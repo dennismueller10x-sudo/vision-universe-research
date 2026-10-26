@@ -1,0 +1,432 @@
+{
+  "schemaVersion": "quant-v6-final-securement-1.0.0",
+  "status": "V6_SECURED_AND_MERGED",
+  "createdAt": "2026-10-26T05:43:33.276Z",
+  "verifiedRuntimeMain": "88f5329ee322316903824bbfe6ef8468b8ab9870",
+  "testedHead": "370d19dd95b760a1be8aa5ad5196a8efdaf9162d",
+  "integrationBases": [
+    "134afa0638b501f41b639c8eb4be3742b52d62d3",
+    "a205063579547c7cf0b4aed405e6fa2e58d10329"
+  ],
+  "areas": [
+    "SAME_STOCK_REPLAY",
+    "PATTERN_EVIDENCE",
+    "SIGNAL_BACKTEST",
+    "SETUP_BACKTEST",
+    "STRATEGY_BACKTEST",
+    "FACTOR_RANKING_BACKTEST",
+    "MONTE_CARLO",
+    "WALK_FORWARD",
+    "OUT_OF_SAMPLE",
+    "MARKET_REGIME",
+    "PARAMETER_SENSITIVITY",
+    "EVENT_DRIVEN",
+    "PORTFOLIO_REBALANCING"
+  ],
+  "methods": [
+    "replay",
+    "pattern",
+    "signal",
+    "setup",
+    "strategy",
+    "factor",
+    "monte-carlo",
+    "walk-forward",
+    "out-of-sample",
+    "regime",
+    "event",
+    "rebalancing",
+    "sensitivity"
+  ],
+  "runtime": {
+    "node": "v22.23.4",
+    "v8": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.41",
+    "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "tests": {
+    "quantCI": {
+      "runId": 40273784882,
+      "jobId": 121412083655,
+      "head": "370d19dd95b760a1be8aa5ad5196a8efdaf9162d",
+      "source": "GitHub plugin decoded workflow logs",
+      "quant": {
+        "tests": 3051,
+        "pass": 3051,
+        "fail": 0,
+        "skipped": 0
+      },
+      "consumers": {
+        "tests": 66,
+        "pass": 66,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    "research": {
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skipped": 0,
+      "logHash": "9ef97acbe6d52e6e27b5637b318fa27c9a30451d17bb46e9669f6564f9051e86"
+    },
+    "onMainResearch": {
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skipped": 0,
+      "logHash": "97293c955e304a567c7a733b8269dd4802a63705104df0d7a82b5e9b6d53c9d7"
+    },
+    "core": {
+      "id": "core",
+      "command": [
+        "/workspace/scratch/v6-runtime/node_modules/node/bin/node",
+        "--test",
+        "core/tests/*.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "state": "PASS",
+      "durationMs": 43874.264801,
+      "logHash": "594a0ea3f71f561338586912a37c1211f71055f9d13952174954493565833b0d",
+      "tests": 238,
+      "pass": 238,
+      "fail": 0,
+      "skipped": 0
+    },
+    "python": {
+      "sec-python": 551,
+      "sec-pit-python": 32
+    },
+    "consumers": {
+      "id": "consumers",
+      "command": [
+        "/workspace/scratch/v6-runtime/node_modules/node/bin/node",
+        "--test",
+        "worker/tests/*.test.mjs",
+        "discover/tests/live-stream.test.mjs",
+        "discover/tests/live-hub.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "state": "PASS",
+      "durationMs": 979.1534619999875,
+      "logHash": "2c5ce875ecefdcb506598995db242b4dad86f1324184c4f6a7f304fdf55ee8f0",
+      "tests": 66,
+      "pass": 66,
+      "fail": 0,
+      "skipped": 0
+    },
+    "fullIsolation": {
+      "state": "PASS",
+      "files": 274,
+      "partitions": 23,
+      "originalPerChildLimitMs": 900000,
+      "manifestHash": "b5d87df8fcc176d4403b125c9c4ae395b850f62471a9e3a241d10af83cdf3f11",
+      "artifact": "isolation.json"
+    },
+    "latestMainDeltaIsolation": {
+      "state": "PASS",
+      "scope": "quant/tests/t*.test.mjs; all changed Node tests are in this subset",
+      "logHash": "d9e42f592893f4889270b6c6faf951fd45cec80ac448d60522792482501762dd"
+    },
+    "realReferences": [
+      {
+        "id": "sec-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/quant/tests",
+          "-p",
+          "test_*.py"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 33893.462506,
+        "logHash": "699e4b77689ea0afb4a9bee68326fdcee36b385aaff4fe72a1c37b0100647d9f"
+      },
+      {
+        "id": "sec-pit-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/vu2",
+          "-p",
+          "test*.py"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 1575.602595999997,
+        "logHash": "b259e2f5d937d5983e8abab61d0d765a816978ecd5189018cb15f1764f6441b6"
+      },
+      {
+        "id": "real-NVDA-1Y-determinism",
+        "state": "PASS",
+        "inputHash": "ff979c8568dde9b7c51ff974ddc00ee7677017c8244944d59b4f4ce38f55192f",
+        "resultHash": "9b5ca6fd568749ede04dff84d1be64729511f9dd147ad857fff7c1f931cad811",
+        "completedTrades": 0,
+        "equityObservations": 53
+      },
+      {
+        "id": "real-NVDA-1Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/scratch/v6-securement/latest-regressions/real-NVDA-1Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 48.66352300001017,
+        "logHash": "e6943cdf662cfd4ae4a62afaad58e47d32de60e9cae8667caf8fbd538cfe4575"
+      },
+      {
+        "id": "real-NVDA-3Y-determinism",
+        "state": "PASS",
+        "inputHash": "f3fd4e8e2c6d1b29eeedbb6767d3b958d8ea56e3156fff20a37e3bca172ce3c4",
+        "resultHash": "63ec1cdc9d883bdd69b64f6985d53005dadac1df5d38ef2c05c30add8af3f8fa",
+        "completedTrades": 2,
+        "equityObservations": 157
+      },
+      {
+        "id": "real-NVDA-3Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/scratch/v6-securement/latest-regressions/real-NVDA-3Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 50.6436160000012,
+        "logHash": "9e44d437f0a02504427d66a51325e6ef42c02a91dc53b7381545fb40cd3afe43"
+      },
+      {
+        "id": "real-NVDA-5Y-determinism",
+        "state": "PASS",
+        "inputHash": "ef4fc6a6e919ad322ed95445ca9ed006cc17ddf7937ef543e7508b008dcab80f",
+        "resultHash": "00d56dc3b6212324e74e8a00e378c79b0f15f8adc5d3dded8ef14513b88b2f5f",
+        "completedTrades": 3,
+        "equityObservations": 262
+      },
+      {
+        "id": "real-NVDA-5Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/scratch/v6-securement/latest-regressions/real-NVDA-5Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 46.994687999991584,
+        "logHash": "11f732bb4b5023a08cb04dbe6e754b54358affbb949070535cbbd7db7be1cba1"
+      },
+      {
+        "id": "real-NVDA-10Y-determinism",
+        "state": "PASS",
+        "inputHash": "23bc1c850a4b9991d237c0b4831e283af6ab319d122cc3b396772726add03b88",
+        "resultHash": "958f43c6a958e8cb68abd735416342c79442207992e6974ccb130b101c269431",
+        "completedTrades": 7,
+        "equityObservations": 522
+      },
+      {
+        "id": "real-NVDA-10Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/scratch/v6-securement/latest-regressions/real-NVDA-10Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 47.3666169999924,
+        "logHash": "c4bfe9f3c55ec823b5b2167cc5656de26f6e19a33527a5427c854f28579db73d"
+      },
+      {
+        "id": "real-NVDA-MAX-determinism",
+        "state": "PASS",
+        "inputHash": "d6a21d4d5148b2ca1ee99677d21f071a47d9be4e88c8c2a1e85282db7b8139aa",
+        "resultHash": "9af6e85cffb4ae456e2e968a77aeff183541bd2b3ec8279d7fce120bea7091c7",
+        "completedTrades": 21,
+        "equityObservations": 1396
+      },
+      {
+        "id": "real-NVDA-MAX-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/scratch/v6-securement/latest-regressions/real-NVDA-MAX.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 60.01877799999784,
+        "logHash": "c0659a9295657b0133cae39e067ca4e88a1feb4bf49f841e489a337334c7347a"
+      },
+      {
+        "id": "mc-TRADE_IID-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-research-monte-carlo.py",
+          "/workspace/scratch/v6-securement/latest-regressions/mc-TRADE_IID-input.json",
+          "/workspace/scratch/v6-securement/latest-regressions/mc-TRADE_IID-result.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 294.95268800000485,
+        "logHash": "1cc3c2c27f06a7feebc95f44058e484b2d4360c6f10e7d42947e5aab21efce13"
+      },
+      {
+        "id": "mc-CIRCULAR_BLOCK-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-research-monte-carlo.py",
+          "/workspace/scratch/v6-securement/latest-regressions/mc-CIRCULAR_BLOCK-input.json",
+          "/workspace/scratch/v6-securement/latest-regressions/mc-CIRCULAR_BLOCK-result.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 443.80848399999377,
+        "logHash": "05ec486d8307c3a2cf060ac6dbd9cb930ad2fb43a4cb23dfb994e6b954f37b7d"
+      }
+    ]
+  },
+  "independent": {
+    "portfolio": {
+      "schemaVersion": "research-portfolio-python-validation-1.0.0",
+      "status": "PASS",
+      "fixtureMode": "SYNTHETIC_TEST",
+      "cases": [
+        {
+          "case": "funded_buy",
+          "expectedEndCapital": "998.50224663005491762356465302046929605591612581128",
+          "resultHash": "b6efcec8bec5371d6c7f6ac516a89686c01e98338df04e3b7e95929bca920768"
+        },
+        {
+          "case": "simultaneous_rebalance",
+          "expectedEndCapital": "996.55604304074150157142216606620879815266355302370",
+          "resultHash": "2c30ba19baae29402286d8859736015463667278ebfbfe1a92dd04218210a8dc"
+        },
+        {
+          "case": "split_dividend_terminal",
+          "expectedEndCapital": "1058.4123814278582126809785322016974538192710933600",
+          "resultHash": "a92e9035a26dc7ee2698856fab5483487c35a29930e7514868f1d6eaba822c45"
+        },
+        {
+          "case": "sourced_zero_terminal",
+          "expectedEndCapital": "19.970044932601098352471293060409385921118322516226",
+          "resultHash": "dfee1e0d52a9536cbe4129ea8c6d7067b46ebecbed861547e09e206ef9c3c83f"
+        }
+      ],
+      "reference": "Python Decimal analytic equations and separate cash/unit journal",
+      "toleranceRelative": "1e-10",
+      "realHistoricalEvidence": false,
+      "scriptSha256": "14bfe7bc8f6611f76505f882a2c7251d96c72fbe0db83bf158ac0f332aa2adab",
+      "nodeRuntime": {
+        "node": "v22.23.4",
+        "v8": "12.4.254.21-node.57",
+        "icu": "78.3",
+        "platform": "linux",
+        "arch": "x64",
+        "glibc": "2.41",
+        "nodeBinaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      }
+    },
+    "studies": {
+      "schemaVersion": "v6-independent-studies-1.0.0",
+      "status": "PASS",
+      "sourceMode": "SYNTHETIC_TEST",
+      "signalEvents": 25,
+      "numericComparisons": 526,
+      "resourceObservation": {
+        "fixtureSourceBars": 360,
+        "nodeWallSeconds": 1.2661555950001002,
+        "childPeakRssKiB": 171224,
+        "scope": "small synthetic validation workload; includes Node startup, runtime hashing and concurrent environment load"
+      },
+      "tolerance": {
+        "relative": 1e-12,
+        "absolute": 1e-12
+      },
+      "independentImplementation": "Python stdlib: all five signal rules/cooldown, fixed replay/pattern selection and controls, setup execution variants, net outcomes/drawdown, ranking, event timing, trend/volatility, two-way cluster inference",
+      "historicalDataEligibility": "NOT_ESTABLISHED_BY_SYNTHETIC_REFERENCE",
+      "inputSha256": "35a30c4539422e4414f98c2f12a955a8f6812d56c314b9f964774e8740e367a4"
+    },
+    "monteCarlo": {
+      "ok": true,
+      "reference": "independent-python-stdlib",
+      "checks": [
+        "endCapital:all_statistics",
+        "totalReturn:all_statistics",
+        "maxDrawdown:all_statistics",
+        "longestLossStreak:all_statistics",
+        "seeded_paths",
+        "conditional_DKW",
+        "no_certification"
+      ],
+      "simulations": 10000,
+      "horizon": 1000,
+      "relativeTolerance": 1e-12,
+      "note": "Independent numerical reproduction, not independent historical/statistical evidence."
+    },
+    "validation": "Python reference invoked and checked by research-validation.test.mjs within the 113 tests"
+  },
+  "resources": {
+    "state": "PASS",
+    "sampledStepsPerRun": 10000000,
+    "runs": 2,
+    "elapsedMs": 2205.231726,
+    "wallBudgetMs": 20000,
+    "peakRssBytes": 175726592,
+    "rssBudgetBytes": 268435456,
+    "inputHash": "bf64dc3bc372b41e716f0b0b8a8814491732e10a8b282612de5d09d2c1ce5567",
+    "resultHash": "8f532ccd8cef61262c035ba9bdc809cec86101b182d79c4ca533698ff40f8e00",
+    "codeHash": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+    "runtime": {
+      "node": "v22.23.4",
+      "v8": "12.4.254.21-node.57",
+      "platform": "linux",
+      "arch": "x64",
+      "glibc": "2.41",
+      "binaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+    },
+    "perRunDurationUpperBoundMs": 2205.231726,
+    "perRunWallBudgetMs": 10000,
+    "note": "Combined duration of both deterministic repetitions bounds each individual run; this verifies the original 10-second per-run budget conservatively.",
+    "fixtureMode": "SYNTHETIC_TEST"
+  },
+  "accessOnMain": {
+    "state": "PASS",
+    "readerState": "UNAVAILABLE",
+    "reason": "REAL_BACKTEST_PREVIEW_DISABLED",
+    "performancePayload": false,
+    "certifiedKinds": 0,
+    "productionApproved": false
+  },
+  "protections": {
+    "noFrontendDelta": true,
+    "noSchedulerDelta": true,
+    "noActivePolicyDelta": true,
+    "noPublicActivation": true,
+    "noPurchases": true,
+    "noNewPreviewInfrastructure": true,
+    "verifiedRuntimeTreeEqualsTestedHead": true
+  },
+  "methodicStatus": "V6_IMPLEMENTED_WITH_EVIDENCE_GAPS",
+  "activeCertifiedKinds": 0,
+  "productionApproved": false,
+  "reportHash": "5a40cf33ed31c0403cf713419403ff69f638e875f4213c99943275128aa11270"
+}

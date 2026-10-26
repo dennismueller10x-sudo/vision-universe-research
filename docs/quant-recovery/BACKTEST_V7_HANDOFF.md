@@ -1,5 +1,7 @@
 # Vision Universe Quant – Übergabe V6 an V7
 
+**Abschlussstatus: V6_SECURED_AND_MERGED.**
+
 Vertrag: `backtest-v7-handoff-1.0.0`. Technische Sicherung von PR [#922](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/922); keine Produktfreigabe. **0/6 bestehende Arten fachlich zertifiziert.** Alle neuen Research-Ergebnisse bleiben `NOT_CERTIFIED`, `productionApproved=false`.
 
 ## 1. Verifizierte Repositorybasis
@@ -7,7 +9,9 @@ Vertrag: `backtest-v7-handoff-1.0.0`. Technische Sicherung von PR [#922](https:/
 - Ursprünglicher V6-Abschluss: `2e82cbd7a0dee57ca7729ee1d4e69884f36142a2`.
 - Zum Sicherungsbeginn geprüfter aktueller Main: `134afa0638b501f41b639c8eb4be3742b52d62d3`.
 - Konfliktfreie Integration dieses Main in den V6-Branch: `14dba647a46237ea435ceff1caa3f5275b9869be`.
-- Die endgültige Merge-/Main-Revision wird nach kontrolliertem Merge mit dem Abnahmenachweis ergänzt. Vorher ist dieses Dokument keine Behauptung eines bereits ausgeführten Merges.
+- Letzte Main-Konsolidierung: `a205063579547c7cf0b4aed405e6fa2e58d10329`, integriert als geprüfter PR-Head `370d19dd95b760a1be8aa5ad5196a8efdaf9162d`.
+- **V6-Merge-/verifizierter Runtime-Main: `88f5329ee322316903824bbfe6ef8468b8ab9870`. PR #922 ist MERGED.** Alle ausgeführten Abschlusschecks waren erfolgreich; keine Reviewanforderung war offen. Normaler Merge mit gebundenem Head, kein Admin-/Auto-Merge.
+- Nach Merge auf genau diesem Main erneut 113/113 Research-Tests und deaktivierter Standardlesezugriff geprüft; Runtime-Baum entspricht dem geprüften PR-Head. Die reine Dokumentationsfinalisierung ändert keine Runtime. Ihre genaue Main-Revision ergibt `git log -1 --first-parent --format=%H -- docs/quant-recovery/BACKTEST_V7_HANDOFF.md`.
 
 Die fünf [V6-Abschlussberichte](BACKTEST_V6_FINAL.md), [Abnahmematrix](BACKTEST_V6_CERTIFICATION_MATRIX.md), [Datenlücken](BACKTEST_V6_DATA_GAPS.md), [Monte-Carlo-Spezifikation](BACKTEST_V6_MONTE_CARLO.md) und [Validierung](BACKTEST_V6_VALIDATION.md) einschließlich `v6/` bleiben unverändert erhalten. Neue Sicherungsnachweise stehen separat unter `v6-securement-final/`.
 
@@ -40,7 +44,7 @@ Gemeinsamer Offline-Einstieg: `scripts/quant/run-research.cjs`. Private immutabl
 
 Die Sicherung prüft alle Quant-Testdateien vollständig und ohne Duplikate über `secure-v6-isolation.mjs`. Jede Teilmenge benutzt die unveränderte ursprüngliche Isolationsprüfung mit unveränderter 900-Sekunden-Grenze. Sowohl Produktionsdaten-Isolation als auch tatsächlicher Kind-Test-Exitcode müssen bestehen. Prüfpunkte, vollständiges Dateimanifest und Hashes verhindern ein stilles Auslassen von Tests. Damit werden die im V6-Bericht dokumentierten unvollständigen monolithischen Wiederholungen getrennt nachgeholt, ohne alte Berichte umzuschreiben.
 
-Zusätzlich werden Core, SEC/PIT, Consumer, die 113 Research-Tests und reale Referenzrechnungen auf der integrierten Basis geprüft. Python rechnet Portfolio-Cash/Stückzahlen, Studienauswahl/Outcomes, Fenster-/Holm-/Ausführungsarithmetik und Monte-Carlo-Pfade/Verteilungen unabhängig nach. Zwei identische Monte-Carlo-Wiederholungen mit je zehn Millionen Schritten prüfen Reproduktion und die bestehenden Laufzeit-/Speicherbudgets. Tatsächliche Abschlusswerte werden im separaten Sicherungsnachweis festgehalten; laufende oder abgebrochene Tests gelten nicht als bestanden.
+Abschlusswerte: **Quant-CI 3.051/3.051**, **Core 238/238**, **Research 113/113** und nach Merge auf Main erneut **113/113**, **SEC-Python 551**, **SEC/PIT 32**, **Consumer 66** bestanden. Die vollständige Isolation deckt **274/274 Quant-Testdateien in 23 Teilmengen** ab; nach der letzten Main-Konsolidierung wurden die betroffenen Technical-Tests samt Isolation, Core, SEC/PIT, Consumer und reale Referenzen erneut erfolgreich geprüft. Sämtliche Quellen-/Test-/Laufzeitnachweise stehen in [validation.json](v6-securement-final/validation.json), [vollständiger Isolation](v6-securement-final/isolation.json), [Berichtserhalt](v6-securement-final/preserved-reports.json) und [Merge-Abnahme](v6-securement-final/merge-acceptance.json). Python rechnet Portfolio-Cash/Stückzahlen, Studienauswahl/Outcomes, Fenster-/Holm-/Ausführungsarithmetik und Monte-Carlo-Pfade/Verteilungen unabhängig nach. Zwei identische Monte-Carlo-Wiederholungen mit je zehn Millionen Schritten prüfen Reproduktion und die bestehenden Laufzeit-/Speicherbudgets. Portfolio: vier unabhängige Decimal-Referenzfälle bestanden; Studien: 526 unabhängige Vergleiche und 25 Signalereignisse bestanden. Monte Carlo: zwei identische Zehn-Millionen-Schritt-Läufe zusammen 2.205,23 ms und 175.726.592 Bytes Peak-RSS; diese gemeinsame Dauer begrenzt jeden einzelnen Lauf und erfüllt die ursprünglichen zehn Sekunden je Lauf und 256 MiB. Der vollständige Zehn-Millionen-Schritt-Ausgang wurde unabhängig mit Python nachgerechnet. Laufende oder abgebrochene Tests wurden nicht als bestanden gezählt; die früheren V6-Berichte bleiben unverändert als Historie erhalten.
 
 Die vorhandene reale Preisreplay-Referenz umfasst fünf Perioden 1Y/3Y/5Y/10Y/MAX, junge Listings und blockierte Fälle. Ihr Preisrendite-/Wochenmodell ist weder Total Return noch garantierter Live-Fill. Vollständige private Generationen und Rohdaten gehören weiterhin nicht in Git oder öffentliche Builds.
 
@@ -62,6 +66,8 @@ Die vorhandene reale Preisreplay-Referenz umfasst fünf Perioden 1Y/3Y/5Y/10Y/MA
 | D12 | Tatsächlich unangetastete, versiegelte oder prospektive Bestätigungskohorte; bekannte Historie bleibt Exploration, auch bei anderem Provider |
 
 **D13 aus V6 bleibt zusätzlich erhalten:** Lizenz, Aufbewahrung, Zugriff und Derived-/Display-/Auditrechte aller Quellen und Ergebnisse. Die Nummer wird durch den V7-Auftrag mit D01–D12 nicht gelöscht oder umgedeutet.
+
+Main enthält zusätzlich die SEC-Consumer-Korrektur aus #935: volle Jahreshistorie und Jahresbericht-Datum aus dem eigenen Geschäftsjahr. Dies verbessert den vorhandenen historischen Consumerbestand, erzeugt aber kein vollständiges ursprüngliches Vintagearchiv und ersetzt keine studienspezifische PIT-Qualifikation.
 
 Bekannter gesicherter V6-Messstand: 6.190 Preisreplay-Kandidaten, 4.451 Klasse B/1.739 C, 22.255 Periodenergebnisse; separate TR-Studie 6.036/6.174 Serien; 3.082 delistete Sensitivitätslistings. Diese Populationen sind verschieden und dürfen nicht addiert werden. Zahlen neuer Produktläufe sind jeweils am eigenen As-of zu prüfen und machen alte Messstände nicht nachträglich PIT.
 
