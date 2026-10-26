@@ -115,6 +115,7 @@ html.wk-story-open,html.wk-story-open body{overflow:hidden}
 .wk-story-stage{position:relative;width:min(100vw,calc(100dvh * 9 / 16));height:min(100dvh,calc(100vw * 16 / 9));max-height:100dvh;background:#08080a;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 @media (max-width:599px){.wk-story-stage{width:100vw;height:100dvh}}
 @media (min-width:600px){.wk-story-stage{height:min(94dvh,calc(100vw * 16 / 9));width:calc(min(94dvh,calc(100vw * 16 / 9)) * 9 / 16);border-radius:18px}}
+.wk-story-stage::before{content:"";position:absolute;z-index:4;left:0;right:0;top:0;height:150px;background:linear-gradient(180deg,rgba(4,4,6,.85),rgba(4,4,6,0));pointer-events:none}
 .wk-story-bars{position:absolute;z-index:4;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;display:flex;gap:4px}
 .wk-story-bar{flex:1;height:3px;border-radius:2px;background:rgba(244,245,241,.28);overflow:hidden}
 .wk-story-fill{display:block;height:100%;background:#f4f5f1;transform:scaleX(0);transform-origin:left}

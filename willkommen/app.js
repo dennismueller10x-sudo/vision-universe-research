@@ -133,7 +133,8 @@
     if (more) {
       var sync = function () { more.hidden = host.scrollLeft + host.clientWidth >= host.scrollWidth - 4; };
       more.onclick = function () { host.scrollBy({ left: host.clientWidth * 0.7, behavior: reduced() ? 'auto' : 'smooth' }); };
-      host.addEventListener('scroll', sync, { passive: true }); global.addEventListener('resize', sync); sync();
+      host.addEventListener('scroll', sync, { passive: true }); global.addEventListener('resize', sync); sync(); requestAnimationFrame(sync);
+      if (global.ResizeObserver) new ResizeObserver(sync).observe(host.firstChild || host);
     }
     var all = doc.getElementById('wk-hl-all');
     if (all) all.onclick = function () { openStory(firstNew || stories.stories[0].id, all); };
