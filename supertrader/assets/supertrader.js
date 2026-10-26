@@ -957,6 +957,9 @@
   function stockKit() {
     loadCss('/assets/stock-navigator.css');
     var core = window.VUStockNavigator ? Promise.resolve() : loadScript('/core/identity.js').then(function () { return loadScript('/core/stock-context.js'); }).then(function () { return loadScript('/assets/stock-navigator.js'); });
+    /* Lesezeichen der persoenlichen Watchlist (docs/accounts/WATCHLIST.md): haengt sich selbst an den Aktienkopf; ohne
+       freigeschaltete Konten zeigt es nichts und fragt die Konto-API nicht an. Blockiert den Kopf nicht. */
+    core.then(function () { if (!window.VUWatchButton) loadScript('/assets/watchlist-button.js').catch(function () {}); });
     var chart = window.VUChart ? Promise.resolve() : loadScript('/assets/vu-chart.js');
     return Promise.all([core, chart]);
   }
