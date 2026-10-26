@@ -6,7 +6,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const Profile = require('./profile-backtest.js');
 const Legacy = require('./backtest.js');
-const VERSION = 'research-portfolio-1.0.0';
+const VERSION = 'research-portfolio-1.1.0';
 const HASH = /^[a-f0-9]{64}$/;
 const cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail : '')); e.code = code; throw e; }
@@ -102,8 +102,11 @@ function runPortfolio(input) {
   const initialCapital = finite(input.initialCapital, 'INVALID_INITIAL_CAPITAL', Number.MIN_VALUE);
   if (typeof input.currency !== 'string' || !/^[A-Z]{3}$/.test(input.currency)) fail('CURRENCY_REQUIRED');
   const p = input.provenance;
-  if (!p || !['SYNTHETIC_TEST', 'HISTORICAL_OBSERVED'].includes(p.mode)) fail('PROVENANCE_REQUIRED');
+  if (!p || !['SYNTHETIC_TEST', 'HISTORICAL_OBSERVED', 'HISTORICAL_PRICE_SIMULATION'].includes(p.mode)) fail('PROVENANCE_REQUIRED');
   hashRef(p.datasetHash);
+  const priceSimulation = p.mode === 'HISTORICAL_PRICE_SIMULATION';
+  if (priceSimulation && (input.returnBasis !== 'PRICE_RETURN' || p.priceSeriesType !== 'SPLIT_ADJUSTED' || p.populationBasis !== 'CONDITIONAL_FIXED_CURRENT_COHORT' || p.clockBasis !== 'MODELED_WEEK_END_DATE' || input.listings.some(l => l.events.length || l.lastTradeDate !== null) || input.targets.some(t => t.factorSnapshotHash || t.selectionKind === 'PROFILE'))) fail('INVALID_CONDITIONAL_PRICE_SIMULATION');
+  const returnBasis = priceSimulation ? 'PRICE_RETURN' : 'TOTAL_RETURN';
   if (p.mode === 'HISTORICAL_OBSERVED') {
     for (const field of ['identityEvidence', 'populationEvidence', 'corporateActionEvidence', 'lifecycleEvidence', 'licenseEvidence']) hashRef(p[field]);
     if (p.historicalPopulation !== 'ALL_THEN_TRADEABLE_LISTINGS' && p.historicalPopulation !== 'HISTORICAL_INDEX_MEMBERSHIP' && p.historicalPopulation !== 'CUSTOM_STRATEGY_UNIVERSE') fail('HISTORICAL_POPULATION_REQUIRED');
@@ -184,7 +187,7 @@ function runPortfolio(input) {
   const eventsByDate = new Map();
   allEvents.forEach(e => { if (!eventsByDate.has(e.effectiveDate)) eventsByDate.set(e.effectiveDate, []); eventsByDate.get(e.effectiveDate).push(e); });
   const benchmark = input.benchmark;
-  if (!benchmark || benchmark.currency !== input.currency || benchmark.returnBasis !== 'TOTAL_RETURN' || benchmark.costPolicy !== 'PASSIVE_NO_TRANSACTION_COSTS') fail('BENCHMARK_CONTRACT_REQUIRED');
+  if (!benchmark || benchmark.currency !== input.currency || benchmark.returnBasis !== returnBasis || benchmark.costPolicy !== 'PASSIVE_NO_TRANSACTION_COSTS') fail('BENCHMARK_CONTRACT_REQUIRED');
   hashRef(benchmark.sourceHash);
   const benchMap = new Map();
   requireArray(benchmark.levels, 'BENCHMARK_LEVELS_REQUIRED').forEach(b => { date(b.date); finite(b.level, 'INVALID_BENCHMARK_LEVEL', Number.MIN_VALUE); if (benchMap.has(b.date)) fail('DUPLICATE_BENCHMARK_DATE'); benchMap.set(b.date, b.level); });
@@ -272,11 +275,11 @@ function runPortfolio(input) {
     equity.push({ date: session.date, value, cash, receivables: claims, positions, benchmark: initialCapital * benchMap.get(session.date) / benchMap.get(dates[0]) });
   }
   const values = [initialCapital, ...equity.map(e => e.value)], years = (Date.parse(dates.at(-1)) - Date.parse(dates[0])) / (365.25 * 86400000), endCapital = equity.at(-1).value;
-  const result = { schemaVersion: VERSION, returnBasis: 'TOTAL_RETURN', currency: input.currency, mode: p.mode, certification: 'NOT_CERTIFIED', productionApproved: false,
+  const result = { schemaVersion: VERSION, returnBasis, conditionalPriceSimulation: priceSimulation, currency: input.currency, mode: p.mode, certification: 'NOT_CERTIFIED', productionApproved: false,
     inputHash: sha(input), sourceHashes: sourceIdentity(), runtime: runtimeIdentity(), initialCapital, endCapital,
     equity, trades, eventLedger, rebalances, openReceivables: receivables,
     metrics: { cumulativeReturn: endCapital / initialCapital - 1, cagr: years > 0 ? Math.pow(endCapital / initialCapital, 1 / years) - 1 : null, maxDrawdown: Legacy.maxDrawdownOf(values), fees: totalFees, slippage: totalSlippage, oneWayTurnoverSum: turnover },
-    limitations: ['FRACTIONAL_LONG_ONLY', 'OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL', 'NO_CASH_INTEREST_OR_TAX', input.liquidity ? 'DAILY_DOLLAR_VOLUME_CAP_IS_NOT_CLOSE_AUCTION_CAPACITY' : 'NO_VOLUME_CAPACITY_MODEL', 'CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE', 'SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT'] };
+    limitations: [...(priceSimulation ? ['CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP','SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES','MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES'] : []), 'FRACTIONAL_LONG_ONLY', 'OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL', 'NO_CASH_INTEREST_OR_TAX', input.liquidity ? 'DAILY_DOLLAR_VOLUME_CAP_IS_NOT_CLOSE_AUCTION_CAPACITY' : 'NO_VOLUME_CAPACITY_MODEL', 'CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE', 'SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT'] };
   result.generation = sha({ version: VERSION, inputHash: result.inputHash, sourceHashes: result.sourceHashes, runtime: result.runtime });
   result.resultHash = sha(result);
   return result;
