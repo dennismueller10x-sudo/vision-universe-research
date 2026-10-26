@@ -176,6 +176,26 @@ export function publicFeatures(det, stage) {
   return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k)));
 }
 
+/**
+ * Planansicht eines modellierten Ablaufs. Hat die Order der Referenz einen höchsten geplanten Verlust (KK-Breakout
+ * NEXT_OPEN: ADR20, Lifecycle-Regel NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX), entsteht daraus das Ausführungsfenster
+ * der Eröffnung: über dem Stop und höchstens Stop × (1 + maxPlannedLoss). `referenceInFillWindow` sagt, ob der
+ * Schlusskurs (die Referenz) darin liegt; die Regel selbst wird nicht verändert, nur sichtbar gemacht.
+ */
+export function planView(p, nextSession) {
+  const r4 = (x) => Math.round(x * 1e4) / 1e4;
+  const upTo = Number.isFinite(p.maxPlannedLoss) && Number.isFinite(p.stop) ? r4(p.stop * (1 + p.maxPlannedLoss)) : null;
+  return {
+    entryType: p.entry.type, trigger: p.entry.trigger, stop: p.stop, earliestSession: nextSession,
+    plannedRiskPct: p.entry.trigger > 0 ? r4(1 - p.stop / p.entry.trigger) : null,
+    limit: p.limit ?? null, maxPlannedLoss: p.maxPlannedLoss ?? null,
+    fillWindow: upTo !== null ? { above: p.stop, upTo, rule: 'NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX' } : null,
+    referenceInFillWindow: upTo !== null ? p.entry.trigger > p.stop && p.entry.trigger <= upTo : null,
+    sizing: p.sizing.method, riskFraction: p.sizing.riskFraction,
+    exitRuleIds: p.exitRuleIds, modelAssumptions: p.modelAssumptions.map((a) => a.ruleId), lifecycle: `${p.lifecycleKey}/${p.variantId}`, hypothetical: true,
+  };
+}
+
 export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, readiness, ceilings, common, meta }) {
   if (!det?.detected) return null;
   const rc = ruleClasses(det.strategyId), ceiling = ceilings.get(det.strategyId);
@@ -186,12 +206,7 @@ export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, 
   const record = buildContractRecord({ det, sec, stage, asOf, nextSession, inputsSha256, dq, readiness });
   const v = validateCandidateRecord(record, { readiness });
   if (!v.ok) return { rejected: { strategyId: det.strategyId, ticker: sec.ticker, reason: 'CONTRACT_VALIDATION_FAILED', stage, errors: v.errors } };
-  const plan = stage === STAGE.MODELED_TRADE_PLAN ? {
-    entryType: det.plan.entry.type, trigger: det.plan.entry.trigger, stop: det.plan.stop, earliestSession: nextSession,
-    plannedRiskPct: det.plan.entry.trigger > 0 ? Math.round((1 - det.plan.stop / det.plan.entry.trigger) * 1e4) / 1e4 : null,
-    limit: det.plan.limit ?? null, maxPlannedLoss: det.plan.maxPlannedLoss ?? null, sizing: det.plan.sizing.method, riskFraction: det.plan.sizing.riskFraction,
-    exitRuleIds: det.plan.exitRuleIds, modelAssumptions: det.plan.modelAssumptions.map((a) => a.ruleId), lifecycle: `${det.plan.lifecycleKey}/${det.plan.variantId}`, hypothetical: true,
-  } : null;
+  const plan = stage === STAGE.MODELED_TRADE_PLAN ? planView(det.plan, nextSession) : null;
   const view = {
     strategyId: det.strategyId, candidateId: record.candidateId, ticker: sec.ticker, securityId: sec.id,
     companyName: meta?.companyName ?? null, exchange: meta?.exchange ?? null, shard: meta?.shard ?? null,

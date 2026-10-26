@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION } from '../source-faithful/product/detectors.mjs';
-import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, planView } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
@@ -135,6 +135,39 @@ test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop-
   }
   assert.ok(below > 0);
   assert.doesNotMatch(JSON.stringify(views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN')), /"(trigger|stopReference|limit)":/);
+});
+
+test('SF8-C08-FILL-WINDOW: KK-Breakout NEXT_OPEN zeigt das Ausführungsfenster der Referenzregel (ADR20) unverändert', () => {
+  const base = { entry: { type: 'ON_OPEN_NEXT_SESSION (reference = as-of close)' }, sizing: { method: 'RISK', riskFraction: 0.005 }, exitRuleIds: [], modelAssumptions: [], lifecycleKey: 'KK_BREAKOUT', variantId: 'REF' };
+  // ZS am 23.10.2026: Schluss 255,15, Stop 234,19 (Tief des Ausbruchstags), ADR20 5,0647 % -> Eröffnung höchstens 246,05
+  const zs = planView({ ...base, entry: { ...base.entry, trigger: 255.15 }, stop: 234.19, maxPlannedLoss: 0.0506469927499545 }, '2026-10-26');
+  assert.deepEqual(zs.fillWindow, { above: 234.19, upTo: 246.0510, rule: 'NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX' });
+  assert.equal(zs.referenceInFillWindow, false, 'zum Schlusskurs nach der Referenzregel nicht ausführbar');
+  // PCOR: Schluss 63, Stop 61,725, ADR20 3,93 % -> ausführbar
+  assert.equal(planView({ ...base, entry: { ...base.entry, trigger: 63 }, stop: 61.725, maxPlannedLoss: 0.0393 }, '2026-10-26').referenceInFillWindow, true);
+  // ohne höchsten geplanten Verlust (z. B. BGU) kein Fenster
+  const bgu = planView({ ...base, entry: { ...base.entry, trigger: 30.52 }, stop: 29.61 }, '2026-10-26');
+  assert.equal(bgu.fillWindow, null); assert.equal(bgu.referenceInFillWindow, null);
+  for (const v of views().filter((x) => x.plan && x.plan.maxPlannedLoss !== null)) {
+    assert.ok(Math.abs(v.plan.fillWindow.upTo - v.plan.stop * (1 + v.plan.maxPlannedLoss)) < 1e-3, v.ticker);
+  }
+});
+
+test('SF8-C08-STAGE: MODELED nur mit O-6-Lesart erfüllt, Setup-Proxy, Plan der Referenz; darunter höchstens CHART', () => {
+  for (const v of views().filter((x) => x.candidateId === 'C08')) {
+    const mom = v.features.momentum?.best ?? null;
+    if (v.stage === 'MODELED_TRADE_PLAN') {
+      assert.ok(mom >= 98, `${v.ticker} Momentum ${mom}`);
+      assert.ok(v.met.includes('KK-SF-BO-MOMENTUM') && v.dataQuality.status === 'PASS');
+      assert.equal(v.plan.lifecycle, 'KK_BREAKOUT/REF');
+      assert.ok(v.plan.stop < v.plan.trigger && v.plan.fillWindow);
+    } else if (mom !== null && mom >= 98 && v.stage === 'CONFIRMED_RESEARCH_SETUP') {
+      assert.ok(v.planBlockers.length > 0, `${v.ticker}: bestätigt ohne Plan nur mit benanntem Plan-Blocker`);
+    } else {
+      assert.equal(v.stage, 'CHART_CANDIDATE', v.ticker);
+      assert.ok(mom === null || mom < 98 || v.dataQuality.status !== 'PASS', v.ticker);
+    }
+  }
 });
 
 test('SF8-REACH: CONFIRMED nur bei vollständig erfüllten mechanischen Setup-Regeln; ohne mechanische Regel nie über CHART', () => {
