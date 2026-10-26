@@ -72,7 +72,7 @@ export function build(options = {}) {
   const spy = existsSync(spyPath) ? readJSON(spyPath) : null;
   const benchmark = spy && Array.isArray(spy.points) ? { dates: spy.points.map((p) => p[0]), close: spy.points.map((p) => p[1]), asOf: spy.asOf } : null;
 
-  const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_]{2}\.json\.gz$/.test(f)).sort();
+  const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f))  /* "C-", "F-", "T-": Vorzugsaktien (product-materialization.shardKey) */.sort();
   const only = options.tickers ? new Set(options.tickers) : null;
   const rows = [], skipped = {};
   let generatedFrom = null;
