@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -50,5 +51,10 @@ test("Eigenstaendig: Navigator unberuehrt, Freigabe zuerst, Einbau nur in freien
     assert.ok(!lock.files[page], page + " ist nicht gesperrt");
     assert.ok(html.indexOf("/assets/stock-navigator.js") < html.indexOf("/assets/watchlist-button.js"), page);
   }
-  for (const page of Object.keys(lock.files)) assert.ok(!/\.html$/.test(page) || !readFileSync(join(ROOT, page), "utf8").includes("watchlist-button"), "gesperrte Seite unveraendert: " + page);
+  /* Eine gesperrte Seite darf das Lesezeichen nur tragen, wenn die Sperrdatei genau diesen Stand freigegeben hat (PR #951). */
+  for (const [page, sha] of Object.entries(lock.files)) {
+    if (!/\.html$/.test(page)) continue;
+    const bytes = readFileSync(join(ROOT, page));
+    if (bytes.includes("watchlist-button")) assert.equal(createHash("sha256").update(bytes).digest("hex"), sha, "gesperrte Seite ohne Freigabe geaendert: " + page);
+  }
 });
