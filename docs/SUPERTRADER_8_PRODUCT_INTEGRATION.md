@@ -228,6 +228,20 @@ Ohne Vorschaudaten prüft die QA, dass keine Seite die Research-Ansicht zeigt od
 
 Der Vorschlag des Reviews, den Isolationstest `SF-PRODUCT-NO-RUN-INTEGRATION` auf `sf-candidates|STResearch` zu erweitern, ist nicht umgesetzt: Er würde die abgeschaltete Vorschau selbst verbieten. Mit O-3/O-4 bleibt die Vorschau im Code. Der Schutz besteht darin, dass keine Daten ausgeliefert werden, siehe Abschnitt 6. Für den deaktivierten Tageslauf ist der Test genau für dessen Workflow geöffnet (`SF8-DAILY-DISABLED`).
 
+**Zweites unabhängiges Review** (26.10.2026, rein lesend, auf dem ganzen Stapel A–D):
+- Gegenproben: voller Lauf mit 3.039 Kandidaten (bitgleich wiederholt), Eingangsprüfung STALE/CURRENT, `--out` im Repository verweigert.
+- Die Bereiche Stufen-Obergrenzen, Lookahead, Quarantäne (80 Ansichten mit V4-D1-Sitzungen, keine über CHART), Referenzschutz, Strategie-Identitäten, O-1 bis O-7, Ranking, Datenverträge, Vorschau-Schalter und Budgets sind ohne Befund.
+
+| Befund | Behandlung | Nachweis |
+|---|---|---|
+| BLOCKING: Die Ansicht trug unterhalb von MODELED `levels.trigger`/`stopReference` (Turtle, Darvas, Weinstein, Holy Grail, BGU, Power Play) | Unterhalb von MODELED geht nur Chartstruktur in die Ansicht (`records.mjs#chartMarks`, `STRUCTURE_LEVELS`). Kennzahlen, aus denen sich Order oder Stop zurückrechnen ließen, entfallen (`ORDER_DERIVED_FEATURES`). | Test `SF8-NO-ORDER-LEVELS-BELOW-MODEL`, rot auf dem alten Stand. Voller Lauf: 0 von 2.012 + 988 Ansichten mit Order- oder Stopmarke; Zahlen unverändert. |
+| HIGH: Als "Pivot" angezeigte Einstiegsorder (C01/C02, C03, C04/C05, C13) | Die Marke ist jetzt die Struktur (Boxoberkante, Wochenwiderstand). Für Turtle und Holy Grail gibt es unterhalb von MODELED keine Marke. In der Oberfläche heißt sie "Chartmarke". | wie oben; Browser-QA und visuelle QA grün |
+| MEDIUM: Commit ohne Registrierung in `domains.json` möglich | Der Workflow bricht vor dem Commit ab, solange der Pfad nicht registriert ist. | `SF8-DAILY-DISABLED` mit Gegenprobe |
+| MEDIUM: Eingangsprüfung nur für Tagesbalken | Höchstalter für Wochenreihen, Kontinuität, SIC, Namen und Stammdaten (`AUX_MAX_AGE_DAYS`) | `SF8-GATE-AUX` |
+| LOW: veraltete Plan-Texte, O-6-Zeile unter "Warum erkannt" auch unter p98, interne Version in der Herkunft, `Cxx` als Ersatzname | behoben (C) | visuelle QA: 0 Codes |
+| LOW: `--as-of` schneidet keine Stammdaten | dokumentiert (`SUPERTRADER_8_DAILY_RUN.md`, "Bekannte Grenze"); betrifft den Tageslauf nicht | – |
+| LOW: C10 nennt nur "ADR 20" als erfüllte Regel | Bleibt so. Die Beschleunigung (`KK-SF-PS-ACCEL`) ist im Vertrag keine mechanische Regel; sie als erfüllt auszuweisen, würde den Datensatz ungültig machen (Gegenprobe: C10 fiel heraus). Das Muster heißt in der Karte "beschleunigte Aufwärtsserie". | Golden-Test |
+
 ## 8. Owner-Entscheidungen (26.10.2026)
 
 | | Entscheidung | Umsetzung |
