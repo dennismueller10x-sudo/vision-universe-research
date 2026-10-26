@@ -477,6 +477,9 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#4f8fdc;--fu-m2:#d07a2c;--fu-m3:#9
 .fu-plus-b{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px 0 12px;border-radius:999px;border:1px dashed var(--vu-line-strong,var(--vu-line));background:transparent;color:var(--vu-text);font:inherit;font-size:14px;font-weight:750;cursor:pointer}
 .fu-plus-b:disabled{opacity:.5;cursor:default}
 .fu-mc-mode .fu-seg{margin-top:10px}
+/* Sichtbar 38 px wie die Zeitraum-Umschalter; die Trefferflaeche reicht 3 px ueber den Rahmen nach oben und unten (44 px) und je 3 px in
+   den 6-px-Abstand, ohne den Nachbarn zu ueberdecken. */
+.fu-mc-mode .fu-seg-b{position:relative;z-index:1}.fu-mc-mode .fu-seg-b::before{content:"";position:absolute;inset:-4px}
 /* Auswahlblatt und Vollbild: Dialog in der obersten Ebene (ueber Kopf und Dock), unten auf dem iPhone, mittig ab Tablet */
 html.fu-locked,html.fu-locked body{overflow:hidden}
 .fu-sheet{position:fixed;inset:auto 0 0;width:100%;max-width:100%;max-height:none;margin:0;padding:0;border:0;border-radius:22px 22px 0 0;background:var(--fu-card);color:var(--vu-text);box-shadow:0 -8px 40px rgba(0,0,0,.28),0 0 0 1px var(--vu-line);overflow:hidden}

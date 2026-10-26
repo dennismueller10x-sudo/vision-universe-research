@@ -209,6 +209,13 @@ for (const [w, h] of viewports) {
       const mode = await b.page.$eval('.fu-mc', (n) => n.dataset.mode);
       const axesOff = await b.page.$eval('.fu-mc-mode .fu-seg-b', (n) => n.disabled);
       expect(at, mode === 'index' && axesOff, 'Drei Einheiten: Index 100, gemeinsame Achse gesperrt', mode);
+      // Umschalter Achsen / Index 100 / Getrennt: sichtbar 38 px wie die bestehenden Umschalter, Trefferflaeche 44 px
+      const hit = await b.page.evaluate(() => [...document.querySelectorAll('.fu-mc-mode .fu-seg-b')].map((n) => {
+        n.scrollIntoView({ block: 'center' }); const r = n.getBoundingClientRect(), x = r.left + r.width / 2, inside = (y) => { const e = document.elementFromPoint(x, y); return !!e && (e === n || n.contains(e)); };
+        return { h: Math.round(r.height), w: Math.round(r.width), top: inside(r.top - 2.5), bottom: inside(r.bottom + 2.5) };
+      }));
+      expect(at, hit.length === 3 && hit.every((x) => x.h <= 40 && x.top && x.bottom && x.h + 6 >= 44 && x.w >= 44),
+        'Darstellungs-Umschalter: sichtbar 38 px, Trefferflaeche mindestens 44 px', JSON.stringify(hit));
       await legibility(b.page, at + ' Index');
       await tapEl(b.page, '.fu-mc-mode .fu-seg-b:nth-child(3)');
       const panels = await b.page.$$eval('.fu-mc-panel', (x) => x.length);
