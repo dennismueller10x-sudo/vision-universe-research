@@ -49,6 +49,27 @@ test("Zeitrahmen waehlt die Spalte; Tagesfelder sind fuer Woche gesperrt", () =>
   assert.equal(Q.columnKey("newHigh200w", "1W"), "newHigh200w", "zeitrahmenunabhaengiges Feld");
 });
 
+test("Mehrzeitrahmen: eigener Zeitrahmen je Filter, gleiche Spaltenregel, Pruefung je Filter", () => {
+  /* Tag ueber SMA 200 UND Woche ueber 40-Wochen-Linie: nur AAA (BBB Woche nein, CCC Tag nein, DDD Tag ohne Wert) */
+  const r = Q.evaluate(ds, { timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: [
+    { field: "aboveSma200", op: "is", value: true }, { field: "aboveSma200", op: "is", value: true, tf: "1W" }] }] });
+  assert.deepEqual(syms(r), ["AAA"]);
+  const v = Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "rsi14", op: "gt", value: 50, tf: "1W" }, { field: "rsi14", op: "lt", value: 30, tf: "1D" }] }] });
+  assert.ok(v.ok);
+  assert.equal(v.query.groups[0].filters[0].tf, "1W");
+  assert.equal(v.query.groups[0].filters[1].tf, undefined, "gleicher Zeitrahmen wie die Abfrage wird nicht mitgeschrieben");
+  assert.equal(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "relVol", op: "gt", value: 1, tf: "1W" }] }] }).errors[0].code, "FIELD_NOT_AVAILABLE_FOR_TIMEFRAME");
+  assert.equal(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "rsi14", op: "gt", value: 1, tf: "5M" }] }] }).errors[0].code, "INVALID_TIMEFRAME");
+  assert.match(Q.describe(v.query), /RSI 14 \(Woche\) über 50/);
+});
+
+test("Verneinte Formation (nin): erfuellt ohne die Typen; fehlender Wert bleibt unbekannt", () => {
+  const r = Q.evaluate(ds, { timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: [{ field: "formationActive", op: "nin", value: ["BULL_FLAG"] }] }] });
+  assert.deepEqual(syms(r), ["AAA", "BBB"], "CCC hat die Flagge, DDD hat keinen Wert");
+  assert.equal(r.funnel[1].missing, 1);
+  assert.match(Q.describe(r.query), /keine von Bullische Flagge/);
+});
+
 test("Sortierung: Feld, fehlende Werte ans Ende; ohne Feld nach erfuellten Bedingungen", () => {
   const r = Q.evaluate(ds, { logic: "AND", groups: [], sort: { field: "rsi14", dir: "desc" } });
   assert.deepEqual(syms(r), ["BBB", "AAA", "CCC", "DDD"]);

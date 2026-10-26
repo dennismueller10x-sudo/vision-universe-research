@@ -1,6 +1,6 @@
 {
  "schema": "vu-technical-query-gold-1",
- "purpose": "Offline-Bewertung der Suche in Worten (query-text.js). Erwartungen von Hand formuliert, nicht aus der Parser-Ausgabe kopiert. 'expect' = kanonische Abfrage (Gruppen sind ODER, Filter in einer Gruppe UND; Reihenfolge innerhalb einer Gruppe egal). 'unsupported' = heute nicht abbildbar; der Parser darf dann NICHT stillschweigend eine Abfrage mit ok=true liefern, sondern muss Unbekanntes melden oder einen Fehler zeigen.",
+ "purpose": "Offline-Bewertung der Suche in Worten (query-text.js). Erwartungen von Hand formuliert, nicht aus der Parser-Ausgabe kopiert. 'expect' = kanonische Abfrage (Filter mit eigenem Zeitrahmen als 'feld@1W') (Gruppen sind ODER, Filter in einer Gruppe UND; Reihenfolge innerhalb einer Gruppe egal). 'unsupported' = heute nicht abbildbar; der Parser darf dann NICHT stillschweigend eine Abfrage mit ok=true liefern, sondern muss Unbekanntes melden oder einen Fehler zeigen.",
  "cases": [
   {
    "q": "Aktien über der SMA 200",
@@ -1220,6 +1220,131 @@
    }
   },
   {
+   "q": "Wochen-RSI über 50 und Tages-RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14@1W",
+       "gt",
+       50
+      ],
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Monats-RSI zwischen 40 und 60",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14@1M",
+       "between",
+       40,
+       60
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "wochen-aboveSma200 und RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200@1W",
+       "is",
+       true
+      ],
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über SMA 200 ohne Kurslücke",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       true
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "GAP_UP",
+        "GAP_DOWN"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "kein Doppeltop und RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "DOUBLE_TOP"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Doppelboden ohne Kurslücke nach unten",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "DOUBLE_BOTTOM"
+       ]
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "GAP_DOWN"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
    "q": "Golden Cross in den letzten 5 Tagen",
    "unsupported": "Ereignis mit Zeitfenster (B12)"
   },
@@ -1230,10 +1355,6 @@
   {
    "q": "Ausbruch seit höchstens 3 Tagen",
    "unsupported": "Alter einer Formation (B12)"
-  },
-  {
-   "q": "Wochen-RSI über 50 und Tages-RSI unter 30",
-   "unsupported": "Zeitrahmen je Filter (B13)"
   },
   {
    "q": "Technologieaktien über der SMA 200",
@@ -1274,6 +1395,10 @@
   {
    "q": "Tagesverlierer über 5 %",
    "unsupported": "Richtungswort 'Verlierer' nicht abgebildet"
+  },
+  {
+   "q": "Wochen-Volumenspitze",
+   "unsupported": "Volumen gibt es nur im Tageszeitrahmen (Wochenschlüsse ohne Volumen)"
   }
  ]
 }

@@ -15,7 +15,7 @@ test("Gold-Set: Erwartungen sind gueltige Abfragen, Faelle eindeutig", () => {
     assert.ok(!!c.expect !== !!c.unsupported, "genau eines von expect/unsupported: " + c.q);
     if (c.expect) {
       const q = { timeframe: c.expect.tf, logic: c.expect.groups.length > 1 ? "OR" : "AND",
-        groups: c.expect.groups.map((g) => ({ op: "AND", filters: g.map(([field, op, value, value2]) => (op === "between" ? { field, op, value, value2 } : { field, op, value })) })) };
+        groups: c.expect.groups.map((g) => ({ op: "AND", filters: g.map(([id, op, value, value2]) => { const [field, tf] = id.split("@"); return Object.assign(op === "between" ? { field, op, value, value2 } : { field, op, value }, tf ? { tf } : {}); }) })) };
       assert.ok(Q.validate(q).ok, c.q + ": " + JSON.stringify(Q.validate(q).errors));
     }
   }

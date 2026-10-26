@@ -19,7 +19,8 @@ const require = createRequire(import.meta.url);
 const P = require("../../quant/engines/technical/query-text.js");
 const GOLD = fileURLToPath(new URL("../../quant/tests/fixtures/technical-query-gold.json", import.meta.url));
 
-const key = (f) => JSON.stringify(f.op === "between" ? [f.field, f.op, f.value, f.value2] : [f.field, f.op, f.value]);
+/* Ein Filter mit eigenem Zeitrahmen heisst im Gold-Set "feld@1W". */
+const key = (f) => { const id = f.tf ? f.field + "@" + f.tf : f.field; return JSON.stringify(f.op === "between" ? [id, f.op, f.value, f.value2] : [id, f.op, f.value]); };
 export function normalize(query) { return { tf: query.timeframe, groups: query.groups.map((g) => g.filters.map(key).sort()) }; }
 export function expected(e) { return { tf: e.tf, groups: e.groups.map((g) => g.map((x) => JSON.stringify(x)).sort()) }; }
 
