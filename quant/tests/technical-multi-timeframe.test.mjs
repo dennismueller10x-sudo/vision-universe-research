@@ -51,6 +51,28 @@ test("Abschlussregel: Woche am Freitag, Monat ohne weiteren Werktag", () => {
   assert.equal(MTF.closedAt("2024-03-28", "1M"), false, "Gruendonnerstag: Karfreitag ist Werktag, konservativ offen");
 });
 
+test("Feiertage: unvollstaendige oder unklare Perioden gelten nie als abgeschlossen", () => {
+  /* Karfreitag 29.03.2024 (Boerse zu): Stichtag Gruendonnerstag. Woche und Monat sind tatsaechlich zu Ende,
+     ohne Kalender ist das aber nicht beweisbar - beide bleiben offen (konservativ, nie umgekehrt). */
+  const thu = ref.date.indexOf("2024-03-28");
+  assert.ok(thu > 0, "Fixture enthaelt den Gruendonnerstag");
+  const out = MTF.compute(series(thu));
+  assert.equal(out["1W"].droppedOpenBar, true);
+  assert.equal(out["1W"].asOf, "2024-03-22");
+  assert.equal(out["1M"].droppedOpenBar, true);
+  assert.equal(out["1M"].asOf, "2024-02-29");
+  /* Jeder Stichtag des Ausschnitts: abgeschlossen nur Freitag bzw. letzter Werktag; asOf nie nach dem Stichtag. */
+  for (let i = 60; i < ref.date.length; i += 7) {
+    const o = MTF.compute(series(i)), d = ref.date[i];
+    for (const tf of ["1W", "1M"]) {
+      if (!o[tf]) continue;
+      assert.ok(o[tf].asOf <= d, tf + " asOf nach Stichtag " + d);
+      if (!o[tf].droppedOpenBar) assert.equal(o[tf].asOf, d, tf + " abgeschlossen heisst: endet am Stichtag " + d);
+      assert.equal(MTF.closedAt(d, tf), !o[tf].droppedOpenBar);
+    }
+  }
+});
+
 test("Woche: Bars und Kennzahlen gleich einer naiven Wochenbildung (Freitags-Stichtag)", () => {
   const cut = ref.date.lastIndexOf("2024-12-27"), out = MTF.compute(series(cut))["1W"];
   const w = naive(isoWeek, cut), n = w.close.length, t = n - 1;

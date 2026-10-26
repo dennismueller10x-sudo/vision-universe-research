@@ -84,6 +84,18 @@ Vorher waren alle diese Felder für Woche und Monat nicht verfügbar.
 
 **4. Tag und alle bestehenden Spalten:** Nach dem Neubau mit dem Erzeuger hat sich kein einziger Wert in einer bestehenden Spalte geändert (5.649 gemeinsame Titel). Neu sind 14 Spalten (`…@1W`/`…@1M`); sie bleiben `null`, bis die Materialisierung den Block liefert. Dazu kommen 6 Vorzugsaktien aus #950, die der Erzeuger seitdem mitnimmt.
 
+## Prüfung vor dem Merge (Owner-Freigabe 26.10.2026)
+
+Geprüft auf allen 5.655 Titeln des Repository-Stands (270 Tagesbars je Titel):
+
+- **Abschlussregel:** Eine Woche oder ein Monat gilt nur dann als abgeschlossen, wenn der Stichtag ein Freitag bzw. der letzte Werktag des Monats ist. 0 Verstöße. Kein `asOf` liegt nach dem Stichtag.
+- **Feiertage (Test):** Am Gründonnerstag 28.03.2024 bleiben Woche und Monat offen, obwohl der Karfreitag börsenfrei ist. Ohne Börsenkalender ist das Ende nicht beweisbar. Die Regel behandelt eine unvollständige Periode deshalb nie als abgeschlossen; sie verliert im Zweifel eine Periode.
+- **Kausalität:** Für jeden Titel und Zeitrahmen wurden die Werte am letzten abgeschlossenen Bar ein zweites Mal gerechnet, nur mit Daten bis zu dessen Datum. Ergebnis: 11.309 von 11.310 identisch.
+  - Die eine Abweichung ist IPEX, Monat September. Der Titel hat am 29. und 30.09.2026 keine Bars.
+  - Mit Daten bis 28.09. gilt der Monat zu Recht als offen. Mit dem Oktober ist er abgeschlossen; seine Werte nutzen weiterhin nur Bars bis 28.09.
+  - Das ist kein Vorgriff, sondern eine Datenlücke im Titel.
+- **Tagesindikatoren:** Nach dem Neubau ist bei 5.649 gemeinsamen Titeln keine bestehende Spalte verändert. Mitgeprüft ist `indicators` 1.2.1 nach #964.
+
 ## Ablauf nach der Freigabe
 
 1. Merge.
