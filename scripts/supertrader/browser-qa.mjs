@@ -71,11 +71,12 @@ async function main() {
   const sfTop = SF ? Object.values(SF.top).flat() : [];
   const sfModel = sfTop.find((r) => r.s === 'MODELED_TRADE_PLAN') || sfTop[0];
   const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
-  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
-  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
-  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '#sf-stock']);
-  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '#sf-stock']);
-  const SF_ROUTE_SELECTOR = { home: '#sf-home', strategies: '#sf' };
+  // ohne Vorschaudaten: die Ansichten bleiben aus (kein Abschnitt, keine Anfrage); geprueft auf denselben Routen
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '.st-cmp']);
+  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '.st-cmp']);
+  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, SF ? '#sf-stock' : '.st-emptybox, .st-lensblock, .st-research']);
+  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', SF ? '#sf-stock' : '.st-emptybox']);
+  const SF_ROUTE_SELECTOR = SF ? { home: '#sf-home', strategies: '#sf' } : {};
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -106,6 +107,8 @@ async function main() {
   const report = [];
   for (const [vpName, vp, isMobile] of viewports) {
     const ctx = await browser.newContext(vp);
+    // Research-Kandidaten sind standardmaessig aus (Owner-Freigabe offen); mit Vorschaudaten wird die Vorschau eingeschaltet
+    if (SF) await ctx.addInitScript(() => { try { localStorage.setItem('vu-supertrader-sf-preview', '1'); } catch { /* ohne Speicher */ } });
     // Research-Zugangsmaske: der Smoke geht den echten geschuetzten Weg. Zuerst
     // wird geprueft, dass die Maske ohne Login schuetzt - auch gegen einen aus
     // dem oeffentlichen Pruefwert gebauten Browserzustand -, dann wird ueber das
@@ -141,9 +144,9 @@ async function main() {
       // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
       // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
       // Firmenlogo im Aktienkopf (assets/stock-navigator.js): fehlt die Datei, zeigt der Kopf das Monogramm - kein Fehler.
-      // Kandidatenlauf nicht freigeschaltet (keine Daten): genau dieser 404 ist erwartet und der Leerzustand wird geprueft;
-      // mit Daten bleibt jeder 404 ein Fehler.
-      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url()) && !(!SF && r.status() === 404 && r.url().includes(SF_PREFIX))) errors.push(`http ${r.status()}: ${r.url()}`); });
+      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
+      // ohne Freigabe (keine Vorschau) darf keine Seite die Research-Daten oder das Modul anfragen
+      page.on('request', (r) => { if (!SF && /\/sf-candidates\/|\/sf-research\./.test(r.url())) errors.push('Research-Vorschau ohne Freigabe angefragt: ' + r.url()); });
       page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse|^Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
@@ -190,6 +193,9 @@ async function main() {
         sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
         sfWording: [...document.querySelectorAll('.sf-host')].map((x) => x.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')).join(' ').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
         sfEmptyState: !!document.querySelector('.sf-empty'),
+        sfPresent: !!document.querySelector('.sf-host'),
+        // auch in zugeklappten Details (textContent): keine internen Regel- oder Datencodes
+        sfCodes: ([...document.querySelectorAll('.sf-host')].map((x) => x.textContent).join(' ').match(/\b(?:DON|KK|DAR|MIN|WEI|WEIN|LC|PILOT|TUR|MOKA|RAS)-[A-Z0-9-]+\b|DATA_BLOCKED|[A-Z]{3,}_[A-Z_]{3,}/g) || []).slice(0, 3),
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
       if (m.failedLoad) errors.push('Ladefehler-Zustand sichtbar');
@@ -207,7 +213,8 @@ async function main() {
       if (m.sfCardsWithoutStage) errors.push(`${m.sfCardsWithoutStage} Research-Kandidaten ohne Stufenabzeichen`);
       if (m.sfPlanOutsideModel) errors.push(`${m.sfPlanOutsideModel} Plan-Marken ausserhalb eines modellierten Ablaufs`);
       if (m.sfWording) errors.push(`Research-Ansicht mit unzulaessiger Sprache: ${m.sfWording}`);
-      if (!SF && (/^sf-strategy/.test(name) || name === 'home' || name === 'strategies') && !m.sfEmptyState) errors.push('Leerzustand der Research-Kandidaten fehlt (kein Datenlauf)');
+      if (!SF && m.sfPresent) errors.push('Research-Kandidaten ohne Vorschau-Freigabe sichtbar');
+      if (m.sfCodes.length) errors.push('interne Codes in der Research-Ansicht: ' + m.sfCodes.join(', '));
       if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.fidBanner) errors.push('Methodentreue fehlt auf der Methodenseite');
       if (hasPortfolio && /^strategy-(momentum|weinstein|darvas|minervini|donchian)/.test(name) && !m.portfolioSec) errors.push('Modellportfolio fehlt auf der Methodenseite');
       if (m.tlDuplicates) errors.push(`${m.tlDuplicates} doppelte Einträge im Protokoll`);

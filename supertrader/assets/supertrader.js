@@ -1543,9 +1543,16 @@
   }
 
   /* Supertrader 8.0: quellentreue Research-Kandidaten (Start, Methoden, Aktienseite). Modul und Styles werden erst hier
-     nachgeladen; ein Fehler darin laesst die bestehende Seite unberuehrt. */
+     nachgeladen; ein Fehler darin laesst die bestehende Seite unberuehrt. Standardmaessig AUS: Anzeige und Datenlauf
+     brauchen Owner-Freigaben (docs/SUPERTRADER_8_PRODUCT_INTEGRATION.md, O-2 bis O-4). Vorschau nur ueber ?sfPreview=1
+     (bleibt im Browser gespeichert, ?sfPreview=0 schaltet ab). */
+  var SF_PREVIEW_KEY = 'vu-supertrader-sf-preview';
+  function researchPreview() {
+    var q = new URLSearchParams(location.search).get('sfPreview');
+    try { if (q === '1') localStorage.setItem(SF_PREVIEW_KEY, '1'); else if (q === '0') localStorage.removeItem(SF_PREVIEW_KEY); return localStorage.getItem(SF_PREVIEW_KEY) === '1'; } catch (e) { return q === '1'; }
+  }
   function mountResearch() {
-    if (['home', 'strategies', 'stock'].indexOf(page) < 0) return;
+    if (['home', 'strategies', 'stock'].indexOf(page) < 0 || !researchPreview()) return;
     loadCss(BASE + 'assets/sf-research.css');
     (window.STResearch ? Promise.resolve() : loadScript(BASE + 'assets/sf-research.js')).then(function () {
       if (window.STResearch) window.STResearch.mount(page, main, { symbol: SYM });
