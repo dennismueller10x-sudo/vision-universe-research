@@ -18,6 +18,8 @@ name: Konten — Dev-Datenbank migrieren (vision-universe-dev)
 on:
   push:
     branches: [ops/supabase-dev-migrations]
+    # Nur Aenderungen an Tests/Generator starten einen Lauf (nicht andere Ops-Workflows).
+    paths: ['ops/supabase-dev/**']
 permissions:
   contents: read
   actions: read
