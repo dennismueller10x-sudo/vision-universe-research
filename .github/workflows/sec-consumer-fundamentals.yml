@@ -164,7 +164,7 @@ jobs:
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
           # consumer-history: aeltere Geschaeftsjahre als das Fenster der Bundles (nur Fundamental liest sie);
-          # ohne Laufdatum, deshalb aendern sich die Dateien nur, wenn sich ein altes Jahr aendert.
+          # 64 gzip-Scherben ohne Laufdatum, byte-reproduzierbar - sie aendern sich nur, wenn sich ein altes Jahr aendert.
           git add quant/data/sec/consumer quant/data/sec/consumer-history quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
                   quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
           # Nur wenn die Messung wirklich entstand. 'git add' auf einen

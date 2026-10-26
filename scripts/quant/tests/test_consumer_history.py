@@ -84,5 +84,37 @@ class ConsumerHistoryTest(unittest.TestCase):
         self.assertIsNone(history)
 
 
+class HistoryShardTest(unittest.TestCase):
+    """Speicherform: 64 gzip-Scherben statt einer Datei je CIK, byte-reproduzierbar, verlustfrei."""
+
+    def _histories(self):
+        return {f"{cik:010d}": {"schema": consumer.HISTORY_SCHEMA, "cik": f"{cik:010d}", "annual": {"revenue": [[2010, "FY", "2010-12-31", float(cik), "2011-02-01", "a", 0]]}}
+                for cik in (1750, 320193, 1045810, 64, 128)}
+
+    def test_round_trip_and_reproducible_bytes(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            first = consumer.write_history_shards(tmp, self._histories())
+            self.assertEqual(consumer.read_history_shards(tmp), self._histories())
+            before = {name: (Path(tmp) / name).read_bytes() for name in first}
+            again = consumer.write_history_shards(tmp, consumer.read_history_shards(tmp))
+            self.assertEqual(again, first)
+            self.assertEqual({name: (Path(tmp) / name).read_bytes() for name in again}, before)
+
+    def test_one_shard_per_cik_bucket_and_nothing_else_left(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "CIK0000001750.json").write_text("{}")
+            (Path(tmp) / "63.json.gz").write_bytes(b"stale")
+            names = consumer.write_history_shards(tmp, self._histories())
+            self.assertEqual(sorted(p.name for p in Path(tmp).iterdir()), names)
+            self.assertEqual(consumer.history_shard_key("0000000128"), "00")
+            self.assertEqual(consumer.history_shard_key(1045810), f"{1045810 % 64:02d}")
+            self.assertIn("00.json.gz", names)
+            self.assertLessEqual(len(names), consumer.HISTORY_SHARDS)
+
+
 if __name__ == "__main__":
     unittest.main()
