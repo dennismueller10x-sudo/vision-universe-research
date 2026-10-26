@@ -40,21 +40,21 @@ Alle Erkennungen laufen auf Tagesbalken bis zum Stichtag, ohne Intraday-Daten un
 
 | | Strategie | Engine (unverändert) | erkennt | heute höchstens | Kandidaten 23.10. (Chart / Setup / Modell) | modellierter Ablauf |
 |---|---|---|---|---|---|---|
-| C01 | Turtle S1 | `methods/turtle.mjs#entryTrigger` + Filter-Tracker | Ausbruch über das 20-Tage-Hoch am Stichtag (Filter, 55-Tage-Failsafe) | MODELED | 293 (44 / 249 / 0) | nein, Owner-Entscheidung O-1 |
-| C02 | Turtle S2 | wie C01 | Ausbruch über das 55-Tage-Hoch am Stichtag | MODELED | 232 (23 / 209 / 0) | nein, O-1 |
+| C01 | Turtle S1 | `methods/turtle.mjs#entryTrigger` + Filter-Tracker | Ausbruch über das 20-Tage-Hoch am Stichtag (Filter, 55-Tage-Failsafe) | MODELED | 293 (43 / 250 / 0) | nein, Owner-Entscheidung O-1 |
+| C02 | Turtle S2 | wie C01 | Ausbruch über das 55-Tage-Hoch am Stichtag | MODELED | 232 (22 / 210 / 0) | nein, O-1 |
 | C03 | Darvas | `research/darvas-lifecycle.mjs` (REF) | stehende Box am Hoch des Tagesfensters | MODELED | 237 (237 / 0 / 0) | nur wenn das Allzeithoch mit Tageshochs über die ganze Listing-Historie belegt ist (heute keiner; O-7) |
 | C04 | Weinstein Investor | `methods/weinstein.mjs#investorScreen` | Ausbruch aus der Basis in der letzten abgeschlossenen Woche | CHART | 423 (423 / 0 / 0) | – |
 | C05 | Weinstein Trader | `#traderScreen` | Fortsetzungsausbruch in der letzten abgeschlossenen Woche | CHART | 380 (380 / 0 / 0) | – |
 | C06 | Minervini SEPA/VCP | `methods/minervini.mjs#trendTemplate` + VCP-Proxy | Trend Template 1–7 am Stichtag | CHART | 644 (644 / 0 / 0) | – |
 | C07 | Minervini Power Play | `research/minervini-lifecycle.mjs#powerPlaySetupAt` + `entryEligibility` | Flagge nach +100 % in unter 40 Sitzungen | MODELED | 23 (16 / 2 / 5) | Buy-Stop-Limit am Pivot, Struktur-Stop |
-| C08 | Kullamägi Breakout | `research/kk-breakout-lifecycle.mjs` (Setup-Konvention CONSOLIDATION_10) + `methods/kullamagi.mjs#momentumRanks` (nur Rangfolge) | Ausbruch am Stichtag | MODELED | 44 (44 / 0 / 0) | nein, solange die Lesart von KK-SF-BO-MOMENTUM offen ist (O-6) |
+| C08 | Kullamägi Breakout | `research/kk-breakout-lifecycle.mjs` (Setup-Konvention CONSOLIDATION_10) + `methods/kullamagi.mjs#momentumRanks` (nur Rangfolge) | Ausbruch am Stichtag | MODELED | 44 (27 / 0 / 17) | nur wenn das beste 1/3/6-Monats-Momentum-Perzentil im Forschungsuniversum ≥ 98 ist. Das ist eine ausdrücklich modellierte Research-Lesart (`MI-SF8-KK-MOMENTUM-P98`, O-6), keine Originalregel und kein Ausschluss. |
 | C09 | KK Episodic Pivot | `research/kk-ep-lifecycle.mjs#epChartCandidate` | Gap ≥ 10 % am Stichtag | CHART | 21 (21 / 0 / 0) | – (Katalysator, Intraday DATA_BLOCKED) |
 | C10 | KK Parabolic Short | `research/kk-ps-study.mjs#psChartCandidate` | beschleunigte Aufwärtsserie (Handelstag t+1) | CHART | 7 (7 / 0 / 0) | – (Short, Borrow DATA_BLOCKED) |
-| C11 | Pocket Pivot | `methods/morales-kacher.mjs#pocketPivotAt` | Volumensignatur am Stichtag | CONFIRMED | 369 (12 / 357 / 0) | – (Stop nicht in der Quelle) |
+| C11 | Pocket Pivot | `methods/morales-kacher.mjs#pocketPivotAt` | Volumensignatur am Stichtag | CONFIRMED | 369 (9 / 360 / 0) | – (Stop nicht in der Quelle) |
 | C12 | Buyable Gap-Up | `methods/morales-kacher.mjs#gapUpAt` + `research/moka-lifecycle.mjs` | Gap ≥ 0,75 × ATR(40) | MODELED | 176 (137 / 22 / 17) | nächste Eröffnung, Stop Gap-Tag-Tief |
-| C13 | Holy Grail | `research/holy-grail-lifecycle.mjs` (W-RAS97) | Rücksetzer an die EMA20 bei ADX > 30 | CONFIRMED | 190 (48 / 142 / 0) | – (Trailing nicht in der Quelle) |
+| C13 | Holy Grail | `research/holy-grail-lifecycle.mjs` (W-RAS97) | Rücksetzer an die EMA20 bei ADX > 30 | CONFIRMED | 190 (46 / 144 / 0) | – (Trailing nicht in der Quelle) |
 
-Insgesamt 3.039 Kandidaten (2.036 Chart, 981 bestätigt, 22 modelliert, 0 validiert) aus 5.100 Titeln mit Tagesreihe. 118 Titel waren DQ-FAIL:
+Insgesamt 3.039 Kandidaten (2.012 Chart, 988 bestätigt, 39 modelliert, 0 validiert; Lauf mit Stand 23.10.2026, nach Umsetzung von O-1 bis O-7) aus 5.100 Titeln mit Tagesreihe. 118 Titel waren DQ-FAIL:
 - 104 mit Kurslücken;
 - 7 veraltet;
 - 7 inaktiv.
@@ -71,8 +71,8 @@ Datenbedarf je Strategie (`STRATEGY_DATA_NEEDS`, mindestens 30 bis 252 Sitzungen
 | Kein Rohkurs / `splitAdj` | Universumsgrenze 5 USD und "ein Cent" auf adjustierter Reihe | als DQ-Detail ausgewiesen |
 | Quarantäne-Rückblick 400 Tage > 389 Tage Fenster | Rest des Rückblicks (11 Tage) ohne Tagesbalken | Wochenschlüsse (Relation ≥ 3 oder ≤ 1/3) erkennen bleibende Niveausprünge (nicht erklärte Splits), aber KEINE Spitzen, die sich in derselben Woche umkehren; keine Obermenge der Tagesregel. Fehlt die Reihe, ist sie nicht echt/split-adjustiert oder endet sie vor dem Fenster: CAP CHART |
 | "Nächste Sitzung" (Weinstein-Woche, PS-Handelstag) | Engine liest Datum der Folgesitzung | Platzhalter ohne Kurswerte; Test vergleicht mit dem echten Folgebalken und mit "lauten" Platzhalterwerten |
-| KK-SF-BO-MOMENTUM "Top 1–2 %" | laut Vertrag Rangfolge (`gate: false`), Schwelle nicht freigegeben | sortiert nur (Forschungsuniversum); als Setup-Regel nicht erfüllt, bis O-6 entschieden ist |
-| Turtle-Einstieg intraday am Stichtag | kein Folgesitzungsplan ohne neue Einstiegsregel | Stufe höchstens CONFIRMED, Owner-Entscheidung O-1 |
+| KK-SF-BO-MOMENTUM "Top 1–2 %" | laut Vertrag Rangfolge (`gate: false`), Schwelle nicht freigegeben | O-6: Perzentil ≥ 98 als eigene, gekennzeichnete Research-Lesart. Die Karte zeigt sie als Interpretation, nicht als Quellregel. Darunter wird der Titel weiter erkannt (Chart-Kandidat mit Begründung), aber nicht ausgeschlossen. Referenzen bleiben unverändert. |
+| Turtle-Einstieg intraday am Stichtag | kein Folgesitzungsplan ohne neue Einstiegsregel | O-1: keine neue Einstiegsregel; Turtle bleibt beim bestätigten Research-Setup |
 
 ## 3. Datenqualitätsvertrag (`sf8-data-quality-1.0.0`)
 
@@ -83,7 +83,7 @@ Fail closed für die Aussage, nicht für die Plattform:
 
 | Prüfung | FAIL | CAP |
 |---|---|---|
-| Identität | kein `EQUITY_COMMON`, inaktiv | Typ oder Status nicht im Security Master, Reihe im Rückblick nach Listing-Unterbrechung neu begonnen, SPAC-Namenshinweis (CHART) |
+| Identität | kein `EQUITY_COMMON`, inaktiv | Typ oder Status nicht im Security Master, Reihe im Rückblick nach Listing-Unterbrechung neu begonnen, SEC-SIC 6770 "Blank Checks" (Mantelgesellschaft, CHART; O-5). Ein SPAC-Name allein ist nur ein unsicherer Hinweis (INFO), kein Ausschluss |
 | Aktualität | letzter Balken ≠ Marktstichtag | – |
 | OHLCV | nicht endlich, High < Low, Tief ≤ 0, Eröffnung oder Schluss außerhalb der Spanne, Datum nicht streng aufsteigend | – |
 | Handelstage (XNYS) | mehr als 5 fehlende Sitzungen, Balken an Nicht-Sitzung | 1–5 fehlende Sitzungen (CHART) |
@@ -147,11 +147,13 @@ Neue Ansichten in den bestehenden Seiten. Es gibt keine neue Shell, keine Menü-
 - **Strategieansicht** (`/supertrader/strategies/?sf=C03`): Kurzbeschreibung, Kennzahlen, Suche, Sortierung, Stufenfilter und Karten mit Schlüsselzahlen. Gründe und Grenzen stehen aufklappbar.
 - **Aktienanalyse** (Aktienseite, `#sf`): Methoden-Chips mit Stufe und Chart (bestehendes `STChart`). Der Chart zeigt Pivot, Modell-Einstieg und -Stop sowie die Darvas-Box. Die Karte zeigt Gründe, fehlende Bedingungen und den modellierten Ablauf, diesen nur in MODELED.
 
-**Standardmäßig aus.** `supertrader.js` lädt `sf-research.js` und `sf-research.css` nur mit dem Vorschau-Schalter `?sfPreview=1` (im Browser gespeichert, `?sfPreview=0` schaltet ab). Ohne Schalter gibt es weder Abschnitt noch Anfrage; die Produktion bleibt unverändert, bis O-2 bis O-4 entschieden sind. Fehlen bei eingeschalteter Vorschau die Daten, zeigt jede Ansicht einen gekennzeichneten Leerzustand.
+**Standardmäßig aus.** `supertrader.js` lädt `sf-research.js` und `sf-research.css` nur mit dem Vorschau-Schalter `?sfPreview=1` (im Browser gespeichert, `?sfPreview=0` schaltet ab). Ohne Schalter gibt es weder Abschnitt noch Anfrage; die Produktion bleibt unverändert.
+
+**Zugriffsschutz.** Der Schalter ist keine Zugriffskontrolle (ein URL-Parameter kann das nicht sein; siehe auch `docs/RESEARCH_ACCESS_GATE.md`: Daten- und Asset-Dateien sind direkt abrufbar). Geschützt ist nur, was nicht ausgeliefert wird. Deshalb liegt in keinem der PRs eine Kandidatendatei unter `supertrader/data/sf-candidates/`, und `scripts/vu2/build-release.mjs` übernimmt nur Dateien, die git verfolgt. Die Branch-Vorschau auf Cloudflare zeigt deshalb nur den Leerzustand. Die befüllte Vorschau lief lokal und isoliert. Ein Commit von Kandidaten wäre eine Veröffentlichung und ist an die Freigaben des Tageslaufs gebunden (`docs/SUPERTRADER_8_DAILY_RUN.md`). Fehlen bei eingeschalteter Vorschau die Daten, zeigt jede Ansicht einen gekennzeichneten Leerzustand.
 
 Je Kandidat sichtbar: erfüllte und nicht erfüllte Regeln, ausstehende Lesarten, Gründe der Stufe, bei MODELED die durch Modellannahmen ersetzten Regeln, aufklappbar die offenen Ermessensregeln und die Sperrgründe der höheren Stufen. Einstiegs- und Stop-Marken erscheinen nur im modellierten Ablauf. Sprache:
-- Stufen heißen "Chart-Kandidat", "Bestätigtes Setup" und "Modellierter Ablauf".
-- Die oberste Stufe heißt nur "gesperrt".
+- Die Stufen heißen nach O-3: 1 "Chart-Kandidat", 2 "Bestätigtes Research-Setup", 3 "Modellierter Handelsablauf", 4 "Geprüfte Handelsfreigabe" (gesperrt). Jede Stufe hat eine Kurzerklärung. Die Bezeichnungen kommen aus `catalog.mjs#STAGE_LABELS` über `summary.json`.
+- Nach O-4 erscheinen alle 13 Strategien. Minervini (C06), Episodic Pivot (C09) und Parabolic Short (C10) tragen ihre Modell- und Datengrenzen hervorgehoben. Katalysatoren, Borrow-Daten und Originalregeln werden nicht erfunden.
 - "Signal", "Kauf" und "validiert" kommen nicht vor; ausgenommen ist der Standardhinweis "keine Kauf- oder Verkaufsempfehlung".
 
 ## 7. Qualität
@@ -178,6 +180,15 @@ Je Kandidat sichtbar: erfüllte und nicht erfüllte Regeln, ausstehende Lesarten
 - Wortwahl.
 
 **Referenzschutz.** Kein Engine-, Vertrags-, Readiness-, Ledger- oder Variantenpfad wurde geändert. Die bestehenden Pin-Tests für Engine-Hashes, Golden Cases, Readiness und Varianten laufen unverändert grün.
+
+**Visuelle QA der befüllten Vorschau** (`scripts/supertrader/sf8-visual-qa.mjs`, echte Kandidaten vom 23.10., lokal und isoliert): 8 Ansichten × iPhone 14/Desktop × Dunkel/Hell, das sind 32 Aufrufe ohne Fehler und ohne horizontales Scrollen. Geprüft wurden:
+- keine internen Codes, keine unzulässige Sprache;
+- kompakte iPhone-Karte höchstens 363 px hoch (Grenze 380 px);
+- Details aufklappbar, Dock, Chart, Vorschau-Hinweis, Datenherkunft und vierstufige Legende vorhanden;
+- hervorgehobene Grenzen bei C06 und C10;
+- Leerzustände.
+
+Die Aufnahmen liegen als private Galerie vor; sie werden nicht über die Seite ausgeliefert. **WebKit/Safari ist offen:** In der Umgebung gibt es nur Chromium. Die Safari-Freigabe ist nicht erteilt.
 
 **Browser-QA** (`scripts/supertrader/browser-qa.mjs`, Chromium; iPhone 14 emuliert und Desktop 1280):
 - mit Vorschaudaten: 62 Aufrufe, 0 Fehler;
@@ -207,7 +218,7 @@ Ohne Vorschaudaten prüft die QA, dass keine Seite die Research-Ansicht zeigt od
 | Befund | Behandlung |
 |---|---|
 | H1 Frontend trotz offener Freigaben | Vorschau-Schalter, Standard aus; Test `research-preview` und Browser-QA |
-| H2 KK-Momentum als Ausschluss mit nicht freigegebener Schwelle | nur Rangfolge im Forschungsuniversum; C08 höchstens CHART bis O-6 |
+| H2 KK-Momentum als Ausschluss mit nicht freigegebener Schwelle | O-6: Perzentil ≥ 98 nur als gekennzeichnete Research-Lesart; kein Ausschluss (Test `KK-MOMENTUM`) |
 | M1 OHLCV ließ Eröffnung außerhalb der Spanne, Tief ≤ 0, doppelte oder vertauschte Balken durch | strengere Prüfung mit Tests |
 | M2 Order-Marken außerhalb MODELED | nur Chartmarke, Plan-Marken nur in MODELED |
 | M3 keine Offenlegung je Kandidat | Modellannahmen, offene Regeln, Sperrgründe je Karte |
@@ -215,19 +226,19 @@ Ohne Vorschaudaten prüft die QA, dass keine Seite die Research-Ansicht zeigt od
 | M5 interne Codes sichtbar, QA-Muster zu eng | Texte bereinigt, QA erweitert |
 | L1–L6 | Failsafe nicht als erfüllt angezeigt, stille Pässe entfernt, `--out` nur außerhalb des Repositorys, Lookahead-Test mit künftigem Wochenschluss, Referenzkurs bei Eröffnungs-Einstieg; `price.close` gegen `published-close.js` bleibt Aktivierungsvoraussetzung (Vertrag §5.4) |
 
-Der Vorschlag des Reviews, den Isolationstest `SF-PRODUCT-NO-RUN-INTEGRATION` auf `sf-candidates|STResearch` zu erweitern, ist nicht umgesetzt: Er würde die abgeschaltete Vorschau selbst verbieten. Ob die Vorschau im Code bleiben darf, entscheidet der Owner mit O-3/O-4.
+Der Vorschlag des Reviews, den Isolationstest `SF-PRODUCT-NO-RUN-INTEGRATION` auf `sf-candidates|STResearch` zu erweitern, ist nicht umgesetzt: Er würde die abgeschaltete Vorschau selbst verbieten. Mit O-3/O-4 bleibt die Vorschau im Code. Der Schutz besteht darin, dass keine Daten ausgeliefert werden, siehe Abschnitt 6. Für den deaktivierten Tageslauf ist der Test genau für dessen Workflow geöffnet (`SF8-DAILY-DISABLED`).
 
-## 8. Owner-Entscheidungen
+## 8. Owner-Entscheidungen (26.10.2026)
 
-| | Entscheidung | Warum offen |
+| | Entscheidung | Umsetzung |
 |---|---|---|
-| O-1 | Turtle: Folgesitzungs-Einstieg (nächste Eröffnung) analog D-KK-ENTRY als Modellannahme freigeben? | Die Quelle steigt intraday am Ausbruchstag ein. Ohne Freigabe bleibt Turtle bei CONFIRMED. |
-| O-2 | Producer aktivieren: Workflow `supertrader-*.yml` nach ADR-005, Domain in `core/registry/domains.json`, DQ-Regeln, Status-Seite (Vertrag §5.1–5.5) | Der Test SF-PRODUCT-NO-RUN-INTEGRATION verbietet die Anbindung bewusst. Seine Anpassung gehört in einen eigenen, freigegebenen PR. |
-| O-3 | Wortlaut der Disclaimer-Codes und Stufennamen in der Oberfläche | Vertrag §5.6: Produktentscheidung. Der Entwurf steht in `sf-research.js`. |
-| O-4 | Anzeige je Stufe und Strategie, insbesondere Minervini (nur übersetzte Quellen), EP und PS als Chart-Modelle | Vertrag §5.7 |
-| O-5 | SPAC-Kennzeichnung über den Namen als vorläufige Datenregel bestätigen oder durch ein Stammdatenfeld ersetzen | Heuristik; der Security Master klassifiziert SPACs nicht. |
-| O-6 | Lesart von KK-SF-BO-MOMENTUM für die Stufe (Vorschlag: bestes 1/3/6-Monats-Perzentil ≥ 98 im Forschungsuniversum) | Der Vertrag führt die Regel als Rangfolge (`gate: false`). Ohne Entscheidung bleibt C08 Chart-Kandidat. |
-| O-7 | Lange Tageshochs (history-store) in die Materialisierung aufnehmen, damit das Darvas-Allzeithoch belegbar wird | Heute nur 270 Sitzungen im Repository; ohne lange Hochs bleibt C03 Chart-Kandidat. |
+| O-1 | Keine neue verbindliche Next-Open-Einstiegsregel für Turtle. | C01/C02 bleiben höchstens beim bestätigten Research-Setup; kein Plan. |
+| O-2 | Tageslauf als eigener, standardmäßig deaktivierter PR. Aktivierung erst, wenn die SEC-/Quant-Consumer-Pipeline nachweislich stabil ist und der Owner freigibt. | PR D mit `supertrader-sf8-candidates.yml` und `docs/SUPERTRADER_8_DAILY_RUN.md`. |
+| O-3 | Die 4 Stufen des 7.0-Vertrags bleiben, mit deutschen Namen und Kurzerklärung. Keine Aufwertung zu Kauf- oder Verkaufssignalen. | `STAGE_LABELS`, Legende mit gesperrter Stufe 4. |
+| O-4 | Alle 13 Strategien dürfen erscheinen. Minervini, Episodic Pivot und Parabolic Short zeigen ihre Grenzen deutlich. | `limits` je Strategie, hervorgehoben für C06/C09/C10. |
+| O-5 | Name-basierte SPAC-Erkennung nur als unsicherer Hinweis; verlässliche Stammdaten bevorzugt. | SEC-SIC 6770 setzt die Obergrenze CHART, ein Namenstreffer ist nur INFO. |
+| O-6 | Momentum-Perzentil ≥ 98 als eigene, ausdrücklich modellierte Research-Lesart, nicht als Originalregel und nicht als Ausschluss. | `KK_MOMENTUM_INTERPRETATION`; 17 modellierte C08-Abläufe. |
+| O-7 | Nur vorhandene Kurs- und Listinghistorie. Allzeithoch-Prüfung nur, wenn sie vollständig ohne Bezahlabruf möglich ist. | Befund: Lange Tageshochs gibt es im Repository nur für 5 Titel und erst ab 2015. Vollständig prüfbar ist das Allzeithoch nur, wenn das Listing im Tagesfenster beginnt (umgesetzt). Sonst bleibt Darvas CHART; es gibt keine Näherung. |
 
 ## 9. Aktualisierung und Kosten
 
@@ -236,4 +247,4 @@ Die Eingaben entstehen bereits täglich in bestehenden Läufen:
 - `discover-series-long`;
 - Security Master.
 
-Ein Kandidatenlauf würde nach deren Commit einmal je Handelstag rechnen und kostet etwa 25 s CPU. Er fragt keinen Anbieter an. Die Ausgabe ist ohne Audit-Datensätze rund 13 MB roh; täglich ändern sich vor allem `summary`, `index` und die betroffenen Shards. Ein Scheduler ist nicht aktiviert (O-2).
+Ein Kandidatenlauf würde nach deren Commit einmal je Handelstag rechnen und kostet etwa 25 s CPU. Er fragt keinen Anbieter an. Die Ausgabe ist ohne Audit-Datensätze rund 13 MB roh; täglich ändern sich vor allem `summary`, `index` und die betroffenen Shards. Ein Scheduler ist nicht aktiviert. Der Tageslauf ist vorbereitet und deaktiviert (O-2, `docs/SUPERTRADER_8_DAILY_RUN.md`). Zum Consumer-Blocker: Der letzte SEC-Consumer-Lauf (40307188633, 26.10.2026 nach #963) war erfolgreich, und der Footprint-Test auf `main` ist grün. Ein einzelner Lauf ist aber kein Stabilitätsnachweis, deshalb bleibt die Aktivierung gesperrt.
