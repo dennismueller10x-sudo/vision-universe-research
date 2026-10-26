@@ -6,7 +6,7 @@ const C=require('../../quant/engines/research-contract.cjs'),A=require('../../qu
 const Store=require('../../quant/engines/research-artifacts.cjs');
 const ROOT=path.resolve(__dirname,'../..');
 const IDS=['ref_A','ref_ARM','ref_GE','ref_IBM','ref_JPM','ref_META','ref_MSFT','ref_NVDA','ref_TSLA','ref_WMT','ref_XOM'];
-function main(out){
+function main(out,systematic=false){
  if(!out)throw Error('PRIVATE_OUTPUT_REQUIRED');out=path.resolve(out);fs.mkdirSync(out,{recursive:true,mode:0o700});if(!path.relative(ROOT,fs.realpathSync(out)).startsWith('..'+path.sep))throw Error('OUTPUT_MUST_BE_OUTSIDE_REPOSITORY');
  const read=p=>JSON.parse(fs.readFileSync(path.join(ROOT,p),'utf8')),write=(p,x)=>{Store.publish(path.join(out,'generations'),x);fs.writeFileSync(path.join(out,p+'.json'),JSON.stringify(x),{mode:0o600});};
  const sources={};const track=p=>{sources[p]=C.shaFile(path.join(ROOT,p));return sources[p];};
@@ -16,12 +16,12 @@ function main(out){
  }
  // Broaden coverage systematically without examining returns. Quality-conditioned survivors remain biased.
  const pool=[...accepted.keys()].filter(id=>!IDS.includes(id));
- const requested=[...IDS,...Array.from({length:29},(_,k)=>pool[Math.floor(k*pool.length/29)])];
+ const requested=[...IDS,...(systematic ? Array.from({length:29},(_,k)=>pool[Math.floor(k*pool.length/29)]) : [])];
  const exclusions=requested.filter(id=>!accepted.has(id)).map(id=>({id,reason:inventory.find(x=>x.id===id)?.reason||'ABSENT'}));
  const listings=requested.filter(id=>accepted.has(id)).map(id=>{const d=loader(id);accepted.set(id,d);track(d.sourcePath);return {listingId:d.listingId,issuerId:id,securityId:id,identity:{mic:d.listingId.includes(':NASDAQ:')?'XNAS':d.listingId.includes(':NYSE:')?'XNYS':'XASE',instrumentClass:'COMMON_STOCK',primary:true,validFrom:d.listingStart,availableAt:d.masterGeneratedAt,sourceHash:d.identityHash},bars:d.points.map(([date,close])=>({date,close}))};});
  track('quant/data/market/security-master/us-security-master.json');
  const calendar=[...new Set(listings.flatMap(l=>l.bars.map(b=>b.date)))].sort(),asOf=calendar.at(-1),benchmark=B.load(ROOT);track(B.SOURCE);
- const registration={id:'V7-CONDITIONAL-COHORT',version:'1.0.0',frozenAt:'2026-10-26T00:00:00Z',analysisMode:'EXPLORATORY',selection:'Eleven named reference listings plus 29 evenly spaced sorted adapter-qualified listing IDs; no outcome optimization; quality-conditioned current survivors, not representative',requestedIds:requested};
+ const registration={id:'V7-CONDITIONAL-COHORT',version:'1.0.0',frozenAt:'2026-10-26T00:00:00Z',analysisMode:'EXPLORATORY',selection:systematic?'SYSTEMATIC_CLASSIFICATION_PROBE_NOT_VALIDATED_COMMON_STOCK_POPULATION':'Eleven named reference listings, conditional descriptive price scope; not historical market membership',requestedIds:requested};
  const base={asOf,sourceMode:'HISTORICAL_SIMULATION',cohortMode:'CONDITIONAL_CURRENT_CLASSIFICATION',executionClock:'OBSERVED_WEEKLY_DATES',returnBasis:'PRICE_RETURN',currency:'USD',registration,horizonBars:13,entryDelayBars:1,costs:{basis:'PER_SIDE_NOTIONAL',feeBps:10,slippageBps:5},expectedCalendar:calendar,listings,benchmark:{currency:'USD',returnBasis:'PRICE_RETURN',bars:[...benchmark.byDate].map(([date,close])=>({date,close}))}};
  const pattern={id:'ABOVE_40W_SMA',version:'1',terms:[{feature:'aboveSma40w',operator:'eq',value:true}]};
  const studies=[];function study(id,input,fn,summarize){write(id+'-input',input);const r=fn(input);write(id+'-result',r);studies.push({id,inputHash:C.hash(input),resultHash:C.hash(r),asOf,population:listings.map(l=>l.listingId),period:[calendar[0],asOf],returnBasis:'PRICE_RETURN',costs:base.costs,benchmark:'SPY PRICE_RETURN, exact dates only, no extension before inception',evidence:'RETROSPECTIVE_CONDITIONAL_NOT_INDEPENDENT',...summarize(r)});return r;}
@@ -83,4 +83,4 @@ function main(out){
  const dependencies=Object.fromEntries(['quant/engines/research-studies.cjs','quant/engines/research-portfolio.cjs','quant/engines/research-validation.cjs','quant/engines/research-monte-carlo.cjs','scripts/quant/run-v7-real-studies.cjs'].map(p=>[p,C.shaFile(path.join(ROOT,p))]));
  const summary={dependencies,schemaVersion:'quant-v7-real-studies-1.0.0',baseline:cp.execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).trim(),runtime:C.runtime(),sources,inventory:{files:inventory.length,candidates:inventory.filter(r=>r.state!=='METADATA_NOT_LISTING').length,metadata:inventory.filter(r=>r.state==='METADATA_NOT_LISTING').length,qualified:inventory.filter(r=>r.state==='QUALIFIED_WEEKLY_PRICE_SCOPE').length,reasons:inventory.filter(r=>r.reason).reduce((a,r)=>(a[r.reason.split(':')[0]]=(a[r.reason.split(':')[0]]||0)+1,a),{})},selection:{requested,exclusions,qualified:listings.length},studies,monteCarlo:mc,unresolved:{strategy:'PRICE_RETURN fixed cohort only; no original PIT profile strategy or full-market TOTAL_RETURN qualification',factor:'Stored accession fact reconstruction only; young original production factor archive cannot supply required 12 completed M3 months',event:'Stored available_from study only; original filings not revalidated, not earnings release times'},certification:'NOT_CERTIFIED',productionApproved:false};write('summary',summary);console.log(JSON.stringify({studies:studies.length,monteCarlo:mc.length,inventory:summary.inventory,selection:summary.selection}));
 }
-if(require.main===module)main(process.argv[2]);module.exports={main};
+if(require.main===module)main(process.argv[2],process.argv[3]==='--classification-probe');module.exports={main};
