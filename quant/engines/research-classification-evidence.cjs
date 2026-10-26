@@ -1,4 +1,6 @@
-{
+'use strict';
+// Versioned original-source evidence records only; no research or certification engine.
+module.exports = {
   "schemaVersion": "research-classification-evidence-1.0.0",
   "scope": "Source-proven listing-specific holds for offline historical common-stock research; no complete historical security master correction",
   "records": [
@@ -43,4 +45,4 @@
       "validity": "Original filing cover page states this instrument is a depositary interest in preferred stock. Earlier classification intervals remain unresolved; no all-history preferred assignment is inferred."
     }
   ]
-}
+};

@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const CorporateActions = require('./corporate-action-evidence.js');
-const ClassificationEvidence = require('../config/research-classification-evidence.json');
+const ClassificationEvidence = require('./research-classification-evidence.cjs');
 if (ClassificationEvidence.schemaVersion !== 'research-classification-evidence-1.0.0' || !Array.isArray(ClassificationEvidence.records)) throw Error('INVALID_RESEARCH_CLASSIFICATION_EVIDENCE');
 function classificationConflict(doc, identity) {
   return ClassificationEvidence.records.find(e => e.decision === 'HOLD_COMMON_STOCK_RESEARCH' && e.securityId === doc.securityId && e.canonicalId === identity?.canonical_id && e.ticker === doc.ticker);
