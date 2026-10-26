@@ -44,6 +44,7 @@ const ROUTES = [
   ['start', '/supertrader/', '#sf-home .sf-row'],
   ['methoden', '/supertrader/strategies/', '#sf .sf-strat'],
   [`strategie-${modeledCid}`, `/supertrader/strategies/?sf=${modeledCid}`, '#sf .sf-card'],
+  ['strategie-C08-kk-breakout', '/supertrader/strategies/?sf=C08', '#sf .sf-card'],
   ['strategie-C06-minervini', '/supertrader/strategies/?sf=C06', '#sf .sf-card'],
   ['strategie-C10-chartmodell', '/supertrader/strategies/?sf=C10', '#sf .sf-card'],
   [`aktie-${multi}`, `/supertrader/stock/?s=${encodeURIComponent(multi)}#sf`, '#sf-stock .sf-card'],
@@ -87,7 +88,7 @@ async function main() {
           wording: txt.replace(/keine kauf- oder verkaufsempfehlung/ig, '').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
           cards: document.querySelectorAll('.sf-card').length, rows: document.querySelectorAll('.sf-row').length,
           cardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length,
-          planOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
+          planOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length, fillHints: document.querySelectorAll('.sf-plan [data-fill]').length, fillOut: document.querySelectorAll('.sf-plan [data-fill="out"]').length,
           kpis: document.querySelectorAll('.sf-host .vu-kpi').length, maxCompactCardHeight: compactHeights.length ? Math.max(...compactHeights) : null,
           legendSteps: document.querySelectorAll('.sf-legend .sf-step').length, lockedStep: !!document.querySelector('.sf-legend .sf-step[data-s="locked"]'),
           openDetailsWithContent: [...document.querySelectorAll('.sf-host details[open]')].filter((d) => d.querySelector('.vu-more-body')?.textContent.trim().length > 10).length,
@@ -106,6 +107,7 @@ async function main() {
       if (opened && m.openDetailsWithContent < 1) errors.push('Aufklappbereich ohne Inhalt');
       if (mobile && m.maxCompactCardHeight !== null && m.maxCompactCardHeight > 380) errors.push(`Karte zu hoch auf dem iPhone: ${m.maxCompactCardHeight}px`);
       if (['start', 'methoden'].includes(name) && !m.provenance) errors.push('Datenherkunft fehlt');
+      if (/C08/.test(name) && !m.fillHints) errors.push('Ausführungsfenster der Referenzregel fehlt im modellierten Ablauf');
       if (/C06|C10/.test(name) && !m.limitsStrong) errors.push('Grenzen der Methode nicht deutlich gekennzeichnet');
       if (/^(start|methoden)$/.test(name) && m.legendSteps !== 4) errors.push(`Stufenlegende mit ${m.legendSteps} statt 4 Stufen`);
       if ((name === 'aktie-ohne-treffer' || name === 'strategie-leere-suche') && !m.empty) errors.push('Leerzustand fehlt');

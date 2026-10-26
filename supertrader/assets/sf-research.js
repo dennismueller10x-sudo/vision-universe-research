@@ -311,6 +311,10 @@
     return h('div', { class: 'sf-plan' }, [
       h('h4', null, [icon(IC.open), 'Modellierter Ablauf (hypothetisch)']),
       h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Einstieg zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Einstiegsmarke', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Modell-Stop', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
+      // Ausführungsfenster der Referenzregel (höchster geplanter Verlust): nur sichtbar machen, nie verändern
+      p.fillWindow ? h('p', { class: 'sf-dq', 'data-fill': p.referenceInFillWindow ? 'in' : 'out' }, [icon(p.referenceInFillWindow ? IC.check : IC.alert), p.referenceInFillWindow
+        ? 'Ausführung laut Modell nur bei einer Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + '.'
+        : 'Zum Schlusskurs nicht ausführbar: Das Modell verlangt eine Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + ', sonst entfällt der Einstieg.']) : null,
       p.modelAssumptions && p.modelAssumptions.length ? h('div', null, [h('h4', { text: 'Durch Modellannahmen ersetzt' }), h('ul', { class: 'sf-rules' }, p.modelAssumptions.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }))]) : null,
       h('p', { class: 'st-hint', text: 'Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit.' }),
     ]);

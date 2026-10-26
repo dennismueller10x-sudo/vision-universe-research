@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "v7-securement-test-accounting-1",
+  "fullQuant": {
+    "tests": 3099,
+    "pass": 3098,
+    "fail": 0,
+    "todo": 1,
+    "todoDetails": [
+      "not ok 2568 - Parabolic SAR: Wert der Umkehrbar liegt ausserhalb ihrer Spanne (Wilder, TA-Lib) # TODO Engine-Befund B7: SAR = alter Extrempunkt ohne das Extrem der Umkehrbar; Korrektur als eigener Fachmodell-PR vorgelegt"
+    ],
+    "todoAlreadyPresentOnMain": true,
+    "todoSourceHash": "ab30b16480b0f7bc23c9984cec85dbb547d92f0120d7da13d271e6b2d34bfa07",
+    "todoSourceUnchangedFromMain": "e877dd7ae255bce69353ff2fa20f1ae4f99ccb12"
+  },
+  "isolationFiles": 278,
+  "checks": [
+    {
+      "id": "sec-python",
+      "passed": 555,
+      "state": "PASS",
+      "logHash": "84edb7efa937e2ab2f6a456ccbc77d82fd9455c7ac9544c4c3b30d2d81c7c982"
+    },
+    {
+      "id": "sec-pit-python",
+      "passed": 32,
+      "state": "PASS",
+      "logHash": "3e9702ea8382087d2021bcc17be863d7a4a9bfe01474f08cf4fb543cff74561e"
+    },
+    {
+      "id": "research-and-fundamental",
+      "tests": 122,
+      "pass": 122,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "state": "PASS",
+      "logHash": "dd9b805909ad45b19ed1578b33526d894087a81c72817ab631636651231b26cb"
+    },
+    {
+      "id": "updated-sec-consumer-data",
+      "tests": 186,
+      "pass": 186,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "state": "PASS",
+      "logHash": "b8d7fc4781abe39ae03cc2af3c15756e6c4b72a7e74bf1db6bf90d0764fdf156"
+    }
+  ],
+  "interpretation": "Existing Main TODO remains explicit, not counted as a pass; no test disabled by V7."
+}
