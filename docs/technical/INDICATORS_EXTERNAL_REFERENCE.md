@@ -26,7 +26,7 @@ Toleranz: relativ 1e-8. Die Fixture speichert 10 signifikante Stellen.
 | ADX 14 | wie ATR (gleiche Glättung), gleich ab Bar 264 |
 | MACD, Signal, Histogramm | **Startwert-Konvention.** TA-Lib startet die schnelle EMA erst mit der langsamen. Gleich ab Bar 137 / 151 / 170. |
 | OBV | gleicher Verlauf. TA-Lib startet bei V₀, die Engine bei 0; die Differenz ist konstant V₀. |
-| Parabolic SAR | seit 1.1.1 gleich bis auf die Startbar 2 (Konvention). In 1.1.0 wichen zwei Umkehrbars ab (173, 308), siehe Befund und Korrektur. |
+| Parabolic SAR | seit 1.2.1 gleich bis auf die Startbar 2 (Konvention). Bis 1.2.0 wichen zwei Umkehrbars ab (173, 308), siehe Befund und Korrektur. |
 | Supertrend, VWMA, CMF, relative Volumenstärke, Volumenspitzen, Keltner-Kanal (ganz) | kein TA-Lib-Gegenstück. Keltner besteht aus EMA und ATR, die beide oben geprüft sind. |
 
 Die Startwert-Konventionen sind dokumentiert, keine Fehler. Der Test prüft dreierlei: dass sie abklingen, dass die Werte ab der festgehaltenen Bar gleich sind und dass die Startabweichung überhaupt existiert. Ändert jemand die Konvention, fällt der Test auf.
@@ -42,19 +42,19 @@ Bei einer Umkehr setzt die Engine den neuen SAR auf den alten Extrempunkt. Errei
 
 Nach Wilder liegt der SAR nie innerhalb der Spanne der aktuellen Bar. TA-Lib setzt deshalb das Extrem der Umkehrbar.
 
-## Korrektur (indicators 1.1.1, eigener Fachmodell-PR)
+## Korrektur (indicators 1.2.1, eigener Fachmodell-PR)
 
 Bei einer Umkehr gilt jetzt:
 - neu kurz: SAR = max(alter Extrempunkt, Hoch der Umkehrbar);
 - neu lang: SAR = min(alter Extrempunkt, Tief der Umkehrbar).
 
-Das ist die Regel von Wilder und TA-Lib. Die Engine stimmt danach an jeder Bar mit TA-Lib überein, nur die Startbar 2 folgt einer eigenen Konvention. Der bisher ausgenommene Prüffall „SAR liegt nie im Kursbereich“ (`technical-indicators-ext.test.mjs`) gilt jetzt auch an Umkehrbars. Er schlägt mit 1.1.0 genau an den Bars 173 und 308 fehl.
+Das ist die Regel von Wilder und TA-Lib. Die Engine stimmt danach an jeder Bar mit TA-Lib überein, nur die Startbar 2 folgt einer eigenen Konvention. Der bisher ausgenommene Prüffall „SAR liegt nie im Kursbereich“ (`technical-indicators-ext.test.mjs`) gilt jetzt auch an Umkehrbars. Er schlägt mit 1.2.0 (wie 1.1.0) genau an den Bars 173 und 308 fehl.
 
 ### Vorher/Nachher über das materialisierte Universum
 
 Grundlage: `technical-signals-v1`, alle 5.655 Instrumente mit echten, splitbereinigten Tagesbars, 1.521.195 SAR-Bars.
 
-| Kennzahl | 1.1.0 | 1.1.1 |
+| Kennzahl | bis 1.2.0 | 1.2.1 |
 |---|---|---|
 | Umkehrbars | 127.470 | 127.470 |
 | davon SAR innerhalb der Bar-Spanne | 3.837 | **0** |

@@ -81,7 +81,7 @@ test("Parabolic SAR: Hand-Beispiel mit Beschleunigung, Begrenzung und Umkehr", (
   assert.deepEqual(r.direction.slice(1), [1, 1, 1, -1, -1]);
 });
 
-test("Parabolic SAR auf AAPL: SAR liegt nie im Kursbereich, auch an Umkehrbars (seit 1.1.1), AF-Grenze haelt", () => {
+test("Parabolic SAR auf AAPL: SAR liegt nie im Kursbereich, auch an Umkehrbars (seit 1.2.1), AF-Grenze haelt", () => {
   const r = I.compute(S, "psar").values;
   let flips = 0;
   for (let i = 2; i < S.close.length; i++) {

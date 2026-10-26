@@ -110,13 +110,13 @@ test("OBV: gleicher Verlauf, TA-Lib startet bei V_0 statt bei 0", () => {
   agrees("OBV + V_0", o.map((x) => x + v0), T.obv.values);
 });
 
-test("Parabolic SAR: gleich ausser der Startbar (seit 1.1.1 auch an den Umkehrbars)", () => {
+test("Parabolic SAR: gleich ausser der Startbar (seit 1.2.1 auch an den Umkehrbars)", () => {
   const { sar } = val("psar"), ta = T.psar.values;
   const differ = [];
   for (let i = 1; i < N; i++) if (!close(sar[i], ta[i])) differ.push(i);
   /* Bar 2: TA-Lib nutzt Bar 0 nur zur Initialisierung und begrenzt mit einer Vorbar (Konvention). */
   assert.deepEqual(differ, [2]);
-  /* Umkehrbars, an denen 1.1.0 den SAR in die Bar-Spanne legte: jetzt das Extrem der Umkehrbar. */
+  /* Umkehrbars, an denen bis 1.2.0 der SAR in der Bar-Spanne lag: jetzt das Extrem der Umkehrbar. */
   assert.equal(sar[173], ref.high[173]);
   assert.equal(sar[308], ref.low[308]);
 });
