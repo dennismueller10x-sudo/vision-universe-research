@@ -23,6 +23,11 @@ await context.addInitScript(k => { try { if (!sessionStorage.getItem('qa-seeded'
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
+let inflight = 0;
+page.on('request', () => { inflight++; });
+for (const e of ['requestfinished', 'requestfailed']) page.on(e, () => { inflight = Math.max(0, inflight - 1); });
+/* wartet, bis 500 ms lang keine Anfrage mehr laeuft (auch nach einem reinen Hash-Wechsel) */
+async function settle() { for (let quiet = 0, n = 0; quiet < 5 && n < 200; n++) { await page.waitForTimeout(100); quiet = inflight ? 0 : quiet + 1; } }
 const local = () => page.evaluate(k => JSON.parse(localStorage.getItem(k) || '[]'), KEY);
 const central = () => page.evaluate(async () => { const r = await fetch('/v1/watchlist', {credentials: 'include', headers: {'X-VU-Client': 'web'}}); return r.ok ? (await r.json()).items.map(i => i.ticker) : null; });
 async function stock(t) {
@@ -63,7 +68,8 @@ check(JSON.stringify(await central()) === '["NVDA"]', 'angemeldet: Klick speiche
 await page.evaluate(() => sessionStorage.removeItem('vu-watchlist-ids-v1'));
 await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json', 'X-VU-Client': 'web'}, body: JSON.stringify({instrumentId: (await (await fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).instrumentId, ticker: 'MSFT'})}); });
 // Ein anderes Geraet zeigt sich nach dem Neuladen (oder nach 5 Minuten Zwischenspeicher) - nicht mitten in derselben Seite.
-await page.goto(`${base}/quant/#/aktie/MSFT`); await page.reload();
+// Erst fertig laden, dann neu laden: ein Abbruch laufender Abrufe meldet WebKit sonst als Seitenfehler.
+await page.goto(`${base}/quant/#/aktie/MSFT`); await settle(); await page.reload();
 // Quant zeichnet seinen Knopf nur beim Seitenaufbau (gesperrte Datei): der Kontostand gilt ab dem naechsten Zeichnen.
 await stock('NVDA');
 btn = await stock('MSFT');
