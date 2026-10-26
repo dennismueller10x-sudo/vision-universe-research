@@ -1,0 +1,4715 @@
+{
+  "schemaVersion": "v7-mc-diagnostics-1",
+  "dependence": [
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "n": 1395,
+      "acf": [
+        -0.09409584799278937,
+        -0.03140764587044429,
+        -0.05267069363923823,
+        0.14074400895693673,
+        -0.16924879473196625,
+        0.04351202656429345,
+        0.007549658017440784,
+        0.04168416731612436,
+        -0.04438761925367876,
+        0.04975040956036755,
+        0.05997572495706357,
+        0.06843543324531355,
+        -0.04396769566215085,
+        0.05738292726850568,
+        0.015201303354524505,
+        -0.06812138808734701,
+        -0.032369086883170556,
+        0.046927522758632434,
+        0.010945189592997964,
+        -0.06354851877394466,
+        0.05414507848528933,
+        0.00864773895715009,
+        0.023133815991673044,
+        -0.0196169842545109,
+        -0.0009133185250015921,
+        -0.009221201647579854
+      ],
+      "meanEssDiagnostic": 1395.0,
+      "zeroReturnShare": 0.5777777777777777,
+      "limitation": "Stationarity and covariance truncation assumptions; not guaranteed effective sample size, not tail-quantile ESS"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "n": 1395,
+      "acf": [
+        -0.09409584799278937,
+        -0.03140764587044429,
+        -0.05267069363923823,
+        0.14074400895693673,
+        -0.16924879473196625,
+        0.04351202656429345,
+        0.007549658017440784,
+        0.04168416731612436,
+        -0.04438761925367876,
+        0.04975040956036755,
+        0.05997572495706357,
+        0.06843543324531355,
+        -0.04396769566215085,
+        0.05738292726850568,
+        0.015201303354524505,
+        -0.06812138808734701,
+        -0.032369086883170556,
+        0.046927522758632434,
+        0.010945189592997964,
+        -0.06354851877394466,
+        0.05414507848528933,
+        0.00864773895715009,
+        0.023133815991673044,
+        -0.0196169842545109,
+        -0.0009133185250015921,
+        -0.009221201647579854
+      ],
+      "meanEssDiagnostic": 1395.0,
+      "zeroReturnShare": 0.5777777777777777,
+      "limitation": "Stationarity and covariance truncation assumptions; not guaranteed effective sample size, not tail-quantile ESS"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "n": 1395,
+      "acf": [
+        -0.09409584799278937,
+        -0.03140764587044429,
+        -0.05267069363923823,
+        0.14074400895693673,
+        -0.16924879473196625,
+        0.04351202656429345,
+        0.007549658017440784,
+        0.04168416731612436,
+        -0.04438761925367876,
+        0.04975040956036755,
+        0.05997572495706357,
+        0.06843543324531355,
+        -0.04396769566215085,
+        0.05738292726850568,
+        0.015201303354524505,
+        -0.06812138808734701,
+        -0.032369086883170556,
+        0.046927522758632434,
+        0.010945189592997964,
+        -0.06354851877394466,
+        0.05414507848528933,
+        0.00864773895715009,
+        0.023133815991673044,
+        -0.0196169842545109,
+        -0.0009133185250015921,
+        -0.009221201647579854
+      ],
+      "meanEssDiagnostic": 1395.0,
+      "zeroReturnShare": 0.5777777777777777,
+      "limitation": "Stationarity and covariance truncation assumptions; not guaranteed effective sample size, not tail-quantile ESS"
+    },
+    {
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "n": 21,
+      "acf": [
+        0.39833042040193295,
+        0.15267538400295808,
+        -0.01884047658109117,
+        -0.0293704630936046,
+        -0.0023027530072458518,
+        0.06194442611286479,
+        -0.029513751911842624,
+        -0.2929038354078682,
+        -0.19841445638286465,
+        -0.34996424148516364,
+        -0.2249561702830349,
+        -0.12499158540747918,
+        0.004394843719770042,
+        -0.031191145526899455,
+        0.0057134989518851835,
+        0.027261212530640715,
+        0.04186768243081336,
+        0.13580060905290264,
+        -0.0003294566020808348,
+        -0.025209741514592772
+      ],
+      "meanEssDiagnostic": 9.99043007754405,
+      "zeroReturnShare": 0.0,
+      "limitation": "Stationarity and covariance truncation assumptions; not guaranteed effective sample size, not tail-quantile ESS"
+    }
+  ],
+  "seedComparisons": [
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 1000,
+      "cdfDistances": {
+        "endCapital": 0.04400000000000004,
+        "totalReturn": 0.04400000000000004,
+        "maxDrawdown": 0.04500000000000004,
+        "longestLossStreak": 0.020999999999999963
+      },
+      "perMetricUnionDkwBound": 0.09361652241643972,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 10000,
+      "cdfDistances": {
+        "endCapital": 0.015100000000000002,
+        "totalReturn": 0.015100000000000002,
+        "maxDrawdown": 0.011500000000000066,
+        "longestLossStreak": 0.006699999999999998
+      },
+      "perMetricUnionDkwBound": 0.029604143746015967,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 1000,
+      "cdfDistances": {
+        "endCapital": 0.04100000000000001,
+        "totalReturn": 0.04100000000000001,
+        "maxDrawdown": 0.03200000000000003,
+        "longestLossStreak": 0.036000000000000004
+      },
+      "perMetricUnionDkwBound": 0.09361652241643972,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 10000,
+      "cdfDistances": {
+        "endCapital": 0.010199999999999987,
+        "totalReturn": 0.010199999999999987,
+        "maxDrawdown": 0.00539999999999996,
+        "longestLossStreak": 0.005199999999999982
+      },
+      "perMetricUnionDkwBound": 0.029604143746015967,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 1000,
+      "cdfDistances": {
+        "endCapital": 0.05800000000000005,
+        "totalReturn": 0.05800000000000005,
+        "maxDrawdown": 0.030000000000000027,
+        "longestLossStreak": 0.024
+      },
+      "perMetricUnionDkwBound": 0.09361652241643972,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 10000,
+      "cdfDistances": {
+        "endCapital": 0.013000000000000012,
+        "totalReturn": 0.013000000000000012,
+        "maxDrawdown": 0.008500000000000063,
+        "longestLossStreak": 0.0044999999999999485
+      },
+      "perMetricUnionDkwBound": 0.029604143746015967,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 1000,
+      "cdfDistances": {
+        "endCapital": 0.03300000000000003,
+        "totalReturn": 0.03300000000000003,
+        "maxDrawdown": 0.046,
+        "longestLossStreak": 0.018000000000000016
+      },
+      "perMetricUnionDkwBound": 0.09361652241643972,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    },
+    {
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 10000,
+      "cdfDistances": {
+        "endCapital": 0.015800000000000036,
+        "totalReturn": 0.015800000000000036,
+        "maxDrawdown": 0.008900000000000019,
+        "longestLossStreak": 0.0047000000000000375
+      },
+      "perMetricUnionDkwBound": 0.029604143746015967,
+      "withinBound": true,
+      "scope": "Conditional two-seed Monte Carlo variability; no market/model validation; no across-comparison familywise claim"
+    }
+  ],
+  "runs": [
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-13-1729-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 1000,
+      "seed": 1729,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 120131.15406915802,
+          "min": 35438.0358144677,
+          "max": 335056.0905154996,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 52112.481834509636,
+              "conditionalMonteCarloBand": [
+                null,
+                69372.03791469194
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 69056.53961562559,
+              "conditionalMonteCarloBand": [
+                46725.760069100405,
+                79552.15038095483
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 112258.44289029232,
+              "conditionalMonteCarloBand": [
+                109726.58904648632,
+                115133.00881389582
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 189934.18842194037,
+              "conditionalMonteCarloBand": [
+                171272.06819856615,
+                266278.6830303879
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 251478.32916240988,
+              "conditionalMonteCarloBand": [
+                189536.23037114303,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.20131154069158003,
+          "min": -0.6456196418553231,
+          "max": 2.350560905154996,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.47887518165490367,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.3062796208530806
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.30943460384374416,
+              "conditionalMonteCarloBand": [
+                -0.5327423993089959,
+                -0.20447849619045166
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.1225844289029232,
+              "conditionalMonteCarloBand": [
+                0.09726589046486311,
+                0.15133008813895832
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.8993418842194039,
+              "conditionalMonteCarloBand": [
+                0.7127206819856615,
+                1.662786830303879
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.5147832916240986,
+              "conditionalMonteCarloBand": [
+                0.8953623037114302,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.21680550400804374,
+          "min": -0.7176504951257974,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6060171794386855,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.48026622897793436
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.48163169910260084,
+              "conditionalMonteCarloBand": [
+                -0.6359653381536547,
+                -0.43005049782558924
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.19171926821440033,
+              "conditionalMonteCarloBand": [
+                -0.2078743943043161,
+                -0.17601713062098512
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.01235673352435529,
+              "conditionalMonteCarloBand": [
+                -0.04328699630476873,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -0.014238494787693678,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.1050000000000004,
+          "min": 0,
+          "max": 7,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                4,
+                6
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-13-1729-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 10000,
+      "seed": 1729,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 121178.5600011008,
+          "min": 24424.89911030697,
+          "max": 467430.20082625654,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 51698.628317525174,
+              "conditionalMonteCarloBand": [
+                null,
+                59383.3822094599
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 70438.68194991033,
+              "conditionalMonteCarloBand": [
+                65022.94756848054,
+                74316.93989071036
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 112899.42923244358,
+              "conditionalMonteCarloBand": [
+                112003.79638440798,
+                113770.90133931278
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 193225.9277098746,
+              "conditionalMonteCarloBand": [
+                184516.81490683518,
+                207649.27057998933
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 256238.2209635853,
+              "conditionalMonteCarloBand": [
+                223679.7899926815,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.21178560001100669,
+          "min": -0.7557510088969303,
+          "max": 3.6743020082625657,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4830137168247483,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.406166177905401
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.2956131805008968,
+              "conditionalMonteCarloBand": [
+                -0.3497705243151946,
+                -0.25683060109289635
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.12899429232443582,
+              "conditionalMonteCarloBand": [
+                0.12003796384407983,
+                0.1377090133931278
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9322592770987462,
+              "conditionalMonteCarloBand": [
+                0.8451681490683518,
+                1.0764927057998932
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.5623822096358528,
+              "conditionalMonteCarloBand": [
+                1.236797899926815,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.20909840249980857,
+          "min": -0.7987518117696565,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6041186806421466,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5593423211091062
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.4887433402516799,
+              "conditionalMonteCarloBand": [
+                -0.5330103517472957,
+                -0.46628557010088223
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.1899509803921569,
+              "conditionalMonteCarloBand": [
+                -0.19171926821440033,
+                -0.17846702522767743
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.012356733524355179,
+              "conditionalMonteCarloBand": [
+                -0.025641025641025772,
+                -0.0014977533699449541
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.0494000000000048,
+          "min": 0,
+          "max": 8,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-13-20261026-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 1000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 121400.9595818134,
+          "min": 28244.2876610785,
+          "max": 385923.07684110897,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 53512.886324366074,
+              "conditionalMonteCarloBand": [
+                null,
+                73129.96849794935
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 71922.88522595477,
+              "conditionalMonteCarloBand": [
+                51308.30746108302,
+                82375.01197990718
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 114699.66997876434,
+              "conditionalMonteCarloBand": [
+                111203.60174732936,
+                117748.05681076349
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 194551.0534441139,
+              "conditionalMonteCarloBand": [
+                174402.12271934166,
+                247975.61488534982
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 241985.00414341743,
+              "conditionalMonteCarloBand": [
+                192230.5243812246,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.214009595818134,
+          "min": -0.7175571233892151,
+          "max": 2.8592307684110896,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4648711367563393,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.2687003150205065
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.28077114774045225,
+              "conditionalMonteCarloBand": [
+                -0.48691692538916975,
+                -0.17624988020092813
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.1469966997876434,
+              "conditionalMonteCarloBand": [
+                0.1120360174732935,
+                0.1774805681076348
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.945510534441139,
+              "conditionalMonteCarloBand": [
+                0.7440212271934166,
+                1.479756148853498
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.4198500414341744,
+              "conditionalMonteCarloBand": [
+                0.9223052438122459,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.20796820424658954,
+          "min": -0.7766037865305442,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6109651950787759,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.47900370522848923
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.4791081787590098,
+              "conditionalMonteCarloBand": [
+                -0.6422085848687552,
+                -0.41700569568755086
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.19171926821440016,
+              "conditionalMonteCarloBand": [
+                -0.2051480250444463,
+                -0.17527535646060677
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.011704029841242646,
+              "conditionalMonteCarloBand": [
+                -0.04328699630476873,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -0.01235673352435529,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.038000000000004,
+          "min": 0,
+          "max": 7,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                4,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-13-20261026-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 13,
+      "simulations": 10000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 120356.3880565053,
+          "min": 25984.17360001827,
+          "max": 385923.07684110897,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 51587.41393497267,
+              "conditionalMonteCarloBand": [
+                null,
+                60191.489660400715
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 71251.45524374364,
+              "conditionalMonteCarloBand": [
+                66172.21285240818,
+                74694.83062443045
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 112865.045929355,
+              "conditionalMonteCarloBand": [
+                111889.74939018751,
+                113860.24040500344
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 189606.45894858777,
+              "conditionalMonteCarloBand": [
+                181044.44259692082,
+                202009.15143198238
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 249100.84829950277,
+              "conditionalMonteCarloBand": [
+                218264.79678596745,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.20356388056505031,
+          "min": -0.7401582639998173,
+          "max": 2.8592307684110896,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4841258606502734,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.3980851033959929
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.28748544756256367,
+              "conditionalMonteCarloBand": [
+                -0.33827787147591826,
+                -0.2530516937556955
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.1286504592935499,
+              "conditionalMonteCarloBand": [
+                0.1188974939018752,
+                0.13860240405003443
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.8960645894858779,
+              "conditionalMonteCarloBand": [
+                0.8104444259692083,
+                1.020091514319824
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.4910084829950274,
+              "conditionalMonteCarloBand": [
+                1.1826479678596744,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.20767548425525328,
+          "min": -0.7766037865305442,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.5978505629477995,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5530467979087885
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.47900370522848934,
+              "conditionalMonteCarloBand": [
+                -0.5207280001426113,
+                -0.46046872279858575
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.18243263165638396,
+              "conditionalMonteCarloBand": [
+                -0.19171926821440022,
+                -0.17601713062098523
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.008090340417846504,
+              "conditionalMonteCarloBand": [
+                -0.02368888888888898,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.032600000000001,
+          "min": 0,
+          "max": 9,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-26-1729-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 1000,
+      "seed": 1729,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 120591.43923769,
+          "min": 27519.181228584544,
+          "max": 354089.32283529517,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 53752.11131407045,
+              "conditionalMonteCarloBand": [
+                null,
+                67765.70176950603
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 67702.67790024672,
+              "conditionalMonteCarloBand": [
+                51721.88847971089,
+                77835.30517470145
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 113104.03453425363,
+              "conditionalMonteCarloBand": [
+                109070.901545616,
+                115859.34749571575
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 192524.54353216875,
+              "conditionalMonteCarloBand": [
+                171400.16950901347,
+                260809.56752624986
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 246922.98516224837,
+              "conditionalMonteCarloBand": [
+                190952.8869089529,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.20591439237689976,
+          "min": -0.7248081877141546,
+          "max": 2.5408932283529517,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4624788868592955,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.32234298230493963
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.3229732209975328,
+              "conditionalMonteCarloBand": [
+                -0.48278111520289113,
+                -0.22164694825298548
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.13104034534253628,
+              "conditionalMonteCarloBand": [
+                0.09070901545616006,
+                0.15859347495715737
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9252454353216875,
+              "conditionalMonteCarloBand": [
+                0.7140016950901347,
+                1.6080956752624984
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.469229851622484,
+              "conditionalMonteCarloBand": [
+                0.9095288690895291,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.204232839021304,
+          "min": -0.7467684128661258,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6478352489219491,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5361070381231672
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.5361070381231674,
+              "conditionalMonteCarloBand": [
+                -0.6478352489219491,
+                -0.4423220044653934
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.176017130620985,
+              "conditionalMonteCarloBand": [
+                -0.19171926821440044,
+                -0.14552636250665718
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -0.001497753369944843,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 2.9760000000000004,
+          "min": 0,
+          "max": 7,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                4,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-26-1729-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 10000,
+      "seed": 1729,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 121350.09273202652,
+          "min": 27519.181228584544,
+          "max": 451506.42089064984,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 52479.62885115774,
+              "conditionalMonteCarloBand": [
+                null,
+                59447.94176304831
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 68546.55341047232,
+              "conditionalMonteCarloBand": [
+                64236.62795929913,
+                73812.08259424151
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 111882.99709868945,
+              "conditionalMonteCarloBand": [
+                110998.7757100882,
+                113244.09203780626
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 194501.54502546822,
+              "conditionalMonteCarloBand": [
+                186310.5671443621,
+                204567.21816825404
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 260342.43121783424,
+              "conditionalMonteCarloBand": [
+                221541.28604417658,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.21350092732026954,
+          "min": -0.7248081877141546,
+          "max": 3.515064208906498,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.47520371148842266,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.40552058236951694
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.31453446589527684,
+              "conditionalMonteCarloBand": [
+                -0.3576337204070087,
+                -0.2618791740575849
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.11882997098689452,
+              "conditionalMonteCarloBand": [
+                0.10998775710088204,
+                0.13244092037806254
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9450154502546821,
+              "conditionalMonteCarloBand": [
+                0.8631056714436212,
+                1.0456721816825403
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.6034243121783427,
+              "conditionalMonteCarloBand": [
+                1.215412860441766,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.1978340019794924,
+          "min": -0.794689955941885,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6478352489219491,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5978505629477993
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.534478672985782,
+              "conditionalMonteCarloBand": [
+                -0.5637711134091694,
+                -0.4790037052284891
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.16668868097719447,
+              "conditionalMonteCarloBand": [
+                -0.176017130620985,
+                -0.16080000000000005
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 2.881800000000009,
+          "min": 0,
+          "max": 8,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-26-20261026-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 1000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 121666.27929756028,
+          "min": 35216.47510780509,
+          "max": 312623.9545403055,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 52474.94432315853,
+              "conditionalMonteCarloBand": [
+                null,
+                74299.26841127152
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 72467.74064411821,
+              "conditionalMonteCarloBand": [
+                46896.905739608614,
+                84569.78583661103
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 111590.95763176706,
+              "conditionalMonteCarloBand": [
+                108977.57127697988,
+                114776.99980718017
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 194765.98809405972,
+              "conditionalMonteCarloBand": [
+                176674.5257564481,
+                275378.7883733559
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 267359.82849710196,
+              "conditionalMonteCarloBand": [
+                194501.54502546822,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.2166627929756026,
+          "min": -0.6478352489219491,
+          "max": 2.1262395454030547,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4752505567684147,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.25700731588728476
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.27532259355881794,
+              "conditionalMonteCarloBand": [
+                -0.5310309426039139,
+                -0.15430214163388967
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.11590957631767063,
+              "conditionalMonteCarloBand": [
+                0.0897757127697989,
+                0.1477699980718017
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9476598809405973,
+              "conditionalMonteCarloBand": [
+                0.7667452575644811,
+                1.7537878837335592
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.6735982849710196,
+              "conditionalMonteCarloBand": [
+                0.9450154502546821,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.19540003274018383,
+          "min": -0.7480447309360286,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6478352489219491,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5072684694381496
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.5109036685662848,
+              "conditionalMonteCarloBand": [
+                -0.648785743773784,
+                -0.43456825648662656
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.176017130620985,
+              "conditionalMonteCarloBand": [
+                -0.19171926821440033,
+                -0.14552636250665718
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 2.835999999999996,
+          "min": 0,
+          "max": 7,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                4,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-26-20261026-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 26,
+      "simulations": 10000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 121248.46458204457,
+          "min": 21602.05961774815,
+          "max": 483305.5653636118,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 52195.08254808536,
+              "conditionalMonteCarloBand": [
+                null,
+                59371.69833017507
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 69235.83967007032,
+              "conditionalMonteCarloBand": [
+                63722.83389551609,
+                73296.08378870672
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 111491.03053088777,
+              "conditionalMonteCarloBand": [
+                110504.82308677553,
+                112549.94881056983
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 196379.54861331923,
+              "conditionalMonteCarloBand": [
+                188860.43099881537,
+                208236.26918061989
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 255611.23499739164,
+              "conditionalMonteCarloBand": [
+                221381.35013970194,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.2124846458204466,
+          "min": -0.7839794038225185,
+          "max": 3.8330556536361176,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.47804917451914636,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.4062830166982493
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.3076416032992968,
+              "conditionalMonteCarloBand": [
+                -0.36277166104483916,
+                -0.2670391621129329
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.1149103053088778,
+              "conditionalMonteCarloBand": [
+                0.10504823086775539,
+                0.12549948810569833
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9637954861331922,
+              "conditionalMonteCarloBand": [
+                0.8886043099881538,
+                1.0823626918061988
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.5561123499739165,
+              "conditionalMonteCarloBand": [
+                1.2138135013970195,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.1987356831836288,
+          "min": -0.8593846232738148,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.6478352489219491,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5978505629477994
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.5361070381231672,
+              "conditionalMonteCarloBand": [
+                -0.5637711134091694,
+                -0.47900370522848923
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.16668868097719447,
+              "conditionalMonteCarloBand": [
+                -0.17601713062098512,
+                -0.16080000000000005
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 2.892700000000004,
+          "min": 0,
+          "max": 8,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                0,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-4-1729-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 1000,
+      "seed": 1729,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 122699.61778290359,
+          "min": 37357.059030006436,
+          "max": 452650.52681169234,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 55387.293376623085,
+              "conditionalMonteCarloBand": [
+                null,
+                71488.21254542585
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 71267.39543990462,
+              "conditionalMonteCarloBand": [
+                53968.86996810639,
+                78930.84129231641
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 115150.24039363778,
+              "conditionalMonteCarloBand": [
+                110917.05888641892,
+                118407.48366727085
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 194223.14509823298,
+              "conditionalMonteCarloBand": [
+                176205.62206182786,
+                273583.31245797133
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 265296.67431436275,
+              "conditionalMonteCarloBand": [
+                193108.5859263084,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.22699617782903594,
+          "min": -0.6264294096999357,
+          "max": 3.5265052681169236,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4461270662337691,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.28511787454574156
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.2873260456009538,
+              "conditionalMonteCarloBand": [
+                -0.4603113003189361,
+                -0.21069158707683588
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.15150240393637782,
+              "conditionalMonteCarloBand": [
+                0.10917058886418918,
+                0.18407483667270852
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9422314509823299,
+              "conditionalMonteCarloBand": [
+                0.7620562206182786,
+                1.7358331245797132
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.6529667431436275,
+              "conditionalMonteCarloBand": [
+                0.9310858592630842,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.22236475678662265,
+          "min": -0.6615313982327269,
+          "max": -0.0014977533699449541,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.5431464028890709,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.43470518078646736
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.4427837466594796,
+              "conditionalMonteCarloBand": [
+                -0.562010278591453,
+                -0.39070295213419826
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.20514802504444618,
+              "conditionalMonteCarloBand": [
+                -0.22111157006137871,
+                -0.18753606462781292
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.05928525948655003,
+              "conditionalMonteCarloBand": [
+                -0.07500753114682657,
+                -0.03451995685005382
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": -0.039906103286384886,
+              "conditionalMonteCarloBand": [
+                -0.05936540429887405,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.0729999999999973,
+          "min": 1,
+          "max": 10,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                null,
+                2
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 2,
+              "conditionalMonteCarloBand": [
+                1,
+                2
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                7
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 7,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-4-1729-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 10000,
+      "seed": 1729,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 122104.57159506548,
+          "min": 27321.83177044934,
+          "max": 700134.836330182,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 53441.51179575655,
+              "conditionalMonteCarloBand": [
+                null,
+                61409.08311692614
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 69704.34220927587,
+              "conditionalMonteCarloBand": [
+                65949.08313969389,
+                72128.59551233037
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 115336.9516828853,
+              "conditionalMonteCarloBand": [
+                114233.41627876415,
+                116316.45543552871
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 198667.49596449497,
+              "conditionalMonteCarloBand": [
+                189192.17414167494,
+                208724.51287652022
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 255110.85133457062,
+              "conditionalMonteCarloBand": [
+                223743.4716040072,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.22104571595065636,
+          "min": -0.7267816822955067,
+          "max": 6.001348363301821,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.46558488204243453,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.38590916883073867
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.3029565779072413,
+              "conditionalMonteCarloBand": [
+                -0.34050916860306113,
+                -0.27871404487669627
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.15336951682885291,
+              "conditionalMonteCarloBand": [
+                0.14233416278764155,
+                0.1631645543552871
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.9866749596449496,
+              "conditionalMonteCarloBand": [
+                0.8919217414167495,
+                1.0872451287652023
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.5511085133457063,
+              "conditionalMonteCarloBand": [
+                1.237434716040072,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.21983162090541908,
+          "min": -0.8049892642505356,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.543478768330702,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.49824854431019117
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.4482831913028396,
+              "conditionalMonteCarloBand": [
+                -0.4711455772289225,
+                -0.42544072340250916
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.19841712811980017,
+              "conditionalMonteCarloBand": [
+                -0.2048737137176495,
+                -0.19289453017716163
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.05680457629373447,
+              "conditionalMonteCarloBand": [
+                -0.06323930846223835,
+                -0.049722662440570664
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": -0.02984666928363415,
+              "conditionalMonteCarloBand": [
+                -0.04330065359477131,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.004700000000006,
+          "min": 0,
+          "max": 10,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                2
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 7,
+              "conditionalMonteCarloBand": [
+                6,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-4-20261026-1000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 1000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 118309.38872981028,
+          "min": 38396.53110136345,
+          "max": 381560.5527996774,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 51821.03523332696,
+              "conditionalMonteCarloBand": [
+                null,
+                68587.54904400436
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 68329.33836976212,
+              "conditionalMonteCarloBand": [
+                50240.70786762856,
+                75093.94987794453
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 113804.55212165843,
+              "conditionalMonteCarloBand": [
+                110501.8242090027,
+                117230.69763777438
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 186536.77352847086,
+              "conditionalMonteCarloBand": [
+                167536.16208730408,
+                238604.55364788408
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 237281.63221494603,
+              "conditionalMonteCarloBand": [
+                185907.97888841404,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.18309388729810222,
+          "min": -0.6160346889863655,
+          "max": 2.815605527996774,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.4817896476667304,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.3141245095599563
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.3167066163023788,
+              "conditionalMonteCarloBand": [
+                -0.49759292132371435,
+                -0.24906050122055468
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.1380455212165842,
+              "conditionalMonteCarloBand": [
+                0.10501824209002697,
+                0.17230697637774384
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 0.8653677352847086,
+              "conditionalMonteCarloBand": [
+                0.6753616208730409,
+                1.3860455364788407
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.3728163221494603,
+              "conditionalMonteCarloBand": [
+                0.8590797888841404,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.22640701762506626,
+          "min": -0.6679227422087887,
+          "max": -0.0029932634747327214,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.5890737984747884,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.4614132853483519
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.46281006504764666,
+              "conditionalMonteCarloBand": [
+                -0.5984356964637002,
+                -0.40045090517163184
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.2051480250444463,
+              "conditionalMonteCarloBand": [
+                -0.2230054469721242,
+                -0.19365216832842425
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.055390475368947145,
+              "conditionalMonteCarloBand": [
+                -0.0728080339899575,
+                -0.01997538382548303
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": -0.02368888888888898,
+              "conditionalMonteCarloBand": [
+                -0.055527383367139915,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 2.992000000000002,
+          "min": 1,
+          "max": 11,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                2
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                4,
+                7
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 7,
+              "conditionalMonteCarloBand": [
+                5,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-CIRCULAR_BLOCK-4-20261026-10000-input",
+      "model": "CIRCULAR_BLOCK",
+      "blockLength": 4,
+      "simulations": 10000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 121786.5321158566,
+          "min": 33912.16000132137,
+          "max": 486329.9760838936,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 52698.779725786495,
+              "conditionalMonteCarloBand": [
+                null,
+                60812.50508557625
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 69570.277649702,
+              "conditionalMonteCarloBand": [
+                65958.57571575794,
+                72156.39397224318
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 114550.14924748172,
+              "conditionalMonteCarloBand": [
+                113519.12463087372,
+                115598.61661932725
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 200519.31529994585,
+              "conditionalMonteCarloBand": [
+                190875.35612968984,
+                212149.19343629113
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 254971.61343227484,
+              "conditionalMonteCarloBand": [
+                228495.3314347893,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 0.21786532115856594,
+          "min": -0.6608783999867863,
+          "max": 3.8632997608389363,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.47301220274213507,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.3918749491442375
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.30429722350298005,
+              "conditionalMonteCarloBand": [
+                -0.3404142428424206,
+                -0.2784360602775682
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 0.14550149247481725,
+              "conditionalMonteCarloBand": [
+                0.13519124630873725,
+                0.15598616619327244
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 1.0051931529994582,
+              "conditionalMonteCarloBand": [
+                0.9087535612968984,
+                1.1214919343629113
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1.5497161343227484,
+              "conditionalMonteCarloBand": [
+                1.2849533143478928,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.2208310657140716,
+          "min": -0.731201484293067,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.5586761167709272,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.5030633161339715
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.4506664586808008,
+              "conditionalMonteCarloBand": [
+                -0.47507514027728426,
+                -0.43023279915240586
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.20044427733356812,
+              "conditionalMonteCarloBand": [
+                -0.2051480250444463,
+                -0.19534736518447937
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.0569321533923306,
+              "conditionalMonteCarloBand": [
+                -0.06323930846223835,
+                -0.04966509997235513
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": -0.027671755725190983,
+              "conditionalMonteCarloBand": [
+                -0.04328699630476873,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 3.0122999999999935,
+          "min": 0,
+          "max": 12,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                2
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 5,
+              "conditionalMonteCarloBand": [
+                5,
+                5
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 7,
+              "conditionalMonteCarloBand": [
+                6,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-TRADE_IID-0-1729-1000-input",
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 1000,
+      "seed": 1729,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 14121252.011379013,
+          "min": 20737.094887403135,
+          "max": 307852225.0900428,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 127916.79932448636,
+              "conditionalMonteCarloBand": [
+                null,
+                392438.0723168822
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 381674.54549752525,
+              "conditionalMonteCarloBand": [
+                123187.5348942903,
+                646955.4773127958
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 5426119.371068802,
+              "conditionalMonteCarloBand": [
+                4406414.151062366,
+                6021835.623435
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 56107496.85730441,
+              "conditionalMonteCarloBand": [
+                36009391.12550129,
+                149424993.57388452
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 136457814.0080774,
+              "conditionalMonteCarloBand": [
+                54510826.36320067,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 140.21252011379036,
+          "min": -0.7926290511259686,
+          "max": 3077.5222509004284,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0.2791679932448636,
+              "conditionalMonteCarloBand": [
+                null,
+                2.924380723168822
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 2.816745454975252,
+              "conditionalMonteCarloBand": [
+                0.23187534894290285,
+                5.469554773127959
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 53.26119371068802,
+              "conditionalMonteCarloBand": [
+                43.06414151062366,
+                59.21835623435
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 560.0749685730441,
+              "conditionalMonteCarloBand": [
+                359.0939112550129,
+                1493.2499357388451
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1363.5781400807741,
+              "conditionalMonteCarloBand": [
+                544.1082636320067,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.49398916622878436,
+          "min": -0.9085446985766813,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.8418778757749795,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.735476561875342
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.7357477430784667,
+              "conditionalMonteCarloBand": [
+                -0.8719360130791132,
+                -0.6983362691326818
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.4589863409553532,
+              "conditionalMonteCarloBand": [
+                -0.4590356853732499,
+                -0.4589863409553532
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.25600762094170115,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 1.5199999999999998,
+          "min": 0,
+          "max": 4,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                2,
+                4
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-TRADE_IID-0-1729-10000-input",
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 10000,
+      "seed": 1729,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 15260022.210730335,
+          "min": 4300.804794611552,
+          "max": 1161322941.4763753,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 101457.84071240158,
+              "conditionalMonteCarloBand": [
+                null,
+                189018.2623543569
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 335328.5460897631,
+              "conditionalMonteCarloBand": [
+                268060.1974552742,
+                416215.23966703034
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 4837777.768987568,
+              "conditionalMonteCarloBand": [
+                4599160.577293841,
+                5141303.501099503
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 59032410.32150905,
+              "conditionalMonteCarloBand": [
+                49893442.45420165,
+                75282272.61659822
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 171389529.38718104,
+              "conditionalMonteCarloBand": [
+                96313373.6403807,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 151.60022210730372,
+          "min": -0.9569919520538844,
+          "max": 11612.229414763753,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0.014578407124015747,
+              "conditionalMonteCarloBand": [
+                null,
+                0.890182623543569
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 2.3532854608976312,
+              "conditionalMonteCarloBand": [
+                1.6806019745527419,
+                3.1621523966703036
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 47.377777689875685,
+              "conditionalMonteCarloBand": [
+                44.991605772938414,
+                50.413035010995024
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 589.3241032150904,
+              "conditionalMonteCarloBand": [
+                497.93442454201653,
+                751.8227261659822
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1712.8952938718105,
+              "conditionalMonteCarloBand": [
+                962.133736403807,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.49806422584496135,
+          "min": -0.9837799288283229,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.8789402112380862,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.8275966084917563
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.7751278315916289,
+              "conditionalMonteCarloBand": [
+                -0.7999441021801239,
+                -0.7574953953372701
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.4589863409553532,
+              "conditionalMonteCarloBand": [
+                -0.4589863409553532,
+                -0.4589863409553532
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.25600762094170115,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                -9.120734212875181e-05
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -9.120734212864079e-05,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 1.5737000000000039,
+          "min": 0,
+          "max": 7,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 4,
+              "conditionalMonteCarloBand": [
+                3,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-TRADE_IID-0-20261026-1000-input",
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 1000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.04294694083467376,
+      "distributions": {
+        "endCapital": {
+          "mean": 12716498.04983352,
+          "min": 28760.64593891819,
+          "max": 209829219.94651577,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 104759.7668135178,
+              "conditionalMonteCarloBand": [
+                null,
+                348718.4803848226
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 330823.72145889956,
+              "conditionalMonteCarloBand": [
+                100661.91122745814,
+                572356.3228153344
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 4999947.893251287,
+              "conditionalMonteCarloBand": [
+                4011740.1112748296,
+                5694550.221207332
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 52594814.8580131,
+              "conditionalMonteCarloBand": [
+                32556887.21863738,
+                129880973.97020793
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 116678197.12999775,
+              "conditionalMonteCarloBand": [
+                51913723.5728504,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 126.16498049833517,
+          "min": -0.7123935406108182,
+          "max": 2097.292199465158,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0.04759766813517797,
+              "conditionalMonteCarloBand": [
+                null,
+                2.487184803848226
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 2.308237214588995,
+              "conditionalMonteCarloBand": [
+                0.00661911227458134,
+                4.723563228153345
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 48.99947893251287,
+              "conditionalMonteCarloBand": [
+                39.1174011127483,
+                55.94550221207332
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 524.948148580131,
+              "conditionalMonteCarloBand": [
+                324.5688721863738,
+                1297.8097397020792
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1165.7819712999774,
+              "conditionalMonteCarloBand": [
+                518.137235728504,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.4970808861311345,
+          "min": -0.9505628459649449,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.8507375887153473,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.7822564324620359
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.7848889886425233,
+              "conditionalMonteCarloBand": [
+                -0.8585380172833592,
+                -0.7408425474126967
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.4589863409553532,
+              "conditionalMonteCarloBand": [
+                -0.4590356853732499,
+                -0.4589863409553532
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.25600762094170115,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                0
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": -9.02952687072453e-05,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 1.569000000000001,
+          "min": 0,
+          "max": 5,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0.9900000000000002,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                0,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                4
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 4,
+              "conditionalMonteCarloBand": [
+                3,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V7-MC-TRADE_IID-0-20261026-10000-input",
+      "model": "TRADE_IID",
+      "blockLength": null,
+      "simulations": 10000,
+      "seed": 20261026,
+      "cdfEpsilon": 0.013581015157406196,
+      "distributions": {
+        "endCapital": {
+          "mean": 14184177.854596673,
+          "min": 3310.4043946074776,
+          "max": 1316343223.6729052,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 104241.211641336,
+              "conditionalMonteCarloBand": [
+                null,
+                178085.65538037263
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 317751.1600178547,
+              "conditionalMonteCarloBand": [
+                244496.9004422378,
+                390042.83074175625
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 4680432.59695149,
+              "conditionalMonteCarloBand": [
+                4440894.655715673,
+                4953398.48210728
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 55290993.78663418,
+              "conditionalMonteCarloBand": [
+                46330966.47883482,
+                67475417.91284798
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 142299211.6658294,
+              "conditionalMonteCarloBand": [
+                87454282.33412881,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "totalReturn": {
+          "mean": 140.84177854596672,
+          "min": -0.9668959560539252,
+          "max": 13162.432236729052,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0.04241211641336018,
+              "conditionalMonteCarloBand": [
+                null,
+                0.7808565538037262
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 2.177511600178547,
+              "conditionalMonteCarloBand": [
+                1.444969004422378,
+                2.9004283074175623
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 45.804325969514906,
+              "conditionalMonteCarloBand": [
+                43.40894655715673,
+                48.5339848210728
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 551.9099378663418,
+              "conditionalMonteCarloBand": [
+                462.30966478834824,
+                673.7541791284798
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 1421.992116658294,
+              "conditionalMonteCarloBand": [
+                873.5428233412881,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "maxDrawdown": {
+          "mean": -0.4978921570904186,
+          "min": -0.9820651565459988,
+          "max": 0,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": -0.865305695392839,
+              "conditionalMonteCarloBand": [
+                null,
+                -0.8255618110897097
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": -0.7806756402892843,
+              "conditionalMonteCarloBand": [
+                -0.8054366851843636,
+                -0.7601156994905414
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": -0.4589863409553532,
+              "conditionalMonteCarloBand": [
+                -0.4589863409553532,
+                -0.4589863409553532
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": -0.25600762094170115,
+              "conditionalMonteCarloBand": [
+                -0.25600762094170115,
+                -0.0001824063654778385
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                -9.120734212864079e-05,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        },
+        "longestLossStreak": {
+          "mean": 1.5803000000000038,
+          "min": 0,
+          "max": 6,
+          "quantiles": [
+            {
+              "p": 0.01,
+              "value": 0,
+              "conditionalMonteCarloBand": [
+                null,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "UNBOUNDED",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.05,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.5,
+              "value": 1,
+              "conditionalMonteCarloBand": [
+                1,
+                1
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.95,
+              "value": 3,
+              "conditionalMonteCarloBand": [
+                3,
+                3
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "FINITE"
+              ]
+            },
+            {
+              "p": 0.99,
+              "value": 4,
+              "conditionalMonteCarloBand": [
+                3,
+                null
+              ],
+              "conditionalMonteCarloBandBounds": [
+                "FINITE",
+                "UNBOUNDED"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "convergence": "DKW epsilon shrinks from 0.04295 at 1000 to 0.01358 at 10000; tails can remain unbounded",
+  "assumptions": [
+    "IID trade resampling is a scenario model, not established exchangeability of 21 trades",
+    "Circular bootstrap preserves dependence only within a block; wrap boundary is artificial",
+    "4/13/26-week block comparison tests model sensitivity, not optimal block selection",
+    "Historical nonstationarity, selection, corporate-action and future-distribution uncertainty remain outside DKW",
+    "No forecast, no positive-edge requirement, no product approval"
+  ]
+}
