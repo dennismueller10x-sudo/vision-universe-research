@@ -98,7 +98,8 @@ export function build(options = {}) {
           bars: inst.bars, series: seriesOf(ticker, inst.bars),
           features: bundle && bundle.featuresAtCutoff || null,
           structure: bundle && bundle.structure && bundle.structure.state || null,
-          weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, benchmark, universeAsOf: options.universeAsOf || null
+          weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, chartSeries: bundle && bundle.chartSeries || null,
+          benchmark, universeAsOf: options.universeAsOf || null
         });
         if (!bundle) row.noBundle = true;
         rows.push(row);

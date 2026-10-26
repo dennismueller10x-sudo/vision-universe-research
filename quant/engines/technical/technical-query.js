@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.5.0";
+  var QUERY_VERSION = "technical-query-1.6.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -84,6 +84,17 @@
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
+    /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
+       mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
+       beides leer = nicht pruefbar (fehlender Wert). Linien aus der Vollhistorie (chartSeries). */
+    { id: "goldenCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts)" },
+    { id: "deathCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts)" },
+    { id: "crossAboveSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss über SMA 200 gekreuzt" },
+    { id: "crossBelowSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss unter SMA 200 gekreuzt" },
+    { id: "rsiExitOversoldDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von unten über 30" },
+    { id: "rsiExitOverboughtDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von oben unter 70" },
+    { id: "newHigh52wDays", window: "high52wWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage)" },
+    { id: "formationNewDays", window: "formationWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit der jüngsten Formations-Erkennung" },
     { id: "close", group: "Kurs", kind: "num", tfs: D, label: "Schlusskurs (USD)" },
     { id: "chg1d", group: "Kurs", kind: "pct", tfs: D, label: "Tagesänderung" },
     { id: "hasVolume", group: "Datenqualität", kind: "bool", tfs: D, label: "Volumendaten vorhanden" },
@@ -196,7 +207,19 @@
     var a = filter.value, b = filter.value2;
     var test = { gt: function (v) { return v > a; }, gte: function (v) { return v >= a; }, lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
                  between: function (v) { return v >= a && v <= b; } }[filter.op];
-    return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    var w = f.window ? ds.column(f.window) : null;
+    if (!w) return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    /* Ereignisfeld: leerer Wert mit Pruefraum W heisst "mindestens W Tage her (oder nie)". Entschieden wird nur,
+       was daraus sicher folgt; sonst bleibt der Wert unbekannt (null), nie geraten. */
+    var whenAbsent = {
+      lte: function (W) { return a < W ? false : null; }, lt: function (W) { return a <= W ? false : null; },
+      gt: function (W) { return W > a ? true : null; }, gte: function (W) { return W >= a ? true : null; },
+      between: function (W) { return b < W ? false : null; }
+    }[filter.op];
+    return function (i) {
+      var v = c[i]; if (isNum(v)) return test(v);
+      var W = w[i]; return isNum(W) ? whenAbsent(W) : null;
+    };
   }
 
   /**

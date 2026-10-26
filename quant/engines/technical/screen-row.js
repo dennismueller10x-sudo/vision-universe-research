@@ -31,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.5.0";
+  var ROW_VERSION = "technical-screen-row-1.6.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -55,6 +55,55 @@
     };
   }
 
+  /**
+   * Ereignisse als "Handelstage seit" (Audit B12). Je Ereignis zwei Werte:
+   *   <feld>        Handelstage seit dem juengsten Ereignis (0 = am Stichtag), null = keines im Pruefraum
+   *   <fenster>     Laenge des Pruefraums in Handelstagen (Tage 0..W-1 geprueft), null = nicht pruefbar
+   * "Kein Ereignis" (Feld null, Fenster W) und "unzureichende Historie" (beide null) sind so unterscheidbar.
+   * Pruefraum = zusammenhaengende Bars vom Stichtag rueckwaerts, an denen das Ereignis entscheidbar ist.
+   * Linien aus chartSeries (Vollhistorie, je Bar kausal), nie aus den 270 Bars neu gerechnet; jede Pruefung an
+   * Bar i nutzt nur Bars <= i (kein Vorgriff). Zeitraeume zaehlen Bars = Handelstage.
+   * Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
+   */
+  function eventBlock(b, cs, formations) {
+    var n = b.close.length, t = n - 1, out = {};
+    /* scan: von t rueckwaerts, solange decidable(i); erstes test(i) liefert die Tage. */
+    function scan(decidable, test) {
+      var w = 0, days = null;
+      for (var i = t; i >= 0 && decidable(i); i--) { w++; if (days === null && test(i)) days = t - i; }
+      return { days: days, window: w > 0 ? w : null };
+    }
+    function both(a, z) { return function (i) { return i >= 1 && isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]); }; }
+    function crossUp(a, z) { return function (i) { return a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    function put(key, windowKey, r) { out[key] = r.days; if (windowKey) out[windowKey] = r.window; }
+    var none = { days: null, window: null };
+    var lines = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
+    put("goldenCrossDays", "smaCrossWindow", lines ? scan(both(cs.sma50, cs.sma200), crossUp(cs.sma50, cs.sma200)) : none);
+    put("deathCrossDays", null, lines ? scan(both(cs.sma50, cs.sma200), crossDown(cs.sma50, cs.sma200)) : none);
+    put("crossAboveSma200Days", "sma200CrossWindow", lines ? scan(both(b.close, cs.sma200), crossUp(b.close, cs.sma200)) : none);
+    put("crossBelowSma200Days", null, lines ? scan(both(b.close, cs.sma200), crossDown(b.close, cs.sma200)) : none);
+    var rsi = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n ? cs.rsi14 : null;
+    var l30 = [], l70 = []; for (var k = 0; k < n; k++) { l30.push(30); l70.push(70); }
+    put("rsiExitOversoldDays", "rsiEventWindow", rsi ? scan(both(rsi, l30), crossUp(rsi, l30)) : none);
+    put("rsiExitOverboughtDays", null, rsi ? scan(both(rsi, l70), crossDown(rsi, l70)) : none);
+    /* Neues 52-Wochen-Hoch: Tageshoch >= Hoch der 251 Vorbars (wie newHigh52w); entscheidbar nur mit 251 Vorbars im Fenster. */
+    put("newHigh52wDays", "high52wWindow", scan(function (i) {
+      if (i < 251 || !isNum(b.high[i])) return false;
+      for (var j = i - 251; j < i; j++) if (!isNum(b.high[j])) return false;
+      return true;
+    }, function (i) { var hi = -Infinity; for (var j = i - 251; j < i; j++) if (b.high[j] > hi) hi = b.high[j]; return b.high[i] >= hi; }));
+    /* Juengste aktive Formations-Erkennung; Pruefraum = das Analysefenster (alle Bars), sofern die Erkennung lief. */
+    if (formations === null || formations === undefined) put("formationNewDays", "formationWindow", none);
+    else {
+      var idx = {}; for (var m = 0; m < n; m++) idx[b.timestamps[m]] = m;
+      var newest = null;
+      formations.forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
+      put("formationNewDays", "formationWindow", { days: newest, window: n });
+    }
+    return out;
+  }
+
   /** Wochenschluesse -> Monatsschluesse (letzter Wochenschluss je Kalendermonat; laufender Monat zaehlt nicht). */
   function monthlyFromWeekly(points, asOf) {
     var out = [], cur = null, curKey = null, openKey = asOf ? asOf.slice(0, 7) : null;
@@ -74,6 +123,7 @@
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
    *   multiTimeframe: bundle.multiTimeframe | null         (Wochen/Monat aus der vollen Tageshistorie; hat Vorrang)
+   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
    * }
@@ -160,6 +210,9 @@
           (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
     } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+
+    /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
+    Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
 
     /* ---- Woche und Monat (Schlusskurse aus discover-series-long) ---- */
     var weekly = (input.weekly || []).filter(function (p) { return p && isNum(p[1]); });
