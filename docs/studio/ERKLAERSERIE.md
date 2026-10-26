@@ -2,12 +2,12 @@
 
 Stand 2026-10-26. Die Willkommensseite `/willkommen/` ist die erste Seite nach der Anmeldung und steht vor allen Produktwelten. Sie gehört zu keinem Produkt (nicht Discover, nicht die Marketing-Startseite `/`).
 
-Aufbau von oben nach unten:
+Aufbau von oben nach unten (Entwurf des Owners vom 26.10.2026). **Auf dem iPhone passt alles in einen Bildschirm, ohne Scrollen:** die Seite ist so hoch wie der sichtbare Bereich unter der Kopfleiste; Kreise, Icons und Überschrift skalieren mit der Höhe, der Text der Meldung bekommt so viele Zeilen, wie Platz ist.
 
-1. **Gruß** nach Tageszeit und eine Zeile Einführung.
-2. **Highlights**: runde Cover mit Erklärvideos, wie Instagram-Highlights. Bewusst abgewandelte Namen und Cover (Start, Entdecken, Quant, Zahlen, Strategien), nicht die eckigen Produkt-Icons der Welten.
-3. **Deine Produkte**: alle Module als Knöpfe (Handy: kleine App-Icons, Desktop: Karten mit einer Zeile Text).
-4. **Neu bei Vision Universe**: Neuigkeiten aus dem Team, angeheftete zuerst, sonst neueste zuerst; ab der fünften eingeklappt.
+1. **Gruß** nach Tageszeit, Titel, eine Zeile, Weltkugel rechts.
+2. **Erklärvideos**: Karte mit runden Covern (Bild der Produktwelt oder Icon, Feld `cover` in `stories.json`), Play-Zeichen, „Alle ansehen" spielt ab dem ersten neuen Video, Pfeil blättert weiter.
+3. **Deine Produkte**: zwei Reihen zu fünf Kacheln (Icon, Name, kurze Zeile). „Alle Produkte" öffnet das globale Menü mit allen Welten.
+4. **Neu bei Vision Universe**: die erste Meldung (angeheftet oder neueste) mit Illustration; „Alle Neuigkeiten" zeigt die Liste.
 
 ## Dateien
 
