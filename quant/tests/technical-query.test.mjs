@@ -111,6 +111,11 @@ test("Screener-Zeile: Werte aus den Features, fehlende Eingaben bleiben null", (
   assert.equal(row.newHigh200w, null);
   assert.equal(row.spark.length, 60);
   assert.ok(Array.isArray(row.formationActive));
+  assert.equal(row.aboveEma200, null, "ohne eingeschwungene EMA 200 kein Wert, keine Schaetzung");
+  assert.equal(row.distEma200, null);
+  const withEma = Row.computeRow({ ticker: "AAPL", bars, series, features: { ...features, ema200: c * 0.8 }, weekly: null, benchmark: null });
+  assert.equal(withEma.aboveEma200, true);
+  assert.ok(Math.abs(withEma.distEma200 - 0.25) < 1e-4, String(withEma.distEma200));
 });
 
 test("Screener-Zeile: relative Staerke nur bei gleichem Stichtag; offene Woche faellt weg", () => {

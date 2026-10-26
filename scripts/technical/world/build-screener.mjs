@@ -33,6 +33,7 @@ const Row = require(join(root, "quant/engines/technical/screen-row.js"));
 const Query = require(join(root, "quant/engines/technical/technical-query.js"));
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
+const Model = require(join(root, "technical/engine/model.js"));
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -123,7 +124,8 @@ export function build(options = {}) {
     schemaVersion: "vu-technical-meta-1.0.0", asOf, generatedFrom, versions,
     counts: { rows: rows.length, fresh: rows.filter((r) => r.fresh).length, stale: rows.filter((r) => !r.fresh).length,
       withVolume: rows.filter((r) => r.hasVolume).length, withWeekly: rows.filter((r) => r.weeks >= 40).length,
-      with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length },
+      with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length,
+      suspectJump60: rows.filter((r) => r.suspectJumpAt).length },
     skipped, formations: formationCounts,
     sources: {
       daily: "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
@@ -132,7 +134,7 @@ export function build(options = {}) {
       names: "quant/data/product/universe-list-v1.json.gz"
     },
     producer: "scripts/technical/world/build-screener.mjs",
-    paths: { screener: "/technical/data/screener-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
+    paths: { screener: "/technical/data/screener-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
   };
   return { artifact, meta };
 }
@@ -147,6 +149,13 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "screener-v1.json"), JSON.stringify(artifact));
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
+  writeFileSync(join(out, "index-v1.json"), JSON.stringify(Model.homeIndex(artifact)));
   console.log(`Technical-Screener: ${meta.counts.rows} Titel, Stand ${meta.asOf}, ${meta.runtimeSec}s -> ${out}`);
+  /* Historische Evidenz der Formationen (beschreibend, kausal); bei --limit/--tickers uebersprungen, damit Teilaeufe schnell bleiben. */
+  if (!limit && !tickers && process.argv.indexOf("--no-evidence") < 0) {
+    const ev = await import("./formation-evidence.mjs");
+    const r = ev.buildAndWrite(join(out, "formation-evidence.json"));
+    console.log(`Formations-Evidenz: ${r.detections} Erkennungen, ${r.titles} Titel, ${r.runtimeSec}s`);
+  }
   console.log("Uebersprungen:", JSON.stringify(meta.skipped));
 }

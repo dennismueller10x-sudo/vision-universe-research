@@ -1,6 +1,6 @@
 {
  "schema": "supertrader-sf7-completion-1.0.0",
- "version": "sf7-completion-matrix-1.2.0",
+ "version": "sf7-completion-matrix-1.4.1",
  "basis": {
   "readinessCriteria": "sf6-readiness-criteria-1.2.0",
   "readinessSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342"
@@ -10,11 +10,12 @@
   "PR911": "Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle)",
   "PR898": "Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache)",
   "PR902": "Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution)",
+  "E77": "docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch)",
   "E76": "docs/SUPERTRADER_7_EPPS_SAMPLE_E7_6.md: E7-6-Stichprobenerweiterung CLEAN_EXT_E7_6 (Läufe 40184926658 Plan, 40185337539 Abruf 481 Anfragen, 40185748527 kk-intraday-cache)",
   "INV": "docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md",
   "EXE": "docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md",
   "CA": "docs/SUPERTRADER_7_V4D1_RESOLUTION.md",
-  "EDGAR": "Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md"
+  "EDGAR": "PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md"
  },
  "statusChange": "Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED",
  "candidates": [
@@ -321,7 +322,7 @@
     "CC5-e-DETECTION-COMPLETE": false,
     "CC5-f-HOLDOUT": false
    },
-   "changed7": "Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386)",
+   "changed7": "Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386); E7-7: fünf vorregistrierte Ausstiegs-Forschungsvarianten (größter Tages- / Wochenrückgang, MA20-Halbverkauf, zwei Klimax-Lesarten), keine Referenz, REF ledger-identisch (Lauf 40185143571)",
    "technical": "9/9 Phasen als Modellstudie (4.0-Engine unverändert)",
    "original": "Bücher vollständig im Projekt, nur Übersetzungen (B12 id, B07 id, B03 vi); englische Bestätigung nur über W-MIN18; Trend-Template-Zahlen in zwei Übersetzungen gleich",
    "assumptions": "19 Lifecycle- und 6 sf7-Modellannahmen, jede klassifiziert (Inventur)",
@@ -331,14 +332,15 @@
    "blocked": "IBD-RS-Historie, Schätzungen / Überraschungen / Guidance",
    "execution": "Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) als SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE behoben, alle 21 Varianten hashgleich (Lauf 40170832007)",
    "manual": "11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS)",
-   "next": "Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Minervini-Ausstiegsvarianten (E7-7)",
+   "next": "Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Auswertung der versiegelten E7-7-Ausstiegsvarianten (keine Referenzänderung)",
    "evidence": [
     "PR899",
     "INV",
     "PR898",
     "PR902",
     "EDGAR",
-    "PR911"
+    "PR911",
+    "E77"
    ]
   },
   {
@@ -377,7 +379,7 @@
     "CC5-e-DETECTION-COMPLETE": false,
     "CC5-f-HOLDOUT": false
    },
-   "changed7": "VCP-Differenz B12 / B03 zugunsten der Referenz aufgelöst; Korrekturspanne präzisiert (20 %, niedrigpreisig etwa 25 %); REF ledger-identisch",
+   "changed7": "VCP-Differenz B12 / B03 zugunsten der Referenz aufgelöst; Korrekturspanne präzisiert (20 %, niedrigpreisig etwa 25 %); REF ledger-identisch; E7-7-Ausstiegsvarianten auch für Power Play (Stage-2-Regeln in rund 600 Trades nicht bewertbar)",
    "technical": "9/9 Phasen als Modellstudie",
    "original": "Bücher nur als Übersetzung; englische Bestätigung für Stop und Größe (W-MIN18)",
    "assumptions": "Pivot, Urteil zum Startvolumen, Schwelle „niedrigpreisig“",
@@ -393,7 +395,8 @@
     "INV",
     "PR902",
     "EDGAR",
-    "PR911"
+    "PR911",
+    "E77"
    ]
   },
   {

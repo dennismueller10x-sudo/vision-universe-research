@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.0.0";
+  var QUERY_VERSION = "technical-query-1.2.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -37,7 +37,8 @@
     RECTANGLE: "Seitwärtsrange (Rechteck)", CUP_WITH_HANDLE: "Tasse mit Henkel",
     SUPPORT_TRENDLINE: "Steigende Unterstützungslinie", RESISTANCE_TRENDLINE: "Fallende Widerstandslinie",
     ASCENDING_CHANNEL: "Aufwärtskanal", DESCENDING_CHANNEL: "Abwärtskanal",
-    RANGE_BREAKOUT: "Range-Ausbruch", RESISTANCE_BREAKOUT: "Ausbruch über Widerstand", VOLATILITY_CONTRACTION: "Volatilitätskontraktion"
+    RANGE_BREAKOUT: "Range-Ausbruch", RESISTANCE_BREAKOUT: "Ausbruch über Widerstand", VOLATILITY_CONTRACTION: "Volatilitätskontraktion",
+    GAP_UP: "Kurslücke nach oben", GAP_DOWN: "Kurslücke nach unten"
   };
   var STRUCTURES = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur", RANGE: "Seitwärts", NEUTRAL: "Neutral" };
 
@@ -49,10 +50,15 @@
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
+    { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
+    { id: "distEma200", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur EMA 200" },
     { id: "distSma200", group: "Trend", kind: "pct", tfs: ALL, label: { "1D": "Abstand zur SMA 200", "1W": "Abstand zur 40-Wochen-Linie", "1M": "Abstand zur 10-Monats-Linie" } },
     { id: "adx", group: "Trend", kind: "num", tfs: D, label: "ADX 14 (Trendstärke)" },
     { id: "supertrendUp", group: "Trend", kind: "bool", tfs: D, label: "Supertrend (10, 3) aufwärts" },
     { id: "structure", group: "Trend", kind: "enum", tfs: D, label: "Marktstruktur (Swings)", values: STRUCTURES },
+    { id: "psarUp", group: "Trend", kind: "bool", tfs: D, label: "Parabolic SAR unter dem Kurs (aufwärts)" },
+    { id: "aboveCloud", group: "Trend", kind: "bool", tfs: D, label: "Kurs über der Ichimoku-Wolke" },
+    { id: "aroonOsc", group: "Trend", kind: "num", tfs: D, label: "Aroon-Oszillator 25 (−100 bis 100)" },
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
@@ -62,6 +68,7 @@
     { id: "stochK", group: "Momentum", kind: "num", tfs: D, label: "Stochastik %K (14, 3)" },
     { id: "cci20", group: "Momentum", kind: "num", tfs: D, label: "CCI 20" },
     { id: "roc21", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 21 Tage (ROC)" },
+    { id: "williamsR", group: "Momentum", kind: "num", tfs: D, label: "Williams %R 14 (−100 bis 0)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
@@ -70,6 +77,7 @@
     { id: "volSpike", group: "Volumen", kind: "bool", tfs: D, label: "Volumenspitze (≥ 2× Median)" },
     { id: "mfi14", group: "Volumen", kind: "num", tfs: D, label: "Money Flow Index 14" },
     { id: "obvRising", group: "Volumen", kind: "bool", tfs: D, label: "OBV steigt (20 Tage)" },
+    { id: "cmf20", group: "Volumen", kind: "num", tfs: D, label: "Chaikin Money Flow 20 (−1 bis 1)" },
     { id: "atrPct", group: "Volatilität", kind: "pct", tfs: D, label: "ATR 14 in % des Kurses" },
     { id: "bbPctB", group: "Volatilität", kind: "num", tfs: D, label: "Bollinger %B (20, 2)" },
     { id: "bbSqueeze", group: "Volatilität", kind: "bool", tfs: D, label: "Bollinger-Enge (Breite im unteren 20-%-Perzentil)" },

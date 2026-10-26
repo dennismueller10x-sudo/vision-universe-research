@@ -155,12 +155,12 @@
       "timestamp": ["generated_at_utc"],
       "records": "latestFundamentals",
       "expectedRecords": "productUniverse",
-      "role": "Verbraucherfertige Kennzahlen (Umsatz, Gewinn, EPS, TTM, 3/5/10 Jahre) je Ticker aus companyfacts.zip.",
+      "role": "Verbraucherfertige Kennzahlen (Umsatz, Gewinn, EPS, TTM, 3/5/10 Jahre) je Ticker aus companyfacts.zip; aeltere Geschaeftsjahre derselben Normalisierung in quant/data/sec/consumer-history.",
       "producer": "scripts/quant/cli.py consumer",
       "workflow": "sec-consumer-fundamentals.yml",
       "schedule": "Mo 07:30 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 360 },
-      "consumers": ["Discover (Geschaeftszahlen)", "Screener"]
+      "consumers": ["Discover (Geschaeftszahlen)", "Screener", "Fundamental (volle Jahreshistorie, Release)"]
     },
     {
       "id": "indexMembership",

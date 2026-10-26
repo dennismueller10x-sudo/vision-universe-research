@@ -1,6 +1,6 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
-**Stand:** 25.10.2026 · V1 gemergt (PR #919, `f2012b0`) · Folgearbeit auf `claude/technical-world-v2` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
+**Stand:** 25.10.2026 · V1 (PR #919, `f2012b0`) und V2 (PR #923, `74a49d0`) gemergt · Menügruppe PR #925 · V3 gemergt (PR #929, `9787b1a`) · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz
@@ -47,6 +47,41 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
 - **Phase 3 – Formationen:** einheitliches Zustandsmodell Erkannt/Bestätigt/Invalidiert. Erkennungszeitpunkt = erster Tag, an dem die Formation mit dem damaligen Wissen sichtbar war. Tests mit vergifteter Zukunft und abgeschnittener Reihe.
 - **Phase 4 – Screener:** `scripts/technical/world/build-screener.mjs` → `technical/data/screener-v1.json` (5.649 Titel, ~0,8 MB gz, 30 s). Filter für Chartmuster, Trend, Hochs (52 W, 200 W), Momentum, Volumen, Volatilität und relative Stärke ggü. SPY. UND/ODER, Zeitrahmen, Trichter mit Fehlwerten, gespeicherte Strategien (localStorage), Chartvorschau, Datenqualitätsflaggen. Sortiert wird nach einem offengelegten Feld oder nach erfüllten Bedingungen; es gibt **keinen Setup-Score**.
 - **Phase 5 – KI-Vorbereitung:** `technical-query.js#jsonSchema()` (Structured-Output-Schema aus dem Katalog), `validate()` mit stabilen Fehlercodes, `describe()`. Kein Modellaufruf.
+- **V3 – Indikatoren 1.1:** sechs neue Katalogeinträge (Parabolic SAR, Ichimoku-Wolke ohne die nicht kausale Chikou-Linie, VWMA, Williams %R, Aroon, Chaikin Money Flow), je mit naiver Referenz auf AAPL-Daten und, für SAR und Aroon, einem von Hand gerechneten Beispiel (`quant/tests/technical-indicators-ext.test.mjs`). Neue Screener-Felder: `psarUp`, `aboveCloud`, `aroonOsc`, `williamsR`, `cmf20`.
+- **V3 – Formationen 1.1:** Kurslücke nach oben/unten (Lücke ≥ 0,5 ATR, mit Volumen zusätzlich ≥ 1,5-faches relatives Volumen; bestätigt nach drei Schlüssen jenseits der Lückenkante, invalidiert beim Schluss in die Lücke). Ein Sprung mit Split-Signatur (Faktor nahe n oder 1/n) oder mit einem Faktor außerhalb 0,2 bis 5 gilt als Datenverdacht und wird nicht als Lücke gemeldet: nicht nachgezogene Splits und Abspaltungen (vgl. DQ-PX-3, 303 Titel mit Sprüngen über 60 %) wären sonst falsche Lücken. Test an der realen AAPL-Lücke vom 03.05.2024 und an einer konstruierten Reihe.
+- **V3 – Suche in Worten** (`quant/engines/technical/query-text.js`): deterministischer Parser deutscher Fachbegriffe, Kennzahl-Vergleiche, „und/oder“-Gruppen, Formationslisten, Zeitrahmen und eine kanonische Schreibweise. Er gibt dieselbe validierte Abfrage aus wie die Klickfilter, meldet Nicht-Erkanntes, statt zu raten, und `contract()` beschreibt den späteren Modellaufruf (Status „vorbereitet, nicht aktiv“). Rundreise-Test über alle Felder und Zeitrahmen. Im Screener: Eingabe mit Live-Vorschau, Adresse `#/screener?q=…`, speicherbar.
+- **V3 – Chart Studio:** Schichten im Kurs (zusätzlich Keltner, Donchian, Ichimoku, Supertrend, Parabolic SAR, VWMA) und ein Unterfenster aus elf Indikatoren (RSI, MACD, Stochastik, ADX, ATR, CCI, Williams %R, Aroon, MFI, OBV, CMF). Formationsfokus `#/chart/<T>?f=<id>`: nur diese Formation, Fenster ab ihrem ersten Punkt, teilbare Adresse.
+- **V3 – Vorher/Nachher Datensatz:** Neubau mit dem Erzeuger. Die 55 bestehenden Spalten sind bitgleich; die Formationslisten unterscheiden sich ausschließlich um die neuen Lücken; alle bisherigen Formationszählungen in `meta.json` sind unverändert.
+- **D – Performance:** Startseite und Chart Studio laden einen schlanken Index (`technical/data/index-v1.json`: Kürzel, Namen, Treffer je Vorlage; 174 KB, 60 KB gzip) statt des vollen Datensatzes (3,8 MB, 822 KB gzip). Erzeuger und Browser-Rückfall nutzen dieselbe Funktion `model.js#homeIndex`. Messung bei 390 px, CPU ×4, 9 Mbit/s, ohne Kompression:
+
+  | Ansicht | vorher | nachher | Daten vorher → nachher |
+  |---|---|---|---|
+  | Start | 4,7 s | 0,8 s | 4,0 → 0,47 MB |
+  | Chart Studio | 5,4 s | 2,1 s | 4,9 → 1,35 MB |
+  | Screener | 4,3 s | 4,5 s | unverändert (braucht den Datensatz) |
+
+  Das `preload` des vollen Datensatzes entfällt.
+- **D – Mobile:** Die Browser-QA prüft zusätzlich 360 px (48 Prüfungen). Kein horizontaler Überlauf in allen sechs Ansichten. Die Beispiel-Links der Suche haben jetzt 44 px Zielhöhe.
+- **D – Datenqualität:** Neue Zeilenspalte `suspectJumpAt`: jüngster Schlusssprung der letzten 60 Bars mit Split-Signatur oder einem Faktor außerhalb 0,2 bis 5; am Stichtag 23.10.2026 betrifft das 56 Titel. Der Screener zeigt „Kurssprung prüfen“, das Chart Studio nennt die Tage unter „Datenqualität und Herkunft“, `meta.json` zählt `counts.suspectJump60`. Ursache sind nicht nachgezogene Splits und Abspaltungen in der Quelle (vgl. DQ-PX-3); Technical korrigiert nichts selbst (ADR-002).
+- **E3a – Historische Evidenz der Formationen** (`scripts/technical/world/formation-evidence.mjs` → `technical/data/formation-evidence.json`, Teil des Erzeugerlaufs, +100 s):
+  - Jede Formation zählt einmal, am ersten Tag, an dem sie mit den damaligen Daten sichtbar war (`analyzeAt` an jedem Bar).
+  - Gemessen wird 20 Handelstage danach: bestätigt, invalidiert, entfallen (nicht mehr geführt ohne festgehaltenen Ausgang) oder offen. Dazu die richtungsbereinigte Rendite gegenüber dem Mittel aller Titel am selben Tag.
+  - Ausgewiesen ab n ≥ 100; „belastbar“ nur nach Bonferroni über alle Typen.
+  - Stand 23.10.2026: 91.891 Erkennungen, 5.649 Titel, Erkennungen 25.02. bis 25.09.2026.
+  - Belastbar sind nur drei Typen:
+
+    | Typ | Rendite ggü. Querschnitt nach 20 Tagen | n |
+    |---|---|---|
+    | Bullische Flagge | +2,3 % ± 1,0 | 1.198 |
+    | Fallender Keil | −2,9 % ± 1,3 (gegen die Lehrbuchrichtung) | 1.940 |
+    | Lücke nach oben | −0,5 % ± 0,3 | 9.804 |
+
+  - Alle anderen sind nicht belastbar. Das betrifft ein einziges Marktjahr und ist keine Prognose.
+  - Anzeige: Methodik (Tabelle) und Befundkarten („Historisch“).
+- **E3 – Befunde für die Formationsmodelle** (Fachmodell, eigener PR zur Entscheidung):
+  - Bestandsformationen werden nie invalidiert, sondern verschwinden (entfallen 45 bis 95 %).
+  - Kanäle und Keile sind beim ersten Sichtbarwerden meist schon bestätigt (58 bis 93 %), die Erkennung kommt also spät.
+  - Flaggen werden praktisch nie bestätigt.
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
@@ -68,12 +103,12 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 ## 6. Offene Aufgaben (priorisiert)
 
 1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
-2. **Eigene Menügruppe „Technical“** (Folge-PR, nur `assets/site-navigation.js` + `discover/tests/navigation-theme.test.mjs`, damit das Discover-Gate sauber bleibt).
-3. **Supertrader-Angleichung** (eigener PR unter Gate A): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
-4. **EMA 200 exakt:** 270 Tagesbars reichen nicht. Vorschlag: `ema200` (und `ema20/50`) in `chartSeries` der Materialisierung aufnehmen (eigener PR mit Vorher/Nachher). Bis dahin zeigt Technical die SMA 200 und sagt das in der Methodik.
-5. **KI-Suche freischalten:** `technical-query.js#jsonSchema()` an `workers/vu-ask` anbinden (Deploy = Produktionsänderung, Kosten → Freigabe nötig).
-6. **Zusammenführung mit `/screener/`:** Feldregister-Injektion in `screener/engine/engine.js`, danach eine Engine für beide.
-7. **Evidenz:** Trefferquoten der Formationen über die bestehende Outcome-Schicht (`ti/outcomes.js`) messen. Erst dann wäre eine Rangfolge nach Evidenz begründbar.
+2. ~~Eigene Menügruppe „Technical“~~ PR #925 (Owner-Freigabe 25.10.2026, Hash von `site-navigation.js` nachgezogen).
+3. ~~Supertrader-Angleichung~~ ATR-Teil erledigt: PR #928 (Wilder als Standard, veröffentlichte Werte bytegleich). Offen: Technical-Befunde auf den Supertrader-Aktienseiten verlinken (eigener PR unter Gate A).
+4. ~~EMA 200 exakt~~ PR #927 gemergt (`ema-settled-1.1.0`). Offen: Screener-Feld `aboveEma200`/`distEma200`, sobald der nächtliche Materialisierungslauf EMA-Werte geliefert hat; danach Wochen-EMA.
+5. **KI-Suche freischalten:** technisch vorbereitet (V3: Parser, Schema, Validierung, Oberfläche, `query-text.js#contract()`). Offen ist nur der Modellaufruf über `workers/vu-ask`; das ist ein Deploy mit Kosten und braucht eine eigene Freigabe.
+6. ~~Zusammenführung mit `/screener/`~~ erster Schritt PR #936: `/screener/` übernimmt 16 Technical-Spalten (Indikatoren und Formationen) aus `technical/data/screener-v1.json`; eine Quelle, keine zweite Rechnung. Offen: eine gemeinsame Abfrage-Engine für beide Oberflächen.
+7. ~~Evidenz~~ PR #934: `technical/data/formation-evidence.json` (Definition, Stichprobe, Bonferroni). **Offen zur Owner-Entscheidung:** PR #938 (Fachmodell, `formations` 1.2.0, vollständiger Lebenszyklus), siehe [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
 9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
 10. **Eigene Menügruppe** und weitere Änderungen an geschützten Dateien (`ui-protection.json`) brauchen je eine eigene Owner-Freigabe der Hashes.
@@ -90,6 +125,19 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 |---|---|
 | 25.10.2026 | PR #919 (V1) gemergt, nachdem alle Checks grün waren. Vercel ist kein Pflicht-Check (Tageslimit des Free-Tarifs). Der WebKit-Ausreißer in der Discover-QA bestand beim einen Wiederholungslauf. |
 | 25.10.2026 | V2 begonnen: Release-Stempel, Browser-QA in CI. |
+| 25.10.2026 | PR #923 (V2) gemergt (`74a49d0`), nachdem alle Pflichtprüfungen grün waren. Vercel (Tageslimit) ist kein Pflicht-Check. |
+| 25.10.2026 | PR #925 gemergt (`6a1396a`): eigene Menügruppe „Technical“ nach Fundamental. Geschützter Hash nur für `site-navigation.js` nachgezogen. Shell-Tests, Discover-Navigationstest und Shell-Browser-QA wurden angepasst. Alle Pflichtprüfungen grün; `frontend` nach einer Wiederholung des bekannten WebKit-Ausreißers. |
+| 25.10.2026 | PR #929 (V3) gemergt (`9787b1a`), nachdem alle Pflichtprüfungen grün waren; Vercel (Tageslimit) ist kein Pflicht-Check. Wirkung: neue Indikatoren, Kurslücken, Suche in Worten und Chart-Studio-Schichten sind auf `main`; bestehende Datensatzspalten bitgleich. |
+| 25.10.2026 | PR #932 (D) gemergt (`51aa903`): Index für Start und Chart Studio, 360-px-QA, Kurssprung-Verdacht. |
+| 25.10.2026 | PR #928 gemergt (`bc7f6e5`, Owner-Freigabe): Supertrader-ATR standardmäßig Wilder. Vor dem Merge gegen den aktuellen `main` geprüft: `build.mjs --out` bytegleich (1.537 Dateien), Supertrader-Tests 790/791 (1 übersprungen), Gate A OK. |
+| 25.10.2026 | PR #927 gemergt (`7d5ef10`, Owner-Freigabe nach Prüfung der Aufwärmregel): exakte EMA 20/50/200 mit kursbezogener Fehlerschranke. Pflicht-CI grün, Vercel (Tageslimit) kein Pflicht-Check. |
+| 25.10.2026 | PR #933 gemergt (`f4790e3`): Filter-Baukasten (Felder je Zeitrahmen, UND/ODER-Gruppen) und gespeicherte Strategien mit Umbenennen, Export und Import. CI grün, Technical-Browser-QA 54/54. |
+| 25.10.2026 | PR #934 gemergt (`61b5b15`): historische Formations-Evidenz mit Methodik-Tabelle. CI grün. |
+| 25.10.2026 | PR #936 gemergt (`426e287`): Technical-Spalten im `/screener/` (ATR erstmals verfügbar). Keine Screener-Funktion entfernt; Screener-Browser-QA und Shell-QA grün. |
+| 25.10.2026 | PR #938 eröffnet (Entwurf, Fachmodell): Formations-Lebenszyklus. Kein automatischer Merge. |
+| 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
+| 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
+| 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
 
 ## 8. Fortsetzen
 

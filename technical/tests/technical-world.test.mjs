@@ -116,7 +116,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["meta.json", "screener-v1.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -140,4 +140,84 @@ test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash 
     }
     assert.doesNotMatch(out, /vu-release/, "kein Meta-Tag, kein Waechter");
   } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test("Index fuer Startseite und Chart Studio: deckungsgleich mit dem Datensatz, ein Bruchteil der Groesse", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const raw = readFileSync(join(root, "technical/data/index-v1.json"), "utf8"), ix = JSON.parse(raw);
+  assert.equal(ix.schemaVersion, M.INDEX_SCHEMA);
+  assert.deepEqual(ix, M.homeIndex(art), "Erzeuger und Rueckfall im Browser rechnen gleich");
+  assert.deepEqual(ix.s, art.cols.s);
+  assert.equal(ix.asOf, art.asOf);
+  const ds = Q.createDataset(art);
+  for (const p of Q.PRESETS) assert.equal(ix.presets[p.id], Q.evaluate(ds, p.query).count, p.id);
+  for (const id of M.FOCUS.concat(M.RANKS)) assert.ok(Q.PRESETS.some((p) => p.id === id), id);
+  assert.ok(ix.focusUnion > 0 && ix.focusUnion <= ix.count);
+  assert.ok(raw.length * 10 < readFileSync(join(root, "technical/data/screener-v1.json")).length, "Index unter 10 % des Datensatzes");
+  const app = readFileSync(join(root, "technical/app.js"), "utf8");
+  assert.match(app, /function viewHome[\s\S]*?loadIndex\(\)/, "Startseite laedt den Index");
+  const html = readFileSync(join(root, "technical/index.html"), "utf8");
+  assert.doesNotMatch(html, /preload[^>]*screener-v1/, "der volle Datensatz wird nicht auf jeder Route vorgeladen");
+});
+
+test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in meta.json stimmt", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const meta = JSON.parse(readFileSync(join(root, "technical/data/meta.json"), "utf8"));
+  const col = art.cols.suspectJumpAt;
+  assert.equal(col.length, art.count);
+  col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+});
+
+test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {
+  const e = JSON.parse(readFileSync(join(root, "technical/data/formation-evidence.json"), "utf8"));
+  assert.equal(e.schemaVersion, "vu-technical-formation-evidence-1.0.0");
+  assert.equal(e.method.horizonBars, 20);
+  assert.ok(e.window.from < e.window.to && /Marktjahr/.test(e.window.regime));
+  for (const t of e.types) {
+    assert.ok(Q.FORMATION_TYPES[t.type], t.type);
+    assert.equal(t.published, t.n >= e.method.minN, t.type);
+    if (t.significant) assert.ok(t.published && Math.abs(t.excess20Mean) > t.excess20Ci95, t.type + ": signifikant nur ausserhalb des 95-%-Bands");
+    if (t.published) { const sum = t.confirmedBy20 + t.invalidatedBy20 + t.droppedBy20 + t.openAt20; assert.ok(sum >= 0.99 && sum <= 1.5, t.type + " Anteile " + sum); }
+  }
+  const small = { n: 40, published: false };
+  assert.match(M.evidenceText(small, e.window), /Zu wenige Fälle/);
+  const t = e.types.find((x) => x.published && !x.significant);
+  if (t) assert.match(M.evidenceText(t, e.window), /nicht belastbar/);
+  assert.match(M.evidenceText(null), /keine historische Auswertung/);
+});
+
+test("Filter-Baukasten: Abfrage <-> Baukasten verlustfrei, Prozent-Eingabe, Standardzeilen fuer jedes Feld", () => {
+  const QT = require(join(root, "quant/engines/technical/query-text.js"));
+  const q = { timeframe: "1D", logic: "OR", groups: [{ op: "AND", filters: [{ field: "rsi14", op: "between", value: 30, value2: 50 }, { field: "formationActive", op: "in", value: ["DOUBLE_BOTTOM"] }] }, { op: "AND", filters: [{ field: "distSma200", op: "gt", value: -0.05 }] }] };
+  const b = M.builderFromQuery(q);
+  assert.equal(b.groups.length, 2);
+  const back = Q.validate(M.queryFromBuilder(b)).query;
+  assert.deepEqual(back.groups.map((g) => g.filters.map(({ id, ...f }) => f)), q.groups.map((g) => g.filters));
+  assert.ok(QT.parse(QT.toText(back)).ok, "Baukasten -> kanonischer Text -> Parser");
+  assert.equal(M.parseFieldInput("distSma200", "-5,5"), -0.055);
+  assert.equal(M.formatFieldInput("distSma200", -0.055), "-5,5");
+  assert.ok(Number.isNaN(M.parseFieldInput("rsi14", "abc")));
+  for (const f of Q.FIELDS) { const r = M.defaultRow(f.id); assert.ok(Q.validate({ timeframe: f.tfs[0], groups: [{ filters: [r] }] }).ok, f.id); }
+  /* Mehrere UND-Gruppen werden zu einer (UND bindet ohnehin). */
+  assert.equal(M.builderFromQuery({ timeframe: "1W", logic: "AND", groups: [{ filters: [{ field: "aboveSma200", op: "is", value: true }] }, { filters: [{ field: "rsi14", op: "gt", value: 50 }] }] }).groups.length, 1);
+});
+
+test("Gespeicherte Suchstrategien: umbenennen, exportieren, importieren (validiert, ohne Dubletten)", () => {
+  const mem = {}, st = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
+  const a = M.saveScreen(st, "RSI tief", "q=" + encodeURIComponent("rsi14 < 30"), 1000);
+  M.saveScreen(st, "Breakout", "preset=breakout", 2000);
+  assert.ok(M.updateScreen(st, a.id, { name: "  RSI unter 30  " }, 3000));
+  const one = M.loadScreens(st).find((x) => x.id === a.id);
+  assert.equal(one.name, "RSI unter 30"); assert.ok(one.updatedAt);
+  assert.equal(M.updateScreen(st, "gibt-es-nicht", { name: "x" }), false);
+  const exp = M.exportScreens(st);
+  const mem2 = {}, st2 = { getItem: (k) => mem2[k] ?? null, setItem: (k, v) => { mem2[k] = v; } };
+  assert.deepEqual(M.importScreens(st2, exp, 5000), { ok: true, added: 2, skipped: 0 });
+  assert.deepEqual(M.importScreens(st2, exp, 6000), { ok: true, added: 0, skipped: 2 }, "keine Dubletten");
+  const bad = JSON.stringify({ format: "vu-technical-screens-1", screens: [{ name: "x", params: "evil=1" }, { name: "", params: "preset=trend" }] });
+  assert.deepEqual(M.importScreens(st2, bad, 7000), { ok: true, added: 0, skipped: 2 }, "unbekannte Parameter und leere Namen");
+  assert.equal(M.importScreens(st2, "{kaputt").error, "KEIN_JSON");
+  assert.equal(M.importScreens(st2, JSON.stringify({ screens: [] })).error, "FORMAT");
 });
