@@ -34,6 +34,7 @@ async function stock(t) {
   await page.goto(`${base}/quant/#/aktie/${t}`);
   await page.waitForSelector('.qx-watch');
   await page.waitForTimeout(800);   /* Kontostand geladen, Knopf neu gezeichnet */
+  await settle();                    /* WebKit meldet Abrufe, die eine spaetere Navigation abbricht, als Seitenfehler */
   return page.locator('.qx-watch');
 }
 
@@ -68,8 +69,7 @@ check(JSON.stringify(await central()) === '["NVDA"]', 'angemeldet: Klick speiche
 await page.evaluate(() => sessionStorage.removeItem('vu-watchlist-ids-v1'));
 await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json', 'X-VU-Client': 'web'}, body: JSON.stringify({instrumentId: (await (await fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).instrumentId, ticker: 'MSFT'})}); });
 // Ein anderes Geraet zeigt sich nach dem Neuladen (oder nach 5 Minuten Zwischenspeicher) - nicht mitten in derselben Seite.
-// Erst fertig laden, dann neu laden: ein Abbruch laufender Abrufe meldet WebKit sonst als Seitenfehler.
-await page.goto(`${base}/quant/#/aktie/MSFT`); await settle(); await page.reload();
+await stock('MSFT'); await page.reload();
 // Quant zeichnet seinen Knopf nur beim Seitenaufbau (gesperrte Datei): der Kontostand gilt ab dem naechsten Zeichnen.
 await stock('NVDA');
 btn = await stock('MSFT');
