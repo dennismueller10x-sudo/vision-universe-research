@@ -1,0 +1,84 @@
+name: Konten — Supabase Auth Produktion (Ops, vor dem Merge)
+# Einmaliger Lauf vor dem Merge von #979: dasselbe Skript wie
+# account-production-auth.yml, fester Commit. Job 1 Probelauf, Job 2 setzt -
+# jeder Job braucht eine eigene Freigabe. Oeffnet die Registrierung nicht.
+on:
+  push:
+    branches: [ops/supabase-dev-migrations]
+    paths: ['.github/workflows/account-prod-auth-apply.yml', 'ops/production/auth.trigger']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-prod-auth-apply-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: 9b73a44f6e57a65a18132429d5528ee8f3214e9a
+jobs:
+  probelauf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: account-dev
+    steps:
+      - name: Freigabe pruefen (fail closed)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Auth einstellen
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.VU_ACCOUNT_SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: qiytbnpoqvldsatpfkeh
+          VU_ACCOUNT_API_ORIGIN: https://konto.visionuniverse.de
+          BREVO_SMTP_LOGIN: ${{ secrets.VU_ACCOUNT_BREVO_SMTP_LOGIN }}
+          BREVO_SMTP_KEY: ${{ secrets.VU_ACCOUNT_BREVO_SMTP_KEY }}
+          VU_MAIL_SENDER: konto@visionuniverse.de
+          MODE: ${{ github.job }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ "$MODE" = "probelauf" ]; then node scripts/account/supabase-auth-config.mjs --production --dry-run
+          else node scripts/account/supabase-auth-config.mjs --production; fi
+  setzen:
+    needs: probelauf
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: account-dev
+    steps:
+      - name: Freigabe pruefen (fail closed)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Auth einstellen
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.VU_ACCOUNT_SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: qiytbnpoqvldsatpfkeh
+          VU_ACCOUNT_API_ORIGIN: https://konto.visionuniverse.de
+          BREVO_SMTP_LOGIN: ${{ secrets.VU_ACCOUNT_BREVO_SMTP_LOGIN }}
+          BREVO_SMTP_KEY: ${{ secrets.VU_ACCOUNT_BREVO_SMTP_KEY }}
+          VU_MAIL_SENDER: konto@visionuniverse.de
+          MODE: ${{ github.job }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ "$MODE" = "probelauf" ]; then node scripts/account/supabase-auth-config.mjs --production --dry-run
+          else node scripts/account/supabase-auth-config.mjs --production; fi
