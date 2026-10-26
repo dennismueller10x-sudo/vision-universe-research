@@ -1,0 +1,1204 @@
+{
+  "schema_version": "1.0.0",
+  "created_at_utc": "2026-10-13",
+  "repository_commit_audited": "8f96cbbaf0e18db50423e14008a3fa15b049aec0",
+  "research_scope": "SOURCE RECONSTRUCTION ONLY; no engines/backtests/live changes",
+  "provenance_order": [
+    "BOOK_PRIMARY",
+    "WEB_PRIMARY",
+    "PRIOR_VU_RESEARCH",
+    "SECONDARY",
+    "INFERENCE"
+  ],
+  "conflict_policy": "Method/era differences, failures and internal source ambiguities are not automatically violations of a universal rule. Historical conflicts can remain uncertain after review if explicitly preserved.",
+  "conflicts": [
+    {
+      "conflict_id": "MIN-C1",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-QUALITY-01",
+        "MIN-PP-01"
+      ],
+      "normative_statement": "Normale SEPA-Wachstumsanalyse beurteilt Gewinne und Gewinnqualität.",
+      "behavioral_conflict": "Power-Play-Regeln erlauben fehlende sichtbare Fundamentals; B 12 PDF 341 und B 07 PDF 36.",
+      "conflict_type": "METHOD_EXCEPTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B12",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Separate Power-Play-/Katalysator-Familie; kein GAAP-EPS-Gate über alle Methoden.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MIN-C2",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-TT-01",
+        "MIN-MM-IPO-01"
+      ],
+      "normative_statement": "2013 er Standard-Template benötigt langfristige Durchschnitte.",
+      "behavioral_conflict": "2015 er IPO-Prozess akzeptiert wenige Wochen Historie; noch keine langen Durchschnitte.",
+      "conflict_type": "METHOD_EXCEPTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B12",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "IPO gesondert; kein erfundener 200-Tage-Nachweis.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MIN-C3",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-MM-SIZE-03",
+        "MIN-MM-SIZE-04"
+      ],
+      "normative_statement": "S 3-2: typisch 1,25–2,5% Equity-Risiko.",
+      "behavioral_conflict": "S 8-2: durchschnittlich 0,75–1,25%, maximal 2,5%.",
+      "conflict_type": "INTRA_SOURCE_TENSION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Beide Antworten behalten; keine fixe risikounabhängige 1,25%-Konstante.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MIN-C4",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-RISK-05"
+      ],
+      "normative_statement": "Bei 3 R fast immer Einstand.",
+      "behavioral_conflict": "VU beschreibt die 3 R-Verschiebung stellenweise als zwingenden Automatismus.",
+      "conflict_type": "VU_HARDENING",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "STRONG_PREFERENCE, nicht HARD.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MIN-C5",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-ADD-01",
+        "MIN-MM-ADD-03"
+      ],
+      "normative_statement": "Nicht in große Verlierer hinein verbilligen.",
+      "behavioral_conflict": "Seltene Ergänzung nahe ursprünglichem Einstieg beim geplanten Pullback-Aufbau wird 2015 eingeräumt.",
+      "conflict_type": "NORMATIVE_EXCEPTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07",
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Keine uneingeschränkte Averaging-down-Freigabe; enge explizite Ausnahme.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MIN-C6",
+      "trader": "Mark Minervini",
+      "rule_ids": [
+        "MIN-MM-SIZE-01"
+      ],
+      "normative_statement": "2015: Positionsmaximum 25%.",
+      "behavioral_conflict": "2017 er Sizing-Text enthält hypothetische 50%-Rechnung neben Konzentrationswarnung; kein bestätigter persönlicher 50%-Trade.",
+      "conflict_type": "EXAMPLE_VS_RULE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B03",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Beispiel nicht zu Behavioral Case umdeklarieren; originale englische Formulierung der 2017 er Grenzliste offen.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "WEIN-C1",
+      "trader": "Stan Weinstein",
+      "rule_ids": [
+        "WEIN-MARKET",
+        "WEIN-SH-REG"
+      ],
+      "normative_statement": "Don’t-commandments verbieten normale Longkäufe im Bearmarkt.",
+      "behavioral_conflict": "Buch diskutiert außergewöhnliche National-Semiconductor-Long-Hedge im Bearmarkt und analoge Short-Hedges im Bullmarkt.",
+      "conflict_type": "NORMATIVE_EXCEPTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B09"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Standardprozess und Hedge-Ausnahme trennen; kein eigener bestätigter Trade.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "WEIN-C2",
+      "trader": "Stan Weinstein",
+      "rule_ids": [
+        "WEIN-RSZERO"
+      ],
+      "normative_statement": "Positive Mansfield-Null wird in einigen Zusammenfassungen als Pflicht dargestellt.",
+      "behavioral_conflict": "Original erlaubt deutlich steigenden RS unter Null; PDF 124.",
+      "conflict_type": "VU_HARDENING",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B09"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "RS-Trend und Niveau separat; Nullgrenze nicht universal.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "WEIN-C3",
+      "trader": "Stan Weinstein",
+      "rule_ids": [
+        "WEIN-TRAIL4"
+      ],
+      "normative_statement": "Ein bloßer MA 30-Wochen-Unterschritt wird häufig als vollständiger Exit formalisiert.",
+      "behavioral_conflict": "Merck-Lehrchart hält leichte Unterschreitung bei weiter steigender MA und intaktem Tief aus; kein Personal-Trade-Beleg.",
+      "conflict_type": "EDUCATIONAL_VS_FORMALIZATION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B09"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Investorstop rekonstruiert Support, MA-Slope und Phase; keine pauschale Close<MA-Regel.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C1",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-B9",
+        "DAR-B1"
+      ],
+      "normative_statement": "Späterer Standardprozess verknüpft Boxen mit künftiger Ertragskraft.",
+      "behavioral_conflict": "E. L. Bruce wurde bewusst ohne passende Fundamentals und ohne eindeutigen Boxrahmen gekauft.",
+      "conflict_type": "PERSONAL_EXCEPTION",
+      "severity": "HIGH",
+      "case_ids": [
+        "DAR-BRUCE"
+      ],
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Ausnahme behalten; keine universelle Box-/Fundamental-Engine als vollständiger Darvas.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C2",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-B6"
+      ],
+      "normative_statement": "Stopversicherung wird als wesentlich beschrieben.",
+      "behavioral_conflict": "Bruce nach Börsen-Handelsaussetzung über Telefon und OTC-Blöcke verkauft; Thiokol beendet, als Stops untersagt wurden.",
+      "conflict_type": "MARKET_STRUCTURE_EXCEPTION",
+      "severity": "HIGH",
+      "case_ids": [
+        "DAR-BRUCEEX",
+        "DAR-THIOEX"
+      ],
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Handelsstruktur ist Teil der Verhaltensrekonstruktion.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C3",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-B8"
+      ],
+      "normative_statement": "Trend bestätigen und dann aufstocken.",
+      "behavioral_conflict": "Zenith/Fairchild-Tabellen enthalten Adds unter dem Pilotkaufpreis.",
+      "conflict_type": "PERSONAL_EXCEPTION",
+      "severity": "MEDIUM",
+      "case_ids": [
+        "DAR-ZADD",
+        "DAR-FADD"
+      ],
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Kein absolutes Jeder-Add-muss-über-jedem-früheren-Fill-liegen.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C4",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-Q1",
+        "DAR-Q3"
+      ],
+      "normative_statement": "Frühere VU-Quellen behandeln Drei-Tage-Box als ausschließlich Neo-Darvas/Trader Fox.",
+      "behavioral_conflict": "Darvas-Q&A in vorhandenem Reprint beschreibt Drei-Tage-Grenzbestätigung ausdrücklich selbst; nicht drei Breakouttage.",
+      "conflict_type": "PRIOR_SOURCE_CORRECTION",
+      "severity": "HIGH",
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Die bloße Zahl 3 ist nicht FOREIGN_RULE; konkrete VU-Implementierung trotzdem gesondert prüfen.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C5",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-B6"
+      ],
+      "normative_statement": "Verlustdisziplin und unemotionales Vorgehen.",
+      "behavioral_conflict": "New-York-Krise: Stops und Boxdisziplin aufgegeben; rund $96.589 tabellierte Verluste.",
+      "conflict_type": "ACKNOWLEDGED_FAILURE",
+      "severity": "HIGH",
+      "case_ids": [
+        "DAR-CRISIS-1",
+        "DAR-CRISIS-2",
+        "DAR-CRISIS-3",
+        "DAR-CRISIS-4",
+        "DAR-CRISIS-5",
+        "DAR-CRISIS-6",
+        "DAR-CRISIS-7",
+        "DAR-CRISIS-8",
+        "DAR-CRISIS-9",
+        "DAR-CRISIS-10",
+        "DAR-CRISIS-11",
+        "DAR-CRISIS-12",
+        "DAR-CRISIS-13",
+        "DAR-CRISIS-14"
+      ],
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Keine strategische Erlaubnis ableiten; expliziter selbstkritischer Fehlverhaltensblock.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "TUR-1987",
+      "trader": "Richard Dennis / William Eckhardt / Original Turtles",
+      "rule_ids": [],
+      "normative_statement": "English document: loaded long interest-rate futures; reported 20–40% one-day loss.",
+      "behavioral_conflict": "B 02 Indonesian bonus PDF 267: short positions,40–60% losses. Both claims retained; neither used to infer trades or fill prices.",
+      "conflict_type": "TRANSLATION_OR_EDITION_CONFLICT",
+      "severity": "HIGH",
+      "source_ids": [
+        "B02",
+        "W-TUR"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY"
+      ],
+      "resolution": "Prefer checked English wording for description; historical incident needs separate primary verification, remains unresolved.",
+      "locations": [
+        "B02 PDF267",
+        "W-TUR PDF10/printed16"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "TUR-TRAINING",
+      "trader": "Richard Dennis / William Eckhardt / Original Turtles",
+      "rule_ids": [
+        "TUR-UNIT"
+      ],
+      "normative_statement": "Normal Unit is 1% notional divided by dollarvolatility.",
+      "behavioral_conflict": "Faith training month used fixed 3-contract Units; heating-oil position 12 contracts.",
+      "conflict_type": "ERA_EXCEPTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B02"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "case_ids": [
+        "TUR-HO84"
+      ],
+      "resolution": "Training-era sizing separate from full-account original Units.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C6",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-Q5",
+        "DAR-Q7"
+      ],
+      "normative_statement": "Normal box-stop uses fractional boundary protection.",
+      "behavioral_conflict": "May 13,1959 four pilot buys intentionally use 10%-below-price test stops to eliminate weaker candidates.",
+      "conflict_type": "PERSONAL_METHOD_EXCEPTION",
+      "severity": "HIGH",
+      "case_ids": [
+        "DAR-ZP",
+        "DAR-BP",
+        "DAR-FP",
+        "DAR-LP"
+      ],
+      "source_ids": [
+        "B06"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "resolution": "Separate strength-test phase; do not generalize 10%-stop across Darvas.",
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "KK-C1",
+      "trader": "Kristjan Kullamägi",
+      "rule_ids": [
+        "KK-012",
+        "KK-034"
+      ],
+      "normative_statement": "Breakout stopdistance≤1 ADR/ATR",
+      "behavioral_conflict": "EP article allows maximum 1.5; do not collapse setup-specific limits.",
+      "conflict_type": "SETUP_SCOPE",
+      "severity": "HIGH",
+      "source_ids": [
+        "W-KK3",
+        "W-KKEP"
+      ],
+      "resolution": "Separatefamilies",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "KK-C2",
+      "trader": "Kristjan Kullamägi",
+      "rule_ids": [
+        "KK-017"
+      ],
+      "normative_statement": "EP exit 20/50 DMA",
+      "behavioral_conflict": "Same article later states 10/20 DMA; insufficient fixed selection rule.",
+      "conflict_type": "SOURCE_INTERNAL_TENSION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "W-KK3"
+      ],
+      "resolution": "Exitchoice discretionary; no universal MA",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": false
+    },
+    {
+      "conflict_id": "KK-C3",
+      "trader": "Kristjan Kullamägi",
+      "rule_ids": [
+        "KK-027",
+        "KK-028"
+      ],
+      "normative_statement": "Use andhonor stops",
+      "behavioral_conflict": "FAQ admits veryrare discretionary override; advicefornovices differs from practice.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "W-KKFAQ"
+      ],
+      "resolution": "Exceptionexplicit; not automaticoverridepermission",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "KK-C4",
+      "trader": "Kristjan Kullamägi",
+      "rule_ids": [
+        "KK-003",
+        "KK-025",
+        "KK-002",
+        "KK-026"
+      ],
+      "normative_statement": "Published sizingranges",
+      "behavioral_conflict": "Different sourcecontexts/eras; singlefixedrisk or 25% hardcap unsupported.",
+      "conflict_type": "ERA_CONTEXT",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "W-KK3",
+        "W-KKFAQ"
+      ],
+      "resolution": "Retain ranges and 30% overnightcap",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "ZA-C1",
+      "trader": "Dan Zanger",
+      "rule_ids": [
+        "ZA-004"
+      ],
+      "normative_statement": "Higherpricepreference",
+      "behavioral_conflict": "IDRA$2.20 personalexception; neverhard$70 gate.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07"
+      ],
+      "case_ids": [
+        "ZA-IDRA"
+      ],
+      "resolution": "Preferencewithdocumentedexception",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "ZA-C2",
+      "trader": "Dan Zanger",
+      "rule_ids": [
+        "ZA-009"
+      ],
+      "normative_statement": "Usualpositionlimit 20–25%",
+      "behavioral_conflict": "GOOG 2005~50%,AAPL 2012≤30%,earlierall-accountfailure; retainera.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07"
+      ],
+      "case_ids": [
+        "ZA-GOOG",
+        "ZA-AAPL",
+        "ZA-UNKNOWN"
+      ],
+      "resolution": "Eraandcontextexplicit",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "RY-C1",
+      "trader": "David Ryan",
+      "rule_ids": [
+        "RY-021",
+        "RY-022"
+      ],
+      "normative_statement": "Respectstop",
+      "behavioral_conflict": "Gapdownexception:30 minuteassessmentandrecovery; absolutecodedstop cannotrepresentdiscretion.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07"
+      ],
+      "resolution": "Explicitcontextualexception",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MR2-C1",
+      "trader": "Mark Ritchie II",
+      "rule_ids": [
+        "MR2-009"
+      ],
+      "normative_statement": "Normally 25% position",
+      "behavioral_conflict": "Explicitrare 50% profitableposition; no universal 25 cap.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07"
+      ],
+      "resolution": "Retainusualandexception",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "LIV-C1",
+      "trader": "Jesse Livermore",
+      "rule_ids": [
+        "LIV-001",
+        "LIV-026"
+      ],
+      "normative_statement": "Waitconfirmedentry",
+      "behavioral_conflict": "Cottonfiveprematureentries andremovingticker missmove; admittedfailure.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B10"
+      ],
+      "case_ids": [
+        "LIV-COTTON"
+      ],
+      "resolution": "Failure not alternative normativeentry",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "LIV-C2",
+      "trader": "Jesse Livermore",
+      "rule_ids": [
+        "LIV-003"
+      ],
+      "normative_statement": "Holdwhileactingright",
+      "behavioral_conflict": "1924 wheatprematureprofitexit, laterreentry 25 centshigher; admittederror.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B10"
+      ],
+      "case_ids": [
+        "LIV-WHEAT1",
+        "LIV-WHEAT2"
+      ],
+      "resolution": "Keepbehaviorseparate",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "LIV-C3",
+      "trader": "Jesse Livermore",
+      "rule_ids": [
+        "LIV-013"
+      ],
+      "normative_statement": "Waitgroup-specificconfirmation",
+      "behavioral_conflict": "1920 s utilityshortlosses despite profitoncopper/motors; admittedgeneralizationerror.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B10"
+      ],
+      "resolution": "Historicalfailure",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "GRA-C1",
+      "trader": "Benjamin Graham",
+      "rule_ids": [
+        "GRA-009"
+      ],
+      "normative_statement": "Do notholdoverpricedrelativeearnings/assets",
+      "behavioral_conflict": "GEICO retained asfamilybusiness despite valuation exceedingownstandards; controlinvestment distinct.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B01"
+      ],
+      "case_ids": [
+        "GRA-GEICO"
+      ],
+      "resolution": "Do not generalize defensivescreen tocontrolbusiness",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "RAS-C1",
+      "trader": "Linda Raschke",
+      "rule_ids": [
+        "RAS-008"
+      ],
+      "normative_statement": "Reducebadtrades",
+      "behavioral_conflict": "1987 crash boughtandadded ondecline;shorttermexhaustiondiscretion. Not contradictionof nonexistent Minervini averagingup rule.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B08"
+      ],
+      "case_ids": [
+        "RAS-CRASH"
+      ],
+      "resolution": "Differentstrategy; execution/clearingrisk admittedinretrospect",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DRI-C1",
+      "trader": "Richard Driehaus",
+      "rule_ids": [
+        "DRI-003",
+        "DRI-011"
+      ],
+      "normative_statement": "Cutdeterioratingstocks",
+      "behavioral_conflict": "TCBY retainedloss&addedafteruptick;DNKG retainedfullstake despite FDA rumor. Explicitart/context, not mechanical 8% stop.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B08"
+      ],
+      "case_ids": [
+        "DRI-TCBY",
+        "DRI-DNKG"
+      ],
+      "resolution": "Discretionary conviction exceptions",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MRSR-C1",
+      "trader": "Mark Ritchie",
+      "rule_ids": [
+        "MRSR-002"
+      ],
+      "normative_statement": "Goldplanned 10% trailingstop",
+      "behavioral_conflict": "Marketfell 25% inoneday; executiongap means realizeddrawdown larger.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B08"
+      ],
+      "case_ids": [
+        "MRSR-GOLD"
+      ],
+      "resolution": "Executiongapnot evidenceofintentionalwidening",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MOKA-C1",
+      "trader": "Gil Morales / Chris Kacher",
+      "rule_ids": [
+        "MOKA12-005",
+        "MOKA24-VOL"
+      ],
+      "normative_statement": "2012 slide 1.5×OR 150% aboveaverage",
+      "behavioral_conflict": "2024 ownreport explicitly 150% OF=+50%.Use 1.5×for 2024; keep 2012 wordingambiguous.",
+      "conflict_type": "PRIMARY_SOURCE_NUMERIC_AMBIGUITY",
+      "severity": "HIGH",
+      "source_ids": [
+        "W-MOKA12",
+        "W-MOKAV24"
+      ],
+      "resolution": "2012 numericwording UNKNOWN;2024 standard 1.5×butexplicit MCDmegacapexceptionkept",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "MOKA-C2",
+      "trader": "Gil Morales / Chris Kacher",
+      "rule_ids": [
+        "MOKA12-009",
+        "MOKASTOP-002"
+      ],
+      "normative_statement": "2012 violationnextday",
+      "behavioral_conflict": "2010 FAQsubsequentdays; consecutive-nextdayrestrictionnotuniversal.",
+      "conflict_type": "VERSION_DIFFERENCE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "W-MOKA12",
+        "W-MOKASTOP"
+      ],
+      "resolution": "Retainerascopedalternatives",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "ONEIL-C1",
+      "trader": "William O'Neil",
+      "rule_ids": [
+        "ONEIL-B-008",
+        "ONEIL-B-007"
+      ],
+      "normative_statement": "Typicaldepth≤33%",
+      "behavioral_conflict": "2009 deepbases and Sea Containers 1975~50% explicitexceptions.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B04"
+      ],
+      "case_ids": [
+        "ONEIL-EX-SeaContainers"
+      ],
+      "resolution": "Contextnotblanketmaximumdepth",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "IBD-C1",
+      "trader": "William O'Neil / IBD",
+      "rule_ids": [
+        "IBD13-013"
+      ],
+      "normative_statement": "Header 5 distributiondaysin 4–5 weeks",
+      "behavioral_conflict": "Body 3–5 warningandstocksconfirmation; no blindbinaryfifthdayfullcash.",
+      "conflict_type": "MODAL_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "W-IBD20"
+      ],
+      "resolution": "Warning/exposurereductiondistinctfromfull-liquidationtrigger",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "BARGH-C1",
+      "trader": "Richard Bargh",
+      "rule_ids": [
+        "BARGH-003"
+      ],
+      "normative_statement": "Exitnonworkingtrade",
+      "behavioral_conflict": "PMIheldloss hopingrecovery; explicitlyworstdecision despite smallerfinalloss.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B11"
+      ],
+      "case_ids": [
+        "BARGH-PMI"
+      ],
+      "resolution": "Failure/eraexplicit;no universalexceptionmechanized",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "SALL-C1",
+      "trader": "Amrit Sall",
+      "rule_ids": [
+        "SALL-002"
+      ],
+      "normative_statement": "Faststopplacementlaterera",
+      "behavioral_conflict": "Reported quick-stop failure/computer problem and24%loss. Translated narrative labelsJune2013; chronology conflicts with officialECBJune2014event. Exact trade date remains unknown.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B11"
+      ],
+      "case_ids": [
+        "SALL-ECBloss"
+      ],
+      "resolution": "Failure/eraexplicit;no universalexceptionmechanized",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true,
+      "related_conflict_ids": [
+        "SALL-DATE-CONFLICT"
+      ]
+    },
+    {
+      "conflict_id": "PARK-C1",
+      "trader": "Marsten Parker",
+      "rule_ids": [
+        "PARK-005"
+      ],
+      "normative_statement": "Laterexposure≤100%",
+      "behavioral_conflict": "2015 allocated 120% newmeanreversionsystems; severeclusteredlosses leadlaterconservativechange.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B11"
+      ],
+      "case_ids": [],
+      "resolution": "Failure/eraexplicit;no universalexceptionmechanized",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "KEAN-C1",
+      "trader": "Michael Kean",
+      "rule_ids": [
+        "KEAN-005"
+      ],
+      "normative_statement": "Tradewithinexpertisescope",
+      "behavioral_conflict": "Energybasketimpulseoutsideusualprocess loses 7%.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B11"
+      ],
+      "case_ids": [
+        "KEAN-OIL"
+      ],
+      "resolution": "Failure/eraexplicit;no universalexceptionmechanized",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "KREJ-C1",
+      "trader": "Pavel Krejčí",
+      "rule_ids": [
+        "KREJ-007"
+      ],
+      "normative_statement": "Laternoovernight",
+      "behavioral_conflict": "Earlyweeks-heldunknownstocklost 30% account; strategychangedafter.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B11"
+      ],
+      "case_ids": [
+        "KREJ-UNKNOWN"
+      ],
+      "resolution": "Failure/eraexplicit;no universalexceptionmechanized",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "TUR-C60",
+      "trader": "Curtis Faith / Original Turtles",
+      "rule_ids": [],
+      "normative_statement": "Original S 2=55 days",
+      "behavioral_conflict": "B 02 PDF 65 examplelabels S 2=60 days;translationorbooknarrativemismatch. Notchanged Original 55 rule.",
+      "conflict_type": "SOURCE_PARAMETER_CONFLICT",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B02",
+        "W-TUR"
+      ],
+      "resolution": "Originalpublished Englishrulespreferred;60 daynarrativeopen",
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "ZA-ERA-OPTIONS",
+      "trader": "Dan Zanger",
+      "rule_ids": [
+        "ZA03-5",
+        "ZA06-6"
+      ],
+      "normative_statement": "Commonretellingneveroptions",
+      "behavioral_conflict": "Own 2003 interviewnakedcalls and 2006 deep ITMlongcallsdocumented;headlinebiographyoversimplifies.",
+      "conflict_type": "ERA_METHOD_SCOPE",
+      "severity": "HIGH",
+      "source_ids": [
+        "W-ZA03",
+        "W-ZA06"
+      ],
+      "case_ids": [
+        "ZA03-CMGICALL",
+        "ZA03-SDLI",
+        "ZA06-GOOGCALL"
+      ],
+      "resolution": "Separateoptionsside-method;donotbanasfaithfulnessrule",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "SALL-DATE-CONFLICT",
+      "trader": "Amrit Sall",
+      "rule_ids": [],
+      "normative_statement": "B 11 PDF 216 June 2013 negative-ratedecision",
+      "behavioral_conflict": "ECBofficialdecision 2014-06-05,effective 2014-06-11.Tradedateunconfirmed.",
+      "conflict_type": "DATE_SOURCE_CONFLICT",
+      "severity": "HIGH",
+      "source_ids": [
+        "B11",
+        "W-ECB14"
+      ],
+      "case_ids": [
+        "SALL-ECBloss"
+      ],
+      "resolution": "Retainprinteddate; verifiedtradedatenull",
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": false
+    },
+    {
+      "conflict_id": "MOKA-C-MEGA",
+      "trader": "Gil Morales",
+      "rule_ids": [
+        "MOKA24-VOL",
+        "MOKA24-MEGA"
+      ],
+      "normative_statement": "Standard≥1.5×averagevolume",
+      "behavioral_conflict": "MCDacceptedat 1.4709×becausemegacap; notpersonalexecutionproof.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "HIGH",
+      "source_ids": [
+        "W-MOKAV24"
+      ],
+      "case_ids": [
+        "MOKA24-MCD"
+      ],
+      "resolution": "Standarddefinition+explicitcontextualexception;notuniversal HARDgate",
+      "provenance": [
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "ZA-DATE-MDVN",
+      "trader": "Dan Zanger",
+      "rule_ids": [],
+      "normative_statement": "Translated MM:February 2010,FDAfailure",
+      "behavioral_conflict": "Jointissuerrelease 2010-03-03 reports CONNECTIONefficacyfailure; notregulatoryrejection.Traderecord remainsunverified.",
+      "conflict_type": "DATE_EVENT_CONFLICT",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B07",
+        "W-MDVN10"
+      ],
+      "case_ids": [
+        "ZA-MDVN"
+      ],
+      "resolution": "No guessedtradedate; retainasprinteddescription",
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": false
+    },
+    {
+      "conflict_id": "ZA-DATE-EBAY",
+      "trader": "Dan Zanger",
+      "rule_ids": [],
+      "normative_statement": "Translated MM:January 2004",
+      "behavioral_conflict": "Possibleevent Jan 2005; notenoughtoverifyexacttrade.",
+      "conflict_type": "DATE_EVENT_UNRESOLVED",
+      "severity": "LOW",
+      "source_ids": [
+        "B07",
+        "W-EBAY05"
+      ],
+      "case_ids": [
+        "ZA-EBAY"
+      ],
+      "resolution": "Dateunknown ratherthanassumecorrection",
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": false
+    },
+    {
+      "conflict_id": "DAR-EARLY-C",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-B6",
+        "DAR-B9"
+      ],
+      "normative_statement": "Latertechnicalconfirmationandstopdiscipline",
+      "behavioral_conflict": "1955 Jones Laughlin:fundamentalconviction,borrowagainstpossessions,noeffectiveexituntillargepanicloss. Earliereraexplicit.",
+      "conflict_type": "METHOD_EVOLUTION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B06"
+      ],
+      "case_ids": [
+        "DAR-EARLY-36"
+      ],
+      "resolution": "Do not treat formativefailureaslater SEPA-styleexception",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "DAR-C-THIO",
+      "trader": "Nicolas Darvas",
+      "rule_ids": [
+        "DAR-Q5",
+        "DAR-Q6"
+      ],
+      "normative_statement": "Laterfractionalbox-linkedprotectivestops",
+      "behavioral_conflict": "Thiokolspecialcreditconditionsrequiredwiderstoparrangement; laterstoporderssuspendedandstockliquidated. Size/margincontext.",
+      "conflict_type": "NORMATIVE_SCOPE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B06"
+      ],
+      "case_ids": [
+        "DAR-THIOEX"
+      ],
+      "resolution": "Exceptionalfinancingcontext; noautomaticsamefractionforalltrades",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "LOVE-DEFINITION-CONFLICT",
+      "trader": "Richard S. Love",
+      "rule_ids": [
+        "LOVE-DEFINITION-AMBIGUITY"
+      ],
+      "normative_statement": "PDF 83: triple or more in two years or less",
+      "behavioral_conflict": "PDF 238: at least 300 percent in a minimum of two years; appendix includes shorter examples. Growth multiple and time direction both differ.",
+      "conflict_type": "SOURCE_INTERNAL_DEFINITION",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B05"
+      ],
+      "resolution": "Image confirms wording; retain ambiguity, do not encode a numeric gate.",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": false
+    },
+    {
+      "conflict_id": "ECK-OVERRIDE",
+      "trader": "William Eckhardt",
+      "rule_ids": [
+        "ECK-004"
+      ],
+      "normative_statement": "Systematische Entscheidungsregeln",
+      "behavioral_conflict": "Eurodollar short deliberately closed before system exit.",
+      "conflict_type": "DISCRETIONARY_OVERRIDE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B08"
+      ],
+      "case_ids": [
+        "ECK-EURODOLLAR"
+      ],
+      "resolution": "Personal later system not equivalent to fully mechanical Original Turtle core.",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    },
+    {
+      "conflict_id": "WEISS-OVERRIDE",
+      "trader": "Al Weiss",
+      "rule_ids": [
+        "WEISS-003"
+      ],
+      "normative_statement": "Follow system well over 90% of time",
+      "behavioral_conflict": "1987 T-bill short closed before reversal signal.",
+      "conflict_type": "DISCRETIONARY_OVERRIDE",
+      "severity": "MEDIUM",
+      "source_ids": [
+        "B08"
+      ],
+      "case_ids": [
+        "WEISS-TBILL"
+      ],
+      "resolution": "Explicit exception, no universal algorithm inferred.",
+      "provenance": [
+        "BOOK_PRIMARY"
+      ],
+      "handling_status": "DOCUMENTED_AND_SCOPED",
+      "historical_truth_resolved": true
+    }
+  ]
+}

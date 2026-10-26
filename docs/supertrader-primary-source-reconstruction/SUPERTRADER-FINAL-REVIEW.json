@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0.0",
+  "completed_at_utc": "2026-10-13T13:09:25Z",
+  "independent_reviewer": "/root/independent_source_review",
+  "review_scope": [
+    "13bookidentities/completeness",
+    "translation/modalstrength",
+    "personalvsillustrativecases",
+    "era separation and duplicates",
+    "primaryvssecondary",
+    "source/rule/case references",
+    "current code read-only",
+    "mainreport counts/scope/all20answers"
+  ],
+  "final_status": "PASS_WITH_EXPLICIT_SOURCE_GAPS",
+  "open_high_findings": 0,
+  "open_critical_findings": 0,
+  "critical_findings_seen": 0,
+  "findings": [
+    {
+      "finding_id": "R01",
+      "severity": "HIGH",
+      "topic": "MissingDarvasMay1959pilotcase",
+      "resolution": "Added10%pilotstop and post-crisis cases; separated eras.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R02",
+      "severity": "HIGH",
+      "topic": "B13identity/completeness",
+      "resolution": "ConfirmedLittleBookofMarketWizards2014;23chapters,endmatter,cover/ISBNimages;BOOK_COMPLETE.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R03",
+      "severity": "MEDIUM",
+      "topic": "B04ending/B03publisher/B10boundary/B11ISBN",
+      "resolution": "Corrected tail chart descriptions,publisher/print facts,authorship segments and ISBNscope.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R04",
+      "severity": "HIGH",
+      "topic": "MCDmegacapvolumeexception",
+      "resolution": "Stored contextual exception and educational acceptance, not personal execution.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R05",
+      "severity": "HIGH",
+      "topic": "HSNinferredpriceband",
+      "resolution": "Removed fabricated numerical boundary; exact entry_price null.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R06",
+      "severity": "HIGH",
+      "topic": "Sall2013ECBchronology",
+      "resolution": "Kept as_printed_date; verifiedtrade date null; linked official2014event without redating trade.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R07",
+      "severity": "HIGH",
+      "topic": "Darvasfloorsearchinterpretation",
+      "resolution": "Removed unproved early-observation violation; actual missingbottomtouchreset retained.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R08",
+      "severity": "HIGH",
+      "topic": "Automatictextnormalization",
+      "resolution": "Restored all original extracted rule paraphrases and auxiliary text; removed global word splitter; corrected known English conditions.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R09",
+      "severity": "HIGH",
+      "topic": "TurtleNotionalmistakenlymissing",
+      "resolution": "ConfirmedliveusessharedportfolioNotional cuts; matching core; annual actual-equity reset VU convention.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R10",
+      "severity": "HIGH",
+      "topic": "MixedpriorrowsblanketForeign",
+      "resolution": "Original Darvas/Turtle components carry primary rule references; adaptation components separately classifiedVU_FORMALIZATION.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R11",
+      "severity": "MEDIUM",
+      "topic": "BrokenZAoptionsruleIDsandcodepath",
+      "resolution": "FixedZA03-5/ZA06-6 references andbuild.mjs path.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R12",
+      "severity": "MEDIUM",
+      "topic": "Grahamera/B03translation/Bassoaction",
+      "resolution": "1973Grahamera,licensedVietnamese status,conservative gap-riskmanagement action.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R13",
+      "severity": "MEDIUM",
+      "topic": "S1/S2reportreadability",
+      "resolution": "Report now explicitly S1:20-day andS2:55-day; no120/255-day ambiguity.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R14",
+      "severity": "LOW",
+      "topic": "Case duplicates and abbreviated presentation",
+      "resolution": "Darvas tranche/reentry cases retained because distinct actions; punctuation/readability corrected without changing technical IDs.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    },
+    {
+      "finding_id": "R15",
+      "severity": "INFO",
+      "topic": "Finalcrosscheck",
+      "resolution": "785rules,287cases,38sources,259priorrows,52conflicts,89contexts,13books12complete1partial;all20answers match artifacts.",
+      "status": "RESOLVED",
+      "reviewer_regression_check": "PASS"
+    }
+  ],
+  "residual_source_uncertainty_policy": "A corrected research artifact may preserve an unresolved historical/source conflict. Such a conflict does not authorize guessed rules,dates,fills or implementation.",
+  "review_limitation": "Independent source sampling and complete structural/reference checks; not a second word-by-word reading of all4232pages."
+}
