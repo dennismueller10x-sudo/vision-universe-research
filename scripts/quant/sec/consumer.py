@@ -34,6 +34,11 @@ from .version import version_stamp
 LOGGER = logging.getLogger("vu.sec.consumer")
 
 SCHEMA = "vu-consumer-fundamentals-1.0.0"
+# Older fiscal years than the bundle's window, from the SAME normalization and in the
+# same row layout (consumer-history/CIK*.json). Kept in a file of its own: every
+# reader of the bundle (Discover, Quant, Supertrader ...) keeps exactly its window;
+# only Fundamental reads the longer history.
+HISTORY_SCHEMA = "vu-consumer-history-1.0.0"
 
 # Registry metrics the consumer layer publishes (what a company reports).
 REPORTED_METRICS = (
@@ -205,15 +210,19 @@ def _horizons(annual_revenue_rows):
 def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), security_ids=(),
                           name=None, fiscal_year_end_hint=None, annual_years=DEFAULT_ANNUAL_YEARS,
                           quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None,
-                          industry=None):
-    """The compact consumer bundle for one company from a companyfacts payload."""
+                          industry=None, with_history=False):
+    """The compact consumer bundle for one company from a companyfacts payload.
+
+    with_history=True returns (bundle, history): history holds the fiscal years
+    BEFORE the bundle's window, resolved exactly like the window (same factbook,
+    resolver and policy), or None if there are none. The bundle is the same either way."""
     cik = normalize_cik(cik)
     provider = provider or SECProvider.__new__(SECProvider)   # iter_raw_facts needs no client
     as_of_text = str(as_of or date.today())
     raw_facts = list(SECProvider.iter_raw_facts(provider, company_facts, availability={},
                                                 forms=PERIODIC_FORMS))
     if not raw_facts:
-        return None
+        return (None, None) if with_history else None
     calendar = FiscalCalendar.from_raw_facts(cik, raw_facts, fiscal_year_end_hint=fiscal_year_end_hint)
     result = normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
                                calendar=calendar, industry=industry)
@@ -255,6 +264,14 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
     for metric in list(quarterly):
         quarterly[metric] = list(reversed(quarterly[metric]))     # oldest first, like annual
 
+    history_annual, history_units = {}, {}
+    if with_history:
+        for fiscal_year in years[:-annual_years] if annual_years else []:
+            for metric, (fact, derived) in _facts_for_period(resolver, registry, fiscal_year, "FY",
+                                                             as_of_text, policy).items():
+                history_annual.setdefault(metric, []).append(_row(fact, derived))
+                history_units.setdefault(metric, fact.unit)
+
     ttm, ttm_through = _ttm(resolver, registry, as_of_text, policy)
 
     revenue_annual = annual.get("revenue", [])
@@ -274,7 +291,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
                           "filed": latest_quarter.get("filed")} if latest_quarter else None,
         "rawFacts": result.stats.get("raw_facts"), "mapped": result.stats.get("mapped"),
     }
-    return {
+    bundle = {
         "schema": SCHEMA,
         "generatedAtUtc": _utcnow(),
         "versions": version_stamp(registry.version),
@@ -299,6 +316,25 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         "quarterly": quarterly,
         "ttm": ttm,
     }
+    if not with_history:
+        return bundle
+    history = None
+    if history_annual:
+        history_years = sorted({row[0] for rows in history_annual.values() for row in rows})
+        # No run date or timestamp: old years rarely change, so the file stays byte-identical
+        # between runs and the repository keeps one copy (the bundle carries asOf).
+        history = {
+            "schema": HISTORY_SCHEMA, "consumerSchema": SCHEMA,
+            "versions": bundle["versions"], "dataSource": bundle["dataSource"],
+            "cik": cik, "policy": policy, "columns": ROW_COLUMNS,
+            "units": history_units,
+            "semantics": {"annual": "fiscal years before the consumer bundle's window (its coverage.annualYears), "
+                                    "same normalization, resolver, policy and row layout as the bundle"},
+            "coverage": {"annualYears": history_years, "bundleFirstYear": annual_scope[0] if annual_scope else None,
+                         "annualMetrics": {m: len(rows) for m, rows in history_annual.items()}},
+            "annual": history_annual,
+        }
+    return bundle, history
 
 
 # ---------------------------------------------------------------- universe run
