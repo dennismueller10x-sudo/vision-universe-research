@@ -197,6 +197,8 @@ export function loadWeeklyCloses(securityId, { root = ROOT } = {}) {
   const p = path.join(root, SOURCES.weeklyLong, `${securityId}.json`);
   if (!fs.existsSync(p)) return null;
   const j = readJson(p);
+  // nur echte, split-adjustierte Reihen (dieselbe Preisbasis wie die Tagesbalken); sonst gilt der Rückblick als ungeprüft
+  if (j.dataMode !== 'real' || j.priceSeriesType !== 'SPLIT_ADJUSTED') return null;
   return Array.isArray(j.points) ? j.points.map(([d, c]) => ({ date: String(d).slice(0, 10), close: c })) : null;
 }
 

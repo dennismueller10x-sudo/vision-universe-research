@@ -9,7 +9,10 @@
  *
  * V4-D1-Quarantäne (integrity/discontinuity.mjs, unverändert): DQ-K5 / DQ-K3 über die Tagesbalken im 400-Tage-Rückblick.
  * Das Tagesfenster (270 Sitzungen) deckt den Rückblick nicht ganz ab. Der Rest wird mit den Wochenschlüssen derselben
- * Preiswahrheit geprüft (Wochenrelation ≥ 3 oder ≤ 1/3, eine Obermenge der Tagesregel); fehlt auch die Wochenreihe, ist
+ * Preiswahrheit geprüft (Wochenrelation ≥ 3 oder ≤ 1/3). Das ist KEINE Obermenge der Tagesregel: ein Sprung, der sich
+ * innerhalb derselben Woche umkehrt, bleibt unsichtbar; erkannt werden bleibende Niveausprünge (nicht erklärte Splits,
+ * der Kern von V4-D1) im Rest des Rückblicks (heute 11 von 400 Tagen, Abweichung in der Doku §2). Fehlt die Wochenreihe,
+ * ist sie nicht split-adjustiert/echt, oder endet sie vor dem Tagesfenster, ist
  * der Rückblick UNVOLLSTÄNDIG und der Titel bleibt CHART_CANDIDATE (CAP). Eine Wochenauffälligkeit ist kein
  * DQ-K-Flag des Vertrags, sondern eine eigene Sperre dieser Stufe (CAP CHART_CANDIDATE).
  */
@@ -20,7 +23,7 @@ import { STAGE, STAGE_ORDER } from './candidate-contract.mjs';
 
 export const DQ_CONTRACT_VERSION = 'sf8-data-quality-1.0.0';
 export const DQ_STATUS = Object.freeze({ PASS: 'PASS', INFO: 'INFO', CAP: 'CAP', FAIL: 'FAIL' });
-/** Wochenrelation des Rückblicks vor dem Tagesfenster: gleiche Schwelle wie DQ-K3 (Obermenge, keine Korrektur). */
+/** Wochenrelation des Rückblicks vor dem Tagesfenster: gleiche Schwelle wie DQ-K3 (bleibende Sprünge, keine Korrektur). */
 export const WEEKLY_LOOKBACK_K = 3;
 /** Fehlende XNYS-Sitzungen im Tagesfenster, ab denen ein Titel nicht mehr bewertet wird (lückenhafte Fenster). */
 export const MAX_MISSING_SESSIONS = 5;
@@ -32,14 +35,14 @@ export const MAX_MISSING_SESSIONS = 5;
 export const STRATEGY_DATA_NEEDS = Object.freeze({
   SF_TURTLE_S1: { minBars: 76, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: '55-Tage-Failsafe + N(20) + Vortag' },
   SF_TURTLE_S2: { minBars: 76, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: '55-Tage-Kanal + N(20) + Vortag' },
-  SF_DARVAS_BOX: { minBars: 30, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: 'Box mit 3-Tage-Bestätigung; Allzeithoch nur in verfügbarer Historie (DAR-Q9 unverifiziert)' },
-  SF_WEINSTEIN_INVESTOR: { minBars: 160, interval: 'WEEKLY_FROM_DAILY', intraday: 'NOT_REQUIRED', benchmark: 'EVIDENCE', fundamentals: false, crossSection: false, why: 'MA30w + Basis; Branchen-Stage und NYSE-Breite DATA_BLOCKED' },
+  SF_DARVAS_BOX: { minBars: 30, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: 'Box mit 3-Tage-Bestätigung; Allzeithoch nur in der verfügbaren Historie prüfbar' },
+  SF_WEINSTEIN_INVESTOR: { minBars: 160, interval: 'WEEKLY_FROM_DAILY', intraday: 'NOT_REQUIRED', benchmark: 'EVIDENCE', fundamentals: false, crossSection: false, why: 'MA30w + Basis; Branchen-Stage und Marktbreite ohne Daten' },
   SF_WEINSTEIN_TRADER: { minBars: 160, interval: 'WEEKLY_FROM_DAILY', intraday: 'NOT_REQUIRED', benchmark: 'EVIDENCE', fundamentals: false, crossSection: false, why: 'MA30w steigend + letztes Swing-Hoch' },
-  SF_MINERVINI_SEPA_VCP: { minBars: 252, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: 'MANUAL_ONLY', crossSection: false, why: 'MA200 + 21 Sitzungen Steigung, 52-Wochen-Hoch/-Tief; IBD-RS DATA_BLOCKED' },
+  SF_MINERVINI_SEPA_VCP: { minBars: 252, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: 'MANUAL_ONLY', crossSection: false, why: 'MA200 + 21 Sitzungen Steigung, 52-Wochen-Hoch/-Tief; IBD-Relative-Stärke ohne Daten' },
   SF_MINERVINI_POWER_PLAY: { minBars: 41, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: '+100 % in < 40 Sitzungen; Startvolumen braucht 50 Sitzungen davor (Evidenz)' },
   SF_KK_BREAKOUT: { minBars: 127, interval: 'DAILY', intraday: 'ORH_DATA_BLOCKED_NOT_ESSENTIAL', benchmark: false, fundamentals: false, crossSection: true, why: '10-Tage-Konsolidierung + 63 Sitzungen Vorlauf; 6-Monats-Momentum (126) für die Rangfolge' },
-  SF_KK_EPISODIC_PIVOT: { minBars: 64, interval: 'DAILY', intraday: 'DATA_BLOCKED', benchmark: false, fundamentals: false, crossSection: false, why: 'Gap am Stichtag, 63 Sitzungen Vorlauf; Katalysator und Intraday-Volumen DATA_BLOCKED' },
-  SF_KK_PARABOLIC_SHORT: { minBars: 31, interval: 'DAILY', intraday: 'DATA_BLOCKED', benchmark: false, fundamentals: false, crossSection: false, why: 'Aufwärtsserie + ADR20 + MA10; Einstieg, Stop und Borrow DATA_BLOCKED' },
+  SF_KK_EPISODIC_PIVOT: { minBars: 64, interval: 'DAILY', intraday: 'DATA_BLOCKED', benchmark: false, fundamentals: false, crossSection: false, why: 'Gap am Stichtag, 63 Sitzungen Vorlauf; Katalysator und Intraday-Volumen ohne Daten' },
+  SF_KK_PARABOLIC_SHORT: { minBars: 31, interval: 'DAILY', intraday: 'DATA_BLOCKED', benchmark: false, fundamentals: false, crossSection: false, why: 'Aufwärtsserie + ADR20 + MA10; Einstieg, Stop und Leihbarkeit ohne Daten' },
   SF_MOKA_POCKET_PIVOT: { minBars: 51, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: 'MANUAL_ONLY', crossSection: false, why: '10-Tage-Abwärtsvolumen + MA50-Kontext' },
   SF_MOKA_BUYABLE_GAP_UP: { minBars: 52, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: 'MANUAL_ONLY', crossSection: false, why: 'ATR40 + 50-Tage-Volumen + MA50 am Vortag' },
   SF_RASCHKE_HOLY_GRAIL: { minBars: 60, interval: 'DAILY', intraday: 'NOT_REQUIRED', benchmark: false, fundamentals: false, crossSection: false, why: 'ADX(14) Wilder + EMA20' },
@@ -59,7 +62,7 @@ export function quarantinedSessions(bars, asOf, cal) {
   return out;
 }
 
-/** Wochenrelationen im Teil des Rückblicks vor dem ersten Tagesbalken (Obermenge, siehe Kopf). */
+/** Wochenrelationen im Teil des Rückblicks vor dem ersten Tagesbalken (bleibende Niveausprünge, siehe Kopf). */
 export function weeklyLookbackCheck(weekly, firstDailyDate, asOf, cal) {
   const from = lookbackStart(asOf, cal);
   if (firstDailyDate <= from) return { status: 'NOT_NEEDED', from, to: firstDailyDate };
@@ -73,6 +76,9 @@ export function weeklyLookbackCheck(weekly, firstDailyDate, asOf, cal) {
     const r = w[k].close / w[k - 1].close;
     if (r >= WEEKLY_LOOKBACK_K || r <= 1 / WEEKLY_LOOKBACK_K) hits.push({ date: w[k].date, ratio: r });
   }
+  // die Reihe muss bis an das Tagesfenster heranreichen (eine Woche Spielraum), sonst ist der Rest ungeprüft
+  const lastWeekly = w.at(-1).date, coverLimit = new Date(Date.parse(`${firstDailyDate}T00:00:00Z`) - 7 * 864e5).toISOString().slice(0, 10);
+  if (lastWeekly < coverLimit) return { status: 'INCOMPLETE', from, to: firstDailyDate, reason: 'WEEKLY_SERIES_ENDS_BEFORE_DAILY_WINDOW' };
   return { status: hits.length ? 'WEEKLY_DISCONTINUITY' : 'COVERED', from, to: firstDailyDate, hits };
 }
 
@@ -91,6 +97,7 @@ export function assessSecurity(security, { asOf, calendar, weekly = null, contin
   else if (!m.instrumentType) { checks.push(check('IDENTITY_INSTRUMENT_TYPE', DQ_STATUS.CAP, 'NOT_IN_SECURITY_MASTER', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
   else checks.push(check('IDENTITY_INSTRUMENT_TYPE', DQ_STATUS.PASS));
   if (m.activeStatus && m.activeStatus !== 'ACTIVE') { checks.push(check('IDENTITY_ACTIVE', DQ_STATUS.FAIL, m.activeStatus)); fail = true; }
+  else if (!m.activeStatus) { checks.push(check('IDENTITY_ACTIVE', DQ_STATUS.CAP, 'NOT_IN_SECURITY_MASTER', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
   // Mantelgesellschaft: Kursmuster spiegeln den Treuhandwert, keine Unternehmensentwicklung (nur Namenshinweis)
   if (m.spacHint) { checks.push(check('IDENTITY_SPAC_NAME_HINT', DQ_STATUS.CAP, 'Name deutet auf eine Mantelgesellschaft (SPAC); Kursmuster ohne Aussagekraft für die Methoden', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
   if (m.adrHint) checks.push(check('IDENTITY_ADR_LISTING', DQ_STATUS.INFO, 'US-Listing eines ADR: nur die US-Reihe wird verwendet, keine Kombination mit dem Heimatlisting'));
@@ -109,14 +116,22 @@ export function assessSecurity(security, { asOf, calendar, weekly = null, contin
   } else checks.push(check('FRESHNESS', DQ_STATUS.PASS, { lastBar: last }));
 
   // OHLCV-Plausibilität (nichts wird repariert)
-  let bad = 0; for (const b of bars) if (![b.open, b.high, b.low, b.close, b.volume].every(fin) || b.high < b.low || b.close > b.high * (1 + 1e-9) || b.close < b.low * (1 - 1e-9) || b.volume < 0 || !(b.close > 0)) bad++;
-  if (bad) { checks.push(check('OHLCV_INTEGRITY', DQ_STATUS.FAIL, { invalidBars: bad })); fail = true; } else checks.push(check('OHLCV_INTEGRITY', DQ_STATUS.PASS));
+  // Eröffnung und Schluss innerhalb der Spanne, Tief > 0, Datum streng aufsteigend und eindeutig (die Engines lesen open
+  // und arbeiten über Indizes)
+  const inRange = (x, b) => x <= b.high * (1 + 1e-9) && x >= b.low * (1 - 1e-9);
+  let bad = 0, order = 0;
+  for (let k = 0; k < bars.length; k++) {
+    const b = bars[k];
+    if (![b.open, b.high, b.low, b.close, b.volume].every(fin) || b.high < b.low || !(b.low > 0) || !inRange(b.close, b) || !inRange(b.open, b) || b.volume < 0) bad++;
+    if (k > 0 && !(b.date > bars[k - 1].date)) order++;
+  }
+  if (bad || order) { checks.push(check('OHLCV_INTEGRITY', DQ_STATUS.FAIL, { invalidBars: bad, dateOrderViolations: order })); fail = true; } else checks.push(check('OHLCV_INTEGRITY', DQ_STATUS.PASS));
 
   // fehlende / zusätzliche Handelstage gegen XNYS
   const have = new Set(bars.map((b) => b.date)), sessions = calendar.sessionsBetween(bars[0].date, last);
   const missing = sessions.filter((d) => !have.has(d)), extra = bars.filter((b) => !calendar.isSession(b.date)).map((b) => b.date);
-  if (!calendar.inCoverage(bars[0].date) || !calendar.inCoverage(last)) { checks.push(check('SESSIONS', DQ_STATUS.CAP, 'CALENDAR_COVERAGE', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
-  else if (missing.length > MAX_MISSING_SESSIONS || extra.length) { checks.push(check('SESSIONS', DQ_STATUS.FAIL, { missing: missing.length, extra: extra.length, firstMissing: missing.slice(0, 3) })); fail = true; }
+  if (!calendar.inCoverage(bars[0].date) || !calendar.inCoverage(last)) { checks.push(check('CALENDAR_COVERAGE', DQ_STATUS.CAP, 'OUTSIDE_CALENDAR_COVERAGE', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
+  if (missing.length > MAX_MISSING_SESSIONS || extra.length) { checks.push(check('SESSIONS', DQ_STATUS.FAIL, { missing: missing.length, extra: extra.length, firstMissing: missing.slice(0, 3) })); fail = true; }
   else if (missing.length) { checks.push(check('SESSIONS', DQ_STATUS.CAP, { missing: missing.length, dates: missing }, STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
   else checks.push(check('SESSIONS', DQ_STATUS.PASS, { sessions: sessions.length }));
 

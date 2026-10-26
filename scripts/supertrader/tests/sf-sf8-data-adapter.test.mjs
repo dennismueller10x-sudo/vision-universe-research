@@ -89,6 +89,17 @@ test('SF8-DQ-OHLCV: unplausible Balken -> FAIL, nichts wird repariert', () => {
   assert.equal(chk(assess(sec(n)), 'OHLCV_INTEGRITY').status, 'FAIL');
 });
 
+test('SF8-DQ-OHLCV-STRICT: Eröffnung außerhalb der Spanne, Tief <= 0, doppelter oder vertauschter Balken -> FAIL (Review M1)', () => {
+  const o = makeBars(270); o[100] = { ...o[100], open: o[100].high + 1 };
+  assert.equal(assess(sec(o)).status, 'FAIL');
+  const z = makeBars(270); z[10] = { ...z[10], low: 0, open: 0.1, close: 0.2, high: 0.3 };
+  assert.equal(assess(sec(z)).status, 'FAIL');
+  const d = makeBars(270); d.push({ ...d.at(-1) });
+  assert.equal(chk(assess(sec(d)), 'OHLCV_INTEGRITY').status, 'FAIL');
+  const sw = makeBars(270); [sw[50], sw[51]] = [sw[51], sw[50]];
+  assert.equal(chk(assess(sec(sw)), 'OHLCV_INTEGRITY').detail.dateOrderViolations, 1);
+});
+
 test('SF8-DQ-SESSIONS: fehlende Handelstage -> CAP CHART; mehr als MAX_MISSING_SESSIONS -> FAIL; Balken am Feiertag -> FAIL', () => {
   const b = makeBars(270); b.splice(200, 2);
   const r = assess(sec(b));
@@ -117,6 +128,8 @@ test('SF8-DQ-LOOKBACK: Rest des Rückblicks über Wochenschlüsse; fehlt die Rei
   const jump = weeklyCovering(asOf).map((p) => (p.date > CAL.addDays(asOf, -395) ? { ...p, close: 200 } : p));
   assert.equal(weeklyLookbackCheck(jump, b[0].date, asOf, CAL).status, 'WEEKLY_DISCONTINUITY');
   assert.equal(assess(sec(b), { weekly: null }).maxStage, 'CHART_CANDIDATE');
+  // endet die Wochenreihe deutlich vor dem Tagesfenster, ist der Rest ungeprüft (Review L2)
+  assert.equal(weeklyLookbackCheck(weeklyCovering(asOf).filter((p) => p.date <= CAL.addDays(asOf, -398)), b[0].date, asOf, CAL).status, 'INCOMPLETE');
   // deckt das Tagesfenster den Rückblick ab, braucht es keine Wochenreihe
   assert.equal(weeklyLookbackCheck(null, CAL.addDays(asOf, -401), asOf, CAL).status, 'NOT_NEEDED');
 });
@@ -125,6 +138,7 @@ test('SF8-DQ-IDENTITY: Nicht-Stammaktie FAIL, inaktiv FAIL, unbekannt CAP, SPAC-
   assert.equal(assess(sec(makeBars(270), { instrumentType: 'WARRANT' })).status, 'FAIL');
   assert.equal(assess(sec(makeBars(270), { activeStatus: 'INACTIVE' })).status, 'FAIL');
   assert.equal(assess(sec(makeBars(270), { instrumentType: null })).maxStage, 'CHART_CANDIDATE');
+  assert.equal(assess(sec(makeBars(270), { activeStatus: null })).maxStage, 'CHART_CANDIDATE', 'fehlender Status ist kein PASS (Review L2)');
   assert.equal(assess(sec(makeBars(270), { spacHint: true })).maxStage, 'CHART_CANDIDATE');
   const adr = assess(sec(makeBars(270), { adrHint: true }));
   assert.equal(adr.maxStage, 'MODELED_TRADE_PLAN'); assert.equal(chk(adr, 'IDENTITY_ADR_LISTING').status, 'INFO');
