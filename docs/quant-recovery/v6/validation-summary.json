@@ -1,0 +1,1104 @@
+{
+  "schemaVersion": "quant-v6-validation-summary-1.0.0",
+  "createdAt": "2026-10-25T16:53:52.299Z",
+  "baseMain": "675eeb97f2fbe924a991d32fa72387502ded67c5",
+  "codeCommit": "d6760c493fc2af35db7057b042d294b3c123650c",
+  "pullRequest": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/922",
+  "overallStatus": "V6_IMPLEMENTED_WITH_EVIDENCE_GAPS",
+  "runtime": {
+    "node": "v22.23.4",
+    "v8": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.41",
+    "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "codeSnapshot": {
+    "quant/engines/research-artifacts.cjs": "7e3f25bcf33b553c20384dac8e10512da6a537b610c53c9ee9be5b60dfd94553",
+    "quant/engines/research-contract.cjs": "a4192856ca4d70b21d8e43b834bd1dc1fb189dade04b2ea98ccf97c386e11b78",
+    "quant/engines/research-exposure.cjs": "e7c3a24a3758b2378cce29dfd6f5a449d91a36c4466b9ea6018546760362bc09",
+    "quant/engines/research-methodology.cjs": "d097f0faec0c467b5f94e768dd995c4a71edb03d3359052432f90e6dc41a361b",
+    "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+    "quant/engines/research-portfolio.cjs": "217669a51c53579c48fbe611064dc45a27232dbc20b9bce26c2febd085a3d55a",
+    "quant/engines/research-studies.cjs": "f5802b62b2d15cbfccad7b305b4e1cb470a44479cb944a962cc7c90da201b7d0",
+    "quant/engines/research-validation.cjs": "8de0f64fb3a06f57447277f5630ee8b98688fb4c9e6cbb22a5343339c5f0ddfb",
+    "quant/engines/research-weekly-source.cjs": "b8bd8b2d57ed3cf2aaec22354faf51542f0c42b82124849dab82814ebf9c875b",
+    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+    "scripts/quant/validate-research-v6.cjs": "8af1bb7dba4c833f0275c712f7f05a0507eff6e0c5c30e4e9efc6238b030f217",
+    "scripts/quant/verify-research-monte-carlo.py": "9a3dc2589432f201a65e112de97627cf690d0fb884975d2a8571c396c8dcf3c4",
+    "scripts/quant/verify-research-portfolio.py": "14bfe7bc8f6611f76505f882a2c7251d96c72fbe0db83bf158ac0f332aa2adab",
+    "scripts/quant/verify-research-studies.py": "48ba3e464d1c716aa5e9a35dfb1bc9487060a6c76eb032c2add85539a448d3bc",
+    "scripts/quant/verify-research-validation.py": "e4827e7761be186ae21669bfdd1831c4074ec2576111c4e39546ce037c7c1e93"
+  },
+  "tests": {
+    "localFullQuantPhase1": {
+      "tests": 2885,
+      "pass": 2885,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 1398515.645262,
+      "logHash": "9116d7518b28e77d2f7db848bbf340ece3a4ddbf738109b081a1abd504121ebe",
+      "scope": "2874 pre-existing plus 11 initial research contract tests; later research tests separately executed"
+    },
+    "localResearchFinal": {
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 24305.392009,
+      "logHash": "a22170ebc0f93939edf1760415874e0003b01cc355c53f72f45693a58d6e942d"
+    },
+    "precedingGithubQuantObserved": {
+      "conclusion": "success",
+      "head_sha": "56f41f70702f20ea5472f3de80989bc374560d41",
+      "html_url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40191310810",
+      "status": "completed",
+      "updated_at": "2026-10-25T12:08:35Z",
+      "tests": 2989,
+      "pass": 2989,
+      "fail": 0,
+      "skipped": 0,
+      "logHash": "eb8f14a08df9665880463d7845f2e1866999b79efdfdf94a9be5b716de3052b0",
+      "scope": "GitHub merge context at recorded head; numerical engines match final code, subsequent harness-only safety fix and two subprocess tests locally validated"
+    },
+    "localCoreFinal": {
+      "tests": 236,
+      "pass": 236,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 75722.24948,
+      "logHash": "e5df4971841956541eeb57672cc40c5510dae026e5379e08c5d8e5fce50f22d0"
+    },
+    "secPython": {
+      "tests": 545,
+      "state": "PASS",
+      "logHash": "539e94ee33025bb6e947cb79fc2640b47c1140676617bbd594326596a023e77f"
+    },
+    "secPitPython": {
+      "tests": 32,
+      "state": "PASS",
+      "logHash": "42f418008aadf59631545004037a41ce1b2dc06276a880c57ef1d68fa4cb6e75"
+    },
+    "consumers": {
+      "id": "consumers",
+      "command": [
+        "/workspace/scratch/v6-runtime/node_modules/node/bin/node",
+        "--test",
+        "worker/tests/*.test.mjs",
+        "discover/tests/live-stream.test.mjs",
+        "discover/tests/live-hub.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "state": "PASS",
+      "durationMs": 1741.893170999996,
+      "logHash": "e61d34b660218f01ca24595a2bb3522d8a0fe6500c23263ad3b7c4aefd4d9d90",
+      "tests": 66,
+      "pass": 66,
+      "fail": 0,
+      "skipped": 0
+    },
+    "isolationFirstAttempt": {
+      "productionDataUnchanged": true,
+      "childSuiteCompleted": false,
+      "childSuiteExitReported": 1,
+      "elapsedMs": 901217.529188,
+      "reason": "Existing CLI 900s child limit under concurrent load; child output not retained by existing CLI. Do not count as complete Quant PASS.",
+      "logHash": "23cad3ee8ff70300dffb6cd73ae01c8631698a9aeb0dfe2017d17ecb0785ab23"
+    },
+    "isolationFinal": {
+      "state": "INTERRUPTED_NO_COMPLETION_REPORT",
+      "reason": "Execution stopped during user-reported limit interruption; no live test process remained on resume. Not counted as passed."
+    },
+    "changedResearchIsolation": {
+      "state": "PASS",
+      "scope": "quant/tests/research-*.test.mjs",
+      "productionDataUnchanged": true,
+      "childSuiteCompleted": true,
+      "logHash": "a16bb23fcae5de0c7b6faf94dc16c60373d951a4594da943143b970fcd0fa271"
+    },
+    "githubQuant": {
+      "conclusion": "success",
+      "head_sha": "d6760c493fc2af35db7057b042d294b3c123650c",
+      "html_url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348259",
+      "status": "completed",
+      "updated_at": "2026-10-25T12:23:13Z",
+      "tests": null,
+      "pass": null,
+      "fail": null,
+      "skipped": null,
+      "logHash": null,
+      "logAvailability": "RAW_LOG_DOWNLOAD_HTTP_403_NO_COUNT_CLAIMED",
+      "jobMetadata": {
+        "conclusion": "success",
+        "head_sha": "d6760c493fc2af35db7057b042d294b3c123650c",
+        "html_url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348259/job/121165832267",
+        "id": 121165832267,
+        "status": "completed",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Engine- und Acceptance-Tests",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Existing SEC exporter and internal PIT projection guards",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Shared relay and unchanged Discovery consumers",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Methodik- und Datendateien sind gueltiges JSON",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "HTML-Seiten binden die gemeinsame Shell und die Navigation ein",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Praekomputierte Technical-Intelligence-Daten stimmen mit den Engines ueberein",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Chartbild-Daten (Technical Intelligence V2) stimmen mit den Engines ueberein",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Kein Produkt rechnet selbst um (Currency Layer Regression Guard)",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Der Currency Layer rechnet an echten Titeln nach",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Die FX-Faehigkeitssondierung laeuft ohne Zugang fehlerfrei durch",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Keine Zugangsdaten in ausgelieferten Marktdaten",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Keine ungeklärten Provider-Rohdaten in oeffentlichen Pfaden",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Der Marktdatenabruf laeuft ohne Zugang fehlerfrei durch",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Anbieterbewertung laeuft",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Anbieterqualifikation laeuft",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Bereinigungssemantik ist in beiden Stacks identisch",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Die Bereinigungs-Sperre der Dashboard-Kette greift",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "status": "completed"
+          }
+        ]
+      },
+      "scope": "Complete Quant CI at frozen implementation head, including validation harness safety regression tests"
+    }
+  },
+  "realData": {
+    "materialization": {
+      "schemaVersion": "real-backtest-read-1.0.0",
+      "generation": "23a3a9b70450c0cc8cedaafb33577e720ad1979d44935deb80ca26241e27bfff",
+      "calculationRuntime": {
+        "nodeVersion": "22.23.4",
+        "v8Version": "12.4.254.21-node.57",
+        "platform": "linux",
+        "arch": "x64",
+        "glibcVersion": "2.41",
+        "nodeExecutableHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      },
+      "state": "COMPLETE",
+      "computedAt": "2026-10-25T11:50:43.154Z",
+      "expected": 6190,
+      "processed": 6190,
+      "counts": {
+        "A": 0,
+        "B": 4451,
+        "C": 1739
+      },
+      "reasons": {
+        "WARMUP": 439,
+        "DATA_GAPS": 218,
+        "CORPORATE_ACTION": 600,
+        "INSTRUMENT_CLASS": 295,
+        "IDENTITY": 183,
+        "TERMINAL_LISTING_VALUE": 4
+      },
+      "benchmarkStates": {
+        "AVAILABLE": 3615,
+        "BENCHMARK_UNAVAILABLE": 836
+      },
+      "calculatedListings": 6190,
+      "calculationCacheHits": 0,
+      "computed": 6190,
+      "reused": 0,
+      "elapsedMs": 355914.7073,
+      "peakRssBytes": 382078976,
+      "newDetailBytes": 886979595,
+      "newDetailGzipBytes": 199251655,
+      "publiclyActivated": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    "repeat": {
+      "schemaVersion": "real-backtest-read-1.0.0",
+      "generation": "23a3a9b70450c0cc8cedaafb33577e720ad1979d44935deb80ca26241e27bfff",
+      "calculationRuntime": {
+        "nodeVersion": "22.23.4",
+        "v8Version": "12.4.254.21-node.57",
+        "platform": "linux",
+        "arch": "x64",
+        "glibcVersion": "2.41",
+        "nodeExecutableHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      },
+      "state": "COMPLETE",
+      "computedAt": "2026-10-25T11:50:43.154Z",
+      "expected": 6190,
+      "processed": 6190,
+      "counts": {
+        "A": 0,
+        "B": 4451,
+        "C": 1739
+      },
+      "reasons": {
+        "WARMUP": 439,
+        "DATA_GAPS": 218,
+        "CORPORATE_ACTION": 600,
+        "INSTRUMENT_CLASS": 295,
+        "IDENTITY": 183,
+        "TERMINAL_LISTING_VALUE": 4
+      },
+      "benchmarkStates": {
+        "AVAILABLE": 3615,
+        "BENCHMARK_UNAVAILABLE": 836
+      },
+      "calculatedListings": 0,
+      "calculationCacheHits": 0,
+      "computed": 0,
+      "reused": 6190,
+      "elapsedMs": 71299.128974,
+      "peakRssBytes": 264720384,
+      "newDetailBytes": 0,
+      "newDetailGzipBytes": 0,
+      "publiclyActivated": false,
+      "certification": "NOT_CERTIFIED"
+    },
+    "reader": {
+      "generation": "23a3a9b70450c0cc8cedaafb33577e720ad1979d44935deb80ca26241e27bfff",
+      "readerCoverage": {
+        "checked": 6190,
+        "states": {
+          "AVAILABLE_LIMITED": 4451,
+          "BLOCKED": 1739
+        },
+        "reasons": {
+          "HISTORICAL_LISTING_NOT_UNIQUELY_MAPPED_TO_PRODUCT": 6
+        },
+        "servedResults": 4451,
+        "financialDataOnBlockedResponses": 0
+      },
+      "payloadStats": {
+        "summaries": 6190,
+        "summaryBytes": 110862837,
+        "maxSummaryBytes": 25681,
+        "periodResults": 22255,
+        "detailBytes": 886979595,
+        "gzipDetailBytes": 199251655,
+        "maxDetailBytes": 210825,
+        "maxGzipDetailBytes": 48550,
+        "overLimitDetails": 0
+      },
+      "counts": {
+        "A": 0,
+        "B": 4451,
+        "C": 1739
+      },
+      "independent": [
+        {
+          "period": "1Y",
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 53,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "ba5afe22b8114d9192cb8a609137c2d2c9fd7de47ff5f622ce4c078987878032"
+        },
+        {
+          "period": "3Y",
+          "state": "PASS",
+          "independentlyCheckedTrades": 2,
+          "equityObservations": 157,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "d58c5b15943f50550c3c1f128d893e3ed921d2930e43d73d4c07cb2cee19e0b9"
+        },
+        {
+          "period": "5Y",
+          "state": "PASS",
+          "independentlyCheckedTrades": 3,
+          "equityObservations": 262,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "0b634fe5945219e1b90e63fbe1d313abf87442bd4249df31fee0b51463caf451"
+        },
+        {
+          "period": "10Y",
+          "state": "PASS",
+          "independentlyCheckedTrades": 7,
+          "equityObservations": 522,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "672a705e5969df46ce6321b1377f8af32d05720d2be2afb62810de02d5fbd1d5"
+        },
+        {
+          "period": "MAX",
+          "state": "PASS",
+          "independentlyCheckedTrades": 21,
+          "equityObservations": 1396,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "7fb5a0274abddde577bdbce0b5b04196dafd7dece7e1eb4b5f2bdcaf1c06f68a"
+        }
+      ],
+      "cases": [
+        {
+          "ticker": "NVDA",
+          "state": "AVAILABLE_LIMITED",
+          "quality": "B",
+          "benchmark": "AVAILABLE"
+        },
+        {
+          "ticker": "AAPL",
+          "state": "BLOCKED",
+          "quality": "C",
+          "benchmark": "NOT_EVALUATED"
+        },
+        {
+          "ticker": "XOM",
+          "state": "AVAILABLE_LIMITED",
+          "quality": "B",
+          "benchmark": "BENCHMARK_UNAVAILABLE"
+        },
+        {
+          "ticker": "ARM",
+          "state": "AVAILABLE_LIMITED",
+          "quality": "B",
+          "benchmark": "AVAILABLE"
+        },
+        {
+          "ticker": "BGC",
+          "state": "BLOCKED",
+          "quality": "C",
+          "benchmark": "NOT_EVALUATED"
+        },
+        {
+          "ticker": "AAAC",
+          "state": "BLOCKED",
+          "quality": "C",
+          "benchmark": "NOT_EVALUATED"
+        },
+        {
+          "ticker": "AACT",
+          "state": "BLOCKED",
+          "quality": "C",
+          "benchmark": "NOT_EVALUATED"
+        },
+        {
+          "ticker": "MSFT",
+          "state": "AVAILABLE_LIMITED",
+          "quality": "B",
+          "benchmark": "BENCHMARK_UNAVAILABLE"
+        }
+      ],
+      "logHash": "618b094e3bffacf8beae623af74e4b3ee30e08ad2373e2059a3e3db9bd98948a"
+    },
+    "additionalRealReference": {
+      "schemaVersion": "quant-v6-validation-1.0.0",
+      "createdAt": "2026-10-25T11:50:12.279Z",
+      "baseMain": "675eeb97f2fbe924a991d32fa72387502ded67c5",
+      "gitHead": "92bea10b652e7baf1d86b2e0f2505bad1796ce38",
+      "runtime": {
+        "node": "v22.23.4",
+        "v8": "12.4.254.21-node.57",
+        "platform": "linux",
+        "arch": "x64",
+        "glibc": "2.41",
+        "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      },
+      "suites": [
+        "real"
+      ],
+      "checks": [
+        {
+          "id": "real-NVDA-1Y-determinism",
+          "state": "PASS",
+          "inputHash": "e50111cd7c3d3ec490c0152ade6afe19c3341139aa6a2cd871088191b2a2a969",
+          "resultHash": "ba5afe22b8114d9192cb8a609137c2d2c9fd7de47ff5f622ce4c078987878032",
+          "completedTrades": 0,
+          "equityObservations": 53
+        },
+        {
+          "id": "real-NVDA-1Y-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-real-weekly-backtest.py",
+            "/workspace/scratch/v6-reference-run/real-NVDA-1Y.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 114.8283550000001,
+          "logHash": "e6266be0a9ea02f3dd3889ab0442f6a81044c9470f31ad7655f79928b0e310dc"
+        },
+        {
+          "id": "real-NVDA-3Y-determinism",
+          "state": "PASS",
+          "inputHash": "efc94fc564818590c179eac36b359166997331be3072efd016dbbd9ee39e1df4",
+          "resultHash": "d58c5b15943f50550c3c1f128d893e3ed921d2930e43d73d4c07cb2cee19e0b9",
+          "completedTrades": 2,
+          "equityObservations": 157
+        },
+        {
+          "id": "real-NVDA-3Y-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-real-weekly-backtest.py",
+            "/workspace/scratch/v6-reference-run/real-NVDA-3Y.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 110.16795400000001,
+          "logHash": "885d17adb361ce2d80b188c22ce13da984611c1f76b607809fd493075eae4fd3"
+        },
+        {
+          "id": "real-NVDA-5Y-determinism",
+          "state": "PASS",
+          "inputHash": "ad1ebe7e8d1a43ef078494ae37aa1ba20efeac0a7c03182dec2b549c643b3323",
+          "resultHash": "0b634fe5945219e1b90e63fbe1d313abf87442bd4249df31fee0b51463caf451",
+          "completedTrades": 3,
+          "equityObservations": 262
+        },
+        {
+          "id": "real-NVDA-5Y-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-real-weekly-backtest.py",
+            "/workspace/scratch/v6-reference-run/real-NVDA-5Y.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 545.776934,
+          "logHash": "fcfca0ea1b2e97531d9c9f5fb82ff82364385b478e9849a0833f4afb92407462"
+        },
+        {
+          "id": "real-NVDA-10Y-determinism",
+          "state": "PASS",
+          "inputHash": "c7f3f292cadc728f5fc06042acc281765fced1b9dd514fe0f29a853e15177edf",
+          "resultHash": "672a705e5969df46ce6321b1377f8af32d05720d2be2afb62810de02d5fbd1d5",
+          "completedTrades": 7,
+          "equityObservations": 522
+        },
+        {
+          "id": "real-NVDA-10Y-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-real-weekly-backtest.py",
+            "/workspace/scratch/v6-reference-run/real-NVDA-10Y.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 98.72526599999992,
+          "logHash": "7715bb3e73f81a96301cd682700c0438c9ef48b559ec063e9af2911a03439aa4"
+        },
+        {
+          "id": "real-NVDA-MAX-determinism",
+          "state": "PASS",
+          "inputHash": "5d3c378f61a27858388ac88d9529a05c25abad5d876ae6a4fd7d64a779478c58",
+          "resultHash": "7fb5a0274abddde577bdbce0b5b04196dafd7dece7e1eb4b5f2bdcaf1c06f68a",
+          "completedTrades": 21,
+          "equityObservations": 1396
+        },
+        {
+          "id": "real-NVDA-MAX-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-real-weekly-backtest.py",
+            "/workspace/scratch/v6-reference-run/real-NVDA-MAX.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 138.52447499999994,
+          "logHash": "4dac825f4ea33500fab9db48b2b1f22b5943507041f95105f51eeeaeca971743"
+        },
+        {
+          "id": "mc-TRADE_IID-source",
+          "state": "PASS",
+          "scope": "LIMITED_SOURCE_NOT_CERTIFIED",
+          "sourceEvidence": {
+            "schemaVersion": "research-weekly-source-1.0.0",
+            "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+            "period": "MAX",
+            "sourceInputHash": "5d3c378f61a27858388ac88d9529a05c25abad5d876ae6a4fd7d64a779478c58",
+            "sourceResultHash": "7fb5a0274abddde577bdbce0b5b04196dafd7dece7e1eb4b5f2bdcaf1c06f68a",
+            "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+            "identityHash": "4e9dd7dd4d4ce2dd1a7b05fcc0c9a09cfcc8d85d6c472893331d35dc57122bcd",
+            "sampledObservations": 21,
+            "completedTrades": 21,
+            "equityPoints": 1396,
+            "endCapital": 4853701.423043009,
+            "openPosition": true,
+            "sourceWarnings": [
+              "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+              "DIVIDENDS_EXCLUDED",
+              "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+              "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+              "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+              "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+            ],
+            "limitations": [
+              "SINGLE_SELECTED_LISTING",
+              "PRICE_RETURN_EXCLUDES_DIVIDENDS",
+              "NO_UNTOUCHED_HOLDOUT",
+              "NO_MARKET_POPULATION_COMPLETENESS",
+              "OPEN_POSITION_AND_IDLE_TIME_EXCLUDED_FROM_TRADE_RESAMPLING"
+            ],
+            "dataEligibility": "LIMITED_SOURCE_NOT_CERTIFIED",
+            "certification": "NOT_CERTIFIED",
+            "productionApproved": false,
+            "evidenceHash": "54d122f306223033d476cb69306dc48a6dfe7269fed0509b1ec0233015698c25"
+          },
+          "inputHash": "9ccadba40aff2aeb16f0c20a95ed85ef2a8be2efbb47be964b65b6a23ac0086a",
+          "resultHash": "c05eb76559f1fc94057f507ca36824d2bbb510c9d8fdd63e5c6353b1bfbbbc7e"
+        },
+        {
+          "id": "mc-TRADE_IID-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-research-monte-carlo.py",
+            "/workspace/scratch/v6-reference-run/mc-TRADE_IID-input.json",
+            "/workspace/scratch/v6-reference-run/mc-TRADE_IID-result.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 747.4213059999997,
+          "logHash": "1cc3c2c27f06a7feebc95f44058e484b2d4360c6f10e7d42947e5aab21efce13"
+        },
+        {
+          "id": "mc-CIRCULAR_BLOCK-source",
+          "state": "PASS",
+          "scope": "LIMITED_SOURCE_NOT_CERTIFIED",
+          "sourceEvidence": {
+            "schemaVersion": "research-weekly-source-1.0.0",
+            "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+            "period": "MAX",
+            "sourceInputHash": "5d3c378f61a27858388ac88d9529a05c25abad5d876ae6a4fd7d64a779478c58",
+            "sourceResultHash": "7fb5a0274abddde577bdbce0b5b04196dafd7dece7e1eb4b5f2bdcaf1c06f68a",
+            "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+            "identityHash": "4e9dd7dd4d4ce2dd1a7b05fcc0c9a09cfcc8d85d6c472893331d35dc57122bcd",
+            "sampledObservations": 1395,
+            "completedTrades": 21,
+            "equityPoints": 1396,
+            "endCapital": 4853701.423043009,
+            "openPosition": true,
+            "sourceWarnings": [
+              "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+              "DIVIDENDS_EXCLUDED",
+              "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+              "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+              "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+              "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+            ],
+            "limitations": [
+              "SINGLE_SELECTED_LISTING",
+              "PRICE_RETURN_EXCLUDES_DIVIDENDS",
+              "NO_UNTOUCHED_HOLDOUT",
+              "NO_MARKET_POPULATION_COMPLETENESS",
+              "OPEN_POSITION_MARKS_AND_PAID_COSTS_INCLUDED_NO_FORCED_EXIT"
+            ],
+            "dataEligibility": "LIMITED_SOURCE_NOT_CERTIFIED",
+            "certification": "NOT_CERTIFIED",
+            "productionApproved": false,
+            "evidenceHash": "1d5f21d66c142f891544f9b64f742082b388ec94ba752fc6ca9cd6c037d6078c"
+          },
+          "inputHash": "aafaac0fcca96aa49be62e44f2995bb580b8299f04e837486f22b768f2353891",
+          "resultHash": "abd1f5af7a9d1a0a79c2cee6f36bf3f7eaeb74ef96087ccc85559cc80bab2b9d"
+        },
+        {
+          "id": "mc-CIRCULAR_BLOCK-python",
+          "command": [
+            "python3",
+            "scripts/quant/verify-research-monte-carlo.py",
+            "/workspace/scratch/v6-reference-run/mc-CIRCULAR_BLOCK-input.json",
+            "/workspace/scratch/v6-reference-run/mc-CIRCULAR_BLOCK-result.json"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "state": "PASS",
+          "durationMs": 948.0830919999999,
+          "logHash": "05ec486d8307c3a2cf060ac6dbd9cb930ad2fb43a4cb23dfb994e6b954f37b7d"
+        },
+        {
+          "id": "blocked-ref_AAPL",
+          "state": "PASS",
+          "reason": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2000-09-29\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]",
+          "performancePayload": false
+        },
+        {
+          "id": "blocked-ref_BGC",
+          "state": "PASS",
+          "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+          "performancePayload": false
+        },
+        {
+          "id": "blocked-ref_AAAC",
+          "state": "PASS",
+          "reason": "INSUFFICIENT_HISTORY",
+          "performancePayload": false
+        },
+        {
+          "id": "blocked-ref_AACT",
+          "state": "PASS",
+          "reason": "MISSING_WEEKS:[{\"after\":\"2025-09-24\",\"before\":\"2026-02-06\"}]",
+          "performancePayload": false
+        },
+        {
+          "id": "young-ARM-1Y",
+          "state": "PASS",
+          "complete": true,
+          "inputHash": "b739fe1f3527615cf0b090050391e4277ab4e3ff5571ae8665acc3414e5500ce",
+          "resultHash": "f29b461c13f16c31a384af8cc9b871f2c8a72fb0d65e23f65069aabeb59bc53f"
+        },
+        {
+          "id": "young-ARM-3Y",
+          "state": "PASS",
+          "complete": false,
+          "inputHash": "6208226dc1a9f985cc69fd4eb68432216349718661de88ece06833fbb29d5999",
+          "resultHash": "a27bb2f483314ef29e1048944d7f6857c98655f5c8ecbe204d3e6f4c50cd2832"
+        },
+        {
+          "id": "young-ARM-5Y",
+          "state": "PASS",
+          "complete": false,
+          "inputHash": "75d80bceb493acd9dad811f31ebeaf9cf8924e3a969c2c6a91f8ace5f4f00279",
+          "resultHash": "75ab457ecd9999f990ce2adeea41e0d7b555045968467c4979a8f8515af3d7c0"
+        },
+        {
+          "id": "young-ARM-10Y",
+          "state": "PASS",
+          "complete": false,
+          "inputHash": "11bfdbbf0eac74c3ad6c84b7873afa23cfbbf92a31e34fbdba03b21fe82aaa24",
+          "resultHash": "aded489063345d2bb0ecbc2a572f4b71f2260e385014954e77fb810ce902327f"
+        },
+        {
+          "id": "young-ARM-MAX",
+          "state": "PASS",
+          "complete": true,
+          "inputHash": "804acdce17271d91c98e0bdf692b0e5cd3cc989cf0a8ee73fb386d7aab35a89d",
+          "resultHash": "306fa2e581daab3acbeaf2a87875838ba8b184f044a7b8bc20c81e1d51b280e9"
+        }
+      ],
+      "state": "PASS",
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "limitation": "Engine validation and observed reference checks do not establish full historical universes or independent predictive evidence.",
+      "reportHash": "08b3d2d040d427b4c6ef6851f0fea9ff238cb7fee4a406d93b4003f2a98c942b"
+    }
+  },
+  "independentReferences": {
+    "monteCarloBenchmark": {
+      "ok": true,
+      "reference": "independent-python-stdlib",
+      "checks": [
+        "endCapital:all_statistics",
+        "totalReturn:all_statistics",
+        "maxDrawdown:all_statistics",
+        "longestLossStreak:all_statistics",
+        "seeded_paths",
+        "conditional_DKW",
+        "no_certification"
+      ],
+      "simulations": 10000,
+      "horizon": 1000,
+      "relativeTolerance": 1e-12,
+      "note": "Independent numerical reproduction, not independent historical/statistical evidence."
+    },
+    "portfolio": {
+      "schemaVersion": "research-portfolio-python-validation-1.0.0",
+      "status": "PASS",
+      "fixtureMode": "SYNTHETIC_TEST",
+      "cases": [
+        {
+          "case": "funded_buy",
+          "expectedEndCapital": "998.50224663005491762356465302046929605591612581128",
+          "resultHash": "b6efcec8bec5371d6c7f6ac516a89686c01e98338df04e3b7e95929bca920768"
+        },
+        {
+          "case": "simultaneous_rebalance",
+          "expectedEndCapital": "996.55604304074150157142216606620879815266355302370",
+          "resultHash": "2c30ba19baae29402286d8859736015463667278ebfbfe1a92dd04218210a8dc"
+        },
+        {
+          "case": "split_dividend_terminal",
+          "expectedEndCapital": "1058.4123814278582126809785322016974538192710933600",
+          "resultHash": "a92e9035a26dc7ee2698856fab5483487c35a29930e7514868f1d6eaba822c45"
+        },
+        {
+          "case": "sourced_zero_terminal",
+          "expectedEndCapital": "19.970044932601098352471293060409385921118322516226",
+          "resultHash": "dfee1e0d52a9536cbe4129ea8c6d7067b46ebecbed861547e09e206ef9c3c83f"
+        }
+      ],
+      "reference": "Python Decimal analytic equations and separate cash/unit journal",
+      "toleranceRelative": "1e-10",
+      "realHistoricalEvidence": false,
+      "scriptSha256": "14bfe7bc8f6611f76505f882a2c7251d96c72fbe0db83bf158ac0f332aa2adab",
+      "nodeRuntime": {
+        "node": "v22.23.4",
+        "v8": "12.4.254.21-node.57",
+        "icu": "78.3",
+        "platform": "linux",
+        "arch": "x64",
+        "glibc": "2.41",
+        "nodeBinaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      }
+    },
+    "studies": {
+      "schemaVersion": "v6-independent-studies-1.0.0",
+      "status": "PASS",
+      "sourceMode": "SYNTHETIC_TEST",
+      "signalEvents": 25,
+      "numericComparisons": 526,
+      "resourceObservation": {
+        "fixtureSourceBars": 360,
+        "nodeWallSeconds": 3.0310410179990868,
+        "childPeakRssKiB": 171032,
+        "scope": "small synthetic validation workload; includes Node startup, runtime hashing and concurrent environment load"
+      },
+      "tolerance": {
+        "relative": 1e-12,
+        "absolute": 1e-12
+      },
+      "independentImplementation": "Python stdlib: all five signal rules/cooldown, fixed replay/pattern selection and controls, setup execution variants, net outcomes/drawdown, ranking, event timing, trend/volatility, two-way cluster inference",
+      "historicalDataEligibility": "NOT_ESTABLISHED_BY_SYNTHETIC_REFERENCE",
+      "inputSha256": "35a30c4539422e4414f98c2f12a955a8f6812d56c314b9f964774e8740e367a4"
+    },
+    "validation": {
+      "state": "PASS",
+      "scope": "Independent partition/Holm/registered-pipeline arithmetic invoked by research-validation.test.mjs",
+      "scriptHash": "e4827e7761be186ae21669bfdd1831c4074ec2576111c4e39546ce037c7c1e93"
+    }
+  },
+  "resources": {
+    "monteCarlo": {
+      "schemaVersion": "monte-carlo-resource-check-1.0.0",
+      "sourceKind": "SYNTHETIC_TEST",
+      "simulations": 10000,
+      "horizon": 1000,
+      "sampledSteps": 10000000,
+      "elapsedMs": 2921.974327,
+      "peakRssBytes": 175656960,
+      "wallBudgetMs": 10000,
+      "rssBudgetBytes": 268435456,
+      "withinBudget": true,
+      "inputHash": "bf64dc3bc372b41e716f0b0b8a8814491732e10a8b282612de5d09d2c1ce5567",
+      "resultHash": "8f532ccd8cef61262c035ba9bdc809cec86101b182d79c4ca533698ff40f8e00",
+      "generationHash": "74ec42c385c5590abc2eee62d1e3286fc8a5a86fd795f98aba9d707b3a9fdabe",
+      "codeHash": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "calculationRuntime": {
+        "node": "v22.23.4",
+        "v8": "12.4.254.21-node.57",
+        "platform": "linux",
+        "arch": "x64",
+        "glibc": "2.41",
+        "binaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      }
+    },
+    "portfolio": {
+      "mode": "SYNTHETIC_TEST",
+      "sessions": 2000,
+      "listings": 20,
+      "valuationCells": 40000,
+      "trades": 20,
+      "endCapital": 998.5022466300551,
+      "elapsedMs": 3102.57156,
+      "peakRssKiB": 236476,
+      "inputHash": "c0af6b240d03b673557a4e88a5577b87f9f7dc7e6fc90efe578566eb3e2eec58",
+      "sourceHashes": {
+        "research-portfolio.cjs": "217669a51c53579c48fbe611064dc45a27232dbc20b9bce26c2febd085a3d55a",
+        "profile-backtest.js": "49160c3e65128e526a4a5d31dd13c56757f6c84ab98da98c5425a51058ee4731",
+        "backtest.js": "4786ea638aabd7cd78c43631987a5d85672a100251a2187ca5d1ba7e484b1a91"
+      },
+      "nodeRuntime": {
+        "node": "v22.23.4",
+        "v8": "12.4.254.21-node.57",
+        "icu": "78.3",
+        "platform": "linux",
+        "arch": "x64",
+        "glibc": "2.41",
+        "nodeBinaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+      },
+      "generation": "a7e4a8313da999a8d6a23c935e2fa89fdca2494f182932f47bd8aa5559fcd17a",
+      "resultHash": "65e7c6d2b83e3e4bef08bd7ccaff82feea64200ae25dee7442da3e1efc2b9ae2"
+    }
+  },
+  "githubCodeChecks": {
+    "headRefOid": "d6760c493fc2af35db7057b042d294b3c123650c",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:15:55Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192345958/job/121165826963",
+        "name": "materialize",
+        "startedAt": "2026-10-25T12:15:56Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant 2.0 Product Intelligence Materialization"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:20:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348269/job/121165832540",
+        "name": "core",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:17:09Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348240/job/121165832554",
+        "name": "contract",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Currency & FX — Capability- und Datennachweis"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:22:20Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348266/job/121165832450",
+        "name": "package",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant 2.0 Production Pages"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:31:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348295/job/121165832459",
+        "name": "experience",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Browser QA"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:23:13Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348259/job/121165832267",
+        "name": "test",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:24:51Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348255/job/121165832236",
+        "name": "validate",
+        "startedAt": "2026-10-25T12:16:01Z",
+        "status": "COMPLETED",
+        "workflowName": "SEC Fundamentals CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:15:57Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348269/job/121165833842",
+        "name": "live",
+        "startedAt": "2026-10-25T12:15:58Z",
+        "status": "COMPLETED",
+        "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:22:21Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348266/job/121167235019",
+        "name": "deploy",
+        "startedAt": "2026-10-25T12:22:21Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant 2.0 Production Pages"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:16:03Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348240/job/121165832417",
+        "name": "marker",
+        "startedAt": "2026-10-25T12:16:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Currency & FX — Capability- und Datennachweis"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:16:03Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348240/job/121165853274",
+        "name": "measure",
+        "startedAt": "2026-10-25T12:16:03Z",
+        "status": "COMPLETED",
+        "workflowName": "Currency & FX — Capability- und Datennachweis"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:22:21Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40192348266/job/121167235116",
+        "name": "company-intelligence-live",
+        "startedAt": "2026-10-25T12:22:21Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant 2.0 Production Pages"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:17:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/1b9b9a27-2bab-4462-89e0-c876c7ca596e",
+        "name": "Cloudflare Pages",
+        "startedAt": "2026-10-25T12:17:12Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      },
+      {
+        "__typename": "StatusContext",
+        "context": "Vercel",
+        "startedAt": "2026-10-25T12:17:00Z",
+        "state": "SUCCESS",
+        "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/D5SxM7QvyZvRkn7uSJFmru2fSKfy"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-25T12:17:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://vercel.com/github",
+        "name": "Vercel Preview Comments",
+        "startedAt": "2026-10-25T12:17:01Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/922"
+  },
+  "scopeProtection": {
+    "protectedPathsUnchanged": true,
+    "protectedPaths": [
+      "quant/app",
+      "quant/ui",
+      "quant/index.html",
+      "assets",
+      "core",
+      "quant/data",
+      "quant/methodology",
+      ".github",
+      "server",
+      "api",
+      "providers"
+    ],
+    "activeCertificationUnchanged": true,
+    "activeCertifiedKinds": 0,
+    "productionApproved": false,
+    "providerRequests": false,
+    "paidOrders": false,
+    "schedulersChanged": false,
+    "frontendChanged": false
+  },
+  "limitations": [
+    "Fixture and calculation parity are not untouched predictive evidence.",
+    "Historical population/PIT/lifecycle/licensing gaps remain in data-sources.json.",
+    "No new methodology proposal activated.",
+    "An earlier external Vercel rate limit was resolved; executed checks on the frozen code head passed. Final documentation-head checks must be consulted separately."
+  ],
+  "reportHash": "9c7a1ec06bd1662e5f1b887d69028a85af336d1a715914effaacae3de7f9595b"
+}
