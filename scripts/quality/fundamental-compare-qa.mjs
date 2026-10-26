@@ -195,7 +195,11 @@ for (const [w, h] of viewports) {
       expect(at, dual === 'LR', 'Zwei Einheiten: linke und rechte Achse', dual);
       await legibility(b.page, at + ' KGV+FCF');
       const r1 = await tapPlot(b.page, '.fu-mc', 0), r2 = await tapPlot(b.page, '.fu-mc', 1);
-      expect(at, /KGV/.test(r2.rows[0]) && /Free Cashflow/.test(r2.rows[1]) && /keine Angabe/.test(r1.rows[1]), 'Ablesen: Luecke vor dem ersten Free Cashflow bleibt „keine Angabe“', r1.rows.join(' / '));
+      // Ob am ersten Zeitraum ein Wert oder eine Luecke steht, haengt von den Daten ab (NVIDIA hat seit #944/#981 Free
+      // Cashflow ab GJ 2010). Hier: beide Kennzahlen werden zum selben Zeitraum abgelesen, je mit Wert oder „keine Angabe“;
+      // dass eine Luecke als „keine Angabe“ erscheint, prueft die Max-Pruefung unten an der spaeter beginnenden Reihe.
+      const readOk = (r) => r.rows.length === 2 && /KGV/.test(r.rows[0]) && /Free Cashflow/.test(r.rows[1]) && r.rows.every((x) => /\d|keine Angabe/.test(x.replace(/^(KGV|Free Cashflow)/, '')));
+      expect(at, readOk(r1) && readOk(r2) && r1.head !== r2.head, 'Ablesen: beide Kennzahlen zum selben Zeitraum, Wert oder „keine Angabe“', r1.head + ': ' + r1.rows.join(' / ') + ' | ' + r2.head + ': ' + r2.rows.join(' / '));
       // Max im Vergleich: Achse beginnt mit der frueher beginnenden Reihe, die spaeter beginnende hat dort eine Luecke;
       // erstes Jahr je Kennzahl genannt. Welche Reihe frueher beginnt, sagen die Daten (Startjahre aus dem Hinweis).
       await tapEl(b.page, '.fu-seg[aria-label=Zeitraum] .fu-seg-b:nth-child(4)');
