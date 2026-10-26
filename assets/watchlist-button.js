@@ -16,6 +16,13 @@
 
    Eine Abfrage der Liste je Tab und 5 Minuten (sessionStorage), geteilt von
    allen Lesezeichen; Aenderungen gehen ueber das Ereignis "vu-watchlist-change".
+
+   couple(store) koppelt eine lokale "Beobachten"-Liste eines Produkts
+   ({has(t), toggle(t) -> an?}) an die Konto-Watchlist: Ohne Konten oder ohne
+   Anmeldung bleibt alles lokal und unveraendert. Angemeldet zaehlt ein Titel
+   als beobachtet, wenn er lokal ODER im Konto steht; ein Klick schreibt beide
+   Seiten gleich. Vorhandene lokale Eintraege werden nie von selbst hochgeladen
+   oder geloescht - die Uebernahme bietet /konto/watchlist/ ausdruecklich an.
    Browser: globalThis.VUWatchButton; Node (Tests): module.exports.
    ========================================================================= */
 (function (root, factory) {
@@ -26,10 +33,12 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "watchlist-button-1.0.0";
+  var VERSION = "watchlist-button-1.1.0";
   var PATH = "M6 3h12v18l-6-4-6 4z";
-  var cache = null;          /* Promise<{signedIn, ids:{instrumentId:true}}> je Seite */
+  var cache = null;          /* Promise<{signedIn, ids:{instrumentId: Ticker beim Speichern}}> je Seite */
   var resolved = {};         /* ticker -> Promise<instrumentId|null> */
+  var known = {};            /* ticker -> instrumentId, sobald aufgeloest (fuer synchrone Abfragen) */
+  var on = null;             /* Promise<boolean>: Konten freigeschaltet (auto/ready) */
 
   function account() { return root.VUAccount || null; }
   function enabled() { var a = account(); return !!(a && a.available()); }
@@ -43,7 +52,9 @@
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (shard) {
           var hit = ((shard && shard.instruments) || []).filter(function (i) { return i.symbol === t && i.active; });
-          return hit.length === 1 && Id.isInstrumentId(hit[0].instrumentId) ? hit[0].instrumentId : null;
+          var id = hit.length === 1 && Id.isInstrumentId(hit[0].instrumentId) ? hit[0].instrumentId : null;
+          if (id) known[t] = id;
+          return id;
         }, function () { return null; });
     }
     return resolved[t];
@@ -62,7 +73,7 @@
       var hit = stored();
       cache = hit ? Promise.resolve({ signedIn: true, ids: hit.ids }) : account().get("/v1/watchlist").then(function (r) {
         var ids = {};
-        if (r.ok) (r.data.items || []).forEach(function (i) { ids[i.instrumentId] = true; });
+        if (r.ok) (r.data.items || []).forEach(function (i) { ids[i.instrumentId] = i.ticker || true; });
         var st = { signedIn: r.ok, ids: ids };
         if (r.ok) store(st);
         return st;
@@ -137,12 +148,72 @@
           if (r.status === 401) { cache = null; try { root.sessionStorage.removeItem(STORE); } catch (e) { /* leer */ } return hint(btn, "Bitte melde dich erneut an.", { href: "/konto/anmelden/", label: "Anmelden" }); }
           return hint(btn, account().message(r.state));
         }
-        if (saved) delete st.ids[id]; else st.ids[id] = true;
+        if (saved) delete st.ids[id]; else st.ids[id] = ticker;
         store(st);
-        if (root.dispatchEvent && root.CustomEvent) root.dispatchEvent(new root.CustomEvent("vu-watchlist-change", { detail: { instrumentId: id, saved: !saved } }));
+        changed(id, ticker, !saved);
         hint(btn, saved ? ticker + " aus der Watchlist entfernt." : ticker + " gespeichert.", saved ? null : { href: "/konto/watchlist/", label: "Watchlist" });
       });
     });
+  }
+
+  function changed(id, ticker, saved) {
+    if (root.dispatchEvent && root.CustomEvent) root.dispatchEvent(new root.CustomEvent("vu-watchlist-change", { detail: { instrumentId: id, ticker: ticker, saved: saved } }));
+  }
+
+  /* ------------------------------------------------ lokale Listen koppeln */
+  var snap = null;           /* geladener Kontostand, sobald da: {signedIn, ids} */
+  function central() {
+    var p = on || (root.document && root.document.head ? ready(root.document) : null);
+    if (!p) return Promise.resolve(null);
+    return p.then(function (ok) { return ok ? load() : null; }).then(function (st) {
+      if (st && !snap) {
+        snap = st;   /* einmal melden: gekoppelte Listen koennen ihren Zustand neu zeichnen */
+        if (root.dispatchEvent && root.CustomEvent) root.dispatchEvent(new root.CustomEvent("vu-watchlist-ready", { detail: { signedIn: st.signedIn } }));
+      }
+      return st;
+    }, function () { return null; });
+  }
+  function centralHas(t) {
+    if (!snap || !snap.signedIn) return false;
+    if (known[t] && snap.ids[known[t]]) return true;
+    for (var id in snap.ids) if (snap.ids[id] === t) return true;
+    return false;
+  }
+  /* Schreibt den Konto-Stand fuer t auf "an"/"aus". Fehler (z. B. Tarifgrenze) lassen die lokale Liste wie geklickt
+     und melden sich ueber "vu-watchlist-sync"; die Watchlist-Seite zeigt den Titel dann als "nur auf diesem Geraet". */
+  function follow(t, want) {
+    return central().then(function (st) {
+      if (!st || !st.signedIn) return { ok: true, state: "LOCAL_ONLY" };
+      return resolveInstrument(t).then(function (id) {
+        if (!id) return { ok: false, state: "INSTRUMENT_NOT_RESOLVED" };
+        if (!!st.ids[id] === want) return { ok: true, state: "UNCHANGED" };
+        var req = want ? account().post("/v1/watchlist/items", { instrumentId: id, ticker: t })
+          : account().post("/v1/watchlist/items/remove", { instrumentId: id });
+        return req.then(function (r) {
+          if (r.ok) { if (want) st.ids[id] = t; else delete st.ids[id]; store(st); changed(id, t, want); }
+          else if (root.dispatchEvent && root.CustomEvent) root.dispatchEvent(new root.CustomEvent("vu-watchlist-sync", { detail: { ticker: t, saved: want, state: r.state || "ERROR" } }));
+          return { ok: !!r.ok, state: r.ok ? (want ? "ADDED" : "REMOVED") : (r.state || "ERROR") };
+        });
+      });
+    });
+  }
+  /**
+   * Koppelt eine lokale Liste {has(t), toggle(t) -> boolean an} an die Konto-Watchlist, an Ort und Stelle
+   * (Verweise anderer Module auf dasselbe Objekt bleiben gueltig). Idempotent. Gibt das Objekt zurueck.
+   */
+  function couple(store) {
+    if (!store || store.vuCoupled) return store;
+    var has = store.has, flip = store.toggle;
+    store.has = function (t) { return has.call(store, t) || centralHas(t); };
+    store.toggle = function (t) {
+      var local = has.call(store, t), want = !(local || centralHas(t));
+      if (local !== want) flip.call(store, t);           /* lokal genau so, wie geklickt */
+      store.lastSync = follow(t, want);
+      return want;
+    };
+    store.vuCoupled = true;
+    central();
+    return store;
   }
 
   var CSS = ".vu-shead-watch{position:relative;display:inline-flex}" +
@@ -165,11 +236,12 @@
   }
   /* Konten freigeschaltet? Ohne Endpunkt bleibt es bei dieser einen kleinen Anfrage. */
   function ready(doc) {
-    return (root.VU_ACCOUNT_CONFIG ? Promise.resolve(true) : script(doc, "/konto/config.js")).then(function () {
+    if (on) return on;
+    return on = (root.VU_ACCOUNT_CONFIG ? Promise.resolve(true) : script(doc, "/konto/config.js")).then(function () {
       var c = root.VU_ACCOUNT_CONFIG;
       if (!c || !c.endpoint) return false;
       return (root.VUAccount ? Promise.resolve(true) : script(doc, "/konto/account-api.js")).then(function () { return enabled(); });
-    });
+    }, function () { return false; });
   }
   function tickerOfPage() {
     var SC = root.VUCore && root.VUCore.StockContext, loc = root.location;
@@ -210,5 +282,7 @@
   }
 
   return Object.freeze({ VERSION: VERSION, mount: mount, auto: auto, resolveInstrument: resolveInstrument, enabled: enabled,
-    STORE: STORE, _reset: function () { cache = null; resolved = {}; } });
+    couple: couple, follow: follow, STORE: STORE,
+    _reset: function () { cache = null; resolved = {}; known = {}; on = null; snap = null; },
+    _ready: function (p) { on = p; } });
 });

@@ -133,7 +133,7 @@ Zustände abgebildet; nichts sonst aus der Datenbank erreicht den Browser.
   - **Vorbereitet als eigene Draft-PRs** (je eine Zeile, auf diesem Branch aufbauend, einzeln freizugeben):
     - Discover (#948): `discover/index.html` (Discover-Gate: nur Discover-Pfade).
     - Supertrader (#949): `stockKit()` in `supertrader/assets/supertrader.js` lädt die Komponente nach (Gate A: nur Supertrader-Pfade; keine Seite wird neu erzeugt).
-    - Quant/Chartbild (#951): `quant/index.html` ist byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`). Der PR lässt die Sperrdatei unverändert, deshalb schlägt der Sperrtest dort bewusst an. Erst nach deiner Freigabe kommt die eine Hash-Zeile dazu.
+    - Quant/Chartbild (#951): `quant/index.html` ist byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`). Mit der Freigabe des Owners (26.10.2026) trägt der PR genau eine Änderung der Sperrdatei: den aus den Dateibytes berechneten Hash von `quant/index.html` nach der einen zusätzlichen Skriptzeile. Alle anderen Sperren bleiben unverändert.
     - Technical zeichnet den einheitlichen Kopf nicht und bekommt deshalb kein Lesezeichen.
 - Hauptmenü, Dock und Chart-Designs sind unverändert. In der Konto-Unternavigation kam der Eintrag „Watchlist“ hinzu.
 
@@ -158,10 +158,33 @@ Ablauf nach der Anmeldung (`core/watchlist-view.js#legacyTickers`/`planMerge`, S
 3. Bereits gespeicherte Titel werden übersprungen; die Zusammenführung ist eine Vereinigung über die `instrumentId`.
 4. Erst auf Klick („Übernehmen“) gehen die Titel in **einem** Aufruf an `POST /v1/watchlist/import`. Die Tarifgrenze stoppt dort
    sauber, und die Meldung nennt die Zahl.
-5. **Lokal wird nichts gelöscht oder geändert.** Die Produktwelten zeigen ihre lokalen Knöpfe weiter, bis ein eigener PR je Welt sie
-   mit dem Konto koppelt (z. B. angemeldet: Konto-Lesezeichen statt lokalem Knopf; abgemeldet: lokaler Knopf wie heute).
+5. **Lokal wird nichts gelöscht oder geändert.**
 6. Die Abfrage wiederholt sich, solange noch nicht übernommene Titel lokal stehen. Ausgeblendet bleibt sie erst, wenn nichts mehr
    offen ist.
+
+#### Kopplung der lokalen Knöpfe (`assets/watchlist-button.js#couple`)
+
+Discover und Quant koppeln ihre „Beobachten“-Knöpfe in je einem eigenen PR (siehe §11) über dieselbe Funktion. Sie
+legt sich um die lokale Liste des Produkts (`{has, toggle}`), ohne deren Speicher zu ändern:
+
+| Lage | Knopf zeigt „beobachtet“, wenn … | Klick |
+|---|---|---|
+| Konten aus (kein Endpunkt in `konto/config.js`) | lokal gespeichert | nur lokal, wie bisher |
+| nicht angemeldet | lokal gespeichert | nur lokal, wie bisher |
+| angemeldet | lokal **oder** im Konto gespeichert | schreibt lokal und Konto auf denselben Stand („an“ oder „aus“) |
+
+- **Keine ungewollte Übernahme:** Beim Laden wird das Konto nur gelesen. Ein Titel, der nur lokal steht, geht erst durch einen Klick
+  oder durch „Übernehmen“ auf `/konto/watchlist/` ins Konto.
+- **Keine automatische Löschung:** Lokal wird nur entfernt, was der Nutzer selbst ausschaltet. Abmelden, Kontolöschung oder ein Fehler
+  der Konto-API lassen die lokalen Listen unverändert; nicht angemeldete Nutzer behalten ihre Einträge.
+- **Fehler im Konto** (z. B. Tarifgrenze): Die lokale Liste bleibt wie geklickt, das Ereignis `vu-watchlist-sync` nennt den Grund,
+  und `/konto/watchlist/` bietet den Titel weiter zur Übernahme an.
+- Die Listenansichten der Produkte (Discover „Watchlist“, Quant „Merkliste“) zeigen weiter die Liste dieses Geräts; die vereinigte
+  Liste mit Kurs, Quant und Supertrader steht auf `/konto/watchlist/`.
+- Nur US-Listings mit genau einem aktiven `instrumentId`. Die europäische Discover-Liste bleibt rein lokal.
+- Quant: `quant/app/ui.js` (`QX.watch`) und `quant/app/page-stock.js` sind byte-gesperrt und bleiben unverändert. Die Kopplung legt
+  sich zur Laufzeit um `QX.watch`, geladen über `assets/watchlist-button.js`, das #951 in `quant/index.html` einbindet. Ein Titel,
+  der nur im Konto steht, erscheint im Quant-Knopf ab dem nächsten Zeichnen der Seite.
 
 ### Währung
 
@@ -266,7 +289,7 @@ oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der O
 | `supabase/tests/08_watchlist_personal.sql` | RLS zwischen zwei Nutzern, Idempotenz, Kennungsformat, Alerts, Tarifgrenze, anonym, Löschung, Fan-out-Index |
 | `workers/vu-account/tests/flows.test.mjs` | API Ende-zu-Ende mit zwei isolierten Konten, CSRF/Herkunft, Grenze 409, Export, Löschung; Pro mit 200 Titeln (Übernahme, Antwortzeit) |
 | `core/tests/watchlist-view.test.mjs` | echte Artefakte: kein Gesamtscore, Supertrader nur Forschung ohne Freigabe; veraltete Stände; zwei Listings (BGC); Delisting; Währungskonflikt; fehlende Quellen; Ereignisse; Teilauslieferung = Gesamtansicht |
-| `core/tests/watchlist-button.test.mjs` | Lesezeichen: ohne Freigabe nichts laden; nur eindeutig aktives Listing; keine HTML-Strings; gesperrte Dateien unberührt |
+| `core/tests/watchlist-button.test.mjs` | Lesezeichen: ohne Freigabe nichts laden; nur eindeutig aktives Listing; keine HTML-Strings; gesperrte Dateien unberührt. Kopplung: ohne Konten/Anmeldung rein lokal; angemeldet lokal ODER Konto, Klick schreibt beide, nichts wird von selbst übernommen; Tarifgrenze lässt lokal wie geklickt |
 | `konto/tests/konto.test.mjs` | Seitenstruktur, kein `innerHTML`, kein Gesamtscore im Browser, Unternavigation |
 | `scripts/account/watchlist-qa.mjs` | Browser (Chromium und WebKit/iPhone, hell/dunkel): Übernahme, Suche, Kennzahlen, Details, Notiz, Alerts, Filter/Sortierung/Gruppen, Entfernen, Lesezeichen angemeldet/abgemeldet/ohne Freigabe |
 | `scripts/account/watchlist-load.mjs` | Speicher und Abfragezeiten (CI: 1.000 Nutzer; Bericht: 10.000) |
@@ -276,8 +299,7 @@ oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der O
 | Punkt | Wer |
 |---|---|
 | Live-Freigabe wie bei #926 (Konten, Supabase-Projekt, Endpunkt in `konto/config.js`); #926 muss zuerst gemergt werden | Owner |
-| Lesezeichen in Discover, Supertrader und Quant/Chartbild: vorbereitete Draft-PRs freigeben (Quant nur mit Freigabe der UI-Sperrdatei) | Owner |
-| Lokale „Beobachten“-Knöpfe in Discover und Quant (`vu-discover-watchlist-v1`, `vu.quant.watchlist.v1`) ersetzen bzw. mit dem Konto koppeln, sobald Konten live sind (Discover-Gate, eigener PR je Produkt) | eigene PRs |
+| Lesezeichen und Kopplung: Draft-PRs in der Reihenfolge aus §11 freigeben | Owner |
 | Benachrichtigungen versenden (Event-Generator als Schritt der Datenläufe, Zustellung, Abmeldelinks) | späterer Meilenstein |
 | Euro-Anzeige einschalten (vorbereitet, `inEuro`), Listing-Währung bleibt maßgeblich | Owner-Entscheidung |
 
@@ -297,8 +319,34 @@ oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der O
    - A merkt drei Titel (Suche, Lesezeichen auf Fundamental, Übernahme lokaler Listen).
    - B ruft `GET /v1/watchlist` auf und sieht nichts von A.
    - B scheitert mit `PATCH`/`remove` auf A-Kennungen.
+   - Kopplung (nach den Discover- und Quant-PRs aus §11): A merkt in Discover einen neuen Titel mit „Zur Watchlist“; er steht danach
+     lokal und im Konto. Ein Titel, der nur lokal stand, bleibt nur lokal, bis A ihn übernimmt. Nach dem Abmelden zeigt Discover
+     wieder genau die lokale Liste.
 6. **Grenze:** A übernimmt 25 Titel. Die Antwort meldet `limitReached`, die Datenbank hat 20 Einträge.
 7. **Löschung:** A löscht das Konto; danach steht kein `watchlist_items`-Eintrag mehr mit A-`user_id`.
 8. **Messen:** In Supabase (**Reports → Database**) Größe und Abfragezeit aufzeichnen, `auth`-Schema-Größe notieren und §6
    (Schätzung Supabase Auth) durch die echte Zahl ersetzen.
 9. **Aufräumen:** Testkonten löschen. Den Endpunkt in `konto/config.js` nur auf dem Entwicklungs-Branch setzen, nie auf `main`.
+
+## 11. Gestapelte PRs und Merge-Reihenfolge
+
+Alle PRs sind Draft. Jeder setzt auf dem vorherigen auf; gemergt wird nur in dieser Reihenfolge, jeweils nach grüner CI und nach
+dem Umstellen der Basis des nächsten PRs auf `main`:
+
+| Schritt | PR | Branch | Basis | Inhalt |
+|---|---|---|---|---|
+| 1 | #926 | `claude/vision-universe-auth-subscriptions-j5ewxe` | `main` | Konten, Abos, Kündigung (Konten aus) |
+| 2 | #945 | `claude/vision-universe-watchlist` | #926 | Watchlist: Datenbank, API, Seite, Lesezeichen, Kopplungsfunktion |
+| 3a | #948 | `claude/watchlist-bookmark-discover` | #945 | Lesezeichen in Discover |
+| 3b | #949 | `claude/watchlist-bookmark-supertrader` | #945 | Lesezeichen in Supertrader |
+| 3c | #951 | `claude/watchlist-bookmark-quant` | #945 | Lesezeichen in Quant und freigegebener Sperr-Hash für `quant/index.html` |
+| 4a | Discover-Kopplung | `claude/watchlist-sync-discover` | #948 | lokaler Discover-Knopf ↔ Konto |
+| 4b | Quant-Kopplung | `claude/watchlist-sync-quant` | #951 | Quant-Merkliste ↔ Konto |
+
+- 3a, 3b und 3c hängen nur von #945 ab und sind untereinander unabhängig; 4a braucht 3a, 4b braucht 3c.
+- Supertrader-Gate A und das Discover-Gate verlangen produkteigene PRs; deshalb bleiben 3a/3b/4a getrennt.
+- #951 ändert die Quant-UI-Sperre nur um den Hash von `quant/index.html` (eine zusätzliche Skriptzeile). Wird `quant/index.html` auf
+  `main` vorher anders geändert, ist der Hash neu aus den Dateibytes zu berechnen, nie zu übernehmen.
+- Konten bleiben nach jedem Schritt aus, bis `konto/config.js` einen Endpunkt hat. Ohne Endpunkt sind Lesezeichen und Kopplung
+  wirkungslos, und alle lokalen Listen verhalten sich wie heute.
+
