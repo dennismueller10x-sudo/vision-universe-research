@@ -50,6 +50,34 @@ end $$;
 
 grant execute on all functions in schema tests to anon, authenticated, service_role;
 
+create or replace function tests.assert_auth_admin_privileges() returns void language plpgsql as $$
+declare t text;
+begin
+  perform tests.eq(has_schema_privilege('supabase_auth_admin', 'public', 'usage'), true, 'auth admin: schema public');
+  perform tests.eq(has_function_privilege('supabase_auth_admin', 'public.hook_before_user_created(jsonb)', 'execute'), true, 'auth admin: hook ausfuehrbar');
+  perform tests.eq((select prosecdef from pg_proc where oid = 'public.hook_before_user_created(jsonb)'::regprocedure), false, 'hook laeuft mit Rechten des Aufrufers');
+  perform tests.eq((select rolsuper or rolbypassrls from pg_roles where rolname = 'supabase_auth_admin'), false, 'auth admin ohne Sonderrechte');
+  foreach t in array array['anon', 'authenticated', 'service_role'] loop
+    perform tests.eq(has_function_privilege(t, 'public.hook_before_user_created(jsonb)', 'execute'), false, 'hook nicht ausfuehrbar fuer ' || t);
+  end loop;
+  foreach t in array array['public.registration_gate', 'public.registration_allowlist'] loop
+    perform tests.eq(has_table_privilege('supabase_auth_admin', t, 'select'), true, 'auth admin liest ' || t);
+    perform tests.eq(has_table_privilege('supabase_auth_admin', t, 'insert, update, delete, truncate'), false, 'auth admin schreibt nicht ' || t);
+    perform tests.eq((select relrowsecurity from pg_class where oid = t::regclass), true, 'RLS an ' || t);
+    perform tests.eq((select count(*) from pg_policies p where format('%I.%I', p.schemaname, p.tablename) = t
+                        and p.cmd = 'SELECT' and 'supabase_auth_admin' = any (p.roles) and p.qual = 'true')::int, 1, 'Leserichtlinie ' || t);
+  end loop;
+end $$;
+
+create or replace function tests.as_auth_admin() returns void language plpgsql as $$
+begin
+  perform tests.assert_auth_admin_privileges();
+  if pg_has_role(current_user, 'supabase_auth_admin', 'member')
+     and coalesce(current_setting('vu.test_hosted_mode', true), '') <> 'on' then
+    execute 'set local role supabase_auth_admin';
+  end if;
+end $$;
+
 -- Abrechnung: Schreibschutz, Zuordnung, Idempotenz, Reihenfolge, Berechtigungen.
 select set_config('vt.dora', (tests.create_user('dora@example.test'))::text, true);
 select set_config('vt.eve', (tests.create_user('eve@example.test'))::text, true);
