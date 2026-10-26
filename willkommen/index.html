@@ -21,27 +21,39 @@
 <a class="wk-skip" href="#wk-main">Zum Inhalt</a>
 <main id="wk-main" class="wk" tabindex="-1">
   <header class="wk-hero">
+    <span class="wk-hero-globe" aria-hidden="true"><span class="wk-hero-orbit"></span></span>
     <p class="wk-eyebrow"><span id="wk-hello">Hallo</span></p>
     <h1>Willkommen bei Vision&nbsp;Universe.</h1>
     <p class="wk-lead">Starte mit einer kurzen Einführung oder spring direkt in dein Modul.</p>
   </header>
 
-  <section class="wk-section wk-section-hl" aria-labelledby="wk-hl-title">
-    <h2 id="wk-hl-title" class="wk-visually-hidden">Erklärvideos</h2>
-    <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
+  <section class="wk-card wk-videos" aria-labelledby="wk-hl-title">
+    <div class="wk-head">
+      <span class="wk-head-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor"/></svg></span>
+      <div class="wk-head-text"><h2 id="wk-hl-title">Erklärvideos</h2><p class="wk-head-sub">Jedes Modul in ~30&nbsp;Sekunden erklärt.</p></div>
+      <button class="wk-pill" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="wk-hl-wrap">
+      <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
+      <button class="wk-hl-more" id="wk-hl-more" type="button" aria-label="Weitere Erklärvideos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
   </section>
 
-  <section class="wk-section" aria-labelledby="wk-products-title">
-    <div class="wk-section-head"><h2 id="wk-products-title">Deine Produkte</h2></div>
+  <section class="wk-products-sec" aria-labelledby="wk-products-title">
+    <div class="wk-head">
+      <h2 id="wk-products-title">Deine Produkte</h2>
+      <button class="wk-pill" id="wk-products-all" type="button">Alle Produkte<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
     <nav id="wk-products" aria-labelledby="wk-products-title"></nav>
   </section>
 
-  <section class="wk-section" aria-labelledby="wk-news-title">
-    <div class="wk-section-head"><h2 id="wk-news-title">Neu bei Vision Universe</h2></div>
-    <div id="wk-news" aria-busy="true"><p class="wk-empty">Neuigkeiten werden geladen …</p></div>
+  <section class="wk-card wk-newsbox" aria-labelledby="wk-news-title">
+    <div class="wk-head">
+      <h2 id="wk-news-title">Neu bei Vision Universe</h2>
+      <button class="wk-pill" id="wk-news-all" type="button">Alle Neuigkeiten<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div id="wk-news" class="wk-news" aria-busy="true"><p class="wk-empty">Neuigkeiten werden geladen …</p></div>
   </section>
-
-  <p class="wk-note">Vision Universe zeigt Daten und Modelle, keine Anlageberatung.</p>
 </main>
 <noscript><p style="padding:24px">Die Willkommensseite benötigt JavaScript.</p></noscript>
 <script src="/willkommen/app.js"></script>
