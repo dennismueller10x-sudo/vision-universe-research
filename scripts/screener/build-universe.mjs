@@ -127,7 +127,7 @@ export const COLUMNS = [
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
   'tiOut', 'tiStr', 'tiEw',
-  'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC'
+  'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC', 'twEma200', 'twDistEma200'
 ];
 const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC']);
 
@@ -164,7 +164,7 @@ export function technicalIntelligenceColumns(index, opts = {}) {
    TW_MAX_AGE_DAYS ist, bleiben leer (Missing != Zero). */
 export const TW_MAX_AGE_DAYS = 7;
 const TW_MAP = { twAtr: 'atrPct', twAdx: 'adx', twSt: 'supertrendUp', twPsar: 'psarUp', twCloud: 'aboveCloud', twAroon: 'aroonOsc', twWr: 'williamsR',
-  twCmf: 'cmf20', twStoch: 'stochK', twCci: 'cci20', twMfi: 'mfi14', twSqz: 'bbSqueeze', twSpike: 'volSpike', twObv: 'obvRising', twForm: 'formationActive', twFormC: 'formationConfirmed' };
+  twCmf: 'cmf20', twStoch: 'stochK', twCci: 'cci20', twMfi: 'mfi14', twSqz: 'bbSqueeze', twSpike: 'volSpike', twObv: 'obvRising', twForm: 'formationActive', twFormC: 'formationConfirmed', twEma200: 'aboveEma200', twDistEma200: 'distEma200' };
 export function technicalWorldColumns(art, opts = {}) {
   const byTicker = new Map();
   const cols = art && art.cols, n = cols && Array.isArray(cols.s) ? cols.s.length : 0;
