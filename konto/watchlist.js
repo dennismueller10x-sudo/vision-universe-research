@@ -11,7 +11,6 @@
   var W = root.VUCore && root.VUCore.WatchlistView;
   var Id = root.VUCore && root.VUCore.Identity;
   var UI_KEY = 'vu-watchlist-ui-v1';
-  var LEGACY_KEYS = ['vu-discover-watchlist-v1', 'vu.quant.watchlist.v1'];
   var FACTORS = ['quality', 'growth', 'momentum', 'value', 'profitability', 'revisions', 'risk'];
   var PRODUCT = {discover: 'Discover', quant: 'Quant', technical: 'Technical', technik: 'Chartbild', supertrader: 'Supertrader', fundamental: 'Fundamental'};
   var ALERTS = [['PRICE_EVENT', 'Neues 52W-Hoch und Volumen'], ['SUPERTRADER_SIGNAL', 'Gültiges Supertrader-Signal'], ['QUANT_CHANGE', 'Deutliche Faktoränderung']];
@@ -352,16 +351,17 @@
   /* Bisherige Browser-Watchlists (Discover, Quant) einmalig uebernehmen - nur auf Wunsch. */
   function setupLegacy() {
     var box = $('wl-legacy');
-    var tickers = [];
-    LEGACY_KEYS.forEach(function (k) { try { var v = JSON.parse(localStorage.getItem(k) || '[]'); (Array.isArray(v) ? v : []).forEach(function (t) { if (typeof t === 'string' && tickers.indexOf(t) < 0) tickers.push(t); }); } catch (e) { /* leer */ } });
-    if (!tickers.length || state.summaryState !== 'ok') { box.hidden = true; return; }
+    var legacy = W.legacyTickers(function (k) { return localStorage.getItem(k); });
+    if (!legacy.length || state.summaryState !== 'ok') { box.hidden = true; return; }
     ensureNames().then(function (names) {
       if (!names) return;
-      var have = {}; state.items.forEach(function (i) { have[i.instrumentId] = true; });
-      var items = tickers.map(function (t) { var id = names.resolveTicker(t); return id && !have[id] ? {instrumentId: id, ticker: t} : null; }).filter(Boolean);
+      var plan = W.planMerge(names, legacy, state.items.map(function (i) { return i.instrumentId; }));
+      var items = plan.add;
       if (!items.length) { box.hidden = true; return; }
       box.hidden = false;
-      $('wl-legacy-text').textContent = items.length + ' Aktie' + (items.length === 1 ? '' : 'n') + ' aus deiner bisherigen Browser-Watchlist (Discover/Quant) übernehmen?';
+      $('wl-legacy-text').textContent = items.length + ' Aktie' + (items.length === 1 ? '' : 'n') + ' aus deiner bisherigen Browser-Watchlist (Discover/Quant) übernehmen?' +
+        (plan.unresolved.length ? ' Nicht eindeutig zuzuordnen: ' + plan.unresolved.slice(0, 8).join(', ') + (plan.unresolved.length > 8 ? ' …' : '') + '.' : '') +
+        ' Deine Listen auf diesem Gerät bleiben unverändert.';
       var btn = $('wl-legacy-btn'), fresh = btn.cloneNode(true);
       btn.parentNode.replaceChild(fresh, btn);
       fresh.addEventListener('click', function () {

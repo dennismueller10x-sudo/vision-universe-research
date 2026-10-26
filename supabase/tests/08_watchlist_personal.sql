@@ -51,6 +51,28 @@ select public.watchlist_add('vu_' || lpad(to_hex(g), 8, '0'), null) from generat
 select tests.throws($$select public.watchlist_add('vu_ffffffff', null)$$, 'WATCHLIST_ITEMS_LIMIT_REACHED');
 reset role;
 
+-- Tarifwechsel: Plus -> Free. Nichts wird geloescht; ueber der Free-Grenze darf nur nichts Neues dazukommen.
+select tests.create_user('jule@example.test') as jule \gset
+select tests.service();
+select public.billing_link_customer(:'jule', 'stripe', 'cus_jule');
+select public.billing_apply_subscription(jsonb_build_object('provider','stripe','provider_subscription_id','sub_jule','provider_customer_id','cus_jule',
+  'provider_price_id','price_test_plus_month','status','active','current_period_end', now() + interval '30 days','state_at', now()));
+reset role;
+select tests.authenticate(:'jule');
+select tests.eq((public.watchlist_import((select jsonb_agg(jsonb_build_object('instrumentId', 'vu_' || lpad(to_hex(g), 10, '0'))) from generate_series(1, 30) g)) ->> 'added')::int,
+  30, 'Plus: 30 Titel');
+reset role;
+select tests.service();
+select public.billing_apply_subscription(jsonb_build_object('provider','stripe','provider_subscription_id','sub_jule','provider_customer_id','cus_jule',
+  'provider_price_id','price_test_plus_month','status','canceled','current_period_end', now() - interval '1 day','state_at', now() + interval '1 minute'));
+reset role;
+select tests.authenticate(:'jule');
+select tests.eq((select count(*) from public.watchlist_items)::int, 30, 'nach Kuendigung bleibt alles lesbar');
+select tests.throws($$select public.watchlist_add('vu_ffffffff01', null)$$, 'WATCHLIST_ITEMS_LIMIT_REACHED');
+select tests.eq(public.watchlist_remove('vu_' || lpad(to_hex(1), 10, '0')), 1, 'Entfernen bleibt moeglich');
+select tests.eq((public.watchlist_import('[{"instrumentId":"vu_ffffffff02"}]') ->> 'limitReached')::boolean, true, 'Uebernahme stoppt an der Free-Grenze');
+reset role;
+
 -- Anonym: keine Funktion, keine Tabelle.
 select tests.anon();
 select tests.throws($$select public.watchlist_add('vu_d57074b4128184', 'NVDA')$$, 'permission denied');

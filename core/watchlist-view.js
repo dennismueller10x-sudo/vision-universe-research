@@ -227,8 +227,10 @@
       var sf = freshness(doc, "supertrader", ss.asOf, now);
       var entries = r.sts.map(function (e) {
         var meta = ss.strategies[e[0]] || {};
-        return { strategyId: e[0], name: meta.name || e[0], state: e[1], stateLabel: (ss.lifecycle || {})[e[1]] || e[1], released: meta.released === true,
-          actionable: ACTIONABLE.indexOf(e[1]) >= 0, level: meta.level || null, levelLabel: meta.levelLabel || null,
+        /* Freigabe gilt nur fuer die freigegebene Regelversion; ein Signal einer anderen Version ist Forschung. */
+        var released = meta.released === true && typeof meta.releasedVersion === "string" && e[2] === meta.releasedVersion;
+        return { strategyId: e[0], name: meta.name || e[0], state: e[1], stateLabel: (ss.lifecycle || {})[e[1]] || e[1], released: released,
+          version: e[2] || null, actionable: ACTIONABLE.indexOf(e[1]) >= 0, level: meta.level || null, levelLabel: meta.levelLabel || null,
           presentationLabel: meta.presentationLabel || null };
       });
       var valid = entries.filter(function (e) { return e.released && e.actionable; });
@@ -339,6 +341,59 @@
     return out;
   }
 
+  /* --------------------------------------------- Euro-Anzeige (vorbereitet)
+     Massgeblich ist immer der Kurs in der Listing-Waehrung. Auf Wunsch (spaeter: Einstellung display_currency)
+     kann daneben ein Euro-Wert stehen - umgerechnet mit dem EZB-Referenzkurs vom Kursdatum oder hoechstens
+     5 Kalendertage davor. Fehlt der Kurs, gibt es keinen Euro-Wert (kein Ersatzkurs). */
+  var FX_MAX_GAP_DAYS = 5;
+  function inEuro(doc, price) {
+    if (!price || (price.state !== "AVAILABLE" && price.state !== "STALE") || !(price.close > 0)) return { state: "UNAVAILABLE", reason: "NO_PRICE" };
+    if (price.currency === "EUR") return { state: "AVAILABLE", value: price.close, currency: "EUR", rate: 1, rateDate: price.date, original: true };
+    var fx = doc.sources && doc.sources.fx, r = fx && fx.rates && fx.rates[price.currency];
+    if (!r) return { state: "UNAVAILABLE", reason: "NO_FX_RATE" };
+    var gap = (Date.parse(price.date) - Date.parse(r[0])) / 864e5;
+    if (!(gap >= 0 && gap <= FX_MAX_GAP_DAYS)) return { state: "UNAVAILABLE", reason: "FX_RATE_NOT_MATCHING_PRICE_DATE" };
+    return { state: "AVAILABLE", value: Math.round(price.close / r[1] * 100) / 100, currency: "EUR", rate: r[1], rateDate: r[0], source: fx.attribution, original: false };
+  }
+
+  /* ------------------------------------------------- Lokale Listen (Uebernahme)
+     Die bisherigen Browser-Watchlists werden nur GELESEN. Die Zusammenfuehrung ist eine Vereinigung ueber die
+     instrumentId; lokal wird nichts geloescht oder geaendert (docs/accounts/WATCHLIST.md §5). */
+  var LEGACY = [
+    { key: "vu-discover-watchlist-v1", product: "Discover", read: function (v) { return Array.isArray(v) ? v : []; } },
+    { key: "vu.quant.watchlist.v1", product: "Quant", read: function (v) { return Array.isArray(v) ? v : []; } },
+    { key: "vu2.watchlist.selection.v1", product: "Quant-Watchlist", read: function (v) { return v && v.version === "1.0.0" && Array.isArray(v.tickers) ? v.tickers : []; } }
+  ];
+  /** getItem(key) -> string|null. Liefert [{ticker, sources:[Produkt…]}] ohne Dubletten (max. 500). */
+  function legacyTickers(getItem) {
+    var out = [], at = {};
+    LEGACY.forEach(function (l) {
+      var raw = null;
+      try { raw = getItem(l.key); } catch (e) { raw = null; }
+      if (!raw || raw.length > 20000) return;
+      var list = [];
+      try { list = l.read(JSON.parse(raw)); } catch (e) { list = []; }
+      list.forEach(function (t) {
+        if (typeof t !== "string" || !/^[A-Z0-9][A-Z0-9.\-]{0,23}$/.test(t)) return;
+        if (at[t] === undefined) { if (out.length >= 500) return; at[t] = out.length; out.push({ ticker: t, sources: [] }); }
+        if (out[at[t]].sources.indexOf(l.product) < 0) out[at[t]].sources.push(l.product);
+      });
+    });
+    return out;
+  }
+  /** names: index(names.json); existing: instrumentIds der Konto-Watchlist. */
+  function planMerge(names, legacy, existing) {
+    var have = {}, plan = { add: [], alreadyPresent: [], unresolved: [] };
+    (existing || []).forEach(function (id) { have[id] = true; });
+    legacy.forEach(function (l) {
+      var id = names.resolveTicker(l.ticker);
+      if (!id) plan.unresolved.push(l.ticker);
+      else if (have[id]) plan.alreadyPresent.push(l.ticker);
+      else { have[id] = true; plan.add.push({ instrumentId: id, ticker: l.ticker }); }
+    });
+    return plan;
+  }
+
   /* ------------------------------------------------------------ Ereignisse
      Vorbereitung fuer eine spaetere Benachrichtigung (APP_READINESS.md §6):
      Vergleich zweier veroeffentlichter Uebersichten, deterministisch, je
@@ -382,6 +437,6 @@
   }
 
   return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
-    PATHS: PATHS, load: load, merge: merge, index: index, freshness: freshness, view: view, aggregate: aggregate, sort: sort, filter: filter, group: group, events: events,
+    PATHS: PATHS, LEGACY_KEYS: LEGACY.map(function (l) { return l.key; }), legacyTickers: legacyTickers, planMerge: planMerge, inEuro: inEuro, load: load, merge: merge, index: index, freshness: freshness, view: view, aggregate: aggregate, sort: sort, filter: filter, group: group, events: events,
     GROUPS: GROUPS.map(function (g) { return { id: g.id, label: g.label }; }) };
 });

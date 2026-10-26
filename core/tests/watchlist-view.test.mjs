@@ -97,7 +97,7 @@ test("Suche und Uebernahme alter Browser-Watchlists aufloesen nur aktive, eindeu
 });
 
 /* ------------------------------------------------------------- Fixtures */
-function fixtureRoot(t, { strategies, signals, priceCurrency = "USD", withTechnical = true } = {}) {
+function fixtureRoot(t, { strategies, signals, priceCurrency = "USD", withTechnical = true, screening = null } = {}) {
   const root = mkdtempSync(join(tmpdir(), "vu-wl-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const w = (rel, data, gz) => { const p = join(root, rel); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, gz ? gzipSync(JSON.stringify(data)) : JSON.stringify(data)); };
@@ -115,9 +115,10 @@ function fixtureRoot(t, { strategies, signals, priceCurrency = "USD", withTechni
       "newHigh52w@1W": [true, true], "newHigh52w@1M": [true, false], distHigh52w: [0, -0.03], relVol: [2.4, 0.9], volSpike: [true, false],
       rsi14: [70, 55], aboveSma200: [true, true], structure: ["BULLISH", "RANGE"] } });
   w("supertrader/data/registry-core.json", { lifecycle: { labels: { SETUP: "Einstieg vorbereitet" } }, strategies: strategies || [
-    { strategy_id: "S_OK", strategy_name: "Freigegeben", mode: "LIVE", evidence: { level: "CRITERIA_MET", presentation: "CURRENT" } },
+    { strategy_id: "S_OK", strategy_name: "Freigegeben", mode: "LIVE", evidence: { level: "CRITERIA_MET", presentation: "CURRENT", version: "1.0.0" } },
     { strategy_id: "S_RES", strategy_name: "Forschung", mode: "LIVE", evidence: { level: "IN_REVIEW", presentation: "RESEARCH" } }] });
-  w("supertrader/data/signals-core.json", { asOf: "2026-10-23", bySymbol: signals || { ACME: [{ strategyId: "S_OK", state: "SETUP" }], ACX: [{ strategyId: "S_RES", state: "ACTIVE" }, { strategyId: "S_OK", state: "CLOSED" }] } });
+  w("supertrader/data/signals-core.json", { asOf: "2026-10-23", bySymbol: signals || { ACME: [{ strategyId: "S_OK", id: "S_OK:ACME:2026-10-22:v1.0.0", state: "SETUP" }], ACX: [{ strategyId: "S_RES", state: "ACTIVE" }, { strategyId: "S_OK", state: "CLOSED" }] } });
+  if (screening) w("quant/data/product/factor-evidence-v1/screening.json.gz", screening, true);
   w("supertrader/data/build.json", { asOf: "2026-10-23", slices: { stock: ["ACME", "ACX"] } });
   return root;
 }
@@ -191,4 +192,56 @@ test("Auslieferung in Teilen: meta, Scherben je shardKey, Namen; Laden nur der b
   const names = W.index(read("names.json"));
   assert.equal(names.resolveTicker("NVDA"), id);
   assert.equal(splitSummary(real).names.cols.i.length, real.count);
+});
+
+test("Freigaben: nichts wird durch ein Datenupdate allein gueltig", t => {
+  const signals = id => ({ ACME: [{ strategyId: id, id: id + ":ACME:2026-10-22:v1.0.0", state: "ACTIVE" }] });
+  const status = (strategies, sig) => {
+    const { doc } = buildSummary(fixtureRoot(t, { strategies, signals: sig }), { now: AFTER_RUN });
+    return W.view(W.index(doc), { instrumentId: "vu_aaaaaa000001" }, AFTER_RUN).supertrader.status;
+  };
+  const S = (evidence, mode = "LIVE") => [{ strategy_id: "S", strategy_name: "S", mode, evidence }];
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "CURRENT", version: "1.0.0" }), signals("S")), "VALID_SIGNAL", "Gegenprobe");
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "RESEARCH", version: "1.0.0" }), signals("S")), "RESEARCH_ONLY", "als Forschung dargestellt");
+  assert.equal(status(S({ level: "IN_REVIEW", presentation: "CURRENT", version: "1.0.0" }), signals("S")), "RESEARCH_ONLY", "in Pruefung");
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "CURRENT" }), signals("S")), "RESEARCH_ONLY", "ohne benannte Regelversion");
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "CURRENT", version: "1.0.0" }, "MODEL"), signals("S")), "RESEARCH_ONLY", "kein LIVE-Modus");
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "CURRENT", version: "2.0.0" }), signals("S")), "RESEARCH_ONLY", "Signal einer anderen Regelversion");
+  assert.equal(status(S({ level: "CRITERIA_MET", presentation: "CURRENT", version: "1.0.0" }), signals("UNBEKANNT")), "NO_SIGNAL", "unbekannte Strategie wird nicht gezeigt");
+});
+
+test("Quant: veroeffentlicht die Quelle einen Gesamtscore, faellt der Abschnitt aus statt ihn zu zeigen", t => {
+  const screening = { schemaVersion: "factor-evidence-screening-1.0.0", namespace: "quantV2.factorEvidence", fields: ["x"], rows: {},
+    publication: { compositeAllowed: true, rankingAllowed: true } };
+  const { doc, report } = buildSummary(fixtureRoot(t, { screening }), { now: AFTER_RUN });
+  assert.match(report.skipped.quant, /QUANT_PUBLICATION_CHANGED/);
+  const v = W.view(W.index(doc), { instrumentId: "vu_aaaaaa000001" }, AFTER_RUN);
+  assert.equal(v.quant.state, "UNAVAILABLE");
+  assert.ok(!JSON.stringify(v).includes("compositeScore"));
+});
+
+test("Lokale Listen: nur lesen, Vereinigung ueber instrumentId, Unklares wird genannt", () => {
+  const store = { "vu-discover-watchlist-v1": '["NVDA","AAPL","../x"]', "vu.quant.watchlist.v1": '["AAPL","MSFT","GIBTESNICHT"]',
+    "vu2.watchlist.selection.v1": '{"version":"1.0.0","tickers":["NVDA","ESTC"]}' };
+  const before = JSON.stringify(store);
+  const legacy = W.legacyTickers(k => store[k] ?? null);
+  assert.deepEqual(legacy.map(l => l.ticker), ["NVDA", "AAPL", "MSFT", "GIBTESNICHT", "ESTC"]);
+  assert.deepEqual(legacy.find(l => l.ticker === "NVDA").sources, ["Discover", "Quant-Watchlist"]);
+  const plan = W.planMerge(ix, legacy, [byTicker("MSFT")]);
+  assert.deepEqual(plan.add.map(a => a.ticker), ["NVDA", "AAPL", "ESTC"]);
+  assert.deepEqual(plan.alreadyPresent, ["MSFT"]);
+  assert.deepEqual(plan.unresolved, ["GIBTESNICHT"]);
+  assert.equal(JSON.stringify(store), before, "lokale Daten unveraendert");
+  assert.deepEqual(W.legacyTickers(() => { throw new Error("SecurityError"); }), [], "gesperrter Speicher");
+});
+
+test("Euro-Anzeige nur vorbereitet: EZB-Kurs vom Kursdatum, Listing-Waehrung bleibt massgeblich", () => {
+  const v = W.view(ix, { instrumentId: byTicker("NVDA") }, AFTER_RUN);
+  assert.equal(v.price.currency, "USD", "Anzeige in Listing-Waehrung");
+  const eur = W.inEuro(real, v.price);
+  assert.equal(eur.state, "AVAILABLE");
+  assert.ok(eur.rateDate <= v.price.date && eur.rate > 0 && Math.abs(eur.value - v.price.close / eur.rate) < 0.01);
+  assert.equal(W.inEuro({ sources: {} }, v.price).reason, "NO_FX_RATE", "ohne Kurs kein Euro-Wert");
+  assert.equal(W.inEuro({ sources: { fx: { rates: { USD: ["2026-09-01", 1.1] } } } }, v.price).reason, "FX_RATE_NOT_MATCHING_PRICE_DATE");
+  assert.equal(W.inEuro(real, { state: "UNAVAILABLE" }).reason, "NO_PRICE");
 });

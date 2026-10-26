@@ -36,11 +36,28 @@ trägt den Grund (`LISTING_INACTIVE`, `LISTING_AMBIGUOUS`, `CURRENCY_MISMATCH`, 
 | Kurs | `quant/data/product/universe-list-v1.json.gz` (`published-close.js`, ADR-002) | letzter veröffentlichter Schluss in Listing-Währung, mit Datum | 1/2 Handelstage |
 | Quant | `quant/data/product/factor-evidence-v1/*.json.gz` | sieben Faktoren mit Stufe aus der **Position** (`bandForPosition`); `validShard`, `screeningVersionState = CURRENT`, `publicationViolations`; **kein Gesamtscore** (`compositeAllowed=false`, `QUANT_V2_NOT_ACTIVE`) | 72/120 h |
 | 52W-Hoch, Volumen, Trend | `technical/data/screener-v1.json` | Plattformdefinition (Tageshoch ≥ 252-Sitzungen-Hoch, split-bereinigt). **Neues Hoch** nur bei aktuellem Stand; **nahe Hoch** ≤ 5 % darunter; **Hoch auf Wochen-/Monatsschluss** ist ein historisches Signal | 72/120 h + `fresh` je Titel |
-| Supertrader | `supertrader/data/signals-core.json` + `registry-core.json` | offene Zustände je Strategie; **gültig** nur, wenn die Strategie freigegeben ist (LIVE, `CRITERIA_MET`, nicht `RESEARCH`) und der Zustand handelbar ist (SETUP, ENTRY_READY, TRIGGERED, ACTIVE) | 1/2 Handelstage |
+| Supertrader | `supertrader/data/signals-core.json` + `registry-core.json` | offene Zustände je Strategie; **gültig** nur, wenn die Strategie freigegeben ist (LIVE, `CRITERIA_MET`, nicht `RESEARCH`, benannte Regelversion), das Signal **genau diese Version** trägt und der Zustand handelbar ist (SETUP, ENTRY_READY, TRIGGERED, ACTIVE) | 1/2 Handelstage |
 
 Stand heute (Daten vom 23.10.2026): 7.809 Instrumente, 6.671 mit Kurs, 6.427 mit Quant-Faktoren, 5.642 mit Technik, 1.047 mit offenen
 Supertrader-Zuständen. **Keine** Supertrader-Strategie ist freigegeben (alle `IN_REVIEW`, Darstellung „Forschung“). Die Watchlist zeigt
 deshalb bei allen Titeln „Supertrader: Forschung“ bzw. „kein Setup“ und zählt **0** gültige Signale. Das ist der zutreffende Status.
+
+### Sperren, die kein Datenupdate aufhebt
+
+Ein späterer Datenlauf kann nichts von selbst freischalten. Jede Freigabe bleibt an die bestehende fachliche Freigabe gebunden:
+
+| Fall im Datenupdate | Verhalten der Watchlist | Test |
+|---|---|---|
+| Quant veröffentlicht einen Gesamtscore (`compositeAllowed` ≠ false) | Der Quant-Abschnitt fällt aus (`QUANT_PUBLICATION_CHANGED`) und zeigt **keinen** Score. Anzeigen erst nach eigenem, freigegebenem PR | `Quant: veroeffentlicht die Quelle einen Gesamtscore …` |
+| Strategie in Prüfung (`IN_REVIEW`) oder als Forschung dargestellt | „Forschung · nicht freigegeben“, zählt nicht | `Freigaben: nichts wird durch ein Datenupdate allein gueltig` |
+| `CRITERIA_MET` ohne benannte Regelversion | nicht freigegeben | dto. |
+| Freigegebene Version 2.0.0, Signal aus 1.0.0 | Forschung | dto. |
+| Modus nicht LIVE (z. B. MODEL) | nicht freigegeben | dto. |
+| Unbekannte Strategie im Signal | wird nicht gezeigt | dto. |
+| Veralteter Stand | „veraltet“, zählt nicht, kein Ereignis | `Veraltete Daten …` |
+
+Die Freigabe selbst geschieht wie bisher in der Supertrader-Welt (Evidenz in `registry-core.json`, eigener PR mit Gate A). Die Watchlist
+übernimmt sie nur.
 
 **Veraltet:** Ist ein Abschnitt älter als seine Frist, steht „veraltet“ daneben. Er zählt dann in keiner Kennzahl der Liste, und es
 entsteht kein Ereignis. Die Prüfung nach Handelstagen nutzt den Kalender aus `quant/config/market-calendar.json`, der in der Übersicht
@@ -59,6 +76,18 @@ Migration `supabase/migrations/20261028000100_watchlist_personal.sql`. Sie baut 
 | Funktionen (security invoker, RLS gilt) | `watchlist_default`, `watchlist_add` (idempotent), `watchlist_remove`, `watchlist_update`, `watchlist_import` (bis 500 Titel in einem Aufruf, stoppt an der Tarifgrenze) |
 | Tarifgrenze | in der Datenbank (Free 20, Plus 100, Pro 500 Titel); Transaktionssperre gegen gleichzeitiges Überschreiten |
 | Löschung | Konto löschen löscht Listen und Einträge per Cascade; der Export enthält sie |
+
+**Verträglichkeit mit dem Kontomodell aus #926:**
+
+| Punkt | Befund |
+|---|---|
+| Tabellen | keine neue Tabelle. `watchlists`/`watchlist_items` aus #926 werden ergänzt (Spalte `alerts`, zwei Indizes, ein Index ersetzt) |
+| Tariflogik | dieselbe Funktion `enforce_watchlist_limits` (nur um eine Transaktionssperre erweitert); Grenzen aus `plan_features` |
+| Herabstufung (Plus → Free) | nichts wird gelöscht; alles bleibt lesbar und entfernbar; neu hinzu kommt erst unter der Grenze (SQL-Test) |
+| Kontolöschung, Export | unverändert über #926: Cascade bzw. `exportData` enthält Listen und Einträge (mit `alerts`) |
+| Benachrichtigungen | `alerts` je Titel ergänzt `user_settings.notification_settings`; versendet wird später nur, wenn **beide** zustimmen |
+| Datenvertrag | `core/contracts/user-data.schema.json` um `alerts` ergänzt |
+| Migrationsreihenfolge | `20261028000100` nach allen Migrationen aus #926; `apply-migrations.mjs` spielt sie mit ein |
 
 **Nachweise** (`supabase/tests/08_watchlist_personal.sql`, `workers/vu-account/tests/flows.test.mjs`):
 
@@ -101,12 +130,46 @@ Zustände abgebildet; nichts sonst aus der Datenbank erreicht den Browser.
   - Umschalten ohne Neuladen, mit kurzer Rückmeldung. Abgemeldet: dezente Aufforderung zur Anmeldung.
   - Ohne Freigabe: kein Lesezeichen, keine Anfrage an die Konto-API. Geladen werden nur die Komponente und `/konto/config.js` (wenige KB, im Cache).
   - **Eingebunden in Fundamental und Hedgefonds:** dort steht eine Zeile in `index.html`. Hedgefonds zeigt es nur auf Seiten mit Kürzel, nicht auf CUSIP-Seiten.
-  - **Noch nicht eingebunden:** Für die übrigen Welten ist die eine `<script>`-Zeile jeweils ein eigener PR.
-    - Quant/Chartbild: `quant/index.html`, `assets/stock-navigator.*` und `assets/site-navigation.js` sind byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`).
-    - Discover: Discover-Gate.
-    - Supertrader: Gate A; dort gibt es keinen einheitlichen Kopf.
-    - Technical: zeichnet den einheitlichen Kopf nicht.
+  - **Vorbereitet als eigene Draft-PRs** (je eine Zeile, auf diesem Branch aufbauend, einzeln freizugeben):
+    - Discover: `discover/index.html` (Discover-Gate: nur Discover-Pfade).
+    - Supertrader: `stockKit()` in `supertrader/assets/supertrader.js` lädt die Komponente nach (Gate A: nur Supertrader-Pfade; keine Seite wird neu erzeugt).
+    - Quant/Chartbild: `quant/index.html` ist byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`); der PR ändert die Sperrdatei und braucht deshalb deine ausdrückliche Freigabe.
+    - Technical zeichnet den einheitlichen Kopf nicht und bekommt deshalb kein Lesezeichen.
 - Hauptmenü, Dock und Chart-Designs sind unverändert. In der Konto-Unternavigation kam der Eintrag „Watchlist“ hinzu.
+
+### Zusammenführung der lokalen „Beobachten“-Listen
+
+Bisher merken sich Discover und Quant Aktien nur im Browser:
+
+| Schlüssel | Format | Welt |
+|---|---|---|
+| `vu-discover-watchlist-v1` | Ticker-Liste | Discover und Screener |
+| `vu.quant.watchlist.v1` | Ticker-Liste | Quant |
+| `vu2.watchlist.selection.v1` | `{version: "1.0.0", tickers}` | Quant-Watchlist |
+
+Die europäische Discover-Liste (`vu.core.europe.watchlist.v1`, `securityId`) wird nicht übernommen. Für europäische Listings gibt es
+im Company Master noch keine `instrumentId`.
+
+Ablauf nach der Anmeldung (`core/watchlist-view.js#legacyTickers`/`planMerge`, Seite `/konto/watchlist/`):
+
+1. Die drei Schlüssel werden **nur gelesen**: Ticker im gültigen Format, ohne Dubletten, höchstens 500.
+2. Jeder Ticker wird über `names.json` auf genau ein **aktives** Listing (`instrumentId`) aufgelöst. Mehrdeutige, delistete oder
+   unbekannte Ticker werden genannt, aber nicht übernommen.
+3. Bereits gespeicherte Titel werden übersprungen; die Zusammenführung ist eine Vereinigung über die `instrumentId`.
+4. Erst auf Klick („Übernehmen“) gehen die Titel in **einem** Aufruf an `POST /v1/watchlist/import`. Die Tarifgrenze stoppt dort
+   sauber, und die Meldung nennt die Zahl.
+5. **Lokal wird nichts gelöscht oder geändert.** Die Produktwelten zeigen ihre lokalen Knöpfe weiter, bis ein eigener PR je Welt sie
+   mit dem Konto koppelt (z. B. angemeldet: Konto-Lesezeichen statt lokalem Knopf; abgemeldet: lokaler Knopf wie heute).
+6. Die Abfrage wiederholt sich, solange noch nicht übernommene Titel lokal stehen. Ausgeblendet bleibt sie erst, wenn nichts mehr
+   offen ist.
+
+### Währung
+
+Maßgeblich ist der Kurs in der **Währung des Listings**; er wird ohne Umrechnung gezeigt. Eine Euro-Anzeige ist nur vorbereitet:
+`core/watchlist-view.js#inEuro` rechnet mit dem EZB-Referenzkurs aus dem vorhandenen Datenlauf (`quant/data/market/fx/ecb/`, in
+`meta.json#sources.fx`). Verwendet wird nur ein Kurs vom Kursdatum oder höchstens 5 Kalendertage davor; sonst gibt es keinen Euro-Wert.
+In der Oberfläche ist sie **nicht eingeschaltet**. Später könnte sie über `user_settings.display_currency` als zweite Zeile („≈ … €“)
+erscheinen.
 
 ## 6. Speicher, Last und Kosten
 
@@ -139,6 +202,45 @@ mit RLS als Rolle `authenticated`; Netz und Supabase-Overhead kommen dazu.
   - Eine Liste mit 25 Titeln lädt rund 22 KB statt 347 KB für die ungeteilte Datei.
   - Bei 10.000 Nutzern und 30 Aufrufen im Monat sind das etwa 6,6 GB gegenüber 104 GB ungeteilt, also innerhalb des GitHub-Pages-Rahmens.
 - **Keine Neuberechnung je Nutzer:** Die Übersicht entsteht einmal je Release in 0,7 s. Der Browser wertet nur aus, was angezeigt wird.
+
+### Gesamter Kontobestand (10.000 Konten nach einem Jahr)
+
+Gemessen mit `node scripts/account/watchlist-load.mjs --scenario=accounts`, PostgreSQL mit allen Migrationen.
+
+Annahmen:
+
+- 15 % zahlend, je zur Hälfte monatlich und jährlich, mit je 6 Zahlungsereignissen pro Rechnung.
+- Watchlist-Mischung: 85 % Free mit Ø 12 Titeln, 12 % Plus mit Ø 40, 3 % Pro mit Ø 120.
+- 1 % Kündigungen.
+
+| Tabelle (inkl. Indizes) | Zeilen | Größe |
+|---|---|---|
+| `watchlist_items` | 184.640 | 47,8 MB |
+| `billing.payment_events` | 60.018 | 16,2 MB |
+| `invoices` | 10.003 | 4,8 MB |
+| `watchlists` | 10.000 | 2,0 MB |
+| `user_settings`, `profiles`, `user_roles` | je 10.000 | 3,7 MB |
+| `subscriptions`, `billing.customers` | je 1.500 | 1,0 MB |
+| **Kontodaten gesamt** (public, billing) | | **76,0 MB** |
+| Datenbank inkl. Katalog | | 86,8 MB |
+| Supabase Auth (Schätzung, nicht gemessen) | | **ca. 30–90 MB** |
+
+Der Wert für Supabase Auth ist eine Schätzung: `auth.users` und Identitäten mit Indizes etwa 2–4 KB je Konto, also 20–40 MB. Dazu
+kommen Sitzungen, Erneuerungstoken und Audit-Log mit etwa 10–50 MB pro Jahr; das Audit-Log lässt sich kürzen. Die echte Zahl liefert
+der erste Integrationstest (§10).
+
+**Summe:** etwa 120–180 MB nach einem Jahr. Supabase Free (500 MB) reicht. Für Produktion ist Supabase Pro trotzdem vorgesehen
+(Backups, kein Pausieren nach einer Woche ohne Zugriff).
+
+### Datentransfer und Limits
+
+| Grenze | Rechnung (10.000 Konten, davon 30 % täglich aktiv) | Ergebnis |
+|---|---|---|
+| Cloudflare Workers Free: 100.000 Anfragen/Tag, 10 ms CPU, 50 Unteranfragen | 3.000 × ≈ 5 Konto-Aufrufe = 15.000/Tag; `GET /v1/watchlist` braucht 3 Unteranfragen; CPU wenige ms | Free reicht. Erst wenn **alle** 10.000 täglich aktiv sind: ≈ 50.000/Tag, weiter unter der Grenze |
+| Supabase Free Egress: 5 GB/Monat | ≈ 5 KB je Konto-Aufruf (Einträge, Listen, Tarif) × 15.000/Tag × 30 | ≈ 2,3 GB/Monat. Bei 10.000 täglich Aktiven ≈ 7,5 GB → Pro (250 GB) |
+| Supabase Free Auth: 50.000 aktive Nutzer/Monat | 10.000 | reicht |
+| GitHub Pages: 100 GB/Monat (weiche Grenze) | gemeinsame Übersicht ≈ 22 KB je Watchlist-Aufruf × 3.000 × 2 × 30 | ≈ 4 GB/Monat |
+| Antwortgröße | `GET /v1/watchlist` mit 200 Titeln ≈ 34 KB, typisch (18 Titel) ≈ 3–4 KB | |
 
 ## 7. Spätere intelligente Watchlist (vorbereitet, nichts aktiviert)
 
@@ -174,7 +276,29 @@ oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der O
 | Punkt | Wer |
 |---|---|
 | Live-Freigabe wie bei #926 (Konten, Supabase-Projekt, Endpunkt in `konto/config.js`); #926 muss zuerst gemergt werden | Owner |
-| Lesezeichen in Quant/Chartbild (UI-Sperre: Freigabe der Sperrdatei nötig), Discover (Discover-Gate), Supertrader (Gate A, eigener Kopf) – je eine `<script>`-Zeile in einem eigenen PR | Owner-Freigabe, eigene PRs |
+| Lesezeichen in Discover, Supertrader und Quant/Chartbild: vorbereitete Draft-PRs freigeben (Quant nur mit Freigabe der UI-Sperrdatei) | Owner |
 | Lokale „Beobachten“-Knöpfe in Discover und Quant (`vu-discover-watchlist-v1`, `vu.quant.watchlist.v1`) ersetzen bzw. mit dem Konto koppeln, sobald Konten live sind (Discover-Gate, eigener PR je Produkt) | eigene PRs |
 | Benachrichtigungen versenden (Event-Generator als Schritt der Datenläufe, Zustellung, Abmeldelinks) | späterer Meilenstein |
-| Anzeigewährung: die Watchlist zeigt die Listing-Währung (keine Umrechnung); Produktwelten mit Umrechnung zeigen ggf. Euro | Owner-Entscheidung |
+| Euro-Anzeige einschalten (vorbereitet, `inEuro`), Listing-Währung bleibt maßgeblich | Owner-Entscheidung |
+
+## 10. Erster echter Supabase-Integrationstest (nach den Zugängen aus DEV_ENVIRONMENT.md)
+
+1. **Vorbereitung:** #926 und #945 bleiben Draft. Den Workflow „Konten — Entwicklungsumgebung einrichten“ vom Watchlist-Branch
+   starten, Schritt `supabase`, zuerst als Probelauf. Die Liste der offenen Migrationen muss `20261028000100_watchlist_personal.sql`
+   enthalten.
+2. **Einspielen:** Denselben Schritt ohne Probelauf ausführen; danach Schritt `pruefen`.
+3. **Worker ausrollen:** Workflow „vu-account ausrollen (Entwicklung)“ vom Watchlist-Branch.
+4. **Kontrolle in Supabase:**
+   - **Table Editor:** `watchlist_items` hat die Spalte `alerts`.
+   - **Database → Indexes:** `watchlist_items_user_added` und `watchlist_items_instrument` sind vorhanden.
+   - **Advisors:** keine RLS-Warnung zu `watchlist_*`.
+5. **Zwei Testkonten** aus der Positivliste anlegen (A, B), auf einem Entwicklungs-Branch mit Endpunkt in `konto/config.js`
+   (DEV_ENVIRONMENT W3):
+   - A merkt drei Titel (Suche, Lesezeichen auf Fundamental, Übernahme lokaler Listen).
+   - B ruft `GET /v1/watchlist` auf und sieht nichts von A.
+   - B scheitert mit `PATCH`/`remove` auf A-Kennungen.
+6. **Grenze:** A übernimmt 25 Titel. Die Antwort meldet `limitReached`, die Datenbank hat 20 Einträge.
+7. **Löschung:** A löscht das Konto; danach steht kein `watchlist_items`-Eintrag mehr mit A-`user_id`.
+8. **Messen:** In Supabase (**Reports → Database**) Größe und Abfragezeit aufzeichnen, `auth`-Schema-Größe notieren und §6
+   (Schätzung Supabase Auth) durch die echte Zahl ersetzen.
+9. **Aufräumen:** Testkonten löschen. Den Endpunkt in `konto/config.js` nur auf dem Entwicklungs-Branch setzen, nie auf `main`.

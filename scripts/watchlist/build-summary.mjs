@@ -88,6 +88,9 @@ export function buildSummary(root,{now=new Date()}={}){
  tryPart('quant',()=>{
   const summary=readJson(root,'quant/data/product/factor-evidence-v1/summary.json');
   const screening=readJson(root,'quant/data/product/factor-evidence-v1/screening.json.gz');
+  /* Wird der Gesamtscore eines Tages veroeffentlicht (compositeAllowed=true), gilt der Vertrag nicht mehr: dann faellt der
+     Quant-Abschnitt aus, bis die Watchlist in einem eigenen PR dafuer freigegeben ist - nie automatisch. */
+  if(screening&&screening.publication&&screening.publication.compositeAllowed!==false)throw Error('QUANT_PUBLICATION_CHANGED');
   if(!screening||FE.screeningVersionState(screening)!=='CURRENT')throw Error('QUANT_SCREENING_NOT_CURRENT');
   const status=readJson(root,'quant/data/product/evidence-status-v1.json');
   const shards=new Set(Object.keys(screening.rows).map(t=>(t+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_')));
@@ -139,21 +142,39 @@ export function buildSummary(root,{now=new Date()}={}){
   const strategies={};
   for(const s of reg.strategies){
    const ev=s.evidence||{};
-   /* Freigegeben nur: LIVE, Stufe CRITERIA_MET und nicht als Forschung dargestellt (supertrader.js#isResearchS). */
-   const released=s.mode==='LIVE'&&ev.level==='CRITERIA_MET'&&ev.presentation!=='RESEARCH';
+   /* Freigegeben nur: LIVE, Stufe CRITERIA_MET, nicht als Forschung dargestellt (supertrader.js#isResearchS) UND mit
+      benannter Regelversion. Gueltig ist spaeter nur ein Signal genau dieser Version (siehe releasedVersion unten). */
+   const released=s.mode==='LIVE'&&ev.level==='CRITERIA_MET'&&ev.presentation!=='RESEARCH'&&typeof ev.version==='string'&&/^\d+\.\d+\.\d+$/.test(ev.version);
    strategies[s.strategy_id]={name:s.strategy_name||s.strategy_id,mode:s.mode||null,level:ev.level||'NOT_TESTED',levelLabel:ev.levelLabel||null,
-    presentation:ev.presentation||null,presentationLabel:ev.presentationLabel||null,released,slug:s.slug||null};
+    presentation:ev.presentation||null,presentationLabel:ev.presentationLabel||null,released,releasedVersion:released?ev.version:null,slug:s.slug||null};
   }
   for(const [t,entries] of Object.entries(sig.bySymbol)){
    let sid;try{sid=Identity.securityIdForTicker(t);}catch{continue;}
    const hit=listingFor(t,sid,null);
    if(!hit.row){note(hit.rows,'supertrader',hit.reason);continue;}
-   const open=(entries||[]).filter(e=>strategies[e.strategyId]&&OPEN_STATES.includes(e.state)).map(e=>[e.strategyId,e.state]);
+   /* [Strategie, Zustand, Regelversion des Signals] - die Version steht in der Signal-ID (…:v3.2.0), WATCH-Eintraege haben keine. */
+   const open=(entries||[]).filter(e=>strategies[e.strategyId]&&OPEN_STATES.includes(e.state))
+    .map(e=>{const v=/:v(\d+\.\d+\.\d+)$/.exec(String(e.id||''));return [e.strategyId,e.state,v?v[1]:null];});
    hit.row.sts=open.length?open:[];
   }
   sources.supertrader={...domainRule(registry,'supertrader'),artifact:'/supertrader/data/signals-core.json',asOf:(build&&build.asOf)||sig.asOf||null,
    generatedAt:sig.inputsGeneratedAt||null,strategies,lifecycle:(reg.lifecycle&&reg.lifecycle.labels)||{},openStates:OPEN_STATES,
    slices:new Set(((build&&build.slices&&build.slices.stock)||[]))};
+ });
+
+ // ---- Optionale Euro-Anzeige (nur vorbereitet, Standard aus): EZB-Referenzkurse aus quant/data/market/fx/ecb (vorhandener
+ //      Datenlauf, kein neuer Anbieter). Je Listing-Waehrung der letzte Kurs bis zum Kursstand; massgeblich bleibt die Listing-Waehrung.
+ tryPart('fx',()=>{
+  const asOf=sources.price&&sources.price.asOf;if(!asOf)throw Error('PRICE_ASOF_MISSING');
+  const need=[...new Set(rows.filter(r=>r.c&&r.pu&&r.pu!=='EUR').map(r=>r.pu))].sort(),rates={};
+  for(const cur of need){
+   const ser=readJson(root,'quant/data/market/fx/ecb/EUR'+cur+'.json');
+   if(!ser||ser.base!=='EUR'||ser.quote!==cur||!Array.isArray(ser.points))continue;
+   let hit=null;for(const p of ser.points){if(p[0]<=asOf&&p[1]>0)hit=p;else if(p[0]>asOf)break;}
+   if(hit)rates[cur]=[hit[0],hit[1]];
+  }
+  sources.fx={artifact:'/quant/data/market/fx/ecb/',base:'EUR',source:'ecb',attribution:'Wechselkurse: Europäische Zentralbank (EZB-Referenzkurse).',
+   asOf,rates,note:'EUR je Listing-Waehrung (EZB: 1 EUR = rate Fremdwaehrung). Nur Anzeigehilfe, Listing-Waehrung bleibt massgeblich.'};
  });
 
  // ---- Kalender: Handelstage nach dem aeltesten Quellstand, damit der Browser veraltete Daten ohne Engine erkennt

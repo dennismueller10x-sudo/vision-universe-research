@@ -42,7 +42,13 @@
                 "instrumentId": { "type": "string", "pattern": "^vu_[a-f0-9]+$" },
                 "tickerAtAdd": { "type": "string", "description": "nur Anzeige/Migration; kein Join-Schluessel" },
                 "addedAt": { "type": "string", "format": "date-time" },
-                "note": { "type": ["string", "null"] }
+                "note": { "type": ["string", "null"] },
+                "alerts": {
+                  "type": "object",
+                  "description": "Opt-in je Ereignisart fuer diesen Titel (supabase/migrations/20261028000100_watchlist_personal.sql). Versendet wird nur, wenn auch notificationSettings die Art erlaubt.",
+                  "additionalProperties": { "type": "boolean" },
+                  "propertyNames": { "enum": ["PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "WATCHLIST_NEWS", "EARNINGS"] }
+                }
               }
             }
           }
