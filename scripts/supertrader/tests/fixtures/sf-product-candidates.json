@@ -1,0 +1,647 @@
+{
+  "note": "SYNTHETISCHES TEST-FIXTURE (Ticker FIXA-FIXD, Preise und Hashes erfunden). Kein Kandidat, kein Signal, kein Produktdatensatz; nur fuer scripts/supertrader/tests/sf-product-contract.test.mjs.",
+  "readinessCriteriaVersion": "sf6-readiness-criteria-1.2.0",
+  "records": [
+    {
+      "schema": "supertrader-sf-product-candidate-1.0.0",
+      "contractVersion": "1.0.0",
+      "stage": "CHART_CANDIDATE",
+      "recordId": "stc_56c133ee2dad006c4e802fcf",
+      "strategyId": "SF_WEINSTEIN_INVESTOR",
+      "candidateId": "C04",
+      "security": {
+        "securityId": "ref_FIXA",
+        "ticker": "FIXA",
+        "identityScheme": "core/identity.js#securityIdForTicker"
+      },
+      "asOf": "2026-10-23",
+      "pit": {
+        "lastBarDate": "2026-10-23",
+        "barInterval": "WEEKLY_FROM_DAILY",
+        "usesIntraday": false,
+        "usesFundamentals": false,
+        "usesFutureBars": false
+      },
+      "price": {
+        "basis": "SPLIT_ADJUSTED_DAILY",
+        "splitFactors": "quant/engines/return-series.js#splitFactors",
+        "publishedClose": "quant/engines/published-close.js",
+        "close": 42.5,
+        "currency": "USD"
+      },
+      "provenance": {
+        "engineId": "fixture:SF_WEINSTEIN_INVESTOR",
+        "engineVersion": "1.2.0",
+        "codeSha256": "01de9e1ecbbe8f7e5ee139f51816ba79a670f9451c7c32f5a9027bfd58142da2",
+        "sourceContractVersion": "1.2.0",
+        "contractFingerprint": "b9a5cc8cb9c36afb4a986490800ead247a0894698344e59dee78824d950e52d4",
+        "candidateContractVersion": "1.0.0",
+        "readinessCriteriaVersion": "sf6-readiness-criteria-1.2.0",
+        "dataSource": {
+          "kind": "DAILY_EOD",
+          "asOf": "2026-10-23",
+          "inputsSha256": "66fb5cac908a0bba5bbab45bc34acf6fde5b0a4a909a3c26d031677dd35ac88c"
+        }
+      },
+      "pattern": {
+        "patternId": "WEIN_STAGE2_BREAKOUT_WEEK",
+        "ruleIds": [
+          "WEIN-SF-MA-GATE",
+          "WEIN-SF-INV-BREAKOUT"
+        ]
+      },
+      "status": {
+        "liveReadiness": "LIVE_NOT_APPROVED",
+        "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+        "tradability": "NO_STATEMENT"
+      },
+      "disclaimers": [
+        "RESEARCH_ONLY_NOT_ADVICE",
+        "NOT_VALIDATED",
+        "NO_TRADABILITY_STATEMENT"
+      ],
+      "dataIntegrity": {
+        "quarantinePolicy": "sf6-discontinuity-quarantine-1.1.0",
+        "lookbackDays": 400,
+        "quarantinedSessions": []
+      },
+      "blockReasons": [
+        {
+          "code": "DATA_BLOCKED_SETUP_RULE",
+          "ref": "WEIN-SF-GROUP",
+          "blocks": "CONFIRMED_RESEARCH_SETUP"
+        },
+        {
+          "code": "DATA_BLOCKED_SETUP_RULE",
+          "ref": "WEIN-SF-MARKET",
+          "blocks": "CONFIRMED_RESEARCH_SETUP"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-3-NO-MANUAL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-4-DATA",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-5-CORPORATE-ACTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-8-OOS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CONTRACT_LOCK",
+          "ref": "candidate-contract-1.0.0",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "LIVE_NOT_APPROVED",
+          "ref": "LIVE_NOT_APPROVED",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "NOT_CERTIFICATION_CANDIDATE",
+          "ref": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-INV-SIZE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-INV-STOP",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-INV-TRAIL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-NO-AVG-DOWN",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-OVERHEAD",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-RS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-STAGE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "WEIN-SF-VOLUME",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OWNER_APPROVAL_MISSING",
+          "ref": null,
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "PAPER_VALIDATION_NOT_EVALUATED",
+          "ref": "SF6-PAPER-2027:PREPARED_NOT_ACTIVE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        }
+      ],
+      "liveActivation": false,
+      "orderRouting": "NONE",
+      "buyDeclarationAllowed": false
+    },
+    {
+      "schema": "supertrader-sf-product-candidate-1.0.0",
+      "contractVersion": "1.0.0",
+      "stage": "CHART_CANDIDATE",
+      "recordId": "stc_86df3413f96fb7f93110acb4",
+      "strategyId": "SF_KK_BREAKOUT",
+      "candidateId": "C08",
+      "security": {
+        "securityId": "ref_FIXB",
+        "ticker": "FIXB",
+        "identityScheme": "core/identity.js#securityIdForTicker"
+      },
+      "asOf": "2026-10-23",
+      "pit": {
+        "lastBarDate": "2026-10-23",
+        "barInterval": "DAILY",
+        "usesIntraday": false,
+        "usesFundamentals": false,
+        "usesFutureBars": false
+      },
+      "price": {
+        "basis": "SPLIT_ADJUSTED_DAILY",
+        "splitFactors": "quant/engines/return-series.js#splitFactors",
+        "publishedClose": "quant/engines/published-close.js",
+        "close": 18.2,
+        "currency": "USD"
+      },
+      "provenance": {
+        "engineId": "fixture:SF_KK_BREAKOUT",
+        "engineVersion": "1.2.1",
+        "codeSha256": "4821b752930e1d8bce092e6941e62127155fa5b8eaa4932fceec0fab457549b0",
+        "sourceContractVersion": "1.2.1",
+        "contractFingerprint": "7680207d852a8a4a6b0f2a4c2a38daa2ed472c3bc2d5fa278c6fe6d243f90539",
+        "candidateContractVersion": "1.0.0",
+        "readinessCriteriaVersion": "sf6-readiness-criteria-1.2.0",
+        "dataSource": {
+          "kind": "DAILY_EOD",
+          "asOf": "2026-10-23",
+          "inputsSha256": "8794810f19aef79a3d5d5b74127600410f54cd55912ba499d5c9bb606d6db056"
+        }
+      },
+      "pattern": {
+        "patternId": "KK_BREAKOUT_DAILY",
+        "ruleIds": [
+          "KK-SF-ADR",
+          "KK-SF-BO-MOMENTUM"
+        ]
+      },
+      "status": {
+        "liveReadiness": "LIVE_NOT_APPROVED",
+        "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+        "tradability": "NO_STATEMENT"
+      },
+      "disclaimers": [
+        "RESEARCH_ONLY_NOT_ADVICE",
+        "NOT_VALIDATED",
+        "NO_TRADABILITY_STATEMENT"
+      ],
+      "dataIntegrity": {
+        "quarantinePolicy": "sf6-discontinuity-quarantine-1.1.0",
+        "lookbackDays": 400,
+        "quarantinedSessions": [
+          {
+            "date": "2026-03-12",
+            "flag": "DQ-K5"
+          }
+        ]
+      },
+      "blockReasons": [
+        {
+          "code": "QUARANTINE_SESSION_IN_LOOKBACK",
+          "ref": "2026-03-12",
+          "blocks": "CONFIRMED_RESEARCH_SETUP"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-3-NO-MANUAL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-5-CORPORATE-ACTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-8-OOS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CONTRACT_LOCK",
+          "ref": "candidate-contract-1.0.0",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "LIVE_NOT_APPROVED",
+          "ref": "LIVE_NOT_APPROVED",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "NOT_CERTIFICATION_CANDIDATE",
+          "ref": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "KK-SF-BO-ENTRY",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "KK-SF-BO-PARTIAL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "KK-SF-BO-SETUP",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "KK-SF-BO-TRAIL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "KK-SF-SIZE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OWNER_APPROVAL_MISSING",
+          "ref": null,
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "PAPER_VALIDATION_NOT_EVALUATED",
+          "ref": "SF6-PAPER-2027:PREPARED_NOT_ACTIVE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        }
+      ],
+      "liveActivation": false,
+      "orderRouting": "NONE",
+      "buyDeclarationAllowed": false
+    },
+    {
+      "schema": "supertrader-sf-product-candidate-1.0.0",
+      "contractVersion": "1.0.0",
+      "stage": "CONFIRMED_RESEARCH_SETUP",
+      "recordId": "stc_1992b4996f08f7c2ed628d97",
+      "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+      "candidateId": "C13",
+      "security": {
+        "securityId": "ref_FIXC",
+        "ticker": "FIXC",
+        "identityScheme": "core/identity.js#securityIdForTicker"
+      },
+      "asOf": "2026-10-23",
+      "pit": {
+        "lastBarDate": "2026-10-23",
+        "barInterval": "DAILY",
+        "usesIntraday": false,
+        "usesFundamentals": false,
+        "usesFutureBars": false
+      },
+      "price": {
+        "basis": "SPLIT_ADJUSTED_DAILY",
+        "splitFactors": "quant/engines/return-series.js#splitFactors",
+        "publishedClose": "quant/engines/published-close.js",
+        "close": 77.1,
+        "currency": "USD"
+      },
+      "provenance": {
+        "engineId": "fixture:SF_RASCHKE_HOLY_GRAIL",
+        "engineVersion": "1.2.1",
+        "codeSha256": "2610c9aa2e33352670b9c08d8132cdacd367a5831314ec87c04ead4f023632fb",
+        "sourceContractVersion": "1.2.1",
+        "contractFingerprint": "e9a10425fe7d99c8d477c33a3afed988f9cb6fbcb7d97164b4323f1e29abf01d",
+        "candidateContractVersion": "1.0.0",
+        "readinessCriteriaVersion": "sf6-readiness-criteria-1.2.0",
+        "dataSource": {
+          "kind": "DAILY_EOD",
+          "asOf": "2026-10-23",
+          "inputsSha256": "aab570b1b154ce297e575e875c47dae97012bba5537b74a637a1eddc0377984f"
+        }
+      },
+      "pattern": {
+        "patternId": "HOLY_GRAIL_EMA20_PULLBACK",
+        "ruleIds": [
+          "RAS-SF-ADX",
+          "RAS-SF-PULLBACK"
+        ]
+      },
+      "status": {
+        "liveReadiness": "LIVE_NOT_APPROVED",
+        "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+        "tradability": "NO_STATEMENT"
+      },
+      "disclaimers": [
+        "RESEARCH_ONLY_NOT_ADVICE",
+        "NOT_VALIDATED",
+        "NO_TRADABILITY_STATEMENT",
+        "OPEN_DISCRETIONARY_RULES_SHOWN"
+      ],
+      "dataIntegrity": {
+        "quarantinePolicy": "sf6-discontinuity-quarantine-1.1.0",
+        "lookbackDays": 400,
+        "quarantinedSessions": []
+      },
+      "blockReasons": [
+        {
+          "code": "LIFECYCLE_INCOMPLETE",
+          "ref": "8",
+          "blocks": "MODELED_TRADE_PLAN"
+        },
+        {
+          "code": "NOT_MEASURABLE",
+          "ref": null,
+          "blocks": "MODELED_TRADE_PLAN"
+        },
+        {
+          "code": "PRIMARY_STATE_BLOCKED",
+          "ref": "SOURCE_BLOCKED",
+          "blocks": "MODELED_TRADE_PLAN"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-1-SOURCE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-2-LIFECYCLE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-3-NO-MANUAL",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-5-CORPORATE-ACTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-8-OOS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CONTRACT_LOCK",
+          "ref": "candidate-contract-1.0.0",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "LIVE_NOT_APPROVED",
+          "ref": "LIVE_NOT_APPROVED",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "NOT_CERTIFICATION_CANDIDATE",
+          "ref": "SOURCE_BLOCKED",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OPEN_DISCRETIONARY_RULE",
+          "ref": "RAS-SF-EXIT",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OWNER_APPROVAL_MISSING",
+          "ref": null,
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "PAPER_VALIDATION_NOT_EVALUATED",
+          "ref": "SF6-PAPER-2027:PREPARED_NOT_ACTIVE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        }
+      ],
+      "liveActivation": false,
+      "orderRouting": "NONE",
+      "buyDeclarationAllowed": false,
+      "setup": {
+        "mechanicalRules": [
+          {
+            "ruleId": "RAS-SF-ADX",
+            "met": true
+          },
+          {
+            "ruleId": "RAS-SF-PULLBACK",
+            "met": true
+          },
+          {
+            "ruleId": "RAS-SF-ENTRY",
+            "met": true
+          }
+        ],
+        "openDiscretionaryRules": [
+          "RAS-SF-EXIT"
+        ],
+        "ambiguousRules": [
+          {
+            "ruleId": "RAS-SF-SIZE",
+            "reading": "FIXTURE_READING"
+          }
+        ],
+        "dataBlockedRules": [],
+        "manualReviewStatus": "REQUIRED_PENDING"
+      }
+    },
+    {
+      "schema": "supertrader-sf-product-candidate-1.0.0",
+      "contractVersion": "1.0.0",
+      "stage": "MODELED_TRADE_PLAN",
+      "recordId": "stc_f54eb47f10e062dd4afac09d",
+      "strategyId": "SF_TURTLE_S2",
+      "candidateId": "C02",
+      "security": {
+        "securityId": "ref_FIXD",
+        "ticker": "FIXD",
+        "identityScheme": "core/identity.js#securityIdForTicker"
+      },
+      "asOf": "2026-10-23",
+      "pit": {
+        "lastBarDate": "2026-10-23",
+        "barInterval": "DAILY",
+        "usesIntraday": false,
+        "usesFundamentals": false,
+        "usesFutureBars": false
+      },
+      "price": {
+        "basis": "SPLIT_ADJUSTED_DAILY",
+        "splitFactors": "quant/engines/return-series.js#splitFactors",
+        "publishedClose": "quant/engines/published-close.js",
+        "close": 101.4,
+        "currency": "USD"
+      },
+      "provenance": {
+        "engineId": "fixture:SF_TURTLE_S2",
+        "engineVersion": "1.2.0",
+        "codeSha256": "38f9aadd77879c8a1b20c79d32a85d0dfc4e43d56890d54afdd0a95dea1c8d9d",
+        "sourceContractVersion": "1.2.0",
+        "contractFingerprint": "d001acfc8d5d5f7c88e7876e52e7ca623e7d63e46427431faea88a014adc91d7",
+        "candidateContractVersion": "1.0.0",
+        "readinessCriteriaVersion": "sf6-readiness-criteria-1.2.0",
+        "dataSource": {
+          "kind": "DAILY_EOD",
+          "asOf": "2026-10-23",
+          "inputsSha256": "6a18fe96e82dfe23efb7f115f512f55f757fcb1ffb6770e3da355244c769dd1d"
+        },
+        "accounting": "RESEARCH_V1"
+      },
+      "pattern": {
+        "patternId": "TURTLE_S2_55D_CHANNEL",
+        "ruleIds": [
+          "TUR-SF-ENTRY"
+        ]
+      },
+      "status": {
+        "liveReadiness": "LIVE_NOT_APPROVED",
+        "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+        "tradability": "NO_STATEMENT"
+      },
+      "disclaimers": [
+        "RESEARCH_ONLY_NOT_ADVICE",
+        "NOT_VALIDATED",
+        "NO_TRADABILITY_STATEMENT",
+        "OPEN_DISCRETIONARY_RULES_SHOWN",
+        "HYPOTHETICAL_MODEL_PLAN"
+      ],
+      "dataIntegrity": {
+        "quarantinePolicy": "sf6-discontinuity-quarantine-1.1.0",
+        "lookbackDays": 400,
+        "quarantinedSessions": []
+      },
+      "blockReasons": [
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-4-DATA",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-5-CORPORATE-ACTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CERTIFICATION_CRITERION_FAILED",
+          "ref": "CC-8-OOS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "CONTRACT_LOCK",
+          "ref": "candidate-contract-1.0.0",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "LIVE_NOT_APPROVED",
+          "ref": "LIVE_NOT_APPROVED",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "NOT_CERTIFICATION_CANDIDATE",
+          "ref": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "OWNER_APPROVAL_MISSING",
+          "ref": null,
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        },
+        {
+          "code": "PAPER_VALIDATION_NOT_EVALUATED",
+          "ref": "SF6-PAPER-2027:PREPARED_NOT_ACTIVE",
+          "blocks": "VALIDATED_TRADE_SIGNAL"
+        }
+      ],
+      "liveActivation": false,
+      "orderRouting": "NONE",
+      "buyDeclarationAllowed": false,
+      "setup": {
+        "mechanicalRules": [
+          {
+            "ruleId": "TUR-SF-ENTRY",
+            "met": true
+          },
+          {
+            "ruleId": "TUR-SF-S2-NOSKIP",
+            "met": true
+          },
+          {
+            "ruleId": "TUR-SF-CONSISTENT",
+            "met": true
+          },
+          {
+            "ruleId": "TUR-SF-MARKETS",
+            "met": true
+          }
+        ],
+        "openDiscretionaryRules": [],
+        "ambiguousRules": [],
+        "dataBlockedRules": [
+          "TUR-SF-LIMIT-CORR"
+        ],
+        "manualReviewStatus": "NOT_REQUIRED"
+      },
+      "plan": {
+        "hypothetical": true,
+        "model": {
+          "lifecycleKey": "TURTLE_S2",
+          "variantId": "REFERENCE"
+        },
+        "entry": {
+          "type": "BUY_STOP_RESTING_FROM_PRIOR_CLOSE",
+          "trigger": 103.25,
+          "earliestSession": "2026-10-26"
+        },
+        "stop": {
+          "initial": 97.05
+        },
+        "sizing": {
+          "method": "TURTLE_UNIT_N",
+          "riskFraction": 0.02
+        },
+        "exit": {
+          "ruleIds": [
+            "TUR-SF-EXIT",
+            "TUR-SF-STOP"
+          ]
+        },
+        "modelAssumptions": [],
+        "declaredDataExceptions": [
+          "TUR-SF-LIMIT-CORR"
+        ]
+      }
+    }
+  ]
+}

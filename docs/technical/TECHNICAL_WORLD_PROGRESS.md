@@ -105,11 +105,11 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 
 1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
 2. ~~Eigene Menügruppe „Technical“~~ PR #925 (Owner-Freigabe 25.10.2026, Hash von `site-navigation.js` nachgezogen).
-3. **Supertrader-Angleichung** (in Arbeit auf `claude/supertrader-atr-wilder`, eigener PR unter Gate A, kein automatischer Merge): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
-4. **EMA 200 exakt:** in Prüfung in PR #927 (Fachmodelländerung, kein automatischer Merge). Regel, Vorher/Nachher und Referenztests: [EMA200_MATERIALIZATION.md](EMA200_MATERIALIZATION.md). Offen danach: Screener-Feld `aboveEma200` und Wochen-EMA, je eigener PR.
+3. ~~Supertrader-Angleichung~~ ATR-Teil erledigt: PR #928 (Wilder als Standard, veröffentlichte Werte bytegleich). Offen: Technical-Befunde auf den Supertrader-Aktienseiten verlinken (eigener PR unter Gate A).
+4. ~~EMA 200 exakt~~ PR #927 gemergt (`ema-settled-1.1.0`). Offen: Screener-Feld `aboveEma200`/`distEma200`, sobald der nächtliche Materialisierungslauf EMA-Werte geliefert hat; danach Wochen-EMA.
 5. **KI-Suche freischalten:** technisch vorbereitet (V3: Parser, Schema, Validierung, Oberfläche, `query-text.js#contract()`). Offen ist nur der Modellaufruf über `workers/vu-ask`; das ist ein Deploy mit Kosten und braucht eine eigene Freigabe.
-6. **Zusammenführung mit `/screener/`:** Feldregister-Injektion in `screener/engine/engine.js`, danach eine Engine für beide.
-7. **Evidenz:** Trefferquoten der Formationen über die bestehende Outcome-Schicht (`ti/outcomes.js`) messen. Erst dann wäre eine Rangfolge nach Evidenz begründbar.
+6. ~~Zusammenführung mit `/screener/`~~ erster Schritt PR #936: `/screener/` übernimmt 16 Technical-Spalten (Indikatoren und Formationen) aus `technical/data/screener-v1.json`; eine Quelle, keine zweite Rechnung. Offen: eine gemeinsame Abfrage-Engine für beide Oberflächen.
+7. ~~Evidenz~~ PR #934: `technical/data/formation-evidence.json` (Definition, Stichprobe, Bonferroni). **Offen zur Owner-Entscheidung:** PR #938 (Fachmodell, `formations` 1.2.0, vollständiger Lebenszyklus), siehe [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
 9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
 10. **Eigene Menügruppe** und weitere Änderungen an geschützten Dateien (`ui-protection.json`) brauchen je eine eigene Owner-Freigabe der Hashes.
@@ -131,6 +131,11 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 25.10.2026 | PR #929 (V3) gemergt (`9787b1a`), nachdem alle Pflichtprüfungen grün waren; Vercel (Tageslimit) ist kein Pflicht-Check. Wirkung: neue Indikatoren, Kurslücken, Suche in Worten und Chart-Studio-Schichten sind auf `main`; bestehende Datensatzspalten bitgleich. |
 | 25.10.2026 | PR #932 (D) gemergt (`51aa903`): Index für Start und Chart Studio, 360-px-QA, Kurssprung-Verdacht. |
 | 25.10.2026 | PR #928 gemergt (`bc7f6e5`, Owner-Freigabe): Supertrader-ATR standardmäßig Wilder. Vor dem Merge gegen den aktuellen `main` geprüft: `build.mjs --out` bytegleich (1.537 Dateien), Supertrader-Tests 790/791 (1 übersprungen), Gate A OK. |
+| 25.10.2026 | PR #927 gemergt (`7d5ef10`, Owner-Freigabe nach Prüfung der Aufwärmregel): exakte EMA 20/50/200 mit kursbezogener Fehlerschranke. Pflicht-CI grün, Vercel (Tageslimit) kein Pflicht-Check. |
+| 25.10.2026 | PR #933 gemergt (`f4790e3`): Filter-Baukasten (Felder je Zeitrahmen, UND/ODER-Gruppen) und gespeicherte Strategien mit Umbenennen, Export und Import. CI grün, Technical-Browser-QA 54/54. |
+| 25.10.2026 | PR #934 gemergt (`61b5b15`): historische Formations-Evidenz mit Methodik-Tabelle. CI grün. |
+| 25.10.2026 | PR #936 gemergt (`426e287`): Technical-Spalten im `/screener/` (ATR erstmals verfügbar). Keine Screener-Funktion entfernt; Screener-Browser-QA und Shell-QA grün. |
+| 25.10.2026 | PR #938 eröffnet (Entwurf, Fachmodell): Formations-Lebenszyklus. Kein automatischer Merge. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
