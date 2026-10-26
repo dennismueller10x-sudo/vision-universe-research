@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "automated_trigger_proof",
+  "test_fixture": true,
+  "brief_id": "vu-trigger-proof-brief-20260917-001",
+  "content_id": "vu-trigger-proof-20260917-001",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "technical-proof-only",
+  "format": "single-post-concept",
+  "topic": "Automatischer Creative-Agent-Workflow ohne klassische OpenAI-API",
+  "objective": "Beweisen, dass ein GitHub-PR-Ereignis den Creative Agent automatisch auslöst und ein strukturiertes Resultat auf denselben isolierten Request-Branch zurückschreibt.",
+  "audience": "Interne Vision-Universe-Workflow-Prüfung",
+  "hook_strategy": {
+    "strategy_id": "curiosity-gap-system-proof-v1",
+    "hook_type": "curiosity_gap",
+    "instruction": "Formuliere neugierig machende Fragen zum automatischen Ablauf. Keine Marktbehauptung, keine Renditeaussage und keine alternative Hook-Strategie."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 3,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Ausschließlich nicht produktive Testfixture",
+    "Keine produktiven Marktbehauptungen",
+    "Keine Anlageberatung",
+    "Keine Publishing-Aktion",
+    "Kein selected_hook",
+    "Hook-Strategie ausschließlich aus diesem Brief übernehmen"
+  ],
+  "publishing_allowed": false
+}
