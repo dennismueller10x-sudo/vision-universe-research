@@ -28,6 +28,7 @@ WAS ES NICHT TUT
     Dokument oder passt der Pin nicht, bleibt die Luecke.
 """
 import copy
+import gzip
 import hashlib
 import io
 import json
@@ -148,6 +149,10 @@ def fetch_facts(client, config, cache_dir, log=print):
             try:
                 path, _, _ = client.download_to(document_url(ext["cik"], filing), target)
                 raw = Path(path).read_bytes()
+                # sec.gov liefert mit Accept-Encoding: gzip komprimiert aus, und download_to legt die
+                # Uebertragung unveraendert ab. Gepinnt ist der Inhalt des Dokuments, nicht die Uebertragung.
+                if raw[:2] == b"\x1f\x8b":
+                    raw = gzip.decompress(raw)
             except Exception as exc:  # noqa: BLE001 - eine fehlende Meldung ist eine Luecke, kein Abbruch
                 log(f"  {ext['id']} {filing['accession']}: nicht verfuegbar ({str(exc)[:160]})")
                 continue

@@ -133,6 +133,20 @@ class IssuerExtensionTest(unittest.TestCase):
         self.assertEqual([r["accession"] for r in rows], [good["accession"]])
         self.assertTrue(any("nicht gelesen" in line for line in logs))
 
+    def test_gzip_transfer_is_checked_against_the_document(self):
+        # Wie sec.gov: die Uebertragung ist gzip-komprimiert, gepinnt ist das entpackte Dokument.
+        import gzip
+
+        class Client:
+            def download_to(self, url, path):
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
+                Path(path).write_bytes(gzip.compress(INSTANCE))
+                return path, 0, False
+        filing = {"accession": "0002000000-20-000003", "document": "synx.xml", "sha256": hashlib.sha256(INSTANCE).hexdigest()}
+        with tempfile.TemporaryDirectory() as tmp:
+            facts = ie.fetch_facts(Client(), {"extensions": [dict(RULE, filings=[filing])]}, tmp, log=lambda _: None)
+        self.assertEqual([r["value"] for r in facts[str(CIK).zfill(10)]], [42000000.0])
+
     def test_shipped_configuration(self):
         config = ie.load()
         registry = MetricRegistry.load()
