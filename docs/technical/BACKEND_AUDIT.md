@@ -509,7 +509,10 @@ Der Audit-Text oben ist eine Momentaufnahme vom 26.10.2026 und bleibt unverände
 | B3 | erledigt: DQ-TW-1..4 (Frische, leere Felder, Schlusskurs-Gleichheit als ERROR, Abdeckung) | #950 |
 | B4 | erledigt: Shard-Regex angeglichen, 6 Vorzugsaktien aufgenommen | #950 |
 | B6 | erledigt: 14 Katalogindikatoren, nur Katalog (`indicators` 1.2.0) | #955 |
-| B7 | erledigt: TA-Lib 0.8.2 als eingefrorene Referenz. Befund Parabolic SAR an Umkehrbars; Korrektur als Fachmodell-PR vorgelegt (#964, Entscheidung beim Owner) | #962 |
+| B5 | erledigt: Monatsschluss = Schluss des letzten Handelstags im Monat (über B8) | #966 |
+| B7 | erledigt: TA-Lib 0.8.2 als eingefrorene Referenz. Befund Parabolic SAR an Umkehrbars, nach Owner-Freigabe korrigiert (`indicators` 1.2.1) | #962, #964 |
+| B8 | erledigt: Wochen-/Monatskennzahlen aus der Tageshistorie, nur abgeschlossene Perioden (`technical-mtf-1.0.0`); Werte erscheinen mit dem nächsten Materialisierungslauf | #966 |
+| B12 | erledigt: Ereignisfilter mit Prüfraum, Golden/Death Cross als Kreuzung, Migration gespeicherter Wortsuchen | #967 |
 | B13 | erledigt: Zeitrahmen je Filter, `nin`, verneinte Formationen (`technical-query` 1.4.0) | #954 |
 | B18 | erledigt: Goldsatz 80 + 14 Fälle, Offline-Evaluation, 80/80 exakt, 0/14 stille Fehlgriffe | #952, #954 |
 | B2 | offen: Prüfung nach dem Materialisierungslauf vom 26./27.10.2026 | – |
