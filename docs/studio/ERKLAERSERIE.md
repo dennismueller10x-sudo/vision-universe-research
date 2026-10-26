@@ -27,14 +27,9 @@ Folien: `video` (`src`, `poster`, `duration`) oder `card` (Überschrift, Text, o
 
 Eintrag oben in `willkommen/config/news.json`: `id` (eindeutig), `date` (`JJJJ-MM-TT`), `tag` (Produkt oder Thema), `title`, `text` (ein bis drei Sätze), optional `link` mit interner Adresse, optional `pinned: true`. Danach `node --test "willkommen/tests/*.test.mjs"`. Keine Kursziele, keine Anlageberatung.
 
-## Neues Video einsetzen
+## Neues Video einsetzen oder ändern
 
-1. Video mit der Reel-Pipeline bauen (`studio/reels/`), 1080 × 1920, H.264, −14,2 LUFS. Für die App eine kleinere Fassung erzeugen (720 × 1280, etwa 2 bis 5 MB, `+faststart`), Posterbild aus dem ersten Bild.
-2. Ablegen unter `assets/stories/<id>.mp4` und `assets/stories/<id>.jpg`.
-3. In `stories.json` die Karten-Folien durch eine `video`-Folie ersetzen (eine Karte mit Knopf zum Modul darf dahinter bleiben), `rev` erhöhen.
-4. `node --test "willkommen/tests/*.test.mjs"`.
-
-Neues Highlight: Eintrag in `stories.json` (Titel höchstens 12 Zeichen, Icon aus `assets/product-icons.svg`).
+Ablauf, Benennung (`<id>-v<version>`) und Speicher: [studio/stories/README.md](../../studio/stories/README.md). Kurz: Quelle bleibt in der Dropbox, Rezept mit den Einblendungen liegt unter `studio/stories/<id>/story.json`, `build-story.mjs --apply` baut die App-Fassung nach `assets/stories/` und trägt sie im Highlight ein. Kommt ein Modul dazu, Text im Rezept ändern, `version` erhöhen, neu bauen.
 
 ## Offen
 
@@ -46,7 +41,7 @@ Neues Highlight: Eintrag in `stories.json` (Titel höchstens 12 Zeichen, Icon au
 Quelle: Dropbox des Owners, `/THE ARRIVAL – Original.mp4` (1080 × 1920, 20 s, Musik ohne Sprache, eigenes Material des Owners). Für die App:
 
 - Vier Texteinblendungen in Marke und Schrift (lokal gerendert, keine Kosten): „Willkommen bei Vision Universe." (0,3 s), „Echte Daten. Statt Bauchgefühl." (4,8 s), „Aktien. Zahlen. Charts. Strategien. Alles an einem Ort, alles verbunden." (9,4 s), Logo mit „Investieren mit Weitblick." und „Tippe auf den nächsten Kreis und lerne jedes Modul kennen." (14,6 s bis Ende).
-- 720 × 1280, H.264 CRF 24, `+faststart`, Ton −16 LUFS (App, leiser als Reels mit −14,2), AAC 128 kb/s, etwa 3 MB: `assets/stories/willkommen.mp4`, Poster `willkommen.jpg` (Bild bei 1,2 s).
+- 720 × 1280, H.264 CRF 24, `+faststart`, Ton −16 LUFS (App, leiser als Reels mit −14,2), AAC 128 kb/s, etwa 3 MB: `assets/stories/start-v1.mp4`, Poster `start-v1.jpg` (Bild bei 1,2 s). Rezept: `studio/stories/start/story.json`, gebaut mit `studio/stories/build-story.mjs`.
 - Danach folgt die Karte „Ein Kreis, ein Modul." (7 s), zusammen 27 s.
 
 Sprache in allen Texten: keine Einschränkung auf US-Aktien (Entscheidung des Owners 26.10.2026), damit später europäische oder deutsche Aktien ohne neue Videos dazukommen können. Konkrete Mengen nur, wenn sie für alle Märkte stimmen.
