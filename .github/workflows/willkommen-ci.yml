@@ -1,0 +1,30 @@
+name: Willkommen CI
+# Willkommensseite (willkommen/**): Erklaervideos (config/stories.json), Neuigkeiten (config/news.json) und Produktliste.
+# Reine Pruefung, schreibt nichts.
+on:
+  push:
+    branches: [main]
+    paths: ['willkommen/**', 'assets/stories/**', 'studio/stories/**', '.github/workflows/willkommen-ci.yml']
+  pull_request:
+    paths: ['willkommen/**', 'assets/stories/**', 'studio/stories/**', '.github/workflows/willkommen-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: willkommen-ci-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check willkommen/app.js
+          node --check studio/stories/build-story.mjs
+      - name: Inhalt und Seite
+        run: node --test "willkommen/tests/*.test.mjs"

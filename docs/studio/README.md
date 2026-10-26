@@ -15,6 +15,7 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 | [STIMME_UND_SOUND.md](STIMME_UND_SOUND.md) | Helmut, Aussprache, Musik, Effekte, Lautheit |
 | [PRODUKTION_HISTORIE.md](PRODUKTION_HISTORIE.md) | Alle bisherigen Reels, Entscheidungen, Fehler und Lösungen |
 | [FAKTEN_ALTERSVORSORGE_RIESTER.md](FAKTEN_ALTERSVORSORGE_RIESTER.md) | Geprüfte Gesetzesfakten für Altersvorsorge-Reels |
+| [ERKLAERSERIE.md](ERKLAERSERIE.md) | Willkommensseite `/willkommen/`: Highlights mit Erklärvideos, Produkte, Neuigkeiten; Sprechertexte und Einsetzen neuer Videos |
 | [AUTOMATISIERUNG.md](AUTOMATISIERUNG.md) | Weg zum automatischen Ablauf, mit den Freigabe-Schranken |
 | [../../studio/reels/README.md](../../studio/reels/README.md) | Werkzeuge und Vorlage (Skripte) |
 

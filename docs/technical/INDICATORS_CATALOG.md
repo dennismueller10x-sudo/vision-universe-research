@@ -1,6 +1,6 @@
 # Technical – Indikator-Katalog
 
-Stand: `technical-indicators-1.2.0` (`quant/engines/technical/indicators.js`, `CATALOG`).
+Stand: `technical-indicators-1.2.1` (1.2.1: Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md) (`quant/engines/technical/indicators.js`, `CATALOG`).
 
 Alle Indikatoren werden über `compute(series, id, params)` berechnet. `series` ist ein Spaltenobjekt `{open, high, low, close, volume}`. Gemeinsame Regeln:
 

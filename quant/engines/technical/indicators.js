@@ -35,7 +35,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.2.0";
+  var INDICATORS_VERSION = "technical-indicators-1.2.1";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -91,7 +91,9 @@
    * Parabolic SAR (Wilder 1978). Start: Richtung aus C_1 gegen C_0, SAR = Extrem der Gegenseite der ersten Bar,
    * Extrempunkt (EP) = Extrem der Richtungsseite. Je Bar: SAR += AF·(EP − SAR), begrenzt durch die Tiefs (lang)
    * bzw. Hochs (kurz) der zwei Vorbars; AF startet bei `step`, steigt bei jedem neuen EP um `step` bis `max`.
-   * Durchbricht das Tief (lang) bzw. Hoch (kurz) den SAR, kehrt die Richtung: SAR = alter EP, AF = step.
+   * Durchbricht das Tief (lang) bzw. Hoch (kurz) den SAR, kehrt die Richtung: SAR = alter EP, mindestens das Hoch
+   * (neu kurz) bzw. hoechstens das Tief (neu lang) der Umkehrbar, damit der SAR nie in ihrer Spanne liegt (Wilder,
+   * wie TA-Lib; seit 1.2.1), AF = step.
    * Eine Luecke in H/L/C setzt die Berechnung zurueck (neuer Start nach zwei gueltigen Bars).
    */
   function psar(high, low, close, step, max) {
@@ -109,11 +111,11 @@
       var next = sar + af * (ep - sar);
       if (up > 0) {
         next = Math.min(next, l[i - 1], l[i - 2]);
-        if (l[i] < next) { up = -1; next = ep; ep = l[i]; af = step; }
+        if (l[i] < next) { up = -1; next = Math.max(ep, h[i]); ep = l[i]; af = step; }
         else if (h[i] > ep) { ep = h[i]; af = Math.min(max, af + step); }
       } else {
         next = Math.max(next, h[i - 1], h[i - 2]);
-        if (h[i] > next) { up = 1; next = ep; ep = h[i]; af = step; }
+        if (h[i] > next) { up = 1; next = Math.min(ep, l[i]); ep = h[i]; af = step; }
         else if (l[i] < ep) { ep = l[i]; af = Math.min(max, af + step); }
       }
       sar = next; out[i] = sar; dir[i] = up;
