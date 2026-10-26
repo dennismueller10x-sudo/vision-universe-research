@@ -89,3 +89,5 @@
 .sf-prov { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
 .sf-prov dt { color: var(--st-muted); font-weight: 650; } .sf-prov dd { margin: 0; color: var(--st-text-2); overflow-wrap: anywhere; }
 @media (max-width: 520px) { .sf-prov { grid-template-columns: 1fr; } .sf-prov dd { margin-bottom: 4px; } }
+.sf-plan .sf-dq[data-fill="in"] { color: var(--st-text-2); }
+.sf-plan .sf-dq { margin: 8px 0 4px; align-items: flex-start; }
