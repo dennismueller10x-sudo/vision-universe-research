@@ -47,6 +47,17 @@ Nichts wird geschätzt, umbenannt oder aufgefüllt.
 
 Gepinnt sind die elf 10-K von 2013 bis 2023 (0001045810-13-000008 … 0001045810-23-000017).
 
+### Quellprüfung je 10-K (26.10.2026, Dateien der Meldungen selbst)
+
+Für alle elf gepinnten 10-K (2013–2023) aus der Label-, der Berechnungs- und der Instanzdatei der jeweiligen Meldung:
+
+- **Bezeichnung** (`nvda-*_lab.xml`): durchgehend „Purchases of property and equipment and intangible assets“ (ab 2021 als Zeilentext „Purchases related to property and equipment and intangible assets“). Die Dokumentation ist die Definition des Investitionsabflusses für Sachanlagen und immaterielle Vermögenswerte ohne Goodwill, also dieselbe wie bei `us-gaap:PaymentsToAcquireProductiveAssets`, das die Registry bereits akzeptiert und NVIDIA ab GJ 2022 meldet.
+- **Stellung in der Kapitalflussrechnung** (`*_cal.xml`): in jeder Meldung ein direkter Bestandteil von `us-gaap:NetCashProvidedByUsedInInvestingActivities` mit Gewicht −1, also die Investitionszeile des Investitions-Cashflows. In keiner Meldung gibt es daneben eine zweite Sachanlagen- oder Investitionszeile; Doppelzählung oder Auswahl zwischen zwei Zeilen ist damit ausgeschlossen.
+- **Rechnerische Gegenprobe** (Instanz): Für jede Meldung und jedes der drei berichteten Geschäftsjahre (33 Perioden) ergibt die Summe aller Bestandteile mit ihren Gewichten exakt den gemeldeten Investitions-Cashflow.
+- **Zeitliche Konsistenz** (Consumer-Lauf mit der Erweiterung): Für jedes Geschäftsjahr 2010–2026 gilt Free Cashflow = operativer Cashflow − Investitionen auf den Dollar, mit demselben Periodenende. Jeder Investitionswert nennt seine Meldung (Accession, Einreichungsdatum; Politik „as of latest“: die jüngste Meldung, die das Jahr enthält).
+
+GJ 2008 und 2009 bleiben ohne Investitionen: Dafür gibt es keine gepinnte Meldung (die ersten XBRL-10-K von NVIDIA stammen von 2010/2011, ihre Werte stehen bereits in companyfacts).
+
 ## Vorher / Nachher (NVIDIA-Bündel, companyfacts vom 26.10.2026)
 
 Gerechnet mit `build_consumer_bundle(…, with_history=True)`, einmal mit und einmal ohne die gepinnten Dokumente.
@@ -69,6 +80,33 @@ alle anderen Kennzahlen sind identisch. Werte in Mio. USD, Stand „as of latest
 
 Abdeckung Jahreswerte: Investitionen und Free Cashflow im Fenster 5 → 12 Jahre, in der Historie davor 3 → 5 Jahre.
 GJ 2014 erscheint mit 255 Mio. statt 255,186 Mio., weil die jüngste Meldung dieses Jahres (10-K 2016) auf Millionen rundet.
+
+### Chartwerte in Fundamental (NVIDIA, Jahresansicht)
+
+Gerechnet mit `catalog.js` (`fromHistory`, `attachValuation`, `seriesOf`) aus der ausgelieferten Historie vor und nach der Erweiterung, also genau den Reihen, die die Oberfläche zeigt. Neu belegt sind nur die Jahre 2013–2021 (2022 bei der Wachstumsrate); kein vorher vorhandener Wert ändert sich, keine Quartalsreihe ändert sich.
+
+| GJ | Investitionen | Free Cashflow | FCF-Marge | Investitionsquote | FCF je Aktie | FCF-Rendite | FCF-Wachstum |
+|---|---|---|---|---|---|---|---|
+| 2013 | 183,3 Mio. | 640,9 Mio. | 15,0 % | 4,3 % | 1,03 | 8,2 % | −16,8 % |
+| 2014 | 255,0 Mio. | 580,0 Mio. | 14,0 % | 6,2 % | 0,98 | 5,7 % | −9,5 % |
+| 2015 | 122,0 Mio. | 784,0 Mio. | 16,7 % | 2,6 % | 1,39 | 6,3 % | +35,2 % |
+| 2016 | 86,0 Mio. | 1.089,0 Mio. | 21,7 % | 1,7 % | 1,91 | 6,0 % | +38,9 % |
+| 2017 | 176,0 Mio. | 1.496,0 Mio. | 21,6 % | 2,5 % | 2,31 | 2,6 % | +37,4 % |
+| 2018 | 593,0 Mio. | 2.909,0 Mio. | 29,9 % | 6,1 % | 4,60 | 2,0 % | +94,5 % |
+| 2019 | 600,0 Mio. | 3.143,0 Mio. | 26,8 % | 5,1 % | 5,03 | 3,3 % | +8,0 % |
+| 2020 | 489,0 Mio. | 4.272,0 Mio. | 39,1 % | 4,5 % | 1,73 | 2,4 % | +35,9 % |
+| 2021 | 1.128,0 Mio. | 4.694,0 Mio. | 28,1 % | 6,8 % | 1,87 | 1,5 % | +9,9 % |
+| 2022 | unverändert | unverändert | unverändert | unverändert | unverändert | unverändert | neu +73,2 % |
+
+Vorher stand in allen Feldern 2013–2021 „keine Angabe“. Free Cashflow je Aktie folgt wie der Gewinn je Aktie der gemeldeten Aktienzahl ohne Split-Bereinigung (4:1-Split 2021: GJ 2019 → 2020; die Oberfläche kennzeichnet Splits wie bisher).
+
+### Andere Produktwelten (Neubau vorher/nachher am selben Stand, nur Zeitstempel ausgenommen)
+
+- **Discover:** von 7.116 Dateien ändert sich nur `stocks/US_REAL/NVDA.json` – die 10-Jahres-Vergleichszeile „Free Cashflow“ (GJ 2016 → 2026) erscheint, die FCF-Spur im Zeitverlauf beginnt GJ 2015 statt 2022. Ranglisten, Reihen und alle anderen Titel unverändert.
+- **Capability-Matrix, Product-Capabilities:** inhaltlich unverändert.
+- **Quant Factor Evidence:** alle 642 Scherben inhaltlich unverändert (Faktoren nutzen TTM und die letzten drei Jahre).
+- **Supertrader:** liest weder Investitionen noch Free Cashflow (`scripts/supertrader/build.mjs`, `keepA`) – unverändert.
+- **Company Intelligence:** nutzt Quartale/TTM, die sich nicht ändern.
 
 ## Wirkung auf andere Leser
 
