@@ -1,0 +1,562 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "conceptual_groups": [
+    [
+      "cross_sectional_momentum",
+      "52_week_high_effect",
+      "industry_momentum",
+      "residual_momentum"
+    ],
+    [
+      "kullamagi_breakout",
+      "MOMENTUM_BREAKOUT",
+      "episodic_pivot",
+      "KK_PARABOLIC_SHORT"
+    ],
+    [
+      "MINERVINI",
+      "william_oneil_canslim",
+      "david_ryan",
+      "oliver_kell",
+      "leif_soreide"
+    ],
+    [
+      "piotroski_value_fscore",
+      "gross_profitability_novy_marx",
+      "quality_minus_junk",
+      "accruals_sloan",
+      "greenblatt_magic_formula",
+      "value_plus_momentum"
+    ],
+    [
+      "turtle",
+      "donchian_channel",
+      "VU_TREND_52W"
+    ]
+  ],
+  "not_statistical_diversification_proof": true,
+  "method_eras_and_conflicts": [
+    {
+      "candidate_id": "cross_sectional_momentum",
+      "era": "1993 paper; French Mom variant separately labeled",
+      "conflicts": [
+        "JT1993 equal-weight overlapping J/K portfolios differ from French size-conditioned value-weighted 2–12 factor. Treat as separate source-defined eras/variants, not interchangeable ground truth.",
+        "Original JT family has no-skip and one-week-skip alternatives; neither silently replaced by French full-month skip. Exact source variant is unresolved until Phase2 freeze."
+      ]
+    },
+    {
+      "candidate_id": "52_week_high_effect",
+      "era": "2004 paper",
+      "conflicts": [
+        "Proximity ranking is not a new-high breakout trigger and not VU Trend52. Do not inherit either method name or paper returns into a breakout engine."
+      ]
+    },
+    {
+      "candidate_id": "industry_momentum",
+      "era": "1999 paper",
+      "conflicts": [
+        "George–Hwang comparison uses a different industry-ranking construction; preserve original MG equal-industry/value-stock structure. Sector ETFs are an adaptation, not paper replication."
+      ]
+    },
+    {
+      "candidate_id": "residual_momentum",
+      "era": "2011 accepted/published paper",
+      "conflicts": [
+        "Residual momentum is not industry-neutral momentum. Regression window, alpha handling and residual standardization are substantive source-defined elements."
+      ]
+    },
+    {
+      "candidate_id": "time_series_momentum",
+      "era": "2012 paper",
+      "conflicts": [
+        "Paper evidence covers 58 liquid equity-index, bond, currency and commodity derivatives; no inference that same risk/return exists in individual stocks. ETF or long-only equities would change source universe and exposure."
+      ]
+    },
+    {
+      "candidate_id": "dual_momentum_gem",
+      "era": "2012 paper map; 2014 public GEM; later proprietary models excluded",
+      "conflicts": [
+        "Author FAQ acknowledges S&P absolute filter first (book p.98) and relative first (p.101) can differ. Preserve alternatives.",
+        "Public GEM is different from proprietary adaptive models actually used by author.",
+        "GEM performance expressly hypothetical, not actual fund/portfolio; a paper award is not a verified account competition."
+      ]
+    },
+    {
+      "candidate_id": "value_plus_momentum",
+      "era": "2013 published paper; paper factor combination",
+      "conflicts": [
+        "50/50 sleeve combination differs from a combined stock-ranking score or intersection filter; these would be VU adaptations.",
+        "Global all-asset evidence does not establish performance of a restricted VU long-only US sleeve."
+      ]
+    },
+    {
+      "candidate_id": "quality_plus_momentum_hypothesis",
+      "era": "QMJ 2019 published version; momentum components from separate eras",
+      "conflicts": [
+        "2013/2014 QMJ working papers used payout component; 2019 published principal definition uses profitability/growth/safety, payout as alternative. Preserve eras.",
+        "Published alpha controlling for UMD is evidence for independent quality premium; it is not evidence for a particular quality+momentum portfolio."
+      ]
+    },
+    {
+      "candidate_id": "pead_bernard_thomas",
+      "era": "1989 paper; Foster-model statistical surprise; continuously balanced quintile variant separated from decile event study",
+      "conflicts": [
+        "1989 Foster-model SUE and later seasonal-random-walk/analyst-surprise definitions must remain separate.",
+        "The CAR decile test implicitly daily rebalances controls; matched quintile buy-and-hold variant has different portfolio mechanics.",
+        "Original Compustat sample has acknowledged potential survivor bias before 1982; current significance cannot be inferred."
+      ]
+    },
+    {
+      "candidate_id": "earnings_momentum_cjl",
+      "era": "1996 published paper; separate SUE, announcement-return ABR and analyst revision REV6 portfolios",
+      "conflicts": [
+        "SUE, ABR and REV6 are separate measured strategies, not one author-prescribed combined engine.",
+        "CJL SUE uses seasonal random walk and preceding eight-quarter difference volatility; Bernard/Thomas Foster-model PEAD differs.",
+        "Revision-free SUE/ABR subset is feasible research, but would not reproduce REV6."
+      ]
+    },
+    {
+      "candidate_id": "piotroski_value_fscore",
+      "era": "2000 study; inspected January 2002 university reprint; original high-book-to-market conditioning retained",
+      "conflicts": [
+        "Removing highest-BM conditioning changes the method.",
+        "University reprint body defines asset turnover with beginning assets while table 1 says average assets: resolve against original final article before rule freeze.",
+        "Study assumes zero delisting return; distressed sample and borrowing costs can affect realizability."
+      ]
+    },
+    {
+      "candidate_id": "greenblatt_magic_formula",
+      "era": "2005/2010 book-derived annual retail portfolio; 2010 Formula Investing quarterly cohorts kept separate",
+      "conflicts": [
+        "Official website allows rejecting names for any reason; mechanical selection must either disclose adaptation or reproduce predeclared ranks.",
+        "2010 interview Formula Investing buys 24 and replaces six quarterly; annual book/retail rule is a different era.",
+        "Interview simplifies EV to market equity plus long-term debt; exact cash/debt adjustments must come from inspected appendix, not harmonized silently."
+      ]
+    },
+    {
+      "candidate_id": "quality_minus_junk",
+      "era": "Version of record November 2018 / 2019 journal issue; three-component quality score",
+      "conflicts": [
+        "Old AQR static PDF includes payout as a fourth component and idiosyncratic volatility in safety; final paper has three core components and payout as alternative.",
+        "Final growth is residual profitability per share; older total-profit growth differs.",
+        "AQR public aggregate factor dataset cites 2014; do not assume final-version constituent/PIT series or product redistribution permission."
+      ]
+    },
+    {
+      "candidate_id": "gross_profitability_novy_marx",
+      "era": "June 2012 author manuscript preceding 2013 publication; canonical annual variant",
+      "conflicts": [
+        "Annual June-lagged variant differs from monthly latest-quarter Appendix A.6 variant; do not merge.",
+        "Profitability plus value combined ranks and industry-adjusted profitability are different variants.",
+        "A long-only quality screen is a VU adaptation of the full long-short research spread."
+      ]
+    },
+    {
+      "candidate_id": "accruals_sloan",
+      "era": "1996 original research; later reported decay is separately documented",
+      "conflicts": [
+        "2011 peer-reviewed publisher abstract reports historical hedge returns decayed to no longer reliably positive; strong old evidence does not establish current edge.",
+        "Balance-sheet accrual construction differs from modern cash-flow-statement variants.",
+        "Acquisition/divestiture accounting can distort balance-sheet changes."
+      ]
+    },
+    {
+      "candidate_id": "net_share_issuance_pontiff_woodgate",
+      "era": "2008 annual issuance predictor; 5-year issuance and buyback announcement event study are separate",
+      "conflicts": [
+        "Pre-1970 predictor mostly lacks significance and differs from post-1970 sample; material era sensitivity.",
+        "Realized net share contraction is not the same as repurchase announcement or authorized buyback dollars.",
+        "Paper exact annual endpoint is t−11 with six-month lag, not a silently substituted t−12 or t−18 variant."
+      ]
+    },
+    {
+      "candidate_id": "william_oneil_canslim",
+      "era": {
+        "selected": "2009 fourth-edition CAN SLIM",
+        "other": "Early personal trading and modern IBD rules remain separate."
+      },
+      "conflicts": [
+        {
+          "topic": "Method era / product rules",
+          "description": "Modern IBD summaries cannot silently become O'Neil personal trading behavior."
+        }
+      ]
+    },
+    {
+      "candidate_id": "david_ryan",
+      "era": {
+        "selected": "1985–1987 competition-era method",
+        "other": "2021–2026 interview-era commentary distinct."
+      },
+      "conflicts": [
+        {
+          "topic": "1986 championship rank",
+          "description": "Modern interview description says three wins; indexed Schwager interview lead says 1986 second place. Original standings and authorized interview edition required; neither merged into three verified wins.",
+          "status": "UNRESOLVED_DISCOVERY_LEAD"
+        }
+      ]
+    },
+    {
+      "candidate_id": "nicolas_darvas",
+      "era": {
+        "selected": "1950s self-described practice / 1960 memoir",
+        "other": "Later promoter and contemporary VU variants excluded."
+      },
+      "conflicts": [
+        {
+          "topic": "Performance claim",
+          "description": "Contemporary TIME reported Attorney-General found only $216k ascertainable profit while not locating all accounts. 1961 court restored inquiry order; opinion establishes neither fraud nor authentic $2m performance.",
+          "source_ids": [
+            "G-DARVAS-CHALLENGE",
+            "G-DARVAS-COURT"
+          ]
+        },
+        {
+          "topic": "Behavior vs modern growth filter",
+          "description": "E. L. Bruce trade interview says company business unknown. Universal fundamental-growth prerequisite cannot be presumed.",
+          "source_ids": [
+            "G-DARVAS-TIME"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "stan_weinstein",
+      "era": {
+        "selected": "1988 original book method",
+        "other": "2022 sector-strength emphasis and current GTA kept separate; 200-day vs30-week shift only discovery lead."
+      },
+      "conflicts": [
+        {
+          "topic": "Era",
+          "description": "Secondary interview notes claim greater 200-day-MA use in 2022, versus familiar 1988 30-week framework. Primary confirmation pending; do not create universal blended system.",
+          "source_ids": [
+            "G-WEINSTEIN-ERA"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "morales_kacher",
+      "era": {
+        "selected": "2010–2019 pocket pivots / BGU / VDU / U&R",
+        "other": "1996–2005 audited accounts precede or differ from 2005 invention and later variants."
+      },
+      "conflicts": [
+        {
+          "topic": "Performance attribution",
+          "description": "Historical account performance cannot validate techniques introduced 2005 or later.",
+          "source_ids": [
+            "G-VOSI-POCKET",
+            "G-KACHER-KPMG",
+            "G-MORALES-AUDIT"
+          ]
+        },
+        {
+          "topic": "Kacher marketing claims",
+          "description": "Site six consecutive triple-digit years1995–2000 conflicts with report1997=98.15%. Report has no18,000% cumulative number; claim not adopted.",
+          "source_ids": [
+            "G-VOSI-BIO",
+            "G-KACHER-KPMG"
+          ]
+        },
+        {
+          "topic": "Signals vs own trades",
+          "description": "Published chart discussions are not a public execution ledger.",
+          "source_ids": [
+            "G-VOSI-PPR"
+          ]
+        },
+        {
+          "topic": "Era-specific entry",
+          "description": "2013–2017 weakness-oriented adaptations broaden initial strength/pocket-pivot rules.",
+          "source_ids": [
+            "G-VOSI-POCKET"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "dan_zanger",
+      "era": {
+        "selected": "1998–2000 bubble and2003 interview specification",
+        "other": "Current growth/float marketing kept separate."
+      },
+      "conflicts": [
+        {
+          "topic": "Claim digits",
+          "description": "Effron cover reads29,223%; current website29,233%. Preserve discrepancy; no guessed OCR decimal.",
+          "source_ids": [
+            "G-ZANGER-AUDIT",
+            "G-ZANGER-ABOUT"
+          ]
+        },
+        {
+          "topic": "Indicators/fundamentals vs later description",
+          "description": "2003 interview says chart/volume only; current About page combines growth/float. Separate eras.",
+          "source_ids": [
+            "G-ZANGER-INTERVIEW",
+            "G-ZANGER-ABOUT"
+          ]
+        },
+        {
+          "topic": "Options headline",
+          "description": "Magazine intro says avoids options; interview discloses naked-call trades and a substantial loss.",
+          "source_ids": [
+            "G-ZANGER-INTERVIEW"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "kullamagi_breakout",
+      "era": {
+        "selected": "2021 author specification",
+        "other": "Small-account risk differs explicitly; EP and parabolic shorts separate."
+      },
+      "conflicts": [
+        {
+          "topic": "Rule freedom",
+          "description": "Author permits several entry timeframes, daily fallback, two trailing MAs and discretionary pattern quality; one mechanical version cannot inherit whole method.",
+          "source_ids": [
+            "G-KULLAMAGI-SETUPS"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "episodic_pivot",
+      "era": {
+        "selected": "January and November2021 author versions distinguished",
+        "other": "Author states definition may differ from Pradeep Bonde; original Stockbee rules not inspected."
+      },
+      "conflicts": [
+        {
+          "topic": "ATR/ADR allowance",
+          "description": "January1x versus November up to1.5x; preserve versions, no optimization.",
+          "source_ids": [
+            "G-KULLAMAGI-SETUPS",
+            "G-KULLAMAGI-EP"
+          ]
+        },
+        {
+          "topic": "Growth/estimates exceptions",
+          "description": "November explicitly allows no earnings with high sales growth and smaller stocks without analysts; hard GAAP-positive-EPS/consensus gates would reject documented allowable cases.",
+          "source_ids": [
+            "G-KULLAMAGI-EP"
+          ]
+        },
+        {
+          "topic": "Lineage",
+          "description": "Kullamägi learned EP from Bonde and explicitly notes their definitions can differ; do not claim universal EP replication.",
+          "source_ids": [
+            "G-KULLAMAGI-EP"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "turtle",
+      "era": "1983–1984 teaching rules, disclosed by participant Curtis Faith in 2003; later Turtle methods explicitly separate",
+      "conflicts": [
+        "Participant reports some Turtles failed or changed rules, while popular summaries claim all were successful. Cohort success cannot be attributed to every participant.",
+        "Public document permits discretionary System 1/System 2 allocation and stop variant; there is no single universal Turtle account.",
+        "An equity long-only universe plus earnings filters/shared sizing would be VU Adaptation, never original Turtle Replication."
+      ]
+    },
+    {
+      "candidate_id": "ed_seykota",
+      "era": "1970s–1980s personal account method versus 2003–2023 public TSP teaching, kept separate",
+      "conflicts": [
+        "HIGH reproducibility of a public educational example must not be promoted into HIGH replication of Seykota actual career.",
+        "TSP simulated trade logs are not behavioral ground truth or evidence of real-money performance."
+      ]
+    },
+    {
+      "candidate_id": "donchian_channel",
+      "era": "1934 qualitative 20 Guides, 1960s–1970s four-week channel and 5/20 systems separated",
+      "conflicts": [
+        "1934/1978 discretionary Guides, four-week channel and 5/20 futures rule are different documents/eras, not one composite system.",
+        "Generic modern channel plus VU risk policy would be a systematic archetype adaptation; not Donchian trader replication.",
+        "Substantial overlap with Turtle, time-series trend and existing VU breakouts; avoid awarding separate implementation slots for aliases."
+      ]
+    },
+    {
+      "candidate_id": "linda_raschke",
+      "era": "1981 options market making; 1990s Street Smarts; hedge-fund period including 2010 Flash Crash; 2018 discretionary technical framework separate",
+      "conflicts": [
+        "Model-assisted preparation is explicitly distinguished by her from intraday discretionary improvement; model signal cannot equal actual practice.",
+        "Normative immediate loser-control versus actual Flash Crash entry before a stop was entered is documented as an execution contingency, not silently normalized away.",
+        "One Street Smarts setup (e.g. Turtle Soup) would be a separately scoped setup, not complete Raschke replication."
+      ]
+    },
+    {
+      "candidate_id": "marty_schwartz",
+      "era": "1980s competitive/index futures practice; Pit Bull memoir; 2013 Amherst speech distinct",
+      "conflicts": [
+        "10-day EMA bias filter cannot explain all discretion, execution and risk of Pit Bull.",
+        "Current competition verification procedure cannot retroactively audit a historical account or substantiate a particular 1984 rank.",
+        "Secondary sources mix annual competition year, four-month sub-contests and dollar versus percentage winners; unresolved."
+      ]
+    },
+    {
+      "candidate_id": "mark_ritchie",
+      "era": "CBOT/commodity floor career, 1989 God in the Pits, later My Trading Bible/Ritchie Rule teaching; explicitly distinct from Mark Ritchie II",
+      "conflicts": [
+        "Identity collision with Mark Ritchie II is material: they must have different IDs and source maps.",
+        "God in the Pits is a personal/spiritual memoir; endorsement blurbs are not performance evidence.",
+        "Ritchie Rule teaching game is not the complete actual commodity account system."
+      ]
+    },
+    {
+      "candidate_id": "paul_tudor_jones",
+      "era": "1970s cotton; 1987 crash; 2014 Robbins public risk teaching; contemporary multi-manager Tudor kept separate",
+      "conflicts": [
+        "Public 200-day MA educational rule and 5:1 principle do not disclose full global macro method.",
+        "Historic Tudor Futures Fund result must not be merged with other vehicles/net-of-fee series or modern multi-manager firm.",
+        "200%/201% versus widely quoted 125.9% claims could have different account/fee scopes; no universal figure adopted.",
+        "Robbins reprint says flat at top of crash; without instrument/time detail no actual ticker-level trade case is counted."
+      ]
+    },
+    {
+      "candidate_id": "larry_hite",
+      "era": "1981–1990s Mint institutional futures; later personal/structured product and 2019 risk memoir eras distinct",
+      "conflicts": [
+        "Systematic execution with LOW trader discretion does not mean HIGH reproducibility when signals/portfolio algorithm remain undisclosed.",
+        "One-percent risk budget is not itself a positive-expectancy strategy and must not be used as proxy for Mint.",
+        "Principal-protected structured products and original trend futures program are different eras/products."
+      ]
+    },
+    {
+      "candidate_id": "oliver_kell",
+      "era": "2020 competition separate from 2023–2024 published semiconductor trade reviews",
+      "conflicts": [
+        "NVDA entry labeled January 6 2024 is a Saturday. Do not silently shift to January 8.",
+        "MU review reverses chronology at May 3 after May 22; June 17 2023 occurs among June 2024 actions; June 19 2024 is US market holiday. Those labels cannot support exact fills.",
+        "Six-phase public framework and selected semiconductor winners are later exposition, not proof that identical rules generated 2020 championship result.",
+        "Backtestable third-party GitHub rulebooks were found but excluded as primary ground truth."
+      ]
+    },
+    {
+      "candidate_id": "leif_soreide",
+      "era": "2019 competition; 2025 conference teaching published as podcast 2026",
+      "conflicts": [
+        "2025 talk explicitly discounts deep OKLO overhead supply; cannot collapse this contextual exception into a universal no-overhead-supply rule.",
+        "Later focus on liquid leaders represents method evolution; do not merge eras with 2019 result.",
+        "Own website describes 2019 as difficult; organizer says market rose strongly. Market-regime descriptions are contextual/marketing, not standardized evidence.",
+        "IBD MarketSurge RS 90+ reference is proprietary; VU rank replacement would be an adaptation."
+      ]
+    },
+    {
+      "candidate_id": "sean_ryan",
+      "era": "Early account blow-up distinct from competition-account years 2019–2025 and 2024 interview",
+      "conflicts": [
+        "Do not mistake Sean Ryan for David Ryan or unrelated Shawn Ryan podcast host.",
+        "Seven reported annual competition results do not prove continuous same-account compounded live wealth, audited lifetime performance, or absence of losing undisclosed accounts.",
+        "Host-summary rules are provisional, not normative direct quote extraction."
+      ]
+    },
+    {
+      "candidate_id": "j_law",
+      "era": "2024–2025 consecutive $1m+ wins; contemporary public glossary/curriculum",
+      "conflicts": [
+        "Own biography calls checks independently audited; organizer only establishes brokerage-statement verification. Use organizer scope.",
+        "Organizer also reports separate J Law under-$1m account +397% in 2024. Do not merge with +353.9% large-account return or imply all personal capital earned either.",
+        "Own capital size is self-report; actual competition start/end capital and leverage unknown.",
+        "Public technical terms are a glossary, not sufficient evidence for deterministic rules."
+      ]
+    },
+    {
+      "candidate_id": "robb_reinhold",
+      "era": "2011 coauthored book; 2023 risk-management interview and Flat Earth Trading Society experiment",
+      "conflicts": [
+        "A prop-firm founder/coauthored strategy book is not a competition win or positive track-record proof.",
+        "Flat Earth Trading Society illustrative experiment is not independently verified lifetime trading performance."
+      ]
+    },
+    {
+      "candidate_id": "VU_TREND_52W",
+      "era": [
+        "TraderFox2018:70% above low, no6%gap requirement",
+        "Later PivotalPoints variant:100%rise,6%gap and concentration trims",
+        "VU2026 Native1.0.0:volume-ranked1800 universe, SPY substitute, Clenow rank"
+      ],
+      "conflicts": [
+        "TraderFox private trend stability is replaced with Clenow90-day slope*R2; rules from third-party version are not original Darvas.",
+        "TraderFox performance marketing cannot be assigned to VU method."
+      ]
+    },
+    {
+      "candidate_id": "MOMENTUM_BREAKOUT",
+      "era": [
+        "Current VU3.2.0 only; prior variants must not be blended with current",
+        "Original trader multi-setup/ORH discretion remains separate candidate"
+      ],
+      "conflicts": [
+        "HIGH reproducibility only for self-defined VU code contract; original trader basis/size/market judgment are not completely mechanical.",
+        "Entry5-dayhigh is VU daily proxy for trader ORH/daily breakout; EP andparabolicshort absent."
+      ]
+    },
+    {
+      "candidate_id": "VU_HOUSE_HS4_V03",
+      "era": [
+        "HS1/HS2:TESTED_NO_EDGE; holdout not opened",
+        "HS3-D3:holdout consumed andTESTED_NO_EDGE",
+        "HS4:EXPLORATORY_NO_EDGE",
+        "HS4V03:OOS_NOT_CONFIRMED in2008–2015; live observation since2026-10-05"
+      ],
+      "conflicts": [
+        "Old HS3 no-model statement is not current HS4 status",
+        "Gain surprise in rule list is earnings change/SUE from SEC history, not analyst-consensus EPS surprise."
+      ]
+    },
+    {
+      "candidate_id": "KK_PARABOLIC_SHORT",
+      "era": [
+        "2010s–2020s trader short setup; portfolio record covers several long/short setups"
+      ],
+      "conflicts": [
+        "Total trader account claims cannot be attributed to parabolic short setup.",
+        "Alladay OHLCV cannot establish exact opening-range trigger/stop ordering or locate execution."
+      ]
+    },
+    {
+      "candidate_id": "MARKET_WIZARDS_NEXT",
+      "era": [
+        "2026 publication, individual interview eras must remain separate"
+      ],
+      "conflicts": [
+        "Publisher teaser securityguard account growth is not assigned to Kullamagi or anyone without direct chapter verification."
+      ]
+    },
+    {
+      "candidate_id": "MINERVINI",
+      "era": "SEPA-PUBLISHED-2013-2022; bestehende Research-Freezes 1.0.0/1.1.0 separat von Live 2.0.0",
+      "conflicts": [
+        "Mechanische SEPA-Definition verfehlt dokumentierte Käufe; Core-Fixes änderten Recall nicht.",
+        "Live Adaptation und Research-Freezes dürfen nicht als Originalreplikation verschmolzen werden."
+      ]
+    },
+    {
+      "candidate_id": "LOW_VOLATILITY",
+      "era": "ERIM-PDF: Cover July 2007, inner version April 2007; keine Vermischung mit späteren Conservative-Formula-Hybriden",
+      "conflicts": [
+        "Original index membership and Factset data are licensed; VU US universe is a disclosed adaptation.",
+        "Low-risk result does not imply strongest raw return in US; costs omitted."
+      ]
+    },
+    {
+      "candidate_id": "SHORT_TERM_REVERSAL",
+      "era": "NBER working paper 1988; published QJE 1990 is a separate final edition",
+      "conflicts": [
+        "Long-only loser basket would change the original self-financing hypothesis.",
+        "Historical plausible cost treatment does not establish current net profitability."
+      ]
+    }
+  ]
+}
