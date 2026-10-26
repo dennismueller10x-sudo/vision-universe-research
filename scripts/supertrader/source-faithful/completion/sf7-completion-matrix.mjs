@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SF = path.resolve(HERE, '..'), ROOT = path.resolve(SF, '..', '..', '..');
-export const SF7_COMPLETION_VERSION = 'sf7-completion-matrix-1.3.0'; // 1.3.0: E7-6 (#920) und E7-7 (#917) zusammengefuehrt; 1.2.0: E7-1 EDGAR check (rule sets 1.4.0 / 1.4.1, runs 40185801366 / 40190526062, CA7 unchanged); 1.1.0: SF7-D3 / SF7-D4 fixed as versioned variants (#911), #899 run 40172178386 (E7-2)
+export const SF7_COMPLETION_VERSION = 'sf7-completion-matrix-1.4.1'; // 1.4.1: rule set 1.4.3 (review of #931, run 40214193643, CA7 unchanged); 1.4.0: rule set 1.4.2 with EDGAR exhibits (run 40206319111, CA7 unchanged); 1.3.0: E7-6 (#920) und E7-7 (#917) zusammengefuehrt; 1.2.0: E7-1 EDGAR check (rule sets 1.4.0 / 1.4.1, runs 40185801366 / 40190526062, CA7 unchanged); 1.1.0: SF7-D3 / SF7-D4 fixed as versioned variants (#911), #899 run 40172178386 (E7-2)
 
 /** 7.0 draft PRs and authoritative runs (evidence keys). */
 export const SF7_EVIDENCE = Object.freeze({
@@ -28,12 +28,12 @@ export const SF7_EVIDENCE = Object.freeze({
   INV: 'docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md',
   EXE: 'docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md',
   CA: 'docs/SUPERTRADER_7_V4D1_RESOLUTION.md',
-  EDGAR: 'Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md',
+  EDGAR: 'PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md',
 });
 
 /**
  * V4-D1 exposure after the 7.0 classification (DQ-K5: exposed / confirmed genuine / unresolved; DQ-K3 the same), from
- * PR902 run 40122736287 (rule set 1.3.0).  Rule sets 1.4.0 / 1.4.1 (E7-1 EDGAR check, runs 40185801366 / 40190526062) confirmed no split and no
+ * PR902 run 40122736287 (rule set 1.3.0).  Rule sets 1.4.0 - 1.4.3 (EDGAR documents and exhibits, runs 40185801366 / 40190526062 / 40206319111 / 40214193643) confirmed no split and no
  * genuine move among the 83 exposed DQ-K5 sessions: every per-reference count is unchanged (public counts of that run).
  */
 export const CA7 = Object.freeze({
@@ -45,7 +45,7 @@ export const CA7 = Object.freeze({
  * CC-5 sub-criteria (owner decision E7-1, 2026-10-25: check which parts are met for zero-exposure strategies; no
  * automatic upgrade). The test of CC-5 (criteria 1.2.0) is decomposed into its parts; CC-5 itself stays as the
  * readiness artifact derives it (false for every reference). Run 40122736287 (rule set 1.3.0, overlay empty); unchanged by
- * runs 40185801366 / 40190526062 (rule sets 1.4.0 / 1.4.1, EDGAR documents, overlay empty).
+ * runs 40185801366 / 40190526062 / 40206319111 / 40214193643 (rule sets 1.4.0 - 1.4.3, EDGAR documents and exhibits, overlay empty).
  */
 export const CC5_SUBCRITERIA = Object.freeze([
   Object.freeze({ id: 'CC5-a-K5-RESOLVED', test: 'every DQ-K5 session behind a reference trade verified (CONFIRMED_*)' }),
@@ -93,7 +93,7 @@ export function sf7CompletionMarkdown(a) {
   let md = `# Supertrader 7.0 – Abschlussmatrix der 13 Strategien\n\nGeneriert von \`scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs\` (${a.version}). Maschinelle Felder aus \`STRATEGY-SF6-READINESS.json\` (Kriterien ${a.basis.readinessCriteria}); keine Note ist von Hand gesetzt. ${a.statusChange}.\n\nV4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.3.0 (Draft-PR #902).\n\n`;
   md += '| | Strategie | Zustand | Messklasse | Phasen | erfüllt | fehlt | V4-D1 (exponiert / echt / ungeklärt) | Live |\n|---|---|---|---|---|---|---|---|---|\n';
   for (const c of a.candidates) md += `| ${c.candidateId} | \`${c.strategyId}\` | ${c.primaryState} | ${c.measurementClass} | ${c.executablePhases ?? '–'} | ${c.certificationMet.map((x) => x.split('-').slice(0, 2).join('-')).join(', ') || '–'} | ${c.certificationMissing.map((x) => x.split('-').slice(0, 2).join('-')).join(', ')} | ${c.corporateActions7 ? `${c.corporateActions7.dqK5Exposed} / ${c.corporateActions7.confirmedGenuine} / ${c.corporateActions7.unresolved}` : '–'} | ${c.liveReadiness} |\n`;
-  md += '\n## CC-5-Teilkriterien (Entscheidung E7-1)\n\nCC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0; unverändert nach der EDGAR-Prüfung, Läufe 40185801366 / 40190526062, Regelsätze 1.4.0 / 1.4.1: 0 von 83 exponierten DQ-K5-Sitzungen bestätigt):\n\n' + CC5_SUBCRITERIA.map((x) => `- \`${x.id}\`: ${x.test}`).join('\n') + '\n\n| | Strategie | K5 exponiert / ungeklärt | K3 exponiert / echt / ungeklärt | a | b | c | d | e | f |\n|---|---|---|---|---|---|---|---|---|---|\n';
+  md += '\n## CC-5-Teilkriterien (Entscheidung E7-1)\n\nCC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0; unverändert nach der EDGAR-Prüfung, Läufe 40185801366 / 40190526062 / 40206319111 / 40214193643, Regelsätze 1.4.0 bis 1.4.3 (mit Exhibits): 0 von 83 exponierten DQ-K5-Sitzungen bestätigt):\n\n' + CC5_SUBCRITERIA.map((x) => `- \`${x.id}\`: ${x.test}`).join('\n') + '\n\n| | Strategie | K5 exponiert / ungeklärt | K3 exponiert / echt / ungeklärt | a | b | c | d | e | f |\n|---|---|---|---|---|---|---|---|---|---|\n';
   const yn = (v) => (v === true ? 'ja' : v === false ? 'nein' : 'entfällt');
   for (const c of a.candidates) if (c.cc5Subcriteria) { const k = c.cc5Subcriteria, ca = c.corporateActions7; md += `| ${c.candidateId} | \`${c.strategyId}\` | ${ca.dqK5Exposed} / ${ca.unresolved} | ${ca.dqK3Exposed} / ${ca.dqK3ConfirmedGenuine} / ${ca.dqK3Unresolved} | ${yn(k['CC5-a-K5-RESOLVED'])} | ${yn(k['CC5-b-K3-RESOLVED'])} | ${yn(k['CC5-c-DATA-PR'] === 'NOT_REQUIRED' ? null : k['CC5-c-DATA-PR'])} | ${yn(k['CC5-d-RECOMPUTED'])} | ${yn(k['CC5-e-DETECTION-COMPLETE'])} | ${yn(k['CC5-f-HOLDOUT'])} |\n`; }
   const Q = [['changed7', 'Was hat sich in 7.0 geändert?'], ['technical', 'Technisch vollständig'], ['original', 'Nachgewiesene Originalregeln'], ['assumptions', 'Modellannahmen'], ['simulation', 'Vollständige Research-Simulation'], ['backtest', 'Vollständiger diagnostischer Backtest'], ['reliable', 'Belastbare Daten'], ['blocked', 'Gesperrte Daten'], ['execution', 'Ausführungsrealismus'], ['manual', 'Manuelle Prüfung'], ['next', 'Nächster konkreter Schritt']];

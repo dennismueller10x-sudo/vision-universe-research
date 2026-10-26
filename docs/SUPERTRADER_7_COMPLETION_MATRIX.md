@@ -1,6 +1,6 @@
 # Supertrader 7.0 – Abschlussmatrix der 13 Strategien
 
-Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.3.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
+Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.4.1). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
 
 V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.3.0 (Draft-PR #902).
 
@@ -22,7 +22,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 
 ## CC-5-Teilkriterien (Entscheidung E7-1)
 
-CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0; unverändert nach der EDGAR-Prüfung, Läufe 40185801366 / 40190526062, Regelsätze 1.4.0 / 1.4.1: 0 von 83 exponierten DQ-K5-Sitzungen bestätigt):
+CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0; unverändert nach der EDGAR-Prüfung, Läufe 40185801366 / 40190526062 / 40206319111 / 40214193643, Regelsätze 1.4.0 bis 1.4.3 (mit Exhibits): 0 von 83 exponierten DQ-K5-Sitzungen bestätigt):
 
 - `CC5-a-K5-RESOLVED`: every DQ-K5 session behind a reference trade verified (CONFIRMED_*)
 - `CC5-b-K3-RESOLVED`: every DQ-K3 session behind a reference trade verified (criteria 1.1.0: DQ-K3 reported as well)
@@ -61,7 +61,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | keine |
 | Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest (E7-1) |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C02 `SF_TURTLE_S2`
 
@@ -79,7 +79,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | keine |
 | Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest; SF6-PAPER-2027 1.1.0 (vorbereitet, nicht aktiv) |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C03 `SF_DARVAS_BOX`
 
@@ -97,7 +97,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 8 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Darvas-Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C04 `SF_WEINSTEIN_INVESTOR`
 
@@ -115,7 +115,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 14 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | PIT-Branchenhistorie; Eigentümerentscheidung, ob V4-D1-Exposition 0 für CC-5 genügt |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C05 `SF_WEINSTEIN_TRADER`
 
@@ -133,7 +133,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 12 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | PIT-Branchenhistorie; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C06 `SF_MINERVINI_SEPA_VCP`
 
@@ -151,7 +151,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS) |
 | Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Auswertung der versiegelten E7-7-Ausstiegsvarianten (keine Referenzänderung) |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
 
 ## C07 `SF_MINERVINI_POWER_PLAY`
 
@@ -169,7 +169,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 6 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | CC-1-Entscheidung wie SEPA; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
 
 ## C08 `SF_KK_BREAKOUT`
 
@@ -187,7 +187,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 7 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C09 `SF_KK_EPISODIC_PIVOT`
 
@@ -241,7 +241,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 7 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Quelle für die Stopregel |
 | Zertifizierung erfüllt / fehlt | CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C12 `SF_MOKA_BUYABLE_GAP_UP`
 
@@ -259,7 +259,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 8 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
 
 ## C13 `SF_RASCHKE_HOLY_GRAIL`
 
@@ -277,4 +277,4 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 3 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Primärquelle für Trailing / Größe |
 | Zertifizierung erfüllt / fehlt | CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsätze 1.4.0 / 1.4.1, Läufe 40185801366 / 40190526062) und Regelsätze 1.4.2 / 1.4.3 mit Exhibits (Läufe 40206319111 / 40214193643; alle 1.4.x-Exhibit-Läufe 254 von 600 Anfragen; davor 1.4.2-Läufe 122 von 600): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md, docs/SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md |
