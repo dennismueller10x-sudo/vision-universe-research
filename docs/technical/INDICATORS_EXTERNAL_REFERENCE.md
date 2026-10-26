@@ -42,7 +42,7 @@ Bei einer Umkehr setzt die Engine den neuen SAR auf den alten Extrempunkt. Errei
 
 Nach Wilder liegt der SAR nie innerhalb der Spanne der aktuellen Bar. TA-Lib setzt deshalb das Extrem der Umkehrbar.
 
-Folge: Der SAR-Wert der Umkehrbar ist um weniger als 0,6 % verschoben. Über die Rekursion verschieben sich auch die folgenden SAR-Werte, und damit kann sich eine spätere Umkehr um Bars verschieben. `psarUp` ist ein Screener-Feld, deshalb ist die Korrektur eine Fachmodelländerung. Sie kommt als eigener PR mit Vorher/Nachher-Vergleich und wird nicht automatisch gemergt.
+Folge: Betroffen ist der SAR-Wert der Umkehrbar selbst. Auf AAPL liegt die Verschiebung unter 0,6 %. Ob sich die Korrektur über die Rekursion auf spätere Bars oder auf `psarUp` (ein Screener-Feld) auswirkt, misst der Vorher/Nachher-Vergleich im Fachmodell-PR #964. Der PR wird nicht automatisch gemergt.
 
 Bis dahin hält der Test den Befund fest:
 - Die Abweichungen sind genau die Startbar und diese beiden Umkehrbars.
