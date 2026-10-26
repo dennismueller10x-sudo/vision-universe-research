@@ -1,0 +1,45 @@
+{
+  "status": "FAIL",
+  "ticker": "CAC",
+  "companyId": "iss_cik_0000750686",
+  "width": 768,
+  "theme": "dark",
+  "generation": "d700d480d9b2858eb8fa34f4",
+  "error": {
+    "name": "TimeoutError",
+    "message": "page.waitForFunction: Timeout 15000ms exceeded."
+  },
+  "consumerResponses": [
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 429
+    },
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 429
+    },
+    {
+      "path": "/company-intelligence/data/index.json",
+      "status": 429
+    }
+  ],
+  "requestFailures": [
+    {
+      "path": "/company-intelligence/data/index.json",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/company-intelligence/data/index.json",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "loads": [
+    {
+      "ticker": "CAC",
+      "state": "UNAVAILABLE",
+      "reason": "INDEX_UNAVAILABLE"
+    }
+  ],
+  "visibleText": "Auf einen Blick\n\nUnternehmensmeldungen sind derzeit nicht verf\u00fcgbar. Bitte sp\u00e4ter erneut versuchen.",
+  "completedCases": 100
+}
