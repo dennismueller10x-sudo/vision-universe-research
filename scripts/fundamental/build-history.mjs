@@ -13,7 +13,7 @@
 // dieselbe Quelle, die die Seite liest; Scherben ueber core/identity.js#shardKey.
 //
 // Aeltere Geschaeftsjahre als das Fenster der Verbraucherdatei stehen in
-// quant/data/sec/consumer-history/CIK*.json (derselbe Erzeuger, dieselbe
+// quant/data/sec/consumer-history/NN.json.gz (gzip-Scherben nach CIK; derselbe Erzeuger, dieselbe
 // Normalisierung, nur die Jahre davor). Sie werden vor die Jahresreihen gelegt
 // und genauso geprueft; passt eine Historie nicht zur Verbraucherdatei (andere
 // Identitaet, anderer Lauf), bleibt es beim Fenster.
@@ -67,6 +67,25 @@ function checkRows(rows, { asOf, quarterly }) {
 export const CONSUMER_HISTORY_SCHEMA = 'vu-consumer-history-1.0.0';
 /* Aeltere Jahre aus derselben Normalisierung vor die Jahresreihen legen. Nur, wenn die Historie zu genau dieser
  * Verbraucherdatei gehoert (Schema, CIK, Politik, Spalten, Quelle) und an ihrem ersten Jahr endet - sonst null. */
+export const CONSUMER_HISTORY_SHARD_SCHEMA = 'vu-consumer-history-shard-1.0.0';
+/** Map cik -> Historie aus den Scherben (scripts/quant/sec/consumer.py#write_history_shards). */
+export async function consumerHistories(dir) {
+  const out = new Map();
+  if (!existsSync(dir)) return out;
+  for (const n of (await readdir(dir)).filter((x) => /^\d{2}\.json\.gz$/.test(x)).sort()) {
+    let doc; try { doc = JSON.parse(gunzipSync(await readFile(join(dir, n)))); } catch { continue; }
+    if (doc?.schema !== CONSUMER_HISTORY_SHARD_SCHEMA) continue;
+    for (const [cik, h] of Object.entries(doc.issuers || {})) out.set(cik, h);
+  }
+  // Uebergang: bis der erste Erzeugerlauf die Scherben schreibt, liegen noch Einzeldateien je CIK im Repository.
+  if (!out.size) {
+    for (const n of (await readdir(dir)).filter((x) => /^CIK\d{10}\.json$/.test(x))) {
+      try { out.set(n.slice(3, 13), JSON.parse(await readFile(join(dir, n), 'utf8'))); } catch { /* unlesbar: ohne Historie */ }
+    }
+  }
+  return out;
+}
+
 export function withConsumerHistory(source, history) {
   if (!history || history.schema !== CONSUMER_HISTORY_SCHEMA || history.consumerSchema !== source?.schema || history.cik !== source.cik
     || history.policy !== source.policy || JSON.stringify(history.columns) !== JSON.stringify(COLUMNS)
@@ -127,7 +146,7 @@ export async function buildHistory({ root }) {
   if (!existsSync(consumerDir)) throw Error('CONSUMER_SOURCE_MISSING');
   const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0, history: 0, historyRejected: 0, consumerAsOf: null };
   const sic = await sicByTicker(root), members = [];
-  const tenK = await annualReportDates(root), sec = await secProcessed(root);
+  const tenK = await annualReportDates(root), sec = await secProcessed(root), histories = await consumerHistories(historyDir);
   const names = (await readdir(stockDir)).filter((n) => /^[A-Z0-9.-]+\.json$/.test(n)).sort();
   for (const name of names) {
     stats.stocks++;
@@ -137,8 +156,7 @@ export async function buildHistory({ root }) {
     if (!f || f.available !== true || !/^\d{10}$/.test(f.cik || '')) { stats.noFundamentals++; continue; }
     const path = join(consumerDir, 'CIK' + f.cik + '.json');
     if (!existsSync(path)) { stats.noSource++; continue; }
-    const hpath = join(historyDir, 'CIK' + f.cik + '.json');
-    let older = null; try { older = existsSync(hpath) ? JSON.parse(await readFile(hpath, 'utf8')) : null; } catch { older = null; }
+    const older = histories.get(f.cik) || null;
     const source = JSON.parse(await readFile(path, 'utf8')), merged = older ? withConsumerHistory(source, older) : null;
     if (older) stats[merged ? 'history' : 'historyRejected']++;
     const projected = projectHistory(merged || source, ticker);

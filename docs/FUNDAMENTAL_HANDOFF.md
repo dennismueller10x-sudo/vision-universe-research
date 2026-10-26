@@ -29,7 +29,8 @@ Statische Seite ohne Build-Schritt und ohne Abhängigkeiten. Die Hash-Routen wer
 | `fundamental/app.css` (≈430 Zeilen) | Eigene Klassen `fu-*`; baut auf den `--vu-*`-Tokens der Shell auf |
 | `fundamental/engine/model.js` | Datenmodell: lädt Historie, Discover-Aktiendatei und Screener-Universum und führt sie zusammen |
 | `fundamental/engine/catalog.js` | Kennzahlenkatalog (60 Kennzahlen), Ranglisten (`RANKINGS`), Quartalsregel (`quarterMismatch`), historische Bewertung (`historicalValuation`) |
-| `fundamental/tests/*.test.mjs` | Modell- und Katalogtests |
+| `fundamental/engine/compare.js` | Mehrere Kennzahlen im Verlauf: Zeitachse, Look-ahead-Sperre, Einheiten, Index (keine neue Kennzahlrechnung) |
+| `fundamental/tests/*.test.mjs` | Modell-, Katalog- und Vergleichstests |
 | `scripts/fundamental/build-history.mjs` | Läuft im Release-Bau. Projiziert die SEC-Verbraucherdateien in die Scherben `/fundamental/data/history/<shardKey>.json.gz`, die Branchenmediane (`industry/*.json`) und die Vergleichsgruppen (`peers.json`). Wird nie committet. |
 | `scripts/fundamental/sec-freshness.mjs` | Wächter: Neue SEC-Meldungen gegen die Verbraucherdaten (`decision`, `pending`, `notAdopted`) |
 | `scripts/fundamental/verify-publication.mjs` | Prüft die Auslieferung gegen das Repository (`consumerAsOf` und Accessions frischer Meldungen) |
@@ -59,6 +60,7 @@ Fehlt die SEC-Historie, liest die Seite die Discover-Aktiendatei und zeigt das a
 | `#/<T>` | Überblick: Kurs, Kennzahlen, Entwicklung, Umsatz und Gewinn, Branche, Datenstand mit Hinweis auf noch nicht verarbeitete SEC-Berichte |
 | `#/<T>?ansicht=kennzahlen` | Katalog aller Kennzahlen mit Suche und Kategorien |
 | `#/<T>?ansicht=kennzahl&k=<id>[&p=q]` | Kennzahl-Detail: jährlich oder quartalsweise, 3J/5J/10J/Max, Balken oder Linie, Vergleich mit Branchenmedian oder Wettbewerbern, CAGR, Tabelle mit SEC-Quelle je Wert |
+| `#/<T>?ansicht=kennzahl&k=<id>&plus=<id>.<id>[&d=achsen\|index\|getrennt]` | Kennzahl-Detail mit bis zu drei weiteren Kennzahlen im gemeinsamen Verlauf (FUNDAMENTAL.md, „Mehrere Kennzahlen im Verlauf“) |
 | `#/<T>?ansicht=vergleich[&t=sektor]` | Branchenvergleich: Wettbewerber (SIC 4), Branche (SIC 2) oder Sektor |
 | `#/<T>?ansicht=finanzen[&t=bilanz\|cashflow][&p=q]` | GuV, Bilanz, Cashflow |
 | `#/<T>?ansicht=mehr\|dividende\|analysten\|bewertung\|aktie\|unternehmen\|quellen` | Weitere Bereiche |
@@ -116,7 +118,7 @@ Unteransichten stehen im Query-Teil, damit `core/stock-context.js#parse` die Adr
 ## 6. Tests und Qualitätsprüfungen
 
 ```bash
-node --test "fundamental/tests/*.test.mjs"        # 51 Tests: Modell, Katalog, Projektion, KGV, Quartalsregel, Routen
+node --test "fundamental/tests/*.test.mjs"        # 60 Tests: Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Kennzahlenvergleich
 node --test "core/tests/*.test.mjs" "quant/tests/*.test.mjs" "discover/tests/*.test.mjs"
 python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'   # SEC-Pipeline
 node scripts/quality/check-test-isolation.mjs
@@ -126,14 +128,15 @@ node scripts/core/data-quality.mjs
 **Browser** (Playwright: `executablePath: '/opt/pw-browsers/chromium'`):
 1. Release lokal bauen: `node scripts/vu2/build-release.mjs --output=<dir>`.
 2. `<dir>` statisch ausliefern.
-3. `node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:<port> --out=<tmp>` prüft Wege, Theme, Visual-Bausteine und Kontrast. Die Fundamental-Prüfungen stehen dort in Zeile 105 und 178–187; sie verlangen u. a. die Klassen `.fu-k .fu-chg`, `.fu-crow .fu-spark i`, `.fu-cagr`, `.fu-bc.is-last .fu-b`, `.fu-stmt`, `.fu-gauge .mk-self`, `.fu-lines .fu-l-self`, `.fu-entry-list li` und `.fu-tile .fu-meter-bar i`.
+3. `node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:<port> --out=<tmp>` prüft Wege, Theme, Visual-Bausteine und Kontrast. Die Fundamental-Prüfungen stehen dort in Zeile 105 und 178–188; sie verlangen u. a. die Klassen `.fu-k .fu-chg`, `.fu-crow .fu-spark i`, `.fu-cagr`, `.fu-bc.is-last .fu-b`, `.fu-stmt`, `.fu-gauge .mk-self`, `.fu-lines .fu-l-self`, `.fu-entry-list li`, `.fu-tile .fu-meter-bar i` und `.fu-mc .fu-l-m.m1` (mehrere Kennzahlen im Verlauf).
 4. `scripts/quality/shell-browser-qa.mjs` prüft Shell und Dock (Fundamental-Ziele in Zeile 35–37).
+5. `scripts/quality/fundamental-compare-qa.mjs` prüft den Kennzahlenvergleich (mehrere Kennzahlen im Verlauf) in WebKit im iPhone-Profil und in Chromium, 390 und 430 px, hell und dunkel: „+ Kennzahl“, mobiler Dialog, Antippen, Achsen und Legende, Touch-Flächen, Vollbild, Entfernen bis zur Ausgangsansicht (CI: `shell-ci.yml`, Job `fundamental-compare`).
 
 **Release-Smoke:** `scripts/vu2/production-smoke.mjs` mit `CHROMIUM_PATH=/opt/pw-browsers/chromium` prüft u. a., dass `/fundamental/#/NVDA` aus der Historie liest.
 
 **CI:**
 - `fundamental-ci.yml` (Pfade `fundamental/**`, `scripts/fundamental/**`)
-- `shell-ci.yml`, Job `vu3-regression` (u. a. `fundamental/**`)
+- `shell-ci.yml`, Jobs `vu3-regression` und `fundamental-compare` (u. a. `fundamental/**`)
 - `pages-release.yml`
 
 **Bekannte Prüfwerte zum Gegenlesen** (live am 25.10.2026):

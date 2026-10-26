@@ -78,6 +78,21 @@ test("DQ-IX-1 · Indexmitglied, das im Universum inaktiv ist, und nicht zuordenb
   assert.deepEqual(r.unmatched, ["SP500: NRG (NRG ENERGY)"]);
 });
 
+test("DQ-TW-1..4 · Technical: veralteter Datensatz, leere Felder, zweite Preiswahrheit, stille Luecken", () => {
+  const lag = (d, e) => (d >= e ? 0 : 3);
+  assert.equal(DQ.technicalFreshness({ asOf: "2026-10-23", generatedFrom: "2026-10-24T02:00:00Z" }, "2026-10-24T02:00:00Z", "2026-10-23", lag, 2).failed, 0);
+  assert.match(DQ.technicalFreshness({ asOf: "2026-10-23", generatedFrom: "2026-10-24T02:00:00Z" }, "2026-10-27T02:00:00Z", "2026-10-23", lag, 2).samples[0], /nicht gelaufen/);
+  assert.equal(DQ.technicalFreshness({ asOf: "2026-10-20", generatedFrom: "x" }, null, "2026-10-23", lag, 2).failed, 1, "Stichtag zu alt");
+  assert.equal(DQ.technicalFreshness(null, null, "2026-10-23", lag, 2).failed, 1);
+  const cols = { s: ["A", "B"], rsi14: [50, null], aboveEma200: [null, null], formationActive: [[], []] };
+  assert.deepEqual(DQ.technicalEmptyFields(cols, ["rsi14", "aboveEma200", "formationActive", "fehlt"]).samples, ["aboveEma200: in allen 2 Zeilen leer", "fehlt: Spalte fehlt"],
+    "leere Liste ist ein Wert (keine Formation), null nicht");
+  const par = DQ.technicalCloseParity([{ ticker: "A", date: "d", close: 100, seriesClose: 100.04 }, { ticker: "B", date: "d", close: 100, seriesClose: 102 }, { ticker: "C", date: "d", close: null, seriesClose: 1 }]);
+  assert.equal(par.checked, 2); assert.equal(par.failed, 1); assert.equal(par.severity, "ERROR");
+  assert.equal(DQ.technicalCoverage(["A", "B", "C"], ["A"], { tooFewBars: 2 }).failed, 0, "Luecke mit gezaehltem Grund");
+  assert.equal(DQ.technicalCoverage(["A", "B", "C"], ["A"], { tooFewBars: 1 }).failed, 2, "mehr Luecken als Gruende");
+});
+
 test("Zusammenfassung · ERROR macht FAIL, nur WARN macht WARN", () => {
   const pass = { status: "PASS", severity: "ERROR" }, warn = { status: "FAIL", severity: "WARN" }, err = { status: "FAIL", severity: "ERROR" };
   assert.equal(DQ.summarize([pass, warn]).overall, "WARN");

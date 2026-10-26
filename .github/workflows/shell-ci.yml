@@ -6,10 +6,10 @@ name: Shell Quality Gates
 # und Seitenende - in Chromium (390 bis 1440 px) und in WebKit (iPhone-Profil).
 on:
   pull_request:
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'scripts/quality/fundamental-compare-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
   push:
     branches: [main]
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'scripts/quality/fundamental-compare-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', '.github/workflows/shell-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -106,4 +106,48 @@ jobs:
         with:
           name: vu3-regression-evidence
           path: /tmp/vu3-evidence
+          if-no-files-found: warn
+  fundamental-compare:
+    # Fundamental: mehrere Kennzahlen in einem Verlauf (scripts/quality/fundamental-compare-qa.mjs) gezielt im
+    # iPhone-Profil von WebKit (390 und 430 px, hell und dunkel): "+ Kennzahl", Auswahl im mobilen Dialog,
+    # synchrones Ablesen per Antippen, Achsen und Legende, Touch-Flaechen, Vollbild, Entfernen bis zur
+    # Ausgangsansicht (Balken, Branchenvergleich). Dazu derselbe Lauf in Chromium (mobil, mit Touch).
+    # Eigener Job neben shell und vu3-regression, damit deren 40-Minuten-Budget unberuehrt bleibt.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build screener universe from committed product data
+        run: node scripts/screener/build-universe.mjs
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/fu-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/fu-release"
+      - name: Fundamental compare (WebKit iPhone 390, 430 · Chromium 390, 430)
+        env:
+          PLAYWRIGHT_PATH: /tmp/fu-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/fu-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/fu-release" --port=8765 > /tmp/fu-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/fundamental/ > /dev/null && break; sleep 1; done
+          webkit_status=0
+          chromium_status=0
+          node scripts/quality/fundamental-compare-qa.mjs --engine=webkit --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/webkit || webkit_status=$?
+          node scripts/quality/fundamental-compare-qa.mjs --engine=chromium --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/chromium || chromium_status=$?
+          test "$webkit_status" -eq 0 && test "$chromium_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundamental-compare-evidence
+          path: /tmp/fu-evidence
           if-no-files-found: warn
