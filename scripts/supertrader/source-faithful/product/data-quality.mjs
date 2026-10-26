@@ -98,8 +98,10 @@ export function assessSecurity(security, { asOf, calendar, weekly = null, contin
   else checks.push(check('IDENTITY_INSTRUMENT_TYPE', DQ_STATUS.PASS));
   if (m.activeStatus && m.activeStatus !== 'ACTIVE') { checks.push(check('IDENTITY_ACTIVE', DQ_STATUS.FAIL, m.activeStatus)); fail = true; }
   else if (!m.activeStatus) { checks.push(check('IDENTITY_ACTIVE', DQ_STATUS.CAP, 'NOT_IN_SECURITY_MASTER', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
-  // Mantelgesellschaft: Kursmuster spiegeln den Treuhandwert, keine Unternehmensentwicklung (nur Namenshinweis)
-  if (m.spacHint) { checks.push(check('IDENTITY_SPAC_NAME_HINT', DQ_STATUS.CAP, 'Name deutet auf eine Mantelgesellschaft (SPAC); Kursmuster ohne Aussagekraft für die Methoden', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
+  // Mantelgesellschaft (O-5): verlässlich nur über das SEC-Stammdatenmerkmal SIC 6770 (Blank Checks) -> CAP CHART, weil der
+  // Kurs am Treuhandwert hängt und Kursmuster keine Unternehmensentwicklung zeigen. Ein Namenshinweis allein ist nur INFO.
+  if (m.secBlankCheck) { checks.push(check('IDENTITY_SEC_BLANK_CHECK', DQ_STATUS.CAP, { sic4: m.sic4, source: 'SEC SIC (sic-peer-taxonomy-v1)' }, STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
+  else if (m.spacHint) checks.push(check('IDENTITY_SPAC_NAME_HINT', DQ_STATUS.INFO, 'unsicherer Namenshinweis auf eine Mantelgesellschaft; ohne Stufenwirkung'));
   if (m.adrHint) checks.push(check('IDENTITY_ADR_LISTING', DQ_STATUS.INFO, 'US-Listing eines ADR: nur die US-Reihe wird verwendet, keine Kombination mit dem Heimatlisting'));
   const lc = continuity?.bySecurityId?.get(security.id) ?? null;
   if (lc) {
