@@ -54,34 +54,51 @@
   }
 
   /**
-   * Ereignisse als "Handelstage seit": 0 = am Stichtag, null = im pruefbaren Fenster nicht vorgekommen
-   * (oder nicht pruefbar). Linien aus chartSeries (Vollhistorie, je Bar exakt), nie aus den 270 Bars neu
-   * gerechnet. Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
+   * Ereignisse als "Handelstage seit" (Audit B12). Je Ereignis zwei Werte:
+   *   <feld>        Handelstage seit dem juengsten Ereignis (0 = am Stichtag), null = keines im Pruefraum
+   *   <fenster>     Laenge des Pruefraums in Handelstagen (Tage 0..W-1 geprueft), null = nicht pruefbar
+   * "Kein Ereignis" (Feld null, Fenster W) und "unzureichende Historie" (beide null) sind so unterscheidbar.
+   * Pruefraum = zusammenhaengende Bars vom Stichtag rueckwaerts, an denen das Ereignis entscheidbar ist.
+   * Linien aus chartSeries (Vollhistorie, je Bar kausal), nie aus den 270 Bars neu gerechnet; jede Pruefung an
+   * Bar i nutzt nur Bars <= i (kein Vorgriff). Zeitraeume zaehlen Bars = Handelstage.
+   * Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
    */
   function eventBlock(b, cs, formations) {
     var n = b.close.length, t = n - 1, out = {};
-    function since(test, from) { for (var i = t; i >= Math.max(1, from || 1); i--) if (test(i)) return t - i; return null; }
-    function crossUp(a, z) { return function (i) { return isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]) && a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
-    function crossDown(a, z) { return function (i) { return isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]) && a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
-    function level(v) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = v; return a; }
-    var ok = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
-    out.goldenCrossDays = ok ? since(crossUp(cs.sma50, cs.sma200)) : null;
-    out.deathCrossDays = ok ? since(crossDown(cs.sma50, cs.sma200)) : null;
-    out.crossAboveSma200Days = ok ? since(crossUp(b.close, cs.sma200)) : null;
-    out.crossBelowSma200Days = ok ? since(crossDown(b.close, cs.sma200)) : null;
-    var rsiOk = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n;
-    out.rsiExitOversoldDays = rsiOk ? since(crossUp(cs.rsi14, level(30))) : null;
-    out.rsiExitOverboughtDays = rsiOk ? since(crossDown(cs.rsi14, level(70))) : null;
-    /* Neues 52-Wochen-Hoch (Tageshoch >= Hoch der 251 Vorbars): pruefbar nur an Bars mit voller Vorschau im Fenster. */
-    out.newHigh52wDays = n >= 252 ? since(function (i) {
-      var hi = -Infinity; for (var j = i - 251; j < i; j++) if (isNum(b.high[j]) && b.high[j] > hi) hi = b.high[j];
-      return isNum(b.high[i]) && b.high[i] >= hi;
-    }, 251) : null;
-    /* Juengste Formations-Erkennung (aktiv, nicht ungueltig). */
-    var idx = {}; for (var k = 0; k < n; k++) idx[b.timestamps[k]] = k;
-    var newest = null;
-    (formations || []).forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
-    out.formationNewDays = newest;
+    /* scan: von t rueckwaerts, solange decidable(i); erstes test(i) liefert die Tage. */
+    function scan(decidable, test) {
+      var w = 0, days = null;
+      for (var i = t; i >= 0 && decidable(i); i--) { w++; if (days === null && test(i)) days = t - i; }
+      return { days: days, window: w > 0 ? w : null };
+    }
+    function both(a, z) { return function (i) { return i >= 1 && isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]); }; }
+    function crossUp(a, z) { return function (i) { return a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    function put(key, windowKey, r) { out[key] = r.days; if (windowKey) out[windowKey] = r.window; }
+    var none = { days: null, window: null };
+    var lines = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
+    put("goldenCrossDays", "smaCrossWindow", lines ? scan(both(cs.sma50, cs.sma200), crossUp(cs.sma50, cs.sma200)) : none);
+    put("deathCrossDays", null, lines ? scan(both(cs.sma50, cs.sma200), crossDown(cs.sma50, cs.sma200)) : none);
+    put("crossAboveSma200Days", "sma200CrossWindow", lines ? scan(both(b.close, cs.sma200), crossUp(b.close, cs.sma200)) : none);
+    put("crossBelowSma200Days", null, lines ? scan(both(b.close, cs.sma200), crossDown(b.close, cs.sma200)) : none);
+    var rsi = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n ? cs.rsi14 : null;
+    var l30 = [], l70 = []; for (var k = 0; k < n; k++) { l30.push(30); l70.push(70); }
+    put("rsiExitOversoldDays", "rsiEventWindow", rsi ? scan(both(rsi, l30), crossUp(rsi, l30)) : none);
+    put("rsiExitOverboughtDays", null, rsi ? scan(both(rsi, l70), crossDown(rsi, l70)) : none);
+    /* Neues 52-Wochen-Hoch: Tageshoch >= Hoch der 251 Vorbars (wie newHigh52w); entscheidbar nur mit 251 Vorbars im Fenster. */
+    put("newHigh52wDays", "high52wWindow", scan(function (i) {
+      if (i < 251 || !isNum(b.high[i])) return false;
+      for (var j = i - 251; j < i; j++) if (!isNum(b.high[j])) return false;
+      return true;
+    }, function (i) { var hi = -Infinity; for (var j = i - 251; j < i; j++) if (b.high[j] > hi) hi = b.high[j]; return b.high[i] >= hi; }));
+    /* Juengste aktive Formations-Erkennung; Pruefraum = das Analysefenster (alle Bars), sofern die Erkennung lief. */
+    if (formations === null || formations === undefined) put("formationNewDays", "formationWindow", none);
+    else {
+      var idx = {}; for (var m = 0; m < n; m++) idx[b.timestamps[m]] = m;
+      var newest = null;
+      formations.forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
+      put("formationNewDays", "formationWindow", { days: newest, window: n });
+    }
     return out;
   }
 

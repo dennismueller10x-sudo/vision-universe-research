@@ -498,7 +498,8 @@
           el("a", { class: "tc-row-text", href: "#/screener?" + sv.params }, [el("b", { text: sv.name }), el("span", { text: desc })]),
           el("span", { class: "tc-hit-score" }, [el("span", { text: "Treffer heute" }), count])]),
         el("div", { class: "tc-brow tc-saved-actions" }, [
-          el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) }),
+          el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) +
+            (sv.migrated ? " · angepasst: „" + sv.migrated.from + "“ heißt jetzt „" + sv.migrated.to + "“ (gleiche Bedeutung)" : "") }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Umbenennen", onclick: function () { edit.hidden = !edit.hidden; if (!edit.hidden) nameIn.focus(); } }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Link kopieren", onclick: function () {
             var url = location.origin + location.pathname + "#/screener?" + sv.params;

@@ -74,3 +74,53 @@ test("Abfragekatalog und Suche in Worten kennen die Ereignisse", () => {
   assert.equal(P.toText(P.parse("Golden Cross in den letzten 10 Tagen").query), "goldenCrossDays <= 10");
   assert.equal(P.toText(P.parse("SMA 50 über SMA 200").query), "sma50AboveSma200", "der Zustand bleibt eigener Begriff");
 });
+
+test("Kein Ereignis vs. unzureichende Historie: Fenster zeigt, was geprueft wurde", () => {
+  const r = row({});                                            /* Linien vorhanden, keine Kreuzung */
+  assert.equal(r.goldenCrossDays, null);
+  assert.equal(r.smaCrossWindow, N - 1, "269 Uebergaenge geprueft");
+  const short = flat(null); for (let i = N - 30; i < N; i++) short[i] = 100;   /* SMA 200 erst seit 30 Bars */
+  const s = row({ sma200: short });
+  assert.equal(s.smaCrossWindow, 29, "nur die Uebergaenge mit beiden Linien");
+  const none = Row.computeRow(input({ chartSeries: null }));
+  assert.equal(none.goldenCrossDays, null); assert.equal(none.smaCrossWindow, null, "nicht pruefbar = fehlender Wert");
+  const hi = row({ high: flat(101) });
+  assert.equal(hi.high52wWindow, N - 251, "52-Wochen-Hoch nur mit 251 Vorbars entscheidbar");
+});
+
+test("Abfrage: leeres Ereignis mit Fenster wird entschieden, ohne Fenster bleibt es unbekannt", () => {
+  const art = { schemaVersion: "test", cols: { s: ["A", "B", "C", "D"], goldenCrossDays: [3, null, null, null], smaCrossWindow: [269, 269, 10, null] } };
+  const ds = Q.createDataset(art);
+  const run = (op, value, value2) => { const r = Q.evaluate(ds, { timeframe: "1D", groups: [{ filters: [{ field: "goldenCrossDays", op, value, value2 }] }] });
+    return { hit: r.indices.map((i) => art.cols.s[i]), missing: r.funnel[1].missing }; };
+  assert.deepEqual(run("lte", 5), { hit: ["A"], missing: 1 }, "B: sicher nein (269 Tage geprueft); C: 10 Tage geprueft, 5 < 10 -> nein; D: unbekannt");
+  assert.deepEqual(run("lte", 20), { hit: ["A"], missing: 2 }, "C: nur 10 Tage geprueft, ob innerhalb 20 ist offen");
+  assert.deepEqual(run("gt", 30), { hit: ["B"], missing: 2 }, "B: kein Golden Cross in 269 Tagen -> mehr als 30 Tage her (oder nie)");
+  assert.deepEqual(run("gt", 1), { hit: ["A", "B", "C"], missing: 1 });
+});
+
+test("Kausal: Werte am Stichtag k haengen nur von Bars <= k ab", () => {
+  const s50 = flat(90); for (let i = 120; i < N; i++) s50[i] = 110; for (let i = 200; i < N; i++) s50[i] = 95;
+  const rsi = flat(50); rsi[150] = 25; rsi[151] = 35;
+  const full = { sma50: s50, sma200: flat(100), rsi14: rsi };
+  for (const k of [130, 160, 199, 210, N - 1]) {
+    const cut = (a) => a.slice(0, k + 1);
+    const bars = { timestamps: D.slice(0, k + 1), open: flat(100).slice(0, k + 1), high: flat(101).slice(0, k + 1), low: flat(99).slice(0, k + 1), close: flat(100).slice(0, k + 1), volume: flat(1e6).slice(0, k + 1) };
+    const prefix = Row.computeRow({ ticker: "T", bars, features: {}, chartSeries: { sma50: cut(s50), sma200: cut(flat(100)), rsi14: cut(rsi) } });
+    const expectGolden = k >= 120 ? k - 120 : null, expectDeath = k >= 200 ? k - 200 : null;
+    assert.equal(prefix.goldenCrossDays, expectGolden, "k=" + k);
+    assert.equal(prefix.deathCrossDays, expectDeath, "k=" + k);
+    assert.equal(prefix.rsiExitOversoldDays, k >= 151 ? k - 151 : null, "k=" + k);
+  }
+  assert.equal(Row.computeRow({ ticker: "T", ...input({ chartSeries: full }) }).goldenCrossDays, N - 1 - 120);
+});
+
+test("Zeitfenster in Handelstagen: Wochenenden und Feiertage zaehlen nicht", () => {
+  /* D enthaelt nur Werktage; ein Kreuz am Freitag ist am Montag 1 Handelstag her, nicht 3 Kalendertage. */
+  const fri = D.findIndex((d, i) => i > 200 && new Date(d + "T12:00:00Z").getUTCDay() === 5);
+  const s50 = flat(90); for (let i = fri; i < N; i++) s50[i] = 110;
+  const bars = { timestamps: D.slice(0, fri + 2), open: flat(100).slice(0, fri + 2), high: flat(101).slice(0, fri + 2), low: flat(99).slice(0, fri + 2), close: flat(100).slice(0, fri + 2), volume: flat(1e6).slice(0, fri + 2) };
+  const r = Row.computeRow({ ticker: "T", bars, features: {}, chartSeries: { sma50: s50.slice(0, fri + 2), sma200: flat(100).slice(0, fri + 2), rsi14: flat(50).slice(0, fri + 2) } });
+  assert.equal(new Date(D[fri + 1] + "T12:00:00Z").getUTCDay(), 1, "naechster Bar ist Montag");
+  assert.equal(r.goldenCrossDays, 1);
+});
