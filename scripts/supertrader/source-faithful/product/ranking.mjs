@@ -11,7 +11,7 @@ export const RANKING_VERSION = 'sf8-ranking-1.0.0';
 /** Sortierschlüssel: Name -> { key(view), dir } ; null-Werte immer zuletzt. */
 export const SORT_KEYS = Object.freeze({
   stage: { label: 'Research-Stufe', dir: 'desc', key: (v) => STAGE_ORDER.indexOf(v.stage) },
-  pivot: { label: 'Abstand zum Pivot (absolut)', dir: 'asc', key: (v) => (v.pivot && Number.isFinite(v.pivot.distance) ? Math.abs(v.pivot.distance) : null) },
+  pivot: { label: 'Abstand zur Chartmarke (absolut)', dir: 'asc', key: (v) => (v.pivot && Number.isFinite(v.pivot.distance) ? Math.abs(v.pivot.distance) : null) },
   volume: { label: 'Volumen ggü. 50-Tage-Schnitt', dir: 'desc', key: (v) => v.trend?.volumeVs50d ?? null },
   momentum: { label: 'bestes 1/3/6-Monats-Perzentil', dir: 'desc', key: (v) => v.features?.momentum?.best ?? null },
   setupState: { label: 'VCP-Proxy erkannt (Pivot vorhanden)', dir: 'asc', key: (v) => (v.features?.vcpProxyState === undefined ? null : v.features.vcpProxyState === 'SETUP_DETECTED' ? 0 : 1) },

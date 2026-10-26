@@ -137,6 +137,45 @@ function stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }) {
 /**
  * Erkennung + DQ -> { record, view } oder { rejected }. readiness / ceilings werden einmal je Lauf übergeben.
  */
+/**
+ * Öffentliche Chartmarken einer Karte (Review SF8-R2 BLOCKING/HIGH).
+ *
+ * Unterhalb von MODELED_TRADE_PLAN gehen keine Order-, Stop- oder Limitmarken der Quelle in die Ansicht, auch nicht
+ * umbenannt. Denn der Vertrag erlaubt sie erst mit einem modellierten Ablauf (STAGE_MIXING). Übrig bleibt nur die
+ * Chartstruktur, an der die Methode erkannt wurde: Boxgrenzen, Widerstand, Basis- oder Gap-Tief, gleitende
+ * Durchschnitte. Wo die einzige Marke der Quelle die Einstiegsorder ist (Turtle-Kanal, Holy-Grail-Touch-Hoch),
+ * gibt es unterhalb von MODELED keine Marke. In MODELED zeigt die Karte die Engine-Marken und den Plan.
+ */
+export const STRUCTURE_LEVELS = Object.freeze({
+  C01: ['channelDays', 'exitChannelDays'], C02: ['channelDays', 'exitChannelDays'],
+  C03: ['top', 'bottom', 'box'], C04: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'], C05: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'],
+  C06: ['pivot', 'ma50', 'ma150', 'ma200'], C07: ['pivot'], C08: ['breakoutLevel'], C09: ['gapDayLow', 'priorClose'],
+  C10: ['ma10', 'ma20'], C11: ['ma10', 'ma50', 'signalDayLow'], C12: ['gapDayLow', 'priorClose'], C13: ['ema20', 'impulseHigh', 'swingLow'],
+});
+// Chartmarke je Strategie unterhalb von MODELED: [Schlüssel in levels, Art] oder null (die einzige Marke wäre die Order)
+const STRUCTURE_MARK = Object.freeze({
+  C01: null, C02: null, C03: ['top', 'BOX_TOP'], C04: ['resistance', 'WEEKLY_RESISTANCE'], C05: ['resistance', 'WEEKLY_RESISTANCE'],
+  C06: ['pivot', 'VCP_PROXY_PIVOT'], C07: ['pivot', 'RUN_UP_HIGH'], C08: ['breakoutLevel', 'CONSOLIDATION_10_LEVEL'], C09: ['gapDayLow', 'GAP_DAY_LOW'],
+  C10: null, C11: null, C12: ['gapDayLow', 'GAP_DAY_LOW'], C13: null,
+});
+export function chartMarks(det, stage, close) {
+  if (stage === STAGE.MODELED_TRADE_PLAN) return { pivot: det.pivot ?? null, levels: det.levels ?? {} };
+  const src = det.levels ?? {}, keep = STRUCTURE_LEVELS[det.strategyId] ?? [];
+  const levels = Object.fromEntries(keep.filter((k) => src[k] !== undefined && src[k] !== null).map((k) => [k, src[k]]));
+  const mark = STRUCTURE_MARK[det.strategyId], level = mark ? src[mark[0]] : null;
+  const pivot = Number.isFinite(level) && level > 0 ? { level, kind: mark[1], distance: Number.isFinite(close) ? Math.round((close / level - 1) * 1e4) / 1e4 : null } : null;
+  return { pivot, levels };
+}
+
+// Kennzahlen, aus denen sich Order- oder Stopmarken der Quelle zurückrechnen ließen (Abstand zum Trigger, Risiko
+// bis zum Stop, Verkaufsführung): unterhalb von MODELED nicht öffentlich.
+export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposedStopRiskPct', 'riskGuide15pct', 'plannedLossAtPivot', 'sellGuide']);
+export function publicFeatures(det, stage) {
+  const f = det.features ?? {};
+  if (stage === STAGE.MODELED_TRADE_PLAN) return f;
+  return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k)));
+}
+
 export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, readiness, ceilings, common, meta }) {
   if (!det?.detected) return null;
   const rc = ruleClasses(det.strategyId), ceiling = ceilings.get(det.strategyId);
@@ -161,7 +200,7 @@ export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, 
     pending: (det.setupRules || []).filter((r) => r.pending).map((r) => ({ ruleId: r.ruleId, status: r.pending })),
     interpretations: det.interpretations ?? [],
     notMet: (det.setupRules || []).filter((r) => !r.met && !r.pending).map((r) => r.ruleId),
-    pivot: det.pivot ?? null, levels: det.levels ?? {}, features: det.features ?? {}, trend: common,
+    ...chartMarks(det, stage, record.price.close), features: publicFeatures(det, stage), trend: common,
     plan, planBlockers: stage === STAGE.MODELED_TRADE_PLAN ? [] : det.planBlockers ?? [],
     why: stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }),
     dataQuality: { status: dq.status, notPass: dq.checks.filter((c) => c.status !== 'PASS').map((c) => ({ id: c.id, status: c.status, ...(c.caps ? { caps: c.caps } : {}) })), quarantinedSessions: dq.quarantinedSessions },

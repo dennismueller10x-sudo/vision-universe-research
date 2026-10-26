@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION } from '../source-faithful/product/detectors.mjs';
-import { detectionReach } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
@@ -119,6 +119,22 @@ test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle (O-1), EP, PS, Pocke
   assert.ok(ps.length && ps.every((v) => v.features.direction === 'SHORT_RESEARCH_MODEL' && /DATA_BLOCKED/.test(v.features.borrow)));
   assert.ok(views().filter((v) => v.candidateId === 'C09').every((v) => /DATA_BLOCKED/.test(v.features.catalyst)));
   for (const t of views().filter((v) => v.candidateId === 'C01')) assert.ok(t.why.some((w) => w.code === 'PLAN_NOT_MODELLED' || w.code.startsWith('DATA_') || w.code === 'SETUP_RULE_NOT_MET'), t.ticker);
+});
+
+test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop- oder Limitmarke in der Ansicht (Review SF8-R2)', () => {
+  let below = 0;
+  for (const v of views()) {
+    if (v.stage === 'MODELED_TRADE_PLAN') continue;
+    below++;
+    const lv = Object.keys(v.levels);
+    assert.ok(lv.every((k) => STRUCTURE_LEVELS[v.candidateId].includes(k)), `${v.candidateId} ${v.ticker} ${lv}`);
+    assert.ok(!lv.some((k) => /trigger|stop|limit/i.test(k)), `${v.candidateId} ${v.ticker}`);
+    assert.ok(!Object.keys(v.features).some((k) => ORDER_DERIVED_FEATURES.includes(k)), `${v.candidateId} ${v.ticker}`);
+    if (v.pivot) assert.doesNotMatch(v.pivot.kind, /PLUS|ORDER|TICK|FRACTION|Risiko/i, `${v.candidateId} ${v.ticker}`);
+    if (['C01', 'C02', 'C13'].includes(v.candidateId)) assert.equal(v.pivot, null, 'einzige Marke der Quelle ist die Order');
+  }
+  assert.ok(below > 0);
+  assert.doesNotMatch(JSON.stringify(views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN')), /"(trigger|stopReference|limit)":/);
 });
 
 test('SF8-REACH: CONFIRMED nur bei vollständig erfüllten mechanischen Setup-Regeln; ohne mechanische Regel nie über CHART', () => {

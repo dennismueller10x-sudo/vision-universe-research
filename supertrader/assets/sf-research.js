@@ -51,12 +51,12 @@
     MANUAL_REVIEW_SETUP: 'Korrektur über 10 %: VCP-Charakter muss geprüft werden.',
     CONTEXT_PROXY_MA50_NOT_MET: 'Schluss vor dem Gap nicht über der 50-Tage-Linie.',
     NOT_ALL_TIME_HIGH_LONG_HISTORY: 'Kein Allzeithoch in der langen Kurshistorie.',
-    ATH_NOT_CHECKABLE_NO_LONG_SERIES: 'Allzeithoch nicht prüfbar: keine lange Kursreihe.',
     ALREADY_ABOVE_PIVOT: 'Schluss bereits über dem Pivot.',
     PLANNED_LOSS_ABOVE_10PCT: 'Geplanter Verlust bis zum Stop über 10 %.',
     OUTSIDE_RESEARCH_UNIVERSE: 'Außerhalb des Forschungsuniversums.',
     VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW: 'Volumen unter dem 1,5-fachen Durchschnitt.',
-    KK_MOMENTUM_READING_PENDING_OWNER_DECISION_O6: 'Die Lesart „Top 1–2 %“ ist noch nicht freigegeben; das Momentum sortiert nur.',
+    KK_MOMENTUM_BELOW_P98_INTERPRETATION: 'Momentum unter dem 98. Perzentil (Modell-Interpretation, keine Originalregel); deshalb kein modellierter Ablauf.',
+    GAP_VOLUME_WINDOW_UNAVAILABLE_REVIEW: 'Volumen rund um das Gap nicht vollständig prüfbar.',
     ATH_NOT_VERIFIABLE_WITHOUT_LONG_DAILY_HIGHS: 'Allzeithoch ohne lange Tageshochs nicht belegbar.',
   };
   var DQ_TXT = {
@@ -122,7 +122,7 @@
       ['Kurse', 'Split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
       ['Universum', num(dq.securities, 0) + ' Aktien mit Tagesreihe · ' + num(dq.FAIL, 0) + ' wegen Datenqualität nicht bewertet'],
       ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
-      ['Prüfsumme', String(inp.inputsSha256 || '').slice(0, 12) + ' · ' + (v.pipeline || '')],
+      ['Prüfsumme der Eingaben', String(inp.inputsSha256 || '').slice(0, 12)],
     ];
     return moreBox('Datenherkunft und Aktualität', [h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })))]);
   }
@@ -132,13 +132,13 @@
   function footnote(sum) {
     return h('p', { class: 'sf-foot', text: (sum ? 'Datenstand ' + dateDe(sum.asOf) + ' (Tagesschluss). ' : '') + DISCLAIMER });
   }
-  function stratName(S, cid) { var s = S[cid]; return s ? s.name : cid; }
+  function stratName(S, cid) { var s = S[cid]; return s ? s.name : 'Methode'; }
   function byCid(sum) { var m = {}; (sum.strategies || []).forEach(function (s) { m[s.candidateId] = s; }); return m; }
 
   /* ----------------------------------------------- kompakte Kandidatenzeile */
   function row(r, S, opts) {
     opts = opts || {};
-    var dist = fin(r.pd) ? h('span', { class: 'sf-num', title: 'Abstand des Schlusskurses zum Pivot', text: pct(r.pd, 1, true) }) : null;
+    var dist = fin(r.pd) ? h('span', { class: 'sf-num', title: 'Abstand des Schlusskurses zur Chartmarke', text: pct(r.pd, 1, true) }) : null;
     return h('a', { class: 'sf-row', href: stockUrl(r.t), 'data-stage': r.s }, [
       h('div', { class: 'sf-row-main' }, [h('strong', { class: 'sf-sym', text: r.t }), h('span', { class: 'sf-nm', text: r.n || '' })]),
       h('div', { class: 'sf-row-meta' }, [opts.hideStrategy ? null : h('span', { class: 'sf-meth', text: stratName(S, r.c) }), stageBadge(r.s)]),
@@ -170,7 +170,7 @@
         kpis([[num(sum.counts.candidates, 0), 'Kandidaten', '13 Methoden'], [num(c.MODELED_TRADE_PLAN, 0), 'Modellierte Abläufe'], [num(c.CONFIRMED_RESEARCH_SETUP, 0), 'Bestätigte Setups'], [dateDe(sum.asOf), 'Datenstand', 'Tagesschluss']]),
         stageChips, stratChips, list,
         h('p', null, [h('a', { class: 'st-more', href: '/supertrader/strategies/#sf' }, ['Alle 13 Methoden', icon(IC.arrow)])]),
-        moreBox('Was bedeuten die Stufen?', [stagesLegend(), h('p', { class: 'st-hint', text: 'Je Methode zählt eine eigene Reihenfolge (Stufe, Datenqualität, dann Abstand zum Pivot, Volumen oder Momentum). Die Methoden werden nicht miteinander verrechnet.' })]),
+        moreBox('Was bedeuten die Stufen?', [stagesLegend(), h('p', { class: 'st-hint', text: 'Je Methode zählt eine eigene Reihenfolge (Stufe, Datenqualität, dann Abstand zur Chartmarke, Volumen oder Momentum). Die Methoden werden nicht miteinander verrechnet.' })]),
         provenance(sum), footnote(sum),
       ], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' }));
     }).catch(function () { host.appendChild(sec('Heute erkannte Aktien', [unavailable(), stagesLegend()], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' })); });
@@ -266,12 +266,12 @@
     opts = opts || {};
     var p = v.pivot, t = v.trend || {};
     var head = h('div', { class: 'sf-card-h' }, [
-      h('div', { class: 'sf-card-id' }, opts.compact ? [h('a', { class: 'sf-sym', href: stockUrl(v.ticker), text: v.ticker }), h('span', { class: 'sf-nm', text: v.companyName || '' })] : [h('strong', { class: 'sf-meth', text: s ? s.name : v.candidateId })]),
+      h('div', { class: 'sf-card-id' }, opts.compact ? [h('a', { class: 'sf-sym', href: stockUrl(v.ticker), text: v.ticker }), h('span', { class: 'sf-nm', text: v.companyName || '' })] : [h('strong', { class: 'sf-meth', text: s ? s.name : 'Methode' })]),
       stageBadge(v.stage),
     ]);
     var nums = h('dl', { class: 'sf-nums' }, [
       pair('Schluss', usd(v.close)),
-      p ? pair('Pivot', usd(p.level), pct(p.distance, 1, true)) : null,
+      p ? pair('Chartmarke', usd(p.level), pct(p.distance, 1, true)) : null,
       pair('Volumen', times(t.volumeVs50d), '50-Tage-Schnitt'),
       pair('Trend', pct(t.ret63, 0, true), '63 Tage'),
     ]);
@@ -282,14 +282,19 @@
       return h('li', { 'data-k': 'lock' }, [icon(IC.lock), h('span', { text: txt + (w.stage && w.code === 'STRATEGY_CEILING' ? ': ' + STAGE_TXT[w.stage][0] : '') })]);
     });
     var dq = (v.dataQuality.notPass || []).map(function (d) { return DQ_TXT[d.id] || null; }).filter(Boolean);
-    var interp = (v.interpretations || []).map(function (p) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: 'Modell-Interpretation, keine Originalregel: ' + ruleText(L, p.ruleId) + ' ab dem 98. Perzentil' })]); });
+    // O-6: die Lesart steht unter "Warum erkannt" nur, wenn sie erfüllt ist; sonst als Begründung der Stufe
+    var interpMet = [], interpOpen = [];
+    (v.interpretations || []).forEach(function (p) {
+      var ok = (v.met || []).indexOf(p.ruleId) >= 0;
+      (ok ? interpMet : interpOpen).push(h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: 'Modell-Interpretation, keine Originalregel: ' + ruleText(L, p.ruleId) + (ok ? ' ab dem 98. Perzentil erfüllt' : ' unter dem 98. Perzentil') })]));
+    });
     var pending = (v.pending || []).map(function (p) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, p.ruleId) + ' – Lesart wartet auf Freigabe' })]); });
     var openRules = s && s.rules ? s.rules.discretionaryRules.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }) : [];
     var blocks = (v.blockReasons || []).filter(function (c) { return BLOCK_TXT[c]; }).map(function (c) { return h('li', { 'data-k': 'lock' }, [icon(IC.lock), h('span', { text: BLOCK_TXT[c] })]); });
     var body = [
       nums,
-      h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, (met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])]).concat(interp))]),
-      notMet.length || why.length || pending.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum diese Stufe' }), h('ul', { class: 'sf-rules' }, notMet.concat(pending, why))]) : null,
+      h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, (met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])]).concat(interpMet))]),
+      notMet.length || why.length || pending.length || interpOpen.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum diese Stufe' }), h('ul', { class: 'sf-rules' }, notMet.concat(interpOpen, pending, why))]) : null,
       v.plan ? planBlock(v, L) : null,
       openRules.length || blocks.length ? moreBox('Offene Prüfung und gesperrte Stufen', [
         openRules.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Offen für die eigene Prüfung' }), h('ul', { class: 'sf-rules' }, openRules)]) : null,
@@ -350,7 +355,7 @@
       [[10, 'var(--ma10)', ['C08', 'C10', 'C11']], [20, 'var(--ma20)', ['C08', 'C13']], [50, 'var(--ma50)', null], [200, 'var(--ma200)', ['C06']]].forEach(function (m) { overlays.push({ id: 'ma' + m[0], label: m[0] + '-Tage-Linie', color: m[1], values: STChart.sma(bars.close, m[0]), on: m[2] ? m[2].indexOf(v.candidateId) >= 0 : true }); });
       if (weekly) overlays.push({ id: 'ma150', label: '30-Wochen-Linie (≈150 Tage)', color: 'var(--ma30w)', values: STChart.sma(bars.close, 150) });
       // Einstiegs- und Stop-Marken nur im modellierten Ablauf; sonst nur die Chartmarke der Methode (Review M2)
-      if (v.pivot && fin(v.pivot.level)) levels.push({ id: 'pivot', label: 'Chartmarke (Pivot)', value: v.pivot.level, color: 'var(--chart-trigger)' });
+      if (v.pivot && fin(v.pivot.level)) levels.push({ id: 'pivot', label: 'Chartmarke', value: v.pivot.level, color: 'var(--chart-trigger)' });
       if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Modell-Einstiegsmarke', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Modell-Stop', value: v.plan.stop, color: 'var(--chart-stop)' }); }
       if (lv.box && fin(lv.box.top)) boxes.push({ from: lv.box.from, to: null, top: lv.box.top, bottom: lv.box.bottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box' });
       STChart.render(box, { bars: bars, mode: 'candles', window: weekly ? 180 : 120, overlays: overlays, levels: levels, boxes: boxes, markers: [], showVolume: true, title: v.ticker, status: 'Marken der Methode ' + (s ? s.name : '') + '. Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
