@@ -6,6 +6,8 @@ Maßgeblich ist der **Regelsatz 1.3.0**, Lauf **40122736287**. Er enthält die B
 - Hash des vollständigen Regelsatzes: `08d8a6ec…`, in einem Test festgeschrieben.
 - Zum Vergleich stehen daneben: 1.0.0 (Lauf 40104626083), 1.1.0 (Lauf 40111713883) und 1.2.0 (Lauf 40118088867).
 
+**Abschluss (25.10.2026):** Nach den EDGAR-Prüfungen (Regelsätze 1.4.0 bis 1.4.3, [SUPERTRADER_7_EDGAR_CA_CHECK.md](SUPERTRADER_7_EDGAR_CA_CHECK.md), [SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md](SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md)) ist die Prüfung der kostenlosen Daten **im untersuchten Umfang ausgeschöpft**. Keine der 83 Sitzungen ist belegt. Das ist kein Beweis, dass außerhalb dieses Umfangs keine Belege existieren. Die Quarantäne bleibt aktiv, CC-5 bleibt offen.
+
 **Kernergebnis:** Unter 1.3.0 ist **kein** nicht erklärter Split bestätigt. Für einen Split verlangt 1.3.0 eine faktortragende unabhängige Quelle (Tiingo-adjClose), und die fehlt in den V4-D1-Fällen. Der verbleibende Hebel ist eine lizenzierte Quelle für Kapitalmaßnahmen; das entscheidet der Eigentümer.
 
 Code:

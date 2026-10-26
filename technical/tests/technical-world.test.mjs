@@ -116,7 +116,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["index-v1.json", "meta.json", "screener-v1.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -168,6 +168,24 @@ test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in me
   col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
   assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
   assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+});
+
+test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {
+  const e = JSON.parse(readFileSync(join(root, "technical/data/formation-evidence.json"), "utf8"));
+  assert.equal(e.schemaVersion, "vu-technical-formation-evidence-1.0.0");
+  assert.equal(e.method.horizonBars, 20);
+  assert.ok(e.window.from < e.window.to && /Marktjahr/.test(e.window.regime));
+  for (const t of e.types) {
+    assert.ok(Q.FORMATION_TYPES[t.type], t.type);
+    assert.equal(t.published, t.n >= e.method.minN, t.type);
+    if (t.significant) assert.ok(t.published && Math.abs(t.excess20Mean) > t.excess20Ci95, t.type + ": signifikant nur ausserhalb des 95-%-Bands");
+    if (t.published) { const sum = t.confirmedBy20 + t.invalidatedBy20 + t.droppedBy20 + t.openAt20; assert.ok(sum >= 0.99 && sum <= 1.5, t.type + " Anteile " + sum); }
+  }
+  const small = { n: 40, published: false };
+  assert.match(M.evidenceText(small, e.window), /Zu wenige Fälle/);
+  const t = e.types.find((x) => x.published && !x.significant);
+  if (t) assert.match(M.evidenceText(t, e.window), /nicht belastbar/);
+  assert.match(M.evidenceText(null), /keine historische Auswertung/);
 });
 
 test("Filter-Baukasten: Abfrage <-> Baukasten verlustfrei, Prozent-Eingabe, Standardzeilen fuer jedes Feld", () => {

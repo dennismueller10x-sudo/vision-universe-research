@@ -151,5 +151,11 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
   writeFileSync(join(out, "index-v1.json"), JSON.stringify(Model.homeIndex(artifact)));
   console.log(`Technical-Screener: ${meta.counts.rows} Titel, Stand ${meta.asOf}, ${meta.runtimeSec}s -> ${out}`);
+  /* Historische Evidenz der Formationen (beschreibend, kausal); bei --limit/--tickers uebersprungen, damit Teilaeufe schnell bleiben. */
+  if (!limit && !tickers && process.argv.indexOf("--no-evidence") < 0) {
+    const ev = await import("./formation-evidence.mjs");
+    const r = ev.buildAndWrite(join(out, "formation-evidence.json"));
+    console.log(`Formations-Evidenz: ${r.detections} Erkennungen, ${r.titles} Titel, ${r.runtimeSec}s`);
+  }
   console.log("Uebersprungen:", JSON.stringify(meta.skipped));
 }

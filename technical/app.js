@@ -93,6 +93,15 @@
     indexP.catch(function () { indexP = null; });
     return indexP;
   }
+  var evidenceP = null, evidence = null;
+  /** Evidenz je Formationstyp; fehlt die Datei, bleibt die Anzeige still (keine erfundenen Werte). */
+  function loadEvidence() {
+    if (!evidenceP) evidenceP = fetchJSON(M.EVIDENCE_PATH).then(function (e) {
+      var by = {}; (e.types || []).forEach(function (t) { by[t.type] = t; });
+      evidence = { doc: e, byType: by }; return evidence;
+    }).catch(function () { evidenceP = null; return null; });
+    return evidenceP;
+  }
   function loadInstrument(ticker) {
     var paths = M.technicalPaths(ticker);
     return fetchGz(paths[0]).catch(function () { return fetchGz(paths[1]); }).then(function (doc2) {
@@ -546,7 +555,7 @@
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
     put(main, [head, links, tabBar, body]);
 
-    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; })]).then(function (r) {
+    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence()]).then(function (r) {
       var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
       titleName.textContent = name ? shortName(name) : T;
       head.querySelector(".tc-eyebrow").textContent = T + (name ? " · " + shortName(name).toUpperCase() : "");
@@ -683,12 +692,21 @@
       var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
       if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
       var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null }); });
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
       if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
       if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
       if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
         var ci = S.dates.indexOf(f.confirmedAt);
         if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
       }
     });
     if (L.niveaus) {
@@ -730,6 +748,7 @@
           el("dt", { text: "Invalidierung" }), el("dd", { text: x.rules.invalidate }),
           el("dt", { text: "Erkannt" }), el("dd", { text: M.dateDe(x.detectedAt) + " (mit dem Wissen dieses Tages)" }),
           el("dt", { text: "Im Chart" }), el("dd", {}, el("a", { class: "tc-link", href: location.hash.replace(/\?.*$/, "").replace(/\/signale$/, "") + "?f=" + encodeURIComponent(x.id), text: "Nur diese Formation zeigen" })),
+          evidence ? el("dt", { text: "Historisch" }) : null, evidence ? el("dd", { text: M.evidenceText(evidence.byType[x.type], evidence.doc.window) }) : null,
           el("dt", { text: "Zeitrahmen" }), el("dd", { text: x.timeframe === "1D" ? "Tag" : x.timeframe }),
           el("dt", { text: "Datenbasis" }), el("dd", { text: (dq.bars || "–") + " Tagesbars" + (dq.hasVolume ? ", mit Volumen" : ", ohne Volumen") + ", ATR " + M.price(dq.atr) })
         ])
@@ -825,7 +844,24 @@
           "Nicht Erkanntes wird angezeigt und nicht geraten. Die kanonische Schreibweise (z. B. „aboveSma200 und rsi14 < 40“) wird unter der Eingabe gezeigt und ist ebenfalls eingebbar.",
           "Eine Übersetzung durch ein Sprachmodell ist vorbereitet (gleiches Abfrageschema, Prüfung durch dieselbe Validierung), aber nicht aktiv."
         ].map(function (t) { return el("li", { text: t }); }))])]);
-      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, el("h2", { text: "Screener" }), search, data]));
+      var evSec = el("div", {});
+      loadEvidence().then(function (E) {
+        if (!E) return;
+        var d = E.doc, w = d.window, fmt = function (v) { return isNum(v) ? (v * 100).toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " %" : "–"; };
+        put(evSec, el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Historische Evidenz der Formationen" }), glyph("chevron", "tc-chev tc-rot")]),
+          el("div", { class: "tc-filter-body" }, [
+            el("p", { text: "Jede Formation zählt einmal, am ersten Tag, an dem sie mit den damaligen Daten sichtbar war. Gemessen wird 20 Handelstage danach: Zustand laut Regel und die richtungsbereinigte Rendite im Vergleich zum Durchschnitt aller Titel am selben Tag. Erkennungen " + M.dateDe(w.from) + " bis " + M.dateDe(w.to) + ", " + d.titles.toLocaleString("de-DE") + " Titel – rund ein Marktjahr, kein voller Zyklus. Keine Handelssimulation, keine Kosten, keine Prognose." }),
+            el("p", { class: "tc-note", text: "„Entfallen“: Die Formation wurde vor Ablauf nicht mehr geführt, ohne dass Bestätigung oder Invalidierung festgehalten wurde – bei den Bestandsformationen (Dreiecke, Doppelböden, SKS, Rechteck, Flaggen) häufig, weil sie beim Bruch verschwinden. Belastbar heißt: Das Ergebnis besteht die Bonferroni-Korrektur über alle " + d.types.length + " Typen. Ab " + d.method.minN + " Fällen wird ein Typ ausgewiesen." }),
+            el("div", { class: "tc-table-wrap" }, el("table", { class: "tc-table" }, [
+              el("thead", {}, el("tr", {}, ["Formation", "n", "bestätigt", "invalidiert", "entfallen", "Rendite ggü. Querschnitt", "Aussage"].map(function (h) { return el("th", { scope: "col", text: h }); }))),
+              el("tbody", {}, d.types.slice().sort(function (a, b) { return b.n - a.n; }).map(function (t) {
+                return el("tr", {}, [el("th", { scope: "row", text: Q.FORMATION_TYPES[t.type] || t.type }), el("td", { class: "num", text: t.n.toLocaleString("de-DE") }),
+                  el("td", { class: "num", text: t.published ? fmt(t.confirmedBy20) : "–" }), el("td", { class: "num", text: t.published ? fmt(t.invalidatedBy20) : "–" }), el("td", { class: "num", text: t.published ? fmt(t.droppedBy20) : "–" }),
+                  el("td", { class: "num", text: t.published ? (t.excess20Mean > 0 ? "+" : "") + (t.excess20Mean * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " % ± " + (t.excess20Ci95 * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–" }),
+                  el("td", { text: !t.published ? "zu wenige Fälle" : t.significant ? "belastbar" : "nicht belastbar" })]);
+              }))]))])]));
+      });
+      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
     }).catch(function () { put(slot, stateBox("Methodik nicht geladen", "Die Engine-Dateien konnten nicht geladen werden.")); });
   }
 

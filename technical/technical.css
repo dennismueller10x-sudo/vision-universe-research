@@ -225,6 +225,11 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-line.tc-negative{stroke:var(--tc-down)}
 .tc-line.tc-muted{stroke:var(--tc-axis);stroke-opacity:.6}
 .tc-line.tc-neutral{stroke:var(--tc-price)}
+.tc-line.tc-proj{stroke-opacity:.55;stroke-width:1.2}
+.tc-xmark{stroke-width:2.4;stroke-linecap:round;fill:none}
+.tc-xmark.tc-negative{stroke:var(--tc-down)}
+.tc-xmark.tc-positive{stroke:var(--tc-up)}
+.tc-xmark.tc-muted,.tc-xmark.tc-neutral{stroke:var(--tc-axis)}
 .tc-zone.tc-positive{fill:var(--tc-zone-pos)}
 .tc-zone.tc-negative{fill:var(--tc-zone-neg)}
 .tc-zone.tc-accent{fill:var(--tc-zone-acc)}
@@ -242,6 +247,8 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-marker.tc-accent{fill:#8bc34a;stroke:var(--vu-accent);stroke-width:3;stroke-opacity:.5}
 .tc-badge-text{font-size:11px;font-weight:800;fill:#101318}
 .tc-chart rect.tc-badge{fill:var(--vu-accent)}
+.tc-chart rect.tc-badge.tc-badge-muted{fill:var(--vu-surface);stroke:var(--vu-line-strong)}
+.tc-chart rect.tc-badge-muted+text.tc-badge-text{fill:var(--vu-text)}
 .tc-vol-up{fill:var(--tc-candle-up);fill-opacity:.35}
 .tc-vol-down{fill:var(--tc-candle-down);fill-opacity:.35}
 .tc-pane-bg{fill:transparent;stroke:var(--tc-grid)}
@@ -381,6 +388,11 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-layer-groups{display:grid;gap:0}
 .tc-layers-h{flex:none;align-self:center;font-size:12px;color:var(--vu-muted);min-width:78px}
 .tc-focus{margin:0 0 10px;padding:10px 14px;border-radius:14px;background:var(--tc-soft);font-size:14px}
+.tc-table-wrap{overflow-x:auto;margin:0 -2px}
+.tc-table{width:100%;border-collapse:collapse;font-size:13px}
+.tc-table th,.tc-table td{padding:8px 6px;border-bottom:1px solid var(--vu-line);text-align:left;white-space:nowrap}
+.tc-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tc-table thead th{color:var(--vu-muted);font-weight:600}
 /* Filter-Baukasten */
 .tc-builder-body{display:grid;gap:10px}
 .tc-brow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

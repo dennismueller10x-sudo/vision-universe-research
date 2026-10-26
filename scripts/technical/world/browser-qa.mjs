@@ -18,7 +18,7 @@
                   Gespeichert zeigt Beschreibung und heutige Trefferzahl
      Signale      Befunde und Erkennungshistorie
      Menue        eigene Gruppe nach Fundamental, Chart Studio aktiv
-     Methodik     Indikatorkatalog
+     Methodik     Indikatorkatalog, Evidenztabelle der Formationen
    Je Ansicht: keine Seitenfehler, keine Konsolenfehler (ausser den zwei
    Pfaden, die nur der Release-Bau schreibt), kein horizontales Scrollen.
 
@@ -173,11 +173,19 @@ async function main() {
     await check(key + " Formationsfokus", async () => {
       await page.goto(base + "#/chart/AAPL");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      assert(await page.locator(".tc-signals .tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
       const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
       assert(href, "kein Fokus-Link in den Befundkarten");
       await page.goto(base + href);
       await page.waitForSelector(".tc-focus b", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg");
+      /* Das Fenster beginnt am ersten Formationspunkt, also liegt der Erkennungstag darin. */
+      assert(await page.locator(".tc-chart text.tc-badge-text", { hasText: "Erkannt" }).count() === 1, "Erkennungsmarke im Fokus fehlt");
+      const overlap = await page.evaluate(() => {
+        const r = [...document.querySelectorAll(".tc-chart rect.tc-badge")].map((e) => e.getBBox());
+        return r.some((a, i) => r.some((b, j) => j > i && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height));
+      });
+      assert(!overlap, "Beschriftungen im Chart ueberdecken sich");
       await clean("Formationsfokus");
     });
 
@@ -212,6 +220,8 @@ async function main() {
       await page.goto(base + "#/methodik");
       await page.waitForSelector(".tc-defs dt", { timeout: 30000 });
       assert(await page.locator(".tc-defs dt").count() >= 18, "Indikatorkatalog unvollstaendig");
+      await page.waitForSelector(".tc-table tbody tr", { timeout: 15000, state: "attached" });
+      assert(await page.locator(".tc-table tbody tr").count() >= 10, "Evidenztabelle unvollstaendig");
       await clean("Methodik");
     });
     await ctx.close();

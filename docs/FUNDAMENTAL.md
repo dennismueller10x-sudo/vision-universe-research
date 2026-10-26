@@ -22,7 +22,7 @@ Unteransichten stehen im Query-Teil, damit `core/stock-context.js#parse` die Adr
 
 | Quelle | Pfad (ausgeliefert) | Erzeuger | Inhalt |
 |---|---|---|---|
-| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `scripts/fundamental/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert |
+| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `scripts/fundamental/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert; ältere Geschäftsjahre aus `quant/data/sec/consumer-history` (derselbe Erzeuger), siehe [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md) |
 | Discover-Aktiendatei | `/discover/data/stocks/US_REAL/<T>.json` | Discover | Kurs, Bewertung (KGV, KUV, Börsenwert, FCF-Rendite), Ersatz-Reihen |
 | Screener-Universum | `/screener/data/universe-US_REAL.json` | Screener im Release | Querschnitt: Branche, KBV, EV-Kennzahlen, ROIC … aller US-Aktien |
 | Branchenmediane | `/fundamental/data/history/industry/<sic4-NNNN\|sic-NN\|sec-ID>.json` | `build-history.mjs#industryMedians` im Release | Median je Geschäftsjahr und Anzahl Unternehmen (mind. 5) für Quoten, Renditen, Wachstum und geprüfte Bewertung |
@@ -108,6 +108,7 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 
 - **Segmentdaten** stehen nicht in den SEC-Companyfacts; nicht enthalten.
 - **Quartale** reichen nur acht bis zehn Quartale zurück (Umfang der SEC-Verbraucherdateien).
+- **Jahre:** so weit, wie SEC companyfacts maschinenlesbare Werte enthält (XBRL ab 2009, mit Vorjahresspalten meist ab 2006–2008). Bewertung je Jahresbericht ab dem ersten 10-K mit Datum im SIC-Verlauf (ab 2009). Einzelheiten und Vergleich je Unternehmen: [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md).
 - **Nachfolge-CIK** (z. B. XOM nach Umstrukturierung): Ist die neue CIK in den Companyfacts noch leer, zeigt Fundamental den Leerzustand. Die Zuordnung zur Vorgänger-CIK gehört in die SEC-Pipeline (`quant/data/universe/sec-universe.json#successor_cik`), nicht in Fundamental.
 - **Banken und Versicherer** melden keinen Bruttogewinn, oft kein operatives Ergebnis und keine Finanzschulden im Sinne der Industrie; diese Kennzahlen bleiben leer.
 - **Analysten** nur für 11 Titel.

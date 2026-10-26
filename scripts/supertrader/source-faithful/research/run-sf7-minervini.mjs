@@ -9,7 +9,10 @@
  *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only);
  *  - the pre-registered research exit variants of owner decision E7-7 (research/minervini-sf7-exits.mjs, both
  *    strategies): REF configuration plus one exit rule, run by research/minervini-sf7-exit-execution.mjs. The run fails
- *    unless that engine copy without a rule reproduces the REF ledger; each variant is compared with REF trade by trade.
+ *    unless that engine copy without a rule reproduces the REF ledger; each variant is compared with REF trade by trade;
+ *  - the mechanical diagnostics of package 1.4.0 (research/minervini-sf7-mechanical.mjs) on the REF trades: base count,
+ *    top-volume decline, relative base depth, fill / gap distance over the pivot and the buy-stop buffer check, and the
+ *    climax-variant signals by base number. Counts only; no trade, fill or exit changes.
  * Public: counts and hashes. Sealed (owner key): metrics per run. No variant is chosen by any result.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf7-minervini.mjs --snapshot sts1-<id> --accounting research-v1 --out <dir> [--smoke-snapshot] [--limit N]
@@ -28,13 +31,14 @@ import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.m
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
 import { SF7_EXIT_VERSION, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256, climaxUpClosesHolds } from './minervini-sf7-exits.mjs';
 import { runMinerviniLifecycleWithExitRule } from './minervini-sf7-exit-execution.mjs';
+import { SF7_MECHANICAL_VERSION, sf7MechanicalRegistrySha256, marketCorrectionAnchors, baseCountAt, baseCountTally, topVolumeDecline, relativeBaseDepth, fieldTally, entryDistanceTally, signalsByBaseNumber } from './minervini-sf7-mechanical.mjs';
 import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck, postBreakoutEvidence, postBreakoutTally, benchIndex } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.4.0'; // 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.6.0'; // 1.6.0: review #940 of the mechanical diagnostics (package sf7-minervini-mechanical-1.1.0: two G-TOPVOL windows, two G-RELDEPTH variants, gap reading incl. limit fills and non-executed orders, base-count uncertainty with direction; counts only); 1.5.0: mechanical diagnostics of package sf7-minervini-1.4.0 (base count, top-volume decline, relative depth, entry distance, climax signals by base number; counts only); 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
-const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs'];
+const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs', 'minervini-sf7-mechanical.mjs'];
 export function sf7CodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of SF7_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -135,6 +139,13 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
   const bench = benchIndex(dataset.benchmark);
+  const baseCtx = { bench, anchors: marketCorrectionAnchors(bench) }, baseMemo = new Map();
+  // G-BASECOUNT per (security, setup close): a pure function of bars 0..setup and benchmark closes up to the setup date
+  const baseOf = (t) => {
+    const k = `${t.id}|${t.setupDate}`; if (baseMemo.has(k)) return baseMemo.get(k);
+    const bars = byId.get(t.id)?.bars, s0 = bars ? bars.findIndex((x) => x.date === t.setupDate) : -1;
+    const r = s0 >= 0 ? baseCountAt(bars, s0, baseCtx) : { status: 'NOT_EVALUABLE' }; baseMemo.set(k, r); return r;
+  };
   for (const strategy of ['SEPA', 'POWER_PLAY']) {
     const refIndex = buildSetupIndex(dataset, strategy, { from });
     const ref = runMinerviniLifecycle(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, from, to });
@@ -150,6 +161,19 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
       largestDeclineSignal: { ...tally(decl, (x) => x.status), signalStrictlyBeforeExit: decl.filter((x) => x.status === 'SIGNAL' && x.sessionsBeforeExit > 0).length, openTrades: decl.filter((x) => /OPEN_TRADE$/.test(x.status)).length, rule: 'B12 PDF 130 (MA-MIN7-STAGE2-START)' },
       halfAverageGainStop: { ...halfAverageGainStopCheck(ref.trades), rule: 'B12 PDF 398-399 (MA-MIN7-AVG-GAIN)' },
       postBreakout: { ...postBreakoutTally(ref.trades.map((t) => postBreakoutEvidence(byId.get(t.id).bars, t, { bench }))), rule: 'E7-2 findings B03 PDF 41/47/48/160/168/217, B12 PDF 250/280/311 (MA-MIN7-POST-BREAKOUT-WINDOW)' },
+    };
+    // package 1.4.0: mechanical diagnostics on the REF trades (counts only, never a gate, never a variant choice)
+    const relDepth = ref.trades.map((t) => relativeBaseDepth(byId.get(t.id).bars, byId.get(t.id).bars.findIndex((x) => x.date === t.setupDate), bench));
+    const topVol = ref.trades.map((t) => topVolumeDecline(byId.get(t.id).bars, t));
+    const depthOf = (w) => ({ above2x: fieldTally(relDepth.map((r) => r[w]), 'aboveStrict'), above3x: fieldTally(relDepth.map((r) => r[w]), 'aboveLoose') });
+    ps.diagnostics.mechanical = {
+      version: SF7_MECHANICAL_VERSION,
+      baseCount: { ...baseCountTally(ref.trades.map(baseOf)), rule: 'B03 PDF 207, B12 PDF 115-116 (MA-MIN7-BASECOUNT-*)' },
+      // two trend-start windows side by side (MA-MIN7-TOPVOL), none chosen
+      topVolumeDecline: { trendTemplateRun: fieldTally(topVol.map((r) => r.trendTemplateRun), 'topVolumeDeclineBeforeExit'), aboveMa200Run: { ...fieldTally(topVol.map((r) => r.aboveMa200Run), 'topVolumeDeclineBeforeExit'), windowTruncated: topVol.filter((r) => r.aboveMa200Run.windowTruncated === true).length }, rule: 'B03 PDF 217 / 219 (MA-MIN7-TOPVOL, MA-MIN7-STAGE2-START, MA-MIN7-BASECOUNT-STOCK-RESET)' },
+      // two windows side by side (MA-MIN7-RELDEPTH), closes on both sides, none chosen
+      relativeBaseDepth: { sameWindow: depthOf('sameWindow'), trailingHigh: depthOf('trailingHigh'), rule: 'B12 PDF 280 / 295, B03 PDF 160 (MA-MIN7-RELDEPTH)' },
+      entryDistance: entryDistanceTally(ref.trades, byId, ref.counts),
     };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
       const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : v.index === 'withTrendTemplateLow25' ? withTrendTemplateLow25(dataset, { from }) : withRsLineRising(dataset, refIndex);
@@ -173,7 +197,7 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     for (const v of ev) {
       const r = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: v.config, exitRule: v.exitRule, stage2, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
-      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId), ...(v.exitRule.kind === 'CLIMAX_UP_CLOSES' ? { upClosesSignalTiming: upClosesSignalTiming(r.trades, byId) } : {}) };
+      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId), ...(v.exitRule.kind === 'CLIMAX_UP_CLOSES' ? { upClosesSignalTiming: upClosesSignalTiming(r.trades, byId) } : {}), ...(['CLIMAX_RUN', 'CLIMAX_UP_CLOSES'].includes(v.exitRule.kind) ? { signalsByBaseNumber: signalsByBaseNumber(r.trades, baseOf) } : {}) };
       const tm = upClosesSignalTiming(r.trades, byId); // every exit variant: no signal before the entry, every scheduled exit fills later
       if (tm.signalBeforeEntry || tm.fillNotAfterSignal) throw new Error(`EXIT_SIGNAL_TIMING_VIOLATION:${strategy}:${v.id}`);
       ss.exitVariants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
@@ -214,7 +238,7 @@ async function main() {
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
   // same input construction as run-sf4-lifecycle (sec-pit attached; the lifecycle does not use it as a gate)
   const dataset = datasetFromPit(pit); attachSecPit(dataset, secPit);
-  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), sf7ExitVersion: SF7_EXIT_VERSION, sf7ExitRegistrySha256: sf7ExitRegistrySha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), sf7MechanicalVersion: SF7_MECHANICAL_VERSION, sf7MechanicalRegistrySha256: sf7MechanicalRegistrySha256(), sf7ExitVersion: SF7_EXIT_VERSION, sf7ExitRegistrySha256: sf7ExitRegistrySha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const full = !LIMIT && !smoke;
   const r = sf7Part(dataset, { log, requireAuthoritativeRef: full });
   const pub = { schema: 'supertrader-sf7-minervini-public-1.0.0', receipt, minervini: r.pub };
