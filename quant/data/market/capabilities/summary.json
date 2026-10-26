@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-26T10:46:35.502Z",
+  "generatedAt": "2026-10-26T18:14:12.368Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -11,8 +11,8 @@
   "sources": {
     "ingestStatus": "2026-10-24T02:01:51.855Z",
     "factors": "2026-10-24T02:02:56.906Z",
-    "intradaySession": "2026-10-23",
-    "discover": "2026-10-26T10:46:32.554Z"
+    "intradaySession": "2026-10-26",
+    "discover": "2026-10-26T18:14:09.898Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,8 +23,8 @@
     "marketDataFetched": 6686,
     "historicalAvailable": 5757,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 5027,
-    "liveCapable": 1387,
+    "intradayAvailable": 1371,
+    "liveCapable": 1371,
     "factorEligible": 6577,
     "fundamentals": 5215,
     "fundamentals10y": 2250,
@@ -36,8 +36,7 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3640,
-    "NO_IEX_BARS": 1657,
+    "NO_INTRADAY_SNAPSHOT": 5253,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
     "INSUFFICIENT_HISTORY": 921,
     "NO_STOCK_PAGE": 561,
@@ -46,13 +45,13 @@
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 125,
     "NO_FACTOR_ROW:FAIL": 104,
     "NO_DISCOVER_CARD": 92,
+    "NO_IEX_BARS": 62,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 9,
     "NO_COMPACT_SERIES": 6,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
-    "NO_INTRADAY_SNAPSHOT": 2,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
     "QUALITY_REJECTED:too_few_bars": 2
@@ -265,7 +264,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -277,7 +276,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {

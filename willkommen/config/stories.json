@@ -1,18 +1,18 @@
 {
   "version": 1,
-  "_comment": "Erklaerserie der Willkommensseite (Highlights). Von Hand gepflegt. Jede Story 15 bis 45 s, im Schnitt 30 s. Folien: type video (src, poster, duration in s) oder card (eyebrow, title, text, optional cta, duration). Neue Fassung: rev erhoehen, dann leuchtet der Kreis wieder als neu. Reihenfolge = Reihenfolge der Kreise. Pruefung: willkommen/tests/willkommen.test.mjs.",
+  "_comment": "Erklaerserie der Willkommensseite (Highlights). Von Hand gepflegt. Jede Story 15 bis 45 s, im Schnitt 30 s. cover (optional): Bild im Kreis statt Icon. Folien: type video (src, poster, duration in s) oder card (eyebrow, title, text, optional cta, duration). Neue Fassung: rev erhoehen, dann leuchtet der Kreis wieder als neu. Reihenfolge = Reihenfolge der Kreise. Pruefung: willkommen/tests/willkommen.test.mjs.",
   "stories": [
     {
       "id": "start",
       "title": "Start",
       "product": "Vision Universe",
       "icon": "layers",
-      "rev": 2,
+      "rev": 3,
       "slides": [
         {
           "type": "video",
-          "src": "/assets/stories/start-v1.mp4",
-          "poster": "/assets/stories/start-v1.jpg",
+          "src": "/assets/stories/start-v2.mp4",
+          "poster": "/assets/stories/start-v2.jpg",
           "duration": 20.1,
           "label": "Willkommen bei Vision Universe"
         },
@@ -57,7 +57,8 @@
             "href": "/discover/#/"
           }
         }
-      ]
+      ],
+      "cover": "/assets/hero-visuals/discover.webp"
     },
     {
       "id": "quant",
@@ -125,11 +126,12 @@
             "href": "/fundamental/#/"
           }
         }
-      ]
+      ],
+      "cover": "/assets/hero-visuals/supertrader.svg"
     },
     {
       "id": "supertrader",
-      "title": "Strategien",
+      "title": "Strategie",
       "product": "Supertrader",
       "icon": "supertrader",
       "rev": 1,
@@ -159,7 +161,8 @@
             "href": "/supertrader/"
           }
         }
-      ]
+      ],
+      "cover": "/assets/hero-visuals/vorsorge.webp"
     }
   ]
 }

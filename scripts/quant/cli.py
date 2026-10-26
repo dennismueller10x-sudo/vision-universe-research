@@ -1510,7 +1510,7 @@ def cmd_consumer(args):
     the raw facts come from companyfacts.zip in one request. Output: one
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
-    from quant.sec import fsds
+    from quant.sec import fsds, issuer_extensions
     from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, read_history_shards, write_history_shards, load_fiscal_year_end_hints,
                                     load_issuer_industries, load_product_universe_ciks, load_successor_issuers, summarize_bundle,
                                     with_successors)
@@ -1537,6 +1537,10 @@ def cmd_consumer(args):
                 for rule in metric.concepts}
     supplement = fsds.load_supplement(fsds_paths, wanted, concepts=accepted) if fsds_paths else {}
     supplemented = {}
+    # Gepruefte firmeneigene Konzepte aus gepinnten Instanzdokumenten
+    # (quant/sec/issuer_extensions.py); companyfacts enthaelt keine.
+    issuer_facts = issuer_extensions.load_facts(args.issuer_facts) if args.issuer_facts else {}
+    extended = {}
     to_read = wanted | {p for preds in successors.values() for p in preds}
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1561,6 +1565,7 @@ def cmd_consumer(args):
     for cik, payload in with_successors(source, successors):
         entry = by_cik[cik]
         payload, added = fsds.supplement_company_facts(payload, supplement.get(cik))
+        payload, extension_added = issuer_extensions.supplement_company_facts(payload, issuer_facts.get(cik))
         try:
             bundle, history = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
                                                     security_ids=entry["securityIds"], name=entry["name"],
@@ -1578,6 +1583,11 @@ def cmd_consumer(args):
         if added:
             bundle["dataSource"]["supplement"] = {"source": fsds.SOURCE_LABEL, "accessions": added}
             supplemented[cik] = added
+        if extension_added:
+            bundle["dataSource"]["issuerExtensions"] = {"source": issuer_extensions.SOURCE_LABEL,
+                                                       "version": registry.issuer_extensions_version,
+                                                       "accessions": extension_added}
+            extended[cik] = extension_added
         path = out_dir / f"CIK{cik}.json"
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
         written.add(path.name)
@@ -1615,6 +1625,8 @@ def cmd_consumer(args):
     coverage["fsdsSupplement"] = {"source": fsds.SOURCE_LABEL, "archives": [Path(p).name for p in fsds_paths],
                                   "issuers": len(supplemented),
                                   "filings": sum(len(v) for v in supplemented.values())}
+    coverage["issuerExtensions"] = {"version": registry.issuer_extensions_version, "issuers": len(extended),
+                                    "filings": sum(len(v) for v in extended.values())}
     coverage["historyExtension"] = {"dir": "consumer-history", "shards": len(history_shards), "issuers": len(histories),
                                     "years": sum(history_years), "maxYears": max(history_years, default=0)}
     coverage["withoutCikTickers"] = without_cik
@@ -1903,6 +1915,9 @@ def build_parser():
     consumer.add_argument("--fsds", default="",
                           help="comma-separated local SEC Financial Statement Data Set zips; their filings "
                                "complete companyfacts where it has none of a filing (quant/sec/fsds.py)")
+    consumer.add_argument("--issuer-facts", default="",
+                          help="JSON from issuer_extensions.fetch_facts: reviewed issuer-specific concepts read from "
+                               "pinned XBRL instances (quant/sec/issuer_extensions.py)")
     consumer.set_defaults(func=cmd_consumer)
 
     census = subparsers.add_parser("concept-census",

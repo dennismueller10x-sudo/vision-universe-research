@@ -2,12 +2,12 @@
 
 Stand 2026-10-26. Die Willkommensseite `/willkommen/` ist die erste Seite nach der Anmeldung und steht vor allen Produktwelten. Sie gehört zu keinem Produkt (nicht Discover, nicht die Marketing-Startseite `/`).
 
-Aufbau von oben nach unten:
+Aufbau von oben nach unten (Entwurf des Owners vom 26.10.2026). **Auf dem iPhone passt alles in einen Bildschirm, ohne Scrollen:** die Seite ist so hoch wie der sichtbare Bereich unter der Kopfleiste; Kreise, Icons und Überschrift skalieren mit der Höhe, der Text der Meldung bekommt so viele Zeilen, wie Platz ist.
 
-1. **Gruß** nach Tageszeit und eine Zeile Einführung.
-2. **Highlights**: runde Cover mit Erklärvideos, wie Instagram-Highlights. Bewusst abgewandelte Namen und Cover (Start, Entdecken, Quant, Zahlen, Strategien), nicht die eckigen Produkt-Icons der Welten.
-3. **Deine Produkte**: alle Module als Knöpfe (Handy: kleine App-Icons, Desktop: Karten mit einer Zeile Text).
-4. **Neu bei Vision Universe**: Neuigkeiten aus dem Team, angeheftete zuerst, sonst neueste zuerst; ab der fünften eingeklappt.
+1. **Gruß** nach Tageszeit, Titel, eine Zeile, Weltkugel rechts.
+2. **Erklärvideos**: Karte mit runden Covern (Bild der Produktwelt oder Icon, Feld `cover` in `stories.json`), Play-Zeichen, „Alle ansehen" spielt ab dem ersten neuen Video, Pfeil blättert weiter.
+3. **Deine Produkte**: zwei Reihen zu fünf Kacheln (Icon, Name, kurze Zeile). „Alle Produkte" öffnet das globale Menü mit allen Welten.
+4. **Neu bei Vision Universe**: die erste Meldung (angeheftet oder neueste) mit Illustration; „Alle Neuigkeiten" zeigt die Liste.
 
 ## Dateien
 
@@ -36,13 +36,14 @@ Ablauf, Benennung (`<id>-v<version>`) und Speicher: [studio/stories/README.md](.
 - Weiterleitung nach der Anmeldung: Heute führt die Zugangsmaske (`scripts/access-gate/`) auf die angefragte Seite oder `/`. Sobald es Konten gibt, zeigt der Login auf `/willkommen/` (eigene Änderung im Bereich Zugang, nicht in diesem PR).
 - Eintrag „Start" im globalen Menü (`assets/site-navigation.js`), eigene Änderung.
 
-## Highlight „Start": THE ARRIVAL
+## Highlight „Start": THE ARRIVAL mit Helmut
 
-Quelle: Dropbox des Owners, `/THE ARRIVAL – Original.mp4` (1080 × 1920, 20 s, Musik ohne Sprache, eigenes Material des Owners). Für die App:
+Quelle: Dropbox des Owners, `/THE ARRIVAL – Original.mp4` (1080 × 1920, 20 s, Musik ohne Sprache, eigenes Material des Owners). Aktuell `assets/stories/start-v2.mp4` (Rezept `studio/stories/start/story.json`):
 
-- Vier Texteinblendungen in Marke und Schrift (lokal gerendert, keine Kosten): „Willkommen bei Vision Universe." (0,3 s), „Echte Daten. Statt Bauchgefühl." (4,8 s), „Aktien. Zahlen. Charts. Strategien. Alles an einem Ort, alles verbunden." (9,4 s), Logo mit „Investieren mit Weitblick." und „Tippe auf den nächsten Kreis und lerne jedes Modul kennen." (14,6 s bis Ende).
-- 720 × 1280, H.264 CRF 24, `+faststart`, Ton −16 LUFS (App, leiser als Reels mit −14,2), AAC 128 kb/s, etwa 3 MB: `assets/stories/start-v1.mp4`, Poster `start-v1.jpg` (Bild bei 1,2 s). Rezept: `studio/stories/start/story.json`, gebaut mit `studio/stories/build-story.mjs`.
-- Danach folgt die Karte „Ein Kreis, ein Modul." (7 s), zusammen 27 s.
+- Sprecher Helmut (HeyGen, ElevenLabs `eleven_v3`), 17,3 s nach `tighten.py`, ab 0,6 s; Aufnahme `studio/stories/start/voice-v2.m4a`, Kosten 0,05 USD. Text: „Willkommen bei Vision Universe. Hier verstehst du Aktien mit echten Daten statt Bauchgefühl. Zahlen, Charts, Faktoren und Strategien. Alles an einem Ort, alles miteinander verbunden. Investieren mit Weitblick. Tippe auf den nächsten Kreis und lerne jedes Modul in dreißig Sekunden kennen."
+- Filmton als Musikbett, unter der Stimme abgesenkt (Ducking), Mischung −16 LUFS.
+- Fünf Texteinblendungen auf den Wortzeiten der Stimme.
+- `start-v1` (ohne Stimme) wurde ersetzt: **Regel des Owners (26.10.2026): Erklärvideos haben immer einen Sprecher.**
 
 Sprache in allen Texten: keine Einschränkung auf US-Aktien (Entscheidung des Owners 26.10.2026), damit später europäische oder deutsche Aktien ohne neue Videos dazukommen können. Konkrete Mengen nur, wenn sie für alle Märkte stimmen.
 
