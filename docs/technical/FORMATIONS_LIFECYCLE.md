@@ -1,6 +1,6 @@
 # Formationen – Lebenszyklus Erkennung, Bestätigung, Invalidierung
 
-Fachmodelländerung der Technical-Formationen. Eigener Zweig `claude/technical-formations-lifecycle` auf Basis von `claude/technical-e3` (PR #934). Die Entscheidung über den Merge liegt beim Owner. Generierte Daten (`technical/data/*`) sind **nicht** neu gebaut. Das übernimmt der Erzeuger nach der Entscheidung.
+Fachmodelländerung der Technical-Formationen (PR #938). **Vom Owner am 26.10.2026 freigegeben** mit den Vorgaben in Abschnitt 9. `technical/data/*` ist mit dem Erzeuger (`build-screener.mjs`) neu gebaut, weil die Tests den Datensatz gegen die Engines prüfen.
 
 | | vorher | nachher |
 |---|---|---|
@@ -266,4 +266,81 @@ Ergebnisse auf diesem Zweig:
 - **Kanäle aus vier Punkten** sind schwächer: 68 bis 75 % werden binnen 20 Bars invalidiert. Das zeigt die Grenze der Formation ehrlich, kann aber als „Rauschen“ wahrgenommen werden.
 - **Rest „entfallen“ bis 4,5 %** bei Bestandsformationen: vor allem abgelöste, unaufgelöste Formationen nach Ablauf der 21 Bars. Das ist ein Verfall ohne eigenen Zustand. Das Zustandsmodell kennt nur drei Zustände, deshalb ist es hier nicht als „invalidiert“ gemeldet (anders als die Flaggen-Zeitgrenze, die eine Regel ist).
 - **Historie im Browser** (`Formations.history`, 252 Bars) ruft `analyzeAt` je Pivot-Bestätigung auf. Mit Ankern sind das mehr `Pat.analyze`-Aufrufe je Stand. Die Browser-QA (48/48) ist grün, eine eigene Zeitmessung im Browser fehlt.
-- **Nach dem Merge:** Der Erzeuger muss `technical/data/*` neu bauen (`screener-v1.json`, `meta.json`, `formation-evidence.json`). Die Engine-Version im Datensatz wechselt auf `technical-formations-1.2.0`.
+- ~~Nach dem Merge Daten neu bauen~~ erledigt im PR (Abschnitt 9.4).
+
+## 9. Owner-Entscheidung (26.10.2026) und Umsetzung
+
+Freigegeben: Erkennung, Bestätigung, Invalidierung und historische Nachverfolgung aus den Abschnitten 3 bis 5. Dazu vier Vorgaben zur Darstellung, umgesetzt ohne weitere Änderung der Erkennungsregeln.
+
+### 9.1 Neue Statusfelder je Formation (`formations.js#annotate`)
+
+| Feld | Bedeutung |
+|---|---|
+| `confirmedAtDetection` | Der Ausbruch lag spätestens am Tag der ersten zuverlässigen Erkennung. Die Formation war vorher **nicht** erkannt; es wird kein früherer Erkennungstag behauptet. |
+| `breakout` | `{ at, direction: UP/DOWN }`, sobald ein Ausbruch festgehalten ist, auch wenn er später scheitert. |
+| `provisional` | Kanal aus vier bestätigten Swing-Punkten, noch ohne fünften Punkt im Kanal. |
+| `directionOpen` | Symmetrisches Dreieck oder Rechteck ohne Ausbruch: Richtung offen. Das Feld `direction` ist dann nur ein Platzhalter. |
+
+Ein Test über die reale AAPL-Reihe (jeder 5. Bar) prüft die Regeln aller Felder: Ausbruch gleich Bestätigungstag, „bei Erkennung“ nur ohne spätere Bestätigung, vorläufig nur offene Kanäle, offene Richtung nur ohne Ausbruch.
+
+### 9.2 Darstellung
+
+- **Keile und andere Fälle, die bei Erkennung schon ausgebrochen sind**:
+  - Etikett „Bei Erkennung ausgebrochen“.
+  - Text „Bei der ersten zuverlässigen Erkennung am … bereits ausgebrochen (nach oben/unten, …); vorher war die Formation nicht erkennbar.“
+  - Im Chart heißt die Marke „Erkannt nach Ausbruch“. Eine eigene Erkennungsmarke vor dem Ausbruch gibt es nicht.
+- **Symmetrische Dreiecke**:
+  - Mit Ausbruch: „Ausbruch nach oben/unten am …, erkannt seit …“. Die Befundkarte zeigt die Zeilen „Erkannt“ (frühester zuverlässiger Tag) und „Ausbruch“ (Richtung und Tag).
+  - Ohne Ausbruch: „noch ohne Ausbruch – Richtung offen“, ohne einseitige Ungültigkeitsgrenze.
+- **Vier-Punkt-Kanäle**: Etikett „Vorläufig“, Text „Vorläufig erkannt am … aus vier bestätigten Swing-Punkten; bestätigt erst, wenn ein fünfter Punkt im Kanal liegt.“ Die Invalidierungsquote wird nicht gesenkt; sie steht in der Evidenztabelle.
+- **Screener (Technical und `/screener/`)**:
+  - Neues Feld „Formation offen (noch ohne Ausbruch)“ (`formationOpen`, im `/screener/` `chartPatternOpen`).
+  - Damit sind offene Formationen und bestätigte Ausbrüche getrennt filterbar. Zusammen mit „Formation bestätigt“ und „Formation erkannt oder bestätigt“ gibt es drei Filter.
+  - Der Treffersatz nennt Ausbruchsrichtung und -tag, „bei Erkennung bereits ausgebrochen“, „vorläufig“ und „Richtung offen“.
+  - In der Wortsuche heißt das Kürzel `offen:TYP`.
+
+### 9.3 Versionen
+
+`screen-row` 1.4.0 (Spalte `formationOpen`, Formationstupel mit Ausbruchstag, -richtung und Kennzeichen B/V/O), `technical-query` 1.3.0, `query-text` 1.2.0. `formations` bleibt 1.2.0; die Statusfelder kommen in dieser Version hinzu.
+
+### 9.4 Auswirkungen auf heutige Daten (Stand 23.10.2026, 5.649 Titel)
+
+**Zeilen je Typ, vorher (main) → nachher:**
+
+| Typ | aktiv | bestätigt | offen (neu) | bei Erkennung ausgebrochen |
+|---|---|---|---|---|
+| Symmetrisches Dreieck | 194 → 331 | 169 → 306 | 27 | 177 (28 mit offener Richtung) |
+| Aufsteigendes Dreieck | 238 → 238 | 127 → 53 | 185 | 6 |
+| Absteigendes Dreieck | 230 → 387 | 128 → 208 | 179 | 30 |
+| Fallender Keil | 216 → 162 | 188 → 96 | 69 | 58 |
+| Steigender Keil | 129 → 32 | 126 → 25 | 7 | 16 |
+| Aufwärtskanal | 174 → 197 | 174 → 48 | 150 (alle vorläufig) | – |
+| Abwärtskanal | 306 → 372 | 306 → 143 | 233 (alle vorläufig) | – |
+| Doppeltop | 277 → 400 | 178 → 226 | 176 | 28 |
+| Doppelboden | 223 → 294 | 95 → 100 | 196 | 24 |
+| SKS / inverse SKS | 140/84 → 219/136 | 85/33 → 117/33 | 102/103 | 52/15 |
+| Bärische / bullische Flagge | 89/21 → 185/36 | 0/0 → 53/7 | 132/29 | – |
+| Rechteck | 129 → 200 | 54 → 86 | 115 (128 mit offener Richtung) | 9 |
+
+**Was gleich bleibt:**
+- Trendlinien, Ausbrüche, Kurslücken, Wimpel und die Volatilitätskontraktion haben dieselben Zahlen wie vorher.
+- Alle Nicht-Formationsspalten des Datensatzes sind bitgleich.
+
+**Wirkung je Bereich:**
+- **Screener**: Die Trefferlisten für ältere Formationstypen und Kanäle ändern sich wie in der Tabelle; der neue Filter „offen“ trennt die Fälle.
+- **Chart Studio**:
+  - Befundkarten zeigen die neuen Etiketten und die Zeilen „Ausbruch“ und „Status“.
+  - Der Formationsfokus setzt bei „bei Erkennung ausgebrochen“ keine Erkennungsmarke vor den Ausbruch.
+- **Evidenz** (`formation-evidence.json`, 87.870 statt 91.891 Erkennungen): Werte wie in Abschnitt 4.
+  - Der Test der Anteile prüft jetzt die exakte Bedingung: Die exklusiven Zustände (invalidiert, entfallen, offen) ergeben zusammen höchstens 1, die Summe mit „bestätigt“ liegt zwischen 1 und 2.
+  - Grund: Ein Fehlausbruch zählt als bestätigt und als invalidiert. Die alte Grenze 1,5 schlug beim symmetrischen Dreieck an (1,535).
+
+### 9.5 Prüfungen vor dem Merge
+
+| Prüfung | Ergebnis |
+|---|---|
+| `quant/tests` | 2.943/2.943 |
+| Technical-, Screener-, Core-, Discover- und ti-Tests | grün |
+| `check-test-isolation` | ok |
+| `verify-technical-data` | OK |
+| Technical-Browser-QA | 54/54 |

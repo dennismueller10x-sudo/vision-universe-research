@@ -109,7 +109,7 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 4. ~~EMA 200 exakt~~ PR #927 gemergt (`ema-settled-1.1.0`). Offen: Screener-Feld `aboveEma200`/`distEma200`, sobald der nächtliche Materialisierungslauf EMA-Werte geliefert hat; danach Wochen-EMA.
 5. **KI-Suche freischalten:** technisch vorbereitet (V3: Parser, Schema, Validierung, Oberfläche, `query-text.js#contract()`). Offen ist nur der Modellaufruf über `workers/vu-ask`; das ist ein Deploy mit Kosten und braucht eine eigene Freigabe.
 6. ~~Zusammenführung mit `/screener/`~~ erster Schritt PR #936: `/screener/` übernimmt 16 Technical-Spalten (Indikatoren und Formationen) aus `technical/data/screener-v1.json`; eine Quelle, keine zweite Rechnung. Offen: eine gemeinsame Abfrage-Engine für beide Oberflächen.
-7. ~~Evidenz~~ PR #934: `technical/data/formation-evidence.json` (Definition, Stichprobe, Bonferroni). **Offen zur Owner-Entscheidung:** PR #938 (Fachmodell, `formations` 1.2.0, vollständiger Lebenszyklus), siehe [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
+7. ~~Evidenz~~ PR #934: `technical/data/formation-evidence.json` (Definition, Stichprobe, Bonferroni). PR #938 (Fachmodell, `formations` 1.2.0, vollständiger Lebenszyklus, Owner-Freigabe 26.10.2026), siehe [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
 9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
 10. **Eigene Menügruppe** und weitere Änderungen an geschützten Dateien (`ui-protection.json`) brauchen je eine eigene Owner-Freigabe der Hashes.
@@ -136,6 +136,8 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 25.10.2026 | PR #934 gemergt (`61b5b15`): historische Formations-Evidenz mit Methodik-Tabelle. CI grün. |
 | 25.10.2026 | PR #936 gemergt (`426e287`): Technical-Spalten im `/screener/` (ATR erstmals verfügbar). Keine Screener-Funktion entfernt; Screener-Browser-QA und Shell-QA grün. |
 | 25.10.2026 | PR #938 eröffnet (Entwurf, Fachmodell): Formations-Lebenszyklus. Kein automatischer Merge. |
+| 26.10.2026 | PR #943 gemergt (`7e19699`): Filter „Kurs über EMA 200“ und „Abstand zur EMA 200“ (Technical, Wortsuche, `/screener/`). Werte erscheinen mit dem ersten Materialisierungslauf nach #927. |
+| 26.10.2026 | PR #938: Owner-Freigabe mit Vorgaben (Keile „bei Erkennung ausgebrochen“, Dreieck-Ausbruch mit Richtung und Tag, vorläufige Vier-Punkt-Kanäle, Filter „offen“). Umsetzung und Auswirkungen: FORMATIONS_LIFECYCLE.md Abschnitt 9. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |

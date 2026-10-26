@@ -488,6 +488,8 @@
     var confirmedAt = (state === "CONFIRMED" || p.status === "FAILED_BREAKOUT") && p.detectionTime ? p.detectionTime : null;
     return {
       id: p.type + "@" + s.timestamps[firstKnown], type: p.type, name: p.name, family: L.family, direction: p.direction,
+      /* Symmetrisches Dreieck/Rechteck ohne Ausbruch: Richtung noch offen (direction ist dann nur ein Platzhalter). */
+      directionOpen: p.bias === "OPEN" && state === "DETECTED",
       state: state, stateLabel: STATES[state], timeframe: s.timeframe || "1D", asOf: ctx.time,
       detectedAt: s.timestamps[firstKnown], detectedIndex: firstKnown,
       confirmedAt: confirmedAt,
@@ -561,9 +563,24 @@
     function atFn(k) { if (!memo[k]) memo[k] = Ctx.at(prep, k); return memo[k]; }
     var all = [].concat(legacy(ctx), trendlines(ctx), channelsAndWedges(ctx), pennants(ctx), rangeBreakout(ctx), resistanceBreakout(ctx, atFn), contraction(ctx), gaps(ctx));
     all.forEach(function (f) { if (f.detectedIndex > ctx.t) throw new Error("LOOKAHEAD:" + f.id); });
+    all.forEach(annotate);
     var order = { CONFIRMED: 0, DETECTED: 1, INVALIDATED: 2 };
     all.sort(function (a, b) { return order[a.state] - order[b.state] || b.detectedIndex - a.detectedIndex || (a.type < b.type ? -1 : 1); });
     return { engineVersion: ENGINE_VERSION, asOf: ctx.time, asOfIndex: ctx.t, timeframe: prep.series.timeframe || "1D", formations: all, dataQuality: quality(ctx) };
+  }
+
+  /**
+   * Ehrliche Statusangaben (Owner-Entscheidung zu #938):
+   *  confirmedAtDetection  Ausbruch spaetestens am Tag der ersten zuverlaessigen Erkennung - die Formation war
+   *                        vorher NICHT erkannt (z. B. Keile, deren 4. Punkt erst mit dem Ausbruch bestaetigt ist).
+   *  breakout              Zeitpunkt und Richtung des Ausbruchs, sobald einer festgehalten ist (auch bei Fehlausbruch).
+   *  provisional           Kanal aus vier bestaetigten Swing-Punkten, noch ohne fuenften Punkt im Kanal.
+   */
+  function annotate(f) {
+    f.confirmedAtDetection = !!(f.confirmedAt && f.detectedAt && f.confirmedAt <= f.detectedAt);
+    f.breakout = f.confirmedAt ? { at: f.confirmedAt, direction: f.direction === "BEARISH" ? "DOWN" : "UP" } : null;
+    f.provisional = f.family === "CHANNEL" && f.state === "DETECTED";
+    if (f.directionOpen === undefined) f.directionOpen = false;
   }
 
   function analyze(series, opts) {

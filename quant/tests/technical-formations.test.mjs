@@ -228,6 +228,12 @@ test("Zustandsmodell und Zeitpunkte (AAPL real, jeder 5. Bar)", () => {
       if (f.invalidatedAt) { assert.equal(f.state, "INVALIDATED"); assert.ok(f.invalidatedAt <= r.asOf, f.id); }
       if (f.confirmedAt && f.invalidatedAt) assert.ok(f.confirmedAt <= f.invalidatedAt, f.id);
       if (f.state === "CONFIRMED") assert.ok(f.confirmedAt, "bestaetigt ohne Zeitpunkt: " + f.id);
+      /* Statusangaben (Owner-Entscheidung #938): Ausbruch mit Zeitpunkt und Richtung; "bei Erkennung ausgebrochen" nur, wenn
+         der Ausbruch nicht nach der Erkennung lag; vorlaeufig nur offene Kanaele; offene Richtung nur ohne Ausbruch. */
+      if (f.confirmedAt) { assert.equal(f.breakout.at, f.confirmedAt); assert.ok(["UP", "DOWN"].includes(f.breakout.direction)); } else assert.equal(f.breakout, null);
+      assert.equal(f.confirmedAtDetection, !!f.confirmedAt && f.confirmedAt <= f.detectedAt, f.id);
+      assert.equal(f.provisional, f.family === "CHANNEL" && f.state === "DETECTED", f.id);
+      if (f.directionOpen) { assert.equal(f.state, "DETECTED"); assert.equal(f.breakout, null); }
       assert.ok(f.rules.confirm && f.rules.invalidate && f.name, "Regeltexte " + f.type);
       for (const l of f.lines) assert.ok(l.from.time <= r.asOf && l.to.time <= r.asOf, "Linie endet nicht in der Zukunft: " + f.id);
     }
