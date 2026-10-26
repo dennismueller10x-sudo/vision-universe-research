@@ -42,7 +42,10 @@ export const SOURCES = Object.freeze({
   continuity: 'quant/data/market/listing-continuity-v1.json',
   weeklyLong: 'quant/data/market/discover-series-long',
   calendar: 'quant/config/market-calendar.json',
+  sic: 'quant/data/product/sic-peer-taxonomy-v1.json',
 });
+/** SEC-SIC 6770 "Blank Checks": verlässliches Stammdatenmerkmal einer Mantelgesellschaft (SPAC), Owner-Entscheidung O-5. */
+export const SIC_BLANK_CHECK = '6770';
 export const IDENTITY_SCHEME = 'core/identity.js#securityIdForTicker';
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -79,6 +82,13 @@ export function loadUniverse({ root = ROOT } = {}) {
   const master = fs.existsSync(path.join(root, SOURCES.master)) ? readJson(path.join(root, SOURCES.master)).rows || [] : [];
   const byName = new Map(names.map((r) => [r.ticker, r]));
   const byMaster = new Map(); for (const r of master) if (!byMaster.has(r.ticker) || r.active_status === 'ACTIVE') byMaster.set(r.ticker, r);
+  // SEC-SIC je Ticker (sic-peer-taxonomy-v1, Spalten laut rowColumns); fehlt die Datei, bleibt sic null (kein Ersatzwert)
+  const sicByTicker = new Map();
+  if (fs.existsSync(path.join(root, SOURCES.sic))) {
+    const t = readJson(path.join(root, SOURCES.sic)), col = (n) => (t.rowColumns || []).indexOf(n);
+    const ti = col('ticker'), si = col('sic4');
+    if (ti >= 0 && si >= 0) for (const r of t.rows || []) sicByTicker.set(r[ti], r[si] ?? null);
+  }
   const symbols = new Set(), excluded = [], meta = new Map();
   for (const sym of idx.symbols) {
     const n = byName.get(sym), m = byMaster.get(sym);
@@ -90,7 +100,9 @@ export function loadUniverse({ root = ROOT } = {}) {
       instrumentType: m?.instrument_type || null, activeStatus: m?.active_status || null,
       listingStart: m?.start_date || null, // erster Handelstag laut Security Master (Allzeithoch-Prüfung, Darvas)
       adrHint: /\b(ADR|ADS|American Depositary)\b/i.test(n?.companyName || ''),
-      // Mantelgesellschaft (SPAC): Kurs hängt am Treuhandwert; nur Namenshinweis, im Security Master nicht klassifiziert
+      // Mantelgesellschaft (SPAC) nur nach dem Namen: unsicherer Hinweis (O-5), nie allein ein Ausschluss oder eine Sperre
+      sic4: sicByTicker.get(sym) ?? null,
+      secBlankCheck: sicByTicker.get(sym) === SIC_BLANK_CHECK,
       spacHint: /\b(Acquisition|Capital Acquisition|Merger)\s+(Corp|Corporation|Company|Co|Ltd|Limited|Inc|Holdings|I{1,3}|IV|V)\b|\bAcquisition Corp\b|\bSPAC\b|\bAcquisition$|\bAcquisition (Class|Unit)/i.test(n?.companyName || ''),
     });
   }
