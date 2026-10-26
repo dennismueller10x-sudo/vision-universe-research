@@ -88,6 +88,7 @@ export function loadUniverse({ root = ROOT } = {}) {
     meta.set(sym, {
       companyName: n?.displayName || n?.companyName || null, exchange: n?.exchange || m?.exchange || null, cik: n?.cik || null,
       instrumentType: m?.instrument_type || null, activeStatus: m?.active_status || null,
+      listingStart: m?.start_date || null, // erster Handelstag laut Security Master (Allzeithoch-Prüfung, Darvas)
       adrHint: /\b(ADR|ADS|American Depositary)\b/i.test(n?.companyName || ''),
       // Mantelgesellschaft (SPAC): Kurs hängt am Treuhandwert; nur Namenshinweis, im Security Master nicht klassifiziert
       spacHint: /\b(Acquisition|Capital Acquisition|Merger)\s+(Corp|Corporation|Company|Co|Ltd|Limited|Inc|Holdings|I{1,3}|IV|V)\b|\bAcquisition Corp\b|\bSPAC\b|\bAcquisition$|\bAcquisition (Class|Unit)/i.test(n?.companyName || ''),

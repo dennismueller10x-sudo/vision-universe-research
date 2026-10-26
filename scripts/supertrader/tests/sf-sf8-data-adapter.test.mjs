@@ -37,7 +37,7 @@ test('SF8-ADAPTER-LOAD: nur kanonische, split-adjustierte Echtdaten; Identität 
   const inst = (sym, x = {}) => ({ securityId: securityIdOf(sym), dataMode: 'real', isMock: false, priceSeriesType: 'SPLIT_ADJUSTED', provenance: { adjustmentStatus: 'adjusted', corporateActionReconciliation: { status: 'PASS' } }, bars: { timestamps: bars.map((b) => b.date), open: bars.map((b) => b.open), high: bars.map((b) => b.high), low: bars.map((b) => b.low), close: bars.map((b) => b.close), volume: bars.map((b) => b.volume), corporateActionFlags: bars.map((_, k) => (k === 3 ? ['DIVIDEND'] : null)) }, ...x });
   w('discover/data/stock-index/US_REAL.json', { universeId: 'US_REAL', symbols: ['AAA', 'BRK.B', 'MOCK', 'ADJ', 'ETFX', 'BAD'] });
   w('quant/data/market/security-master/company-names.json', { rows: [{ ticker: 'AAA', companyName: 'Alpha Inc', exchange: 'NYSE' }, { ticker: 'ETFX', companyName: 'Some Index ETF', exchange: 'NYSE ARCA' }] });
-  w('quant/data/market/security-master/us-security-master.json', { rows: [{ ticker: 'AAA', instrument_type: 'EQUITY_COMMON', active_status: 'ACTIVE' }] });
+  w('quant/data/market/security-master/us-security-master.json', { rows: [{ ticker: 'AAA', instrument_type: 'EQUITY_COMMON', active_status: 'ACTIVE', start_date: '2001-05-02' }] });
   w('quant/data/product/technical-signals-v1/AA.json.gz', { generatedAt: '2026-10-24T00:00:00Z', instruments: { AAA: inst('AAA'), 'BRK.B': inst('BRK.B'), MOCK: inst('MOCK', { isMock: true }), ADJ: inst('ADJ', { priceSeriesType: 'RAW' }), BAD: inst('BAD', { securityId: 'ref_BAD.X' }), ETFX: inst('ETFX') } }, true);
   w('quant/data/product/technical-signals-v1/summary.json', {});
   const u = loadUniverse({ root });
@@ -49,6 +49,7 @@ test('SF8-ADAPTER-LOAD: nur kanonische, split-adjustierte Echtdaten; Identität 
   assert.deepEqual(r.securities[0].bars[0], bars[0]);
   assert.deepEqual(r.securities[0].meta.corporateActions, [{ date: bars[3].date, flags: ['DIVIDEND'] }]);
   assert.equal(r.sourceFiles.length, 1);
+  assert.equal(r.securities[0].meta.listingStart, '2001-05-02');
   assert.equal(marketAsOf(r.securities), '2026-10-23');
   assert.equal(inputsSha256(r.securities[0]), inputsSha256(structuredClone(r.securities[0])), 'deterministisch');
   fs.rmSync(root, { recursive: true, force: true });
