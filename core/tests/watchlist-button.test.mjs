@@ -114,3 +114,14 @@ test("Kopplung: Fehler im Konto (Tarifgrenze) laesst die lokale Liste wie geklic
   assert.deepEqual(s.raw, ["AAPL"]); assert.equal(s.has("AAPL"), true, "lokal gespeichert");
   delete globalThis.VUAccount;
 });
+
+test("Quant: QX.watch wird im Browser gekoppelt, ohne gesperrte Quant-Dateien zu aendern", () => {
+  const button = readFileSync(join(ROOT, "assets", "watchlist-button.js"), "utf8");
+  assert.match(button, /if \(root\.QX && root\.QX\.watch\) couple\(root\.QX\.watch\);/);
+  const html = readFileSync(join(ROOT, "quant", "index.html"), "utf8");
+  assert.ok(html.indexOf('<script src="/quant/app/ui.js"></script>') < html.indexOf('<script src="/assets/watchlist-button.js"></script>'), "QX steht vorher");
+  assert.ok(html.indexOf('<script src="/assets/watchlist-button.js"></script>') < html.indexOf('<script src="/quant/app/page-stock.js"></script>'), "vor dem ersten Zeichnen");
+  const lock = JSON.parse(readFileSync(join(ROOT, "docs/quant-recovery/v51/ui-protection.json"), "utf8"));
+  for (const f of ["quant/app/ui.js", "quant/app/page-stock.js", "quant/app/pages.js", "quant/index.html"])
+    assert.equal(createHash("sha256").update(readFileSync(join(ROOT, f))).digest("hex"), lock.files[f], f);
+});
