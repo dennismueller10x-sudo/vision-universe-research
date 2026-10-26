@@ -6,7 +6,9 @@
 // kein horizontaler Ueberlauf, Kerninhalt gerendert, mobile Bottom-Navigation
 // sichtbar, Chart zeichnet auf der Strategy Lens. Screenshots nach --out.
 //
-// Aufruf: node scripts/supertrader/browser-qa.mjs [--site=.] [--out=qa] [--base=http://...]
+// Aufruf: node scripts/supertrader/browser-qa.mjs [--site=.] [--out=qa] [--base=http://...] [--sf-candidates=<dir>]
+// --sf-candidates: Ausgabe des (noch nicht freigeschalteten) Kandidatenlaufs fuer eine Vorschau; der Server liefert sie
+// unter /supertrader/data/sf-candidates/. Ohne Daten muss jede Ansicht den gekennzeichneten Leerzustand zeigen.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,11 +26,14 @@ function loadPlaywright() {
 }
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.gz': 'application/gzip', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml' };
+const SF_DIR = args['sf-candidates'] ? path.resolve(args['sf-candidates']) : null;
+const SF_PREFIX = '/supertrader/data/sf-candidates/';
 function serve(root) {
   const server = http.createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     let file = path.join(root, p);
-    if (!file.startsWith(root)) { res.writeHead(403); return res.end(); }
+    if (SF_DIR && p.startsWith(SF_PREFIX)) { file = path.join(SF_DIR, p.slice(SF_PREFIX.length)); if (!file.startsWith(SF_DIR)) { res.writeHead(403); return res.end(); } }
+    else if (!file.startsWith(root)) { res.writeHead(403); return res.end(); }
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
     if (!fs.existsSync(file)) { res.writeHead(404); return res.end('not found'); }
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' });
@@ -60,6 +65,17 @@ async function main() {
   // Teilpruefung steht hinter vollstaendigen Modellen; sichtbar als eigener Tab.
   if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist, .st-chips.lens button']);
   routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
+  // Supertrader 8.0: quellentreue Research-Kandidaten (Start, Methoden, Strategie- und Aktienansicht)
+  const sfSummaryFile = SF_DIR ? path.join(SF_DIR, 'summary.json') : path.join(SITE, 'supertrader/data/sf-candidates/summary.json');
+  const SF = fs.existsSync(sfSummaryFile) ? JSON.parse(fs.readFileSync(sfSummaryFile, 'utf8')) : null;
+  const sfTop = SF ? Object.values(SF.top).flat() : [];
+  const sfModel = sfTop.find((r) => r.s === 'MODELED_TRADE_PLAN') || sfTop[0];
+  const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
+  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
+  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '#sf-stock']);
+  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '#sf-stock']);
+  const SF_ROUTE_SELECTOR = { home: '#sf-home', strategies: '#sf' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -125,12 +141,17 @@ async function main() {
       // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
       // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
       // Firmenlogo im Aktienkopf (assets/stock-navigator.js): fehlt die Datei, zeigt der Kopf das Monogramm - kein Fehler.
-      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
+      // Kandidatenlauf nicht freigeschaltet (keine Daten): genau dieser 404 ist erwartet und der Leerzustand wird geprueft;
+      // mit Daten bleibt jeder 404 ein Fehler.
+      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url()) && !(!SF && r.status() === 404 && r.url().includes(SF_PREFIX))) errors.push(`http ${r.status()}: ${r.url()}`); });
       page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse|^Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });
       try { await page.waitForSelector(selector, { timeout: 15000 }); } catch { errors.push(`selector ${selector} fehlt`); }
+      if (SF_ROUTE_SELECTOR[name]) { try { await page.waitForSelector(SF_ROUTE_SELECTOR[name], { timeout: 15000 }); } catch { errors.push(`Research-Kandidaten ${SF_ROUTE_SELECTOR[name]} fehlen`); } }
+      if (/^sf-|^lens$/.test(name)) { try { await page.waitForSelector('#sf-stock, #sf .sf-card, #sf .sf-empty, #sf-home', { timeout: 15000 }); } catch { /* Routen-Selektor meldet */ } }
+      if (name === 'sf-stock' && SF) { try { await page.waitForSelector('#sf-stock .st-chart svg path', { timeout: 20000 }); } catch { errors.push('Research-Chart nicht gezeichnet'); } }
       // Lens (VU3): Kursverlauf ueber den gemeinsamen Kurschart (assets/vu-chart.js); das Chartbild der Methode liegt dort hinter einer Aufklappzeile.
       if (name === 'lens' || name === 'replay') { try { await page.waitForSelector(name === 'lens' ? '.vu-chart svg path.vu-chart-line' : '.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
       if (name === 'lens') { const lv = await page.locator('.vu-chart svg .st-lvl').count(); if (!lv) errors.push('Kursmarken des Setups fehlen im Kurschart'); }
@@ -164,6 +185,11 @@ async function main() {
         codes: (document.body.innerText.match(/\b(?:DON|KK|DAR|MIN|WEI|LC|PILOT)-[A-Z0-9-]+\b/g) || []).slice(0, 3),
         replayBanner: /kein aktuelles Signal/.test(document.body.innerText),
         partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
+        // quellentreue Research-Kandidaten: Stufe sichtbar, Plan nur im modellierten Ablauf, keine Signal-/Freigabesprache
+        sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length,
+        sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
+        sfWording: [...document.querySelectorAll('.sf-host')].map((x) => x.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')).join(' ').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
+        sfEmptyState: !!document.querySelector('.sf-empty'),
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
       if (m.failedLoad) errors.push('Ladefehler-Zustand sichtbar');
@@ -177,7 +203,11 @@ async function main() {
       if (name === 'home' && researchIds.some((id) => signals.strategies[id]?.open?.length) && !m.researchSection) errors.push('Forschung/Modellbeobachtung fehlt auf der Startseite');
       if (name === 'home' && m.researchInNear) errors.push('Forschungsmethode als Einstiegschance hervorgehoben');
       if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.evBanner) errors.push('Evidenz-Einstufung fehlt auf der Methodenseite');
-      if ((['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay'].includes(name) || /^strategy-/.test(name)) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if ((['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay', 'strategies'].includes(name) || /^strategy-|^sf-/.test(name)) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if (m.sfCardsWithoutStage) errors.push(`${m.sfCardsWithoutStage} Research-Kandidaten ohne Stufenabzeichen`);
+      if (m.sfPlanOutsideModel) errors.push(`${m.sfPlanOutsideModel} Plan-Marken ausserhalb eines modellierten Ablaufs`);
+      if (m.sfWording) errors.push(`Research-Ansicht mit unzulaessiger Sprache: ${m.sfWording}`);
+      if (!SF && (/^sf-strategy/.test(name) || name === 'home' || name === 'strategies') && !m.sfEmptyState) errors.push('Leerzustand der Research-Kandidaten fehlt (kein Datenlauf)');
       if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.fidBanner) errors.push('Methodentreue fehlt auf der Methodenseite');
       if (hasPortfolio && /^strategy-(momentum|weinstein|darvas|minervini|donchian)/.test(name) && !m.portfolioSec) errors.push('Modellportfolio fehlt auf der Methodenseite');
       if (m.tlDuplicates) errors.push(`${m.tlDuplicates} doppelte Einträge im Protokoll`);
@@ -188,7 +218,7 @@ async function main() {
       if ((name === 'lens' || name === 'lens-position' || name === 'lens-prepared') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
       if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       const shot = path.join(OUT, `${vpName}-${name}.png`);
-      await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' });
+      await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' || /^sf-/.test(name) });
       report.push({ viewport: vpName, route: url, ms: Date.now() - t0, errors });
       if (errors.length) failures.push(`${vpName} ${url}: ${errors.join(' | ')}`);
       await page.close();
