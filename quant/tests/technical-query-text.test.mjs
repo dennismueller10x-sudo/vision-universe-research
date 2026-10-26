@@ -58,6 +58,9 @@ test("Vergleiche: Operatoren, Kommazahlen, zwischen, Prozentfelder in Prozent", 
   assert.deepEqual(filters(P.parse("Tagesänderung über 3%"))[0], [{ field: "chg1d", op: "gt", value: 0.03 }]);
   /* Eine Zahl hinter "über" gehoert nicht zur Kennzahl, wenn sie Teil eines Begriffs ist */
   assert.deepEqual(filters(P.parse("Kurs über 200-Tage-Linie"))[0], [{ field: "aboveSma200", op: "is", value: true }]);
+  /* EMA 200 ist nicht EMA 20 */
+  assert.deepEqual(filters(P.parse("über EMA 200 und über EMA 20"))[0], [{ field: "aboveEma200", op: "is", value: true }, { field: "aboveEma20", op: "is", value: true }]);
+  assert.deepEqual(filters(P.parse("Abstand zur EMA 200 unter 10"))[0], [{ field: "distEma200", op: "lt", value: 0.1 }]);
 });
 
 test("Unbekanntes wird gemeldet, nicht geraten; Fehlercodes kommen aus validate()", () => {
