@@ -20,6 +20,11 @@ on:
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   workflow_dispatch:
+    inputs:
+      recover_v8_archives:
+        description: 'Read-only V8 private archive assessment; zero provider requests'
+        type: boolean
+        default: false
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
 permissions:
@@ -152,3 +157,45 @@ jobs:
         run: |
           python3 scripts/dashboard/migrate_adjustment_semantics.py --check
           python3 scripts/dashboard/verify_adjustment_gate.py
+
+  v8-private-archive-assessment:
+    if: github.event_name == 'workflow_dispatch' && inputs.recover_v8_archives == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Exact existing main cache keys. Restore only: no mutation or cache save.
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-40047253956
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/tiingo2-cache.enc
+          key: tiingo2-encrypted-v1-main-39962041711
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-40087710308
+      - name: Open existing authenticated cache using its original context
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context main
+      - name: Assess existing archives offline with bounded memory
+        run: node --max-old-space-size=2048 scripts/quant/audit-v8-archives.mjs .verification/v8-archives
+      - name: Assert canonical data remained unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant-v8-derived-archive-assessment
+          path: .verification/v8-archives/archive-assessment.json
+          retention-days: 14
+      - name: Remove ephemeral private archive contents
+        if: always()
+        run: rm -rf -- .market-cache .sec-cache .quant-state quant/data/sec/facts

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "research-portfolio-python-validation-1.0.0",
+  "status": "PASS",
+  "fixtureMode": "SYNTHETIC_TEST",
+  "cases": [
+    {
+      "case": "funded_buy",
+      "expectedEndCapital": "998.50224663005491762356465302046929605591612581128",
+      "resultHash": "8e76ecbc091acdfac19210a68df56ff38f844198204c0efd750c876733e2beab"
+    },
+    {
+      "case": "simultaneous_rebalance",
+      "expectedEndCapital": "996.55604304074150157142216606620879815266355302370",
+      "resultHash": "bbad770a9651e81cd0fbfb4f6b7193cc45d8678cb5b0bf5ebdd990842e30a158"
+    },
+    {
+      "case": "split_dividend_terminal",
+      "expectedEndCapital": "1058.4123814278582126809785322016974538192710933600",
+      "resultHash": "7653373a974fa47203e9943762f7b9775205a7e75e2fdfea3398f8e2f0375a71"
+    },
+    {
+      "case": "sourced_zero_terminal",
+      "expectedEndCapital": "19.970044932601098352471293060409385921118322516226",
+      "resultHash": "9b48d8880cb16a05a0a819d7265682df89ff03a7036ca9acc82737ff9a1b0526"
+    }
+  ],
+  "reference": "Python Decimal analytic equations and separate cash/unit journal",
+  "toleranceRelative": "1e-10",
+  "realHistoricalEvidence": false,
+  "scriptSha256": "14bfe7bc8f6611f76505f882a2c7251d96c72fbe0db83bf158ac0f332aa2adab",
+  "nodeRuntime": {
+    "node": "v22.23.4",
+    "v8": "12.4.254.21-node.57",
+    "icu": "78.3",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.41",
+    "nodeBinaryHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  }
+}

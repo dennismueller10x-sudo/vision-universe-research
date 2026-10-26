@@ -230,6 +230,60 @@ function holm(pValues) {
   sorted.forEach((x, rank) => { previous = Math.max(previous, Math.min(1, (sorted.length - rank) * x.p)); adjusted[x.i] = previous; });
   return adjusted;
 }
+/** Circular calendar-block bootstrap of a pooled event mean. Whole dates move together,
+ * retaining cross-sectional dependence and local serial/overlapping-label dependence.
+ * Inference is conditional on weak stationarity/mixing and the declared block design;
+ * it does not prove those assumptions or produce an exact finite-sample test. */
+function inferTemporalBlockMean(config, observations) {
+  check(config && Array.isArray(config.calendar) && Array.isArray(observations), 'INVALID_BLOCK_INFERENCE_INPUT');
+  const calendar = config.calendar.map(time), nDates = calendar.length;
+  integer(nDates, 2, 100000); check(calendar.every((t, i) => !i || t > calendar[i - 1]), 'CALENDAR_NOT_STRICTLY_ORDERED');
+  const blockLength = integer(config.blockLength, 1, Math.floor(nDates / 2));
+  const minBlockLength = integer(config.minimumBlockLength, 1, blockLength);
+  const replicates = integer(config.replicates, 99, 100000);
+  let state = integer(config.seed, 1, 4294967295);
+  check(Number.isFinite(config.alpha) && config.alpha > 0 && config.alpha < 1, 'INVALID_ALPHA');
+  check(config.assumption === 'CONDITIONAL_WEAK_STATIONARITY_AND_MIXING', 'DEPENDENCE_ASSUMPTION_REQUIRED');
+  check(replicates * Math.ceil(nDates / blockLength) <= 20000000, 'BOOTSTRAP_OPERATION_BUDGET');
+  check(observations.length > 0 && observations.length <= 100000, 'OBSERVATION_BUDGET');
+  const indices = new Map(calendar.map((t, i) => [t, i])), ids = new Set();
+  const sums = Array(nDates).fill(0), counts = Array(nDates).fill(0);
+  for (const row of observations) {
+    text(row.id); check(!ids.has(row.id), 'DUPLICATE_OBSERVATION_ID'); ids.add(row.id);
+    check(Number.isFinite(row.value), 'INVALID_OBSERVATION');
+    const k = indices.get(time(row.date)); check(k !== undefined, 'OBSERVATION_NOT_ON_CALENDAR');
+    sums[k] += row.value; counts[k]++;
+  }
+  const estimate = sums.reduce((a, b) => a + b, 0) / observations.length;
+  const prefixSum = [0], prefixCount = [0];
+  for (let k = 0; k < 2 * nDates; k++) { prefixSum.push(prefixSum[k] + sums[k % nDates]); prefixCount.push(prefixCount[k] + counts[k % nDates]); }
+  const bootstrap = [];
+  for (let r = 0; r < replicates; r++) {
+    let sum = 0, count = 0;
+    for (let used = 0; used < nDates; used += blockLength) {
+      state ^= state << 13; state ^= state >>> 17; state ^= state << 5; state >>>= 0;
+      const start = Math.floor(state / 4294967296 * nDates), length = Math.min(blockLength, nDates - used);
+      sum += prefixSum[start + length] - prefixSum[start]; count += prefixCount[start + length] - prefixCount[start];
+    }
+    // Do not redraw sparse samples: conditioning on a positive count would alter the design.
+    check(count > 0, 'EMPTY_BOOTSTRAP_SAMPLE'); bootstrap.push(sum / count);
+  }
+  const sorted = [...bootstrap].sort((a, b) => a - b);
+  const quantile = p => { const k = (sorted.length - 1) * p, i = Math.floor(k); return sorted[i] + (sorted[Math.min(i + 1, sorted.length - 1)] - sorted[i]) * (k - i); };
+  const tails = bootstrap.filter(v => Math.abs(v - estimate) >= Math.abs(estimate)).length;
+  return stamp({ schemaVersion: 'research-temporal-inference-1.0.0', kind: 'TEMPORAL_BLOCK_MEAN', config: copy(config), inputHash: hash(observations),
+    estimate, n: observations.length, dates: nDates, occupiedDates: counts.filter(Boolean).length,
+    blockCountDiagnostic: Math.floor(nDates / blockLength), minimumBlockLength: minBlockLength,
+    pValue: (1 + tails) / (replicates + 1), ci: [2 * estimate - quantile(1 - config.alpha / 2), 2 * estimate - quantile(config.alpha / 2)],
+    bootstrap, inferenceMethod: 'CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED',
+    intervalMultiplicity: 'NOMINAL_NOT_SIMULTANEOUS', effectiveN: null,
+    status: DISCLAIMER, productionApproved: false,
+    limitations: ['Block count is a design diagnostic, never an estimated effective sample size or proof of independent clusters.',
+      'Calendar dates with zero events stay in the resampling population; all instruments on each date move together.',
+      'Weak stationarity/mixing and block sufficiency are assumptions; structural change, selection and long dependence can invalidate nominal inference.',
+      'Centered bootstrap p-values are approximate; the add-one correction only controls Monte Carlo resolution, not inferential size.'] });
+}
+
 function gridPoints(dimensions) {
   check(dimensions && Object.getPrototypeOf(dimensions) === Object.prototype, 'GRID_REQUIRED');
   const keys = Object.keys(dimensions).sort(); check(keys.length > 0 && keys.length <= 8, 'GRID_DIMENSION_BUDGET');
@@ -268,7 +322,7 @@ function runSensitivity(registration, evaluator, context) {
     integer(result.n, 1, Number.MAX_SAFE_INTEGER);
     check(Array.isArray(result.ci) && result.ci.length === 2 && result.ci.every(Number.isFinite) && result.ci[0] <= result.ci[1], 'UNCERTAINTY_INTERVAL_REQUIRED');
     text(result.inferenceMethod); integer(result.clusters, 1, result.n);
-    check(Number.isFinite(result.effectiveN) && result.effectiveN > 0 && result.effectiveN <= result.n, 'INVALID_EFFECTIVE_SAMPLE');
+    check(result.effectiveN === null || Number.isFinite(result.effectiveN) && result.effectiveN > 0 && result.effectiveN <= result.n, 'INVALID_EFFECTIVE_SAMPLE');
     return { parameters: copy(parameters), estimate: result.estimate, pValue: result.pValue, n: result.n, ci: copy(result.ci), inferenceMethod: result.inferenceMethod, clusters: result.clusters, effectiveN: result.effectiveN };
   });
   const adjusted = holm(rows.map(r => r.pValue));
@@ -362,4 +416,4 @@ function openHoldoutStore(directory) {
   });
 }
 
-module.exports = { VERSION, hash, buildWalkForward, aggregateOos, registerWalkForwardExecution, runWalkForward, createExposureLedger, verifyExposureLedger, appendExposure, registerHoldout, consumeHoldout, holm, registerSensitivity, runSensitivity, openHoldoutStore };
+module.exports = { VERSION, hash, buildWalkForward, aggregateOos, registerWalkForwardExecution, runWalkForward, createExposureLedger, verifyExposureLedger, appendExposure, registerHoldout, consumeHoldout, holm, registerSensitivity, runSensitivity, openHoldoutStore, inferTemporalBlockMean };
