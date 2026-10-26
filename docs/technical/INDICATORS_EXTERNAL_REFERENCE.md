@@ -26,7 +26,7 @@ Toleranz: relativ 1e-8. Die Fixture speichert 10 signifikante Stellen.
 | ADX 14 | wie ATR (gleiche Glättung), gleich ab Bar 264 |
 | MACD, Signal, Histogramm | **Startwert-Konvention.** TA-Lib startet die schnelle EMA erst mit der langsamen. Gleich ab Bar 137 / 151 / 170. |
 | OBV | gleicher Verlauf. TA-Lib startet bei V₀, die Engine bei 0; die Differenz ist konstant V₀. |
-| Parabolic SAR | gleich bis auf die Startbar 2 (Konvention) und **zwei Umkehrbars (173, 308)**. Siehe Befund. |
+| Parabolic SAR | seit 1.2.1 gleich bis auf die Startbar 2 (Konvention). Bis 1.2.0 wichen zwei Umkehrbars ab (173, 308), siehe Befund und Korrektur. |
 | Supertrend, VWMA, CMF, relative Volumenstärke, Volumenspitzen, Keltner-Kanal (ganz) | kein TA-Lib-Gegenstück. Keltner besteht aus EMA und ATR, die beide oben geprüft sind. |
 
 Die Startwert-Konventionen sind dokumentiert, keine Fehler. Der Test prüft dreierlei: dass sie abklingen, dass die Werte ab der festgehaltenen Bar gleich sind und dass die Startabweichung überhaupt existiert. Ändert jemand die Konvention, fällt der Test auf.
@@ -42,9 +42,30 @@ Bei einer Umkehr setzt die Engine den neuen SAR auf den alten Extrempunkt. Errei
 
 Nach Wilder liegt der SAR nie innerhalb der Spanne der aktuellen Bar. TA-Lib setzt deshalb das Extrem der Umkehrbar.
 
-Folge: Betroffen ist der SAR-Wert der Umkehrbar selbst. Auf AAPL liegt die Verschiebung unter 0,6 %. Ob sich die Korrektur über die Rekursion auf spätere Bars oder auf `psarUp` (ein Screener-Feld) auswirkt, misst der Vorher/Nachher-Vergleich im Fachmodell-PR #964. Der PR wird nicht automatisch gemergt.
+## Korrektur (indicators 1.2.1, eigener Fachmodell-PR)
 
-Bis dahin hält der Test den Befund fest:
-- Die Abweichungen sind genau die Startbar und diese beiden Umkehrbars.
-- Ein `todo`-Test („SAR der Umkehrbar liegt außerhalb ihrer Spanne“) ist rot, ohne die Suite zu brechen.
-- Nach der Korrektur wird `todo` entfernt und die erwartete Abweichungsliste auf `[2]` gekürzt.
+Bei einer Umkehr gilt jetzt:
+- neu kurz: SAR = max(alter Extrempunkt, Hoch der Umkehrbar);
+- neu lang: SAR = min(alter Extrempunkt, Tief der Umkehrbar).
+
+Das ist die Regel von Wilder und TA-Lib. Die Engine stimmt danach an jeder Bar mit TA-Lib überein, nur die Startbar 2 folgt einer eigenen Konvention. Der bisher ausgenommene Prüffall „SAR liegt nie im Kursbereich“ (`technical-indicators-ext.test.mjs`) gilt jetzt auch an Umkehrbars. Er schlägt mit 1.2.0 (wie 1.1.0) genau an den Bars 173 und 308 fehl.
+
+### Vorher/Nachher über das materialisierte Universum
+
+Grundlage: `technical-signals-v1`, alle 5.655 Instrumente mit echten, splitbereinigten Tagesbars, 1.521.195 SAR-Bars.
+
+| Kennzahl | bis 1.2.0 | 1.2.1 |
+|---|---|---|
+| Umkehrbars | 127.470 | 127.470 |
+| davon SAR innerhalb der Bar-Spanne | 3.837 | **0** |
+| Bars mit geändertem SAR-Wert | – | 3.837 (genau diese Umkehrbars) |
+| Bars mit geänderter Richtung | – | **0** |
+| `psarUp` am letzten Bar geändert | – | **0 von 5.655** |
+
+Die Korrektur pflanzt sich nicht fort. Schon an der Folgebar begrenzen beide Fassungen den SAR auf dasselbe Extrem der Umkehrbar.
+
+Die Änderung je betroffenem Wert liegt im Median bei 1,1 %. Große relative Sprünge gibt es nur an Bars mit extremer Spanne, etwa ZSTK am 19.08.2026: Hoch 12,40, Tief 1,52. Dort lag der alte SAR mit 2,10 tief in der Bar; neu sind es 12,40.
+
+**Wirkung:**
+- Screener-Filter, KI-Suche und materialisierte Daten ändern sich nicht.
+- Im Chart Studio sitzt der SAR-Punkt an solchen Umkehrbars künftig am Bar-Extrem statt in der Kerze.
