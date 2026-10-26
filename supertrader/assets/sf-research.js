@@ -9,11 +9,17 @@
   var DATA = '/supertrader/data/sf-candidates/';
   var STAGES = ['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'];
   var STAGE_TXT = {
-    CHART_CANDIDATE: ['Chart-Kandidat', 'chart', 'Ein Chartmuster der Methode ist erkannt. Keine Aussage über ein vollständiges Setup.'],
-    CONFIRMED_RESEARCH_SETUP: ['Bestätigtes Setup', 'setup', 'Alle mechanischen Setup-Regeln der Methode sind am Stichtag erfüllt. Ermessensfragen bleiben offen.'],
-    MODELED_TRADE_PLAN: ['Modellierter Ablauf', 'model', 'Das Forschungsmodell liefert zusätzlich hypothetische Einstiegs- und Stop-Marken. Keine Order, keine Empfehlung.'],
+    CHART_CANDIDATE: ['Chart-Kandidat', 'chart', 'Ein Chartmuster der Methode ist erkannt. Ein vollständiges Setup ist damit nicht bestätigt.', 1],
+    CONFIRMED_RESEARCH_SETUP: ['Bestätigtes Research-Setup', 'setup', 'Alle mechanischen Setup-Regeln der Methode sind am Stichtag erfüllt. Ermessensfragen bleiben offen.', 2],
+    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell liefert zusätzlich hypothetische Einstiegs- und Stop-Marken. Keine Order, keine Empfehlung.', 3],
   };
-  var LOCKED_TXT = 'Die oberste Stufe ist für alle 13 Methoden gesperrt: keine Freigabe, kein Live-Betrieb.';
+  var LOCKED = ['Geprüfte Handelsfreigabe', 'Für alle 13 Methoden gesperrt: keine Zertifizierung, keine Freigabe, kein Live-Betrieb.', 4];
+  /* Stufennamen kommen aus den Daten (catalog.mjs#STAGE_LABELS, Owner-Entscheidung O-3); die Werte oben sind nur Rückfall */
+  function adoptStageLabels(sum) {
+    var L = sum && sum.stageLabels; if (!L) return;
+    STAGES.forEach(function (k) { if (L[k]) { STAGE_TXT[k][0] = L[k].name; STAGE_TXT[k][2] = L[k].short; STAGE_TXT[k][3] = L[k].step; } });
+    if (L.VALIDATED_TRADE_SIGNAL) LOCKED = [L.VALIDATED_TRADE_SIGNAL.name, L.VALIDATED_TRADE_SIGNAL.short, L.VALIDATED_TRADE_SIGNAL.step];
+  }
   var DISCLAIMER = 'Research-Ergebnisse regelbasierter Modelle. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Aussage zur Handelbarkeit.';
   var WHY_TXT = {
     STRATEGY_CEILING: 'Die Methode ist heute höchstens bis zu dieser Stufe freigegeben',
@@ -25,7 +31,7 @@
     DATA_SESSIONS: 'Fehlende Handelstage in der Kursreihe',
     DATA_LIQUIDITY_RESEARCH_UNIVERSE: 'Unter der Liquiditätsgrenze des Forschungsuniversums',
     DATA_IDENTITY_INSTRUMENT_TYPE: 'Instrument nicht im Security Master bestätigt',
-    DATA_IDENTITY_SPAC_NAME_HINT: 'Mantelgesellschaft (SPAC): Kursmuster ohne Aussagekraft',
+    DATA_IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft laut SEC-Branchencode: Kursmuster ohne Aussagekraft',
     DATA_IDENTITY_LISTING_CONTINUITY: 'Reihe nach Listing-Unterbrechung neu begonnen',
     DATA_ADJUSTMENT: 'Abgleich der Corporate Actions unbekannt',
     DATA_IDENTITY_ACTIVE: 'Listing-Status nicht bestätigt',
@@ -55,7 +61,7 @@
   };
   var DQ_TXT = {
     QUARANTINE_V4_D1: 'Kurssprung im Rückblick', QUARANTINE_LOOKBACK_COVERAGE: 'Rückblick unvollständig', SESSIONS: 'Handelstage fehlen',
-    LIQUIDITY_RESEARCH_UNIVERSE: 'geringe Liquidität', IDENTITY_SPAC_NAME_HINT: 'Mantelgesellschaft', IDENTITY_ADR_LISTING: 'ADR-Listing',
+    LIQUIDITY_RESEARCH_UNIVERSE: 'geringe Liquidität', IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft (SEC)', IDENTITY_SPAC_NAME_HINT: 'Name deutet auf Mantelgesellschaft (unsicher)', IDENTITY_ADR_LISTING: 'ADR-Listing',
     IDENTITY_INSTRUMENT_TYPE: 'Identität offen', IDENTITY_LISTING_CONTINUITY: 'Listing-Unterbrechung', ADJUSTMENT: 'Adjustierung offen',
   };
 
@@ -98,7 +104,30 @@
     return empty('Research-Kandidaten noch nicht verfügbar', 'Die Erkennung für die 13 quellentreuen Methoden ist vorbereitet, aber der tägliche Datenlauf ist noch nicht freigeschaltet. Sobald er läuft, erscheinen hier die erkannten Aktien mit Datenstand.');
   }
   function stagesLegend() {
-    return h('ul', { class: 'sf-legend' }, STAGES.map(function (s) { return h('li', null, [stageBadge(s), h('span', { text: STAGE_TXT[s][2] })]); }).concat([h('li', null, [h('span', { class: 'sf-stage', 'data-s': 'locked' }, [icon(IC.lock), 'Oberste Stufe']), h('span', { text: LOCKED_TXT })])]));
+    return h('ul', { class: 'sf-legend' }, STAGES.map(function (s) { return h('li', null, [h('span', { class: 'sf-step', text: String(STAGE_TXT[s][3]) }), h('div', null, [stageBadge(s), h('span', { text: STAGE_TXT[s][2] })])]); })
+      .concat([h('li', null, [h('span', { class: 'sf-step', 'data-s': 'locked', text: String(LOCKED[2]) }), h('div', null, [h('span', { class: 'sf-stage', 'data-s': 'locked' }, [icon(IC.lock), LOCKED[0]]), h('span', { text: LOCKED[1] })])])]));
+  }
+  /* Grenzen der Methode (O-4): bei Chart-Modellen und übersetzten Quellen deutlich, sonst dezent */
+  var STRONG_LIMITS = { C06: true, C09: true, C10: true };
+  function limitsLine(s, force) {
+    if (!s || !s.limits || !s.limits.length) return null;
+    var strong = force || STRONG_LIMITS[s.candidateId];
+    return h('ul', { class: 'sf-limits', 'data-strong': strong ? 'true' : null, 'aria-label': 'Grenzen der Methode' }, s.limits.map(function (t) { return h('li', null, [icon(IC.alert), h('span', { text: t })]); }));
+  }
+  /* Datenherkunft und Aktualität: woher die Kandidaten stammen, welcher Stand, welche Prüfsumme */
+  function provenance(sum) {
+    var v = sum.versions || {}, dq = sum.dataQuality || {}, inp = sum.inputs || {};
+    var rows = [
+      ['Datenstand', dateDe(sum.asOf) + ' (Tagesschluss US) · nächste Sitzung ' + dateDe(sum.nextSession)],
+      ['Kurse', 'Split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
+      ['Universum', num(dq.securities, 0) + ' Aktien mit Tagesreihe · ' + num(dq.FAIL, 0) + ' wegen Datenqualität nicht bewertet'],
+      ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
+      ['Prüfsumme', String(inp.inputsSha256 || '').slice(0, 12) + ' · ' + (v.pipeline || '')],
+    ];
+    return moreBox('Datenherkunft und Aktualität', [h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })))]);
+  }
+  function previewBanner() {
+    return h('p', { class: 'sf-preview', role: 'note' }, [icon(IC.lock), 'Vorschau · noch nicht freigeschaltet · Research, keine Empfehlung']);
   }
   function footnote(sum) {
     return h('p', { class: 'sf-foot', text: (sum ? 'Datenstand ' + dateDe(sum.asOf) + ' (Tagesschluss). ' : '') + DISCLAIMER });
@@ -123,6 +152,7 @@
     var hero = main.querySelector('.st-hero');
     if (hero && hero.nextSibling) main.insertBefore(host, hero.nextSibling); else main.appendChild(host);
     getJSON('summary.json').then(function (sum) {
+      adoptStageLabels(sum);
       var S = byCid(sum), c = sum.counts.byStage, filter = { stage: null, cid: null };
       var list = h('div', { class: 'sf-rows' });
       function draw() {
@@ -136,11 +166,12 @@
       var stratChips = chipRow([[null, 'Alle Methoden', null]].concat(sum.strategies.map(function (s) { return [s.candidateId, s.name.replace(/ \(.*\)$/, ''), s.counts.published]; })), function (v) { filter.cid = v; draw(); });
       draw();
       host.appendChild(sec('Heute erkannte Aktien', [
+        previewBanner(),
         kpis([[num(sum.counts.candidates, 0), 'Kandidaten', '13 Methoden'], [num(c.MODELED_TRADE_PLAN, 0), 'Modellierte Abläufe'], [num(c.CONFIRMED_RESEARCH_SETUP, 0), 'Bestätigte Setups'], [dateDe(sum.asOf), 'Datenstand', 'Tagesschluss']]),
         stageChips, stratChips, list,
         h('p', null, [h('a', { class: 'st-more', href: '/supertrader/strategies/#sf' }, ['Alle 13 Methoden', icon(IC.arrow)])]),
         moreBox('Was bedeuten die Stufen?', [stagesLegend(), h('p', { class: 'st-hint', text: 'Je Methode zählt eine eigene Reihenfolge (Stufe, Datenqualität, dann Abstand zum Pivot, Volumen oder Momentum). Die Methoden werden nicht miteinander verrechnet.' })]),
-        footnote(sum),
+        provenance(sum), footnote(sum),
       ], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' }));
     }).catch(function () { host.appendChild(sec('Heute erkannte Aktien', [unavailable(), stagesLegend()], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' })); });
   }
@@ -161,10 +192,12 @@
     var foot = main.querySelector('.st-foot');
     main.insertBefore(host, foot || null);
     getJSON('summary.json').then(function (sum) {
+      adoptStageLabels(sum);
       host.appendChild(sec('Quellentreue Methoden (13)', [
+        previewBanner(),
         h('p', { class: 'st-hint', text: 'Regeln nach den Originalquellen, getrennt von den Modellbeobachtungen oben. Jede Methode erkennt heutige Kandidaten auf Tagesschlusskursen.' }),
         h('div', { class: 'st-list sf-strats' }, sum.strategies.map(function (s) { return stratCard(s); })),
-        moreBox('Was bedeuten die Stufen?', [stagesLegend()]), footnote(sum),
+        moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
       ], { kicker: 'Research · alle nicht für den Live-Betrieb freigegeben' }));
     }).catch(function () { host.appendChild(sec('Quellentreue Methoden (13)', [unavailable()], { kicker: 'Research' })); });
   }
@@ -174,6 +207,7 @@
       h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.name }), h('div', { class: 'who', text: s.author + ' · ' + s.family + ' · ' + s.timeframe })]), h('div', { class: 'cnt' }, [h('strong', { text: num(s.counts.published, 0) }), h('span', { text: 'heute' })])]),
       h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling), b.MODELED_TRADE_PLAN ? h('span', { class: 'sf-mini', text: num(b.MODELED_TRADE_PLAN, 0) + ' modelliert' }) : null, s.direction === 'SHORT_RESEARCH_ONLY' ? h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Short · nur Forschung' }) : null]),
       h('p', { class: 'sf-strat-why', text: s.short }),
+      limitsLine(s),
     ]);
   }
 
@@ -186,10 +220,12 @@
     Promise.all([getJSON('summary.json'), getJSON('strategy/' + cid + '.json')]).then(function (res) {
       var sum = res[0], data = res[1], S = byCid(sum), s = S[cid];
       if (!s) throw new Error('unbekannt');
+      adoptStageLabels(sum);
       document.title = s.name + ' – quellentreu · Supertrader';
       var L = sum.ruleLabels, views = data.views, state = { stage: null, q: '', sort: 'default', limit: 30 };
       var byS = s.counts.byStage;
-      host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)])]));
+      host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
+      host.appendChild(previewBanner());
       host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       var list = h('div', { class: 'sf-cards' });
       var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06'); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
@@ -216,6 +252,7 @@
         s.rules.dataBlockedRules.length ? moreBox('Ohne Daten nicht prüfbar (' + s.rules.dataBlockedRules.length + ')', [ruleList(s.rules.dataBlockedRules, L, 'lock'), h('p', { class: 'st-hint', text: 'Ein Ersatzwert hebt diese Sperre nicht auf.' })]) : null,
         s.readings.length ? moreBox('Gewählte Lesarten mehrdeutiger Regeln', [ruleList(s.readings.map(function (r) { return r.ruleId; }), L, 'open')]) : null,
         moreBox('Stufen', [stagesLegend()]),
+        provenance(sum),
       ], { kicker: 'Aufklappbar' }));
       host.appendChild(footnote(sum));
     }).catch(function () { host.appendChild(empty('Methode nicht verfügbar', 'Für diese Methode liegen keine Research-Kandidaten vor.')); host.appendChild(unavailable()); });
@@ -245,12 +282,13 @@
       return h('li', { 'data-k': 'lock' }, [icon(IC.lock), h('span', { text: txt + (w.stage && w.code === 'STRATEGY_CEILING' ? ': ' + STAGE_TXT[w.stage][0] : '') })]);
     });
     var dq = (v.dataQuality.notPass || []).map(function (d) { return DQ_TXT[d.id] || null; }).filter(Boolean);
+    var interp = (v.interpretations || []).map(function (p) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: 'Modell-Interpretation, keine Originalregel: ' + ruleText(L, p.ruleId) + ' ab dem 98. Perzentil' })]); });
     var pending = (v.pending || []).map(function (p) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, p.ruleId) + ' – Lesart wartet auf Freigabe' })]); });
     var openRules = s && s.rules ? s.rules.discretionaryRules.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }) : [];
     var blocks = (v.blockReasons || []).filter(function (c) { return BLOCK_TXT[c]; }).map(function (c) { return h('li', { 'data-k': 'lock' }, [icon(IC.lock), h('span', { text: BLOCK_TXT[c] })]); });
     var body = [
       nums,
-      h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])])]),
+      h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, (met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])]).concat(interp))]),
       notMet.length || why.length || pending.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum diese Stufe' }), h('ul', { class: 'sf-rules' }, notMet.concat(pending, why))]) : null,
       v.plan ? planBlock(v, L) : null,
       openRules.length || blocks.length ? moreBox('Offene Prüfung und gesperrte Stufen', [
@@ -259,7 +297,8 @@
       ].filter(Boolean)) : null,
       dq.length ? h('p', { class: 'sf-dq' }, [icon(IC.alert), 'Datenhinweis: ' + dq.join(' · ')]) : null,
     ];
-    return h('article', { class: 'sf-card', 'data-stage': v.stage }, opts.compact ? [head, nums, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))] : [head].concat(body));
+    var lim = s && STRONG_LIMITS[s.candidateId] ? limitsLine(s) : null;
+    return h('article', { class: 'sf-card', 'data-stage': v.stage }, opts.compact ? [head, nums, lim, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))] : [head, lim].concat(body, [limitsLine(s)].filter(function () { return !lim; })));
   }
   function pair(k, v, sub) { return h('div', null, [h('dt', { text: k }), h('dd', null, [h('strong', { text: v }), sub ? h('small', { text: sub }) : null])]); }
   function planBlock(v, L) {
@@ -286,15 +325,16 @@
       return ((sum.tickerShards || []).indexOf(shard) >= 0 ? getJSON('ticker/' + shard + '.json') : Promise.resolve({ views: [] })).then(function (t) { return [sum, t]; });
     }).then(function (res) {
       var sum = res[0], S = byCid(sum), L = sum.ruleLabels;
+      adoptStageLabels(sum);
       var vs = (res[1].views || []).filter(function (v) { return v.ticker === sym; });
       vs.sort(function (a, b) { return STAGES.indexOf(b.stage) - STAGES.indexOf(a.stage) || (a.candidateId < b.candidateId ? -1 : 1); });
-      if (!vs.length) { host.appendChild(sec('Quellentreue Methoden', [empty('Keine quellentreue Methode erkennt ' + sym, 'Am Stichtag ' + dateDe(sum.asOf) + ' passt die Aktie zu keinem Muster der 13 Methoden. Das ist ein gültiges Ergebnis.')], { kicker: 'Research', id: 'sf-stock' })); return; }
+      if (!vs.length) { host.appendChild(sec('Quellentreue Methoden', [previewBanner(), empty('Keine quellentreue Methode erkennt ' + sym, 'Am Stichtag ' + dateDe(sum.asOf) + ' passt die Aktie zu keinem Muster der 13 Methoden. Das ist ein gültiges Ergebnis.')], { kicker: 'Research', id: 'sf-stock' })); return; }
       var chartHost = h('div', { class: 'sf-chart' }), cards = h('div', { class: 'sf-cards' });
       var pick = chipRow(vs.map(function (v) { return [v.candidateId, stratName(S, v.candidateId), null, v.stage]; }), function (cid) { var v = vs.filter(function (x) { return x.candidateId === cid; })[0]; show(v); });
       function show(v) { cards.replaceChildren(card(v, S[v.candidateId], L, {})); drawChart(chartHost, v, S[v.candidateId]); }
       host.appendChild(sec(vs.length === 1 ? '1 quellentreue Methode erkennt ' + sym : vs.length + ' quellentreue Methoden erkennen ' + sym, [
-        pick, chartHost, cards,
-        moreBox('Was bedeuten die Stufen?', [stagesLegend()]), footnote(sum),
+        previewBanner(), pick, chartHost, cards,
+        moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
       ], { kicker: 'Research · Stand ' + dateDe(sum.asOf), id: 'sf-stock' }));
       show(vs[0]);
       if (location.hash === '#sf') host.scrollIntoView({ block: 'start' });
