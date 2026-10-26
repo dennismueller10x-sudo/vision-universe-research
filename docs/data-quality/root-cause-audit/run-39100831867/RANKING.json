@@ -1,0 +1,140 @@
+{
+  "schema": "vu-root-cause-ranking-public-1.0.0",
+  "version": "vu-price-root-cause-audit-1.0.0",
+  "kind": "DIAGNOSTIC_REPLAY_NOT_CERTIFYING",
+  "runId": "39100831867",
+  "sourceDataFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+  "scenarios": [
+    "A_ORIGINAL",
+    "B_VU_BUGS",
+    "C2_STRICT"
+  ],
+  "ranks": {
+    "A_ORIGINAL": {
+      "cagr": {
+        "cross_sectional_momentum": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "52_week_high_effect": 3,
+        "LOW_VOLATILITY": 4,
+        "KULLAMAGI_DAILY_ADAPTATION": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "sharpe": {
+        "WEINSTEIN_STAGE_DAILY": 1,
+        "52_week_high_effect": 2,
+        "cross_sectional_momentum": 3,
+        "LOW_VOLATILITY": 4,
+        "TURTLE_S2_EQUITY_DAILY": 5,
+        "KULLAMAGI_DAILY_ADAPTATION": 6
+      },
+      "maxDrawdown": {
+        "KULLAMAGI_DAILY_ADAPTATION": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "52_week_high_effect": 3,
+        "LOW_VOLATILITY": 4,
+        "cross_sectional_momentum": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "aboveSpy": {
+        "cross_sectional_momentum": false,
+        "52_week_high_effect": false,
+        "LOW_VOLATILITY": false,
+        "TURTLE_S2_EQUITY_DAILY": false,
+        "WEINSTEIN_STAGE_DAILY": false,
+        "KULLAMAGI_DAILY_ADAPTATION": false
+      }
+    },
+    "B_VU_BUGS": {
+      "cagr": {
+        "cross_sectional_momentum": 1,
+        "52_week_high_effect": 2,
+        "WEINSTEIN_STAGE_DAILY": 3,
+        "LOW_VOLATILITY": 4,
+        "KULLAMAGI_DAILY_ADAPTATION": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "sharpe": {
+        "52_week_high_effect": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "cross_sectional_momentum": 3,
+        "LOW_VOLATILITY": 4,
+        "TURTLE_S2_EQUITY_DAILY": 5,
+        "KULLAMAGI_DAILY_ADAPTATION": 6
+      },
+      "maxDrawdown": {
+        "KULLAMAGI_DAILY_ADAPTATION": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "52_week_high_effect": 3,
+        "LOW_VOLATILITY": 4,
+        "cross_sectional_momentum": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "aboveSpy": {
+        "cross_sectional_momentum": false,
+        "52_week_high_effect": false,
+        "LOW_VOLATILITY": false,
+        "TURTLE_S2_EQUITY_DAILY": false,
+        "WEINSTEIN_STAGE_DAILY": false,
+        "KULLAMAGI_DAILY_ADAPTATION": false
+      }
+    },
+    "C2_STRICT": {
+      "cagr": {
+        "cross_sectional_momentum": 1,
+        "52_week_high_effect": 2,
+        "WEINSTEIN_STAGE_DAILY": 3,
+        "LOW_VOLATILITY": 4,
+        "KULLAMAGI_DAILY_ADAPTATION": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "sharpe": {
+        "52_week_high_effect": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "cross_sectional_momentum": 3,
+        "LOW_VOLATILITY": 4,
+        "TURTLE_S2_EQUITY_DAILY": 5,
+        "KULLAMAGI_DAILY_ADAPTATION": 6
+      },
+      "maxDrawdown": {
+        "KULLAMAGI_DAILY_ADAPTATION": 1,
+        "WEINSTEIN_STAGE_DAILY": 2,
+        "52_week_high_effect": 3,
+        "LOW_VOLATILITY": 4,
+        "cross_sectional_momentum": 5,
+        "TURTLE_S2_EQUITY_DAILY": 6
+      },
+      "aboveSpy": {
+        "cross_sectional_momentum": false,
+        "52_week_high_effect": false,
+        "LOW_VOLATILITY": false,
+        "TURTLE_S2_EQUITY_DAILY": false,
+        "WEINSTEIN_STAGE_DAILY": false,
+        "KULLAMAGI_DAILY_ADAPTATION": false
+      }
+    },
+    "changes": {
+      "cagr": {
+        "A_to_B": true,
+        "A_to_C2": true,
+        "B_to_C2": false
+      },
+      "sharpe": {
+        "A_to_B": true,
+        "A_to_C2": true,
+        "B_to_C2": false
+      },
+      "maxDrawdown": {
+        "A_to_B": false,
+        "A_to_C2": false,
+        "B_to_C2": false
+      }
+    }
+  },
+  "performanceNumbersPublished": "RANKS_ONLY",
+  "sealed": {
+    "audience": "owner",
+    "file": "RANKING.owner.sealed.json",
+    "plaintextSha256": "a10ae3098f192f8a9c1c5fe8e89a8b204e6bf87dc6a0fb5415739b025e29aef5",
+    "sealedSha256": "d045daf7c4092211e601584fa3fdc0be5c4ebbc167e5317d394d0e1f32bf84b3"
+  }
+}

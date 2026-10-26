@@ -1,0 +1,473 @@
+{
+  "schema": "vu-root-cause-backtest-public-1.0.0",
+  "version": "vu-price-root-cause-audit-1.0.0",
+  "kind": "DIAGNOSTIC_REPLAY_NOT_CERTIFYING",
+  "runId": "39073148967",
+  "sourceDataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+  "inputs": {
+    "secAvailable": true,
+    "finraAvailable": true,
+    "vendorUsed": false
+  },
+  "census": {
+    "events": 616,
+    "securities": 226,
+    "byKind": {
+      "UNDECLARED_RAW_JUMP_10X": 590,
+      "DECLARED_SPLIT_RESIDUAL": 26
+    },
+    "byClass": {
+      "UNRESOLVED": 320,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 42,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
+      "INSUFFICIENT_EVIDENCE": 200
+    },
+    "byStrictClass": {
+      "UNRESOLVED": 320,
+      "RATIO_DOES_NOT_EXPLAIN_MOVE": 7,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
+      "INSUFFICIENT_EVIDENCE": 200,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 28,
+      "CONFOUNDED_BY_DECLARED_SPLIT": 6,
+      "CONFLICTING_INDEPENDENT_EVIDENCE": 1
+    },
+    "byKindAndClass": {
+      "UNDECLARED_RAW_JUMP_10X:UNRESOLVED": 304,
+      "UNDECLARED_RAW_JUMP_10X:CONFIRMED_BY_INDEPENDENT_SOURCE": 36,
+      "DECLARED_SPLIT_RESIDUAL:UNRESOLVED": 16,
+      "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
+      "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 196,
+      "DECLARED_SPLIT_RESIDUAL:CONFIRMED_BY_INDEPENDENT_SOURCE": 6,
+      "DECLARED_SPLIT_RESIDUAL:INSUFFICIENT_EVIDENCE": 4
+    },
+    "byChannel": {
+      "SEC_8K": 14,
+      "SEC_SHARES_ONLY": 13,
+      "FINRA_SYMBOL_MATCH_ONLY": 9,
+      "SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 6
+    },
+    "residualOfStatedRatio": {
+      "GT_2": 3,
+      "LE_1.25": 15,
+      "1.25_TO_2": 5
+    },
+    "normalizable": 23,
+    "normalizableStrict": 15,
+    "strictConfirmedSecurities": 26
+  },
+  "methodId": "52_week_high_effect",
+  "scenarios": {
+    "A_ORIGINAL": {
+      "runner": "V3",
+      "securities": 9407,
+      "audit": null,
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0,
+        "meanExposurePp": 0,
+        "trades": 0
+      },
+      "deltaVsB": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84934,
+        "inEventSecurities": 232,
+        "spanningEvent": 21,
+        "enteredWithin252AfterEvent": 26,
+        "distinctEventSecuritiesTraded": 38,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 17,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 181
+    },
+    "B1_A5_TIMING": {
+      "runner": "V3",
+      "securities": 9407,
+      "audit": {
+        "policy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+        "quarantinedSecurities": 521,
+        "terminalDatesMoved": 143
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0,
+        "meanExposurePp": 0,
+        "trades": 0
+      },
+      "deltaVsB": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": -0.1,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84934,
+        "inEventSecurities": 232,
+        "spanningEvent": 21,
+        "enteredWithin252AfterEvent": 26,
+        "distinctEventSecuritiesTraded": 38,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 17,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 185
+    },
+    "B_VU_BUGS": {
+      "runner": "V4",
+      "securities": 9407,
+      "audit": {
+        "policy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+        "quarantinedSecurities": 521,
+        "terminalDatesMoved": 143
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.1,
+        "meanExposurePp": -0.4,
+        "trades": 2
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84936,
+        "inEventSecurities": 232,
+        "spanningEvent": 20,
+        "enteredWithin252AfterEvent": 27,
+        "distinctEventSecuritiesTraded": 38,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 16,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 189
+    },
+    "C_INDEPENDENT": {
+      "runner": "V4",
+      "securities": 9406,
+      "audit": {
+        "normalized": 21,
+        "cut": 18,
+        "removed": 1,
+        "securities": 37
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.1,
+        "meanExposurePp": -0.4,
+        "trades": -25
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84909,
+        "inEventSecurities": 218,
+        "spanningEvent": 20,
+        "enteredWithin252AfterEvent": 25,
+        "distinctEventSecuritiesTraded": 34,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 16,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 187
+    },
+    "C2_STRICT": {
+      "runner": "V4",
+      "securities": 9406,
+      "audit": {
+        "normalized": 14,
+        "cut": 12,
+        "removed": 1,
+        "securities": 26
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.1,
+        "meanExposurePp": -0.4,
+        "trades": -23
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84911,
+        "inEventSecurities": 218,
+        "spanningEvent": 20,
+        "enteredWithin252AfterEvent": 25,
+        "distinctEventSecuritiesTraded": 34,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 16,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 180
+    },
+    "C3_STRICT_NORMALIZE_ONLY": {
+      "runner": "V4",
+      "securities": 9407,
+      "audit": {
+        "normalized": 15,
+        "cut": 0,
+        "removed": 0,
+        "securities": 15
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.2,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.2,
+        "meanExposurePp": -0.4,
+        "trades": -3
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84931,
+        "inEventSecurities": 230,
+        "spanningEvent": 20,
+        "enteredWithin252AfterEvent": 25,
+        "distinctEventSecuritiesTraded": 36,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 16,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 176
+    },
+    "D_UNRESOLVED_CUT": {
+      "runner": "V4",
+      "securities": 9392,
+      "audit": {
+        "normalized": 20,
+        "cut": 209,
+        "removed": 15,
+        "securities": 226
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.2,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.2,
+        "meanExposurePp": -0.4,
+        "trades": -207
+      },
+      "deltaVsB": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84727,
+        "inEventSecurities": 100,
+        "spanningEvent": 11,
+        "enteredWithin252AfterEvent": 0,
+        "distinctEventSecuritiesTraded": 21,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 6,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 4,
+          "UNDECLARED_RAW_JUMP_10X:UNRESOLVED": 1
+        },
+        "pnlSpanningShareOfFinalEquityPp": 0
+      },
+      "seconds": 176
+    },
+    "E_WHOLE_SERIES": {
+      "runner": "V4",
+      "securities": 8886,
+      "audit": {
+        "removed": 521
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.2,
+        "maxDrawdownPp": -0.1,
+        "excessVsSpyPp": 0.2,
+        "meanExposurePp": -0.4,
+        "trades": -794
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": -0.1
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": -0.1
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": -0.1
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84140,
+        "inEventSecurities": 214,
+        "spanningEvent": 14,
+        "enteredWithin252AfterEvent": 27,
+        "distinctEventSecuritiesTraded": 34,
+        "eventMonthsHeld": 9,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 10,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 176
+    },
+    "F_V4_FORENSIC_SANITY": {
+      "runner": "V4",
+      "securities": 9407,
+      "audit": {
+        "quarantined": 3,
+        "removedInsufficientBars": 0,
+        "affected": 74,
+        "defectQuarantined": 3
+      },
+      "cagrVsSpy": "BELOW_SPY",
+      "deltaVsA": {
+        "cagrPp": 0.1,
+        "maxDrawdownPp": 0,
+        "excessVsSpyPp": 0.1,
+        "meanExposurePp": -0.4,
+        "trades": 2
+      },
+      "deltaVsB": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "deltaVsC2": {
+        "cagrPp": 0,
+        "maxDrawdownPp": 0
+      },
+      "cagrGapToSpyBucket": "BELOW_1_TO_5PP",
+      "sharpeVsSpy": "BELOW_SPY_SHARPE",
+      "tradeExposure": {
+        "tradeRecords": 84936,
+        "inEventSecurities": 232,
+        "spanningEvent": 20,
+        "enteredWithin252AfterEvent": 27,
+        "distinctEventSecuritiesTraded": 38,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 16,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "seconds": 172
+    }
+  },
+  "performanceNumbersPublished": "DELTAS_AND_DIRECTIONS_ONLY",
+  "sealed": {
+    "audience": "owner",
+    "file": "BACKTEST-IMPACT-52_week_high_effect.owner.sealed.json",
+    "plaintextSha256": "37fb1373eaf9c34ba30c7c640c720b5c56b1f52b259bfc1d56bd45d2ae4141d4",
+    "sealedSha256": "67b4c83f5160a6ea404f4264f93a5ee98e8bd27d453e911286dd8aed45a4e31c"
+  }
+}

@@ -1,0 +1,3085 @@
+{
+  "schema": "vision-universe-calibration-v3-inrunner-capture-receipt-1.0.0",
+  "status": "V3_CANONICAL_CAPTURE_VERIFIED_IN_RUNNER",
+  "claim": "NEW_AUTHORIZED_CAPTURE_FROM_VU_HISTORY_STORE; EARLIER_ENCRYPTED_500_PART_CAPTURE_NOT_DECRYPTED_OR_COMPARED",
+  "provenance": {
+    "capturedAt": "2026-10-18T05:31:28.000Z",
+    "workflowRunId": "39100831867",
+    "codeCommit": "701ffc8492d204155527f58b134d9b65463aaef9",
+    "timestampIsPartOfContentClaim": false
+  },
+  "contract": {
+    "dataInventorySha256": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+    "canonicalInputSha256": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+    "captureRunnerSha256": "1af858f9ca968673127b39f5d0783e1889fa2e1f6fe47ce15feb30f75f27e1ba",
+    "chunkBytes": 8388608,
+    "factDocLimit": 4
+  },
+  "inputs": {
+    "manifestSha256": "77c5abf10a7d838c65895d882b303760b0d0cbadf65be9520d9e608d6597ad75",
+    "manifestBytes": 939539,
+    "sourceMetadataSha256": "30dd229643dc063fd5784b8528ee7e0e6179a15c5fe9633d47434f05b82f2b36",
+    "sourceMetadataBytes": 92586451,
+    "dataFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+    "parts": [
+      {
+        "stem": "canonical-dataset-part-0000",
+        "sha256": "4bd3be882c63a1705ae29d2a280461c2e9b2294e0a911e2b4c94265ac3e48ffe",
+        "plaintextBytes": 7882258,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0001",
+        "sha256": "3b8760311f88fc69ff88374a04a97ab863f0ef173f8773af119641c014b71a0b",
+        "plaintextBytes": 7868177,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0002",
+        "sha256": "fc2dea3e84ff62e0db9c41d4da30c8cf38aec698acb7ebab0ee0c521d02c47b7",
+        "plaintextBytes": 7677566,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0003",
+        "sha256": "6b93135828cf64df178f325239603174390a00f89bb8e8d020920b8857b89eba",
+        "plaintextBytes": 7722773,
+        "securities": 11
+      },
+      {
+        "stem": "canonical-dataset-part-0004",
+        "sha256": "3fff360bf0fc94b9e7b53d2065f635de4f8ee75326c36eab9329d66bc356d672",
+        "plaintextBytes": 8175229,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0005",
+        "sha256": "2785f686bd0d2b6bec216847bb1487e0326838c1e77a4bd6b0b10a9cdb2105e1",
+        "plaintextBytes": 7894704,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0006",
+        "sha256": "2db0c0ce2346f9960e8b56265bc9eab1e1db3edd5e508fb70b6649e03369b983",
+        "plaintextBytes": 8356012,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0007",
+        "sha256": "474427dcf5a5634d534411ffb626458bd22a3a11e9ca3a133ef3e86808114771",
+        "plaintextBytes": 7798916,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0008",
+        "sha256": "4f32de378e16c2ed9f972d234f224baca8657910c77f03382fc36dd89826adef",
+        "plaintextBytes": 7793654,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0009",
+        "sha256": "8739cc88279a9180e4f2b53b6db69064bb6b2bb98e9f312ef53ff0bf4e390911",
+        "plaintextBytes": 8228171,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0010",
+        "sha256": "50a5f732090de8448d673fe64ebe0f31e96c26b41beecb30a65542eec9139484",
+        "plaintextBytes": 8128085,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0011",
+        "sha256": "a05a3e90e15bfaac2c30e5b95ed6bc33f9987c990aa3da4569bd6fc5afedb1d2",
+        "plaintextBytes": 8123782,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0012",
+        "sha256": "279b8854a10c9a5a20b57bfa9f1cb10d8aa8b877a639d623eb608ee57cae164d",
+        "plaintextBytes": 7688383,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0013",
+        "sha256": "124ed247ef0ed6efe8176c8d22508424795ab6aaff5d993cd2e66f91483de349",
+        "plaintextBytes": 7609510,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0014",
+        "sha256": "52705cbfa6dab77658ef5aaf09c58afdd8afa23e17bc5d76270bbe4c984773f4",
+        "plaintextBytes": 7676242,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0015",
+        "sha256": "1b2a4aa4d6cd1a6dddb75b3d3f1fa6dbf3d5c73aadae2e4279fc8c8e83b1d1f4",
+        "plaintextBytes": 8272045,
+        "securities": 72
+      },
+      {
+        "stem": "canonical-dataset-part-0016",
+        "sha256": "5030c730ef5813d7ed04eb001ac7ce5423b671d773fcb69f721a660d9030ccd4",
+        "plaintextBytes": 8278671,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0017",
+        "sha256": "461135399bdb251112d0ff91c52811685878ca5a8b8f35cee045e06a0d645d61",
+        "plaintextBytes": 8030457,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0018",
+        "sha256": "a0628b9447e5f5410f2d9c1203aa0e129871e9a7197182c17e91a5f5eb255480",
+        "plaintextBytes": 8328543,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0019",
+        "sha256": "20be21b21277d5f96cd5082f2b2ec93e48f9a9bdab30f9678df5f3b5b3d56346",
+        "plaintextBytes": 8333793,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0020",
+        "sha256": "2eef325fa243c7f18e034e942bdb7448c93beff3507caf962f9ed672f67d7474",
+        "plaintextBytes": 8104827,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0021",
+        "sha256": "df15dc34cb0c76b52a609b1c76a279ced2fa25ed07835b403febbd51e8c175e1",
+        "plaintextBytes": 8310730,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0022",
+        "sha256": "496962b6982aef164dcd7c047e9c2e05b9028143727c51c0432c5bbd1f1126a0",
+        "plaintextBytes": 8239282,
+        "securities": 28
+      },
+      {
+        "stem": "canonical-dataset-part-0023",
+        "sha256": "686d38ab9f3cd8a86b7ccd120c029e46928bd25cacdb78b97f1d47d3894b6afd",
+        "plaintextBytes": 8138770,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0024",
+        "sha256": "93eab1d21e1cdad9ea2d98a8a72e821e737c994c6e7573f8396beed643c29460",
+        "plaintextBytes": 8069353,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0025",
+        "sha256": "6f3646576c6c9c8eda8e56f0609d890648588de18c523d501c24ad5f64cd0d31",
+        "plaintextBytes": 7997705,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0026",
+        "sha256": "cb2e1eba4c8a41af00e90959a6f64122ba5c103a51dd022f0acff0556c236df3",
+        "plaintextBytes": 8339217,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0027",
+        "sha256": "30d51cc23398785912831addfd3283be38e14cab5c9166292e901df8557e25fc",
+        "plaintextBytes": 8181231,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0028",
+        "sha256": "1787ea3e826b1bcb143c1b1813624085826b8fa7bb63f028377b0df7241d6a80",
+        "plaintextBytes": 8001064,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0029",
+        "sha256": "734366147d420c8fffc5a9549eed0eb9b1d7b775907edf23d564e1194704210b",
+        "plaintextBytes": 8336954,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0030",
+        "sha256": "fa0131e92f18ccc36d7155fd9b7291561485b4f12be314514fe3ab41753ce496",
+        "plaintextBytes": 8307193,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0031",
+        "sha256": "7d88eaec5b8dadf21a88f77d24aae8a9f0a56df7b4da16d15d064cf3cd6dad74",
+        "plaintextBytes": 8299847,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0032",
+        "sha256": "4a074c9a7f771c9f6165161f278b587a393e9c150f144edb2e95b82019bf426f",
+        "plaintextBytes": 7648427,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0033",
+        "sha256": "7f14741a8f6e8edf2cde362072a36ecdf23e8f11bdc2cd3b5b17b28ad9521e92",
+        "plaintextBytes": 8123742,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0034",
+        "sha256": "3690ce2b262ec4f01d89db0e45ebdb714a0fb0606b2adaf6366d8c8da536e724",
+        "plaintextBytes": 8277545,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0035",
+        "sha256": "16f647ee5fdfcf09c94664a01bc864ce2f832be86e0203a700068f2413b5e012",
+        "plaintextBytes": 7650141,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0036",
+        "sha256": "335eb17981c9f8eee8ed235a3448521b6f16dbc7835387ec468433c716a12ebe",
+        "plaintextBytes": 8248493,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0037",
+        "sha256": "eedc5f3711e0fd14a94d59d6c8222c4714a490fd2d88cb7079d23c44bc1d4153",
+        "plaintextBytes": 8174399,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0038",
+        "sha256": "23b0932ee44c21de0ac21f80490f06af0fb8997e59116189b4f5d81f9bd5f9ec",
+        "plaintextBytes": 8202231,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0039",
+        "sha256": "408cfc8e4df19d2df6bcafe86812940931ddf21dec6f1be5c4760c5dffa7555f",
+        "plaintextBytes": 8195482,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0040",
+        "sha256": "6ddaeb0af925e5e6aea932841076fdcd73337a3f7ab0b92bf26b82fae093ac8c",
+        "plaintextBytes": 8060665,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0041",
+        "sha256": "3fc3b433e02f12fdd9beaf6069df4e8642e2f98e263cfef5d6d6d21a9e6e2159",
+        "plaintextBytes": 8161263,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0042",
+        "sha256": "70a1d3957de915569643d5da414bc0a9dcf4f6f0fd11717c161bcc1797cfec40",
+        "plaintextBytes": 7972214,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0043",
+        "sha256": "869403e86432ff6ffbcababb456b6040570cff1cbde21cffb871a92791f611ef",
+        "plaintextBytes": 7973291,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0044",
+        "sha256": "44d77dd23524f61be998172430045881221d9a00b5c1b41f100a4d664ec16838",
+        "plaintextBytes": 7949937,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0045",
+        "sha256": "c7f30202eab6ecc32e74bf2b29c89da1bb0220cb357b0576365487bdb7537495",
+        "plaintextBytes": 7694308,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0046",
+        "sha256": "9189a2a7c09da55700c08908782f72fe75cfc4f1344d5812badcd2fd5f8d5baf",
+        "plaintextBytes": 7804455,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0047",
+        "sha256": "1742266adfc194baff621835663e1004744d4de83692835d0f46226c04dbf634",
+        "plaintextBytes": 8375240,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0048",
+        "sha256": "5237f313f14a36bfca2d75b8c29128c97e672e38f2921b5ebe5b9eb601a1acb8",
+        "plaintextBytes": 8336490,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0049",
+        "sha256": "2554b49d18a353e46c28e77ded790f24f73c9e348913cd12588f388bf5495145",
+        "plaintextBytes": 8340804,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0050",
+        "sha256": "cfbe7d2b9f35b4034b4f400d2a1b23aa0f5879f2336757faaa58a7cdb488d2a0",
+        "plaintextBytes": 8051851,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0051",
+        "sha256": "8432224caf38a21532c857b5745216f7de60cd5b441738beb349a78c75579763",
+        "plaintextBytes": 7737507,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0052",
+        "sha256": "4b2155cb3a066515a898579e0a2fe155b0714ae52b0c8f261902bb19424196eb",
+        "plaintextBytes": 8100281,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0053",
+        "sha256": "a3cf4feb67b4f0c4e6e887eb0014557ba10e7d69fe04139e8824dede79fd5d19",
+        "plaintextBytes": 8199264,
+        "securities": 27
+      },
+      {
+        "stem": "canonical-dataset-part-0054",
+        "sha256": "1a76b841097d29031a788ceaca82f914a5b43b6d01e55ec6aac80b4a8bb763a9",
+        "plaintextBytes": 8184569,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0055",
+        "sha256": "e290faeecd6c25802e3c86d812cb806d6b27ebdfeaa8f87f6dcb78340a5fdb11",
+        "plaintextBytes": 7763882,
+        "securities": 36
+      },
+      {
+        "stem": "canonical-dataset-part-0056",
+        "sha256": "11cdd0300ab8a199b8d6f08c854a16d3034020a14adceb25d8a299883d45fada",
+        "plaintextBytes": 8355429,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0057",
+        "sha256": "69a8c501b5c164be25882e30cc80cbcef85cf3e630d4aac9d19c32fbf53fc286",
+        "plaintextBytes": 7704099,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0058",
+        "sha256": "d9188ec61503a226662d33dfff25cb8e8adb52897040011f04233f6c97782640",
+        "plaintextBytes": 7944733,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0059",
+        "sha256": "3bfb60f286ee9345a08bb3efb32ba8612cbd20e7af44cfbcbbb61fe4b2ea6018",
+        "plaintextBytes": 7918647,
+        "securities": 29
+      },
+      {
+        "stem": "canonical-dataset-part-0060",
+        "sha256": "00d06887e3aa62f03d0ebcbd428dad4e3065404c9f5e33c768dce676f1d9c184",
+        "plaintextBytes": 8346659,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0061",
+        "sha256": "6cefcbf41a03efa0469deb8613ee5dc45b7d0e4f0c8ec86758630895930b450b",
+        "plaintextBytes": 8094038,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0062",
+        "sha256": "0583960b9d7567853ba603b80be693d963a93d34c6409a3bd57dded6eb577dfa",
+        "plaintextBytes": 7991622,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0063",
+        "sha256": "46d35534fbbcc9c1cd7990a7d6387a23fb8a4fa0b6d90f7dcb60ba687ada89de",
+        "plaintextBytes": 7488343,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0064",
+        "sha256": "5f876d72e680bd781057402cebe2dfb517d9e30674a1738dcbf7a6f2bfdc8111",
+        "plaintextBytes": 8300705,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0065",
+        "sha256": "72744d089b970d55ee76c2d79886d33183df2180313dd5fbdd2c9f06361ddbe5",
+        "plaintextBytes": 8251320,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0066",
+        "sha256": "fb60746fd6a847a3b9f7daea28e4256300fa5a600ab9965585e85da9888a2acf",
+        "plaintextBytes": 8262696,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0067",
+        "sha256": "dedbf06fd29cf821c67e1975ce30f8b32c34ac9093a3ce4339c188d68eacb726",
+        "plaintextBytes": 7889546,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0068",
+        "sha256": "0f1ee9c619f0d8ef050e016cbac375332569cee304af63f1d48efafed59192f7",
+        "plaintextBytes": 8254176,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0069",
+        "sha256": "b8e93ebbec497d874d236a3f5687577361f06da8711cb288766712ce559eea68",
+        "plaintextBytes": 8099994,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0070",
+        "sha256": "b2bbafd51358c34ed6d8a422708c2e4d2d40ee901a3d24eba2d134ce87a9a32f",
+        "plaintextBytes": 8221466,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0071",
+        "sha256": "1259036a57ac8e6f85e9c027a92d3089757af3f0f721d74a6dc2a7ab0f277c22",
+        "plaintextBytes": 8158219,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0072",
+        "sha256": "0fc9c223431a972c935ddabb30d11bfc9d02ce20048246b6b0c3d183bf8ec638",
+        "plaintextBytes": 7961826,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0073",
+        "sha256": "e600b08a3a5da71bb16bfeb8a95a35478dd8a084fb0bf523af57357c2d896dd3",
+        "plaintextBytes": 7704751,
+        "securities": 11
+      },
+      {
+        "stem": "canonical-dataset-part-0074",
+        "sha256": "33d3f1513389add0d066fe798560fd89f717c02f69ec06a28529270daa474e2c",
+        "plaintextBytes": 8272642,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0075",
+        "sha256": "ed8d414c6f756e9215029aca1a505676b4615e2d8c3e060c3fa085dd37b3eb0c",
+        "plaintextBytes": 7682788,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0076",
+        "sha256": "9529690322771cdeaa966988302056e314f493eaa2ce8189fd852ad7885fe1ee",
+        "plaintextBytes": 7866121,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0077",
+        "sha256": "e60e48620d962051c560616f48c52d76fd372ed64729ad369a3a4fdbf68384b9",
+        "plaintextBytes": 8156383,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0078",
+        "sha256": "56dd5ff54a7775c90c7a020a516536e97c5df98453a7b264962bea816d396937",
+        "plaintextBytes": 7857668,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0079",
+        "sha256": "029ccebdc8c4c876e757a379523b4e1f0f4ec158bc5f543dced65eff0db5165c",
+        "plaintextBytes": 8167746,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0080",
+        "sha256": "9c0ae7f6de4dec2732bb39aadc085f892aef2c8c0ecdf449c67fb8cebf278c5a",
+        "plaintextBytes": 8386766,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0081",
+        "sha256": "5d813bbb08f246b65c4a72e6c5cb5a639937129cbe4d66f3f9a38ba292f613ab",
+        "plaintextBytes": 7703833,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0082",
+        "sha256": "246c8e5fd7db3655d5ae656df9e194ea29e24a56990165550c025c3e8f621dda",
+        "plaintextBytes": 8007383,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0083",
+        "sha256": "ae9db118fbab0aaed784f17ed5c221e2f4182d3dc86011bcc348ae014f913791",
+        "plaintextBytes": 8341321,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0084",
+        "sha256": "7f7f54eaeccc843b069be67c85792033c38f4a60fbbfa85e1d4e39dea9892456",
+        "plaintextBytes": 8203956,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0085",
+        "sha256": "f52889f28b29da0371831cec3eb42f50b4e6166dbbd8b901aa08989f329b2e6b",
+        "plaintextBytes": 8222178,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0086",
+        "sha256": "6504f1b06d81888d4922ad476caff6554d5bb72259fd2e72fff173f9a470aad5",
+        "plaintextBytes": 7571900,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0087",
+        "sha256": "a4b990480b0f2c9d10b322463e0181a13b726f0ee4373304890e82aff7fbfab7",
+        "plaintextBytes": 8354315,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0088",
+        "sha256": "c6b6a2bea402a31dede3c8a468723fcb8a2286c1d74247db8fc583e70200443a",
+        "plaintextBytes": 7913998,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0089",
+        "sha256": "4f34d6e76f8364a9068cd52d1fe0332d4b4fc3dedbd428ae293268055ec63b88",
+        "plaintextBytes": 8075443,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0090",
+        "sha256": "e8131cfaf501d1fb27a3c5c2d085870d152944b6fcc7a641f6aa8cf5caf80bf0",
+        "plaintextBytes": 8370456,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0091",
+        "sha256": "e9e5e3f86eb8968e8f81c23d37b70ad10d0e260b2380609d9331dc27bb5972e6",
+        "plaintextBytes": 7799860,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0092",
+        "sha256": "8c61e5736b401638c000e108209b160077312ac8e642043d2bdb04b8a4dca823",
+        "plaintextBytes": 8249193,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0093",
+        "sha256": "f0a17cd7be6cfc87538f1720490acd4a18b4cf0cc8437baafb0ac02e7e065a54",
+        "plaintextBytes": 8154876,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0094",
+        "sha256": "60116912167747846f3d1e528a5f2ea84f18bc7850e4a1260d4199b79c211369",
+        "plaintextBytes": 8161171,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0095",
+        "sha256": "78bc01f0685422bf196981d3fc09f693b283f074d3e9d2ee7eb3578cc5af206e",
+        "plaintextBytes": 8374282,
+        "securities": 27
+      },
+      {
+        "stem": "canonical-dataset-part-0096",
+        "sha256": "7feaa373a221a86342ba04a01a1fbdddc37a5a2293cb8a15d94f5a7f2cb029f0",
+        "plaintextBytes": 8255997,
+        "securities": 28
+      },
+      {
+        "stem": "canonical-dataset-part-0097",
+        "sha256": "e4d00010d2488ac3c480abdbb9a008fa4dc8c5691a482e9e708b49faa2d51e1f",
+        "plaintextBytes": 8189959,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0098",
+        "sha256": "3d727b41274cb96bb1818dac2751b415863d3156c21d12af5e39f1f5e95898b8",
+        "plaintextBytes": 7497729,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0099",
+        "sha256": "cbbb6b8705833a09c414c8a329ad46c8a32f9be3b4fad77852396887c61f6fbd",
+        "plaintextBytes": 8079116,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0100",
+        "sha256": "1fd91b236315f29050e9eb9327e555b203885363f9bb31f44fda69a306eaa30c",
+        "plaintextBytes": 8069624,
+        "securities": 28
+      },
+      {
+        "stem": "canonical-dataset-part-0101",
+        "sha256": "f25f684c8837bb4ab0755d41d4ed89e69fe1f0e15b1adfb0689c30ffb1ab25e7",
+        "plaintextBytes": 8317461,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0102",
+        "sha256": "82d77a665991f6a91fb75865d5b2831e6b1b9d29a23622420dbb81e986bf2aac",
+        "plaintextBytes": 8386458,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0103",
+        "sha256": "006bc3fd654537bedea6adc98a15a5b0def13361eb69c5e00e8781032e68c26f",
+        "plaintextBytes": 8322775,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0104",
+        "sha256": "bcd9ac99418ac60d87548b548b87b19bdcb0dbb45bcf7d09cd048ae79f5b0b93",
+        "plaintextBytes": 8373722,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0105",
+        "sha256": "a877be3e7514349bb2eed733ff01ef2312a370c1dc935f97ff53b75cb0ae085c",
+        "plaintextBytes": 7815857,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0106",
+        "sha256": "89ec96ea8b1a527aea7b7f2d7ff125bae5042138d9ede12c0e3ba72a9dfab6a7",
+        "plaintextBytes": 8300420,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0107",
+        "sha256": "2c67bef25f484de311ec25020c19d8fcbc0217cf4bb76565dee46fd717e79e67",
+        "plaintextBytes": 7836050,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0108",
+        "sha256": "dc3c31a6aa67ef24cce2aa9e27cfa587fdbb727047ff7c71ed8dc34462ab52dd",
+        "plaintextBytes": 8014334,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0109",
+        "sha256": "20e06362d47e95ebb24d3f52bd38f6baf083b28bcccae7fd9135fe746a6fedbd",
+        "plaintextBytes": 8290121,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0110",
+        "sha256": "7a0feba70f7ddbfccb0880833b73f1b4320f89098cc315cf198562410b02762e",
+        "plaintextBytes": 8351146,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0111",
+        "sha256": "c81a399e25094b42f986cb6dd63447cb11955c1a543b9e025869e3714f7e7541",
+        "plaintextBytes": 7813742,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0112",
+        "sha256": "270049472ea71e554e8ead2ea5db9b9027707b72463cdd02106c1d7c8b2650f5",
+        "plaintextBytes": 7896907,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0113",
+        "sha256": "74d4f3893e4ebdd437b23f4cf0fd8403763449cfd03377152862cc47ff20f318",
+        "plaintextBytes": 8033019,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0114",
+        "sha256": "80376aa0846097518fd96be8fb07e929ce46be6aa24c957051aa24f0ea6c2806",
+        "plaintextBytes": 7926062,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0115",
+        "sha256": "84bf7721c97109064b4ae4edb41821697c5f22aa72165fe380ce42bab1409b82",
+        "plaintextBytes": 8041880,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0116",
+        "sha256": "4345d3c15cc96c01d7f00f860b28f2e60e98054b74574692cde0ffb83e7dd184",
+        "plaintextBytes": 8050072,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0117",
+        "sha256": "edfba278a82ca576ae5c7307ac8419a38fc8324a23e1babf114079bb281ae767",
+        "plaintextBytes": 7944616,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0118",
+        "sha256": "ea2e02685c767055bbdfdd048b0746bb458b8095d957426ab11811c9dbeb38ec",
+        "plaintextBytes": 8362873,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0119",
+        "sha256": "fe5f4ca04481bd101e82c5ccf3c61ee5da7b8f42c114d7608f787dd01d1cc4de",
+        "plaintextBytes": 8102712,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0120",
+        "sha256": "1f83cd5b0bbbb4ecab4d30db078ae845bb9f02979ddc7669c79ceec53e409d9a",
+        "plaintextBytes": 7819790,
+        "securities": 27
+      },
+      {
+        "stem": "canonical-dataset-part-0121",
+        "sha256": "d470f686c42f524b0b7a8914d02c892c4656a241d2e3835929f69ae926bafe3f",
+        "plaintextBytes": 8303152,
+        "securities": 29
+      },
+      {
+        "stem": "canonical-dataset-part-0122",
+        "sha256": "ac08cbb93b143268514f1c7bf252db62126cd97b690a65650bea3bb75638121f",
+        "plaintextBytes": 7899410,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0123",
+        "sha256": "71ee0f2c1dc324552fd0a74a1bf8e99f3756fa0514a3868909f9facf688810c3",
+        "plaintextBytes": 8029331,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0124",
+        "sha256": "469218757aab79b23ff2d5e2af079d088f867a6d298c3f6d72833ed81af45291",
+        "plaintextBytes": 7431519,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0125",
+        "sha256": "d330689aa20a6b874c58777e3683ddef088d43ca10fd2a8c120261b432272c89",
+        "plaintextBytes": 8369771,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0126",
+        "sha256": "9aea4ee7b4fd150b2b381bb1977ac0b89e6c07ad6831885bb329a9584cb14b55",
+        "plaintextBytes": 7447782,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0127",
+        "sha256": "dd66b14c5992d46705446c8607a3ebb20f5b238c62ae4ea6db4fb797597f261e",
+        "plaintextBytes": 8307577,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0128",
+        "sha256": "f59cfbbf52f4d9fdcf2c2cfb24b99fe5bdae4b3443d7230ba827659b337be432",
+        "plaintextBytes": 8096382,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0129",
+        "sha256": "b91beeb5619dbd41322b4f70df4dabdd258a9b26a4966d4b17dfd99ae07bb68c",
+        "plaintextBytes": 8158500,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0130",
+        "sha256": "f1ef8541093dc8a352654f502e1bdcee953dd05da7c041c42ced7f570b91fd2a",
+        "plaintextBytes": 8259768,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0131",
+        "sha256": "22c784313ba23606ccf2fc33f0da599276249e0ef1b1539f8d0d4bba8d80190e",
+        "plaintextBytes": 8284278,
+        "securities": 31
+      },
+      {
+        "stem": "canonical-dataset-part-0132",
+        "sha256": "2cc37a4b7e001198e6fa30f1890ae46bee42f8ff7a309cb53bbf2aa1587e475a",
+        "plaintextBytes": 8354573,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0133",
+        "sha256": "44b9f167ce0646ec3bf9b152697f97754ac4abc3a872e9543e7e41875550b4b6",
+        "plaintextBytes": 8350451,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0134",
+        "sha256": "6e0d0a4f196c2e442f01ab9f6e58b19810b7961e66f10b7fdf2b5d555b1e46d4",
+        "plaintextBytes": 7607732,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0135",
+        "sha256": "fda69a0c5bd5c396e5d32fec2041c995ef19e5fe2aec33c2285d89817451ac01",
+        "plaintextBytes": 8085315,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0136",
+        "sha256": "b7f753763616bdbb654cd47becc6b9a205c2d40eb84cc7441296ac9be62e9ac2",
+        "plaintextBytes": 8364587,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0137",
+        "sha256": "bd63e88f580a238208d23bee14f5dc9d5d6bef74f4d8c44382d675c821399681",
+        "plaintextBytes": 8276468,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0138",
+        "sha256": "c9a06bb6ba6d290d4d134269affac6ce98052a2fcb17e91939ffd76dd268fc07",
+        "plaintextBytes": 7848597,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0139",
+        "sha256": "442e19df217c6cb2234469ccb78202157c14d413d8bc138a0ce4f8d9139bd7fe",
+        "plaintextBytes": 7824898,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0140",
+        "sha256": "0622d76c7fdb2542ded0122edd115c6b5b72ef1f605f217e9f614a1abda6a904",
+        "plaintextBytes": 8042662,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0141",
+        "sha256": "b043cd4b3cb11fd3b97c6a76b4a07ee8649424da4c61ac0c6b694d672348bfb0",
+        "plaintextBytes": 8148995,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0142",
+        "sha256": "4c4485ec6f67dded7362604fe992cd9aea8cc15b6f42fe818e32f2ede3b9ea9f",
+        "plaintextBytes": 7982280,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0143",
+        "sha256": "3f03ee5ce5f5a246427994fb59f050748965740fbd836c98d7c0cd0b7735879e",
+        "plaintextBytes": 8256319,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0144",
+        "sha256": "44692304d21404222477494381b31b55f63978f99abd3a88bb5d24dd387ebe9f",
+        "plaintextBytes": 8366842,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0145",
+        "sha256": "67a3762c6e30bd075e8c83940ed1b09053a4e17bf149d29d9c21c8f845940500",
+        "plaintextBytes": 8286084,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0146",
+        "sha256": "6c2b938b3e1746cb1c17b1037d7926d9889a37acf9ccc188d18cc2a1d84c6bf8",
+        "plaintextBytes": 8156961,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0147",
+        "sha256": "55cadfd28d9ffdaf5f1a00e6780f55eae72697416241555677f7978908598392",
+        "plaintextBytes": 8307382,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0148",
+        "sha256": "3c931ebe8d0b7e23cbaa63025525e9ef69edf48ff41703c2b414b83ad3db6901",
+        "plaintextBytes": 8177013,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0149",
+        "sha256": "e608501679427cb749fe2eb0e2014f451e43a0e0c613c239bb9c9ee155a6aedc",
+        "plaintextBytes": 7586332,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0150",
+        "sha256": "d57745024055e263797deb7156b7b2f6c170bf3fc9930adb2f7b80509244a3ba",
+        "plaintextBytes": 8180052,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0151",
+        "sha256": "389a2adbc7e91fff86a2f1d74b4572ab8efe4f7c154164d3df980f879c9f43bb",
+        "plaintextBytes": 8088251,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0152",
+        "sha256": "0276aee9c100bf549e3860043998c6504e7b200e6ca566d53dbaf6b5921b92f3",
+        "plaintextBytes": 8205347,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0153",
+        "sha256": "c3b96fd70550d2e009c85772dd292ae782d8fa6210cd78d3072b988a2bd80e7c",
+        "plaintextBytes": 8170512,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0154",
+        "sha256": "2e68cd2d52b272dbead8fb7c843db589f0bc82afe4e4a93a68a50b776a604ac6",
+        "plaintextBytes": 7790029,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0155",
+        "sha256": "a74bcaef6234559f76c0773ad102a2d23fa3b8a04f0e58281a19f70c736bd9ef",
+        "plaintextBytes": 8342530,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0156",
+        "sha256": "2f912c15a84d8dda9686058e19f8300952915f30f6261b9dc1e3a456865a9929",
+        "plaintextBytes": 8275624,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0157",
+        "sha256": "0dc15b31d7c7de71bcc19f5c66860983dc254412a9973a9567edf96e7181933b",
+        "plaintextBytes": 8344723,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0158",
+        "sha256": "2186f9b0d88519aad6af08492bab479407c02fdfccbc3c85dc7a8569f19b9f8c",
+        "plaintextBytes": 8215753,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0159",
+        "sha256": "f6643d24fc317969d15f55280ab28a9c2e20cd1f4aae4d636c6031fa2d52a80f",
+        "plaintextBytes": 7680686,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0160",
+        "sha256": "2e835948582b0b303fc16453d550018e5eef51c6634d4f6f9ba368a8515cbdca",
+        "plaintextBytes": 8355080,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0161",
+        "sha256": "cc827de2bc36b878c2c87e2e3c6a1a23eff8ae254e524606e83f133974d3b6d3",
+        "plaintextBytes": 8151089,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0162",
+        "sha256": "5ce2ef3e4ff0a78a5110efbb241c99dc36204f3adbb62f40a9645c0e7858c6d8",
+        "plaintextBytes": 8335105,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0163",
+        "sha256": "e0ee0e90d5b9f3de07baab6170be0c5dbe89199037a063e8c18fb10b32317102",
+        "plaintextBytes": 8360877,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0164",
+        "sha256": "6734281a72d5a6486b28ec2e16fed27d299a463185f51600a06a6e97649100c6",
+        "plaintextBytes": 8341955,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0165",
+        "sha256": "2f14ee993be9e8bb1fab8b8d17e9b6ddaac1ea78eb10e3843832c61968e504b8",
+        "plaintextBytes": 7938846,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0166",
+        "sha256": "5b50601841bd63cf78c134d88506f48ae149c57f364a56f4556777b51fbb7964",
+        "plaintextBytes": 8038671,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0167",
+        "sha256": "c0fce17b63f4ceb8de5a76d676113e4878675cbc59e51395c508996a98642d66",
+        "plaintextBytes": 8236349,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0168",
+        "sha256": "495e105823dfeb67f6436aa24899a819d7c99c51a78e4a5ce3ff6a1e4a9d8a6b",
+        "plaintextBytes": 8302406,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0169",
+        "sha256": "b2ba03cd35c955efa3883dec363f64ca0e9b916a9e4b9e4b76104d5b3d8ff6ae",
+        "plaintextBytes": 8063788,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0170",
+        "sha256": "19581d7bda65b6be59295ff8fea2b4d3a1bf863f0ae37d65d33af9e01485f08c",
+        "plaintextBytes": 8299535,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0171",
+        "sha256": "887c530a9cca747785c1ab5c664d896e1f0be11a61bc54184528ed482a902ddb",
+        "plaintextBytes": 7957055,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0172",
+        "sha256": "584cd81323da458ff2bac941475e21ffdea55acc7851b37766579fb9928a6950",
+        "plaintextBytes": 8148275,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0173",
+        "sha256": "88ff4b77228e65ab0d7d1ab66270ca73425a86ea926f8176eac575f446ea1175",
+        "plaintextBytes": 7682645,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0174",
+        "sha256": "6a0c36e11cf4f612bd7088c11950b50db50c57bc8ddc13bfcfa139a4d6c326c4",
+        "plaintextBytes": 7881669,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0175",
+        "sha256": "8e2ddc96f8684db7238a9c65b92fbaea9acfeb947658604aabbb640e2e47bdf5",
+        "plaintextBytes": 8312803,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0176",
+        "sha256": "cdb4fff28d4c9fa123e48636087ae1645925b60333273d2c925742e57cd738df",
+        "plaintextBytes": 8317945,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0177",
+        "sha256": "5a50ca392d5a57ea271a2b24578ebc4301b81083895ab06ad8458244394668f6",
+        "plaintextBytes": 7914237,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0178",
+        "sha256": "12aec080e911a5170e844fb8f7f12ad74b529f0715bb9011c8ce54510e674ffd",
+        "plaintextBytes": 8127753,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0179",
+        "sha256": "b44cf2838cd312da532fc6b0aba08a5664e3366ff0d54ae4b297204fe2525443",
+        "plaintextBytes": 7904846,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0180",
+        "sha256": "6561d444f0bf8dbbe8aa1f44d2c67ac8bb3b9a91ba263d8909df73f67dfacdf5",
+        "plaintextBytes": 8230970,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0181",
+        "sha256": "79fcbe8c54f809f627fd7d88007d5f97d91c58b7391394fb662ff136d29f379a",
+        "plaintextBytes": 7793690,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0182",
+        "sha256": "47f31b15661fcfa8c0def805a0a859d8f734df51808a34002b4dd3cc0a198b63",
+        "plaintextBytes": 8108093,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0183",
+        "sha256": "c8f182fa0dfd4f11ceb40912240f2e9089f35bf1b7a029f6642318b3b82149bd",
+        "plaintextBytes": 8346657,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0184",
+        "sha256": "5c96331d15864d7f68e8a6e51ca308f10bdd31b76b75ebb0daeb0a77ea9da8f5",
+        "plaintextBytes": 7916727,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0185",
+        "sha256": "d752ea7f00871e09d4c3c03062217b0b525e3dcbf7f10ca7265731edf7b1680b",
+        "plaintextBytes": 7689802,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0186",
+        "sha256": "a4a4d178c07e9830a509c58762aa57914b1f7ec64cbf4e1e8b5622edce11d204",
+        "plaintextBytes": 7885877,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0187",
+        "sha256": "02dbd08dfbedae0c83d1cff3bf70f08469147518b5c8df90e4781bdd0a7d8863",
+        "plaintextBytes": 7690098,
+        "securities": 11
+      },
+      {
+        "stem": "canonical-dataset-part-0188",
+        "sha256": "c8157b67b8078f7208a8cc098baf0065d2f1a856612197b0ce3006f0f86a3b40",
+        "plaintextBytes": 7765808,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0189",
+        "sha256": "476bd61df7d835186e29cfa0bccb4afc17b9609e340e0de1eea1bc0fd2173745",
+        "plaintextBytes": 7937661,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0190",
+        "sha256": "fa18e41b51c57b9ff7453f95a15aedb38da6801b752933c5f0ba0e934a4dee19",
+        "plaintextBytes": 7786992,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0191",
+        "sha256": "a1000349f92bb366323a32d5f0f67d96a7ebda940f4a587700544f528e07b9c9",
+        "plaintextBytes": 8301218,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0192",
+        "sha256": "a4efea37b24b51c435db6fbc782e182a65c1b80994f90e215602b11a8487e908",
+        "plaintextBytes": 7717662,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0193",
+        "sha256": "8c76f2e88debc2050c2f43879fed3457f83dfb3e0a634b808f344246ce1655af",
+        "plaintextBytes": 7749934,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0194",
+        "sha256": "bbe6feaa97437e19baa6a1ac00c3cbbd7eb2e2e0ff9b03be10663ebe32016680",
+        "plaintextBytes": 8024561,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0195",
+        "sha256": "06f80d53a6d5000a7469f71828ccd54ee850c553c763b0c992afd7121ffe33d9",
+        "plaintextBytes": 8260228,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0196",
+        "sha256": "b2681a90a5b8786bdb9dd0edcd0496684ca41c7aa946b9177ee07f38f7ad4ec8",
+        "plaintextBytes": 8231968,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0197",
+        "sha256": "c7a991fc97e7ef2ee1d733b314e1ab447f85273ea5a19b0ab4d4d46e6e35efc3",
+        "plaintextBytes": 8158385,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0198",
+        "sha256": "0f16d7dbc21e49ede7283820d1e42ee49eff9855c9ad3b27cad197c911f6dc8b",
+        "plaintextBytes": 8293296,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0199",
+        "sha256": "1f63c4c3d945dc5f2e794c2c9fffdacc7006cbb296286316fbe27710368a291a",
+        "plaintextBytes": 7948470,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0200",
+        "sha256": "ed9d8604cfb41ae7d4e2eedc4b16052afc855112adee7716c128161e3d3790eb",
+        "plaintextBytes": 7950641,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0201",
+        "sha256": "0f65164c16a72c32d6cba7a5ed2c751c97bf7c0faa6ad0b3e0b5be0eb33ca321",
+        "plaintextBytes": 8334791,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0202",
+        "sha256": "ed988fc5d2810b88f2bc0dc2528f23bff39e90b601f7f3cba433e2a3615fc52c",
+        "plaintextBytes": 8275456,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0203",
+        "sha256": "286e500f747229f513fcc42c1322044c920e4ba500ee51f158828d6ac1cc42af",
+        "plaintextBytes": 8177175,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0204",
+        "sha256": "b898358f369a1f5e34e663e57b57d6ad2a8069060ca0a4a299e5e2b1c58d67b7",
+        "plaintextBytes": 8300261,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0205",
+        "sha256": "505d9f96740731b7511e031b881d89361b5f676c408a53a326212aea2d703326",
+        "plaintextBytes": 7755885,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0206",
+        "sha256": "d5d57b9207cd6867395a6ff6025ce11d267a91b0305f24987f3cfbe35a351d94",
+        "plaintextBytes": 7763238,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0207",
+        "sha256": "09da1bbf89594701f34eaacdace71172ab925fa9afac4cd6e92b08702bb987d2",
+        "plaintextBytes": 8348759,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0208",
+        "sha256": "c9310c2aa88e2e0be7ed06e9dd286d422558dba1b9d8a6699f0b53f56604e580",
+        "plaintextBytes": 8040186,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0209",
+        "sha256": "45f63b22ca1bf586e9356e8960a97e99f57e90a777e611724c6be7fbd6878a9f",
+        "plaintextBytes": 8310961,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0210",
+        "sha256": "44a23801fa49b7072047c497790d4b3409222694a553bfe7f94bde6b7acdb4bb",
+        "plaintextBytes": 8144409,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0211",
+        "sha256": "41fc4f466c1d2e3c67ec97ca5e61d89416c75b5dfd25baf699cc9201020c3764",
+        "plaintextBytes": 8005497,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0212",
+        "sha256": "cb4e8e0d1fb13da2f2e3bba43133f3b80af6aa4759a798e3ac2b1b0b2f6945ff",
+        "plaintextBytes": 7926086,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0213",
+        "sha256": "5677479f640a844ffeec77b82bf382c5429891c6f33dff3db7bc2ef384b93e85",
+        "plaintextBytes": 8074792,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0214",
+        "sha256": "dc5fa3d5e64380ff7983e20e1979e3959bb5b65f9554cc63a232575f529d9fdd",
+        "plaintextBytes": 7713774,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0215",
+        "sha256": "df1ffae52b868d24d0898a38a201982f149cef6a0e2851f3d1e74819a65d30d8",
+        "plaintextBytes": 7802275,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0216",
+        "sha256": "6f4e66285c25d88bb5c1a2fd5ee5aa274ce185e86ccae9258114284db889c65c",
+        "plaintextBytes": 7582515,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0217",
+        "sha256": "ffbfbd2d5ccc7d4a6c90e46cbbb48fa26b1dd00c38107cb8a9e4d0db28bac7d5",
+        "plaintextBytes": 7744284,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0218",
+        "sha256": "f784fc9f8067bd6a436305c81dacf1e8fbfb307ff387403e5d3475a86d861af1",
+        "plaintextBytes": 7894799,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0219",
+        "sha256": "9bedc675c35d9abcad6d992f2bc2f6727acdcbcaaa1380c67faa0ec07a41ca8e",
+        "plaintextBytes": 8206577,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0220",
+        "sha256": "398f05d6a2626b0624e18e7566d038c4d0989dc541de8c8d48e52f079d7f047c",
+        "plaintextBytes": 8226258,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0221",
+        "sha256": "cc362c9e3180bf42f7868d31d3bb62e74bc7460e2002d0e1cb360d762035d631",
+        "plaintextBytes": 8371358,
+        "securities": 28
+      },
+      {
+        "stem": "canonical-dataset-part-0222",
+        "sha256": "efed08d52ba3d1bf72bb4a27b5cd5752d830f204de703a5166aaf0676562d88a",
+        "plaintextBytes": 8162213,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0223",
+        "sha256": "6db29fc7ab1d503377062f1ce9dc7042cc2a463c595a5ddc90e948412c4b37f8",
+        "plaintextBytes": 7669609,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0224",
+        "sha256": "60f952bde9334d440d595f2f7de36d08e1ed9717d8dcaf4b21be7aeb70a4d412",
+        "plaintextBytes": 8082199,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0225",
+        "sha256": "599aa59e1ce6e9aa0aa06162cfb7a7fd3b903f787d4c339b0c126ede21738f07",
+        "plaintextBytes": 7950414,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0226",
+        "sha256": "f6659bd9ffc32273ca52b8aec48c289e032483c1fb4c0f9a6dad0d94c6b161b7",
+        "plaintextBytes": 7920638,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0227",
+        "sha256": "b10427e12d8bfadda71fd4862d92657466183de81d4b9355e55da47828125e9e",
+        "plaintextBytes": 8195754,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0228",
+        "sha256": "94dbf2010babcf22f8e6fbd60cb2a097af72e54927907efc57b4a1ff07c6389a",
+        "plaintextBytes": 8279783,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0229",
+        "sha256": "56e7a6b67d3ecbcfb03059e308311bc8d6433fe25e91a9d6444d730d44475abd",
+        "plaintextBytes": 8157286,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0230",
+        "sha256": "6841fc04a5a203b4164d541b2a51189be3aeabda95799c0e4ea39fd57d102479",
+        "plaintextBytes": 8286322,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0231",
+        "sha256": "39bfe38a66a8696dd5ff5c261311735732004f63d445c15cbea5c66825c7026c",
+        "plaintextBytes": 7878188,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0232",
+        "sha256": "c1e2ad1830c054381928885ef1beab9f16eccff4203c12dfdf21c5afd6647f23",
+        "plaintextBytes": 7909816,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0233",
+        "sha256": "67e00e11bad9cc180f660c5482a7ea10605be2fa687b1d365a81af28da8f3e9a",
+        "plaintextBytes": 8172384,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0234",
+        "sha256": "c9ba4560c884f859ed40556219e49d645f0330c13f1e3db0afa34f5a375f6612",
+        "plaintextBytes": 8224561,
+        "securities": 27
+      },
+      {
+        "stem": "canonical-dataset-part-0235",
+        "sha256": "437b9fb74b92c3da663a5dfdd60b63fbc51b5234b23c54dfccb3804c4a517325",
+        "plaintextBytes": 7985453,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0236",
+        "sha256": "94c8658a546e079ef35427d4fd54681fd1a6e672ca5ac8ec7fdfa7f9c278bd2b",
+        "plaintextBytes": 8280956,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0237",
+        "sha256": "580fd327e0121d8ac8c1e6a0066bc480680b42127b7aae9a09d14a3e20deab45",
+        "plaintextBytes": 8325064,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0238",
+        "sha256": "868e6c72879fa825fdf37a7e01fdea1cf7ba78f56c8893e079f60b1bb45a6304",
+        "plaintextBytes": 8370881,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0239",
+        "sha256": "c99a290b465e6969505af87d93e7c105e7c219433f8faf9879a848795f8ba889",
+        "plaintextBytes": 8001225,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0240",
+        "sha256": "888991be2fbcb97358f950b5a4236216efe64f15d3e705199aadcdefda53732b",
+        "plaintextBytes": 7677903,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0241",
+        "sha256": "072c1b083e0ddf907d9f8ef01bad668e460c28749d5caed59e3fbff67a5fad75",
+        "plaintextBytes": 7601206,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0242",
+        "sha256": "918bdcca4234d39b0035dcd1ff249457b3baadbc5e770c2156e14996a5c7f60b",
+        "plaintextBytes": 7755051,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0243",
+        "sha256": "d82f4072c62795a0bddd72813fc8208bb8cdee70c837001a0f78ac530deb32db",
+        "plaintextBytes": 7699949,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0244",
+        "sha256": "f9cc8b486a2398b447aa85ab5f8489e34e3b55be6e360402d0d7fe0e7e0246b0",
+        "plaintextBytes": 8109363,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0245",
+        "sha256": "37c39f6985274d85150e9e67e26740681da053ed911beae0ecce26a7674a0fb2",
+        "plaintextBytes": 7569845,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0246",
+        "sha256": "689d58f897001fd719bd0a033c8e3d578ed5408493f94a5aa28015ecbdde4b50",
+        "plaintextBytes": 7675458,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0247",
+        "sha256": "bd025c502954ce5d6e9332c5e69c1b4b0fc9c162e40a92a904a1b599bdd04a78",
+        "plaintextBytes": 8269740,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0248",
+        "sha256": "6c1dd9fab4fa6d87338c0c5f9bca52dceeba90cb42967dd5f4126baf35128d51",
+        "plaintextBytes": 7984590,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0249",
+        "sha256": "5f4307b333b5df228cd043773157658bbbed5cc3b3c380056879ac0800c3d668",
+        "plaintextBytes": 7731380,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0250",
+        "sha256": "a6913dbd3dc070a91c4607bb135953e8d2f15d250acb27e38bb1f579e688e159",
+        "plaintextBytes": 7888262,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0251",
+        "sha256": "2ec7d4a0a825b7efa4e56e9d71e1c27692a761a43c8e58a2274bf8f93e4caec4",
+        "plaintextBytes": 7987944,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0252",
+        "sha256": "44efd27129cd88c5397b912821346f39472700a7df4c5c57fd2646105ad903a2",
+        "plaintextBytes": 8369692,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0253",
+        "sha256": "a349c295f17286928573d826088871045626eeea415c8595b92495974fb62583",
+        "plaintextBytes": 8040528,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0254",
+        "sha256": "b2a7f3911e02487ac4b9d685eb0839719f0f3481cc8a25a5f12ead853250c7f1",
+        "plaintextBytes": 8326020,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0255",
+        "sha256": "452515fd0b71839ca9e04566d6cdcb1400ae835be230978f8b5f4050a92d474f",
+        "plaintextBytes": 7897406,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0256",
+        "sha256": "780914997decac03e648695109c93509eee60fb8636ded2c5ed22939550472cc",
+        "plaintextBytes": 7781073,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0257",
+        "sha256": "d151c0d423f7a63bfec43fada643e161ab4d0171d0a9efd8ba0654dbce2b994c",
+        "plaintextBytes": 7801974,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0258",
+        "sha256": "0bc0f71132318591ed4765c1a4c738130787b5a73b7fb91b1a34cb5bc1e9ee85",
+        "plaintextBytes": 8335685,
+        "securities": 26
+      },
+      {
+        "stem": "canonical-dataset-part-0259",
+        "sha256": "3cbf2cb003e2d487d3b9e252b9d0cf1f1365ecd3bacba379aa0fc986b53f4299",
+        "plaintextBytes": 8294057,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0260",
+        "sha256": "8d3b3acab08599914809c02a65c55f47fffc64daa48522cd4ffe235aca82b3eb",
+        "plaintextBytes": 8345008,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0261",
+        "sha256": "6ddc4155be028712cba9e7839ec1051c8467879c9cf3f24dddf66472299499a6",
+        "plaintextBytes": 8060256,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0262",
+        "sha256": "33ede042ecb7a202dd8972f77cb945a67088a37e95cff2dfe6a61d97c95352cf",
+        "plaintextBytes": 8311468,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0263",
+        "sha256": "2985203d6838bc0fe01314597aadfaf66809a73f60bbd524e8294a1ff9714c73",
+        "plaintextBytes": 8316952,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0264",
+        "sha256": "673dfaa13f9c7b20d1f471be59754ca43237b682ce7640227797cc5b66ca79f0",
+        "plaintextBytes": 8028800,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0265",
+        "sha256": "0d40047cbd4188d7372936df5605e5b759be12e532a88d14630b8fe6859bcc13",
+        "plaintextBytes": 7813042,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0266",
+        "sha256": "592c4c71fbd4a379fc3cb15f148d0d95493025b3fcf191f57017c0fe68049890",
+        "plaintextBytes": 7821732,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0267",
+        "sha256": "f1a245c6ef66ef3bfe2409e45be63484ee644fff4de5f9875670421917fc4744",
+        "plaintextBytes": 8125253,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0268",
+        "sha256": "7a4eb373c2522c17b1e8357c01960779af2b685931a799dfcfa8198eef330cf1",
+        "plaintextBytes": 7854273,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0269",
+        "sha256": "3d14f85cffcecc3fbc3dd7b82c3cdb0f70d8ec185304704566943ec40755397c",
+        "plaintextBytes": 8001302,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0270",
+        "sha256": "93d5618bf369a8f2b017e16bc64bdb21db54fdff2ffa5df9731c2e8185e6e922",
+        "plaintextBytes": 8245250,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0271",
+        "sha256": "405cf5bddea1ca04ce24a9cbf18859c63e00c1031ba1ccf366261c5cb00b5aba",
+        "plaintextBytes": 7777974,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0272",
+        "sha256": "9407d52f3b5d5556978a79a110ffa8d413b05f1de6f7e90c20710562a6ed2451",
+        "plaintextBytes": 7712212,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0273",
+        "sha256": "eb8ddc97c0958fcf568824a643e9495cacb9ba245aaba9c76d55735786f24257",
+        "plaintextBytes": 8329994,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0274",
+        "sha256": "97007af90bdde7381434e6fcc05ab7d08b90880ff23d83495f35ff98277faa3c",
+        "plaintextBytes": 8286521,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0275",
+        "sha256": "0f1cab9d73c359a948c737d1a4c968a22820d72a6a30bacf5d13972d2a1184bd",
+        "plaintextBytes": 8102535,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0276",
+        "sha256": "e481e6959b8931009895900d431175bbbdfc45e4b526e32250723d4b778160fc",
+        "plaintextBytes": 7964968,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0277",
+        "sha256": "b0ba9ec7c0be7cfbc269fdbd0c23e45a0288dde69fe2b5ab268330d9ead02cb7",
+        "plaintextBytes": 7767598,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0278",
+        "sha256": "ffb75e11fe6cf7875ecde14f4c785ae5585079a89061ef4bcc5bd408a46a6d0b",
+        "plaintextBytes": 8385688,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0279",
+        "sha256": "587dfbc16d39135861528be8837f8c7da21eee6d5e07c3dcb1bd5c7b9feb9032",
+        "plaintextBytes": 8082879,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0280",
+        "sha256": "0e0bb249f0716f0174dad270af3d2f857f5e6115b144aa29cd06bf5930e165ce",
+        "plaintextBytes": 7835446,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0281",
+        "sha256": "c231c8adfc8f767511f2141837a4c2ec397e3a80ad49671a67e56cb45c502eb7",
+        "plaintextBytes": 8180171,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0282",
+        "sha256": "847ba1c9310b579e82ad82e3215f4b3bfa71fdfd3c32bc0cada9ae667c9b4bb3",
+        "plaintextBytes": 8118045,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0283",
+        "sha256": "d0fe321877f4b81bd8bf010274b66cc144d6bda51fc019617d17ab0a30bb6a45",
+        "plaintextBytes": 8334416,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0284",
+        "sha256": "91f6e18490a208c26272252e95679c3e1c5198e364927818332e3f4000087218",
+        "plaintextBytes": 7888692,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0285",
+        "sha256": "5bf23d125a08c1c6341d5f2700d4e7f498d33c156be165ada159b7f12638f22b",
+        "plaintextBytes": 8306685,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0286",
+        "sha256": "37f915e9699c243f97bd80cae5d1b753738613497890514b3615f2306102b93c",
+        "plaintextBytes": 8056251,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0287",
+        "sha256": "873ce725b693d7fa4af18d531c9b62acc71d4de86353659c68dd9eeac671834c",
+        "plaintextBytes": 7868556,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0288",
+        "sha256": "201bcbcbdb0936c2ea485b2b9267598c5565a42d4b4b5557dba788a04117ea3b",
+        "plaintextBytes": 7808830,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0289",
+        "sha256": "cd72bcb43ea3a4f7b349fac1f7c1cd39e7c53e483c460ac91b5cf0a3f97c6dce",
+        "plaintextBytes": 8372586,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0290",
+        "sha256": "77d42d04d20cc8268c315206f051bc3f5fd3bd05dc93852e065413c69f6fae6a",
+        "plaintextBytes": 7834459,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0291",
+        "sha256": "e3395f8ec9623ad2099ae1140ce0d76139f570cf60e97e4dd4f00c354e5c10ed",
+        "plaintextBytes": 8298479,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0292",
+        "sha256": "6d5af509558f3e4dc0d5a5abd14b57b8eeed206b5ff69e4138d8002b90248d39",
+        "plaintextBytes": 7991893,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0293",
+        "sha256": "396d50f346213270d098b1696f2d5de3583c388857e6451a2d4b4187f1099990",
+        "plaintextBytes": 8337574,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0294",
+        "sha256": "16a387aecc6ae6263ee94751385f5f61dd0387a01ad60bcc448d6445783b71ee",
+        "plaintextBytes": 8068716,
+        "securities": 33
+      },
+      {
+        "stem": "canonical-dataset-part-0295",
+        "sha256": "1656f4442eb4fac12babc8f751668d6a2013a0ffe09ba6e6a90316593f08dfe4",
+        "plaintextBytes": 7763307,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0296",
+        "sha256": "5b8dcb8d81e829245b5aa70ef633a20a244254b573e8700a236f51148453f881",
+        "plaintextBytes": 8211825,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0297",
+        "sha256": "cae75981d7ec7e61ca67ac8982267d48f3806492e0248cc973a9463cc5f36481",
+        "plaintextBytes": 8145181,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0298",
+        "sha256": "c65b3bcf723e14f6fe53ca721426fcdeef04b11202c60ef8f782188d4f5c1e11",
+        "plaintextBytes": 8231138,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0299",
+        "sha256": "07df12d39728355f910d2bcb12e7fa3063086a34d490670d1fffe4b65e13728a",
+        "plaintextBytes": 7897352,
+        "securities": 28
+      },
+      {
+        "stem": "canonical-dataset-part-0300",
+        "sha256": "6ff7d4640e385e5b768e56327b438256525520b0baefc3abf61e6fc98f566f21",
+        "plaintextBytes": 7929372,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0301",
+        "sha256": "2cd51496d6f03964a4b8b969526d27a9c83427f31adf6b65cabc6053ba18d28d",
+        "plaintextBytes": 7794667,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0302",
+        "sha256": "e4227deaa4d3623e8163db24f819dbc96dbb618e38b2275eefd1df806a77ce7e",
+        "plaintextBytes": 7706259,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0303",
+        "sha256": "afc96c09e0b28905695c97019bbe0907ea46bee4bbb91bafe3130c0c69647457",
+        "plaintextBytes": 8233347,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0304",
+        "sha256": "de2e44494244f381466db88fa15b9b5af8ea8a75d1d90a91311dd535775edd25",
+        "plaintextBytes": 8167150,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0305",
+        "sha256": "cee2ac81ff9a1a28c1449317a18ea55c50466cf8d46978ae04385be3e30c5da0",
+        "plaintextBytes": 7896975,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0306",
+        "sha256": "702f013ce3d947fc183664b4110f7b8502baecce7ae1982ffa9b29e277c044ad",
+        "plaintextBytes": 8257051,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0307",
+        "sha256": "c9fdf76eb74d014906aff9248a2fc8bbb03e37f33b1e8483b272a586ee0d336c",
+        "plaintextBytes": 7914605,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0308",
+        "sha256": "f8c569535cff1ba1f80052ec1c0ebf64e8992aa7bd7c9202f4ff861a2f2ed9a4",
+        "plaintextBytes": 8327356,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0309",
+        "sha256": "eded2fcd1a10d5b618604ea1fbffb39339793d5528416641dc76fdc24136663a",
+        "plaintextBytes": 8085318,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0310",
+        "sha256": "675d187c85a19b1771b1e46515a28778c266fd8d9cdcc3c979c75e8337b2f1ed",
+        "plaintextBytes": 7897127,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0311",
+        "sha256": "4b56a2f6193d300e291c2260f9d6215f7a7ac71156651b910bde1177953ed111",
+        "plaintextBytes": 8376449,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0312",
+        "sha256": "5447ae441f6084caa7d064f30644ba48ce8a4df58a352012475aa05987f10c27",
+        "plaintextBytes": 8083235,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0313",
+        "sha256": "d4b14cb002e46aec07bc951107fa3feabfc25e3eef17e3530ace8cde8c46fa25",
+        "plaintextBytes": 7642097,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0314",
+        "sha256": "343b876eb0b1275cf7d2d06438a7b4358a45c28ef11a2f5633252839b1efabb8",
+        "plaintextBytes": 7754189,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0315",
+        "sha256": "627bbb6ccf0fa25f1f97de8f431dbcd8a547f58cd7bbba35451e0fbd650d9c10",
+        "plaintextBytes": 7620417,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0316",
+        "sha256": "d5b65560eb5881f2b2a01cff2f7ac99ec2037dd046e5e6f855c485f6caed7178",
+        "plaintextBytes": 7906366,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0317",
+        "sha256": "7aca7b1902aebac018f93e9601c09b15363527ea3a2300a14bea38b7b156731a",
+        "plaintextBytes": 8149117,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0318",
+        "sha256": "e4298ff05c3489e1619ea9b7c30c3570531e4089a459c1a364c1cf76390ad889",
+        "plaintextBytes": 7765786,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0319",
+        "sha256": "a21ffd8c59778cc62d4ae6944cea2aa73c4023e05169f70bd6fd1302bfadca1c",
+        "plaintextBytes": 8228360,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0320",
+        "sha256": "dd420d48a4427773010c4a923c725a8e701ffd2b92485f2987506d77073e891c",
+        "plaintextBytes": 8370074,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0321",
+        "sha256": "52bb7a1f9dde8e1074b103467a90416daba94a00c3ee1bc47d5101e117f55ac8",
+        "plaintextBytes": 8047355,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0322",
+        "sha256": "8edddd8fb1a82d54aabccced94675d2c4f0ca735fddb0972bb7d78bbd6105b14",
+        "plaintextBytes": 8004809,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0323",
+        "sha256": "8a336e5614c360d9af01fb691ee185b90e45c2e279eefb23479cf0b35ad89053",
+        "plaintextBytes": 8031773,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0324",
+        "sha256": "71802bd6685fb401cfa0d30c7aa02ff2782be815fd6174f1beab47dbd8b5252a",
+        "plaintextBytes": 8387957,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0325",
+        "sha256": "dd5367328e17a3721a81ce024a22605efa7bc365a5049baf8835e1758ad2743d",
+        "plaintextBytes": 8071743,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0326",
+        "sha256": "18e8b886fe362722f448f45e90f90942f40691aa05c8953355dd8acd1a400c62",
+        "plaintextBytes": 8134847,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0327",
+        "sha256": "45cfc1934f222ef5c73f7a2209560b99147dc19db18f3bdfd33e8993eb9f8355",
+        "plaintextBytes": 7960676,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0328",
+        "sha256": "e9f650b9cec63e625e2aac87e01ebeb3a2d720338d7ec12979a639982191e6dd",
+        "plaintextBytes": 8143697,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0329",
+        "sha256": "ada676d9ca4bc7d75bfe6a6ef2b50016454eed0b2d740d1e2ce96dba41015c87",
+        "plaintextBytes": 8316771,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0330",
+        "sha256": "448b2bac883a3aad6a1c1a9ea6baad1d6e58a571c6548318aa0565b3c0286b61",
+        "plaintextBytes": 7899879,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0331",
+        "sha256": "f74a2aea7374aa6c140eb6e3e35ac1b21d5265e2aae34d178e822d4a3f3a09dc",
+        "plaintextBytes": 8051422,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0332",
+        "sha256": "4611e14b620cebe73a7c85a60177d8b8cd2ae7969bd2b927222ed9d2955cd8e6",
+        "plaintextBytes": 8040997,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0333",
+        "sha256": "266b6828380fcc1e7d5a94114b27fbcc8133e2f7d88e2b026e7c01e58c2e885a",
+        "plaintextBytes": 8341793,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0334",
+        "sha256": "b1f07211dacba93e8b7031c942a410b43ac89c15e2dc9e74d1406c6e4b0c45e9",
+        "plaintextBytes": 7633728,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0335",
+        "sha256": "ff45f7db659217bd9de56aff19dd324389ade3905f87ad1ae561493bcfe99b9a",
+        "plaintextBytes": 8237781,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0336",
+        "sha256": "22320eafeb6181af4649334bed3616097030916b2f15aeeb22ba65e6076bf5a5",
+        "plaintextBytes": 7930707,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0337",
+        "sha256": "6eb24d9d8e19e0a2e017887314683eba1b0924dd1790ede2d6c01fbb3d9b738b",
+        "plaintextBytes": 8193752,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0338",
+        "sha256": "bc2d17efb112153000f14b4393c5296d9d52e29dfb91a11fe612f24a3661dab8",
+        "plaintextBytes": 7997263,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0339",
+        "sha256": "da79ac196d2eaadbb948b9df391701e846c417e3b18892254f668d06f49cb8d0",
+        "plaintextBytes": 7980447,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0340",
+        "sha256": "956cccb95aa7e95a8fd1c99d297897fd687538cd5412e8fcde00ebace0f5ee51",
+        "plaintextBytes": 8167396,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0341",
+        "sha256": "fb119262bb797cd22697f2de67777d81559da44308dfceaa008d2c072223a92d",
+        "plaintextBytes": 8170387,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0342",
+        "sha256": "5ab713ab65583ce8c4f2765dccd93dfb3b3492aecd86cd1827842d91a41c0606",
+        "plaintextBytes": 7984314,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0343",
+        "sha256": "428251aa6bc16bf6e2261ae247933aa806f4eada8e2613c6ba7a209967a48dcf",
+        "plaintextBytes": 7802896,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0344",
+        "sha256": "d969a0450b15b721de9b3d5b45f03386052831b46bcdc92e0bd5f43b5e275670",
+        "plaintextBytes": 8130453,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0345",
+        "sha256": "40ab319324370ecce19049e26f562894c3e516ec012b206c3ac88e1a701cb214",
+        "plaintextBytes": 8294660,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0346",
+        "sha256": "b24735b32512e4776227a9c3203d5d889605beebb03c06623a35497642c665b9",
+        "plaintextBytes": 8270458,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0347",
+        "sha256": "89b729bd7dba9aeaa334962fe90d5c61748466155bbfde19d793161c53a0e349",
+        "plaintextBytes": 7916210,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0348",
+        "sha256": "f7b4675a1f7d102901fc97ffc7e7ef7e95bc78153dd28917f700263c28a6a4d0",
+        "plaintextBytes": 8264643,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0349",
+        "sha256": "e2351bc669c95c87b31b87fb83ea5435827009c999dc6b4def0b7e16e4bfe8b9",
+        "plaintextBytes": 8260011,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0350",
+        "sha256": "91915da4f4ba03ef15670ab9843dfeb5c9c2820a64f9961fa95b782004088eaa",
+        "plaintextBytes": 7801433,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0351",
+        "sha256": "ac9d3bf68e546017c60dfb7890355112b2fbc3e65ed3ca61b394199b96574903",
+        "plaintextBytes": 7661798,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0352",
+        "sha256": "9550cf67b7876f4af089cae7f125c9039ea3557ce45b095a2ccdfc756c454747",
+        "plaintextBytes": 8014173,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0353",
+        "sha256": "fd2ae3b3e7ad684f41a32330e724213ef5660bd607b5002d290c4ca87499c6b9",
+        "plaintextBytes": 8017966,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0354",
+        "sha256": "5e2ea9a0521fef7ad750d3ba12d4dbb3d784cd74e8a3481c4fe6c64b531a9c0b",
+        "plaintextBytes": 8095942,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0355",
+        "sha256": "d4f5f37baf1ca32485303585e50adc7f3844034ff6c9cf19103c03b6466d2c70",
+        "plaintextBytes": 7875467,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0356",
+        "sha256": "8edb84f1400e1aad8c7086698f4ab1852760072b5d1eddaa0ab4a66e9f2a623b",
+        "plaintextBytes": 8086148,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0357",
+        "sha256": "6d19889a8bb6871b1667ba44068281e8dc8c795ccf1e9ba4201f40ba6fb06954",
+        "plaintextBytes": 8000188,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0358",
+        "sha256": "f11283a3078ebaccee1520cfe2e9dd9e07a2e35d366f298512e3d3df4cf2a4a7",
+        "plaintextBytes": 7977804,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0359",
+        "sha256": "17a84b8d8d886918570bca55dee9931093c06a4968f17fe0657e8ee4f6ce2846",
+        "plaintextBytes": 7781842,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0360",
+        "sha256": "fe120454ed3ab7007d4eccd91467d8309b40f069173847f2f3aff154abd67459",
+        "plaintextBytes": 7868466,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0361",
+        "sha256": "08fdc7ab95f98cfcbd03c32a9df96cb446c438718257cde8f83379745936732a",
+        "plaintextBytes": 8352402,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0362",
+        "sha256": "31790c132bf0f6a4f616bd4bafb6da02d5e105a8f5f375af8476d9a28049e930",
+        "plaintextBytes": 8094621,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0363",
+        "sha256": "e887090bbfb0aecd48ade54693ccf5db2bd89dd8462913f3b508b1f61192d1f8",
+        "plaintextBytes": 8042600,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0364",
+        "sha256": "c531a9161d9567e59a6d74e423ccc3eeb1784330439e8035c2922ba7b89f18e5",
+        "plaintextBytes": 7737491,
+        "securities": 24
+      },
+      {
+        "stem": "canonical-dataset-part-0365",
+        "sha256": "fa34067464a4cf68f7349ca1c68c62da226b59231bae11b559d71231052348de",
+        "plaintextBytes": 7817806,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0366",
+        "sha256": "9adcfcc629ba82c47f9ffc78d034523cac63649aaf0b176e590e24df13b7c5c5",
+        "plaintextBytes": 8271892,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0367",
+        "sha256": "9b362f0e84ceb64fa1c931ec8b599f63cecae513853b765ea3ea33ed171ebeb8",
+        "plaintextBytes": 7942694,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0368",
+        "sha256": "d18f8e9b918747d8e3ec858400be495acd2e84a3f0ca233c64cee298e7518215",
+        "plaintextBytes": 8034556,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0369",
+        "sha256": "8436dd1f3c494d994740b66e618323ab5528354aa549f78935d96f59c9370e78",
+        "plaintextBytes": 8371835,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0370",
+        "sha256": "6b86915021f896c76002a1111e0b9c9f406dd9722d41314bd52210c9b89155d5",
+        "plaintextBytes": 8083832,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0371",
+        "sha256": "f70534a8797e04cc08c0f8837c7e02b97405fa19235da3f02c13b04ae8e29cce",
+        "plaintextBytes": 7784789,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0372",
+        "sha256": "96c2cbc11ef0a9d905e5a63d8864f1067c7ca5873ccab8096f24fff18a0b1fb9",
+        "plaintextBytes": 8300185,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0373",
+        "sha256": "2fadac259f9be18959822be2fc06dd21710a6eee80c7797c9c4770d657b0eac6",
+        "plaintextBytes": 7680174,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0374",
+        "sha256": "5765b2d704894566a2aaf957a8c56e4837b28c99cbc81832d7ba3f941c1bb541",
+        "plaintextBytes": 8304089,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0375",
+        "sha256": "a0c230af3552fb925e7dbc8e5e052b848c356f9dd9deea1c772344bab241f386",
+        "plaintextBytes": 7973641,
+        "securities": 27
+      },
+      {
+        "stem": "canonical-dataset-part-0376",
+        "sha256": "ec1347ec3586d1b1af4a30ceec34f0e9b22334f588a3c88ff9adc112d68ad838",
+        "plaintextBytes": 8358295,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0377",
+        "sha256": "58712099a03f3c59f20f5f00f3174164fdb54fec5f6743766a6d5c7e15cb25f9",
+        "plaintextBytes": 8054268,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0378",
+        "sha256": "46aeb848939882dfdb341c110aee12ac43718a5f72f402bf4e018ab184058242",
+        "plaintextBytes": 8262972,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0379",
+        "sha256": "0783c972ce93387009f6996455b330b4c33aaee5394aa7e9fa3711f53b40b540",
+        "plaintextBytes": 8009624,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0380",
+        "sha256": "3725dc75724fe589586b1fa671175d8590653a7361e31ab8d43115e4575b63c0",
+        "plaintextBytes": 8049371,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0381",
+        "sha256": "3702ff1bd11e6b788f63719c6364e9ff9ed54bf3390c54ade59b4cb4ef73fb6c",
+        "plaintextBytes": 7853773,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0382",
+        "sha256": "72b58606f4f294632ea39c4485ae69b3f2867fa5215e32f2edd2d30b679ac5be",
+        "plaintextBytes": 8067720,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0383",
+        "sha256": "77934afe853a7ee320b81312c2684e4e5aea359dc34f607a5ad4179a4d134302",
+        "plaintextBytes": 7607115,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0384",
+        "sha256": "db13da4fb92204e294952e3c25be4c09f9e6aee053d36ac2df9d14a7bf286b1a",
+        "plaintextBytes": 7763885,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0385",
+        "sha256": "87f2635b17ce701fbe81839f953dd57278302d177af880c3811812bbc0a81811",
+        "plaintextBytes": 8323966,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0386",
+        "sha256": "6baa78df7359c14262c0f5472cad0d46f670d9356644f868f2c1c9228fe496b7",
+        "plaintextBytes": 8079737,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0387",
+        "sha256": "12beed8a59a36dfe2b75c31cf754116055be9476107017c4f9c5418cf92d5c7b",
+        "plaintextBytes": 7949435,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0388",
+        "sha256": "a93f10243ea6aa96f72d8bec3a76794b087a4d4e9aeb44cdfc29c8dcc370bb0a",
+        "plaintextBytes": 8128733,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0389",
+        "sha256": "f1cc004f0f795df55f2ad483630d47d6f96294e0fbb396f207c408b0bd9bc336",
+        "plaintextBytes": 8306752,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0390",
+        "sha256": "eb4a3d7c5ca3d7934e7c7cc884915c3071eb466b89830e558f31318b077d5422",
+        "plaintextBytes": 8055145,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0391",
+        "sha256": "bde55367d3d7edf2a757f319e1324c57b4da08c6dfe0d8c8182c977e5492cf44",
+        "plaintextBytes": 8130829,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0392",
+        "sha256": "9564cb5e4165b06697be579980b2d9ca7afaa4006dc0b84a05747d207a153436",
+        "plaintextBytes": 8362360,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0393",
+        "sha256": "d4e721e13e6acf12ba6ca42da163bc1322a50b90b0fbcbe20b243840df299418",
+        "plaintextBytes": 8275671,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0394",
+        "sha256": "7414b4eb117835a130cc27fdfb7431ee99bd094e1ffa4b66b2398d3373249215",
+        "plaintextBytes": 8274122,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0395",
+        "sha256": "dcc905508f525e42a59fe632c51b21d0fbcfe9257123b19a3190be8e97b5fc82",
+        "plaintextBytes": 8251418,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0396",
+        "sha256": "0a22bd99b4de38a695e8ad1e9ab7aa7f4154f5c5656bd0f0fc4ab2ef2fc4e72c",
+        "plaintextBytes": 8258950,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0397",
+        "sha256": "5448f29120afdd9367b2f124913b39d67c87d31aeebfc61a94e2bf5738210bea",
+        "plaintextBytes": 7815984,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0398",
+        "sha256": "704b35065e9eb9bdbb3a628ee40b3f1a6db34068c2e3cdae337641f76ddb7418",
+        "plaintextBytes": 8104271,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0399",
+        "sha256": "09036684ea65c8a6d6dca268a4abb05ea8ac4649daf17c8fb19927a28f4c4248",
+        "plaintextBytes": 8238333,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0400",
+        "sha256": "62e23fbc66c01033b5b39dfa82f6442ce58f28aa2b4b922f18fd90041e488f39",
+        "plaintextBytes": 8315957,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0401",
+        "sha256": "f2693c7123679df24469f6300cfad8f5ccf9a4a6e574bbb724524b561c4f5ea8",
+        "plaintextBytes": 8180730,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0402",
+        "sha256": "695ba42efec7ff09ced281085c3c1b6a4bf6d0b1e7759eefdba23a7c1f2b8e93",
+        "plaintextBytes": 8093420,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0403",
+        "sha256": "275f2624843488ae4b9bb2f4fbd62ddecca27bf5aa86f50a09d7878799d1fc63",
+        "plaintextBytes": 7951337,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0404",
+        "sha256": "eac678aab7587029205f99f59cd3cc20980959d8b96547448ba413ae5d6cec57",
+        "plaintextBytes": 8024370,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0405",
+        "sha256": "5fa5ca6f968b52157785d5ad260274db4bd9482006eb5b2e0ad045877d325f33",
+        "plaintextBytes": 8035621,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0406",
+        "sha256": "4622d6f293babbc614807c20dc131979fff7198978f44a13d37eae8d687399fe",
+        "plaintextBytes": 8370683,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0407",
+        "sha256": "76e4b093780b9d6c3b25a78c4df9e74f99cc4d1c47663c3051ddb386160a6f81",
+        "plaintextBytes": 8315574,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0408",
+        "sha256": "0b475fae5d3ffa0af62d442c12980fd3104232428bd31e8a7468394cef2618c4",
+        "plaintextBytes": 7658945,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0409",
+        "sha256": "99279015962dce7082a32b2e56d944993782c4d30c9bb11f78c7732e78fa281e",
+        "plaintextBytes": 8325847,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0410",
+        "sha256": "1eb87447ae25e90a2c967fef38d51c503e3aad2633850f764b9771299c21049b",
+        "plaintextBytes": 7879491,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0411",
+        "sha256": "b15ce52d4d6303aeba4ee9bdf4cea3ef496782a5d92d5ea9445e3c05c7f0548a",
+        "plaintextBytes": 7977869,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0412",
+        "sha256": "bfc7ea9e193eb8a6a484bf5b0239a2d93ba7a8ead31a9805ed3b135ebf69c608",
+        "plaintextBytes": 7916627,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0413",
+        "sha256": "bcc6bc5c5fe360c4e9b6487acdba7d35c58b71ecee6e8bc6adbadebaac733f72",
+        "plaintextBytes": 8192772,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0414",
+        "sha256": "e1c1ce317889b42539e33dc3d3f10ee643e8b91127c3bb120073b8dd0b392e9a",
+        "plaintextBytes": 8374349,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0415",
+        "sha256": "20ae90615a31176580a67c66c7a5b8344cad23c7ac57cde6a689e45422849f96",
+        "plaintextBytes": 8260647,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0416",
+        "sha256": "7d2ad6491b76c008bfba8816e2eefc2041a38cd9cc06f8569ef40eda48cbea43",
+        "plaintextBytes": 8331363,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0417",
+        "sha256": "76ef6d7da23bb6a8377898c72e9eece786b706724b5f21ce485c342be0327c0f",
+        "plaintextBytes": 8044879,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0418",
+        "sha256": "212a06257c1d401cb0d2f6a581fa68ff93ecbcbb685d820cb4a60b47018cfe35",
+        "plaintextBytes": 7921388,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0419",
+        "sha256": "82f2f90bdfb09cea9201d26b65ee1212a53422597d2ec050537263b1f56354a9",
+        "plaintextBytes": 8241984,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0420",
+        "sha256": "7196d3cc8c3d1063f4c406cdd5e1300203357bc25d895f8726be5d5b6dee8363",
+        "plaintextBytes": 7849081,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0421",
+        "sha256": "1de356e443308c951f84e6d41c22b868cdea1f0494f9e8aa159efe089de71c54",
+        "plaintextBytes": 8076158,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0422",
+        "sha256": "b4d6f9e94db37c8814116a5745d57d77ae8d23d91b0d264ab78b3e43c414b473",
+        "plaintextBytes": 7853606,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0423",
+        "sha256": "7ad47511baef107b73adcc37dfc57f26a47940bf8fe211b4b6b5018e4f03e009",
+        "plaintextBytes": 7891713,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0424",
+        "sha256": "54331d134692ade3179ee42cea97d74eecda9fccd49f905c314d5474ff7b5c3f",
+        "plaintextBytes": 8311977,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0425",
+        "sha256": "1c6cdd1180cc65fbc5d3ed1c6ac1464f90648dab232461f7cfe5fbc60d49495e",
+        "plaintextBytes": 8332899,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0426",
+        "sha256": "c3f1d4c6cd254eadbef90b6dbff9c322ccfe97525a8cfbc6f89cd19f76de52c1",
+        "plaintextBytes": 8246661,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0427",
+        "sha256": "2f934c112b35fef38f0283cfdc01da6dd01c899cd77bb7bdca4b0a07620eab1e",
+        "plaintextBytes": 8125938,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0428",
+        "sha256": "031eafd69c5f5ba80ad99203815e872b807ed4d08ab991f24a3452f597f5031b",
+        "plaintextBytes": 8109781,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0429",
+        "sha256": "3c4a47a6ceadd1d55c4dabbb557ad2f23abe18be99444c7c6107c01390d5032b",
+        "plaintextBytes": 8166791,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0430",
+        "sha256": "188eba6e1eb53877d7b1105c2456b9c58f4e5b743d7f9eaef4ba49a0e80dae54",
+        "plaintextBytes": 8337493,
+        "securities": 25
+      },
+      {
+        "stem": "canonical-dataset-part-0431",
+        "sha256": "4718faa5969a989b7eb6f4a8cb025c3423d4f2b3fb5f453696044f31629f7db3",
+        "plaintextBytes": 8306189,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0432",
+        "sha256": "0837cb764c2ec043aeb0b3ad7fe7e06ee8e843a7550ed1bce1644702686e4db5",
+        "plaintextBytes": 8155699,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0433",
+        "sha256": "5be2da698ef22791ef509353fa6ab6841fa1e10871d818c98a2bab7131100ca8",
+        "plaintextBytes": 7557320,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0434",
+        "sha256": "2104cc6ba65511f3b1198d183c0ab0b0641215ccec636e9a5ec6ef11fc63d1e8",
+        "plaintextBytes": 8196721,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0435",
+        "sha256": "afd3bdfd2400b26bbb7c748d494f2ce6bf067bbe65b68760c81023c367f3f01c",
+        "plaintextBytes": 7608390,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0436",
+        "sha256": "dd97cc9d09b275876a05772787b55e38dfa90a6730211ae8033a8ddc5b7a577a",
+        "plaintextBytes": 8042068,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0437",
+        "sha256": "5d6cfb589a2e00393c1b374890190b8323a6c28d0378e247bb5c710851e1859c",
+        "plaintextBytes": 8160889,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0438",
+        "sha256": "ee7821c615123320262decf3b4e5af9ec3af4b0a627fba7bfbcbb508c58e8cdf",
+        "plaintextBytes": 8202065,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0439",
+        "sha256": "8fc67b7497357faec199c7a4f67d3905b01842c11cf7808e2eb39946cbd87d76",
+        "plaintextBytes": 7921381,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0440",
+        "sha256": "ae94dd80e11b066329f816d846afcb0cd28df431287b8723b3fcd51ff7762f69",
+        "plaintextBytes": 8065021,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0441",
+        "sha256": "d4daf9aba1902eaf80a21bc527c935d5aafcc48f4c5c96677cb7c0d7bf2d8990",
+        "plaintextBytes": 7584106,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0442",
+        "sha256": "15fb5a47ad9985975a70175d46d9e34ae4c4bbd5dce9ae495488e2e161f21650",
+        "plaintextBytes": 8288914,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0443",
+        "sha256": "8827d3492913b37b4aa325ae62f5801f8da05c1ad453b664ee0667cd906b0a99",
+        "plaintextBytes": 8374819,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0444",
+        "sha256": "741738c93782c4bf531139f5a08a9710d2556437f564184de52782299a6fa2f5",
+        "plaintextBytes": 7974840,
+        "securities": 22
+      },
+      {
+        "stem": "canonical-dataset-part-0445",
+        "sha256": "7d5076b8640e354e40b4702fcc2999e55b53b202b71307ef08469ecbb3108cee",
+        "plaintextBytes": 8225788,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0446",
+        "sha256": "7097a4cc607aafd22f59970f7da98b85341295d0756f9d7be0331c8b3ea0d2e2",
+        "plaintextBytes": 8032859,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0447",
+        "sha256": "7eb6804bc1175a018191d37997a3f9c71a35ab5556ea3d5a740ef54a6023d8f4",
+        "plaintextBytes": 8342973,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0448",
+        "sha256": "19581393a40d7821c35d322d2609e78c5d546dfddab70ea8f76ef4b0b0d3d31a",
+        "plaintextBytes": 7965208,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0449",
+        "sha256": "96e6a83e2b153e0a3cd0e5c33e41ed8fbb14cef2ad56adf1e218df2f922ebb84",
+        "plaintextBytes": 8281101,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0450",
+        "sha256": "09d87a0b9b546cb55285a212b3f3f5b97ba26d31418dc700f8c18890616bf9fa",
+        "plaintextBytes": 7910480,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0451",
+        "sha256": "fa6dc0ee62bb62a3620fb9a4bdcc91d7b3d6001d5aef04f2451c61e2b4907db7",
+        "plaintextBytes": 8219181,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0452",
+        "sha256": "059b54af969daabb16d73f1e32faee0df68b8a29b821631eb32101cea3932435",
+        "plaintextBytes": 7771985,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0453",
+        "sha256": "d6d3b68bf5692054de730f9392ed2c6bd5a3a84d22ac039c12cb7b157ac85032",
+        "plaintextBytes": 7615953,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0454",
+        "sha256": "4fb6ae7bd8b4d7e27570969e8bea1b5dd1577856e62de20d9c5788bbd23ae247",
+        "plaintextBytes": 8322320,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0455",
+        "sha256": "7a4a0fca9072c44b4f789da44b6db67c920fe8512468a1eb751cccfa0f2d2ecf",
+        "plaintextBytes": 8304483,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0456",
+        "sha256": "6a8bfb56f9a499d86dfabd05ccfdfbd49071182c75437215210629406ce8efe2",
+        "plaintextBytes": 7750387,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0457",
+        "sha256": "38c9776abddbd7939dcd8ef6a4ba7762ffc1f6c360558d84c3c13f291692431f",
+        "plaintextBytes": 8209560,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0458",
+        "sha256": "52c3dbb99489361dac6b95a252fc330c6e3b6e0208f39ebc2e43dcd975ea0365",
+        "plaintextBytes": 7911259,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0459",
+        "sha256": "969edb95707abbab553f25f2ce20b7246177b5b793db0a2a94616f6d64f94f88",
+        "plaintextBytes": 8162079,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0460",
+        "sha256": "41eae4dd96bc887bc3a20f12a3c94831f484b1809770752074b51095efc9f033",
+        "plaintextBytes": 8028347,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0461",
+        "sha256": "99d699fa335d34e77331539f73e5e8b9c066a90d599c4bf6d31917f16d17d1b4",
+        "plaintextBytes": 8281144,
+        "securities": 23
+      },
+      {
+        "stem": "canonical-dataset-part-0462",
+        "sha256": "2335852b0efbd3214531e71ca36ebbe37e8891de8eaa3455a0a9990776c0a3cf",
+        "plaintextBytes": 7905506,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0463",
+        "sha256": "208ca5fb6f5bc822bd80fbf26cfea373a052b1b8fba2e29753ae30026eb48557",
+        "plaintextBytes": 7700116,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0464",
+        "sha256": "c87e0114305882aa68a0f841f4c083ebdcc6dd8781cafb2740d2929a7d7b8266",
+        "plaintextBytes": 8173687,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0465",
+        "sha256": "6e2290391540f70958c81af8e52bb18ea43f5a5dff7e48bc6a412a73c326670c",
+        "plaintextBytes": 7968652,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0466",
+        "sha256": "7dca7b4e374e8648c0d04fe61c42f4d541b53c998706a605541fc9081e398339",
+        "plaintextBytes": 8285082,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0467",
+        "sha256": "d2d4237d2229e04435fce42c76ace20862415f7e1f7ce83b9530a7cea5a6b561",
+        "plaintextBytes": 7854658,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0468",
+        "sha256": "265b14b5363fb14f7c337d51abd9cc34b0d49d829c275f68b6d627f3c9d52aa1",
+        "plaintextBytes": 8070797,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0469",
+        "sha256": "d2c8f14807f6cec0058c74513ba364f08cfba4f4ac7ddd4fe9cc95cc4d604140",
+        "plaintextBytes": 8190574,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0470",
+        "sha256": "3c6105eaa16df31013badf1a3e3a477002a019c75772c9fae5197690fa671070",
+        "plaintextBytes": 8297779,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0471",
+        "sha256": "d65ca0caa8a308f39c38a810d6f4d07d69accf6ab1cb8ed5b2161fc71f40f795",
+        "plaintextBytes": 7673712,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0472",
+        "sha256": "0dfe75be70cd6f06c54cc3924a5564174921bc9559d1b7ac85b1e9784065dcd3",
+        "plaintextBytes": 8333761,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0473",
+        "sha256": "e109cf0bb963bfd557f782c1fc97f5c4fbb52755335d9c9d2fad93a79d7d72fd",
+        "plaintextBytes": 8063431,
+        "securities": 21
+      },
+      {
+        "stem": "canonical-dataset-part-0474",
+        "sha256": "c9d14044d180b68cb78821cfa705a9ea4b4c54b0985e1db7cdeb996546c0a1d4",
+        "plaintextBytes": 7928271,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0475",
+        "sha256": "eadaada93837693c995424dc743c4a115d08aecc343a4da3504294e892fa8347",
+        "plaintextBytes": 7543301,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0476",
+        "sha256": "13402aab59fcc2c0676771ca5157c812bba0bf6034457416ae27db31db9c0e7a",
+        "plaintextBytes": 7657046,
+        "securities": 18
+      },
+      {
+        "stem": "canonical-dataset-part-0477",
+        "sha256": "fa964549dbf5a20d7977d9941f5e83aa46a6a0edbd497cd3fa9c4a172eb1ed4c",
+        "plaintextBytes": 8225761,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0478",
+        "sha256": "f8a5bed18a9f3cdc41db73528d0cfcf545dfa4c38cd345234d6a7aeb8235f68d",
+        "plaintextBytes": 8354482,
+        "securities": 19
+      },
+      {
+        "stem": "canonical-dataset-part-0479",
+        "sha256": "65134baefe4a296e1ee20d9987133da91542e538946506f014a4cbed21b168fc",
+        "plaintextBytes": 8270942,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0480",
+        "sha256": "6c0b92dd2e7e0f4257d295fa4d07f89e64650ba0f7483c460f2aab2cc8ddcaa7",
+        "plaintextBytes": 7951036,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0481",
+        "sha256": "945663cf30b4d95e51ae6901445d8f5e6cc6af2a42fca612a85f9c6dbd0532bd",
+        "plaintextBytes": 7899286,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0482",
+        "sha256": "f8be4e3756c00ae29605eee34e7439b8d54b38341e10573fe59985f6b6713dc5",
+        "plaintextBytes": 7549967,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0483",
+        "sha256": "02d8ffcb1024b8a0107bf0dc18c0c7395a004b2a5b356ba849216a2b3315f833",
+        "plaintextBytes": 8041050,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0484",
+        "sha256": "af4848639b0a1f5d74839a00391ada8d7b21ffffc59b3594a37e77b3da4522d3",
+        "plaintextBytes": 7740998,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0485",
+        "sha256": "1c9df431b000944dd6c0b1e9842f2063b2b21d75d9aa8b1827ba9f4383e0baba",
+        "plaintextBytes": 8149296,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0486",
+        "sha256": "fe46d108c120aae70d3dd0b6ba74c2ec30e2b5f4f22c6f803e1ab9aab56e257c",
+        "plaintextBytes": 8112327,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0487",
+        "sha256": "2e306cbdfccfda86ef7e2f0bef5734aeb23dc4d060836cdb4b2f93363df9228a",
+        "plaintextBytes": 7877638,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0488",
+        "sha256": "98282dd0d8b2e487c85dbefce673d41e43d732b9e64a8fc11767813d8c3b0efc",
+        "plaintextBytes": 7782942,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0489",
+        "sha256": "dc50c164acd1911a54a4d9c7d04e19ed870db2e36a12582dd1fd44a976ce4403",
+        "plaintextBytes": 8139675,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0490",
+        "sha256": "07319e61912f05bace2b8e8cdcf604643eb670a4e3548aaeae4bdef867892b27",
+        "plaintextBytes": 7587071,
+        "securities": 16
+      },
+      {
+        "stem": "canonical-dataset-part-0491",
+        "sha256": "2e3449d06ef75801679276ef45e45ee3fc4a82779e35ca53c05e9792b925eb51",
+        "plaintextBytes": 7724271,
+        "securities": 14
+      },
+      {
+        "stem": "canonical-dataset-part-0492",
+        "sha256": "256d757bbe3558dc63a791166070ea07cd88f196f6b1b9c44fd34595c525ef03",
+        "plaintextBytes": 7622690,
+        "securities": 12
+      },
+      {
+        "stem": "canonical-dataset-part-0493",
+        "sha256": "dcd0789c5cda2a194cc0cf90985827929a4bc5670adbf0214b54d394f9be8070",
+        "plaintextBytes": 7814098,
+        "securities": 15
+      },
+      {
+        "stem": "canonical-dataset-part-0494",
+        "sha256": "6efbd968f3d7b78de352a7573517806942560963ad264e1a57b444b25a319609",
+        "plaintextBytes": 8260471,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0495",
+        "sha256": "2c008ecb45432a966312facc6fc27dfbf1d81565c723babe8454ec1ae663c31e",
+        "plaintextBytes": 8008377,
+        "securities": 13
+      },
+      {
+        "stem": "canonical-dataset-part-0496",
+        "sha256": "617811ed7ae231929a72068d2513e92481eb503ddeb2b96eef2beb0d55960137",
+        "plaintextBytes": 8324425,
+        "securities": 17
+      },
+      {
+        "stem": "canonical-dataset-part-0497",
+        "sha256": "f269e3910d682830687b2468c0f1d812d10b856899f62ce7a5ac54b5fac986ee",
+        "plaintextBytes": 7862767,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0498",
+        "sha256": "3f7d50984ba93b37ea275e2065b5ca958f870c48aef24311299e8e3a591de64f",
+        "plaintextBytes": 7861564,
+        "securities": 20
+      },
+      {
+        "stem": "canonical-dataset-part-0499",
+        "sha256": "d61113d61ac0a91a9ec2b5b7bf294cd471de0b22a8fcee39ba42c234ee773d76",
+        "plaintextBytes": 6440378,
+        "securities": 20
+      }
+    ],
+    "sourceObjectSetSha256": "ada0dc7f838534df2dcb147f966370357b6e261a4ec5fa2a82b342a7d80f1fd2",
+    "readReceiptSetSha256": "1932a9a8f2a4f4a6046a234a09e18d10f83b37b86acf14cbb824723adbde07e5",
+    "sourceObjects": {
+      "available": 9,
+      "missing": 0
+    },
+    "readReceipts": 9049
+  },
+  "counts": {
+    "inputSegments": 9408,
+    "usableSegments": 9406,
+    "parts": 500,
+    "verifiedSecurities": 9406,
+    "providerSupportedListingRecords": 16565,
+    "observedListingGenerations": 15562,
+    "readOnlyGetCalls": 9049,
+    "writeCalls": 0
+  },
+  "rejections": {
+    "reasons": {
+      "CORPORATE_ACTION_CONTRADICTED": 2
+    },
+    "unknownReasonCount": 0,
+    "details": {
+      "CORPORATE_ACTION_CONTRADICTED": {
+        "SPLIT_NOT_IN_RAW_PRICE": 2
+      }
+    },
+    "unknownDetailCount": 0
+  },
+  "overlay": {
+    "securities": 9406,
+    "priceSourcesAttached": 9406,
+    "priceSourcesMissing": 0,
+    "issuerCikDiagnostics": 7350,
+    "existingPriceSourceMismatch": 0
+  },
+  "verification": {
+    "rereadFromDisk": true,
+    "perPartHashesMatchManifest": true,
+    "uniqueSecurityIds": true,
+    "partsSumEqualsUsableSegments": true,
+    "loaderWithSourceOverlayPassed": true
+  },
+  "contentBinding": {
+    "schema": "supertrader-calibration-v3-content-binding-1.0.0",
+    "normalizedPartListSha256": "580fdd99ceacf45bad803de9347faec0303f3e62da425d172eef5675ffda4e59",
+    "normalizedManifestSha256": "7fb76f4d58691542ae0d6c9c149c723cee830b795f346808ea880f2aded4b383",
+    "normalizedInputsSha256": "83be252c851e8a5282fd3986a1423263e315b883cc7fda56bd5e69a825f02582",
+    "dataFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+    "sourceObjectSetSha256": "ada0dc7f838534df2dcb147f966370357b6e261a4ec5fa2a82b342a7d80f1fd2",
+    "readReceiptSetSha256": "1932a9a8f2a4f4a6046a234a09e18d10f83b37b86acf14cbb824723adbde07e5",
+    "listingSourceSha256": "3d294d3e21ebaf9a6c53a8283916a131163b725f10d95b927cd78b89c29aa583",
+    "parts": 500,
+    "securities": 9406
+  },
+  "performanceCalculated": false,
+  "privateIdentitiesPublished": false,
+  "plaintextUploaded": false
+}
