@@ -197,8 +197,10 @@ jobs:
           V8_SEC_CACHE_HIT: ${{ steps.sec-cache.outputs.cache-hit }}
         run: node --max-old-space-size=2048 scripts/quant/audit-v8-archives.mjs .verification/v8-archives
       - name: Assert canonical data remained unchanged
+        if: always()
         run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: quant-v8-derived-archive-assessment
           path: .verification/v8-archives/archive-assessment.json

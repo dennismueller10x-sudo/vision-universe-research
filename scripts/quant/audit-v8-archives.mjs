@@ -4,16 +4,18 @@ import {readFileSync,readdirSync,lstatSync,mkdirSync,writeFileSync,existsSync} f
 import {join,resolve,relative} from 'node:path';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {tmpdir} from 'node:os';
+import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {scanCorporateActionSeries} from '../market/tiingo2-corporate-action-scan.mjs';
-const require=createRequire(import.meta.url), CA=require('../../quant/engines/corporate-action-evidence.js'), Adapter=require('../../quant/engines/weekly-real-adapter.cjs'), Returns=require('../../quant/engines/return-series.js');
+const require=createRequire(import.meta.url), CA=require('../../quant/engines/corporate-action-evidence.js'), Adapter=require('../../quant/engines/weekly-real-adapter.cjs'), Returns=require('../../quant/engines/return-series.js'), Weekly=require('./run-real-weekly-backtest.cjs'), Benchmark=require('../../quant/engines/weekly-benchmark.cjs'), Store=require('../../quant/engines/research-artifacts.cjs');
 const root=process.cwd(),out=resolve(process.argv[2]||'.verification/v8-archives');
 if(!out.startsWith(resolve(root,'.verification')+'/'))throw Error('DERIVED_OUTPUT_REQUIRED');
 const sha=b=>createHash('sha256').update(b).digest('hex'), loader=Adapter.createLoader(root), master=JSON.parse(readFileSync(join(root,'quant/data/market/security-master/us-security-master.json'))), ids=new Map(master.rows.map(r=>[r.baseline_security_id,r]));
-const report={schemaVersion:'v8-private-archives-1',gitHead:process.env.GITHUB_SHA||null,runId:process.env.GITHUB_RUN_ID||null,codeHash:sha(readFileSync(new URL(import.meta.url))),rawPublication:false,providerRequests:0,productionApproved:false,cacheRestores:{discover:{key:'discover-market-cache-40047253956',hit:process.env.V8_DISCOVER_CACHE_HIT==='true'},tiingo:{key:'tiingo2-encrypted-v1-main-39962041711',hit:process.env.V8_TIINGO_CACHE_HIT==='true'},sec:{key:'sec-fundamentals-40087710308',hit:process.env.V8_SEC_CACHE_HIT==='true'}},archives:[],series:[],weeklyRequalification:[],secFacts:{files:0,factObservations:0,accessions:new Set(),earliestFiled:null,latestFiled:null},budgets:{maxFiles:100000,maxFileBytes:64*1024*1024,maxTotalBytes:6*1024**3}};
-let count=0,total=0;const fingerprints=[];
+const report={schemaVersion:'v8-private-archives-1',gitHead:process.env.GITHUB_SHA||null,runId:process.env.GITHUB_RUN_ID||null,codeHash:sha(readFileSync(new URL(import.meta.url))),rawPublication:false,providerRequests:0,productionApproved:false,cacheRestores:{discover:{key:'discover-market-cache-40047253956',hit:process.env.V8_DISCOVER_CACHE_HIT==='true'},tiingo:{key:'tiingo2-encrypted-v1-main-39962041711',hit:process.env.V8_TIINGO_CACHE_HIT==='true'},sec:{key:'sec-fundamentals-40087710308',hit:process.env.V8_SEC_CACHE_HIT==='true'}},archives:[],series:[],weeklyRequalification:[],secFacts:{files:0,factObservations:0,accessions:new Set(),earliestFiled:null,latestFiled:null},budgets:{maxFiles:250000,maxFileBytes:64*1024*1024,maxProcessedBytes:20*1024**3}};
+let count=0,total=0,processedBytes=0,metadataTruncated=false;const fingerprints=[],metadataFingerprints=[],budgetEvents=[],requalified=new Map();
 function processJson(p,bytes){
- let doc;try{doc=JSON.parse(bytes);}catch{return;}
+ let doc;try{doc=JSON.parse(bytes);}catch{return false;}
  if(doc?.facts){report.secFacts.files++;for(const tax of Object.values(doc.facts))for(const concept of Object.values(tax||{}))for(const values of Object.values(concept.units||{}))for(const f of values||[]){report.secFacts.factObservations++;if(f.accn)report.secFacts.accessions.add(f.accn);if(f.filed){report.secFacts.earliestFiled=!report.secFacts.earliestFiled||f.filed<report.secFacts.earliestFiled?f.filed:report.secFacts.earliestFiled;report.secFacts.latestFiled=!report.secFacts.latestFiled||f.filed>report.secFacts.latestFiled?f.filed:report.secFacts.latestFiled;}}}
  const rows=Array.isArray(doc?.bars)?doc.bars:Array.isArray(doc?.rows)&&doc.rows.some(r=>r?.adjClose)?doc.rows:null;
  if(!rows?.length)return;
@@ -32,10 +34,65 @@ function processJson(p,bytes){
  const evidence=CA.evidence(daily,weekly.points,bars);if(!evidence)return;
  const revised={...weekly,corporateActions:evidence};let after;try{loader(securityId,JSON.stringify(revised));after='QUALIFIED';}catch(e){after=e.message.split(':')[0];}
  report.weeklyRequalification.push({securityId,before,after,weeklySourceHash:sha(readFileSync(wp)),dailySourceHash:sha(bytes),evidenceHash:sha(JSON.stringify(evidence)),pricesModified:false});
+ if(after==='QUALIFIED'&&!requalified.has(securityId))requalified.set(securityId,{revised,dailySourceHash:sha(bytes),weeklySourceHash:sha(readFileSync(wp))});
 }
-function walk(dir,summary){if(!existsSync(dir))return;for(const name of readdirSync(dir).sort()){const p=join(dir,name),s=lstatSync(p);if(s.isSymbolicLink()){summary.linksSkipped++;continue;}if(s.isDirectory()){walk(p,summary);continue;}if(!s.isFile())continue;if(++count>report.budgets.maxFiles||total+s.size>report.budgets.maxTotalBytes)throw Error('ARCHIVE_BUDGET');total+=s.size;summary.files++;summary.bytes+=s.size;if(s.size>report.budgets.maxFileBytes){summary.oversizeSkipped++;continue;}const b=readFileSync(p);fingerprints.push(relative(root,p)+'\0'+sha(b));if(name.endsWith('.gz')){try{processJson(p,gunzipSync(b,{maxOutputLength:report.budgets.maxFileBytes}));}catch{summary.compressedSkipped++;}}else if(name.endsWith('.json')||dir.includes('.sec-cache'))processJson(p,b);}}
-for(const name of ['.market-cache','.sec-cache','quant/data/sec/facts','.quant-state']){const summary={path:name,exists:existsSync(name),files:0,bytes:0,linksSkipped:0,oversizeSkipped:0,compressedSkipped:0};walk(name,summary);report.archives.push(summary);}
+// Metadata discovery is distinct from bounded content parsing. Opaque archive
+// binaries (ciphertext/ZIP) are not loaded into memory or mislabeled parsed.
+function walk(dir,summary){
+ if(!existsSync(dir)||metadataTruncated)return;
+ for(const name of readdirSync(dir).sort()){
+  if(metadataTruncated)return;
+  const p=join(dir,name),st=lstatSync(p);
+  if(st.isSymbolicLink()){summary.linksSkipped++;continue;}
+  if(st.isDirectory()){walk(p,summary);continue;}
+  if(!st.isFile())continue;
+  if(count>=report.budgets.maxFiles){metadataTruncated=true;budgetEvents.push({reason:'DISCOVERED_FILE_LIMIT',limit:report.budgets.maxFiles,discoveredFiles:count});return;}
+  count++;total+=st.size;summary.files++;summary.bytes+=st.size;
+  metadataFingerprints.push(relative(root,p)+'\0'+st.size);
+  if(!name.endsWith('.json')&&!name.endsWith('.gz')){summary.opaqueFiles++;summary.opaqueBytes+=st.size;continue;}
+  summary.candidateFiles++;
+  if(st.size>report.budgets.maxFileBytes){summary.oversizeSkipped++;summary.oversizeBytes+=st.size;continue;}
+  if(processedBytes+st.size>report.budgets.maxProcessedBytes){summary.budgetSkippedFiles++;summary.budgetSkippedBytes+=st.size;continue;}
+  const bytes=readFileSync(p);processedBytes+=bytes.length;summary.readBytes+=bytes.length;
+  fingerprints.push(relative(root,p)+'\0'+sha(bytes));
+  if(name.endsWith('.gz')){
+   try{const unpacked=gunzipSync(bytes,{maxOutputLength:report.budgets.maxFileBytes});summary.decompressedBytes+=unpacked.length;if(processJson(p,unpacked)===false)summary.jsonParseFailures++;else summary.parsedFiles++;}
+   catch{summary.compressedSkipped++;}
+  }else{if(processJson(p,bytes)===false)summary.jsonParseFailures++;else summary.parsedFiles++;}
+ }
+}
+for(const name of ['.market-cache','.sec-cache','quant/data/sec/facts','.quant-state']){
+ const summary={path:name,exists:existsSync(name),files:0,bytes:0,candidateFiles:0,parsedFiles:0,readBytes:0,decompressedBytes:0,linksSkipped:0,oversizeSkipped:0,oversizeBytes:0,opaqueFiles:0,opaqueBytes:0,compressedSkipped:0,jsonParseFailures:0,budgetSkippedFiles:0,budgetSkippedBytes:0};
+ walk(name,summary);report.archives.push(summary);
+}
+if(report.archives.some(x=>x.budgetSkippedFiles))budgetEvents.push({reason:'PROCESSED_BYTE_LIMIT',limit:report.budgets.maxProcessedBytes,processedBytes});
+report.coverage={metadataDiscoveryComplete:!metadataTruncated,discoveredFiles:count,discoveredBytes:total,processedBytes,opaqueFiles:report.archives.reduce((n,x)=>n+x.opaqueFiles,0),opaqueBytes:report.archives.reduce((n,x)=>n+x.opaqueBytes,0),candidateFiles:report.archives.reduce((n,x)=>n+x.candidateFiles,0),parsedFiles:report.archives.reduce((n,x)=>n+x.parsedFiles,0),oversizeSkipped:report.archives.reduce((n,x)=>n+x.oversizeSkipped,0),compressedSkipped:report.archives.reduce((n,x)=>n+x.compressedSkipped,0),jsonParseFailures:report.archives.reduce((n,x)=>n+x.jsonParseFailures,0),budgetEvents};
+report.coverage.state=metadataTruncated||budgetEvents.length||report.coverage.oversizeSkipped||report.coverage.compressedSkipped||report.coverage.jsonParseFailures?'PARTIAL':'COMPLETE_FOR_JSON_AND_GZIP_FORMATS';
+report.discoveredMetadataHash=sha(metadataFingerprints.sort().join('\n'));
 report.secFacts.uniqueAccessions=report.secFacts.accessions.size;delete report.secFacts.accessions;
-report.manifestHash=sha(fingerprints.sort().join('\n'));report.summary={files:count,bytes:total,dailySeries:report.series.length,actionCoherentSeries:report.series.filter(r=>r.corporateActionGatePassed).length,additionalQualifiedWeeklySeries:report.weeklyRequalification.filter(r=>r.after==='QUALIFIED').length};
+report.manifestHash=sha(fingerprints.sort().join('\n'));report.summary={files:count,bytes:total,dailySeries:report.series.length,actionCoherentSeries:report.series.filter(r=>r.corporateActionGatePassed).length,additionalQualifiedWeeklySeries:requalified.size};
+// Recompute only genuinely newly qualified listings; no original points are edited.
+// Existing immutable generation store and independent Python execution reference.
+const privateRoot=resolve(process.env.RUNNER_TEMP||tmpdir(),'quant-v8-archive-studies');
+report.recoveredStudies={requested:[...requalified.keys()].sort().slice(0,20),candidateListings:requalified.size,maximumStudies:20,results:[],returnBasis:'PRICE_RETURN',certification:'NOT_CERTIFIED',productionApproved:false};
+if(requalified.size){
+ mkdirSync(privateRoot,{recursive:true,mode:0o700});
+ let benchmark;try{benchmark=Benchmark.load(root);}catch(e){benchmark={error:e.message};}
+ for(const securityId of report.recoveredStudies.requested){
+  const candidate=requalified.get(securityId),sourceBytes=JSON.stringify(candidate.revised),sourceFile=join(privateRoot,securityId+'-source.json');
+  writeFileSync(sourceFile,sourceBytes,{mode:0o600});
+  try{
+   const data={...loader(securityId,sourceBytes),sourcePath:sourceFile},result=Weekly.run(data,{benchmark}),repeat=Weekly.run(data,{benchmark});
+   if(result.resultHash!==repeat.resultHash)throw Error('RECOMPUTATION_MISMATCH');
+   const clean=JSON.parse(JSON.stringify(result)),generation=Store.publish(join(privateRoot,'generations'),{source:candidate.revised,result:clean}),resultFile=join(privateRoot,securityId+'-result.json');
+   writeFileSync(resultFile,JSON.stringify(clean),{mode:0o600});
+   const parity=spawnSync('python3',[resolve(import.meta.dirname,'verify-real-weekly-backtest.py'),resultFile],{cwd:root,encoding:'utf8',timeout:90000,maxBuffer:262144});
+   if(parity.status!==0)throw Error('INDEPENDENT_PYTHON_PARITY_FAILED');
+   const independent=JSON.parse(parity.stdout);
+   report.recoveredStudies.results.push({securityId,state:'PASS',sourceBytesHash:data.sourceBytesHash,originalWeeklySourceHash:candidate.weeklySourceHash,rawDailySourceHash:candidate.dailySourceHash,inputHash:result.inputHash,resultHash:result.resultHash,generation:generation.generation,repeatIdentical:true,independent,metrics:result.metrics,marketBenchmarkState:result.marketBenchmark.state,scope:'Existing NEW_52W_HIGH funded price-ledger model; source-derived corporate-action evidence, selected surviving listings; no new market population or prediction confirmation'});
+  }catch(e){report.recoveredStudies.results.push({securityId,state:'UNRESOLVED',reason:e.message});}
+ }
+}
+report.codeDependencies=Object.fromEntries(['scripts/quant/audit-v8-archives.mjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/verify-real-weekly-backtest.py','quant/engines/weekly-real-adapter.cjs','quant/engines/return-series.js','quant/engines/corporate-action-evidence.js','quant/engines/weekly-benchmark.cjs','quant/config/research-classification-evidence.json'].map(p=>[p,sha(readFileSync(resolve(import.meta.dirname,'../..',p)))]));
 report.limitations=['Archive existence and coherent action factors do not establish historical listing identity, first-filing provenance, complete market coverage or independent evidence.','Companyfacts observations are latest extracted SEC records, not original filing vintages.','Weekly corrections are assessment only; no canonical data, gates or published results changed.'];
-mkdirSync(out,{recursive:true});writeFileSync(join(out,'archive-assessment.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report.summary));
+mkdirSync(out,{recursive:true});writeFileSync(join(out,'archive-assessment.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report.summary,coverage:report.coverage}));
