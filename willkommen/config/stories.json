@@ -1,12 +1,14 @@
 {
   "version": 1,
-  "_comment": "Erklaerserie der Willkommensseite (Highlights). Von Hand gepflegt. Jede Story 15 bis 45 s, im Schnitt 30 s. cover (optional): Bild im Kreis statt Icon. Folien: type video (src, poster, duration in s) oder card (eyebrow, title, text, optional cta, duration). Neue Fassung: rev erhoehen, dann leuchtet der Kreis wieder als neu. Reihenfolge = Reihenfolge der Kreise. Pruefung: willkommen/tests/willkommen.test.mjs.",
+  "_comment": "Erklaervideos der Willkommensseite. Von Hand gepflegt. Das erste Video steht gross oben, die weiteren als Karten. Felder: id, title (kurz), product, icon, tagline (Titel auf der Karte), thumb (Vorschaubild; oben 1080 x 620, Karten 640 x 400), rev (neue Fassung: +1), slides (video: src, poster, duration in s; card: eyebrow, title, text, optional cta, duration). Jede Story 15 bis 45 s. Pruefung: willkommen/tests/willkommen.test.mjs.",
   "stories": [
     {
       "id": "start",
       "title": "Start",
       "product": "Vision Universe",
       "icon": "layers",
+      "tagline": "Ein kurzer Einblick in deine Möglichkeiten.",
+      "thumb": "/assets/stories/start-v3-hero.jpg",
       "rev": 4,
       "slides": [
         {
@@ -23,7 +25,8 @@
       "title": "Entdecken",
       "product": "Discover",
       "icon": "discover",
-      "cover": "/assets/hero-visuals/discover.webp",
+      "tagline": "Dein Einstieg in den Markt.",
+      "thumb": "/assets/stories/discover-v1-thumb.jpg",
       "rev": 2,
       "slides": [
         {
@@ -51,6 +54,8 @@
       "title": "Quant",
       "product": "Quant",
       "icon": "quant",
+      "tagline": "7 Eigenschaften. Jeden Tag.",
+      "thumb": "/assets/stories/quant-v1-thumb.jpg",
       "rev": 2,
       "slides": [
         {
@@ -78,7 +83,8 @@
       "title": "Zahlen",
       "product": "Fundamental",
       "icon": "fundamental",
-      "cover": "/assets/hero-visuals/fundamental.svg",
+      "tagline": "Verdient es wirklich Geld?",
+      "thumb": "/assets/stories/fundamental-v1-thumb.jpg",
       "rev": 3,
       "slides": [
         {
@@ -106,7 +112,8 @@
       "title": "Strategie",
       "product": "Supertrader",
       "icon": "supertrader",
-      "cover": "/assets/hero-visuals/supertrader.svg",
+      "tagline": "Wie handeln die Besten?",
+      "thumb": "/assets/stories/supertrader-v1-thumb.jpg",
       "rev": 2,
       "slides": [
         {
@@ -134,7 +141,8 @@
       "title": "Charts",
       "product": "Technical",
       "icon": "technical",
-      "cover": "/assets/hero-visuals/technical.svg",
+      "tagline": "Was sagt der Chart?",
+      "thumb": "/assets/stories/technical-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
@@ -162,6 +170,8 @@
       "title": "Wellen",
       "product": "Elliott",
       "icon": "elliott",
+      "tagline": "Märkte bewegen sich in Wellen.",
+      "thumb": "/assets/stories/elliott-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
@@ -189,7 +199,8 @@
       "title": "Filter",
       "product": "Screener",
       "icon": "screener",
-      "cover": "/assets/hero-visuals/screener.webp",
+      "tagline": "Aus Tausenden deine Auswahl.",
+      "thumb": "/assets/stories/screener-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
@@ -217,7 +228,8 @@
       "title": "Vorsorge",
       "product": "Vorsorge",
       "icon": "vorsorge",
-      "cover": "/assets/hero-visuals/vorsorge.webp",
+      "tagline": "Reicht deine Rente später?",
+      "thumb": "/assets/stories/vorsorge-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
@@ -245,7 +257,8 @@
       "title": "Investoren",
       "product": "Hedgefonds",
       "icon": "hedgefonds",
-      "cover": "/assets/hero-visuals/hedgefonds.webp",
+      "tagline": "Was kauft Warren Buffett?",
+      "thumb": "/assets/stories/hedgefonds-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
@@ -273,6 +286,8 @@
       "title": "AI Atlas",
       "product": "AI Atlas",
       "icon": "atlas",
+      "tagline": "Frag in eigenen Worten.",
+      "thumb": "/assets/stories/atlas-v1-thumb.jpg",
       "rev": 1,
       "slides": [
         {
