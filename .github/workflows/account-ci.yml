@@ -7,7 +7,7 @@ on:
   pull_request:
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
       'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml',
-      'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs']
+      'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs', 'quant/index.html']
   push:
     branches: [main]
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/watchlist/**', 'core/watchlist-view.js',
@@ -105,10 +105,25 @@ jobs:
           # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
           node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
           node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
-          # Discover-Knopf gekoppelt: abgemeldet rein lokal, angemeldet lokal und Konto, nichts wird von selbst uebernommen.
-          node scripts/discover/watchlist-coupling-qa.mjs --url=http://localhost:8790 || chromium_status=$?
-          node scripts/discover/watchlist-coupling-qa.mjs --engine=webkit --url=http://localhost:8790 || webkit_status=$?
           test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Kopplungs-QA (lokale Beobachten-Listen, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Eigener Testserver: frischer Zaehler fuer Registrierungen (signup 5/h je IP, die Simulation meldet immer
+          # 127.0.0.1). Die Grenze selbst bleibt unveraendert. Abgemeldet rein lokal, angemeldet lokal und Konto.
+          node scripts/account/dev-server.mjs --port=8791 > /tmp/account-evidence/server-coupling.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8791/v1/health > /dev/null && break; sleep 1; done
+          status=0
+          for qa in scripts/discover/watchlist-coupling-qa.mjs scripts/account/quant-watch-coupling-qa.mjs; do
+            [ -f "$qa" ] || continue
+            node "$qa" --url=http://localhost:8791 || status=1
+            node "$qa" --engine=webkit --url=http://localhost:8791 || status=1
+          done
+          test "$status" -eq 0
       - name: Screenshots sichern
         if: always()
         uses: actions/upload-artifact@v4
