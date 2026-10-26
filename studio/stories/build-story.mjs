@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Baut die App-Fassung eines Highlights der Willkommensseite aus einem Quellvideo und einem Rezept (story.json):
-// Texteinblendungen in Marke und Schrift, 720 x 1280, H.264, Ton -16 LUFS, Poster.
+// Texteinblendungen in Marke und Schrift, optional Sprecherstimme ueber dem Quellton, 720 x 1280, H.264, Ton -16 LUFS, Poster.
 //
 //   node studio/stories/build-story.mjs studio/stories/start/story.json --source <quelle.mp4> [--out assets/stories] [--apply]
 //
@@ -70,11 +70,22 @@ recipe.overlays.forEach((o, i) => {
   chains.push(`[${last}][c${i}]overlay=0:0:shortest=1[v${i}]`); last = `v${i}`;
 });
 chains.push(`[${last}]scale=720:1280:flags=lanczos,format=yuv420p[v]`);
+// Ton: ohne Stimme der Ton der Quelle; mit Stimme (voice.file neben dem Rezept, ab voice.offset s) wird der Quellton
+// darunter abgesenkt (Ducking) und beides gemischt. Danach -16 LUFS.
+const loud = 'loudnorm=I=-16:TP=-1.5:LRA=11';
+if (recipe.voice) {
+  const v = recipe.overlays.length + 1, ms = Math.round((recipe.voice.offset || 0) * 1000);
+  inputs.push('-i', join(dirname(resolve(recipePath)), recipe.voice.file));
+  chains.push(`[${v}:a]aresample=48000,aformat=channel_layouts=stereo,adelay=${ms}|${ms},apad,asplit=2[vo1][vo2]`,
+    `[0:a]aresample=48000,aformat=channel_layouts=stereo,volume=0.55[bed]`,
+    `[bed][vo1]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[duck]`,
+    `[duck][vo2]amix=inputs=2:duration=first:normalize=0,${loud}[a]`);
+} else chains.push(`[0:a]${loud}[a]`);
 mkdirSync(out, {recursive: true});
 const mp4 = join(out, base + '.mp4'), jpg = join(out, base + '.jpg');
-execFileSync('ffmpeg', ['-v', 'error', '-y', ...inputs, '-filter_complex', chains.join(';'), '-map', '[v]', '-map', '0:a?',
+execFileSync('ffmpeg', ['-v', 'error', '-y', ...inputs, '-filter_complex', chains.join(';'), '-map', '[v]', '-map', '[a]',
   '-c:v', 'libx264', '-preset', 'slow', '-crf', '24', '-profile:v', 'high', '-movflags', '+faststart',
-  '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ar', '48000', '-c:a', 'aac', '-b:a', '128k', mp4], {stdio: 'inherit'});
+  '-ar', '48000', '-c:a', 'aac', '-b:a', '128k', mp4], {stdio: 'inherit'});
 const posterAt = Math.min(duration - 0.1, (recipe.overlays[0]?.from ?? 0) + 0.9);
 execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(posterAt), '-i', mp4, '-frames:v', '1', '-q:v', '4', jpg]);
 rmSync(work, {recursive: true, force: true});

@@ -10,17 +10,18 @@
   var MIN_S = 15, MAX_S = 45;
 
   // Produkte in der Reihenfolge des globalen Menues (assets/site-navigation.js).
+  // art: Bild der Produktwelt (assets/hero-visuals) oder leer, dann zeigt die Karte das grosse Produkt-Icon.
   var PRODUCTS = [
-    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken, Themenwelten und Märkte.' },
-    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren, Ereignisse und frühere Vergleichsfälle.' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Über 60 Kennzahlen aus SEC-Meldungen.' },
-    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Chartanalyse, Indikatoren und Formationen.' },
-    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur, wo sie sich belastbar lesen lässt.' },
-    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Kriterien filtern und vergleichen.' },
-    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Bewährte Methoden, feste Regeln, Backtests.' },
-    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was große Investoren halten.' },
-    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Vorsorgelücke, ETFs, Kosten und Förderung.' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in eigenen Worten, Atlas rechnet auf den Daten.' }
+    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken, Themen und Märkte.', art: '/assets/hero-visuals/discover.webp' },
+    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren und frühere Vergleichsfälle.' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Über 60 Kennzahlen je Unternehmen.', art: '/assets/hero-visuals/fundamental.svg' },
+    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Chartanalyse und Formationen.', art: '/assets/hero-visuals/technical.svg' },
+    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Bewährte Methoden, feste Regeln.', art: '/assets/hero-visuals/supertrader.svg' },
+    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Kriterien filtern.', art: '/assets/hero-visuals/screener.webp' },
+    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur im Chartbild.' },
+    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was große Investoren halten.', art: '/assets/hero-visuals/hedgefonds.webp' },
+    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Vorsorgelücke, ETFs, Förderung.', art: '/assets/hero-visuals/vorsorge.webp' },
+    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in eigenen Worten.' }
   ];
 
   function storyDuration(story) {
@@ -117,7 +118,7 @@
     stories.stories.forEach(function (story, i) {
       var li = h('li'), b = h('button', 'wk-hl'), cover = h('span', 'wk-hl-cover'), glyph = h('span', 'wk-hl-glyph');
       b.type = 'button'; b.dataset.story = story.id; b.style.setProperty('--wk-turn', (i * 72) + 'deg');
-      glyph.appendChild(icon(story.icon || 'layers')); cover.appendChild(glyph);
+      glyph.appendChild(icon(story.icon || 'layers')); cover.append(glyph, h('span', 'wk-hl-play'));
       b.append(cover, h('span', 'wk-hl-name', story.title));
       b.addEventListener('click', function () { openStory(story.id, b); });
       li.appendChild(b); list.appendChild(li);
@@ -128,11 +129,13 @@
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), copy = h('span', 'wk-product-copy');
+      var li = h('li'), a = h('a', 'wk-product'), art = h('span', 'wk-product-art'), chip = h('span', 'wk-product-chip'), copy = h('span', 'wk-product-copy');
       a.href = p.href; a.dataset.product = p.id;
-      ic.appendChild(icon(p.id));
+      if (p.art) { var img = h('img'); img.src = p.art; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; art.appendChild(img); }
+      else { art.classList.add('is-icon'); art.appendChild(icon(p.id)); }
+      chip.appendChild(icon(p.id));
       copy.append(h('strong', '', p.name), h('span', '', p.text));
-      a.append(ic, copy, h('span', 'wk-product-go', '→'));
+      a.append(art, chip, copy);
       li.appendChild(a); list.appendChild(li);
     });
     host.replaceChildren(list);
