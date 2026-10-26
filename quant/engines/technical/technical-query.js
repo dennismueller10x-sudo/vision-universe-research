@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.2.0";
+  var QUERY_VERSION = "technical-query-1.3.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -83,6 +83,7 @@
     { id: "bbSqueeze", group: "Volatilität", kind: "bool", tfs: D, label: "Bollinger-Enge (Breite im unteren 20-%-Perzentil)" },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
     { id: "close", group: "Kurs", kind: "num", tfs: D, label: "Schlusskurs (USD)" },
     { id: "chg1d", group: "Kurs", kind: "pct", tfs: D, label: "Tagesänderung" },
     { id: "hasVolume", group: "Datenqualität", kind: "bool", tfs: D, label: "Volumendaten vorhanden" },

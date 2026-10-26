@@ -21,11 +21,31 @@
    Pivots mit confirmedIndex <= t. Ein Ausbruch zaehlt ab dem ersten
    Schlusskurs jenseits der Nackenlinie NACH der Bestaetigung des letzten
    Formationspivots: detectionIndex = max(Ausbruchs-Bar, Bestaetigung).
+
+   LEBENSZYKLUS-MODUS (seit 1.1.0, opts.lifecycle, nur formations.js):
+   Ohne ihn wird jede Formation an jedem Bar t aus den letzten Pivots neu
+   abgeleitet. Ein neuer bestaetigter Pivot verschiebt das Fenster — und fast
+   jede Invalidierung (Kurs jenseits des Formationsextrems) sowie viele
+   Ausbrueche (Flagge, Tasse) setzen genau so einen neuen Pivot voraus. Die
+   Formation verschwand dann, statt als invalidiert/bestaetigt zu enden.
+   Im Lebenszyklus-Modus wird die Geometrie Stand ctx.t (Anker) bestimmt
+   und Ausbruch/Invalidierung bis opts.until (>= ctx.t) verfolgt:
+     • Dreiecke: Invalidierung an der (schraegen) Gegenlinie je Bar statt
+       an ihrem Wert am Stand-Bar.
+     • Tasse mit Henkel: Henkel Stand Bestaetigung des rechten Rands;
+       invalidiert, sobald ein Schluss die zulaessige Henkeltiefe
+       (min(15 %, halbe Tassentiefe) unter dem rechten Rand) unterschreitet.
+     • Flagge: erkannt am ersten Bar, an dem Mast, Ruecklauf (15–50 %) und
+       Mindestdauer erfuellt sind; ohne Ausbruch bis 1,5 × Mastdauer
+       (mind. 6 Bars) nach dem Mast-Extrem gilt sie als invalidiert.
+     • ATR und Kurs fuer Toleranzen stammen vom Bestaetigungsbar des
+       juengsten Pivots (Fensterbeginn), nicht vom Stand-Bar.
+   Ohne opts.lifecycle ist das Ergebnis identisch zu 1.0.0 (ti/engine.js).
    ========================================================================= */
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "ti-chart-patterns-1.0.0";
+  var ENGINE_VERSION = "ti-chart-patterns-1.1.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
@@ -80,6 +100,8 @@
       breakoutTime: isNum(res.breakoutIndex) ? ctx.series.timestamps[res.breakoutIndex] : null,
       barsSinceBreakout: isNum(res.breakoutIndex) ? ctx.t - res.breakoutIndex : null
     };
+    /* Lebenszyklus: Bar der Invalidierung (1.0.0 gab ihn nicht weiter, invalidatedAt blieb deshalb immer leer). */
+    if (ctx.lifecycle) { o.failedIndex = isNum(res.failedIndex) ? res.failedIndex : null; if (isNum(res.breakoutIndex)) o.breakoutIndex = res.breakoutIndex; }
     return Object.assign(o, extra || {});
   }
 
@@ -88,6 +110,17 @@
     var scaleId = opts.scaleId || "scale-2", v = ctx.view(scaleId);
     if (!v || v.confirmed.length < 4) return { engineVersion: ENGINE_VERSION, family: "PATTERN", evidenceGrade: "C", patterns: [], active: [], status: "UNAVAILABLE", reason: "TOO_FEW_SWINGS" };
     var c = v.confirmed, n = c.length, atr = ctx.atr, close = ctx.close, bpy = ctx.profile.barsPerYear;
+    /* Lebenszyklus: Geometrie Stand ctx.t, Aufloesung (Ausbruch/Invalidierung) bis U >= ctx.t. */
+    var life = opts.lifecycle === true, U = life && isNum(opts.until) ? Math.max(ctx.t, Math.min(opts.until, ctx.series.length - 1)) : ctx.t;
+    if (life) {
+      /* Geometrie eingefroren am Bar, an dem der juengste Pivot bestaetigt wurde (Beginn dieses Pivot-Fensters):
+         ATR und Kurs fuer Toleranzen/Mindesthoehen aendern sich innerhalb des Fensters nicht mehr, sonst kaeme und
+         ginge dieselbe Formation mit der Tagesvolatilitaet. */
+      var g = c[n - 1].confirmedIndex, atrG = ctx.col("atr", g);
+      if (isNum(atrG) && atrG > 0) atr = atrG;
+      close = ctx.series.close[g];
+    }
+    var rctx = life ? Object.assign({}, ctx, { t: U, lifecycle: true, atr: atr, close: close }) : ctx;
     var tol = Math.max(0.75 * atr, 0.025 * close), minSep = Math.max(2, Math.round(bpy / 25)), maxAge = Math.round(bpy / 3);
     var found = [];
     function last(k) { return c[n - k]; }
@@ -101,8 +134,8 @@
         var height = Math.abs(top - m.pivotPrice);
         var priorTrend = dir < 0 ? pre.pivotPrice < m.pivotPrice : pre.pivotPrice > m.pivotPrice;
         if (height >= 2.5 * atr && priorTrend) {
-          var res = resolve(ctx, b, m.pivotPrice, dir, top);
-          found.push(pack(ctx, dir < 0 ? "DOUBLE_TOP" : "DOUBLE_BOTTOM", dir, [a, m, b], res, m.pivotPrice, height, top));
+          var res = resolve(rctx, b, m.pivotPrice, dir, top);
+          found.push(pack(rctx, dir < 0 ? "DOUBLE_TOP" : "DOUBLE_BOTTOM", dir, [a, m, b], res, m.pivotPrice, height, top));
         }
       }
     }
@@ -117,10 +150,10 @@
         var neck = lineThrough(n1, n2);
         var headHeight = Math.abs(hd.pivotPrice - neck(hd.pivotIndex));
         if (headDominant && shouldersMatch && headHeight >= 3 * atr) {
-          var res2 = resolve(ctx, s2, neck, d2, hd.pivotPrice);
-          var lvl = isNum(res2.breakoutLevel) ? res2.breakoutLevel : neck(ctx.t);
-          found.push(pack(ctx, d2 < 0 ? "HEAD_AND_SHOULDERS" : "INVERSE_HEAD_AND_SHOULDERS", d2, [s1, n1, hd, n2, s2], res2, lvl, headHeight, s2.pivotPrice,   /* ungueltig jenseits der rechten Schulter */
-            { neckline: { from: { time: n1.pivotTime, price: r4(n1.pivotPrice) }, to: { time: n2.pivotTime, price: r4(n2.pivotPrice) }, atNow: r4(neck(ctx.t)) } }));
+          var res2 = resolve(rctx, s2, neck, d2, hd.pivotPrice);
+          var lvl = isNum(res2.breakoutLevel) ? res2.breakoutLevel : neck(U);
+          found.push(pack(rctx, d2 < 0 ? "HEAD_AND_SHOULDERS" : "INVERSE_HEAD_AND_SHOULDERS", d2, [s1, n1, hd, n2, s2], res2, lvl, headHeight, s2.pivotPrice,   /* ungueltig jenseits der rechten Schulter */
+            { neckline: { from: { time: n1.pivotTime, price: r4(n1.pivotPrice) }, to: { time: n2.pivotTime, price: r4(n2.pivotPrice) }, atNow: r4(neck(U)) } }));
         }
       }
     }
@@ -138,14 +171,19 @@
           var upper = flatH ? function () { return Math.max(hA.pivotPrice, hB.pivotPrice); } : lineThrough(hA, hB);
           var lower = flatL ? function () { return Math.min(lA.pivotPrice, lB.pivotPrice); } : lineThrough(lA, lB);
           var lastP = win[win.length - 1];
-          var upIdx = firstCross(ctx, lastP.pivotIndex, upper, 1), dnIdx = firstCross(ctx, lastP.pivotIndex, lower, -1);
+          var upIdx = firstCross(rctx, lastP.pivotIndex, upper, 1), dnIdx = firstCross(rctx, lastP.pivotIndex, lower, -1);
           var dir3 = upIdx >= 0 && (dnIdx < 0 || upIdx < dnIdx) ? 1 : dnIdx >= 0 ? -1 : (type === "ASCENDING_TRIANGLE" ? 1 : type === "DESCENDING_TRIANGLE" ? -1 : 0);
+          /* Lebenszyklus (Regeltexte): aufsteigendes Dreieck bricht nur nach oben aus, ein Schluss unter der Unterkante
+             invalidiert es (und umgekehrt); symmetrisches Dreieck und Rechteck bleiben beidseitig. */
+          if (life && type === "ASCENDING_TRIANGLE") dir3 = 1;
+          if (life && type === "DESCENDING_TRIANGLE") dir3 = -1;
           var res3;
           if (dir3 === 0) res3 = { status: "FORMING", detectionIndex: lastP.confirmedIndex };
-          else res3 = resolve(ctx, lastP, dir3 > 0 ? upper : lower, dir3, dir3 > 0 ? lower(ctx.t) : upper(ctx.t));
-          var bl = dir3 >= 0 ? upper(ctx.t) : lower(ctx.t);
-          found.push(pack(ctx, type, dir3 >= 0 ? 1 : -1, win, res3, isNum(res3.breakoutLevel) ? res3.breakoutLevel : bl, width, dir3 >= 0 ? lower(ctx.t) : upper(ctx.t),
-            { bias: dir3 === 0 ? "OPEN" : null, upperNow: r4(upper(ctx.t)), lowerNow: r4(lower(ctx.t)) }));
+          /* Lebenszyklus: Gegenlinie je Bar (Regel "Schluss unter der steigenden Unterkante"), nicht ihr Wert am Stand-Bar. */
+          else res3 = resolve(rctx, lastP, dir3 > 0 ? upper : lower, dir3, life ? (dir3 > 0 ? lower : upper) : (dir3 > 0 ? lower(ctx.t) : upper(ctx.t)));
+          var bl = dir3 >= 0 ? upper(U) : lower(U);
+          found.push(pack(rctx, type, dir3 >= 0 ? 1 : -1, win, res3, isNum(res3.breakoutLevel) ? res3.breakoutLevel : bl, width, dir3 >= 0 ? lower(U) : upper(U),
+            { bias: dir3 === 0 ? "OPEN" : null, upperNow: r4(upper(U)), lowerNow: r4(lower(U)) }));
         }
       }
     }
@@ -153,13 +191,27 @@
     if (n >= 2) {
       var p0 = last(2), p1 = last(1);
       var pole = p1.pivotPrice - p0.pivotPrice, poleBars = Math.max(1, p1.pivotIndex - p0.pivotIndex), fd = pole > 0 ? 1 : -1;
-      var since = ctx.t - p1.pivotIndex;
-      var retr = 0;
-      for (var k2 = p1.pivotIndex + 1; k2 <= ctx.t; k2++) retr = Math.max(retr, fd > 0 ? p1.pivotPrice - ctx.series.low[k2] : ctx.series.high[k2] - p1.pivotPrice);
-      if (Math.abs(pole) >= 5 * atr && Math.abs(pole) / poleBars >= 0.35 * atr && since >= 3 && since <= Math.max(6, 1.5 * poleBars) && retr <= 0.5 * Math.abs(pole) && retr >= 0.15 * Math.abs(pole)) {
-        var res4 = resolve(ctx, p1, p1.pivotPrice, fd, p1.pivotPrice - fd * 0.5 * Math.abs(pole));
-        if (res4.status === "FORMING") res4.detectionIndex = Math.max(p1.confirmedIndex, p1.pivotIndex + 3);
-        found.push(pack(ctx, fd > 0 ? "BULL_FLAG" : "BEAR_FLAG", fd, [p0, p1], res4, p1.pivotPrice, Math.abs(pole), p1.pivotPrice - fd * 0.5 * Math.abs(pole), { pole: r4(Math.abs(pole)), poleBars: poleBars }));
+      var since = ctx.t - p1.pivotIndex, maxLen = Math.max(6, 1.5 * poleBars), steep = Math.abs(pole) >= 5 * atr && Math.abs(pole) / poleBars >= 0.35 * atr;
+      var retr = 0, known = -1;
+      for (var k2 = p1.pivotIndex + 1; k2 <= ctx.t; k2++) {
+        retr = Math.max(retr, fd > 0 ? p1.pivotPrice - ctx.series.low[k2] : ctx.series.high[k2] - p1.pivotPrice);
+        /* Lebenszyklus: erster Bar k2 (<= Anker), an dem die Flagge mit dem damaligen Wissen erkennbar war. */
+        if (life && known < 0 && k2 >= p1.confirmedIndex && k2 - p1.pivotIndex >= 3 && k2 - p1.pivotIndex <= maxLen && retr <= 0.5 * Math.abs(pole) && retr >= 0.15 * Math.abs(pole)) known = k2;
+      }
+      var flagOk = life ? steep && known >= 0
+        : steep && since >= 3 && since <= maxLen && retr <= 0.5 * Math.abs(pole) && retr >= 0.15 * Math.abs(pole);
+      if (flagOk) {
+        var res4 = resolve(rctx, p1, p1.pivotPrice, fd, p1.pivotPrice - fd * 0.5 * Math.abs(pole));
+        if (res4.status === "FORMING") res4.detectionIndex = life ? known : Math.max(p1.confirmedIndex, p1.pivotIndex + 3);
+        if (life) {
+          /* Zeitgrenze: Ausbruch nur bis 1,5 x Mastdauer (mind. 6 Bars) nach dem Mast-Extrem, sonst invalidiert. */
+          var deadline = p1.pivotIndex + Math.floor(maxLen);
+          var firstEvent = isNum(res4.breakoutIndex) ? res4.breakoutIndex : res4.status === "FAILED" ? res4.failedIndex : Infinity;
+          if (firstEvent > deadline && U > deadline) res4 = { status: "FAILED", failedIndex: deadline + 1, expired: true };
+          res4.knownIndex = known;
+        }
+        found.push(pack(rctx, fd > 0 ? "BULL_FLAG" : "BEAR_FLAG", fd, [p0, p1], res4, p1.pivotPrice, Math.abs(pole), p1.pivotPrice - fd * 0.5 * Math.abs(pole),
+          life ? { pole: r4(Math.abs(pole)), poleBars: poleBars, knownIndex: known, expired: !!res4.expired } : { pole: r4(Math.abs(pole)), poleBars: poleBars }));
       }
     }
     /* ---- Cup & Handle (O'Neil): Hoch – Tasse 12–35 % – rechter Rand nahe Hoch – Henkel ---- */
@@ -170,11 +222,15 @@
       if (leftRim.side === "HIGH" && cupLow.side === "LOW" && rightRim.side === "HIGH") {
         var depth = 1 - cupLow.pivotPrice / leftRim.pivotPrice, rimGap = rightRim.pivotPrice / leftRim.pivotPrice - 1, dur = rightRim.pivotIndex - leftRim.pivotIndex;
         var handleLow = Infinity;
-        for (var k3 = rightRim.pivotIndex + 1; k3 <= ctx.t; k3++) handleLow = Math.min(handleLow, ctx.series.low[k3]);
+        /* Lebenszyklus: Henkel Stand Bestaetigung des rechten Rands (erster Kenntnisstand); ein spaeter zu tiefer Henkel
+           ist dann die Invalidierung (Schluss unter der zulaessigen Henkeltiefe), kein stilles Verschwinden. */
+        var handleTo = life ? rightRim.confirmedIndex : ctx.t, maxHandle = Math.min(0.15, depth / 2);
+        for (var k3 = rightRim.pivotIndex + 1; k3 <= handleTo; k3++) handleLow = Math.min(handleLow, ctx.series.low[k3]);
         var handleDepth = isNum(handleLow) ? 1 - handleLow / rightRim.pivotPrice : 0;
-        if (depth >= 0.12 && depth <= 0.35 && rimGap >= -0.05 && rimGap <= 0.03 && dur >= Math.round(bpy * 7 / 52) && handleDepth <= Math.min(0.15, depth / 2)) {
-          var res5 = resolve(ctx, rightRim, rightRim.pivotPrice, 1, handleLow === Infinity ? cupLow.pivotPrice : handleLow);
-          found.push(pack(ctx, "CUP_WITH_HANDLE", 1, [leftRim, cupLow, rightRim], res5, rightRim.pivotPrice, rightRim.pivotPrice - cupLow.pivotPrice, handleLow === Infinity ? cupLow.pivotPrice : handleLow,
+        if (depth >= 0.12 && depth <= 0.35 && rimGap >= -0.05 && rimGap <= 0.03 && dur >= Math.round(bpy * 7 / 52) && handleDepth <= maxHandle) {
+          var cupInvalid = life ? rightRim.pivotPrice * (1 - maxHandle) : handleLow === Infinity ? cupLow.pivotPrice : handleLow;
+          var res5 = resolve(rctx, rightRim, rightRim.pivotPrice, 1, cupInvalid);
+          found.push(pack(rctx, "CUP_WITH_HANDLE", 1, [leftRim, cupLow, rightRim], res5, rightRim.pivotPrice, rightRim.pivotPrice - cupLow.pivotPrice, cupInvalid,
             { depthPct: r4(depth), handleDepthPct: r4(handleDepth), source: "O'Neil (2009), How to Make Money in Stocks" }));
         }
       }
@@ -182,7 +238,7 @@
 
     /* Nur relevante: formend, oder Ausbruch/Fehlschlag nicht aelter als maxAge Bars. */
     var relevant = found.filter(function (p) {
-      if (p.status === "FORMING") return ctx.t - (p.detectionIndex || 0) <= maxAge;
+      if (p.status === "FORMING") return U - (p.detectionIndex || 0) <= maxAge;
       return p.barsSinceBreakout === null || p.barsSinceBreakout <= maxAge;
     });
     var active = relevant.filter(function (p) { return p.status === "FORMING" || p.status === "BREAKOUT" || p.status === "BREAKOUT_RETEST"; });
