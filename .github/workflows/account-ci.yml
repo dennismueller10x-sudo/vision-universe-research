@@ -5,10 +5,12 @@ name: Konten und Abos — Tests
 # Stripe, keine Konten, keine Zahlungen.
 on:
   pull_request:
-    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', '.github/workflows/account-*.yml']
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
+      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml']
   push:
     branches: [main]
-    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', '.github/workflows/account-ci.yml']
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/watchlist/**', 'core/watchlist-view.js',
+      'assets/watchlist-button.js', '.github/workflows/account-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -39,6 +41,10 @@ jobs:
         run: node scripts/account/sql-tests.mjs
       - name: Worker, Ende-zu-Ende und Kontoseiten
         run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"
+      - name: Watchlist - Uebersicht und Ansicht (Core)
+        run: node --test core/tests/watchlist-view.test.mjs core/tests/watchlist-button.test.mjs
+      - name: Watchlist - Last und Speicher (1.000 Nutzer, Kurzlauf)
+        run: node scripts/account/watchlist-load.mjs --users=1000 --sizes=25,200
       - name: Keine Schluessel im Repository
         run: node scripts/account/assert-no-billing-secrets.mjs
       - name: Worker laesst sich buendeln (ohne Ausrollen)
@@ -95,6 +101,9 @@ jobs:
           webkit_status=0
           node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
           node scripts/account/browser-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
+          node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
           test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       - name: Screenshots sichern
         if: always()

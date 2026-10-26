@@ -16,6 +16,7 @@ import {resolve, dirname, extname, join, normalize} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createEnvironment} from './sim/environment.mjs';
 import {SIM_PRICES} from './sim/fake-stripe.mjs';
+import {buildSummary, splitSummary, SUMMARY_DIR} from '../watchlist/build-summary.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const port = Number((process.argv.find(a => a.startsWith('--port=')) || '--port=8790').slice(7));
@@ -60,6 +61,7 @@ async function send(res, response) {
   res.end(Buffer.from(await response.arrayBuffer()));
 }
 
+let summary = null;
 const redirect = (res, to) => { res.writeHead(303, {Location: to}); res.end(); };
 const html = (res, text) => { res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store'}); res.end(text); };
 
@@ -139,6 +141,16 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url, origin);
     if (url.pathname.startsWith('/v1/')) return await send(res, await toWorker(req, url));
     if (url.pathname === '/__dev' || url.pathname.startsWith('/__dev/')) return await devRoute(req, res, url);
+    // Watchlist-Uebersicht: im Release gebaut (nie committet), hier einmal beim Start aus den Artefakten des Repositorys.
+    if (url.pathname.startsWith('/' + SUMMARY_DIR)) {
+      if (!summary) { try { summary = splitSummary(buildSummary(ROOT).doc); } catch (e) { summary = null; } }
+      const rel = url.pathname.slice(SUMMARY_DIR.length + 1);
+      const part = !summary ? null : rel === 'meta.json' ? summary.meta : rel === 'names.json' ? summary.names
+        : /^rows\/[A-Z0-9_]{1,2}\.json$/.test(rel) ? summary.rows[rel.slice(5, -5)] : null;
+      if (!part) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, {'Content-Type': TYPES['.json'], 'Cache-Control': 'no-store'});
+      return res.end(JSON.stringify(part));
+    }
     if (url.pathname === '/konto/config.js') {
       res.writeHead(200, {'Content-Type': TYPES['.js'], 'Cache-Control': 'no-store'});
       return res.end(`globalThis.VU_ACCOUNT_CONFIG = ${JSON.stringify({endpoint: origin, localSimulation: true})};`);
