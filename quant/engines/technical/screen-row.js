@@ -31,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.5.0";
+  var ROW_VERSION = "technical-screen-row-1.6.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -49,7 +49,9 @@
     return {
       aboveSma200: isNum(sl) ? c > sl : null, aboveSma50: isNum(ss) ? c > ss : null,
       sma50AboveSma200: isNum(sl) && isNum(ss) ? ss > sl : null, distSma200: r(pct(c, sl)),
-      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi))
+      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi)),
+      /* Nur aus der vollen Tageshistorie (bundle.multiTimeframe) berechenbar; Schlusskurse allein reichen nicht. */
+      adx: null, macdPositive: null, stochK: null, atrPct: null, relVol: null, volAboveAvg: null, volSpike: null
     };
   }
 
@@ -120,6 +122,7 @@
    *   bars: {timestamps, open, high, low, close, volume}   (technical-signals-v1, SPLIT_ADJUSTED)
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
+   *   multiTimeframe: bundle.multiTimeframe | null         (Wochen/Monat aus der vollen Tageshistorie; hat Vorrang)
    *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
@@ -217,11 +220,14 @@
        Woche noch offen und faellt weg (Feiertagsfreitage verlieren dadurch eine Woche - bewusst konservativ). */
     if (weekly.length && weekly[weekly.length - 1][0] === row.asOf && new Date(row.asOf + "T12:00:00Z").getUTCDay() !== 5) weekly = weekly.slice(0, -1);
     var wc = weekly.map(function (p) { return p[1]; });
-    var W = closeOnlyBlock(wc, 40, 10, 52);
+    /* Vorrang: Wochen-/Monatskennzahlen der Materialisierung aus der vollen Tageshistorie
+       (bundle.multiTimeframe, OHLCV, echter Monatsschluss). Ohne sie: Schlusskurs-Rechnung wie bisher. */
+    var mtf = input.multiTimeframe && /^technical-mtf-1\./.test(input.multiTimeframe.version || "") ? input.multiTimeframe : null;
+    var W = mtf && mtf["1W"] && mtf["1W"].values || closeOnlyBlock(wc, 40, 10, 52);
     if (W) Object.keys(W).forEach(function (k) { row[k + "@1W"] = W[k]; });
-    var mc = monthlyFromWeekly(weekly, row.asOf);
-    var M = closeOnlyBlock(mc, 10, 5, 12);
+    var M = mtf && mtf["1M"] && mtf["1M"].values || closeOnlyBlock(monthlyFromWeekly(weekly, row.asOf), 10, 5, 12);
     if (M) Object.keys(M).forEach(function (k) { row[k + "@1M"] = M[k]; });
+    row.mtfSource = mtf ? "DAILY_HISTORY" : "WEEKLY_CLOSES";
     var hi200 = wc.length >= 200 ? Math.max.apply(null, wc.slice(wc.length - 200)) : null;
     row.newHigh200w = isNum(hi200) ? wc[wc.length - 1] >= hi200 : null;
     row.distHigh200w = r(pct(wc[wc.length - 1], hi200));

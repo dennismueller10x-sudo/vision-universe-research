@@ -60,6 +60,13 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Bundesrat-Datum widersprüchlich (24.04. oder 08.05.) | bundesrat.de: 08.05.2026 |
 | Verlorene Shell-Sitzung durch `pkill -f` | keine pkill-Befehle mit Mustern, die den eigenen Prozess treffen |
 
+## Highlights der Willkommensseite (App, nicht Instagram)
+
+| Datum | Highlight | Ergebnis und Lehre |
+|---|---|---|
+| 26.10.2026 | `start-v1` | Film „THE ARRIVAL – Original" (Dropbox, 20 s, Musik ohne Sprache) mit vier Texteinblendungen, 720 × 1280, −16 LUFS, 3,0 MB, keine Kosten. Owner wählte die Fassung mit Text statt des reinen Films (ohne Text erklärt der Film nichts). Lehre: in App-Texten keine Einschränkung auf US-Aktien. Rezept `studio/stories/start/story.json`, Neubau bei neuem Modul über `build-story.mjs`. faster-whisper liest MP4 direkt nicht (av-Version), vorher mit FFmpeg nach WAV wandeln. |
+| 26.10.2026 | `start-v2` | Owner: Erklärvideos immer mit Sprecher. Helmut-Aufnahme (40 Wörter, 21,1 s roh, 17,3 s nach tighten, 0,05 USD), Filmton per Ducking darunter, fünf Einblendungen auf den Wortzeiten, Whisper bestätigt Wortlaut und „Vision Universe". Lehre: `tighten.py` legt `_t.wav` im Arbeitsverzeichnis ab, im Repo-Wurzelordner nicht aufrufen. |
+
 ## Recherche-Läufe (Datensätze verfallen nach der Aufbewahrungszeit)
 
 Finanz-Profile `vmVxdjRcc7v07SQ8G`, `LgzyktH5O7puaRZjp`; Hashtag Finanz `yKLbKtnWhPbGJNUe4`; Nischen `vvgkXK9xfnNukS4cx`; X-Profile `GgGu5WuduZXlaJhak` (Kallaway), `zKiwu6dl3fva1AWBO` (liu8in). Auswertung steht in REEL_RESEARCH.md; Rohdaten bei Bedarf neu laden (Kosten im Voraus nennen).

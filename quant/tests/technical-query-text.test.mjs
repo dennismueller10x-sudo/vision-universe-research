@@ -70,7 +70,7 @@ test("Unbekanntes wird gemeldet, nicht geraten; Fehlercodes kommen aus validate(
   assert.deepEqual(u.unknown, ["mondphase"]);
   assert.equal(filters(u)[0].length, 1, "der erkannte Teil bleibt auswertbar");
 
-  const tf = P.parse("Woche ADX über 25 und über SMA 200");
+  const tf = P.parse("Woche CCI über 100 und über SMA 200");
   assert.equal(tf.ok, false);
   assert.deepEqual(tf.errors.map((e) => e.code), ["FIELD_NOT_AVAILABLE_FOR_TIMEFRAME"]);
   assert.deepEqual(filters(tf), [[{ field: "aboveSma200", op: "is", value: true }]], "ungueltiger Teil entfaellt sichtbar");

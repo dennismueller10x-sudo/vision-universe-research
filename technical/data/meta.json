@@ -3,9 +3,9 @@
  "asOf": "2026-10-23",
  "generatedFrom": "2026-10-24T02:33:37.003Z",
  "versions": {
-  "row": "technical-screen-row-1.5.0",
-  "query": "technical-query-1.5.0",
-  "indicators": "technical-indicators-1.2.0",
+  "row": "technical-screen-row-1.6.0",
+  "query": "technical-query-1.6.0",
+  "indicators": "technical-indicators-1.2.1",
   "formations": "technical-formations-1.2.0"
  },
  "counts": {
@@ -16,7 +16,8 @@
   "withWeekly": 5648,
   "with200Weeks": 4898,
   "noBundle": 0,
-  "suspectJump60": 56
+  "suspectJump60": 56,
+  "weeklyMonthlyFromDailyHistory": 0
  },
  "skipped": {},
  "formations": {
@@ -71,7 +72,7 @@
  },
  "sources": {
   "daily": "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
-  "weekly": "quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
+  "weekly": "quant/data/product/technical-signals-v1 bundle.multiTimeframe (Wochen/Monat aus der vollen Tageshistorie, OHLCV); Ersatz: quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
   "benchmark": "quant/data/market/discover-series/ref_SPY.json",
   "names": "quant/data/product/universe-list-v1.json.gz"
  },
@@ -81,5 +82,5 @@
   "index": "/technical/data/index-v1.json",
   "chart": "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz"
  },
- "runtimeSec": 30
+ "runtimeSec": 36
 }

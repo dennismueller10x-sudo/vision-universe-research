@@ -43,9 +43,14 @@ test("ODER innerhalb einer Gruppe und ODER zwischen Gruppen", () => {
 test("Zeitrahmen waehlt die Spalte; Tagesfelder sind fuer Woche gesperrt", () => {
   const w = Q.evaluate(ds, { timeframe: "1W", logic: "AND", groups: [{ op: "AND", filters: [{ field: "aboveSma200", op: "is", value: true }] }] });
   assert.deepEqual(syms(w), ["AAA", "DDD"]);
-  const v = Q.validate({ timeframe: "1W", groups: [{ op: "AND", filters: [{ field: "relVol", op: "gt", value: 1 }] }] });
+  const v = Q.validate({ timeframe: "1W", groups: [{ op: "AND", filters: [{ field: "mfi14", op: "gt", value: 50 }] }] });
   assert.equal(v.ok, false);
   assert.equal(v.errors[0].code, "FIELD_NOT_AVAILABLE_FOR_TIMEFRAME");
+  /* Seit technical-query 1.5.0 (Audit B8) auch fuer Woche und Monat: Werte aus der vollen Tageshistorie. */
+  for (const id of ["adx", "macdPositive", "stochK", "atrPct", "relVol", "volAboveAvg", "volSpike"]) {
+    assert.deepEqual(Q.field(id).tfs, ["1D", "1W", "1M"], id);
+    assert.equal(Q.columnKey(id, "1M"), id + "@1M");
+  }
   assert.equal(Q.columnKey("newHigh200w", "1W"), "newHigh200w", "zeitrahmenunabhaengiges Feld");
 });
 
@@ -58,7 +63,8 @@ test("Mehrzeitrahmen: eigener Zeitrahmen je Filter, gleiche Spaltenregel, Pruefu
   assert.ok(v.ok);
   assert.equal(v.query.groups[0].filters[0].tf, "1W");
   assert.equal(v.query.groups[0].filters[1].tf, undefined, "gleicher Zeitrahmen wie die Abfrage wird nicht mitgeschrieben");
-  assert.equal(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "relVol", op: "gt", value: 1, tf: "1W" }] }] }).errors[0].code, "FIELD_NOT_AVAILABLE_FOR_TIMEFRAME");
+  assert.equal(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "cci20", op: "gt", value: 1, tf: "1W" }] }] }).errors[0].code, "FIELD_NOT_AVAILABLE_FOR_TIMEFRAME");
+  assert.ok(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "relVol", op: "gt", value: 1, tf: "1W" }] }] }).ok, "relVol gibt es seit 1.5.0 auch je Woche");
   assert.equal(Q.validate({ timeframe: "1D", groups: [{ filters: [{ field: "rsi14", op: "gt", value: 1, tf: "5M" }] }] }).errors[0].code, "INVALID_TIMEFRAME");
   assert.match(Q.describe(v.query), /RSI 14 \(Woche\) über 50/);
 });
