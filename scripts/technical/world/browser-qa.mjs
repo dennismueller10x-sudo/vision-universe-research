@@ -14,9 +14,11 @@
      Suche        Suche in Worten: Vorschau (erkannt/nicht erkannt), Ausfuehren,
                   "Erkannt als" und Treffer
      Fokus        Befundkarte -> Chart nur mit dieser Formation
+     Baukasten    Bedingung hinzufuegen, RSI waehlen, anwenden, speichern;
+                  Gespeichert zeigt Beschreibung und heutige Trefferzahl
      Signale      Befunde und Erkennungshistorie
      Menue        eigene Gruppe nach Fundamental, Chart Studio aktiv
-     Methodik     Indikatorkatalog
+     Methodik     Indikatorkatalog, Evidenztabelle der Formationen
    Je Ansicht: keine Seitenfehler, keine Konsolenfehler (ausser den zwei
    Pfaden, die nur der Release-Bau schreibt), kein horizontales Scrollen.
 
@@ -123,6 +125,29 @@ async function main() {
       await clean("Suche in Worten");
     });
 
+    await check(key + " Baukasten und Gespeichert", async () => {
+      await page.goto(base + "#/screener");
+      await page.waitForSelector(".tc-builder summary", { timeout: 30000 });
+      await page.locator(".tc-builder summary").click();
+      await page.locator(".tc-builder .tc-bgroup .tc-btn-ghost").first().click();
+      const sel = page.locator(".tc-builder .tc-bgroup .tc-brow").nth(1).locator("select").first();
+      await sel.selectOption("rsi14");
+      const val = page.locator(".tc-builder .tc-bgroup .tc-brow").nth(1).locator("input.tc-num-in").first();
+      await val.fill("45"); await val.dispatchEvent("change");
+      await page.locator(".tc-builder").getByRole("button", { name: "Anwenden", exact: true }).click();
+      await page.waitForFunction(() => /q=/.test(location.hash) && /rsi14/.test(decodeURIComponent(location.hash)));
+      await page.waitForSelector(".tc-preset");
+      assert(/RSI 14/.test(await page.locator(".tc-preset p").innerText()), "Baukasten-Abfrage nicht erkannt");
+      await page.locator(".tc-save summary").click();
+      await page.fill(".tc-save-form input", "QA Baukasten");
+      await page.locator(".tc-save-form button[type=submit]").click();
+      await page.goto(base + "#/screener/gespeichert");
+      await page.waitForSelector(".tc-saved");
+      await page.waitForFunction(() => /\d/.test(document.querySelector(".tc-saved .tc-hit-score b").textContent));
+      assert(/RSI 14/.test(await page.locator(".tc-saved .tc-row-text span").first().innerText()), "Beschreibung fehlt");
+      await clean("Baukasten und Gespeichert");
+    });
+
     await check(key + " Chart Studio", async () => {
       await page.goto(base + "#/chart/NVDA");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
@@ -148,11 +173,19 @@ async function main() {
     await check(key + " Formationsfokus", async () => {
       await page.goto(base + "#/chart/AAPL");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      assert(await page.locator(".tc-signals .tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
       const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
       assert(href, "kein Fokus-Link in den Befundkarten");
       await page.goto(base + href);
       await page.waitForSelector(".tc-focus b", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg");
+      /* Das Fenster beginnt am ersten Formationspunkt, also liegt der Erkennungstag darin. */
+      assert(await page.locator(".tc-chart text.tc-badge-text", { hasText: "Erkannt" }).count() === 1, "Erkennungsmarke im Fokus fehlt");
+      const overlap = await page.evaluate(() => {
+        const r = [...document.querySelectorAll(".tc-chart rect.tc-badge")].map((e) => e.getBBox());
+        return r.some((a, i) => r.some((b, j) => j > i && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height));
+      });
+      assert(!overlap, "Beschriftungen im Chart ueberdecken sich");
       await clean("Formationsfokus");
     });
 
@@ -187,6 +220,8 @@ async function main() {
       await page.goto(base + "#/methodik");
       await page.waitForSelector(".tc-defs dt", { timeout: 30000 });
       assert(await page.locator(".tc-defs dt").count() >= 18, "Indikatorkatalog unvollstaendig");
+      await page.waitForSelector(".tc-table tbody tr", { timeout: 15000, state: "attached" });
+      assert(await page.locator(".tc-table tbody tr").count() >= 10, "Evidenztabelle unvollstaendig");
       await clean("Methodik");
     });
     await ctx.close();

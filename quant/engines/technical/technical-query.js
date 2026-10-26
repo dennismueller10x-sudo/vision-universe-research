@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.1.0";
+  var QUERY_VERSION = "technical-query-1.2.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -50,6 +50,8 @@
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
+    { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
+    { id: "distEma200", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur EMA 200" },
     { id: "distSma200", group: "Trend", kind: "pct", tfs: ALL, label: { "1D": "Abstand zur SMA 200", "1W": "Abstand zur 40-Wochen-Linie", "1M": "Abstand zur 10-Monats-Linie" } },
     { id: "adx", group: "Trend", kind: "num", tfs: D, label: "ADX 14 (Trendstärke)" },
     { id: "supertrendUp", group: "Trend", kind: "bool", tfs: D, label: "Supertrend (10, 3) aufwärts" },

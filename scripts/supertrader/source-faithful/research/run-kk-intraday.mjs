@@ -38,13 +38,15 @@ import { toSession, compactSession, expandSession, tickerOf, KK_INTRADAY_VERSION
 import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION, IEX_BASELINE_SESSIONS, IEX_BASELINE_MIN_DAYS } from './kk-ep-lifecycle.mjs';
 import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, PS_OVERLAP_POLICIES, psChartCandidate, evaluatePsCandidates, psTradeMetrics, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
 import { SF7_EP_VARIANTS, SF7_EP_EXECUTION_VERSION, sf7EpExecutionVariantsSha256 } from './sf7-ep-execution-variants.mjs';
+import { checkLifecycleRun, SF7_CHECKS_VERSION } from './sf7-execution-checks.mjs';
+import { PLATFORM_RESEARCH_PORTFOLIO_POLICY } from './lifecycle-engine.mjs';
 import { KK_EXT_E7_6_VERSION, EXT_E7_6_ID, EXT_E7_6_REQUEST_CAP, EXT_E7_6_TARGETS, kkExtE76RegistrySha256, extPopulation, extTargets, planExtension, runExtFetch, extDaySets } from './kk-sample-ext-e7-6.mjs';
 import { KK_SAMPLE_VERSION, STRATA_SCHEMES, STRATA_MIN_POPULATION, OUTSIDE_DAY_SET, hashOrder, median, cleanPrefix, epCommonDaySet, regimeByDate, strataFeatures, stratumOf, stratifiedSample, kkSampleRegistrySha256 } from './kk-sample.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.4.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2); 1.3.0 (7.0): SF7 EP variant (SF7-D5); 1.4.0 (E7-6): extension sample CLEAN_EXT_E7_6
-export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'kk-sample-ext-e7-6.mjs', 'run-kk-intraday.mjs', 'sf7-ep-execution-variants.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.5.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2); 1.3.0 (7.0): SF7 EP variant (SF7-D5); 1.4.0 (E7-6): extension sample CLEAN_EXT_E7_6; 1.5.0 (7.0 validation): ep.sf7Validation (independent checks of the CLEAN EP runs, entry-day daily low vs IEX stop)
+export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'kk-sample-ext-e7-6.mjs', 'run-kk-intraday.mjs', 'sf7-ep-execution-variants.mjs', 'sf7-execution-checks.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
 export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
 export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
 // Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
@@ -403,6 +405,14 @@ async function main() {
       pub.ep.sets[setId].variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
       sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map(epSealedTrade) };
       log(`EP ${setId} ${v.id}: trades ${r.trades.length}`);
+      // Supertrader 7.0 validation (counts only): independent checks of the reference day set; the diagnostic
+      // entryDayLowBelowStopKept counts entry days whose consolidated daily low lies below the stop while no IEX
+      // minute after the fill reached it (the EP same-day stop is decided on IEX only; SF7 open finding, MEDIUM)
+      if (setId === 'CLEAN') {
+        const c = checkLifecycleRun(dataset, r, { config: v.config, adapter: KK_EP_ADAPTER, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, from: L.WINDOW.from });
+        ((pub.ep.sf7Validation ??= { version: SF7_CHECKS_VERSION, daySet: 'CLEAN', invariants: {} }).invariants[v.id] = { violationCount: c.violationCount, violations: c.violations, checks: c.checks, diagnostics: c.diagnostics });
+        if (c.examples.length) ((sealed.ep.sf7ValidationExamples ??= {})[v.id] = c.examples);
+      }
     }
   }
   // Supertrader 7.0: SF7 EP execution variant (sf7-ep-execution-variants.mjs) beside its unchanged comparison variant
@@ -418,6 +428,7 @@ async function main() {
     pub.ep.sf7Execution.variants[x.id] = { compareTo: x.compareTo, daySet: x.daySet, revision: x.revision, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), fillMinuteStop: fillMinute, notExecuted: r.counts.notExecutedResolved ?? {}, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])), comparison: { tradesDelta: r.trades.length - baseV.trades, ledgerEqual: sha(r.ledger) === baseV.ledgerSha256 } };
     sealed.ep.sf7Execution[x.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), trades: r.trades.map(epSealedTrade) };
     log(`EP SF7 ${x.id} (vs ${x.compareTo}): trades ${r.trades.length}`);
+    if (x.daySet === 'CLEAN' && pub.ep.sf7Validation) { const c = checkLifecycleRun(dataset, r, { config: x.config, adapter: x.adapter, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, from: L.WINDOW.from }); pub.ep.sf7Validation.invariants[x.id] = { violationCount: c.violationCount, violations: c.violations, checks: c.checks, diagnostics: c.diagnostics }; if (c.examples.length) ((sealed.ep.sf7ValidationExamples ??= {})[x.id] = c.examples); }
   }
   cur = null;
   // PS: trade-level short studies on each day set, reference overlap (INDEPENDENT) and ONE_POSITION_PER_TICKER

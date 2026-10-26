@@ -30,12 +30,14 @@ import { GROUP_VARIANTS, buildGroupStrength } from './industry-strength.mjs';
 import { makeWeinsteinGroupMembership, cikCandidatesFromSegments } from '../adapters/industry-groups.mjs';
 import { SF5_LIFECYCLES, SF5_KEYS, sf5VariantRegistrySha256 } from './sf5-lifecycles.mjs';
 import { SF7_EXECUTION_VARIANTS, SF7_EXECUTION_VERSION, sf7ExecutionVariantsSha256, ledgerWithoutReasonsSha256 } from './sf7-execution-variants.mjs';
+import { SF7_VALIDATION_VARIANTS, SF7_VALIDATION_VERSION, SF7_VALIDATION_PROTOCOL, sf7ValidationSha256, checkLifecycleRun, corruptAfter, decisionsSha256, signalsThrough, stabilityPart, stabilityPublic, compareTradeSets } from './sf7-execution-validation.mjs';
+import { PLATFORM_RESEARCH_PORTFOLIO_POLICY } from './lifecycle-engine.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF5_RUNNER_VERSION = 'sf5-lifecycle-runner-1.1.0'; // 1.1.0 (Supertrader 7.0): SF7 execution revision variants beside the unchanged sf5 variants
+export const SF5_RUNNER_VERSION = 'sf5-lifecycle-runner-1.2.0'; // 1.1.0 (Supertrader 7.0): SF7 execution revision variants beside the unchanged sf5 variants; 1.2.0: SF7 validation block (invariants, PIT corruption, stability, EX7-WEIN-TRAIL-AT-OR-ABOVE)
 // every file the lifecycle results depend on, including the unchanged screens and the reused fill order (fillRank)
-export const SF5_RESEARCH_FILES = Object.freeze(['../methods/darvas.mjs', '../methods/kullamagi.mjs', '../methods/morales-kacher.mjs', '../methods/holy-grail.mjs', '../methods/weinstein.mjs', '../common/series.mjs', '../runner/metrics.mjs', 'minervini-execution.mjs', 'lifecycle-engine.mjs', 'darvas-lifecycle.mjs', 'kk-breakout-lifecycle.mjs', 'moka-lifecycle.mjs', 'holy-grail-lifecycle.mjs', 'weinstein-lifecycle.mjs', 'sf5-lifecycles.mjs', 'run-sf5-lifecycle.mjs', 'sf7-execution-variants.mjs', 'industry-strength.mjs', '../adapters/industry-groups.mjs', '../../../core/load-sic-history.mjs', '../../../../core/industry-classification.js']);
+export const SF5_RESEARCH_FILES = Object.freeze(['../methods/darvas.mjs', '../methods/kullamagi.mjs', '../methods/morales-kacher.mjs', '../methods/holy-grail.mjs', '../methods/weinstein.mjs', '../common/series.mjs', '../runner/metrics.mjs', 'minervini-execution.mjs', 'lifecycle-engine.mjs', 'darvas-lifecycle.mjs', 'kk-breakout-lifecycle.mjs', 'moka-lifecycle.mjs', 'holy-grail-lifecycle.mjs', 'weinstein-lifecycle.mjs', 'sf5-lifecycles.mjs', 'run-sf5-lifecycle.mjs', 'sf7-execution-variants.mjs', 'sf7-execution-validation.mjs', 'sf7-execution-checks.mjs', '../../engine/indicators.mjs', 'industry-strength.mjs', '../adapters/industry-groups.mjs', '../../../core/load-sic-history.mjs', '../../../../core/industry-classification.js']);
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // as run-sf3-research.mjs
 export function sf5ResearchCodeSha256() {
   const h = crypto.createHash('sha256');
@@ -67,13 +69,23 @@ export function lifecyclePart(dataset, { keys = SF5_KEYS, from = L.WINDOW.from, 
     const cache = new Map(), prep = (cfg) => { const k = lc.adapter.prepareKey(cfg); if (!cache.has(k)) cache.set(k, prepareAll(dataset, lc.adapter, cfg)); return cache.get(k); };
     const ps = (pub.strategies[lc.key] = { strategyId: lc.strategyId, adapterVersion: lc.adapter.version, label: lc.adapter.label, sourceStatus: lc.sourceStatus, variants: {} });
     const ss = (sealed.strategies[lc.key] = { variants: {} });
+    // Supertrader 7.0 validation (sf7-execution-validation.mjs): its own block, the blocks above keep their 1.1.0 content
+    const pv = { version: SF7_VALIDATION_VERSION, registrySha256: sf7ValidationSha256(), invariants: {} }, sv = { examples: {} };
+    const validate = (id, r, adapter, config) => {
+      const c = checkLifecycleRun(dataset, r, { config, adapter, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, from });
+      pv.invariants[id] = { violationCount: c.violationCount, violations: c.violations, checks: c.checks, diagnostics: c.diagnostics };
+      if (c.examples.length) sv.examples[id] = c.examples;
+    };
+    let refRun = null;
     for (const v of lc.variants) {
       const prepared = prep(v.config);
       const r = runResearchLifecycle(dataset, { adapter: lc.adapter, config: v.config, prepared, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${lc.key}:${v.id}`);
       ps.variants[v.id] = { changes: v.changes, securitiesWithSignals: prepared.size, ...publicOf(r), ...(v.config.groupProxy ? { groupProxyCoverage: groupProxyCoverage(prepared) } : {}) };
+      validate(v.id, r, lc.adapter, v.config);
       ss.variants[v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }) };
       if (v.id === 'REF') {
+        refRun = r;
         const again = runResearchLifecycle(dataset, { adapter: lc.adapter, config: v.config, prepared: prep(v.config), from, to });
         ps.determinism = { referenceRunTwice: sha(again.ledger) === ps.variants.REF.ledgerSha256 && sha(again.trades) === sha(r.trades) };
         ss.referenceTrades = r.trades.map((t) => ({ id: t.id, signalDate: t.signalDate, entryDate: t.entryDate, entryFill: t.entryFill, entryBasis: t.entryBasis, initialStop: t.initialStop, shares: t.shares, weight: t.weight, riskOfEquity: t.riskOfEquity, exitDate: t.exitDate, exitReason: t.exitReason, pnl: t.pnl ?? null, rMultiple: t.rMultiple ?? null, unrealizedPnl: t.unrealizedPnl ?? null, status: t.status }));
@@ -92,8 +104,33 @@ export function lifecyclePart(dataset, { keys = SF5_KEYS, from = L.WINDOW.from, 
       ps.sf7Execution.variants[x.id] = { compareTo: x.compareTo, revision: x.revision, ...publicOf(r), comparison: { ledgerWithoutReasonsEqual: ledgerWithoutReasonsSha256(r.ledger) === ledgerWithoutReasonsSha256(base.ledger), ledgerRowsWithChangedReason: changedReasons, tradesDelta: r.trades.length - base.trades.length, sameBarStopCertainByClose: r.counts.sameBarStopCertainByClose ?? 0 } };
       ss.sf7Execution[x.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }) };
       log(`${lc.key} ${x.id} (vs ${x.compareTo}): trades ${r.trades.length}, certain by close ${r.counts.sameBarStopCertainByClose ?? 0}`);
+      validate(x.id, r, x.adapter, x.config);
     }
     baseRuns.clear();
+    // SF7 validation variants (declared readings beside REF; counts and hashes only)
+    for (const x of SF7_VALIDATION_VARIANTS.filter((y) => y.key === lc.key)) {
+      const r = runResearchLifecycle(dataset, { adapter: x.adapter, config: x.config, prepared: prep(x.config), from, to });
+      if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${lc.key}:${x.id}`);
+      (pv.variants ??= {})[x.id] = { compareTo: x.compareTo, revision: x.revision, ...publicOf(r), comparison: { ...compareTradeSets(refRun.trades, r.trades), stopRaisesDelta: r.counts.stopRaises - refRun.counts.stopRaises, ledgerEqual: sha(r.ledger) === sha(refRun.ledger) } };
+      (ss.sf7Validation ??= {})[x.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }) };
+      validate(x.id, r, x.adapter, x.config);
+      log(`${lc.key} ${x.id} (vs REF): trades ${r.trades.length}, raises ${r.counts.stopRaises} vs ${refRun.counts.stopRaises}`);
+    }
+    if (refRun) {
+      const P = SF7_VALIDATION_PROTOCOL, prepared = prep(lc.reference);
+      // PIT: bars after the cut replaced (same dates); decisions and signals through the cut must be identical
+      const cal = dataset.calendar.filter((d) => d >= from && d <= to), cutDate = cal[Math.floor(cal.length * P.pitCorruption.cutQuantile)], cut = dataset.calendar.indexOf(cutDate);
+      const bad = corruptAfter(dataset, cut, { seed: P.pitCorruption.seed, keep: P.pitCorruption.keepSessions });
+      const badPrep = prepareAll(bad, lc.adapter, lc.reference);
+      const rb = runResearchLifecycle(bad, { adapter: lc.adapter, config: lc.reference, prepared: badPrep, from, to: bad.calendar.at(-1) });
+      const sa = signalsThrough(dataset, { adapter: lc.adapter, config: lc.reference, prepared }, cutDate), sb = signalsThrough(bad, { adapter: lc.adapter, config: lc.reference, prepared: badPrep }, cutDate);
+      pv.pitCorruption = { cutDate, keepSessions: P.pitCorruption.keepSessions, decisionsIdentical: decisionsSha256(refRun, cutDate) === decisionsSha256(rb, cutDate), signalsIdentical: sa.sha256 === sb.sha256, signalsCompared: sa.count, ledgerRowsThroughCut: refRun.ledger.filter((q) => q.date <= cutDate).length, entriesThroughCut: refRun.trades.filter((t) => t.entryDate <= cutDate).length };
+      // stability: without one security / start one session later (prepared inputs shared; counts only, ids sealed)
+      const st = stabilityPart(dataset, refRun, { run: (d, f) => runResearchLifecycle(d, { adapter: lc.adapter, config: lc.reference, prepared, from: f, to }), from, n: P.stability.leaveOut });
+      pv.stability = stabilityPublic(st); sv.stability = st;
+      log(`${lc.key} SF7 validation: violations ${Object.values(pv.invariants).reduce((a, q) => a + q.violationCount, 0)}, PIT ${pv.pitCorruption.decisionsIdentical && pv.pitCorruption.signalsIdentical}`);
+    }
+    ps.sf7Validation = pv; ss.sf7Validation = { ...(ss.sf7Validation ?? {}), ...sv };
   }
   return { pub, sealed };
 }
@@ -187,7 +224,7 @@ async function main() {
       process.exit(3);
     }
   }
-  const receipt = { schema: 'supertrader-sf5-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: sf5ResearchCodeSha256(), runner: SF5_RUNNER_VERSION, variantRegistrySha256: sf5VariantRegistrySha256(), sf7ExecutionVariantsSha256: sf7ExecutionVariantsSha256(), groupProxy: groupProxyReceipt, limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf5-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: sf5ResearchCodeSha256(), runner: SF5_RUNNER_VERSION, variantRegistrySha256: sf5VariantRegistrySha256(), sf7ExecutionVariantsSha256: sf7ExecutionVariantsSha256(), sf7ValidationSha256: sf7ValidationSha256(), groupProxy: groupProxyReceipt, limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = lifecyclePart(dataset, { keys, log });
   const pub = { schema: 'supertrader-sf5-lifecycle-public-1.0.0', receipt, lifecycle: r.pub };
   const sealed = { receipt, public: pub, lifecycle: r.sealed };
