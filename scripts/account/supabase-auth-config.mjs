@@ -9,12 +9,17 @@
 // Redirect-URL des Workers, E-Mail-Bestaetigung, Passwortregeln, Hook
 // "Before User Created" (Registrierungssperre), eigenes SMTP ueber Brevo und
 // deutsche Vorlagen. Bricht ab, wenn der Projektname nicht nach Entwicklung
-// aussieht (dev/test/staging) - das Produktionsprojekt wird nie angefasst.
+// aussieht (dev/test/staging) - es sei denn, die Ref ist das ausdruecklich
+// benannte Produktionsprojekt (PRODUCTION_REF, docs/accounts/PRODUCTION.md).
+// Dafuer genuegt ein Token mit Auth-Rechten; die Projektdaten werden dann
+// nicht gelesen.
 // Gibt nur die Namen geaenderter Einstellungen aus, nie Werte von Geheimnissen.
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const SITE = 'https://research.visionuniverse.de/konto/';
+// Die eine Produktionsdatenbank (Owner-Entscheidung 26.10.2026).
+export const PRODUCTION_REF = 'qiytbnpoqvldsatpfkeh';
 const SECRET_FIELDS = new Set(['smtp_pass']);
 
 const mailTemplate = (title, intro, action) => `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
@@ -42,13 +47,15 @@ export function desiredAuthConfig({apiOrigin, smtp}) {
     mailer_templates_confirmation_content: mailTemplate('Registrierung bestätigen', 'Bitte bestätige deine E-Mail-Adresse, um dein Vision-Universe-Konto zu aktivieren.', 'E-Mail bestätigen'),
     mailer_subjects_recovery: 'Passwort zurücksetzen – Vision Universe',
     mailer_templates_recovery_content: mailTemplate('Passwort zurücksetzen', 'Du hast ein neues Passwort für dein Vision-Universe-Konto angefordert.', 'Neues Passwort setzen'),
+    mailer_subjects_email_change: 'Neue E-Mail-Adresse bestätigen – Vision Universe',
+    mailer_templates_email_change_content: mailTemplate('E-Mail-Adresse ändern', 'Bitte bestätige die neue E-Mail-Adresse für dein Vision-Universe-Konto.', 'Neue Adresse bestätigen'),
   };
   if (smtp) Object.assign(cfg, {smtp_host: 'smtp-relay.brevo.com', smtp_port: '587', smtp_user: smtp.login, smtp_pass: smtp.key,
     smtp_admin_email: smtp.sender, smtp_sender_name: 'Vision Universe', smtp_max_frequency: 60, rate_limit_email_sent: 30});
   return cfg;
 }
 
-export async function configureAuth({token, ref, apiOrigin, smtp, dryRun = false, fetchImpl = fetch, log = console.log}) {
+export async function configureAuth({token, ref, apiOrigin, smtp, production = false, dryRun = false, fetchImpl = fetch, log = console.log}) {
   if (!/^sbp_[A-Za-z0-9]+$/.test(String(token || ''))) throw new Error('SUPABASE_ACCESS_TOKEN fehlt (persoenliches Zugriffstoken sbp_…)');
   if (!/^[a-z0-9]{20}$/.test(String(ref || ''))) throw new Error('SUPABASE_PROJECT_REF fehlt (20 Zeichen, aus der Projekt-URL)');
   if (!/^https:\/\/[a-z0-9.-]+$/.test(String(apiOrigin || ''))) throw new Error('VU_ACCOUNT_API_ORIGIN fehlt (https://<host>)');
@@ -63,9 +70,14 @@ export async function configureAuth({token, ref, apiOrigin, smtp, dryRun = false
     if (!res.ok) throw new Error(`Supabase ${method} ${path.replace(ref, '<ref>')}: ${res.status} ${String(data.message || '').slice(0, 160)}`);
     return data;
   };
-  const project = await call('GET', `/v1/projects/${ref}`);
-  if (!/(^|[^a-z])(dev|test|staging)([^a-z]|$)/i.test(String(project.name || ''))) {
-    throw new Error('Projektname enthaelt nicht dev/test/staging - Abbruch (nur das Entwicklungsprojekt wird eingestellt).');
+  if (production) {
+    if (ref !== PRODUCTION_REF) throw new Error('Produktion: SUPABASE_PROJECT_REF ist nicht das freigegebene Produktionsprojekt - Abbruch.');
+    log('Produktionsprojekt (feste Ref) - Projektname wird nicht geprueft.');
+  } else {
+    const project = await call('GET', `/v1/projects/${ref}`);
+    if (!/(^|[^a-z])(dev|test|staging)([^a-z]|$)/i.test(String(project.name || ''))) {
+      throw new Error('Projektname enthaelt nicht dev/test/staging - Abbruch (nur das Entwicklungsprojekt wird eingestellt).');
+    }
   }
   const current = await call('GET', `/v1/projects/${ref}/config/auth`);
   const want = desiredAuthConfig({apiOrigin, smtp});
@@ -83,5 +95,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const smtp = e.BREVO_SMTP_KEY ? {login: e.BREVO_SMTP_LOGIN, key: e.BREVO_SMTP_KEY, sender: e.VU_MAIL_SENDER} : null;
   if (!smtp) console.log('::warning::Kein BREVO_SMTP_KEY - Supabase sendet mit dem eingebauten Dienst (2 E-Mails/Stunde).');
   configureAuth({token: e.SUPABASE_ACCESS_TOKEN, ref: e.SUPABASE_PROJECT_REF, apiOrigin: e.VU_ACCOUNT_API_ORIGIN, smtp,
+    production: process.argv.includes('--production'),
     dryRun: process.argv.includes('--dry-run')}).catch(err => { console.error(`FEHLER: ${err.message}`); process.exit(1); });
 }

@@ -34,10 +34,11 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 
 1. **Ausrollen** – Actions → „Konten — vu-account ausrollen (Produktion)“ → Run workflow (zwei Freigaben). Danach meldet
    `https://konto.visionuniverse.de/v1/health` `accounts: true`, `autoProcess: false`.
-2. **Auth einstellen** – Repository-Variable `VU_ACCOUNT_API_ORIGIN = https://konto.visionuniverse.de`, dann „Konten —
-   Entwicklungsumgebung einrichten“, Schritt `supabase` (erst Probelauf). Setzt Site-URL, Redirect `…/v1/auth/callback**`,
-   E-Mail-Bestätigung, Passwortregeln, Hook „Before User Created“, deutsche Vorlagen und – mit
-   `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` – SMTP über Brevo.
+2. **Auth einstellen** – „Konten — Supabase Auth einstellen (Produktion)“ (erst Probelauf;
+   `supabase-auth-config.mjs --production`, nur die feste Ref, ohne Projektabfrage). Setzt Site-URL, Redirect
+   `https://konto.visionuniverse.de/v1/auth/callback**`, E-Mail-Bestätigung, Passwort ≥ 10 mit Groß/Klein/Ziffer, Hook
+   „Before User Created“, deutsche Vorlagen (Registrierung, Passwort, E-Mail-Änderung) und – mit
+   `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` in `account-dev` – SMTP über Brevo.
 3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“: legt Produkte `vu_plus`/`vu_pro` und den Webhook an; das
    Geheimnis geht direkt in den Worker. Preise, Kundenportal und `plan_prices` erst mit der Repository-Variable
    `VU_ACCOUNT_LIVE_PRICES` (Owner-Entscheidung).

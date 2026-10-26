@@ -11,7 +11,7 @@ import {setupStripe, assertTestKey, WEBHOOK_EVENTS, priceSql, CATALOG} from '../
 import {checkBrevo} from '../brevo-check.mjs';
 import {doctor} from '../dev-doctor.mjs';
 import {pendingMigrations, applyMigrations} from '../apply-migrations.mjs';
-import {configureAuth} from '../supabase-auth-config.mjs';
+import {configureAuth, PRODUCTION_REF} from '../supabase-auth-config.mjs';
 
 const TEST_KEY = ['sk', 'test', 'abc123'].join('_');
 const API = 'https://account-dev.visionuniverse.de';
@@ -235,4 +235,28 @@ test('Supabase-Auth: nur Entwicklungsprojekt, Hook und Redirect, Geheimnis nie i
   await configureAuth({token, ref, apiOrigin: API, dryRun: true, fetchImpl: dry.fetchImpl, log: () => {}});
   assert.ok(dry.calls.every(c => c.method === 'GET'));
   await assert.rejects(configureAuth({token, ref, apiOrigin: API, smtp: {login: 'x', key: 'y', sender: 'a@gmail.com'}, fetchImpl: dry.fetchImpl}), /SMTP/);
+});
+
+test('Supabase-Auth Produktion: nur die feste Ref, ohne Projektabfrage', async () => {
+  const token = ['sbp', 'abc123'].join('_');
+  const calls = [];
+  const fetchImpl = async (url, {method, body}) => {
+    calls.push({method, path: new URL(url).pathname, body: body ? JSON.parse(body) : null});
+    if (/\/v1\/projects\/[a-z]+$/.test(new URL(url).pathname)) return json(403, {message: 'kein Projektrecht'});
+    if (method === 'GET') return json(200, {site_url: 'http://localhost:3000', password_min_length: 6, hook_before_user_created_enabled: false});
+    return json(200, {});
+  };
+  await assert.rejects(configureAuth({token, ref: 'abcdefghijklmnopqrst', apiOrigin: 'https://konto.visionuniverse.de', production: true,
+    fetchImpl, log: () => {}}), /Produktionsprojekt/);
+  assert.equal(calls.length, 0);
+  const r = await configureAuth({token, ref: PRODUCTION_REF, apiOrigin: 'https://konto.visionuniverse.de', production: true, fetchImpl, log: () => {}});
+  assert.ok(!calls.some(c => /\/v1\/projects\/[a-z]+$/.test(c.path)), 'Projektdaten nicht gelesen');
+  const patch = calls.find(c => c.method === 'PATCH').body;
+  assert.equal(patch.site_url, 'https://research.visionuniverse.de/konto/');
+  assert.equal(patch.uri_allow_list, 'https://konto.visionuniverse.de/v1/auth/callback**');
+  assert.equal(patch.password_min_length, 10);
+  assert.equal(patch.hook_before_user_created_enabled, true);
+  assert.equal(patch.mailer_autoconfirm, false);
+  assert.match(patch.mailer_templates_email_change_content, /\{\{ \.ConfirmationURL \}\}/);
+  assert.ok(r.changed.includes('hook_before_user_created_uri'));
 });
