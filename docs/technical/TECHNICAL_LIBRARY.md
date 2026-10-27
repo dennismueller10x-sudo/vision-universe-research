@@ -1,8 +1,36 @@
 # Technical-Analysebibliothek – Inventur und Ausbaustand
 
-Stand 27.10.2026, `main` nach #991. Versionen: `indicators` 1.2.1, `formations` 1.2.0, `ti-chart-patterns` 1.1.0, `screen-row` und `technical-query` 1.6.0.
+Stand 27.10.2026, `main` nach #1006. Versionen: `indicators` 1.4.0, `candlesticks` 1.1.0, `formations` 1.2.1, `ti-chart-patterns` 1.1.0, `screen-row` und `technical-query` 1.6.0 (1.7.0 mit L6, PR #1004, Freigabe offen).
+
+Die Inventur unten (Abschnitte 1–3) ist der Stand vor dem Ausbau (nach #991). Der aktuelle Gesamtstand steht in Abschnitt 0, die Einzelheiten der neuen Einträge in INDICATORS_CATALOG.md, CANDLESTICKS.md und FORMATION_VALIDATION.md.
 
 Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indikatoren, Formationen und Candlestick-Muster. Gezählt wird nur, was eine eigene Definition hat. Eine Parametervariante zählt nur, wenn sie fachlich etabliert ist und eigens genutzt wird, etwa ROC 63/126/252 als 3-, 6- und 12-Monats-Momentum. Varianten nur für die Zahl gibt es nicht.
+
+## 0. Gesamtstand nach dem Ausbau L1–L5
+
+| Bereich | Code | Mathe | Markt | Screener | Chart |
+|---|---|---|---|---|---|
+| Indikatoren (`indicators.js` 1.4.0) | 77 | 77 | 52 | 21 (26 mit L6) | 20 ●, Rest ○ |
+| Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 0 (27 mit L6) | 0 ●, 58 ○ (Marker je Bar) |
+| Chartformationen (`formations.js` 1.2.1 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
+| **gesamt** | **159** | **159** | **133** | **45 (77 mit L6)** | **44 ●** |
+
+**Herkunft „Markt“:**
+- **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
+  - 18 im Grundbestand.
+  - 17 in `technical-talib-reference-aapl-ext.json`: 12 aus 1.3.0, dazu KAMA, LINEARREG, TRIX, Ultimate Oscillator und CMO (L3).
+  - 15 in `…-ext2.json`, aus TA-Lib-Grundbausteinen zusammengesetzt (1.4.0).
+- **Indikatoren, 2 Volumenmaße** im Universum nachgerechnet.
+- **Ohne fremde Referenz (25):** Hier gibt es kein TA-Lib-Gegenstück, z. B. ZLEMA, ALMA, McGinley, NVI/PVI, Connors RSI, Elder Impulse, Envelope und die Pivot-Varianten. Sie sind nur mathematisch geprüft.
+- **Candlesticks:** 57 Muster gegen TA-Lib auf 38 echten Titeln (10.260 Bars) und konstruierten Reihen. Tweezer hat kein TA-Lib-Gegenstück.
+  - Übereinstimmung auf entscheidbaren Bars: 98–100 %.
+  - Alle Abweichungen sind einzeln belegte Gleichstände.
+  - Nie eine Richtungsabweichung.
+- **Formationen:** historische Evidenz im Universum.
+  - Dazu die Regelprüfung (L5): 11.519 von 11.525 Erkennungen regelkonform.
+  - Und der Spiegeltest (FORMATION_VALIDATION.md).
+
+**Chart ○** heißt: Die Ausgabe ist als Overlay, Unterfenster oder Marker je Bar darstellbar, wird im Chart Studio aber noch nicht gezeigt. Die Darstellung ist Frontend-Arbeit und nicht Teil dieses Ausbaus.
 
 ## Status-Spalten
 
@@ -127,7 +155,9 @@ Quellen: `formations.js` (13 Regeln, Lebenszyklus nach FORMATIONS_LIFECYCLE.md) 
 
 ## 4. Candlestick-Muster
 
-Bestand: keine eigene Bibliothek. Vorhanden sind nur verwandte Bausteine: `insideBar`, `nr7`, `heikinAshi` und die Kurslücken GAP_UP/GAP_DOWN.
+**Stand (nach #996, #1006):** `candlesticks.js` 1.1.0 mit 58 Mustern. Einzelheiten in [CANDLESTICKS.md](CANDLESTICKS.md). Der folgende Text ist der ursprüngliche Plan aus L1.
+
+Bestand vor L4: keine eigene Bibliothek. Vorhanden waren nur verwandte Bausteine: `insideBar`, `nr7`, `heikinAshi` und die Kurslücken GAP_UP/GAP_DOWN.
 
 Geplant ist das Modul `candlesticks.js`. Es soll die etablierten Ein-, Zwei- und Dreikerzenmuster enthalten: Doji-Varianten, Hammer/Hanging Man, Inverted Hammer/Shooting Star, Marubozu, Spinning Top, Engulfing, Harami, Piercing/Dark Cloud, Tweezer, Morning/Evening Star, Three White Soldiers/Black Crows, Three Inside/Outside und weitere. Jedes Muster bekommt eine dokumentierte Regel mit relativen Kerzenmaßen (Körper, Schatten gegen die mittlere Spanne der Vorbars) und einen Trendkontext, der nur Vorbars nutzt. Abgeglichen wird gegen die TA-Lib-Funktionen `CDL*` auf echten Kursen. Die Übereinstimmungsquote wird als Kennzahl festgehalten, nicht als Gleichheit, weil sich die Schwellen beider Bibliotheken bewusst unterscheiden können.
 
@@ -151,11 +181,11 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 
 | Schritt | Inhalt | Art | Status |
 |---|---|---|---|
-| L1 | Diese Inventur | Doku | dieser PR |
-| L2 | Fehlende Standardindikatoren, nur Katalog: DEMA, TEMA, TRIMA, T3, PPO, StochRSI, NATR, A/D-Linie, Chaikin-Oszillator, Balance of Power, Momentum, Standardabweichung, Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray, Ease of Movement, Awesome Oscillator, Coppock, KST, TSI, DPO, historische Volatilität, Z-Score, NVI/PVI, PVO, Klinger. Je Indikator TA-Lib-Abgleich, wo es ein Gegenstück gibt. | Katalog, kein Fachmodell | offen |
-| L3 | TA-Lib-Abgleich für KAMA, LINEARREG, TRIX, ULTOSC (Status „Markt“ der Katalogindikatoren) | Test | offen |
-| L4 | Candlestick-Bibliothek (Abschnitt 4), nur Katalog | Katalog | offen |
-| L5 | Validierung der Formationen: konstruierte Grenzfälle je Typ, Stichprobe echter Erkennungen mit Begründung | Test/Doku | offen |
+| L1 | Diese Inventur | Doku | erledigt (#994) |
+| L2 | Fehlende Standardindikatoren, nur Katalog: DEMA, TEMA, TRIMA, T3, PPO, StochRSI, NATR, A/D-Linie, Chaikin-Oszillator, Balance of Power, Momentum, Standardabweichung, Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray, Ease of Movement, Awesome Oscillator, Coppock, KST, TSI, DPO, historische Volatilität, Z-Score, NVI/PVI, PVO, Klinger. Je Indikator TA-Lib-Abgleich, wo es ein Gegenstück gibt. | Katalog, kein Fachmodell | erledigt (#995: 15, #997: 24; Klinger offen) |
+| L3 | TA-Lib-Abgleich für KAMA, LINEARREG, TRIX, ULTOSC (Status „Markt“ der Katalogindikatoren) | Test | erledigt (#995) |
+| L4 | Candlestick-Bibliothek (Abschnitt 4), nur Katalog | Katalog | erledigt (#996: 27, #1006: +31) |
+| L5 | Validierung der Formationen: konstruierte Grenzfälle je Typ, Stichprobe echter Erkennungen mit Begründung | Test/Doku | erledigt (#998); Korrektur 1.2.1 (#1000, Owner-Freigabe) |
 | L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | offen |
 | L7 | Woche/Monat: Verfügbarkeitsgrenzen je neuem Feld; aus der Tageshistorie im Materialisierungslauf | **Fachmodell** | offen |
 
