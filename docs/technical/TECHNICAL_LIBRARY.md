@@ -10,10 +10,10 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
-| Indikatoren (`indicators.js` 1.5.0) | 78 | 78 | 52 | 26 | 20 ●, Rest ○ |
+| Indikatoren (`indicators.js` 1.5.0) | 78 | 78 | 78 | 26 | 20 ●, Rest ○ |
 | Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
 | Chartformationen (`formations.js` 1.2.3 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
-| **gesamt** | **160** | **160** | **133** | **77** | **44 ●** |
+| **gesamt** | **160** | **160** | **159** | **77** | **44 ●** |
 
 **Herkunft „Markt“:**
 - **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
@@ -21,7 +21,10 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
   - 17 in `technical-talib-reference-aapl-ext.json`: 12 aus 1.3.0, dazu KAMA, LINEARREG, TRIX, Ultimate Oscillator und CMO (L3).
   - 15 in `…-ext2.json`, aus TA-Lib-Grundbausteinen zusammengesetzt (1.4.0).
 - **Indikatoren, 2 Volumenmaße** im Universum nachgerechnet.
-- **Ohne fremde Referenz (26):** Hier gibt es kein TA-Lib-Gegenstück, z. B. ZLEMA, ALMA, McGinley, Klinger, NVI/PVI, Connors RSI, Elder Impulse, Envelope und die Pivot-Varianten. Sie sind nur mathematisch geprüft.
+- **Indikatoren, 26 ohne TA-Lib-Gegenstück (L8):** Sie sind gegen eine zweite fremde Referenz geprüft, pandas-ta 0.4.71b0 oder die Formel aus TA-Lib-/numpy-Bausteinen (`technical-pandasta-reference-aapl.json`).
+  - Darunter ZLEMA, ALMA, McGinley, Klinger, NVI/PVI, Connors RSI, Supertrend, Keltner, Chandelier, Elder Impulse, Envelope und die Pivot-Varianten.
+  - Alle 57 Reihen stimmen. McGinley stimmt erst ab Bar 215 (Startwert-Konvention).
+  - Wo pandas-ta anders definiert, ist es belegt (INDICATORS_EXTERNAL_REFERENCE.md, L8).
 - **Candlesticks:** 57 Muster gegen TA-Lib auf 38 echten Titeln (10.260 Bars) und konstruierten Reihen. Tweezer hat kein TA-Lib-Gegenstück.
   - Übereinstimmung auf entscheidbaren Bars: 98–100 %.
   - Alle Abweichungen sind einzeln belegte Gleichstände.
