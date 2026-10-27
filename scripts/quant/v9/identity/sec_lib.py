@@ -160,7 +160,7 @@ KIND_RULES = [
     ('UNIT', re.compile(r'\bunits?\b', re.I)),
     ('RIGHT', re.compile(r'\brights?\b', re.I)),
     ('DEBT', re.compile(r'\bnotes?\b|debenture|\bbonds?\b|senior|subordinated', re.I)),
-    ('COMMON', re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|subordinate voting shares|common share|shares of beneficial interest', re.I)),
+    ('COMMON', re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|subordinate voting shares|common share|shares of beneficial interest|limited voting shares', re.I)),
 ]
 
 

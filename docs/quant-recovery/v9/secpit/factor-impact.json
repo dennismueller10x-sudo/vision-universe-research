@@ -1,0 +1,2008 @@
+{
+ "schemaVersion": "v9-secpit-factor-impact-1.0.0",
+ "codeSha256": "f1752bd501c6360542e52519fcf301b069f9b2a5412b6d33a6dfb07dbf4780b4",
+ "engines": {
+  "fundamentalInputs": "fundamental-inputs-1.0.0",
+  "pitHistory": "quant/engines/pit-fundamental-history.js"
+ },
+ "asOf": "2026-10-26",
+ "pitDates": [
+  "2016-06-30",
+  "2018-06-30",
+  "2019-06-30",
+  "2020-06-30",
+  "2021-06-30",
+  "2022-06-30",
+  "2023-06-30",
+  "2024-06-30",
+  "2025-06-30",
+  "2026-10-26"
+ ],
+ "affectedCiks": 224,
+ "committedVsRebuiltBase": {
+  "comparable": 211,
+  "identicalInputs": 200,
+  "note": "rebuilt BASE omits FSDS supplement and issuer extensions and uses today's bulk vintage; differences are vintage/supplement effects, not patch effects"
+ },
+ "variantEffectVsBase": {
+  "P1": {
+   "ciksChanged": 3,
+   "rawsChanged": 3,
+   "sharesChanged": 3,
+   "referenceEndChanged": 2,
+   "pitChanged": 2,
+   "latestQuarterChanged": 3
+  },
+  "P2": {
+   "ciksChanged": 10,
+   "rawsChanged": 2,
+   "sharesChanged": 6,
+   "referenceEndChanged": 0,
+   "pitChanged": 6,
+   "latestQuarterChanged": 8
+  },
+  "P12": {
+   "ciksChanged": 13,
+   "rawsChanged": 5,
+   "sharesChanged": 9,
+   "referenceEndChanged": 2,
+   "pitChanged": 8,
+   "latestQuarterChanged": 11
+  }
+ },
+ "rows": [
+  {
+   "cik": "0000006201",
+   "tickers": [
+    "AAL"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "revenueGrowthYoy",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "revenueGrowthYoy",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 661969951,
+     "end": "2027-07-17"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2027,
+     "fp": "Q2",
+     "end": "2027-07-17",
+     "filed": "2026-07-23"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 661936666,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 661936666,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "published": {
+    "marketCap": 8076033402.2,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-06-30",
+    "fundamentalsAvailableAt": "2026-07-23"
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0000006207",
+   "tickers": [
+    "AXR"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "revenueGrowthYoy",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "revenueGrowthYoy",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 5271309,
+     "end": "2033-09-12"
+    },
+    "referenceEnd": "2026-07-31",
+    "latestQuarter": {
+     "fy": 2034,
+     "fp": "Q1",
+     "end": "2033-09-12",
+     "filed": "2023-09-13"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 5324849,
+     "end": "2026-07-31"
+    },
+    "referenceEnd": "2026-07-31",
+    "latestQuarter": {
+     "fy": 2027,
+     "fp": "Q1",
+     "end": "2026-07-31",
+     "filed": "2026-09-11"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 5324849,
+     "end": "2026-07-31"
+    },
+    "referenceEnd": "2026-07-31",
+    "latestQuarter": {
+     "fy": 2027,
+     "fp": "Q1",
+     "end": "2026-07-31",
+     "filed": "2026-09-11"
+    }
+   },
+   "published": {
+    "marketCap": 108536252.31,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-07-31",
+    "fundamentalsAvailableAt": "2026-09-11"
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0000917225",
+   "tickers": null,
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END"
+   ],
+   "committedVsBase": {
+    "comparable": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2020-06-30": [
+       "capexIntensity",
+       "fcfMargin"
+      ]
+     },
+     "latestQuarterChanged": false
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2020-06-30": [
+       "capexIntensity",
+       "fcfMargin"
+      ]
+     },
+     "latestQuarterChanged": false
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 94684463,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 94684463,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 94684463,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001001614",
+   "tickers": null,
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 20400032,
+     "end": "2029-04-03"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2029,
+     "fp": "Q1",
+     "end": "2029-04-03",
+     "filed": "2024-04-03"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 22153785,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-05"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 22153785,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-05"
+    }
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001056943",
+   "tickers": [
+    "PFIS"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 10010367,
+     "end": "2028-08-01"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2028,
+     "fp": "Q2",
+     "end": "2028-08-01",
+     "filed": "2026-08-07"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 10010367,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 10010367,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "published": {
+    "marketCap": 714439892.7900001,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-06-30",
+    "fundamentalsAvailableAt": "2026-08-07"
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001134115",
+   "tickers": null,
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 195885531,
+     "end": "2033-10-31"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2033,
+     "fp": "Q3",
+     "end": "2033-10-31",
+     "filed": "2023-11-08"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 261637473,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-12"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 261637473,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-12"
+    }
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "reasons": [
+    "LABEL_FAR_FROM_END_YEAR"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "dividendCoverageByOcf",
+      "effectiveTaxRateTtm",
+      "fcfMarginTtm",
+      "netDebtToAssets",
+      "netMarginTtm",
+      "ocfMarginTtm",
+      "operatingMarginTtm",
+      "pretaxRoaTtm",
+      "roaTtm",
+      "roeTtm",
+      "roicTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2026-10-26": [
+       "revenueGrowthYoy"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "dividendCoverageByOcf",
+      "effectiveTaxRateTtm",
+      "fcfMarginTtm",
+      "netDebtToAssets",
+      "netMarginTtm",
+      "ocfMarginTtm",
+      "operatingMarginTtm",
+      "pretaxRoaTtm",
+      "roaTtm",
+      "roeTtm",
+      "roicTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2026-10-26": [
+       "revenueGrowthYoy"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P1": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 212677178,
+     "end": "2025-06-27"
+    },
+    "referenceEnd": "2026-07-03",
+    "latestQuarter": {
+     "fy": 2027,
+     "fp": "Q4",
+     "end": "2025-06-27",
+     "filed": "2026-08-04"
+    }
+   },
+   "afterP1": {
+    "shares": {
+     "v": 226644518,
+     "end": "2026-07-03"
+    },
+    "referenceEnd": "2026-07-03",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q4",
+     "end": "2026-07-03",
+     "filed": "2026-08-04"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 226644518,
+     "end": "2026-07-03"
+    },
+    "referenceEnd": "2026-07-03",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q4",
+     "end": "2026-07-03",
+     "filed": "2026-08-04"
+    }
+   },
+   "published": {
+    "marketCap": 137008764839.38,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-07-03",
+    "fundamentalsAvailableAt": "2026-08-04"
+   },
+   "rawsBeforeAfterP12": {
+    "accrualRatio": [
+     null,
+     -0.054459572103362046
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.40833564879133094
+    ],
+    "dividendCoverageByOcf": [
+     null,
+     5.794952681388013
+    ],
+    "effectiveTaxRateTtm": [
+     null,
+     0.13712737127371274
+    ],
+    "fcfMarginTtm": [
+     null,
+     0.25461254612546125
+    ],
+    "netDebtToAssets": [
+     0.4166666666666667,
+     0.19043321299638988
+    ],
+    "netMarginTtm": [
+     null,
+     0.2610906109061091
+    ],
+    "ocfMarginTtm": [
+     null,
+     0.30127101271012713
+    ],
+    "operatingMarginTtm": [
+     null,
+     0.33571135711357114
+    ],
+    "pretaxRoaTtm": [
+     null,
+     0.4101139205334815
+    ],
+    "roaTtm": [
+     null,
+     0.3538760766879689
+    ],
+    "roeTtm": [
+     null,
+     1.46931241347485
+    ],
+    "roicTtm": [
+     null,
+     0.8688146930657697
+    ]
+   }
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "reasons": [
+    "IMPLAUSIBLE_FY_LABEL",
+    "LABEL_FAR_FROM_END_YEAR"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "dividendCoverageByOcf",
+      "pretaxRoaTtm",
+      "roaTtm",
+      "roeTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": true,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "dividendCoverageByOcf",
+      "pretaxRoaTtm",
+      "roaTtm",
+      "roeTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": true,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P1": true,
+    "P12": true
+   },
+   "before": {
+    "shares": null,
+    "referenceEnd": "2025-12-31",
+    "latestQuarter": {
+     "fy": 2107,
+     "fp": "Q4",
+     "end": "2017-12-31",
+     "filed": "2019-02-28"
+    }
+   },
+   "afterP1": {
+    "shares": {
+     "v": 17043743,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 17043743,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "published": {
+    "marketCap": null,
+    "marketCapReason": "NO_PIT_SHARE_COUNT",
+    "fundamentalsAsOf": "2025-12-31",
+    "fundamentalsAvailableAt": "2026-07-23"
+   },
+   "rawsBeforeAfterP12": {
+    "accrualRatio": [
+     null,
+     -0.0029593360985677134
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.012370368145578741
+    ],
+    "dividendCoverageByOcf": [
+     null,
+     2.9829726853494147
+    ],
+    "pretaxRoaTtm": [
+     null,
+     0.011980284986272922
+    ],
+    "roaTtm": [
+     null,
+     0.009411032047011028
+    ],
+    "roeTtm": [
+     null,
+     0.14430888959903754
+    ]
+   }
+  },
+  {
+   "cik": "0001436208",
+   "tickers": [
+    "LEGH"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 23781601,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2033,
+     "fp": "Q1",
+     "end": "2033-03-31",
+     "filed": "2024-05-09"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 23781601,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-05"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 23781601,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-05"
+    }
+   },
+   "published": {
+    "marketCap": 672068044.26,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-06-30",
+    "fundamentalsAvailableAt": "2026-08-05"
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [
+      "revenueCagr3y",
+      "revenueGrowthAcceleration"
+     ],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "capexIntensity",
+       "cashToAssets",
+       "equityToAssets",
+       "fcfMargin",
+       "grossMargin",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "revenueGrowthYoy",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "revenueGrowthYoy",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "equityToAssets",
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [
+      "revenueCagr3y",
+      "revenueGrowthAcceleration"
+     ],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2018-06-30": [
+       "capexIntensity",
+       "cashToAssets",
+       "equityToAssets",
+       "fcfMargin",
+       "grossMargin",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "revenueGrowthYoy",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2019-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "revenueGrowthYoy",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2020-06-30": [
+       "cashToAssets",
+       "equityToAssets",
+       "netMargin",
+       "profitableLastYear",
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2021-06-30": [
+       "equityToAssets",
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2022-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y",
+       "visibleFiscalYears"
+      ],
+      "2023-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2024-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2025-06-30": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ],
+      "2026-10-26": [
+       "revenueCagr3y",
+       "visibleFiscalYears"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 87202362,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": null
+   },
+   "afterP2": {
+    "shares": {
+     "v": 87202362,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-04"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 87202362,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-04"
+    }
+   },
+   "published": {
+    "marketCap": 615648675.7199999,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-06-30",
+    "fundamentalsAvailableAt": "2026-08-04"
+   },
+   "rawsBeforeAfterP12": {
+    "revenueCagr3y": [
+     null,
+     0.21565883857880808
+    ],
+    "revenueGrowthAcceleration": [
+     null,
+     0.28817693273437817
+    ]
+   }
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH"
+   ],
+   "reasons": [
+    "IMPLAUSIBLE_FY_LABEL",
+    "LABEL_FAR_FROM_END_YEAR"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "fcfMarginTtm",
+      "netMarginTtm",
+      "ocfMarginTtm",
+      "operatingMarginTtm",
+      "revenueGrowthTtmYoy",
+      "roaTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": true,
+     "pitDatesChanged": {
+      "2021-06-30": [
+       "revenueGrowthYoy",
+       "shareCountChange3y"
+      ],
+      "2022-06-30": [
+       "revenueCagr3y",
+       "revenueGrowthYoy"
+      ],
+      "2023-06-30": [
+       "revenueGrowthYoy",
+       "shareCountChange3y"
+      ],
+      "2024-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y"
+      ],
+      "2025-06-30": [
+       "revenueCagr3y"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [
+      "accrualRatio",
+      "cashReturnOnAssets",
+      "fcfMarginTtm",
+      "netMarginTtm",
+      "ocfMarginTtm",
+      "operatingMarginTtm",
+      "revenueGrowthTtmYoy",
+      "roaTtm"
+     ],
+     "sharesChanged": true,
+     "referenceEndChanged": true,
+     "pitDatesChanged": {
+      "2021-06-30": [
+       "revenueGrowthYoy",
+       "shareCountChange3y"
+      ],
+      "2022-06-30": [
+       "revenueCagr3y",
+       "revenueGrowthYoy"
+      ],
+      "2023-06-30": [
+       "revenueGrowthYoy",
+       "shareCountChange3y"
+      ],
+      "2024-06-30": [
+       "revenueCagr3y",
+       "shareCountChange3y"
+      ],
+      "2025-06-30": [
+       "revenueCagr3y"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P1": true,
+    "P12": true
+   },
+   "before": {
+    "shares": null,
+    "referenceEnd": "2025-12-31",
+    "latestQuarter": {
+     "fy": 43830,
+     "fp": "Q4",
+     "end": "2019-12-31",
+     "filed": "2021-03-31"
+    }
+   },
+   "afterP1": {
+    "shares": {
+     "v": 82440372,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 82440372,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "published": {
+    "marketCap": null,
+    "marketCapReason": "NO_PIT_SHARE_COUNT",
+    "fundamentalsAsOf": "2025-12-31",
+    "fundamentalsAvailableAt": "2026-08-06"
+   },
+   "rawsBeforeAfterP12": {
+    "accrualRatio": [
+     null,
+     -0.03413096734619695
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.06070998546027322
+    ],
+    "fcfMarginTtm": [
+     null,
+     0.10368049773036474
+    ],
+    "netMarginTtm": [
+     null,
+     0.05613561233170162
+    ],
+    "ocfMarginTtm": [
+     null,
+     0.12822114774271004
+    ],
+    "operatingMarginTtm": [
+     null,
+     0.13765155475763735
+    ],
+    "revenueGrowthTtmYoy": [
+     -0.010558189781332605,
+     0.08907766303270992
+    ],
+    "roaTtm": [
+     null,
+     0.026579018114076272
+    ]
+   }
+  },
+  {
+   "cik": "0001754170",
+   "tickers": [
+    "ASLE"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END",
+    "IMPLAUSIBLE_FY_LABEL"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2024-06-30": [
+       "shareCountChange3y"
+      ],
+      "2025-06-30": [
+       "shareCountChange3y"
+      ],
+      "2026-10-26": [
+       "shareCountChange3y"
+      ]
+     },
+     "latestQuarterChanged": true
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": true,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {
+      "2024-06-30": [
+       "shareCountChange3y"
+      ],
+      "2025-06-30": [
+       "shareCountChange3y"
+      ],
+      "2026-10-26": [
+       "shareCountChange3y"
+      ]
+     },
+     "latestQuarterChanged": true
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": {
+     "v": 52990947,
+     "end": "2034-03-05"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2033,
+     "fp": "Q4",
+     "end": "2034-03-05",
+     "filed": "2024-03-27"
+    }
+   },
+   "afterP2": {
+    "shares": {
+     "v": 47726763,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "afterP12": {
+    "shares": {
+     "v": 47726763,
+     "end": "2026-06-30"
+    },
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "published": {
+    "marketCap": 249587360.37,
+    "marketCapReason": null,
+    "fundamentalsAsOf": "2026-06-30",
+    "fundamentalsAvailableAt": "2026-08-07"
+   },
+   "rawsBeforeAfterP12": {}
+  },
+  {
+   "cik": "0001846416",
+   "tickers": [
+    "HVII"
+   ],
+   "reasons": [
+    "AVAILABILITY_BEFORE_PERIOD_END"
+   ],
+   "committedVsBase": {
+    "comparable": true,
+    "rawsChanged": [],
+    "sharesChanged": false,
+    "referenceEndChanged": false,
+    "pitDatesChanged": {},
+    "latestQuarterChanged": false
+   },
+   "baseVs": {
+    "P1": {
+     "comparable": true,
+     "rawsChanged": [],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P2": {
+     "comparable": true,
+     "rawsChanged": [
+      "equityToAssets"
+     ],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    },
+    "P12": {
+     "comparable": true,
+     "rawsChanged": [
+      "equityToAssets"
+     ],
+     "sharesChanged": false,
+     "referenceEndChanged": false,
+     "pitDatesChanged": {},
+     "latestQuarterChanged": false
+    }
+   },
+   "changed": {
+    "P2": true,
+    "P12": true
+   },
+   "before": {
+    "shares": null,
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-12"
+    }
+   },
+   "afterP2": {
+    "shares": null,
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-12"
+    }
+   },
+   "afterP12": {
+    "shares": null,
+    "referenceEnd": "2026-06-30",
+    "latestQuarter": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-12"
+    }
+   },
+   "published": null,
+   "rawsBeforeAfterP12": {
+    "equityToAssets": [
+     -0.05086113202871216,
+     -0.0456446057961072
+    ]
+   }
+  }
+ ],
+ "unchangedCiks": [
+  "0000007431",
+  "0000009092",
+  "0000007623",
+  "0000012239",
+  "0000016058",
+  "0000021665",
+  "0000019745",
+  "0000025895",
+  "0000027904",
+  "0000031791",
+  "0000034067",
+  "0000034956",
+  "0000036029",
+  "0000039368",
+  "0000040533",
+  "0000042682",
+  "0000046129",
+  "0000057515",
+  "0000059478",
+  "0000061986",
+  "0000063276",
+  "0000063754",
+  "0000064463",
+  "0000069422",
+  "0000069633",
+  "0000070858",
+  "0000073756",
+  "0000074208",
+  "0000078239",
+  "0000089089",
+  "0000091576",
+  "0000091767",
+  "0000093556",
+  "0000094845",
+  "0000097210",
+  "0000102109",
+  "0000104169",
+  "0000106535",
+  "0000108516",
+  "0000310764",
+  "0000319201",
+  "0000318300",
+  "0000705432",
+  "0000706698",
+  "0000715446",
+  "0000714562",
+  "0000724910",
+  "0000727273",
+  "0000740664",
+  "0000745732",
+  "0000746514",
+  "0000763901",
+  "0000766792",
+  "0000783325",
+  "0000783412",
+  "0000784977",
+  "0000788784",
+  "0000788965",
+  "0000796343",
+  "0000807882",
+  "0000804328",
+  "0000811596",
+  "0000815556",
+  "0000821189",
+  "0000822663",
+  "0000825324",
+  "0000827054",
+  "0000833640",
+  "0000845877",
+  "0000857005",
+  "0000861884",
+  "0000872912",
+  "0000873303",
+  "0000874238",
+  "0000874501",
+  "0000874761",
+  "0000876427",
+  "0000882184",
+  "0000882835",
+  "0000887596",
+  "0000886163",
+  "0000894158",
+  "0000894405",
+  "0000895126",
+  "0000909494",
+  "0000909724",
+  "0000910606",
+  "0000912593",
+  "0000914122",
+  "0000914208",
+  "0000916365",
+  "0000921582",
+  "0000925528",
+  "0000925741",
+  "0000923601",
+  "0000924168",
+  "0000929008",
+  "0000928658",
+  "0000931015",
+  "0000931148",
+  "0000933972",
+  "0000932787",
+  "0000935419",
+  "0000936468",
+  "0000944075",
+  "0001013237",
+  "0001021561",
+  "0001029199",
+  "0001024795",
+  "0001034760",
+  "0001037038",
+  "0001037868",
+  "0001039684",
+  "0001041514",
+  "0001045609",
+  "0001045810",
+  "0001045986",
+  "0001048268",
+  "0001049502",
+  "0001063761",
+  "0001066923",
+  "0001070524",
+  "0001072627",
+  "0001080657",
+  "0001083743",
+  "0001090872",
+  "0001096752",
+  "0001111335",
+  "0001127371",
+  "0001133421",
+  "0001136893",
+  "0001159152",
+  "0001162896",
+  "0001164863",
+  "0001173420",
+  "0001273813",
+  "0001286043",
+  "0001286613",
+  "0001289419",
+  "0001296445",
+  "0001318484",
+  "0001321732",
+  "0001326706",
+  "0001331875",
+  "0001335105",
+  "0001356093",
+  "0001358190",
+  "0001350593",
+  "0001356576",
+  "0001362190",
+  "0001362468",
+  "0001365135",
+  "0001374328",
+  "0001378140",
+  "0001378590",
+  "0001377630",
+  "0001375205",
+  "0001376986",
+  "0001385818",
+  "0001389170",
+  "0001398805",
+  "0001402057",
+  "0001401521",
+  "0001411342",
+  "0001411579",
+  "0001415404",
+  "0001425287",
+  "0001450704",
+  "0001460702",
+  "0001464790",
+  "0001466258",
+  "0001484769",
+  "0001495932",
+  "0001497770",
+  "0001504678",
+  "0001516551",
+  "0001517175",
+  "0001518621",
+  "0001521332",
+  "0001526119",
+  "0001534525",
+  "0001532619",
+  "0001552033",
+  "0001556727",
+  "0001567683",
+  "0001575793",
+  "0001580149",
+  "0001589061",
+  "0001591670",
+  "0001592560",
+  "0001612630",
+  "0001646188",
+  "0001648087",
+  "0001679273",
+  "0001683541",
+  "0001711754",
+  "0001713863",
+  "0001737523",
+  "0001735041",
+  "0001806524",
+  "0001826011",
+  "0001838163",
+  "0001847846",
+  "0001849296",
+  "0001851003",
+  "0001860543",
+  "0001863990",
+  "0001867066",
+  "0001904286",
+  "0001907223",
+  "0001933567"
+ ],
+ "productionApproved": false
+}

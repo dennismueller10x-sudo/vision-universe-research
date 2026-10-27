@@ -92,6 +92,9 @@ for (const [cik, reasons] of Object.entries(meta.affected)) {
     if (c.latestQuarterChanged) tally[v].latestQuarterChanged++;
   }
   if (row.changed && row.tickers) row.published = productRecord(row.tickers[0]);
+  if (row.changed && row.baseVs.P12.comparable) {
+    row.rawsBeforeAfterP12 = Object.fromEntries(row.baseVs.P12.rawsChanged.map(k => [k, [snaps.BASE.raws[k] ?? null, snaps.P12.raws[k] ?? null]]));
+  }
   rows.push(row);
 }
 const cvb = rows.map(r => r.committedVsBase).filter(c => c.comparable);

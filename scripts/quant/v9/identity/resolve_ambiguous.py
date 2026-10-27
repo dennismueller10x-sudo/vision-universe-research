@@ -197,7 +197,11 @@ def efts_confirmation(cik, sym, series_from, limit_date):
         return {'state': 'SEARCH_FAILED', 'error': str(e)[:160], 'searchUrl': url}
     main_forms = ('10-K', '10-Q', '424B4', '424B1', '424B3', 'S-1', 'F-1', 'F-10', '20-F', '40-F')
     hits.sort(key=lambda h: (h['_source'].get('file_date', '')[:7], h['_source'].get('form') not in main_forms, h['_source'].get('file_date', ''), h['_id']))
-    pat = r'symbol\W{0,4}%s\b|\b%s\W{0,4}(?:\)|on the|on)?.{0,60}symbol' % (re.escape(q), re.escape(q))
+    if len(q) < 2:
+        return {'state': 'SKIPPED_SINGLE_LETTER_TICKER'}
+    t = re.escape(q)
+    # ticker matched case-sensitively and as a whole token, next to the word 'symbol'
+    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["\u201c\u2018\'(]?%s["\u201d\u2019\')]?(?![A-Za-z0-9])|["\u201c(]%s["\u201d)].{0,60}(?i:symbol)' % (t, t))
     tried = 0
     for h in hits:
         if tried >= 10:
@@ -208,7 +212,9 @@ def efts_confirmation(cik, sym, series_from, limit_date):
             doc, dmeta = S.get(S.doc_url(cik, acc, fname), prefix=True)
         except Exception:  # noqa: BLE001
             continue
-        quote = S.quote(doc, pat)
+        text = S._text(doc.decode('utf-8', errors='replace'))
+        m = pat.search(text)
+        quote = text[max(0, m.start() - 90):m.start() + 190] if m else None
         if quote:
             return {'state': 'FOUND', 'accession': acc, 'document': fname, 'filingDate': h['_source'].get('file_date'),
                     'form': h['_source'].get('form'), 'url': dmeta['url'], 'sha256': dmeta['sha256'],
