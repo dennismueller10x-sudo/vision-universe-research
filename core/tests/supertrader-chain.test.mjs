@@ -227,7 +227,7 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* der Alarm sieht nur den ANSTOSS */
   assert.match(wf, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result == 'failure' && 'failure'/);
-  assert.match(wf, /needs: \[refresh, materialize, freshness-contract, imblick, supertrader\]/);
+  assert.match(wf, /needs: \[refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune\]/);
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
   assert.match(st, /cron: '17 6 \* \* 2-6'/);
@@ -359,6 +359,7 @@ test("SC11 · Bereinigung nach gescheiterter Materialisierung (27.10.2026, BZH):
   assert.equal(p({ pipeline: null }).reason, "UNIVERSE_NOT_CURRENT");
   assert.equal(p({ runs: [{ status: "queued" }] }).reason, "ALREADY_QUEUED", "keinen wartenden Lauf verdraengen");
   assert.equal(p({ runs: [{ status: "in_progress" }] }).action, "DISPATCH", "laufender Lauf: Bereinigung danach");
+  assert.equal(p({ runsKnown: false }).reason, "RUNS_UNKNOWN", "Warteschlange unbekannt: fail closed");
   /* Der volle Anstoss bleibt an validierte Daten gebunden - unveraendert. */
   assert.equal(planDispatch({ pipeline: ROT, basisAsOf: "2026-10-26", supertraderAsOf: "2026-10-23", runs: [], inputs: EING, deadRefs: ["BZH"], universeOk: true }).reason, "DATA_NOT_VALIDATED");
 
@@ -373,11 +374,23 @@ test("SC11 · Bereinigung nach gescheiterter Materialisierung (27.10.2026, BZH):
     assert.equal(gh.posts.length, 1);
     assert.match(gh.posts[0].url, /\/actions\/workflows\/supertrader-signals\.yml\/dispatches$/);
     assert.deepEqual(gh.posts[0].body, { ref: "main", inputs: { mode: "prune-dead-refs" } });
+    /* Laeufe-API tot: kein POST (ein wartender voller Lauf koennte verdraengt werden), Exit 1 fuer den Alarm */
+    gh = await githubMock({ runsStatus: 502 });
+    r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 1, r.out); assert.equal(gh.posts.length, 0); assert.match(r.out, /RUNS_UNKNOWN/);
     /* voller Anstoss in derselben Lage: kein POST */
     gh = await githubMock();
     r = await lauf(["dispatch", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
     gh.server.close();
     assert.equal(gh.posts.length, 0, "nie ein voller Lauf auf unvalidierten Daten");
+    /* toter Verweis nur im VU-Trendfolge-Depot (kein Signal-Titel): wird ebenfalls erkannt */
+    writeFileSync(join(dir, "supertrader/data/signals.json"), JSON.stringify({ bySymbol: { AAA: {} }, discoverAvailability: { unavailable: [] } }));
+    writeFileSync(join(dir, "supertrader/data/trend52.json"), JSON.stringify({ portfolio: { positions: [{ symbol: "BZH" }] }, prepared: { candidates: [] }, nearMisses: [], closed: [] }));
+    gh = await githubMock();
+    r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 1, "gleiche Titelmenge wie Build und Bereinigung");
     /* keine toten Verweise: kein POST */
     writeFileSync(join(dir, "discover/data/stock-index/US_REAL.json"), JSON.stringify({ symbols: ["AAA", "BZH"] }));
     gh = await githubMock();
@@ -401,6 +414,11 @@ test("SC11 · Bereinigung nach gescheiterter Materialisierung (27.10.2026, BZH):
   assert.equal(schritte.length, 3);
   for (const s of schritte) { assert.match(s, /continue-on-error: true/); assert.match(s, /timeout-minutes: \d+/); }
   assert.match(job, /node scripts\/ci\/supertrader-chain\.mjs prune\n/);
+  /* ein gescheiterter Anstoss bleibt nicht still: Ausgaben + Alarm */
+  assert.match(job, /ergebnis: \$\{\{ \(steps\.checkout\.outcome == 'failure' \|\| steps\.node\.outcome == 'failure' \|\| steps\.anstossen\.outcome == 'failure'\) && 'failure' \|\| 'success' \}\}/);
+  assert.match(job, /id: anstossen/);
+  assert.match(wf, /RESULT_SUPERTRADER_PRUNE: \$\{\{ needs\.supertrader-prune\.result == 'failure' && 'failure'/);
+  assert.match(wf, /SUPERTRADER_PRUNE_DETAIL: \$\{\{ needs\.supertrader-prune\.outputs\.detail \}\}/);
   /* der Supertrader-Workflow kennt den Modus */
   assert.match(lies(".github/workflows/supertrader-signals.yml"), /- prune-dead-refs/);
 });

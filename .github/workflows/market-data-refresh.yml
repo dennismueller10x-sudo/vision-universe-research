@@ -778,6 +778,8 @@ jobs:
   # voller Build, keine Markt- oder Quant-Daten, Signale und Stand
   # unveraendert. Die Stufe `supertrader` und ihre Bedingungen bleiben
   # unberuehrt. Entkoppelt wie dort: continue-on-error, eigener Lauf.
+  # Scheitert der Anstoss (auch: Warteschlange unlesbar, Universum nicht aus
+  # diesem Lauf, Dispatch abgewiesen), meldet es der Pipeline-Alarm.
   # ===================================================================
   supertrader-prune:
     needs: [refresh, materialize, freshness-contract]
@@ -790,6 +792,9 @@ jobs:
     permissions:
       contents: read
       actions: write
+    outputs:
+      ergebnis: ${{ (steps.checkout.outcome == 'failure' || steps.node.outcome == 'failure' || steps.anstossen.outcome == 'failure') && 'failure' || 'success' }}
+      detail: ${{ steps.anstossen.outputs.detail }}
     steps:
       - uses: actions/checkout@v4
         id: checkout
@@ -805,6 +810,7 @@ jobs:
         with:
           node-version: '22'
       - name: Entfallene Titel ausweisen lassen (nur bei toten Verweisen, nie ein voller Lauf)
+        id: anstossen
         if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
         continue-on-error: true
         timeout-minutes: 5
@@ -825,7 +831,7 @@ jobs:
   # selben Issue, ohne es zu oeffnen.
   # ===================================================================
   alarm:
-    needs: [refresh, materialize, freshness-contract, imblick, supertrader]
+    needs: [refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -865,6 +871,9 @@ jobs:
           # eigener Workflow-Lauf; sein Stand wird vom Freshness-Monitor ueberwacht).
           RESULT_SUPERTRADER: ${{ needs.supertrader.result == 'failure' && 'failure' || needs.supertrader.outputs.ergebnis == 'failure' && 'failure' || needs.supertrader.result == 'success' && 'success' || 'skipped' }}
           SUPERTRADER_DETAIL: ${{ needs.supertrader.outputs.detail }}
+          # Bereinigung nach gescheiterter Materialisierung: ebenfalls nur der Anstoss.
+          RESULT_SUPERTRADER_PRUNE: ${{ needs.supertrader-prune.result == 'failure' && 'failure' || needs.supertrader-prune.outputs.ergebnis == 'failure' && 'failure' || needs.supertrader-prune.result == 'success' && 'success' || 'skipped' }}
+          SUPERTRADER_PRUNE_DETAIL: ${{ needs.supertrader-prune.outputs.detail }}
           GATE_DIR: ${{ runner.temp }}/gates
         run: |
           : > "$RUNNER_TEMP/stufen-detail.txt"
@@ -873,6 +882,9 @@ jobs:
           fi
           if [ -n "${SUPERTRADER_DETAIL:-}" ]; then
             printf 'Supertrader (Anstoss nach dem Nachtlauf): %s\n' "$SUPERTRADER_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
+          fi
+          if [ -n "${SUPERTRADER_PRUNE_DETAIL:-}" ]; then
+            printf 'Supertrader-Bereinigung (entfallene Titel): %s\n' "$SUPERTRADER_PRUNE_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
           fi
           if [ -s "$RUNNER_TEMP/stufen-detail.txt" ]; then
             export ALARM_DETAIL_FILE="$RUNNER_TEMP/stufen-detail.txt"

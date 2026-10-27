@@ -56,7 +56,11 @@
                 - das Discover-Universum die letzte abgeschlossene Sitzung
                   traegt (also aus diesem Nachtlauf stammt)
                 - kein Lauf wartet (ein wartender Lauf wuerde in der
-                  Concurrency-Gruppe verdraengt)
+                  Concurrency-Gruppe verdraengt); ist die Warteschlange
+                  nicht lesbar: kein Anstoss (fail closed)
+              Tote Verweise zaehlen hier ueber alle Titel mit Supertrader-
+              Seite (Signale, VU-Trendfolge, Teilpruefungen) - dieselbe
+              Menge wie Build und Bereinigung.
 
    check      Aktualitaetsmonitor (freshness-monitor.yml). Ergebnis, nicht
               Workflow: steht Supertrader auf dem Stichtag der Produktdaten?
@@ -82,6 +86,7 @@ import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { symbolsIn, trend52Symbols } from "../supertrader/discover-availability.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, "..", "..");
@@ -132,12 +137,13 @@ export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs, input
  * Soll der Nachtlauf nach gescheiterter Materialisierung den Bereinigungsmodus
  * anstossen? Ohne Nebenwirkung (testbar). Gibt nie einen vollen Lauf frei.
  */
-export function planPrune({ pipeline, basisAsOf, runs, deadRefs, universeOk }) {
+export function planPrune({ pipeline, basisAsOf, runs, runsKnown = true, deadRefs, universeOk }) {
   if (universeOk === false) return { action: "REFUSE", reason: "UNIVERSE_UNREADABLE", detail: "Discover-Aktienindex nicht lesbar oder leer." };
   const tot = deadRefs || [];
   if (!tot.length) return { action: "SKIP", reason: "NO_DEAD_REFS", detail: "Keine Signal-Titel ohne Discover-Seite." };
   const sitzung = pipeline && pipeline.LATEST_MARKET_SESSION;
   if (!sitzung || basisAsOf !== sitzung) return { action: "REFUSE", reason: "UNIVERSE_NOT_CURRENT", detail: "Discover-Universum " + (basisAsOf || "-") + ", letzte Sitzung " + (sitzung || "-") + ": das Universum stammt nicht aus diesem Nachtlauf." };
+  if (!runsKnown) return { action: "REFUSE", reason: "RUNS_UNKNOWN", detail: "Laeufe von supertrader-signals.yml nicht lesbar: ein wartender voller Lauf wuerde verdraengt. Kein Anstoss." };
   if ((runs || []).some((r) => CONFIG.waitingStates.includes(r.status))) return { action: "SKIP", reason: "ALREADY_QUEUED", detail: "Ein Lauf wartet bereits; er wuerde in der Concurrency-Gruppe verdraengt." };
   return { action: "DISPATCH", reason: "PRUNE_DEAD_REFS", detail: tot.length + " Signal-Titel ohne Discover-Seite und ohne Ausweis: " + tot.slice(0, 8).join(", ") + ". Nur Ausweis, kein voller Lauf.", inputs: { mode: "prune-dead-refs" } };
 }
@@ -203,8 +209,11 @@ function zustand(root) {
   const build = lies(join(root, "supertrader", "data", "build.json"));
   const signals = lies(join(root, "supertrader", "data", "signals.json")) || {};
   const index = lies(join(root, "discover", "data", "stock-index", "US_REAL.json"));
+  let seiten = Object.keys(signals.bySymbol || {});
+  try { seiten = [...new Set([...seiten, ...trend52Symbols(lies(join(root, "supertrader", "data", "trend52.json"))), ...symbolsIn(signals.partialChecks)])]; } catch { /* ohne trend52.json: nur die Signal-Titel */ }
   return {
     basis: u ? { asOf: u.asOf, generatedAt: u.generatedAt || null } : null,
+    seiten,
     supertraderAsOf: build ? build.asOf : null,
     symbols: Object.keys(signals.bySymbol || {}),
     universe: index && Array.isArray(index.symbols) && index.symbols.length ? new Set(index.symbols) : null,
@@ -249,11 +258,12 @@ async function dispatch(args, env, art = "build") {
   const root = args.root || REPO_ROOT;
   const z = zustand(root);
   const pipeline = messePipeline(root, args);
-  let runs = [];
-  try { runs = await holeLaeufe(args, env); } catch (e) { console.log("::warning title=Supertrader-Kette::" + e.message + " - Warteschlange unbekannt, es wird trotzdem geplant."); }
-  const tot = z.universe ? z.symbols.filter((x) => !z.universe.has(x) && !new Set(z.unavailable).has(x)).sort() : [];
+  let runs = [], runsKnown = true;
+  try { runs = await holeLaeufe(args, env); } catch (e) { runsKnown = false; console.log("::warning title=Supertrader-Kette::" + e.message + " - Warteschlange unbekannt" + (art === "prune" ? "." : ", es wird trotzdem geplant.")); }
+  const totIn = (liste) => z.universe ? liste.filter((x) => !z.universe.has(x) && !new Set(z.unavailable).has(x)).sort() : [];
+  const tot = totIn(z.symbols);
   const plan = art === "prune"
-    ? planPrune({ pipeline, basisAsOf: z.basis && z.basis.asOf, runs, deadRefs: tot, universeOk: !!z.universe })
+    ? planPrune({ pipeline, basisAsOf: z.basis && z.basis.asOf, runs, runsKnown, deadRefs: totIn(z.seiten), universeOk: !!z.universe })
     : planDispatch({ pipeline, basisAsOf: z.basis && z.basis.asOf, supertraderAsOf: z.supertraderAsOf, runs, inputs: z.inputs, deadRefs: tot, universeOk: !!z.universe });
   const kopf = [art === "prune" ? "### Supertrader-Bereinigung nach gescheiterter Materialisierung" : "### Supertrader nach dem Nachtlauf", "", "| Feld | Wert |", "|---|---|",
     "| Entscheidung | " + plan.action + " / " + plan.reason + " |", "| Grund | " + plan.detail + " |",
