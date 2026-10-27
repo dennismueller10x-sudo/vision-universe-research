@@ -120,9 +120,18 @@ test("SG6 · Verdrahtung: Code-Tests ohne Zustandstests, Zustandstests im selben
   const live = ci.slice(ci.indexOf("\n  live:\n"));
   assert.ok(core.indexOf("scripts/ci/state-gate.mjs") > core.indexOf("Core-Tests"), "nach den Code-Tests, im Job `core`");
   assert.match(core, /--event="\$EVENT"/);
-  assert.match(core, /--base="\$BASE_SHA"/);
-  const aufruf = core.split("\n").find((z) => z.includes("node scripts/ci/state-gate.mjs"));
-  assert.ok(aufruf && !aufruf.includes("${{"), "Eingaben nur über env:, nie im Shell-Text");
+  /* Im PR bekommt das Gate die geaenderten Dateien als Liste: Merge-Commit gegen seine Basis (erster Elternteil).
+     Der Checkout muss die Basis erreichen (Tiefe 2 im PR), ein Git-Fehler darf nie still "0 Dateien" melden. */
+  assert.match(core, /--changed="\$RUNNER_TEMP\/changed\.txt"/);
+  assert.match(core, /fetch-depth: \$\{\{ github\.event_name == 'pull_request' && 2 \|\| 1 \}\}/, "PR: Merge-Commit samt Eltern");
+  const liste = core.slice(core.indexOf("- name: Geaenderte Dateien des PR"), core.indexOf("- name: Core-Tests"));
+  assert.match(liste, /set -euo pipefail/);
+  assert.match(liste, /git rev-parse HEAD\^2\)" != "\$HEAD_SHA"/, "Checkout ist der Merge-Commit des PR-Kopfs");
+  assert.match(liste, /git diff --name-only HEAD\^1 HEAD > "\$RUNNER_TEMP\/changed\.txt"/);
+  assert.ok(core.indexOf("- name: Geaenderte Dateien des PR") < core.indexOf("scripts/ci/state-gate.mjs"), "Liste vor dem Gate");
+  for (const aufruf of core.split("\n").filter((z) => z.includes("node scripts/ci/state-gate.mjs"))) {
+    assert.ok(!aufruf.includes("${{"), "Eingaben nur über env:, nie im Shell-Text");
+  }
   assert.match(live, /state-gate\.mjs --strict/, "Zeitplan/Dispatch: streng");
   /* Der Glob der Code-Tests nimmt die Unterordner nicht mit */
   assert.ok(readdirSync(join(ROOT, "core", "tests")).filter((n) => n.endsWith(".test.mjs")).every((n) => n !== "supertrader-discover.test.mjs"));
