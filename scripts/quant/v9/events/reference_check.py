@@ -111,9 +111,11 @@ def block_bootstrap(calendar, obs, block=20, reps=9999, seed=20261027, alpha=0.0
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument('--priv', required=True); ap.add_argument('--evidence', required=True); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument('--priv', required=True); ap.add_argument('--evidence', required=True); ap.add_argument('--registration', default='docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json'); a = ap.parse_args()
     priv = pathlib.Path(a.priv).resolve(); evd = pathlib.Path(a.evidence).resolve()
-    reg = json.loads((ROOT / 'docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json').read_text())
+    reg = json.loads((ROOT / a.registration).read_text()); ver = reg['version']
+    exb = reg['controls'].get('exclusionSessions', {}).get('before', EXCL); exa = reg['controls'].get('exclusionSessions', {}).get('after', EXCL)
+    rundir = priv / ('run' if ver == '1.0.0' else 'run-' + ver)
     asof = reg['engineContract']['asOf']; asof_end = asof + 'T23:59:59.999Z'
     pop = json.loads((priv / 'population.json').read_text()); led = json.loads((priv / 'sec-ledger.json').read_text()); hdr = json.loads((priv / 'header-parity.json').read_text())
     master = json.loads((ROOT / 'quant/data/market/security-master/us-security-master.json').read_text())
@@ -210,7 +212,7 @@ def main():
             lid = s['listingId']
             if lid == e['listingId'] or E not in bmap[lid] or P not in bmap[lid]:
                 continue
-            if any(abs(j - si) <= EXCL for j in item_sess[lid]):
+            if any(si - exb <= j <= si + exa for j in item_sess[lid]):
                 continue
             cands.append((sha(SEED + '|' + e['eventId'] + '|' + lid), lid))
         cands.sort()
@@ -288,8 +290,8 @@ def main():
     ps = [per[h][ep]['pValue'] for ep in ('A', 'B') for h in HORIZONS]
     adj = holm(ps)
     # ---- parity against JS (read only now) ----
-    js = json.loads((evd / 'results-retrospective-1.0.0.json').read_text())
-    ref = json.loads((priv / 'run' / 'events-for-reference.json').read_text())
+    js = json.loads((evd / f'results-retrospective-{ver}.json').read_text())
+    ref = json.loads((rundir / 'events-for-reference.json').read_text())
     checks, fails = 0, []
 
     def close(name, a_, b_, rel=1e-9, abs_=1e-12):
@@ -312,7 +314,7 @@ def main():
     close('entrySessions', json.dumps([ext[e['entryIdx']]['date'] for e in events]), json.dumps([e['entrySession'] for e in ref['events']]))
     row_checks = 0
     for h in HORIZONS:
-        eng = json.loads((priv / 'run' / f'engine-result-h{h}.json').read_text())
+        eng = json.loads((rundir / f'engine-result-h{h}.json').read_text())
         for x in eng['events']:
             r = out_rows[h][x['eventId']]
             st = x['state']
@@ -342,13 +344,13 @@ def main():
                 close(f'pre.{nm}.{b}.meanAbs', jsb['meanAbs'], sum(abs(v) for v in xs) / len(xs)); close(f'pre.{nm}.{b}.mean', jsb['mean'], sum(xs) / len(xs))
     for i, f in enumerate(js['holmFamily']):
         close('holm.' + f['endpoint'], f['holm'], adj[i])
-    report = dict(schemaVersion='v9-events-parity-1.0.0', codeSha256=sha((pathlib.Path(__file__)).read_bytes()), inputs=dict(population=sha((priv / 'population.json').read_bytes()), ledger=sha((priv / 'sec-ledger.json').read_bytes()), header=sha((priv / 'header-parity.json').read_bytes()), jsResults=sha((evd / 'results-retrospective-1.0.0.json').read_bytes())),
+    report = dict(schemaVersion='v9-events-parity-1.0.0', codeSha256=sha((pathlib.Path(__file__)).read_bytes()), inputs=dict(population=sha((priv / 'population.json').read_bytes()), ledger=sha((priv / 'sec-ledger.json').read_bytes()), header=sha((priv / 'header-parity.json').read_bytes()), jsResults=sha((evd / f'results-retrospective-{ver}.json').read_bytes())),
                   tolerance='returns/excess abs 1e-12; statistics max(1e-12 abs, 1e-9 rel); ids/dates/states exact', populationMasterRecheckDisagreements=master_disagree,
                   counts=dict(retainedListings=len(bars), events=len(events), controls=len(controls), observedRowComparisons=row_checks, checks=checks, failures=len(fails)),
                   reference=dict((str(h), dict(A=per[h]['A'], B=per[h]['B'], bootA=per[h]['bootA'], bootB=per[h]['bootB'])) for h in HORIZONS), holm=adj,
                   firstFailures=[list(map(str, f)) for f in fails[:20]], result='PASS' if not fails and master_disagree == 0 else 'FAIL',
                   scope='Same-data computational parity in a second language; not an independent holdout. Weekly qualification flag taken from population.json (not re-derived).')
-    (evd / 'parity-1.0.0.json').write_text(json.dumps(report, indent=1) + '\n')
+    (evd / f'parity-{ver}.json').write_text(json.dumps(report, indent=1) + '\n')
     print(json.dumps(dict(report['counts'], result=report['result'], master=master_disagree, firstFailures=report['firstFailures'][:5])))
 
 

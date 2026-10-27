@@ -1,9 +1,9 @@
 {
  "schemaVersion": "v9-identity-ambiguous-resolution-1.0.0",
- "generatedAt": "2026-10-27T19:01:30+00:00",
+ "generatedAt": "2026-10-27T19:07:51+00:00",
  "codeSha256": {
-  "resolve_ambiguous.py": "0482736fe8c7ca9c5e887401b330d7612add5a104b372ee77dc56fc5d7979f55",
-  "sec_lib.py": "0bb3abad1a6ebfa8092d9893cca39110efb08526ef3f0df6f3448eb51ea06429",
+  "resolve_ambiguous.py": "64d57ba2275e5e88250f5d9e405be76d1443a5a0d70076331c2dbb5549711868",
+  "sec_lib.py": "f28a12380e1b71ae55a5e124da61e3f0cbb8cd2929dab913f184b0509b2ec37c",
   "series_lib.py": "77451a03986b25dd95f42a2fd231d388ab3fed19f1740f070996e3957b289919"
  },
  "inputs": {
@@ -167,16 +167,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001279569-18-002046",
-    "document": "ex995.htm",
-    "filingDate": "2018-10-18",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1683541/000127956918002046/ex995.htm",
-    "sha256": "6f6c9a9827a227b39a4c3fe95930bbf31b0d066a24eeb5aa181da8a268cb2abd",
-    "bytesRead": 10821,
-    "complete": true,
-    "quote": "l commence trading effective the open of markets, October 23, 2018. Aurora's shares will trade on the NYSE under ticker symbol \"ACB\", the same symbol the Company's common shares currently, and will continue to, trade under on the Toronto Stock Exchange (TSX). Existing shares of A",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ACB%22&ciks=0001683541&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2014-03-13&enddt=2017-03-15",
@@ -187,28 +178,15 @@
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ACB%22&ciks=0001683541&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-03-15&enddt=2020-03-17",
       "sha256": "86b617c14ba2ebd7afb1a89772da921edfeb2809ea9ea02b996281d2fa02d7a8",
       "hits": 100
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22ACB%22&ciks=0001683541&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-03-17&enddt=2021-09-27",
+      "sha256": "62d833c31f85914e73c8d75d381ca14015d66a73b91b086d95df45db309ea62d",
+      "hits": 73
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2021-05-26",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2021-05-21",
-      76
-     ],
-     "bar": [
-      "2021-05-28",
-      96.6
-     ],
-     "logReturn": 0.239845,
-     "trailingSd": 0.177689,
-     "z": 1.35,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:ACB:2007-03-07"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:ACB:2014-07-11",
     "cik": "0001683541",
@@ -220,11 +198,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2018-10-19",
+    "validFrom": "2021-10-01",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 419,
-    "excludedLeadingBars": 223,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 265,
+    "excludedLeadingBars": 377,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:ACB:2007-03-07"
     ]
@@ -393,7 +371,8 @@
       "sha256": "597aebae48ee7dbaf85b026ab67c17b681ec89e94ac0d14107f0e7e8c8a18ae4",
       "hits": 29
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -1538,7 +1517,8 @@
       "sha256": "65be3e6264644b34502e480947179c6ed6ed865abddb971cc7b89f9ec120204f",
       "hits": 59
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -1692,22 +1672,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001213900-21-063954",
-    "document": "f424b31221_adstech-eusg.htm",
-    "filingDate": "2021-12-07",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1879248/000121390021063954/f424b31221_adstech-eusg.htm",
-    "sha256": "41e970b9dea04b689b6bf1aa8c200aad0a549cdc306e5dbfa737947bec1afecd",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "the time of the consummation of the Transactions, of the Parent Ordinary Shares and Parent Warrants on Nasdaq under the symbols “ADSE” and “ADSEW”, respectively, and Parent is expected to be publicly traded on Nasdaq under those symbols following the completion of the Transaction",
+    "accession": "0001213900-21-067972",
+    "document": "f20f2021_adstecenergy.htm",
+    "filingDate": "2021-12-29",
+    "form": "20-F",
+    "url": "https://www.sec.gov/Archives/edgar/data/1879248/000121390021067972/f20f2021_adstecenergy.htm",
+    "sha256": "b53bf3df36b2a199af78a5f0adcd93510598ec2db8154b78f1500f13e961ac00",
+    "bytesRead": 188402,
+    "complete": true,
+    "quote": "ercise price of $11.50 per share, subject to adjustment (“Warrants”), are listed on the Nasdaq Capital Market under the symbols ADSE and ADSEW, respectively. The Ordinary Shares and Warrants are described in the Proxy Statement/Prospectus in the section entitled “Description of P",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ADSE%22&ciks=0001879248&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-08-25&enddt=2022-04-28",
       "sha256": "71cc010e4823f2a8e3094afbeb1dacd3dc13fa58744dd07a0240d0844e1e2d1d",
       "hits": 17
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -2083,16 +2064,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-23-270492",
-    "document": "d584147dex991.htm",
-    "filingDate": "2023-11-03",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1853044/000119312523270492/d584147dex991.htm",
-    "sha256": "d3fd6569ff3cd3b21708844e989af5bab65d2e51d898ec3f9de8de47ec900570",
-    "bytesRead": 9762,
-    "complete": true,
-    "quote": "s A common stock and warrants are expected to trade on The Nasdaq Stock Market LLC beginning November 7, 2023 under the symbols “AERT” and “AERTW”, respectively. About WWAC WWAC is a special purpose acquisition company founded by Daniel Webb, a former technology investment banker",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22AERT%22&ciks=0001853044&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-08-19&enddt=2023-11-13",
@@ -2101,25 +2073,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2023-11-09",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2023-11-03",
-      61.92
-     ],
-     "bar": [
-      "2023-11-10",
-      13.36
-     ],
-     "logReturn": -1.533578,
-     "trailingSd": 0.045648,
-     "z": -33.596,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:AERT:2001-01-02"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:AERT:2021-12-17",
     "cik": "0001853044",
@@ -2131,11 +2085,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2023-11-10",
+    "validFrom": "2023-11-17",
     "validTo": null,
-    "basis": "AFTER_LEVEL_BREAK_AT_OTHER_ROW_BOUNDARY",
-    "bars": 155,
-    "excludedLeadingBars": 99,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 154,
+    "excludedLeadingBars": 100,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:AERT:2001-01-02"
     ]
@@ -2551,7 +2505,8 @@
       "sha256": "b3e10a937436d4dccc8290249a99fb55e08668aee2e78311c92da7775e2a149e",
       "hits": 3
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -2887,16 +2842,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001628280-19-011016",
-    "document": "q22019interimfinancial.htm",
-    "filingDate": "2019-08-20",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1167379/000162828019011016/q22019interimfinancial.htm",
-    "sha256": "61217d8b9a63f48b2afe19b96e60f6228ed4820efe253e4bd6d98b49159a9e1c",
-    "bytesRead": 1906308,
-    "complete": true,
-    "quote": "hares of Alcon are listed on the SIX Swiss Stock Exchange (\"SIX\") and on the New York Stock Exchange (\"NYSE\") under the symbol “ALC”. Each Novartis shareholder of record as of April 8, 2019 and each holder of Novartis’ ADR of record as of April 1, 2019 received one share of Alcon",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ALC%22&ciks=0001167379&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-12-13&enddt=2020-02-25",
@@ -2917,11 +2863,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2019-08-23",
+    "validFrom": "2020-02-28",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 375,
-    "excludedLeadingBars": 19,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 348,
+    "excludedLeadingBars": 46,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -3097,21 +3043,22 @@
    "tickerConfirmation": {
     "state": "FOUND",
     "accession": "0001193125-22-313860",
-    "document": "d432433d8k.htm",
+    "document": "d432433dex991.htm",
     "filingDate": "2022-12-29",
     "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1838615/000119312522313860/d432433d8k.htm",
-    "sha256": "f29d7205f96a9129e2477fa57a140ef3bf528e6b393feef31eb44aed90735dcf",
-    "bytesRead": 37659,
+    "url": "https://www.sec.gov/Archives/edgar/data/1838615/000119312522313860/d432433dex991.htm",
+    "sha256": "5e574f4f2e1cb319e11712379a681973b17671db7e61fc610f376b37aaf99e9c",
+    "bytesRead": 12225,
     "complete": true,
-    "quote": "mbined company’s common stock and warrants are expected be listed on the NASDAQ Capital Market under the updated ticker symbols “ALTI” and “ALTIW”, respectively. A copy of the press release is attached hereto as Exhibit 99.1 and incorporated herein by reference. No Offer or Solic",
+    "quote": "demann” or “AlTi” or the “Company”) and its common stock and warrants will be listed on NASDAQ under the updated ticker symbols “ALTI” and “ALTIW,” respectively. No action by the Company’s shareholders is required with respect to the ticker symbol change and the change, once effe",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ALTI%22&ciks=0001838615&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-09-08&enddt=2023-01-09",
       "sha256": "316c04fb8265305ed4b9026459e89f137edfc060c3af3cc67f5b528f90678f2f",
       "hits": 9
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -3658,7 +3605,8 @@
       "sha256": "314515ba4c55470f4684a6c0d2927ad9995c089ae89af57bb5e02429a74aef51",
       "hits": 13
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -3911,7 +3859,8 @@
       "sha256": "d9c1f5449d00d0156e3cab7930765edddcc3bfa345844bf4a361afc98e1489f4",
       "hits": 41
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -4241,16 +4190,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-22-264603",
-    "document": "d349441df1.htm",
-    "filingDate": "2022-10-19",
-    "form": "F-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1937926/000119312522264603/d349441df1.htm",
-    "sha256": "d0541290773b652622bd89b1d9d0aa12185bbc9b9e41ac357b1891c6bb001072",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": " “BAM”, and the Manager has also applied to list the Class A Shares on the New York Stock Exchange (“ NYSE ”) under the symbol “BAM”. In connection with the Arrangement, the Manager expects that trading in the Class A Shares will commence on an “if, as and when issued” basis on t",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BAM%22&ciks=0001937926&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-08-04&enddt=2023-04-03",
@@ -4259,15 +4199,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2022-12-16",
-     "state": "INSUFFICIENT_HISTORY",
-     "bar": "2022-12-16",
-     "logReturn": -0.165833,
-     "otherRow": "tiingo:NYSE:BAM:2022-12-01"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NYSE:BAM:2022-12-01",
     "cik": "0001937926",
@@ -4279,15 +4211,17 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2022-12-02",
+    "validFrom": "2023-04-06",
     "validTo": null,
-    "basis": "FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START",
-    "bars": 204,
-    "excludedLeadingBars": 0,
-    "excludedPartOverlapsOtherMasterRows": []
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 186,
+    "excludedLeadingBars": 18,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NYSE:BAM:2022-12-01"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "FULL_SERIES",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -4623,15 +4557,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001493152-20-002799",
-    "document": "formf-1a.htm",
-    "filingDate": "2020-02-21",
-    "form": "F-1/A",
-    "url": "https://www.sec.gov/Archives/edgar/data/1610820/000149315220002799/formf-1a.htm",
-    "sha256": "5703a976398555a3c289bffc216cbd1baed8c0802d433c597602ab9505a9c442",
+    "accession": "0001493152-21-004840",
+    "document": "form424b4.htm",
+    "filingDate": "2021-02-25",
+    "form": "424B4",
+    "url": "https://www.sec.gov/Archives/edgar/data/1610820/000149315221004840/form424b4.htm",
+    "sha256": "4be278cffec46198837107e21a8871759b2b6f14537b9d15802f20a1c09c4315",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "A”. We are in the process of applying to list our common shares and our Warrants on the Nasdaq Capital Market under the symbols “BCTX” and “BCTXW”, respectively. No assurance can be given that our application will be approved. If Nasdaq does not approve the listing of our common ",
+    "quote": "the Symbol “8BTA”. Our common shares and Warrants have been approved for trading on the Nasdaq Capital Market under the symbols “BCTX” and “BCTXW”, respectively, and commence trading on February 24, 2021. On January 2, 2020, we implemented a 1-for-300 consolidation, or reverse sp",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BCTX%22&ciks=0001610820&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2010-07-01&enddt=2013-07-03",
@@ -4653,26 +4587,10 @@
       "sha256": "345618e00f874f0179ecb1970148be0acca01536711f80882ee3273807004127",
       "hits": 73
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
-    {
-     "date": "2021-02-24",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2021-02-19",
-      925.36
-     ],
-     "bar": [
-      "2021-02-26",
-      510
-     ],
-     "logReturn": -0.595772,
-     "trailingSd": 0.156173,
-     "z": -3.815,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:BCTX:2021-02-24"
-    },
     {
      "date": "2022-12-30",
      "state": "NO_LEVEL_BREAK",
@@ -4702,15 +4620,17 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2020-02-21",
+    "validFrom": "2021-02-26",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 349,
-    "excludedLeadingBars": 469,
-    "excludedPartOverlapsOtherMasterRows": []
+    "bars": 296,
+    "excludedLeadingBars": 522,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NASDAQ:BCTX:2021-02-24"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "TRUNCATED_UNSOURCED_HISTORY",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -4861,7 +4781,8 @@
       "sha256": "6fce16cd666d9f5808f49afa55492ec6916975558c296f5e40e744eb61558695",
       "hits": 100
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -5047,7 +4968,8 @@
       "sha256": "078da4e75c0fb33e94c29cf4edf3c31bb3774584146a3cfa2a63959526770777",
       "hits": 11
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -5214,7 +5136,8 @@
       "sha256": "2243ab9d30007610c67ea9ba77e3644bc30d9896e0fc994c39e0584653724f34",
       "hits": 9
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -5707,22 +5630,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001104659-21-108453",
-    "document": "tm2116372d2_ex4-14.htm",
-    "filingDate": "2021-08-23",
-    "form": "F-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/1867834/000110465921108453/tm2116372d2_ex4-14.htm",
-    "sha256": "437513c151ee65beb4726a0f67e4324dadf273337963f6d51595a66fd347f792",
-    "bytesRead": 358488,
+    "accession": "0001104659-21-109247",
+    "document": "tm2116372d9_ex99-1.htm",
+    "filingDate": "2021-08-25",
+    "form": "6-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1867834/000110465921109247/tm2116372d9_ex99-1.htm",
+    "sha256": "579223ac0c374da004b6d036211af78f1e2aab66baaf303c5b9dbd2f9072ac77",
+    "bytesRead": 11261,
     "complete": true,
-    "quote": "ted on the Toronto Stock Exchange under the symbol BRAG.TO and has applied to list on the Nasdaq Stock Market under the symbol BRAG. Oryx has been in operation for over nine years as a full turnkey iGaming solutions provider to the online gaming industry, with an established cust",
+    "quote": "t Market (\" Nasdaq \"). The Company’s shares are expected to begin trading on Nasdaq on August 27, 2021 under the ticker symbol \"BRAG\". The Company will retain its listing on the Toronto Stock Exchange under the ticker symbol \"BRAG\". Richard Carter, Chief Executive Officer of Brag",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BRAG%22&ciks=0001867834&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-04-29&enddt=2022-03-10",
       "sha256": "d808c8d6a0f38292973f57d41eea37a303c4d72c4b3cbe6800015eccec135394",
       "hits": 47
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -5873,22 +5797,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001104659-23-037142",
-    "document": "tm2135137-60_424b3.htm",
-    "filingDate": "2023-03-27",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1899123/000110465923037142/tm2135137-60_424b3.htm",
-    "sha256": "a6186c29beb1665685a0106c9814940cb8448d44cb01b1f1ae327a18138ae0ce",
+    "accession": "0001104659-23-047181",
+    "document": "tm237717-2_20f.htm",
+    "filingDate": "2023-04-19",
+    "form": "20-F",
+    "url": "https://www.sec.gov/Archives/edgar/data/1899123/000110465923047181/tm237717-2_20f.htm",
+    "sha256": "977edad7dd426bfedbb8777aee224b432acc368a9db76845a63c650517ae87a2",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "G has filed an initial listing application to list the BTG Class A Ordinary Shares on The Nasdaq Stock Market under the symbol “BTDR.” BTG Class A Ordinary Shares received in exchange for BSGA Ordinary Shares in the transaction will be freely transferable under United States fede",
+    "quote": "Combination on April 13, 2023. Our Class A Ordinary Shares commenced trading on the Nasdaq on April 14, 2023, under the symbol “BTDR.” Key Performance Metrics We regularly review a number of metrics, including the key metrics presented below, to evaluate our business and performa",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BTDR%22&ciks=0001899123&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-12-15&enddt=2023-04-28",
       "sha256": "ad3392ef0f105b4d12ef82972b3ab6288fb52ee246b0d1b8d0f0a7d598d04f31",
       "hits": 13
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -6099,7 +6024,8 @@
       "sha256": "3fec10b3ebcb08f766db3f44ef5cc5335323d910a16f3e870537e3ad4ded602d",
       "hits": 97
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -6429,7 +6355,8 @@
       "sha256": "112820de99c54351ce93afb6f89900388b350db6a003f4bfe1876e318f4b547b",
       "hits": 92
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -6922,15 +6849,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001171843-21-003285",
+    "accession": "0001171843-21-003364",
     "document": "exh_991.htm",
-    "filingDate": "2021-05-07",
+    "filingDate": "2021-05-11",
     "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1854640/000117184321003285/exh_991.htm",
-    "sha256": "a0ef1857b60f6299efd52e9992b4027dff9d6c1f91cffa5cccdefce0996f7ac2",
-    "bytesRead": 8217,
+    "url": "https://www.sec.gov/Archives/edgar/data/1854640/000117184321003364/exh_991.htm",
+    "sha256": "e212a7c4332c6340e1e4c10a7e90b35e4cefae0c3ed8d7e5664ebea46a15fe95",
+    "bytesRead": 720208,
     "complete": true,
-    "quote": "hares trade on the Toronto Stock Exchange (TSX) under the symbol CG and on the New York Stock Exchange (NYSE) under the symbol CGAU. The Company is based in Toronto, Ontario, Canada. For more information: John W. Pearson Vice President, Investor Relations (416) 204-1953 john.pear",
+    "quote": " New York Stock Exchange Listing Centerra’s common shares began trading on the New York Stock Exchange (NYSE) under the symbol “CGAU” on Thursday, April 15, 2021. Kyrgyz Republic Update As previously disclosed, the Kyrgyz Republic Parliament passed a law on May 6, 2021 which woul",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22CGAU%22&ciks=0001854640&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2015-09-10&enddt=2018-09-12",
@@ -6942,7 +6869,8 @@
       "sha256": "7a33b5a0ea88f405c097565b54f96ad9ef3ff14b5140e7f21b0e0b35c04f9cbd",
       "hits": 19
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -6974,11 +6902,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-05-07",
+    "validFrom": "2021-05-14",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 286,
-    "excludedLeadingBars": 274,
+    "bars": 285,
+    "excludedLeadingBars": 275,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:CGAU:2021-04-15"
     ]
@@ -7107,22 +7035,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001193125-21-024709",
-    "document": "d113754d6k.htm",
-    "filingDate": "2021-02-01",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1824814/000119312521024709/d113754d6k.htm",
-    "sha256": "1a545fa488ff7af8a039eaf2b8ec3ac3b3b27f810b67bb950af2b8eb5dd7ec2e",
-    "bytesRead": 32103,
-    "complete": true,
-    "quote": "dent, publicly traded company and the Cognyte shares are listed on the Nasdaq Global Select Market (“NASDAQ”) under the symbol “CGNT.” Trading in Cognyte shares is expected to commence on NASDAQ on February 2, 2021. In connection with the Spin-Off, we entered into certain agreeme",
+    "accession": "0001824814-21-000007",
+    "document": "cgnt-20210131.htm",
+    "filingDate": "2021-04-29",
+    "form": "20-F",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824814/000182481421000007/cgnt-20210131.htm",
+    "sha256": "808900ce5270b1d7bfcb9d673f90646b8206bf5472e4c3b1736097da5f8f1ce0",
+    "bytesRead": 2097152,
+    "complete": false,
+    "quote": "n. As a result, we are now an independent, publicly traded company and our shares are listed on Nasdaq under the ticker symbol “CGNT”. In connection with the spin-off, we entered into the following agreements with Verint (collectively, the “Ancillary Agreements”), each dated as o",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22CGNT%22&ciks=0001824814&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-10-08&enddt=2021-04-29",
       "sha256": "8eac6db1c98a19264b90ff9372f6a853d11acf9533de29ad6949784a8c8f1cb3",
       "hits": 6
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -7136,15 +7065,15 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-02-05",
+    "validFrom": "2021-04-30",
     "validTo": null,
-    "basis": "FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START",
-    "bars": 299,
-    "excludedLeadingBars": 0,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 287,
+    "excludedLeadingBars": 12,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "FULL_SERIES",
+   "subState": "TRUNCATED_UNSOURCED_HISTORY",
    "reasons": []
   },
   {
@@ -7336,16 +7265,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-22-189506",
-    "document": "d253559d8k.htm",
-    "filingDate": "2022-07-07",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1486159/000119312522189506/d253559d8k.htm",
-    "sha256": "8972eed50796cd224b86fec0be7cba5545466b5ae1ca51dc239c8e2531491459",
-    "bytesRead": 89929,
-    "complete": true,
-    "quote": "Company Common Stock ”) began trading on the Nasdaq Global Select Market (“ NASDAQ ”) under the new name and new ticker symbol “CHRD”. The Merger Pursuant to the Merger Agreement, at the effective time of the Company Merger (as defined below) (the “ Company Merger Effective Time ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22CHRD%22&ciks=0001486159&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-07-23&enddt=2022-07-07",
@@ -7744,16 +7664,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-24-266188",
-    "document": "d897754d424b3.htm",
-    "filingDate": "2024-11-26",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1710366/000119312524266188/d897754d424b3.htm",
-    "sha256": "e8c6dd8a7c8ba7f30eb9770050ffd5ee6e7a33c0bb4ff7dd43547dd4bf012de6",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "L will be renamed “Core Natural Resources, Inc.” and its shares of common stock will trade on the NYSE under the ticker symbol “CNR.” The combined company will retain CONSOL’s current headquarters in Canonsburg, Pennsylvania. CONSOL and Arch have also agreed to certain governance",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22CNR%22&ciks=0001710366&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-07-19&enddt=2020-07-21",
@@ -7784,11 +7695,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2024-11-29",
+    "validFrom": "2025-01-17",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 100,
-    "excludedLeadingBars": 367,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 93,
+    "excludedLeadingBars": 374,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:CNR:1992-04-06",
      "tiingo:NYSE MKT:CNR:2016-01-04"
@@ -7950,7 +7861,8 @@
       "sha256": "890f8ce7f74d5d0cf8d3c5be8cff5f802ec6c129afbfa89e1bc3f4ddd084c415",
       "hits": 37
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -8112,21 +8024,17 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-20-263412",
-    "document": "d14737d8k.htm",
-    "filingDate": "2020-10-05",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312520263412/d14737d8k.htm",
-    "sha256": "d2500c237045c1857d9c2f5543b8a67c88717e80488aad380506b0b078f83c47",
-    "bytesRead": 20944,
-    "complete": true,
-    "quote": "espectively. The Company’s common stock will trade on the Nasdaq Global Select Market under the new name and the ticker symbol “COGT” as of the start of trading on October 6, 2020. In connection with the corporate name change, the new CUSIP for the Company’s common stock will be ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22COGT%22&ciks=0001622229&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-11-29&enddt=2020-12-01",
       "sha256": "b1a53120d9e8b73e8d5e8d52fb8a9c613418540820f6202135f3722b9903ab16",
       "hits": 16
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22COGT%22&ciks=0001622229&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-12-01&enddt=2021-08-16",
+      "sha256": "86aec75f73a4ee2e91dd94df94fde02f5dac6c5ac8618f2780c0583a64f7d139",
+      "hits": 32
      }
     ]
    },
@@ -8142,11 +8050,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2020-10-09",
+    "validFrom": "2021-08-20",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 316,
-    "excludedLeadingBars": 132,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 271,
+    "excludedLeadingBars": 177,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:COGT:2007-12-27"
     ]
@@ -8319,16 +8227,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-23-005999",
-    "document": "tm234123d1_8k.htm",
-    "filingDate": "2023-01-24",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1140859/000110465923005999/tm234123d1_8k.htm",
-    "sha256": "f8bf4a0950647ec30dae75d95344bc6003c38fd2b3e80a8fa70c73fd9767c406",
-    "bytesRead": 27075,
-    "complete": true,
-    "quote": "ock to cease trading under the ticker symbol “ABC” and to begin trading on the New York Stock Exchange under the ticker symbol “COR”. The information in this item, including Exhibit 99.1, is being furnished to the Securities and Exchange Commission and shall not be deemed “filed”",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22COR%22&ciks=0001140859&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
@@ -8384,11 +8283,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2023-01-27",
+    "validFrom": "2023-09-01",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 196,
-    "excludedLeadingBars": 1451,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 165,
+    "excludedLeadingBars": 1482,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:COR:2010-09-23"
     ]
@@ -8753,16 +8652,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001628280-20-017287",
-    "document": "iret-20201209.htm",
-    "filingDate": "2020-12-09",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/798359/000162828020017287/iret-20201209.htm",
-    "sha256": "740274f7a4cefbf49c4b6d798627d3944f0e5acc50805822720cb3df580f6b4f",
-    "bytesRead": 37512,
-    "complete": true,
-    "quote": "pace immediately, with its common shares of beneficial interest trading on the New York Stock Exchange under the ticker symbol \"CSR\", and its Series C Cumulative Redeemable Preferred Shares trading under the ticker symbol \"CSR PRC\" beginning December 21, 2020. Outstanding share c",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22CSR%22&ciks=0000798359&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
@@ -8813,11 +8703,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2020-12-11",
+    "validFrom": "2021-01-08",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 307,
-    "excludedLeadingBars": 1208,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 303,
+    "excludedLeadingBars": 1212,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:CSR:2007-10-29"
     ]
@@ -9026,7 +8916,8 @@
       "sha256": "b81ee147e13cd02196ebd0509c2071483f4458e990789f10f93253f0a57021fa",
       "hits": 9
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -9247,7 +9138,8 @@
       "sha256": "39c9c066ab3c11c0fab80485daebd6de1c59313679b96051c528eec8a22fe7dd",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -9584,16 +9476,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-20-306180",
-    "document": "d81708df10.htm",
-    "filingDate": "2020-12-01",
-    "form": "F-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/1829959/000119312520306180/d81708df10.htm",
-    "sha256": "fdaa3414b0892c3815b13a45285a7c4c5852b2a7267fc815d5cf151cae9ca620",
-    "bytesRead": 620604,
-    "complete": true,
-    "quote": " Additional Shares and its outstanding Common Shares on the Nasdaq Global Select Market ( “ Nasdaq ”) under the trading symbol “DCBO”. Listing is subject to the Company fulfilling all of the listing requirements of the TSX and Nasdaq, respectively. Subscriptions will be received ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22DCBO%22&ciks=0001829959&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2019-12-18&enddt=2021-03-11",
@@ -9603,23 +9486,6 @@
     ]
    },
    "levelChecks": [
-    {
-     "date": "2020-12-03",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2020-11-27",
-      50.56
-     ],
-     "bar": [
-      "2020-12-04",
-      50.07
-     ],
-     "logReturn": -0.009739,
-     "trailingSd": 0.119863,
-     "z": -0.081,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:DCBO:2020-12-03"
-    },
     {
      "date": "2022-12-30",
      "state": "NO_LEVEL_BREAK",
@@ -9649,11 +9515,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2020-12-04",
+    "validFrom": "2021-03-12",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 308,
-    "excludedLeadingBars": 25,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 294,
+    "excludedLeadingBars": 39,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:DCBO:2020-12-03"
     ]
@@ -9991,7 +9857,8 @@
       "sha256": "853cefdedb28272f3388b14d91b2ae1f54281ecafdd405c62c511f49e3449042",
       "hits": 11
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -10188,22 +10055,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001193125-21-243355",
-    "document": "d172577ds1.htm",
-    "filingDate": "2021-08-11",
-    "form": "S-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1830214/000119312521243355/d172577ds1.htm",
-    "sha256": "a1381d42c8083a4ab512f3eb065f6981ba66fc85cc7adabd988cc3464e827d84",
+    "accession": "0001193125-21-275407",
+    "document": "d172577d424b3.htm",
+    "filingDate": "2021-09-17",
+    "form": "424B3",
+    "url": "https://www.sec.gov/Archives/edgar/data/1830214/000119312521275407/d172577d424b3.htm",
+    "sha256": "2405eb71a19894b21c1fc40b16a1625e521919c6f5a189ff69fc837260cbdd27",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "pany’s Class A common stock and public warrants are expected to trade on the New York Stock Exchange (“NYSE”) under the symbols “DNA” and “DNA.WS”, respectively. New Ginkgo will not have units traded following the Closing. We are an “emerging growth company” under applicable fede",
+    "quote": "shares and New Ginkgo common stock The New Ginkgo Class A common stock and public warrants are listed on NYSE under the symbols “DNA” and “DNA.WS”, respectively. New Ginkgo does not have units traded following the Closing. Risk factors Any investment in the securities offered her",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22DNA%22&ciks=0001830214&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-12-24&enddt=2021-09-20",
       "sha256": "f767c0408408a57568d27e57b022d17449830616d736a6cde1980e0b2a973684",
       "hits": 14
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -10217,11 +10085,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-08-13",
+    "validFrom": "2021-09-17",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 272,
-    "excludedLeadingBars": 16,
+    "bars": 267,
+    "excludedLeadingBars": 21,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -10437,16 +10305,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-23-112345",
-    "document": "tm2329359d3_ex99-2.htm",
-    "filingDate": "2023-10-30",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/765880/000110465923112345/tm2329359d3_ex99-2.htm",
-    "sha256": "04cb0b7747a901cf9f8fa25f82f4cdf26836131befde0e4c7b3e56749425cff8",
-    "bytesRead": 43526,
-    "complete": true,
-    "quote": "nance Combined Company is expected to operate under the name Healthpeak Properties Inc., trade on the NYSE under ticker symbol “DOC”, and be headquartered in Denver Combined Company led by Scott Brinker (President & CEO), Peter Scott (CFO), and John Thomas (Vice Chair) who will h",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22DOC%22&ciks=0000765880&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
@@ -10490,25 +10349,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2024-03-07",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2024-03-01",
-      17.1
-     ],
-     "bar": [
-      "2024-03-08",
-      17.74
-     ],
-     "logReturn": 0.036744,
-     "trailingSd": 0.041737,
-     "z": 0.88,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NYSE:DOC:2013-07-19"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NYSE:DOC:1987-11-05",
     "cik": "0000765880",
@@ -10520,11 +10361,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2023-11-03",
+    "validFrom": "2024-03-15",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 156,
-    "excludedLeadingBars": 1765,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 137,
+    "excludedLeadingBars": 1784,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:DOC:2013-07-19"
     ]
@@ -10815,16 +10656,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-19-094612",
-    "document": "d721485dex991.htm",
-    "filingDate": "2019-04-01",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1751788/000119312519094612/d721485dex991.htm",
-    "sha256": "d5fe7254c5bab6002dd463c4ee77abec719b54a90b55966c450a72e625dfa27f",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "wn common stock in both DowDuPont and Dow. The Dow common stock will be listed on the New York Stock Exchange under the symbol “DOW.” We encourage you to carefully read the enclosed information statement, which is being made available to all DowDuPont stockholders who held shares",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22DOW%22&ciks=0001751788&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-11-22&enddt=2019-10-25",
@@ -10845,11 +10677,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2019-04-05",
+    "validFrom": "2019-10-25",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 395,
-    "excludedLeadingBars": 2,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 366,
+    "excludedLeadingBars": 31,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -11356,7 +11188,8 @@
       "sha256": "36650a92188921074cdbc1bb1f1f738ce43e546ce2d29231deeb8ca489b78ace",
       "hits": 15
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -11503,15 +11336,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0000950142-21-002028",
-    "document": "eh210160855_ex9901.htm",
-    "filingDate": "2021-06-15",
+    "accession": "0001171843-21-005514",
+    "document": "exh_991.htm",
+    "filingDate": "2021-08-05",
     "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1853860/000095014221002028/eh210160855_ex9901.htm",
-    "sha256": "1fd998cf39c82d1e79802471c19dea60711aac4ecb25ed7fe24f47698817420e",
-    "bytesRead": 14984,
+    "url": "https://www.sec.gov/Archives/edgar/data/1853860/000117184321005514/exh_991.htm",
+    "sha256": "32ba763f2147dad03a838531e7457db73513a98a765ffdcafead754143710164",
+    "bytesRead": 700035,
     "complete": true,
-    "quote": "any’s common shares will commence trading on the New York Stock Exchange (“NYSE”) at market open today under the ticker symbol “ERO”. The Company’s common shares will continue trading on the Toronto Stock Exchange under the ticker symbol “ERO”. Concurrent with the commencement of",
+    "quote": ".gov). The Company’s shares are publicly traded on the Toronto Stock Exchange and the New York Stock Exchange under the symbol “ERO”. Ero Copper Corp. June 30, 2021 MD&A | Page 1 HIGHLIGHTS 2021 - Q2 2021 - Q1 2021 - YTD 2020 - Q2 2020 - YTD Operating Information Copper (MCSA Ope",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ERO%22&ciks=0001853860&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-06-29&enddt=2020-07-01",
@@ -11523,7 +11356,8 @@
       "sha256": "8022e52f87c66364fa14d6f2eed7d14883b22d8f7dde7616802465072409dbe3",
       "hits": 81
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -11555,11 +11389,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-06-18",
+    "validFrom": "2021-08-06",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 280,
-    "excludedLeadingBars": 180,
+    "bars": 273,
+    "excludedLeadingBars": 187,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:ERO:2007-12-27"
     ]
@@ -11726,7 +11560,8 @@
       "sha256": "47016db8167393f5bef97a5739923e442046effd55cb1efcc080d3f831abc779",
       "hits": 7
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -11904,7 +11739,8 @@
       "sha256": "6ba5196d86a708b31d684e90bfc73cf2feb91d5e5644a1f881ea59ea7aff07f6",
       "hits": 34
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -12082,7 +11918,8 @@
       "sha256": "a067b693747e48b1009a24eba8ba147637b3b97c613d2a5556d1d7cda5fdea11",
       "hits": 34
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -12424,21 +12261,22 @@
    "tickerConfirmation": {
     "state": "FOUND",
     "accession": "0001628280-22-030432",
-    "document": "exhibit991-8xk.htm",
+    "document": "exhibit992-8xk.htm",
     "filingDate": "2022-11-18",
     "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1934850/000162828022030432/exhibit991-8xk.htm",
-    "sha256": "190cb7a4769dfe210b99595f423dfa65576092cf1560dd9e674530cae44ce39d",
-    "bytesRead": 13673,
-    "complete": true,
-    "quote": "ber 1, 2022, “when-issued” trading will end and F&G common stock will begin “regular-way” trading on the NYSE under the symbol “FG”. Shares of FNF common stock will continue to trade “regular-way” on the NYSE under the symbol “FNF” through and after the December 1, 2022 distribut",
+    "url": "https://www.sec.gov/Archives/edgar/data/1934850/000162828022030432/exhibit992-8xk.htm",
+    "sha256": "f423057c390a7f3e23e159bd362255e45fbcfffc7c50548b82db032b42f1aae0",
+    "bytesRead": 2097152,
+    "complete": false,
+    "quote": "ities & Life, Inc. (“F&G”), the common stock of which we expect will be listed on the New York Stock Exchange under the symbol “FG.” We are a leading provider of insurance solutions serving retail annuity and life customers and institutional clients. In fiscal year 2021, we gener",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22FG%22&ciks=0001934850&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-07-28&enddt=2023-02-27",
       "sha256": "c447d8a3bc165e2c70a882874d39a6e2191daee5f66284af5d85fbebff0f444d",
       "hits": 15
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -12743,7 +12581,8 @@
       "sha256": "d9ca7b720e3623eabca71f8b98bb2c3e47f6640dd30ae1a91a7ffa676df9e447",
       "hits": 9
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -12915,7 +12754,8 @@
       "sha256": "1da29bc654659fb88b2b8353d73592cb5e4a45cc75fd562f2af03996cfe274c8",
       "hits": 6
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -13227,16 +13067,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-24-020999",
-    "document": "d574523d424b3.htm",
-    "filingDate": "2024-01-31",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1999001/000119312524020999/d574523d424b3.htm",
-    "sha256": "9e975fae40bf66cd4cfa54e052d0f95073541e5990d8f4b8579b084c506ac905",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "ts name to “Six Flags Entertainment Corporation” and be listed on the New York Stock Exchange (“NYSE”) under the ticker symbol “FUN.” The obligations of Six Flags and Cedar Fair to complete the Mergers are subject to the satisfaction or waiver, in whole or in part (to the extent ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22FUN%22&ciks=0001999001&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
@@ -13310,11 +13141,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2024-02-02",
+    "validFrom": "2024-07-05",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 143,
-    "excludedLeadingBars": 1778,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 121,
+    "excludedLeadingBars": 1800,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:FUN:1987-04-23"
     ]
@@ -14281,7 +14112,8 @@
       "sha256": "e6177d9de6f38cfa5575fa12bb979f6ee45dd46d48c8c8436e8cbdebd4c49710",
       "hits": 44
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -14443,21 +14275,17 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001213900-21-030505",
-    "document": "ea142074-6k_hightide.htm",
-    "filingDate": "2021-06-02",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1847409/000121390021030505/ea142074-6k_hightide.htm",
-    "sha256": "c5f11cc93327b6d8f5d1fcd5fac09d2c26855e3ed0cbf679bdfa440e3ef11975",
-    "bytesRead": 17963,
-    "complete": true,
-    "quote": " NOTE On June 2, 2021, High Tide Inc. (i) issued a press release titled: “High Tide Begins Trading On NASDAQ Toda Under Symbol “HITI”” and (ii) issued a Notice of Change of Status advising that it is no longer a “venture issuer,” as defined under applicable Canadian law. A copy o",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22HITI%22&ciks=0001847409&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-09-30&enddt=2021-10-02",
       "sha256": "ab8c3be4fdba3a11345419c28dbd712d609c46ba8d3a6812171b46397ba074be",
       "hits": 79
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22HITI%22&ciks=0001847409&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-10-02&enddt=2022-02-02",
+      "sha256": "2fc3cb813ecc7e45b0b94d8960cfc64150ab0b3f001d70bbea5f006b6d299e05",
+      "hits": 34
      }
     ]
    },
@@ -14491,11 +14319,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-06-04",
+    "validFrom": "2022-02-04",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 282,
-    "excludedLeadingBars": 122,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 247,
+    "excludedLeadingBars": 157,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:HITI:2021-06-02"
     ]
@@ -14673,14 +14501,15 @@
     "sha256": "33c376bbf1cf483a07b7baa24d82154b7d743ddead8ebd665c08db956e3b1424",
     "bytesRead": 152686,
     "complete": true,
-    "quote": "es and public warrants outstanding upon the Closing began trading on the NASDAQ Stock Exchange (the “NASDAQ”) under the symbols “HOLO” and “HOLOW,” respectively. Immediately after giving effect to the Business Combination, MicroCloud has 50,812,035 ordinary shares issued and outs",
+    "quote": "ber 19, 2022, the Company’s ordinary shares and warrants began trading on The Nasdaq Stock Market under the new trading symbols “HOLO” and “HOLOW”, respectively. Immediately after giving effect to the Business Combination, MicroCloud has 50,812,035 ordinary shares issued and outs",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22HOLO%22&ciks=0001841209&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-05-24&enddt=2022-09-22",
       "sha256": "ed4e166648882aea490c7d57e02fb62c3c2fde0646392fdecbb750e182445ac3",
       "hits": 2
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -15109,16 +14938,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-23-116384",
-    "document": "tm235928-42_424b3.htm",
-    "filingDate": "2023-11-09",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465923116384/tm235928-42_424b3.htm",
-    "sha256": "c90134010a25979ea8a91c0e360da3db88a4e46e14f665b4412dc59dd4d72d71",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "ET PRICE OF AND DIVIDENDS ON COMMON EQUITY Hut 8 Common Shares Hut 8 common shares have been listed on Nasdaq under the symbol “HUT” since June 15, 2021 and on the TSX under the symbol “HUT” since October 8, 2019. Prior to that date, Hut 8 common shares were listed on the TSX Ven",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22HUT%22&ciks=0001964789&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-11-09&enddt=2020-11-11",
@@ -15129,28 +14949,15 @@
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22HUT%22&ciks=0001964789&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-11-11&enddt=2023-11-14",
       "sha256": "550caf4d72c3438a437f933aebab1deffac81fec3692dc2b8848767c94253315",
       "hits": 1
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22HUT%22&ciks=0001964789&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2023-11-14&enddt=2023-12-19",
+      "sha256": "1a21077ebb3ad2777b45f457b6a3a89e94aa1307bd3297856549d2a9f576b249",
+      "hits": 23
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2023-12-01",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2023-11-24",
-      9.65
-     ],
-     "bar": [
-      "2023-12-01",
-      11.35
-     ],
-     "logReturn": 0.16226,
-     "trailingSd": 0.158377,
-     "z": 1.025,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:HUT:2018-03-08"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:HUT:2018-03-08",
     "cik": "0001964789",
@@ -15162,11 +14969,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2023-11-10",
+    "validFrom": "2023-12-22",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 155,
-    "excludedLeadingBars": 296,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 149,
+    "excludedLeadingBars": 302,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:HUT:2018-03-08"
     ]
@@ -15301,15 +15108,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001213900-21-041186",
-    "document": "ea145456-f1_icecuremedi.htm",
-    "filingDate": "2021-08-10",
+    "accession": "0001213900-21-063330",
+    "document": "ea151557-f1_icecuremedi.htm",
+    "filingDate": "2021-12-03",
     "form": "F-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1584371/000121390021041186/ea145456-f1_icecuremedi.htm",
-    "sha256": "dcb7ce14b0019b707feb30d60ea5ad8fe01383b5484dc2a1f7f099a3cbaab6ad",
+    "url": "https://www.sec.gov/Archives/edgar/data/1584371/000121390021063330/ea151557-f1_icecuremedi.htm",
+    "sha256": "aca2e87603f7576ab194d51ac1f3563f31fd355dc53ec04500b79b0eb82b75b1",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "“Plan of Distribution”). We have applied to list the Ordinary Shares on the Nasdaq Capital Market, or Nasdaq, under the symbol “ICCM.” This offering is contingent upon the listing of the Ordinary Shares on Nasdaq. Although we believe that as of the closing of the January 2021 SPA",
+    "quote": "ry Shares offered by this prospectus. Our Ordinary Shares are listed on the Nasdaq Capital Market, or Nasdaq, under the symbol “ICCM.” The last reported sale price on Nasdaq of our Ordinary Shares on December 1, 2021 was $4.89 per share. Our Ordinary Shares are also listed on the",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ICCM%22&ciks=0001584371&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2013-07-11&enddt=2016-07-13",
@@ -15326,26 +15133,10 @@
       "sha256": "0aff3d44bc9e74eb5b8799ffaaa995ca435568b0c8f9eb0f7810ca978a3f1f2a",
       "hits": 19
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
-    {
-     "date": "2021-08-26",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2021-08-20",
-      280.5
-     ],
-     "bar": [
-      "2021-08-27",
-      331.5
-     ],
-     "logReturn": 0.167054,
-     "trailingSd": 0.338825,
-     "z": 0.493,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:ICCM:2021-08-26"
-    },
     {
      "date": "2022-12-30",
      "state": "NO_LEVEL_BREAK",
@@ -15375,15 +15166,17 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-08-13",
+    "validFrom": "2021-12-03",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 272,
-    "excludedLeadingBars": 375,
-    "excludedPartOverlapsOtherMasterRows": []
+    "bars": 256,
+    "excludedLeadingBars": 391,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NASDAQ:ICCM:2021-08-26"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "TRUNCATED_UNSOURCED_HISTORY",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -15527,7 +15320,8 @@
       "sha256": "c4e78021b7b7635113fb77900794581dcb392c39aab918f510560c2d8e4d1d07",
       "hits": 62
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -15693,7 +15487,8 @@
       "sha256": "fca088843bf35940f2b5453f8463a740b511d52a95306085af77f3f2770b54d2",
       "hits": 54
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -15839,22 +15634,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001062993-21-002492",
-    "document": "exhibit99-13.htm",
-    "filingDate": "2021-03-09",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1792030/000106299321002492/exhibit99-13.htm",
-    "sha256": "3735b3e3be2c83ffaf51a7c2797f53823508d270999159d96d99feda1dad876a",
-    "bytesRead": 28522,
+    "accession": "0001062993-21-002699",
+    "document": "formf10.htm",
+    "filingDate": "2021-03-15",
+    "form": "F-10",
+    "url": "https://www.sec.gov/Archives/edgar/data/1792030/000106299321002699/formf10.htm",
+    "sha256": "c9ddffbeaaec80140f9b5191cade0786c5aa801f0598dc90ef6a7ab15a4deab1",
+    "bytesRead": 229340,
     "complete": true,
-    "quote": "Capital Market (\"NASDAQ\") was approved. The Common Shares commenced trading on NASDAQ on March 1, 2021 under the ticker symbol \"IMCC\". 2. Provide a general overview and discussion of the activities of management. Management of the Issuer is focused on continuing its acquisition s",
+    "quote": "the Board. Listing on NASDAQ On March 1, 2021, the Company's Common Shares commenced trading on NASDAQ under the ticker symbol \"IMCC\", making the Company the first Israeli medical cannabis operator to list its shares on NASDAQ. The listing is expected to increase access to invest",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22IMCC%22&ciks=0001792030&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-01-21&enddt=2022-04-04",
       "sha256": "e45d381ec26fdb1cc1c69760c3474d06e383a74e07295ad0c143dcd7ee779368",
       "hits": 98
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -15868,11 +15664,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-03-12",
+    "validFrom": "2021-03-19",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 294,
-    "excludedLeadingBars": 41,
+    "bars": 293,
+    "excludedLeadingBars": 42,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:IMCC:2021-03-01"
     ]
@@ -16016,7 +15812,8 @@
       "sha256": "0a4870c936642b95060e9fd734090a6b9567621d10e2be47c4e4df9e0930e49b",
       "hits": 21
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -16166,16 +15963,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-20-174157",
-    "document": "d904092ds1.htm",
-    "filingDate": "2020-06-19",
-    "form": "S-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1728328/000119312520174157/d904092ds1.htm",
-    "sha256": "93ad264bf66c7a3e5c36119980a7e28365329816c1d16fad64d6f42c0b976d47",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": " the Toronto Stock Exchange, or “TSX”. We have applied to list our common shares on the Nasdaq Capital Market under the symbol “INM.” The successful listing of our common shares on the Nasdaq is a condition of this offering. We are an “emerging growth company” as defined by the J",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22INM%22&ciks=0001728328&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2014-01-09&enddt=2017-01-11",
@@ -16195,23 +15983,6 @@
     ]
    },
    "levelChecks": [
-    {
-     "date": "2020-11-12",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2020-11-06",
-      3422.46
-     ],
-     "bar": [
-      "2020-11-13",
-      1685
-     ],
-     "logReturn": -0.708594,
-     "trailingSd": 0.162362,
-     "z": -4.364,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:INM:2020-11-12"
-    },
     {
      "date": "2022-12-30",
      "state": "NO_LEVEL_BREAK",
@@ -16241,11 +16012,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2020-11-13",
+    "validFrom": "2021-09-10",
     "validTo": null,
-    "basis": "AFTER_LEVEL_BREAK_AT_OTHER_ROW_BOUNDARY",
-    "bars": 311,
-    "excludedLeadingBars": 340,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 268,
+    "excludedLeadingBars": 383,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:INM:2020-11-12"
     ]
@@ -16395,7 +16166,8 @@
       "sha256": "99564e7428535b0c363938a0d20a75256fe74d1ab6d2e4da5c6f797a70bd2de6",
       "hits": 15
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -16571,7 +16343,8 @@
       "sha256": "daa359ccf696e48b8a4d51319385c43158ff4caf177d11e026b6359b5c2984b2",
       "hits": 10
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -17466,7 +17239,8 @@
       "sha256": "3a7f578f2ad4d1df5844b403b2c59a037523b78b2b14057ac7aa5b82853edbca",
       "hits": 5
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -17812,16 +17586,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001140361-20-019993",
-    "document": "nt10014873x1_f10.htm",
-    "filingDate": "2020-09-09",
-    "form": "F-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/1823306/000114036120019993/nt10014873x1_f10.htm",
-    "sha256": "b80de72b56ccaa451b2b3b822a0d96ccb584876456587a18f8c3471484cf9af8",
-    "bytesRead": 827466,
-    "complete": true,
-    "quote": "ry Shares and its outstanding Subordinate Voting Shares on the New York Stock Exchange (the “ NYSE ”) under the trading symbol “LSPD”. Listing will be subject to the Company fulfilling all of the listing requirements of the TSX and the NYSE, respectively. All dollar amounts in th",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22LSPD%22&ciks=0001823306&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2019-04-18&enddt=2021-05-20",
@@ -17830,25 +17595,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2020-10-06",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2020-10-02",
-      31.58
-     ],
-     "bar": [
-      "2020-10-09",
-      37.21
-     ],
-     "logReturn": 0.164054,
-     "trailingSd": 0.160987,
-     "z": 1.019,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NYSE:LSPD:2008-01-23"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NYSE:LSPD:2019-08-13",
     "cik": "0001823306",
@@ -17860,11 +17607,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2020-09-11",
+    "validFrom": "2021-05-21",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 320,
-    "excludedLeadingBars": 56,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 284,
+    "excludedLeadingBars": 92,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:LSPD:2008-01-23"
     ]
@@ -18306,7 +18053,8 @@
       "sha256": "c2babe1c952cfd87d41db9adfac80717f771a9e53e58ebd1c4183b7bfd12fdcf",
       "hits": 13
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -18507,22 +18255,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001193125-21-286856",
-    "document": "d188983d424b3.htm",
-    "filingDate": "2021-09-29",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1809987/000119312521286856/d188983d424b3.htm",
-    "sha256": "6df0e245f5310c34ea7fc131a5c9c8eb3fd0f6ff43e7304ee0fa8cb58f4488d2",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "espectively. We intend to apply to continue the listing of GSAH Class A common stock and warrants on the NYSE under the symbols “MIR” and “MIR.WS,” respectively, upon the closing of the Business Combination, though such securities may not be listed, for instance if there is not a",
+    "accession": "0001193125-21-305946",
+    "document": "d219393d8k.htm",
+    "filingDate": "2021-10-25",
+    "form": "8-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1809987/000119312521305946/d219393d8k.htm",
+    "sha256": "dfecc960febc2b3013a0e5bd133009402bf9e5b392d53c7d270e5b3c83874bcd",
+    "bytesRead": 244784,
+    "complete": true,
+    "quote": "he Business Combination. The Company’s Class A common stock and public warrants commenced trading on the NYSE under the symbols “MIR” and “MIRW,” respectively, on October 21, 2021, subject to ongoing review of the Company’s satisfaction of all listing criteria following the Busin",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22MIR%22&ciks=0001809987&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-04-23&enddt=2021-10-25",
       "sha256": "8468e598989c90249eb90cb29092af016d99b0b48be3cb88344f9af1eb20333f",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -18536,11 +18285,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-10-01",
+    "validFrom": "2021-10-29",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 265,
-    "excludedLeadingBars": 58,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 261,
+    "excludedLeadingBars": 62,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -18693,16 +18442,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001213900-21-051257",
-    "document": "ea147872ex99-1_helixacq.htm",
-    "filingDate": "2021-10-04",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1821586/000121390021051257/ea147872ex99-1_helixacq.htm",
-    "sha256": "60bebc5ee2eb60ad4281618ad1f67f0426be4dee68e3e82f35cf505f4025e4e5",
-    "bytesRead": 30889,
-    "complete": true,
-    "quote": "nal team of immunology experts. The combined company’s common stock is expected to be listed on Nasdaq under the ticker symbol MLTX. In addition to the approximately $115 million held in Helix Acquisition Corp.’s trust (assuming no redemptions), the transaction also includes comm",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22MLTX%22&ciks=0001821586&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-06-25&enddt=2022-04-11",
@@ -18711,42 +18451,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2022-04-05",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2022-04-01",
-      10.33
-     ],
-     "bar": [
-      "2022-04-05",
-      13.25
-     ],
-     "logReturn": 0.248945,
-     "trailingSd": 0.010211,
-     "z": 24.38,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:MLTX:2022-04-05"
-    },
-    {
-     "date": "2022-04-08",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2022-04-05",
-      13.25
-     ],
-     "bar": [
-      "2022-04-14",
-      5.05
-     ],
-     "logReturn": -0.964609,
-     "trailingSd": 0.035963,
-     "z": -26.822,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:MLTX:2022-04-05"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:MLTX:2020-10-20",
     "cik": "0001821586",
@@ -18760,7 +18465,7 @@
    "usableInterval": {
     "validFrom": "2022-04-14",
     "validTo": null,
-    "basis": "AFTER_LEVEL_BREAK_AT_OTHER_ROW_BOUNDARY",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
     "bars": 237,
     "excludedLeadingBars": 77,
     "excludedPartOverlapsOtherMasterRows": [
@@ -18923,7 +18628,8 @@
       "sha256": "2ceb633f968f1ccee5338aba5f1c28fee1e2dc21063f63c2318881eeb37d463f",
       "hits": 8
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -19318,7 +19024,8 @@
       "sha256": "cf8858ab76046cd9995fd08fd6e40af218b12bb9ff11ba2f4cb39e20c2437dc1",
       "hits": 59
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -19908,16 +19615,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-21-090682",
-    "document": "tm2113965-5_s1.htm",
-    "filingDate": "2021-07-09",
-    "form": "S-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1287098/000110465921090682/tm2113965-5_s1.htm",
-    "sha256": "3ac7d59887daf4081df48589c34a2fc7fc7b21d22fa250aaa933c984ca6e7710",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "stock will be between $ and $ per share. We have applied to list our common stock on the Nasdaq Global Market under the symbol “MXCT.” Our common stock trades on AIM, a market operated by the London Stock Exchange, under the symbols “MXCT” and “MXCN.” We will apply to list the sh",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22MXCT%22&ciks=0001287098&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2019-08-07&enddt=2021-09-13",
@@ -19927,23 +19625,6 @@
     ]
    },
    "levelChecks": [
-    {
-     "date": "2021-07-30",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2021-07-23",
-      5.85
-     ],
-     "bar": [
-      "2021-07-30",
-      17
-     ],
-     "logReturn": 1.066772,
-     "trailingSd": 0.252411,
-     "z": 4.226,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:MXCT:2021-07-30"
-    },
     {
      "date": "2022-12-30",
      "state": "NO_LEVEL_BREAK",
@@ -19973,15 +19654,17 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-07-30",
+    "validFrom": "2021-09-17",
     "validTo": null,
-    "basis": "AFTER_LEVEL_BREAK_AT_OTHER_ROW_BOUNDARY",
-    "bars": 274,
-    "excludedLeadingBars": 56,
-    "excludedPartOverlapsOtherMasterRows": []
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 267,
+    "excludedLeadingBars": 63,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NASDAQ:MXCT:2021-07-30"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "TRUNCATED_UNSOURCED_HISTORY",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -20136,7 +19819,8 @@
       "sha256": "f792c12c34913cdb3914e3447c2cd671a0fec7b016aa6e6516163f95d27b03a7",
       "hits": 7
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -20304,16 +19988,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-21-069364",
-    "document": "tm2110407d3_ex99-1.htm",
-    "filingDate": "2021-05-19",
-    "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465921069364/tm2110407d3_ex99-1.htm",
-    "sha256": "320221daf6439cdc7b484485a7739d74aa6870062c17cb1414d8c5d7067bd5c0",
-    "bytesRead": 14777,
-    "complete": true,
-    "quote": "k Exchange (“NYSE”). The Company expects its common shares will open for trading on the NYSE on May 24, 2021, under the symbol “NMG”. Arne H Frandsen, Chairman of Nouveau Monde, commented: “An extraordinary journey has just achieved another milestone. As Chairman, I am so proud o",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22NMG%22&ciks=0001649752&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-06-01&enddt=2020-06-03",
@@ -20328,23 +20003,6 @@
     ]
    },
    "levelChecks": [
-    {
-     "date": "2021-05-24",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2021-05-21",
-      15.63
-     ],
-     "bar": [
-      "2021-05-28",
-      12.69
-     ],
-     "logReturn": -0.208378,
-     "trailingSd": 0.161178,
-     "z": -1.293,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NYSE:NMG:2021-05-24"
-    },
     {
      "date": "2022-12-21",
      "state": "NO_LEVEL_BREAK",
@@ -20374,15 +20032,17 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-05-21",
+    "validFrom": "2022-04-01",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 284,
-    "excludedLeadingBars": 186,
-    "excludedPartOverlapsOtherMasterRows": []
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 239,
+    "excludedLeadingBars": 231,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NYSE:NMG:2021-05-24"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "TRUNCATED_UNSOURCED_HISTORY",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -20527,7 +20187,8 @@
       "sha256": "f246feea295881e59a589bb914b34e3953f18e33da7b09cc001c2b917d167856",
       "hits": 70
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -20870,7 +20531,8 @@
       "sha256": "b397655f600e77923febb1afe371b77ae9d52cd6720103ca23488a2050c97623",
       "hits": 61
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -21030,7 +20692,8 @@
       "sha256": "dca6fe77fd69df5cb65207050c001751aa8bcc2667657996352ceeda74338232",
       "hits": 9
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -21183,16 +20846,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-21-079516",
-    "document": "tm2111148-6_f1.htm",
-    "filingDate": "2021-06-10",
-    "form": "F-1",
-    "url": "https://www.sec.gov/Archives/edgar/data/1857190/000110465921079516/tm2111148-6_f1.htm",
-    "sha256": "fcc7b30ebf63e2a6de08b903ec4a87d800867887f767cdab375d81521927df8b",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "ur ordinary shares in the United States. We have applied to list our ordinary shares The Nasdaq Global Market under the symbol “NYXH.” Our ordinary shares are traded on Euronext Brussels under the symbol “NYXH.” On June 9, 2021, the last reported sale price of our ordinary shares",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22NYXH%22&ciks=0001857190&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-12-31&enddt=2022-03-24",
@@ -21231,11 +20885,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-06-11",
+    "validFrom": "2022-03-25",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 281,
-    "excludedLeadingBars": 6,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 240,
+    "excludedLeadingBars": 47,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:NYXH:2021-04-28"
     ]
@@ -21588,16 +21242,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001493152-23-036345",
-    "document": "form424b3.htm",
-    "filingDate": "2023-10-05",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1866816/000149315223036345/form424b3.htm",
-    "sha256": "4bd9c33efddf03ef0463a58bbf7ef9853f55c9954aa23a0a35f67d2e9a960032",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "d converted into shares and warrants of New Syntec Optics that are expected to be listed on Nasdaq under the new ticker symbols “OPTX” and “OPTXW,” in each case in accordance with the terms of the Business Combination Agreement. The consummation of the Business Combination is con",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22OPTX%22&ciks=0001866816&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-09-30&enddt=2023-11-08",
@@ -21607,23 +21252,6 @@
     ]
    },
    "levelChecks": [
-    {
-     "date": "2023-11-08",
-     "state": "LEVEL_BREAK_SUSPECT",
-     "prevBar": [
-      "2023-11-03",
-      9.3
-     ],
-     "bar": [
-      "2023-11-10",
-      5.57
-     ],
-     "logReturn": -0.512619,
-     "trailingSd": 0.018453,
-     "z": -27.779,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:OPTX:2023-11-08"
-    },
     {
      "date": "2023-11-09",
      "state": "LEVEL_BREAK_SUSPECT",
@@ -23035,7 +22663,8 @@
       "sha256": "e9d622729a6cc91a47118f241144af6e7fcd1358dd495fe9f02b77a58b520302",
       "hits": 21
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -23201,7 +22830,8 @@
       "sha256": "0b24c99cb3bbc43b016f51378330be231a503eb9ad2e915917ba1332e9092654",
       "hits": 11
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -23409,22 +23039,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001193125-21-209280",
-    "document": "d185614dex991.htm",
-    "filingDate": "2021-07-07",
+    "accession": "0001193125-21-355383",
+    "document": "d278527d8k.htm",
+    "filingDate": "2021-12-13",
     "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312521209280/d185614dex991.htm",
-    "sha256": "f5a0b16237e2d6aa3cf67b5d954da7a1598a20fcea3b1e000440b150133df560",
-    "bytesRead": 34864,
+    "url": "https://www.sec.gov/Archives/edgar/data/1836833/000119312521355383/d278527d8k.htm",
+    "sha256": "a3d5ec019c5a63638eb08edc54c7b77591252d975b8869bbb42ff4e66c098166",
+    "bytesRead": 136900,
     "complete": true,
-    "quote": "aded company. Upon closing, the combined company will retain the Planet name and be listed on the NYSE under the ticker symbol “PL.” The transaction values Planet at a post-transaction equity value of approximately $2.8 billion. Planet has a proven track record of success, genera",
+    "quote": "elated Stockholder Matters Shares of Class A Common Stock and Planet’s warrants commenced trading on the NYSE under the symbols “PL” and “PL WS,” respectively, on December 8, 2021, in lieu of the Class A Common Stock, warrants and units of dMY IV. Planet has not paid any cash div",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22PL%22&ciks=0001836833&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-12-31&enddt=2021-12-13",
       "sha256": "3eba6ffcfc39c98cb0d88a90c562d90275e7b562cb85d31099b3529f2ec13d7b",
       "hits": 11
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -23438,11 +23069,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2021-07-09",
+    "validFrom": "2021-12-17",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 277,
-    "excludedLeadingBars": 10,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 254,
+    "excludedLeadingBars": 33,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -23611,7 +23242,8 @@
       "sha256": "a0e60c1ab67d2595e7ec4af9ff6655139fef31572c1aa576ddd87fd22bc98c4e",
       "hits": 100
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -23803,7 +23435,8 @@
       "sha256": "c7d9bc8b7ea693a55fd130d51bea2805a06dd320c541b2ffcefb2f5fa6c714a2",
       "hits": 23
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -23987,14 +23620,15 @@
     "sha256": "20a97c8663ecc427b9e42f5655d58e9d12c5d33ee2e4f298c3c27d8927ec613d",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "usiness Combination. Stock Exchange Listing Holdco has applied to list the Holdco Ordinary Shares on the NYSE under the symbol “PRM” and intends to apply to list the Holdco Warrants on the OTC under the symbol “PRMW.” Emerging Growth Company We are an emerging growth company as d",
+    "quote": "vest in Holdco Ordinary Shares. NYSE symbol Holdco has applied to list its Holdco Ordinary Shares on the NYSE under the symbol “PRM.” Lock-Up Restrictions Certain of our shareholders are subject to certain restrictions on transfer until the termination of applicable lock-up perio",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22PRM%22&ciks=0001880319&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-07-15&enddt=2023-02-28",
       "sha256": "17cb1932b35cf79254e7a12be9fa8053aebcdb03ae2c4dc88c16e9f15e624de1",
       "hits": 32
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -24851,7 +24485,8 @@
       "sha256": "9e3147efac3674b053de0f4631e9557e7d165db81a9bd18bbc4fe082f0406ad7",
       "hits": 14
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -25310,16 +24945,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-25-075908",
-    "document": "d944548dex991.htm",
-    "filingDate": "2025-04-08",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/810332/000119312525075908/d944548dex991.htm",
-    "sha256": "17b57fd79df9b0a78ef55341129b25399888030a9a5083c75ecc711ae6f3834d",
-    "bytesRead": 26013,
-    "complete": true,
-    "quote": "ned company will be renamed Republic Airways Holdings Inc. and is expected to remain NASDAQ-listed under the new ticker symbol “RJET”. “Today’s announcement is an exciting next step in Mesa’s more than 40-year history, one that represents the best outcome for our shareholders, em",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22RJET%22&ciks=0000810332&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-04-12&enddt=2021-04-14",
@@ -25350,11 +24976,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2025-04-11",
+    "validFrom": "2025-12-05",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 81,
-    "excludedLeadingBars": 348,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 47,
+    "excludedLeadingBars": 382,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -25503,7 +25129,8 @@
       "sha256": "0c9696e26ea0f91d4750405625ef2ff6da21eb008508ac6e5da55c5b9291eeb2",
       "hits": 29
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -25886,7 +25513,8 @@
       "sha256": "e803347ca46392a09e36f2563b0ae06b4ed430f47693d86ac4acc69a3b07ba48",
       "hits": 12
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -26105,7 +25733,8 @@
       "sha256": "b47a5f784e5eaa7f00166bf26a3818adc6a4fb28969ad9067304c76c6061a8d6",
       "hits": 3
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [],
    "binding": {
@@ -26507,15 +26136,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001104659-23-039176",
-    "document": "tm239851d1_10ka.htm",
-    "filingDate": "2023-03-30",
-    "form": "10-K/A",
-    "url": "https://www.sec.gov/Archives/edgar/data/1095651/000110465923039176/tm239851d1_10ka.htm",
-    "sha256": "880027f7d5fb43a7d45fe0dc2edc0711fdb9e0b27348228f9daae8d1b46130b6",
-    "bytesRead": 465936,
+    "accession": "0001104659-23-041210",
+    "document": "tm2310731d1_8k.htm",
+    "filingDate": "2023-04-04",
+    "form": "8-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1095651/000110465923041210/tm2310731d1_8k.htm",
+    "sha256": "0103f47fd007b4157d47ecfde8fbbf6538c6b25dd98522a3d6cfd8ba8bdfdaf9",
+    "bytesRead": 235557,
     "complete": true,
-    "quote": " to Safehold Inc. (“ New SAFE ”). New SAFE's shares of common stock will trade on the New York Stock Exchange under the symbol “SAFE.” We currently expect that the Merger will close in the first half of 2023. In the Merger and related transactions, each outstanding share of commo",
+    "quote": "mmon Stock in the Merger. In connection with the Merger, the Company’s common stock began trading on the NYSE under the symbol “SAFE” on March 31, 2023. Caret Reorganization Description of the Caret Program In 2018, Old SAFE established the Caret program (as defined below) throug",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22SAFE%22&ciks=0001095651&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2017-02-23&enddt=2020-02-26",
@@ -26532,7 +26161,8 @@
       "sha256": "110b12940d38002fe70dbd8a1a22a3e822fa6622b486a309c625e7efa562c546",
       "hits": 20
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -26564,11 +26194,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2023-03-31",
+    "validFrom": "2023-04-06",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 187,
-    "excludedLeadingBars": 301,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 186,
+    "excludedLeadingBars": 302,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:SAFE:1989-11-16"
     ]
@@ -26719,7 +26349,8 @@
       "sha256": "952e6ae08e5784b07f8c67e2aae52cbf2f4024539dbc364ba0e9d71bba9ac807",
       "hits": 18
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -26915,7 +26546,8 @@
       "sha256": "a926ef926e4ba2cbb2a4efcbf1f08d4710d824fff2804d400e5767e72aaab3da",
       "hits": 28
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -27299,7 +26931,8 @@
       "sha256": "69fbccf637cd84c7ddf3d0a86e55d46edbda34304fc7c4b27ed714c560112361",
       "hits": 6
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -27910,15 +27543,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001104659-21-131143",
-    "document": "tm2131114d2_ex99-1.htm",
-    "filingDate": "2021-10-28",
+    "accession": "0001104659-21-140055",
+    "document": "tm2132955d1_ex99-2.htm",
+    "filingDate": "2021-11-16",
     "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1848309/000110465921131143/tm2131114d2_ex99-1.htm",
-    "sha256": "98969707187a829e8d9fa30640ccc5a8ae05987a469f81167435ee5009ba732c",
-    "bytesRead": 971372,
+    "url": "https://www.sec.gov/Archives/edgar/data/1848309/000110465921140055/tm2132955d1_ex99-2.htm",
+    "sha256": "cde5bf6f4072c67ac94a71e08cca6cc987b65ecd94b0980fd77570cdfdee70a1",
+    "bytesRead": 466638,
     "complete": true,
-    "quote": "stry systems within its regional ecosystem. Sigma´s Common Shares are listed and trade on the TSXV and Nasdaq under the symbol SGML. Lithium Properties The Company has four wholly-owned properties comprising the Project, all held through its indirectly wholly-owned subsidiary Sig",
+    "quote": " On September 13, 2021, the Company's common shares commenced trading on the Nasdaq Capital Market (\"Nasdaq\") under the symbol \"SGML\". Concurrent with the listing on the Nasdaq, the common shares ceased to be quoted on the Over-the-Counter QB and the symbol under which common sha",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22SGML%22&ciks=0001848309&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-07-08&enddt=2021-07-10",
@@ -27930,7 +27563,8 @@
       "sha256": "2c081a972c90da476aaad451bc092507fb78f4c70a1da43f2cb59335dd7cfe20",
       "hits": 35
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -27962,11 +27596,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-10-29",
+    "validFrom": "2021-11-19",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 261,
-    "excludedLeadingBars": 111,
+    "bars": 258,
+    "excludedLeadingBars": 114,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:SGML:2021-09-13"
     ]
@@ -28177,7 +27811,8 @@
       "sha256": "632b713700e3173b2cd9b5941b0b63511438b6a52bd8ac33e00afc4fb40be7dc",
       "hits": 6
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -28388,7 +28023,8 @@
       "sha256": "0ef56e2164414724af84405d664c9800b8e18cdc9c9cadebdec952561be97dbd",
       "hits": 8
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -28836,16 +28472,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001641172-25-027127",
-    "document": "form8-k.htm",
-    "filingDate": "2025-09-11",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1530766/000164117225027127/form8-k.htm",
-    "sha256": "3413c4caa3bbcf5b38d6fa8ee197e3225aebff0bf47ddab8e0a73ddca108bf76",
-    "bytesRead": 46690,
-    "complete": true,
-    "quote": "ck will cease trading under the ticker symbol “BSGM” and will begin trading on the Nasdaq Stock Market under the ticker symbol “STEX” (the “Symbol Change”). The aforementioned Name Change and Symbol Change was approved by the Board of Directors of the Company. The Name Change doe",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22STEX%22&ciks=0001530766&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2014-07-03&enddt=2017-07-05",
@@ -28916,11 +28543,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2025-09-12",
+    "validFrom": "2025-10-31",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 59,
-    "excludedLeadingBars": 567,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 52,
+    "excludedLeadingBars": 574,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
@@ -29105,16 +28732,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-25-162760",
-    "document": "d71154d424b3.htm",
-    "filingDate": "2025-07-23",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1210708/000119312525162760/d71154d424b3.htm",
-    "sha256": "c9e597abe9aaafdd3ba52aa6735d227dc3cd5874d89561a56bc5c7a2365b5d29",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "traded on the Nasdaq Capital Market (“NASDAQ”) under the symbol “HSON.” Star Common Stock is traded on NASDAQ under the symbol “STRR.” For more information regarding the Merger Consideration to be received by Star stockholders if the Merger is consummated, please see the section ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22STRR%22&ciks=0001210708&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2002-11-21&enddt=2005-11-23",
@@ -29158,25 +28776,7 @@
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2025-08-21",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2025-08-15",
-      9.19
-     ],
-     "bar": [
-      "2025-08-22",
-      9.13
-     ],
-     "logReturn": -0.00655,
-     "trailingSd": 0.04161,
-     "z": -0.157,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:STRR:2004-06-10"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:STRR:2003-03-18",
     "cik": "0001210708",
@@ -29188,11 +28788,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2025-07-25",
+    "validFrom": "2025-09-12",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 66,
-    "excludedLeadingBars": 1166,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 59,
+    "excludedLeadingBars": 1173,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:STRR:2004-06-10"
     ]
@@ -29503,7 +29103,8 @@
       "sha256": "57997d984c2c669daba507ccb70283d5aac732390e33d5d920804d1a08fa8957",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -29748,22 +29349,33 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001047469-07-004833",
-    "document": "a2178368zex-99_1.htm",
-    "filingDate": "2007-06-08",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746907004833/a2178368zex-99_1.htm",
-    "sha256": "c1b801ece368efd930f312f0376bdd422bae65827ee94056b7b1d2150ce52655",
+    "accession": "0001047469-13-010572",
+    "document": "a2217307z10-k.htm",
+    "filingDate": "2013-11-15",
+    "form": "10-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746913010572/a2217307z10-k.htm",
+    "sha256": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "ics will apply to have its common shares listed on the New York Stock Exchange and the Bermuda Stock Exchange under the symbol \"TEL,\" and Covidien will apply to have its common shares listed on the New York Stock Exchange and the Bermuda Stock Exchange under the symbol \"COV.\" Tyc",
+    "quote": "SECURITIES Market Information Our common shares are listed and traded on the New York Stock Exchange (\"NYSE\") under the symbol \"TEL.\" The following table sets forth the high and low closing sales prices of our common shares as reported by the NYSE for the quarterly periods during",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEL%22&ciks=0001385157&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2007-02-15&enddt=2010-02-17",
       "sha256": "91dde74f6b17793dd1202f485b173e74b61728efc8be8f25fbcc74b6d470f446",
       "hits": 75
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEL%22&ciks=0001385157&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2010-02-17&enddt=2013-02-19",
+      "sha256": "fbb7581b404957217523c073da01956c823202ccb3cd07f12e65f6ea650c568c",
+      "hits": 100
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEL%22&ciks=0001385157&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2013-02-19&enddt=2016-02-22",
+      "sha256": "a2bdae6f4a54ca7c1fab477c2ceaf12312fa58ff0803f29c60e16824510cbac6",
+      "hits": 35
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -29795,15 +29407,17 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2007-06-15",
+    "validFrom": "2013-11-15",
     "validTo": null,
-    "basis": "FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START",
-    "bars": 1011,
-    "excludedLeadingBars": 0,
-    "excludedPartOverlapsOtherMasterRows": []
+    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
+    "bars": 676,
+    "excludedLeadingBars": 335,
+    "excludedPartOverlapsOtherMasterRows": [
+     "tiingo:NYSE:TEL:2007-06-14"
+    ]
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "FULL_SERIES",
+   "subState": "CONCATENATION_RISK_TRUNCATED",
    "reasons": []
   },
   {
@@ -30002,16 +29616,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-05-077657",
-    "document": "d20f.htm",
-    "filingDate": "2005-04-15",
-    "form": "20-F",
-    "url": "https://www.sec.gov/Archives/edgar/data/1166663/000119312505077657/d20f.htm",
-    "sha256": "eca4cb6ea902d571a58e23b99364054a08d3bc136eb06b3db19ef08e52ffa721",
-    "bytesRead": 1382003,
-    "complete": true,
-    "quote": " New York Stock Exchange under the symbol TNP. Other listings. Our common shares were listed on the Oslo Børs under the symbol TEN until a voluntary de-listing on March 18, 2005 and on the Bermuda Stock Exchange under the symbol TEN. Our common shares are no longer actively trade",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2001-11-08&enddt=2004-11-10",
@@ -30022,28 +29627,40 @@
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2004-11-10&enddt=2007-11-13",
       "sha256": "427f6aa152e4a705e0a6293c72fec044e470bda7bf85d21f4060054acd34c166",
       "hits": 32
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2007-11-13&enddt=2010-11-15",
+      "sha256": "d1a638f6c1fc300821f8f20390395b9f73ef99fe200383c09deb9f201867d3c9",
+      "hits": 31
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2010-11-15&enddt=2013-11-17",
+      "sha256": "da848b45271d5afa63193c130530ddd896f1cef9c33af04313d2ebc2aa5ec344",
+      "hits": 25
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2013-11-17&enddt=2016-11-19",
+      "sha256": "7a18805a4cf3b47292d707c4708acb6216a922ff75c9bb0a10410af20b9b2203",
+      "hits": 24
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2016-11-19&enddt=2019-11-22",
+      "sha256": "b3a5c9815e924a3e48dd92ff7834057c33bd287d871b3a3113a514516409c0e9",
+      "hits": 24
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2019-11-22&enddt=2022-11-24",
+      "sha256": "9abdcd8a6f3f4e22288517abc9e81e05dc801133277c5765d4e56437d1e9160f",
+      "hits": 40
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TEN%22&ciks=0001166663&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-11-24&enddt=2025-04-11",
+      "sha256": "2f932de5ef7b6eba52419b48a5bae6ebbc9cc09ea77ea73bca8fa384a1e5694a",
+      "hits": 25
      }
     ]
    },
-   "levelChecks": [
-    {
-     "date": "2022-11-16",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2022-11-11",
-      17.99
-     ],
-     "bar": [
-      "2022-11-18",
-      19.43
-     ],
-     "logReturn": 0.077002,
-     "trailingSd": 0.089359,
-     "z": 0.862,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NYSE:TEN:1982-01-04"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NYSE:TEN:2002-03-05",
     "cik": "0001166663",
@@ -30055,11 +29672,11 @@
     "masterExchange": "NYSE"
    },
    "usableInterval": {
-    "validFrom": "2005-04-15",
+    "validFrom": "2025-04-11",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 1124,
-    "excludedLeadingBars": 162,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 81,
+    "excludedLeadingBars": 1205,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NYSE:TEN:1982-01-04"
     ]
@@ -30408,7 +30025,8 @@
       "sha256": "d5952fd1b089e1676ba420c0e34ea38afd18e0daa0ec5514de42da2e82a8e777",
       "hits": 13
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -30767,7 +30385,8 @@
       "sha256": "eaea71954d7155dfb391f5087dff0a4e75ff67f92920c2bd6c0076833d9d38a6",
       "hits": 81
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [
     {
@@ -31162,22 +30781,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001213900-20-035290",
-    "document": "f424b31120_ucommuneint.htm",
-    "filingDate": "2020-11-05",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1821424/000121390020035290/f424b31120_ucommuneint.htm",
-    "sha256": "951028854ab78ac7f9fd145d46a60920efa551fa5e74442544b2cd7d46d2cc8d",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "ubCo intends to apply to list the PubCo Class A Ordinary Shares and PubCo Warrants on the Nasdaq Stock Market under the symbols “UK” and “UKOMW,” respectively, in connection with the closing of the Business Combination. Orisun cannot assure you that the PubCo Class A Ordinary Sha",
+    "accession": "0001213900-20-037869",
+    "document": "ea130131ex99-1_ucommune.htm",
+    "filingDate": "2020-11-18",
+    "form": "6-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1821424/000121390020037869/ea130131ex99-1_ucommune.htm",
+    "sha256": "08ef6e506295aed64ab5c26c2dae81207e250b5630880714e08fff97871ad6df",
+    "bytesRead": 12705,
+    "complete": true,
+    "quote": "raded entity. Its Class A Ordinary Shares and Warrants are expected to be traded on the Nasdaq Capital Market under the symbols “UK” and “UKOMW,” respectively, commencing November 18, 2020. As previously announced and in connection with the consummation of the Business Combinatio",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22UK%22&ciks=0001821424&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-07-23&enddt=2021-05-17",
       "sha256": "2db328c387eb5a3f4ccd6b607af8f65831efd5aab56a93cb10ba2a559013321b",
       "hits": 16
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -31545,15 +31165,15 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001193805-26-000990",
-    "document": "e665662_8k-vulcan.htm",
-    "filingDate": "2026-07-20",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1844971/000119380526000990/e665662_8k-vulcan.htm",
-    "sha256": "ea4be4502b50661085dd5314eb29b79d4bd1330f065e0b6b1c577ff6cb2c1d1a",
-    "bytesRead": 129636,
+    "accession": "0001628280-26-057159",
+    "document": "gree-20260630.htm",
+    "filingDate": "2026-08-14",
+    "form": "10-Q",
+    "url": "https://www.sec.gov/Archives/edgar/data/1844971/000162828026057159/gree-20260630.htm",
+    "sha256": "5ef45bcc2cf4b086f42d7885b014c92a1bee928f9e0ffecc6a330e4312ab3125",
+    "bytesRead": 1509030,
     "complete": true,
-    "quote": " the opening of trading on July 24, 2026, trading of the Company’s Class A common stock is expected to be under the new symbol “VIP.” The Company’s Senior Notes will continue to be traded on Nasdaq under the symbol “GREEL.” There will be no change to the CUSIP of the Company’s Cl",
+    "quote": " Power Inc.” to reflect the Company’s name change. The Company’s Class A common stock began trading on Nasdaq under the symbol “VIP” on July 24, 2026. The Senior Notes continue to be traded on Nasdaq under the symbol “GREEL.” Equity Interest Payment On July 6, 2026, the Company i",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22VIP%22&ciks=0001844971&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2021-05-20&enddt=2024-05-22",
@@ -31565,44 +31185,10 @@
       "sha256": "c144433ca24a1522ac38038e564cff87da0e178d6836852b926346c160fc1473",
       "hits": 5
      }
-    ]
+    ],
+    "factualOnly": true
    },
-   "levelChecks": [
-    {
-     "date": "2026-07-23",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2026-07-17",
-      1.71
-     ],
-     "bar": [
-      "2026-07-24",
-      2.45
-     ],
-     "logReturn": 0.359595,
-     "trailingSd": 0.112636,
-     "z": 3.193,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:VIP:2026-07-23"
-    },
-    {
-     "date": "2026-07-23",
-     "state": "NO_LEVEL_BREAK",
-     "prevBar": [
-      "2026-07-17",
-      1.71
-     ],
-     "bar": [
-      "2026-07-24",
-      2.45
-     ],
-     "logReturn": 0.359595,
-     "trailingSd": 0.112636,
-     "z": 3.193,
-     "rule": "|z|>4 flags LEVEL_BREAK_SUSPECT",
-     "otherRow": "tiingo:NASDAQ:VIP:2026-07-23"
-    }
-   ],
+   "levelChecks": [],
    "binding": {
     "canonicalId": "tiingo:NASDAQ:VIP:2021-09-14",
     "cik": "0001844971",
@@ -31614,11 +31200,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2026-07-24",
+    "validFrom": "2026-08-14",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 14,
-    "excludedLeadingBars": 253,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 11,
+    "excludedLeadingBars": 256,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:VIP:2026-07-23"
     ]
@@ -31786,16 +31372,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001193125-26-014078",
-    "document": "d749492d8k.htm",
-    "filingDate": "2026-01-15",
-    "form": "8-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526014078/d749492d8k.htm",
-    "sha256": "ed86151e53f5f57f7f4ef74a2eaac445200253d91a952fc8f79ae90591bf7533",
-    "bytesRead": 36769,
-    "complete": true,
-    "quote": "ock will continue to trade on the NASDAQ Stock Market, but effective as of January 14, 2026, it trades under the ticker symbol “VISN”. Item 9.01. Financial Statements and Exhibits. (b) Unaudited Pro Forma Condensed Consolidated Financial Information The following unaudited pro fo",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22VISN%22&ciks=0001517228&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2013-06-27&enddt=2016-06-29",
@@ -32446,22 +32023,23 @@
    },
    "tickerConfirmation": {
     "state": "FOUND",
-    "accession": "0001654954-22-013553",
+    "accession": "0001654954-22-015336",
     "document": "voxr_ex991.htm",
-    "filingDate": "2022-10-11",
+    "filingDate": "2022-11-15",
     "form": "6-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/1907909/000165495422013553/voxr_ex991.htm",
-    "sha256": "df7f4bf5562fc8bc90d2c7ffc1d75a4dfc62db7c00067b9951811a90ec0782d7",
-    "bytesRead": 7119,
+    "url": "https://www.sec.gov/Archives/edgar/data/1907909/000165495422015336/voxr_ex991.htm",
+    "sha256": "04987fe09cbbe8b245f347dda2e4fe434ea00c12d988b256545ad8d50f879153",
+    "bytesRead": 526355,
     "complete": true,
-    "quote": "t its common shares will commence trading on The Nasdaq Stock Market (“ Nasdaq ”) at market open today under the ticker symbol “VOXR”. Vox’s common shares will continue to trade on the TSX Venture Exchange under the ticker symbol “VOX”. Concurrent with the commencement of trading",
+    "quote": "shares trade on the TSX Venture Exchange under the ticker symbol “VOX”, and on the Nasdaq Stock Market under the ticker symbol “VOXR”. Vox is a mining royalty company focused on accretive acquisitions on a net asset value and cash flow per share basis, with a particular emphasis ",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22VOXR%22&ciks=0001907909&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2020-04-02&enddt=2023-03-15",
       "sha256": "43af4b88be1c906de40bfabe543dbf107c6ed74d9083be3a62ec9e9e65d76c82",
       "hits": 25
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "levelChecks": [
     {
@@ -32493,11 +32071,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2022-10-14",
+    "validFrom": "2022-11-18",
     "validTo": null,
     "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 211,
-    "excludedLeadingBars": 115,
+    "bars": 206,
+    "excludedLeadingBars": 120,
     "excludedPartOverlapsOtherMasterRows": [
      "tiingo:NASDAQ:VOXR:2020-08-04"
     ]
@@ -32652,7 +32230,8 @@
       "sha256": "d39126179aeb2c9c56fb104db79110256f3a52693a5e583848e0c8b434d0f0fa",
       "hits": 60
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -33259,16 +32838,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001104659-22-086312",
-    "document": "tm2212886-18_424b3.htm",
-    "filingDate": "2022-08-05",
-    "form": "424B3",
-    "url": "https://www.sec.gov/Archives/edgar/data/1806347/000110465922086312/tm2212886-18_424b3.htm",
-    "sha256": "2582a3b1be356e9192d6bc268a328049d996b435e0d8049cca17b21182c08f8d",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "uished and converted into shares and warrants of Westrock that are expected to be listed on Nasdaq under the new ticker symbols “WEST” and “WESTW,” in each case in accordance with the terms of the Transaction Agreement. Concurrently with the execution of the Transaction Agreement",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22WEST%22&ciks=0001806347&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2022-04-28&enddt=2022-08-29",
@@ -33289,15 +32859,15 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2022-08-26",
+    "validFrom": "2022-09-02",
     "validTo": null,
-    "basis": "FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START",
-    "bars": 218,
-    "excludedLeadingBars": 0,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 217,
+    "excludedLeadingBars": 1,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",
-   "subState": "FULL_SERIES",
+   "subState": "TRUNCATED_UNSOURCED_HISTORY",
    "reasons": []
   },
   {
@@ -33644,7 +33214,8 @@
       "sha256": "993162bb7482088f7ac43ea3a9ac77bcee4f11fb3edf7dab49b44f599ce30ca1",
       "hits": 5
      }
-    ]
+    ],
+    "factualOnly": false
    },
    "levelChecks": [],
    "binding": {
@@ -33794,16 +33365,7 @@
     "firstKind": "COMMON"
    },
    "tickerConfirmation": {
-    "state": "FOUND",
-    "accession": "0001753926-21-000445",
-    "document": "g082332_f1a.htm",
-    "filingDate": "2021-09-16",
-    "form": "F-1/A",
-    "url": "https://www.sec.gov/Archives/edgar/data/1729214/000175392621000445/g082332_f1a.htm",
-    "sha256": "d7f2c8ecc3c7d0fde8877c585cfbb31247c3aef816eb833fa65c1abccc3383f2",
-    "bytesRead": 2097152,
-    "complete": false,
-    "quote": "the Canadian Securities Exchange (“CSE”). We have applied to list our common shares on Nasdaq or NYSE under the trading symbol “XRTX”. The successful listing of our common shares on Nasdaq or NYSE is a condition of this offering. We are an “emerging growth company” as defined by ",
+    "state": "NOT_FOUND",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22XRTX%22&ciks=0001729214&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K&dateRange=custom&startdt=2018-07-31&enddt=2021-08-02",
@@ -33829,11 +33391,11 @@
     "masterExchange": "NASDAQ"
    },
    "usableInterval": {
-    "validFrom": "2021-09-17",
+    "validFrom": "2022-05-06",
     "validTo": null,
-    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
-    "bars": 267,
-    "excludedLeadingBars": 89,
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "bars": 234,
+    "excludedLeadingBars": 122,
     "excludedPartOverlapsOtherMasterRows": []
    },
    "state": "RESOLVED_SINGLE_COMMON_LISTING",

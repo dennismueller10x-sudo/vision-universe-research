@@ -10,7 +10,7 @@ const S = require(path.join(ROOT, 'quant/engines/research-studies.cjs'));
 const V = require(path.join(ROOT, 'quant/engines/research-validation.cjs'));
 const C = require(path.join(ROOT, 'quant/engines/research-contract.cjs'));
 const T = require(path.join(ROOT, 'quant/engines/realtime/trading-session.js'));
-const REG_PATH = 'docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json';
+const DEFAULT_REG_PATH = 'docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json';
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
 const HARVEST_FROM = '2025-08-15', WINDOW_FROM_UTC = '2025-09-30T20:00:00.000Z';
 const MIC = { NYSE: 'XNYS', NASDAQ: 'XNAS', AMEX: 'XASE', 'NYSE MKT': 'XASE' };
@@ -40,12 +40,14 @@ function etParts(iso) {
   return { date: `${p.year}-${p.month}-${p.day}`, hms: `${p.hour}:${p.minute}:${p.second}` };
 }
 
-function main(privDir, evidenceDir) {
+function main(privDir, evidenceDir, regPath = DEFAULT_REG_PATH) {
+  const REG_PATH = regPath;
   if (!privDir || !evidenceDir) throw Error('USAGE: run-v9-events.cjs <privateDir> <evidenceDir>');
   const priv = path.resolve(privDir); if (priv === ROOT || priv.startsWith(ROOT + path.sep)) throw Error('PRIVATE_OUTPUT_MUST_BE_OUTSIDE_REPOSITORY');
   const ev = path.resolve(evidenceDir); fs.mkdirSync(ev, { recursive: true });
-  const runDir = path.join(priv, 'run'); fs.mkdirSync(runDir, { recursive: true });
-  const regBytes = fs.readFileSync(path.join(ROOT, REG_PATH)), registrationDoc = JSON.parse(regBytes);
+  const regBytes = fs.readFileSync(path.join(ROOT, REG_PATH)), registrationDoc = JSON.parse(regBytes), VER = registrationDoc.version;
+  const runDir = path.join(priv, VER === '1.0.0' ? 'run' : 'run-' + VER); fs.mkdirSync(runDir, { recursive: true });
+  const EXB = registrationDoc.controls.exclusionSessions?.before ?? EXCL, EXA = registrationDoc.controls.exclusionSessions?.after ?? EXCL;
   const registration = { id: registrationDoc.id, version: registrationDoc.version, frozenAt: registrationDoc.frozenAt, analysisMode: registrationDoc.analysisMode, documentSha256: sha(regBytes) };
   const read = f => fs.readFileSync(path.join(priv, f));
   const popB = read('population.json'), ledB = read('sec-ledger.json'), hdrB = read('header-parity.json');
@@ -151,7 +153,7 @@ function main(privDir, evidenceDir) {
     for (const l of listings) {
       if (l.listingId === e.listingId) continue;
       const bd = barDates.get(l.listingId); if (!bd.has(E) || !bd.has(P)) continue;
-      const ix = item202Sessions.get(l.listingId); if (ix.some(j => Math.abs(j - si) <= EXCL)) continue;
+      const ix = item202Sessions.get(l.listingId); if (ix.some(j => j >= si - EXB && j <= si + EXA)) continue;
       cands.push({ l, r: sha(CONTROL_SEED + '|' + e.eventId + '|' + l.listingId) });
     }
     cands.sort((a, b) => cmp(a.r, b.r));
@@ -252,24 +254,24 @@ function main(privDir, evidenceDir) {
     population: { dailyFiles: pop.dailyFiles, populationEligible: pop.eligible, secMappedListings: ledger.listings.length, retainedListings: listings.length, retainedIssuers: retained.length, exclusionsByReason: guardCounts,
       survivorship: registrationDoc.population.survivorship },
     eventCounts: { ...counts, ledgerEightKOriginal: ledger.counts.eightKOriginal, ledgerEightKAmend: ledger.counts.eightKAmend, ledgerItem202Original: ledger.counts.item202Original, ledgerItem202Amend: ledger.counts.item202Amend,
-      controls: controls.length, controlShortfallEvents: controlShortfall.length, engineSkippedAfterAsOf: notSubmittedByEngine },
+      controlExclusionSessions: { before: EXB, after: EXA }, controls: controls.length, controlShortfallEvents: controlShortfall.length, engineSkippedAfterAsOf: notSubmittedByEngine },
     stateCounts, immature, perHorizon, holmFamily: fam, methodValidity: { criterion: registrationDoc.inference.methodValidityCriterion, result: methodValidity },
     preEntryMoveMarketAdjusted: { all: summ(preRows), byBucket: Object.fromEntries(Object.entries(pre).map(([k, v]) => [k, summ(v)])), controlsByBucketPostRegistrationDiagnostic: Object.fromEntries(Object.entries(preCtrl).map(([k, v]) => [k, summ(v)])), oneBarARByBucket: absByBucket,
       meaning: 'Last close at/before SEC acceptance -> entry close (first close strictly after acceptance), minus SPY. Large |move| for PRE_OPEN/REGULAR acceptances shows information already priced before the entry close: next-close entry is look-ahead-free relative to acceptance but late relative to the market reaction.' },
     clustering, certification: 'NOT_CERTIFIED', productionApproved: false };
   fs.writeFileSync(path.join(runDir, 'results.json'), JSON.stringify(result, null, 1));
-  fs.writeFileSync(path.join(ev, 'results-retrospective-1.0.0.json'), JSON.stringify(result, null, 1) + '\n');
+  fs.writeFileSync(path.join(ev, 'results-retrospective-' + VER + '.json'), JSON.stringify(result, null, 1) + '\n');
   // Event ledger: accession + acceptance per event, controls, per-horizon state and AR (derived numbers only).
   const resMaps = Object.fromEntries(HORIZONS.map(h => [h, new Map(results[h].r.events.map(x => [x.eventId, x]))]));
-  const ledgerOut = { schemaVersion: 'v9-events-ledger-1.0.0', registrationSha256: registration.documentSha256, resultsGeneratedAt: result.generatedAt,
+  const ledgerOut = { schemaVersion: 'v9-events-ledger-1.0.0', registrationVersion: VER, registrationSha256: registration.documentSha256, resultsGeneratedAt: result.generatedAt,
     columns: ['eventId', 'cik', 'ticker', 'securityId', 'accession', 'acceptanceRaw', 'acceptanceUtc', 'bucket', 'filingDate', 'items', 'entrySession', 'state_h1', 'state_h5', 'state_h20', 'ar_h1', 'ar_h5', 'ar_h20', 'netExcess_h1', 'preEntryAdj', 'controls'],
     events: events.map(e => { const m = e._meta; const st = h => resMaps[h].get(e.eventId); const xs = HORIZONS.map(st);
       return [e.eventId, m.cik, m.ticker, m.securityId, m.accession, m.acceptanceRaw, m.acceptanceUtc, m.bucket, m.filingDate, m.items.join(','), m.entrySession, ...xs.map(x => x?._state ?? 'NOT_SUBMITTED'), ...xs.map(x => x?._state === 'OBSERVED' ? ar(x) : null), xs[0]?._state === 'OBSERVED' ? xs[0].benchmarkExcess : null, m.preEntryAdj ?? null,
         (ctrlByParent.get(e.eventId) || []).map(id => { const c = metaById.get(id); const x = resMaps[1].get(id); return [c.securityId, x?._state, x?._state === 'OBSERVED' ? ar(x) : null]; })]; }),
     exclusions };
-  fs.writeFileSync(path.join(ev, 'event-ledger-1.0.0.json.gz'), zlib.gzipSync(JSON.stringify(ledgerOut), { level: 9 }));
+  fs.writeFileSync(path.join(ev, 'event-ledger-' + VER + '.json.gz'), zlib.gzipSync(JSON.stringify(ledgerOut), { level: 9 }));
   fs.writeFileSync(path.join(runDir, 'events-for-reference.json'), JSON.stringify({ events: events.map(e => ({ eventId: e.eventId, ...e._meta })), controls: controls.map(c => ({ eventId: c.eventId, listingId: c.listingId, ...c._meta })), listings: listings.map(l => ({ listingId: l.listingId, securityId: l.securityId, issuerId: l.issuerId })) }));
   console.log(JSON.stringify({ retainedListings: listings.length, events: events.length, controls: controls.length, stateCounts, holm: fam, methodValidity, A1: perHorizon[1].A.inference, B1: perHorizon[1].B.inference }, null, 1));
 }
-if (require.main === module) main(process.argv[2], process.argv[3]);
+if (require.main === module) main(process.argv[2], process.argv[3], process.argv[4]);
 module.exports = { main, erfc, easternToUtc };

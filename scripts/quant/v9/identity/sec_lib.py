@@ -216,6 +216,7 @@ def price_statements(body):
 
 US_VENUE_RE = re.compile(r'new york stock exchange|\bnyse\b|nasdaq|american stock exchange|\bamex\b|nyse american|nyse mkt|nyse arca|cboe|bats', re.I)
 NON_US_OR_OTC_RE = re.compile(r'\btsx\b|toronto stock exchange|canadian securities exchange|\bcse\b|tsx venture|euronext|lima stock exchange|bolsa|london stock exchange|\baim\b|frankfurt|six swiss|\botc\b|otcqb|otcqx|pink sheets|bulletin board|over[- ]the[- ]counter|hong kong stock exchange|australian securities exchange|\basx\b|oslo|b\u00f8rs|bermuda|tel aviv|\btase\b|johannesburg|\bjse\b|deutsche b\u00f6rse|xetra|stockholm|copenhagen|helsinki|mexican stock|singapore|tokyo|korea exchange|shanghai|shenzhen|borsa|bourse|\bnzx\b', re.I)
+OWN_RE = re.compile(r'\bour\b|\bwe\b|the company[\u2019\']s|\bregistrant', re.I)
 INTENT_RE = re.compile(r'appl(?:y|ied|ication)|intend|expect|will |anticipate|propos|to be listed|approved for listing|subject to|upon (?:the )?(?:closing|consummation|completion)', re.I)
 SENTENCE_END_RE = re.compile(r'[a-z0-9\)\u201d"]\.\s+(?=[A-Z\u201c"])')
 
@@ -226,7 +227,7 @@ def ticker_symbol_statements(text, sym, factual=False):
     venue appears between that exchange name and the symbol. factual=True additionally rejects statements of
     intent (apply/expect/will/...). Returns [(start, quote)]."""
     t = re.escape(sym)
-    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["\u201c\u2018\'(]{0,2}%s["\u201d\u2019\')]{0,2}(?![A-Za-z0-9])(?!\s?WI\b)(?!\.[A-Z]{1,2}\b)' % t)
+    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["\u201c\u2018\'(]{0,2}%s["\u201d\u2019\')]{0,2}(?![A-Za-z0-9])(?!\s?WI\b)(?!\s?PR[A-Z]?\b)(?!\.[A-Z]{1,2}\b)' % t)
     out = []
     for m in pat.finditer(text):
         pre = text[max(0, m.start() - 220):m.start()]
@@ -240,6 +241,8 @@ def ticker_symbol_statements(text, sym, factual=False):
             continue
         if factual and INTENT_RE.search(pre):
             continue
+        if not OWN_RE.search(pre):
+            continue  # the sentence must speak about the filer's own security, not a merger partner's
         out.append((m.start(), text[max(0, m.start() - 120):m.start() + 160]))
     return out
 

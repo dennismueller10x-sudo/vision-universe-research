@@ -1,0 +1,147 @@
+{
+ "schemaVersion": "v9-events-parity-1.0.0",
+ "codeSha256": "fdfc98e53bbec6aa469604f6e1841af344efe210fe1668efd028d13eaf4e57e5",
+ "inputs": {
+  "population": "b67744ba7fc3c758767aaf98b196e4dab84055c322421a3486df726d1fc8bbcd",
+  "ledger": "78ca96d769c4779c93a43665a99b50cf5c101239da2e58dae372a3ce7b07739b",
+  "header": "fc3ff13d742570a4fc66ee42c4241d3c31a2eb0e6b99165509eb9eece51693ed",
+  "jsResults": "6cf35fcfc772e308b05b7701deed7541d5985e0d314e438adf639ca2753b4e29"
+ },
+ "tolerance": "returns/excess abs 1e-12; statistics max(1e-12 abs, 1e-9 rel); ids/dates/states exact",
+ "populationMasterRecheckDisagreements": 0,
+ "counts": {
+  "retainedListings": 2730,
+  "events": 11888,
+  "controls": 23680,
+  "observedRowComparisons": 104271,
+  "checks": 732449,
+  "failures": 0
+ },
+ "reference": {
+  "1": {
+   "A": {
+    "n": 11823,
+    "mean": 0.007398194005026338,
+    "standardError": 0.0012768104175173327,
+    "z": 5.794277602630782,
+    "pValue": 6.8615881998559365e-09,
+    "timeClusters": 265,
+    "issuerClusters": 2727,
+    "intersectionClusters": 11823
+   },
+   "B": {
+    "n": 11823,
+    "mean": -0.00496973686408764,
+    "standardError": 0.000853877729421274,
+    "z": -5.82019731028228,
+    "pValue": 5.877819820893351e-09,
+    "timeClusters": 265,
+    "issuerClusters": 2727,
+    "intersectionClusters": 11823
+   },
+   "bootA": {
+    "estimate": 0.00739819400502634,
+    "pValue": 0.0012,
+    "ci": [
+     0.002866809324159409,
+     0.011367549144761752
+    ]
+   },
+   "bootB": {
+    "estimate": -0.004969736864087639,
+    "pValue": 0.0001,
+    "ci": [
+     -0.006896165000704727,
+     -0.0034587767942467398
+    ]
+   }
+  },
+  "5": {
+   "A": {
+    "n": 11544,
+    "mean": 0.007151616834329399,
+    "standardError": 0.0021309248041487647,
+    "z": 3.3561094321140246,
+    "pValue": 0.0007904728399155482,
+    "timeClusters": 261,
+    "issuerClusters": 2727,
+    "intersectionClusters": 11544
+   },
+   "B": {
+    "n": 11544,
+    "mean": -0.006792235598632298,
+    "standardError": 0.0021234641628412212,
+    "z": -3.1986579841988965,
+    "pValue": 0.0013806886016957023,
+    "timeClusters": 261,
+    "issuerClusters": 2727,
+    "intersectionClusters": 11544
+   },
+   "bootA": {
+    "estimate": 0.007151616834329403,
+    "pValue": 0.0856,
+    "ci": [
+     -0.002059734346813587,
+     0.01452067498817085
+    ]
+   },
+   "bootB": {
+    "estimate": -0.006792235598632292,
+    "pValue": 0.07,
+    "ci": [
+     -0.014431777549519994,
+     9.860182673912879e-05
+    ]
+   }
+  },
+  "20": {
+   "A": {
+    "n": 11390,
+    "mean": -0.017324302183208865,
+    "standardError": 0.005059775558785579,
+    "z": -3.423927006629312,
+    "pValue": 0.0006172319742430688,
+    "timeClusters": 246,
+    "issuerClusters": 2725,
+    "intersectionClusters": 11390
+   },
+   "B": {
+    "n": 11390,
+    "mean": -0.009616593821882213,
+    "standardError": 0.0024338002247215437,
+    "z": -3.9512667162246102,
+    "pValue": 7.773862722617331e-05,
+    "timeClusters": 246,
+    "issuerClusters": 2725,
+    "intersectionClusters": 11390
+   },
+   "bootA": {
+    "estimate": -0.01732430218320886,
+    "pValue": 0.0894,
+    "ci": [
+     -0.03953101667179446,
+     0.0009226948981542124
+    ]
+   },
+   "bootB": {
+    "estimate": -0.00961659382188221,
+    "pValue": 0.0798,
+    "ci": [
+     -0.02074723616285784,
+     0.0006280479371455032
+    ]
+   }
+  }
+ },
+ "holm": [
+  3.52669189253601e-08,
+  0.0018516959227292064,
+  0.0018516959227292064,
+  3.52669189253601e-08,
+  0.0018516959227292064,
+  0.00031095450890469324
+ ],
+ "firstFailures": [],
+ "result": "PASS",
+ "scope": "Same-data computational parity in a second language; not an independent holdout. Weekly qualification flag taken from population.json (not re-derived)."
+}

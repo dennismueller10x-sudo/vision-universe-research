@@ -1,7 +1,7 @@
 {
  "schemaVersion": "v9-identity-dossiers-1.0.0",
- "generatedAt": "2026-10-27T19:01:47+00:00",
- "codeSha256": "ad100e2257a675531ade4ced0eb3b92313a4b02295539f31b5c4e51653ce4057",
+ "generatedAt": "2026-10-27T19:08:07+00:00",
+ "codeSha256": "8ce7d5729e169d212c2141033dd1361b355521c4c10a954301a9cddf0e928331",
  "secTickerMap": {
   "url": "https://www.sec.gov/files/company_tickers_exchange.json",
   "sha256": "76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46",
@@ -1001,7 +1001,8 @@
       "sha256": "bba32079c2e1a1d61d86dbe86a055372e22cc41796e3e2899c1f055919d3695c",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0000820318",
@@ -1893,22 +1894,23 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "accession": "0001125282-01-500926",
-    "document": "b311818_10ka.txt",
-    "filingDate": "2001-06-15",
-    "form": "10-K/A",
-    "url": "https://www.sec.gov/Archives/edgar/data/1094831/000112528201500926/b311818_10ka.txt",
-    "sha256": "d118182f7f9bcd5ad0fbdd336772a7054e1b67741ef95eeef885f9dd39d0bf85",
-    "bytesRead": 307626,
+    "accession": "0000950136-03-000748",
+    "document": "file001.txt",
+    "filingDate": "2003-03-31",
+    "form": "10-K",
+    "url": "https://www.sec.gov/Archives/edgar/data/1094831/000095013603000748/file001.txt",
+    "sha256": "38d734435522ba4dc45754d8c06a8b4f126bb81e13cff024213ee085f7e5b59b",
+    "bytesRead": 390994,
     "complete": true,
-    "quote": " public on December 10, 1999 at $22.00 per share. It has traded since that date on the Nasdaq National Market under the symbol \"ESPD.\" Through February 28, 2001, the high and low sales prices for our Class A common stock, as reported by Nasdaq, were as follows: High Low 1999 Four",
+    "quote": " MATTERS PRICE RANGE OF CLASS A COMMON STOCK Our Class A common stock is traded on the Nasdaq National Market under the symbol \"ESPD\". For each quarter of the prior two years and through March 17, 2003, the high and low sales prices for our Class A common stock, as reported by Na",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22ESPD%22&ciks=0001094831&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
       "sha256": "81540435e4828b01b82a25110774b7fce9984097a8f432cf778075b007dcc4ab",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0001094831",
@@ -2924,15 +2926,15 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "accession": "0001171200-09-000091",
-    "document": "i00039_bridgehampton-10k.htm",
-    "filingDate": "2009-03-12",
+    "accession": "0001104659-11-013915",
+    "document": "a11-7685_110k.htm",
+    "filingDate": "2011-03-11",
     "form": "10-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/846617/000117120009000091/i00039_bridgehampton-10k.htm",
-    "sha256": "2345586279fffccff111fd9ea47f8bbd543e8731ded30abd596347f4a36d486c",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000110465911013915/a11-7685_110k.htm",
+    "sha256": "a56d0c1d3bc2b8c8e595417e19fbffcef9edf8828575f408443c114b7222905e",
     "bytesRead": 2097152,
     "complete": false,
-    "quote": "t-only basis. During 2008, the Company received approval and began trading on the NASDAQ Global Select Market under the symbol “BDGE”. Equity incentive plan grants of stock options and stock awards are recorded directly to the holding company. The Company’s sources of funds are d",
+    "quote": "uity Securities COMMON STOCK INFORMATION The Company’s common stock trades on the NASDAQ Global Select Market under the symbol, “BDGE”. The following table details the quarterly high and low sale prices of the Company’s common stock and the dividends declared for such periods. At",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
@@ -2948,8 +2950,14 @@
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2007-01-06&enddt=2010-01-08",
       "sha256": "0584eeb80412d27eebc12ebfb27a34016464b0722c74ebf96c83d2206a08023c",
       "hits": 3
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2010-01-08&enddt=2013-01-10",
+      "sha256": "4a8c1407ae928a9c87a05e53dae190b1dbbd55534f2234bd732694e017e4c59f",
+      "hits": 3
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0000846617",
@@ -3094,8 +3102,6 @@
       "from": null,
       "to": "2021-01-29",
       "matches": [
-       "2009-12-31",
-       "2010-12-31",
        "2011-12-31",
        "2015-12-31",
        "2016-12-31",
@@ -3119,12 +3125,12 @@
     "segmentRule": "ALL_SEGMENTS_FROM_BDGE_MATCHED",
     "unexplainedLevelBreaks": [],
     "usableInterval": {
-     "validFrom": "2009-03-13",
+     "validFrom": "2011-03-11",
      "validTo": null,
      "basis": [
       "EARLIEST_SEC_FULLTEXT_TICKER_CONFIRMATION"
      ],
-     "bars": 920
+     "bars": 816
     }
    }
   },
@@ -4207,7 +4213,8 @@
       "sha256": "9e07cfc5db17cc6ea96a39fcd25ea95120757a3f872121bb86734cbc73dc1c5a",
       "hits": 4
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0000890564",
@@ -5032,7 +5039,8 @@
       "sha256": "b474b799f80535570c7ec93dd6b010e5b064e1a4ebec65ed0888e6f9a2b25df8",
       "hits": 6
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0001206264",
@@ -5911,7 +5919,8 @@
       "sha256": "280245d307f9b559537fb72a8192709be22326195f9f111e50c0446a75ea7748",
       "hits": 1
      }
-    ]
+    ],
+    "factualOnly": true
    },
    "currentTickerCovers": {
     "cik": "0000022701",
