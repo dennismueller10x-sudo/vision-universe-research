@@ -422,9 +422,9 @@
       "cik": "0000840489",
       "name": "FirstCash Holdings, Inc.",
       "sic": "5900",
-      "rawFacts": 20258,
-      "mappedFacts": 6966,
-      "unmappedFacts": 13218,
+      "rawFacts": 20619,
+      "mappedFacts": 7083,
+      "unmappedFacts": 13489,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -434,9 +434,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -448,7 +448,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -468,28 +468,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -503,14 +503,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -533,46 +533,47 @@
         }
       },
       "quality": {
-        "HIGH": 566,
-        "MEDIUM": 60
+        "HIGH": 572,
+        "MEDIUM": 61
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 626,
-        "resolvedValues": 626
+        "datableValues": 633,
+        "resolvedValues": 633
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13835,
+        "total": 13941,
         "by_severity": {
-          "INFO": 13218,
-          "WARNING": 617
+          "INFO": 13489,
+          "WARNING": 452
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 582,
-          "RESTATEMENT_CONFLICT": 33,
+          "CONCEPT_DISAGREEMENT": 431,
+          "RESTATEMENT_CONFLICT": 19,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 13218
+          "UNKNOWN_CONCEPT": 13489
         }
       },
       "latestFiling": {
-        "accession": "0000840489-26-000085",
-        "filing_date": "2026-07-27",
+        "accession": "0000840489-26-000099",
+        "filing_date": "2026-10-26",
         "form": "10-Q",
-        "periodic_filings": 125
+        "periodic_filings": 126,
+        "acceptance_datetime": "2026-10-26T19:39:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.13.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a6dc7880ea8654a5747a8e429d98a5cfab9520c74f7ca1d51581477d20b40858",
+      "sourceDigest": "f1ee14f639df2ab79fcb26fe12cb9c06f4243575541d6b744c2e3b14b2df2416",
       "issuerId": "iss_cik_0000840489"
     },
     {
