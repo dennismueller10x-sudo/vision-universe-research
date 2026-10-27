@@ -1,0 +1,258 @@
+{
+ "schemaVersion": "quant-v9-evidence-matrix-1.0.0",
+ "gitHeadAtBuild": "bce19075f8b003a7af283f7b7cf1807e63bff477",
+ "matrix": [
+  {
+   "area": "SAME_STOCK_REPLAY",
+   "methodStatus": "PARTIAL",
+   "summary": "Unchanged engine; V9 adds source-proven identity bindings (COHR, BGC, DCOM, SGI, TRAK) and one confirmed unadjusted split (PZZA) as proposals. Structural survivor-by-construction limit remains.",
+   "evidence": [
+    "docs/quant-recovery/v9/identity/dossiers-7.json",
+    "docs/quant-recovery/v9/corporate-actions/ca-manual-review.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "PATTERN_EVIDENCE",
+   "methodStatus": "PARTIAL",
+   "summary": "No new pattern study. Survivorship/return basis gates unchanged.",
+   "evidence": [],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "SIGNAL_BACKTEST",
+   "methodStatus": "PARTIAL",
+   "summary": "NEW_52W_HIGH re-run on registered 1,000/3,255-listing populations: positive raw price return, no benchmark-excess evidence after Holm. No rule certified.",
+   "evidence": [
+    "docs/quant-recovery/v9/sensitivity/population-summary.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "SETUP_BACKTEST",
+   "methodStatus": "PARTIAL",
+   "summary": "4,137 events / 20 dates / 2 months / 6 ISO weeks; blockers are forward-time accumulation plus one normative question (recommendation prepared, not approved).",
+   "evidence": [
+    "docs/quant-recovery/v9/certification-readiness-1.0.0.json",
+    "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "STRATEGY_BACKTEST",
+   "methodStatus": "PARTIAL",
+   "summary": "Ledger now runs on SEC-sourced dividends (pay dates), splits and terminal events; membership/factor history gates (24 months) are time-bound (~2028-07).",
+   "evidence": [
+    "docs/quant-recovery/v9/portfolio/portfolio-v9-index.json",
+    "docs/quant-recovery/v9/certification-readiness-1.0.0.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "FACTOR_RANKING_BACKTEST",
+   "methodStatus": "PARTIAL",
+   "summary": "Fiscal-year/PIT defects traced to filer XBRL with proposed fixes; 1,105/1,105 original-value parities. Factor snapshot history gate time-bound.",
+   "evidence": [
+    "docs/quant-recovery/v9/secpit/summary.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "MONTE_CARLO",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "V7 acceptance preserved unchanged.",
+   "evidence": [],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "WALK_FORWARD",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "V8 acceptance preserved unchanged.",
+   "evidence": [],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "OUT_OF_SAMPLE",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "V7 acceptance preserved; V9 adds a prospective registered-not-evaluable 8-K cohort (evaluable 2027-04-29).",
+   "evidence": [
+    "docs/quant-recovery/v9/events/registration-prospective-1.0.0.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "MARKET_REGIME",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "V8 acceptance preserved unchanged.",
+   "evidence": [],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "PARAMETER_SENSITIVITY",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "NEW: pre-registered dependence diagnostics (PW block length, SE plateau, KPSS/CUSUM/split tests) pass C1-C6 on P1 and P2 for the primary endpoint; trio and benchmark-excess endpoint excluded from scope. Python parity 1,420,112 checks.",
+   "evidence": [
+    "docs/quant-recovery/v9/sensitivity/registration-1.0.0.json",
+    "docs/quant-recovery/v9/sensitivity/diagnostics-summary.json",
+    "docs/quant-recovery/v9/sensitivity/decision.json",
+    "docs/quant-recovery/v9/sensitivity/parity.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "EVENT_DRIVEN",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "NEW: 11,888 original 8-K Item 2.02 events (2,730 listings), SEC acceptance clock 283/283 header parity, registered positive control A1 detected vs 23,680 placebo controls; scope h=1 absolute abnormal reaction, current survivors, 2025-09..2026-10, price return. Python parity 732,449 checks.",
+   "evidence": [
+    "docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json",
+    "docs/quant-recovery/v9/events/results-retrospective-1.0.0.json",
+    "docs/quant-recovery/v9/events/header-parity-1.0.0.json",
+    "docs/quant-recovery/v9/events/parity-1.0.0.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  },
+  {
+   "area": "PORTFOLIO_REBALANCING",
+   "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+   "summary": "NEW (bookkeeping mechanics only): SEC-sourced cash dividends credited at pay date (MSFT/WMT 47/47 quarters), sourced splits, one real cash (CRNX) and one real stock (LBRDK->CHTR) terminal event; 22/22 exact Python ledger parities. Spin-offs, ADS consideration and unstated pay dates excluded; no strategy certification.",
+   "evidence": [
+    "docs/quant-recovery/v9/portfolio/portfolio-v9-index.json"
+   ],
+   "certification": "NOT_CERTIFIED"
+  }
+ ],
+ "counts": {
+  "implemented": "13/13",
+  "acceptedInDefinedScope": "7/13",
+  "extensionMethodsAccepted": "7/7",
+  "certifiedBacktestKinds": "0/6"
+ },
+ "finalStatus": "V9_METHODS_ACCEPTED_WITH_LIMITED_SCOPE",
+ "files": {
+  "docs/quant-recovery/v9/baseline-1.0.0.json": "491b7b6431fa8aca193a2f81dbf09eb067a74168fb86b0433fc9fc0a59e54ba6",
+  "docs/quant-recovery/v9/certification-readiness-1.0.0.json": "a93e6ccbd65638136b32064d1473e1ccddb7f62054137e76d3498767468d2a3d",
+  "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json": "84aad4408f57b79130c9d84ef8e72bb70cbc8a5ddc858f32e8ef539e557726a3",
+  "docs/quant-recovery/v9/technical-close-review-1.0.0.json": "bb9aadd7c2d957fa4b30062e14d33282b617465bad3306598535630be8ebf821",
+  "docs/quant-recovery/v9/technical-close-review-1.0.1.json": "f7df6405fd5d5ea176160aaec472a0fb55d3287415330d5163dccb101f5e3757",
+  "docs/quant-recovery/v9/v8-securement-1.0.0.json": "3ebba9e8e36f4bbbacb376dc50265a6351421b4d955e3b3f9f884412b1f1726f",
+  "docs/quant-recovery/v9/identity/README.md": "74c4d39303a70004e6a6bff4be3fc9cc0abe4590b5f323b32e23e8100f23db65",
+  "docs/quant-recovery/v9/identity/ambiguous-resolution.json": "f35115b321d7e374b6d7e9c5e9a1e82398789220861385b300ac9e62ab0a9820",
+  "docs/quant-recovery/v9/identity/dossiers-7.json": "4190d1c1a31e7c4c2d351f291a886c43902d09f40d251dc20826ac2c86aa339d",
+  "docs/quant-recovery/v9/identity/dry-run-counts.json": "ed6ea18ea0700935530e77c38d4d115d5007d48836d28d57a48c6f20af8d639b",
+  "docs/quant-recovery/v9/identity/identity-evidence-proposal.json": "ccf117f195b7ab7cdc9d9bc1a924ca92e6e3d79af9f9a6230f71d0b6da0cb054",
+  "docs/quant-recovery/v9/identity/independent-check.json": "d79f0e361f4279a0c283beb072fe0475acd9743be69c4ab23c170029682a4233",
+  "docs/quant-recovery/v9/sensitivity/decision.json": "ea4f58f598f4ee34f31f657dd5aab8c4b625cb89755dd04e2278775f8f6546f1",
+  "docs/quant-recovery/v9/sensitivity/diagnostics-summary.json": "c2851e308d3785a20dc0acf39327fbbad2ed0e4fff4012d5be8606e8b131ec8f",
+  "docs/quant-recovery/v9/sensitivity/parity.json": "17869af433d37fad8774ab178033c721f31d211c1fee96cd8383618320b57eb8",
+  "docs/quant-recovery/v9/sensitivity/population-summary.json": "31e50781ec5e5f1f3d7ccc6a817b0096230521077604ea9b15ccc52736a35d4c",
+  "docs/quant-recovery/v9/sensitivity/registration-1.0.0.json": "8d9b0ee26bf482e9c4c61288da171d3797cee25cd7633c11e5551a1f79cbb719",
+  "docs/quant-recovery/v9/sensitivity/source-manifest-1.0.0.json.gz": "54eea506b0997384e066d80c867c35a2b5dc574bb347373b2ef234fd4d5fdd45",
+  "docs/quant-recovery/v9/sensitivity/v8-reproduction.json": "12430b5efe48f458d4a5d4895ef3e28c72b3c0fd7cf032017933778cc9a6f7b2",
+  "docs/quant-recovery/v9/portfolio/dividend-evidence.json": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
+  "docs/quant-recovery/v9/portfolio/ledger-L1.json": "f5a5fb08c561a582b25af3e5112854d078181afa7a10118da584127119cd7379",
+  "docs/quant-recovery/v9/portfolio/ledger-L2.json": "9037be37f188ea3a91d56eaa039e3f55962056d6f0a821d803695f6cb4346eda",
+  "docs/quant-recovery/v9/portfolio/ledger-L3.json": "1ef86f953492e0a58a599abaac73f70c70e6e8dae2a565e5f39024d4081ce84a",
+  "docs/quant-recovery/v9/portfolio/ledger-terminal-daily.json": "149d612a8f2b7cf6b5f55d4210483d6362128f900a0cc5ca5789e7ed29db371f",
+  "docs/quant-recovery/v9/portfolio/parity-L1.json": "9e55a89aad4624c0a51a6b621b2d4cd204f1b7b7e9cc950f99ae064e3562e8b8",
+  "docs/quant-recovery/v9/portfolio/parity-L2.json": "fd9d4bc42e020b373b64a2942a7fbbc6dd892e07e5c1558daf62adf27602ce42",
+  "docs/quant-recovery/v9/portfolio/parity-L3.json": "49262a87c7f53a1cf97428fe1902c5a352ffe76bf726eec0190179381da72263",
+  "docs/quant-recovery/v9/portfolio/parity-terminal-daily.json": "295c80bc9d1d6d5a4dc289dc20d703c36317187aaed7559818f2d88231d2cc66",
+  "docs/quant-recovery/v9/portfolio/portfolio-v9-index.json": "b605dcd6b5ab68aad1bfd0efb654dfaf08559942f69f7294f2993da46c621bb9",
+  "docs/quant-recovery/v9/portfolio/split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4",
+  "docs/quant-recovery/v9/portfolio/terminal-evidence.json": "e5a4535581def94a87144f3e202a28b64bb8248b2b37fe14dc658de910124738",
+  "docs/quant-recovery/v9/portfolio/terminal-ledger-events.json": "6be891aa23b8246a535695034b09284643b01fe1bff640e45d76f0624b9c44b7",
+  "docs/quant-recovery/v9/events/README.md": "81449088d1dddb539244de4e34b522ee049e4dd2d942b9501672a102b59223c8",
+  "docs/quant-recovery/v9/events/event-ledger-1.0.0.json.gz": "fae173dc954894f1c708d803d4d2f379c27469ce31f33d7fd2fdba31e0c5b0a7",
+  "docs/quant-recovery/v9/events/event-ledger-1.1.0.json.gz": "31e88f0b300b36fc0cb64341783ea0cb71036ea35d8e6f91866ec3368223e776",
+  "docs/quant-recovery/v9/events/header-parity-1.0.0.json": "4e242b06d1b6e6e52914516a02c7e1f9c6a1f434fc77d1ad331812abc4ef2161",
+  "docs/quant-recovery/v9/events/parity-1.0.0.json": "4e29fe6f7629b224004051a49d773796b98577ddcd71c73d43787f7681eebd4d",
+  "docs/quant-recovery/v9/events/parity-1.1.0.json": "7bf8718d6ef50a79a55713d7d7949aeba06841ebae28efb19d4bf86a9eba1b15",
+  "docs/quant-recovery/v9/events/registration-prospective-1.0.0.json": "97aefa807c7b437e841dfd0ac850eefced5304bbef2106240dca6c55600b5255",
+  "docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json": "4bd65dd5c25d5a2d0347cdbd42e096a1ad81b10a3cb13d7cbb7c04ac12bf4bec",
+  "docs/quant-recovery/v9/events/registration-retrospective-1.1.0.json": "089339d16ddb10694079e9435e8971df435f8907c006f429b764245e115b1dc5",
+  "docs/quant-recovery/v9/events/results-retrospective-1.0.0.json": "93ed7edc765a2ccb2df70bf0715bdb7872b2c68ea2e6271f62ff380de08496c1",
+  "docs/quant-recovery/v9/events/results-retrospective-1.1.0.json": "d29b2b337cbecdd8f033ed13ecd96f7fe2437a4ca1c09c23c7ea68cd31413001",
+  "docs/quant-recovery/v9/corporate-actions/ca-dryrun.json": "50d677c743c13cb255b1c1fb6d17664aae99924b8159a343059791a4a483f78b",
+  "docs/quant-recovery/v9/corporate-actions/ca-event-resolutions.json.gz": "1548f7e7417b7bdc887882a86e23eb78b35383f94ef78a94ce99dc17902b4322",
+  "docs/quant-recovery/v9/corporate-actions/ca-evidence-proposal.json": "bebe1150289077e798bb9e442afe9f74568ffef549c8106659903da03a5fe596",
+  "docs/quant-recovery/v9/corporate-actions/ca-evidence-quotes.json": "ae7a21fe687b660f604eec638b2872d1f8783a776b8f65a55d6a60f1d1333d2c",
+  "docs/quant-recovery/v9/corporate-actions/ca-independent-check.json": "f4a0350f91c0767512ad6fcc47603a0fd956b883202bfeb3c53ac0b865207c3b",
+  "docs/quant-recovery/v9/corporate-actions/ca-manual-review.json": "b9d304a1dc37e8e290cec6a8b62b884a0b780306bbdd510be084fe65758cc6b9",
+  "docs/quant-recovery/v9/corporate-actions/ca-missing-weeks.json": "e30e7b5f03a12dcad020f5720c320839e62b320377e6793613ffc911ca33fcef",
+  "docs/quant-recovery/v9/corporate-actions/ca-run-manifest.json": "2bb3b998e7ba90e961a6dbd21d46b0d4c0e2f38f4c455d1c1c0b66549fec23fd",
+  "docs/quant-recovery/v9/corporate-actions/ca-stale-tail-finding.json": "f0830f59a07aabce5ecb91f03126a080e941030a14da0e903d221fb0f64be133",
+  "docs/quant-recovery/v9/corporate-actions/ca-triage-summary.json": "3c229ce1af317925511dec1e3e2b12dc20ada10dafc494dc1454dcbcdd05ecf5",
+  "docs/quant-recovery/v9/secpit/acceptance-timezone-check.json": "5fe7c4c1ea92cbff1de840849b055a2eb327c751985f98b7af84867223ad542c",
+  "docs/quant-recovery/v9/secpit/availability-before-period-end.json": "3250147b6f7bbe5822fedf31259699a0fc3c110c795d6685e05c9ca0537c2783",
+  "docs/quant-recovery/v9/secpit/availability-sample-registration.json": "e9967dbba80cfa253373e73314109acdb4be0d644f57ff77469c0e83e86e14c8",
+  "docs/quant-recovery/v9/secpit/availability-sample-verification.json": "85c439c1b6c6393af7c7a3d88867d342713b4b1d37bbdf676ab2530964f4afd0",
+  "docs/quant-recovery/v9/secpit/factor-impact.json": "490072de9b70849dc5c1fd5849a83d8da7469f365db7ed51ecfdc70e1928d204",
+  "docs/quant-recovery/v9/secpit/fy-anomaly-dossier.json": "061f3175a88ed46fc6facb40f4b126c97199f6e0ef8f7248e8d2607700336ebd",
+  "docs/quant-recovery/v9/secpit/independent-check.json": "cddf7b5eef78b212af1da5659d00679e702a21416cc5bbffd0d7687c8f314d6d",
+  "docs/quant-recovery/v9/secpit/parity-registration.json": "de1638aa6d2d2c73b020d33c21cd14797b41384fb4c618e51c518e386690492d",
+  "docs/quant-recovery/v9/secpit/parity-restatement-pairs.json": "fa6d9400dad8e2a0a47b6239bac32f86545ef6b543af3e9b26c44db2892901ef",
+  "docs/quant-recovery/v9/secpit/parity-results.json": "5030529a6ffb6cb8b977291d971e874d6ee90f68222a3bb455f9501929b157ca",
+  "docs/quant-recovery/v9/secpit/proposal-effect.json": "a9d952270603b6b4a28c32fe2a1f69be946d217099fda8f5728b996b07f2d689",
+  "docs/quant-recovery/v9/secpit/proposals.json": "267ff91c68c5a59d6fe850417b2e0acf0c2dad13a161c593553874f055f3ac7b",
+  "docs/quant-recovery/v9/secpit/summary.json": "e3243e68959c8d26e929d9f65aae8ecc32e0619c6218221dc17f3136afe44f5e"
+ },
+ "code": {
+  "scripts/quant/v9/build-v9-manifest.py": "86d1ade6c88b3d3e69e2344d2394ab77a992b319f42c45f05610dfd4dff0eda6",
+  "scripts/quant/v9/certification-readiness.py": "9ab6f5eeb8deb8f9a111f81fd52ac47619c3abfe36e09e4ca8503db57c4bb949",
+  "scripts/quant/v9/identity/build_dossiers.py": "8ce7d5729e169d212c2141033dd1361b355521c4c10a954301a9cddf0e928331",
+  "scripts/quant/v9/identity/build_proposal.py": "cac8568fd82086362a6200b83c823ed1e27c7cdc7eaa1aee4cb098f939fc8610",
+  "scripts/quant/v9/identity/check_identity.py": "d2d30d1fec0d49422ff66fa7cad49ec96cbfea45e4418abb3c494a2e905317a1",
+  "scripts/quant/v9/identity/dry-run-qualification.cjs": "44a44366bc61f7cccb022d7aea014f568c1affbb4221d8683f63bd85530bad42",
+  "scripts/quant/v9/identity/reproduce-weekly-reasons.cjs": "45af126849df98bb0436af064c65af71e442794c4413e6f20b55869f96d26112",
+  "scripts/quant/v9/identity/resolve_ambiguous.py": "39439855dc9356e75b65ecc344ddd8acc8ad616146ee80fbbb67a8acf23b4db4",
+  "scripts/quant/v9/identity/sec_lib.py": "c1cf08f2604cdb8cc4f8d35788cd734d9209bb706e7ceb1d4034bfe62922eb2b",
+  "scripts/quant/v9/identity/series_lib.py": "77451a03986b25dd95f42a2fd231d388ab3fed19f1740f070996e3957b289919",
+  "scripts/quant/v9/sensitivity/dependence.cjs": "6f60bb3651410bd58dd204b927a284e8c49fd5c3ae1f90dd479223825a4cc2a9",
+  "scripts/quant/v9/sensitivity/publish-v9-sensitivity.cjs": "c810fb8e0e167080111e98339edaff9d8c6288c2790e0ed2cc67ac51fd4576fa",
+  "scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs": "c5e0f3fb83f7c26eea5a61f0109c49112297519a00af05d6c3d3f8d7aae1cf04",
+  "scripts/quant/v9/sensitivity/verify_v9_sensitivity.py": "06419106171c17f4c5e8300ed3b8cc5470fd9ae426e010fde676f49a17b5f70f",
+  "scripts/quant/v9/portfolio/build_dividend_table.py": "fdd397c32c70c5db9ad1e6a72826e255ca91c221361dd013aec8be2831770974",
+  "scripts/quant/v9/portfolio/harvest_dividends.py": "e0e3f8e23fdb2de075b8c6b1377f4601f098c81daf6162ba49349527fa603217",
+  "scripts/quant/v9/portfolio/run_ledger.cjs": "ef25d4bae9e338d2f4f77e257638bc898913f3ab984c883d561cd73dbd043182",
+  "scripts/quant/v9/portfolio/run_terminal_ledger.cjs": "df760b0e8bfcd634788edeec97ab1686367d8b720bae535e9e1d7f52e631ddf3",
+  "scripts/quant/v9/portfolio/secfetch.py": "895d508a8624e5a593010b50526caefd5b17e13d4d0c68ceda3120edaeb40ed8",
+  "scripts/quant/v9/portfolio/split_evidence.py": "972db6142391e7c850f115a0908b86ad4f7a2e9a33c5d896cfd400226cee63f2",
+  "scripts/quant/v9/portfolio/terminal_evidence.py": "f1195a4b0eda9ecea66844387c1d34dbe4021ef498ec96f692524439ec2c10c2",
+  "scripts/quant/v9/portfolio/terminal_ledger_events.py": "cb6ce4f484e11b2d4e5f9fe28e5c1d9fa8b35cdf4344b746603861f03f753332",
+  "scripts/quant/v9/portfolio/verify_ledger.py": "1705dc2269661bb936aa35e0de87821bbe82c65ef569d9c325cce5564f90b2c1",
+  "scripts/quant/v9/portfolio/verify_terminal_ledger.py": "24fdae86041b686ef1d1b635cfef5325ec42962e641a4000447404b309c4f355",
+  "scripts/quant/v9/events/harvest_8k_items.py": "0b117b73930c84750a138afe1bab38ed39f04ed0ae20c0d4211579657cdeb126",
+  "scripts/quant/v9/events/population.cjs": "82965cfd4b625e3255586e37dc6270e5a7f41e7ac20caac43f5cb5b8f3a50f65",
+  "scripts/quant/v9/events/reference_check.py": "5815a66ed477f69f04014d62d717e0c398b5a98287ba8cc1e5b0a126b79b4122",
+  "scripts/quant/v9/events/run-v9-events.cjs": "5fd0191307cb3caf9adf374c108b7dfd0f33be5f782ca58a0e068e7c17d51d7e",
+  "scripts/quant/v9/events/verify_acceptance_headers.py": "b809c5330d3e4f8c908ad7aa91172dff7375e839599aa99248ed5ca68c9ee92b",
+  "scripts/quant/v9/corporate-actions/build_manual_review.py": "761cd71f7de7a6b6229f7cf82d1769d78be78012a2c1fb388e1f0edecf60b2e7",
+  "scripts/quant/v9/corporate-actions/classify.cjs": "f4b246447f064913b9b6f90f0d6515c958c9802c5ebaa02fd7378df6a73beb0b",
+  "scripts/quant/v9/corporate-actions/evidence_quotes.py": "d1d5f8d8f68c629bc35affb07fbcc64c6dd0428b751ae39ebf27c18ea476f637",
+  "scripts/quant/v9/corporate-actions/fetch_sec_evidence.py": "507c724dfba7da8fd133ad423e07cf0d597c474306cbcdf2d5db23074c32e08c",
+  "scripts/quant/v9/corporate-actions/independent_check.py": "ad7b6eb9d3272193536c834538876039cf3288df3056e16bda84db5a984a7131",
+  "scripts/quant/v9/corporate-actions/missing_weeks.py": "00d69cfbe21261518f3bcaf1673104a9f63c48202762118667117294e1206fb5",
+  "scripts/quant/v9/corporate-actions/mw_delisted_lookup.py": "5862865acd82de14e4fb618a943e9e763208a741e8e98e0453c764b99a8b76ea",
+  "scripts/quant/v9/corporate-actions/mw_sec_sample.py": "a847d4bdd657d0faa90e7e82e9cad59cf3f118226ab538a39372d2cf43034784",
+  "scripts/quant/v9/corporate-actions/proposal_dryrun.cjs": "94b3e66ee1312dd2dbd7515a10192d0a3984db98af97b689fe7697dc4142bc66",
+  "scripts/quant/v9/corporate-actions/stale_tails.py": "e3aad7bdfeea84b339ab68f31d7a464216bff74052cc55e443886f51140b8f06",
+  "scripts/quant/v9/corporate-actions/triage.cjs": "4aa6c41ff38714aaea9002ae995f4214fb3dfa14de4d42fc714292afb3e94df6",
+  "scripts/quant/v9/secpit/avail_classify.py": "a04e53ddc555a6eaab12b9dd2acaedbe0250fe30d453eb4a5ab0797a122cea18",
+  "scripts/quant/v9/secpit/common.py": "b93b4764f25cf0f9b7747652933f0a2a60535bf9080c7ba2c909ec9c83e58bbd",
+  "scripts/quant/v9/secpit/fetch_bulk.py": "27016d5bd940ad4a30ec6d3269b0a231ed5173d9d2025f0675a54d4346be71a2",
+  "scripts/quant/v9/secpit/fy_dossier.py": "8388e217476a5f641e8a2f5010ec54ba0819bc70ccec54849592b07b1916a428",
+  "scripts/quant/v9/secpit/impact.mjs": "f1752bd501c6360542e52519fcf301b069f9b2a5412b6d33a6dfb07dbf4780b4",
+  "scripts/quant/v9/secpit/impact.py": "3998a5cdc1f53207bbdc2245e667d7ddab56a50e699bc5c10717ab08aa81ba42",
+  "scripts/quant/v9/secpit/independent_check.py": "2e131a41e0bc4f1b1478895b286038431c79b26db240bb4860d8846e452894a7",
+  "scripts/quant/v9/secpit/parity.py": "da34d6d5288447fc76f903f772819b88b805a6e30a4ddf7b3db0b267536b4d5e",
+  "scripts/quant/v9/secpit/proposal_effect.py": "3b6969cd40e62f009491d9e733d779cd7be10fe4748760d68538e1a83cdf7261",
+  "scripts/quant/v9/secpit/reproduce.py": "960dc7b633bad5d04d69a78ac7505ab49addb91ee2b917365bfa63a6bc9bab38",
+  "scripts/quant/v9/secpit/tz_check.py": "11c6f6778d72eb45d502af8bcdfddcaa3d57223559317225ef515116fa1d1081",
+  "scripts/quant/v9/secpit/xbrl.py": "d5e0edc36cd7c7303f4d96e16ab495f45a7757644422dfb57dc855607d6895e0",
+  "quant/tests/v9-events.test.mjs": "6b3ce53775fec9b8e273ded100e9f3b033677f53506760e483c46e1339b47cc7",
+  "quant/tests/v9-sensitivity-dependence.test.mjs": "1ea355548c432a2771885b3b629703db62e4d5c4058eca7fca039a4b4bdf34c5"
+ },
+ "activeGatesChanged": false,
+ "enginesChanged": false,
+ "productionApproved": false
+}
