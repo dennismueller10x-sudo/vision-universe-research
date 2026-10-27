@@ -170,7 +170,7 @@ test("(a) Chandelier Exit 22/3 entspricht der Definition (AAPL real)", () => {
   same(got.long, I.compute(S, "atr", { period: 22 }).values.map((a, i) => i < 21 ? NaN : Math.max(...H.slice(i - 21, i + 1)) - 3 * a), "lang = HH − 3·ATR (Katalog-ATR)");
 });
 test("(a) Regressionskanal 50 entspricht den Normalgleichungen (AAPL real)", () => {
-  const got = I.compute(S, "linreg").values;
+  const all = I.compute(S, "linreg").values, got = { value: all.value, slope: all.slope, upper: all.upper, lower: all.lower }; /* r2 seit 1.3.0, eigener Test */
   sameOut(got, REF.linreg(), "LinReg");
   got.value.forEach((v, i) => { if (fin(v)) assert.ok(got.upper[i] >= v && got.lower[i] <= v); });
 });
@@ -285,13 +285,13 @@ test("(d) Aufwaermphase: Zahl der NaN je Ausgabe = dokumentierte Periode (luecke
 
 /* ---------- Vertrag ---------- */
 test("Katalog 1.2.0: neue Eintraege dokumentiert, nur Katalog (catalogOnly), bestehende Eintraege unveraendert gelistet", () => {
-  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.2.1");
+  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.3.0"); /* 1.3.0: Katalogerweiterung L2a, siehe technical-indicators-catalog-l2.test.mjs */
   for (const id of NEW_IDS) {
     const e = I.catalogEntry(id);
     assert.ok(e && e.name && e.definition && e.family && e.catalogOnly === true, id);
     assert.equal(typeof I.compute(S, id).error, "undefined", id);
   }
-  assert.equal(I.CATALOG.filter((e) => !e.catalogOnly).length, 24, "gelistete Indikatoren wie in 1.1.0");
+  assert.equal(I.CATALOG.filter((e) => !e.catalogOnly).length, 24, "gelistete Indikatoren wie in 1.1.0 (auch nach 1.3.0)");
   const app = readFileSync(new URL("../../technical/app.js", import.meta.url), "utf8");
   assert.match(app, /c\.family === k && !c\.catalogOnly/, "Methodik-Seite zeigt nur freigegebene Indikatoren");
   assert.equal(I.compute({ close: C }, "heikinAshi").error, "MISSING_INPUT:open,high,low");
