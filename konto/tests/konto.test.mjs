@@ -47,6 +47,33 @@ test('Anfragen: Cookies mitsenden, CSRF-Kopf, Zeitueberschreitung und Netzfehler
   assert.equal(slow.state, 'TIMEOUT');
 });
 
+test('Merker "angemeldet" (localStorage): gesetzt nach Anmeldung, geloescht bei 401, Abmelden und Loeschen', async () => {
+  globalThis.VU_ACCOUNT_CONFIG = {endpoint: 'https://konto.visionuniverse.de'};
+  const store = new Map();
+  globalThis.localStorage = {getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k)};
+  const reply = (status, body) => ({fetch: async () => new Response(JSON.stringify(body || {}), {status})});
+  const on = () => store.get('vu-account-session-v1') === '1';
+  await A.get('/v1/plans', reply(200, {plans: []}));
+  assert.equal(on(), false, 'oeffentliche Abfrage setzt nichts');
+  await A.post('/v1/auth/login', {}, reply(200, {authenticated: true}));
+  assert.equal(on(), true, 'Anmeldung');
+  await A.get('/v1/watchlist', reply(401, {state: 'NOT_AUTHENTICATED'}));
+  assert.equal(on(), false, 'abgelaufene Sitzung');
+  await A.get('/v1/session', reply(200, {authenticated: true}));
+  assert.equal(on(), true, 'Sitzung bestaetigt (auch nach der E-Mail-Bestaetigung)');
+  await A.get('/v1/session', reply(200, {authenticated: false}));
+  assert.equal(on(), false, 'Sitzung nicht angemeldet');
+  await A.get('/v1/me', reply(200, {}));
+  await A.post('/v1/auth/logout', {}, reply(200, {}));
+  assert.equal(on(), false, 'Abmelden');
+  await A.get('/v1/me', reply(200, {}));
+  await A.post('/v1/me/delete', {}, reply(200, {}));
+  assert.equal(on(), false, 'Konto geloescht');
+  await A.get('/v1/me', {fetch: async () => { throw new TypeError('offline'); }});
+  assert.equal(on(), false, 'Netzfehler aendert nichts');
+  delete globalThis.localStorage;
+});
+
 test('Weiterleitung nur zu Stripe (https), localhost nur in der lokalen Simulation', () => {
   globalThis.VU_ACCOUNT_CONFIG = {endpoint: 'https://account.visionuniverse.de'};
   assert.ok(A.safePaymentUrl('https://checkout.stripe.com/c/pay/cs_test_1'));
