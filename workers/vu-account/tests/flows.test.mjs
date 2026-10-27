@@ -529,9 +529,82 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.ok(env.logs.some(l => l.message === 'PAYMENT_DISPUTED'));
   });
 
+  await t.test('Watchlist: Merken, Entfernen, Notiz, Isolation zwischen Konten, Tarifgrenze', async () => {
+    const nvda = 'vu_d57074b4128184', aapl = 'vu_aaaa00000001';
+    const anon = env.browser();
+    assert.equal((await anon.get('/v1/watchlist')).status, 401, 'ohne Anmeldung keine Liste');
+    const a = await signedIn(env, 'wl-anna@example.test'), b = await signedIn(env, 'wl-ben@example.test');
+    const empty = await a.get('/v1/watchlist');
+    assert.deepEqual([empty.status, empty.data.items, empty.data.limits], [200, [], {plan: 'free', items: 20, lists: 1}]);
+    assert.match(empty.headers.get('Cache-Control'), /private, no-store/);
+
+    const added = await a.post('/v1/watchlist/items', {instrumentId: nvda, ticker: 'nvda'});
+    assert.deepEqual([added.status, added.data.state], [201, 'ADDED']);
+    const again = await a.post('/v1/watchlist/items', {instrumentId: nvda, ticker: 'NVDA'});
+    assert.deepEqual([again.status, again.data.state], [200, 'ALREADY_PRESENT'], 'doppelt -> kein zweiter Eintrag');
+    assert.equal((await a.post('/v1/watchlist/items', {instrumentId: 'NVDA'})).data.state, 'INSTRUMENT_INVALID', 'Ticker ist keine Kennung');
+    assert.equal((await a.post('/v1/watchlist/items', {instrumentId: nvda, ticker: '../x'})).data.state, 'TICKER_INVALID');
+    // CSRF: ohne Kopf X-VU-Client kein Schreiben.
+    assert.equal((await a.post('/v1/watchlist/items', {instrumentId: aapl}, {headers: {'X-VU-Client': ''}})).status, 403);
+    assert.equal((await a.post('/v1/watchlist/items', {instrumentId: aapl}, {origin: 'https://evil.example'})).status, 403);
+
+    const listA = (await a.get('/v1/watchlist')).data;
+    assert.equal(listA.items.length, 1);
+    assert.deepEqual([listA.items[0].instrumentId, listA.items[0].ticker], [nvda, 'NVDA']);
+    const listId = listA.items[0].listId;
+    const upd = await a.patch('/v1/watchlist/items', {instrumentId: nvda, listId, note: 'Q4 abwarten', alerts: {PRICE_EVENT: true}});
+    assert.deepEqual([upd.status, upd.data.item.note, upd.data.item.alerts], [200, 'Q4 abwarten', {PRICE_EVENT: true}]);
+    assert.equal((await a.patch('/v1/watchlist/items', {instrumentId: nvda, listId, alerts: {MARKET_REGIME_CHANGE: true}})).data.state, 'ALERTS_INVALID');
+    assert.equal((await a.patch('/v1/watchlist/items', {instrumentId: nvda, listId, note: 'x'.repeat(501)})).data.state, 'TEXT_TOO_LONG');
+
+    // Ben: sieht nichts, kann nichts aendern, hat eine eigene Liste.
+    assert.deepEqual((await b.get('/v1/watchlist')).data.items, []);
+    assert.equal((await b.patch('/v1/watchlist/items', {instrumentId: nvda, listId, note: 'fremd'})).status, 404);
+    assert.equal((await b.post('/v1/watchlist/items', {instrumentId: aapl, listId})).status, 404, 'fremde Liste');
+    assert.deepEqual((await b.post('/v1/watchlist/items/remove', {instrumentId: nvda})).data, {state: 'NOT_PRESENT', removed: 0});
+    assert.equal((await b.post('/v1/watchlist/items', {instrumentId: nvda, ticker: 'NVDA'})).status, 201);
+    assert.equal((await a.get('/v1/watchlist')).data.items[0].note, 'Q4 abwarten', 'Annas Notiz unberuehrt');
+
+    // Free: 20 Titel; die Grenze setzt die Datenbank durch.
+    for (let i = 1; i < 20; i++) assert.equal((await a.post('/v1/watchlist/items', {instrumentId: `vu_${String(i).padStart(10, '0')}`})).status, 201);
+    const full = await a.post('/v1/watchlist/items', {instrumentId: 'vu_ffffffffff'});
+    assert.deepEqual([full.status, full.data.state], [409, 'WATCHLIST_ITEMS_LIMIT_REACHED']);
+
+    const rm = await a.post('/v1/watchlist/items/remove', {instrumentId: nvda});
+    assert.deepEqual(rm.data, {state: 'REMOVED', removed: 1});
+    assert.equal((await b.get('/v1/watchlist')).data.items.length, 1, 'Bens Eintrag bleibt');
+
+    // Export enthaelt die Watchlist, Loeschung entfernt sie.
+    const exp = await b.get('/v1/me/export');
+    assert.equal(exp.data.watchlistItems.length, 1);
+    assert.equal((await b.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: PASSWORD})).status, 200);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from public.watchlist_items i join auth.users u on u.id = i.user_id where u.email = 'wl-ben@example.test'`), 0);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from public.watchlist_items where instrument_id = :'id'`, {id: nvda}), 0);
+  });
+
+  await t.test('Watchlist mit Pro-Tarif: 200 Titel laden, Antwortzeit', async () => {
+    const c = await signedIn(env, 'wl-pro@example.test');
+    await subscribe(env, c, 'pro_month');
+    assert.equal((await c.get('/v1/watchlist')).data.limits.items, 500);
+    // Einzeln merken ist je Konto begrenzt (120/min); viele Titel kommen in einem Aufruf.
+    const items = Array.from({length: 200}, (_, i) => ({instrumentId: `vu_${String(i).padStart(12, 'a')}`, ticker: `T${i}`}));
+    const imp = await c.post('/v1/watchlist/import', {items: [...items, {instrumentId: 'NVDA'}]});
+    assert.deepEqual([imp.status, imp.data.added, imp.data.skipped, imp.data.limitReached], [200, 200, 1, false]);
+    assert.equal((await c.post('/v1/watchlist/import', {items})).data.alreadyPresent, 200, 'zweiter Import idempotent');
+    const free = await signedIn(env, 'wl-free@example.test');
+    const capped = await free.post('/v1/watchlist/import', {items: items.slice(0, 25)});
+    assert.deepEqual([capped.data.added, capped.data.skipped, capped.data.limitReached], [20, 5, true], 'Free: an der Grenze gestoppt');
+    const runs = [];
+    for (let i = 0; i < 5; i++) { const t0 = performance.now(); const r = await c.get('/v1/watchlist'); runs.push(performance.now() - t0); assert.equal(r.data.items.length, 200); }
+    const body = JSON.stringify((await c.get('/v1/watchlist')).data);
+    t.diagnostic(`GET /v1/watchlist mit 200 Titeln: Median ${runs.sort((x, y) => x - y)[2].toFixed(1)} ms (Simulation), ${body.length} Byte`);
+    assert.ok(body.length < 60000, 'Antwort bleibt klein (nur Auswahl, keine Kennzahlen)');
+  });
+
   await t.test('Datenexport und Kontoloeschung (DSGVO)', async () => {
     const b = await signedIn(env, 'jan@example.test');
     const sub = await subscribe(env, b, 'plus_month');
+    const deletionsBefore = await env.pg.json('select to_json(count(*)) from billing.account_deletions');
     const exp = await b.get('/v1/me/export');
     assert.equal(exp.status, 200);
     assert.match(exp.headers.get('Content-Disposition'), /attachment/);
@@ -551,7 +624,7 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
       'profiles', (select count(*) from public.profiles p left join auth.users u on u.id = p.user_id where u.id is null),
       'pseudonymousSubs', (select count(*) from public.subscriptions where provider_subscription_id = :'sub' and user_id is null),
       'deletions', (select count(*) from billing.account_deletions))`, {sub: sub.id});
-    assert.deepEqual(left, {users: 0, profiles: 0, pseudonymousSubs: 1, deletions: 1});
+    assert.deepEqual(left, {users: 0, profiles: 0, pseudonymousSubs: 1, deletions: deletionsBefore + 1});
     await env.deliverWebhooks(); // spaete Stripe-Meldung zum geloeschten Konto
     assert.equal(await env.pg.json(`select to_json(count(*)) from public.subscriptions where provider_subscription_id = :'sub' and user_id is not null`, {sub: sub.id}), 0);
   });
