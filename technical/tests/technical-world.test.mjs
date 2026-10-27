@@ -39,8 +39,8 @@ test("Screener-Zustand: Adresse <-> Zustand <-> gueltige Abfrage", () => {
   /* Woche: Tagesfelder entfallen sichtbar statt still. */
   const w = M.queryFromState(M.stateFromParams({ tf: "1W", muster: "dreieck", trend: "sma200,rs", vol: "1" }));
   assert.ok(Q.validate(w.query).ok);
-  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200"]);
-  assert.equal(w.dropped.length, 3);
+  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200", "volAboveAvg"], "Wochenvolumen gibt es seit technical-query 1.5.0");
+  assert.equal(w.dropped.length, 2);
   assert.equal(M.stateFromParams({ rsi: "150" }).rsiMax, null, "RSI-Grenze ausserhalb 0..100 wird ignoriert");
 });
 
@@ -75,6 +75,26 @@ test("Befunde: Formationen mit Zustand, Indikatoren nur aus vorhandenen Werten",
   assert.equal(M.findings(null, {}, null).length, 0);
   assert.equal(M.hitSentence({ formations: [["RANGE_BREAKOUT", "CONFIRMED", "2026-10-22"], ["SYMMETRICAL_TRIANGLE", "DETECTED", "2026-10-12"]] }, ["SYMMETRICAL_TRIANGLE"]),
     "Symmetrisches Dreieck: in Bildung, erkannt am 12.10.2026.", "die gesuchte Formation zuerst");
+});
+
+test("Ehrliche Zustaende: bei Erkennung ausgebrochen, vorlaeufiger Kanal, offene Richtung, Ausbruch mit Richtung", () => {
+  const wedge = { id: "W", name: "Fallender Keil", family: "WEDGE", direction: "BULLISH", state: "CONFIRMED", detectedAt: "2026-10-20", confirmedAt: "2026-10-20",
+    confirmedAtDetection: true, breakout: { at: "2026-10-20", direction: "UP" }, levels: {} };
+  const tri = { id: "T", name: "Symmetrisches Dreieck", family: "TRIANGLE", direction: "BEARISH", state: "CONFIRMED", detectedAt: "2026-10-01", confirmedAt: "2026-10-15",
+    confirmedAtDetection: false, breakout: { at: "2026-10-15", direction: "DOWN" }, levels: {} };
+  const open = { id: "O", name: "Symmetrisches Dreieck", family: "TRIANGLE", direction: "BULLISH", state: "DETECTED", detectedAt: "2026-10-12", directionOpen: true, levels: { invalidation: 90 } };
+  const chan = { id: "C", name: "Aufwärtskanal", family: "CHANNEL", direction: "BULLISH", state: "DETECTED", detectedAt: "2026-10-09", provisional: true, levels: {} };
+  const f = M.findings({ formations: [wedge, tri, open, chan] }, {}, null);
+  assert.equal(f[0].badge, "Bei Erkennung ausgebrochen");
+  assert.match(f[0].text, /^Bei der ersten zuverlässigen Erkennung am 20\.10\.2026 bereits ausgebrochen \(nach oben, 20\.10\.2026\); vorher war die Formation nicht erkennbar\./);
+  assert.equal(f[1].badge, "Bestätigt");
+  assert.match(f[1].text, /^Ausbruch nach unten am 15\.10\.2026, erkannt seit 01\.10\.2026\./);
+  assert.match(f[2].text, /Richtung offen/); assert.doesNotMatch(f[2].text, /Ungültig/, "bei offener Richtung keine einseitige Ungültigkeitsgrenze");
+  assert.equal(f[3].badge, "Vorläufig"); assert.match(f[3].text, /vier bestätigten Swing-Punkten/);
+  assert.equal(M.hitSentence({ formations: [["FALLING_WEDGE", "CONFIRMED", "2026-10-20", "2026-10-20", "UP", "B"]] }), "Fallender Keil: bei Erkennung am 20.10.2026 bereits ausgebrochen (nach oben).");
+  assert.equal(M.hitSentence({ formations: [["SYMMETRICAL_TRIANGLE", "CONFIRMED", "2026-10-01", "2026-10-15", "DOWN", ""]] }), "Symmetrisches Dreieck: Ausbruch nach unten am 15.10.2026, erkannt am 01.10.2026.");
+  assert.equal(M.hitSentence({ formations: [["SYMMETRICAL_TRIANGLE", "DETECTED", "2026-10-12", null, null, "O"]] }), "Symmetrisches Dreieck: in Bildung, Richtung offen, erkannt am 12.10.2026.");
+  assert.equal(M.hitSentence({ formations: [["ASCENDING_CHANNEL", "DETECTED", "2026-10-09", null, null, "V"]] }), "Aufwärtskanal: vorläufig (vier Swing-Punkte), erkannt am 09.10.2026.");
 });
 
 test("Seite: Skripte existieren, Engines in Abhaengigkeitsreihenfolge, keine eigene Identitaetsbildung, keine Demo-Daten", () => {
@@ -116,5 +136,113 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["meta.json", "screener-v1.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json"]);
+});
+
+test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
+  const { mkdtemp, mkdir, copyFile, readFile: rf, rm } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { createHash } = await import("node:crypto");
+  const R = await import(join(root, "scripts/vu2/release-id.mjs"));
+  assert.ok(R.STAMP_ONLY.includes("technical"));
+  const dir = await mkdtemp(join(tmpdir(), "tc-stamp-"));
+  try {
+    const html = readFileSync(join(root, "technical/index.html"), "utf8");
+    const linked = [...html.matchAll(/(?:src|href)="\/([^"?#]+\.(?:js|css))"/g)].map((m) => m[1]);
+    assert.ok(linked.includes("technical/app.js") && linked.includes("technical/technical.css"));
+    for (const f of ["technical/index.html", ...linked]) { await mkdir(dirname(join(dir, f)), { recursive: true }); await copyFile(join(root, f), join(dir, f)); }
+    const report = await R.stampTrees(dir, ["technical"]);
+    assert.deepEqual(report, { pages: 1, changed: 1 });
+    const out = await rf(join(dir, "technical/index.html"), "utf8");
+    for (const f of linked) {
+      const digest = createHash("sha256").update(readFileSync(join(root, f))).digest("hex").slice(0, 16);
+      assert.ok(out.includes("/" + f + "?v=" + digest), f);
+    }
+    assert.doesNotMatch(out, /vu-release/, "kein Meta-Tag, kein Waechter");
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test("Index fuer Startseite und Chart Studio: deckungsgleich mit dem Datensatz, ein Bruchteil der Groesse", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const raw = readFileSync(join(root, "technical/data/index-v1.json"), "utf8"), ix = JSON.parse(raw);
+  assert.equal(ix.schemaVersion, M.INDEX_SCHEMA);
+  assert.deepEqual(ix, M.homeIndex(art), "Erzeuger und Rueckfall im Browser rechnen gleich");
+  assert.deepEqual(ix.s, art.cols.s);
+  assert.equal(ix.asOf, art.asOf);
+  const ds = Q.createDataset(art);
+  for (const p of Q.PRESETS) assert.equal(ix.presets[p.id], Q.evaluate(ds, p.query).count, p.id);
+  for (const id of M.FOCUS.concat(M.RANKS)) assert.ok(Q.PRESETS.some((p) => p.id === id), id);
+  assert.ok(ix.focusUnion > 0 && ix.focusUnion <= ix.count);
+  assert.ok(raw.length * 10 < readFileSync(join(root, "technical/data/screener-v1.json")).length, "Index unter 10 % des Datensatzes");
+  const app = readFileSync(join(root, "technical/app.js"), "utf8");
+  assert.match(app, /function viewHome[\s\S]*?loadIndex\(\)/, "Startseite laedt den Index");
+  const html = readFileSync(join(root, "technical/index.html"), "utf8");
+  assert.doesNotMatch(html, /preload[^>]*screener-v1/, "der volle Datensatz wird nicht auf jeder Route vorgeladen");
+});
+
+test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in meta.json stimmt", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const meta = JSON.parse(readFileSync(join(root, "technical/data/meta.json"), "utf8"));
+  const col = art.cols.suspectJumpAt;
+  assert.equal(col.length, art.count);
+  col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+});
+
+test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {
+  const e = JSON.parse(readFileSync(join(root, "technical/data/formation-evidence.json"), "utf8"));
+  assert.equal(e.schemaVersion, "vu-technical-formation-evidence-1.0.0");
+  assert.equal(e.method.horizonBars, 20);
+  assert.ok(e.window.from < e.window.to && /Marktjahr/.test(e.window.regime));
+  for (const t of e.types) {
+    assert.ok(Q.FORMATION_TYPES[t.type], t.type);
+    assert.equal(t.published, t.n >= e.method.minN, t.type);
+    if (t.significant) assert.ok(t.published && Math.abs(t.excess20Mean) > t.excess20Ci95, t.type + ": signifikant nur ausserhalb des 95-%-Bands");
+    /* Exklusiv sind: invalidiert, entfallen, offen (und "nur bestaetigt"). Ein Fehlausbruch zaehlt bestaetigt UND invalidiert,
+       daher liegt die Gesamtsumme zwischen 1 und 2; die drei exklusiven Anteile zusammen hoechstens 1. */
+    if (t.published) {
+      const excl = t.invalidatedBy20 + t.droppedBy20 + t.openAt20, sum = excl + t.confirmedBy20;
+      assert.ok(excl <= 1.001 && sum >= 0.999 && sum <= 2.001, t.type + " Anteile " + excl + " / " + sum);
+    }
+  }
+  const small = { n: 40, published: false };
+  assert.match(M.evidenceText(small, e.window), /Zu wenige Fälle/);
+  const t = e.types.find((x) => x.published && !x.significant);
+  if (t) assert.match(M.evidenceText(t, e.window), /nicht belastbar/);
+  assert.match(M.evidenceText(null), /keine historische Auswertung/);
+});
+
+test("Filter-Baukasten: Abfrage <-> Baukasten verlustfrei, Prozent-Eingabe, Standardzeilen fuer jedes Feld", () => {
+  const QT = require(join(root, "quant/engines/technical/query-text.js"));
+  const q = { timeframe: "1D", logic: "OR", groups: [{ op: "AND", filters: [{ field: "rsi14", op: "between", value: 30, value2: 50 }, { field: "formationActive", op: "in", value: ["DOUBLE_BOTTOM"] }] }, { op: "AND", filters: [{ field: "distSma200", op: "gt", value: -0.05 }] }] };
+  const b = M.builderFromQuery(q);
+  assert.equal(b.groups.length, 2);
+  const back = Q.validate(M.queryFromBuilder(b)).query;
+  assert.deepEqual(back.groups.map((g) => g.filters.map(({ id, ...f }) => f)), q.groups.map((g) => g.filters));
+  assert.ok(QT.parse(QT.toText(back)).ok, "Baukasten -> kanonischer Text -> Parser");
+  assert.equal(M.parseFieldInput("distSma200", "-5,5"), -0.055);
+  assert.equal(M.formatFieldInput("distSma200", -0.055), "-5,5");
+  assert.ok(Number.isNaN(M.parseFieldInput("rsi14", "abc")));
+  for (const f of Q.FIELDS) { const r = M.defaultRow(f.id); assert.ok(Q.validate({ timeframe: f.tfs[0], groups: [{ filters: [r] }] }).ok, f.id); }
+  /* Mehrere UND-Gruppen werden zu einer (UND bindet ohnehin). */
+  assert.equal(M.builderFromQuery({ timeframe: "1W", logic: "AND", groups: [{ filters: [{ field: "aboveSma200", op: "is", value: true }] }, { filters: [{ field: "rsi14", op: "gt", value: 50 }] }] }).groups.length, 1);
+});
+
+test("Gespeicherte Suchstrategien: umbenennen, exportieren, importieren (validiert, ohne Dubletten)", () => {
+  const mem = {}, st = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
+  const a = M.saveScreen(st, "RSI tief", "q=" + encodeURIComponent("rsi14 < 30"), 1000);
+  M.saveScreen(st, "Breakout", "preset=breakout", 2000);
+  assert.ok(M.updateScreen(st, a.id, { name: "  RSI unter 30  " }, 3000));
+  const one = M.loadScreens(st).find((x) => x.id === a.id);
+  assert.equal(one.name, "RSI unter 30"); assert.ok(one.updatedAt);
+  assert.equal(M.updateScreen(st, "gibt-es-nicht", { name: "x" }), false);
+  const exp = M.exportScreens(st);
+  const mem2 = {}, st2 = { getItem: (k) => mem2[k] ?? null, setItem: (k, v) => { mem2[k] = v; } };
+  assert.deepEqual(M.importScreens(st2, exp, 5000), { ok: true, added: 2, skipped: 0 });
+  assert.deepEqual(M.importScreens(st2, exp, 6000), { ok: true, added: 0, skipped: 2 }, "keine Dubletten");
+  const bad = JSON.stringify({ format: "vu-technical-screens-1", screens: [{ name: "x", params: "evil=1" }, { name: "", params: "preset=trend" }] });
+  assert.deepEqual(M.importScreens(st2, bad, 7000), { ok: true, added: 0, skipped: 2 }, "unbekannte Parameter und leere Namen");
+  assert.equal(M.importScreens(st2, "{kaputt").error, "KEIN_JSON");
+  assert.equal(M.importScreens(st2, JSON.stringify({ screens: [] })).error, "FORMAT");
 });

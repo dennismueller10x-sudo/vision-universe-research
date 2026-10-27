@@ -13,6 +13,13 @@
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
+  /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
+  var INDEX_PATH = "/technical/data/index-v1.json";
+  var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
+  var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
+  /* Startseite: "Setups im Fokus" und Ranglisten (Vorlagen aus technical-query.js). */
+  var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var TECH_DIR = "/quant/data/product/technical-signals-v1/";
   var LONG_DIR = "/quant/data/market/discover-series-long/";
   var STORE_KEY = "vu-technical-screens-v1";
@@ -54,12 +61,13 @@
     { id: "kanal", label: "Trendkanal", types: ["ASCENDING_CHANNEL", "DESCENDING_CHANNEL"] },
     { id: "kontraktion", label: "Volatilitätskontraktion", types: ["VOLATILITY_CONTRACTION"] },
     { id: "range", label: "Range", types: ["RECTANGLE"] },
-    { id: "tasse", label: "Tasse mit Henkel", types: ["CUP_WITH_HANDLE"] }
+    { id: "tasse", label: "Tasse mit Henkel", types: ["CUP_WITH_HANDLE"] },
+    { id: "luecke", label: "Kurslücke", types: ["GAP_UP", "GAP_DOWN"] }
   ];
   var TREND_PILLS = [
     { id: "sma200", field: "aboveSma200" }, { id: "hoch52", field: "newHigh52w" }, { id: "sma50", field: "aboveSma50" },
     { id: "kreuz", field: "sma50AboveSma200" }, { id: "hoch200w", field: "newHigh200w" }, { id: "rs", field: "rsPositive", daily: true },
-    { id: "supertrend", field: "supertrendUp", daily: true }
+    { id: "supertrend", field: "supertrendUp", daily: true }, { id: "wolke", field: "aboveCloud", daily: true }, { id: "psar", field: "psarUp", daily: true }
   ];
   function trendLabel(p, tf) { var f = Q.field(p.field); return Q.labelOf(f, tf); }
 
@@ -119,15 +127,137 @@
   }
 
   /* --------------------------------------------- Gespeicherte Strategien */
+  /*
+   * Bedeutung gespeicherter Suchen in Worten ("q=..."): Seit query-text 1.5.0 (Audit B12) meinen
+   * "Golden Cross"/"Death Cross" das Kreuzungsereignis, vorher den Zustand "SMA 50 ueber/unter SMA 200".
+   * Gespeicherte Texte ohne Bedeutungsstand "qv" stammen von vorher und werden einmalig ausdruecklich
+   * umgeschrieben, damit sie ihre Bedeutung behalten. Neue Speicherungen tragen qv=2.
+   */
+  var QUERY_TEXT_SEMANTICS = "2";
+  function migrateParams(params) {
+    var parts = String(params || "").split("&"), qi = -1, hasQv = false;
+    parts.forEach(function (kv, i) { var k = kv.split("=")[0]; if (k === "q") qi = i; if (k === "qv") hasQv = true; });
+    if (qi < 0 || hasQv) return { params: params, changed: false, rewritten: false };
+    var text;
+    try { text = decodeURIComponent(parts[qi].slice(2).replace(/\+/g, " ")); } catch (e) { return { params: params, changed: false, rewritten: false }; }
+    var next = text.replace(/golden\s+cross/gi, "SMA 50 über SMA 200").replace(/death\s+cross/gi, "SMA 50 unter SMA 200");
+    parts[qi] = "q=" + encodeURIComponent(next);
+    parts.push("qv=" + QUERY_TEXT_SEMANTICS);
+    return { params: parts.join("&"), changed: true, rewritten: next !== text, from: text, to: next };
+  }
+  function stampParams(params) { return /(^|&)q=/.test(params) && !/(^|&)qv=/.test(params) ? params + "&qv=" + QUERY_TEXT_SEMANTICS : params; }
   function loadScreens(storage) {
-    try { var raw = storage && storage.getItem(STORE_KEY); var list = raw ? JSON.parse(raw) : []; return Array.isArray(list) ? list.filter(function (x) { return x && x.id && x.name && typeof x.params === "string"; }).slice(0, 50) : []; }
+    var list;
+    try { var raw = storage && storage.getItem(STORE_KEY); list = raw ? JSON.parse(raw) : []; if (!Array.isArray(list)) return []; }
     catch (e) { return []; }
+    list = list.filter(function (x) { return x && x.id && x.name && typeof x.params === "string"; }).slice(0, 50);
+    var migrated = false;
+    list.forEach(function (x) {
+      var m = migrateParams(x.params);
+      if (!m.changed) return;
+      migrated = true; x.params = m.params;
+      if (m.rewritten) x.migrated = { from: m.from, to: m.to, reason: "Golden/Death Cross bedeuten seit Technical-Suche 1.5.0 das Ereignis; die gespeicherte Suche behaelt den Zustand." };
+    });
+    if (migrated) { try { storage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) { /* bleibt im Speicher migriert */ } }
+    return list;
   }
   function saveScreen(storage, name, params, now) {
+    params = stampParams(params);
     var list = loadScreens(storage), id = "s" + (now || Date.now()).toString(36);
     list.unshift({ id: id, name: String(name).slice(0, 60), params: params, createdAt: new Date(now || Date.now()).toISOString() });
     try { storage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 50))); return { ok: true, id: id }; } catch (e) { return { ok: false }; }
   }
+  /* ---------------------------------------------------------- Evidenz */
+  function pctDe(v, d) { return typeof v === "number" && isFinite(v) ? (v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 0 : d, maximumFractionDigits: d === undefined ? 0 : d }) + " %" : "–"; }
+  function signedPct(v) { return (v > 0 ? "+" : v < 0 ? "−" : "±") + pctDe(Math.abs(v), 1); }
+  /**
+   * Ein Satz zur historischen Evidenz eines Formationstyps. Keine Aussage ohne ausreichende Stichprobe;
+   * eine Ueberrendite heisst nur "belastbar", wenn sie die Mehrfachtest-Korrektur besteht.
+   */
+  function evidenceText(e, window) {
+    if (!e) return "Für diesen Typ liegt keine historische Auswertung vor.";
+    var span = window && window.from ? " (Erkennungen " + dateDe(window.from) + " – " + dateDe(window.to) + ")" : "";
+    if (!e.published) return "Zu wenige Fälle für eine Aussage (n = " + e.n.toLocaleString("de-DE") + span + ").";
+    return "n = " + e.n.toLocaleString("de-DE") + span + ": nach 20 Handelstagen bestätigt " + pctDe(e.confirmedBy20) + ", invalidiert " + pctDe(e.invalidatedBy20) +
+      ", entfallen " + pctDe(e.droppedBy20) + ". Rendite ggü. allen Titeln am selben Tag " + signedPct(e.excess20Mean) + " (± " + pctDe(e.excess20Ci95, 1) + ") – " +
+      (e.significant ? "nach Mehrfachtest-Korrektur belastbar, aber nur ein Marktjahr." : "statistisch nicht belastbar.");
+  }
+
+  /** Umbenennen bzw. Filter einer gespeicherten Suchstrategie ersetzen (gleiche ID, Zeitstempel "updatedAt"). */
+  function updateScreen(storage, id, patch, now) {
+    var list = loadScreens(storage), hit = false;
+    list = list.map(function (x) {
+      if (x.id !== id) return x;
+      hit = true;
+      var y = Object.assign({}, x, { updatedAt: new Date(now || Date.now()).toISOString() });
+      if (patch && typeof patch.name === "string" && patch.name.trim()) y.name = patch.name.trim().slice(0, 60);
+      if (patch && typeof patch.params === "string") y.params = stampParams(patch.params);
+      return y;
+    });
+    if (!hit) return false;
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  /** Export als JSON (Format vu-technical-screens-1); nur Name und Filteradresse, keine Treffer. */
+  function exportScreens(storage) {
+    return JSON.stringify({ format: "vu-technical-screens-1", screens: loadScreens(storage).map(function (x) { return { name: x.name, params: x.params, createdAt: x.createdAt }; }) }, null, 1);
+  }
+  /**
+   * Import: nur bekannte Adressparameter (preset, q, muster, trend, ...), gleiche Filteradresse wird nicht doppelt
+   * angelegt, hoechstens 50 Eintraege. Liefert { ok, added, skipped, error? }.
+   */
+  var PARAM_KEYS = ["preset", "q", "qv", "muster", "bestaetigt", "trend", "vol", "rsi", "logik", "sort", "tf"];
+  function importScreens(storage, text, now) {
+    var doc;
+    try { doc = JSON.parse(text); } catch (e) { return { ok: false, added: 0, skipped: 0, error: "KEIN_JSON" }; }
+    var items = doc && doc.format === "vu-technical-screens-1" && Array.isArray(doc.screens) ? doc.screens : null;
+    if (!items) return { ok: false, added: 0, skipped: 0, error: "FORMAT" };
+    var list = loadScreens(storage), have = {}, added = 0, skipped = 0, t = now || Date.now();
+    list.forEach(function (x) { have[x.params] = 1; });
+    items.forEach(function (x, i) {
+      var params = x && typeof x.params === "string" ? x.params : null;
+      var okKeys = params !== null && params.split("&").every(function (kv) { return !kv || PARAM_KEYS.indexOf(kv.split("=")[0]) >= 0; });
+      if (okKeys) params = migrateParams(params).params;
+      if (!okKeys || !x.name || have[params] || list.length >= 50) { skipped++; return; }
+      have[params] = 1; added++;
+      list.push({ id: "s" + (t + i).toString(36) + "i", name: String(x.name).slice(0, 60), params: params, createdAt: new Date(t).toISOString() });
+    });
+    try { storage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 50))); } catch (e) { return { ok: false, added: 0, skipped: items.length, error: "SPEICHER" }; }
+    return { ok: true, added: added, skipped: skipped };
+  }
+
+  /* ------------------------------------------------- Filter-Baukasten */
+  /* Zeilen { field, op, value, value2 } je Gruppe; Gruppen sind ODER-verknuepft, Zeilen einer Gruppe UND. Prozentfelder
+     werden in der Oberflaeche in Prozent eingegeben und als Anteil gespeichert. */
+  function builderFromQuery(query) {
+    var v = Q.validate(query || { groups: [] }), q = v.query;
+    var groups = q.groups.filter(function (g) { return g.filters.length; });
+    if (q.logic === "AND" && groups.length > 1) groups = [{ filters: [].concat.apply([], groups.map(function (g) { return g.filters; })) }];
+    return { tf: q.timeframe, groups: groups.length ? groups.map(function (g) { return g.filters.map(function (f) { var o = { field: f.field, op: f.op, value: f.value }; if (f.op === "between") o.value2 = f.value2; if (f.tf) o.tf = f.tf; return o; }); }) : [[]] };
+  }
+  function queryFromBuilder(b) {
+    var groups = (b.groups || []).map(function (rows) { return { op: "AND", filters: rows.filter(function (r) { return r && r.field; }) }; }).filter(function (g) { return g.filters.length; });
+    return { v: 1, timeframe: b.tf || "1D", logic: groups.length > 1 ? "OR" : "AND", groups: groups, sort: null, limit: 200 };
+  }
+  /** Eingabetext -> Wert (Komma oder Punkt; Prozentfelder in Prozent). NaN bei ungueltiger Eingabe. */
+  function parseFieldInput(fieldId, text) {
+    var f = Q.field(fieldId), v = Number(String(text).trim().replace(",", "."));
+    if (!f || String(text).trim() === "" || !isFinite(v)) return NaN;
+    return f.kind === "pct" ? Math.round(v * 1e6) / 1e8 : v;
+  }
+  function formatFieldInput(fieldId, v) {
+    var f = Q.field(fieldId);
+    if (!f || typeof v !== "number" || !isFinite(v)) return "";
+    return String(f.kind === "pct" ? Math.round(v * 1e6) / 1e4 : v).replace(".", ",");
+  }
+  /** Standardzeile fuer ein Feld (sinnvoller Startwert je Art). */
+  function defaultRow(fieldId) {
+    var f = Q.field(fieldId);
+    if (!f) return null;
+    if (f.kind === "bool") return { field: f.id, op: "is", value: true };
+    if (f.kind === "enum") return { field: f.id, op: "in", value: [Object.keys(f.values)[0]] };
+    return { field: f.id, op: "gt", value: f.kind === "pct" ? 0 : 50 };
+  }
+
   function deleteScreen(storage, id) {
     var list = loadScreens(storage).filter(function (x) { return x.id !== id; });
     try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
@@ -143,15 +273,26 @@
   function pct(v, d) { return isNum(v) ? (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }) + " %" : "–"; }
   function num(v, d) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }) : "–"; }
 
+  var BREAK_DIR = { UP: "nach oben", DOWN: "nach unten" };
+  /** Zustandsetikett mit den ehrlichen Sonderfaellen (vorlaeufiger Kanal, bei Erkennung bereits ausgebrochen). */
+  function stateBadge(f) {
+    if (f.state === "CONFIRMED" && f.confirmedAtDetection) return "Bei Erkennung ausgebrochen";
+    if (f.state === "DETECTED" && f.provisional) return "Vorläufig";
+    return STATE_BADGE[f.state];
+  }
   function formationText(f) {
-    var lv = f.levels || {}, parts = [];
-    if (f.state === "CONFIRMED" && f.confirmedAt) parts.push("Bestätigt am " + dateDe(f.confirmedAt) + ".");
-    else if (f.state === "INVALIDATED" && f.invalidatedAt) parts.push("Invalidiert am " + dateDe(f.invalidatedAt) + ".");
+    var lv = f.levels || {}, parts = [], br = f.breakout;
+    if (f.state === "CONFIRMED" && f.confirmedAtDetection && br) parts.push("Bei der ersten zuverlässigen Erkennung am " + dateDe(f.detectedAt) + " bereits ausgebrochen (" + BREAK_DIR[br.direction] + ", " + dateDe(br.at) + "); vorher war die Formation nicht erkennbar.");
+    else if (f.state === "CONFIRMED" && br) parts.push("Ausbruch " + BREAK_DIR[br.direction] + " am " + dateDe(br.at) + ", erkannt seit " + dateDe(f.detectedAt) + ".");
+    else if (f.state === "CONFIRMED" && f.confirmedAt) parts.push("Bestätigt am " + dateDe(f.confirmedAt) + ".");
+    else if (f.state === "INVALIDATED" && f.invalidatedAt) parts.push("Invalidiert am " + dateDe(f.invalidatedAt) + (br ? " nach Ausbruch " + BREAK_DIR[br.direction] + " am " + dateDe(br.at) : "") + ".");
+    else if (f.provisional) parts.push("Vorläufig erkannt am " + dateDe(f.detectedAt) + " aus vier bestätigten Swing-Punkten; bestätigt erst, wenn ein fünfter Punkt im Kanal liegt.");
+    else if (f.directionOpen) parts.push("Erkannt am " + dateDe(f.detectedAt) + ", noch ohne Ausbruch – Richtung offen.");
     else parts.push("Erkannt am " + dateDe(f.detectedAt) + ".");
     var key = isNum(lv.breakout) ? ["Ausbruchsniveau", lv.breakout] : isNum(lv.zoneHigh) ? ["Zone bis", lv.zoneHigh] : isNum(lv.rangeHigh) ? ["Range-Oberkante", lv.rangeHigh]
       : isNum(lv.pivot) ? ["Pivot", lv.pivot] : isNum(lv.lineNow) ? ["Linie heute", lv.lineNow] : isNum(lv.upperNow) ? ["Oberkante heute", lv.upperNow] : null;
     if (key) parts.push(key[0] + " " + price(key[1]) + ".");
-    if (isNum(lv.invalidation) && f.state !== "INVALIDATED") parts.push("Ungültig " + (f.direction === "BEARISH" ? "über " : "unter ") + price(lv.invalidation) + ".");
+    if (isNum(lv.invalidation) && f.state !== "INVALIDATED" && !f.directionOpen) parts.push("Ungültig " + (f.direction === "BEARISH" ? "über " : "unter ") + price(lv.invalidation) + ".");
     return parts.join(" ");
   }
 
@@ -159,7 +300,7 @@
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
-      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: STATE_BADGE[f.state], tone: STATE_TONE[f.state],
+      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
                  icon: FAMILY_ICON[f.family] || "trend", direction: f.direction, formation: f });
     });
     var F = features || {};
@@ -191,15 +332,18 @@
     if (wanted && wanted.length) f = list.filter(function (x) { return wanted.indexOf(x[0]) >= 0; })[0] || null;
     f = f || list[0];
     if (f) {
-      var name = Q.FORMATION_TYPES[f[0]] || f[0];
-      return name + ": " + (f[1] === "CONFIRMED" ? "bestätigt" : "in Bildung") + ", erkannt am " + dateDe(f[2]) + ".";
+      var name = Q.FORMATION_TYPES[f[0]] || f[0], flags = f[5] || "", dir = BREAK_DIR[f[4]];
+      if (f[1] === "CONFIRMED" && flags.indexOf("B") >= 0) return name + ": bei Erkennung am " + dateDe(f[2]) + " bereits ausgebrochen" + (dir ? " (" + dir + ")" : "") + ".";
+      if (f[1] === "CONFIRMED") return name + ": Ausbruch" + (dir ? " " + dir : "") + (f[3] ? " am " + dateDe(f[3]) : "") + ", erkannt am " + dateDe(f[2]) + ".";
+      if (flags.indexOf("V") >= 0) return name + ": vorläufig (vier Swing-Punkte), erkannt am " + dateDe(f[2]) + ".";
+      return name + ": in Bildung" + (flags.indexOf("O") >= 0 ? ", Richtung offen" : "") + ", erkannt am " + dateDe(f[2]) + ".";
     }
     return row.structure ? "Marktstruktur: " + (Q.STRUCTURES[row.structure] || row.structure) + "." : "Keine aktive Formation.";
   }
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 
@@ -230,12 +374,28 @@
     return scored.slice(0, limit || 8).map(function (x) { return x[1]; });
   }
 
+  /**
+   * Index aus dem Screener-Datensatz: eine Rechnung fuer Erzeuger (build-screener.mjs) und Rueckfall im Browser.
+   * presets = Trefferzahl je Vorlage; focusUnion = Titel in mindestens einer Fokus-Vorlage (je hoechstens 500, wie die Anzeige).
+   */
+  function homeIndex(artifact) {
+    var ds = Q.createDataset(artifact), presets = {}, union = {};
+    Q.PRESETS.forEach(function (p) {
+      var r = Q.evaluate(ds, Object.assign({}, p.query, { limit: 500 }));
+      presets[p.id] = r.count;
+      if (FOCUS.indexOf(p.id) >= 0) r.indices.forEach(function (i) { union[i] = 1; });
+    });
+    return { schemaVersion: INDEX_SCHEMA, asOf: artifact.asOf, count: artifact.count, s: artifact.cols.s.slice(), n: artifact.cols.n.slice(),
+      presets: presets, focusUnion: Object.keys(union).length };
+  }
+
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
-    PATTERN_PILLS: PATTERN_PILLS, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
+    PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
-    loadScreens: loadScreens, saveScreen: saveScreen, deleteScreen: deleteScreen,
+    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
+    builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
     findings: findings, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
