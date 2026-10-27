@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "v8-integrated-data-quality-1",
+  "head": "d9cd0a2b9e0c0c5810b10ba09de7a62ffb61edf3",
+  "summaryLine": "VISION UNIVERSE DATA QUALITY  WARN  (Sitzung 2026-10-23, 2026-10-26T15:04:14.878Z)",
+  "rules": [
+    {
+      "id": "DQ-ID-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "securityId folgt der kanonischen Regel",
+      "failed": 0,
+      "checked": 24904
+    },
+    {
+      "id": "DQ-ID-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Produktuniversum ohne doppelte Ticker/IDs",
+      "failed": 0,
+      "checked": 7803
+    },
+    {
+      "id": "DQ-ID-3",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ein aktives Symbol = ein aktives Instrument (Company Master)",
+      "failed": 0,
+      "checked": 7794
+    },
+    {
+      "id": "DQ-PX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Kursreihen sortiert, eindeutig, positiv, Kopf = Inhalt",
+      "failed": 0,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-2",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Kursreihen tragen die letzte Sitzung (2026-10-23)",
+      "failed": 93,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-3",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Keine unplausiblen Tagesspr\u00fcnge (>|60 %|) in split-bereinigten Reihen",
+      "failed": 303,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-4",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Tages- und Wochenreihe zeigen denselben Schlusskurs",
+      "failed": 0,
+      "checked": 6188
+    },
+    {
+      "id": "DQ-PX-5",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Aktienseite = letzter Schlusskurs der Reihe",
+      "failed": 0,
+      "checked": 6125
+    },
+    {
+      "id": "DQ-PR-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Discover-Aktienindex und Aktienseiten deckungsgleich",
+      "failed": 0,
+      "checked": 6125
+    },
+    {
+      "id": "DQ-PR-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ausgelieferte Datenpfade existieren (keine kaputten Charts)",
+      "failed": 0,
+      "checked": 8757
+    },
+    {
+      "id": "DQ-IX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Indexmitglieder sind aktive, geeignete Titel des Universums",
+      "failed": 0,
+      "checked": 626
+    },
+    {
+      "id": "DQ-TW-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Screener folgt Materialisierung und letzter Sitzung",
+      "failed": 0,
+      "checked": 1
+    },
+    {
+      "id": "DQ-TW-2",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Technical-Katalogfelder sind im Datensatz belegt",
+      "failed": 2,
+      "checked": 43
+    },
+    {
+      "id": "DQ-TW-3",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Schluss = Discover-Tagesreihe (eine Preiswahrheit)",
+      "failed": 0,
+      "checked": 5647
+    },
+    {
+      "id": "DQ-TW-4",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)",
+      "failed": 6,
+      "checked": 5655
+    }
+  ],
+  "resource": {
+    "command": [
+      "node",
+      "scripts/core/data-quality.mjs",
+      "--strict"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 80.09576194200054,
+    "maxRssKiB": 1982684,
+    "userSeconds": 44.313194,
+    "systemSeconds": 5.567282
+  },
+  "logHash": "b18df9d28d3a60fe800fcdc90438933ebec668517e318e7b1faf0aa9b21c96bb",
+  "note": "Exact strict command log parsed once; zero ERROR failures, four baseline WARN rules remain. Exit0 does not mean WARN-free quality.",
+  "productionApproved": false
+}
