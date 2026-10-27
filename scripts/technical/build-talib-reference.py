@@ -16,6 +16,11 @@ Fixture bewusst neu erzeugt, in einer eigenen Umgebung:
 
 `--set core` (Standard) ist der Bestand aus Audit B7 und bleibt unveraendert.
 `--set ext` sind die Katalogerweiterungen ab indicators 1.3.0 (TECHNICAL_LIBRARY.md, L2/L3).
+`--set candles` friert echte Tagesbars ausgewaehlter Titel aus den Technical-Shards ein und rechnet die
+TA-Lib-Candlestick-Funktionen (CDL*) darauf (candlesticks.js, L4):
+
+    /tmp/talib-venv/bin/python scripts/technical/build-talib-reference.py --set candles \
+        --tickers AAPL,MSFT,... --out quant/tests/fixtures/technical-talib-candles.json
 
 Die Fixture haelt Bibliotheks- und C-Kern-Version fest. Werte sind auf 10
 signifikante Stellen gerundet, NaN wird null.
@@ -42,8 +47,11 @@ def ser(a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--set", default="core", choices=["core", "ext"])
+    ap.add_argument("--set", default="core", choices=["core", "ext", "candles"])
+    ap.add_argument("--tickers", default="")
     args = ap.parse_args()
+    if args.set == "candles":
+        return write_candles(args)
 
     ref = json.load(open(SRC, encoding="utf-8"))
     o, h, l, c, v = (np.asarray(ref[k], dtype=float) for k in ("open", "high", "low", "close", "volume"))
@@ -112,6 +120,51 @@ def ext_series(o, h, l, c, v):
         "ultimateOscillator": {"call": "ULTOSC(high, low, close, 7, 14, 28)", "values": ser(talib.ULTOSC(h, l, c, 7, 14, 28))},
         "cmo": {"call": "CMO(close, 14)", "values": ser(talib.CMO(c, 14))},
     }
+
+
+CANDLE_FUNCTIONS = {
+    "doji": "CDLDOJI", "dragonflyDoji": "CDLDRAGONFLYDOJI", "gravestoneDoji": "CDLGRAVESTONEDOJI",
+    "longLeggedDoji": "CDLLONGLEGGEDDOJI", "hammer": "CDLHAMMER", "hangingMan": "CDLHANGINGMAN",
+    "invertedHammer": "CDLINVERTEDHAMMER", "shootingStar": "CDLSHOOTINGSTAR", "marubozu": "CDLMARUBOZU",
+    "spinningTop": "CDLSPINNINGTOP", "engulfing": "CDLENGULFING", "harami": "CDLHARAMI", "haramiCross": "CDLHARAMICROSS",
+    "piercing": "CDLPIERCING", "darkCloudCover": "CDLDARKCLOUDCOVER", "kicking": "CDLKICKING",
+    "morningStar": "CDLMORNINGSTAR", "eveningStar": "CDLEVENINGSTAR", "morningDojiStar": "CDLMORNINGDOJISTAR",
+    "eveningDojiStar": "CDLEVENINGDOJISTAR", "abandonedBaby": "CDLABANDONEDBABY", "threeWhiteSoldiers": "CDL3WHITESOLDIERS",
+    "threeBlackCrows": "CDL3BLACKCROWS", "threeInside": "CDL3INSIDE", "threeOutside": "CDL3OUTSIDE",
+    "threeMethods": "CDLRISEFALL3METHODS",
+}
+
+
+def write_candles(args):
+    """Echte Tagesbars (eingefroren) + TA-Lib-Signale je Muster als Liste [Index, Wert] der Treffer."""
+    import gzip
+    from talib import abstract
+    shards = os.path.join(ROOT, "quant", "data", "product", "technical-signals-v1")
+    tickers = [t for t in args.tickers.split(",") if t]
+    titles = {}
+    for t in tickers:
+        path = os.path.join(shards, t[:2] + ".json.gz")
+        b = json.load(gzip.open(path))["instruments"][t]["bars"]
+        o, h, l, c = (np.asarray(b[k], dtype=float) for k in ("open", "high", "low", "close"))
+        signals = {}
+        for pid, fn in CANDLE_FUNCTIONS.items():
+            a = getattr(talib, fn)(o, h, l, c)
+            signals[pid] = [[int(i), int(a[i])] for i in np.nonzero(a)[0]]
+        titles[t] = {"from": b["timestamps"][0][:10], "to": b["timestamps"][-1][:10], "open": b["open"], "high": b["high"], "low": b["low"], "close": b["close"], "signals": signals}
+    out = {
+        "note": "Echte Tagesbars (aus technical-signals-v1, eingefroren) und TA-Lib-Candlestick-Signale. "
+                "Erzeugt mit scripts/technical/build-talib-reference.py --set candles. Nur fuer Tests.",
+        "library": "TA-Lib (Python)",
+        "libraryVersion": talib.__version__,
+        "set": "candles",
+        "lookback": {pid: abstract.Function(fn).lookback for pid, fn in CANDLE_FUNCTIONS.items()},
+        "functions": CANDLE_FUNCTIONS,
+        "titles": titles,
+    }
+    with open(args.out, "w", encoding="utf-8") as fh:
+        json.dump(out, fh, separators=(",", ":"))
+        fh.write("\n")
+    print(f"{args.out}: {len(titles)} Titel, {len(CANDLE_FUNCTIONS)} Muster, TA-Lib {out['libraryVersion']}")
 
 
 def write(args, ref, c, series):
