@@ -326,9 +326,9 @@
       "cik": "0000910329",
       "name": "MEDIFAST INC",
       "sic": "2090",
-      "rawFacts": 17877,
-      "mappedFacts": 6507,
-      "unmappedFacts": 11644,
+      "rawFacts": 18185,
+      "mappedFacts": 6615,
+      "unmappedFacts": 11971,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -338,28 +338,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -379,21 +379,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -407,14 +407,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -437,45 +437,46 @@
         }
       },
       "quality": {
-        "HIGH": 566,
+        "HIGH": 573,
         "MEDIUM": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 594,
-        "resolvedValues": 594
+        "datableValues": 601,
+        "resolvedValues": 601
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12030,
+        "total": 12258,
         "by_severity": {
-          "INFO": 11644,
-          "WARNING": 386
+          "INFO": 11971,
+          "WARNING": 287
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 340,
+          "CONCEPT_DISAGREEMENT": 241,
           "RESTATEMENT_CONFLICT": 46,
-          "UNKNOWN_CONCEPT": 11644
+          "UNKNOWN_CONCEPT": 11971
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-051928",
-        "filing_date": "2026-08-03",
+        "accession": "0001628280-26-067165",
+        "filing_date": "2026-10-26",
         "form": "10-Q",
-        "periodic_filings": 94
+        "periodic_filings": 95,
+        "acceptance_datetime": "2026-10-26T12:50:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.13.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "630c8d65606e0ba25bf06c20449a2e04fd7b003b83d3be1e87a9b94812d7abfc",
+      "sourceDigest": "cd3c485e29d05ff453a016e17c3ded9617ed626f8c521423e37b50ca1af39fee",
       "issuerId": "iss_cik_0000910329"
     },
     {
