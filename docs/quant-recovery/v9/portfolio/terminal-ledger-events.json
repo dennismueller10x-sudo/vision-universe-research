@@ -1,0 +1,114 @@
+{
+ "schemaVersion": "v9-portfolio-terminal-ledger-events-1.0.0",
+ "codeSha256": "b38f05e1f32fa00fe86934440a3a498ac97359670aaa0a37b3d8e9241d4b7778",
+ "events": [
+  {
+   "ledgerAvailableAt": "2026-09-01T13:26:31.000Z",
+   "ledgerAvailabilityBasis": "completion 8-K acceptance",
+   "ticker": "CRNX",
+   "cik": 1658247,
+   "accession": "0001140361-26-035195",
+   "type": "TERMINAL_CASH",
+   "closingDate": "2026-09-01",
+   "cashPerShare": "85.00",
+   "shareRatio": null,
+   "successor": null,
+   "lastTradeDateRule": "trading suspended prior to the opening on the Closing Date -> last trading session is the session before 2026-09-01",
+   "url": "https://www.sec.gov/Archives/edgar/data/1658247/000114036126035195/ef20081409_8k.htm",
+   "sha256": "60a6057e2b64f176a2606628a17a1d0787f74a9bf8d727416a09171ff0ebd817",
+   "acceptanceUtc": "2026-09-01T13:26:31.000Z",
+   "headerSha256": "1692cde6ab51d0f95d02096cc9f8a37e17e244c164d0106472cf131b386e0453",
+   "quotes": {
+    "closing": "On September 1, 2026 (the \u201c Closing Date \u201d), pursuant to the terms of the Merger Agreement, Merger Sub merged with and into the Company",
+    "consideration": "right to receive $85.00",
+    "trading": "suspend trading in the Company Common Stock effective prior to the opening of trading on the Closing Date"
+   },
+   "quotesVerifiedInBody": true,
+   "cashCreditDate": null,
+   "cashCreditDateState": "NOT_STATED (right to receive arises at the Effective Time; paying-agent/broker credit date not in source)",
+   "fractionalShareCash": null
+  },
+  {
+   "termsAvailability": {
+    "accession": "0001104659-24-117312",
+    "file": "tm2428162d1_8k.htm",
+    "quote": "would be automatically converted into and become the right to receive 0.236 of a share (the \u201c Common Exchange Ratio \u201d)",
+    "url": "https://www.sec.gov/Archives/edgar/data/1611983/000110465924117312/tm2428162d1_8k.htm",
+    "sha256": "e7c8706fbd1dbd841ba4e9f8f518c3e0313bdd242822cd51289445e7fab36a18",
+    "acceptanceUtc": "2024-11-13T13:37:37.000Z",
+    "quoteVerifiedInBody": true
+   },
+   "removalNoticeAvailability": {
+    "form": "25-NSE",
+    "accession": "0001354457-26-000811",
+    "acceptanceUtc": "2026-08-20T13:11:12.000Z",
+    "headerSha256": "8e1b6e84afdd9eaaaa7df0d7cfef9c4705f91f294f1aed7a5a47cdc94d5a0aea"
+   },
+   "ledgerAvailableAt": "2026-08-20T13:11:12.000Z",
+   "ledgerAvailabilityBasis": "max(exchange-ratio terms 8-K acceptance, Form 25-NSE acceptance); completion 8-K itself was accepted after the close of the first post-merger session",
+   "ticker": "LBRDK",
+   "cik": 1611983,
+   "accession": "0001140361-26-033932",
+   "type": "TERMINAL_EXCHANGE",
+   "closingDate": "2026-08-19",
+   "cashPerShare": "0",
+   "shareRatio": "0.236",
+   "successor": "CHTR",
+   "lastTradeDateRule": "effective 11:56 p.m. on 2026-08-19 -> 2026-08-19 is the last possible regular session; first session holding Charter Class A is 2026-08-20",
+   "url": "https://www.sec.gov/Archives/edgar/data/1611983/000114036126033932/ef20080711_8k.htm",
+   "sha256": "8a1700d1a8f9f2e3778efa42ee8c78759f6d999fcadaefcb094dd05724716dbc",
+   "acceptanceUtc": "2026-08-20T22:40:52.000Z",
+   "headerSha256": "d28f2339662acddb5006d0b43aaa40ef86660e1ca4c789dca074e6349487e185",
+   "quotes": {
+    "closing": "On August 19, 2026 (the \u201c Closing Date \u201d)",
+    "effective": "At 11:56 p.m., New York City time on the Closing Date (the \u201c Effective Time \u201d)",
+    "consideration": "was automatically converted into 0.236 of a share of a validly issued, fully paid and nonassessable share of Charter Class A common stock",
+    "fractions": "with cash (without interest) being paid to entitled record holders of Liberty Broadband Common Stock in lieu of fractional shares"
+   },
+   "quotesVerifiedInBody": true,
+   "cashCreditDate": null,
+   "cashCreditDateState": "NOT_STATED (right to receive arises at the Effective Time; paying-agent/broker credit date not in source)",
+   "fractionalShareCash": "stated as paid in lieu but amount per holder not stated; ledger keeps fractional successor units"
+  }
+ ],
+ "noDividendPolicies": [
+  {
+   "ticker": "CRNX",
+   "cik": 1658247,
+   "accession": "0001658247-26-000012",
+   "file": "crnx-20251231.htm",
+   "quote": "We have never declared or paid any cash dividends on our capital stock.",
+   "url": "https://www.sec.gov/Archives/edgar/data/1658247/000165824726000012/crnx-20251231.htm",
+   "sha256": "ba3cfa8c832e07fafea2e0099afbf5cf0c4af806c19c440c09755631f9a1a35b",
+   "acceptanceUtc": "2026-02-26T21:25:35.000Z",
+   "quoteVerifiedInBody": true,
+   "scope": "statement as of the 10-K filing date; absence of later declarations inside the ledger window is not positively sourced"
+  },
+  {
+   "ticker": "LBRDK",
+   "cik": 1611983,
+   "accession": "0001104659-26-010397",
+   "file": "lbrda-20251231x10k.htm",
+   "quote": "We have not paid any cash dividends on our common stock",
+   "url": "https://www.sec.gov/Archives/edgar/data/1611983/000110465926010397/lbrda-20251231x10k.htm",
+   "sha256": "82bffe7447e73ce68da19ea383fca0c01f075e46c490f0f430c9f201b3e80d4d",
+   "acceptanceUtc": "2026-02-04T23:09:24.000Z",
+   "quoteVerifiedInBody": true,
+   "scope": "statement as of the 10-K filing date; absence of later declarations inside the ledger window is not positively sourced"
+  },
+  {
+   "ticker": "CHTR",
+   "cik": 1091667,
+   "accession": "0001091667-26-000017",
+   "file": "chtr-20251231.htm",
+   "quote": "Charter has not paid cash dividends on its common stock and does not intend to do so in the foreseeable future.",
+   "url": "https://www.sec.gov/Archives/edgar/data/1091667/000109166726000017/chtr-20251231.htm",
+   "sha256": "a981e35f7653c320147c11c152817da9c0b61801cf6febfac777c752ca35fde6",
+   "acceptanceUtc": "2026-01-30T12:01:50.000Z",
+   "quoteVerifiedInBody": true,
+   "scope": "statement as of the 10-K filing date; absence of later declarations inside the ledger window is not positively sourced"
+  }
+ ],
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false
+}

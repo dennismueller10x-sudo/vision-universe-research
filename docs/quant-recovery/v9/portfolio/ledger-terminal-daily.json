@@ -1,0 +1,712 @@
+{
+ "schemaVersion": "v9-portfolio-ledger-terminal-daily-1.0.0",
+ "registration": {
+  "id": "V9-PORTFOLIO-TERMINAL-DAILY",
+  "version": "1.0.0",
+  "frozenAt": "2026-10-27T19:00:34.683Z",
+  "analysisMode": "MECHANICS_ACCEPTANCE_RETROSPECTIVE",
+  "holdings": [
+   "MSFT",
+   "NVDA",
+   "CRNX",
+   "LBRDK"
+  ],
+  "successorOnly": [
+   "CHTR"
+  ],
+  "period": [
+   "2025-10-01",
+   "2026-10-26"
+  ],
+  "initialCapital": 100000,
+  "weights": "0.9/4 equal at the first execution; buy-and-hold",
+  "secondRebalance": {
+   "decisionDate": "2026-10-01",
+   "weights": "0.9/3 MSFT, NVDA, CHTR"
+  },
+  "costs": {
+   "basis": "PER_SIDE_NOTIONAL",
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "clock": "daily sessions of discover-series (MSFT calendar); closeAt from market-calendar incl. early closes",
+  "rules": {
+   "prices": "split-adjusted daily closes used as raw: no sourced or provider split for these listings inside the window (checked)",
+   "terminalBars": "bars after the sourced last trading session are excluded (provider carry-forward closes)",
+   "terminalCashPayDate": {
+    "CONSERVATIVE": "last session of the run (credit date not stated in source; claim never investable in-window)",
+    "OPTIMISTIC_UNSOURCED": "closing date (right-to-receive date; labelled assumption)"
+   },
+   "dividends": "MSFT/NVDA SEC-sourced; T+1 regime ex-date = record date (rule, not sourced); entitlement at that session; cash at sourced payDate"
+  },
+  "runs": [
+   "HOLD_CONSERVATIVE (primary)",
+   "HOLD_OPTIMISTIC_UNSOURCED",
+   "REBAL_CONSERVATIVE (expected guard failure)",
+   "REBAL_OPTIMISTIC_UNSOURCED",
+   "PRICE_SIMULATION_ATTEMPT (expected contract rejection)"
+  ],
+  "evidenceHashes": {
+   "docs/quant-recovery/v9/portfolio/dividend-evidence.json": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
+   "docs/quant-recovery/v9/portfolio/split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4",
+   "docs/quant-recovery/v9/portfolio/terminal-ledger-events.json": "0a0c317a0721d3b511e558a91f9c1c1985b73c23a63a04b25098ef3bf0b903ce"
+  },
+  "codeHash": "df760b0e8bfcd634788edeec97ab1686367d8b720bae535e9e1d7f52e631ddf3",
+  "priorExposure": "none of these terminal names used in earlier studies",
+  "registrationHash": "2f1614a36355fee5d0aedbdfd60c09a1c9c5dcc4ac8b95abcf17fac5cb1251f2"
+ },
+ "sessions": 269,
+ "period": [
+  "2025-10-01",
+  "2026-10-26"
+ ],
+ "audit": {
+  "splitCheck": {
+   "MSFT": {
+    "providerSplitsInWindow": 0,
+    "sourcedSplitsInWindow": 0
+   },
+   "NVDA": {
+    "providerSplitsInWindow": 0,
+    "sourcedSplitsInWindow": 0
+   },
+   "CRNX": {
+    "providerSplitsInWindow": 0,
+    "sourcedSplitsInWindow": 0
+   },
+   "LBRDK": {
+    "providerSplitsInWindow": 0,
+    "sourcedSplitsInWindow": 0
+   },
+   "CHTR": {
+    "providerSplitsInWindow": 0,
+    "sourcedSplitsInWindow": 0
+   }
+  },
+  "bars": {
+   "MSFT": {
+    "used": 269,
+    "first": "2025-10-01",
+    "last": "2026-10-26",
+    "excludedAfterLastTrade": []
+   },
+   "NVDA": {
+    "used": 269,
+    "first": "2025-10-01",
+    "last": "2026-10-26",
+    "excludedAfterLastTrade": []
+   },
+   "CRNX": {
+    "used": 230,
+    "first": "2025-10-01",
+    "last": "2026-08-31",
+    "excludedAfterLastTrade": [
+     [
+      "2026-09-01",
+      84.95
+     ]
+    ]
+   },
+   "LBRDK": {
+    "used": 222,
+    "first": "2025-10-01",
+    "last": "2026-08-19",
+    "excludedAfterLastTrade": [
+     [
+      "2026-08-20",
+      36.02
+     ],
+     [
+      "2026-08-21",
+      36.02
+     ]
+    ]
+   },
+   "CHTR": {
+    "used": 269,
+    "first": "2025-10-01",
+    "last": "2026-10-26",
+    "excludedAfterLastTrade": []
+   }
+  },
+  "events": [
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-11-20",
+    "payDate": "2025-12-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-02-19",
+    "payDate": "2026-03-12",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-05-21",
+    "payDate": "2026-06-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-08-20",
+    "payDate": "2026-09-10",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-12-04",
+    "payDate": "2025-12-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-03-11",
+    "payDate": "2026-04-01",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-06-04",
+    "payDate": "2026-06-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-09-10",
+    "payDate": "2026-10-01",
+    "amount": "0.25",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-11-20",
+    "payDate": "2025-12-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-02-19",
+    "payDate": "2026-03-12",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-05-21",
+    "payDate": "2026-06-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-08-20",
+    "payDate": "2026-09-10",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-12-04",
+    "payDate": "2025-12-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-03-11",
+    "payDate": "2026-04-01",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-06-04",
+    "payDate": "2026-06-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-09-10",
+    "payDate": "2026-10-01",
+    "amount": "0.25",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-11-20",
+    "payDate": "2025-12-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-02-19",
+    "payDate": "2026-03-12",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-05-21",
+    "payDate": "2026-06-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-08-20",
+    "payDate": "2026-09-10",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-12-04",
+    "payDate": "2025-12-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-03-11",
+    "payDate": "2026-04-01",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-06-04",
+    "payDate": "2026-06-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-09-10",
+    "payDate": "2026-10-01",
+    "amount": "0.25",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-11-20",
+    "payDate": "2025-12-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-02-19",
+    "payDate": "2026-03-12",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-05-21",
+    "payDate": "2026-06-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-08-20",
+    "payDate": "2026-09-10",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-12-04",
+    "payDate": "2025-12-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-03-11",
+    "payDate": "2026-04-01",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-06-04",
+    "payDate": "2026-06-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-09-10",
+    "payDate": "2026-10-01",
+    "amount": "0.25",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-11-20",
+    "payDate": "2025-12-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-02-19",
+    "payDate": "2026-03-12",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-05-21",
+    "payDate": "2026-06-11",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "MSFT",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-08-20",
+    "payDate": "2026-09-10",
+    "amount": "0.91",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2025-12-04",
+    "payDate": "2025-12-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-03-11",
+    "payDate": "2026-04-01",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-06-04",
+    "payDate": "2026-06-26",
+    "amount": "0.01",
+    "tier": "SEC_ACCEPTANCE"
+   },
+   {
+    "ticker": "NVDA",
+    "type": "CASH_DIVIDEND",
+    "recordDate": "2026-09-10",
+    "payDate": "2026-10-01",
+    "amount": "0.25",
+    "tier": "SEC_ACCEPTANCE"
+   }
+  ]
+ },
+ "runs": {
+  "HOLD_CONSERVATIVE": {
+   "endCapital": 113816.4874882097,
+   "metrics": {
+    "cumulativeReturn": 0.13816487488209717,
+    "cagr": 0.12885539145557168,
+    "maxDrawdown": -0.2329946297494866,
+    "fees": 89.8786638038648,
+    "slippage": 44.9393319019324,
+    "oneWayTurnoverSum": 0.44939331901932394
+   },
+   "trades": 4,
+   "eventLedger": [
+    {
+     "date": "2025-11-20",
+     "eventId": "MSFT:DIV:2025-11-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2025-12-04",
+     "eventId": "NVDA:DIV:2025-12-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-02-19",
+     "eventId": "MSFT:DIV:2026-02-19",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-03-11",
+     "eventId": "NVDA:DIV:2026-03-11",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-05-21",
+     "eventId": "MSFT:DIV:2026-05-21",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-06-04",
+     "eventId": "NVDA:DIV:2026-06-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "LBRDK:TERMINAL_EXCHANGE:2026-08-19",
+     "type": "TERMINAL_EXCHANGE",
+     "entitlementUnits": 361.9469386431411
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "MSFT:DIV:2026-08-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-09-01",
+     "eventId": "CRNX:TERMINAL_CASH:2026-09-01",
+     "type": "TERMINAL_CASH",
+     "entitlementUnits": 541.3072982646639
+    },
+    {
+     "date": "2026-09-10",
+     "eventId": "NVDA:DIV:2026-09-10",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    }
+   ],
+   "openReceivables": [],
+   "chtrUnitsAfterExchange": 85.4194775197813,
+   "receivableAtCrnxClose": 46050.767065986525,
+   "cashAtCrnxClose": 10109.02703155842,
+   "resultHash": "ab9a6dfcb2d44392a2ebcc15aaf096d9941a5c81ade2a5dde08896ab7d6aa371"
+  },
+  "HOLD_OPTIMISTIC_UNSOURCED": {
+   "endCapital": 113816.4874882097,
+   "metrics": {
+    "cumulativeReturn": 0.13816487488209717,
+    "cagr": 0.12885539145557168,
+    "maxDrawdown": -0.2329946297494866,
+    "fees": 89.8786638038648,
+    "slippage": 44.9393319019324,
+    "oneWayTurnoverSum": 0.44939331901932394
+   },
+   "trades": 4,
+   "eventLedger": [
+    {
+     "date": "2025-11-20",
+     "eventId": "MSFT:DIV:2025-11-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2025-12-04",
+     "eventId": "NVDA:DIV:2025-12-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-02-19",
+     "eventId": "MSFT:DIV:2026-02-19",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-03-11",
+     "eventId": "NVDA:DIV:2026-03-11",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-05-21",
+     "eventId": "MSFT:DIV:2026-05-21",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-06-04",
+     "eventId": "NVDA:DIV:2026-06-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "LBRDK:TERMINAL_EXCHANGE:2026-08-19",
+     "type": "TERMINAL_EXCHANGE",
+     "entitlementUnits": 361.9469386431411
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "MSFT:DIV:2026-08-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-09-01",
+     "eventId": "CRNX:TERMINAL_CASH:2026-09-01",
+     "type": "TERMINAL_CASH",
+     "entitlementUnits": 541.3072982646639
+    },
+    {
+     "date": "2026-09-10",
+     "eventId": "NVDA:DIV:2026-09-10",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    }
+   ],
+   "openReceivables": [],
+   "chtrUnitsAfterExchange": 85.4194775197813,
+   "receivableAtCrnxClose": 39.646713490090434,
+   "cashAtCrnxClose": 56120.14738405486,
+   "resultHash": "02534f7962c042f1b8f921943c910e0d3b76042956aff84cfa5caab494b0d97c"
+  },
+  "REBAL_CONSERVATIVE": {
+   "error": "UNSETTLED_CASH_NOT_INVESTABLE"
+  },
+  "REBAL_OPTIMISTIC_UNSOURCED": {
+   "endCapital": 111920.59178426,
+   "metrics": {
+    "cumulativeReturn": 0.11920591784259993,
+    "cagr": 0.11123546679386243,
+    "maxDrawdown": -0.2329946297494866,
+    "fees": 134.4178171783439,
+    "slippage": 67.20890858917195,
+    "oneWayTurnoverSum": 0.6415338934781325
+   },
+   "trades": 7,
+   "eventLedger": [
+    {
+     "date": "2025-11-20",
+     "eventId": "MSFT:DIV:2025-11-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2025-12-04",
+     "eventId": "NVDA:DIV:2025-12-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-02-19",
+     "eventId": "MSFT:DIV:2026-02-19",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-03-11",
+     "eventId": "NVDA:DIV:2026-03-11",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-05-21",
+     "eventId": "MSFT:DIV:2026-05-21",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-06-04",
+     "eventId": "NVDA:DIV:2026-06-04",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "LBRDK:TERMINAL_EXCHANGE:2026-08-19",
+     "type": "TERMINAL_EXCHANGE",
+     "entitlementUnits": 361.9469386431411
+    },
+    {
+     "date": "2026-08-20",
+     "eventId": "MSFT:DIV:2026-08-20",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 43.5678170220774
+    },
+    {
+     "date": "2026-09-01",
+     "eventId": "CRNX:TERMINAL_CASH:2026-09-01",
+     "type": "TERMINAL_CASH",
+     "entitlementUnits": 541.3072982646639
+    },
+    {
+     "date": "2026-09-10",
+     "eventId": "NVDA:DIV:2026-09-10",
+     "type": "CASH_DIVIDEND",
+     "entitlementUnits": 118.95635529126052
+    }
+   ],
+   "openReceivables": [],
+   "chtrUnitsAfterExchange": 85.4194775197813,
+   "receivableAtCrnxClose": 39.646713490090434,
+   "cashAtCrnxClose": 56120.14738405486,
+   "resultHash": "54c5d1264f8a7d5ba7786c7945e75538d94019fad6e2385ce2d01972283b7d66"
+  },
+  "PRICE_SIMULATION_ATTEMPT": {
+   "error": "INVALID_CONDITIONAL_PRICE_SIMULATION"
+  }
+ },
+ "runtime": {
+  "node": "v22.22.0",
+  "v8": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.39",
+  "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "engineSha256": "1b9204e5609ffa9eb8cdb827e2b35d732e8d76ce5fb72afb0f58a20edeeeb8b0",
+ "runnerSha256": "df760b0e8bfcd634788edeec97ab1686367d8b720bae535e9e1d7f52e631ddf3",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false
+}

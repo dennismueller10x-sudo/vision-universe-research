@@ -50,7 +50,7 @@ def extract(t):
     flat = re.sub(r"\s+", " ", t)
     out = {"considerationQuotes": [], "cashPerShare": [], "shareRatios": [], "completionDates": [], "tradingQuotes": []}
     for m in CONSID.finditer(flat):
-        q = flat[m.start():m.end()][:600]
+        q = flat[m.start():m.end()][:300]
         out["considerationQuotes"].append(q)
         for c in re.finditer(r"\$\s?(\d+(?:\.\d+)?)\s*(?:in cash|per share in cash|, in cash|, without interest|\(the)", m.group(0)):
             out["cashPerShare"].append(c.group(1))

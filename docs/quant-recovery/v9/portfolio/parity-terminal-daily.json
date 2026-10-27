@@ -1,0 +1,59 @@
+{
+ "schemaVersion": "v9-portfolio-terminal-parity-1.0.0",
+ "tolerance": "1E-9",
+ "registrationHash": "2f1614a36355fee5d0aedbdfd60c09a1c9c5dcc4ac8b95abcf17fac5cb1251f2",
+ "runs": {
+  "HOLD_CONSERVATIVE": {
+   "inputEventsMatch": true,
+   "lastTradeDatesMatch": true,
+   "events": 10,
+   "pythonEnd": "113816.48748820970056863779733048303134205386544887",
+   "jsEnd": 113816.4874882097,
+   "maxEquityRelDiff": "2.8706945966490719146780100237042482287480198441795E-16",
+   "maxReceivableRelDiff": "3.1171395555555555555555555555555558989229490196080E-16",
+   "maxEntitlementRelDiff": "1.7743514577777777777777777777777780550534533333334E-16",
+   "ledgerOrderMatch": true,
+   "tradesPython": 4,
+   "tradesJs": 4,
+   "match": true
+  },
+  "HOLD_OPTIMISTIC_UNSOURCED": {
+   "inputEventsMatch": true,
+   "lastTradeDatesMatch": true,
+   "events": 10,
+   "pythonEnd": "113816.48748820970056863779733048303134205386544887",
+   "jsEnd": 113816.4874882097,
+   "maxEquityRelDiff": "2.8706945966490719146780100237042482287480198441795E-16",
+   "maxReceivableRelDiff": "1.7743514577777777777777777777777780550534533333334E-16",
+   "maxEntitlementRelDiff": "1.7743514577777777777777777777777780550534533333334E-16",
+   "ledgerOrderMatch": true,
+   "tradesPython": 4,
+   "tradesJs": 4,
+   "match": true
+  },
+  "REBAL_CONSERVATIVE": {
+   "inputEventsMatch": true,
+   "lastTradeDatesMatch": true,
+   "events": 10,
+   "python": "UNSETTLED_CASH_NOT_INVESTABLE",
+   "js": "UNSETTLED_CASH_NOT_INVESTABLE",
+   "match": true
+  },
+  "REBAL_OPTIMISTIC_UNSOURCED": {
+   "inputEventsMatch": true,
+   "lastTradeDatesMatch": true,
+   "events": 10,
+   "pythonEnd": "111920.59178425998085023257824360371437322027666996",
+   "jsEnd": 111920.59178426,
+   "maxEquityRelDiff": "2.8706945966490719146780100237042482287480198441795E-16",
+   "maxReceivableRelDiff": "1.7743514577777777777777777777777780550534533333334E-16",
+   "maxEntitlementRelDiff": "1.7743514577777777777777777777777780550534533333334E-16",
+   "ledgerOrderMatch": true,
+   "tradesPython": 7,
+   "tradesJs": 7,
+   "match": true
+  }
+ },
+ "scriptSha256": "24fdae86041b686ef1d1b635cfef5325ec42962e641a4000447404b309c4f355",
+ "status": "PASS"
+}

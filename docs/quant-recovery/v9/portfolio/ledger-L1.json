@@ -3,7 +3,7 @@
  "registration": {
   "id": "V9-PORTFOLIO-L1",
   "version": "1.0.0",
-  "frozenAt": "2026-10-27T18:56:10.555Z",
+  "frozenAt": "2026-10-27T19:01:16.692Z",
   "analysisMode": "MECHANICS_ACCEPTANCE_RETROSPECTIVE",
   "purpose": "Exercise the existing ledger with SEC-sourced dividends (pay-date cash), sourced splits; compare with split-adjusted price-only run. Not a strategy test.",
   "universe": [
@@ -46,10 +46,11 @@
   "priorExposure": "Trio price-only portfolio explored in V7/V8; retrospective; no confirmatory claim",
   "evidenceHashes": {
    "docs/quant-recovery/v9/portfolio/dividend-evidence.json": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
-   "docs/quant-recovery/v9/portfolio/split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4"
+   "docs/quant-recovery/v9/portfolio/split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4",
+   "docs/quant-recovery/v9/portfolio/terminal-evidence.json": "900f7838661619b03f46c40bad91cb056c0b8595e9c2baa1f5b3fd77a2a60b9c"
   },
   "codeHash": "ef25d4bae9e338d2f4f77e257638bc898913f3ab984c883d561cd73dbd043182",
-  "registrationHash": "ce08bd4c5b85bd7752ce27e801b60562ac624603cf43423baa5d244ef1a85c03"
+  "registrationHash": "bf9dffc5db6aab7401e598f236fb889a8c522887e19353044d27452711133dcc"
  },
  "sessions": 617,
  "period": [
@@ -1151,8 +1152,8 @@
    "trades": 308,
    "events": 95,
    "openReceivables": 0,
-   "resultHash": "b9daf16474aa2c9a5752c2ec5de7b410475ca7154c8aff3383e8855dd46ccb8c",
-   "inputHash": "ff046adc54be9514e5157bba680fc36fca2e50b457ecef4bf73def3cf901c8bc",
+   "resultHash": "68be8b60dfda4f5aecc54d3496b25235b9af4d30561c1a5b7e6546049f5320ae",
+   "inputHash": "fb669693a06ff3d6892792b856744eeef890e0c122534dfccfb8010ddb06f957",
    "maxReceivables": 1253.0342082327297,
    "dividendCashCredited": 40201.290225754565,
    "receivableSessions": 263
@@ -1171,8 +1172,8 @@
    "trades": 308,
    "events": 0,
    "openReceivables": 0,
-   "resultHash": "c8b20f9a5b9230e23b034cd57046393690e349c5a7ef111db2764cdf40069a3c",
-   "inputHash": "702a8b924f81adc2416fb97ae4324b2cf5f4a003fb795d41d9815b494e462a23",
+   "resultHash": "1612e73c6cd20cd6e41f30602627a8da4809aa497826534d8516a4f4bae9083b",
+   "inputHash": "3c03787ae9075a226353c583d491e17336580c5346face399a8c54fcf2ff3d6d",
    "maxReceivables": 0,
    "dividendCashCredited": null
   },
@@ -1190,8 +1191,8 @@
    "trades": 308,
    "events": 1,
    "openReceivables": 0,
-   "resultHash": "e4ea369914038c5ec2e73f3d37b3eeaee73d6311d40207b7ef65adbbfdea8161",
-   "inputHash": "b99eb3a0168d36a32a3217accb61bf93a4371a12f728ebf4fd8b12977139b0aa",
+   "resultHash": "ffdb47101f07954df5892415b61570fe900c66a453c86547f6a76e219f761a17",
+   "inputHash": "1b529d5b12ec2f7d50b1b19cbdac86f6315bb725901bea63c962a866daaccf2d",
    "maxReceivables": 0,
    "dividendCashCredited": null
   },
@@ -1209,8 +1210,8 @@
    "trades": 308,
    "events": 95,
    "openReceivables": 0,
-   "resultHash": "6ce23c93eeba40213df9634ec1cb7a8bcc267d2abce73172e7c34ba6c86d20bd",
-   "inputHash": "a10f95b670723469869979854762f4a7199e554b110de3f5a2cb0cd2dae75fca",
+   "resultHash": "e1e762388953a5822db1e479b2f1af52b8ccebf68b0f7980648fd313270f3b3c",
+   "inputHash": "3ea6b3daf2fad97a2b142f9dcdb1e5ac6a203862652b42b7ff79590c06ae2846",
    "maxReceivables": 0,
    "dividendCashCredited": null
   },
@@ -1231,8 +1232,8 @@
    "trades": 308,
    "events": 95,
    "openReceivables": 0,
-   "resultHash": "7715ab1dc4e5f49a1f2ec67e56f4991b3a364f994aa4862617dfb2e29f15dbbb",
-   "inputHash": "2843c3102152f1e394e2d0a13bd48799808040484cb7811121cb7bd939177ee9",
+   "resultHash": "8a11c5d0188151fce65ce9db6e50e60bb4fb7781f9158a36e0137d3db095253e",
+   "inputHash": "71fed604d46c69123145ad9dadc1c8abee2b0996a84f886c3d0539516f94953f",
    "maxReceivables": 0,
    "dividendCashCredited": null
   }
