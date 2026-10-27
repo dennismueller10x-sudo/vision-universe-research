@@ -1,0 +1,15 @@
+'use strict';
+// Private offline research artifacts; deliberately incompatible with the live weekly reader.
+const fs=require('node:fs'), path=require('node:path'), crypto=require('node:crypto');
+const C=require('./research-contract.cjs');
+const SCHEMA='research-generation-1.0.0';
+function id(v){if(typeof v!=='string'||!/^[a-f0-9]{64}$/.test(v))throw Error('INVALID_GENERATION_ID');return v;}
+function root(directory){const d=path.resolve(directory),repository=path.resolve(__dirname,'../..');const outside=p=>{const rel=path.relative(repository,p);if(!rel.startsWith('..'+path.sep))throw Error('OUTPUT_MUST_BE_PRIVATE_OUTSIDE_REPOSITORY');};outside(d);fs.mkdirSync(d,{recursive:true,mode:0o700});if(fs.lstatSync(d).isSymbolicLink())throw Error('SYMLINK_STORE_FORBIDDEN');outside(fs.realpathSync(d));return d;}
+function readFile(p){if(fs.lstatSync(p).isSymbolicLink())throw Error('SYMLINK_ARTIFACT_FORBIDDEN');return JSON.parse(fs.readFileSync(p,'utf8'));}
+function read(directory,generation){const d=root(directory), g=id(generation);const snapshot=readFile(path.join(d,g+'.json'));if(snapshot.schemaVersion!==SCHEMA||C.hash(snapshot.payload)!==g)throw Error('CORRUPT_RESEARCH_GENERATION');return snapshot;}
+function current(directory){const d=root(directory), p=path.join(d,'current.json');if(!fs.existsSync(p))return null;const pointer=readFile(p);if(pointer.schemaVersion!==SCHEMA)throw Error('UNKNOWN_RESEARCH_POINTER');read(d,pointer.generation);return pointer.generation;}
+function atomic(p,value){const t=p+'.'+crypto.randomBytes(12).toString('hex')+'.tmp';let fd;try{fd=fs.openSync(t,'wx',0o600);fs.writeFileSync(fd,C.canonical(value)+'\n');fs.fsyncSync(fd);fs.closeSync(fd);fd=undefined;fs.renameSync(t,p);const dir=fs.openSync(path.dirname(p),'r');try{fs.fsyncSync(dir);}finally{fs.closeSync(dir);}}finally{if(fd!==undefined)fs.closeSync(fd);if(fs.existsSync(t))fs.unlinkSync(t);}}
+function locked(directory,fn){const d=root(directory), p=path.join(d,'writer.lock');let fd;try{fd=fs.openSync(p,'wx',0o600);}catch(e){if(e.code==='EEXIST')throw Error('RESEARCH_WRITER_LOCKED');throw e;}try{fs.writeFileSync(fd,JSON.stringify({pid:process.pid}));return fn(d);}finally{fs.closeSync(fd);fs.unlinkSync(p);}}
+function publish(directory,payload,expectedParent){return locked(directory,d=>{const parent=current(d);if(expectedParent!==undefined&&expectedParent!==parent)throw Error('RESEARCH_PARENT_CHANGED');const generation=C.hash(payload), p=path.join(d,generation+'.json');if(fs.existsSync(p))read(d,generation);else atomic(p,{schemaVersion:SCHEMA,payload});atomic(path.join(d,'current.json'),{schemaVersion:SCHEMA,generation});return {generation,parent,reused:parent===generation};});}
+function rollback(directory,generation,expectedCurrent){return locked(directory,d=>{const previous=current(d);if(expectedCurrent!==undefined&&expectedCurrent!==previous)throw Error('RESEARCH_PARENT_CHANGED');read(d,id(generation));atomic(path.join(d,'current.json'),{schemaVersion:SCHEMA,generation});return {generation,previous};});}
+module.exports={SCHEMA,publish,current,read,rollback};

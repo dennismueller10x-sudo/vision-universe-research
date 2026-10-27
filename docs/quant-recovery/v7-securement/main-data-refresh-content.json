@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "v7-main-data-refresh-content-1",
+  "from": "0ea8a11429ec2932ad2948f7ecb9bc02aaa0e14a",
+  "to": "e877dd7ae255bce69353ff2fa20f1ae4f99ccb12",
+  "changedFiles": 5135,
+  "sameAfterIgnoringExplicitGenerationMetadata": 5132,
+  "otherDifferences": [
+    "quant/data/market/capabilities/summary.json",
+    "quant/data/sec/concept-census.json",
+    "quant/data/sec/consumer_coverage.json"
+  ],
+  "ignoredKeys": [
+    "generated_at_utc",
+    "generatedAt",
+    "generatedAtUtc"
+  ],
+  "codeChanged": false,
+  "scope": "Fresh main-generated data preserved; generation metadata normalization only, no price/fact substitution."
+}

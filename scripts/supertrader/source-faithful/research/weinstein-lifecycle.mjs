@@ -153,7 +153,11 @@ export function groupProxyEvidence(built, securityId, weekKey) {
   return { ...cache.get(k) };
 }
 
-function makeAdapter(kind, version) {
+/**
+ * trailAtOrAbove (Supertrader 7.0, EX7-WEIN-TRAIL-AT-OR-ABOVE, research/sf7-execution-validation.mjs only): a weekly high
+ * equal to the peak also ends the correction, as MA-WEIN-TRAIL declares. Without it (every reference) the 5.0 code runs.
+ */
+function makeAdapter(kind, version, { trailAtOrAbove = false } = {}) {
   const validateConfig = (cfg) => validate(cfg, kind);
   return Object.freeze({
     strategy: `WEINSTEIN_${kind}`, version, methodVersion: WEINSTEIN_VERSION, label: 'MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION_NOT_A_STRATEGY_BACKTEST',
@@ -194,7 +198,7 @@ function makeAdapter(kind, version) {
         if (!v.anyAlternative) pos.events.push({ date: bars[i].date, type: 'WEIN_VOL5_UNCONFIRMED', rule: 'WEIN-VOL5' });
       }
       // MA-WEIN-TRAIL: correction >= threshold from the peak, then a weekly high at or above the peak raises the stop
-      if (wk.high > st.peak) {
+      if (trailAtOrAbove ? wk.high >= st.peak : wk.high > st.peak) {
         if (st.peak > 0 && st.corrLow < Infinity && (st.peak - st.corrLow) / st.peak >= cfg.trailThreshold - 1e-12) {
           const base = kind === 'INVESTOR' && fin(ma[W]) ? Math.min(st.corrLow, ma[W]) : st.corrLow;
           api.raiseStop(base - rawTickAdjusted(bars[i]), kind === 'INVESTOR' ? 'WEIN-TRAIL1-2' : 'WEIN-TR-TRAIL');
@@ -206,6 +210,8 @@ function makeAdapter(kind, version) {
 }
 
 export const WEINSTEIN_INVESTOR_ADAPTER = makeAdapter('INVESTOR', WEIN_LIFECYCLE_VERSION);
+/** Supertrader 7.0: adapter with a declared reading flag (validation variants only; the references above have none). */
+export const makeWeinsteinAdapter = (kind, opts) => makeAdapter(kind, WEIN_LIFECYCLE_VERSION, opts);
 export const WEINSTEIN_TRADER_ADAPTER = makeAdapter('TRADER', WEIN_LIFECYCLE_VERSION);
 export const validateWeinInvestorConfig = (cfg) => validate(cfg, 'INVESTOR');
 export const validateWeinTraderConfig = (cfg) => validate(cfg, 'TRADER');

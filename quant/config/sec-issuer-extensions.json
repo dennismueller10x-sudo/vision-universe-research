@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "version": "1.0.0",
+  "description": "Gepruefte firmeneigene XBRL-Konzepte (Extension-Taxonomie eines Emittenten), die companyfacts.zip grundsaetzlich nicht enthaelt. Getrennt von der Metric Registry, die nur generische Zuordnungen kennt: eine Regel hier gilt ausschliesslich fuer die genannte CIK und nie fuer ein anderes Unternehmen. Aufgenommen wird ein Konzept nur, wenn es in den Jahren, in denen der Emittent zusaetzlich ein generisch akzeptiertes Konzept meldet, wertgleich ist (evidence.overlap). Die Werte kommen aus den gepinnten Instanzdokumenten der 10-K (Accession + SHA-256); weicht ein Dokument vom Pin ab, wird es nicht gelesen. Generische Konzepte haben immer Vorrang (priority unter allen Registry-Prioritaeten).",
+  "extensions": [
+    {
+      "id": "nvda-capex-2013-2021",
+      "cik": "0001045810",
+      "issuer": "NVIDIA Corp",
+      "taxonomy": "nvda",
+      "concept": "PurchasesOfPropertyAndEquipmentAndIntangibleAssets",
+      "metric": "capital_expenditures",
+      "priority": 900,
+      "unit": "USD",
+      "reason": "NVIDIA meldet den Investitionsabfluss der Kapitalflussrechnung ('Purchases related to property and equipment and intangible assets') in den 10-K fuer die Geschaeftsjahre 2013 bis 2021 nur mit diesem eigenen Konzept. companyfacts enthaelt keine Extension-Konzepte, deshalb fehlten Investitionen und freier Cashflow fuer diese Jahre.",
+      "evidence": {
+        "overlap": [
+          {
+            "fiscalYearEnd": "2011-01-30",
+            "value": 97890000,
+            "genericConcept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "genericValue": 97890000,
+            "accession": "0001045810-13-000008",
+            "genericAccession": "0001045810-12-000013"
+          },
+          {
+            "fiscalYearEnd": "2012-01-29",
+            "value": 138735000,
+            "genericConcept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+            "genericValue": 138735000,
+            "accession": "0001045810-13-000008",
+            "genericAccession": "0001045810-12-000013"
+          },
+          {
+            "fiscalYearEnd": "2022-01-30",
+            "value": 976000000,
+            "genericConcept": "us-gaap:PaymentsToAcquireProductiveAssets",
+            "genericValue": 976000000,
+            "accession": "0001045810-23-000017",
+            "genericAccession": "0001045810-24-000029"
+          },
+          {
+            "fiscalYearEnd": "2023-01-29",
+            "value": 1833000000,
+            "genericConcept": "us-gaap:PaymentsToAcquireProductiveAssets",
+            "genericValue": 1833000000,
+            "accession": "0001045810-23-000017",
+            "genericAccession": "0001045810-24-000029"
+          }
+        ]
+      },
+      "filings": [
+        {
+          "accession": "0001045810-13-000008",
+          "filed": "2013-03-12",
+          "document": "nvda-20130127.xml",
+          "sha256": "61d8a2ff19c12d94bdc40c371267094e7ba1f5f775af303f50b786530fe45381"
+        },
+        {
+          "accession": "0001045810-14-000030",
+          "filed": "2014-03-13",
+          "document": "nvda-20140126.xml",
+          "sha256": "461a1441a41be0ec099d6cdaedf5e0c8798c91e240000a444e2fd3ea85350d7c"
+        },
+        {
+          "accession": "0001045810-15-000036",
+          "filed": "2015-03-12",
+          "document": "nvda-20150125.xml",
+          "sha256": "8c954fb8dfc255f848d635b87e531ebc60bdd4de5976222fbae63f3e41785aa5"
+        },
+        {
+          "accession": "0001045810-16-000205",
+          "filed": "2016-03-17",
+          "document": "nvda-20160131.xml",
+          "sha256": "fc7e8875fd458a0a646c0bd207ee8c81c83bb7240ee7f102691bdd3f3cce2956"
+        },
+        {
+          "accession": "0001045810-17-000027",
+          "filed": "2017-03-01",
+          "document": "nvda-20170129.xml",
+          "sha256": "c38922e9dd4de20b0d9ed69a7237cdb519738103c6d3886a48903c7af86919db"
+        },
+        {
+          "accession": "0001045810-18-000010",
+          "filed": "2018-02-28",
+          "document": "nvda-20180128.xml",
+          "sha256": "187c882aa072b25206c2b9bcf379b92647e6d39c5909c9461842628eb48e7f2d"
+        },
+        {
+          "accession": "0001045810-19-000023",
+          "filed": "2019-02-21",
+          "document": "nvda-20190127.xml",
+          "sha256": "c6f9bbcaf3d8d67b3fde277900c4fb52382aae716334c767b4b565e0f1b4bebd"
+        },
+        {
+          "accession": "0001045810-20-000010",
+          "filed": "2020-02-20",
+          "document": "nvda-2020x10k_htm.xml",
+          "sha256": "027642676e544cbd94fdcada518ba597bc6e1c8ef34e2b1033b9e244f3496494"
+        },
+        {
+          "accession": "0001045810-21-000010",
+          "filed": "2021-02-26",
+          "document": "nvda-20210131_htm.xml",
+          "sha256": "88bacaea0201e14ee7d85e1a534e60fbc0f73fae8670310c197bd7b812d13f9e"
+        },
+        {
+          "accession": "0001045810-22-000036",
+          "filed": "2022-03-18",
+          "document": "nvda-20220130_htm.xml",
+          "sha256": "230732b2e913338efa18b1975869cb8899a688bbb3c08e3a0b38946c9108fad3"
+        },
+        {
+          "accession": "0001045810-23-000017",
+          "filed": "2023-02-24",
+          "document": "nvda-20230129_htm.xml",
+          "sha256": "6951254b74c59d8b0263604c83b0b494bc43a2565acffcc3645eede1df776644"
+        }
+      ]
+    }
+  ]
+}
