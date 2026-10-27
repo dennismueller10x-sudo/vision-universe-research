@@ -279,6 +279,9 @@
   if (typeof module !== "object" && root.document) {
     if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", function () { auto(); });
     else auto();
+    /* Quant: die Merkliste QX.watch (quant/app/ui.js, byte-gesperrt) wird zur Laufzeit gekoppelt, ihre Dateien bleiben
+       unveraendert. QX steht vorher in quant/index.html bzw. im Release-Buendel (docs/accounts/WATCHLIST.md §5). */
+    if (root.QX && root.QX.watch) couple(root.QX.watch);
   }
 
   return Object.freeze({ VERSION: VERSION, mount: mount, auto: auto, resolveInstrument: resolveInstrument, enabled: enabled,
