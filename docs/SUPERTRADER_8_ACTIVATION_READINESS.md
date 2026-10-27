@@ -150,9 +150,26 @@ Neu:
 
 Solange `PREPARED_DISABLED` gilt, ist ein Commit doppelt ausgeschlossen: Der Workflow bricht ab, und Core-Tests, DQ und Health würden ein Artefakt melden. `main`, #1025 und #1026 sind eingemergt. E2E-Probe lokal: CURRENT → 3.001 Kandidaten → DQ 8/8 PASS → Commit gesperrt.
 
+## Unabhängiges Review (27.10.2026)
+
+Das Review lief rein lesend, mit eigenen Gegenproben auf dem echten Lauf vom 26.10. Ergebnis: kein BLOCKING, 3 HIGH, 3 MEDIUM, 2 LOW.
+
+| Befund | Behandlung | PR |
+|---|---|---|
+| HIGH 1: DQ-SF8-4 übernahm nur die Liste des Erzeugers; `closeVsGapLow` (C12) und Turtle `N` unterhalb von MODELED | Die Core-Regel ist jetzt unabhängig: festgeschriebene Strukturmarken und Chartmarkenarten je Methode, keine Zahl unter Order-, Stop-, Limit- oder Einstiegsnamen (Wortteile). `closeVsGapLow` bleibt (Abstand zur Strukturmarke `GAP_DAY_LOW`, gleich `pivot.distance`), ebenso `N` (Volatilitätseinheit, ohne Einstiegsmarke kein Stop); begründet in `SUPERTRADER_8_PRICE_PARITY_V4.md`. | #1027, #1026 |
+| HIGH 2: Inhaltsregeln sahen nur `strategy/`, nicht `ticker/`, `index.json`, `summary.top` und keine fremde `C14.json` | Alle Ansichten und Kurzzeilen werden geprüft. Scherben müssen der Strategieansicht gleichen, `index.json` ist Pflicht. Die sechs Mutationen des Reviews sind auf echten Daten jetzt alle ERROR. | #1027 |
+| HIGH 3: `SF8-GATE-AUX` sicherte künftige Daten des Repositorys zu (Zeitbombe ab ca. 10.11.) | Der Test läuft jetzt auf einer Fixture mit festen Erzeugungsdaten (Grenze, Folgetag, undatiert). | #973 |
+| MEDIUM 4: Merge-Reihenfolge nicht erzwungen | `core-ci` führt die Registry-Schutztests mit aus. | #1027 |
+| MEDIUM 5: V6 ohne roten Zwischenstand unmöglich | Neuer Zustand `ACTIVATING` in Health, Register-Tests, DQ und Commit-Sperre; Ablauf siehe unten. | #1027, #973 |
+| MEDIUM 6: Ausnahme für `domains.json` breiter als ein Verweis | Schlüsselsatz festgeschrieben; nur `artifact` und `producer` dürfen den Pfad nennen. Das Muster umfasst die Altmodule und ignoriert Groß-/Kleinschreibung. | #1025 |
+| LOW 7: Rundungsfenster bis 0,99 Cent | Nur genau ½ Einheit (gemessen 1.330 von 1.330); Kandidaten unverändert. | #1026 |
+| LOW 8: `instrumentId` in DQ-SF8-8, unlesbare Referenz als MISSING, fremde Datei als „keine Daten“ | Alle drei behoben. | #1027, #1026 |
+
+Ohne Befund: Gate A, Test-Isolation, `missingArtifact` gegen die echten Fehlertexte, Registry-Schutz gegen die echte Registry, Preisabgleich ohne Toleranz am Stichtag sowie ADR-005 und die Abschaltung des Tageslaufs.
+
 ## Merge-Reihenfolge
 
-1. **#1025** (Schutztests): zuerst; sonst wird die Supertrader-Suite rot, sobald #1027 auf `main` ist.
+1. **#1025** (Schutztests): zuerst. Erzwungen: `core-ci` von #1027 führt die Registry-Schutztests mit aus und bleibt rot, bis #1025 auf `main` ist; danach `main` in #1027 mergen.
 2. **#1026** (V4): unabhängig von #1025 und #1027, vor #973.
 3. **#1027** (Core): nach #1025.
 4. **#973** (Tageslauf, abgeschaltet): zuletzt. Der Merge aktiviert nichts. Davor ist `main` erneut einzumergen; `pendingWorkflow` in #1027 entfällt dann in einem kleinen Core-Nachtrag oder im Aktivierungs-PR.
@@ -161,7 +178,13 @@ Solange `PREPARED_DISABLED` gilt, ist ein Commit doppelt ausgeschlossen: Der Wor
 
 - V1: S1–S3, S5 (reguläre Läufe abwarten) und S6 (Owner-Entscheidung Security Master und Firmennamen).
 - V5: Owner-Abnahme der befüllten Vorschau sowie Safari/WebKit (separat).
-- V6, ausdrücklich gesperrt: eigener PR, der `activation` aus dem Registry-Eintrag entfernt und `SF8_ACTIVATION_STATE` in `registry-guard.mjs` anpasst. Danach die Variable setzen, einen ersten Lauf mit `commit=false` prüfen und erst dann einen Zeitplan in einem weiteren PR ergänzen.
+- V6, ausdrücklich gesperrt. Jeder Schritt ist ein eigener, vom Owner gemergter PR; jeder Zwischenstand ist grün, und kein PR bringt Daten mit:
+  1. Supertrader-PR: `registry-guard.mjs` akzeptiert `ACTIVATING`.
+  2. Core-PR: `activation.state` → `ACTIVATING`. Health zeigt DISABLED/AWAITING_FIRST_RUN, DQ prüft ohne Daten nichts, der Commit-Schritt ist freigegeben.
+  3. Variable `SF8_CANDIDATES_ENABLED=true`, erster Lauf mit `commit=false`, DQ-Bericht und CI-Artefakt prüfen.
+  4. Lauf mit `commit=true`.
+  5. Supertrader-PR, der `activation` nicht mehr verlangt, dann Core-PR, der das Feld entfernt. Ab dann ist ein fehlendes Artefakt FAILED.
+  6. Zeitplan in einem weiteren PR, gekoppelt an das Ende der Kette.
 
 ## Owner-Freigabevorlage
 
