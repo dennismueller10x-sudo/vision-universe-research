@@ -60,7 +60,7 @@ export async function recover({env=process.env,fetchImpl=globalThis.fetch,root=R
    const result=analyzeCase(raw,weekly,daily);Object.assign(item,result.summary);
    const privateFile=join(privateRoot,securityId+'-input.json');writeFileSync(privateFile,JSON.stringify({raw,weekly,daily,revised:result.revised||null,newPrices:result.newPrices||null,oldPrices:result.oldPrices||null}),{mode:0o600});
    if(!result.revised)continue;
-   const parity=spawnSync('python3',[resolve(import.meta.dirname,'verify-v8-r2-ca-cases.py'),privateFile],{encoding:'utf8',timeout:90000,maxBuffer:262144});if(parity.status!==0)throw Error('INDEPENDENT_SOURCE_PARITY_FAILED');item.independentSourceParity=JSON.parse(parity.stdout);
+   const parity=spawnSync('python3',[resolve(import.meta.dirname,'verify-v8-r2-ca-cases.py'),privateFile],{encoding:'utf8',timeout:90000,maxBuffer:262144});try{item.independentSourceParity=JSON.parse(parity.stdout);}catch{item.independentSourceParity={state:'FAIL',reason:parity.error?'VERIFIER_PROCESS_ERROR':'VERIFIER_OUTPUT_UNAVAILABLE'};}if(parity.status!==0||item.independentSourceParity.state!=='PASS')throw Error('INDEPENDENT_SOURCE_PARITY_FAILED');
    const sourceFile=join(privateRoot,securityId+'-reconstructed-weekly.json'),sourceBytes=JSON.stringify(result.revised);writeFileSync(sourceFile,sourceBytes,{mode:0o600});item.reconstructedSourceHash=sha(sourceBytes);
    let data;try{data={...loader(securityId,sourceBytes),sourcePath:sourceFile};item.privateWeeklyQualification='QUALIFIED';}catch(e){item.privateWeeklyQualification=safeError(e);continue;}
    const r=Weekly.run(data,{benchmark}),repeat=Weekly.run(data,{benchmark});if(r.resultHash!==repeat.resultHash)throw Error('EXACT_REPLAY_FAILED');
