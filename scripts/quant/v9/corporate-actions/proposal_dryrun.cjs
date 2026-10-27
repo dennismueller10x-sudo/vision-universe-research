@@ -77,7 +77,6 @@ for (const r of RES.rows) {
     bindings: { seriesSha256: sha(bytes) },
   });
 }
-const proposalHead = 0;
 const proposal = { schemaVersion: 'ca-evidence-registry-proposal-1.0.0', status: 'PROPOSAL_NOT_ACTIVE', productionApproved: false,
   acceptanceRule: ACCEPT_RULE, classifierRule: RES.rule, classifierCodeSha256: RES.codeSha256, secEvidenceSha256: RES.secEvidenceSha256,
   negativeEvidenceNote: 'GENUINE_MOVE is negative evidence: it shows that no split/reverse split (share-count change by ~k) and no split/distribution filing occurred around the date. It does not prove the correctness of the individual price print.',

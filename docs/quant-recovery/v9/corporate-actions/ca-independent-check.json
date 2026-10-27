@@ -1,0 +1,62 @@
+{
+ "schemaVersion": "v9-ca-independent-check-1.0.0",
+ "implementation": "Python stdlib, reads series + master + raw SEC cache bodies directly",
+ "eventParity": {
+  "jsEvents": 1391,
+  "pyEvents": 1391,
+  "missingInPy": 0,
+  "missingInJs": 0,
+  "kMismatch": 0,
+  "ratioMaxAbsDiff": 1.000000000139778e-06,
+  "reasonMismatch": 0
+ },
+ "eventParityExamples": {},
+ "resolutionParity": {
+  "events": 1391,
+  "mismatches": 0,
+  "examples": []
+ },
+ "pyResolutionCounts": {
+  "UNRESOLVED_PRE_XBRL_NO_SHARE_BRACKET": 309,
+  "SPIN_OFF_OR_DISTRIBUTION_CANDIDATE": 16,
+  "ENGINE_RESOLVED": 304,
+  "UNRESOLVED_NO_SHARE_BRACKET": 228,
+  "UNRESOLVED_SHARES_OTHER_CHANGE": 171,
+  "GENUINE_MOVE_SUPPORTED": 158,
+  "ROUND_TRIP_PRICE_INTEGRITY": 81,
+  "SPLIT_MENTION_NEAR_DATE_REVIEW": 52,
+  "UNRESOLVED_NO_SEC_MAPPING": 43,
+  "UNRESOLVED_IDENTITY_INCONSISTENT": 5,
+  "CONFLICT_SPLIT_FILING_WITH_CONTINUOUS_SHARES": 12,
+  "SHARES_K_CHANGE_UNEXPLAINED": 4,
+  "SPLIT_CONFIRMED_SERIES_UNADJUSTED": 8
+ },
+ "jsResolutionCounts": {
+  "UNRESOLVED_PRE_XBRL_NO_SHARE_BRACKET": 309,
+  "SPIN_OFF_OR_DISTRIBUTION_CANDIDATE": 16,
+  "ENGINE_RESOLVED": 304,
+  "UNRESOLVED_NO_SHARE_BRACKET": 228,
+  "UNRESOLVED_SHARES_OTHER_CHANGE": 171,
+  "GENUINE_MOVE_SUPPORTED": 158,
+  "ROUND_TRIP_PRICE_INTEGRITY": 81,
+  "SPLIT_MENTION_NEAR_DATE_REVIEW": 52,
+  "UNRESOLVED_NO_SEC_MAPPING": 43,
+  "UNRESOLVED_IDENTITY_INCONSISTENT": 5,
+  "CONFLICT_SPLIT_FILING_WITH_CONTINUOUS_SHARES": 12,
+  "SHARES_K_CHANGE_UNEXPLAINED": 4,
+  "SPLIT_CONFIRMED_SERIES_UNADJUSTED": 8
+ },
+ "wouldQualify": {
+  "py": 77,
+  "js": 81,
+  "identical": false,
+  "onlyPy": [],
+  "onlyJs": [
+   "ref_AAPL",
+   "ref_JCI",
+   "ref_SPXC",
+   "ref_VATE"
+  ]
+ },
+ "tolerance": "weekly ratios compared after rounding to 6 decimals (engine stores r6); k/direction/reasons/decisions must match exactly."
+}

@@ -24,6 +24,11 @@ FIRST_QUARTER = {"META": "2024Q1"}  # META's first dividend declared Feb 2024 (s
 SPLITS_PATH = Path(__file__).resolve().parents[4] / "docs/quant-recovery/v9/portfolio/split-evidence.json"
 
 
+def norm(x):
+    v = Decimal(x)
+    return format(v.normalize(), "f") if v != v.to_integral() else format(v.quantize(Decimal(1)), "f")
+
+
 def quarter(d):
     return f"{d[:4]}Q{(int(d[5:7]) - 1) // 3 + 1}"
 
@@ -77,7 +82,7 @@ def main():
         d = json.loads(f.read_text())
         tk, cik = d["ticker"], d["cik"]
         tsplits = sorted(splits.get(tk, []), key=lambda s: s["effectiveDate"])
-        groups, intents, docs_seen, errors = {}, {}, 0, []
+        groups, intents, partials, docs_seen, errors = {}, {}, {}, 0, []
         for r in d["documents"]:
             if r.get("error"):
                 errors.append({"accession": r["accession"], "file": r["file"], "error": r["error"]})
@@ -85,6 +90,14 @@ def main():
             docs_seen += 1
             ix_vals = {x["value"] for x in r.get("ixFacts", [])}
             for e in r["events"]:
+                if e["amount"]:
+                    e["amount"] = norm(e["amount"])
+                if e["recordDate"] is None:
+                    if e["payDate"] and PERIOD[0] <= e["payDate"] <= "2026-12-31":
+                        partials.setdefault(e["payDate"], []).append({"accession": r["accession"], "file": r["file"], "fileDate": r["fileDate"], "form": r["form"],
+                                                                     "sha256": r["sha256"], "acceptanceUtc": r.get("acceptanceDateTimeSubmissions"),
+                                                                     "amount": e["amount"], "declarationDate": e["declarationDate"], "quote": e["quote"]})
+                    continue
                 if not (PERIOD[0] <= e["recordDate"] <= PERIOD[1]):
                     continue
                 att = {"accession": r["accession"], "file": r["file"], "url": r["url"], "form": r["form"],
@@ -162,6 +175,22 @@ def main():
                 gaps.append({"quarter": q, "gap": "NO_SEC_ATTESTATION_FOUND"})
             elif len(byq[q]) > 1:
                 gaps.append({"quarter": q, "gap": "MULTIPLE_RECORD_DATES", "recordDates": byq[q]})
+        # Declarations stating amount + pay date but no record date (cannot place the entitlement).
+        known_pays = {ev["payDate"] for ev in events}
+        partial_rows = []
+        for pay, atts in sorted(partials.items()):
+            if pay in known_pays:
+                for ev in events:
+                    if ev["payDate"] == pay:
+                        ev["noRecordDateCorroborations"] = len(atts)
+                continue
+            first_p = sorted([x for x in atts if x["acceptanceUtc"]], key=lambda x: x["acceptanceUtc"])
+            partial_rows.append({"payDate": pay, "amountsStated": sorted({x["amount"] for x in atts}), "declarationDatesStated": sorted({x["declarationDate"] for x in atts if x["declarationDate"]}),
+                                 "recordDate": None, "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND", "attestations": len(atts),
+                                 "firstSecAvailability": {k: first_p[0][k] for k in ("accession", "file", "form", "acceptanceUtc", "sha256", "quote")} if first_p else None})
+        for pr in partial_rows:
+            q = quarter(pr["payDate"])
+            gaps.append({"payDate": pr["payDate"], "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)", "amountsStated": pr["amountsStated"]})
         for ev in events:
             if not ev["payDate"]:
                 gaps.append({"recordDate": ev["recordDate"], "gap": "PAY_DATE_" + ev["payDateState"], "stated": ev["payDatesStated"]})
@@ -186,7 +215,7 @@ def main():
         companies.append({
             "ticker": tk, "cik": cik, "documentsScanned": docs_seen, "documentErrors": errors,
             "expectedQuarters": len(expected), "expectedBasis": "one regular dividend per record-date calendar quarter " + q0 + ".." + EXPECTED_QUARTERS[1],
-            "eventsFound": len(events), "eventsInExpectedQuartersWithPayDateAndAmount": len(complete_fields),
+            "eventsFound": len(events), "declarationsWithoutRecordDate": partial_rows, "eventsInExpectedQuartersWithPayDateAndAmount": len(complete_fields),
             "gaps": gaps, "companyFactsCrossCheck": {
                 "concept": "us-gaap:CommonStockDividendsPerShareDeclared (3-month durations)",
                 "match": sum(x["state"] == "MATCH" for x in xcheck), "matchRestated": sum(x["state"] == "MATCH_RESTATED" for x in xcheck),

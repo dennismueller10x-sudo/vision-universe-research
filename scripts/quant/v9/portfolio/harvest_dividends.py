@@ -104,9 +104,9 @@ def sentence_events(t, doc_dateline):
             continue
         ctx = t[max(0, lo - 450):lo] + s
         amt = None
-        dpos = s.lower().find("dividend")
-        for src in (s[dpos:] if dpos >= 0 else "", s, ctx):
-            mm = re.search(AMT, src, re.I)
+        for src, pat in ((s, r"dividend[^$.]{0,60}?(?:of|to)\s*" + AMT), (ctx, r"dividend[^$.]{0,60}?(?:of|to)\s*" + AMT),
+                         (s, r"installments?[^$.]{0,20}?of\s*" + AMT), (s, AMT)):
+            mm = re.search(pat, src, re.I)
             if mm:
                 amt = mm.group(1)
                 break
@@ -120,6 +120,20 @@ def sentence_events(t, doc_dateline):
         kind = "SPECIAL" if re.search(r"(?i)special", s) else "REGULAR"
         out.append({"pattern": "SENTENCE", "recordDate": rec, "payDate": pay, "amount": amt, "declarationDate": decl,
                     "intentOnly": intent, "kind": kind, "quote": re.sub(r"\s+", " ", s.strip())[:300]})
+    return out
+
+
+def partial_events(t):
+    """Declaration with amount and pay date but NO record date (e.g. JPM 10-Q 'Capital actions')."""
+    out = []
+    flat = re.sub(r"\s+", " ", t)
+    for m in re.finditer(r"(?i)\bOn\s+" + DATE + r",?\s+[^.]{0,120}?declared\s+a\s+quarterly\s+(?:common\s+stock\s+|cash\s+)?dividend\s+of\s+" + AMT + r"[^.]{0,40}?payable\s+(?:on\s+)?" + DATE, flat):
+        g = m.groups()
+        seg = flat[m.start():m.end() + 120]
+        if re.search(r"(?i)of record", seg[:m.end() - m.start() + 120]):
+            continue
+        out.append({"pattern": "SENTENCE_NO_RECORD_DATE", "recordDate": None, "declarationDate": iso(*g[0:3]), "amount": g[3],
+                    "payDate": iso(*g[4:7]), "intentOnly": False, "kind": "REGULAR", "quote": flat[m.start():m.end()][:300]})
     return out
 
 
@@ -259,7 +273,7 @@ def main():
             head = re.sub(r"\s+", " ", t[:1500])
             dl = dates_in(head)
             sub = by_acc.get(acc, {})
-            ev = sentence_events(t, dl[0][1] if dl else None) + table_events(t) + installment_events(t)
+            ev = sentence_events(t, dl[0][1] if dl else None) + table_events(t) + installment_events(t) + partial_events(t)
             records.append({"accession": acc, "file": fn, "url": url, **meta, "sha256": S.sha(raw), "bytes": len(raw),
                             "acceptanceDateTimeSubmissions": sub.get("acceptanceDateTime"), "items": sub.get("items"),
                             "datelineDate": dl[0][1] if dl else None, "events": ev, "ixFacts": ix_facts(raw)})
