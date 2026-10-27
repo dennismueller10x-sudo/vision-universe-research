@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "v8-archive-derived-accounting-validation-1",
+  "state": "PASS",
+  "checks": [
+    "deterministic gzip exact original payload",
+    "all discovered file and byte partitions sum exactly",
+    "candidate = parsed + oversize + nonJSON",
+    "all other files explicitly opaque",
+    "no raw bar/value/token/password fields"
+  ],
+  "reportHash": "845724903805803e2d6c168fd6271f6a6c6c954f7bc8907c36923701407001dc",
+  "scope": "Derived inventory accounting and artifact safety; no raw archive completeness or economic inference",
+  "productionApproved": false
+}

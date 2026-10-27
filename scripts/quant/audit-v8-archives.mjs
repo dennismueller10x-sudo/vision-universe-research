@@ -8,7 +8,7 @@ import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {scanCorporateActionSeries} from '../market/tiingo2-corporate-action-scan.mjs';
-const require=createRequire(import.meta.url), CA=require('../../quant/engines/corporate-action-evidence.js'), Adapter=require('../../quant/engines/weekly-real-adapter.cjs'), Returns=require('../../quant/engines/return-series.js'), Weekly=require('./run-real-weekly-backtest.cjs'), Benchmark=require('../../quant/engines/weekly-benchmark.cjs'), Store=require('../../quant/engines/research-artifacts.cjs');
+const require=createRequire(import.meta.url), Identity=require('../../core/identity.js'), CA=require('../../quant/engines/corporate-action-evidence.js'), Adapter=require('../../quant/engines/weekly-real-adapter.cjs'), Returns=require('../../quant/engines/return-series.js'), Weekly=require('./run-real-weekly-backtest.cjs'), Benchmark=require('../../quant/engines/weekly-benchmark.cjs'), Store=require('../../quant/engines/research-artifacts.cjs');
 const root=process.cwd(),out=resolve(process.argv[2]||'.verification/v8-archives');
 if(!out.startsWith(resolve(root,'.verification')+'/'))throw Error('DERIVED_OUTPUT_REQUIRED');
 const sha=b=>createHash('sha256').update(b).digest('hex'), loader=Adapter.createLoader(root), master=JSON.parse(readFileSync(join(root,'quant/data/market/security-master/us-security-master.json'))), ids=new Map(master.rows.map(r=>[r.baseline_security_id,r]));
@@ -50,7 +50,7 @@ function processJson(p,bytes){
  if(!rows?.length)return;
  const ticker=doc.ticker||doc.metadata?.ticker||doc.securityId?.replace(/^ref_/,'')||null;if(!ticker||!/^[A-Za-z0-9_.-]+$/.test(ticker))return;
  const result=scanCorporateActionSeries([{ticker,bars:rows,sourceSha256:sha(bytes)}]).results[0];report.series.push(result);
- const securityId=doc.securityId||'ref_'+ticker,wp=join(root,'quant/data/market/discover-series-long',securityId+'.json'),identity=ids.get(securityId);
+ const securityId=doc.securityId||Identity.securityIdForTicker(ticker),wp=join(root,'quant/data/market/discover-series-long',securityId+'.json'),identity=ids.get(securityId);
  if(!existsSync(wp)||!identity)return;
  const weekly=JSON.parse(readFileSync(wp));let before;try{loader(securityId);before='QUALIFIED';}catch(e){before=e.message.split(':')[0];}
  if(before!=='CORPORATE_ACTION_UNRESOLVED')return;
@@ -123,6 +123,6 @@ if(requalified.size){
   }catch(e){report.recoveredStudies.results.push({securityId,state:'UNRESOLVED',reason:e.message});}
  }
 }
-report.codeDependencies=Object.fromEntries(['scripts/quant/audit-v8-archives.mjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/verify-real-weekly-backtest.py','quant/engines/weekly-real-adapter.cjs','quant/engines/return-series.js','quant/engines/corporate-action-evidence.js','quant/engines/weekly-benchmark.cjs','quant/engines/research-classification-evidence.cjs'].map(p=>[p,sha(readFileSync(resolve(import.meta.dirname,'../..',p)))]));
+report.codeDependencies=Object.fromEntries(['core/identity.js','scripts/quant/audit-v8-archives.mjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/verify-real-weekly-backtest.py','quant/engines/weekly-real-adapter.cjs','quant/engines/return-series.js','quant/engines/corporate-action-evidence.js','quant/engines/weekly-benchmark.cjs','quant/engines/research-classification-evidence.cjs'].map(p=>[p,sha(readFileSync(resolve(import.meta.dirname,'../..',p)))]));
 report.limitations=['Archive existence and coherent action factors do not establish historical listing identity, first-filing provenance, complete market coverage or independent evidence.','Companyfacts observations are latest extracted SEC records, not original filing vintages.','Weekly corrections are assessment only; no canonical data, gates or published results changed.'];
 mkdirSync(out,{recursive:true});writeFileSync(join(out,'archive-assessment.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report.summary,coverage:report.coverage}));

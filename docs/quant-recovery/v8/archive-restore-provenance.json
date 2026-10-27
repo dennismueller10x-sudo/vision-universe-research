@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "v8-archive-restore-provenance-1.0.0",
+  "firstAttempt": {
+    "runId": "40345969062",
+    "result": "CACHE_ACCESS_AND_DECRYPT_SUCCESS_ASSESSOR_BUDGET_FAILURE",
+    "passedAssessment": false
+  },
+  "firstCompletedAssessment": {
+    "runId": "40347386211",
+    "head": "d1dbcbf74ff30acd14bc6a60d881c549262cdf94",
+    "artifactId": 12661782382,
+    "artifactZipHash": "1e4dd2498cd4c35849939549f924e36c91acbbe74789d50a75ab3105c0b86d0d",
+    "reportHash": "845724903805803e2d6c168fd6271f6a6c6c954f7bc8907c36923701407001dc",
+    "artifact": "archive-assessment-initial.json.gz",
+    "coverage": {
+      "metadataDiscoveryComplete": true,
+      "discoveredFiles": 20228,
+      "discoveredBytes": 11771237597,
+      "processedBytes": 5133972415,
+      "opaqueFiles": 33,
+      "opaqueBytes": 775400832,
+      "candidateFiles": 20195,
+      "parsedFiles": 20091,
+      "oversizeSkipped": 76,
+      "compressedSkipped": 0,
+      "jsonParseFailures": 28,
+      "budgetEvents": [],
+      "state": "PARTIAL"
+    },
+    "summary": {
+      "files": 20228,
+      "bytes": 11771237597,
+      "dailySeries": 12492,
+      "actionCoherentSeries": 7614,
+      "additionalQualifiedWeeklySeries": 0
+    },
+    "recognizerScope": "Raw daily series, original companyfacts-shaped records; normalized factbook files parsed but their fields not counted until1.1.0",
+    "cacheRestores": {
+      "discover": {
+        "key": "discover-market-cache-40047253956",
+        "hit": true
+      },
+      "tiingo": {
+        "key": "tiingo2-encrypted-v1-main-39962041711",
+        "hit": true
+      },
+      "sec": {
+        "key": "sec-fundamentals-40087710308",
+        "hit": true
+      }
+    }
+  },
+  "noProviderRequests": true,
+  "rawDataPublished": false,
+  "productionApproved": false
+}

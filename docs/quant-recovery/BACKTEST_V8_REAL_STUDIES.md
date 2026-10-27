@@ -1,6 +1,6 @@
 # V8 – inkrementelle Realstudien
 
-V8 ergänzt echte Ausführungsnachweise zu den bestehenden Engines. [Ergebnisse](v8/real-studies.json) und [unabhängige Python-Parität](v8/real-studies-parity.json) binden Studien und Eingaben über Hashes. Vollständige Inputs, Labels, Modelle, Resultate und immutable Generationen liegen ausschließlich unter `/workspace/v8-private/real-studies/`. Diese Sitzung ist keine zugesagte dauerhafte Archivierung.
+V8 ergänzt echte Ausführungsnachweise zu den bestehenden Engines. [Ergebnisse](v8/real-studies.json) und [unabhängige Python-Parität](v8/real-studies-parity.json) binden Studien und Eingaben über Hashes. Vollständige Inputs, Labels, Modelle, Resultate und immutable Generationen liegen ausschließlich unter `/workspace/v8-private/real-studies-validated/`. Diese Sitzung ist keine zugesagte dauerhafte Archivierung. Die endgültige Generation wurde nach Integration von Main `6397635a4` auf geprüftem V8-Codehead `8fea838ea9aec792ae7dcb3f546710a03a499d2f` erstellt; aktuelle Quellen- und Codehashes stehen im Ergebnis.
 
 ## Population und Nenner
 
@@ -19,9 +19,9 @@ Training lässt nur Regeln mit positivem Trainmittel zu; Cash bleibt immer verf�
 | Rolling | 157–207 | 60–92 | 120–161 | 876 |
 | Expanding | 165–859 | 60–92 | 120–161 | 876 |
 
-Der Mittelwert beträgt in beiden Modi 1,2152 % pro Kandidatenereignisgelegenheit. Die ausgewählten Modelle sind hier identisch; die Modi liefern keine zwei unabhängigen Bestätigungen. Der Endpunkt ist ein Ausführungsnachweis einer registrierten Auswahl auf bekannten Daten, kein finanziertes Portfolio, keine annualisierte Strategieperformance und kein profitabler Edgebeleg. Die Rückschau-Registrierung am 26.10.2026 erzeugt keinen damaligen Holdout.
+Der Mittelwert beträgt in beiden Modi 1,2152 % pro Kandidatenereignisgelegenheit. Die ausgewählten Modelle sind hier identisch; die Modi liefern keine zwei unabhängigen Bestätigungen. Der Endpunkt ist ein Ausführungsnachweis einer registrierten Auswahl auf bekannten Daten, kein finanziertes Portfolio, keine annualisierte Strategieperformance und kein profitabler Edgebeleg. Der private Entwicklungsplan speichert den tatsächlichen Registrierungszeitpunkt am 26.10.2026 und wird bei identischer Wiederholung wiederverwendet. Diese Registrierung auf bereits explorierter Historie erzeugt keinen damaligen Holdout.
 
-Python rekonstruiert unabhängig jede Rollenbelegung und jeden Ausschluss einschließlich Purging/Embargo, trainiert/selektiert die Modelle erneut und vergleicht alle aggregierten Testwerte. Sämtliche zwölf ausgeführten Fenster besitzen besetzte, gereifte Rollen.
+Im gesamten Signalnenner bleiben 1.555 Ereignisse, davon 1.532 gereift und 23 unreif, ausgewiesen; die Walk-Forward-Rechnung verwendet davon die gereiften Ereignisse im deklarierten Kalender. Python rekonstruiert unabhängig jede Rollenbelegung und jeden Ausschluss einschließlich Purging/Embargo, trainiert/selektiert die Modelle erneut und vergleicht alle aggregierten Testwerte. Sämtliche zwölf ausgeführten Fenster besitzen besetzte, gereifte Rollen.
 
 ## Ex-post-Regime mit Episoden
 
@@ -37,9 +37,13 @@ Die Episoden sind keine nachgewiesen unabhängigen Zeitcluster. Benachbarte Zust
 
 Für JPM, MSFT, NVDA und XOM wird jeweils das letzte qualifizierte Acceptanceereignis mit einem 20-Handelstage-Preisoutcome ausgewertet: 4 erwartet, 4 beobachtet, 0 unreif, 0 zensiert. Entry ist der erste beobachtete Tagesschluss strikt nach Acceptance. Tagesdaten bestimmen die vorhandenen Sessiondaten; der bestehende Kalender liefert ergänzend modellierte reguläre Schlusszeiten samt DST und verkürzten Schlüssen. Dies beweist keine originale historische Kursverfügbarkeit oder einen tatsächlichen Livefill. SEC-Acceptance ist weder Unternehmensveröffentlichung noch Earningszeit. Python prüft Entry-/Exitwahl, UTC-Umrechnung und sämtliche Nettorenditen unabhängig.
 
+Zusätzlich werden **alle zwölf original verifizierten Acceptanceereignisse** auf den bereits vorhandenen langen Wochenreihen untersucht. Der vorhandene Modus `OBSERVED_WEEKLY_DATES` wählt den ersten tatsächlich gespeicherten Wochenschluss auf einem strikt späteren Datum; der Outcome umfasst vier beobachtete Wochenbars. Dadurch sind auch die acht vor der Daily-Abdeckung liegenden Originalereignisse historisch auswertbar, ohne alte Intraday-Schlusszeiten zu erfinden. Erwartet und beobachtet: 12/12, keine unreifen oder zensierten Fälle. Python prüft für alle zwölf Ereignisse die unabhängige Datumsauswahl und Nettoarithmetik. Diese Wochenstudie und die tägliche Vierer-Teilstudie überlappen in den Quellen; sie sind keine 16 unabhängigen Ereignisse und verwenden unterschiedliche Horizont-/Ausführungsmodelle.
+
 ## Andere Backtest-Arten und Portfolio
 
 Same Stock Replay, Pattern, Setup, Strategie und Ranking behalten ihre V7-Ergebnisse. Der neue Walk-Forward-Nachweis verwendet alle fünf realen Signalregeln, löst aber keine Survivorship-, Membership-, Finanzierung- oder Unabhängigkeitslücke. Setup-Wochenproxies bleiben von M3/M6-Verträgen getrennt; offene Horizonte bleiben offen. Die [versionierte Wochen-/Monatsentscheidung](v8/setup-decision.json) verändert keine Gates.
+
+Die zusätzliche [Sensitivitätsstudie](BACKTEST_V8_METHOD_VALIDATION.md) umfasst 36 Parameterpunkte in der festen JPM/MSFT/NVDA-Kohorte mit zwei deklarierten Kalenderblockdesigns. Sie ergänzt abhängigkeitsbewusste bedingte Rechenprüfungen, bleibt wegen ungeprüfter Inferenzannahmen partiell validiert.
 
 Die drei V7-Preisportfolios bleiben unabhängig nachgerechnete Cash-/Drift-/Kostenstudien. Ohne neue belegte Dividend-/CA-/Terminaldaten wird keine vollständige Total-Return- oder PIT-Profilstrategieabnahme behauptet und keine unveränderte Generation erneut voll berechnet.
 
@@ -51,3 +55,5 @@ python3 scripts/quant/verify-v8-real-studies.py /private/v8/real-studies
 ```
 
 Ohne dritten Parameter werden WF und Regime offline ausgeführt; Originalevents bleiben ausdrücklich `NOT_SUPPLIED`. Private Rohdaten werden nicht veröffentlicht. Kein Produktstatus wird verändert.
+
+Exakte Wiederholung: 27 private JSON-Dateien der neuen Realstudien sowie die vier zentralen Sensitivitätsdateien wurden unter identischer Node-22-Runtime bytegleich regeneriert; [Reproduktionsnachweis](v8/study-reproduction.json). Unveränderte V7-Monte-Carlo- und Portfolio-Generationen wurden nicht redundant neu berechnet.

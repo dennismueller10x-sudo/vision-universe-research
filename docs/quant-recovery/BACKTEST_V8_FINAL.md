@@ -1,0 +1,41 @@
+# V8 – Abschluss
+
+**V8_PARTIALLY_VALIDATED.** 13/13 Bereiche sind technisch implementiert; **4/13** sind im ausdrücklich benannten Methodenscope abgenommen, entsprechend **4/7** Erweiterungsmethoden. Die sechs Backtest-Arten bleiben **0/6 CERTIFIED**. Es gibt keine Produktfreigabe, keinen automatischen Merge und keine Aktivierung.
+
+V8 schließt zwei in V7 offene methodische Teilziele: vollständige entwicklungsbezogene Walk-Forward-Ausführung und beschreibende ex-post-Regimeanalyse. Monte Carlo und OOS-Expositionsverwaltung bleiben im bereits abgenommenen V7-Scope erhalten. Parameter-Sensitivität, Event-Driven und vollständiges Portfolio-Rebalancing bleiben trotz zusätzlicher Nachweise teilweise validiert. Eine erfolgreiche Rechenprüfung wird nicht als unabhängige Prognosebestätigung ausgegeben.
+
+## Repository und technische Sicherung
+
+- Ausgangs-Main: `e8cd0c7920b4304340901e352ddad495097abe90`; vollständige verbindliche Übergabe gelesen und als [Baseline](v8/baseline.json) mit Quellenhashes gesichert.
+- Während der Unterbrechung fortgeschriebenen Main integriert: `6397635a475ac245d623e3b6f762e9b8f5948dd2`, Integrationscommit `d9cd0a2b9e0c0c5810b10ba09de7a62ffb61edf3`. Dabei fremde Produkt-/Datenänderungen erhalten, nicht als V8-Arbeit ausgegeben.
+- [Draft-PR #976](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/976), Branch `research/quant-v8-recovery`. Kein Mergeauftrag ausgeführt. Der endgültige Head und die Remote-Prüfungen werden im Sicherungsartefakt ausgewiesen.
+- Bestehende `quant/engines/research-*.cjs`, Wochenadapter, Portfolioledger und Offline-Einstieg `scripts/quant/run-research.cjs` bleiben die Architektur. Keine parallele Backtestengine.
+
+## Konkrete neue Ergebnisse
+
+1. **Walk-Forward:** Rolling und Expanding führen jeweils sechs besetzte Train-/Validation-/Testfenster vollständig aus. Je Modus 876 eindeutige Testgelegenheiten; reine, quellcodegebundene Fit-/Select-/Evaluate-Funktionen, gereifte Labels, konservatives Purging und sieben Tage Embargo. Der Endpunkt ist der Nettoertrag je Kandidatenereignisgelegenheit mit null für nicht ausgewählte Regeln, keine finanzierte Strategie. Unabhängige Python-Parität für sämtliche Zuordnungen, Ausschlüsse, Modelle und Ergebnisse.
+2. **Marktregime:** 7.880 SPY-Tageslabels, 581 zusammenhängende Trendepisoden und 47 Volatilitätsepisoden vollständig unabhängig nachgerechnet. Abnahme ausschließlich für die beschreibende ex-post-Analyse. Episodenanzahl ist kein Nachweis unabhängiger Zeitcluster; vorhandene nominale Engineintervalle tragen keine Signifikanzbehauptung.
+3. **Sensitivität:** Tatsächlich vorhandener V7-Parameterraum mit 36 Punkten; zwei deklarierte Kalenderblockdesigns ergeben 72 Bootstrapkonfigurationen. Feste JPM/MSFT/NVDA-Survivor-Kohorte, 67 gereifte Ereignisse je Haltedauer-/Delaykombination. Ganze Datumsblöcke erhalten gemeinsame Titelbewegungen und lokale zeitliche Abhängigkeit. Nominale Intervalle/p-Werte und Holm-Werte getrennt, unbekannte effektive Stichprobengröße bleibt `null`. Python prüft 144.661 Vergleiche einschließlich 402 Source-Price-Paaren. Fehlende Stationaritäts-/Mischungsnachweise verhindern eine volle empirische Inferenzabnahme.
+4. **Originalereignisse:** Zwölf deterministisch ausgewählte originale SEC-Acceptanceheader aus vier Emittenten qualifiziert; Verfügbarkeit und Accessionidentität geprüft. Vier jüngere Ereignisse haben unabhängig geprüfte tägliche 20-Bar-Outcomes; alle zwölf Ereignisse besitzen zusätzlich unabhängig geprüfte Vier-Wochen-Outcomes im beobachteten Wochenmodell. Die zwölf Wochen- und vier Tagesfälle sind keine 16 verschiedenen Ereignisse. SEC-Acceptance ist keine behauptete Earnings- oder Unternehmensveröffentlichungszeit.
+5. **Instrumentklassen:** Die Original-10-K-Coverseiten belegen FRMEP als Depositary Interest in Series A Preferred und MBINM als Depositary Interest in Series D Preferred. Zwei fehlerhafte Common-Stock-Zulassungen werden jetzt über exakt gebundene Listingidentitäten als Quellenkonflikt zurückgehalten. Die Änderung erfindet keine historischen Klassenintervalle und verändert weder Security Master noch Produktstatus. Die Evidenzregistry ist eine neue Generations-/Refresh- und Identitätsabhängigkeit. Alte oder geänderte ungebundene Klassifikationsgenerationen liefern keine Performance mehr; auch eine Änderung während eines asynchronen privaten Abrufs wird abgefangen. Alte Generationen werden nicht umetikettiert. **Zwei Zulassungsfehler korrigiert; null vollständige historische Identitätsrekonstruktionen.**
+6. **Archive:** Bestehende Tiingo-, Discover- und SEC-Actions-Caches tatsächlich wiederhergestellt; der bestehende Tiingo-Entschlüsselungsweg funktioniert mit dem bereits autorisierten Actions-Secret. Damit ist fehlender lokaler Zugriff kein fehlender Datenbestand. Die genaue Feldabdeckung, Wiederqualifizierung und Ressourcenbilanz stehen im [Datenrettungsbericht](BACKTEST_V8_DATA_RECOVERY.md).
+
+## Sechs Backtest-Arten und Populationen
+
+Same Stock Replay und Pattern Evidence behalten die eingeschränkten realen Referenznachweise. Signal Backtest erhält eine vollständige Entwicklungs-Auswahlkette über die fünf unveränderten Regeln, ohne Ereignisoutcomes zu einer finanzierten Handelsstrategie umzudeuten. Setup behält originale Veröffentlichungen und Rekonstruktionen getrennt; offene M6 bleiben offen. Strategy und Factor Ranking behalten ihre strengen PIT-/Membership-/Faktor-/TR-Verträge. Originale SEC-Verfügbarkeitsbelege verbessern deren Inputaudit, ersetzen jedoch keine vollständigen damaligen Querschnitte oder Erst-/Restatementvintages.
+
+Die elf benannten Referenzlistings und die engere feste Drei-Titel-Kohorte sind selektierte heutige Überlebende. Der langfristige Zielscope historischer primärer US-Stammaktien an NYSE, Nasdaq und NYSE American einschließlich Delistings bleibt bestehen. Weder 4.449 eingeschränkt verwendbare Wochenreihen nach den zwei Klassifikationsholds noch einzelne Studienpopulationen sind eine qualifizierte historische Gesamtmarktpopulation. Neue Quellen werden mit Herkunft, Zeitraum, vollständigem jeweiligen Nenner, Ausschlüssen und Zensierungen berichtet.
+
+## Verbleibende Grenzen und Entscheidungen
+
+Unvollständige historische Primärlisting-/Klassen-/Tickerintervalle, belegte terminale Cash-/Stockereignisse, vollständige ursprüngliche SEC-/Faktorvintages, damalige Marktpopulationen und unangetastete Bestätigungsdaten bleiben offen. Kein unbekannter Terminalwert wird geschätzt, keine Wochenlücke aufgefüllt, keine heutige Information rückdatiert. Roharchive bleiben privat; Provider-Neuabrufe und neue Datenkäufe werden vermieden.
+
+Die einzige konkret vorbereitete normative Änderung ist die [versionierte Setup-Entscheidungsvorlage](v8/setup-decision.json): Der aktive Vertrag nennt 20 unabhängige Wochen, der Erzeuger zählt Monate. Gemessen sind zwei Monate und fünf ISO-Wochen bei 3.995 Originalereignissen auf 19 Ereignistagen. Ein Wochenzähler allein beweist ebenfalls keine Unabhängigkeit. Die vorgeschlagene Version 1.1.0 ist **nicht genehmigt**; aktive M6-, Reife-, OOS- und Ownergates bleiben erhalten.
+
+## Validierung und Isolation
+
+Der [Validierungsbericht](BACKTEST_V8_VALIDATION.md) enthält ausschließlich abgeschlossene Checks mit tatsächlich geprüftem Code-/Daten-/Runtime-Scope. Unterbrochene oder wegen neuer Befunde ersetzte Läufe werden nicht als bestanden gezählt. Die tatsächlichen Quellen- und Ergebnisgenerationen sowie Python-Paritäten sind in den [maschinenlesbaren Nachweisen](v8/evidence-matrix.json) gebunden. Datenqualitätswarnungen des integrierten Main werden gesondert ausgewiesen.
+
+V8 verändert kein Frontend, keine Navigation, Charts, Themes, Icons oder andere Produktwelt gegenüber dem integrierten Main. Keine neue Preview angefordert, kein produktiver Scheduler geändert, keine öffentliche Backtest-Auslieferung, keine Anbieterbuchung und keine Vertragsänderung. Der zusätzliche Archivjob ist ausschließlich manuell aktivierbar und liest vorhandene Caches; er schreibt keine Produktionsdaten.
+
+[13-Bereiche-Matrix](BACKTEST_V8_EVIDENCE_MATRIX.md) · [Datenrettung](BACKTEST_V8_DATA_RECOVERY.md) · [Methoden](BACKTEST_V8_METHOD_VALIDATION.md) · [Realstudien](BACKTEST_V8_REAL_STUDIES.md) · [Validierung](BACKTEST_V8_VALIDATION.md).

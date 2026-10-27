@@ -1,0 +1,41 @@
+# V8 – methodische Abnahme
+
+V8 ergänzt die bestehenden Research-Engines, ohne aktive Zertifizierungsverträge oder Produktstatus zu ändern. **4/7 Erweiterungsmethoden sind im ausdrücklich benannten Scope methodisch abgenommen; 4/13 Bereiche insgesamt.** Die sechs Backtest-Arten bleiben **0/6 CERTIFIED**. Die neuen Abnahmen betreffen die vollständige entwicklungsbezogene Walk-Forward-Ausführung und die beschreibende ex-post-Regimeanalyse. Eine profitable Tradingregel ist für diese beiden Validierungsmethoden keine Abnahmevoraussetzung.
+
+| Methode | Methodischer Status | Nachweis und Geltungsbereich | Offene Grenze |
+|---|---|---|---|
+| Monte Carlo | ACCEPTED_WITH_DEFINED_SCOPE, aus V7 erhalten | Bedingtes empirisches Resampling; IID-Szenariosimulation und Circular Blocks. V7-Nachweise bleiben unverändert. | Austauschbarkeit, Stationarität und Zukunftsgewinne werden nicht als empirisch bewiesen behandelt. |
+| Out-of-Sample | ACCEPTED_WITH_DEFINED_SCOPE, aus V7 erhalten | Registrierung, Expositionsverwaltung und Schutz vor Wiederverwendung bekannter Historie. | Keine unabhängige Bestätigung einer Handelsregel. |
+| Walk-Forward | ACCEPTED_WITH_DEFINED_SCOPE, neu | Vollständige registrierte Fit-/Select-/Testkette, Rolling und Expanding, jeweils sechs besetzte Fenster; Labelreife, konservatives Purging und sieben Tage Embargo. Alle Zuordnungen, Ausschlüsse, Modelle und Testwerte unabhängig in Python nachgerechnet. | Entwicklungsstudie auf bereits exponierter Survivor-Historie; der Endpunkt ist eine Ereignisgelegenheit, kein finanziertes Portfolio oder unabhängiger Holdout. |
+| Marktregime | ACCEPTED_WITH_DEFINED_SCOPE, neu | Reproduzierbare beschreibende ex-post-Trend-/Volatilitätslabels und vollständige zusammenhängende Episoden. Python prüft sämtliche Label- und Episodenberechnungen. Keine Signifikanzbehauptung aus den vorhandenen Engineintervallen. | Keine nachgewiesen unabhängigen Episoden, keine frühere PIT-Regimeverfügbarkeit, keine Regime-Tradingstrategie. |
+| Parameter-Sensitivität | PARTIALLY_VALIDATED | Registrierter Parameterraum, tatsächliche Evaluatorquelle, gemeinsames kalenderbasiertes Circular-Block-Resampling, nominale Intervalle/p-Werte, Holm innerhalb des Rasters und Nachbarschaftsparität. | Gültigkeit der Stationaritäts-/Mischungsannahmen und ausreichende Blocklänge auf dieser Historie nicht empirisch gesichert; keine allgemeine Signifikanzabnahme. |
+| Event-Driven | PARTIALLY_VALIDATED | Zwölf originale SEC-Acceptanceheader und zwölf gereifte Vier-Wochen-Outcomes im beobachteten Wochenmodus; davon vier zusätzlich mit täglichen 20-Bar-Outcomes und unabhängiger Zeit-/Renditeparität. | Quellenprobe aus vier Emittenten; acht Header nur im Wochenmodus, vor Daily-Abdeckung; SEC-Acceptance ist keine Unternehmens- oder Earningsveröffentlichung. Sessionuhrzeiten sind ein Kalender-/Ausführungsmodell. |
+| Portfolio-Rebalancing | PARTIALLY_VALIDATED | Die drei bereits unabhängig nachgerechneten realen V7-Preisportfolios erhalten Cash-, Drift-, Rebalancing- und Kostenparität im benannten Preis-Scope. | Vollständige reale Dividenden-/CA-/TR-/Terminalereignisabnahme sowie historische PIT-Selektion fehlen. Keine günstigere Gesamtbewertung allein durch Umbenennen des Scopes. |
+
+Die zwei neuen Abnahmen sind enger als eine Markt-, Prognose- oder Produktzertifizierung. Der Regimescope ist rein beschreibend: Abhängigkeit wird sichtbar gemacht, aber keine statistische Unabhängigkeit aus Zustandswechseln abgeleitet. Eine Akzeptanz einer PIT-Regimestrategie wird nicht behauptet.
+
+## Sensitivitätsinferenz und Mehrfachtests
+
+Die tatsächlichen V7-Dimensionen ergeben **36 Parameterpunkte**: Haltedauer 4/13/26 Wochen × Delay 1/2 × Gebühren 0/10 bps × Slippage 0/5/20 bps. Die ältere V7-Prosa beziehungsweise Übergabe nennt teilweise 72; der gespeicherte V7-Ergebnisstand und der vorhandene Runner enthalten 36. V8 ändert diese Originale nicht und erweitert den Parameterraum nicht nach Ergebnisbetrachtung. **36 Punkte × zwei vorab deklarierte Blockdesigns = 72 Bootstrapkonfigurationen**, keine 72 unterschiedlichen Parameterpunkte.
+
+Die zusätzliche Untersuchung verwendet die feste V7-Preisportfolio-Kohorte JPM/MSFT/NVDA und einen ausgewogenen Entscheidungskalender 2000–2025. Diese Eingrenzung vermeidet eine wechselnde Titelzusammensetzung im Bootstrap und bleibt eine selektierte Survivor-Population. Für jede der sechs Haltedauer-/Delaykombinationen liegen 67 gereifte NEW_52W_HIGH-Ereignisse vor; die 402 source-price-Outcomevergleiche sind keine 402 unabhängigen Ereignisse. Alle Kostenvarianten verwenden dieselben zugrunde liegenden Beobachtungen.
+
+Ganze Kalenderblöcke bewegen sämtliche Titel eines Datums gemeinsam; kalenderbezogene Null-Ereignistage bleiben im Resamplingnenner. Das primäre Design verwendet 52 Wochen, die deklarierte Robustheitsprüfung 104 Wochen, jeweils 1.999 Replikate mit fixiertem Seed. Die Mindestblocklänge von 28 Wochen berücksichtigt den längsten Outcome-/Delaybereich; sie beweist nicht, dass längere Abhängigkeit entfällt. Die Blockanzahl ist nur eine Designdiagnostik. Eine effektive Stichprobengröße wird ausdrücklich als unbekannt (`null`) ausgewiesen.
+
+Die Basisvariante mit 13 Wochen Haltedauer, einer Woche Delay, 10 bps Gebühren und 5 bps Slippage je Seite liefert einen mittleren Netto-Preisereignisertrag von rund 6,647 %. Das nominale Basic-Intervall beträgt etwa [2,403 %; 10,958 %], der zentrierte Bootstrap-p-Wert 0,0025 und der Holm-Wert 0,06: **keine Zurückweisung für die Basisvariante nach Rasterkorrektur**. Die übrigen bedingten Rasterergebnisse werden vollständig berichtet, ohne Gewinnerauswahl. Der Endpunkt ist keine Benchmarküberschussrendite; Aktienmarktdrift bleibt enthalten.
+
+Holm korrigiert die p-Werte/Rejektionsentscheidungen innerhalb der 36 registrierten Punkte. Die Intervalle bleiben nominal und nicht simultan; frühere Suchräume sind nicht rückwirkend in dieser Fehlerfamilie enthalten. Die Add-one-Korrektur begrenzt nur die Monte-Carlo-Auflösung. Weder sie noch Holm reparieren ungültige Ausgangs-p-Werte. Schwache Stationarität/Mischung und ausreichende Blocklänge bleiben ungeprüfte Annahmen. Deshalb erfolgt eine rechnerische Validierung des bedingten Verfahrens, aber keine volle empirische Inferenzabnahme der Sensitivitätsmethode.
+
+[Maschinenlesbare Sensitivität](v8/sensitivity-summary.json) · [unabhängige Python-Prüfung](v8/sensitivity-independent-validation.json) · [Realstudien](BACKTEST_V8_REAL_STUDIES.md) · [Reproduktionsnachweis](v8/study-reproduction.json).
+
+## Registrierung, Exposition und Abnahmegrenzen
+
+Die neue Entwicklungsregistrierung verwendet einen tatsächlich gespeicherten Laufzeitpunkt und wird bei identischer Wiederholung aus dem privaten Plan wiederverwendet. Sie wird nicht auf einen früheren historischen Entscheidungszeitpunkt zurückdatiert. Alle benutzten Historien bleiben als bereits exploriert bezeichnet. JavaScript-Callbacks sind quellcodegebunden und im verwendeten Runner rein; Hashes sind keine Sicherheits-Sandbox und beweisen nicht, dass außerhalb des Runners niemals Labels betrachtet wurden.
+
+Unabhängige Python-Rechenparität prüft eine andere Implementierung derselben Rechnung. Die originalen SEC-Header liefern zusätzliche ursprüngliche Quellenbelege. Beides ist von unabhängiger, unangetasteter Prognoseevidenz getrennt. Für keine Handelsregel wird ein neuer unabhängiger Holdout behauptet.
+
+## Tatsächlich offene normative Entscheidung
+
+[Entscheidungsvorlage `quant-v8-setup-decision-1.0.0`](v8/setup-decision.json): Der aktive Setup-Vertrag verlangt 20 unabhängige Wochen; `build-backtest-certification.mjs` zählt mit `date.slice(0, 7)` tatsächlich Monate. Im gespeicherten Originaloutcome-Archiv stehen 3.995 Ereignisse auf 19 Ereignistagen, zwei Monaten und fünf ISO-Wochen. Auch eine bloße Wochenzählung würde keine statistische Unabhängigkeit beweisen.
+
+Vorgeschlagene Vertragsversion 1.1.0: Legacy-Monatszähler als Auditfeld erhalten, expliziten ISO-Wochenzähler mit ISO-Wochenjahr für das benannte Gate ergänzen und Abhängigkeitsdefinition fachlich präzisieren. Bestehende M6-/Reife-/OOS-/Ownergates bleiben erhalten. Dies ist eine konkrete, noch nicht genehmigte normative Vorlage; kein aktiver Vertrag oder Zertifizierungsstatus wurde geändert. Der frühere Entwurf #872 bleibt ebenfalls ungeprüftes Archivmaterial.

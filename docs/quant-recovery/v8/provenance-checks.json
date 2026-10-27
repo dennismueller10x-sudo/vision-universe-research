@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "quant-v8-provenance-checks-1",
+  "checks": [
+    {
+      "id": "v8/real-studies.json",
+      "sourceBindingsVerified": 36,
+      "state": "PASS"
+    },
+    {
+      "id": "v8/sensitivity-summary.json",
+      "sourceBindingsVerified": 17,
+      "state": "PASS"
+    },
+    {
+      "id": "priorReportsAndHandoffImmutable",
+      "files": 17,
+      "state": "PASS"
+    },
+    {
+      "id": "protectedScopeUnchangedFromIntegratedMain",
+      "state": "PASS",
+      "main": "6397635a475ac245d623e3b6f762e9b8f5948dd2"
+    }
+  ],
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false
+}

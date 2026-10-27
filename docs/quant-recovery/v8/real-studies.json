@@ -1,0 +1,574 @@
+{
+  "schemaVersion": "v8-incremental-real-studies-1.0.0",
+  "baseline": "8fea838ea9aec792ae7dcb3f546710a03a499d2f",
+  "runtime": {
+    "node": "v22.23.4",
+    "v8": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.41",
+    "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "sources": {
+    "quant/data/market/discover-series-long/ref_A.json": "e4d85473f2137f55bc51988d38f1e376df81f1d420695e6dd978ebde1b09a09d",
+    "quant/data/market/discover-series-long/ref_ARM.json": "034b3c2954fedf50bf4d4f90aa485c6d9c99fc8a6a84d2aa7e87ffc53cd0c2cc",
+    "quant/data/market/discover-series-long/ref_GE.json": "1aff48982be392d78e230db759ea1b97bf8114e47d276bd82d80634e432e8256",
+    "quant/data/market/discover-series-long/ref_IBM.json": "d5feb9b87083c749a6d767c74c003fa78cc2c0376cb34f9edd7073f943311235",
+    "quant/data/market/discover-series-long/ref_JPM.json": "48119a4150aed22230271e5c1284fb1f6dba0378ab3b192b01aed49d0e7d5934",
+    "quant/data/market/discover-series-long/ref_META.json": "be97496deb0eecc3576c35b8c1b9794ecf859041ad0cd0a5f3b2d22d27f457cc",
+    "quant/data/market/discover-series-long/ref_MSFT.json": "6447c671f781fd58c36faaa2891a0072e7ce0f93e6e08a80db35008916ae2e1c",
+    "quant/data/market/discover-series-long/ref_NVDA.json": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+    "quant/data/market/discover-series-long/ref_TSLA.json": "6783b982bb752bd8788e0c41f5f43f69479950f85b02f09228b414f3e46a47bd",
+    "quant/data/market/discover-series-long/ref_WMT.json": "f330ca7722b34cc8dc0513660cd04b2e45f37715c8c0d39c3cf90825b5c4861b",
+    "quant/data/market/discover-series-long/ref_XOM.json": "03a4940f7c8b59685fcc263d7a0ec41a86f61993e59a1d2d81b01754ad7d4347",
+    "quant/data/market/security-master/us-security-master.json": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+    "quant/engines/research-classification-evidence.cjs": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235",
+    "quant/data/market/multi-asset/series/SPY.json": "b81fd6f6062e713bd9dd0991b219c1dc8b41de758b74b41f376813002e8348dc",
+    "quant/data/market/multi-asset/instruments.json": "18936baabca676ccc06cedaa30ae428c6f9d804b131c056fc65e9051e0907e13",
+    "quant/data/market/discover-series/ref_SPY.json": "2971ed3c845b0dd4cec851ea1ef37ca02d546152bc1e1f2ddab0704bedd679f5",
+    "private:SEC-acceptance-report": "caf6527560edff8c2b3db9d3747af80668aa61f0e1a2b765f8c2c4c1a67a7bfc",
+    "quant/config/market-calendar.json": "8755b3fb7f4dde23391656dbbcebd2e2442b75e46d3b673d9140d34c11c43380",
+    "quant/engines/realtime/trading-session.js": "af81dc3948774b3ee4ef42789563ca989b12ee791b31a7723a9d469b93101721",
+    "quant/data/market/discover-series/ref_JPM.json": "4155d01910661c6f484bf7e42730f9538b961b341bb62fa2aa675dee6c3aac16",
+    "quant/data/market/discover-series/ref_MSFT.json": "533c8b6b905d858b1246763911d4da856349aedbe026e42bfcc2b36d7971ab19",
+    "quant/data/market/discover-series/ref_NVDA.json": "337c3604e431368fd246e46ab2e27696435799e2818ea7b9f4b4c1829815042d",
+    "quant/data/market/discover-series/ref_XOM.json": "8a71376b84c53dc7d6c47cff43b7b2fb9ca453dbfd35ba0a85713b13e4bd4069"
+  },
+  "dependencies": {
+    "scripts/quant/run-v8-real-studies.cjs": "731649bf736365e8e58d1d0011a03578f3f714101c51d7bc2b1105441d93a0b0",
+    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+    "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+    "quant/engines/research-artifacts.cjs": "7e3f25bcf33b553c20384dac8e10512da6a537b610c53c9ee9be5b60dfd94553",
+    "quant/engines/research-contract.cjs": "a4192856ca4d70b21d8e43b834bd1dc1fb189dade04b2ea98ccf97c386e11b78",
+    "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+    "quant/engines/research-classification-evidence.cjs": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235",
+    "quant/engines/corporate-action-evidence.js": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+    "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+    "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+    "quant/engines/profile-backtest.js": "49160c3e65128e526a4a5d31dd13c56757f6c84ab98da98c5425a51058ee4731"
+  },
+  "registrationHash": "27606c621104dcc5c6f0f69dff51aac22f35a770c5671062960b8409b270d290",
+  "population": {
+    "requested": [
+      "ref_A",
+      "ref_ARM",
+      "ref_GE",
+      "ref_IBM",
+      "ref_JPM",
+      "ref_META",
+      "ref_MSFT",
+      "ref_NVDA",
+      "ref_TSLA",
+      "ref_WMT",
+      "ref_XOM"
+    ],
+    "qualified": 11,
+    "selection": "Named current survivors, conditional identity; no historical US population denominator",
+    "period": [
+      "1990-01-05",
+      "2026-10-23"
+    ],
+    "basis": "PRICE_RETURN",
+    "coverage": {
+      "expected": 1555,
+      "observed": 1532,
+      "immature": 23,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 1532,
+      "observedShareMatured": 1
+    }
+  },
+  "walkForward": [
+    {
+      "mode": "ROLLING",
+      "partitionHash": "a46b27524980990091c8b20f1a40f8608c181c25aaef2c4b57f68e672d84788c",
+      "registrationHash": "2bd1b00fe4b254124b19e42ac2909a0586623b0a4d016c05dccd584d3792f127",
+      "resultHash": "0127dc104a04134f066a0f1afae47b27c6ccb9608734f30a025503a447fc77b4",
+      "folds": [
+        {
+          "id": 0,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "TREND_UP",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "TREND_UP"
+          },
+          "trainN": 165,
+          "validationN": 71,
+          "testN": 120
+        },
+        {
+          "id": 1,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_IMPROVED"
+          },
+          "trainN": 177,
+          "validationN": 65,
+          "testN": 160
+        },
+        {
+          "id": 2,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_DETERIORATED"
+          },
+          "trainN": 157,
+          "validationN": 92,
+          "testN": 161
+        },
+        {
+          "id": 3,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "NEW_52W_HIGH"
+          },
+          "trainN": 176,
+          "validationN": 91,
+          "testN": 134
+        },
+        {
+          "id": 4,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "NEW_52W_HIGH"
+          },
+          "trainN": 207,
+          "validationN": 60,
+          "testN": 149
+        },
+        {
+          "id": 5,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_DETERIORATED"
+          },
+          "trainN": 168,
+          "validationN": 85,
+          "testN": 152
+        }
+      ],
+      "testOpportunities": 876,
+      "meanNetOpportunityReturn": 0.01215200934691536,
+      "scope": "Mean net selected-rule return across ALL candidate-event opportunities; nonselected opportunities zero; cash zero; NOT a funded strategy"
+    },
+    {
+      "mode": "EXPANDING",
+      "partitionHash": "964aa6bc118fc1305656e817224db16ca9f8ae87a0587af75413e176c1737d2d",
+      "registrationHash": "551e529563edd33653758c27369843a108b3b33d659fa476dc0a774153964f2c",
+      "resultHash": "d5cacbf10ea9a25afbe57a93b5d55501a1e838a64803882e36460acc2c5cc1a6",
+      "folds": [
+        {
+          "id": 0,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "TREND_UP",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "TREND_UP"
+          },
+          "trainN": 165,
+          "validationN": 71,
+          "testN": 120
+        },
+        {
+          "id": 1,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_IMPROVED"
+          },
+          "trainN": 302,
+          "validationN": 65,
+          "testN": 160
+        },
+        {
+          "id": 2,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_DETERIORATED"
+          },
+          "trainN": 423,
+          "validationN": 92,
+          "testN": 161
+        },
+        {
+          "id": 3,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "NEW_52W_HIGH"
+          },
+          "trainN": 570,
+          "validationN": 91,
+          "testN": 134
+        },
+        {
+          "id": 4,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "NEW_52W_HIGH"
+          },
+          "trainN": 729,
+          "validationN": 60,
+          "testN": 149
+        },
+        {
+          "id": 5,
+          "fitted": {
+            "candidates": [
+              "CASH",
+              "MOMENTUM_IMPROVED",
+              "MOMENTUM_DETERIORATED",
+              "TREND_UP",
+              "TREND_DOWN",
+              "NEW_52W_HIGH"
+            ]
+          },
+          "selected": {
+            "rule": "MOMENTUM_DETERIORATED"
+          },
+          "trainN": 859,
+          "validationN": 85,
+          "testN": 152
+        }
+      ],
+      "testOpportunities": 876,
+      "meanNetOpportunityReturn": 0.01215200934691536,
+      "scope": "Mean net selected-rule return across ALL candidate-event opportunities; nonselected opportunities zero; cash zero; NOT a funded strategy"
+    }
+  ],
+  "regimes": [
+    {
+      "axis": "state",
+      "episodes": 581,
+      "states": [
+        {
+          "state": "POSITIVE_TREND",
+          "episodes": 182,
+          "bars": 4453,
+          "eventBearingEpisodes": 100,
+          "events": 711
+        },
+        {
+          "state": "SIDEWAYS",
+          "episodes": 290,
+          "bars": 2219,
+          "eventBearingEpisodes": 143,
+          "events": 478
+        },
+        {
+          "state": "NEGATIVE_TREND",
+          "episodes": 109,
+          "bars": 1208,
+          "eventBearingEpisodes": 42,
+          "events": 205
+        }
+      ],
+      "unmatched": 138,
+      "scope": "DESCRIPTIVE_EX_POST_ONLY; adjacent episodes and overlapping event outcomes NOT independent clusters; engine intervals not significance evidence"
+    },
+    {
+      "axis": "volatilityState",
+      "episodes": 47,
+      "states": [
+        {
+          "state": "LOW_VOLATILITY",
+          "episodes": 24,
+          "bars": 6858,
+          "eventBearingEpisodes": 17,
+          "events": 1216
+        },
+        {
+          "state": "HIGH_VOLATILITY",
+          "episodes": 23,
+          "bars": 1022,
+          "eventBearingEpisodes": 18,
+          "events": 178
+        }
+      ],
+      "unmatched": 138,
+      "scope": "DESCRIPTIVE_EX_POST_ONLY; adjacent episodes and overlapping event outcomes NOT independent clusters; engine intervals not significance evidence"
+    }
+  ],
+  "originalEvents": {
+    "state": "CALCULATED",
+    "scope": "Four recent original SEC acceptance events; observed daily dates and modeled calendar regular close, 20 trading-bar price outcomes. Calendar is supplemental close-time model, not a replacement session-date source. No earnings time or guaranteed live fill; eight headers predate daily price coverage.",
+    "weekly": {
+      "verifiedEvents": 12,
+      "coverage": {
+        "expected": 12,
+        "observed": 12,
+        "immature": 0,
+        "censored": 0,
+        "ineligible": 0,
+        "maturedDenominator": 12,
+        "observedShareMatured": 1
+      },
+      "entryModel": "FIRST_OBSERVED_WEEK_CLOSE_ON_LATER_DATE",
+      "resultHash": "f6f7f0d3a214ae11bf8de3e1aa1fa583c229da9ac7b1eb79d2b530b8ca52e144",
+      "outcomes": [
+        {
+          "eventId": "JPM:0000019617-17-000314",
+          "entryDate": "2017-03-03",
+          "exitDate": "2017-03-31",
+          "netReturn": -0.056283677931378784,
+          "benchmarkReturn": -0.01124066772921728
+        },
+        {
+          "eventId": "JPM:0000019617-23-000524",
+          "entryDate": "2023-11-03",
+          "exitDate": "2023-12-01",
+          "netReturn": 0.09349779526514435,
+          "benchmarkReturn": 0.05615496100669448
+        },
+        {
+          "eventId": "JPM:0001628280-26-054343",
+          "entryDate": "2026-08-07",
+          "exitDate": "2026-09-04",
+          "netReturn": 0.0001278011378547106,
+          "benchmarkReturn": -0.0039702040710756226
+        },
+        {
+          "eventId": "MSFT:0001193125-16-662209",
+          "entryDate": "2016-07-29",
+          "exitDate": "2016-08-26",
+          "netReturn": 0.020751071698732693,
+          "benchmarkReturn": 0.0007829771554899168
+        },
+        {
+          "eventId": "MSFT:0000950170-23-035122",
+          "entryDate": "2023-07-28",
+          "exitDate": "2023-08-25",
+          "netReturn": -0.04834201840248753,
+          "benchmarkReturn": -0.03709620940208347
+        },
+        {
+          "eventId": "MSFT:0001193125-26-323660",
+          "entryDate": "2026-07-31",
+          "exitDate": "2026-08-28",
+          "netReturn": 0.10172085863286329,
+          "benchmarkReturn": 0.02987831813983388
+        },
+        {
+          "eventId": "NVDA:0001045810-17-000027",
+          "entryDate": "2017-03-03",
+          "exitDate": "2017-03-31",
+          "netReturn": 0.10237895189735724,
+          "benchmarkReturn": -0.01124066772921728
+        },
+        {
+          "eventId": "NVDA:0001045810-23-000227",
+          "entryDate": "2023-11-24",
+          "exitDate": "2023-12-22",
+          "netReturn": 0.018914386896005775,
+          "benchmarkReturn": 0.04030309685921374
+        },
+        {
+          "eventId": "NVDA:0001045810-26-000075",
+          "entryDate": "2026-08-28",
+          "exitDate": "2026-09-25",
+          "netReturn": 0.03146771453942954,
+          "benchmarkReturn": 0.0025995970624552722
+        },
+        {
+          "eventId": "XOM:0000034088-17-000017",
+          "entryDate": "2017-02-24",
+          "exitDate": "2017-03-24",
+          "netReturn": -0.0011510238342534729,
+          "benchmarkReturn": -0.012165244572104439
+        },
+        {
+          "eventId": "XOM:0000034088-23-000048",
+          "entryDate": "2023-08-04",
+          "exitDate": "2023-09-01",
+          "netReturn": 0.05362083480625257,
+          "benchmarkReturn": 0.009802824466775606
+        },
+        {
+          "eventId": "XOM:0000034088-26-000067",
+          "entryDate": "2026-05-08",
+          "exitDate": "2026-06-05",
+          "netReturn": 0.033899935184033,
+          "benchmarkReturn": -9.48998129118861e-05
+        }
+      ],
+      "scope": "Original SEC acceptance, first observed week-close on a strictly later date, four weekly-bar outcomes. No invented historical intraday close time. Same12 header sample; not independent of daily4subset or V7 explored history."
+    },
+    "verifiedHeaders": 12,
+    "studyEvents": 4,
+    "excluded": [
+      {
+        "ticker": "JPM",
+        "accession": "0000019617-17-000314",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "JPM",
+        "accession": "0000019617-23-000524",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "MSFT",
+        "accession": "0001193125-16-662209",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "MSFT",
+        "accession": "0000950170-23-035122",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "NVDA",
+        "accession": "0001045810-17-000027",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "NVDA",
+        "accession": "0001045810-23-000227",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "XOM",
+        "accession": "0000034088-17-000017",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      },
+      {
+        "ticker": "XOM",
+        "accession": "0000034088-23-000048",
+        "reason": "BEFORE_DAILY_PRICE_COVERAGE"
+      }
+    ],
+    "coverage": {
+      "expected": 4,
+      "observed": 4,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 4,
+      "observedShareMatured": 1
+    },
+    "outcomes": [
+      {
+        "eventId": "JPM:0001628280-26-054343",
+        "entryDate": "2026-08-07",
+        "exitDate": "2026-09-04",
+        "netReturn": 0.0001278011378547106,
+        "benchmarkReturn": -0.0039702040710756226
+      },
+      {
+        "eventId": "MSFT:0001193125-26-323660",
+        "entryDate": "2026-07-30",
+        "exitDate": "2026-08-27",
+        "netReturn": 0.11626488442906457,
+        "benchmarkReturn": 0.03965268508406483
+      },
+      {
+        "eventId": "NVDA:0001045810-26-000075",
+        "entryDate": "2026-08-27",
+        "exitDate": "2026-09-25",
+        "netReturn": -0.01572154882861254,
+        "benchmarkReturn": 0.00032421216444045164
+      },
+      {
+        "eventId": "XOM:0000034088-26-000067",
+        "entryDate": "2026-05-04",
+        "exitDate": "2026-06-02",
+        "netReturn": -0.02978728601742453,
+        "benchmarkReturn": 0.057882202197740984
+      }
+    ],
+    "entryModel": "FIRST_EXPLICIT_SESSION_CLOSE_STRICTLY_AFTER_AVAILABILITY",
+    "resultHash": "71b53c4272f40551d013b00cd9ad812b218962b0dd52b10fcb455d4f19f72413"
+  },
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false
+}
