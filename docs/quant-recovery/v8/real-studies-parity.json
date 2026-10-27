@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "v8-independent-real-parity-1.1.0",
+  "checks": [
+    {
+      "id": "FULL_WF_ROLLING",
+      "folds": 6,
+      "testOpportunities": 876,
+      "state": "PASS"
+    },
+    {
+      "id": "FULL_WF_EXPANDING",
+      "folds": 6,
+      "testOpportunities": 876,
+      "state": "PASS"
+    },
+    {
+      "id": "ALL_DAILY_REGIME_LABELS",
+      "labels": 7880,
+      "state": "PASS"
+    },
+    {
+      "id": "COMPLETE_REGIME_EPISODES_state",
+      "episodes": 581,
+      "state": "PASS"
+    },
+    {
+      "id": "COMPLETE_REGIME_EPISODES_volatilityState",
+      "episodes": 47,
+      "state": "PASS"
+    },
+    {
+      "id": "ORIGINAL_SEC_DAILY_EVENT_TIMING_AND_NET_OUTCOMES",
+      "events": 4,
+      "state": "PASS"
+    },
+    {
+      "id": "ORIGINAL_SEC_WEEKLY_EVENT_DATE_AND_NET_OUTCOMES",
+      "events": 12,
+      "state": "PASS"
+    }
+  ],
+  "referenceSha256": "4a43cd9af47831d4476e64ae673f4fb574f773001b569fad420ee78cc0adedc3",
+  "artifactHashes": {
+    "observations.json": "a21fd43eecf0bf99eb5e24f50fdd5d507994de107c047691813e2a5d1105c066",
+    "original-events-input.json": "01052a90dd1a38343df74b9a6d80a1bb384f4833acc4592025a4804a6c7ffd64",
+    "original-events-result.json": "ef439abc72c9a6a11a3b901e1ad330469f58c2d013a3af9c1e67d02e5f0fcd7e",
+    "original-weekly-events-input.json": "57d94eb630c7dc64cfa4f35c0543e536a3b807563a04edc4aa931a013b0ee931",
+    "original-weekly-events-result.json": "07f2ed1b58506eaf5f9ac390cfda4881c92f3ff12fe236d8f61662c5bdd47c3c",
+    "regime-input.json": "db886f4969317b209f550249ff73210e07bb6af757e78841a6fed22fb4910181",
+    "regime-labels.json": "f8a90dbb84f62363b0800201cb9c5cceae81189b37bfdd6e1839a90a77cc7e7e",
+    "regime-state-episodes.json": "aacdc93991f2e2ff9fb1b79faceea65ae3a0245088025ee34358b8a67215d6da",
+    "regime-state-result.json": "b9a479ce8a44360aa2a9fadc3d83fadb89306be33b43858c1583408b7de99255",
+    "regime-volatilityState-episodes.json": "387270bab43ec43c835571442a6e4f3da46cd830ae16bced85ae148b93bcb4d6",
+    "regime-volatilityState-result.json": "eca352e2be646fcce37f57310d8aed21feadf20444d118c58b6c8fb89d88c79d",
+    "registration.json": "5414e4eceddd522d690c3583c58d8da50e9bd3030f4324d7c49b565870d93595",
+    "sec-header-input.json": "f6e5fb34798ddbc41a6df02e22aebbf7b52e96ac264ac0577ffcb557316e01fd",
+    "signal-input.json": "1faa248a1e5338aad2990308629c698d4490bc8e6edc292284dfdd1ca30c79e3",
+    "signal-result.json": "94cd70fe3d5ebddf44d8f2ce4861586a7aeb0b7fcf00dd5a6f43f728891c3fc0",
+    "study-plan-1.1.json": "5414e4eceddd522d690c3583c58d8da50e9bd3030f4324d7c49b565870d93595",
+    "summary.json": "d6a8cdc256e88348f3ea695e560fb2a95a492060dfeebb9d7eda01472ef26468",
+    "wf-EXPANDING-input.json": "f0b34adacc4865af220895bb6c7272840dd6cf23fb8566a1deb3c00e630f8e84",
+    "wf-EXPANDING-models.json": "fac9ad0f2621239504caffa568e921151b5b853511b57f94b0cc9de22f98b30c",
+    "wf-EXPANDING-partition.json": "79d358ea5c97911e108c93c3639073872035c7fd4c75ca9ae6dd15b8e674c020",
+    "wf-EXPANDING-registration.json": "62d5f72f67f38e0e52f52486eb85a83967e7c8b74177f8bd25ac4f3472dd49f8",
+    "wf-EXPANDING-result.json": "0b2d839774a957974a3fd7a8409afdee38679528ab97c2a8f3b75a9fb4068159",
+    "wf-ROLLING-input.json": "4496056939bee11967cf66fbf00ab7776bee187141d430996f97257155bf855c",
+    "wf-ROLLING-models.json": "ef958b8e8d480c75ae9c33c9adb26bfd479d7a527e06e91cab0b002cbc34b11f",
+    "wf-ROLLING-partition.json": "56792453226b6195a83a8e43f33e7e0b796e047820b87a4458de636c62ce5376",
+    "wf-ROLLING-registration.json": "c4b1bd769875d0e95584bf792026a3ab8ca302bc4a075f860e263c761fd1a78a",
+    "wf-ROLLING-result.json": "288d3c15413b9c93b1a2393f1c73e89fe6eb455c43da549e2b5607b4d14ff1e2"
+  },
+  "source": "Independent Python; no engine import",
+  "scope": "Arithmetic and method execution parity only; no untouched predictive confirmation",
+  "productionApproved": false
+}

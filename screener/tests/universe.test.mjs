@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
-import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS } from '../../scripts/screener/build-universe.mjs';
+import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS, technicalWorldColumns, TW_MAX_AGE_DAYS } from '../../scripts/screener/build-universe.mjs';
 import { sectorFromSic } from '../../scripts/screener/sic.mjs';
 const require = createRequire(import.meta.url);
 const Fields = require('../engine/fields.js');
@@ -52,6 +52,24 @@ test('Chartbild-Spalten: nur bekannte Zustaende, veraltete Titel bleiben leer', 
   /* Bezug Baudatum: ein insgesamt veralteter Index liefert keine Zustaende (Code-Review M3) */
   const old = technicalIntelligenceColumns({ rows: [{ t: 'AAA', asOf: '2026-10-01', outlook: 'BULLISH', structure: 'UPTREND_ADVANCING', elliottApplicable: 'LOW' }] }, { now: '2027-01-15' });
   assert.equal(old.byTicker.size, 0); assert.equal(old.meta.stale, 1);
+});
+
+test('Technical-Spalten: Abbildung, Wahrheitswerte als 1/0, veraltete Titel bleiben leer', () => {
+  const art = { schemaVersion: 'vu-technical-screener-1.0.0', asOf: '2026-10-23', cols: {
+    s: ['AAA', 'BBB', 'CCC'], asOf: ['2026-10-23', '2026-10-01', '2026-10-22'],
+    atrPct: [0.031, 0.02, NaN], adx: [28.5, 10, null], supertrendUp: [true, false, false], aboveCloud: [false, true, null],
+    formationActive: [['BULL_FLAG', 'GAP_UP'], [], []], formationConfirmed: [['GAP_UP'], [], []] } };
+  const { byTicker, meta } = technicalWorldColumns(art, { now: '2026-10-25' });
+  const a = byTicker.get('AAA');
+  assert.equal(a.twAtr, 0.031); assert.equal(a.twAdx, 28.5); assert.equal(a.twSt, 1); assert.equal(a.twCloud, 0);
+  assert.deepEqual(a.twForm, ['BULL_FLAG', 'GAP_UP']); assert.deepEqual(a.twFormC, ['GAP_UP']);
+  assert.equal(a.twMfi, null, 'fehlende Quellspalte ergibt leer');
+  assert.equal(byTicker.has('BBB'), false, 'aelter als ' + TW_MAX_AGE_DAYS + ' Tage');
+  assert.equal(byTicker.get('CCC').twAtr, null, 'NaN wird leer'); assert.equal(byTicker.get('CCC').twCloud, null);
+  assert.equal(meta.stale, 1); assert.equal(meta.asOf, '2026-10-23');
+  assert.equal(technicalWorldColumns(null).meta, null);
+  assert.equal(technicalWorldColumns(art, { now: '2027-01-15' }).byTicker.size, 0, 'insgesamt veraltet');
+  for (const t of ['BULL_FLAG', 'GAP_UP']) assert.notEqual(Fields.enumLabel('chartPattern', t, { formations: { BULL_FLAG: 'Bullenflagge', GAP_UP: 'Kurslücke aufwärts' } }), t);
 });
 
 const tiIndex = new URL('../../quant/data/technical-intelligence/v3/index.json.gz', import.meta.url);

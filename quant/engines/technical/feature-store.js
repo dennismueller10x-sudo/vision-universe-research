@@ -56,6 +56,75 @@
     return out;
   }
 
+  /* ---------------------------------------------------- Eingeschwungene EMA
+     ema() startet mit dem SMA der ersten `period` Werte. Dieser Startwert
+     wirkt nach k weiteren Bars noch mit dem Gewicht (1 - a)^k, a = 2/(p+1).
+     settledEma() rechnet DIESELBE Reihe (dieselbe Funktion ema(), keine
+     zweite Formel) und gibt einen Wert erst aus, wenn das Startgewicht
+     hoechstens maxSeedWeight betraegt. Davor: NaN (serialisiert null) -
+     Missing != Zero, kein Wert, der von der Startkonvention abhaengt.
+     Begruendung und Messung: docs/technical/EMA200_MATERIALIZATION.md. */
+  var EMA_MAX_SEED_WEIGHT = 1e-3;
+
+  /** Restgewicht des Startwerts nach k Bars hinter dem Startindex. */
+  function emaSeedWeight(period, k) { return Math.pow(1 - 2 / (period + 1), k); }
+
+  /** Kleinste Zahl k von Bars hinter dem Start, ab der das Startgewicht <= maxSeedWeight ist. */
+  function emaWarmupBars(period, maxSeedWeight) {
+    var eps = isNum(maxSeedWeight) ? maxSeedWeight : EMA_MAX_SEED_WEIGHT;
+    if (!(period >= 1) || !(eps > 0 && eps < 1)) throw new Error("emaWarmupBars: ungueltige Parameter");
+    var k = Math.max(0, Math.ceil(Math.log(eps) / Math.log(1 - 2 / (period + 1))));
+    /* Gleitkomma-Grenzfall: an der Definition nachpruefen, nicht am Logarithmus. */
+    while (k > 0 && emaSeedWeight(period, k - 1) <= eps) k--;
+    while (emaSeedWeight(period, k) > eps) k++;
+    return k;
+  }
+
+  /* Freigaberegel (ema-settled-1.1.0). Zwei EMA-Laeufe mit verschiedenem Start unterscheiden sich nach k
+     Beobachtungen genau um w_k * |Start - Start'| mit w_k = (1 - 2/(p+1))^k. Jede Startkonvention, die im
+     Startfenster liegt (erster Kurs, SMA, Median ...), weicht hoechstens um dessen Spanne R ab; fuer eine
+     abgeschnittene Historie ist die Schranke an den Golden-Reihen empirisch geprueft (0 Verletzungen).
+     E_t = w_k * R / Schluss_t ist damit eine obere Schranke fuer den relativen Fehler am Tag t (nur Daten <= t).
+     Veroeffentlicht wird, wenn E_t <= EMA_MAX_REL_ERROR (0,1 % des Kurses) UND w_k <= EMA_FLOOR_SEED_WEIGHT
+     (nie, solange der Start noch mit mehr als 5 % wirkt). Herleitung: docs/technical/EMA200_MATERIALIZATION.md. */
+  var EMA_MAX_REL_ERROR = 1e-3, EMA_FLOOR_SEED_WEIGHT = 5e-2;
+
+  /**
+   * EMA mit Freigaberegel. Gezaehlt werden nur endliche Beobachtungen nach dem Startindex
+   * (eine fehlende Beobachtung traegt den Wert fort, laesst das Startgewicht aber nicht sinken).
+   * rule: Zahl = reine Gewichtsregel (Wert, sobald w_k <= Zahl; fuer Handwerte und Vergleiche),
+   *       sonst { maxRelError, floorSeedWeight } (Standard: die Produktregel oben).
+   * @returns {{values:number[], period:number, mode:string, warmupBars:number, minimumBars:number,
+   *            seedIndex:number, firstSettledIndex:number, barsAfterSeed:number|null, seedRange:number|null,
+   *            errorBound:number[], maxSeedWeight:number|null, maxRelError:number|null, floorSeedWeight:number|null}}
+   *   warmupBars/minimumBars: fruehester moeglicher Wert (bei BOUND die Untergrenze; tatsaechlich je nach Schranke spaeter).
+   */
+  function settledEma(values, period, rule) {
+    var strict = isNum(rule), o = strict ? {} : (rule || {});
+    var maxRel = isNum(o.maxRelError) ? o.maxRelError : EMA_MAX_REL_ERROR;
+    var floor = isNum(o.floorSeedWeight) ? o.floorSeedWeight : EMA_FLOOR_SEED_WEIGHT;
+    var raw = ema(values, period), n = values.length, out = arr(n), bound = arr(n);
+    var warm = emaWarmupBars(period, strict ? rule : floor), seedIndex = -1, firstSettled = -1, k = 0, R = NaN;
+    for (var i = 0; i < n; i++) {
+      if (seedIndex < 0) {
+        if (!isNum(raw[i])) continue;
+        seedIndex = i;
+        var hi = -Infinity, lo = Infinity;
+        for (var j = Math.max(0, i - period + 1); j <= i; j++) if (isNum(values[j])) { hi = Math.max(hi, values[j]); lo = Math.min(lo, values[j]); }
+        R = hi - lo;
+      } else if (isNum(values[i])) k++;
+      if (!isNum(raw[i])) continue;
+      var w = emaSeedWeight(period, k);
+      if (isNum(values[i]) && values[i] > 0) bound[i] = w * R / values[i];
+      var ok = strict ? k >= warm : (k >= warm && isNum(bound[i]) && bound[i] <= maxRel);
+      if (ok) { out[i] = raw[i]; if (firstSettled < 0) firstSettled = i; }
+    }
+    return { values: out, period: period, mode: strict ? "SEED_WEIGHT" : "ERROR_BOUND", warmupBars: warm, minimumBars: period + warm,
+      maxSeedWeight: strict ? rule : null, maxRelError: strict ? null : maxRel, floorSeedWeight: strict ? null : floor,
+      seedIndex: seedIndex, firstSettledIndex: firstSettled, barsAfterSeed: seedIndex < 0 ? null : k,
+      seedRange: isNum(R) ? R : null, errorBound: bound };
+  }
+
   /** Wilder-Glaettung (RMA) — fuer ATR, RSI, ADX. */
   function wilder(values, period) {
     var n = values.length, out = arr(n), sum = 0, count = 0, prev = NaN;
@@ -317,7 +386,8 @@
     FEATURE_VERSION: FEATURE_VERSION, DEFAULTS: DEFAULTS,
     computeFeatures: computeFeatures,
     /* Primitive fuer Tests und andere Engines */
-    sma: sma, ema: ema, wilder: wilder, trueRange: trueRange, rsi: rsi,
+    sma: sma, ema: ema, wilder: wilder,
+    EMA_MAX_SEED_WEIGHT: EMA_MAX_SEED_WEIGHT, EMA_MAX_REL_ERROR: EMA_MAX_REL_ERROR, EMA_FLOOR_SEED_WEIGHT: EMA_FLOOR_SEED_WEIGHT, emaSeedWeight: emaSeedWeight, emaWarmupBars: emaWarmupBars, settledEma: settledEma, trueRange: trueRange, rsi: rsi,
     rollingMax: rollingMax, rollingMin: rollingMin, rollingStd: rollingStd,
     rollingMedianPrior: rollingMedianPrior, regressionSlope: regressionSlope, adx: adx, percentileRank: percentileRank
   };

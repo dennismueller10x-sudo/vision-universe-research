@@ -1,0 +1,1529 @@
+{
+ "schema": "vu-technical-query-gold-1",
+ "purpose": "Offline-Bewertung der Suche in Worten (query-text.js). Erwartungen von Hand formuliert, nicht aus der Parser-Ausgabe kopiert. 'expect' = kanonische Abfrage (Filter mit eigenem Zeitrahmen als 'feld@1W') (Gruppen sind ODER, Filter in einer Gruppe UND; Reihenfolge innerhalb einer Gruppe egal). 'unsupported' = heute nicht abbildbar; der Parser darf dann NICHT stillschweigend eine Abfrage mit ok=true liefern, sondern muss Unbekanntes melden oder einen Fehler zeigen.",
+ "cases": [
+  {
+   "q": "Aktien über der SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurs unter der 200-Tage-Linie",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       false
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über der 50-Tage-Linie",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma50",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Golden Cross",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       5
+      ]
+     ]
+    ]
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 über SMA 200\""
+  },
+  {
+   "q": "über EMA 20",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveEma20",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "unter EMA 50",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveEma50",
+       "is",
+       false
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über EMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveEma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über der 200-Tage-EMA und RSI unter 40",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveEma200",
+       "is",
+       true
+      ],
+      [
+       "rsi14",
+       "lt",
+       40
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI über 70",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "gt",
+       70
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI zwischen 40 und 60",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "between",
+       40,
+       60
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI 14 mindestens 55",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "gte",
+       55
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "ADX über 25",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "adx",
+       "gt",
+       25
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "ADX >= 30 und Supertrend aufwärts",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "adx",
+       "gte",
+       30
+      ],
+      [
+       "supertrendUp",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Stochastik unter 20",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "stochK",
+       "lt",
+       20
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "CCI unter -100",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "cci20",
+       "lt",
+       -100
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Williams %R unter -80",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "williamsR",
+       "lt",
+       -80
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "MFI über 80",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "mfi14",
+       "gt",
+       80
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Chaikin Money Flow über 0,1",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "cmf20",
+       "gt",
+       0.1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Aroon über 50",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aroonOsc",
+       "gt",
+       50
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "ATR unter 3 %",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "atrPct",
+       "lt",
+       0.03
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "relatives Volumen über 2",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "relVol",
+       "gt",
+       2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Volumenspitze",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "volSpike",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "mit steigendem Volumen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "volAboveAvg",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Tagesänderung über 3%",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "chg1d",
+       "gt",
+       0.03
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Monatsperformance über 10 %",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "roc21",
+       "gt",
+       0.1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurs unter 10",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "close",
+       "lt",
+       10
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Abstand zur SMA 200 unter 5",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "distSma200",
+       "lt",
+       0.05
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Abstand zur EMA 200 zwischen 0 und 10",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "distEma200",
+       "between",
+       0,
+       0.1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Abstand zum 52-Wochen-Hoch über -5",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "distHigh52w",
+       "gt",
+       -0.05
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "neues 52-Wochen-Hoch",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "newHigh52w",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "52-Wochen-Hoch mit Volumenspitze",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "newHigh52w",
+       "is",
+       true
+      ],
+      [
+       "volSpike",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über der Ichimoku-Wolke",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveCloud",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "unter der Wolke",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveCloud",
+       "is",
+       false
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Parabolic SAR aufwärts",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "psarUp",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Supertrend abwärts",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "supertrendUp",
+       "is",
+       false
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Doppelboden",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "DOUBLE_BOTTOM"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "bestätigter Doppelboden",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationConfirmed",
+       "in",
+       [
+        "DOUBLE_BOTTOM"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Doppelboden oder inverse Schulter-Kopf-Schulter",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "DOUBLE_BOTTOM",
+        "INVERSE_HEAD_AND_SHOULDERS"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Schulter-Kopf-Schulter",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "HEAD_AND_SHOULDERS"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurslücke nach unten",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "GAP_DOWN"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Volatilitätskontraktion über SMA 50",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "VOLATILITY_CONTRACTION"
+       ]
+      ],
+      [
+       "aboveSma50",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Golden Cross und ADX über 25 oder 52-Wochen-Hoch",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       5
+      ],
+      [
+       "adx",
+       "gt",
+       25
+      ]
+     ],
+     [
+      [
+       "newHigh52w",
+       "is",
+       true
+      ]
+     ]
+    ]
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 über SMA 200\""
+  },
+  {
+   "q": "RSI unter 30 oder Stochastik unter 20",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ],
+     [
+      [
+       "stochK",
+       "lt",
+       20
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Wochenchart: über der 40-Wochen-Linie und RSI über 50",
+   "expect": {
+    "tf": "1W",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       true
+      ],
+      [
+       "rsi14",
+       "gt",
+       50
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Monatschart über der 10-Monats-Linie",
+   "expect": {
+    "tf": "1M",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "formation:BULL_FLAG und relVol >= 1,5",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "BULL_FLAG"
+       ]
+      ],
+      [
+       "relVol",
+       "gte",
+       1.5
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "offen:SYMMETRICAL_TRIANGLE",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationOpen",
+       "in",
+       [
+        "SYMMETRICAL_TRIANGLE"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "bestaetigt:RESISTANCE_BREAKOUT und aboveSma200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationConfirmed",
+       "in",
+       [
+        "RESISTANCE_BREAKOUT"
+       ]
+      ],
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "nicht aboveSma50 und rsi14 < 35",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma50",
+       "is",
+       false
+      ],
+      [
+       "rsi14",
+       "lt",
+       35
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Bollinger-Enge",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "bbSqueeze",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "MACD positiv",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "macdPositive",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "OBV steigt",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "obvRising",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI kleiner 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI < 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI größer als 60",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "gt",
+       60
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "überverkauft",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "überkauft",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "gt",
+       70
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "starker Trend",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "adx",
+       "gt",
+       25
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Ausbruch",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "RESISTANCE_BREAKOUT",
+        "RANGE_BREAKOUT"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Flagge",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "BULL_FLAG",
+        "BEAR_FLAG"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "bullische Flagge",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "BULL_FLAG"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "fallender Keil",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "FALLING_WEDGE"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "aufsteigendes Dreieck",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "ASCENDING_TRIANGLE"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Aufwärtskanal",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "ASCENDING_CHANNEL"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Tasse mit Henkel",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "CUP_WITH_HANDLE"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Ausbruch über Widerstand",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "RESISTANCE_BREAKOUT"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Death Cross",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "deathCrossDays",
+       "lte",
+       5
+      ]
+     ]
+    ]
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 unter SMA 200\""
+  },
+  {
+   "q": "unter der SMA 50 und über der SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma50",
+       "is",
+       false
+      ],
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurs über 100 Dollar",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "close",
+       "gt",
+       100
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "ATR über 5 Prozent",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "atrPct",
+       "gt",
+       0.05
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Gap up",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "GAP_UP"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Doppeltop",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "DOUBLE_TOP"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI über 50 auf Wochenbasis",
+   "expect": {
+    "tf": "1W",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "gt",
+       50
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Wochen-RSI über 50 und Tages-RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14@1W",
+       "gt",
+       50
+      ],
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Monats-RSI zwischen 40 und 60",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14@1M",
+       "between",
+       40,
+       60
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "wochen-aboveSma200 und RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200@1W",
+       "is",
+       true
+      ],
+      [
+       "rsi14",
+       "lt",
+       30
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "über SMA 200 ohne Kurslücke",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "aboveSma200",
+       "is",
+       true
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "GAP_UP",
+        "GAP_DOWN"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "kein Doppeltop und RSI unter 30",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsi14",
+       "lt",
+       30
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "DOUBLE_TOP"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Doppelboden ohne Kurslücke nach unten",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationActive",
+       "in",
+       [
+        "DOUBLE_BOTTOM"
+       ]
+      ],
+      [
+       "formationActive",
+       "nin",
+       [
+        "GAP_DOWN"
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Golden Cross in den letzten 5 Tagen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       5
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI ist gestern über 30 gestiegen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsiExitOversoldDays",
+       "lte",
+       1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Golden Cross in den letzten 20 Tagen und über SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       20
+      ],
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "heute Death Cross",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "deathCrossDays",
+       "lte",
+       0
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI verlässt überverkauft mit Volumenspitze",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsiExitOversoldDays",
+       "lte",
+       5
+      ],
+      [
+       "volSpike",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurs steigt über die SMA 200 in den letzten 3 Tagen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "crossAboveSma200Days",
+       "lte",
+       3
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "neue Formation binnen 2 Tagen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationNewDays",
+       "lte",
+       2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "SMA 50 über SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "sma50AboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Ausbruch seit höchstens 3 Tagen",
+   "unsupported": "Alter einer Formation (B12)"
+  },
+  {
+   "q": "Technologieaktien über der SMA 200",
+   "unsupported": "Sektor ist kein Technical-Feld"
+  },
+  {
+   "q": "KGV unter 15 und RSI unter 30",
+   "unsupported": "Fundamentalfeld"
+  },
+  {
+   "q": "Dreifachboden",
+   "unsupported": "Formationstyp fehlt (B16)"
+  },
+  {
+   "q": "Hammer-Kerze am Support",
+   "unsupported": "Kerzenmuster fehlen"
+  },
+  {
+   "q": "Aktien mit Dividende über 3 %",
+   "unsupported": "Fundamentalfeld"
+  },
+  {
+   "q": "RSI-Divergenz",
+   "unsupported": "Divergenzen fehlen"
+  },
+  {
+   "q": "Aufwärtstrend",
+   "unsupported": "mehrdeutig (Struktur, SMA 200 oder Kanal); bewusst nicht geraten"
+  },
+  {
+   "q": "neues Allzeithoch",
+   "unsupported": "Allzeithoch braucht die Vollhistorie (nur 200-Wochen-Hoch vorhanden)"
+  },
+  {
+   "q": "nahe am 52-Wochen-Hoch",
+   "unsupported": "'nahe' ist keine genannte Schwelle"
+  },
+  {
+   "q": "Tagesverlierer über 5 %",
+   "unsupported": "Richtungswort 'Verlierer' nicht abgebildet"
+  },
+  {
+   "q": "Wochen-Volumenspitze",
+   "unsupported": "Volumen gibt es nur im Tageszeitrahmen (Wochenschlüsse ohne Volumen)"
+  }
+ ]
+}

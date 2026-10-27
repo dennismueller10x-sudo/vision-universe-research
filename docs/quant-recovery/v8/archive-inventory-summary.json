@@ -1,0 +1,298 @@
+{
+  "schemaVersion": "v8-archive-inventory-1",
+  "environmentBindings": {
+    "TIINGO_API_KEY": false,
+    "MARKETSTACK_API_KEY": false,
+    "VU_HISTORY_S3_ENDPOINT": false,
+    "VU_HISTORY_S3_BUCKET": false,
+    "VU_HISTORY_S3_ACCESS_KEY_ID": false,
+    "VU_HISTORY_S3_SECRET_ACCESS_KEY": false,
+    "SEC_USER_AGENT": false
+  },
+  "paths": {
+    "quant/data/market/discover-series-long": {
+      "exists": true,
+      "files": 6191,
+      "bytes": 104803025
+    },
+    "quant/data/market/discover-series": {
+      "exists": true,
+      "files": 6680,
+      "bytes": 41396091
+    },
+    "quant/data/market/security-master": {
+      "exists": true,
+      "files": 11,
+      "bytes": 25581793
+    },
+    "quant/data/sec/inspector": {
+      "exists": true,
+      "files": 6,
+      "bytes": 4542149
+    },
+    ".tiingo2-private": {
+      "exists": false,
+      "files": 0,
+      "bytes": 0
+    },
+    ".sec-cache": {
+      "exists": false,
+      "files": 0,
+      "bytes": 0
+    },
+    "/workspace/v7-private": {
+      "exists": false,
+      "files": 0,
+      "bytes": 0
+    },
+    "quant/data/market/history": {
+      "exists": true,
+      "files": 2,
+      "bytes": 28743,
+      "filenameDateFrom": null,
+      "filenameDateTo": null,
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/market/index-membership": {
+      "exists": true,
+      "files": 22,
+      "bytes": 834354,
+      "filenameDateFrom": "2026-09-15",
+      "filenameDateTo": "2026-10-24",
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/market/factors": {
+      "exists": true,
+      "files": 11,
+      "bytes": 21641528,
+      "filenameDateFrom": null,
+      "filenameDateTo": null,
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/product/factor-evidence-history": {
+      "exists": true,
+      "files": 23,
+      "bytes": 1971463,
+      "filenameDateFrom": "2026-09-18",
+      "filenameDateTo": "2026-10-23",
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/product/market-regime-history": {
+      "exists": true,
+      "files": 20,
+      "bytes": 14733,
+      "filenameDateFrom": "2026-09-10",
+      "filenameDateTo": "2026-10-23",
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/product/setup-observation-history": {
+      "exists": true,
+      "files": 21,
+      "bytes": 899770,
+      "filenameDateFrom": "2026-09-10",
+      "filenameDateTo": "2026-10-23",
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    },
+    "quant/data/sec/consumer-history": {
+      "exists": true,
+      "files": 64,
+      "bytes": 1779831,
+      "filenameDateFrom": null,
+      "filenameDateTo": null,
+      "scope": "Stored archive presence/bytes/date names; not proof of PIT eligibility or full historical population"
+    }
+  },
+  "productionApproved": false,
+  "remoteArchiveMetadata": [
+    {
+      "id": 9443475810,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-40087710308",
+      "size_in_bytes": 555651740,
+      "created_at": "2026-10-24T11:08:25.619457Z",
+      "last_accessed_at": "2026-10-26T09:13:06.953225Z"
+    },
+    {
+      "id": 9397573333,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-39946886760",
+      "size_in_bytes": 554656198,
+      "created_at": "2026-10-23T11:47:43.455534Z",
+      "last_accessed_at": "2026-10-24T11:06:56.101594Z"
+    },
+    {
+      "id": 9432086744,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-40047253956",
+      "size_in_bytes": 317427673,
+      "created_at": "2026-10-24T02:19:13.608626Z",
+      "last_accessed_at": "2026-10-24T02:19:13.608626Z"
+    },
+    {
+      "id": 9376676772,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-39880198476",
+      "size_in_bytes": 317174433,
+      "created_at": "2026-10-23T02:10:02.406685Z",
+      "last_accessed_at": "2026-10-24T00:55:13.522615Z"
+    },
+    {
+      "id": 9402478961,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-39962041711",
+      "size_in_bytes": 761143437,
+      "created_at": "2026-10-23T13:37:01.611242Z",
+      "last_accessed_at": "2026-10-23T13:37:01.611242Z"
+    },
+    {
+      "id": 9344447839,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-39790683049",
+      "size_in_bytes": 719886322,
+      "created_at": "2026-10-22T13:56:55.086052Z",
+      "last_accessed_at": "2026-10-23T13:33:17.602611Z"
+    },
+    {
+      "id": 9338328692,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-39773086914",
+      "size_in_bytes": 552953915,
+      "created_at": "2026-10-22T12:01:10.613133Z",
+      "last_accessed_at": "2026-10-23T11:45:50.696851Z"
+    },
+    {
+      "id": 9314890857,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-39701728271",
+      "size_in_bytes": 316914882,
+      "created_at": "2026-10-22T02:15:27.123937Z",
+      "last_accessed_at": "2026-10-23T00:48:32.594672Z"
+    },
+    {
+      "id": 9280947069,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-39611962485",
+      "size_in_bytes": 678673343,
+      "created_at": "2026-10-21T13:58:18.049277Z",
+      "last_accessed_at": "2026-10-22T13:53:10.012506Z"
+    },
+    {
+      "id": 9274678027,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-39594029011",
+      "size_in_bytes": 551937353,
+      "created_at": "2026-10-21T11:57:29.403904Z",
+      "last_accessed_at": "2026-10-22T12:00:02.169639Z"
+    },
+    {
+      "id": 9251702052,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-39523081393",
+      "size_in_bytes": 316652152,
+      "created_at": "2026-10-21T02:07:56.936733Z",
+      "last_accessed_at": "2026-10-22T00:48:00.634045Z"
+    },
+    {
+      "id": 9219902850,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-39432025506",
+      "size_in_bytes": 637464773,
+      "created_at": "2026-10-20T13:42:07.609433Z",
+      "last_accessed_at": "2026-10-21T13:54:34.000565Z"
+    },
+    {
+      "id": 9214386499,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-39415480431",
+      "size_in_bytes": 551312407,
+      "created_at": "2026-10-20T11:45:24.748108Z",
+      "last_accessed_at": "2026-10-21T11:56:34.514225Z"
+    },
+    {
+      "id": 9195017701,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-39351739842",
+      "size_in_bytes": 316379882,
+      "created_at": "2026-10-20T02:39:07.924488Z",
+      "last_accessed_at": "2026-10-21T00:45:13.930057Z"
+    },
+    {
+      "id": 9170414801,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-39279923393",
+      "size_in_bytes": 596268812,
+      "created_at": "2026-10-19T15:45:22.363121Z",
+      "last_accessed_at": "2026-10-20T13:38:53.337562Z"
+    },
+    {
+      "id": 9087765967,
+      "ref": "refs/heads/main",
+      "key": "sec-fundamentals-39025641322",
+      "size_in_bytes": 551162681,
+      "created_at": "2026-10-17T10:50:12.220890Z",
+      "last_accessed_at": "2026-10-20T11:45:02.439019Z"
+    },
+    {
+      "id": 9211067804,
+      "ref": "refs/heads/main",
+      "key": "ownership-signals-39406276495",
+      "size_in_bytes": 104168601,
+      "created_at": "2026-10-20T10:27:19.221130Z",
+      "last_accessed_at": "2026-10-20T10:27:19.221130Z"
+    },
+    {
+      "id": 8884188985,
+      "ref": "refs/heads/main",
+      "key": "ownership-signals-38400048707",
+      "size_in_bytes": 103904259,
+      "created_at": "2026-10-13T12:55:43.886842Z",
+      "last_accessed_at": "2026-10-20T10:13:31.864114Z"
+    },
+    {
+      "id": 9077811508,
+      "ref": "refs/heads/main",
+      "key": "discover-market-cache-38987427690",
+      "size_in_bytes": 316108862,
+      "created_at": "2026-10-17T02:10:16.703854Z",
+      "last_accessed_at": "2026-10-20T01:09:46.399182Z"
+    },
+    {
+      "id": 9050350121,
+      "ref": "refs/heads/main",
+      "key": "tiingo2-encrypted-v1-main-38906870359",
+      "size_in_bytes": 554791690,
+      "created_at": "2026-10-16T13:23:00.084394Z",
+      "last_accessed_at": "2026-10-19T15:42:32.379454Z"
+    }
+  ],
+  "accessInterpretation": "Metadata readable through existing authorized GitHub account. Actual archive content requires restore inside authorized Actions runner and, for Tiingo, existing cache key. Local missing credentials do not mean historical data absent.",
+  "privateInventoryHash": "1ea5c4250bf677550eded9b421b1dd07446c9bc42890ee7250070cedb13f6915",
+  "archiveAccessObservedInActions": {
+    "runId": "40345969062",
+    "discoverRestored": true,
+    "secRestored": true,
+    "tiingoCiphertextRestored": true,
+    "existingTiingoKeyOpenedCache": true,
+    "assessmentStatus": "INITIAL_ASSESSOR_BUDGET_EXCEEDED_RETRY_WITH_EXPLICIT_COVERAGE",
+    "noNewProviderRequests": true
+  },
+  "r2SecretMetadataProbe": {
+    "state": "NOT_ACCESSIBLE_TO_GITHUB_INTEGRATION",
+    "httpStatus": 403,
+    "scope": "Repository Actions secret-name metadata only; no secret values requested",
+    "meaning": "Does not establish that S3 secrets or R2 historical objects are missing"
+  },
+  "authorizedActionsR2Observation": {
+    "artifact": "r2-assessment.json",
+    "state": "READABLE_INDEX_PROVED",
+    "configuredBindings": {
+      "VU_HISTORY_S3_ENDPOINT": true,
+      "VU_HISTORY_S3_BUCKET": true,
+      "VU_HISTORY_S3_ACCESS_KEY_ID": true,
+      "VU_HISTORY_S3_SECRET_ACCESS_KEY": true
+    },
+    "indexSymbolCount": 7803,
+    "actualDownloadedBytes": 471733,
+    "scope": "Bounded existing HistoryStore index proof; local missingbindings do not mean unavailableR2access or absenthistoricalobjects."
+  }
+}

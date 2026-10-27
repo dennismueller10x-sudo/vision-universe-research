@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "v8-classification-regression-validation-1",
+  "stages": [
+    {
+      "stage": "Required registry missing from fixture",
+      "pass": 45,
+      "fail": 15,
+      "resolvedBy": "Copy new dependency into existing source fixture; later CJS registry moved into already copied engines directory."
+    },
+    {
+      "stage": "JSON dependency rejected by existing strict reader code namespace",
+      "pass": 56,
+      "fail": 4,
+      "resolvedBy": "Versioned literal registry CJS in existing engines namespace. No allowlist widening."
+    },
+    {
+      "stage": "CJS materialization and refresh",
+      "pass": 60,
+      "fail": 0
+    },
+    {
+      "stage": "Final materialization, read, refresh, source and classification regressions",
+      "pass": 62,
+      "fail": 0
+    }
+  ],
+  "staleGenerationCounterexample": {
+    "before": {
+      "state": "AVAILABLE_LIMITED",
+      "hasResult": true,
+      "changedDependencies": [
+        "CALCULATION_CODE"
+      ]
+    },
+    "after": {
+      "state": "UNAVAILABLE",
+      "reason": "BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED",
+      "hasResult": false
+    },
+    "mode": "Private temporary historical-invalid-classification reproduction; not historical return evidence"
+  },
+  "logs": {
+    "final-affected-run.log": "37d4ab3c160160c17c66f409ae1ecab1188299fad261be4310eaf95377a28d13",
+    "final-affected-fixed-run.log": "03183c032ff334b5771458d35db51bb8d80915897570ff831cd33dc5d8927897",
+    "final-affected-cjs-run.log": "4e78d94307c50e8a960746c0eb6b91d0ac8b5d20a17cfbe3f71633a677f1d35f",
+    "final-affected-context-run.log": "762e6807faaa1eea43bb28ad5da67b12d25345ecaa723381b458a8efd0e1a301",
+    "classification-stale-proof-run.log": "e7e6411b9bdab93049d4236ad6aa895450c6a9039b7a2a38a6a90ddedebc6fbc",
+    "classification-stale-fixed-run.log": "ed009aa9a0d9c8b5c893611e592e07f9faf733abff3ed64e3663e3b7d635a4bb"
+  },
+  "resource": {
+    "command": [
+      "node",
+      "--test",
+      "quant/tests/research-v8-classification.test.mjs",
+      "quant/tests/real-weekly-backtest.test.mjs",
+      "quant/tests/real-backtest-read.test.mjs",
+      "quant/tests/weekly-benchmark-batch.test.mjs",
+      "quant/tests/backtest-refresh.test.mjs",
+      "quant/tests/research-weekly-source.test.mjs"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 13.246783296999638,
+    "maxRssKiB": 318648,
+    "userSeconds": 13.243252,
+    "systemSeconds": 2.6653000000000002
+  },
+  "sourceHashes": {
+    "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+    "quant/engines/research-classification-evidence.cjs": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235",
+    "scripts/quant/materialize-real-backtest-read.cjs": "13d59f6850f2c0a85c3dae24ab9058504d73fe4816865ceea2ac6d732787199a",
+    "scripts/quant/refresh-real-backtest.cjs": "8937855f0d57d54908ba881c7b8932d1da2da6e2e72a22bd6c2195308ea23c36",
+    "server/quant-backtest-reader.cjs": "fca356cb8e20a0d818150e5a55243b00847abf0b64cdcfcc210e2c92f2b73f0c",
+    "server/quant-backtest-freshness.cjs": "e6340b61411c9ef5a6daf4a7baa972dfaf15ece60ee8a754f54741f562797f7b",
+    "quant/tests/research-v8-classification.test.mjs": "abc17bb2441e3dead9353ba8a3759d0df37374dcca830cf785abd9189f319c8c",
+    "quant/tests/backtest-refresh.test.mjs": "98724bb1371c3445b0fc9071a2005b6efa4e169512db6db1bb5247dafd276f85"
+  },
+  "productionApproved": false
+}

@@ -107,9 +107,19 @@ test('Echte Daten: PLTR 8 Geschaeftsjahre + TTM, Quellen je Jahr, Aktienanzahl m
   assert.ok(f.metrics.find((m) => m.id === 'shares').caveat);
 });
 
-test('Echte Daten: Lueckenhafte Reihe (NVDA Free Cashflow) und Banken ohne Bruttomarge (JPM)', () => {
-  const nv = M.fromStock(stock('NVDA')).metrics.find((m) => m.id === 'free_cash_flow');
-  assert.ok(nv.gaps.length > 0 && nv.available, 'Luecken bleiben sichtbar');
+test('Echte Daten: Luecken bleiben sichtbar (Free Cashflow) und Banken ohne Bruttomarge (JPM)', () => {
+  /* Bis 26.10.2026 hatte NVDA Free Cashflow erst ab GJ 2022; der SEC-Lauf a486756 hat die Historie
+     verlaengert, seitdem ist die Reihe luecklos. Gemessen wird deshalb die Regel, nicht ein Datenstand:
+     jedes Jahr ohne gemeldeten Wert ist eine sichtbare Luecke, keines wird aufgefuellt. */
+  const synth = M.series([p(2020, 1), p(2022, 3)], [2020, 2021, 2022]);
+  assert.deepEqual(synth.filter((r) => r.gap).map((r) => r.fy), [2021], 'Luecken bleiben sichtbar');
+  assert.equal(synth.find((r) => r.fy === 2021).v, null, 'nichts aufgefuellt');
+  for (const t of ['NVDA', 'ABNB']) {
+    const fcf = M.fromStock(stock(t)).metrics.find((m) => m.id === 'free_cash_flow');
+    assert.ok(fcf.available, t);
+    assert.deepEqual(fcf.gaps, fcf.rows.filter((r) => r.v == null).map((r) => r.fy), t + ': jede Luecke ausgewiesen');
+    assert.ok(fcf.rows.every((r) => (r.gap ? r.v == null : typeof r.v === 'number')), t + ': nichts aufgefuellt');
+  }
   const jpm = M.fromStock(stock('JPM'));
   assert.equal(jpm.margins.find((m) => m.id === 'gross').available, false);
   assert.equal(jpm.margins.find((m) => m.id === 'net').available, true);

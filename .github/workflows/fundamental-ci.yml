@@ -26,6 +26,7 @@ jobs:
         run: |
           node --check fundamental/engine/model.js
           node --check fundamental/engine/catalog.js
+          node --check fundamental/engine/compare.js
           node --check fundamental/app.js
           node --check scripts/fundamental/build-history.mjs
           node --check scripts/fundamental/sec-freshness.mjs
