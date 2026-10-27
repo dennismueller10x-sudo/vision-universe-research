@@ -102,6 +102,7 @@ def main():
     ap.add_argument('--resolutions', required=True)
     ap.add_argument('--dryrun', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--review', required=True)
     a = ap.parse_args()
     C = Cache(pathlib.Path(a.private) / 'http-cache')
     master = json.load(open(ROOT / 'quant/data/market/security-master/us-security-master.json'))
@@ -268,7 +269,14 @@ def main():
     by_id = collections.defaultdict(list)
     for key, d in decisions.items():
         by_id[key[0]].append(d)
-    MANUAL_DIST = {('ref_ABT', '2013-01-04')}
+    review = json.load(open(a.review))['reviews']
+    MANUAL_DIST = {tuple(r['key'].split('|')) for r in review if r['verdict'] in ('SPIN_OFF_CONFIRMED', 'SPECIAL_CASH_DIVIDEND_CONFIRMED')}
+    MANUAL_GENUINE = {tuple(r['key'].split('|')) for r in review if r['verdict'] == 'GENUINE_MOVE_SUPPORTED_MANUAL_PRE2001'}
+    # manual pre-2001 share counts re-checked: continuity |ln R| <= ln 1.25
+    for r in review:
+        if r['verdict'] == 'GENUINE_MOVE_SUPPORTED_MANUAL_PRE2001':
+            sc = r['shareCounts']
+            assert abs(math.log(sc[1]['val'] / sc[0]['val'])) <= math.log(1.25), r['key']
     would = []
     for sid, ds in by_id.items():
         ok = True
@@ -278,6 +286,8 @@ def main():
             if isinstance(d, tuple) and d[0] == 'GENUINE_MOVE_SUPPORTED' and d[1] == 'CONSISTENT':
                 continue
             if isinstance(d, tuple) and d[0] == 'SPIN_OFF_OR_DISTRIBUTION_CANDIDATE' and key in MANUAL_DIST:
+                continue
+            if key in MANUAL_GENUINE:
                 continue
             ok = False
         if ok:
@@ -290,7 +300,7 @@ def main():
            'resolutionParity': {'events': len(js_rows), 'mismatches': len(mism), 'examples': mism[:20]},
            'pyResolutionCounts': dict(py_counts), 'jsResolutionCounts': js['counts']['byResolution'],
            'wouldQualify': {'py': len(would), 'js': len(js_new), 'identical': sorted(would) == js_new, 'onlyPy': sorted(set(would) - set(js_new)), 'onlyJs': sorted(set(js_new) - set(would))},
-           'tolerance': 'weekly ratios compared after rounding to 6 decimals (engine stores r6); k/direction/reasons/decisions must match exactly.'}
+           'tolerance': 'weekly ratios compared after rounding to 6 decimals; max allowed |diff| = 1e-6 + 1e-12 (one unit in the 6th decimal: JS Math.round(x*1e6)/1e6 vs Python round() half-even/binary representation at .5 boundaries). k/direction/engine reasons/decisions/would-qualify sets must match exactly.', 'ratioWithinTolerance': ev_parity['ratioMaxAbsDiff'] <= 1e-6 + 1e-12}
     pathlib.Path(a.out).write_text(json.dumps(rep, indent=1))
     print(json.dumps({k: rep[k] for k in ('eventParity', 'resolutionParity', 'wouldQualify')}, indent=1))
 

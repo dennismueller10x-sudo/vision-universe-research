@@ -51,8 +51,8 @@ function weeklyStudy(reg) {
     const bars = pts.filter(p => closeOf.has(p[0])).map(p => ({ date: p[0], close: p[1] * factor(p[0]), availableAt: closeOf.get(p[0]) }));
     const events = [];
     for (const s of splits) {
+      if (s.effectiveDate < dates[0] || s.effectiveDate > dates.at(-1)) continue;
       const eff = firstOnOrAfter(dates, s.effectiveDate);
-      if (!eff) continue;
       events.push({ id: `${t}:SPLIT:${s.effectiveDate}`, type: 'SPLIT', effectiveDate: eff, ratio: s.ratio, availableAt: s.availableAt,
         sourceHash: s.documents.find(x => x.ratioStated)?.sha256, sequence: 0, _date: s.effectiveDate });
     }
@@ -60,9 +60,8 @@ function weeklyStudy(reg) {
     for (const e of comp.events) {
       if (!e.payDate || !e.amount) throw Error('INCOMPLETE_DIVIDEND ' + t + ' ' + e.recordDate);
       const lo = firstOnOrAfter(dates, addWeekdays(e.recordDate, -3)), hi = firstOnOrAfter(dates, e.recordDate), ex = ruleExDate(e.recordDate);
+      if (ex < dates[0] || ex > dates.at(-1)) continue; // entitlement outside the modeled sessions
       const eff = firstOnOrAfter(dates, ex);
-      if (!eff || eff > reg.period[1]) continue;
-      if (eff < dates[0]) continue;
       const close = Date.parse(closeOf.get(eff));
       const sec = e.firstSecAvailability && e.firstSecAvailability.acceptanceUtc;
       let availableAt, tier;
@@ -70,18 +69,19 @@ function weeklyStudy(reg) {
       else if (e.declarationDate && Date.parse(e.declarationDate + 'T23:59:59.000Z') <= close) { availableAt = e.declarationDate + 'T23:59:59.000Z'; tier = 'ISSUER_STATED_DECLARATION_DATE_RETROSPECTIVE'; }
       else { availableAt = null; tier = 'NOT_AVAILABLE_BY_ENTITLEMENT_SESSION'; }
       audit.events.push({ ticker: t, recordDate: e.recordDate, ruleExDate: ex, entitlementSession: eff, mappingInvariant: lo === hi, payDate: e.payDate, amount: e.amount, availabilityTier: tier, secAcceptance: sec || null });
-      if (!availableAt) throw Error('EVENT_NOT_AVAILABLE_BY_ENTITLEMENT ' + t + ' ' + e.recordDate);
+      if (!availableAt) throw Error('EVENT_NOT_AVAILABLE_BY_ENTITLEMENT ' + t + ' ' + e.recordDate + ' sec=' + sec + ' decl=' + e.declarationDate + ' eff=' + eff);
       events.push({ id: `${t}:DIV:${e.recordDate}`, type: 'CASH_DIVIDEND', effectiveDate: eff, payDate: e.payDate, amount: Number(e.amount), currency: 'USD',
         availableAt, sourceHash: e.firstSecAvailability.sha256, sequence: 0, _date: ex });
     }
-    // Same-session ordering follows the sourced calendar dates (split trading date vs rule ex-date).
-    const bySession = {};
-    events.forEach(e => (bySession[e.effectiveDate] = bySession[e.effectiveDate] || []).push(e));
-    Object.values(bySession).forEach(list => list.sort((a, b) => a._date.localeCompare(b._date) || a.type.localeCompare(b.type)).forEach((e, i) => { e.sequence = i; }));
-    events.forEach(e => delete e._date);
     return { listingId: 'ref_' + t, issuerId: 'ISSUER_' + t, mic: /NASDAQ/.test(reg.mic[t]) ? 'XNAS' : 'XNYS', instrumentClass: 'COMMON_STOCK', primary: true,
       currency: 'USD', firstTradeDate: dates[0], lastTradeDate: null, bars, events, _adjusted: pts.filter(p => closeOf.has(p[0])).map(p => ({ date: p[0], close: p[1], availableAt: closeOf.get(p[0]) })) };
   });
+  // Engine requires a unique (effectiveDate, sequence) across ALL listings. Same-session ordering
+  // follows the sourced calendar dates (split trading date vs rule ex-date), then type, then id.
+  const bySession = {};
+  listings.flatMap(l => l.events).forEach(e => (bySession[e.effectiveDate] = bySession[e.effectiveDate] || []).push(e));
+  Object.values(bySession).forEach(list => list.sort((a, b) => a._date.localeCompare(b._date) || a.type.localeCompare(b.type) || a.id.localeCompare(b.id)).forEach((e, i) => { e.sequence = i; }));
+  listings.forEach(l => l.events.forEach(e => delete e._date));
   return { sessions, dates, listings, audit };
 }
 
@@ -110,13 +110,13 @@ function main() {
   const universe = (arg('universe', 'JPM,MSFT,NVDA')).split(',');
   const master = read('quant/data/market/security-master/us-security-master.json');
   const mic = Object.fromEntries(universe.map(t => [t, (master.rows.find(r => r.baseline_security_id === 'ref_' + t) || {}).canonical_id || '']));
-  const reg = { id: 'V9-PORTFOLIO-TR-WEEKLY', version: '1.0.0', frozenAt: new Date().toISOString(), analysisMode: 'MECHANICS_ACCEPTANCE_RETROSPECTIVE',
+  const reg = { id: arg('id', 'V9-PORTFOLIO-TR-WEEKLY'), version: '1.0.0', frozenAt: new Date().toISOString(), analysisMode: 'MECHANICS_ACCEPTANCE_RETROSPECTIVE',
     purpose: 'Exercise the existing ledger with SEC-sourced dividends (pay-date cash), sourced splits; compare with split-adjusted price-only run. Not a strategy test.',
     universe, mic, period: [arg('from', '2015-01-01'), arg('to', '2026-10-23')], clock: 'Weekly sessions = last trading day per ISO week from discover-series-long; closeAt 16:00 America/New_York (calendar early closes from 2022)',
     initialCapital: 100000, weights: '0.9/n equal, 10% cash buffer', rebalanceEverySessions: Number(arg('every', '4')), costs: { basis: 'PER_SIDE_NOTIONAL', feeBps: 10, slippageBps: 5 },
     benchmark: 'ZERO_RATE_CASH constant level (no market benchmark claim)',
     eventRules: { dividendEntitlementSession: 'first weekly session on/after settlement-rule ex-date derived from sourced record date (ex-date NOT sourced)', payDate: 'sourced payment date; cash credited at first weekly session on/after it', availability: 'SEC acceptance if <= entitlement session close, else issuer-stated declaration date (end of day UTC), else run fails', split: 'sourced first split-adjusted trading date mapped to first weekly session on/after it; raw price = split-adjusted close x product of later sourced split ratios' },
-    runs: ['TR_PAYDATE (primary)', 'PRICE_ADJUSTED (HISTORICAL_PRICE_SIMULATION)', 'RAW_SPLITS_ONLY (diagnostic; must equal PRICE_ADJUSTED)', 'TR_EXDATE_CASH (forbidden-assumption diagnostic)', 'TR_FULLY_INVESTED (guard demonstration)'],
+    runs: ['TR_PAYDATE (primary)', 'PRICE_ADJUSTED (HISTORICAL_PRICE_SIMULATION)', 'RAW_SPLITS_ONLY (diagnostic; must equal PRICE_ADJUSTED)', 'TR_EXDATE_CASH (forbidden-assumption diagnostic)', 'TR_FULLY_INVESTED (guard demonstration)', 'TR_EXDATE_CASH_FULLY_INVESTED (forbidden-assumption diagnostic: shows what ex-date cash would unlock)'],
     primaryEndpoint: 'endCapital and cumulative return TR_PAYDATE vs PRICE_ADJUSTED; parity with independent Python ledger',
     priorExposure: 'Trio price-only portfolio explored in V7/V8; retrospective; no confirmatory claim', evidenceHashes: hashes, codeHash: C.shaFile(__filename) };
   reg.registrationHash = C.hash(reg);
@@ -135,6 +135,7 @@ function main() {
   exec('RAW_SPLITS_ONLY', baseInput(reg, sessions, dates, listings.map(l => ({ ...l, events: l.events.filter(e => e.type === 'SPLIT') })), prov, 'TOTAL_RETURN', 0.9));
   exec('TR_EXDATE_CASH', baseInput(reg, sessions, dates, listings.map(l => ({ ...l, events: l.events.map(e => e.type === 'CASH_DIVIDEND' ? { ...e, payDate: e.effectiveDate } : e) })), prov, 'TOTAL_RETURN', 0.9));
   exec('TR_FULLY_INVESTED', baseInput(reg, sessions, dates, listings, prov, 'TOTAL_RETURN', 1));
+  exec('TR_EXDATE_CASH_FULLY_INVESTED', baseInput(reg, sessions, dates, listings.map(l => ({ ...l, events: l.events.map(e => e.type === 'CASH_DIVIDEND' ? { ...e, payDate: e.effectiveDate } : e) })), prov, 'TOTAL_RETURN', 1));
   if (tr) {
     const divCash = tr.eventLedger.filter(e => e.type === 'CASH_DIVIDEND').reduce((s, e) => { const ev = listings.flatMap(l => l.events).find(x => x.id === e.eventId); return s + e.entitlementUnits * ev.amount; }, 0);
     runs.TR_PAYDATE.dividendCashCredited = divCash;

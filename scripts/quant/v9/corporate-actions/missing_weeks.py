@@ -34,6 +34,7 @@ def main():
     ap.add_argument('--triage', required=True)
     ap.add_argument('--sec', default='')
     ap.add_argument('--out', required=True)
+    ap.add_argument('--delisted', default='')
     a = ap.parse_args()
     tri = json.load(open(a.triage))['results']
     js_mw = {r['id']: r['gaps'] for r in tri if r['status'] == 'MISSING_WEEKS'}
@@ -103,7 +104,8 @@ def main():
         'largestSharedWindows': [{'firstMissingWeek': k[0], 'weeksMissing': k[1], 'listings': v} for k, v in windows.most_common(12)],
         'staleConstantTailListings': sorted({r['id'] for r in rows if r['constantTailAfterGap']}),
         'gapRows': rows,
-        'secSample': sec.get('summary'),
+        'secSample': {'rule': sec.get('sampleRule'), 'coverage': sec.get('coverageNote'), 'sampled': sec.get('sampled'), 'summary': sec.get('summary')} if sec else None,
+        'delistedVerification': (lambda d: {'note': d['note'], 'results': {k: {'verdict': v['verdict'], 'nameHypothesis': v['nameHypothesis'], 'verified': v['verified']} for k, v in d['results'].items()}})(json.load(open(a.delisted))) if a.delisted else None,
         'productionApproved': False,
     }
     pathlib.Path(a.out).write_text(json.dumps(rep, indent=1))

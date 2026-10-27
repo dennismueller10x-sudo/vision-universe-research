@@ -112,8 +112,11 @@ def sentence_events(t, doc_dateline):
                 break
         decl = None
         mm = re.search(r"(?i)\bOn\s+" + DATE + r",?\s+(?:the\s+|our\s+)?(?:Board|board|Company|company|Firm|we\b|IBM|ExxonMobil|NVIDIA|Microsoft|Walmart|Agilent|Meta)[^.]{0,160}?(?:declared|approved|announced)", ctx)
+        mm2 = re.search(r"(?i)declaration\s+by\s+the\s+Board[^.]{0,80}?\bon\s+" + DATE + r"\s+of\s+a\s+(?:quarterly\s+)?dividend", ctx)
         if mm:
             decl = iso(*mm.groups()[0:3])
+        elif mm2:
+            decl = iso(*mm2.groups()[0:3])
         elif re.search(r"(?i)today\s+(?:declared|approved|announced)", ctx) and doc_dateline:
             decl = doc_dateline
         intent = bool(re.search(r"(?i)\bintends?\b|\bwould be\b|\bexpects?\b|\bplans? to\b", s))

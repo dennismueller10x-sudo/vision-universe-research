@@ -122,7 +122,7 @@ def kind_of(title):
         return 'RIGHT'
     if re.search(r'\bnotes?\b|debenture|\bbonds?\b|senior|subordinated', t):
         return 'DEBT'
-    if re.search(r'common stock|common shares?|ordinary shares|subordinate voting shares|shares of beneficial interest|limited voting shares|class [a-z] common', t):
+    if re.search(r'common stock|common shares?|ordinary shares?|subordinate voting shares|shares of beneficial interest|limited voting shares|class [a-z] common', t):
         return 'COMMON'
     return 'UNKNOWN'
 
@@ -213,9 +213,9 @@ EXCH = {'NYSE': r'new york stock exchange|^nyse$|^nyse\b(?! (american|arca|mkt))
 
 
 def norm(s):
-    s = (s or '').upper().strip()
-    s = s.replace('_P_', 'P')
-    s = re.sub(r'[\s.\-/]+PR(?=[A-Z]?$)', 'P', s)
+    s = re.sub(r'(?<=[A-Z])Pr(?=[A-Z]?$)', 'P', (s or '').strip())
+    s = s.upper().replace('_P_', 'P')
+    s = re.sub(r'[\s.\-/]+PR\s*(?=[A-Z]?$)', 'P', s)
     s = re.sub(r'[\s.\-/]+P(?=[A-Z]$)', 'P', s)
     return re.sub(r'[^A-Z0-9]', '', s)
 

@@ -1,0 +1,595 @@
+{
+ "schemaVersion": "v9-portfolio-ledger-weekly-1.0.0",
+ "registration": {
+  "id": "V9-PORTFOLIO-L3",
+  "version": "1.0.0",
+  "frozenAt": "2026-10-27T18:56:12.552Z",
+  "analysisMode": "MECHANICS_ACCEPTANCE_RETROSPECTIVE",
+  "purpose": "Exercise the existing ledger with SEC-sourced dividends (pay-date cash), sourced splits; compare with split-adjusted price-only run. Not a strategy test.",
+  "universe": [
+   "JPM",
+   "MSFT",
+   "NVDA"
+  ],
+  "mic": {
+   "JPM": "tiingo:NYSE:JPM:1983-12-30",
+   "MSFT": "tiingo:NASDAQ:MSFT:1986-03-13",
+   "NVDA": "tiingo:NASDAQ:NVDA:1999-01-22"
+  },
+  "period": [
+   "2015-01-05",
+   "2017-09-29"
+  ],
+  "clock": "Weekly sessions = last trading day per ISO week from discover-series-long; closeAt 16:00 America/New_York (calendar early closes from 2022)",
+  "initialCapital": 100000,
+  "weights": "0.9/n equal, 10% cash buffer",
+  "rebalanceEverySessions": 4,
+  "costs": {
+   "basis": "PER_SIDE_NOTIONAL",
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "benchmark": "ZERO_RATE_CASH constant level (no market benchmark claim)",
+  "eventRules": {
+   "dividendEntitlementSession": "first weekly session on/after settlement-rule ex-date derived from sourced record date (ex-date NOT sourced)",
+   "payDate": "sourced payment date; cash credited at first weekly session on/after it",
+   "availability": "SEC acceptance if <= entitlement session close, else issuer-stated declaration date (end of day UTC), else run fails",
+   "split": "sourced first split-adjusted trading date mapped to first weekly session on/after it; raw price = split-adjusted close x product of later sourced split ratios"
+  },
+  "runs": [
+   "TR_PAYDATE (primary)",
+   "PRICE_ADJUSTED (HISTORICAL_PRICE_SIMULATION)",
+   "RAW_SPLITS_ONLY (diagnostic; must equal PRICE_ADJUSTED)",
+   "TR_EXDATE_CASH (forbidden-assumption diagnostic)",
+   "TR_FULLY_INVESTED (guard demonstration)",
+   "TR_EXDATE_CASH_FULLY_INVESTED (forbidden-assumption diagnostic: shows what ex-date cash would unlock)"
+  ],
+  "primaryEndpoint": "endCapital and cumulative return TR_PAYDATE vs PRICE_ADJUSTED; parity with independent Python ledger",
+  "priorExposure": "Trio price-only portfolio explored in V7/V8; retrospective; no confirmatory claim",
+  "evidenceHashes": {
+   "docs/quant-recovery/v9/portfolio/dividend-evidence.json": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
+   "docs/quant-recovery/v9/portfolio/split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4"
+  },
+  "codeHash": "ef25d4bae9e338d2f4f77e257638bc898913f3ab984c883d561cd73dbd043182",
+  "registrationHash": "5cfeff78216fe830eb666fc5c958dbfbc12e740ad32792113043fa38c0755daf"
+ },
+ "sessions": 143,
+ "period": [
+  "2015-01-09",
+  "2017-09-29"
+ ],
+ "eventCounts": {
+  "ref_JPM": {
+   "dividends": 10,
+   "splits": 0
+  },
+  "ref_MSFT": {
+   "dividends": 11,
+   "splits": 0
+  },
+  "ref_NVDA": {
+   "dividends": 11,
+   "splits": 0
+  }
+ },
+ "eventAudit": {
+  "mappingInvariant": 24,
+  "mappingDependsOnRuleExDate": 8,
+  "availabilityTiers": {
+   "SEC_ACCEPTANCE": 31,
+   "ISSUER_STATED_DECLARATION_DATE_RETROSPECTIVE": 1
+  },
+  "rows": [
+   {
+    "ticker": "JPM",
+    "recordDate": "2015-04-06",
+    "ruleExDate": "2015-04-02",
+    "entitlementSession": "2015-04-02",
+    "mappingInvariant": false,
+    "payDate": "2015-04-30",
+    "amount": "0.4",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-04-01T20:37:40.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2015-07-06",
+    "ruleExDate": "2015-07-02",
+    "entitlementSession": "2015-07-02",
+    "mappingInvariant": false,
+    "payDate": "2015-07-31",
+    "amount": "0.44",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-07-01T20:41:28.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2015-10-06",
+    "ruleExDate": "2015-10-02",
+    "entitlementSession": "2015-10-02",
+    "mappingInvariant": false,
+    "payDate": "2015-10-31",
+    "amount": "0.44",
+    "availabilityTier": "ISSUER_STATED_DECLARATION_DATE_RETROSPECTIVE",
+    "secAcceptance": "2015-10-02T20:17:48.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2016-01-06",
+    "ruleExDate": "2016-01-04",
+    "entitlementSession": "2016-01-08",
+    "mappingInvariant": true,
+    "payDate": "2016-01-31",
+    "amount": "0.44",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-01-04T21:44:42.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2016-04-06",
+    "ruleExDate": "2016-04-04",
+    "entitlementSession": "2016-04-08",
+    "mappingInvariant": false,
+    "payDate": "2016-04-30",
+    "amount": "0.44",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-04-04T20:26:38.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2016-07-06",
+    "ruleExDate": "2016-07-04",
+    "entitlementSession": "2016-07-08",
+    "mappingInvariant": false,
+    "payDate": "2016-07-31",
+    "amount": "0.48",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-07-01T10:52:13.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2016-10-06",
+    "ruleExDate": "2016-10-04",
+    "entitlementSession": "2016-10-07",
+    "mappingInvariant": true,
+    "payDate": "2016-10-31",
+    "amount": "0.48",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-10-04T20:36:43.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2017-01-06",
+    "ruleExDate": "2017-01-04",
+    "entitlementSession": "2017-01-06",
+    "mappingInvariant": true,
+    "payDate": "2017-01-31",
+    "amount": "0.48",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-01-04T21:44:14.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2017-04-06",
+    "ruleExDate": "2017-04-04",
+    "entitlementSession": "2017-04-07",
+    "mappingInvariant": true,
+    "payDate": "2017-04-30",
+    "amount": "0.5",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-04-04T20:30:50.000Z"
+   },
+   {
+    "ticker": "JPM",
+    "recordDate": "2017-07-06",
+    "ruleExDate": "2017-07-04",
+    "entitlementSession": "2017-07-07",
+    "mappingInvariant": true,
+    "payDate": "2017-07-31",
+    "amount": "0.5",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-07-03T17:29:02.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2015-02-19",
+    "ruleExDate": "2015-02-17",
+    "entitlementSession": "2015-02-20",
+    "mappingInvariant": true,
+    "payDate": "2015-03-12",
+    "amount": "0.31",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-01-26T21:13:49.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2015-05-21",
+    "ruleExDate": "2015-05-19",
+    "entitlementSession": "2015-05-22",
+    "mappingInvariant": true,
+    "payDate": "2015-06-11",
+    "amount": "0.31",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-04-23T20:09:01.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2015-08-20",
+    "ruleExDate": "2015-08-18",
+    "entitlementSession": "2015-08-21",
+    "mappingInvariant": true,
+    "payDate": "2015-09-10",
+    "amount": "0.31",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-07-31T19:07:52.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2015-11-19",
+    "ruleExDate": "2015-11-17",
+    "entitlementSession": "2015-11-20",
+    "mappingInvariant": true,
+    "payDate": "2015-12-10",
+    "amount": "0.36",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-10-22T20:10:04.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2016-02-18",
+    "ruleExDate": "2016-02-16",
+    "entitlementSession": "2016-02-19",
+    "mappingInvariant": true,
+    "payDate": "2016-03-10",
+    "amount": "0.36",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-01-28T21:11:24.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2016-05-19",
+    "ruleExDate": "2016-05-17",
+    "entitlementSession": "2016-05-20",
+    "mappingInvariant": true,
+    "payDate": "2016-06-09",
+    "amount": "0.36",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-04-21T20:10:33.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2016-08-18",
+    "ruleExDate": "2016-08-16",
+    "entitlementSession": "2016-08-19",
+    "mappingInvariant": true,
+    "payDate": "2016-09-08",
+    "amount": "0.36",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-07-28T20:12:18.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2016-11-17",
+    "ruleExDate": "2016-11-15",
+    "entitlementSession": "2016-11-18",
+    "mappingInvariant": true,
+    "payDate": "2016-12-08",
+    "amount": "0.39",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-10-20T20:10:25.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2017-02-16",
+    "ruleExDate": "2017-02-14",
+    "entitlementSession": "2017-02-17",
+    "mappingInvariant": true,
+    "payDate": "2017-03-09",
+    "amount": "0.39",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-01-26T21:13:28.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2017-05-18",
+    "ruleExDate": "2017-05-16",
+    "entitlementSession": "2017-05-19",
+    "mappingInvariant": true,
+    "payDate": "2017-06-08",
+    "amount": "0.39",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-03-14T21:18:04.000Z"
+   },
+   {
+    "ticker": "MSFT",
+    "recordDate": "2017-08-17",
+    "ruleExDate": "2017-08-15",
+    "entitlementSession": "2017-08-18",
+    "mappingInvariant": true,
+    "payDate": "2017-09-14",
+    "amount": "0.39",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-08-02T20:15:01.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2015-02-26",
+    "ruleExDate": "2015-02-24",
+    "entitlementSession": "2015-02-27",
+    "mappingInvariant": true,
+    "payDate": "2015-03-19",
+    "amount": "0.085",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-02-11T21:22:40.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2015-05-21",
+    "ruleExDate": "2015-05-19",
+    "entitlementSession": "2015-05-22",
+    "mappingInvariant": true,
+    "payDate": "2015-06-12",
+    "amount": "0.0975",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-05-07T20:29:26.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2015-08-20",
+    "ruleExDate": "2015-08-18",
+    "entitlementSession": "2015-08-21",
+    "mappingInvariant": true,
+    "payDate": "2015-09-11",
+    "amount": "0.0975",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-08-06T20:24:10.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2015-11-20",
+    "ruleExDate": "2015-11-18",
+    "entitlementSession": "2015-11-20",
+    "mappingInvariant": true,
+    "payDate": "2015-12-14",
+    "amount": "0.115",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2015-11-05T21:25:11.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2016-03-02",
+    "ruleExDate": "2016-02-29",
+    "entitlementSession": "2016-03-04",
+    "mappingInvariant": false,
+    "payDate": "2016-03-23",
+    "amount": "0.115",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-02-17T21:28:19.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2016-05-26",
+    "ruleExDate": "2016-05-24",
+    "entitlementSession": "2016-05-27",
+    "mappingInvariant": true,
+    "payDate": "2016-06-20",
+    "amount": "0.115",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-05-12T20:39:07.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2016-08-25",
+    "ruleExDate": "2016-08-23",
+    "entitlementSession": "2016-08-26",
+    "mappingInvariant": true,
+    "payDate": "2016-09-16",
+    "amount": "0.115",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-08-11T20:22:20.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2016-11-28",
+    "ruleExDate": "2016-11-24",
+    "entitlementSession": "2016-11-25",
+    "mappingInvariant": false,
+    "payDate": "2016-12-19",
+    "amount": "0.14",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2016-11-10T21:21:36.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2017-02-24",
+    "ruleExDate": "2017-02-22",
+    "entitlementSession": "2017-02-24",
+    "mappingInvariant": true,
+    "payDate": "2017-03-17",
+    "amount": "0.14",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-02-09T21:23:02.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2017-05-23",
+    "ruleExDate": "2017-05-19",
+    "entitlementSession": "2017-05-19",
+    "mappingInvariant": false,
+    "payDate": "2017-06-14",
+    "amount": "0.14",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-05-09T20:21:40.000Z"
+   },
+   {
+    "ticker": "NVDA",
+    "recordDate": "2017-08-24",
+    "ruleExDate": "2017-08-22",
+    "entitlementSession": "2017-08-25",
+    "mappingInvariant": true,
+    "payDate": "2017-09-18",
+    "amount": "0.14",
+    "availabilityTier": "SEC_ACCEPTANCE",
+    "secAcceptance": "2017-08-10T20:23:58.000Z"
+   }
+  ]
+ },
+ "splitCrossCheck": [
+  {
+   "ticker": "JPM",
+   "sourced": [],
+   "provider": [],
+   "equal": true,
+   "returnSeriesSplitFactorsAgree": true
+  },
+  {
+   "ticker": "MSFT",
+   "sourced": [],
+   "provider": [],
+   "equal": true,
+   "returnSeriesSplitFactorsAgree": true
+  },
+  {
+   "ticker": "NVDA",
+   "sourced": [
+    [
+     "2021-07-20",
+     4
+    ],
+    [
+     "2024-06-10",
+     10
+    ]
+   ],
+   "provider": [],
+   "equal": false,
+   "returnSeriesSplitFactorsAgree": false
+  }
+ ],
+ "runs": {
+  "TR_PAYDATE": {
+   "endCapital": 291924.35448726796,
+   "metrics": {
+    "cumulativeReturn": 1.9192435448726797,
+    "cagr": 0.48240128303549135,
+    "maxDrawdown": -0.14603847852583196,
+    "fees": 325.88322758720625,
+    "slippage": 162.94161379360312,
+    "oneWayTurnoverSum": 1.1499793266790115
+   },
+   "rebalances": 36,
+   "trades": 108,
+   "events": 32,
+   "openReceivables": 0,
+   "resultHash": "9ae87fd87e71a1f0efd65f97158e1401912391f939ec67b6e74f7fcf40314c2d",
+   "inputHash": "3de78915cf07b9d65e99112978afdb49dc54eee2a1321fde060a4c72e849b8d2",
+   "maxReceivables": 517.323338974073,
+   "dividendCashCredited": 7738.396797263516,
+   "receivableSessions": 87
+  },
+  "PRICE_ADJUSTED": {
+   "endCapital": 278001.00960263284,
+   "metrics": {
+    "cumulativeReturn": 1.7800100960263285,
+    "cagr": 0.4560186552739416,
+    "maxDrawdown": -0.1479752568304359,
+    "fees": 318.4948251409918,
+    "slippage": 159.2474125704959,
+    "oneWayTurnoverSum": 1.1503014053744791
+   },
+   "rebalances": 36,
+   "trades": 108,
+   "events": 0,
+   "openReceivables": 0,
+   "resultHash": "69c93de913a61d32a034adf2cc795ed50790ae6463b1ae9d3d9da2db25725f3b",
+   "inputHash": "016843758ce76f8c11f9706e5450de304da92a25fee00969a29edaccb694dd97",
+   "maxReceivables": 0,
+   "dividendCashCredited": null
+  },
+  "RAW_SPLITS_ONLY": {
+   "endCapital": 278001.0096026328,
+   "metrics": {
+    "cumulativeReturn": 1.7800100960263276,
+    "cagr": 0.4560186552739416,
+    "maxDrawdown": -0.14797525683043578,
+    "fees": 318.4948251409919,
+    "slippage": 159.24741257049595,
+    "oneWayTurnoverSum": 1.1503014053744796
+   },
+   "rebalances": 36,
+   "trades": 108,
+   "events": 0,
+   "openReceivables": 0,
+   "resultHash": "4c608759fe5f37fcfbdcc94494f4cb1995ba9550690cf849af0dc80180ee9c11",
+   "inputHash": "22041d5452ee14b08e3cdf9e40a4e687540b3c7ffb1d97f9b715166de7e4c7c0",
+   "maxReceivables": 0,
+   "dividendCashCredited": null
+  },
+  "TR_EXDATE_CASH": {
+   "endCapital": 291924.35448726796,
+   "metrics": {
+    "cumulativeReturn": 1.9192435448726797,
+    "cagr": 0.48240128303549135,
+    "maxDrawdown": -0.14603847852583196,
+    "fees": 325.88322758720625,
+    "slippage": 162.94161379360312,
+    "oneWayTurnoverSum": 1.1499793266790115
+   },
+   "rebalances": 36,
+   "trades": 108,
+   "events": 32,
+   "openReceivables": 0,
+   "resultHash": "d4b47046f959cdd0753860311243c50a6cad60fe92ce3c66d0742ed4a4b18b0e",
+   "inputHash": "ecca7178e004b405f3fbb88607e6a41d580c7c5c08bd81cdf876d521e5bf2f11",
+   "maxReceivables": 0,
+   "dividendCashCredited": null
+  },
+  "TR_FULLY_INVESTED": {
+   "error": "UNSETTLED_CASH_NOT_INVESTABLE"
+  },
+  "TR_EXDATE_CASH_FULLY_INVESTED": {
+   "endCapital": 326479.8957530351,
+   "metrics": {
+    "cumulativeReturn": 2.264798957530351,
+    "cagr": 0.5446104891355206,
+    "maxDrawdown": -0.16140140396529956,
+    "fees": 381.0787873589695,
+    "slippage": 190.53939367948476,
+    "oneWayTurnoverSum": 1.2812381673866664
+   },
+   "rebalances": 36,
+   "trades": 108,
+   "events": 32,
+   "openReceivables": 0,
+   "resultHash": "7e3f48d8150d97647810d841e375db0eb8aed8ca662bc72c3d0ce6b8fd5b00af",
+   "inputHash": "0c90617fb96b02f9a3ecc749277f9388e69f863e6f8586fce6b2d34a6473c556",
+   "maxReceivables": 0,
+   "dividendCashCredited": null
+  }
+ },
+ "comparisons": {
+  "totalVsPrice": {
+   "trEnd": 291924.35448726796,
+   "priceEnd": 278001.00960263284,
+   "trCum": 1.9192435448726797,
+   "priceCum": 1.7800100960263285,
+   "trCagr": 0.48240128303549135,
+   "priceCagr": 0.4560186552739416,
+   "cagrDiff": 0.02638262776154976
+  },
+  "rawSplitsOnlyVsPriceRelDiff": 2.220446049250313e-16,
+  "exDateCashMinusPayDate": 0
+ },
+ "runtime": {
+  "node": "v22.22.0",
+  "v8": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.39",
+  "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "engineSha256": "1b9204e5609ffa9eb8cdb827e2b35d732e8d76ce5fb72afb0f58a20edeeeb8b0",
+ "runnerSha256": "ef25d4bae9e338d2f4f77e257638bc898913f3ab984c883d561cd73dbd043182",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false
+}

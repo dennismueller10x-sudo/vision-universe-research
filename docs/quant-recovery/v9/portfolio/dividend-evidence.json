@@ -16,8 +16,8 @@
   "restated (post-split) amounts are classified and checked, never mixed with contemporaneous amounts"
  ],
  "splitEvidenceFile": "docs/quant-recovery/v9/portfolio/split-evidence.json",
- "codeSha256": "4e382b34e787a77c8c5471e6821faa1709ac7fa13b05a3893fc5bb9a1e4220f5",
- "harvesterSha256": "6707cc14a781c6d7c87532a426e539003a09d468a6b14c1804c506eeadaba95f",
+ "codeSha256": "fdd397c32c70c5db9ad1e6a72826e255ca91c221361dd013aec8be2831770974",
+ "harvesterSha256": "e0e3f8e23fdb2de075b8c6b1377f4601f098c81daf6162ba49349527fa603217",
  "companies": [
   {
    "ticker": "A",
@@ -27,7 +27,8 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 28,
-   "eventsInExpectedQuartersWithPayDateAndAmount": 27,
+   "declarationsWithoutRecordDate": [],
+   "eventsInExpectedQuartersWithPayDateAndAmount": 28,
    "gaps": [
     {
      "quarter": "2015Q3",
@@ -116,22 +117,14 @@
     {
      "quarter": "2026Q3",
      "gap": "NO_SEC_ATTESTATION_FOUND"
-    },
-    {
-     "recordDate": "2022-01-04",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.21",
-      "0.210"
-     ]
     }
    ],
    "companyFactsCrossCheck": {
     "concept": "us-gaap:CommonStockDividendsPerShareDeclared (3-month durations)",
-    "match": 20,
+    "match": 21,
     "matchRestated": 0,
     "mismatch": 0,
-    "unmatchable": 9,
+    "unmatchable": 8,
     "rows": [
      {
       "period": [
@@ -144,7 +137,7 @@
       "eventsDeclaredInPeriod": [
        "2015-01-06"
       ],
-      "sum": "0.10",
+      "sum": "0.1",
       "state": "MATCH"
      },
      {
@@ -168,7 +161,7 @@
       "eventsDeclaredInPeriod": [
        "2015-06-30"
       ],
-      "sum": "0.100",
+      "sum": "0.1",
       "state": "MATCH"
      },
      {
@@ -309,7 +302,11 @@
       "xbrl": [
        "0.21"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2022-01-04"
+      ],
+      "sum": "0.21",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -332,7 +329,7 @@
       "eventsDeclaredInPeriod": [
        "2022-07-05"
       ],
-      "sum": "0.210",
+      "sum": "0.21",
       "state": "MATCH"
      },
      {
@@ -514,10 +511,10 @@
       "2015-01-28"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.10",
+     "amount": "0.1",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.10"
+      "0.1"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -556,7 +553,7 @@
        "fileDate": "2014-12-22",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.10",
+       "amount": "0.1",
        "payDate": "2015-01-28",
        "declarationDate": "2014-11-20",
        "sha256": "1e147ab791863224e17d547320203cee0c99c20b2ff959fbe43d9e5b6f37e535"
@@ -567,7 +564,7 @@
        "fileDate": "2014-12-22",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.10",
+       "amount": "0.1",
        "payDate": "2015-01-28",
        "declarationDate": "2014-11-20",
        "sha256": "1e147ab791863224e17d547320203cee0c99c20b2ff959fbe43d9e5b6f37e535"
@@ -578,7 +575,7 @@
        "fileDate": "2014-12-22",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.10",
+       "amount": "0.1",
        "payDate": "2015-01-28",
        "declarationDate": "2014-11-20",
        "sha256": "1e147ab791863224e17d547320203cee0c99c20b2ff959fbe43d9e5b6f37e535"
@@ -593,10 +590,10 @@
       "2015-07-22"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.100",
+     "amount": "0.1",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.100"
+      "0.1"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -635,7 +632,7 @@
        "fileDate": "2015-06-05",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.100",
+       "amount": "0.1",
        "payDate": "2015-07-22",
        "declarationDate": "2015-05-20",
        "sha256": "630e501eed81c11cfb191513463ce80b1a582601d63a8e05001106dbab7804ec"
@@ -646,7 +643,7 @@
        "fileDate": "2015-06-05",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.100",
+       "amount": "0.1",
        "payDate": "2015-07-22",
        "declarationDate": "2015-05-20",
        "sha256": "630e501eed81c11cfb191513463ce80b1a582601d63a8e05001106dbab7804ec"
@@ -1561,11 +1558,10 @@
       "2022-01-26"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.21",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.21",
-      "0.210"
+      "0.21"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -1604,7 +1600,7 @@
        "fileDate": "2021-12-17",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.210",
+       "amount": "0.21",
        "payDate": "2022-01-26",
        "declarationDate": "2021-11-17",
        "sha256": "d51aec47de45e2d7e909a694f91ed11f3ba9aef015ff79ad9aa0218d7aabd17e"
@@ -1615,7 +1611,7 @@
        "fileDate": "2021-12-17",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.210",
+       "amount": "0.21",
        "payDate": "2022-01-26",
        "declarationDate": "2021-11-17",
        "sha256": "d51aec47de45e2d7e909a694f91ed11f3ba9aef015ff79ad9aa0218d7aabd17e"
@@ -1641,10 +1637,10 @@
       "2022-07-27"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.210",
+     "amount": "0.21",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.210"
+      "0.21"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -1683,7 +1679,7 @@
        "fileDate": "2022-05-31",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.210",
+       "amount": "0.21",
        "payDate": "2022-07-27",
        "declarationDate": null,
        "sha256": "a3946f4b17fb7d826ff7cc05da63e6d8f4505eb0b434ea4b3cec41399207ab9f"
@@ -1694,7 +1690,7 @@
        "fileDate": "2022-05-31",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.210",
+       "amount": "0.21",
        "payDate": "2022-07-27",
        "declarationDate": "2022-05-18",
        "sha256": "a3946f4b17fb7d826ff7cc05da63e6d8f4505eb0b434ea4b3cec41399207ab9f"
@@ -2725,6 +2721,7 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 43,
+   "declarationsWithoutRecordDate": [],
    "eventsInExpectedQuartersWithPayDateAndAmount": 43,
    "gaps": [
     {
@@ -2772,10 +2769,10 @@
       "2015-03-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.10",
+     "amount": "1.1",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.10"
+      "1.1"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -2814,7 +2811,7 @@
        "fileDate": "2015-02-24",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "1.10",
+       "amount": "1.1",
        "payDate": "2015-03-10",
        "declarationDate": "2015-01-27",
        "sha256": "436216402c48b2b88bbf56344e0c51d4e34a78f4ad98d51ba65d990016a9e17b"
@@ -2829,10 +2826,10 @@
       "2016-03-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.30",
+     "amount": "1.3",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.30"
+      "1.3"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -2871,7 +2868,7 @@
        "fileDate": "2016-02-23",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "1.30",
+       "amount": "1.3",
        "payDate": "2016-03-10",
        "declarationDate": "2016-01-26",
        "sha256": "1bf52f27d8a7cb37fc8c4f61a7f4b6709c6d8d93bcfbc8537271c80459de0fe2"
@@ -2882,7 +2879,7 @@
        "fileDate": "2016-06-13",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "1.30",
+       "amount": "1.3",
        "payDate": "2016-03-10",
        "declarationDate": "2016-01-26",
        "sha256": "d3cd4187cb8b245fe8f43c0c0c25b85a99d18a105401004d67d6fe85dba7df01"
@@ -2897,10 +2894,10 @@
       "2016-09-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.40",
+     "amount": "1.4",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.40"
+      "1.4"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -2939,7 +2936,7 @@
        "fileDate": "2016-07-26",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "1.40",
+       "amount": "1.4",
        "payDate": "2016-09-10",
        "declarationDate": "2016-07-26",
        "sha256": "3599ca87b1e123652f47952b7864ad261692d82575af03db6ac9425ba6241f56"
@@ -2954,10 +2951,10 @@
       "2016-12-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.40",
+     "amount": "1.4",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.40"
+      "1.4"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -2996,7 +2993,7 @@
        "fileDate": "2016-10-25",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "1.40",
+       "amount": "1.4",
        "payDate": "2016-12-10",
        "declarationDate": "2016-10-25",
        "sha256": "df6785960246cbdaf185b999f6e76af937fb52a332c7d96b4eb82da43f258ddc"
@@ -3011,10 +3008,10 @@
       "2017-03-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.40",
+     "amount": "1.4",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.40"
+      "1.4"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -3053,7 +3050,7 @@
        "fileDate": "2017-02-28",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "1.40",
+       "amount": "1.4",
        "payDate": "2017-03-10",
        "declarationDate": "2017-01-31",
        "sha256": "ab8027d85a1b271ef33e6c807b247aeca3af44331c2b9da92c6ef558b815fc3e"
@@ -3068,10 +3065,10 @@
       "2017-06-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.50",
+     "amount": "1.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.50"
+      "1.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -3110,7 +3107,7 @@
        "fileDate": "2017-04-25",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "1.50",
+       "amount": "1.5",
        "payDate": "2017-06-10",
        "declarationDate": "2017-04-25",
        "sha256": "26d814c5767f8a2691973b3cd287e125d0e29298c90095c148b5c3da453072e8"
@@ -3125,10 +3122,10 @@
       "2017-09-09"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.50",
+     "amount": "1.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.50"
+      "1.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -3167,7 +3164,7 @@
        "fileDate": "2017-07-25",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "1.50",
+       "amount": "1.5",
        "payDate": "2017-09-09",
        "declarationDate": "2017-07-25",
        "sha256": "3738ad27ff53e8e5e4508821875c307c60872ba7409bbf48959365db98489e0f"
@@ -3182,10 +3179,10 @@
       "2017-12-09"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.50",
+     "amount": "1.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.50"
+      "1.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -3224,7 +3221,7 @@
        "fileDate": "2017-10-31",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "1.50",
+       "amount": "1.5",
        "payDate": "2017-12-09",
        "declarationDate": "2017-10-31",
        "sha256": "374d016548dcbdec0091c846cbfb445b0c92b2c25c514af53ef22fac9b14dd78"
@@ -3239,10 +3236,10 @@
       "2018-03-10"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "1.50",
+     "amount": "1.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "1.50"
+      "1.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -3281,7 +3278,7 @@
        "fileDate": "2018-02-27",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "1.50",
+       "amount": "1.5",
        "payDate": "2018-03-10",
        "declarationDate": "2018-01-30",
        "sha256": "80c37e1efafd545e3315867d3933ff0869fb960f88b4efe8b33bf4d398a6be7e"
@@ -5226,7 +5223,209 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 15,
-   "eventsInExpectedQuartersWithPayDateAndAmount": 13,
+   "declarationsWithoutRecordDate": [
+    {
+     "payDate": "2024-04-30",
+     "amountsStated": [
+      "1.15"
+     ],
+     "declarationDatesStated": [
+      "2024-03-19"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-24-000326",
+      "file": "jpm-20240331.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2024-05-01T20:18:10.000Z",
+      "sha256": "6c1ecee811e55487d76c3689bc4f99933b4ed162eb982575c91b7142811b11bb",
+      "quote": "On March 19, 2024, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.15 per share, payable on April 30, 2024"
+     }
+    },
+    {
+     "payDate": "2024-07-31",
+     "amountsStated": [
+      "1.15"
+     ],
+     "declarationDatesStated": [
+      "2024-05-20"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-24-000453",
+      "file": "jpm-20240630.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2024-08-02T20:18:48.000Z",
+      "sha256": "72428a02940e3f0b5088ad31445d48f0639e475db9aaae1df4213ce165045e3d",
+      "quote": "On May 20, 2024, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.15 per share, payable on July 31, 2024"
+     }
+    },
+    {
+     "payDate": "2024-10-31",
+     "amountsStated": [
+      "1.25"
+     ],
+     "declarationDatesStated": [
+      "2024-09-17"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-24-000611",
+      "file": "jpm-20240930.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2024-10-30T20:18:49.000Z",
+      "sha256": "e95c84e0f59e6f160e3daf0b42dbdc10b0d6e080fae1a2028b2b6434f1f73568",
+      "quote": "On September 17, 2024, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.25 per share, payable on October 31, 2024"
+     }
+    },
+    {
+     "payDate": "2025-01-31",
+     "amountsStated": [
+      "1.25"
+     ],
+     "declarationDatesStated": [
+      "2024-12-09"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-25-000270",
+      "file": "jpm-20241231.htm",
+      "form": "10-K",
+      "acceptanceUtc": "2025-02-14T21:17:07.000Z",
+      "sha256": "78a272cbc61fd1a705814b747872ba9b438d4c417c8246d5e8233da77d423d13",
+      "quote": "On December 9, 2024, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.25 per share, payable on January 31, 2025"
+     }
+    },
+    {
+     "payDate": "2025-04-30",
+     "amountsStated": [
+      "1.4"
+     ],
+     "declarationDatesStated": [
+      "2025-03-18"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-25-000421",
+      "file": "jpm-20250331.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2025-05-01T20:16:56.000Z",
+      "sha256": "288e7480aeac76b7f7a2640d93ce16bb602870038932c85d55aa7033191206cc",
+      "quote": "On March 18, 2025, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.40 per share, payable on April 30, 2025"
+     }
+    },
+    {
+     "payDate": "2025-07-31",
+     "amountsStated": [
+      "1.4"
+     ],
+     "declarationDatesStated": [
+      "2025-05-19"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0000019617-25-000615",
+      "file": "jpm-20250630.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2025-08-05T20:18:22.000Z",
+      "sha256": "a631d6603560e078425aec583657f69fad342dbb797e0c7b5592b33a3fe74614",
+      "quote": "On May 19, 2025, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.40 per share, payable on July 31, 2025"
+     }
+    },
+    {
+     "payDate": "2025-10-31",
+     "amountsStated": [
+      "1.5"
+     ],
+     "declarationDatesStated": [
+      "2025-09-16"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0001628280-25-048859",
+      "file": "jpm-20250930.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2025-11-04T21:18:08.000Z",
+      "sha256": "cf143e3a51920dde891b84db0b959d2d305e44c5b81d770210ca16fbab1b273d",
+      "quote": "On September 16, 2025, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.50 per share, payable on October 31, 2025"
+     }
+    },
+    {
+     "payDate": "2026-01-31",
+     "amountsStated": [
+      "1.5"
+     ],
+     "declarationDatesStated": [
+      "2025-12-09"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0001628280-26-008131",
+      "file": "jpm-20251231.htm",
+      "form": "10-K",
+      "acceptanceUtc": "2026-02-13T21:20:00.000Z",
+      "sha256": "003131ab9664295ef64e72553b583840ab08f6d5d17d741c0b15517d90320888",
+      "quote": "On December 9, 2025, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.50 per share, payable on January 31, 2026"
+     }
+    },
+    {
+     "payDate": "2026-04-30",
+     "amountsStated": [
+      "1.5"
+     ],
+     "declarationDatesStated": [
+      "2026-03-17"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0001628280-26-029344",
+      "file": "jpm-20260331.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2026-05-01T20:18:43.000Z",
+      "sha256": "02971a65971673e6d715a7744d7f06fef25d367852b755c2e16a59b228140ff9",
+      "quote": "On March 17, 2026, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.50 per share, payable on April 30, 2026"
+     }
+    },
+    {
+     "payDate": "2026-07-31",
+     "amountsStated": [
+      "1.5"
+     ],
+     "declarationDatesStated": [
+      "2026-05-18"
+     ],
+     "recordDate": null,
+     "recordDateState": "NOT_STATED_IN_SEC_SOURCES_FOUND",
+     "attestations": 1,
+     "firstSecAvailability": {
+      "accession": "0001628280-26-054343",
+      "file": "jpm-20260630.htm",
+      "form": "10-Q",
+      "acceptanceUtc": "2026-08-06T20:19:03.000Z",
+      "sha256": "46c26919f7edce86249a1d69141d4064f44ba34f573028a06fc8d0717bdf918f",
+      "quote": "On May 18, 2026, the Firm announced that its Board of Directors had declared a quarterly common stock dividend of $1.50 per share, payable on July 31, 2026"
+     }
+    }
+   ],
+   "eventsInExpectedQuartersWithPayDateAndAmount": 15,
    "gaps": [
     {
      "quarter": "2017Q4",
@@ -5357,28 +5556,82 @@
      "gap": "NO_SEC_ATTESTATION_FOUND"
     },
     {
-     "recordDate": "2015-07-06",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.40",
-      "42.325"
+     "payDate": "2024-04-30",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.15"
      ]
     },
     {
-     "recordDate": "2016-07-06",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.44",
-      "42.136"
+     "payDate": "2024-07-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.15"
+     ]
+    },
+    {
+     "payDate": "2024-10-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.25"
+     ]
+    },
+    {
+     "payDate": "2025-01-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.25"
+     ]
+    },
+    {
+     "payDate": "2025-04-30",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.4"
+     ]
+    },
+    {
+     "payDate": "2025-07-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.4"
+     ]
+    },
+    {
+     "payDate": "2025-10-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.5"
+     ]
+    },
+    {
+     "payDate": "2026-01-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.5"
+     ]
+    },
+    {
+     "payDate": "2026-04-30",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.5"
+     ]
+    },
+    {
+     "payDate": "2026-07-31",
+     "gap": "RECORD_DATE_NOT_STATED (amount+payDate+declaration found)",
+     "amountsStated": [
+      "1.5"
      ]
     }
    ],
    "companyFactsCrossCheck": {
     "concept": "us-gaap:CommonStockDividendsPerShareDeclared (3-month durations)",
-    "match": 0,
+    "match": 6,
     "matchRestated": 0,
-    "mismatch": 0,
-    "unmatchable": 31,
+    "mismatch": 1,
+    "unmatchable": 24,
     "rows": [
      {
       "period": [
@@ -5398,7 +5651,11 @@
       "xbrl": [
        "0.44"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2016-04-06"
+      ],
+      "sum": "0.44",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5408,7 +5665,11 @@
       "xbrl": [
        "0.48"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2016-07-06"
+      ],
+      "sum": "0.48",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5418,7 +5679,11 @@
       "xbrl": [
        "0.48"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2016-10-06"
+      ],
+      "sum": "0.48",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5428,7 +5693,11 @@
       "xbrl": [
        "0.5"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2017-04-06"
+      ],
+      "sum": "0.5",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5438,7 +5707,11 @@
       "xbrl": [
        "0.56"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2018-04-06"
+      ],
+      "sum": "0.56",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5448,7 +5721,11 @@
       "xbrl": [
        "1.12"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2018-07-06"
+      ],
+      "sum": "0.56",
+      "state": "MISMATCH"
      },
      {
       "period": [
@@ -5458,7 +5735,11 @@
       "xbrl": [
        "0.8"
       ],
-      "state": "NO_EVENT_WITH_STATED_DECLARATION_IN_PERIOD"
+      "eventsDeclaredInPeriod": [
+       "2018-10-05"
+      ],
+      "sum": "0.8",
+      "state": "MATCH"
      },
      {
       "period": [
@@ -5702,16 +5983,18 @@
       "2015-01-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.377",
+     "amount": "0.4",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.377"
+      "0.4"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2014-12-09"
+     ],
+     "declarationDate": "2014-12-09",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -5742,9 +6025,9 @@
        "fileDate": "2015-01-02",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.377",
+       "amount": "0.4",
        "payDate": "2015-01-31",
-       "declarationDate": null,
+       "declarationDate": "2014-12-09",
        "sha256": "989df48ffb110cc12d5f574e44ba9642e9f114f96e6a35083a62a32c54a2c5ed"
       }
      ]
@@ -5757,10 +6040,10 @@
       "2015-04-30"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.363",
+     "amount": "0.4",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.363"
+      "0.4"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -5797,7 +6080,7 @@
        "fileDate": "2015-04-01",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.363",
+       "amount": "0.4",
        "payDate": "2015-04-30",
        "declarationDate": null,
        "sha256": "30b3ea70857c013dd34feb6f8c69fce0f1882a09ed9932a2997cfc9b9a734c22"
@@ -5812,17 +6095,18 @@
       "2015-07-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.44",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.40",
-      "42.325"
+      "0.44"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2015-05-19"
+     ],
+     "declarationDate": "2015-05-19",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -5853,9 +6137,9 @@
        "fileDate": "2015-07-01",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.325",
+       "amount": "0.44",
        "payDate": "2015-07-31",
-       "declarationDate": null,
+       "declarationDate": "2015-05-19",
        "sha256": "b91578f5a1ab401fa7620d44dd72de4366afa76351736d3b684be311b4fd58e2"
       },
       {
@@ -5864,7 +6148,7 @@
        "fileDate": "2015-08-03",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.40",
+       "amount": null,
        "payDate": "2015-07-31",
        "declarationDate": null,
        "sha256": "b37a875e81d33355f6de60fe483d55449132af746d0e489f5dda9102ffae508d"
@@ -5875,7 +6159,7 @@
        "fileDate": "2015-11-02",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.40",
+       "amount": null,
        "payDate": "2015-07-31",
        "declarationDate": null,
        "sha256": "b7e19690f9c09dd343e891cbdb9494badca5437491ac469012eff0159792f613"
@@ -5890,16 +6174,18 @@
       "2015-10-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.284",
+     "amount": "0.44",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.284"
+      "0.44"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2015-09-15"
+     ],
+     "declarationDate": "2015-09-15",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -5930,9 +6216,9 @@
        "fileDate": "2015-10-02",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.284",
+       "amount": "0.44",
        "payDate": "2015-10-31",
-       "declarationDate": null,
+       "declarationDate": "2015-09-15",
        "sha256": "5945ead467e3820312269cf89c87827abdd27318ddc7dc2eb53236a89228fbdf"
       }
      ]
@@ -5945,16 +6231,18 @@
       "2016-01-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.246",
+     "amount": "0.44",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.246"
+      "0.44"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2015-12-08"
+     ],
+     "declarationDate": "2015-12-08",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -5985,9 +6273,9 @@
        "fileDate": "2016-01-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.246",
+       "amount": "0.44",
        "payDate": "2016-01-31",
-       "declarationDate": null,
+       "declarationDate": "2015-12-08",
        "sha256": "59052c78f417009ad4a19b826a4639477e0d9f64b12e8785b9ac96dc66d98486"
       }
      ]
@@ -6000,16 +6288,18 @@
       "2016-04-30"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.204",
+     "amount": "0.44",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.204"
+      "0.44"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2016-03-15"
+     ],
+     "declarationDate": "2016-03-15",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6040,9 +6330,9 @@
        "fileDate": "2016-04-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.204",
+       "amount": "0.44",
        "payDate": "2016-04-30",
-       "declarationDate": null,
+       "declarationDate": "2016-03-15",
        "sha256": "e22feed2688d3a2794c35a434ba5723adf2d55cd0a9403cc68246331af4e79c7"
       }
      ]
@@ -6055,17 +6345,18 @@
       "2016-07-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.48",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.44",
-      "42.136"
+      "0.48"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2016-05-17"
+     ],
+     "declarationDate": "2016-05-17",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6096,9 +6387,9 @@
        "fileDate": "2016-07-01",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.136",
+       "amount": "0.48",
        "payDate": "2016-07-31",
-       "declarationDate": null,
+       "declarationDate": "2016-05-17",
        "sha256": "275917ae3a3e7388b6fb20c77a258f6d215c4d6f7a2e4e92bac7241e21a4018c"
       },
       {
@@ -6107,7 +6398,7 @@
        "fileDate": "2016-08-03",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.44",
+       "amount": null,
        "payDate": "2016-07-31",
        "declarationDate": null,
        "sha256": "968679da9b021d5c978f9590193eb20d79cb92e7df7623a01d0667382cc6cf00"
@@ -6118,7 +6409,7 @@
        "fileDate": "2016-11-01",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.44",
+       "amount": null,
        "payDate": "2016-07-31",
        "declarationDate": null,
        "sha256": "50089210806bdf3ffe453495b44eee052c8a9bc7a83da1509c9c529455bacc78"
@@ -6133,16 +6424,18 @@
       "2016-10-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.073",
+     "amount": "0.48",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.073"
+      "0.48"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2016-09-20"
+     ],
+     "declarationDate": "2016-09-20",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6173,9 +6466,9 @@
        "fileDate": "2016-10-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.073",
+       "amount": "0.48",
        "payDate": "2016-10-31",
-       "declarationDate": null,
+       "declarationDate": "2016-09-20",
        "sha256": "829c53798365e3bd53961c005b1c7d7cc034dc927bcf9b743313cfec1d1823cd"
       }
      ]
@@ -6188,16 +6481,18 @@
       "2017-01-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "42.025",
+     "amount": "0.48",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "42.025"
+      "0.48"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2016-12-13"
+     ],
+     "declarationDate": "2016-12-13",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6228,9 +6523,9 @@
        "fileDate": "2017-01-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "42.025",
+       "amount": "0.48",
        "payDate": "2017-01-31",
-       "declarationDate": null,
+       "declarationDate": "2016-12-13",
        "sha256": "a4d8ae61716d07c58257f870a52b59e7510c4ee9c81b966630dcff019b4e264b"
       }
      ]
@@ -6243,16 +6538,18 @@
       "2017-04-30"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.967",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.967"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2017-03-21"
+     ],
+     "declarationDate": "2017-03-21",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6283,9 +6580,9 @@
        "fileDate": "2017-04-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.967",
+       "amount": "0.5",
        "payDate": "2017-04-30",
-       "declarationDate": null,
+       "declarationDate": "2017-03-21",
        "sha256": "b3557378b4a70962d9f6c24019c9eb649b3dce990560e525afaf56137336a3cb"
       }
      ]
@@ -6298,16 +6595,18 @@
       "2017-07-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.912",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.912"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2017-05-16"
+     ],
+     "declarationDate": "2017-05-16",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6338,9 +6637,9 @@
        "fileDate": "2017-07-03",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.912",
+       "amount": "0.5",
        "payDate": "2017-07-31",
-       "declarationDate": null,
+       "declarationDate": "2017-05-16",
        "sha256": "dc5b134967d4dd092f9792ff4eb2c61a63c5c3e9ba2d4aa215d1809cc40264fc"
       }
      ]
@@ -6353,16 +6652,18 @@
       "2018-01-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.764",
+     "amount": "0.56",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.764"
+      "0.56"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2017-12-11"
+     ],
+     "declarationDate": "2017-12-11",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6393,9 +6694,9 @@
        "fileDate": "2018-01-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.764",
+       "amount": "0.56",
        "payDate": "2018-01-31",
-       "declarationDate": null,
+       "declarationDate": "2017-12-11",
        "sha256": "4fab5e19b75f92ddcd03688988589e216da092029ffedbf71258e2a27e62956c"
       }
      ]
@@ -6408,16 +6709,18 @@
       "2018-04-30"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.696",
+     "amount": "0.56",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.696"
+      "0.56"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2018-03-20"
+     ],
+     "declarationDate": "2018-03-20",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6448,9 +6751,9 @@
        "fileDate": "2018-04-05",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.696",
+       "amount": "0.56",
        "payDate": "2018-04-30",
-       "declarationDate": null,
+       "declarationDate": "2018-03-20",
        "sha256": "35cc2ead5b51fa74e8149ec213b4f57a9b1ea0e5f641a6be4f9ee9bb549995b9"
       }
      ]
@@ -6463,16 +6766,18 @@
       "2018-07-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.624",
+     "amount": "0.56",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.624"
+      "0.56"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2018-05-15"
+     ],
+     "declarationDate": "2018-05-15",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6503,9 +6808,9 @@
        "fileDate": "2018-07-05",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.624",
+       "amount": "0.56",
        "payDate": "2018-07-31",
-       "declarationDate": null,
+       "declarationDate": "2018-05-15",
        "sha256": "7c70c28cb6e08830b1cd821561be7e0ab2eb5e5d7f917b7c78d87d2a61bac130"
       }
      ]
@@ -6518,16 +6823,18 @@
       "2018-10-31"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "41.472",
+     "amount": "0.8",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "41.472"
+      "0.8"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
-     "declarationDatesStated": [],
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
+     "declarationDatesStated": [
+      "2018-09-18"
+     ],
+     "declarationDate": "2018-09-18",
+     "declarationDateState": "STATED",
      "kind": "REGULAR",
      "exDate": null,
      "exDateState": "NOT_STATED_IN_SEC_SOURCES_USED",
@@ -6558,9 +6865,9 @@
        "fileDate": "2018-10-04",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "41.472",
+       "amount": "0.8",
        "payDate": "2018-10-31",
-       "declarationDate": null,
+       "declarationDate": "2018-09-18",
        "sha256": "b4a94f46b17409b1c4be1a549e1a1e22f9e8512d40537625462d11756e09a79d"
       }
      ]
@@ -6575,6 +6882,7 @@
    "expectedQuarters": 11,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2024Q1..2026Q3",
    "eventsFound": 1,
+   "declarationsWithoutRecordDate": [],
    "eventsInExpectedQuartersWithPayDateAndAmount": 1,
    "gaps": [
     {
@@ -6636,7 +6944,7 @@
       "eventsDeclaredInPeriod": [
        "2024-02-22"
       ],
-      "sum": "0.50",
+      "sum": "0.5",
       "state": "MATCH"
      },
      {
@@ -6730,10 +7038,10 @@
       "2024-03-26"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.50",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.50"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -6772,7 +7080,7 @@
        "fileDate": "2024-02-01",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": null,
        "sha256": "aeb1f2fcddb5f66222516587448bf9dc213f2a5f8ead8942f9a2586e75c24069"
@@ -6783,7 +7091,7 @@
        "fileDate": "2024-02-01",
        "form": "8-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": "2024-02-01",
        "sha256": "60636027ebf2ff2b1a992ec01480c24b08feb17dda03b73ad3d5011b34a74875"
@@ -6794,7 +7102,7 @@
        "fileDate": "2024-02-02",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": "2024-02-01",
        "sha256": "b916697c3d5336c88c515ad5314e62260a9498c0d32146d17f255be20232cf31"
@@ -6805,7 +7113,7 @@
        "fileDate": "2024-02-02",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": "2024-02-01",
        "sha256": "b916697c3d5336c88c515ad5314e62260a9498c0d32146d17f255be20232cf31"
@@ -6816,7 +7124,7 @@
        "fileDate": "2024-02-02",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": "2024-02-01",
        "sha256": "b916697c3d5336c88c515ad5314e62260a9498c0d32146d17f255be20232cf31"
@@ -6827,7 +7135,7 @@
        "fileDate": "2024-02-02",
        "form": "10-K",
        "pattern": "SENTENCE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2024-03-26",
        "declarationDate": "2024-02-01",
        "sha256": "b916697c3d5336c88c515ad5314e62260a9498c0d32146d17f255be20232cf31"
@@ -6844,6 +7152,7 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 47,
+   "declarationsWithoutRecordDate": [],
    "eventsInExpectedQuartersWithPayDateAndAmount": 47,
    "gaps": [],
    "companyFactsCrossCheck": {
@@ -12590,35 +12899,12 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 46,
-   "eventsInExpectedQuartersWithPayDateAndAmount": 43,
+   "declarationsWithoutRecordDate": [],
+   "eventsInExpectedQuartersWithPayDateAndAmount": 46,
    "gaps": [
     {
      "quarter": "2020Q2",
      "gap": "NO_SEC_ATTESTATION_FOUND"
-    },
-    {
-     "recordDate": "2016-05-26",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.115",
-      "0.1150"
-     ]
-    },
-    {
-     "recordDate": "2016-08-25",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.115",
-      "0.1150"
-     ]
-    },
-    {
-     "recordDate": "2016-11-28",
-     "gap": "AMOUNT_CONFLICT",
-     "stated": [
-      "0.14",
-      "0.1400"
-     ]
     }
    ],
    "companyFactsCrossCheck": {
@@ -13395,11 +13681,10 @@
       "2016-06-20"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.115",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.115",
-      "0.1150"
+      "0.115"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -13447,7 +13732,7 @@
        "fileDate": "2016-05-25",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.1150",
+       "amount": "0.115",
        "payDate": "2016-06-20",
        "declarationDate": null,
        "sha256": "c7529902ff412d8730a1ef1f0b1f9488499c2d830594f47dac3a01a6764543b5"
@@ -13458,7 +13743,7 @@
        "fileDate": "2016-05-25",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.1150",
+       "amount": "0.115",
        "payDate": "2016-06-20",
        "declarationDate": null,
        "sha256": "c7529902ff412d8730a1ef1f0b1f9488499c2d830594f47dac3a01a6764543b5"
@@ -13473,11 +13758,10 @@
       "2016-09-16"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.115",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.115",
-      "0.1150"
+      "0.115"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -13525,7 +13809,7 @@
        "fileDate": "2016-08-23",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.1150",
+       "amount": "0.115",
        "payDate": "2016-09-16",
        "declarationDate": null,
        "sha256": "39ed67aced661ab2c7646b31f7fc1aec0094b897a89c50d48b4a200450d2be30"
@@ -13536,7 +13820,7 @@
        "fileDate": "2016-08-23",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.1150",
+       "amount": "0.115",
        "payDate": "2016-09-16",
        "declarationDate": null,
        "sha256": "39ed67aced661ab2c7646b31f7fc1aec0094b897a89c50d48b4a200450d2be30"
@@ -13551,11 +13835,10 @@
       "2016-12-19"
      ],
      "payDateState": "CONSISTENT",
-     "amount": null,
-     "amountState": "CONFLICT",
+     "amount": "0.14",
+     "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.14",
-      "0.1400"
+      "0.14"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -13625,7 +13908,7 @@
        "fileDate": "2016-11-22",
        "form": "10-Q",
        "pattern": "SENTENCE",
-       "amount": "0.1400",
+       "amount": "0.14",
        "payDate": "2016-12-19",
        "declarationDate": null,
        "sha256": "44aa715379a6db98fff3d3aa86933f1ae6ac787c4e0a3d7e709f1977da557916"
@@ -15839,6 +16122,7 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 47,
+   "declarationsWithoutRecordDate": [],
    "eventsInExpectedQuartersWithPayDateAndAmount": 47,
    "gaps": [],
    "companyFactsCrossCheck": {
@@ -15899,7 +16183,7 @@
        "2016-08-12",
        "2016-12-09"
       ],
-      "sum": "2.00",
+      "sum": "2.0",
       "state": "MATCH"
      },
      {
@@ -16819,10 +17103,10 @@
       "2016-04-04"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.50",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.50"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -16861,7 +17145,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -16872,7 +17156,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -16883,7 +17167,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -16894,7 +17178,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -16905,7 +17189,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -16916,7 +17200,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -16927,7 +17211,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -16938,7 +17222,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-04-04",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -16953,10 +17237,10 @@
       "2016-06-06"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.50",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.50"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -16995,7 +17279,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17006,7 +17290,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17017,7 +17301,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17028,7 +17312,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17039,7 +17323,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17050,7 +17334,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17061,7 +17345,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -17072,7 +17356,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-06-06",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -17087,10 +17371,10 @@
       "2016-09-06"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.50",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.50"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -17129,7 +17413,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17140,7 +17424,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17151,7 +17435,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17162,7 +17446,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17173,7 +17457,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17184,7 +17468,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17195,7 +17479,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -17206,7 +17490,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2016-09-06",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -17221,10 +17505,10 @@
       "2017-01-03"
      ],
      "payDateState": "CONSISTENT",
-     "amount": "0.50",
+     "amount": "0.5",
      "amountState": "CONSISTENT",
      "contemporaneousAmountsStated": [
-      "0.50"
+      "0.5"
      ],
      "restatedAttestations": [],
      "restatementConsistent": null,
@@ -17263,7 +17547,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17274,7 +17558,7 @@
        "fileDate": "2016-03-30",
        "form": "10-K",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "4f9ee4f476df02634260402ff9ca8df8de1378f2c47673a113c948a277669c84"
@@ -17285,7 +17569,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17296,7 +17580,7 @@
        "fileDate": "2016-06-03",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "12676ba3ec94f6b60a8aa08fa7bc5f304094820f2c0796375e274a7ae2905b07"
@@ -17307,7 +17591,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17318,7 +17602,7 @@
        "fileDate": "2016-08-31",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "b51f4b9e5919974ef4f0f6fedc3d8018e05d32ffcd2c8e1c55803a950e32db0b"
@@ -17329,7 +17613,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -17340,7 +17624,7 @@
        "fileDate": "2016-12-01",
        "form": "10-Q",
        "pattern": "INSTALLMENT_TABLE",
-       "amount": "0.50",
+       "amount": "0.5",
        "payDate": "2017-01-03",
        "declarationDate": "2016-02-18",
        "sha256": "4c207a3d8da9f3a42c090d23444cd11051a0d46de74c1111daa3622584368884"
@@ -21483,6 +21767,7 @@
    "expectedQuarters": 47,
    "expectedBasis": "one regular dividend per record-date calendar quarter 2015Q1..2026Q3",
    "eventsFound": 14,
+   "declarationsWithoutRecordDate": [],
    "eventsInExpectedQuartersWithPayDateAndAmount": 14,
    "gaps": [
     {

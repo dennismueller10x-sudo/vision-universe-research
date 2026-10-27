@@ -47,16 +47,12 @@
   "SPLIT_CONFIRMED_SERIES_UNADJUSTED": 8
  },
  "wouldQualify": {
-  "py": 77,
+  "py": 81,
   "js": 81,
-  "identical": false,
+  "identical": true,
   "onlyPy": [],
-  "onlyJs": [
-   "ref_AAPL",
-   "ref_JCI",
-   "ref_SPXC",
-   "ref_VATE"
-  ]
+  "onlyJs": []
  },
- "tolerance": "weekly ratios compared after rounding to 6 decimals (engine stores r6); k/direction/reasons/decisions must match exactly."
+ "tolerance": "weekly ratios compared after rounding to 6 decimals; max allowed |diff| = 1e-6 + 1e-12 (one unit in the 6th decimal: JS Math.round(x*1e6)/1e6 vs Python round() half-even/binary representation at .5 boundaries). k/direction/engine reasons/decisions/would-qualify sets must match exactly.",
+ "ratioWithinTolerance": true
 }

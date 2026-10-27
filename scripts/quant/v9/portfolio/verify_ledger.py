@@ -89,14 +89,14 @@ def build(reg):
         ev = []
         for s in splits:
             eff = first_on_or_after(dates, s["effectiveDate"])
-            if eff:
+            if dates[0] <= s["effectiveDate"] <= dates[-1]:
                 ev.append({"id": f"{t}:SPLIT:{s['effectiveDate']}", "type": "SPLIT", "eff": eff, "ratio": D(str(s["ratio"])), "date": s["effectiveDate"]})
         comp = next(c for c in div["companies"] if c["ticker"] == t)
         for e in comp["events"]:
             ex = rule_ex(e["recordDate"])
-            eff = first_on_or_after(dates, ex)
-            if not eff or eff < dates[0]:
+            if ex < dates[0] or ex > dates[-1]:
                 continue
+            eff = first_on_or_after(dates, ex)
             sec = (e.get("firstSecAvailability") or {}).get("acceptanceUtc")
             close = ts(closes[eff])
             if sec and ts(sec) <= close:
@@ -107,9 +107,13 @@ def build(reg):
                 raise SystemExit("EVENT_NOT_AVAILABLE " + t + e["recordDate"])
             ev.append({"id": f"{t}:DIV:{e['recordDate']}", "type": "CASH_DIVIDEND", "eff": eff, "pay": e["payDate"],
                        "amount": D(e["amount"]), "date": ex, "tier": tier})
-        ev.sort(key=lambda e: (e["eff"], e["date"], e["type"]))
         L["ref_" + t] = {"raw": raw, "adj": adj, "events": ev}
     return dates, closes, L
+
+
+def ordered_events(L):
+    allev = [(k, e) for k in L for e in L[k]["events"]]
+    return sorted(allev, key=lambda ke: (ke[1]["eff"], ke[1]["date"], ke[1]["type"], ke[1]["id"]))
 
 
 def solve_after(before, marked, weights, rate):
@@ -142,8 +146,7 @@ def simulate(reg, dates, closes, L, mode, wtotal):
     fees = D(0)
     for d in dates:
         if mode != "PRICE_ADJUSTED":
-            for k in ids:
-                for e in L[k]["events"]:
+            for k, e in ORDERED:
                     if e["eff"] != d:
                         continue
                     if mode == "RAW_SPLITS_ONLY" and e["type"] != "SPLIT":
@@ -196,12 +199,14 @@ def main():
     priv = Path(a.private)
     reg = load(priv / "registration.json")
     dates, closes, L = build(reg)
+    global ORDERED
+    ORDERED = ordered_events(L)
     report = {"schemaVersion": "v9-portfolio-ledger-parity-1.0.0", "reference": "Python Decimal(50) journal; inputs rebuilt independently from evidence + price files",
               "tolerance": str(TOL), "registrationHash": reg["registrationHash"], "runs": {},
               "scriptSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     ok = True
-    for name, wt in [("TR_PAYDATE", 0.9), ("PRICE_ADJUSTED", 0.9), ("RAW_SPLITS_ONLY", 0.9), ("TR_EXDATE_CASH", 0.9), ("TR_FULLY_INVESTED", 1.0)]:
-        mode = "TR_PAYDATE" if name == "TR_FULLY_INVESTED" else name
+    for name, wt in [("TR_PAYDATE", 0.9), ("PRICE_ADJUSTED", 0.9), ("RAW_SPLITS_ONLY", 0.9), ("TR_EXDATE_CASH", 0.9), ("TR_FULLY_INVESTED", 1.0), ("TR_EXDATE_CASH_FULLY_INVESTED", 1.0)]:
+        mode = {"TR_FULLY_INVESTED": "TR_PAYDATE", "TR_EXDATE_CASH_FULLY_INVESTED": "TR_EXDATE_CASH"}.get(name, name)
         py = simulate(reg, dates, closes, L, mode, wt)
         rp = priv / f"{name}-result.json"
         inp = load(priv / f"{name}-input.json")
@@ -210,7 +215,7 @@ def main():
         js_ev = sorted((e["id"], e["effectiveDate"], e.get("payDate")) for l in inp["listings"] for e in l["events"])
         py_ev = sorted((e["id"], e["eff"], e.get("pay")) for k in L for e in L[k]["events"]
                        if name not in ("PRICE_ADJUSTED",) and (name != "RAW_SPLITS_ONLY" or e["type"] == "SPLIT"))
-        if name == "TR_EXDATE_CASH":
+        if name in ("TR_EXDATE_CASH", "TR_EXDATE_CASH_FULLY_INVESTED"):
             py_ev = sorted((i, eff, eff if p is not None else None) for i, eff, p in py_ev)
         px_dev = max((rel(b["close"], (L[l["listingId"]]["adj"] if name == "PRICE_ADJUSTED" else L[l["listingId"]]["raw"])[b["date"]])
                       for l in inp["listings"] for b in l["bars"]), default=D(0))

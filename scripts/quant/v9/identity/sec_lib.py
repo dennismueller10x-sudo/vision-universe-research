@@ -160,7 +160,7 @@ KIND_RULES = [
     ('UNIT', re.compile(r'\bunits?\b', re.I)),
     ('RIGHT', re.compile(r'\brights?\b', re.I)),
     ('DEBT', re.compile(r'\bnotes?\b|debenture|\bbonds?\b|senior|subordinated', re.I)),
-    ('COMMON', re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|subordinate voting shares|common share|shares of beneficial interest|limited voting shares', re.I)),
+    ('COMMON', re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|subordinate voting shares|common share|ordinary share|shares of beneficial interest|limited voting shares', re.I)),
 ]
 
 
@@ -176,9 +176,10 @@ def class_kind(title):
 
 def norm_symbol(sym):
     """Comparable symbol: provider 'DBRG_P_H' / SEC 'DBRG PRH' / map 'DBRG-PH' -> 'DBRGPH'."""
-    s = (sym or '').upper().strip()
+    s = re.sub(r'(?<=[A-Z])Pr(?=[A-Z]?$)', 'P', (sym or '').strip())  # SEC style 'PSAPrQ'
+    s = s.upper()
     s = re.sub(r'_P_', 'P', s)
-    s = re.sub(r'[\s.\-/]+PR(?=[A-Z]?$)', 'P', s)
+    s = re.sub(r'[\s.\-/]+PR\s*(?=[A-Z]?$)', 'P', s)
     s = re.sub(r'[\s.\-/]+P(?=[A-Z]$)', 'P', s)
     return re.sub(r'[^A-Z0-9]', '', s)
 
@@ -210,4 +211,23 @@ def price_statements(body):
             seen.add((d, p))
             s = max(0, m.start() - 60)
             out.append((d, p, text[s:min(len(text), m.end() + 20)][:300]))
+    return out
+
+
+US_VENUE_RE = re.compile(r'new york stock exchange|\bnyse\b|nasdaq|american stock exchange|\bamex\b|nyse american|nyse mkt|nyse arca|cboe|bats', re.I)
+NON_US_OR_OTC_RE = re.compile(r'\btsx\b|toronto stock exchange|canadian securities exchange|\bcse\b|tsx venture|euronext|lima stock exchange|bolsa|london stock exchange|\baim\b|frankfurt|six swiss|\botc\b|otcqb|otcqx|pink sheets|bulletin board|over[- ]the[- ]counter|hong kong stock exchange|australian securities exchange|\basx\b', re.I)
+
+
+def ticker_symbol_statements(text, sym):
+    """Statements binding `sym` (case-sensitive, whole token, not a when-issued 'WI' line) to 'symbol', whose
+    nearest preceding venue mention (within 160 chars) is a US national exchange. Returns [(start, quote)]."""
+    t = re.escape(sym)
+    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["“‘\'(]{0,2}%s["”’\')]{0,2}(?![A-Za-z0-9])(?!\s?WI\b)(?!\.[A-Z]{1,2}\b)' % t)
+    out = []
+    for m in pat.finditer(text):
+        pre = text[max(0, m.start() - 160):m.start()]
+        venues = [(v.start(), 'US') for v in US_VENUE_RE.finditer(pre)] + [(v.start(), 'X') for v in NON_US_OR_OTC_RE.finditer(pre)]
+        if not venues or max(venues)[1] != 'US':
+            continue
+        out.append((m.start(), text[max(0, m.start() - 120):m.start() + 160]))
     return out
