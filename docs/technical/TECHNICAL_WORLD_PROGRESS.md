@@ -1,6 +1,7 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
-**Stand:** 25.10.2026 · V1 (PR #919, `f2012b0`) und V2 (PR #923, `74a49d0`) gemergt · Menügruppe PR #925 · V3 gemergt (PR #929, `9787b1a`) · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
+**Stand:** 27.10.2026 · Bibliothek L1–L8 auf `main` (160 Funktionen: 78 Indikatoren, 58 Kerzenmuster, 24 Formationen; Stand je Funktion in [TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)) · Versionen `indicators` 1.5.0, `candlesticks` 1.1.0, `formations` 1.2.3, `screen-row` 1.8.0, `technical-mtf` 1.1.0 · Auftrag seit 26.10.2026: Bibliothek mit mathematischer und historischer Validierung und Screener-Anbindung.
+Ältere Stände: V1 (PR #919), V2 (PR #923), Menügruppe (PR #925), V3 (PR #929).
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz
@@ -113,6 +114,8 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
 9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
 10. **Eigene Menügruppe** und weitere Änderungen an geschützten Dateien (`ui-protection.json`) brauchen je eine eigene Owner-Freigabe der Hashes.
+11. **L7 nach der Materialisierung prüfen:** Die 18 Wochen-/Monatsspalten (#1017) sind bis zur ersten Materialisierung mit `technical-mtf-1.1.0` `null`. Danach Abdeckung je Spalte messen und mit der Näherung in SCREENER_FIELDS_L7.md §2a vergleichen.
+12. **Bibliothek:** Neue Fachmodelländerungen (z. B. Gleichstandsbehandlung der Pivots, Ursache der Spiegeltest-Asymmetrie, FORMATION_VALIDATION.md §2) nur als eigener PR mit Vorher/Nachher.
 
 ## 7. Blockaden und Entscheidungen
 
@@ -153,6 +156,11 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 26.10.2026 | Abschließende Prüfung auf `main` nach #966/#967, siehe Abschnitt 11. |
 | 27.10.2026 | Nächtliche Materialisierung scheiterte im Vertragstest an einer Marktannahme (NVDA mit Momentum 6M ≥ 0, real −5,3 %). Nichts committet, Frische-Vertrag rot. PR #988 (nur Test, Owner-Freigabe) gemergt (`7cc3f26`). |
 | 27.10.2026 | Wiederanlauf per `workflow_dispatch` ohne Anbieterabruf: Lauf 40459929703 grün, Produktdaten `c04c7a5` (Stichtag 26.10.). technical-world automatisch `0f91cf7` (5.657 Titel). EMA 200 bei 4.809 Titeln belastbar, 848 ohne (335 zu kurze Historie, 513 Fehlerschranke). Wochen-/Monatswerte bei allen 5.657 aus der Tageshistorie. Frische: Ablage und Produkt CURRENT. Folgeläufe grün: Pages-Release (2×), Startseite, Supertrader Production Smoke. DQ: DQ-TW-1..4 PASS. DQ-PX-4 meldet 14/6.188 Split-Abweichungen in der langen Wochenreihe; sie stammen von Januar bis September 2026, sind älter als der Lauf und gehören zu long-series.yml. Supertrader-Signale liegen 1 Sitzung zurück; das ist deren eigener Erzeuger. |
+| 27.10.2026 | Bibliothek: Inventur L1 (#994), Katalogindikatoren mit TA-Lib-Abgleich (#995, #997), Candlestick-Bibliothek 58 Muster (#996, #1006), Formationsvalidierung L5 (#998) und Korrekturen 1.2.1 (#1000), 1.2.2 (#1008, Sichtbarkeit am Erkennungstag) und 1.2.3 (#1013, Rundung bei Sub-Penny-Titeln), jeweils mit Owner-Freigabe, wo Fachmodell. Kerzen-Evidenz (#1010). |
+| 27.10.2026 | PR #1004 gemergt (`d95cdfb`, Owner-Freigabe): Screener-Felder L6 (ROC 63/126/252, Inside Bar, NR7, Kerzenmuster); bestehende 94 Spalten byte-gleich. PR #1015 (`5662a0f`): Klinger, 78 Indikatoren. Erzeugerlauf auf `main`: Versionen bestätigt. |
+| 27.10.2026 | PR #1017 gemergt (`e490982`, Owner-Freigabe): L7, dieselben Felder je Woche und Monat (`technical-mtf` 1.1.0); bestehende 105 Spalten byte-gleich, neue Spalten bis zur Materialisierung `null`. |
+| 27.10.2026 | PR #1019 gemergt (`dc350dd`, Owner-Freigabe): Core-CI holt nicht mehr die volle Historie (18 GB `.git`, 15-Minuten-Abbruch vor jedem Test). Im PR der Merge-Commit mit Tiefe 2, geänderte Dateien gegen seine Basis; Core-Job danach 5–7 min. |
+| 27.10.2026 | PR #1021 gemergt (`126d7f2`): zweite fremde Referenz (pandas-ta bzw. Formel aus Bausteinen) für die 26 Indikatoren ohne TA-Lib-Gegenstück; 57 Reihen gleich. Damit sind 78/78 Indikatoren gegen echte Kurse geprüft. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
