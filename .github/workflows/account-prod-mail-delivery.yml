@@ -1,0 +1,36 @@
+name: Konten — Zustellung der SMTP-Testmail pruefen (Ops, nur lesen)
+# Liest bei Brevo die Ereignisse (requests, delivered, bounces, blocked ...)
+# der Testmail aus account-prod-auth-apply.yml, erkannt an der Kennung im
+# Betreff. Nur GET, keine Aenderung, kein Versand; Adressen werden nicht
+# ausgegeben.
+on:
+  push:
+    branches: [ops/supabase-dev-migrations]
+    paths: ['.github/workflows/account-prod-mail-delivery.yml', 'ops/production/mail-delivery.trigger']
+permissions:
+  contents: read
+concurrency:
+  group: account-prod-mail-delivery-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  KENNUNG: vu-smtp-20261027T112112Z
+jobs:
+  zustellung:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Brevo-Ereignisse der Testmail
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: |
+          set -euo pipefail
+          curl -fsS -H "api-key: $BREVO_API_KEY" -H 'accept: application/json' -H 'User-Agent: VisionUniverse-Brevo/1.0' \
+            "https://api.brevo.com/v3/smtp/statistics/events?days=2&limit=500&sort=desc" > e.json
+          jq -r --arg k "$KENNUNG" '[.events[]? | select((.subject // "") | contains($k))]
+            | if length == 0 then "Keine Ereignisse zur Kennung \($k) gefunden."
+              else (map("\(.date)  \(.event)  \(.reason // "")") | join("\n")) end' e.json
+          n=$(jq --arg k "$KENNUNG" '[.events[]? | select((.subject // "") | contains($k)) | select(.event=="delivered")] | length' e.json)
+          bad=$(jq --arg k "$KENNUNG" '[.events[]? | select((.subject // "") | contains($k)) | select(.event|test("ounce|blocked|invalid|error|spam"))] | length' e.json)
+          rm -f e.json
+          echo "zugestellt=$n  fehler=$bad"
+          [ "$n" -ge 1 ] && [ "$bad" -eq 0 ]
