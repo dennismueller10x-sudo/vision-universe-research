@@ -1,7 +1,7 @@
 {
  "schemaVersion": "v9-identity-dossiers-1.0.0",
- "generatedAt": "2026-10-27T18:32:06+00:00",
- "codeSha256": "777b90d834922ad20b5b92725edea81d4a1fa64f4e2208e81a25856f06c21dc6",
+ "generatedAt": "2026-10-27T18:57:49+00:00",
+ "codeSha256": "ad100e2257a675531ade4ced0eb3b92313a4b02295539f31b5c4e51653ce4057",
  "secTickerMap": {
   "url": "https://www.sec.gov/files/company_tickers_exchange.json",
   "sha256": "76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46",
@@ -986,8 +986,6 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "IIVI",
-    "cik": "0000820318",
     "accession": "0000820318-01-500018",
     "document": "r10k-2001.txt",
     "filingDate": "2001-09-27",
@@ -996,11 +994,140 @@
     "sha256": "5bde7a792c743163cdda29f0c37e141c18da1244eb606fefda1f95360d8aa3ad",
     "bytesRead": 103045,
     "complete": true,
-    "quote": "KHOLDER MATTERS The Company's Common Stock is traded on the Nasdaq National Market under the symbol \"IIVI.\" The following table sets forth the range of high and low closing sale prices per share of the Company's Common Stock for the fiscal periods indicated, as reported by Nasdaq",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22IIVI%22&ciks=0000820318&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
-     "sha256": "bba32079c2e1a1d61d86dbe86a055372e22cc41796e3e2899c1f055919d3695c"
-    }
+    "quote": "MON EQUITY AND RELATED STOCKHOLDER MATTERS The Company's Common Stock is traded on the Nasdaq National Market under the symbol \"IIVI.\" The following table sets forth the range of high and low closing sale prices per share of the Company's Common Stock for the fiscal periods indic",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22IIVI%22&ciks=0000820318&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
+      "sha256": "bba32079c2e1a1d61d86dbe86a055372e22cc41796e3e2899c1f055919d3695c",
+      "hits": 4
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0000820318",
+    "name": "COHERENT CORP.",
+    "secTickers": [
+     "COHR"
+    ],
+    "secExchanges": [
+     "NYSE"
+    ],
+    "formerNames": [
+     {
+      "name": "II-VI INC",
+      "from": "1995-10-04T00:00:00.000Z",
+      "to": "2022-09-01T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000820318.json",
+      "sha256": "0a97107a7208b60e44e839a88bfc0a540e36c220888fd56c0c02ce264c073f66"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000820318-submissions-001.json",
+      "sha256": "c7db204543e421e0d0140574c2522df02d664020295870f31349774d157370b6"
+     }
+    ],
+    "ixbrlCoverFilings": 145,
+    "listingForms": [
+     {
+      "form": "8-A12G",
+      "filingDate": "2001-08-28",
+      "accession": "0000820318-01-500014"
+     },
+     {
+      "form": "15-12G",
+      "filingDate": "2004-03-03",
+      "accession": "0000820318-04-000015"
+     },
+     {
+      "form": "15-12G",
+      "filingDate": "2020-02-27",
+      "accession": "0001193125-20-050953"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2020-07-07",
+      "accession": "0001193125-20-188807"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2023-02-09",
+      "accession": "0001193125-23-029127"
+     },
+     {
+      "form": "25",
+      "filingDate": "2023-02-22",
+      "accession": "0001193125-23-044806"
+     },
+     {
+      "form": "25-NSE",
+      "filingDate": "2023-07-03",
+      "accession": "0000876661-23-000552"
+     },
+     {
+      "form": "15-12G",
+      "filingDate": "2023-07-13",
+      "accession": "0001193125-23-186292"
+     }
+    ],
+    "latest": {
+     "cik": "0000820318",
+     "accession": "0001193125-26-375462",
+     "form": "8-K",
+     "filingDate": "2026-08-31",
+     "document": "d110649d8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/820318/000119312526375462/d110649d8k.htm",
+     "sha256": "79ee6d0bfb1119b0b8cd850d4ccd84c98df54bd95f79b15436d95cfa2886e3bc",
+     "bytesRead": 38424,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, no par value",
+      "TradingSymbol": "COHR",
+      "SecurityExchangeName": "New York Stock Exchange"
+     }
+    },
+    "first": {
+     "cik": "0000820318",
+     "accession": "0001193125-22-240836",
+     "form": "8-K",
+     "filingDate": "2022-09-08",
+     "document": "d347635d8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/820318/000119312522240836/d347635d8k.htm",
+     "sha256": "56b08149f67d9aa84461543ac713420472d99c208ef7516ba9f249947c17a552",
+     "bytesRead": 27829,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, no par value",
+      "TradingSymbol": "COHR",
+      "SecurityExchangeName": "Nasdaq Global Select Market"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0000820318",
+     "accession": "0001193125-22-235791",
+     "form": "8-K",
+     "filingDate": "2022-09-01",
+     "document": "d306085d8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/820318/000119312522235791/d306085d8k.htm",
+     "sha256": "7bd57d4df358059b5ba04636e2ffb02283b97f140ff49369e2e08b07729853dd",
+     "bytesRead": 24624,
+     "complete": true,
+     "symbols": [
+      "IIVI",
+      "IIVIP"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0001193125-24-152389",
+     "filingDate": "2024-06-03",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [],
    "issuer": "Coherent Corp. (formerly II-VI Incorporated)",
@@ -1766,8 +1893,6 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "ESPD",
-    "cik": "0001094831",
     "accession": "0001125282-01-500926",
     "document": "b311818_10ka.txt",
     "filingDate": "2001-06-15",
@@ -1776,11 +1901,123 @@
     "sha256": "d118182f7f9bcd5ad0fbdd336772a7054e1b67741ef95eeef885f9dd39d0bf85",
     "bytesRead": 307626,
     "complete": true,
-    "quote": "9 at $22.00 per share. It has traded since that date on the Nasdaq National Market under the symbol \"ESPD.\" Through February 28, 2001, the high and low sales prices for our Class A common stock, as reported by Nasdaq, were as follows: High Low 1999 Fourth Quarter (beginning Decem",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22ESPD%22&ciks=0001094831&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
-     "sha256": "81540435e4828b01b82a25110774b7fce9984097a8f432cf778075b007dcc4ab"
-    }
+    "quote": " public on December 10, 1999 at $22.00 per share. It has traded since that date on the Nasdaq National Market under the symbol \"ESPD.\" Through February 28, 2001, the high and low sales prices for our Class A common stock, as reported by Nasdaq, were as follows: High Low 1999 Four",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22ESPD%22&ciks=0001094831&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
+      "sha256": "81540435e4828b01b82a25110774b7fce9984097a8f432cf778075b007dcc4ab",
+      "hits": 4
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0001094831",
+    "name": "BGC Group, Inc.",
+    "secTickers": [
+     "BGC"
+    ],
+    "secExchanges": [
+     "Nasdaq"
+    ],
+    "formerNames": [
+     {
+      "name": "BGC Partners, Inc.",
+      "from": "2008-04-04T00:00:00.000Z",
+      "to": "2023-07-03T00:00:00.000Z"
+     },
+     {
+      "name": "ESPEED INC",
+      "from": "1999-11-16T00:00:00.000Z",
+      "to": "2008-04-04T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0001094831.json",
+      "sha256": "4b06409fadda52aa2d8539664c78e70e8dfd3f7ca42b9e80d6090bfb90bf148f"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0001094831-submissions-001.json",
+      "sha256": "4e94e1941523434e8bf0109490715d1b898417248e9809e614547983be277a67"
+     }
+    ],
+    "ixbrlCoverFilings": 145,
+    "listingForms": [
+     {
+      "form": "8-A12G",
+      "filingDate": "1999-11-18",
+      "accession": "0000889812-99-003453"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2012-06-29",
+      "accession": "0001193125-12-289863"
+     },
+     {
+      "form": "25-NSE",
+      "filingDate": "2018-09-05",
+      "accession": "0000876661-18-000966"
+     },
+     {
+      "form": "8-K12B",
+      "filingDate": "2023-07-03",
+      "accession": "0001193125-23-180979"
+     }
+    ],
+    "latest": {
+     "cik": "0001094831",
+     "accession": "0001628280-26-063655",
+     "form": "8-K",
+     "filingDate": "2026-09-28",
+     "document": "bgcp-20260928.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1094831/000162828026063655/bgcp-20260928.htm",
+     "sha256": "544e5941c966e110faa13111c3786b52e68a3a1038463b2f3f4afd7f94955af8",
+     "bytesRead": 39695,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "TradingSymbol": "BGC",
+      "SecurityExchangeName": "The NASDAQ Stock Market LLC"
+     }
+    },
+    "first": {
+     "cik": "0001094831",
+     "accession": "0001193125-23-180979",
+     "form": "8-K12B",
+     "filingDate": "2023-07-03",
+     "document": "d521017d8k12b.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1094831/000119312523180979/d521017d8k12b.htm",
+     "sha256": "78de80e9f2f5a3e86ef73d7f3cec9fb9c1e48d7207231386bcf13130f7e99610",
+     "bytesRead": 100179,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Class A Common Stock, $0.01 par value",
+      "TradingSymbol": "BGC",
+      "SecurityExchangeName": "The Nasdaq Stock Market, LLC"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0001094831",
+     "accession": "0001628280-23-023896",
+     "form": "8-K",
+     "filingDate": "2023-06-29",
+     "document": "bgcp-20230629.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1094831/000162828023023896/bgcp-20230629.htm",
+     "sha256": "d54085b2f66bf21cbde8c1ddbc6294429447588c3edfbe51b44c28474d9a985e",
+     "bytesRead": 45515,
+     "complete": true,
+     "symbols": [
+      "BGCP"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0001213900-24-101020",
+     "filingDate": "2024-11-21",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [
     {
@@ -1793,8 +2030,10 @@
    "issuer": "BGC Group, Inc. (successor issuer of BGC Partners, Inc., formerly eSpeed, Inc.)",
    "instrumentClass": "CLASS_A_COMMON_STOCK",
    "decision": {
-    "state": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
-    "unresolvedReasons": [],
+    "state": "UNRESOLVED",
+    "unresolvedReasons": [
+     "LATEST_COVER_CLASS_NOT_COMMON"
+    ],
     "hold": null,
     "sameDayMismatches": [],
     "priceCheckCounts": {
@@ -2686,21 +2925,156 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "BDGE",
-    "cik": "0000846617",
-    "accession": "0000846617-02-000032",
-    "document": "final10k.htm",
-    "filingDate": "2002-03-13",
+    "accession": "0001171200-09-000091",
+    "document": "i00039_bridgehampton-10k.htm",
+    "filingDate": "2009-03-12",
     "form": "10-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/846617/000084661702000032/final10k.htm",
-    "sha256": "53ee60829693958b3cfe7331dd12603dd260b7daab98e1aff28ac3dce5492e59",
-    "bytesRead": 210291,
-    "complete": true,
-    "quote": "pany’s common stock is traded on the NASDAQ over the counter bulletin board market under the symbol “BDGE”. The following table details the quarterly high and low prices of the Company’s common stock and the dividends declared for such periods. At December 31, 2001 the Company ha",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
-     "sha256": "8aa0e6a998be0a86175a81805543551de1baf25f613a10c38a761b48f310d684"
-    }
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000117120009000091/i00039_bridgehampton-10k.htm",
+    "sha256": "2345586279fffccff111fd9ea47f8bbd543e8731ded30abd596347f4a36d486c",
+    "bytesRead": 2097152,
+    "complete": false,
+    "quote": "t-only basis. During 2008, the Company received approval and began trading on the NASDAQ Global Select Market under the symbol “BDGE”. Equity incentive plan grants of stock options and stock awards are recorded directly to the holding company. The Company’s sources of funds are d",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
+      "sha256": "8aa0e6a998be0a86175a81805543551de1baf25f613a10c38a761b48f310d684",
+      "hits": 3
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2004-01-04&enddt=2007-01-06",
+      "sha256": "6bd3b2e56014f8ae763eca33db3a21474f54a42a9851d37d527425b5110b5519",
+      "hits": 3
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22BDGE%22&ciks=0000846617&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2007-01-06&enddt=2010-01-08",
+      "sha256": "0584eeb80412d27eebc12ebfb27a34016464b0722c74ebf96c83d2206a08023c",
+      "hits": 3
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0000846617",
+    "name": "Dime Commercial Bancshares, Inc. /NY/",
+    "secTickers": [
+     "DCOM",
+     "DCBG",
+     "DCOM-P"
+    ],
+    "secExchanges": [
+     "NYSE",
+     "NYSE",
+     "NYSE"
+    ],
+    "formerNames": [
+     {
+      "name": "Dime Community Bancshares, Inc. /NY/",
+      "from": "2021-02-01T05:00:00.000Z",
+      "to": "2026-05-27T04:00:00.000Z"
+     },
+     {
+      "name": "BRIDGE BANCORP, INC.",
+      "from": "2019-08-22T04:00:00.000Z",
+      "to": "2021-01-29T05:00:00.000Z"
+     },
+     {
+      "name": "BRIDGE BANCORP INC",
+      "from": "1996-08-05T04:00:00.000Z",
+      "to": "2019-08-08T04:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000846617.json",
+      "sha256": "fd8a219ad27888fd215a78a8076640aabc146691f70bb05f70939e2750acb9cc"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000846617-submissions-001.json",
+      "sha256": "03bc9539800a38f5d61fc47b9f742c51e0a5da48e509c8d282620f2069ef9fdf"
+     }
+    ],
+    "ixbrlCoverFilings": 169,
+    "listingForms": [
+     {
+      "form": "8-A12B",
+      "filingDate": "2008-06-09",
+      "accession": "0001068800-08-000250"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2021-02-01",
+      "accession": "0001104659-21-009777"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2024-07-01",
+      "accession": "0001104659-24-076798"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2026-03-17",
+      "accession": "0000943374-26-000131"
+     },
+     {
+      "form": "25",
+      "filingDate": "2026-04-06",
+      "accession": "0000943374-26-000159"
+     }
+    ],
+    "latest": {
+     "cik": "0000846617",
+     "accession": "0000846617-26-000049",
+     "form": "8-K",
+     "filingDate": "2026-10-22",
+     "document": "dcom-20261022x8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/846617/000084661726000049/dcom-20261022x8k.htm",
+     "sha256": "62cf5a2d671e36f6470afe324ea4b7c6be70a11aa20432ad41f5bcb7dad23fc6",
+     "bytesRead": 46033,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, $0.01 Par Value",
+      "TradingSymbol": "DCOM",
+      "SecurityExchangeName": "The New York Stock Exchange"
+     }
+    },
+    "first": {
+     "cik": "0000846617",
+     "accession": "0001104659-21-009751",
+     "form": "8-K",
+     "filingDate": "2021-02-01",
+     "document": "tm214412d1_8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/846617/000110465921009751/tm214412d1_8k.htm",
+     "sha256": "f2e190faaf6f1a386050469d229435588e3cace8735d0b5741a90d916fea7856",
+     "bytesRead": 71999,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, $0.01 Par Value",
+      "TradingSymbol": "DCOM",
+      "SecurityExchangeName": "The Nasdaq Stock Market, LLC"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0000846617",
+     "accession": "0000846617-21-000006",
+     "form": "8-K",
+     "filingDate": "2021-01-28",
+     "document": "bdge-20210128x8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/846617/000084661721000006/bdge-20210128x8k.htm",
+     "sha256": "5ddbe59ff371370aeaf6382661663547f0fecfbf4320c6226487b33bcf51ba49",
+     "bytesRead": 43725,
+     "complete": true,
+     "symbols": [
+      "BDGE"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0000846617-23-000075",
+     "filingDate": "2023-10-19",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [],
    "issuer": "Dime Commercial Bancshares, Inc. (formerly Dime Community Bancshares, Inc.; formerly Bridge Bancorp, Inc.)",
@@ -2721,8 +3095,6 @@
       "from": null,
       "to": "2021-01-29",
       "matches": [
-       "2006-12-29",
-       "2007-12-29",
        "2009-12-31",
        "2010-12-31",
        "2011-12-31",
@@ -2748,12 +3120,12 @@
     "segmentRule": "ALL_SEGMENTS_FROM_BDGE_MATCHED",
     "unexplainedLevelBreaks": [],
     "usableInterval": {
-     "validFrom": "2002-03-15",
+     "validFrom": "2009-03-13",
      "validTo": null,
      "basis": [
       "EARLIEST_SEC_FULLTEXT_TICKER_CONFIRMATION"
      ],
-     "bars": 1285
+     "bars": 920
     }
    }
   },
@@ -2950,6 +3322,131 @@
    ],
    "earliestSourcedTicker": {
     "state": "NOT_NEEDED_SERIES_STARTS_AFTER_CONFIRMED_TICKER"
+   },
+   "currentTickerCovers": {
+    "cik": "0000050471",
+    "name": "ReposiTrak, Inc.",
+    "secTickers": [
+     "TRAK"
+    ],
+    "secExchanges": [
+     "NYSE"
+    ],
+    "formerNames": [
+     {
+      "name": "PARK CITY GROUP INC",
+      "from": "2002-08-07T00:00:00.000Z",
+      "to": "2023-12-18T00:00:00.000Z"
+     },
+     {
+      "name": "FIELDS TECHNOLOGIES INC",
+      "from": "2001-07-06T00:00:00.000Z",
+      "to": "2002-07-31T00:00:00.000Z"
+     },
+     {
+      "name": "AMERINET GROUP COM INC",
+      "from": "1999-10-08T00:00:00.000Z",
+      "to": "2001-02-09T00:00:00.000Z"
+     },
+     {
+      "name": "EQUITY GROWTH SYSTEMS INC /DE/",
+      "from": "1996-11-18T00:00:00.000Z",
+      "to": "1999-06-04T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000050471.json",
+      "sha256": "3096cdb498fe5d3ddd7129f468be569124f670f36fb55ae0073a55f1cbd3184b"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000050471-submissions-001.json",
+      "sha256": "4ef5db87d663f4fd8e5d2ceb366309c19ec9f6284c9765cd88990d161efce722"
+     }
+    ],
+    "ixbrlCoverFilings": 70,
+    "listingForms": [
+     {
+      "form": "8-A12B",
+      "filingDate": "2010-10-29",
+      "accession": "0001415889-10-000392"
+     },
+     {
+      "form": "25",
+      "filingDate": "2013-10-25",
+      "accession": "0001415889-13-002105"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2013-10-25",
+      "accession": "0001415889-13-002106"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2023-10-18",
+      "accession": "0001437749-23-028467"
+     },
+     {
+      "form": "25",
+      "filingDate": "2023-11-01",
+      "accession": "0001437749-23-029770"
+     }
+    ],
+    "latest": {
+     "cik": "0000050471",
+     "accession": "0001437749-26-031604",
+     "form": "8-K",
+     "filingDate": "2026-09-30",
+     "document": "trak20260930_8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/50471/000143774926031604/trak20260930_8k.htm",
+     "sha256": "2b8f846da204810c63ba2b70a343e025fcba835ee22880b8ecaf443c16099b2c",
+     "bytesRead": 25755,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common stock, par value $0.01 per share",
+      "TradingSymbol": "TRAK",
+      "SecurityExchangeName": "New York Stock Exchange"
+     }
+    },
+    "first": {
+     "cik": "0000050471",
+     "accession": "0001437749-23-032047",
+     "form": "10-Q",
+     "filingDate": "2023-11-14",
+     "document": "pcyg20230930_10q.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/50471/000143774923032047/pcyg20230930_10q.htm",
+     "sha256": "f444960702b70b7af927d0ff83750591d498bce5816db404fe56706aeaf45505",
+     "bytesRead": 728540,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common stock, par value $0.01 per",
+      "TradingSymbol": "TRAK",
+      "SecurityExchangeName": "New York Stock Exchange"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0000050471",
+     "accession": "0001437749-23-028469",
+     "form": "8-K",
+     "filingDate": "2023-10-18",
+     "document": "pcyg20231017_8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/50471/000143774923028469/pcyg20231017_8k.htm",
+     "sha256": "93ba3605b23d86d2d7d27e513ad0d271ac1de82fbe1ff92d98f6d053de400283",
+     "bytesRead": 24292,
+     "complete": true,
+     "symbols": [
+      "PCYG"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0001437749-25-017260",
+     "filingDate": "2025-05-15",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [],
    "issuer": "ReposiTrak, Inc. (formerly Park City Group, Inc.)",
@@ -3696,8 +4193,6 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "ASGN",
-    "cik": "0000890564",
     "accession": "0000950148-01-500266",
     "document": "v70910e10-k.txt",
     "filingDate": "2001-03-29",
@@ -3706,11 +4201,114 @@
     "sha256": "233ddec8bcf29a7fc9749a57094a3b3014aeb7dfc2a7505b6d1feaca4c4f0498",
     "bytesRead": 145795,
     "complete": true,
-    "quote": "D STOCKHOLDER MATTERS The Company's Common Stock trades on the Nasdaq Stock Market under the symbol ASGN. The following table sets forth the range of high and low sales prices, as reported on the Nasdaq Stock Market for the period from January 1, 1999 to December 31, 2000. At Jan",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22ASGN%22&ciks=0000890564&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
-     "sha256": "9e07cfc5db17cc6ea96a39fcd25ea95120757a3f872121bb86734cbc73dc1c5a"
-    }
+    "quote": "'S COMMON EQUITY AND RELATED STOCKHOLDER MATTERS The Company's Common Stock trades on the Nasdaq Stock Market under the symbol ASGN. The following table sets forth the range of high and low sales prices, as reported on the Nasdaq Stock Market for the period from January 1, 1999 t",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22ASGN%22&ciks=0000890564&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
+      "sha256": "9e07cfc5db17cc6ea96a39fcd25ea95120757a3f872121bb86734cbc73dc1c5a",
+      "hits": 4
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0000890564",
+    "name": "Everforth Inc",
+    "secTickers": [
+     "EFOR"
+    ],
+    "secExchanges": [
+     "NYSE"
+    ],
+    "formerNames": [
+     {
+      "name": "ASGN Inc",
+      "from": "2018-04-02T00:00:00.000Z",
+      "to": "2026-04-22T00:00:00.000Z"
+     },
+     {
+      "name": "ON ASSIGNMENT INC",
+      "from": "1996-09-30T00:00:00.000Z",
+      "to": "2018-03-27T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000890564.json",
+      "sha256": "5484292972f8c9cfa8332d49bcdd6b30636d5273c54b858a7fbd390c5db61f81"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000890564-submissions-001.json",
+      "sha256": "81c941c5b67a8e5d54447376e96af14c2bb158861ab487ea0f28df3706bcfc06"
+     }
+    ],
+    "ixbrlCoverFilings": 89,
+    "listingForms": [
+     {
+      "form": "8-A12B",
+      "filingDate": "2012-08-22",
+      "accession": "0000890564-12-000059"
+     },
+     {
+      "form": "25",
+      "filingDate": "2012-08-30",
+      "accession": "0000890564-12-000064"
+     }
+    ],
+    "latest": {
+     "cik": "0000890564",
+     "accession": "0000890564-26-000050",
+     "form": "10-Q",
+     "filingDate": "2026-07-31",
+     "document": "asgn-20260630.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/890564/000089056426000050/asgn-20260630.htm",
+     "sha256": "14c67044e3736e287f630e5ea0dfedfa15debdbb761d8b13b81d2218c3a2deed",
+     "bytesRead": 951119,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock",
+      "TradingSymbol": "EFOR",
+      "SecurityExchangeName": "NYSE"
+     }
+    },
+    "first": {
+     "cik": "0000890564",
+     "accession": "0000890564-26-000025",
+     "form": "8-K",
+     "filingDate": "2026-04-24",
+     "document": "asgn-20260424.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/890564/000089056426000025/asgn-20260424.htm",
+     "sha256": "5e7dd44004c79aad6d602372546f7669910fa3b75dd3d0aa8ea3cbd7b0c258de",
+     "bytesRead": 27160,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock",
+      "TradingSymbol": "EFOR",
+      "SecurityExchangeName": "NYSE"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0000890564",
+     "accession": "0000890564-26-000020",
+     "form": "8-K",
+     "filingDate": "2026-04-22",
+     "document": "asgn-20260422.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/890564/000089056426000020/asgn-20260422.htm",
+     "sha256": "9e639299979ca0a40bc15f6be756d4667c6f59ba78768de159376552b392a659",
+     "bytesRead": 26338,
+     "complete": true,
+     "symbols": [
+      "ASGN"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0000890564-26-000040",
+     "filingDate": "2026-06-16",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [],
    "issuer": "Everforth, Inc. (formerly ASGN Incorporated; formerly On Assignment, Inc.)",
@@ -4420,8 +5018,6 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "TPX",
-    "cik": "0001206264",
     "accession": "0001193125-04-053868",
     "document": "d10k.htm",
     "filingDate": "2004-03-30",
@@ -4430,11 +5026,129 @@
     "sha256": "9e82261704f34e7a6480bb9501126a5fdd3896de5af3e4affacc9e46bd0a6a2d",
     "bytesRead": 1622629,
     "complete": true,
-    "quote": " our $0.01 par value common stock, which is trading on the New York Stock Exchange under the symbol “TPX.” Trading in our common stock commenced on the NYSE on December 18, 2003. Prior to that time, there was no public trading market for our common stock. As of March 15, 2004, th",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22TPX%22&ciks=0001206264&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2003-12-19&enddt=2006-12-21",
-     "sha256": "b474b799f80535570c7ec93dd6b010e5b064e1a4ebec65ed0888e6f9a2b25df8"
-    }
+    "quote": "e class of common equity is our $0.01 par value common stock, which is trading on the New York Stock Exchange under the symbol “TPX.” Trading in our common stock commenced on the NYSE on December 18, 2003. Prior to that time, there was no public trading market for our common stoc",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22TPX%22&ciks=0001206264&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2003-12-19&enddt=2006-12-21",
+      "sha256": "b474b799f80535570c7ec93dd6b010e5b064e1a4ebec65ed0888e6f9a2b25df8",
+      "hits": 6
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0001206264",
+    "name": "SOMNIGROUP INTERNATIONAL INC.",
+    "secTickers": [
+     "SGI"
+    ],
+    "secExchanges": [
+     "NYSE"
+    ],
+    "formerNames": [
+     {
+      "name": "TEMPUR SEALY INTERNATIONAL, INC.",
+      "from": "2013-06-26T00:00:00.000Z",
+      "to": "2025-02-14T00:00:00.000Z"
+     },
+     {
+      "name": "TEMPUR PEDIC INTERNATIONAL INC",
+      "from": "2003-12-04T00:00:00.000Z",
+      "to": "2013-06-04T00:00:00.000Z"
+     },
+     {
+      "name": "TWI HOLDINGS INC",
+      "from": "2002-11-14T00:00:00.000Z",
+      "to": "2003-11-25T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0001206264.json",
+      "sha256": "6587bcb42f2db991c09921c1567744f8108c253daad387e45ae50971f4d876f4"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0001206264-submissions-001.json",
+      "sha256": "a4a317e255161347d68d7a9ea50bc6e67dc42ee8a65f2c6b9fc1c800c111e7d5"
+     }
+    ],
+    "ixbrlCoverFilings": 176,
+    "listingForms": [
+     {
+      "form": "8-A12B",
+      "filingDate": "2003-12-08",
+      "accession": "0001193125-03-090649"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2017-02-09",
+      "accession": "0001193125-17-035409"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2020-03-27",
+      "accession": "0001206264-20-000119"
+     },
+     {
+      "form": "25-NSE",
+      "filingDate": "2020-09-15",
+      "accession": "0000876661-20-000771"
+     }
+    ],
+    "latest": {
+     "cik": "0001206264",
+     "accession": "0001206264-26-000121",
+     "form": "8-K",
+     "filingDate": "2026-08-26",
+     "document": "sgi-20260826.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1206264/000120626426000121/sgi-20260826.htm",
+     "sha256": "e4ee768a3fd4e9a43f48a0f92985d235393b027cace6d89a7c4038050873c1cf",
+     "bytesRead": 38247,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, $0.01 par value",
+      "TradingSymbol": "SGI",
+      "SecurityExchangeName": "New York Stock Exchange"
+     }
+    },
+    "first": {
+     "cik": "0001206264",
+     "accession": "0001206264-25-000037",
+     "form": "8-K",
+     "filingDate": "2025-02-18",
+     "document": "tpx-20250218.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1206264/000120626425000037/tpx-20250218.htm",
+     "sha256": "783376cdbe36291d9d5fc701b1ce4b106290a4f56df48fe7655fd886752b078c",
+     "bytesRead": 29479,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, $0.01 par value",
+      "TradingSymbol": "SGI",
+      "SecurityExchangeName": "New York Stock Exchange"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0001206264",
+     "accession": "0001206264-25-000033",
+     "form": "8-K",
+     "filingDate": "2025-02-12",
+     "document": "tpx-20250212.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1206264/000120626425000033/tpx-20250212.htm",
+     "sha256": "be38d5a2d4cfc319a3b7be96c38d8c620e982f8f2d6300436c854ba898a38156",
+     "bytesRead": 27700,
+     "complete": true,
+     "symbols": [
+      "TPX"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0001206264-25-000188",
+     "filingDate": "2025-11-06",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [],
    "issuer": "Somnigroup International Inc. (formerly Tempur Sealy International, Inc.; formerly Tempur-Pedic International Inc.)",
@@ -5183,8 +5897,6 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "ticker": "JCS",
-    "cik": "0000022701",
     "accession": "0000022701-03-000002",
     "document": "csi10k02.txt",
     "filingDate": "2003-03-31",
@@ -5193,11 +5905,134 @@
     "sha256": "de0a9b96d35ff5167f51e88efba7150f40a81a34fd6bcd567be25efd5436d25d",
     "bytesRead": 170469,
     "complete": true,
-    "quote": "any began trading its common stock on the American Stock Exchange (\"AMEX\") under the trading symbol JCS. The table below presents the price range of high and low trades of the Company's common stock for each quarterly period indicated as reported by NASDAQ. These prices indicate ",
-    "search": {
-     "url": "https://efts.sec.gov/LATEST/search-index?q=%22JCS%22&ciks=0000022701&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
-     "sha256": "280245d307f9b559537fb72a8192709be22326195f9f111e50c0446a75ea7748"
-    }
+    "quote": "e January 27, 2003 the Company began trading its common stock on the American Stock Exchange (\"AMEX\") under the trading symbol JCS. The table below presents the price range of high and low trades of the Company's common stock for each quarterly period indicated as reported by NAS",
+    "searches": [
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22JCS%22&ciks=0000022701&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
+      "sha256": "280245d307f9b559537fb72a8192709be22326195f9f111e50c0446a75ea7748",
+      "hits": 1
+     }
+    ]
+   },
+   "currentTickerCovers": {
+    "cik": "0000022701",
+    "name": "SUNation Energy, Inc.",
+    "secTickers": [
+     "SUNE"
+    ],
+    "secExchanges": [
+     "Nasdaq"
+    ],
+    "formerNames": [
+     {
+      "name": "Pineapple Energy Inc.",
+      "from": "2022-02-28T00:00:00.000Z",
+      "to": "2024-11-19T00:00:00.000Z"
+     },
+     {
+      "name": "Pineapple Holdings, Inc.",
+      "from": "2022-03-28T00:00:00.000Z",
+      "to": "2022-04-08T00:00:00.000Z"
+     },
+     {
+      "name": "COMMUNICATIONS SYSTEMS INC",
+      "from": "1995-04-12T00:00:00.000Z",
+      "to": "2022-03-25T00:00:00.000Z"
+     },
+     {
+      "name": "COMMUNICATIONS SYSTEMS INC/MN",
+      "from": "1994-02-14T00:00:00.000Z",
+      "to": "1995-03-31T00:00:00.000Z"
+     }
+    ],
+    "submissions": [
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000022701.json",
+      "sha256": "eea78240952faee4ddb860550e85b75653c8a8b094ff83e8c9b48c82ca53d319"
+     },
+     {
+      "url": "https://data.sec.gov/submissions/CIK0000022701-submissions-001.json",
+      "sha256": "33b9ef213b9d88128ecee38e333966695cb7cc8757f263d55c4adf8f40e0f265"
+     }
+    ],
+    "ixbrlCoverFilings": 127,
+    "listingForms": [
+     {
+      "form": "8-A12G",
+      "filingDate": "1999-11-08",
+      "accession": "0000022701-99-000006"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2003-01-24",
+      "accession": "0000022701-03-000001"
+     },
+     {
+      "form": "25",
+      "filingDate": "2008-06-02",
+      "accession": "0000897101-08-001216"
+     },
+     {
+      "form": "8-A12B",
+      "filingDate": "2009-12-30",
+      "accession": "0000897101-09-002680"
+     }
+    ],
+    "latest": {
+     "cik": "0000022701",
+     "accession": "0001213900-26-109850",
+     "form": "8-K",
+     "filingDate": "2026-10-15",
+     "document": "ea0308651-8k_sunation.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/22701/000121390026109850/ea0308651-8k_sunation.htm",
+     "sha256": "36c847f91d48412d4acff18b11eab306134e8c6526c7a4486d3c7f41ca97c89f",
+     "bytesRead": 42671,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, par value, $.05 per share",
+      "TradingSymbol": "SUNE",
+      "SecurityExchangeName": "Nasdaq"
+     }
+    },
+    "first": {
+     "cik": "0000022701",
+     "accession": "0001213900-24-108931",
+     "form": "8-K",
+     "filingDate": "2024-12-13",
+     "document": "ea0224756-8k_sunation.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/22701/000121390024108931/ea0224756-8k_sunation.htm",
+     "sha256": "c37417bd6caa7ddf75043c3c24501b3b5e8e3ee0e39fb45f831e938693262952",
+     "bytesRead": 41399,
+     "complete": true,
+     "symbolFound": true,
+     "cls": {
+      "Security12bTitle": "Common Stock, par value, $.05 per share",
+      "TradingSymbol": "SUNE",
+      "SecurityExchangeName": "Nasdaq"
+     }
+    },
+    "tickerPredatesFirstIxbrl": false,
+    "before": {
+     "cik": "0000022701",
+     "accession": "0000897101-24-000584",
+     "form": "8-K",
+     "filingDate": "2024-11-19",
+     "document": "pegy241204_8k.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/22701/000089710124000584/pegy241204_8k.htm",
+     "sha256": "6160761191d92e8e6ca124ffab18e3d4d94f8252fc2013d47e944e9227c5dcd6",
+     "bytesRead": 40070,
+     "complete": true,
+     "symbols": [
+      "PEGY"
+     ]
+    },
+    "monotoneSpotCheck": {
+     "accession": "0001213900-25-077989",
+     "filingDate": "2025-08-18",
+     "symbolFound": true
+    },
+    "state": "OK"
    },
    "caNotes": [
     {

@@ -134,11 +134,12 @@ def cover_timeline(cik, sym, covers):
         return out, filings
     # latest filing carrying a class list
     last = None
-    for i in range(len(fx) - 1, max(-1, len(fx) - 8), -1):
+    for i in range(len(fx) - 1, max(-1, len(fx) - 12), -1):
         v, hit = covers.pred(cik, fx[i], sym)
-        if v is not None:
-            last = (i, v, hit)
-            break
+        if v is None or (v and not hit.get('Security12bTitle')):
+            continue  # no class list, or symbol tagged without its class title: use the latest complete cover
+        last = (i, v, hit)
+        break
     if last is None:
         out['state'] = 'NO_COVER_CLASSES_IN_LATEST_FILINGS'
         return out, filings
@@ -187,6 +188,23 @@ def efts_confirmation(cik, sym, series_from, limit_date):
     """Earliest venue-checked full-text ticker statement of this CIK from (series start - 120 days) on."""
     start = (iso(series_from) - datetime.timedelta(days=120)).isoformat()
     return S.fulltext_ticker_confirmation(cik, sym, start, limit_date, FT_FORMS)
+
+
+def cik_candidates(sym, tmap):
+    n = S.norm_symbol(sym)
+    exact = [r for r in tmap if S.norm_symbol(r['ticker']) == n]
+    if exact:
+        return exact, 'SEC_MAP_NORMALISED_EXACT'
+    base = None
+    if '_' in sym:
+        base = sym.split('_')[0]
+    elif re.fullmatch(r'[A-Z]{5}', sym) and sym[-1] in 'PLMNOZRUW':
+        base = sym[:4]
+    if base:
+        b = [r for r in tmap if r['ticker'] == base]
+        if b:
+            return b, 'SEC_MAP_BASE_TICKER_%s' % base
+    return [], 'NO_SEC_MAP_ENTRY'
 
 
 def efts_cik_candidates(sym, as_of):

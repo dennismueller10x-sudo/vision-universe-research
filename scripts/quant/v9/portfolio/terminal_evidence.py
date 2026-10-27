@@ -42,20 +42,21 @@ def resolve_cik(ticker, name):
     return None, None
 
 
-CONSID = re.compile(r"(?i)(?:converted into|exchanged for|cancelled[^.]{0,40}?in exchange for)[^.]{0,40}?right to receive[^.]{0,500}")
+NP = r"(?:[^.]|\.(?=\d))"
+CONSID = re.compile(r"(?i)(?:converted into|exchanged for|cancelled[^.]{0,40}?in exchange for)" + NP + r"{0,40}?right to receive" + NP + r"{0,600}")
 
 
 def extract(t):
     flat = re.sub(r"\s+", " ", t)
     out = {"considerationQuotes": [], "cashPerShare": [], "shareRatios": [], "completionDates": [], "tradingQuotes": []}
     for m in CONSID.finditer(flat):
-        q = flat[max(0, m.start() - 160):m.end()][:300]
+        q = flat[m.start():m.end()][:600]
         out["considerationQuotes"].append(q)
-        for c in re.finditer(r"\$\s?(\d+(?:\.\d+)?)\s*(?:in cash|per share in cash|, in cash|, without interest)", m.group(0)):
+        for c in re.finditer(r"\$\s?(\d+(?:\.\d+)?)\s*(?:in cash|per share in cash|, in cash|, without interest|\(the)", m.group(0)):
             out["cashPerShare"].append(c.group(1))
-        for r_ in re.finditer(r"(\d+\.\d+)\s*(?:\(the “Exchange Ratio”\)\s*)?(?:validly issued[^.]{0,60})?(?:shares?|fully paid)[^.]{0,80}?(?:Class [A-Z] )?common stock", m.group(0), re.I):
+        for r_ in re.finditer(r"(\d+\.\d+)\s*(?:\([^)]{0,40}\)\s*)?(?:validly issued[^.]{0,60})?(?:shares?|fully paid|American Depositary)[^;]{0,120}?(?:common stock|ordinary shares|American Depositary Shares|ADS)", m.group(0), re.I):
             out["shareRatios"].append(r_.group(1))
-    for m in re.finditer(r"(?i)On\s+" + DATE + r"[^.]{0,200}?(?:completed|consummated)[^.]{0,200}?(?:merger|acquisition|transaction)", flat):
+    for m in re.finditer(r"(?i)On\s+" + DATE + NP + r"{0,200}?(?:completed|consummated)" + NP + r"{0,200}?(?:merger|acquisition|transaction|Mergers)", flat):
         out["completionDates"].append({"date": iso(*m.groups()[0:3]), "quote": flat[m.start():m.end()][:300]})
     for m in re.finditer(r"(?i)(?:ceased trading|suspend(?:ed)? trading|halt(?:ed)? trading|delist|removal from listing)[^.]{0,250}", flat):
         out["tradingQuotes"].append(flat[max(0, m.start() - 120):m.end()][:300])
@@ -95,7 +96,7 @@ def main():
         dos["filings"] = [{"form": r["form"], "accession": r["accessionNumber"], "filingDate": r["filingDate"],
                            "acceptanceUtc": r["acceptanceDateTime"], "items": r.get("items"), "primaryDocument": r["primaryDocument"]} for r in rel]
         docs = []
-        for r in [r for r in rel if r["form"] == "8-K"][:3]:
+        for r in [r for r in rel if r["form"] == "8-K" and "2.01" in r.get("items", "")][:2]:
             ix = S.index_json(cik, r["accessionNumber"])
             names = [it["name"] for it in ix["directory"]["item"] if re.search(r"\.htm$", it["name"]) and not re.match(r"R\d+\.htm", it["name"])]
             for n in names[:4]:
