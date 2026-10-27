@@ -16,6 +16,9 @@ Fixture bewusst neu erzeugt, in einer eigenen Umgebung:
 
 `--set core` (Standard) ist der Bestand aus Audit B7 und bleibt unveraendert.
 `--set ext` sind die Katalogerweiterungen ab indicators 1.3.0 (TECHNICAL_LIBRARY.md, L2/L3).
+`--set ext2` setzt die Erweiterungen ab indicators 1.4.0 (L2b) aus TA-Lib-Grundbausteinen zusammen
+(SMA, EMA, WMA, ROC, SUM, MAX, MIN, STDDEV, MEDPRICE): Die Formel steht hier ein zweites Mal,
+unabhaengig von der Engine, und die Rechenkerne sind fremd.
 `--set candles` friert echte Tagesbars ausgewaehlter Titel aus den Technical-Shards ein und rechnet die
 TA-Lib-Candlestick-Funktionen (CDL*) darauf (candlesticks.js, L4):
 
@@ -47,7 +50,7 @@ def ser(a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--set", default="core", choices=["core", "ext", "candles"])
+    ap.add_argument("--set", default="core", choices=["core", "ext", "ext2", "candles"])
     ap.add_argument("--tickers", default="")
     args = ap.parse_args()
     if args.set == "candles":
@@ -58,6 +61,9 @@ def main():
 
     if args.set == "ext":
         series = ext_series(o, h, l, c, v)
+        return write(args, ref, c, series)
+    if args.set == "ext2":
+        series = ext2_series(o, h, l, c, v)
         return write(args, ref, c, series)
 
     macd, macd_sig, macd_hist = talib.MACD(c, 12, 26, 9)
@@ -165,6 +171,41 @@ def write_candles(args):
         json.dump(out, fh, separators=(",", ":"))
         fh.write("\n")
     print(f"{args.out}: {len(titles)} Titel, {len(CANDLE_FUNCTIONS)} Muster, TA-Lib {out['libraryVersion']}")
+
+
+def ext2_series(o, h, l, c, v):
+    """indicators 1.4.0 (L2b), aus TA-Lib-Grundbausteinen zusammengesetzt (Formeln wie dokumentiert)."""
+    prev_c = np.concatenate([[np.nan], c[:-1]])
+    prev_h = np.concatenate([[np.nan], h[:-1]])
+    prev_l = np.concatenate([[np.nan], l[:-1]])
+    tr = np.maximum.reduce([h - l, np.abs(h - prev_c), np.abs(l - prev_c)])
+    e1 = talib.EMA(h - l, 9)
+    mx = talib.MAX(c, 14)
+    e13 = talib.EMA(c, 13)
+    mid = talib.MEDPRICE(h, l)
+    d = c - prev_c
+    k = 20 // 2 + 1
+    eh = talib.EMA(h - l, 10)
+    series = {
+        "vortexPlus": ("SUM(|H − L₋₁|,14)/SUM(TR,14)", talib.SUM(np.abs(h - prev_l), 14) / talib.SUM(tr, 14)),
+        "vortexMinus": ("SUM(|L − H₋₁|,14)/SUM(TR,14)", talib.SUM(np.abs(l - prev_h), 14) / talib.SUM(tr, 14)),
+        "massIndex": ("SUM(EMA9(H−L)/EMA9(EMA9(H−L)),25)", talib.SUM(e1 / talib.EMA(e1, 9), 25)),
+        "choppiness": ("100·log10(SUM(TR,14)/(MAX(H,14)−MIN(L,14)))/log10(14)", 100 * np.log10(talib.SUM(tr, 14) / (talib.MAX(h, 14) - talib.MIN(l, 14))) / np.log10(14)),
+        "ulcerIndex": ("sqrt(SMA((100·(C−MAX(C,14))/MAX)^2,14))", np.sqrt(talib.SMA((100 * (c - mx) / mx) ** 2, 14))),
+        "forceIndex": ("EMA((C−C₋₁)·V,13)", talib.EMA((c - prev_c) * v, 13)),
+        "elderBull": ("H − EMA(C,13)", h - e13),
+        "elderBear": ("L − EMA(C,13)", l - e13),
+        "awesomeOscillator": ("SMA(MEDPRICE,5) − SMA(MEDPRICE,34)", talib.SMA(mid, 5) - talib.SMA(mid, 34)),
+        "coppock": ("WMA(ROC14 + ROC11, 10)", talib.WMA(talib.ROC(c, 14) + talib.ROC(c, 11), 10)),
+        "kst": ("SMA10(ROC10)+2·SMA10(ROC15)+3·SMA10(ROC20)+4·SMA15(ROC30)", talib.SMA(talib.ROC(c, 10), 10) + 2 * talib.SMA(talib.ROC(c, 15), 10) + 3 * talib.SMA(talib.ROC(c, 20), 10) + 4 * talib.SMA(talib.ROC(c, 30), 15)),
+        "tsi": ("100·EMA13(EMA25(ΔC))/EMA13(EMA25(|ΔC|))", 100 * talib.EMA(talib.EMA(d, 25), 13) / talib.EMA(talib.EMA(np.abs(d), 25), 13)),
+        "dpo": ("C₋₁₁ − SMA(C,20)", np.concatenate([np.full(k, np.nan), c[:-k]]) - talib.SMA(c, 20)),
+        "historicalVolatility": ("100·STDDEV(ln C/C₋₁,20)·sqrt(20/19)·sqrt(252)", 100 * talib.STDDEV(np.log(c / prev_c), 20, 1) * np.sqrt(20 / 19) * np.sqrt(252)),
+        "zScore": ("(C − SMA20)/STDDEV(C,20)", (c - talib.SMA(c, 20)) / talib.STDDEV(c, 20, 1)),
+        "pvo": ("PPO(volume, 12, 26, EMA)", talib.PPO(v, 12, 26, 1)),
+        "chaikinVolatility": ("100·(EMA10(H−L)/EMA10(H−L)₋₁₀ − 1)", 100 * (eh / np.concatenate([np.full(10, np.nan), eh[:-10]]) - 1)),
+    }
+    return {key: {"call": call, "values": ser(vals)} for key, (call, vals) in series.items()}
 
 
 def write(args, ref, c, series):
