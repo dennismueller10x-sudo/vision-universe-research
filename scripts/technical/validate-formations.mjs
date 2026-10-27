@@ -47,6 +47,7 @@ const require = createRequire(import.meta.url);
 const F = require(join(root, "quant/engines/technical/formations.js"));
 const I = require(join(root, "quant/engines/technical/indicators.js"));
 const Cn = require(join(root, "quant/engines/technical/canonical-bars.js"));
+const Ctx = require(join(root, "quant/engines/technical/ti/context.js"));
 const SHARDS = join(root, "quant/data/product/technical-signals-v1");
 const STATES = new Set(["DETECTED", "CONFIRMED", "INVALIDATED", "FORMING", "ACTIVE", "EXPIRED"]);
 const BULL = new Set(["SUPPORT_TRENDLINE", "ASCENDING_CHANNEL", "FALLING_WEDGE", "BULL_PENNANT", "RANGE_BREAKOUT", "RESISTANCE_BREAKOUT", "VOLATILITY_CONTRACTION", "GAP_UP", "DOUBLE_BOTTOM", "INVERSE_HEAD_AND_SHOULDERS", "ASCENDING_TRIANGLE", "BULL_FLAG", "CUP_WITH_HANDLE"]);
@@ -176,6 +177,9 @@ export function run(opts = {}) {
       let s;
       try { s = seriesOf(ticker, b); } catch { continue; }
       const r = F.analyze(s);
+      /* Sichtbarkeit (B-F3): jede Formation muss am Erkennungstag mit dem damaligen Wissen erscheinen. */
+      const prep = Ctx.prepare(s), seenAt = {};
+      const visible = (f) => f.detectedIndex < 0 || (seenAt[f.detectedIndex] = seenAt[f.detectedIndex] || F.analyzeAt(prep, f.detectedIndex).formations).some((x) => x.id === f.id);
       const atrSeries = I.atr(b.high, b.low, b.close, 14);
       let mirrored = null;
       if (opts.mirror && b.low.every((x) => x > 0)) {
@@ -184,6 +188,7 @@ export function run(opts = {}) {
       titles++;
       for (const f of r.formations) {
         const v = check(f, { asOf: r.asOf, close: b.close[b.close.length - 1], bars: b, atrSeries });
+        if (!visible(f)) v.push("NICHT_SICHTBAR_AM_ERKENNUNGSTAG");
         if (mirrored && MIRROR[f.type]) {
           const ms = (mirror[f.type] = mirror[f.type] || { n: 0, mirrored: 0, sameState: 0 }), y = mirrored.get(MIRROR[f.type] + "@" + f.detectedAt);
           ms.n++;

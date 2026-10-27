@@ -140,3 +140,56 @@ Eine gezielte Prüfung der Pivot-Gleichstände ist der nächste Schritt.
 - Bei den Wimpeln entfallen rund 25 % der Stichprobe. Wimpel bleiben ohne signifikante Überrendite.
 
 **Daten:** Ein Neubau durch den Erzeugerlauf (`build-screener.mjs`, `formation-evidence.mjs`) übernimmt 1.2.1 in `technical/data`. Der PR bringt keine Artefakte mit.
+
+## 4. Befund B-F3: Erkennungsdatum vor der ersten Sichtbarkeit (`technical-formations-1.2.2`, Fachmodell, Owner-Freigabe nötig)
+
+**Neue Prüfung** in `validate-formations.mjs`: `NICHT_SICHTBAR_AM_ERKENNUNGSTAG`.
+- Jede Formation am Stichtag muss auch erscheinen, wenn man die Engine am Erkennungstag mit den bis dahin bekannten Bars rechnet (`analyzeAt(detectedIndex)`, gleiche Id).
+- Das ist die dokumentierte Bedeutung des Erkennungstags: der erste Tag, an dem die Formation mit dem damaligen Wissen sichtbar war.
+- Die Prüfung in Abschnitt 1 hat nur die Reihenfolge der Zeitpunkte kontrolliert (Bestätigung/Invalidierung nicht vor der Erkennung). Diese Lücke hat sie nicht erfasst.
+
+**Befund unter 1.2.1** (5.657 Titel, Stand 26.10.2026):
+
+| Typ | nicht sichtbar am Erkennungstag | Verzug bis zur ersten Sichtbarkeit (Median / Max, Handelstage) |
+|---|---|---|
+| Bärischer Wimpel | 179 von 247 | 14 / 55 |
+| Bullischer Wimpel | 73 von 104 | 14 / 101 |
+| Widerstandslinie | 36 von 2.291 | 14 / 81 |
+| Unterstützungslinie | 44 von 2.078 | 19 / 130 |
+| alle übrigen 20 Typen | 0 | – |
+
+**Ursachen:**
+- **Wimpel.** Als Erkennungstag galt der früheste mögliche Bar: Mast-Pivot bestätigt und 5 Konsolidierungsbars. Sichtbar wird der Wimpel aber erst an dem Bar, an dem sich die Konsolidierung tatsächlich verengt, oft Wochen später.
+- **Wimpel und Trendlinien (ATR).** Die ATR-Schwellen maßen die Engine an der ATR des Stands t: beim Wimpel Mastlänge und Tempo, bei der Trendlinie Anstieg und Toleranz. Fiel die ATR später, wurde eine frühere Struktur nachträglich gültig und trug ihr altes Datum.
+
+**Korrektur 1.2.2:**
+- **Wimpel.** Der Erkennungstag ist der erste Bar ab dem frühestmöglichen Bar, an dem sich die Konsolidierung verengt.
+  - Kommt der Ausbruch oder die Invalidierung vor der ersten Sichtbarkeit, ist der Wimpel erst am Tag des Ausbruchs sichtbar. Er gilt dann am selben Tag als erkannt und bestätigt bzw. invalidiert.
+  - Mast und Tempo werden an der ATR des frühestmöglichen Bars gemessen.
+- **Trendlinien.** Die Toleranz kommt aus der ATR am Erkennungsbar, also an der Bestätigung des zweiten Pivots.
+
+**Vorher/Nachher heutige Daten:**
+
+| | 1.2.1 | 1.2.2 |
+|---|---|---|
+| Erkennungen gesamt | 11.525 | 11.426 |
+| regelkonform inkl. Sichtbarkeit | 11.189 | 11.422 |
+| nicht sichtbar am Erkennungstag | 332 | **0** |
+| Bärischer / bullischer Wimpel | 247 / 104 | 161 / 57 |
+| Widerstands- / Unterstützungslinie | 2.291 / 2.078 | 2.304 / 2.099 |
+| alle übrigen Typen | unverändert | unverändert |
+
+Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 0 am Stichtag) und 3 × Kurs 0 bei CPTAF (Datenfehler).
+
+**Vorher/Nachher historische Evidenz** (`formation-evidence.mjs --out`):
+
+| Typ | n | Titel | bestätigt in 20 T | invalidiert in 20 T | Überrendite 20 T | signifikant |
+|---|---|---|---|---|---|---|
+| Bärischer Wimpel | 1.418 → 901 | 1.246 → 833 | 44,6 → 38,3 % | 29,9 → 32,3 % | +1,69 ± 1,31 → +2,60 ± 1,73 % | nein → nein |
+| Bullischer Wimpel | 593 → 413 | 568 → 402 | 27,8 → 27,6 % | 42,7 → 37,8 % | +1,76 ± 1,41 → +1,73 ± 1,77 % | nein → nein |
+| Widerstandslinie | 8.759 → 8.544 | 4.586 → 4.550 | 57,6 → 59,0 % | 45,3 → 45,5 % | −0,38 ± 0,47 → −0,36 ± 0,47 % | nein → nein |
+| Unterstützungslinie | 9.252 → 8.966 | 4.548 → 4.480 | 61,6 → 61,4 % | 46,0 → 45,6 % | −0,06 ± 0,40 → −0,02 ± 0,40 % | nein → nein |
+
+**Lesart:** Bei den Wimpeln fällt rund ein Drittel der historischen Stichprobe weg. Das waren Fälle, die zu ihrem Datum noch nicht erkennbar waren. Keine Aussage zur Wirksamkeit ändert sich: weiterhin nirgends signifikant.
+
+**Test:** In `technical-formations.test.mjs` prüft „B-F3“ an eingefrorenen echten Tagesbars von ADT, ABAT, ACVA und AIRG (`fixtures/technical-formations-visibility.json`): Für jeden Wimpel und jede Trendlinie in 20 Ständen muss die Formation am Erkennungstag sichtbar sein. Der Test schlägt auf 1.2.1 fehl und läuft auf 1.2.2 durch.
