@@ -1,6 +1,6 @@
 # Technical-Analysebibliothek – Inventur und Ausbaustand
 
-Stand 27.10.2026, `main` nach #1006. Versionen: `indicators` 1.4.0, `candlesticks` 1.1.0, `formations` 1.2.1, `ti-chart-patterns` 1.1.0, `screen-row` und `technical-query` 1.6.0 (1.7.0 mit L6, PR #1004, Freigabe offen).
+Stand 27.10.2026, `main` nach #1006. Versionen: `indicators` 1.4.0, `candlesticks` 1.1.0, `formations` 1.2.1, `ti-chart-patterns` 1.1.0, `screen-row` und `technical-query` 1.7.0 (L6, #1004).
 
 Die Inventur unten (Abschnitte 1–3) ist der Stand vor dem Ausbau (nach #991). Der aktuelle Gesamtstand steht in Abschnitt 0, die Einzelheiten der neuen Einträge in INDICATORS_CATALOG.md, CANDLESTICKS.md und FORMATION_VALIDATION.md.
 
@@ -10,10 +10,10 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
-| Indikatoren (`indicators.js` 1.4.0) | 77 | 77 | 52 | 21 (26 mit L6) | 20 ●, Rest ○ |
-| Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 0 (27 mit L6) | 0 ●, 58 ○ (Marker je Bar) |
+| Indikatoren (`indicators.js` 1.4.0) | 77 | 77 | 52 | 26 | 20 ●, Rest ○ |
+| Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
 | Chartformationen (`formations.js` 1.2.1 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
-| **gesamt** | **159** | **159** | **133** | **45 (77 mit L6)** | **44 ●** |
+| **gesamt** | **159** | **159** | **133** | **77** | **44 ●** |
 
 **Herkunft „Markt“:**
 - **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
@@ -186,7 +186,7 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L3 | TA-Lib-Abgleich für KAMA, LINEARREG, TRIX, ULTOSC (Status „Markt“ der Katalogindikatoren) | Test | erledigt (#995) |
 | L4 | Candlestick-Bibliothek (Abschnitt 4), nur Katalog | Katalog | erledigt (#996: 27, #1006: +31) |
 | L5 | Validierung der Formationen: konstruierte Grenzfälle je Typ, Stichprobe echter Erkennungen mit Begründung | Test/Doku | erledigt (#998); Korrektur 1.2.1 (#1000, Owner-Freigabe) |
-| L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | offen |
+| L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | erledigt (#1004, Owner-Freigabe 27.10.2026): [SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md) |
 | L7 | Woche/Monat: Verfügbarkeitsgrenzen je neuem Feld; aus der Tageshistorie im Materialisierungslauf | **Fachmodell** | offen |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**
