@@ -143,7 +143,7 @@ def fetch_doc(cik, acc, prim):
 
 def earliest_ticker_confirmation(ticker, cik, series_from):
     """Earliest venue-checked (US national exchange) full-text 10-K/10-Q statement of the ticker by this CIK."""
-    return S.fulltext_ticker_confirmation(cik, ticker, series_from, datetime.date.today().isoformat(), '10-K,10-K405,10-Q')
+    return S.fulltext_ticker_confirmation(cik, ticker, series_from, datetime.date.today().isoformat(), '10-K,10-K405,10-Q', factual=True)
 
 
 GLOBAL_EXCLUDE = re.compile(r'would have (had )?a value|reference range|implied|represented (an )?(aggregate )?value|exercise price|value of approximately|in value for each', re.I)

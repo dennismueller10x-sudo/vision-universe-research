@@ -215,25 +215,36 @@ def price_statements(body):
 
 
 US_VENUE_RE = re.compile(r'new york stock exchange|\bnyse\b|nasdaq|american stock exchange|\bamex\b|nyse american|nyse mkt|nyse arca|cboe|bats', re.I)
-NON_US_OR_OTC_RE = re.compile(r'\btsx\b|toronto stock exchange|canadian securities exchange|\bcse\b|tsx venture|euronext|lima stock exchange|bolsa|london stock exchange|\baim\b|frankfurt|six swiss|\botc\b|otcqb|otcqx|pink sheets|bulletin board|over[- ]the[- ]counter|hong kong stock exchange|australian securities exchange|\basx\b', re.I)
+NON_US_OR_OTC_RE = re.compile(r'\btsx\b|toronto stock exchange|canadian securities exchange|\bcse\b|tsx venture|euronext|lima stock exchange|bolsa|london stock exchange|\baim\b|frankfurt|six swiss|\botc\b|otcqb|otcqx|pink sheets|bulletin board|over[- ]the[- ]counter|hong kong stock exchange|australian securities exchange|\basx\b|oslo|b\u00f8rs|bermuda|tel aviv|\btase\b|johannesburg|\bjse\b|deutsche b\u00f6rse|xetra|stockholm|copenhagen|helsinki|mexican stock|singapore|tokyo|korea exchange|shanghai|shenzhen|borsa|bourse|\bnzx\b', re.I)
+INTENT_RE = re.compile(r'appl(?:y|ied|ication)|intend|expect|will |anticipate|propos|to be listed|approved for listing|subject to|upon (?:the )?(?:closing|consummation|completion)', re.I)
+SENTENCE_END_RE = re.compile(r'[a-z0-9\)\u201d"]\.\s+(?=[A-Z\u201c"])')
 
 
-def ticker_symbol_statements(text, sym):
-    """Statements binding `sym` (case-sensitive, whole token, not a when-issued 'WI' line) to 'symbol', whose
-    nearest preceding venue mention (within 160 chars) is a US national exchange. Returns [(start, quote)]."""
+def ticker_symbol_statements(text, sym, factual=False):
+    """Statements binding `sym` (case-sensitive, whole token, not a when-issued 'WI' or '.XX' foreign suffix)
+    to 'symbol', where the same sentence names a US national exchange before the symbol and no non-US/OTC
+    venue appears between that exchange name and the symbol. factual=True additionally rejects statements of
+    intent (apply/expect/will/...). Returns [(start, quote)]."""
     t = re.escape(sym)
-    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["“‘\'(]{0,2}%s["”’\')]{0,2}(?![A-Za-z0-9])(?!\s?WI\b)(?!\.[A-Z]{1,2}\b)' % t)
+    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["\u201c\u2018\'(]{0,2}%s["\u201d\u2019\')]{0,2}(?![A-Za-z0-9])(?!\s?WI\b)(?!\.[A-Z]{1,2}\b)' % t)
     out = []
     for m in pat.finditer(text):
-        pre = text[max(0, m.start() - 160):m.start()]
-        venues = [(v.start(), 'US') for v in US_VENUE_RE.finditer(pre)] + [(v.start(), 'X') for v in NON_US_OR_OTC_RE.finditer(pre)]
-        if not venues or max(venues)[1] != 'US':
+        pre = text[max(0, m.start() - 220):m.start()]
+        ends = list(SENTENCE_END_RE.finditer(pre))
+        if ends:
+            pre = pre[ends[-1].end():]
+        us = list(US_VENUE_RE.finditer(pre))
+        if not us:
+            continue
+        if NON_US_OR_OTC_RE.search(pre[us[-1].start():]):
+            continue
+        if factual and INTENT_RE.search(pre):
             continue
         out.append((m.start(), text[max(0, m.start() - 120):m.start() + 160]))
     return out
 
 
-def fulltext_ticker_confirmation(cik, sym, start, limit, forms, windows=8, per_window=10):
+def fulltext_ticker_confirmation(cik, sym, start, limit, forms, windows=8, per_window=10, factual=False):
     """Earliest EDGAR full-text-search (2001+) document of this CIK with a venue-checked ticker statement
     (ticker_symbol_statements). Searches consecutive 3-year windows from `start` until `limit`."""
     import datetime as _dt
@@ -261,10 +272,11 @@ def fulltext_ticker_confirmation(cik, sym, start, limit, forms, windows=8, per_w
                 doc, dmeta = get(doc_url(cik, acc, fname), prefix=True)
             except Exception:  # noqa: BLE001
                 continue
-            st = ticker_symbol_statements(_text(doc.decode('utf-8', errors='replace')), q)
+            st = ticker_symbol_statements(_text(doc.decode('utf-8', errors='replace')), q, factual)
             if st:
                 return {'state': 'FOUND', 'accession': acc, 'document': fname, 'filingDate': h['_source'].get('file_date'),
                         'form': h['_source'].get('form'), 'url': dmeta['url'], 'sha256': dmeta['sha256'],
-                        'bytesRead': dmeta['bytesRead'], 'complete': dmeta['complete'], 'quote': st[0][1][:300], 'searches': searches}
+                        'bytesRead': dmeta['bytesRead'], 'complete': dmeta['complete'], 'quote': st[0][1][:300], 'searches': searches,
+                        'factualOnly': factual}
         lo = hi
     return {'state': 'NOT_FOUND', 'searches': searches}

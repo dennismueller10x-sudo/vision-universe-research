@@ -1,6 +1,6 @@
 {
  "schemaVersion": "v9-identity-dossiers-1.0.0",
- "generatedAt": "2026-10-27T18:57:49+00:00",
+ "generatedAt": "2026-10-27T19:01:47+00:00",
  "codeSha256": "ad100e2257a675531ade4ced0eb3b92313a4b02295539f31b5c4e51653ce4057",
  "secTickerMap": {
   "url": "https://www.sec.gov/files/company_tickers_exchange.json",
@@ -1966,18 +1966,19 @@
     ],
     "latest": {
      "cik": "0001094831",
-     "accession": "0001628280-26-063655",
-     "form": "8-K",
-     "filingDate": "2026-09-28",
-     "document": "bgcp-20260928.htm",
-     "url": "https://www.sec.gov/Archives/edgar/data/1094831/000162828026063655/bgcp-20260928.htm",
-     "sha256": "544e5941c966e110faa13111c3786b52e68a3a1038463b2f3f4afd7f94955af8",
-     "bytesRead": 39695,
+     "accession": "0001628280-26-055187",
+     "form": "10-Q",
+     "filingDate": "2026-08-10",
+     "document": "bgcg-20260630.htm",
+     "url": "https://www.sec.gov/Archives/edgar/data/1094831/000162828026055187/bgcg-20260630.htm",
+     "sha256": "46e63c86d464c8c8cb39ee02f99ee4bb67f3a40098849e6854b3e09ac12a38fc",
+     "bytesRead": 3072440,
      "complete": true,
      "symbolFound": true,
      "cls": {
+      "Security12bTitle": "Class A Common Stock, $0.01 par value",
       "TradingSymbol": "BGC",
-      "SecurityExchangeName": "The NASDAQ Stock Market LLC"
+      "SecurityExchangeName": "The Nasdaq Stock Market, LLC"
      }
     },
     "first": {
@@ -2013,8 +2014,8 @@
      ]
     },
     "monotoneSpotCheck": {
-     "accession": "0001213900-24-101020",
-     "filingDate": "2024-11-21",
+     "accession": "0001628280-24-046648",
+     "filingDate": "2024-11-08",
      "symbolFound": true
     },
     "state": "OK"
@@ -2030,10 +2031,8 @@
    "issuer": "BGC Group, Inc. (successor issuer of BGC Partners, Inc., formerly eSpeed, Inc.)",
    "instrumentClass": "CLASS_A_COMMON_STOCK",
    "decision": {
-    "state": "UNRESOLVED",
-    "unresolvedReasons": [
-     "LATEST_COVER_CLASS_NOT_COMMON"
-    ],
+    "state": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "unresolvedReasons": [],
     "hold": null,
     "sameDayMismatches": [],
     "priceCheckCounts": {

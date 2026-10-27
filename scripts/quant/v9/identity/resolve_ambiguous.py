@@ -295,6 +295,9 @@ def resolve_one(sid, rows, tmap, covers):
         start, basis, conf = doc['from'], 'SERIES_STARTS_INSIDE_COVER_CONFIRMED_INTERVAL', None
     else:
         conf = efts_confirmation(cik, sym, doc['from'], first_cover)
+        if conf.get('state') == 'FOUND' and conf['filingDate'] > (iso(doc['from']) + datetime.timedelta(days=7)).isoformat():
+            # after the series start only a statement of fact (not of intent) can open the usable interval
+            conf = S.fulltext_ticker_confirmation(cik, sym, (iso(doc['from']) - datetime.timedelta(days=120)).isoformat(), first_cover, FT_FORMS, factual=True)
         if conf.get('state') == 'FOUND' and conf['filingDate'] <= (iso(doc['from']) + datetime.timedelta(days=7)).isoformat():
             start, basis = doc['from'], 'FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START'
         elif conf.get('state') == 'FOUND' and conf['filingDate'] < first_cover:

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "v9-portfolio-terminal-ledger-events-1.0.0",
- "codeSha256": "b38f05e1f32fa00fe86934440a3a498ac97359670aaa0a37b3d8e9241d4b7778",
+ "codeSha256": "cb6ce4f484e11b2d4e5f9fe28e5c1d9fa8b35cdf4344b746603861f03f753332",
  "events": [
   {
    "ledgerAvailableAt": "2026-09-01T13:26:31.000Z",
@@ -69,6 +69,92 @@
    "cashCreditDate": null,
    "cashCreditDateState": "NOT_STATED (right to receive arises at the Effective Time; paying-agent/broker credit date not in source)",
    "fractionalShareCash": "stated as paid in lieu but amount per holder not stated; ledger keeps fractional successor units"
+  }
+ ],
+ "verifiedDossiersNotInLedger": [
+  {
+   "ticker": "DBRG",
+   "cik": 1679688,
+   "accession": "0001104659-26-112148",
+   "file": "tm2626145d9_8k.htm",
+   "type": "TERMINAL_CASH",
+   "cashPerShare": "16.00",
+   "quotes": {
+    "consideration": "was converted into the right to receive $16.00 in cash, without interest",
+    "trading": "removed from trading on the NYSE prior to the opening of trading on September 30, 2026"
+   },
+   "notInLedger": "DBRG paid cash dividends in the window; no SEC dividend evidence harvested for DBRG -> TR incomplete",
+   "url": "https://www.sec.gov/Archives/edgar/data/1679688/000110465926112148/tm2626145d9_8k.htm",
+   "sha256": "ebb4b1316cc6deaf7a7538a2b94dae26e64091658d53df674a424acd3f9bc6ef",
+   "acceptanceUtc": "2026-09-30T13:29:36.000Z",
+   "quotesVerifiedInBody": {
+    "consideration": true,
+    "trading": true
+   }
+  },
+  {
+   "ticker": "TWO",
+   "cik": 1465740,
+   "accession": "0001104659-26-100622",
+   "file": "tm2621794d1_8k.htm",
+   "type": "TERMINAL_CASH",
+   "cashPerShare": "12.00",
+   "quotes": {
+    "closing": "On August 25, 2026 (the \u201cClosing Date\u201d)",
+    "consideration": "converted into the right to receive an amount in cash equal to $12.00 per share",
+    "trading": "suspend trading of TWO Common Stock on the NYSE prior to the opening of trading on the Closing Date"
+   },
+   "notInLedger": "TWO paid cash dividends in the window; no SEC dividend evidence harvested for TWO -> TR incomplete",
+   "url": "https://www.sec.gov/Archives/edgar/data/1465740/000110465926100622/tm2621794d1_8k.htm",
+   "sha256": "eff88ab97c334ec9c63ed7dc953f9bf1eecfb95fd7d642f7b188bf51c8c4611c",
+   "acceptanceUtc": "2026-08-25T15:12:18.000Z",
+   "quotesVerifiedInBody": {
+    "closing": true,
+    "consideration": true,
+    "trading": true
+   }
+  },
+  {
+   "ticker": "WBS",
+   "cik": 801337,
+   "accession": "0001193125-26-357758",
+   "file": "d919931d8k.htm",
+   "type": "TERMINAL_MIXED_CASH_AND_ADS",
+   "cashPerShare": "48.75",
+   "shareRatio": "2.0548",
+   "successor": "SAN (Banco Santander ADS)",
+   "quotes": {
+    "consideration": "exchanged for the right to receive from Banco Santander 2.0548 Banco Santander American Depositary Shares and $48.75 in cash, without interest",
+    "trading": "withdraw Webster Common Stock and Webster Preferred Stock from listing on the NYSE before the market opened on NYSE on August 20, 2026"
+   },
+   "notInLedger": "successor is an American Depositary Share; runPortfolio accepts only COMMON_STOCK listings (would require mislabelling) and WBS dividends not harvested",
+   "url": "https://www.sec.gov/Archives/edgar/data/801337/000119312526357758/d919931d8k.htm",
+   "sha256": "85e85d36d53bcc5dbd52e469c37269e846836816d6dc47275acdb1a09e477980",
+   "acceptanceUtc": "2026-08-20T10:33:53.000Z",
+   "quotesVerifiedInBody": {
+    "consideration": true,
+    "trading": true
+   }
+  },
+  {
+   "ticker": "TALK",
+   "cik": 1803901,
+   "accession": "0000950157-26-000907",
+   "file": "form8-k.htm",
+   "type": "TERMINAL_CASH",
+   "cashPerShare": "5.25",
+   "quotes": {
+    "closing": "On August 17, 2026 (the \u201c Closing Date \u201d)",
+    "consideration": "was automatically converted into the right to receive $5.25 in cash, without interest"
+   },
+   "notInLedger": "source does not state whether trading was suspended before the open on the Closing Date; last trading session not established",
+   "url": "https://www.sec.gov/Archives/edgar/data/1803901/000095015726000907/form8-k.htm",
+   "sha256": "f32fd4d7dc74459b8cca3a9889992d3622399633af2d7dee5d8d168d5a8e8043",
+   "acceptanceUtc": "2026-08-17T13:09:51.000Z",
+   "quotesVerifiedInBody": {
+    "closing": true,
+    "consideration": true
+   }
   }
  ],
  "noDividendPolicies": [
