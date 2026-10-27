@@ -39,7 +39,7 @@
   var EXACT_EMA_PERIODS = [20, 50, 200];
 
   /** Optionale Module (Annotationen, Elliott, Snapshot) — registrierbar, damit der Kern ohne sie laeuft. */
-  var optional = { annotations: null, elliott: null };
+  var optional = { annotations: null, elliott: null, multiTimeframe: null };
   function registerOptional(name, module) { optional[name] = module; }
   /* Lazy: in Node per require, im Browser ueber den geladenen Namespace. Ein
      Fehlen ist kein Fehler — der Kern laeuft ohne Elliott/Annotationen. */
@@ -148,6 +148,10 @@
           status: finite(s.values[i]) ? "SETTLED" : "INSUFFICIENT_HISTORY" };
       })
     };
+    /* Wochen- und Monatskennzahlen aus der vollen Tageshistorie (multi-timeframe.js, Audit B8).
+       Rein additiv wie emaSettlement: keine Engine liest sie, parametersHash bleibt unberuehrt. */
+    var MtfMod = opts.multiTimeframe !== false ? resolveOptional("multiTimeframe", "./multi-timeframe.js", "MultiTimeframe") : null;
+    if (MtfMod) bundle.multiTimeframe = MtfMod.compute(series);
     var AnnMod = opts.annotations !== false ? resolveOptional("annotations", "./annotations.js", "Annotations") : null;
     if (AnnMod) bundle.annotations = AnnMod.buildAnnotations(bundle, { calendarDays: series.timestamps });
     return bundle;

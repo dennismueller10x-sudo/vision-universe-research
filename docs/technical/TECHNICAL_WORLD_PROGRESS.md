@@ -146,9 +146,52 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 26.10.2026 | PR #962 gemergt (`ec19c88`): externe Referenz TA-Lib 0.8.2 als eingefrorene Fixture (Audit B7). 17 Indikatoren gleich, 4 mit dokumentierter Startwert-Konvention. Befund Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md. |
 | 26.10.2026 | PR #954 gemergt (`9670eb6`): Zeitrahmen je Filter und verneinte Formationen (`technical-query` 1.4.0, `query-text` 1.4.0), Goldsatz 80/80. Ein seit 51 Minuten ohne Runner wartender Job (Currency & FX „marker“) wurde einmal neu gestartet und war grün. |
 | 26.10.2026 | PR #964 eröffnet (Fachmodell, kein automatischer Merge): Parabolic SAR an Umkehrbars nach Wilder (`indicators` 1.2.1). Vorher/Nachher: 3.837 SAR-Werte an Umkehrbars, 0 Richtungswechsel, `psarUp` 0/5.655 geändert. Entscheidung beim Owner. |
+| 26.10.2026 | PR #964 gemergt (`220512d`, Owner-Freigabe): Parabolic SAR an Umkehrbars nach Wilder (`indicators` 1.2.1). TA-Lib-Referenztest grün, 0 Richtungswechsel, Screener-Spalten unverändert. |
+| 26.10.2026 | PR #966 gemergt (`0c8b0b3`, Owner-Freigabe): Wochen- und Monatskennzahlen aus der Tageshistorie (Audit B8, `technical-mtf-1.0.0`). Offene Wochen/Monate gelten nie als abgeschlossen; Monatsschluss = letzter Handelstag (behebt B5). Tageswerte unverändert. |
+| 26.10.2026 | PR #967 gemergt (`8a59500`, Owner-Freigabe): Ereignisfilter (Audit B12, `screen-row`/`technical-query` 1.6.0, `query-text` 1.5.0). Golden/Death Cross = echte Kreuzung, Zustand „SMA 50 über/unter SMA 200“ getrennt, gespeicherte Wortsuchen migriert (`qv=2`), Prüfraum statt „kein Ereignis“ bei fehlender Historie. `technical/data` mit dem Erzeuger neu gebaut. |
+| 26.10.2026 | Browser-QA (`vu2-browser-qa`, Job „experience“, kein Pflicht-Check) lief bei #964, #966 und #967 jeweils beim Browser-Install in die 35-Minuten-Grenze. Gemergt auf Grundlage der Pflichtprüfungen (Technical, Quant, Core, Pages, SEC, Currency & FX). |
+| 26.10.2026 | Abschließende Prüfung auf `main` nach #966/#967, siehe Abschnitt 11. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
+
+## 11. Abschließende Prüfung nach #964, #966, #967 (26.10.2026, `main` = `8a59500`)
+
+**Tests:** Technical (`quant/tests/technical-*`, `ti-*`, `technical/tests`) 355/355. `verify-technical-data` OK. Test-Isolation OK.
+
+**Bestehende Spalten:** `technical/data/screener-v1.json` gegen den Stand vor #966 (`220512d`), Stichtag 23.10.2026:
+- 0 Werte geändert in allen bisherigen Spalten (5.649 gemeinsame Titel), keine Spalte entfernt.
+- 6 Titel neu (Vorzugsaktien aus #950, die der Erzeuger seitdem mitnimmt).
+- 27 neue Spalten: 14 Wochen-/Monatswerte (B8) und 13 Ereignis- und Prüfraumspalten (B12).
+
+**Abdeckung des Screeners (Stand 23.10.2026, 5.655 Titel):**
+
+| Spalte | belegt | Bemerkung |
+|---|---|---|
+| `goldenCrossDays` / `deathCrossDays` | 3.120 / 3.687 | Rest: kein Ereignis im Prüfraum (`smaCrossWindow` bei allen 5.655 belegt) |
+| `newHigh52wDays` | 558 | Prüfraum 19 Tage, bei allen belegt |
+| `formationNewDays` | 4.188 | Prüfraum bei allen belegt |
+| `rsi14@1W`, `aboveSma200@1W/1M` | 5.652 / 5.648 | noch Rückfall aus Wochenschlüssen (`weeklyMonthlyFromDailyHistory` = 0) |
+| `adx`, `macdPositive`, `stochK`, `atrPct`, `relVol`, `volAboveAvg`, `volSpike` je `@1W/@1M` | 0 | erscheinen mit dem ersten Materialisierungslauf nach #966 |
+| `aboveEma200` / `distEma200` | 0 | erscheinen mit dem ersten Materialisierungslauf nach #927 |
+
+Die Shards tragen `bundle.multiTimeframe` und die EMA 200 erst nach dem nächsten Lauf der Materialisierung. Bis dahin werten Filter auf diese Felder „ohne Wert“ aus (Trichter zeigt 5.655 ohne Wert) und liefern 0 Treffer, nie ein falsches Nein.
+
+**Echte Daten, Suche in Worten:**
+
+| Eingabe | Treffer |
+|---|---|
+| „Golden Cross in den letzten 5 Tagen“ | 48 (unabhängige Shard-Zählung: 48) |
+| „Death Cross“ (Standard ≤ 5) | 181 (unabhängig: 181) |
+| „Golden Cross heute“ | 10 |
+| „SMA 50 über SMA 200“ (Zustand) | 2.401 |
+| „Kurs steigt über die SMA 200 in den letzten 10 Tagen“ | 715 |
+| „RSI ist gestern über 30 gestiegen“ | 250 |
+| „neue Formation“ | 1.650 |
+| „Wochenchart: über der 40-Wochen-Linie und RSI über 50“ | 1.807 (7 ohne Wert) |
+| „Wochenchart: ADX über 25“, „Monatschart: MACD positiv“, „über der EMA 200“ | 0, alle ohne Wert (siehe oben) |
+
+**Noch offen (unverändert):** EMA-200-Live-Prüfung und Abdeckung der Wochen-/Monatswerte nach dem Materialisierungslauf vom 26./27.10.2026 und dem technical-world-Lauf 05:10 UTC. Ergebnis kommt nach EMA200_MATERIALIZATION.md und MULTI_TIMEFRAME.md.
 
 ## 8. Fortsetzen
 

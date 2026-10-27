@@ -127,11 +127,42 @@
   }
 
   /* --------------------------------------------- Gespeicherte Strategien */
+  /*
+   * Bedeutung gespeicherter Suchen in Worten ("q=..."): Seit query-text 1.5.0 (Audit B12) meinen
+   * "Golden Cross"/"Death Cross" das Kreuzungsereignis, vorher den Zustand "SMA 50 ueber/unter SMA 200".
+   * Gespeicherte Texte ohne Bedeutungsstand "qv" stammen von vorher und werden einmalig ausdruecklich
+   * umgeschrieben, damit sie ihre Bedeutung behalten. Neue Speicherungen tragen qv=2.
+   */
+  var QUERY_TEXT_SEMANTICS = "2";
+  function migrateParams(params) {
+    var parts = String(params || "").split("&"), qi = -1, hasQv = false;
+    parts.forEach(function (kv, i) { var k = kv.split("=")[0]; if (k === "q") qi = i; if (k === "qv") hasQv = true; });
+    if (qi < 0 || hasQv) return { params: params, changed: false, rewritten: false };
+    var text;
+    try { text = decodeURIComponent(parts[qi].slice(2).replace(/\+/g, " ")); } catch (e) { return { params: params, changed: false, rewritten: false }; }
+    var next = text.replace(/golden\s+cross/gi, "SMA 50 über SMA 200").replace(/death\s+cross/gi, "SMA 50 unter SMA 200");
+    parts[qi] = "q=" + encodeURIComponent(next);
+    parts.push("qv=" + QUERY_TEXT_SEMANTICS);
+    return { params: parts.join("&"), changed: true, rewritten: next !== text, from: text, to: next };
+  }
+  function stampParams(params) { return /(^|&)q=/.test(params) && !/(^|&)qv=/.test(params) ? params + "&qv=" + QUERY_TEXT_SEMANTICS : params; }
   function loadScreens(storage) {
-    try { var raw = storage && storage.getItem(STORE_KEY); var list = raw ? JSON.parse(raw) : []; return Array.isArray(list) ? list.filter(function (x) { return x && x.id && x.name && typeof x.params === "string"; }).slice(0, 50) : []; }
+    var list;
+    try { var raw = storage && storage.getItem(STORE_KEY); list = raw ? JSON.parse(raw) : []; if (!Array.isArray(list)) return []; }
     catch (e) { return []; }
+    list = list.filter(function (x) { return x && x.id && x.name && typeof x.params === "string"; }).slice(0, 50);
+    var migrated = false;
+    list.forEach(function (x) {
+      var m = migrateParams(x.params);
+      if (!m.changed) return;
+      migrated = true; x.params = m.params;
+      if (m.rewritten) x.migrated = { from: m.from, to: m.to, reason: "Golden/Death Cross bedeuten seit Technical-Suche 1.5.0 das Ereignis; die gespeicherte Suche behaelt den Zustand." };
+    });
+    if (migrated) { try { storage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) { /* bleibt im Speicher migriert */ } }
+    return list;
   }
   function saveScreen(storage, name, params, now) {
+    params = stampParams(params);
     var list = loadScreens(storage), id = "s" + (now || Date.now()).toString(36);
     list.unshift({ id: id, name: String(name).slice(0, 60), params: params, createdAt: new Date(now || Date.now()).toISOString() });
     try { storage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 50))); return { ok: true, id: id }; } catch (e) { return { ok: false }; }
@@ -160,7 +191,7 @@
       hit = true;
       var y = Object.assign({}, x, { updatedAt: new Date(now || Date.now()).toISOString() });
       if (patch && typeof patch.name === "string" && patch.name.trim()) y.name = patch.name.trim().slice(0, 60);
-      if (patch && typeof patch.params === "string") y.params = patch.params;
+      if (patch && typeof patch.params === "string") y.params = stampParams(patch.params);
       return y;
     });
     if (!hit) return false;
@@ -174,7 +205,7 @@
    * Import: nur bekannte Adressparameter (preset, q, muster, trend, ...), gleiche Filteradresse wird nicht doppelt
    * angelegt, hoechstens 50 Eintraege. Liefert { ok, added, skipped, error? }.
    */
-  var PARAM_KEYS = ["preset", "q", "muster", "bestaetigt", "trend", "vol", "rsi", "logik", "sort", "tf"];
+  var PARAM_KEYS = ["preset", "q", "qv", "muster", "bestaetigt", "trend", "vol", "rsi", "logik", "sort", "tf"];
   function importScreens(storage, text, now) {
     var doc;
     try { doc = JSON.parse(text); } catch (e) { return { ok: false, added: 0, skipped: 0, error: "KEIN_JSON" }; }
@@ -185,6 +216,7 @@
     items.forEach(function (x, i) {
       var params = x && typeof x.params === "string" ? x.params : null;
       var okKeys = params !== null && params.split("&").every(function (kv) { return !kv || PARAM_KEYS.indexOf(kv.split("=")[0]) >= 0; });
+      if (okKeys) params = migrateParams(params).params;
       if (!okKeys || !x.name || have[params] || list.length >= 50) { skipped++; return; }
       have[params] = 1; added++;
       list.push({ id: "s" + (t + i).toString(36) + "i", name: String(x.name).slice(0, 60), params: params, createdAt: new Date(t).toISOString() });
@@ -362,7 +394,7 @@
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
-    loadScreens: loadScreens, saveScreen: saveScreen, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
+    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
     findings: findings, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
