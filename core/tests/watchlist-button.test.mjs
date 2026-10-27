@@ -40,7 +40,8 @@ test("Eigenstaendig: Navigator unberuehrt, Freigabe zuerst, Einbau nur in freien
   const lock = JSON.parse(readFileSync(join(ROOT, "docs/quant-recovery/v51/ui-protection.json"), "utf8"));
   assert.ok(lock.files["assets/stock-navigator.js"], "Navigator ist byte-gesperrt");
   const button = readFileSync(join(ROOT, "assets", "watchlist-button.js"), "utf8");
-  assert.match(button, /if \(!c \|\| !c\.endpoint\) return false;/, "ohne Endpunkt nichts weiter");
+  assert.match(button, /if \(!configured\(\)\) return false;/, "ohne Endpunkt nichts weiter");
+  assert.match(button, /if \(!session\(\)\) return true;/, "ohne Anmeldung kein /konto/account-api.js");
   assert.ok(button.indexOf('"/konto/config.js"') < button.indexOf('"/konto/account-api.js"'));
   const code = button.replace(/\/\*[\s\S]*?\*\//g, "");
   assert.ok(!/innerHTML|insertAdjacentHTML|document\.write/.test(code), "keine HTML-Strings");
@@ -72,6 +73,11 @@ function signedInAccount(items, calls, fail) {
     post: async (path, body) => { calls.push([path, body.instrumentId]); return fail ? { ok: false, status: 409, state: fail } : { ok: true, status: 200, data: {} }; }
   };
 }
+/* Merker "angemeldet" aus konto/account-api.js (localStorage); ohne ihn fragt das Lesezeichen die Konto-API nie an. */
+function signIn(on) {
+  if (on) globalThis.localStorage = { getItem: k => (k === "vu-account-session-v1" ? "1" : null), setItem() {}, removeItem() {} };
+  else delete globalThis.localStorage;
+}
 function withMaster() {
   globalThis.fetch = async () => ({ ok: true, json: async () => ({ instruments: Object.entries(IDS).map(([symbol, instrumentId]) => ({ symbol, instrumentId, active: true })) }) });
 }
@@ -90,7 +96,7 @@ test("Kopplung ohne Konten oder ohne Anmeldung: rein lokal, keine Anfrage", asyn
 });
 
 test("Kopplung angemeldet: Zustand = lokal ODER Konto, ein Klick schreibt beide gleich, nichts wird von selbst uebernommen", async () => {
-  B._reset(); withMaster(); const calls = [];
+  B._reset(); withMaster(); signIn(true); const calls = [];
   globalThis.VUAccount = signedInAccount([{ instrumentId: IDS.MSFT, ticker: "MSFT" }], calls); B._ready(Promise.resolve(true));
   const s = B.couple(localStore(["NVDA"]));
   await new Promise(r => setTimeout(r, 0));
@@ -102,16 +108,28 @@ test("Kopplung angemeldet: Zustand = lokal ODER Konto, ein Klick schreibt beide 
   assert.deepEqual(s.raw, ["AAPL", "NVDA"], "lokal unberuehrt"); assert.deepEqual(calls.at(-1), ["/v1/watchlist/items/remove", IDS.MSFT]);
   assert.equal(s.toggle("NVDA"), false); assert.equal((await s.lastSync).state, "UNCHANGED", "nicht im Konto: nichts zu entfernen");
   assert.deepEqual(s.raw, ["AAPL"]); assert.equal(s.has("MSFT"), false); assert.equal(s.has("AAPL"), true);
-  delete globalThis.VUAccount;
+  delete globalThis.VUAccount; signIn(false);
 });
 
 test("Kopplung: Fehler im Konto (Tarifgrenze) laesst die lokale Liste wie geklickt", async () => {
-  B._reset(); withMaster(); const calls = [];
+  B._reset(); withMaster(); signIn(true); const calls = [];
   globalThis.VUAccount = signedInAccount([], calls, "WATCHLIST_ITEMS_LIMIT_REACHED"); B._ready(Promise.resolve(true));
   const s = B.couple(localStore([]));
   assert.equal(s.toggle("AAPL"), true);
   assert.deepEqual(await s.lastSync, { ok: false, state: "WATCHLIST_ITEMS_LIMIT_REACHED" });
   assert.deepEqual(s.raw, ["AAPL"]); assert.equal(s.has("AAPL"), true, "lokal gespeichert");
+  delete globalThis.VUAccount; signIn(false);
+});
+
+test("Konten an, ohne Merker \"angemeldet\": keine Konto-Anfrage, lokale Liste unveraendert (Ressourcenbudgets)", async () => {
+  B._reset(); signIn(false); const calls = [];
+  globalThis.VUAccount = signedInAccount([{ instrumentId: IDS.MSFT, ticker: "MSFT" }], calls); B._ready(Promise.resolve(true));
+  const s = B.couple(localStore(["NVDA"]));
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(s.has("MSFT"), false, "Kontostand wird nicht gelesen");
+  assert.equal(s.toggle("AAPL"), true); assert.equal((await s.lastSync).state, "LOCAL_ONLY");
+  assert.deepEqual(calls, [], "keine Anfrage an die Konto-API");
+  assert.deepEqual(s.raw, ["AAPL", "NVDA"]);
   delete globalThis.VUAccount;
 });
 

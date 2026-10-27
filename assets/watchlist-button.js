@@ -9,9 +9,13 @@
 
    Eigenstaendig: eine Seite bindet nur diese Datei ein. Sie laedt
    /konto/config.js und tut ohne Endpunkt (Konten aus) nichts weiter. Mit
-   Endpunkt laedt sie /konto/account-api.js, haengt sich an jeden Aktienkopf
+   Endpunkt haengt sie sich an jeden Aktienkopf
    (Kuerzel aus der Adresse, core/stock-context.js#parse) und bringt ihr
-   Aussehen selbst mit. assets/stock-navigator.js bleibt unveraendert
+   Aussehen selbst mit. /konto/account-api.js und die Konto-API fragt sie nur
+   mit dem Merker "angemeldet" (SESSION, gesetzt von konto/account-api.js) an:
+   ohne Anmeldung kostet eine Produktseite mit Konten keine Anfrage mehr als
+   ohne (Ressourcenbudgets, scripts/vu2/resource-budget.mjs).
+   assets/stock-navigator.js bleibt unveraendert
    (byte-gesperrt, docs/quant-recovery/v51/ui-protection.json).
 
    Eine Abfrage der Liste je Tab und 5 Minuten (sessionStorage), geteilt von
@@ -33,15 +37,19 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "watchlist-button-1.1.0";
+  var VERSION = "watchlist-button-1.2.0";
   var PATH = "M6 3h12v18l-6-4-6 4z";
   var cache = null;          /* Promise<{signedIn, ids:{instrumentId: Ticker beim Speichern}}> je Seite */
   var resolved = {};         /* ticker -> Promise<instrumentId|null> */
   var known = {};            /* ticker -> instrumentId, sobald aufgeloest (fuer synchrone Abfragen) */
   var on = null;             /* Promise<boolean>: Konten freigeschaltet (auto/ready) */
 
+  /* Gleicher Schluessel wie konto/account-api.js#SESSION_HINT. Kein Geheimnis, die Sitzung bleibt im HttpOnly-Cookie. */
+  var SESSION = "vu-account-session-v1";
+  function session() { try { return root.localStorage.getItem(SESSION) === "1"; } catch (e) { return false; } }
+  function configured() { var c = root.VU_ACCOUNT_CONFIG; return !!(c && c.endpoint); }
   function account() { return root.VUAccount || null; }
-  function enabled() { var a = account(); return !!(a && a.available()); }
+  function enabled() { var a = account(); return configured() && (!session() || !!(a && a.available())); }
 
   /* Genau ein aktives Listing zum Ticker im Company Master (dieselbe Regel wie core/client.js#getSecurity). */
   function resolveInstrument(ticker, fetchImpl) {
@@ -69,6 +77,7 @@
   }
   function store(st) { try { root.sessionStorage.setItem(STORE, JSON.stringify({ at: Date.now(), signedIn: st.signedIn, ids: st.ids })); } catch (e) { /* nur Komfort */ } }
   function load() {
+    if (!session()) return Promise.resolve({ signedIn: false, ids: {} });
     if (!cache) {
       var hit = stored();
       cache = hit ? Promise.resolve({ signedIn: true, ids: hit.ids }) : account().get("/v1/watchlist").then(function (r) {
@@ -112,13 +121,15 @@
   function mount(slot, o) {
     if (!slot || !o || !o.ticker || !enabled()) return Promise.resolve(null);
     var doc = slot.ownerDocument;
-    return resolveInstrument(o.ticker, o.fetch).then(function (id) {
-      if (!id) return null;
+    /* Ohne Anmeldung zeigt der Knopf nur die Aufforderung; das Listing wird erst angemeldet aufgeloest. */
+    return (session() ? resolveInstrument(o.ticker, o.fetch) : Promise.resolve("")).then(function (id) {
+      if (id === null) return null;
       return load().then(function (st) {
         var btn = doc.createElement("button");
-        btn.type = "button"; btn.className = "vu-watch"; btn.setAttribute("data-instrument", id);
+        btn.type = "button"; btn.className = "vu-watch";
+        if (id) btn.setAttribute("data-instrument", id);
         btn.appendChild(svg(doc));
-        paint(btn, !!st.ids[id], o.ticker);
+        paint(btn, !!(id && st.ids[id]), o.ticker);
         btn.addEventListener("click", function () { toggle(btn, id, o.ticker); });
         root.addEventListener && root.addEventListener("vu-watchlist-change", function (e) {
           if (e.detail && e.detail.instrumentId === id) paint(btn, e.detail.saved, o.ticker);
@@ -165,7 +176,7 @@
   function central() {
     var p = on || (root.document && root.document.head ? ready(root.document) : null);
     if (!p) return Promise.resolve(null);
-    return p.then(function (ok) { return ok ? load() : null; }).then(function (st) {
+    return p.then(function (ok) { return ok && session() ? load() : null; }).then(function (st) {
       if (st && !snap) {
         snap = st;   /* einmal melden: gekoppelte Listen koennen ihren Zustand neu zeichnen */
         if (root.dispatchEvent && root.CustomEvent) root.dispatchEvent(new root.CustomEvent("vu-watchlist-ready", { detail: { signedIn: st.signedIn } }));
@@ -234,12 +245,12 @@
       doc.head.appendChild(s);
     });
   }
-  /* Konten freigeschaltet? Ohne Endpunkt bleibt es bei dieser einen kleinen Anfrage. */
+  /* Konten freigeschaltet? Ohne Endpunkt oder ohne Anmeldung bleibt es bei dieser einen kleinen Anfrage (/konto/config.js). */
   function ready(doc) {
     if (on) return on;
     return on = (root.VU_ACCOUNT_CONFIG ? Promise.resolve(true) : script(doc, "/konto/config.js")).then(function () {
-      var c = root.VU_ACCOUNT_CONFIG;
-      if (!c || !c.endpoint) return false;
+      if (!configured()) return false;
+      if (!session()) return true;
       return (root.VUAccount ? Promise.resolve(true) : script(doc, "/konto/account-api.js")).then(function () { return enabled(); });
     }, function () { return false; });
   }

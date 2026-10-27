@@ -81,6 +81,22 @@
 
   function message(state) { return MESSAGES[state] || 'Das hat nicht geklappt. Bitte versuche es noch einmal.'; }
 
+  /* Merker "angemeldet" (localStorage, kein Geheimnis: die Sitzung bleibt im HttpOnly-Cookie). Nur damit
+     assets/watchlist-button.js auf Produktseiten ohne Anmeldung keine Konto-Anfrage stellt; ein veralteter
+     Merker kostet hoechstens eine Anfrage und verschwindet mit der 401. Gleicher Schluessel dort. */
+  var SESSION_HINT = 'vu-account-session-v1';
+  function remember(path, r) {
+    try {
+      var ls = globalThis.localStorage;
+      if (!ls) return;
+      var signedIn = path === '/v1/session' ? !!(r.ok && r.data && r.data.authenticated)
+        : r.status === 401 || path === '/v1/auth/logout' || (path === '/v1/me/delete' && r.ok) ? false
+        : r.ok && (path === '/v1/auth/login' || path === '/v1/me' || path.indexOf('/v1/watchlist') === 0) ? true : null;
+      if (signedIn === true) ls.setItem(SESSION_HINT, '1');
+      else if (signedIn === false) ls.removeItem(SESSION_HINT);
+    } catch (e) { /* nur Komfort */ }
+  }
+
   function request(method, path, body, opts) {
     opts = opts || {};
     var endpoint = config().endpoint;
@@ -101,7 +117,7 @@
       }, function (err) {
         return {ok: false, status: 0, state: err && err.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK', data: null};
       })
-      .then(function (r) { if (timer) clearTimeout(timer); return r; });
+      .then(function (r) { if (timer) clearTimeout(timer); remember(path, r); return r; });
   }
 
   // Dieselben Regeln wie workers/vu-account/src/validate.mjs.
