@@ -1,0 +1,581 @@
+{
+ "schemaVersion": "v9-secpit-parity-registration-1.0.0",
+ "seed": "v9-secpit-parity-1",
+ "rule": "Per accession: every companyfacts entry (accn == accession) of the registered concepts is compared with the ORIGINAL XBRL instance of that accession: same taxonomy/concept, a non-dimensional context with identical start/end (instant: end), exact decimal value equality.",
+ "concepts": [
+  "us-gaap:Revenues",
+  "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+  "us-gaap:SalesRevenueNet",
+  "us-gaap:NetIncomeLoss",
+  "us-gaap:Assets",
+  "us-gaap:StockholdersEquity",
+  "us-gaap:OperatingIncomeLoss",
+  "dei:EntityCommonStockSharesOutstanding",
+  "us-gaap:CommonStockSharesOutstanding",
+  "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding"
+ ],
+ "forms": [
+  "10-K",
+  "10-Q"
+ ],
+ "strata": "A Dec FYE non-financial rawFacts>=median; B non-Dec FYE non-financial; C SIC 6000-6799; D Dec FYE non-financial rawFacts<median",
+ "medianRawFacts": 9421.5,
+ "accessionRule": "earliest, median, latest 10-K/10-Q accession (by filed) carrying a registered concept",
+ "restatementRule": "same concept/unit/start/end in companyfacts, later accession (by filed), value differs; up to 10 pairs touching the sample verified in both original instances",
+ "primaryEndpoint": "share of compared facts with exact value parity; mismatches explained individually",
+ "excludedCiks": [
+  "0000019617",
+  "0000034088",
+  "0000070858",
+  "0000320193",
+  "0000789019",
+  "0001018724",
+  "0001045810"
+ ],
+ "priorExposure": "Issuers not used by V7 (8 originals) or V8 (4 issuers' acceptance audit). Values have not been looked at before registration.",
+ "companyfactsZipSha256": "330324c4064779199c8ceaa2818d0b6fdf37ec4b1d786573601e8fadd82e7582",
+ "codeSha256": "5c4b95a9bfe0e91830fef9fad95c87b2048008c056c50b28c09d48d24bef5dfe",
+ "selection": {
+  "D_DECEMBER_SMALLER": [
+   {
+    "cik": "0001799191",
+    "tickers": [
+     "STLN",
+     "DFPH",
+     "STLNW"
+    ],
+    "sic": "8011",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 8424,
+    "accessions": [
+     {
+      "accession": "0001104659-20-058786",
+      "filed": "2020-05-08",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001799191-23-000034",
+      "filed": "2023-08-09",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001799191-26-000017",
+      "filed": "2026-08-06",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001576885",
+    "tickers": [
+     "ABOS"
+    ],
+    "sic": "2836",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 5322,
+    "accessions": [
+     {
+      "accession": "0001193125-21-247879",
+      "filed": "2021-08-16",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001576885-24-000064",
+      "filed": "2024-05-14",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-26-067276",
+      "filed": "2026-10-26",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001852353",
+    "tickers": [
+     "DC"
+    ],
+    "sic": "1000",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 3199,
+    "accessions": [
+     {
+      "accession": "0001062993-22-015574",
+      "filed": "2022-06-28",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001062993-24-014899",
+      "filed": "2024-08-13",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001104659-26-094733",
+      "filed": "2026-08-12",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001640428",
+    "tickers": [
+     "EVER"
+    ],
+    "sic": "7370",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 8424,
+    "accessions": [
+     {
+      "accession": "0001193125-18-246112",
+      "filed": "2018-08-10",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001193125-22-212493",
+      "filed": "2022-08-04",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001193125-26-332775",
+      "filed": "2026-08-04",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001898496",
+    "tickers": [
+     "GETY"
+    ],
+    "sic": "7389",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 6462,
+    "accessions": [
+     {
+      "accession": "0001410578-22-002423",
+      "filed": "2022-08-12",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-24-036346",
+      "filed": "2024-08-09",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-26-055246",
+      "filed": "2026-08-10",
+      "form": "10-Q"
+     }
+    ]
+   }
+  ],
+  "C_FINANCIAL_SIC_6000_6799": [
+   {
+    "cik": "0001253986",
+    "tickers": [
+     "ABR",
+     "ABR-PD",
+     "ABR-PE",
+     "ABR-PF"
+    ],
+    "sic": "6798",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 22928,
+    "accessions": [
+     {
+      "accession": "0001104659-11-043990",
+      "filed": "2011-08-05",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001047469-19-000508",
+      "filed": "2019-02-15",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001253986-26-000048",
+      "filed": "2026-07-31",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001176948",
+    "tickers": [
+     "ARES",
+     "ARES-PB"
+    ],
+    "sic": "6282",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 9213,
+    "accessions": [
+     {
+      "accession": "0001047469-14-005478",
+      "filed": "2014-06-10",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-20-012083",
+      "filed": "2020-08-07",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-26-054538",
+      "filed": "2026-08-07",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0002036973",
+    "tickers": [
+     "UYSC",
+     "UYSCR",
+     "UYSCU"
+    ],
+    "sic": "6770",
+    "fiscalYearEnd": "0331",
+    "rawFacts": 753,
+    "accessions": [
+     {
+      "accession": "0001185185-25-000760",
+      "filed": "2025-07-11",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001185185-26-000388",
+      "filed": "2026-02-03",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001185185-26-003499",
+      "filed": "2026-08-13",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0000023795",
+    "tickers": [
+     "CTO",
+     "CTO-PA"
+    ],
+    "sic": "6798",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 23967,
+    "accessions": [
+     {
+      "accession": "0001193125-11-215716",
+      "filed": "2011-08-09",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001558370-19-001302",
+      "filed": "2019-02-28",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001104659-26-050378",
+      "filed": "2026-04-28",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001571776",
+    "tickers": [
+     "CHMI",
+     "CHMI-PB",
+     "CHMI-PA"
+    ],
+    "sic": "6798",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 18193,
+    "accessions": [
+     {
+      "accession": "0001193125-13-433236",
+      "filed": "2013-11-07",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001140361-20-011289",
+      "filed": "2020-05-11",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001140361-26-032050",
+      "filed": "2026-08-10",
+      "form": "10-Q"
+     }
+    ]
+   }
+  ],
+  "B_NON_DECEMBER_FYE": [
+   {
+    "cik": "0000733269",
+    "tickers": [
+     "RAMP"
+    ],
+    "sic": "7374",
+    "fiscalYearEnd": "0331",
+    "rawFacts": 22264,
+    "accessions": [
+     {
+      "accession": "0000733269-10-000087",
+      "filed": "2010-08-05",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000733269-18-000023",
+      "filed": "2018-08-09",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000733269-26-000047",
+      "filed": "2026-08-05",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001304492",
+    "tickers": [
+     "ATEX"
+    ],
+    "sic": "4813",
+    "fiscalYearEnd": "0331",
+    "rawFacts": 13547,
+    "accessions": [
+     {
+      "accession": "0001193125-15-054197",
+      "filed": "2015-02-19",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001304492-20-000055",
+      "filed": "2020-11-16",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001304492-26-000046",
+      "filed": "2026-08-11",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0000006281",
+    "tickers": [
+     "ADI"
+    ],
+    "sic": "3674",
+    "fiscalYearEnd": "1031",
+    "rawFacts": 29372,
+    "accessions": [
+     {
+      "accession": "0000950123-09-036183",
+      "filed": "2009-08-18",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000006281-18-000018",
+      "filed": "2018-02-28",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000006281-26-000073",
+      "filed": "2026-08-19",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0000089439",
+    "tickers": [
+     "MLI"
+    ],
+    "sic": "3350",
+    "fiscalYearEnd": "1226",
+    "rawFacts": 22685,
+    "accessions": [
+     {
+      "accession": "0000089439-10-000052",
+      "filed": "2010-07-23",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000089439-18-000099",
+      "filed": "2018-10-24",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000089439-26-000041",
+      "filed": "2026-10-21",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0000876427",
+    "tickers": [
+     "MNRO"
+    ],
+    "sic": "7500",
+    "fiscalYearEnd": "0327",
+    "rawFacts": 19039,
+    "accessions": [
+     {
+      "accession": "0001193125-11-210232",
+      "filed": "2011-08-04",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001562762-19-000030",
+      "filed": "2019-02-07",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000876427-26-000007",
+      "filed": "2026-05-27",
+      "form": "10-K"
+     }
+    ]
+   }
+  ],
+  "A_DECEMBER_LARGER": [
+   {
+    "cik": "0000031462",
+    "tickers": [
+     "ECL"
+    ],
+    "sic": "2840",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 29115,
+    "accessions": [
+     {
+      "accession": "0001104659-09-047977",
+      "filed": "2009-08-07",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001558370-18-000999",
+      "filed": "2018-02-23",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001628280-26-053886",
+      "filed": "2026-08-06",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0000771999",
+    "tickers": [
+     "DSS"
+    ],
+    "sic": "2650",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 16732,
+    "accessions": [
+     {
+      "accession": "0001144204-11-047209",
+      "filed": "2011-08-15",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001493152-19-003423",
+      "filed": "2019-03-15",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001493152-26-038447",
+      "filed": "2026-08-14",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001023994",
+    "tickers": [
+     "OLOX"
+    ],
+    "sic": "5030",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 15430,
+    "accessions": [
+     {
+      "accession": "0001144204-11-062978",
+      "filed": "2011-11-10",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001213900-19-008438",
+      "filed": "2019-05-13",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001213900-26-091621",
+      "filed": "2026-08-19",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001783180",
+    "tickers": [
+     "CARR"
+    ],
+    "sic": "3585",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 11248,
+    "accessions": [
+     {
+      "accession": "0001783180-20-000019",
+      "filed": "2020-05-11",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001783180-23-000038",
+      "filed": "2023-04-26",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001783180-26-000026",
+      "filed": "2026-04-30",
+      "form": "10-Q"
+     }
+    ]
+   },
+   {
+    "cik": "0001309108",
+    "tickers": [
+     "WEX"
+    ],
+    "sic": "7389",
+    "fiscalYearEnd": "1231",
+    "rawFacts": 27388,
+    "accessions": [
+     {
+      "accession": "0000950123-10-068536",
+      "filed": "2010-07-27",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001309108-18-000118",
+      "filed": "2018-08-08",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001309108-26-000029",
+      "filed": "2026-07-23",
+      "form": "10-Q"
+     }
+    ]
+   }
+  ]
+ },
+ "productionApproved": false,
+ "registrationSha256": "66e40e93f116bcb10e2d1c6c9e1cfcbbd4566802f28bb346e2686e43d7fcd217"
+}
