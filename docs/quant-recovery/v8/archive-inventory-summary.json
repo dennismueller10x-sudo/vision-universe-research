@@ -281,5 +281,18 @@
     "httpStatus": 403,
     "scope": "Repository Actions secret-name metadata only; no secret values requested",
     "meaning": "Does not establish that S3 secrets or R2 historical objects are missing"
+  },
+  "authorizedActionsR2Observation": {
+    "artifact": "r2-assessment.json",
+    "state": "READABLE_INDEX_PROVED",
+    "configuredBindings": {
+      "VU_HISTORY_S3_ENDPOINT": true,
+      "VU_HISTORY_S3_BUCKET": true,
+      "VU_HISTORY_S3_ACCESS_KEY_ID": true,
+      "VU_HISTORY_S3_SECRET_ACCESS_KEY": true
+    },
+    "indexSymbolCount": 7803,
+    "actualDownloadedBytes": 471733,
+    "scope": "Bounded existing HistoryStore index proof; local missingbindings do not mean unavailableR2access or absenthistoricalobjects."
   }
 }

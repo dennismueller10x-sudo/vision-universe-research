@@ -1,8 +1,9 @@
 {
-  "schemaVersion": "quant-v8-complete-isolation-1",
-  "state": "PASS",
-  "sourceHead": "e9c1b8d1e62e63121a8b5f7d1ba4aaddb14defd8",
-  "fullBaselineHead": "8fea838ea9aec792ae7dcb3f546710a03a499d2f",
+  "schemaVersion": "quant-v8-versioned-isolation-1.1.0",
+  "generatedAt": "2026-10-27T12:12:19.763Z",
+  "state": "PASS_FOR_COMPLETED_VERSIONED_SCOPES",
+  "sourceHead": "8a56478b1eda02bef146159a98548c67f86964f1",
+  "integratedMain": "1dfccf81d579da5f1da603e895b9dbe0ea5d4bd6",
   "runtime": {
     "node": "v22.23.4",
     "v8": "12.4.254.21-node.57",
@@ -11,26 +12,15 @@
     "glibc": "2.41",
     "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
   },
-  "uniqueFiles": 283,
-  "fullOriginalFiles": 282,
-  "fullManifestHash": "cc3ee8e060906d32d1dacc4101708737a9965faaadb9e98f3a8ee4660899624e",
-  "fullReportSha256": "0f2c8e100d7fd9fc746dbc6eedaf5895e24491a7bf73903c163420423ec42930",
-  "supplementManifest": {
-    "quant/tests/research-v8-archive-assessment.test.mjs": "0610e694bb1fdda022a9fc70a854989a683cc50eca25fab4efe7a3fcff8450b5",
-    "quant/tests/research-v8-classification.test.mjs": "abc17bb2441e3dead9353ba8a3759d0df37374dcca830cf785abd9189f319c8c",
-    "quant/tests/research-v8-real-studies.test.mjs": "d433f95c36fb8a9acefea16c0ad5c68adf37f432d973014b4f5a361ecc62b85b",
-    "quant/tests/research-v8-sec-archive-schema.test.mjs": "9e6ca40aee58238693597e91ef36ad035b6a485fd5a1e34ab4b128d86e16400e"
-  },
-  "supplementReportSha256": "447eebb4fcce398f1754485dbba0c153afc5e2bd972f183231a34c243488dcc9",
-  "childTimeoutMs": 900000,
-  "manifest": {
+  "uniqueFiles": 288,
+  "currentManifest": {
     "quant/tests/acceptance.test.mjs": "76be330a84bd7e5d2cd06a5f6b5c9bbbadd73d4ebd25c0ce9ecf1233410eff3e",
     "quant/tests/adjustment-consistency.test.mjs": "0365bf74d4526652f3467eae16050541d48c82e188d112c81a65acbfcd62aefa",
     "quant/tests/ai.test.mjs": "89127e155d70c2c6f4289d6a827602fda84aa9d10033896e9617903ce9b8ca34",
     "quant/tests/analysis-lag.test.mjs": "74b7112c5244d919d2e5ea89701aaaa308c0ec56ccd8367e096cdf86e2ee4da9",
     "quant/tests/assignment-change.test.mjs": "59e3553268104b66402d26b127ed8f47f0d4834b9267dded3489c12c67f85777",
     "quant/tests/atlas-tools.test.mjs": "ff0a1f900b3b60866a9da10d18ab09dcda33955acc8777c6bacca2b0ef5a1949",
-    "quant/tests/backtest-artifact-consistency.test.mjs": "e471b1b3030c3e7982beb44d49d00d919a81dc226d35410d426b1cc7df614d56",
+    "quant/tests/backtest-artifact-consistency.test.mjs": "e327e37d4e519af8807fad87ab7b5ce6cb755e3e861a8445be56b0e674122789",
     "quant/tests/backtest-certification.test.mjs": "b34271f97c0a4e1db1bbc7821c432623037e3f5c31b27775786778b61bfe1078",
     "quant/tests/backtest-consolidation-boundary.test.mjs": "23a97792e5a74cd7efe0c305b08b6e3c08fdbab95b68d80005855f321b264cb7",
     "quant/tests/backtest-handoff-archive.test.mjs": "e416ad2b01a1a3cfc608df008b6a4f1207d9744e383f590f92677ad0fae5036f",
@@ -69,6 +59,7 @@
     "quant/tests/elliott-registry-product-view.test.mjs": "bf0d6de088c2fc76664309ae2e2f5950e1b4937fd17a832f711882b408bfb832",
     "quant/tests/elliott-registry.test.mjs": "9a99a6a44f46f019c3823a5dcd0a1be0df7552ac96bec19fe2aefb080fca7352",
     "quant/tests/elliott-thesis-split-view.test.mjs": "9f54c5dcd615db32aaa59d7a6ba51359443542bb7299051590f81b2f316418c4",
+    "quant/tests/emerging-leaders-fcf-history.test.mjs": "07ebbcd35b10a9a45554e6150498fc88e168ccceeb755423ed27e9c4c756e58d",
     "quant/tests/emerging-leaders-study.test.mjs": "9c4798a75bb65f57a84b0d58fbfdc61fd02444048e408c366c942102e91d378e",
     "quant/tests/emerging-leaders.test.mjs": "a3b57ae855eff43d166ee669a63aaf23eda57dfeba2f9447a03e75095c8afe48",
     "quant/tests/eod-publish-gates.test.mjs": "e72e40d1bdf97d17e69df2924dd743033cfc36c0fe511b108f7ee3e83a830cfa",
@@ -160,7 +151,7 @@
     "quant/tests/product-intelligence-materialization.test.mjs": "9fa6fb8e84d874464cb17c475e73e34729ef5847227f294d58db0f4e333a5c37",
     "quant/tests/product-language.test.mjs": "519f0df438c85fd20a6d70e21d54c6a5e2c1a74178b81cf40709d545d09efe98",
     "quant/tests/product-positioning.test.mjs": "e9b3fc71a65842a4cb7156483445279c69e4edcbee2f8174290ed05e8f24dfdf",
-    "quant/tests/product-services.test.mjs": "6b17a54ee844c273a1d59d84e772b0a3dc2b37ae64a55e189b0aa305c5352827",
+    "quant/tests/product-services.test.mjs": "862d7f69b7c86f7adcce342458101cdb39cff7358a60644dc5c3dbc4dcf1f938",
     "quant/tests/production-isolation.test.mjs": "cbb3b1a178e17e5d69ecc04b174a26b8721aa2d09f5b37f7687025fd44ec935c",
     "quant/tests/produktgrenze-screener.test.mjs": "2b00585adc91714395e3dd328e8a79627a38d8d6390d7108ac17b2a7b2d53891",
     "quant/tests/provider-qualification.test.mjs": "ea84f9b21c2a22d1f0d9d94c3cccf9acf69135cd66f98fe8e0e0fc7f3e1a4cfb",
@@ -207,7 +198,10 @@
     "quant/tests/research-v7-scope.test.mjs": "e7de1653fa050bacaefb83c96551fe47778ecb59c3a931be44a541cd512a9343",
     "quant/tests/research-v8-archive-assessment.test.mjs": "0610e694bb1fdda022a9fc70a854989a683cc50eca25fab4efe7a3fcff8450b5",
     "quant/tests/research-v8-classification.test.mjs": "abc17bb2441e3dead9353ba8a3759d0df37374dcca830cf785abd9189f319c8c",
+    "quant/tests/research-v8-r2-ca-cases.test.mjs": "bd36f4ce817c4e4658984a1b1c21238e0f4f1bb6a37f74affbd6bc6e4f921626",
+    "quant/tests/research-v8-r2-probe.test.mjs": "5ad0c7f97276553e07013153b86536e69ecce411c88b4815b8222e085513a7f8",
     "quant/tests/research-v8-real-studies.test.mjs": "d433f95c36fb8a9acefea16c0ad5c68adf37f432d973014b4f5a361ecc62b85b",
+    "quant/tests/research-v8-sec-archive-schema.test.mjs": "9e6ca40aee58238693597e91ef36ad035b6a485fd5a1e34ab4b128d86e16400e",
     "quant/tests/research-validation-runner.test.mjs": "25f1124d7b6a49af10e0dc43c8bb49e12deacf0ab711fbb5d3aa4c2cef539c7e",
     "quant/tests/research-validation.test.mjs": "c9b68dcedb1b41fc5e97ab9ff89c5c9298b747b68df611672de83731d8227481",
     "quant/tests/research-weekly-source.test.mjs": "ceef92ff34c20b61680d6fed8efb58bb180c17d06b8c9ca5513a7e1109ff22d3",
@@ -252,16 +246,18 @@
     "quant/tests/technical-elliott.test.mjs": "55e6c7a7ffc847c1fd05c4e6f61c5dcd568ecdfc9ef56bd3aa0b9dca36adaa74",
     "quant/tests/technical-ema200-materialization.test.mjs": "ea4d3457a30847e442494d168b027600ace3eeb2b9f93840422929a4a38bfcc4",
     "quant/tests/technical-engines.test.mjs": "e4a9cedbeadc6eb253b22a3a8f5c1e0d11cfbc18101853edce8d60df0aa86773",
+    "quant/tests/technical-events.test.mjs": "17d865fb84f8c5068563039c68fb7df3d04687782d219eaea01ce80767e46460",
     "quant/tests/technical-formations.test.mjs": "c4a1337e4697361c3464a550506d84132e37ea5664ba2bb221e7417dea4ef305",
     "quant/tests/technical-indicators-catalog-b6.test.mjs": "e272b5af0d44ce1ed7954eadd04a213d8ec3b8f1c5eae7311eb90ad1a56be011",
     "quant/tests/technical-indicators-ext.test.mjs": "bca4c409de305342b32256ea0d4dc5b6151eaed2223aaff8378766c11360f2c9",
     "quant/tests/technical-indicators-talib.test.mjs": "4d3d07aaddea58136e4ebd77c99d6d28740960d2b16d45a09a9ad427b6819149",
     "quant/tests/technical-indicators.test.mjs": "14bf710572fe3e825f755d071d1ad9f99c0f3c5415ec6d38c0b63a63c2a3a831",
     "quant/tests/technical-momentum-labels.test.mjs": "a1db0acf9130f18a20d9dfcad7c63a05a3c38e6ffd90bb2f7363a4221ee981b9",
+    "quant/tests/technical-multi-timeframe.test.mjs": "04a52c9e2c32db2b9e0666fde909c65ad040e7d178b07eb70c11099d58449d10",
     "quant/tests/technical-pivots.test.mjs": "25cb86df61c52865dd4dff2e4db0223d5d52ab73953a23e526ae43437478ef7d",
     "quant/tests/technical-query-gold.test.mjs": "8fe31798102fe057c8f31246552edc80f52e3cc39312a49bdc02d95926e88448",
-    "quant/tests/technical-query-text.test.mjs": "61e38abb06e869672217b9ede9a3af7412d82b73cd24519cd8feffdb591f0a9c",
-    "quant/tests/technical-query.test.mjs": "9d49f83b18002d95fa501ab982e506b0cbf8715dbc08a9f66eb851070823d47d",
+    "quant/tests/technical-query-text.test.mjs": "933cce3b288e0fb11bc398dbe142feb81aa94faeac2157a8719303cc8af2db8a",
+    "quant/tests/technical-query.test.mjs": "b23b312a3899fe6f7853bea4e9927147fa77b812aadc5f9e2fd782f985b5b6a2",
     "quant/tests/technical-scanner-rule-parity.test.mjs": "0b4e82aa308f276c5f4c1a15ebcd407d90f3c675d584317d90a72416f804f94d",
     "quant/tests/technical-scenario.test.mjs": "3a3db5d228cc7660de3320573b03a52e1d012ac4c63eebf724ffbb5fa0a2c164",
     "quant/tests/technical-snapshot.test.mjs": "d642aab91f0b5f430bd203d78e285242e0daf0289d8d44b9a14a6cb42fab835a",
@@ -305,9 +301,31 @@
     "quant/tests/weekly-benchmark-batch.test.mjs": "0c01ce6e0f531db55b7b98b7ddc5fc8fc51ef7719bcc3a5d40d7b1db86bb2719",
     "quant/tests/workflow-git-pull.test.mjs": "b4349ae1377a960659386e20dd31a02a90d8d8d9838957cd3f9c6ced7e6857b5",
     "quant/tests/workflow-npx-pinned.test.mjs": "47a3ac8c166861df0084f80efb1e42d85f9a6cee956510e369a0b36ca87ab88f",
-    "quant/tests/zero-cost-guard.test.mjs": "e754e298060d4c850742c98e9e4cf87141b64cc418f2c8ac9daa240a98d0b7c5",
-    "quant/tests/research-v8-sec-archive-schema.test.mjs": "9e6ca40aee58238693597e91ef36ad035b6a485fd5a1e34ab4b128d86e16400e"
+    "quant/tests/zero-cost-guard.test.mjs": "e754e298060d4c850742c98e9e4cf87141b64cc418f2c8ac9daa240a98d0b7c5"
   },
-  "manifestRecheckedAgainstCurrentFiles": true,
-  "productionContentChanges": false
+  "currentManifestHash": "17d608c34b468a9dd909712ae03809fa2d8f9b573c7e16502b2791e4757ccb2f",
+  "fullHistoricalScope": {
+    "head": "0ce7551d4bdbd2ecdffe343382b1b3554abe0f31",
+    "main": "f10afd9666136810f0c9081db6ff4324d04065fe",
+    "files": 288,
+    "state": "PASS",
+    "artifact": "isolation-f10-checkpoint.json",
+    "artifactSha256": "0fb18006d3456e426c8ec52dc1c0316d9e6385f2ff655e50f81854e9a87dd33c"
+  },
+  "latestMainDeltaScope": {
+    "head": "8a56478b1eda02bef146159a98548c67f86964f1",
+    "main": "1dfccf81d579da5f1da603e895b9dbe0ea5d4bd6",
+    "files": [
+      "quant/tests/backtest-artifact-consistency.test.mjs",
+      "quant/tests/product-services.test.mjs"
+    ],
+    "state": "PASS",
+    "artifact": "isolation-final-main-delta.json",
+    "artifactSha256": "eb046a7d1f0a9c7c6c81166f272cbb094099874b5b5d51880271955395c248e6"
+  },
+  "childTimeoutMs": 900000,
+  "productionContentChanges": false,
+  "interpretation": "The completed full 288-file isolation used f10 data. The two changed test files were isolated again on latest Main. This combined report does not claim that every historical test file was rerun against the latest dataset.",
+  "productionApproved": false,
+  "reportHash": "1033eef8ef2c7803dcc3534f242469232426536f27210c52c911acb7dfc8bcf5"
 }
