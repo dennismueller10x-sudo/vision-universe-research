@@ -20,38 +20,35 @@
 <body class="wk-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="wk-skip" href="#wk-main">Zum Inhalt</a>
 <main id="wk-main" class="wk" tabindex="-1">
-  <header class="wk-hero">
-    <span class="wk-hero-globe" aria-hidden="true"><span class="wk-hero-orbit"></span></span>
-    <p class="wk-eyebrow"><span id="wk-hello">Hallo</span></p>
-    <h1>Willkommen bei Vision&nbsp;Universe.</h1>
-    <p class="wk-lead">Starte mit einer kurzen Einführung oder spring direkt in dein Modul.</p>
-  </header>
+  <h1 class="wk-visually-hidden">Willkommen bei Vision Universe</h1>
+  <section class="wk-hero" aria-labelledby="wk-hero-title">
+    <button id="wk-hero-play" class="wk-hero-card" type="button" aria-describedby="wk-hero-sub">
+      <span class="wk-hero-img" id="wk-hero-img" aria-hidden="true"></span>
+      <span class="wk-hero-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+      <span class="wk-hero-copy">
+        <span class="wk-eyebrow" id="wk-hello">Hallo</span>
+        <span class="wk-hero-title" id="wk-hero-title">Ein kurzer Einblick in deine Möglichkeiten.</span>
+        <span class="wk-hero-sub" id="wk-hero-sub">Vision Universe in 30&nbsp;Sekunden.</span>
+      </span>
+      <span class="wk-dur" id="wk-hero-dur"></span>
+    </button>
+  </section>
 
-  <section class="wk-card wk-videos" aria-labelledby="wk-hl-title">
-    <div class="wk-head">
-      <span class="wk-head-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor"/></svg></span>
-      <div class="wk-head-text"><h2 id="wk-hl-title">Erklärvideos</h2><p class="wk-head-sub">Jedes Modul in ~30&nbsp;Sekunden erklärt.</p></div>
-      <button class="wk-pill" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
+  <section class="wk-sec" aria-labelledby="wk-hl-title">
+    <div class="wk-head"><h2 id="wk-hl-title">Weitere Videos</h2><button class="wk-link" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <div class="wk-hl-wrap">
       <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
-      <button class="wk-hl-more" id="wk-hl-more" type="button" aria-label="Weitere Erklärvideos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="wk-hl-more" id="wk-hl-more" type="button" aria-label="Weitere Videos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
   </section>
 
-  <section class="wk-products-sec" aria-labelledby="wk-products-title">
-    <div class="wk-head">
-      <h2 id="wk-products-title">Deine Produkte</h2>
-      <button class="wk-pill" id="wk-products-all" type="button">Alle Produkte<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
+  <section class="wk-sec" aria-labelledby="wk-products-title">
+    <div class="wk-head"><h2 id="wk-products-title">Deine Produktwelten</h2><button class="wk-link" id="wk-products-all" type="button">Alle Produkte<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <nav id="wk-products" aria-labelledby="wk-products-title"></nav>
   </section>
 
-  <section class="wk-card wk-newsbox" aria-labelledby="wk-news-title">
-    <div class="wk-head">
-      <h2 id="wk-news-title">Neu bei Vision Universe</h2>
-      <button class="wk-pill" id="wk-news-all" type="button">Alle Neuigkeiten<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
+  <section class="wk-sec wk-newsbox" aria-labelledby="wk-news-title">
+    <div class="wk-head"><h2 id="wk-news-title">Neu bei Vision Universe</h2><button class="wk-link" id="wk-news-all" type="button">Alle Neuigkeiten<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <div id="wk-news" class="wk-news" aria-busy="true"><p class="wk-empty">Neuigkeiten werden geladen …</p></div>
   </section>
 </main>

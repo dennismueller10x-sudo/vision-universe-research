@@ -42,3 +42,29 @@ Die App-Fassungen liegen im Repo und werden mit der Seite ausgeliefert (GitHub P
 - Jede neue Fassung bleibt in der Git-Historie (etwa 3 MB je Fassung). Bei seltenen Änderungen ist das unkritisch.
 
 Wird es mehr (viele Videos, häufige Neufassungen, längere Filme), ziehen die Videos auf einen eigenen Speicher mit öffentlicher Adresse um, zum Beispiel einen HeyGen-Asset-Upload wie bei den Reels oder einen Cloudflare-Speicher. Dann ändert sich nur `src` in `willkommen/config/stories.json`; Seite und Rezepte bleiben gleich.
+
+## Erklärvideos im Motion-Graphics-Stil (Baukasten `kit/`)
+
+Stand 26.10.2026. Stil wie die Instagram-Reels zu Quant und Minervini: dunkler Grund mit Lime-Glow, Logo und Rubrik, große Schlagzeile mit Lime-Wort, animierte Grafik (Icons, Handy, Raster, Radar, Balken), wortgenaue Untertitel, Lichtstreifen und Kamerafahrt, Endkarte. Immer mit Helmut, Musik aus der Dropbox (`/System_Collapse_-_Dark_Hybrid_Trailer.mp3`, ab 15,6 s, Ducking) und selbst synthetisierten Effekten.
+
+| Datei | Inhalt |
+|---|---|
+| `<id>/script.txt` | Sprechertext im Skriptformat (`[[s2]]` Szenen, `[[e:name]]` Ereignisse, `{gesprochen|Anzeige}`), siehe `studio/reels/tools/build_script.py` |
+| `<id>/voice-v<n>.m4a`, `words-v<n>.json`, `timing-v<n>.json` | Aufnahme, Wortzeiten, Zeitplan (Neubau ohne neue Kosten) |
+| `<id>/scenes.js` | sechs Szenen: Schlagzeile, Grafik, Animation auf den Ereigniszeiten |
+| `kit/story.html`, `kit.css`, `kit.js` | gemeinsamer Motor (Logo, Rubrik, Untertitel, Glow, Kamerafahrt, Endkarte; `filmUntil` für einen Film darunter) |
+| `kit/render.mjs` | Bildfolge (30 fps) über einen lokalen Server im Repo-Wurzelordner |
+| `kit/sfx.py`, `kit/finish.sh` | Effekte, Mischung (−16 LUFS), Master 1080 × 1920 und App-Fassung 720 × 1280 |
+
+Ablauf (Arbeitsordner außerhalb des Repos, z. B. Scratchpad):
+
+```bash
+python3 -I studio/reels/tools/build_script.py studio/stories/<id>/script.txt tts tts.json   # Text für die Stimme (Kosten vorher nennen)
+# Aufnahme mit Helmut (POST /v3/voices/speech), dann tighten.py 1.14, Whisper prüfen
+python3 -I studio/reels/tools/build_script.py studio/stories/<id>/script.txt timing words.json timing.json
+python3 -m http.server 8765 &                                   # im Repo-Wurzelordner
+node studio/stories/kit/render.mjs v=<id> timing=timing.json out=frames [i0= i1=] [ovl=1]   # vier Prozesse parallel
+cd <arbeitsordner> && studio/stories/kit/finish.sh music.mp3 <id>-master.mp4 <id>-app.mp4 [film.mp4]
+```
+
+Für einen Neubau aus dem Repo: `voice-v<n>.m4a` nach `vo.wav` wandeln (`ffmpeg -i voice-v1.m4a -ar 48000 vo.wav`) und `timing-v<n>.json` als `timing.json` nehmen.

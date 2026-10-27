@@ -47,6 +47,26 @@ Quelle: Dropbox des Owners, `/THE ARRIVAL – Original.mp4` (1080 × 1920, 20 s,
 
 Sprache in allen Texten: keine Einschränkung auf US-Aktien (Entscheidung des Owners 26.10.2026), damit später europäische oder deutsche Aktien ohne neue Videos dazukommen können. Konkrete Mengen nur, wenn sie für alle Märkte stimmen.
 
+## Stand der Highlights (26.10.2026)
+
+Elf Erklärvideos im Motion-Graphics-Stil (Baukasten `studio/stories/kit/`), alle mit Helmut, Musik und Effekten, 24 bis 32 s, danach eine Karte mit Knopf ins Modul:
+
+| Kreis | Modul | Datei |
+|---|---|---|
+| Start | Vision Universe (mit THE ARRIVAL) | `start-v3.mp4` |
+| Entdecken | Discover | `discover-v1.mp4` |
+| Quant | Quant | `quant-v1.mp4` |
+| Zahlen | Fundamental | `fundamental-v1.mp4` |
+| Strategie | Supertrader | `supertrader-v1.mp4` |
+| Charts | Technical | `technical-v1.mp4` |
+| Wellen | Elliott | `elliott-v1.mp4` |
+| Filter | Screener | `screener-v1.mp4` |
+| Vorsorge | Vorsorge | `vorsorge-v1.mp4` |
+| Investoren | Hedgefonds | `hedgefonds-v1.mp4` |
+| AI Atlas | AI Atlas | `atlas-v1.mp4` |
+
+Grafiken zeigen Platzhalter („Aktie A") und keine echten Kurse oder Zielwerte; Investoren als Initialen, keine Fotos. Kosten der Stimmen: 0,78 USD für alle elf.
+
 ## Unterschiede zu Instagram-Reels
 
 Es gelten die Regeln aus [README.md](README.md) mit drei Abweichungen, weil die Zuschauer schon in der App sind:
