@@ -1,0 +1,75 @@
+name: Konten — öffentliche Registrierung öffnen (Ops, Produktion)
+# Owner-Entscheidung 27.10.2026: öffentliche Registrierung für jede gültige E-Mail-Adresse, KEINE Positivliste.
+# Eine Freigabe (Umgebung account-dev), dann:
+#   1. Datenbank: alle Einträge der Positivliste entfernen, registration_gate.open = true, Ergebnis auslesen.
+#   2. Worker: Registrierung ist offen, sobald der Deploy mit VU_REGISTRATION_ENABLED = "true" (#1023) aktiv ist.
+#      Probe ohne Konto: gültige Adresse, zu kurzes Passwort -> PASSWORD_LENGTH (offen) statt REGISTRATION_CLOSED.
+#      Es wird nichts angelegt und keine E-Mail versendet.
+# Ausgabe nur Zählungen und Zustände, keine Adressen oder Werte.
+# Rücknahme: update public.registration_gate set open = false (wirkt sofort, ohne Ausrollen).
+on:
+  push:
+    branches: [ops/supabase-dev-migrations]
+    paths: ['.github/workflows/account-prod-registration-open.yml', 'ops/production/registration.trigger']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-prod-registration-open-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  PROJECT_REF: qiytbnpoqvldsatpfkeh
+  API_ORIGIN: https://konto.visionuniverse.de
+  SITE_ORIGIN: https://research.visionuniverse.de
+jobs:
+  oeffnen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: account-dev
+    steps:
+      - name: Freigabe des Owners pruefen (fail closed, vor jedem Datenbankzugriff)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          APPROVER: dennismueller10x-sudo
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" '[.[] | select(.state == "approved" and .user.login == $u
+                 and any(.environments[]; .name == "account-dev"))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer account-dev - Abbruch ohne jede Aenderung"; exit 1; }
+          echo "Freigabe durch $APPROVER fuer account-dev liegt vor."
+
+      - name: Datenbank - Positivliste leeren, Registrierung oeffnen, Ergebnis auslesen
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          [[ "$DB_URL" == postgresql://* && "$DB_URL" == *"$PROJECT_REF"* ]] \
+            || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL fehlt oder gehoert nicht zu $PROJECT_REF"; exit 1; }
+          q() { psql -X -q -t -A -v ON_ERROR_STOP=1 -d "$DB_URL" -c "$1"; }
+          echo "vorher: Positivliste $(q 'select count(*) from public.registration_allowlist'), offen $(q 'select open from public.registration_gate'), Konten $(q 'select count(*) from auth.users')"
+          [ "$(q "select count(*) from pg_proc where oid = 'public.hook_before_user_created'::regproc")" = 1 ] \
+            || { echo "::error::Hook public.hook_before_user_created fehlt"; exit 1; }
+          q "begin; delete from public.registration_allowlist; update public.registration_gate set open = true, updated_at = now(); commit;" > /dev/null
+          allow=$(q 'select count(*) from public.registration_allowlist'); open=$(q 'select open from public.registration_gate')
+          echo "nachher: Positivliste $allow, offen $open"
+          [ "$allow" = 0 ] && [ "$open" = t ] || { echo "::error::Zustand nicht wie erwartet"; exit 1; }
+          echo "RLS: $(q "select count(*) filter (where c.relrowsecurity) || '/' || count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where c.relkind = 'r' and n.nspname in ('public','billing')") Tabellen in public/billing mit RLS"
+
+      - name: Worker - Registrierung offen (Probe ohne Konto)
+        run: |
+          set -euo pipefail
+          # Wenige Versuche: jede Probe zaehlt gegen die Registrierungsgrenze (5/h je IP und Isolate).
+          for i in $(seq 1 4); do
+            state=$(curl -sS -m 20 -X POST "$API_ORIGIN/v1/auth/signup" -H "Origin: $SITE_ORIGIN" -H 'X-VU-Client: web' \
+              -H 'Content-Type: application/json' -d '{"email":"probe@visionuniverse.de","password":"x","acceptTerms":true}' | jq -r .state)
+            echo "Versuch $i: $state"
+            [ "$state" = PASSWORD_LENGTH ] && { echo "Registrierung offen (Worker und Datenbank)."; break; }
+            [ "$state" = REGISTRATION_CLOSED ] || [ "$state" = RATE_LIMITED ] || { echo "::error::unerwartet: $state"; exit 1; }
+            [ "$i" = 4 ] && { echo "::error::Worker meldet weiter $state - Deploy mit #1023 ausstehend?"; exit 1; }
+            sleep 120
+          done
+          curl -sS -m 20 "$API_ORIGIN/v1/health" | jq '{state, accounts, mail, autoProcess}'
