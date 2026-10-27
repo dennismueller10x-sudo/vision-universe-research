@@ -28,8 +28,8 @@ Stand 27.10.2026. Fachmodell-PR, braucht die Freigabe des Owners. Versionen: `te
 
 | | vorher (1.6.0) | nachher (1.7.0) |
 |---|---|---|
-| Spalten | 83 | 94 (+11) |
-| bestehende Spalten | – | **byte-gleich** (alle 83) |
+| Spalten | 94 | 105 (+11) |
+| bestehende Spalten | – | **byte-gleich** (alle 94) |
 | `screener-v1.json` | 4.901.229 B | 5.263.602 B (+7,4 %) |
 | Laufzeit Erzeuger | 34 s | 81 s (Kerzenerkennung je Titel über 270 Bars) |
 
@@ -63,3 +63,13 @@ Die bestehenden Rundreise-Tests (`technical-query-text.test.mjs`) erfassen die n
 - Woche/Monat (L7).
 - Chartdarstellung der Kerzenmuster.
 - Kein Frontend: `/technical/` zeigt neue Felder über die bestehende Feldliste (`technical-query.js` FIELDS), ohne Code-Änderung an der Oberfläche.
+
+## 5. Prüfung vor dem Merge (Owner-Freigabe 27.10.2026)
+
+| Bedingung | Nachweis |
+|---|---|
+| Bestehende Spalten unverändert | Neubau mit dem Erzeuger auf dem aktuellen `main` (Formationen 1.2.1): alle **94** bestehenden Spalten byte-gleich mit `main`. In der ersten Fassung dieses Dokuments stand „83“; das war ein Zählfehler, gemeint war immer der volle Spaltenbestand. |
+| Kausal, mit echten Daten geprüft | `technical-screener-l6.test.mjs`: echte AAPL-Tagesbars, abgeschnittene Reihen je Stand, „Tage seit“ gegen die abgeschnittene Reihe am Tag t − d; Kerzenmuster selbst gegen TA-Lib auf 38 echten Titeln (#996, #1006). |
+| Fehlende Werte = `null` | Neubau: kein `undefined`, kein `NaN` in den 11 neuen Spalten. `null` bei 244 Titeln für die Kerzenlisten (nicht entscheidbar, davon 168 ruhend mit ATR 0), bei 257/260 für „Tage seit“ (zusätzlich: kein Muster im Prüfraum). ROC, Inside Bar, NR7: keine `null`, weil alle Titel 270 Bars haben. |
+| Abfrage- und Filterlogik | `technical-query`-Validierung, Text-Rundreise über alle Felder (`technical-query-text.test.mjs`), Datensatzvertrag (jede Spalte vorhanden, jede Vorlage auswertbar). |
+| Ressourcen | Erzeugerlauf 81 s im Workflow-Limit von 30 min (`technical-world.yml`); `screener-v1.json` +7,4 %; Browser-QA (`experience`, Ressourcenbudget der Seiten) grün. |
