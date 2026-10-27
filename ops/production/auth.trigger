@@ -1,1 +1,1 @@
-2026-10-27T05:44:23Z auth istzustand + schreibprobe
+2026-10-27T09:23:26Z auth mit brevo-smtp
