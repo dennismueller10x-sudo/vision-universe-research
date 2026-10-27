@@ -302,6 +302,216 @@
       "Fehlend " + missing.length + ", mit Grund gezaehlt " + skipped + " (" + JSON.stringify(skippedCounts || {}) + ").");
   }
 
+  /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
+
+  /* Research-Kandidaten der 13 quellentreuen Methoden
+     (supertrader/data/sf-candidates, Registry supertrader-sf8-candidates).
+     Fail closed: jede Regel prueft den Aktivierungszustand mit. Vorbereitet
+     (PREPARED_DISABLED) und ohne Daten = PASS mit 0 geprueft; Daten trotz
+     fehlender Freigabe oder freigegeben ohne Daten = ERROR. Ein unlesbarer
+     Teil ist ein Befund, nie ein stiller Pass. Regelkatalog:
+     docs/data/DATA_QUALITY.md (DQ-SF8-1..8).
+
+     bundle = { activation: "PREPARED_DISABLED"|null, summary, strategies:
+       {Cxx: {...}|null}, tickers: {shard: {...}|null}, recordsPresent,
+       files: [{path, bytes}], unreadable: [pfad] } */
+
+  var SF8_SCHEMA = "supertrader-sf8-candidates-1.0.0";
+  var SF8_STAGES = ["CHART_CANDIDATE", "CONFIRMED_RESEARCH_SETUP", "MODELED_TRADE_PLAN", "VALIDATED_TRADE_SIGNAL"];
+  /* Obergrenze je Methode (SF6-Readiness, Vertrag 1.0.0). Eine Aenderung ist
+     eine fachliche Aenderung in einem eigenen PR. */
+  var SF8_CEILING = {
+    C01: "MODELED_TRADE_PLAN", C02: "MODELED_TRADE_PLAN", C03: "MODELED_TRADE_PLAN", C04: "CHART_CANDIDATE",
+    C05: "CHART_CANDIDATE", C06: "CHART_CANDIDATE", C07: "MODELED_TRADE_PLAN", C08: "MODELED_TRADE_PLAN",
+    C09: "CHART_CANDIDATE", C10: "CHART_CANDIDATE", C11: "CONFIRMED_RESEARCH_SETUP", C12: "MODELED_TRADE_PLAN",
+    C13: "CONFIRMED_RESEARCH_SETUP"
+  };
+  var SF8_IDS = Object.keys(SF8_CEILING);
+  /* Marken, die eine Order, einen Stop oder ein Limit tragen oder daraus
+     zurueckrechnen lassen - nur im modellierten Ablauf erlaubt. */
+  var SF8_ORDER_KEY = /trigger|stop|limit|entry|maxPlannedLoss/i;
+  var SF8_ORDER_FEATURES = ["closeVsTrigger", "proposedStopRiskPct", "riskGuide15pct", "plannedLossAtPivot", "sellGuide"];
+  var SF8_BUDGET = { totalBytes: 16 * 1024 * 1024, fileBytes: 2 * 1024 * 1024 };
+
+  function sf8Present(b) { return !!(b && (b.summary || (b.files || []).length || b.recordsPresent)); }
+  function sf8Views(b) {
+    var out = [];
+    SF8_IDS.forEach(function (c) { var f = b.strategies && b.strategies[c]; ((f && f.views) || []).forEach(function (v) { out.push(v); }); });
+    return out;
+  }
+  function stageRank(s) { return SF8_STAGES.indexOf(s); }
+  /* Gemeinsamer Vorlauf: Aktivierungszustand und Lesbarkeit. Liefert null,
+     wenn die Regel weiterpruefen soll, sonst ihr Ergebnis. */
+  function sf8Gate(id, title, b) {
+    var present = sf8Present(b), prepared = b && b.activation === "PREPARED_DISABLED";
+    if (prepared && !present) return result(id, title, "ERROR", 0, [], "Vorbereitet und nicht freigegeben (PREPARED_DISABLED): keine Daten, nichts zu pruefen.");
+    if (prepared && present) return result(id, title, "ERROR", 1, ["Daten unter supertrader/data/sf-candidates liegen vor, die Datenart ist nicht freigegeben (PREPARED_DISABLED)"]);
+    if (!present || !b.summary) return result(id, title, "ERROR", 1, ["summary.json fehlt, obwohl die Datenart freigegeben ist"]);
+    if ((b.unreadable || []).length) return result(id, title, "ERROR", (b.unreadable || []).length, b.unreadable.map(function (p) { return p + ": nicht lesbar"; }));
+    return null;
+  }
+
+  /** DQ-SF8-1: Stand = letzte Sitzung (hoechstens maxLag zurueck); alle Teile tragen denselben Stand. */
+  function sf8Freshness(b, expectedSession, lagFn, maxLag) {
+    var g = sf8Gate("DQ-SF8-1", "SF8-Kandidaten aktuell", b); if (g) return g;
+    var fail = [], asOf = b.summary.asOf, lag = lagFn(asOf, expectedSession);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(asOf))) fail.push("summary.asOf fehlt oder ist kein Datum: " + asOf);
+    else if (lag === null) fail.push("Rueckstand von " + asOf + " gegen " + expectedSession + " nicht bestimmbar");
+    else if (lag > maxLag) fail.push("Stand " + asOf + " liegt " + lag + " Sitzungen hinter " + expectedSession);
+    if (expectedSession && asOf > expectedSession) fail.push("Stand " + asOf + " liegt nach der letzten abgeschlossenen Sitzung " + expectedSession);
+    return result("DQ-SF8-1", "SF8-Kandidaten aktuell", "ERROR", 1, fail);
+  }
+
+  /** DQ-SF8-2: jede Ansicht hat die kanonische Identitaet (core/identity.js), die richtige Scherbe, keine Doppelten. */
+  function sf8Identity(b, Identity) {
+    var g = sf8Gate("DQ-SF8-2", "SF8-Aktienidentitaet kanonisch", b); if (g) return g;
+    var fail = [], seen = {}, checked = 0;
+    sf8Views(b).forEach(function (v) {
+      checked++;
+      var id = safeId(Identity, v.ticker);
+      if (id === "ungueltig" || v.securityId !== id) fail.push(v.candidateId + " " + v.ticker + ": securityId " + v.securityId + " (erwartet " + id + ")");
+      else if (v.shard !== Identity.shardKey(v.ticker)) fail.push(v.candidateId + " " + v.ticker + ": Scherbe " + v.shard + " (erwartet " + Identity.shardKey(v.ticker) + ")");
+      var k = v.candidateId + "|" + v.securityId;
+      if (seen[k]) fail.push(v.candidateId + " " + v.ticker + ": doppelt"); seen[k] = 1;
+    });
+    return result("DQ-SF8-2", "SF8-Aktienidentitaet kanonisch", "ERROR", checked, fail);
+  }
+
+  /** DQ-SF8-3: Stufe 4 gesperrt, keine Ansicht ueber der Obergrenze ihrer Methode, Status unveraendert. */
+  function sf8StageLock(b) {
+    var g = sf8Gate("DQ-SF8-3", "SF8-Stufensperren eingehalten", b); if (g) return g;
+    var fail = [], s = b.summary, checked = 0;
+    var st = s.status || {};
+    if (st.liveReadiness !== "LIVE_NOT_APPROVED" || st.certification !== "DIAGNOSTIC_NOT_CERTIFIED" || st.validatedTradeSignal !== "LOCKED_FOR_ALL_13" || st.orders !== "NONE") fail.push("summary.status nicht gesperrt: " + JSON.stringify(st));
+    var cnt = s.counts || {};
+    if (cnt.validatedTradeSignal !== 0) fail.push("counts.validatedTradeSignal = " + cnt.validatedTradeSignal);
+    if (cnt.byStage && cnt.byStage.VALIDATED_TRADE_SIGNAL) fail.push("counts.byStage.VALIDATED_TRADE_SIGNAL = " + cnt.byStage.VALIDATED_TRADE_SIGNAL);
+    (s.strategies || []).forEach(function (x) {
+      if (SF8_CEILING[x.candidateId] && x.ceiling !== SF8_CEILING[x.candidateId]) fail.push(x.candidateId + ": Obergrenze " + x.ceiling + " (erwartet " + SF8_CEILING[x.candidateId] + ")");
+      if (x.liveReadiness !== "LIVE_NOT_APPROVED") fail.push(x.candidateId + ": liveReadiness " + x.liveReadiness);
+    });
+    sf8Views(b).forEach(function (v) {
+      checked++;
+      var r = stageRank(v.stage), cap = stageRank(SF8_CEILING[v.candidateId]);
+      if (r < 0 || r > 2) fail.push(v.candidateId + " " + v.ticker + ": Stufe " + v.stage);
+      else if (cap < 0 || r > cap) fail.push(v.candidateId + " " + v.ticker + ": " + v.stage + " ueber der Obergrenze " + SF8_CEILING[v.candidateId]);
+    });
+    return result("DQ-SF8-3", "SF8-Stufensperren eingehalten", "ERROR", checked, fail);
+  }
+
+  /** DQ-SF8-4: unterhalb von MODELED_TRADE_PLAN kein Plan, keine Order-, Stop- oder Limitmarke, keine daraus rueckrechenbare Kennzahl. */
+  function sf8NoOrderBelowModel(b) {
+    var g = sf8Gate("DQ-SF8-4", "SF8 ohne Order-/Stopmarken unterhalb des modellierten Ablaufs", b); if (g) return g;
+    var fail = [], checked = 0;
+    sf8Views(b).forEach(function (v) {
+      if (v.stage === "MODELED_TRADE_PLAN") return;
+      checked++;
+      var where = v.candidateId + " " + v.ticker + " (" + v.stage + ")";
+      if (v.plan !== null && v.plan !== undefined) fail.push(where + ": Plan");
+      Object.keys(v.levels || {}).forEach(function (k) { if (SF8_ORDER_KEY.test(k)) fail.push(where + ": Marke levels." + k); });
+      Object.keys(v.features || {}).forEach(function (k) { if (SF8_ORDER_FEATURES.indexOf(k) >= 0) fail.push(where + ": Kennzahl features." + k); });
+      if (v.pivot && /ORDER|TRIGGER|STOP|LIMIT|PLUS|TICK|FRACTION/i.test(String(v.pivot.kind))) fail.push(where + ": Chartmarke " + v.pivot.kind);
+    });
+    return result("DQ-SF8-4", "SF8 ohne Order-/Stopmarken unterhalb des modellierten Ablaufs", "ERROR", checked, fail);
+  }
+
+  /** DQ-SF8-5: Quarantaene (V4-D1) und Datenqualitaet - betroffene Ansichten hoechstens Chart-Kandidat, kein FAIL veroeffentlicht. */
+  function sf8Quarantine(b) {
+    var g = sf8Gate("DQ-SF8-5", "SF8-Quarantaene und Datenqualitaetsgrenzen eingehalten", b); if (g) return g;
+    var fail = [], checked = 0;
+    sf8Views(b).forEach(function (v) {
+      checked++;
+      var dq = v.dataQuality, where = v.candidateId + " " + v.ticker;
+      if (!dq || ["PASS", "CAP"].indexOf(dq.status) < 0) { fail.push(where + ": Datenqualitaet " + (dq && dq.status)); return; }
+      if (!Array.isArray(dq.quarantinedSessions)) { fail.push(where + ": Quarantaene-Sitzungen fehlen"); return; }
+      if (dq.quarantinedSessions.length && v.stage !== "CHART_CANDIDATE") fail.push(where + ": " + dq.quarantinedSessions.length + " Quarantaene-Sitzung(en), Stufe " + v.stage);
+      (dq.notPass || []).forEach(function (n) {
+        if (n.status === "FAIL") fail.push(where + ": " + n.id + " FAIL veroeffentlicht");
+        if (n.status === "CAP" && n.caps && stageRank(v.stage) > stageRank(n.caps)) fail.push(where + ": " + n.id + " begrenzt auf " + n.caps + ", Stufe " + v.stage);
+      });
+      if (dq.status === "PASS" && (dq.notPass || []).some(function (n) { return n.status === "CAP"; })) fail.push(where + ": PASS trotz CAP");
+    });
+    return result("DQ-SF8-5", "SF8-Quarantaene und Datenqualitaetsgrenzen eingehalten", "ERROR", checked, fail);
+  }
+
+  /** DQ-SF8-6: Ergebnisvertraege - Schema, 13 Methoden, alle Teile vorhanden, Zaehlungen und Stand konsistent, keine records/. */
+  function sf8Contracts(b) {
+    var g = sf8Gate("DQ-SF8-6", "SF8-Ergebnisvertraege konsistent", b); if (g) return g;
+    var fail = [], s = b.summary, asOf = s.asOf, checked = 0;
+    if (s.schema !== SF8_SCHEMA) fail.push("summary.schema " + s.schema + " (erwartet " + SF8_SCHEMA + ")");
+    if (b.recordsPresent) fail.push("records/ veroeffentlicht (Vertragsdatensaetze nur als CI-Artefakt)");
+    var ids = (s.strategies || []).map(function (x) { return x.candidateId; }).sort();
+    if (ids.join(",") !== SF8_IDS.join(",")) fail.push("Methoden " + ids.join(",") + " (erwartet C01-C13)");
+    var total = 0, byStage = { CHART_CANDIDATE: 0, CONFIRMED_RESEARCH_SETUP: 0, MODELED_TRADE_PLAN: 0 }, viewKeys = {};
+    (s.strategies || []).forEach(function (x) {
+      var f = b.strategies && b.strategies[x.candidateId];
+      checked++;
+      if (!f) { fail.push("strategy/" + x.candidateId + ".json fehlt"); return; }
+      if (f.schema !== SF8_SCHEMA || f.candidateId !== x.candidateId || f.strategyId !== x.strategyId || f.asOf !== asOf) fail.push("strategy/" + x.candidateId + ".json: Kopf passt nicht (" + [f.schema, f.candidateId, f.strategyId, f.asOf].join(" ") + ")");
+      var vs = f.views || [];
+      if (!x.counts || vs.length !== x.counts.published) fail.push(x.candidateId + ": " + vs.length + " Ansichten, summary nennt " + (x.counts && x.counts.published));
+      vs.forEach(function (v) {
+        total++; if (byStage[v.stage] !== undefined) byStage[v.stage]++;
+        if (v.candidateId !== x.candidateId || v.strategyId !== x.strategyId || v.asOf !== asOf) fail.push(x.candidateId + " " + v.ticker + ": Ansicht gehoert nicht in diese Datei oder zu einem anderen Stand");
+        viewKeys[v.candidateId + "|" + v.ticker] = v.shard;
+      });
+    });
+    var c = s.counts || {};
+    if (c.candidates !== total) fail.push("counts.candidates " + c.candidates + ", Ansichten " + total);
+    Object.keys(byStage).forEach(function (k) { if (!c.byStage || c.byStage[k] !== byStage[k]) fail.push("counts.byStage." + k + " " + (c.byStage && c.byStage[k]) + ", gezaehlt " + byStage[k]); });
+    /* Scherben: genau die genannten, jede Ansicht genau einmal in ihrer Scherbe */
+    var shards = (s.tickerShards || []).slice().sort(), inShards = {};
+    shards.forEach(function (k) {
+      var t = b.tickers && b.tickers[k];
+      checked++;
+      if (!t) { fail.push("ticker/" + k + ".json fehlt"); return; }
+      if (t.schema !== SF8_SCHEMA || t.shard !== k || t.asOf !== asOf) fail.push("ticker/" + k + ".json: Kopf passt nicht");
+      (t.views || []).forEach(function (v) { var key = v.candidateId + "|" + v.ticker; if (inShards[key]) fail.push("ticker/" + k + ": " + key + " doppelt"); inShards[key] = k; });
+    });
+    Object.keys(b.tickers || {}).forEach(function (k) { if (shards.indexOf(k) < 0) fail.push("ticker/" + k + ".json nicht in summary.tickerShards"); });
+    Object.keys(viewKeys).forEach(function (k) { if (inShards[k] !== viewKeys[k]) fail.push(k + ": in Scherbe " + inShards[k] + ", erwartet " + viewKeys[k]); });
+    Object.keys(inShards).forEach(function (k) { if (!viewKeys[k]) fail.push(k + ": nur in ticker/" + inShards[k]); });
+    return result("DQ-SF8-6", "SF8-Ergebnisvertraege konsistent", "ERROR", checked, fail);
+  }
+
+  /** DQ-SF8-7: oeffentliche Teile hoechstens 16 MB, jede Datei hoechstens 2 MB. */
+  function sf8Budget(b) {
+    var g = sf8Gate("DQ-SF8-7", "SF8-Datenbudget eingehalten", b); if (g) return g;
+    var fail = [], total = 0;
+    (b.files || []).forEach(function (f) { total += f.bytes; if (f.bytes > SF8_BUDGET.fileBytes) fail.push(f.path + ": " + f.bytes + " Bytes ueber 2 MB"); });
+    if (total > SF8_BUDGET.totalBytes) fail.push("zusammen " + total + " Bytes ueber 16 MB");
+    return result("DQ-SF8-7", "SF8-Datenbudget eingehalten", "ERROR", (b.files || []).length, fail, "Oeffentliche Teile " + total + " Bytes.");
+  }
+
+  /** DQ-SF8-8: eine Preiswahrheit (ADR-002) - Schluss jeder Ansicht = veroeffentlichter Schluss derselben Identitaet und Sitzung
+   *  (quant/engines/published-close.js, ohne Toleranz). referenceOf(securityId) liefert die Discover-Tagesreihe oder null. */
+  function sf8PriceParity(b, referenceOf, PublishedClose) {
+    var g = sf8Gate("DQ-SF8-8", "SF8-Schluss = veroeffentlichter Schluss (eine Preiswahrheit)", b); if (g) return g;
+    var fail = [], checked = 0, cache = {};
+    sf8Views(b).forEach(function (v) {
+      checked++;
+      var where = v.candidateId + " " + v.ticker + " " + v.asOf;
+      if (!(v.securityId in cache)) cache[v.securityId] = referenceOf(v.securityId);
+      var ref = cache[v.securityId];
+      if (!ref) { fail.push(where + ": keine veroeffentlichte Reihe"); return; }
+      if (ref.securityId !== v.securityId || ref.ticker !== v.ticker || ref.currency !== "USD") { fail.push(where + ": Reihe gehoert zu " + ref.securityId + "/" + ref.ticker + "/" + ref.currency); return; }
+      /* gleiche Sitzung: der letzte Punkt; eine spaetere Reihe kann seitdem nachadjustiert sein - dann fehlt der zeitgleiche Beleg */
+      var lp = ref.asOf === v.asOf ? PublishedClose.lastPoint(ref, v.asOf) : null;
+      if (!lp || lp.date !== v.asOf) { fail.push(where + ": kein zeitgleicher veroeffentlichter Schluss (Reihe " + ref.asOf + ")"); return; }
+      if (PublishedClose.roundClose(v.close) !== lp.close) fail.push(where + ": Schluss " + v.close + " ≠ veroeffentlicht " + lp.close);
+    });
+    return result("DQ-SF8-8", "SF8-Schluss = veroeffentlichter Schluss (eine Preiswahrheit)", "ERROR", checked, fail);
+  }
+
+  /** Alle SF8-Regeln in fester Reihenfolge. */
+  function sf8Rules(b, ctx) {
+    return [
+      sf8Freshness(b, ctx.expectedSession, ctx.lagFn, ctx.maxLag === undefined ? 2 : ctx.maxLag),
+      sf8Identity(b, ctx.Identity), sf8StageLock(b), sf8NoOrderBelowModel(b), sf8Quarantine(b), sf8Contracts(b), sf8Budget(b),
+      sf8PriceParity(b, ctx.referenceOf, ctx.PublishedClose)
+    ];
+  }
+
   /** Fasst Regelergebnisse zusammen. */
   function summarize(rules) {
     var s = { ERROR: 0, WARN: 0, INFO: 0 }, overall = "PASS";
@@ -324,6 +534,9 @@
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET,
+    sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
+    sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize
   };
 });

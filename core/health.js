@@ -10,7 +10,8 @@
      DEGRADED  Rueckstand ueber der Warnschwelle oder Bestand unter Soll
      STALE     Rueckstand ueber der harten Schwelle
      FAILED    Artefakt fehlt oder ist nicht lesbar
-     DISABLED  Domaene ist bewusst abgeschaltet
+     DISABLED  Domaene ist bewusst abgeschaltet (auch: vorbereitet, nicht
+               freigegeben - activation.state PREPARED_DISABLED, Artefakt fehlt)
      NOT_DELIVERED  gegen die Seite gemessen, Artefakt wird bewusst nicht
                ausgeliefert (repositoryOnly)
      UNKNOWN   kein Zeitstempel - Frische nicht messbar
@@ -77,6 +78,13 @@
         .format(new Date(ms));
     } catch (e) { return new Date(ms).toISOString().slice(0, 10); }
   }
+  /* Fehlt das Artefakt (Repository: "fehlt: <pfad>", Seite: HTTP 404)? Nur
+     dann ist eine vorbereitete Datenart DISABLED; jeder andere Fehler
+     (kaputtes JSON, 500) bleibt ein Befund. */
+  function missingArtifact(loaded) {
+    var e = loaded && typeof loaded.error === "string" ? loaded.error : "";
+    return /^fehlt: /.test(e) || /^HTTP 404 /.test(e);
+  }
   function worse(a, b) { return (RANK[b] || 0) > (RANK[a] || 0) ? b : a; }
 
   /** Handelstage, die `date` hinter `expected` liegt (0 = gleich). */
@@ -109,6 +117,22 @@
     if (domain.repositoryOnly && ctx.target === "site") {
       out.status = "NOT_DELIVERED"; out.reason = "REPOSITORY_ONLY";
       out.warnings.push("Wird nicht ausgeliefert; nur gegen das Repository messbar.");
+      return out;
+    }
+    /* Vorbereitet, nicht freigegeben (domains.json, Kopf "activation"): das
+       Artefakt darf NICHT existieren. Fehlt es, ist das der Sollzustand;
+       liegt es vor, wurde ohne Freigabe veroeffentlicht. Ist es vorhanden,
+       aber unlesbar, bleibt es FAILED - kein stilles DISABLED. */
+    if (domain.activation && domain.activation.state === "PREPARED_DISABLED") {
+      if (loaded && loaded.ok) {
+        out.status = "FAILED"; out.reason = "PUBLISHED_WITHOUT_ACTIVATION";
+        out.warnings.push("Artefakt liegt vor, die Datenart ist aber nicht freigegeben (activation.state PREPARED_DISABLED).");
+      } else if (missingArtifact(loaded)) {
+        out.status = "DISABLED"; out.reason = "NOT_ACTIVATED";
+      } else {
+        out.status = "FAILED"; out.reason = "ARTIFACT_UNREADABLE";
+        out.warnings.push("Artefakt nicht lesbar: " + (loaded && loaded.error ? loaded.error : "unbekannt"));
+      }
       return out;
     }
     if (!loaded || !loaded.ok) {

@@ -22,6 +22,16 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-TW-2 | WARN | kein Tagesfeld des Technical-Katalogs ist in allen Zeilen leer | `aboveEma200`/`distEma200` vor dem ersten Lauf nach #927 |
 | DQ-TW-3 | ERROR | Technical-Schluss = Schluss der Discover-Tagesreihe am selben Tag (eine Preiswahrheit) | 26.10.2026: 5.647/5.647 gleich |
 | DQ-TW-4 | WARN | jeder materialisierte Titel steht im Technical-Screener oder ist in `meta.skipped` gezählt | sechs Vorzugsaktien (C-P-N, F-P-B/C/D, T-P-A/C) fielen still durch ein Dateimuster |
+| DQ-SF8-1 | ERROR | Supertrader-8-Research-Kandidaten (`supertrader/data/sf-candidates`): Stand höchstens zwei Sitzungen hinter der letzten abgeschlossenen, nicht danach | Vorbereitung V3; Daten gibt es erst nach Freigabe |
+| DQ-SF8-2 | ERROR | jede Ansicht: `securityId` = `core/identity.js`, Scherbe = `shardKey`, je Methode kein Titel doppelt | ADR-001 |
+| DQ-SF8-3 | ERROR | Stufe 4 gesperrt, keine Ansicht über der Obergrenze ihrer Methode (`SF8_CEILING`), Status `LIVE_NOT_APPROVED` / `LOCKED_FOR_ALL_13` / Orders `NONE` | Vertrag 1.0.0 |
+| DQ-SF8-4 | ERROR | unterhalb `MODELED_TRADE_PLAN` kein Plan, keine Order-, Stop- oder Limitmarke, keine daraus rückrechenbare Kennzahl | Review SF8-R2 (BLOCKING) |
+| DQ-SF8-5 | ERROR | Quarantäne (V4-D1) nur als Chart-Kandidat; kein FAIL veröffentlicht; keine Stufe über einer CAP-Grenze | 83 Quarantänefälle bleiben unverändert |
+| DQ-SF8-6 | ERROR | Ergebnisverträge: Schema, 13 Methoden, alle Strategie- und Scherbendateien, Zählungen, Stand, jede Ansicht genau einmal in ihrer Scherbe, kein `records/` | – |
+| DQ-SF8-7 | ERROR | öffentliche Teile höchstens 16 MB, jede Datei höchstens 2 MB | Lauf 23.10.: 12,7 MB, größte Datei 1,25 MB |
+| DQ-SF8-8 | ERROR | Schluss jeder Ansicht = veröffentlichter Schluss derselben Identität und Sitzung (`published-close.js`, ohne Toleranz) | V4, ADR-002 |
+
+Die DQ-SF8-Regeln prüfen den Aktivierungszustand der Registry mit (`activation.state`). Für eine vorbereitete Datenart ohne Daten bestehen sie mit 0 Prüfungen. Liegen Daten ohne Freigabe vor, ist die Freigabe ohne Daten erteilt oder ist ein Teil unlesbar, ist jede Regel rot. Der Tageslauf prüft sein Ergebnis vor dem Commit mit `node scripts/core/data-quality.mjs --only=sf8 --sf8-dir=<Ausgabe> --sf8-activated --strict`.
 
 ## Erster Lauf (03.10.2026, Repository-Stand)
 

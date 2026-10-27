@@ -94,7 +94,8 @@ jobs:
             const changed = fs.readFileSync(process.env.RUNNER_TEMP + "/changed.txt", "utf8").split("\n").filter(Boolean);
             const owned = [/^quant\/data\/market\/intraday\//, /^quant\/data\/market\/capabilities\//, /^quant\/data\/market\/freshness\//,
               /^quant\/data\/product\/capabilities(-summary)?-v1\.json$/, /^quant\/data\/market\/discover-series(-long)?\//,
-              /^quant\/data\/market\/factors\//, /^quant\/data\/market\/golden-preview\//, /^discover\/data\//];
+              /^quant\/data\/market\/factors\//, /^quant\/data\/market\/golden-preview\//, /^discover\/data\//,
+              /^supertrader\/data\/sf-candidates\//];
             const hits = changed.filter((f) => owned.some((r) => r.test(f)));
             if (hits.length) {
               console.log("::warning::Dieser PR aendert " + hits.length + " pipeline-eigene Artefakte (z. B. " + hits.slice(0, 5).join(", ") + "). Der naechste Datenlauf kann daran in einen Rebase-Konflikt laufen. Wenn nicht beabsichtigt: diese Dateien auf den Stand von main zuruecksetzen.");

@@ -1,0 +1,194 @@
+/* Core · Datenqualitaet der Supertrader-8.0-Research-Kandidaten (DQ-SF8-1..8, core/data-quality.js).
+   Golden Case: ein in sich stimmiger Stand; je Regel adversariale Gegenproben. Fail closed: vorbereitet ohne Daten
+   ist der einzige Pass ohne Pruefung; Daten ohne Freigabe, Freigabe ohne Daten und Unlesbares sind Fehler. */
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { spawnSync } from "node:child_process";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const DQ = require(join(ROOT, "core", "data-quality.js"));
+const Identity = require(join(ROOT, "core", "identity.js"));
+const PublishedClose = require(join(ROOT, "quant", "engines", "published-close.js"));
+
+const ASOF = "2026-10-23";
+const SCHEMA = "supertrader-sf8-candidates-1.0.0";
+const IDS = Object.keys(DQ.SF8_CEILING);
+const TICKERS = ["AAPL", "MSFT", "NVDA", "BRK.B"];
+const lagFn = (d, e) => (d === e ? 0 : d === "2026-10-22" ? 1 : d === "2026-10-21" ? 2 : 5);
+
+/* Ansicht in der Form von records.mjs (nur die gepruefen Felder). */
+function view(c, t, stage, over = {}) {
+  const modeled = stage === "MODELED_TRADE_PLAN";
+  return Object.assign({
+    strategyId: "SF_" + c, candidateId: c, ticker: t, securityId: Identity.securityIdForTicker(t), shard: Identity.shardKey(t),
+    stage, ceiling: DQ.SF8_CEILING[c], asOf: ASOF, close: 100.5,
+    levels: modeled ? { gapDayLow: 98, stopReference: 98 } : { gapDayLow: 98 },
+    features: modeled ? { closeVsTrigger: 0.01 } : { gap: 0.1 },
+    pivot: modeled ? null : { level: 98, kind: "GAP_DAY_LOW", distance: 0.02 },
+    plan: modeled ? { entryType: "NEXT_OPEN", trigger: 100.5, stop: 98, hypothetical: true } : null,
+    dataQuality: { status: "PASS", notPass: [], quarantinedSessions: [] }
+  }, over);
+}
+/* Golden Case: jede Methode mit einem Titel auf ihrer Obergrenze bzw. darunter, C12 mit modelliertem Ablauf. */
+function bundle(mut) {
+  const views = {};
+  IDS.forEach((c, k) => {
+    const stage = c === "C12" ? "MODELED_TRADE_PLAN" : DQ.SF8_CEILING[c] === "CONFIRMED_RESEARCH_SETUP" ? "CONFIRMED_RESEARCH_SETUP" : "CHART_CANDIDATE";
+    views[c] = [view(c, TICKERS[k % TICKERS.length], stage)];
+  });
+  const b = { activation: null, recordsPresent: false, unreadable: [], strategies: {}, tickers: {}, files: [] };
+  if (mut) mut(views, b);
+  const all = IDS.flatMap((c) => views[c] || []);
+  const byStage = { CHART_CANDIDATE: 0, CONFIRMED_RESEARCH_SETUP: 0, MODELED_TRADE_PLAN: 0 };
+  all.forEach((v) => { if (byStage[v.stage] !== undefined) byStage[v.stage]++; });
+  b.summary = b.summary || {
+    schema: SCHEMA, asOf: ASOF,
+    status: { liveReadiness: "LIVE_NOT_APPROVED", certification: "DIAGNOSTIC_NOT_CERTIFIED", validatedTradeSignal: "LOCKED_FOR_ALL_13", orders: "NONE" },
+    counts: { candidates: all.length, byStage, validatedTradeSignal: 0, rejectedRecords: 0 },
+    strategies: IDS.map((c) => ({ candidateId: c, strategyId: "SF_" + c, ceiling: DQ.SF8_CEILING[c], liveReadiness: "LIVE_NOT_APPROVED", counts: { published: (views[c] || []).length } })),
+    tickerShards: [...new Set(all.map((v) => v.shard))].sort()
+  };
+  IDS.forEach((c) => { b.strategies[c] = b.strategies[c] === undefined ? { schema: SCHEMA, strategyId: "SF_" + c, candidateId: c, asOf: ASOF, views: views[c] || [] } : b.strategies[c]; });
+  for (const k of b.summary.tickerShards) if (b.tickers[k] === undefined) b.tickers[k] = { schema: SCHEMA, asOf: ASOF, shard: k, views: all.filter((v) => v.shard === k) };
+  if (!b.files.length) b.files = [{ path: "summary.json", bytes: 1000 }, ...IDS.map((c) => ({ path: "strategy/" + c + ".json", bytes: 5000 }))];
+  return b;
+}
+const series = (t, over = {}) => Object.assign({ schemaVersion: "discover-series-1.1.0", status: "CALCULATED", source: "tiingo", provider: "tiingo", dataMode: "real", priceSeriesType: "SPLIT_ADJUSTED", currency: "USD", grain: "daily", publishBasis: "test", securityId: Identity.securityIdForTicker(t), ticker: t, instrumentId: t, asOf: ASOF, points: [["2026-10-22", 99], [ASOF, 100.5]] }, over);
+const REFS = Object.fromEntries(TICKERS.map((t) => [Identity.securityIdForTicker(t), series(t)]));
+const ctx = (over = {}) => Object.assign({ expectedSession: ASOF, lagFn, maxLag: 2, Identity, PublishedClose, referenceOf: (id) => REFS[id] || null }, over);
+const byId = (rules) => Object.fromEntries(rules.map((r) => [r.id, r]));
+const failing = (b, c) => DQ.sf8Rules(b, ctx(c)).filter((r) => r.status === "FAIL").map((r) => r.id);
+
+test("DQ-SF8 · Golden Case: stimmiger Stand besteht alle acht Regeln, alle als ERROR", () => {
+  const r = DQ.sf8Rules(bundle(), ctx());
+  assert.deepEqual(r.map((x) => x.id), ["DQ-SF8-1", "DQ-SF8-2", "DQ-SF8-3", "DQ-SF8-4", "DQ-SF8-5", "DQ-SF8-6", "DQ-SF8-7", "DQ-SF8-8"]);
+  assert.ok(r.every((x) => x.status === "PASS" && x.severity === "ERROR"), JSON.stringify(r.filter((x) => x.status !== "PASS")));
+  assert.equal(byId(r)["DQ-SF8-2"].checked, 13);
+  assert.equal(byId(r)["DQ-SF8-4"].checked, 12, "nur Ansichten unterhalb MODELED");
+  assert.equal(DQ.summarize(r).overall, "PASS");
+});
+
+test("DQ-SF8 · Aktivierungszustand fail closed: vorbereitet ohne Daten PASS, sonst Fehler", () => {
+  const none = { activation: "PREPARED_DISABLED", summary: null, strategies: {}, tickers: {}, files: [], recordsPresent: false, unreadable: [] };
+  const r = DQ.sf8Rules(none, ctx());
+  assert.ok(r.every((x) => x.status === "PASS" && x.checked === 0));
+  const leaked = Object.assign(bundle(), { activation: "PREPARED_DISABLED" });
+  assert.equal(failing(leaked).length, 8, "Daten ohne Freigabe: jede Regel rot");
+  assert.equal(failing({ activation: "PREPARED_DISABLED", summary: null, strategies: {}, tickers: {}, files: [], recordsPresent: true, unreadable: [] }).length, 8, "auch nur records/");
+  assert.equal(failing(Object.assign({}, none, { activation: null })).length, 8, "freigegeben ohne Daten: rot");
+  const broken = bundle(); broken.unreadable = ["supertrader/data/sf-candidates/strategy/C03.json"];
+  assert.equal(failing(broken).length, 8, "Unlesbares ist nie ein Pass");
+});
+
+test("DQ-SF8-1 · Frische: veraltet, kein Datum, Zukunft", () => {
+  const b = bundle(); b.summary.asOf = "2026-10-20";
+  assert.deepEqual(failing(b).filter((x) => x === "DQ-SF8-1"), ["DQ-SF8-1"]);
+  const ok = bundle(); ok.summary.asOf = "2026-10-21";
+  assert.ok(!failing(ok).includes("DQ-SF8-1"), "zwei Sitzungen Rueckstand sind noch zulaessig");
+  const nd = bundle(); nd.summary.asOf = null; assert.ok(failing(nd).includes("DQ-SF8-1"));
+  const fut = bundle(); fut.summary.asOf = "2026-10-26"; assert.ok(failing(fut).includes("DQ-SF8-1"));
+  assert.ok(failing(bundle(), { lagFn: () => null }).includes("DQ-SF8-1"), "unbestimmbarer Rueckstand");
+});
+
+test("DQ-SF8-2 · Identitaet: selbstgebildete securityId, falsche Scherbe, Doppelte, ungueltiger Ticker", () => {
+  for (const over of [{ securityId: "ref_aapl" }, { securityId: "ref_MSFT" }, { shard: "ZZ" }, { ticker: "a b", securityId: "ref_a b" }]) {
+    const b = bundle((v) => { Object.assign(v.C04[0], over); });
+    assert.ok(failing(b).includes("DQ-SF8-2"), JSON.stringify(over));
+  }
+  const d = bundle((v) => { v.C04.push(view("C04", v.C04[0].ticker, "CHART_CANDIDATE")); });
+  assert.ok(failing(d).includes("DQ-SF8-2"));
+});
+
+test("DQ-SF8-3 · Stufensperren: Stufe 4, ueber der Obergrenze, geaenderte Obergrenze, entsperrter Status", () => {
+  assert.ok(failing(bundle((v) => { v.C04[0].stage = "CONFIRMED_RESEARCH_SETUP"; })).includes("DQ-SF8-3"), "C04 hoechstens Chart");
+  assert.ok(failing(bundle((v) => { v.C11[0].stage = "MODELED_TRADE_PLAN"; v.C11[0].plan = { trigger: 1 }; })).includes("DQ-SF8-3"), "C11 hoechstens bestaetigt");
+  assert.ok(failing(bundle((v) => { v.C12[0].stage = "VALIDATED_TRADE_SIGNAL"; })).includes("DQ-SF8-3"));
+  assert.ok(failing(bundle((v) => { v.C06[0].stage = "UNKNOWN"; })).includes("DQ-SF8-3"));
+  for (const mut of [(s) => { s.status.validatedTradeSignal = "UNLOCKED"; }, (s) => { s.status.liveReadiness = "LIVE_APPROVED"; }, (s) => { s.status.orders = "PAPER"; },
+    (s) => { s.counts.validatedTradeSignal = 1; }, (s) => { s.counts.byStage.VALIDATED_TRADE_SIGNAL = 1; }, (s) => { s.strategies[3].ceiling = "MODELED_TRADE_PLAN"; },
+    (s) => { s.strategies[0].liveReadiness = "LIVE_APPROVED"; }]) {
+    const b = bundle(); mut(b.summary); assert.ok(failing(b).includes("DQ-SF8-3"), String(mut));
+  }
+});
+
+test("DQ-SF8-4 · keine Order-/Stopmarke, kein Plan, keine rueckrechenbare Kennzahl unterhalb MODELED", () => {
+  for (const mut of [(x) => { x.plan = { trigger: 1 }; }, (x) => { x.levels.trigger = 101; }, (x) => { x.levels.stopReference = 97; }, (x) => { x.levels.limit = 103; },
+    (x) => { x.levels.initialStop = 97; }, (x) => { x.levels.entryPrice = 101; }, (x) => { x.features.proposedStopRiskPct = 0.03; }, (x) => { x.features.closeVsTrigger = 0; },
+    (x) => { x.pivot.kind = "ORDER_TRIGGER"; }, (x) => { x.pivot.kind = "PIVOT_PLUS_TICK"; }]) {
+    assert.ok(failing(bundle((v) => mut(v.C09[0]))).includes("DQ-SF8-4"), String(mut));
+  }
+  assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen");
+});
+
+test("DQ-SF8-5 · Quarantaene und DQ-Grenzen: Quarantaene ueber Chart, veroeffentlichtes FAIL, CAP ueberschritten", () => {
+  assert.ok(failing(bundle((v) => { v.C11[0].dataQuality.quarantinedSessions = [{ date: "2026-05-01", flag: "DQ-K5" }]; })).includes("DQ-SF8-5"));
+  assert.ok(!failing(bundle((v) => { v.C04[0].dataQuality.quarantinedSessions = [{ date: "2026-05-01", flag: "DQ-K5" }]; })).includes("DQ-SF8-5"), "Chart-Kandidat mit Quarantaene ist zulaessig");
+  for (const mut of [(dq) => { dq.status = "FAIL"; }, (dq) => { delete dq.quarantinedSessions; }, (dq) => { dq.status = "CAP"; dq.notPass = [{ id: "PRICE_PARITY", status: "FAIL" }]; },
+    (dq) => { dq.status = "CAP"; dq.notPass = [{ id: "SESSIONS", status: "CAP", caps: "CHART_CANDIDATE" }]; }, (dq) => { dq.notPass = [{ id: "ADJUSTMENT", status: "CAP", caps: "CHART_CANDIDATE" }]; }]) {
+    assert.ok(failing(bundle((v) => mut(v.C13[0].dataQuality))).includes("DQ-SF8-5"), String(mut));
+  }
+  assert.ok(!failing(bundle((v) => { v.C13[0].dataQuality.notPass = [{ id: "PRICE_HISTORY_PARITY", status: "INFO" }]; })).includes("DQ-SF8-5"), "INFO ohne Stufenwirkung");
+});
+
+test("DQ-SF8-6 · Ergebnisvertraege: Schema, Methoden, fehlende Teile, Zaehlungen, Stand, Scherben, records/", () => {
+  const cases = {
+    schema: (b) => { b.summary.schema = "supertrader-sf8-candidates-0.9.0"; },
+    records: (b) => { b.recordsPresent = true; },
+    methode: (b) => { b.summary.strategies.pop(); },
+    dateiFehlt: (b) => { b.strategies.C05 = null; },
+    kopf: (b) => { b.strategies.C05.asOf = "2026-10-22"; },
+    zaehlung: (b) => { b.summary.counts.candidates += 1; },
+    stufenZaehlung: (b) => { b.summary.counts.byStage.CHART_CANDIDATE -= 1; },
+    published: (b) => { b.summary.strategies[1].counts.published = 9; },
+    fremdeAnsicht: (b) => { b.strategies.C05.views[0] = Object.assign({}, b.strategies.C05.views[0], { candidateId: "C06" }); },
+    scherbeFehlt: (b) => { b.tickers[b.summary.tickerShards[0]] = null; },
+    scherbeVerwaist: (b) => { b.tickers.ZZ = { schema: SCHEMA, asOf: ASOF, shard: "ZZ", views: [] }; },
+    ansichtNichtInScherbe: (b) => { const k = b.summary.tickerShards[0]; b.tickers[k] = Object.assign({}, b.tickers[k], { views: b.tickers[k].views.slice(1) }); },
+    ansichtNurInScherbe: (b) => { const k = b.summary.tickerShards[0]; b.tickers[k] = Object.assign({}, b.tickers[k], { views: b.tickers[k].views.concat([view("C04", "ZZZZ", "CHART_CANDIDATE")]) }); }
+  };
+  for (const [name, mut] of Object.entries(cases)) { const b = bundle(); mut(b); assert.ok(failing(b).includes("DQ-SF8-6"), name); }
+});
+
+test("DQ-SF8-7 · Budget: eine Datei ueber 2 MB, zusammen ueber 16 MB", () => {
+  const big = bundle(); big.files.push({ path: "strategy/C06.json", bytes: 2 * 1024 * 1024 + 1 });
+  assert.ok(failing(big).includes("DQ-SF8-7"));
+  const sum = bundle(); sum.files = Array.from({ length: 9 }, (_, k) => ({ path: "ticker/" + k + ".json", bytes: 1.9 * 1024 * 1024 }));
+  assert.ok(failing(sum).includes("DQ-SF8-7"));
+  const edge = bundle(); edge.files = [{ path: "strategy/C06.json", bytes: 2 * 1024 * 1024 }];
+  assert.ok(!failing(edge).includes("DQ-SF8-7"), "genau 2 MB ist zulaessig");
+});
+
+test("DQ-SF8-8 · eine Preiswahrheit: ohne Toleranz, gleiche Sitzung, gleiche Identitaet", () => {
+  const cent = bundle((v) => { v.C04[0].close = 100.51; });
+  assert.ok(failing(cent).includes("DQ-SF8-8"), "ein Cent");
+  assert.ok(!failing(bundle((v) => { v.C04[0].close = 100.504; })).includes("DQ-SF8-8"), "Rundungsregel der Veroeffentlichung");
+  const id0 = Identity.securityIdForTicker("AAPL");
+  for (const ref of [null, series("AAPL", { asOf: "2026-10-26", points: [[ASOF, 100.5], ["2026-10-26", 101]] }), series("AAPL", { asOf: "2026-10-22", points: [["2026-10-22", 100.5]] }),
+    series("AAPL", { currency: "EUR" }), series("AAPL", { ticker: "AAPL.L" }), series("AAPL", { securityId: "ref_X" }), series("AAPL", { dataMode: "mock" }), series("AAPL", { priceSeriesType: "RAW" })]) {
+    const refs = Object.assign({}, REFS, { [id0]: ref });
+    assert.ok(failing(bundle(), { referenceOf: (id) => refs[id] || null }).includes("DQ-SF8-8"), JSON.stringify(ref && { asOf: ref.asOf, currency: ref.currency, ticker: ref.ticker, dataMode: ref.dataMode, priceSeriesType: ref.priceSeriesType }));
+  }
+});
+
+test("DQ-SF8 · Repository-Stand: vorbereitet, keine Daten -> alle Regeln PASS; --sf8-activated ohne Daten -> streng rot", () => {
+  const run = (args) => spawnSync(process.execPath, [join(ROOT, "scripts", "core", "data-quality.mjs"), "--only=sf8", "--json", ...args], { encoding: "utf8" });
+  const repo = run([]);
+  assert.equal(repo.status, 0, repo.stderr);
+  const rep = JSON.parse(repo.stdout);
+  assert.equal(rep.rules.length, 8); assert.ok(rep.rules.every((r) => r.status === "PASS" && r.checked === 0));
+  const empty = mkdtempSync(join(tmpdir(), "sf8-dq-"));
+  try {
+    const r = run(["--sf8-dir=" + empty, "--sf8-activated", "--strict"]);
+    assert.equal(r.status, 2, "freigegeben ohne Daten faellt");
+    mkdirSync(join(empty, "strategy")); writeFileSync(join(empty, "summary.json"), "{kaputt"); writeFileSync(join(empty, "fremd.txt"), "x");
+    const r2 = run(["--sf8-dir=" + empty, "--sf8-activated", "--strict"]);
+    assert.equal(r2.status, 2);
+    assert.ok(JSON.parse(r2.stdout).rules.every((x) => x.status === "FAIL"));
+  } finally { rmSync(empty, { recursive: true, force: true }); }
+});
