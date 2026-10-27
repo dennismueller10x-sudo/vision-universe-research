@@ -152,12 +152,12 @@ test("(c) Grenzfaelle: flache Reihe ohne Division durch null, Luecken ergeben Na
 });
 
 test("Vertrag: 1.4.0, neue Eintraege dokumentiert, nur Katalog, Produktflaechen unveraendert", () => {
-  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.4.0");
+  assert.match(I.INDICATORS_VERSION, /^technical-indicators-1\.\d+\.\d+$/);
   for (const id of NEW_IDS) {
     const e = I.catalogEntry(id);
     assert.ok(e && e.name && e.definition && e.family && e.catalogOnly === true, id);
     assert.equal(typeof I.compute(S, id).error, "undefined", id);
   }
-  assert.equal(I.CATALOG.length, 77);
+  assert.ok(I.CATALOG.length >= 77, "1.4.0: 77 Eintraege; spaetere Versionen nur mehr (genaue Zahl im jeweils neuesten Test)");
   assert.equal(I.CATALOG.filter((e) => !e.catalogOnly).length, 24, "gelistete Indikatoren unveraendert");
 });
