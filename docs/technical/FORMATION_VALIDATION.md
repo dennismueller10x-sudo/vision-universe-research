@@ -36,13 +36,13 @@ Grundlage: alle aktiven Formationen von 5.657 Titeln, zusammen 11.727 Erkennunge
 | Typ | gültig | Verstöße |
 |---|---|---|
 | Aufwärts-/Abwärtskanal | 315/315, 514/514 | – |
-| Aufsteigendes / absteigendes / symmetrisches Dreieck | 372/372, 542/544, 428/428 | 2 × Preis 0 (CPTAF, Datenfehler) |
+| Aufsteigendes / absteigendes / symmetrisches Dreieck | 372/372, 542/544, 428/428 | 2 × Preis 0 (CPTAF, Rundung bei Sub-Penny-Kursen, siehe §4) |
 | Rechteck | 261/261 | – |
 | Steigender / fallender Keil | 38/38, 185/185 | – |
 | Bullische / bärische Flagge | 82/82, 306/306 | – |
 | Bullischer Wimpel | 103/159 | **56 invalidiert vor der Erkennung**, 1 Mast |
 | Bärischer Wimpel | 241/310 | **66 invalidiert vor der Erkennung**, 4 Mast |
-| Doppeltop / -boden | 547/547, 421/422 | 1 × Preis 0 (CPTAF) |
+| Doppeltop / -boden | 547/547, 421/422 | 1 × Preis 0 (CPTAF, Rundung, siehe §4) |
 | SKS / inverse SKS | 270/270, 174/174 | – |
 | Unterstützungs- / Widerstandslinie | 2.078/2.078, 2.291/2.291 | – |
 | Lücke nach oben / unten | 368/410, 427/469 | **je 42 ohne Lücke** |
@@ -66,7 +66,7 @@ Grundlage: alle aktiven Formationen von 5.657 Titeln, zusammen 11.727 Erkennunge
 
 **Offen:**
 - 5 Wimpel und Flaggen mit „Mast zu kurz“. Es sind ältere Formationen; die ATR am Ankerbar der Lebenszyklus-Auswertung ist aus der Ausgabe nicht rekonstruierbar. Ungeklärt, aber kein Hinweis auf einen Regelbruch.
-- CPTAF: Kurse von 0 in den Tagesbars. Das ist ein Datenfehler, kein Engine-Fehler.
+- CPTAF: Punktpreise von 0. Erste Einschätzung „Datenfehler“ war falsch; Ursache ist die Rundung der Punktpreise bei einem Sub-Penny-Titel (siehe §4).
 
 ## 2. Spiegeltest
 
@@ -179,7 +179,7 @@ Eine gezielte Prüfung der Pivot-Gleichstände ist der nächste Schritt.
 | Widerstands- / Unterstützungslinie | 2.291 / 2.078 | 2.304 / 2.099 |
 | alle übrigen Typen | unverändert | unverändert |
 
-Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 0 am Stichtag) und 3 × Kurs 0 bei CPTAF (Datenfehler).
+Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 0 am Stichtag) und 3 × Kurs 0 bei CPTAF. Beide Fälle sind weiter unten aufgeklärt.
 
 **Vorher/Nachher historische Evidenz** (`formation-evidence.mjs --out`):
 
@@ -210,8 +210,8 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 
 | Titel | Formation | Prüfung | Befund | Status |
 |---|---|---|---|---|
-| CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Formationspunkte mit Kurs 0; die Tagesbars enthalten Schlusskurse von 0 | **Datenfehler** in `technical-signals-v1`. Die Engine erkennt auf fehlerhaften Kursen. Abhilfe gehört in die Datenqualität: Bars mit Kurs ≤ 0 verwerfen oder den Titel sperren. Offen. |
-| CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Datenfehler**, offen. |
+| CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Kein Datenfehler (korrigiert gegenüber Abschnitt 1): Die Tagesbars sind positiv, CPTAF notiert im Sub-Penny-Bereich (Schluss 0,0001 $, Tief bis 0,000001 $). Die Altformationen (`ti/chart-patterns.js`) runden Punktpreise auf 4 Nachkommastellen; ein Tief von 0,000001 wird dadurch 0. | **Rundungsfehler in der Ausgabe**, offen. Abhilfe: Punktpreise wie veröffentlichte Schlusskurse runden (`published-close.js`: unter 1 Cent 4 signifikante Stellen). Eigener kleiner PR mit Vorher/Nachher. |
+| CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Rundungsfehler**, offen. |
 | TECTP | BEAR_PENNANT@2026-01-22 | MAST_ZU_KURZ | Mast 1,87; 5 ATR am Erkennungsbar = 0,61, also erfüllt. Ursache war ein **Validatorfehler**: Bei ATR 0 am Stichtag (ruhender Titel) fiel der Validator auf einen undefinierten Wert zurück, und jeder Vergleich scheiterte. | **Validator korrigiert**: Er misst den Mast nur noch an positiver ATR. Die Engine ist unverändert. Danach regelkonform. |
 
-**Stand nach der Validatorkorrektur:** 11.423 von 11.426 Erkennungen sind regelkonform. Offen sind nur die 3 CPTAF-Fälle, ein Datenfehler.
+**Stand nach der Validatorkorrektur:** 11.423 von 11.426 Erkennungen sind regelkonform. Offen sind nur die 3 CPTAF-Fälle: Sie entstehen durch die Rundung der Punktpreise bei einem Sub-Penny-Titel.
