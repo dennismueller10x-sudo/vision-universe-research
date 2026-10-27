@@ -49,10 +49,11 @@ test('NVIDIA: KGV + Free Cashflow – gleiche Geschaeftsjahre, Kurs nach dem 10-
     assert.ok(r.priceDate > r.pubDate, 'Kurs nach dem 10-K ' + p.key);
     assert.equal(p.published, b.published[p.key]);
   });
-  // Free Cashflow erst ab GJ 2022: davor Luecken, nichts aufgefuellt
-  const first = m.points.find((p) => has(fcf, p.key));
-  assert.equal(first.key, 2022);
-  assert.ok(m.points.some((p) => p.key < 2022 && has(pe, p.key) && !has(fcf, p.key)));
+  // Luecken bleiben, nichts aufgefuellt: Free Cashflow steht genau in den Jahren, fuer die der Katalog
+  // einen Wert hat. (Bis 26.10.2026 begann NVDA FCF erst 2022; der SEC-Lauf a486756 hat ihn verlaengert.)
+  const ref = {}; C.seriesOf(b, fcf.def, m.period).forEach((r) => { ref[r.key] = r.v; });
+  m.points.forEach((p) => assert.equal(has(fcf, p.key), typeof ref[p.key] === 'number', 'FCF ' + p.key));
+  assert.ok(m.points.some((p) => has(fcf, p.key)), 'mindestens ein Jahr mit Free Cashflow');
   // Berichtszeitraum (Ende GJ) und Veroeffentlichung sind getrennt; der Bericht liegt nach dem Ende
   m.points.forEach((p) => { if (p.end && p.published) assert.ok(p.published > p.end, p.key); });
   const md = K.modes(m);
