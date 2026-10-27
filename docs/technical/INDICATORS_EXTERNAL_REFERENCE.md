@@ -91,3 +91,35 @@ Für Indikatoren ohne eigenes TA-Lib-Gegenstück ist die dokumentierte Formel ei
 Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray, Awesome Oscillator, Coppock, KST, TSI, DPO, historische Volatilität, Z-Score, PVO und Chaikin-Volatilität stimmen an jeder Bar, einschließlich der ersten (1e-8).
 
 Damit sind die Rechenkerne der Engine (EMA-Start, Fenster, Summen) gegen fremde geprüft. Die Formel selbst bleibt die dokumentierte.
+
+## Erweiterung L8: zweite fremde Referenz für die übrigen 26 Indikatoren
+
+26 Katalogindikatoren haben kein eigenes TA-Lib-Gegenstück. Für sie gibt es jetzt eine zweite Referenz auf demselben AAPL-Ausschnitt (315 Tagesbars).
+- Wo pandas-ta 0.4.71b0 die dokumentierte Definition hat, rechnet pandas-ta selbst.
+- Sonst ist die dokumentierte Formel ein weiteres Mal aus TA-Lib-/numpy-Bausteinen zusammengesetzt, wie bei `ext2`.
+
+Erzeuger: `scripts/technical/build-pandasta-reference.py`, Fixture `technical-pandasta-reference-aapl.json`, Test `technical-indicators-pandasta.test.mjs`. pandas-ta rechnet dabei mit `talib=False`, damit das Ergebnis nicht davon abhängt, ob TA-Lib installiert ist.
+
+**Ergebnis: 57 Ausgabereihen, alle gleich (1e-8).** 56 Reihen stimmen ab der ersten Bar. Nur McGinley hat eine Startwert-Konvention.
+
+| Indikator | Referenz | Ergebnis |
+|---|---|---|
+| VWMA, HMA, ZLEMA, CMF, Ease of Movement, Heikin-Ashi (4 Reihen), Keltner-Mittellinie | pandas-ta | gleich ab der ersten Bar |
+| Chandelier (lang, kurz) | pandas-ta (`chandelier_exit`, RMA-ATR) | gleich ab der ersten Bar. Damit stimmt auch die Wilder-ATR der Engine mit der RMA von pandas-ta überein. |
+| Keltner (oben, unten) | pandas-ta EMA 20 ± 2 · ATR 10 | gleich ab der ersten Bar |
+| Supertrend | Pine `ta.supertrend` (TradingView) mit pandas-ta-ATR | gleich ab der ersten Bar |
+| McGinley Dynamic | pandas-ta `mcgd` | **Startwert-Konvention:** pandas-ta startet an Bar 1 mit dem Schluss, die Engine an Bar 13 mit SMA 14. Die Differenz klingt ab, gleich ab Bar 215. |
+| ALMA, NVI, PVI, Klinger (KVO, Signal), Connors RSI | Formel aus TA-Lib-/numpy-Bausteinen | gleich ab der ersten Bar |
+| Pivot klassisch, Fibonacci, Camarilla, Woodie (26 Reihen) | Formel aus der Vorbar | gleich ab der ersten Bar |
+| ROC 63/126/252, Inside Bar, NR7, Envelope (3 Reihen), Elder Impulse | TA-Lib ROC/SMA/EMA/MACD bzw. numpy | gleich ab der ersten Bar |
+
+**Wo pandas-ta anders definiert (deshalb nicht direkt als Referenz):**
+- **ALMA:** pandas-ta rundet den Offset ab (`m = ⌊offset·(n−1)⌋`). Legoux und TradingView (`floor=false`) runden nicht, die Engine auch nicht. Ein Mutationstest belegt die Trennschärfe: Rundet die Engine ab, wird der Test rot.
+- **NVI/PVI:** pandas-ta addiert die Prozentänderung als Punkte. Fosback, und mit ihm die Engine, rechnet multiplikativ: `NVI·(1+r)`.
+- **Klinger:** pandas-ta rechnet vereinfacht mit Volumen · Vorzeichen(ΔHLC3). Klinger und die Engine nutzen die Volumenkraft mit dm/cm.
+- **Connors RSI:** Die Serie von pandas-ta 0.4.71b0 liefert nur ±1. Connors kumuliert sie (+1, +2, …), die Engine auch. Der Rang stimmt mit `percent_rank` überein; nur liefert pandas-ta schon an Bar 100 einen Wert mit 99 gültigen Renditen. Die Referenz beginnt wie die Definition an Bar 101.
+- **Supertrend:** pandas-ta zieht die Bänder anders nach (nur ohne Richtungswechsel, gegen das Vorband). Die Engine folgt Pine. Pine startet abwärts, die Engine mit Schluss ≥ Mitte. Auf dieser Stichprobe ist das an der ersten Bar dasselbe.
+- **CMF:** Mit `open` rechnet pandas-ta `(C − O)/(H − L)` statt `((C − L) − (H − C))/(H − L)`. Die Referenz ruft deshalb ohne `open` auf.
+- **Keltner:** pandas-ta nimmt für die Bandbreite die Länge der Mittellinie. Die Engine hat eine eigene ATR-Länge (10).
+
+Damit hat jeder der 78 Katalogindikatoren eine fremde Referenz auf echten Kursen.
