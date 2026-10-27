@@ -336,3 +336,45 @@ test("B-F2: ruhender Titel ohne Volumen (O = H = L = C, ATR 0) hat keine Kurslue
   assert.equal(types.includes("GAP_UP"), false);
   assert.equal(types.includes("GAP_DOWN"), false);
 });
+
+test("B-F3: jede Formation ist an ihrem Erkennungstag sichtbar (echte Titel, an denen 1.2.1 rueckdatierte)", () => {
+  /* Erkennungstag = erster Tag, an dem die Formation mit dem damaligen Wissen sichtbar war. Bis 1.2.1 datierten
+     Wimpel auf den fruehestmoeglichen Bar zurueck und Trendlinien/Wimpel massen ATR-Schwellen am Stand t. */
+  const fx = JSON.parse(readFileSync(new URL("./fixtures/technical-formations-visibility.json", import.meta.url), "utf8"));
+  let checked = 0;
+  for (const [tk, t] of Object.entries(fx.titles)) {
+    const rows = t.date.map((d, i) => ({ date: d, open: t.open[i], high: t.high[i], low: t.low[i], close: t.close[i], volume: t.volume[i] }));
+    const prep = Ctx.prepare(Canonical.fromRows(rows, { instrumentId: tk, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "visibility" }));
+    for (let T = rows.length - 60; T < rows.length; T += 3) {
+      for (const f of Fm.analyzeAt(prep, T).formations) {
+        if (f.detectedIndex < 0 || !/PENNANT|TRENDLINE/.test(f.type)) continue;
+        assert.ok(Fm.analyzeAt(prep, f.detectedIndex).formations.some((x) => x.id === f.id), tk + " " + f.id + " nicht sichtbar am Erkennungstag (Stand " + rows[T].date + ")");
+        checked++;
+      }
+    }
+  }
+  assert.ok(checked >= 20, "geprueft: " + checked);
+});
+
+test("B-F3: Erkennung erst am Ausbruchstag ist als solche gekennzeichnet und zaehlt in der Evidenz ab diesem Tag", async () => {
+  /* Wer erst am Ausbruchstag sichtbar wird, traegt confirmedAtDetection (Screener-Kennzeichen "B") und darf nicht als
+     vorher verfuegbares Einstiegssignal gelten: formation-evidence misst ab dem ersten sichtbaren Stand k (Schluss k). */
+  const fx = JSON.parse(readFileSync(new URL("./fixtures/technical-formations-visibility.json", import.meta.url), "utf8"));
+  const Ev = await import("../../scripts/technical/world/formation-evidence.mjs");
+  let atBreakout = 0;
+  for (const [tk, t] of Object.entries(fx.titles)) {
+    const rows = t.date.map((d, i) => ({ date: d, open: t.open[i], high: t.high[i], low: t.low[i], close: t.close[i], volume: t.volume[i] }));
+    const s = Canonical.fromRows(rows, { instrumentId: tk, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "visibility" });
+    const prep = Ctx.prepare(s);
+    for (const f of Fm.analyzeAt(prep, rows.length - 1).formations) {
+      if (f.confirmedAt) assert.equal(f.confirmedAtDetection, f.confirmedAt <= f.detectedAt, f.id);
+      if (f.confirmedAtDetection) atBreakout++;
+    }
+    for (const d of Ev.detectionsOf(s, 1)) {
+      /* Evidenz: Messbeginn k ist nie vor dem Erkennungstag der Formation. */
+      const f = Fm.analyzeAt(prep, d.k).formations.find((x) => x.type === d.type && x.state === d.stateAtK);
+      assert.ok(f && f.detectedIndex <= d.k, tk + " " + d.type + " k=" + d.k);
+    }
+  }
+  assert.ok(atBreakout > 0, "mindestens eine Formation mit Erkennung am Ausbruchstag im Fixture");
+});

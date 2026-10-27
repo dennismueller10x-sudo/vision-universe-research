@@ -22,10 +22,15 @@
     try{localStorage.setItem(WATCH_KEY,JSON.stringify(list));}catch(_){}
     return index<0;
   }
+  // Angemeldet: lokal und Konto gekoppelt (assets/watchlist-button.js#couple, docs/accounts/WATCHLIST.md); sonst rein lokal.
+  const localWatch={has:s=>watchlist().includes(s),toggle:saveWatchlist};
+  function watchStore(){const W=window.VUWatchButton;return W&&W.couple?W.couple(localWatch):localWatch;}
   function watchButton(root,symbol){
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
-    button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
+    const paint=()=>{const saved=watchStore().has(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',(saved?'Auf Watchlist · ':'')+symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
+    button.onclick=()=>{watchStore().toggle(symbol);paint();};paint();root.prepend(button);
+    const repaint=()=>{if(button.isConnected)paint();else for(const e of['vu-watchlist-ready','vu-watchlist-change'])removeEventListener(e,repaint);};
+    for(const e of['vu-watchlist-ready','vu-watchlist-change'])addEventListener(e,repaint);
   }
   D.EuropeView.attachApp({ctx,route,isReady:()=>meta});
   function settings(root){
