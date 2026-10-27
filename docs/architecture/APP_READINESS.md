@@ -61,7 +61,7 @@ VISION UNIVERSE API   heute: core/client.js über statische Dateien, api/*.js (V
 | `vu-screener-v1` | Screener-Zustand | Screener |
 | `vu-ask-access`, `vu-ask-client`, `vu-ask-read` | Atlas-Zugang. **Das Passwort steht im Klartext** (SECURITY_REVIEW L1). | Ask |
 
-**Befund:** Es gibt zwei getrennte Watchlists. Wer in Discover eine Aktie merkt, sieht sie in Quant nicht.
+**Befund:** Es gibt zwei getrennte Watchlists. Wer in Discover eine Aktie merkt, sieht sie in Quant nicht. Die Konto-Watchlist ([WATCHLIST.md](../accounts/WATCHLIST.md)) bietet die Übernahme beider Listen an.
 Das Schema sieht **eine** Watchlist-Sammlung für alle Produkte vor. Die Migration bildet die Vereinigung beider Schlüssel und löst jeden Ticker einmalig auf eine `instrumentId` auf (`core/client.js#getSecurity`).
 
 ## 4. Routing, Deep Links, Universal Links
@@ -87,11 +87,11 @@ Vorbereitung:
 
 | Bereich | Stand |
 |---|---|
-| Authentication, Sessions | nicht gebaut; Modell: `userId` opaque, Token nur serverseitig |
+| Authentication, Sessions | gebaut, ausgeschaltet (ADR-006): Supabase Auth, Worker `vu-account` mit Cookie (Web) und Bearer (App) |
 | User Profile, Preferences | Schema (`user-data.schema.json#profile/preferences`) |
-| Watchlists, Saved Stocks, Portfolios | Schema, Migrationsquelle dokumentiert |
+| Watchlists, Saved Stocks, Portfolios | Watchlist gebaut, ausgeschaltet ([WATCHLIST.md](../accounts/WATCHLIST.md)): `instrumentId`, RLS, Übernahme der Browser-Listen, Lesezeichen im Aktienkopf; Portfolios offen |
 | Notifications, Device Registration | Schema (`devices`, `notificationSettings`) + Ereignismodell (§6) |
-| Entitlements, Subscription State | Schema (`entitlements`); kein Anbieter angebunden |
+| Entitlements, Subscription State | gebaut (ADR-006): `effective_entitlements`, Stripe angebunden, Apple/Google vorbereitet |
 | Feature Flags | Schema; heute `quant/config/feature-gates.json` (global, nicht je Nutzer) |
 | Deep Links, App-Routing | §4 |
 

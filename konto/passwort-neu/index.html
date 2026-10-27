@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Neues Passwort · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="new-password"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--narrow" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title">Neues Passwort</h1>
+<p class="ka-lead">Lege ein neues Passwort für dein Konto fest.</p>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<form class="ka-card ka-form" id="ka-new-password" novalidate>
+<div class="ka-field"><label for="password">Neues Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint" id="pw-rules" aria-live="polite"></ul></div>
+<div class="ka-field"><label for="password-repeat">Neues Passwort wiederholen</label><div class="ka-pw"><input class="ka-input" id="password-repeat" name="password-repeat" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="password-repeat" aria-controls="password-repeat" aria-pressed="false">Anzeigen</button></div></div>
+<button class="ka-btn ka-btn--block" type="submit">Passwort speichern</button>
+</form>
+<nav class="ka-links" aria-label="Weitere Möglichkeiten"><a class="ka-link" href="/konto/passwort/">Neuen Link anfordern</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

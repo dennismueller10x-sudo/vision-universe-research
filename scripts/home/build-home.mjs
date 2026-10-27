@@ -11,6 +11,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { runInNewContext } from 'node:vm';
+import { cancelLinkItem } from './cancel-link.mjs';
 
 const root = new URL('../../', import.meta.url);
 const outArg = process.argv.find(a => a.startsWith('--out='))?.slice(6);
@@ -235,6 +236,7 @@ const values = {
   NVDA_SIGNAL_STATE: nvdaSignal ? STATE[nvdaSignal.state][0].toLowerCase() : 'beobachtet',
   SIGNAL_ROWS: (signalRows.length ? signalRows.slice(0, 5).map(r => r.html) : ['<div class="sig"><div><b>Derzeit keine Setups</b><small>bei den großen Namen</small></div></div>']).join('\n            '),
   SCREENER_ROWS: screenerRows, KI_ROWS: kiRows, WATCH_ROWS: watch, FACTOR_ROWS: factorRows,
+  CANCEL_LINK: cancelLinkItem(read('konto/config.js')),
 };
 
 const out = read('scripts/home/index.template.html').replace(/%%([A-Z0-9_]+)%%/g, (m, k) => {

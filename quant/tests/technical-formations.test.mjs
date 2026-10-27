@@ -15,7 +15,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { seriesFromCloses } from "./technical-fixtures.mjs";
+import { seriesFromCloses, tradingDays } from "./technical-fixtures.mjs";
 
 const require = createRequire(import.meta.url);
 const Fm = require("../engines/technical/formations.js");
@@ -302,4 +302,37 @@ test("Kursluecke: konstruiert; ohne Volumenspitze keine Luecke, geschlossen per 
 test("Kursluecke: Sprung mit Split-Signatur oder extremem Faktor ist Datenverdacht, keine Luecke", () => {
   for (const r of [2, 3.03, 10, 0.5, 1 / 3, 0.01, 0.162, 6]) assert.equal(Fm.suspectJump(r), true, "Verdacht " + r);
   for (const r of [1.05, 1.3, 1.566, 0.7, 0.45, 2.5, 0.3]) assert.equal(Fm.suspectJump(r), false, "echt moeglich " + r);
+});
+
+/* ---------- 1.2.1: Befunde der Formationsvalidierung (docs/technical/FORMATION_VALIDATION.md) ---------- */
+function rowsSeries(hlc, start, volume = 1e6) {
+  const days = tradingDays(start, hlc.length);
+  const rows = hlc.map(([h, l, c], i) => ({ date: days[i], open: (h + l) / 2, high: h, low: l, close: c, volume }));
+  return Canonical.fromRows(rows, { instrumentId: "SYN", exchange: "SYN", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "1.2.1" });
+}
+
+test("B-F1: Wimpel, der vor seiner Erkennung invalidiert wurde, erscheint nicht (Geometrie AMZN 29.07.–14.08.2026)", () => {
+  /* Mast, kurze Konsolidierung, Bruch unter das Konsolidierungstief (Bar 10). Der Mast-Pivot ist erst an Bar 12
+     bestaetigt; bis 1.2.0 erschien ein INVALIDATED-Wimpel mit invalidatedAt vor detectedAt. */
+  const tail = [[232.82, 226.16, 226.65], [239.82, 231.06, 235.5], [273.23, 262.01, 271.58], [287.2, 278, 284.02], [281.07, 275.82, 277.42],
+    [282.79, 270.73, 272.65], [275.48, 271.06, 272.26], [278.31, 272.75, 274.48], [280.14, 273.6, 278.09], [278.84, 271.36, 272.27],
+    [273.46, 267.1, 267.28], [269.58, 264.7, 265.13], [265.81, 262.42, 262.65]];
+  const lead = Array.from({ length: 60 }, (_, i) => { const c = 226 + 3 * Math.sin(i * 0.9); return [c + 2, c - 2, c]; });
+  const s = rowsSeries(lead.concat(tail), "2026-04-01"), prep = Ctx.prepare(s);
+  for (let t = 60; t < s.length; t++) {
+    for (const f of Fm.analyzeAt(prep, t).formations) {
+      if (f.invalidatedAt) assert.ok(f.invalidatedAt >= f.detectedAt, f.id + " invalidiert vor Erkennung, t=" + t);
+      if (f.confirmedAt) assert.ok(f.confirmedAt >= f.detectedAt, f.id + " bestaetigt vor Erkennung, t=" + t);
+    }
+    assert.equal(Fm.analyzeAt(prep, t).formations.some((f) => /PENNANT/.test(f.type)), false, "kein Wimpel, t=" + t);
+  }
+});
+
+test("B-F2: ruhender Titel ohne Volumen (O = H = L = C, ATR 0) hat keine Kursluecke", () => {
+  /* Wie ADEX: ohne Volumen entfaellt die Volumenpruefung, eine Luecke der Groesse 0 erfuellte bis 1.2.0 die Regel ≥ 0,5 ATR. */
+  const flat = Array.from({ length: 80 }, () => [5.38, 5.38, 5.38]);
+  const s = rowsSeries(flat, "2026-06-01", null);
+  const types = Fm.analyzeAt(Ctx.prepare(s), s.length - 1).formations.map((f) => f.type);
+  assert.equal(types.includes("GAP_UP"), false);
+  assert.equal(types.includes("GAP_DOWN"), false);
 });
