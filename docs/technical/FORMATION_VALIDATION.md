@@ -196,3 +196,20 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 - Keine Aussage zur Wirksamkeit ändert sich: weiterhin nirgends signifikant.
 
 **Test:** In `technical-formations.test.mjs` prüft „B-F3“ an eingefrorenen echten Tagesbars von ADT, ABAT, ACVA und AIRG (`fixtures/technical-formations-visibility.json`): Für jeden Wimpel und jede Trendlinie in 20 Ständen muss die Formation am Erkennungstag sichtbar sein. Der Test schlägt auf 1.2.1 fehl und läuft auf 1.2.2 durch.
+
+### Absicherung vor dem Merge von 1.2.2 (Owner-Freigabe 27.10.2026)
+
+| Bedingung | Nachweis |
+|---|---|
+| Jede Formation ist am Erkennungstag mit den damaligen Daten erkennbar | Validator `NICHT_SICHTBAR_AM_ERKENNUNGSTAG` über alle 5.657 Titel: 0 Fälle (vorher 332). Test „B-F3“ an eingefrorenen echten Kursen; schlägt auf 1.2.1 fehl. |
+| ATR-Schwellen nur aus damals bekannter Information | Wimpel: Mast und Tempo an der ATR des frühestmöglichen Erkennungsbars (≤ Erkennungstag). Trendlinien: Steigung und Toleranz an der ATR des Erkennungsbars. Alle übrigen Regeln messen an der ATR des Auswertungsstands t; dass dadurch kein Rückdatieren entsteht, belegt die Sichtbarkeitsprüfung für alle 24 Typen (0 Fälle). |
+| Keine rückwirkend erzeugten Frühsignale | wie oben. Zusätzlich misst die historische Evidenz ab dem ersten sichtbaren Stand k mit Einstieg am Schluss von k, nie ab `detectedAt`. Neuer Test: der Messbeginn k liegt nie vor dem Erkennungstag. |
+| Erst am Ausbruchstag erkennbar ≠ früheres Einstiegssignal | Solche Formationen tragen `confirmedAtDetection` (Erkennung = Bestätigung am selben Tag). Im Screener steht dafür das Kennzeichen „B“, im Chart Studio „Erkannt nach Ausbruch“. Die Evidenz misst sie ab dem Ausbruchsschluss. Neuer Test: Das Kennzeichen ist genau dann gesetzt, wenn die Bestätigung nicht nach der Erkennung liegt. Eine historische Strategie, die Formationen als Einstieg nutzt, muss `confirmedAtDetection` beachten. Heute gibt es außer der beschreibenden Evidenz keine solche Strategie im Repository: `formations.js` wird nur von Screener, Chart Studio, Evidenz und Validator gelesen. |
+
+**Die vier verbleibenden Auffälligkeiten.** Sie sind bekannt und nicht als fehlerfrei gewertet.
+
+| Titel | Formation | Prüfung | Befund | Status |
+|---|---|---|---|---|
+| CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Formationspunkte mit Kurs 0; die Tagesbars enthalten Schlusskurse von 0 | **Datenfehler** in `technical-signals-v1`. Die Engine erkennt auf fehlerhaften Kursen. Abhilfe gehört in die Datenqualität: Bars mit Kurs ≤ 0 verwerfen oder den Titel sperren. Offen. |
+| CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Datenfehler**, offen. |
+| TECTP | BEAR_PENNANT@2026-01-22 | MAST_ZU_KURZ | Mast 1,87; 5 ATR am Erkennungsbar = 0,61 (erfüllt). Der Validator prüft zusätzlich gegen die ATR am Stichtag; die ist 0, der Titel ruht. | Regel am Erkennungstag eingehalten. Die Meldung kommt aus der strengeren Doppelprüfung des Validators bei einem ruhenden Titel (ATR 0 am Stichtag) und ist kein Engine-Fehler. Bleibt als Hinweis stehen. |
