@@ -1,12 +1,57 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const root = new URL("../../", import.meta.url);
 const C = require("../engines/backtest-artifact-consistency.js");
 const json = (p) => JSON.parse(readFileSync(new URL(p, root), "utf8"));
+const CTR = require("../engines/canonical-total-return.js");
+
+/* Erwartete Total-Return-Abdeckung, unabhaengig von den Zaehlern der Studie hergeleitet:
+   Universum = Wochenreihen in discover-series-long ohne Benchmark (Eingang von build-signal-backtest),
+   Regel   = ein Titel ist in der Studie, wenn er nicht im Ablehnungsbuch (quality.rejected) steht.
+   Das Buch muss je Titel genau einen Eintrag haben, nur Titel des Eingangsuniversums nennen und
+   in Gruenden und Fehlerklassen zu den gemeldeten Zaehlern passen. */
+const LONG_DIR = new URL("quant/data/market/discover-series-long/", root);
+function inputUniverse() {
+  const bm = json("quant/config/tiingo-scale.json").benchmark || {};
+  const ids = [];
+  for (const f of readdirSync(LONG_DIR).filter((f) => f.endsWith(".json") && f !== "index.json")) {
+    const j = JSON.parse(readFileSync(new URL(f, LONG_DIR), "utf8"));
+    if (j.securityId === bm.securityId || j.ticker === bm.symbol) continue;
+    ids.push(j.securityId);
+  }
+  return ids;
+}
+function expectedCoverage(universe, quality) {
+  const errors = [], ids = new Set(universe), study = quality.signalStudy || {};
+  if (ids.size !== universe.length) errors.push("UNIVERSE_DUPLICATE_SECURITY");
+  const rows = quality.rejected && Array.isArray(quality.rejected.rows) ? quality.rejected.rows : null;
+  if (!rows || JSON.stringify(quality.rejected.columns) !== JSON.stringify(["securityId", "reason", "date"])) return { errors: ["REJECTED_LEDGER_MISSING"] };
+  const seen = new Set(), reasons = {}, buckets = { REJECTED_DIVIDEND_GAP: 0, REJECTED_SPLIT_GAP: 0, REJECTED_IDENTITY: 0, REJECTED_OTHER: 0 };
+  for (const [id, reason] of rows) {
+    if (!id || !reason) errors.push("REJECTED_ROW_INCOMPLETE");
+    if (seen.has(id)) errors.push("REJECTED_DUPLICATE:" + id);
+    if (!ids.has(id)) errors.push("REJECTED_OUTSIDE_UNIVERSE:" + id);
+    seen.add(id);
+    reasons[reason] = (reasons[reason] || 0) + 1;
+    buckets[CTR.bucketOf(reason)]++;
+  }
+  /* Die Studie laeuft auf dem Universum ihres Laufs. Ein spaeterer Kursreihen-Lauf darf neue Titel
+     hinzufuegen (sie fehlen bis zum naechsten Studienlauf), aber keiner darf verschwinden. */
+  const titles = study.titles;
+  if (!(Number.isInteger(titles) && titles <= ids.size)) errors.push("STUDY_UNIVERSE_LARGER_THAN_INPUT");
+  /* Ohne veraltete Gesamtrenditen (RECONSTRUCTED == CONFIRMED_AFTER) stammt jede Ablehnung aus der
+     Rekonstruktion: dann muessen Gruende und Fehlerklassen exakt den gemeldeten Zaehlern entsprechen. */
+  if (study.TOTAL_RETURN_RECONSTRUCTED === study.TOTAL_RETURN_CONFIRMED_AFTER) {
+    if (JSON.stringify(Object.entries(reasons).sort()) !== JSON.stringify(Object.entries(study.reasons || {}).sort())) errors.push("REJECTED_REASONS_MISMATCH");
+    for (const b of Object.keys(buckets)) if (buckets[b] !== study[b]) errors.push("REJECTED_BUCKET_MISMATCH:" + b);
+  }
+  const withTotalReturn = titles - seen.size;
+  return { errors, titles, withTotalReturn, share: Math.round(withTotalReturn / titles * 1000) / 1000 };
+}
 
 test("signal readiness derives total return and SPY basis from matching canonical artifacts", () => {
   const signal = json("quant/data/product/signal-backtest-v1.json");
@@ -15,11 +60,14 @@ test("signal readiness derives total return and SPY basis from matching canonica
   const status = C.assertSignalSourceStatus(signal, quality);
   assert.equal(status.state, "AVAILABLE");
   assert.equal(status.returnType, "TOTAL_RETURN");
-  // Abdeckung aus dem Qualitaetsartefakt, nicht als feste Zahl: der Datenlauf
-  // erweitert das Universum (6036/6174 -> 6052/6190 am 27.10.2026).
-  assert.equal(status.coverage.withTotalReturn, quality.signalStudy.withTotalReturn);
-  assert.equal(status.coverage.titles, quality.signalStudy.titles);
-  assert.ok(status.coverage.withTotalReturn > 6000 && status.coverage.withTotalReturn <= status.coverage.titles);
+  // Abdeckung unabhaengig hergeleitet (Eingangsuniversum + Ablehnungsbuch), nicht als feste Zahl:
+  // der Datenlauf erweitert das Universum (6036/6174 -> 6052/6190 am 27.10.2026).
+  const expected = expectedCoverage(inputUniverse(), quality);
+  assert.deepEqual(expected.errors, []);
+  assert.equal(status.coverage.withTotalReturn, expected.withTotalReturn);
+  assert.equal(status.coverage.titles, expected.titles);
+  assert.equal(status.coverage.share, expected.share);
+  assert.equal(signal.source.titles, expected.withTotalReturn, "Studie rechnet genau auf den nicht abgelehnten Titeln");
   assert.ok(status.coverage.share >= status.coverage.minimumShare);
   assert.equal(status.coverage.unit, "SECURITY_PRICE_SERIES");
   assert.equal(status.studySchemaVersion, signal.schemaVersion);
@@ -80,4 +128,35 @@ test("source consistency does not change any backtest certification status", () 
   assert.equal(signalKind.status, "LIMITED");
   assert.ok(signalKind.gates.some((g) => g.id === "survivorship" && g.state === "FAIL"));
   assert.ok(signalKind.rules.every((r) => r.status !== "CERTIFIED"));
+});
+
+test("die unabhaengige Erwartung erkennt fehlende, zusaetzliche, doppelte und widerspruechliche Ablehnungen", () => {
+  const quality = json("quant/data/product/total-return-quality-v1.json"), universe = inputUniverse();
+  const base = expectedCoverage(universe, quality);
+  assert.deepEqual(base.errors, []);
+  const rows = (q) => q.rejected.rows;
+  const cases = [
+    ["Ablehnung fehlt", (q) => { rows(q).pop(); }, (e) => e.withTotalReturn === base.withTotalReturn + 1 && e.errors.includes("REJECTED_REASONS_MISMATCH")],
+    ["Ablehnung doppelt", (q) => { rows(q).push(rows(q)[0].slice()); }, (e) => e.errors.some((x) => x.startsWith("REJECTED_DUPLICATE:"))],
+    ["Titel ausserhalb des Universums", (q) => { rows(q).push(["ref_NICHT_IM_UNIVERSUM", "DIVIDEND_MISSING", null]); }, (e) => e.errors.some((x) => x.startsWith("REJECTED_OUTSIDE_UNIVERSE:"))],
+    ["Grund widerspricht Zaehler", (q) => { rows(q)[0][1] = "SPLIT_MISSING"; }, (e) => e.errors.includes("REJECTED_REASONS_MISMATCH")],
+    ["Zeile ohne Grund", (q) => { rows(q)[0][1] = null; }, (e) => e.errors.includes("REJECTED_ROW_INCOMPLETE")],
+    ["Buch fehlt", (q) => { delete q.rejected; }, (e) => e.errors.includes("REJECTED_LEDGER_MISSING")],
+    ["Studie groesser als Eingang", (q) => { q.signalStudy.titles = universe.length + 1; }, (e) => e.errors.includes("STUDY_UNIVERSE_LARGER_THAN_INPUT")]
+  ];
+  for (const [name, mutate, caught] of cases) {
+    const q = structuredClone(quality);
+    mutate(q);
+    assert.ok(caught(expectedCoverage(universe, q)), name);
+  }
+  /* Studienzaehler gegen die Erwartung: eine Studie, die einen Titel zu viel oder zu wenig meldet, faellt auf. */
+  const signal = json("quant/data/product/signal-backtest-v1.json");
+  for (const d of [-1, 1]) {
+    const s = structuredClone(signal), q = structuredClone(quality);
+    s.source.totalReturnCoverage.withTotalReturn += d; s.source.titles += d; q.signalStudy.withTotalReturn += d;
+    const st = C.signalSourceStatus(s, q);
+    assert.notEqual(st.state === "AVAILABLE" && st.coverage.withTotalReturn === base.withTotalReturn, true, "Abweichung " + d);
+  }
+  /* Ein neuer Titel im Eingang nach dem Studienlauf ist erlaubt (er fehlt bis zum naechsten Lauf). */
+  assert.deepEqual(expectedCoverage(universe.concat("ref_NEU_NACH_STUDIE"), quality).errors, []);
 });
