@@ -20,6 +20,19 @@ on:
             'scripts/dashboard/migrate_adjustment_semantics.py',
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   workflow_dispatch:
+    inputs:
+      recover_v8_archives:
+        description: 'Read-only V8 private archive assessment; zero provider requests'
+        type: boolean
+        default: false
+      probe_v8_r2_archives:
+        description: 'Read-only existing R2 index probe; four requests maximum'
+        type: boolean
+        default: false
+      recover_v8_r2_ca_cases:
+        description: 'Read-only registered fourteen split-vintage cases; 32 requests maximum'
+        type: boolean
+        default: false
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
 permissions:
@@ -152,3 +165,109 @@ jobs:
         run: |
           python3 scripts/dashboard/migrate_adjustment_semantics.py --check
           python3 scripts/dashboard/verify_adjustment_gate.py
+
+  v8-private-archive-assessment:
+    if: github.event_name == 'workflow_dispatch' && inputs.recover_v8_archives == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Exact existing main cache keys. Restore only: no mutation or cache save.
+      - id: discover-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-40047253956
+      - id: tiingo-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/tiingo2-cache.enc
+          key: tiingo2-encrypted-v1-main-39962041711
+      - id: sec-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .sec-cache
+            quant/data/sec/facts
+            .quant-state
+          key: sec-fundamentals-40087710308
+      - name: Open existing authenticated cache using its original context
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context main
+      - name: Assess existing archives offline with bounded memory
+        env:
+          V8_DISCOVER_CACHE_HIT: ${{ steps.discover-cache.outputs.cache-hit }}
+          V8_TIINGO_CACHE_HIT: ${{ steps.tiingo-cache.outputs.cache-hit }}
+          V8_SEC_CACHE_HIT: ${{ steps.sec-cache.outputs.cache-hit }}
+        run: node --max-old-space-size=2048 scripts/quant/audit-v8-archives.mjs .verification/v8-archives
+      - name: Assert canonical data remained unchanged
+        if: always()
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quant-v8-derived-archive-assessment
+          path: .verification/v8-archives/archive-assessment.json
+          retention-days: 14
+      - name: Remove ephemeral private archive contents
+        if: always()
+        run: rm -rf -- .market-cache .sec-cache .quant-state quant/data/sec/facts
+
+  v8-r2-archive-probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.probe_v8_r2_archives == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect existing History Store index metadata without writes
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/probe-v8-r2-archives.mjs .verification/v8-r2
+      - name: Assert canonical data remained unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant-v8-derived-r2-assessment
+          path: .verification/v8-r2/r2-assessment.json
+          retention-days: 14
+
+  v8-r2-corporate-action-cases:
+    if: github.event_name == 'workflow_dispatch' && inputs.recover_v8_r2_ca_cases == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reconstruct registered source-vintage conflicts without canonical writes
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node --max-old-space-size=2048 scripts/quant/recover-v8-r2-ca-cases.mjs .verification/v8-r2-ca
+      - name: Assert canonical data remained unchanged
+        if: always()
+        run: git diff --exit-code -- quant/data discover/data technical/data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quant-v8-derived-r2-ca-assessment
+          path: .verification/v8-r2-ca/r2-ca-assessment.json
+          retention-days: 14

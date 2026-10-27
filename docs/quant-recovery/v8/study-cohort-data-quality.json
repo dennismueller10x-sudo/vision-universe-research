@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "v8-study-cohort-price-consistency-1",
+  "checks": [
+    {
+      "securityId": "ref_A",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "d013cc431fdc1a69267e9005e191ea5e1a3070112ab0204c281f5f8fbfb23635",
+      "weeklySourceHash": "e4d85473f2137f55bc51988d38f1e376df81f1d420695e6dd978ebde1b09a09d"
+    },
+    {
+      "securityId": "ref_ARM",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "fed5887ad414c9ee8a18ffcb098984a1b87e3ad2b748317170399a2fa17a1d5f",
+      "weeklySourceHash": "034b3c2954fedf50bf4d4f90aa485c6d9c99fc8a6a84d2aa7e87ffc53cd0c2cc"
+    },
+    {
+      "securityId": "ref_GE",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "c74b8295a042b6f1189632b46e41e16b75c7202ec407916ad840f3ff4db163ab",
+      "weeklySourceHash": "1aff48982be392d78e230db759ea1b97bf8114e47d276bd82d80634e432e8256"
+    },
+    {
+      "securityId": "ref_IBM",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "cb8249938ed7b94577ed1540726c29e14e3f51f1e5ee7772c299ee5c301e5593",
+      "weeklySourceHash": "d5feb9b87083c749a6d767c74c003fa78cc2c0376cb34f9edd7073f943311235"
+    },
+    {
+      "securityId": "ref_JPM",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "dc833184dfb1865ebce04c5f2b0b40676bd81bdd708eac3bb0e76b384056b054",
+      "weeklySourceHash": "48119a4150aed22230271e5c1284fb1f6dba0378ab3b192b01aed49d0e7d5934"
+    },
+    {
+      "securityId": "ref_META",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "a8dee1b8b9da0ea8fa48e8acb84be1a03c1b56c2917a4c29aad1fb547e91a3d5",
+      "weeklySourceHash": "be97496deb0eecc3576c35b8c1b9794ecf859041ad0cd0a5f3b2d22d27f457cc"
+    },
+    {
+      "securityId": "ref_MSFT",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "a01a136e15685ced9ae7b20fdd62c71856b4bc9dd0c1b8f3cc5bee0418bf0def",
+      "weeklySourceHash": "6447c671f781fd58c36faaa2891a0072e7ce0f93e6e08a80db35008916ae2e1c"
+    },
+    {
+      "securityId": "ref_NVDA",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "7d630b0f72caa1b79dbc65a6a1676e50586209c3aed5b1692678d721efb6aa00",
+      "weeklySourceHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d"
+    },
+    {
+      "securityId": "ref_TSLA",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "9e3a94c1f1bd69cd5646ade4ca2bc5db567a9255bf9cc81496751dd69a7cb0d4",
+      "weeklySourceHash": "6783b982bb752bd8788e0c41f5f43f69479950f85b02f09228b414f3e46a47bd"
+    },
+    {
+      "securityId": "ref_WMT",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "55f4050f373548e74916f6d5ba880f71bc4b76213c5cf10ee3f655a826d659dc",
+      "weeklySourceHash": "f330ca7722b34cc8dc0513660cd04b2e45f37715c8c0d39c3cf90825b5c4861b"
+    },
+    {
+      "securityId": "ref_XOM",
+      "state": "CONSISTENT",
+      "compared": 56,
+      "mismatched": 0,
+      "dailySourceHash": "e301b300968a622d38eb18b168a3492dd57549bbe19eafbd9fa190c416535569",
+      "weeklySourceHash": "03a4940f7c8b59685fcc263d7a0ec41a86f61993e59a1d2d81b01754ad7d4347"
+    }
+  ],
+  "state": "PASS",
+  "scope": "Daily/weekly overlap of the eleven named study listings only; does not waive latest Main aggregate data-quality failures.",
+  "productionApproved": false
+}
