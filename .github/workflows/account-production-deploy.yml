@@ -85,6 +85,9 @@ jobs:
           PUB: ${{ secrets.VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY }}
           SB_URL: ${{ vars.VU_ACCOUNT_SUPABASE_URL }}
           OPS_ALERT_EMAIL: ${{ vars.VU_ACCOUNT_OPS_ALERT_EMAIL }}
+          # Optional: Adressen, die vor der oeffentlichen Freigabe registrieren duerfen (Owner-Test),
+          # kommagetrennt; nicht im Repository. Zusaetzlich noetig: registration_allowlist in der Datenbank.
+          REG_ALLOW: ${{ vars.VU_ACCOUNT_REGISTRATION_ALLOWLIST }}
         run: |
           set -euo pipefail
           [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
@@ -94,6 +97,11 @@ jobs:
           if [ -n "$OPS_ALERT_EMAIL" ]; then
             [[ "$OPS_ALERT_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "::error::VU_ACCOUNT_OPS_ALERT_EMAIL ist keine Adresse"; exit 1; }
             extra+=(--var "VU_OPS_ALERT_EMAIL:$OPS_ALERT_EMAIL")
+          fi
+          if [ -n "$REG_ALLOW" ]; then
+            [[ "$REG_ALLOW" =~ ^[A-Za-z0-9._%+@,-]+$ ]] || { echo "::error::VU_ACCOUNT_REGISTRATION_ALLOWLIST: nur Adressen, kommagetrennt"; exit 1; }
+            extra+=(--var "VU_REGISTRATION_ALLOWLIST:$REG_ALLOW")
+            echo "Positivliste fuer die Registrierung: $(tr ',' '\n' <<<"$REG_ALLOW" | grep -c @) Adresse(n)"
           fi
           npx --yes "$WRANGLER" deploy --env production "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g; s/sb_publishable_[A-Za-z0-9_-]+/<oeffentlich>/g'
       - name: Secrets zu Cloudflare (Supabase, Brevo)
