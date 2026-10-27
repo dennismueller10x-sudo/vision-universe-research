@@ -1,15 +1,15 @@
 {
  "schemaVersion": "ownership-signals-manifest-1.0.0",
  "engineVersion": "ownership-signals-1.0.0",
- "generatedAt": "2026-10-20T10:27:15.665Z",
- "asOf": "2026-10-20",
+ "generatedAt": "2026-10-27T11:17:53.097Z",
+ "asOf": "2026-10-27",
  "source": "SEC_EDGAR",
  "license": "SEC EDGAR-Daten sind gemeinfrei (public domain); abgeleitete Kennzahlen je Emittent.",
  "access": {
   "userAgent": "SEC_USER_AGENT (Kontaktadresse Pflicht)",
   "ratePerSecondMax": 9,
   "sourceMode": "network",
-  "requests": 1903
+  "requests": 7661
  },
  "sources": {
   "pages": {
@@ -85,22 +85,22 @@
    "datasets": 46,
    "missing": [],
    "coverageEnd": "2026-09-30",
-   "accessionsInUniverse": 433850,
-   "transactionsInUniverse": 960724,
-   "purchasesByInsiders": 173850,
+   "accessionsInUniverse": 434209,
+   "transactionsInUniverse": 961613,
+   "purchasesByInsiders": 174023,
    "implausibleValuesNulled": 73,
-   "salesByInsiders": 751053,
-   "issuersWithTransactions": 4259,
+   "salesByInsiders": 751765,
+   "issuersWithTransactions": 4262,
    "amendmentsSkipped": 41329,
    "planColumnSeen": true,
    "form4GapFill": {
-    "needed": 6129,
-    "cached": 4291,
-    "fetched": 1838,
+    "needed": 7210,
+    "cached": 0,
+    "fetched": 7210,
     "failed": 0,
     "cap": 25000,
     "from": "2026-10-01",
-    "to": "2026-10-20",
+    "to": "2026-10-27",
     "missingFilingDays": 0,
     "complete": true
    }
@@ -108,12 +108,12 @@
   "schedules": {
    "indexQuarters": 47,
    "indexMissing": [],
-   "issuersWithFilings": 5039,
-   "filings": 335219,
-   "resolved": 188172,
-   "ambiguous": 2688,
-   "filerOnly": 10697,
-   "notInUniverse": 133662
+   "issuersWithFilings": 5041,
+   "filings": 335455,
+   "resolved": 188312,
+   "ambiguous": 2689,
+   "filerOnly": 10707,
+   "notInUniverse": 133747
   },
   "thirteenF": {
    "datasets": 46,
@@ -191,12 +191,12 @@
     "2026-06-30"
    ]
   },
-  "sharesBaseIssuers": 4402,
-  "tickersWithAnySignal": 6115,
-  "tickersWithInsiderTx": 4406,
-  "tickersWithSchedule": 5192,
+  "sharesBaseIssuers": 4405,
+  "tickersWithAnySignal": 6116,
+  "tickersWithInsiderTx": 4409,
+  "tickersWithSchedule": 5194,
   "tickersWith13F": 5811,
-  "tickersWithSharesBase": 4402,
+  "tickersWithSharesBase": 4405,
   "historyRows": 536399
  },
  "datasets": {
@@ -919,5 +919,5 @@
   "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",
   "Aktienbasis ist eine Jahreszahl (verwaessert, gewichtet), keine taggenaue ausstehende Aktienzahl."
  ],
- "runtimeSeconds": 822
+ "runtimeSeconds": 2020
 }

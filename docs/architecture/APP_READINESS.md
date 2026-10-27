@@ -87,11 +87,11 @@ Vorbereitung:
 
 | Bereich | Stand |
 |---|---|
-| Authentication, Sessions | nicht gebaut; Modell: `userId` opaque, Token nur serverseitig |
+| Authentication, Sessions | gebaut, ausgeschaltet (ADR-006): Supabase Auth, Worker `vu-account` mit Cookie (Web) und Bearer (App) |
 | User Profile, Preferences | Schema (`user-data.schema.json#profile/preferences`) |
 | Watchlists, Saved Stocks, Portfolios | Schema, Migrationsquelle dokumentiert |
 | Notifications, Device Registration | Schema (`devices`, `notificationSettings`) + Ereignismodell (§6) |
-| Entitlements, Subscription State | Schema (`entitlements`); kein Anbieter angebunden |
+| Entitlements, Subscription State | gebaut (ADR-006): `effective_entitlements`, Stripe angebunden, Apple/Google vorbereitet |
 | Feature Flags | Schema; heute `quant/config/feature-gates.json` (global, nicht je Nutzer) |
 | Deep Links, App-Routing | §4 |
 

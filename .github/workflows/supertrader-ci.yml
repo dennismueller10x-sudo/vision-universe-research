@@ -34,6 +34,17 @@ jobs:
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       - name: Build auf den aktuellen kanonischen Artefakten (frisches Protokoll, temporaer)
         run: node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-build"
+      - name: Build wie im Produktivlauf (inkrementell auf einer Kopie, Heap wie supertrader-signals.yml)
+        # Belegt auf dem echten Runner, dass die Heap-Einstellung des Signallaufs
+        # reicht, und protokolliert den Standard des Runners. Schreibt nur in
+        # RUNNER_TEMP; die Einstellung wird aus supertrader-signals.yml gelesen.
+        run: |
+          set -euo pipefail
+          heap=$(grep -oE 'max-old-space-size=[0-9]+' .github/workflows/supertrader-signals.yml | head -1)
+          echo "Runner-Standard Heap-Grenze (MB): $(node -p 'Math.round(require("v8").getHeapStatistics().heap_size_limit/1048576)')"
+          echo "Signallauf-Einstellung: --$heap -> $(node --$heap -p 'Math.round(require("v8").getHeapStatistics().heap_size_limit/1048576)') MB"
+          cp -r supertrader "$RUNNER_TEMP/supertrader-inkrementell"
+          node "--$heap" scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-inkrementell"
       - name: Discovery-Regression (bestehende Tests)
         run: node --test "discover/tests/*.test.mjs"
       - name: Quant-2.0-Regression (bestehende Tests)
