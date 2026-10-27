@@ -28,10 +28,10 @@ class _PrefixClient(SECHttpClient):
     """Reads at most PREFIX_BYTES of a body (same convention as V8 prefix audits).
     A distinct URL fragment keys the cache so a prefix never masquerades as a full body."""
     def _urlopen(self, url, headers, timeout):
-        clean = url.split('#v9-prefix-')[0]
+        clean, _, size = url.partition('#v9-prefix-')
         request = urllib.request.Request(clean, headers={k: v for k, v in headers.items() if k.lower() != 'accept-encoding'})
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            return response.read(PREFIX_BYTES)
+            return response.read(int(size or PREFIX_BYTES))
 
 
 def _assert_private(path):
@@ -54,9 +54,10 @@ def sha256(b):
 def get(url, prefix=False):
     """Returns (bytes, meta). prefix=True reads at most PREFIX_BYTES (meta.prefixBytes)."""
     if prefix:
-        body = PREFIX_CLIENT.get_bytes(url + '#v9-prefix-%d' % PREFIX_BYTES)
-        meta = {'url': url, 'bytesRead': len(body), 'prefixLimit': PREFIX_BYTES,
-                'complete': len(body) < PREFIX_BYTES, 'sha256': sha256(body)}
+        size = PREFIX_BYTES if prefix is True else int(prefix)
+        body = PREFIX_CLIENT.get_bytes(url + '#v9-prefix-%d' % size)
+        meta = {'url': url, 'bytesRead': len(body), 'prefixLimit': size,
+                'complete': len(body) < size, 'sha256': sha256(body)}
     else:
         body = CLIENT.get_bytes(url)
         meta = {'url': url, 'bytesRead': len(body), 'complete': True, 'sha256': sha256(body)}
@@ -106,18 +107,38 @@ ATTR_RE = re.compile(r'(\w+(?::\w+)?)\s*=\s*"([^"]*)"')
 
 
 def cover_classes(body):
-    """Inline-XBRL cover facts per contextRef: dei:Security12bTitle, dei:TradingSymbol,
-    dei:SecurityExchangeName (+ dei:EntityRegistrantName, dei:EntityCentralIndexKey)."""
+    """Inline-XBRL cover facts per class row: dei:Security12bTitle, dei:TradingSymbol,
+    dei:SecurityExchangeName (+ dei:EntityRegistrantName, dei:EntityCentralIndexKey).
+    Rows are grouped by contextRef when every context carries at most one fact of each name;
+    otherwise (several classes tagged in one context, e.g. ADS + ordinary shares) by document order."""
     text = body.decode('utf-8', errors='replace')
-    by_ctx, entity = {}, {}
+    facts, entity = [], {}
     for attrs, inner in IX_RE.findall(text):
         a = dict(ATTR_RE.findall(attrs))
         name = a.get('name', '')
         if name in ('dei:Security12bTitle', 'dei:TradingSymbol', 'dei:SecurityExchangeName', 'dei:NoTradingSymbolFlag'):
-            by_ctx.setdefault(a.get('contextRef', ''), {})[name.split(':')[1]] = _text(inner)
+            facts.append((a.get('contextRef', ''), name.split(':')[1], _text(inner)))
         elif name in ('dei:EntityRegistrantName', 'dei:EntityCentralIndexKey', 'dei:DocumentType', 'dei:EntityFileNumber'):
             entity.setdefault(name.split(':')[1], _text(inner))
-    classes = [dict(ctx=k, **v) for k, v in by_ctx.items() if 'TradingSymbol' in v or 'Security12bTitle' in v]
+    seen, collision = set(), False
+    for ctx, name, _ in facts:
+        if (ctx, name) in seen:
+            collision = True
+        seen.add((ctx, name))
+    rows = []
+    if not collision:
+        by_ctx = {}
+        for ctx, name, val in facts:
+            if ctx not in by_ctx:
+                by_ctx[ctx] = {'ctx': ctx}
+                rows.append(by_ctx[ctx])
+            by_ctx[ctx][name] = val
+    else:
+        for ctx, name, val in facts:
+            if not rows or name in rows[-1]:
+                rows.append({'ctx': ctx, 'grouping': 'DOCUMENT_ORDER'})
+            rows[-1][name] = val
+    classes = [r for r in rows if 'TradingSymbol' in r or 'Security12bTitle' in r]
     return classes, entity
 
 
@@ -131,18 +152,35 @@ def quote(body, pattern, width=280):
     return text[s:s + width]
 
 
-NOT_COMMON_RE = re.compile(r'preferred|depositary|warrant|\bunits?\b|\bnotes?\b|debenture|rights?\b|senior|subordinated|trust preferred|% ', re.I)
-COMMON_RE = re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|shares of beneficial interest', re.I)
+KIND_RULES = [
+    ('DEPOSITARY_PREFERRED', re.compile(r'depositary.{0,200}preferred|preferred.{0,200}depositary', re.I)),
+    ('ADS', re.compile(r'american depositary|depositary shares|\bADS\b|\bADR', re.I)),
+    ('PREFERRED', re.compile(r'preferred|preference', re.I)),
+    ('WARRANT', re.compile(r'warrant', re.I)),
+    ('UNIT', re.compile(r'\bunits?\b', re.I)),
+    ('RIGHT', re.compile(r'\brights?\b', re.I)),
+    ('DEBT', re.compile(r'\bnotes?\b|debenture|\bbonds?\b|senior|subordinated', re.I)),
+    ('COMMON', re.compile(r'common stock|common shares|ordinary shares|class [a-z] common|subordinate voting shares|common share|shares of beneficial interest', re.I)),
+]
 
 
 def class_kind(title):
+    """Instrument class from an SEC cover 'Title of each class' (dei:Security12bTitle)."""
     if not title:
         return 'UNKNOWN'
-    if NOT_COMMON_RE.search(title):
-        return 'NOT_COMMON'
-    if COMMON_RE.search(title):
-        return 'COMMON'
+    for kind, rx in KIND_RULES:
+        if rx.search(title):
+            return kind
     return 'UNKNOWN'
+
+
+def norm_symbol(sym):
+    """Comparable symbol: provider 'DBRG_P_H' / SEC 'DBRG PRH' / map 'DBRG-PH' -> 'DBRGPH'."""
+    s = (sym or '').upper().strip()
+    s = re.sub(r'_P_', 'P', s)
+    s = re.sub(r'[\s.\-/]+PR(?=[A-Z]?$)', 'P', s)
+    s = re.sub(r'[\s.\-/]+P(?=[A-Z]$)', 'P', s)
+    return re.sub(r'[^A-Z0-9]', '', s)
 
 
 MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'

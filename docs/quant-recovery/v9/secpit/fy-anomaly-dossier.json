@@ -1,6 +1,6 @@
 {
  "schemaVersion": "v9-secpit-fy-dossier-1.0.0",
- "codeSha256": "70aef87bad78fca4beeb722279aa579e3dacec198117f998fc8f0eefd86aac59",
+ "codeSha256": "8388e217476a5f641e8a2f5010ec54ba0819bc70ccec54849592b07b1916a428",
  "reproduceMeta": {
   "populationCiks": 5479,
   "companyfactsZipSha256": "330324c4064779199c8ceaa2818d0b6fdf37ec4b1d786573601e8fadd82e7582",
@@ -16,12 +16,10 @@
   2027
  ],
  "population": {
-  "ciks": 5479,
+  "ciks": 2,
   "processed": 5438,
   "statusCounts": {
-   "OK": 5438,
-   "BULK_COMPANYFACTS_WITHOUT_CIK": 1,
-   "NO_BULK_COMPANYFACTS": 40
+   "null": 2
   }
  },
  "mechanism": {
@@ -1417,6 +1415,81 @@
    ]
   }
  ],
+ "plausibleRangeAnchorsVerified": [
+  {
+   "cik": "0001045609",
+   "tickers": [
+    "PLD",
+    "PLDGP"
+   ],
+   "accession": "0000950123-11-015736",
+   "filed": "2011-02-18",
+   "anchorPeriodEnd": "2008-12-31",
+   "label": 2010,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1045609/000095012311015736/amb-20101231.xml",
+   "instanceSha256": "225c06f62b5b893b687a0183a8b3b1fdef648ff06546d8c9672c52e37c913692",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2010"
+    ],
+    "DocumentPeriodEndDate": [
+     "2010-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "PIPELINE_ANCHOR_END_NOT_DOCUMENT_PERIOD_END"
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "accession": "0001137789-25-000157",
+   "filed": "2025-08-01",
+   "anchorPeriodEnd": "2025-06-27",
+   "label": 2027,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1137789/000113778925000157/stx-20250627_htm.xml",
+   "instanceSha256": "9b74621bd11e9e533707e8a991064022dae8b24fe9dc15a7052b7526f2eff5a4",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2027"
+    ],
+    "DocumentPeriodEndDate": [
+     "2025-06-27"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "FILER_DOCUMENT_FISCAL_YEAR_FOCUS_WRONG"
+  },
+  {
+   "cik": "0001552033",
+   "tickers": [
+    "TRU"
+   ],
+   "accession": "0001552033-15-000013",
+   "filed": "2015-03-30",
+   "anchorPeriodEnd": "2012-12-31",
+   "label": 2014,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1552033/000155203315000013/ck0001552033-20141231.xml",
+   "instanceSha256": "fb379436de90749f23f7f07bdde7bfafc934ff5c5f444eddd6e24165cd71a755",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2014"
+    ],
+    "DocumentPeriodEndDate": [
+     "2014-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "PIPELINE_ANCHOR_END_NOT_DOCUMENT_PERIOD_END"
+  }
+ ],
  "timelinesWithImplausibleLabel": [
   {
    "cik": "0000006207",
@@ -1888,8 +1961,8 @@
   }
  ],
  "requestStats": {
-  "requests": 22,
-  "cache_hits": 4,
+  "requests": 0,
+  "cache_hits": 32,
   "retries": 0,
   "deduplicated": 0
  },

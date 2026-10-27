@@ -25,6 +25,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import sec_lib as S  # noqa: E402
 import series_lib as L  # noqa: E402
+import resolve_ambiguous as R  # noqa: E402
 
 ROOT = L.ROOT
 MASTER = ROOT / 'quant/data/market/security-master/us-security-master.json'
@@ -166,6 +167,7 @@ def earliest_ticker_confirmation(ticker, cik, series_from):
 
 
 GLOBAL_EXCLUDE = re.compile(r'would have (had )?a value|reference range|implied|represented (an )?(aggregate )?value|exercise price|value of approximately|in value for each', re.I)
+COVERS = R.Covers()
 SCAN_FORMS = ('DEF 14A', 'DEFM14A', '424B3', '424B4', '424B5', 'S-4', 'S-4/A')
 
 
@@ -262,6 +264,8 @@ def build_case(case, tickers_rows):
         out['earliestSourcedTicker'] = earliest_ticker_confirmation(t, cik, doc['from'])
     else:
         out['earliestSourcedTicker'] = {'state': 'NOT_NEEDED_SERIES_STARTS_AFTER_CONFIRMED_TICKER'}
+    tl, _ = R.cover_timeline(case['seriesCik'], doc['ticker'], COVERS)
+    out['currentTickerCovers'] = tl
     out['caNotes'] = case.get('caNotes', [])
     out['issuer'] = case['issuer']
     out['instrumentClass'] = case['instrumentClass']
@@ -312,6 +316,19 @@ def decide(case_out, doc):
         unresolved.append('CLAIM_QUOTE_NOT_FOUND')
     if est.get('state') == 'NOT_FOUND':
         unresolved.append('NO_SOURCED_TICKER_CONFIRMATION')
+    # R5 current listing: latest iXBRL cover of the series issuer carries the series ticker as a common class,
+    # is recent (<= 200 days before asOf) and no Form 25/15 follows it.
+    tl = case_out['currentTickerCovers']
+    latest = tl.get('latest') or {}
+    if tl.get('state') != 'OK' or not latest.get('symbolFound'):
+        unresolved.append('CURRENT_TICKER_NOT_ON_LATEST_COVER')
+    else:
+        if S.class_kind((latest.get('cls') or {}).get('Security12bTitle')) != 'COMMON':
+            unresolved.append('LATEST_COVER_CLASS_NOT_COMMON')
+        if (datetime.date.fromisoformat(doc['asOf']) - datetime.date.fromisoformat(latest['filingDate'])).days > R.CURRENT_DAYS:
+            unresolved.append('LATEST_CONFIRMING_COVER_NOT_CURRENT')
+        if [x for x in tl['listingForms'] if x['form'] in ('25', '25-NSE', '15-12B', '15-12G', '15-15D') and x['filingDate'] > latest['filingDate']]:
+            unresolved.append('DELISTING_FORM_AFTER_LATEST_COVER')
     ca_dates = [n['date'] for n in case_out['caNotes']]
     for n in case_out['caNotes']:
         if n['date'] > start:

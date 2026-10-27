@@ -1,0 +1,47 @@
+{
+ "schemaVersion": "v9-secpit-independent-check-1.0.0",
+ "codeSha256": "103a33a433b970b89eae2f125efc5aee1a3fb71babd99c18be65062a8ada475f",
+ "A_fiscalYear": {
+  "entries": 20785,
+  "accessions": 42,
+  "issuers": 27,
+  "excelSerialRangeEntries": 3723,
+  "parity": {
+   "entries": true,
+   "accessions": true,
+   "issuers": true
+  }
+ },
+ "B_availability": {
+  "rows": 904,
+  "foundInCompanyfacts": 896,
+  "predicateHolds": 904,
+  "classAgreement": 60,
+  "apiChecked": 9,
+  "apiEqual": 9,
+  "byClassIndependent": {
+   "FUTURE_INSTANT_OTHER": 295,
+   "DURATION_ENTIRELY_AFTER_REPORT_PERIOD": 285,
+   "CONTEXT_YEAR_TYPO_ON_REPORT_PERIOD": 245,
+   "DURATION_STRADDLING_REPORT_PERIOD_END": 57,
+   "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": 10,
+   "COVER_DATE_YEAR_TYPO": 7,
+   "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": 5
+  },
+  "byClassParity": false,
+  "finalParity": true
+ },
+ "C_parity": {
+  "factsRecomputed": 1105,
+  "matches": 1105,
+  "instanceShaMatches": 60,
+  "parity": {
+   "facts": true,
+   "matches": true
+  }
+ },
+ "D_restatements": {
+  "restatementPairs": 793,
+  "parity": true
+ }
+}

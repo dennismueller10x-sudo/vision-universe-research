@@ -145,6 +145,45 @@ def main():
         entry["pattern"], entry["excelSerialDate"] = pattern(entry["companyfactsFy"][0], entry["reportDate"], pe)
         dossier.append(entry)
 
+    # anchors whose label is inside the window but >= 2 years away from the period end year:
+    # locate the annual accession that produced the anchor and verify it in its original instance
+    import zipfile
+    from common import PRIVATE
+    z = zipfile.ZipFile(PRIVATE / "bulk/companyfacts.zip")
+    anchors = []
+    for l in labels:
+        if not (FY_MIN <= l["label"] <= FY_MAX):
+            continue
+        cf = json.loads(z.read("CIK%s.json" % l["cik"]))
+        found = {}
+        for concepts in cf["facts"].values():
+            for body in concepts.values():
+                for rows in body["units"].values():
+                    for e in rows:
+                        if e.get("form") in ("10-K", "20-F", "40-F", "10-KT", "10-K405") and e.get("fp") == "FY" \
+                                and e.get("fy") == l["label"] and e.get("start") and e["end"] <= e["filed"]:
+                            days = (datetime.date.fromisoformat(e["end"]) - datetime.date.fromisoformat(e["start"])).days
+                            if 330 <= days <= 390:
+                                rec = found.setdefault(e["accn"], {"maxAnnualEnd": e["end"], "filed": e["filed"]})
+                                rec["maxAnnualEnd"] = max(rec["maxAnnualEnd"], e["end"])
+        for acc, rec in found.items():
+            if rec["maxAnnualEnd"] != l["periodEnd"]:
+                continue
+            inst = xbrl.fetch_instance(c, l["cik"], acc)
+            dei = {}
+            if inst["state"] == "OK":
+                ctx, _, facts = xbrl.parse_instance(inst["body"])
+                dei = {k: xbrl.dei_values(ctx, facts, k) for k in
+                       ("DocumentFiscalYearFocus", "DocumentPeriodEndDate", "DocumentType")}
+            claimed = dei.get("DocumentFiscalYearFocus") or []
+            pe = (dei.get("DocumentPeriodEndDate") or [None])[0]
+            anchors.append({"cik": l["cik"], "tickers": l["tickers"], "accession": acc, "filed": rec["filed"],
+                            "anchorPeriodEnd": l["periodEnd"], "label": l["label"],
+                            "instanceUrl": inst.get("url"), "instanceSha256": inst.get("sha256"), "dei": dei,
+                            "diagnosis": ("FILER_DOCUMENT_FISCAL_YEAR_FOCUS_WRONG" if str(l["label"]) in claimed and pe == l["periodEnd"]
+                                          else "PIPELINE_ANCHOR_END_NOT_DOCUMENT_PERIOD_END"
+                                          if pe and pe != l["periodEnd"] else "UNDETERMINED")})
+
     report = {
         "schemaVersion": "v9-secpit-fy-dossier-1.0.0",
         "codeSha256": sha256_file(pathlib.Path(__file__)),
@@ -180,6 +219,7 @@ def main():
         },
         "accessions": dossier,
         "pipelineLabelAnomalies": labels,
+        "plausibleRangeAnchorsVerified": anchors,
         "timelinesWithImplausibleLabel": bad_timelines,
         "committedConsumerBundlesWithImplausibleFy": consumer_bad_fy(),
         "requestStats": c.stats,

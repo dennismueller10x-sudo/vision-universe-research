@@ -76,42 +76,53 @@ def check_a(z, names, pop, dossier):
                        "issuers": len(issuers) == c["issuersWithImplausibleFy"]}}
 
 
-def klass(row):
-    """Independent re-implementation of the availability classes."""
-    def day(x):
-        return datetime.date(int(x[:4]), int(x[5:7]), int(x[8:10]))
-    end, avail = day(row["period_end"]), day(row["trueAvailable"])
-    rep = day(row["reportDate"]) if row.get("reportDate") else None
-    start = day(row["period_start"]) if row.get("period_start") else None
-    cover = "COVER_DATE_INSTANT" in (row.get("flags") or [])
-    if rep and rep > avail:
+DIVIDENDS = {"CommonStockDividendsPerShareDeclared", "CommonStockDividendsPerShareCashPaid", "PaymentsOfDividends",
+             "PaymentsOfDividendsCommonStock", "DividendsCommonStock", "DividendsCommonStockCash"}
+
+
+def _day(x):
+    return datetime.date(int(x[:4]), int(x[5:7]), int(x[8:10]))
+
+
+def _back(day, years):
+    y = day.year - years
+    try:
+        return day.replace(year=y)
+    except ValueError:
+        return datetime.date(y, day.month, 28)
+
+
+def klass(row, n_future_same_concept):
+    """Independent re-implementation of the v3 availability classes."""
+    end, avail = _day(row["period_end"]), _day(row["trueAvailable"])
+    rep = _day(row["reportDate"]) if row.get("reportDate") else None
+    start = _day(row["period_start"]) if row.get("period_start") else None
+    if rep is not None and rep > avail:
         return "FILING_ACCEPTED_BEFORE_ITS_REPORT_PERIOD_END"
-    for k in range(1, 11):
-        y = end.year - k
-        try:
-            s = end.replace(year=y)
-        except ValueError:
-            s = datetime.date(y, end.month, 28)
-        if rep and -7 <= (s - rep).days <= 7:
-            return "CONTEXT_YEAR_TYPO_ON_REPORT_PERIOD"
-        if cover and rep and rep <= s <= avail + datetime.timedelta(days=1):
-            return "COVER_DATE_YEAR_TYPO"
-    if cover:
+    if "COVER_DATE_INSTANT" in (row.get("flags") or []):
+        if rep is not None and any(rep <= _back(end, k) <= avail + datetime.timedelta(days=1) for k in range(1, 11)):
+            return "COVER_DATE_YEAR_SHIFT"
         return "COVER_DATE_AFTER_ACCEPTANCE_LE_31D" if (end - avail).days <= 31 else "COVER_DATE_AFTER_ACCEPTANCE_GT_31D"
-    if start is None:
-        if rep and end.month == rep.month and abs(end.day - rep.day) <= 3:
-            return "FUTURE_INSTANT_SAME_MONTHDAY_AS_REPORT_PERIOD"
-        return "FUTURE_INSTANT_OTHER"
-    if rep and start > rep:
-        return "DURATION_ENTIRELY_AFTER_REPORT_PERIOD"
-    if rep and start <= rep < end:
+    if start is not None and row["concept"] in DIVIDENDS:
+        return "DIVIDEND_DECLARED_FOR_LATER_PERIOD"
+    if n_future_same_concept > 1:
+        return "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS"
+    kind = "DURATION" if start is not None else "INSTANT"
+    if start is not None and rep is not None and start <= rep:
         return "DURATION_STRADDLING_REPORT_PERIOD_END"
-    return "DURATION_OTHER"
+    if rep is not None and min(abs((_back(end, k) - rep).days) for k in range(1, 11)) <= 7:
+        return "SINGLE_FUTURE_" + kind + "_YEAR_SHIFT_OF_REPORT_PERIOD"
+    if rep is not None and _back(rep, 1) - datetime.timedelta(days=7) <= _back(end, 1) < rep:
+        return "SINGLE_FUTURE_" + kind + "_WITHIN_12M_AFTER_REPORT_PERIOD"
+    return "SINGLE_FUTURE_" + kind + "_OTHER"
 
 
 def check_b(z, names, private, avail):
-    found = predicate = class_ok = api_checked = api_equal = 0
+    found = predicate = class_ok = api_checked = api_equal = cover_redated = 0
     by_class = {}
+    futures = {}
+    for row in avail["rows"]:
+        futures.setdefault((row["accession"], row["taxonomy"], row["concept"]), set()).add(row["period_end"])
     cf_cache = {}
     for row in avail["rows"]:
         cik = row["cik"]
@@ -122,6 +133,12 @@ def check_b(z, names, private, avail):
         hit = any(e.get("accn") == row["accession"] and e.get("end") == row["period_end"] and
                   e.get("start") == row["period_start"] and float(e["val"]) == float(row["value"])
                   for rows in (body.get("units") or {}).values() for e in rows)
+        if not hit and row["taxonomy"] == "dei":
+            # cover-date instants are re-dated by the pipeline; match on accession + value
+            redated = any(e.get("accn") == row["accession"] and float(e["val"]) == float(row["value"])
+                          for rows in (body.get("units") or {}).values() for e in rows)
+            cover_redated += redated
+            hit = redated
         found += hit
         api = cache_body(private, "https://data.sec.gov/submissions/CIK%s.json" % cik)
         if api is not None:
@@ -130,11 +147,11 @@ def check_b(z, names, private, avail):
                 api_checked += 1
                 api_equal += recent["acceptanceDateTime"][recent["accessionNumber"].index(row["accession"])] == row["trueAvailable"]
         predicate += str(row["trueAvailable"])[:10] < row["period_end"]
-        k = klass(row)
+        k = klass(row, len(futures[(row["accession"], row["taxonomy"], row["concept"])]))
         class_ok += k == row["class"]
         by_class[k] = by_class.get(k, 0) + 1
     return {"rows": len(avail["rows"]), "foundInCompanyfacts": found, "predicateHolds": predicate,
-            "classAgreement": class_ok, "apiChecked": api_checked, "apiEqual": api_equal,
+            "classAgreement": class_ok, "coverDateRowsMatchedByValueOnly": cover_redated, "apiChecked": api_checked, "apiEqual": api_equal,
             "byClassIndependent": dict(sorted(by_class.items(), key=lambda kv: -kv[1])),
             "byClassParity": by_class == avail["byClass"], "finalParity": len(avail["rows"]) == avail["final"]}
 
@@ -188,6 +205,29 @@ def check_c(z, private, parity):
             "parity": {"facts": compared == c["factsCompared"], "matches": match == c["MATCH"]}}
 
 
+def check_e(private, verification):
+    verdicts = {}
+    parsed = {}
+    for row in verification["rows"]:
+        if row.get("instanceUrl") not in parsed:
+            body = cache_body(private, row["instanceUrl"]) if row.get("instanceUrl") else None
+            parsed[row.get("instanceUrl")] = parse_dom(body) if body else None
+        facts = parsed[row.get("instanceUrl")]
+        if facts is None:
+            v = "ORIGINAL_NOT_RETRIEVED"
+        else:
+            tax, con = row["concept"].split(":", 1)
+            target = Decimal(str(row["value"]))
+            if target in facts.get((tax, con, row["period_start"], row["period_end"]), set()):
+                v = "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE"
+            else:
+                ends = [k[3] for k, vals in facts.items() if k[0] == tax and k[1] == con and target in vals]
+                v = ("FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE"
+                     if ends and all(e > row["trueAvailable"][:10] for e in ends) else "NOT_FOUND_IN_ORIGINAL_INSTANCE")
+        verdicts[v] = verdicts.get(v, 0) + 1
+    return {"rows": len(verification["rows"]), "verdicts": verdicts, "parity": verdicts == verification["verdicts"]}
+
+
 def check_d(z, parity_reg, pairs):
     forms = {"10-K", "10-Q", "10-K/A", "10-Q/A"}
     concepts = [c.split(":", 1) for c in parity_reg["concepts"]]
@@ -221,6 +261,7 @@ def main():
            "A_fiscalYear": check_a(z, names, pop, ev("fy-anomaly-dossier.json")),
            "B_availability": check_b(z, names, args.private, ev("availability-before-period-end.json")),
            "C_parity": check_c(z, args.private, ev("parity-results.json")),
+           "E_availabilitySample": check_e(args.private, ev("availability-sample-verification.json")),
            "D_restatements": check_d(z, ev("parity-registration.json"), ev("parity-restatement-pairs.json"))}
     with open(os.path.join(args.evidence, "independent-check.json"), "w") as handle:
         json.dump(out, handle, indent=1)

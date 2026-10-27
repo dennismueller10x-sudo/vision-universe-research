@@ -190,6 +190,20 @@ def sb_boot(sums, counts, b):
     assert (cnt > 0).all(); return list(acc / cnt)
 
 
+_det = {}
+
+
+def detections(i, c):
+    """NEW_52W_HIGH: close above max of prior 52 closes and not so in the prior week; 13-week cooldown (last hit resets)."""
+    if i in _det: return _det[i]
+    out = []; last = -10 ** 9
+    for k in range(53, len(c)):
+        if not (c[k] > max(c[k - 52:k]) and not (c[k - 1] > max(c[k - 53:k - 1]))): continue
+        if k - last >= 13: out.append(k)
+        last = k
+    _det[i] = out; return out
+
+
 def holm(ps):
     order = sorted(range(len(ps)), key=lambda i: (ps[i], i)); adj = [0.0] * len(ps); prev = 0.0
     for rank, i in enumerate(order): prev = max(prev, min(1.0, (len(ps) - rank) * ps[i])); adj[i] = prev
@@ -253,12 +267,7 @@ def main(private, root, out_path=None):
                 ev = []
                 for i in ids:
                     pts = docs[i]['points']; c = [p[1] for p in pts]; dates = [p[0] for p in pts]; start = mrow[i][0]['start_date']
-                    last = -10 ** 9
-                    for k in range(53, len(c)):
-                        m = max(c[k - 52:k]); mp = max(c[k - 53:k - 1])
-                        if not (c[k] > m and not (c[k - 1] > mp)): continue
-                        take = k - last >= 13; last = k
-                        if not take: continue
+                    for k in detections(i, c):
                         sd = dates[k]
                         if not (WINDOW[0] <= sd <= WINDOW[1]): continue
                         e = {'listing': i, 'signalDate': sd, 'completed': False}

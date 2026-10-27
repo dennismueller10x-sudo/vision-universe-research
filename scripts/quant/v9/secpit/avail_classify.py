@@ -42,35 +42,50 @@ def shift_years(day, years):
         return day.replace(year=day.year + years, day=28)
 
 
-def classify(o):
-    """Return (class, legitimacy) for one observation with availability < period_end."""
+DIVIDEND_CONCEPTS = {"CommonStockDividendsPerShareDeclared", "CommonStockDividendsPerShareCashPaid",
+                     "PaymentsOfDividends", "PaymentsOfDividendsCommonStock", "DividendsCommonStock",
+                     "DividendsCommonStockCash"}
+
+
+def classify(o, future_ends):
+    """Return (class, assessment) for one observation with availability < period_end.
+
+    `future_ends` = distinct period ends after availability for the same
+    accession and concept. Classes are structural; whether a context is a filer
+    error is decided only by the original-instance verification.
+    """
     end = d(o["period_end"])
     avail = d(o["trueAvailable"])
     report = d(o["reportDate"]) if o.get("reportDate") else None
     start = d(o["period_start"]) if o.get("period_start") else None
     cover = "COVER_DATE_INSTANT" in (o.get("flags") or [])
     if report is not None and report > avail:
-        return "FILING_ACCEPTED_BEFORE_ITS_REPORT_PERIOD_END", "DATA_ERROR_FILING_METADATA_OR_EARLY_FILING"
-    # whole-year typo: shifting the context by k years lands on/near the report period or before acceptance
-    for k in range(1, 11):
-        shifted = shift_years(end, -k)
-        if report is not None and abs((shifted - report).days) <= 7:
-            return "CONTEXT_YEAR_TYPO_ON_REPORT_PERIOD", "DATA_ERROR_FILER_CONTEXT_DATE"
-        if cover and report is not None and report <= shifted <= avail + datetime.timedelta(days=1):
-            return "COVER_DATE_YEAR_TYPO", "DATA_ERROR_FILER_CONTEXT_DATE"
+        return "FILING_ACCEPTED_BEFORE_ITS_REPORT_PERIOD_END", "FILING_METADATA_REVIEW"
     if cover:
+        for k in range(1, 11):
+            shifted = shift_years(end, -k)
+            if report is not None and report <= shifted <= avail + datetime.timedelta(days=1):
+                return "COVER_DATE_YEAR_SHIFT", "FILER_CONTEXT_DATE_ERROR_CANDIDATE"
         gap = (end - avail).days
         return ("COVER_DATE_AFTER_ACCEPTANCE_LE_31D" if gap <= 31 else "COVER_DATE_AFTER_ACCEPTANCE_GT_31D",
-                "DATA_ERROR_FILER_CONTEXT_DATE_OR_FORWARD_DATED_COVER")
-    if start is None:
-        if report is not None and end.month == report.month and abs(end.day - report.day) <= 3:
-            return "FUTURE_INSTANT_SAME_MONTHDAY_AS_REPORT_PERIOD", "FORWARD_SCHEDULE_OR_YEAR_TYPO_REVIEW"
-        return "FUTURE_INSTANT_OTHER", "FORWARD_DATED_INSTANT_REVIEW"
-    if report is not None and start > report:
-        return "DURATION_ENTIRELY_AFTER_REPORT_PERIOD", "FORWARD_LOOKING_OR_DECLARED_FOR_NEXT_PERIOD"
-    if report is not None and start <= report < end:
-        return "DURATION_STRADDLING_REPORT_PERIOD_END", "PERIOD_MISDATED_OR_DECLARED_FOR_CURRENT_PERIOD"
-    return "DURATION_OTHER", "REVIEW"
+                "FILER_CONTEXT_DATE_ERROR_CANDIDATE")
+    if o["concept"] in DIVIDEND_CONCEPTS and start is not None:
+        return "DIVIDEND_DECLARED_FOR_LATER_PERIOD", "LEGITIMATE_DECLARATION_NOT_A_REPORTED_PERIOD"
+    if len(future_ends) >= 2:
+        return "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS", "LEGITIMATE_FORWARD_DISCLOSURE_NOT_A_REPORTED_PERIOD"
+    year_shift = report is not None and any(abs((shift_years(end, -k) - report).days) <= 7 for k in range(1, 11))
+    # the date lies within twelve months after the report period (one year back it would
+    # sit in the prior-year comparative window); verification decides typo vs forward fact
+    comparative = report is not None and \
+        shift_years(report, -1) - datetime.timedelta(days=7) <= shift_years(end, -1) < report
+    kind = "INSTANT" if start is None else "DURATION"
+    if start is not None and report is not None and start <= report:
+        return "DURATION_STRADDLING_REPORT_PERIOD_END", "REQUIRES_ORIGINAL_CONTEXT"
+    if year_shift:
+        return "SINGLE_FUTURE_%s_YEAR_SHIFT_OF_REPORT_PERIOD" % kind, "REQUIRES_ORIGINAL_CONTEXT"
+    if comparative:
+        return "SINGLE_FUTURE_%s_WITHIN_12M_AFTER_REPORT_PERIOD" % kind, "REQUIRES_ORIGINAL_CONTEXT"
+    return "SINGLE_FUTURE_%s_OTHER" % kind, "REQUIRES_ORIGINAL_CONTEXT"
 
 
 def load_candidates(repro):
@@ -123,9 +138,12 @@ def cmd_classify(args):
             r["trueAvailable"] = true_avail
             r["availabilitySource"] = "API_BOUNDARY"
             final.append(r)
+    future = {}
+    for r in final:
+        future.setdefault((r["accession"], r["taxonomy"], r["concept"]), set()).add(r["period_end"])
     classes = {}
     for r in final:
-        r["class"], r["legitimacy"] = classify(r)
+        r["class"], r["legitimacy"] = classify(r, future[(r["accession"], r["taxonomy"], r["concept"])])
         classes.setdefault(r["class"], 0)
         classes[r["class"]] += 1
     def tally(key):
@@ -261,7 +279,35 @@ def cmd_verify(args):
             row["contextsWithSameDates"] = hits[:5]
             row["verdict"] = ("CONFIRMED_IN_FILER_ORIGINAL_INSTANCE" if any(x["valueEqual"] for x in hits) else
                               "DATE_PRESENT_VALUE_DIFFERS" if hits else "NOT_FOUND_IN_ORIGINAL_INSTANCE")
+            if row["verdict"] == "NOT_FOUND_IN_ORIGINAL_INSTANCE" and s["taxonomy"] == "dei":
+                # normalize.period_end_for_cover_date / assign_cover_date re-date a cover-date instant;
+                # look for the filer's raw cover date carrying the same value
+                raw = sorted({ctx[f["context"]]["end"] for f in same_concept
+                              if f["context"] in ctx and not ctx[f["context"]]["dimensional"]
+                              and f["value"] == Decimal(str(s["value"]))})
+                row["rawCoverDates"] = raw
+                if raw and all(x > s["trueAvailable"][:10] for x in raw):
+                    row["verdict"] = "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE"
+                elif raw:
+                    row["verdict"] = "PIPELINE_REDATED_COVER_DATE_INTO_FUTURE"
             row["dei"] = dei
+            # counterpart of the same concept k years earlier (k = 1..3): absent -> the future date
+            # stands in for a missing comparative/current context (date error); present with a
+            # different value -> a separate forward-dated fact
+            target = Decimal(str(s["value"]))
+            counterpart = {}
+            for k in (1, 2, 3):
+                e_k = shift_years(d(s["period_end"]), -k).isoformat()
+                s_k = shift_years(d(s["period_start"]), -k).isoformat() if s["period_start"] else None
+                vals = [f["value"] for f in same_concept
+                        if f["context"] in ctx and not ctx[f["context"]]["dimensional"]
+                        and abs((d(ctx[f["context"]]["end"]) - d(e_k)).days) <= 7
+                        and ((s_k is None and ctx[f["context"]]["instant"]) or
+                             (s_k is not None and ctx[f["context"]]["start"] and
+                              abs((d(ctx[f["context"]]["start"]) - d(s_k)).days) <= 7))]
+                counterpart["minus%dy" % k] = ("ABSENT" if not vals else "SAME_VALUE" if target in vals
+                                               else "DIFFERENT_VALUE")
+            row["counterpart"] = counterpart
             # same-concept contexts in the instance on the report period (to see the "intended" date)
             row["sameConceptPeriodEnds"] = sorted({ctx[f["context"]]["end"] for f in same_concept
                                                    if f["context"] in ctx and not ctx[f["context"]]["dimensional"]})[:12]
@@ -272,13 +318,20 @@ def cmd_verify(args):
     for r in out:
         counts.setdefault(r["class"], {}).setdefault(r["verdict"], 0)
         counts[r["class"]][r["verdict"]] += 1
+    counterpart = {}
+    for r in out:
+        if "counterpart" in r:
+            key = r["counterpart"]["minus1y"]
+            counterpart.setdefault(r["class"], {}).setdefault(key, 0)
+            counterpart[r["class"]][key] += 1
     report = {"schemaVersion": "v9-secpit-avail-sample-verification-1.0.0",
               "registrationSha256": reg["registrationSha256"], "codeSha256": sha256_file(pathlib.Path(__file__)),
               "sample": len(out), "accessions": len(cache),
               "verdicts": {v: sum(r["verdict"] == v for r in out) for v in sorted({r["verdict"] for r in out})},
-              "verdictsByClass": counts, "requestStats": c.stats, "rows": out, "productionApproved": False}
+              "verdictsByClass": counts, "counterpartMinus1yByClass": counterpart, "requestStats": c.stats, "rows": out, "productionApproved": False}
     write_json(ev / "availability-sample-verification.json", report)
-    print(json.dumps({k: report[k] for k in ("sample", "accessions", "verdicts", "verdictsByClass")}, indent=1))
+    print(json.dumps({k: report[k] for k in ("sample", "accessions", "verdicts", "verdictsByClass",
+                                             "counterpartMinus1yByClass")}, indent=1))
 
 
 def main():
