@@ -1,0 +1,751 @@
+{
+  "schemaVersion": "quant-v6-assessment-1.0.0",
+  "overallStatus": "V6_IMPLEMENTED_WITH_EVIDENCE_GAPS",
+  "implementationScope": "See BACKTEST_V6_CERTIFICATION_MATRIX.md; event studies are not funded portfolios.",
+  "areas": [
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "SAME_STOCK_REPLAY",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "f355597de097f6735411f8b7c54453ba5b0817d9036061f4877abdb6943b1721"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "PATTERN_EVIDENCE",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "0656f3de140f9a70b95dacfe9aff020065fe64fa6e3f254468378da064a877f2"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "SIGNAL_BACKTEST",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "7a109a749c9cd745cab15966418944a1203c06920bc180da67eabbb714ee4db4"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "SETUP_BACKTEST",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "7de77af31ab584dd50eaae8daecb90d29087bdcde781c28461b2924ceca12c88"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "STRATEGY_BACKTEST",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group portfolio and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "7d02c6c6515adf9f1bb7bbf9219c705451c3bc5a2d5e5676c855b73b4f60f6c9"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "FACTOR_RANKING_BACKTEST",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "FAIL",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "FAIL",
+          "reason": "Complete required historical population/PIT/lifecycle sources not qualified"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "bab8846ea5bdcca359662e7c1b532c9a23f04177ebeab3bce87353020d716525"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "MONTE_CARLO",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group monte-carlo and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "bb98da72873b6acc3fc3de6d942dd6b2f514106072312cf625ef31ffb976d1e7"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "WALK_FORWARD",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group validation and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "49b3c735630289362e6b3b039919532e43c37e533a83ae11a5ba1145a827e7bb"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "OUT_OF_SAMPLE",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group validation and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "5e70911007aef7b1153defd86957e0381ed494b4333dd27bcf07d5d6dac069e3"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "MARKET_REGIME",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "cdbd8902a03495e20ac4cabbb1045f142a4595f05d48f94cd16ee8888bb9cc44"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "PARAMETER_SENSITIVITY",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group validation and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "749f561414a493012374eb3cacd25acc6437fa19be748b9f45fe7f9634ee466f"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "EVENT_DRIVEN",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group studies and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "90ec3d724e2fddcf8a6ebe6ec9c9e8d0fe87d74484c2068f77b0e3857ef95cbf"
+    },
+    {
+      "schemaVersion": "quant-research-contract-1.0.0",
+      "area": "PORTFOLIO_REBALANCING",
+      "scope": "NAMED_OFFLINE_BASELINE; no override of legacy active certification gates",
+      "axes": {
+        "IMPLEMENTATION_COMPLETE": "PASS",
+        "DATA_ELIGIBLE": "UNKNOWN",
+        "METHOD_VALIDATED": "UNKNOWN",
+        "INDEPENDENT_EVIDENCE": "UNKNOWN",
+        "ECONOMIC_ADVANTAGE": "UNKNOWN",
+        "PRODUCTION_APPROVED": "NOT_APPROVED"
+      },
+      "checks": [
+        {
+          "id": "engine",
+          "axis": "IMPLEMENTATION_COMPLETE",
+          "state": "PASS",
+          "reason": "Named offline baseline implemented; shared group portfolio and combined 113 new tests passed; see scope limits in certification matrix.",
+          "artifact": "validation-summary.json",
+          "artifactHash": "cc5efd17aa8d9fd90a9f794bd0c43b06958498afba798d320d8252a728d9818b"
+        },
+        {
+          "id": "historical-source",
+          "axis": "DATA_ELIGIBLE",
+          "state": "UNKNOWN",
+          "reason": "Conditional source contract validated; full study source suitability requires audit"
+        },
+        {
+          "id": "formal-method",
+          "axis": "METHOD_VALIDATED",
+          "state": "UNKNOWN",
+          "reason": "Calculations independently checked; formal data/study-specific methodology approval remains open"
+        },
+        {
+          "id": "unseen-confirmation",
+          "axis": "INDEPENDENT_EVIDENCE",
+          "state": "UNKNOWN",
+          "reason": "No new independently qualified untouched confirmation cohort"
+        },
+        {
+          "id": "net-edge",
+          "axis": "ECONOMIC_ADVANTAGE",
+          "state": "UNKNOWN",
+          "reason": "No independently established preregistered economic advantage"
+        },
+        {
+          "id": "release",
+          "axis": "PRODUCTION_APPROVED",
+          "state": "FAIL",
+          "reason": "Explicitly not approved"
+        }
+      ],
+      "certification": "NOT_CERTIFIED",
+      "productionApproved": false,
+      "interpretation": "EVIDENCE_ASSESSMENT_DOES_NOT_OVERRIDE_ACTIVE_GATES",
+      "resultHash": "e5edc5d22dd36541bc479d3c720ac42333a9ac02f0a7a61c417fb39f491278e8"
+    }
+  ],
+  "activeCertifiedKinds": 0,
+  "productionApproved": false,
+  "reportHash": "89644c987038269d81209787b3a4746acf23d41c23a0df771dadb3af2979b422"
+}

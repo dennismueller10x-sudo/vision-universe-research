@@ -33,6 +33,7 @@ const Row = require(join(root, "quant/engines/technical/screen-row.js"));
 const Query = require(join(root, "quant/engines/technical/technical-query.js"));
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
+const Model = require(join(root, "technical/engine/model.js"));
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -71,7 +72,7 @@ export function build(options = {}) {
   const spy = existsSync(spyPath) ? readJSON(spyPath) : null;
   const benchmark = spy && Array.isArray(spy.points) ? { dates: spy.points.map((p) => p[0]), close: spy.points.map((p) => p[1]), asOf: spy.asOf } : null;
 
-  const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_]{2}\.json\.gz$/.test(f)).sort();
+  const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f))  /* "C-", "F-", "T-": Vorzugsaktien (product-materialization.shardKey) */.sort();
   const only = options.tickers ? new Set(options.tickers) : null;
   const rows = [], skipped = {};
   let generatedFrom = null;
@@ -97,7 +98,8 @@ export function build(options = {}) {
           bars: inst.bars, series: seriesOf(ticker, inst.bars),
           features: bundle && bundle.featuresAtCutoff || null,
           structure: bundle && bundle.structure && bundle.structure.state || null,
-          weekly, benchmark, universeAsOf: options.universeAsOf || null
+          weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, chartSeries: bundle && bundle.chartSeries || null,
+          benchmark, universeAsOf: options.universeAsOf || null
         });
         if (!bundle) row.noBundle = true;
         rows.push(row);
@@ -114,6 +116,10 @@ export function build(options = {}) {
   rows.forEach((r) => { r.fresh = r.asOf === asOf; });
   rows.sort((a, b) => (a.s < b.s ? -1 : a.s > b.s ? 1 : 0));
 
+  /* Quelle der Wochen-/Monatswerte nur als Zaehlung in meta, nicht als Spalte. */
+  const mtfFromHistory = rows.filter((r) => r.mtfSource === "DAILY_HISTORY").length;
+  rows.forEach((r) => { delete r.mtfSource; });
+
   const versions = { row: Row.ROW_VERSION, query: Query.QUERY_VERSION, indicators: Indicators.INDICATORS_VERSION, formations: Formations.ENGINE_VERSION };
   const artifact = { schemaVersion: SCHEMA_VERSION, asOf, generatedFrom, versions, benchmark: benchmark ? { ticker: "SPY", asOf: benchmark.asOf } : null,
     count: rows.length, cols: toColumns(rows) };
@@ -123,16 +129,18 @@ export function build(options = {}) {
     schemaVersion: "vu-technical-meta-1.0.0", asOf, generatedFrom, versions,
     counts: { rows: rows.length, fresh: rows.filter((r) => r.fresh).length, stale: rows.filter((r) => !r.fresh).length,
       withVolume: rows.filter((r) => r.hasVolume).length, withWeekly: rows.filter((r) => r.weeks >= 40).length,
-      with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length },
+      with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length,
+      suspectJump60: rows.filter((r) => r.suspectJumpAt).length,
+      weeklyMonthlyFromDailyHistory: mtfFromHistory },
     skipped, formations: formationCounts,
     sources: {
       daily: "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
-      weekly: "quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
+      weekly: "quant/data/product/technical-signals-v1 bundle.multiTimeframe (Wochen/Monat aus der vollen Tageshistorie, OHLCV); Ersatz: quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
       benchmark: "quant/data/market/discover-series/ref_SPY.json",
       names: "quant/data/product/universe-list-v1.json.gz"
     },
     producer: "scripts/technical/world/build-screener.mjs",
-    paths: { screener: "/technical/data/screener-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
+    paths: { screener: "/technical/data/screener-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
   };
   return { artifact, meta };
 }
@@ -147,6 +155,13 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "screener-v1.json"), JSON.stringify(artifact));
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
+  writeFileSync(join(out, "index-v1.json"), JSON.stringify(Model.homeIndex(artifact)));
   console.log(`Technical-Screener: ${meta.counts.rows} Titel, Stand ${meta.asOf}, ${meta.runtimeSec}s -> ${out}`);
+  /* Historische Evidenz der Formationen (beschreibend, kausal); bei --limit/--tickers uebersprungen, damit Teilaeufe schnell bleiben. */
+  if (!limit && !tickers && process.argv.indexOf("--no-evidence") < 0) {
+    const ev = await import("./formation-evidence.mjs");
+    const r = ev.buildAndWrite(join(out, "formation-evidence.json"));
+    console.log(`Formations-Evidenz: ${r.detections} Erkennungen, ${r.titles} Titel, ${r.runtimeSec}s`);
+  }
   console.log("Uebersprungen:", JSON.stringify(meta.skipped));
 }

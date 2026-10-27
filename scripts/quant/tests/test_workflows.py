@@ -215,13 +215,22 @@ class DataBudgetTests(unittest.TestCase):
     # (FSDS sub.txt, Header) bleibt lokal und faellt unter test_raw_payloads_and_factbooks_are_not_committed.
     SIC_HISTORY_BUDGET_KB = 12 * 1024
     SIC_HISTORY_DIR = "sic-history"
+    # Die Jahre vor dem Fenster der Consumer-Bundles (sec-consumer-fundamentals.yml, nur fuer
+    # Fundamental „Max“, docs/FUNDAMENTAL_HISTORY_DEPTH.md) sind die dritte Ausnahme: nicht
+    # ausgeliefert (build-history.mjs liest sie beim Release-Bau), 64 gzip-Scherben. Gemessen
+    # 26.10.2026: 2.444 Emittenten, 1,7 MB (als Einzeldateien je CIK waren es 19,3 MB). Jedes
+    # Jahr wandert ein Geschaeftsjahr aus dem Fenster hierher; 3 MB reichen fuer mehrere Jahre,
+    # und eine Rueckkehr zu Einzeldateien je CIK faellt sofort auf.
+    CONSUMER_HISTORY_BUDGET_KB = 3 * 1024
+    CONSUMER_HISTORY_DIR = "consumer-history"
 
     @classmethod
     def files(cls):
         root = ROOT / "quant" / "data" / "sec"
         return [p for p in root.rglob("*")
                 if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts
-                and cls.SIC_HISTORY_DIR not in p.relative_to(root).parts]
+                and cls.SIC_HISTORY_DIR not in p.relative_to(root).parts
+                and cls.CONSUMER_HISTORY_DIR not in p.relative_to(root).parts]
 
     @classmethod
     def consumer_files(cls):
@@ -246,6 +255,17 @@ class DataBudgetTests(unittest.TestCase):
         total = sum(p.stat().st_size for p in files) // 1024
         self.assertLessEqual(total, self.SIC_HISTORY_BUDGET_KB,
                              f"quant/data/sec/sic-history is {total}KB, over the {self.SIC_HISTORY_BUDGET_KB}KB budget")
+        for path in files:
+            self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
+
+    def test_the_consumer_history_stays_within_its_own_budget(self):
+        root = ROOT / "quant" / "data" / "sec" / self.CONSUMER_HISTORY_DIR
+        files = [p for p in root.rglob("*") if p.is_file()]
+        if not files:
+            self.skipTest("no consumer history committed")
+        total = sum(p.stat().st_size for p in files) // 1024
+        self.assertLessEqual(total, self.CONSUMER_HISTORY_BUDGET_KB,
+                             f"quant/data/sec/consumer-history is {total}KB, over the {self.CONSUMER_HISTORY_BUDGET_KB}KB budget")
         for path in files:
             self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
 

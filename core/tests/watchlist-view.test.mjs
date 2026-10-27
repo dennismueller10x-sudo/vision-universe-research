@@ -18,6 +18,10 @@ const AFTER_RUN = new Date("2026-10-24T12:00:00Z");   // Tag nach dem Datenlauf 
 
 const real = buildSummary(ROOT, { now: AFTER_RUN }).doc;
 const ix = W.index(real);
+/* Der echte Bestand wandert mit jedem Datenlauf; feste Daten (AFTER_RUN) gelten nur fuer die Fixtures unten.
+   Fuer den echten Bestand: eine Stunde nach dem juengsten Lauf von Kurs, Technik und Quant. */
+const REAL_NOW = new Date(Math.max(...["price", "technical", "quant"].map(k => Date.parse(real.sources[k].generatedAt))) + 3600e3);
+const HOUR = 3600e3;
 const byTicker = t => { const c = real.cols; const k = c.s.findIndex((s, i) => s === t && c.act[i] === 1); return c.i[k]; };
 
 test("Uebersicht aus dem echten Bestand: Schema, Abdeckung, kein Gesamtscore", () => {
@@ -31,7 +35,7 @@ test("Uebersicht aus dem echten Bestand: Schema, Abdeckung, kein Gesamtscore", (
 });
 
 test("NVDA: Kurs, Faktoren mit Stufe, Gesamtscore zurueckgehalten, Supertrader nicht freigegeben", () => {
-  const v = W.view(ix, { instrumentId: byTicker("NVDA"), ticker: "NVDA" }, AFTER_RUN);
+  const v = W.view(ix, { instrumentId: byTicker("NVDA"), ticker: "NVDA" }, REAL_NOW);
   assert.equal(v.identity.state, "AVAILABLE");
   assert.deepEqual([v.exchange, v.currency], ["NASDAQ", "USD"]);
   assert.equal(v.price.state, "AVAILABLE");
@@ -46,46 +50,47 @@ test("NVDA: Kurs, Faktoren mit Stufe, Gesamtscore zurueckgehalten, Supertrader n
 
 test("Supertrader: Zustaende nur als Forschung, solange keine Strategie freigegeben ist", () => {
   const released = Object.values(real.sources.supertrader.strategies).filter(s => s.released);
-  const v = W.view(ix, { instrumentId: byTicker("ESTC") }, AFTER_RUN);
+  const v = W.view(ix, { instrumentId: byTicker("ESTC") }, REAL_NOW);
   if (!released.length) {
     assert.equal(v.supertrader.status, "RESEARCH_ONLY");
     assert.match(v.supertrader.label, /Forschung/);
     assert.ok(v.supertrader.entries.length > 0 && v.supertrader.entries.every(e => !e.released));
   }
-  const all = real.cols.i.map(id => W.view(ix, { instrumentId: id }, AFTER_RUN));
+  const all = real.cols.i.map(id => W.view(ix, { instrumentId: id }, REAL_NOW));
   const agg = W.aggregate(all);
   if (!released.length) assert.equal(agg.validSupertrader, 0, "keine Eignung ohne Freigabe");
   assert.ok(agg.newHighs >= 0 && agg.total === all.length);
 });
 
 test("Veraltete Daten werden ausgewiesen und nicht mitgezaehlt", () => {
-  const later = new Date("2026-10-30T12:00:00Z");      // fuenf faellige Handelstage spaeter, kein neuer Lauf
+  const later = new Date(REAL_NOW.getTime() + 7 * 24 * HOUR);   // eine Woche spaeter, kein neuer Lauf
   const ids = real.cols.i.filter((id, k) => real.cols.h52[k] === true && real.cols.tf[k] === 1).slice(0, 3);
   assert.ok(ids.length, "Bestand hat neue Hochs");
-  const fresh = ids.map(id => W.view(ix, { instrumentId: id }, AFTER_RUN)), old = ids.map(id => W.view(ix, { instrumentId: id }, later));
+  const fresh = ids.map(id => W.view(ix, { instrumentId: id }, REAL_NOW)), old = ids.map(id => W.view(ix, { instrumentId: id }, later));
   assert.ok(fresh.every(v => v.high52.signal === "NEW_HIGH"));
   assert.ok(old.every(v => v.high52.state === "STALE" && !v.high52.signal));
   assert.ok(old.every(v => v.price.state === "STALE" && v.price.close > 0), "Kurs bleibt sichtbar, aber als veraltet markiert");
   assert.equal(W.aggregate(old).newHighs, 0);
   assert.equal(W.aggregate(old).stale, ids.length);
   // Ein Tag Verzug ist "verzoegert", noch nicht veraltet.
-  assert.equal(W.view(ix, { instrumentId: ids[0] }, new Date("2026-10-27T12:00:00Z")).price.freshness.state, "WARN");
+  const s1 = real.calendar.sessions.find(s => s > real.sources.price.asOf);   // erste Sitzung nach dem Kursstand
+  assert.equal(W.view(ix, { instrumentId: ids[0] }, new Date(Date.parse(s1 + "T00:00:00Z") + 31 * HOUR)).price.freshness.state, "WARN");
 });
 
 test("Zwei Listings desselben Tickers: Daten nur am aktiven Listing (BGC)", () => {
   const rows = real.cols.i.map((id, k) => k).filter(k => real.cols.s[k] === "BGC");
   if (rows.length < 2) return;
-  const views = rows.map(k => W.view(ix, { instrumentId: real.cols.i[k] }, AFTER_RUN));
+  const views = rows.map(k => W.view(ix, { instrumentId: real.cols.i[k] }, REAL_NOW));
   const act = views.filter(v => v.identity.listing === "ACTIVE"), inact = views.filter(v => v.identity.listing === "INACTIVE");
   assert.equal(act.length, 1);
   assert.ok(inact.every(v => v.price.state === "UNAVAILABLE" && v.price.reason === "LISTING_INACTIVE"));
 });
 
 test("Unbekannte Kennung und Tickerwechsel", () => {
-  const v = W.view(ix, { instrumentId: "vu_ffffffffffffff", ticker: "OLD" }, AFTER_RUN);
+  const v = W.view(ix, { instrumentId: "vu_ffffffffffffff", ticker: "OLD" }, REAL_NOW);
   assert.equal(v.identity.state, "UNAVAILABLE");
   assert.equal(v.price.reason, "NOT_IN_UNIVERSE");
-  const t = W.view(ix, { instrumentId: byTicker("NVDA"), ticker: "NVDX" }, AFTER_RUN);
+  const t = W.view(ix, { instrumentId: byTicker("NVDA"), ticker: "NVDX" }, REAL_NOW);
   assert.equal(t.identity.tickerChanged, true);
 });
 

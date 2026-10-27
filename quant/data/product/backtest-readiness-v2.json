@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-24T16:05:39.280Z",
+ "generatedAt": "2026-10-27T07:01:42.721Z",
  "signalStudy": {
   "asOf": "2026-10-23",
-  "generatedAt": "2026-10-24T02:58:38.859Z",
+  "generatedAt": "2026-10-27T06:58:42.346Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,8 +17,8 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6174,
-    "withTotalReturn": 6036,
+    "titles": 6190,
+    "withTotalReturn": 6052,
     "share": 0.978,
     "minimumShare": 0.95
    }
@@ -49,31 +49,31 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 20,
+   "count": 21,
    "from": "2026-09-10",
-   "to": "2026-10-23",
-   "spanDays": 43,
+   "to": "2026-10-26",
+   "spanDays": 46,
    "replay": {
     "titles": 157,
-    "observations": 125623,
+    "observations": 125770,
     "from": "1991-03-08"
    }
   },
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 20,
+   "count": 21,
    "from": "2026-09-23",
-   "to": "2026-10-23",
-   "spanDays": 30
+   "to": "2026-10-26",
+   "spanDays": 33
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 20,
-   "from": "2026-10-22",
-   "to": "2026-10-23",
-   "spanDays": 1
+   "count": 21,
+   "from": "2026-10-23",
+   "to": "2026-10-26",
+   "spanDays": 3
   },
   {
    "id": "membershipSnapshots",
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6036,
-    "eligibleTitles": 6174,
+    "titles": 6052,
+    "eligibleTitles": 6190,
     "share": 0.978,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-10-23",
-    "generatedAt": "2026-10-24T02:58:38.859Z"
+    "generatedAt": "2026-10-27T06:58:42.346Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 20,
+   "count": 21,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 20,
+   "publishedSnapshots": 21,
    "reconstructible": {
     "titles": 5
    }
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "3027 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "3177 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -279,7 +279,7 @@
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7479,
+     "n": 7485,
      "titles": 146,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
@@ -287,7 +287,7 @@
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8249,
+     "n": 8256,
      "titles": 147,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
@@ -324,7 +324,7 @@
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "6036 von 6174 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
+     "value": "6052 von 6190 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "20 Faktor-Snapshots seit 2026-09-23",
+     "value": "21 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -457,7 +457,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "20 Snapshots über 30 Tage",
+     "value": "21 Snapshots über 33 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {

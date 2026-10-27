@@ -6,22 +6,22 @@
       "cik": "0001035443",
       "name": "ALEXANDRIA REAL ESTATE EQUITIES, INC.",
       "sic": "6798",
-      "rawFacts": 25870,
-      "mappedFacts": 5029,
-      "unmappedFacts": 20753,
+      "rawFacts": 26299,
+      "mappedFacts": 5109,
+      "unmappedFacts": 21156,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "impairment_of_real_estate": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -42,7 +42,7 @@
         },
         "real_estate_net": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -61,9 +61,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
@@ -75,7 +75,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -95,28 +95,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -130,14 +130,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -161,45 +161,46 @@
       },
       "quality": {
         "MEDIUM": 98,
-        "HIGH": 437
+        "HIGH": 444
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 535,
-        "resolvedValues": 535
+        "datableValues": 542,
+        "resolvedValues": 542
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 21537,
+        "total": 21921,
         "by_severity": {
-          "INFO": 20753,
-          "WARNING": 784
+          "INFO": 21156,
+          "WARNING": 765
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 681,
+          "CONCEPT_DISAGREEMENT": 662,
           "RESTATEMENT_CONFLICT": 96,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 20753
+          "UNKNOWN_CONCEPT": 21156
         }
       },
       "latestFiling": {
-        "accession": "0001035443-26-000066",
-        "filing_date": "2026-08-03",
+        "accession": "0001035443-26-000076",
+        "filing_date": "2026-10-26",
         "form": "10-Q",
-        "periodic_filings": 118
+        "periodic_filings": 119,
+        "acceptance_datetime": "2026-10-26T20:07:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.13.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "021790fd0519f7cdad558775d25915b23a9bd4f408d6494690ed70bc565b3b17",
+      "sourceDigest": "1ee69918e439a2498c7ed60891276afda2ae512b240fe693714f1597209eea99",
       "issuerId": "iss_cik_0001035443"
     },
     {

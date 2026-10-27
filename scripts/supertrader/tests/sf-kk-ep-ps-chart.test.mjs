@@ -228,6 +228,7 @@ test('SF-KK-RUNNER-IEX-BASELINE: IEX-Tagesvolumen nur aus IEX-Balken je ET-Datum
 import fs from 'node:fs';
 import { buildKkEpPs, KK_SNAPSHOT_RUNS } from '../source-faithful/completion/build-kk-ep-ps.mjs';
 import { kkResearchCodeSha256 as kkCode } from '../source-faithful/research/run-kk-intraday.mjs';
+import { codeSha256 as engineCode } from '../source-faithful/runner/run-research.mjs';
 
 test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer Short nie vergebbar; Vertragsstatus unveraendert; nichts live', () => {
   const a = buildKkEpPs();
@@ -238,6 +239,8 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
   for (const id of ['KK-SF-PS-ENTRY', 'KK-SF-PS-STOP', 'KK-SF-PS-BORROW']) assert.equal(a.strategies.C10.contract.ruleStatuses[id], 'DATA_BLOCKED');
   for (const c of ['C09', 'C10']) { assert.equal(a.strategies[c].liveReadiness, 'LIVE_NOT_APPROVED'); assert.match(a.strategies[c].contract.measurementClassOfTheOriginalMethod, /^NOT_MEASURABLE/); }
   for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.researchCodeSha256, kkCode());
+  // the engine hash of the AUTHORITATIVE run is the receipt value of the current engine (review #942: copied from a predecessor before)
+  for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.engineCodeSha256, engineCode());
   // a run on older code is never AUTHORITATIVE: the pre-6.0 run keeps its own hashes and is labelled as the BEFORE side
   for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.researchCodeSha256 !== kkCode())) {
     assert.notEqual(r.role, 'AUTHORITATIVE');

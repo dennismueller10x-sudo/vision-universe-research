@@ -6,7 +6,13 @@
  *    (completion/sf6-run-facts.mjs, run 39746264325); otherwise the run fails;
  *  - the pre-registered 7.0 SEPA variants ALT-SEPA-FLAT-BASE, ALT-SEPA-TT6-25 and ALT-SEPA-RS-LINE, each against REF trade
  *    by trade (Power Play: REF and diagnostics only; the B12 / B03 VCP question resolves to the reference reading);
- *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only).
+ *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only);
+ *  - the pre-registered research exit variants of owner decision E7-7 (research/minervini-sf7-exits.mjs, both
+ *    strategies): REF configuration plus one exit rule, run by research/minervini-sf7-exit-execution.mjs. The run fails
+ *    unless that engine copy without a rule reproduces the REF ledger; each variant is compared with REF trade by trade;
+ *  - the mechanical diagnostics of package 1.4.0 (research/minervini-sf7-mechanical.mjs) on the REF trades: base count,
+ *    top-volume decline, relative base depth, fill / gap distance over the pivot and the buy-stop buffer check, and the
+ *    climax-variant signals by base number. Counts only; no trade, fill or exit changes.
  * Public: counts and hashes. Sealed (owner key): metrics per run. No variant is chosen by any result.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf7-minervini.mjs --snapshot sts1-<id> --accounting research-v1 --out <dir> [--smoke-snapshot] [--limit N]
@@ -23,13 +29,16 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { researchCodeSha256 } from './run-sf4-lifecycle.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
+import { SF7_EXIT_VERSION, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256, climaxUpClosesHolds } from './minervini-sf7-exits.mjs';
+import { runMinerviniLifecycleWithExitRule } from './minervini-sf7-exit-execution.mjs';
+import { SF7_MECHANICAL_VERSION, sf7MechanicalRegistrySha256, marketCorrectionAnchors, baseCountAt, baseCountTally, topVolumeDecline, relativeBaseDepth, fieldTally, entryDistanceTally, signalsByBaseNumber } from './minervini-sf7-mechanical.mjs';
 import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck, postBreakoutEvidence, postBreakoutTally, benchIndex } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.1.0';
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.6.0'; // 1.6.0: review #940 of the mechanical diagnostics (package sf7-minervini-mechanical-1.1.0: two G-TOPVOL windows, two G-RELDEPTH variants, gap reading incl. limit fills and non-executed orders, base-count uncertainty with direction; counts only); 1.5.0: mechanical diagnostics of package sf7-minervini-1.4.0 (base count, top-volume decline, relative depth, entry distance, climax signals by base number; counts only); 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
-const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs'];
+const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs', 'minervini-sf7-mechanical.mjs'];
 export function sf7CodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of SF7_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -61,12 +70,82 @@ export function diffTrades(ref, alt) {
   return { unchanged: same, changed, removedVsRef: removed, addedVsRef: added };
 }
 
-/** REF + 7.0 variants + diagnostics for one dataset. */
-export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false } = {}) {
+/**
+ * Trade-level comparison of an exit variant against REF: like diffTrades, but a trade counts as unchanged only if its
+ * whole sell sequence (date, shares, reason of every sale) is identical, so a partial sale with the same final exit is
+ * "changed". Counts only.
+ */
+export function diffTradeSells(ref, alt) {
+  const sells = (t) => JSON.stringify((t.events ?? []).filter((e) => e.type === 'SELL').map((e) => [e.date, e.shares, e.reason]));
+  const a = new Map(ref.map((t) => [tradeKey(t), t])), b = new Map(alt.map((t) => [tradeKey(t), t]));
+  let same = 0, changed = 0, removed = 0, added = 0;
+  for (const [k, t] of a) { const u = b.get(k); if (!u) removed++; else if (u.shares === t.shares && u.exitDate === t.exitDate && u.exitReason === t.exitReason && sells(u) === sells(t)) same++; else changed++; }
+  for (const k of b.keys()) if (!a.has(k)) added++;
+  return { unchanged: same, changed, removedVsRef: removed, addedVsRef: added };
+}
+
+const sellReasons = (r) => tally(r.ledger.filter((x) => x.side === 'SELL'), (x) => x.reason);
+
+/** REF + 7.0 variants + diagnostics + E7-7 exit variants for one dataset. */
+/**
+ * Owner check E7-7 (25.10.2026) of EXIT-CLIMAX-UPCLOSES, counts only. Per scheduled signal: on the entry close (j = e)
+ * or later, and whether the same condition already held on the setup close (knowable BEFORE the entry). A signal on the
+ * entry close still uses that close, which comes after the fill, and fills at the next open: no look-ahead, no exit
+ * before the entry. ALREADY_AT_SETUP means the variant mostly measures the state at the purchase, not a climax after it.
+ */
+export function upClosesSignalTiming(trades, byId) {
+  const out = { ON_ENTRY_CLOSE_ALREADY_AT_SETUP: 0, ON_ENTRY_CLOSE_NEW_ON_ENTRY_DAY: 0, LATER_ALREADY_AT_SETUP: 0, LATER_NOT_AT_SETUP: 0, unknown: 0, signalBeforeEntry: 0, fillNotAfterSignal: 0 };
+  for (const t of trades) {
+    const bars = byId.get(t.id)?.bars; if (!bars) continue;
+    const e = bars.findIndex((x) => x.date === t.entryDate), s0 = bars.findIndex((x) => x.date === t.setupDate);
+    for (const ev of t.events ?? []) {
+      if (ev.type !== 'EXIT_SCHEDULED_NEXT_OPEN' || ev.rule !== 'SF7_EXIT_VARIANT') continue;
+      const j = bars.findIndex((x) => x.date === ev.signalDate);
+      if (e < 0 || s0 < 0 || j < 0) { out.unknown++; continue; }
+      if (j < e) out.signalBeforeEntry++;
+      if (t.exitDate && t.exitDate <= ev.signalDate) out.fillNotAfterSignal++; // a scheduled exit must fill on a later session
+      const atSetup = climaxUpClosesHolds(bars, s0);
+      out[j === e ? (atSetup ? 'ON_ENTRY_CLOSE_ALREADY_AT_SETUP' : 'ON_ENTRY_CLOSE_NEW_ON_ENTRY_DAY') : (atSetup ? 'LATER_ALREADY_AT_SETUP' : 'LATER_NOT_AT_SETUP')]++;
+    }
+  }
+  return out;
+}
+
+/** REF trades whose setup close already met the EXIT-CLIMAX-UPCLOSES condition: pre-entry risk evidence, counts only, never a gate or filter. */
+export function upClosesExtendedAtSetup(trades, byId) {
+  let yes = 0, no = 0, unknown = 0;
+  for (const t of trades) { const bars = byId.get(t.id)?.bars; const s0 = bars ? bars.findIndex((x) => x.date === t.setupDate) : -1; if (s0 < 0) { unknown++; continue; } if (climaxUpClosesHolds(bars, s0)) yes++; else no++; }
+  return { extendedAtSetup: yes, notExtendedAtSetup: no, unknown, rule: 'MA-MIN7-CLIMAX-EXTENDED on the setup close (evidence only)' };
+}
+
+/** Review #917: sessions from the entry to each scheduled exit-variant signal (public tally, counts only; 0 = signal on the entry close). */
+export const SIGNAL_SESSION_BUCKETS = Object.freeze([[0, 0], [1, 2], [3, 5], [6, 10], [11, 20], [21, Infinity]]);
+export function signalSessionsFromEntry(trades, byId) {
+  const out = Object.fromEntries(SIGNAL_SESSION_BUCKETS.map(([a, b]) => [Number.isFinite(b) ? `${a}-${b}` : `${a}+`, 0]));
+  let unknown = 0;
+  for (const t of trades) for (const e of t.events ?? []) {
+    if (e.type !== 'EXIT_SCHEDULED_NEXT_OPEN' || e.rule !== 'SF7_EXIT_VARIANT') continue;
+    const bars = byId.get(t.id)?.bars; const i0 = bars?.findIndex((x) => x.date === t.entryDate), i1 = bars?.findIndex((x) => x.date === e.signalDate);
+    if (!bars || i0 < 0 || i1 < 0) { unknown++; continue; }
+    const n = i1 - i0, k = SIGNAL_SESSION_BUCKETS.findIndex(([a, b]) => n >= a && n <= b);
+    if (k < 0) { unknown++; continue; }
+    const [a, b] = SIGNAL_SESSION_BUCKETS[k]; out[Number.isFinite(b) ? `${a}-${b}` : `${a}+`]++;
+  }
+  return { ...out, unknown };
+}
+
+export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false, exitVariants = SF7_EXIT_VARIANTS } = {}) {
   const pub = { version: SF7_MINERVINI_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
   const bench = benchIndex(dataset.benchmark);
+  const baseCtx = { bench, anchors: marketCorrectionAnchors(bench) }, baseMemo = new Map();
+  // G-BASECOUNT per (security, setup close): a pure function of bars 0..setup and benchmark closes up to the setup date
+  const baseOf = (t) => {
+    const k = `${t.id}|${t.setupDate}`; if (baseMemo.has(k)) return baseMemo.get(k);
+    const bars = byId.get(t.id)?.bars, s0 = bars ? bars.findIndex((x) => x.date === t.setupDate) : -1;
+    const r = s0 >= 0 ? baseCountAt(bars, s0, baseCtx) : { status: 'NOT_EVALUABLE' }; baseMemo.set(k, r); return r;
+  };
   for (const strategy of ['SEPA', 'POWER_PLAY']) {
     const refIndex = buildSetupIndex(dataset, strategy, { from });
     const ref = runMinerviniLifecycle(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, from, to });
@@ -83,6 +162,19 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
       halfAverageGainStop: { ...halfAverageGainStopCheck(ref.trades), rule: 'B12 PDF 398-399 (MA-MIN7-AVG-GAIN)' },
       postBreakout: { ...postBreakoutTally(ref.trades.map((t) => postBreakoutEvidence(byId.get(t.id).bars, t, { bench }))), rule: 'E7-2 findings B03 PDF 41/47/48/160/168/217, B12 PDF 250/280/311 (MA-MIN7-POST-BREAKOUT-WINDOW)' },
     };
+    // package 1.4.0: mechanical diagnostics on the REF trades (counts only, never a gate, never a variant choice)
+    const relDepth = ref.trades.map((t) => relativeBaseDepth(byId.get(t.id).bars, byId.get(t.id).bars.findIndex((x) => x.date === t.setupDate), bench));
+    const topVol = ref.trades.map((t) => topVolumeDecline(byId.get(t.id).bars, t));
+    const depthOf = (w) => ({ above2x: fieldTally(relDepth.map((r) => r[w]), 'aboveStrict'), above3x: fieldTally(relDepth.map((r) => r[w]), 'aboveLoose') });
+    ps.diagnostics.mechanical = {
+      version: SF7_MECHANICAL_VERSION,
+      baseCount: { ...baseCountTally(ref.trades.map(baseOf)), rule: 'B03 PDF 207, B12 PDF 115-116 (MA-MIN7-BASECOUNT-*)' },
+      // two trend-start windows side by side (MA-MIN7-TOPVOL), none chosen
+      topVolumeDecline: { trendTemplateRun: fieldTally(topVol.map((r) => r.trendTemplateRun), 'topVolumeDeclineBeforeExit'), aboveMa200Run: { ...fieldTally(topVol.map((r) => r.aboveMa200Run), 'topVolumeDeclineBeforeExit'), windowTruncated: topVol.filter((r) => r.aboveMa200Run.windowTruncated === true).length }, rule: 'B03 PDF 217 / 219 (MA-MIN7-TOPVOL, MA-MIN7-STAGE2-START, MA-MIN7-BASECOUNT-STOCK-RESET)' },
+      // two windows side by side (MA-MIN7-RELDEPTH), closes on both sides, none chosen
+      relativeBaseDepth: { sameWindow: depthOf('sameWindow'), trailingHigh: depthOf('trailingHigh'), rule: 'B12 PDF 280 / 295, B03 PDF 160 (MA-MIN7-RELDEPTH)' },
+      entryDistance: entryDistanceTally(ref.trades, byId, ref.counts),
+    };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
       const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : v.index === 'withTrendTemplateLow25' ? withTrendTemplateLow25(dataset, { from }) : withRsLineRising(dataset, refIndex);
       const r = runMinerviniLifecycle(dataset, { strategy, setupIndex: idx, config: v.config, from, to });
@@ -90,6 +182,26 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
       ps.variants[v.id] = { source: v.source, indexChanges: idx.counts.sf7, ...publicOf(r), vsRef: diffTrades(ref.trades, r.trades) };
       ss.variants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
       log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.variants[v.id].vsRef)}`);
+    }
+    // E7-7 research exit variants: REF configuration + one pre-registered exit rule (never a reference, never an original rule)
+    const ev = exitVariants.filter((x) => x.strategies.includes(strategy));
+    if (!ev.length) continue;
+    const copy = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, exitRule: null, from, to });
+    const copyLedger = sha(copy.ledger), copyTrades = publicOf(copy).tradesSha256;
+    ps.exitEngineIdentity = { ledgerEqualsRef: copyLedger === ps.ref.ledgerSha256, tradesEqualRef: copyTrades === ps.ref.tradesSha256, curveEqualsRef: sha(copy.curve) === sha(ref.curve), countsEqualRef: sha(copy.counts) === sha(ref.counts) };
+    log(`${strategy} exit engine copy without rule: ledger ${ps.exitEngineIdentity.ledgerEqualsRef ? 'EQUAL' : 'DIFFERENT'}`);
+    if (Object.values(ps.exitEngineIdentity).some((x) => !x)) throw new Error(`EXIT_ENGINE_COPY_NOT_REF:${strategy}`);
+    ps.exitVariants = {}; ss.exitVariants = {};
+    ps.diagnostics.upClosesExtendedAtSetup = upClosesExtendedAtSetup(ref.trades, byId); // pre-entry risk evidence on REF trades, never a gate
+    const stage2 = new Map(); // Stage 2 start per (security, setup close), shared by the variants (pure function of the bars)
+    for (const v of ev) {
+      const r = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: v.config, exitRule: v.exitRule, stage2, from, to });
+      if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
+      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId), ...(v.exitRule.kind === 'CLIMAX_UP_CLOSES' ? { upClosesSignalTiming: upClosesSignalTiming(r.trades, byId) } : {}), ...(['CLIMAX_RUN', 'CLIMAX_UP_CLOSES'].includes(v.exitRule.kind) ? { signalsByBaseNumber: signalsByBaseNumber(r.trades, baseOf) } : {}) };
+      const tm = upClosesSignalTiming(r.trades, byId); // every exit variant: no signal before the entry, every scheduled exit fills later
+      if (tm.signalBeforeEntry || tm.fillNotAfterSignal) throw new Error(`EXIT_SIGNAL_TIMING_VIOLATION:${strategy}:${v.id}`);
+      ss.exitVariants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
+      log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.exitVariants[v.id].vsRefSells)}`);
     }
   }
   return { pub, sealed };
@@ -126,7 +238,7 @@ async function main() {
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
   // same input construction as run-sf4-lifecycle (sec-pit attached; the lifecycle does not use it as a gate)
   const dataset = datasetFromPit(pit); attachSecPit(dataset, secPit);
-  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), sf7MechanicalVersion: SF7_MECHANICAL_VERSION, sf7MechanicalRegistrySha256: sf7MechanicalRegistrySha256(), sf7ExitVersion: SF7_EXIT_VERSION, sf7ExitRegistrySha256: sf7ExitRegistrySha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const full = !LIMIT && !smoke;
   const r = sf7Part(dataset, { log, requireAuthoritativeRef: full });
   const pub = { schema: 'supertrader-sf7-minervini-public-1.0.0', receipt, minervini: r.pub };
