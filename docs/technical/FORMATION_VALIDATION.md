@@ -206,10 +206,12 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 | Keine rückwirkend erzeugten Frühsignale | wie oben. Zusätzlich misst die historische Evidenz ab dem ersten sichtbaren Stand k mit Einstieg am Schluss von k, nie ab `detectedAt`. Neuer Test: der Messbeginn k liegt nie vor dem Erkennungstag. |
 | Erst am Ausbruchstag erkennbar ≠ früheres Einstiegssignal | Solche Formationen tragen `confirmedAtDetection` (Erkennung = Bestätigung am selben Tag). Im Screener steht dafür das Kennzeichen „B“, im Chart Studio „Erkannt nach Ausbruch“. Die Evidenz misst sie ab dem Ausbruchsschluss. Neuer Test: Das Kennzeichen ist genau dann gesetzt, wenn die Bestätigung nicht nach der Erkennung liegt. Eine historische Strategie, die Formationen als Einstieg nutzt, muss `confirmedAtDetection` beachten. Heute gibt es außer der beschreibenden Evidenz keine solche Strategie im Repository: `formations.js` wird nur von Screener, Chart Studio, Evidenz und Validator gelesen. |
 
-**Die vier verbleibenden Auffälligkeiten.** Sie sind bekannt und nicht als fehlerfrei gewertet.
+**Die vier verbleibenden Auffälligkeiten.** Jede wurde einzeln untersucht und keine stillschweigend als fehlerfrei gewertet.
 
 | Titel | Formation | Prüfung | Befund | Status |
 |---|---|---|---|---|
 | CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Formationspunkte mit Kurs 0; die Tagesbars enthalten Schlusskurse von 0 | **Datenfehler** in `technical-signals-v1`. Die Engine erkennt auf fehlerhaften Kursen. Abhilfe gehört in die Datenqualität: Bars mit Kurs ≤ 0 verwerfen oder den Titel sperren. Offen. |
 | CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Datenfehler**, offen. |
-| TECTP | BEAR_PENNANT@2026-01-22 | MAST_ZU_KURZ | Mast 1,87; 5 ATR am Erkennungsbar = 0,61 (erfüllt). Der Validator prüft zusätzlich gegen die ATR am Stichtag; die ist 0, der Titel ruht. | Regel am Erkennungstag eingehalten. Die Meldung kommt aus der strengeren Doppelprüfung des Validators bei einem ruhenden Titel (ATR 0 am Stichtag) und ist kein Engine-Fehler. Bleibt als Hinweis stehen. |
+| TECTP | BEAR_PENNANT@2026-01-22 | MAST_ZU_KURZ | Mast 1,87; 5 ATR am Erkennungsbar = 0,61, also erfüllt. Ursache war ein **Validatorfehler**: Bei ATR 0 am Stichtag (ruhender Titel) fiel der Validator auf einen undefinierten Wert zurück, und jeder Vergleich scheiterte. | **Validator korrigiert**: Er misst den Mast nur noch an positiver ATR. Die Engine ist unverändert. Danach regelkonform. |
+
+**Stand nach der Validatorkorrektur:** 11.423 von 11.426 Erkennungen sind regelkonform. Offen sind nur die 3 CPTAF-Fälle, ein Datenfehler.

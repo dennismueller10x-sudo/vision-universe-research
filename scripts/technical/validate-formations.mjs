@@ -80,6 +80,8 @@ export function check(f, ctx) {
   const atrD = ctx.atrSeries && di >= 0 && isFinite(ctx.atrSeries[di]) ? ctx.atrSeries[di] : atr;
   const closeD = ctx.bars && di >= 0 ? ctx.bars.close[di] : ctx.close;
   const tol = Math.max(0.75 * Math.max(atr, atrD), 0.025 * closeD) * 1.15;
+  /* Mast gegen die kleinere positive ATR (Stichtag oder Erkennung). ATR 0 am Stichtag (ruhender Titel) ist kein Massstab. */
+  const atrMast = Math.min(...[atr, atrD].filter((x) => fin(x) && x > 0));
   const t = f.type;
   if (t === "ASCENDING_TRIANGLE" || t === "DESCENDING_TRIANGLE" || t === "SYMMETRICAL_TRIANGLE" || t === "RECTANGLE") {
     /* wie die Engine: erstes und letztes Hoch bzw. Tief im Fenster der letzten fuenf Pivots */
@@ -110,14 +112,14 @@ export function check(f, ctx) {
     const u = line(f, "upper"), lo = line(f, "lower");
     if (!u || !lo) v.push("LINIEN_FEHLEN");
     else if (!(slope(u) <= 0 && slope(lo) >= 0)) v.push("KEINE_KONVERGENZ");
-    if (!(f.levels && f.levels.pole >= 5 * Math.min(atr, atrD) * 0.98)) v.push("MAST_ZU_KURZ");
+    if (!(f.levels && f.levels.pole >= 5 * atrMast * 0.98)) v.push("MAST_ZU_KURZ");
   }
   if (t === "BULL_FLAG" || t === "BEAR_FLAG") {
     const lv = f.levels || {}, d = t === "BULL_FLAG" ? 1 : -1, [p0, p1] = pts;
     if (!(p0 && p1)) v.push("PUNKTE_FEHLEN");
     else {
       const pole = (p1.price - p0.price) * d;
-      if (!(pole >= 5 * Math.min(atr, atrD) * 0.98)) v.push("MAST_ZU_KURZ");
+      if (!(pole >= 5 * atrMast * 0.98)) v.push("MAST_ZU_KURZ");
       if (!(Math.abs(lv.invalidation - (p1.price - d * 0.5 * pole)) <= 1e-3 * p1.price)) v.push("INVALIDIERUNG");
     }
   }
