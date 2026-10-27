@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.4.0";
+  var TEXT_VERSION = "technical-query-text-1.6.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -43,13 +43,19 @@
   function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
   var T = Q.FORMATION_TYPES, ALL_TRI = ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"];
+  var CANDLE_LOWER = {};
+  Object.keys(Q.CANDLE_TYPES).forEach(function (id) { CANDLE_LOWER[id.toLowerCase()] = id; });
   function b(field, value) { return { field: field, op: "is", value: value }; }
   function n(field, op, value) { return { field: field, op: op, value: value }; }
 
   /* Begriffe: [Muster (gefaltet), Filter[] | {formations:[]} | {confirmed:true}]. Laengere Muster zuerst geprueft. */
   var TERMS = [
-    ["golden cross|sma ?50 (ueber|oberhalb)( der| die)? sma ?200", [b("sma50AboveSma200", true)]],
-    ["death cross|sma ?50 (unter|unterhalb)( der| die)? sma ?200", [b("sma50AboveSma200", false)]],
+    /* Kerzen und Spannen (seit 1.6.0) */
+    ["inside[- ]bars?|innenstab", [b("insideBar", true)]],
+    ["nr 7|narrow range( 7)?", [b("nr7", true)]],
+    /* Zustand "SMA 50 ueber SMA 200". "Golden/Death Cross" meint seit 1.5.0 das Ereignis (siehe Ereignisse unten). */
+    ["sma ?50 (ueber|oberhalb)( der| die)? sma ?200", [b("sma50AboveSma200", true)]],
+    ["sma ?50 (unter|unterhalb)( der| die)? sma ?200", [b("sma50AboveSma200", false)]],
     ["(ueber|oberhalb)( der| dem| die)? (sma ?200|gd ?200|200-tage-(linie|durchschnitt)|200er( linie)?)", [b("aboveSma200", true)]],
     ["(unter|unterhalb)( der| dem| die)? (sma ?200|gd ?200|200-tage-(linie|durchschnitt)|200er( linie)?)", [b("aboveSma200", false)]],
     ["(ueber|oberhalb)( der| dem| die)? (sma ?50|gd ?50|50-tage-(linie|durchschnitt)|50er( linie)?)", [b("aboveSma50", true)]],
@@ -129,6 +135,8 @@
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
     ["chaikin money flow|cmf( ?20)?", "cmf20"], ["money flow index|mfi( ?14)?", "mfi14"], ["stochastik( %k)?|%k", "stochK"],
     ["bollinger %b|%b", "bbPctB"], ["atr( ?%| in %| ?14)?", "atrPct"], ["rsi( ?14)?", "rsi14"], ["adx( ?14)?", "adx"], ["cci( ?20)?", "cci20"],
+    ["roc ?63|3-?monats-?performance|quartalsperformance", "roc63"], ["roc ?126|6-?monats-?performance|halbjahresperformance", "roc126"],
+    ["roc ?252|12-?monats-?performance|jahresperformance", "roc252"],
     ["roc( ?21)?|21-?tage-?(aenderung|performance)|monatsperformance", "roc21"], ["tagesaenderung|tagesperformance", "chg1d"],
     ["schlusskurs|aktienkurs|kurs|preis", "close"]
   ];
@@ -163,6 +171,26 @@
  *   recognized: je erkanntem Baustein eine fachliche Beschriftung (z. B. "Kurs über SMA 200").
    * query ist das von validate() normalisierte Objekt (auch bei Fehlern, dann ohne die fehlerhaften Teile).
    */
+  /* Ereignisbegriffe (gefaltet: Umlaute als ae/oe/ue) -> Feld "Tage seit". Ein Zeitwort darf auch mitten stehen. */
+  var EVENTS = [
+    ["golden[ -]?cross|goldene[ns]? kreuz", "goldenCrossDays"],
+    ["death[ -]?cross|todeskreuz", "deathCrossDays"],
+    ["(?:kurs |schluss )?(?:steigt|stieg|kreuzt|kreuzte|bricht|brach) (?:ueber|durch) (?:die |den )?(?:sma ?200|200-?tage-?linie)", "crossAboveSma200Days"],
+    ["(?:kurs |schluss )?(?:faellt|fiel|kreuzt|kreuzte|bricht|brach) (?:unter|durch) (?:die |den )?(?:sma ?200|200-?tage-?linie) nach unten|(?:kurs |schluss )?(?:faellt|fiel) unter (?:die |den )?(?:sma ?200|200-?tage-?linie)", "crossBelowSma200Days"],
+    ["rsi(?: ?14)?(?: ist| hat)?(?: (?:heute|gestern))? (?:von unten )?ueber 30 (?:gestiegen|gekreuzt|gelaufen)|rsi verl(?:ae|a)sst (?:den |die )?ueberverkauft\\w*", "rsiExitOversoldDays"],
+    ["rsi(?: ?14)?(?: ist| hat)?(?: (?:heute|gestern))? (?:von oben )?unter 70 (?:gefallen|gekreuzt)|rsi verl(?:ae|a)sst (?:den |die )?ueberkauft\\w*", "rsiExitOverboughtDays"],
+    ["neue[snm]? (?:formation|chartmuster|muster)", "formationNewDays"],
+    ["bullische[snm]? kerze(?:nmuster)?|bullische[snm]? candlestick(?:-?muster)?", "candleBullDays"],
+    ["baerische[snm]? kerze(?:nmuster)?|baerische[snm]? candlestick(?:-?muster)?", "candleBearDays"]
+  ];
+  var WINDOW_RE = "(?:(heute|gestern)|(?:in den letzten|innerhalb (?:der letzten|von)|binnen|seit hoechstens|vor hoechstens) (\\d{1,3}) (?:handels)?(?:tagen|tage|tag))";
+  function windowDays(word, num) {
+    if (word === "heute") return 0;
+    if (word === "gestern") return 1;
+    var v = Number(num);
+    return Number.isFinite(v) ? v : 5;
+  }
+
   function parse(input) {
     var text = " " + fold(input) + " ", slots = [], errors = [], recognized = [];
     function slot(item) { slots.push(item); return " §" + (slots.length - 1) + "§ "; }
@@ -190,9 +218,26 @@
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
       return slot({ filters: [{ field: "formationOpen", op: "in", value: types }], text: m });
     });
+    /* "kerze-bull:hammer,engulfing" usw. (seit 1.6.0); Ids klein geschrieben, weil der Text gefaltet ist. */
+    var CANDLE_FIELD = { bull: "candleBullish", baer: "candleBearish", neutral: "candleNeutral" };
+    text = text.replace(/\bkerze-(bull|baer|neutral):([a-z0-9,]+)/g, function (m, kind, list) {
+      var ids = list.split(",").filter(Boolean).map(function (x) { return CANDLE_LOWER[x] || null; });
+      if (ids.indexOf(null) >= 0 || !ids.length) { errors.push({ code: "UNKNOWN_CANDLE", text: list }); return " "; }
+      return slot({ filters: [{ field: CANDLE_FIELD[kind], op: "in", value: ids }], text: m });
+    });
     text = text.replace(/\bstruktur:([a-z,]+)/g, function (m, list) {
       var v = list.toUpperCase().split(",").filter(function (x) { return Q.STRUCTURES[x]; });
       return v.length ? slot({ filters: [{ field: "structure", op: "in", value: v }], text: m }) : " ";
+    });
+
+    /* 2a. Ereignisse mit Zeitfenster (Audit B12): "Golden Cross in den letzten 10 Tagen", "RSI gestern ueber 30
+       gestiegen". Ohne Angabe gilt "in den letzten 5 Handelstagen"; "heute" = 0, "gestern" = hoechstens 1. */
+    EVENTS.forEach(function (e) {
+      text = text.replace(new RegExp("(^|\\s)(?:(heute|gestern)\\s+)?(?:" + e[0] + ")(?:\\s+" + WINDOW_RE + ")?(?=\\s|$)", "g"), function (m, pre, w1, w2, n2) {
+        var word = w1 || w2 || (/(^|\s)gestern(\s|$)/.test(m) ? "gestern" : /(^|\s)heute(\s|$)/.test(m) ? "heute" : null);
+        var days = windowDays(word, n2);
+        return pre + slot({ filters: [n(e[1], "lte", days)], text: m.trim() });
+      });
     });
 
     /* 2. Vergleiche (vor der Zerlegung, weil "zwischen 30 und 50" ein "und" enthaelt) */
@@ -292,6 +337,8 @@
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
         if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
+        if (x.field === "candleBullish" || x.field === "candleBearish" || x.field === "candleNeutral")
+          return "kerze-" + { candleBullish: "bull", candleBearish: "baer", candleNeutral: "neutral" }[x.field] + ":" + x.value.join(",").toLowerCase();
         if (x.op === "between") return pre + x.field + " zwischen " + fmtNum(x.field, x.value) + " und " + fmtNum(x.field, x.value2);
         return pre + x.field + " " + SYM[x.op] + " " + fmtNum(x.field, x.value);
       }).join(" und ");

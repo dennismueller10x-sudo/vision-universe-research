@@ -36,13 +36,14 @@ test('Gruss nach Tageszeit',()=>{
 test('Icons, Produktziele und lokale Medien existieren',()=>{
   const icons=read('assets/product-icons.svg');
   for(const s of stories.stories){
-    assert(icons.includes('id="'+s.icon+'"'),s.id+': Icon '+s.icon);
+    if(s.icon!=='atlas')assert(icons.includes('id="'+s.icon+'"'),s.id+': Icon '+s.icon);
     for(const slide of s.slides)for(const file of [slide.src,slide.poster])
       if(file&&file.startsWith('/'))assert(existsSync(new URL(file.slice(1),root)),s.id+': '+file);
   }
   for(const p of W.PRODUCTS){
     if(p.id!=='atlas')assert(icons.includes('id="'+p.id+'"'),p.id+': Icon');
     assert(existsSync(new URL(p.href.split('#')[0].slice(1)+'index.html',root)),p.id+': '+p.href);
+    if(p.art)assert(existsSync(new URL(p.art.slice(1),root)),p.id+': Bild '+p.art);
   }
 });
 
@@ -59,5 +60,6 @@ test('Videos: versionierter Name, Rezept im Studio, hoechstens 6 MB',()=>{
     const recipe=JSON.parse(read('studio/stories/'+m[1]+'/story.json'));
     assert.equal(recipe.id,m[1]);assert.equal(String(recipe.version),m[2],s.id+': Version im Rezept passt nicht zur Datei');
     assert(statSync(new URL(slide.src.slice(1),root)).size<=6e6,s.id+': Video groesser als 6 MB');
+    assert(recipe.voice&&existsSync(new URL('studio/stories/'+m[1]+'/'+recipe.voice.file,root)),s.id+': Erklaervideos haben einen Sprecher (voice im Rezept)');
   }
 });

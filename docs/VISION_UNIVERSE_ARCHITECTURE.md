@@ -51,6 +51,7 @@ Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/
 | [ADR-003](architecture/ADR-003-core-product-separation.md) | Core und Produkte sind getrennt; Produkte lesen über Verträge |
 | [ADR-004](architecture/ADR-004-mobile-architecture.md) | App-Weg: zuerst PWA, dann Expo/React Native gegen dieselbe API |
 | [ADR-005](architecture/ADR-005-pipeline-commit-protocol.md) | Datenläufe: Spitze auschecken, `push-with-retry.sh`, Erzeugerhoheit |
+| [ADR-006](architecture/ADR-006-accounts-and-billing.md) | Konten: Supabase Auth + Worker `vu-account` (BFF), Abos anbieterunabhängig, Stripe zuerst; gebaut, ausgeschaltet ([docs/accounts/](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md)) |
 
 ---
 

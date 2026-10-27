@@ -17,6 +17,8 @@
                         Parabolic SAR, Ichimoku-Wolke, Aroon, Williams %R, CMF
                         -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
                         (<= 77 Bars, Ichimoku-Wolke) liegen im Fenster
+     Tagesbars          ROC 63/126/252, Inside Bar, NR7 (seit 1.7.0)
+     candlesticks.js    Kerzenmuster am Stichtag und "Tage seit" (seit 1.7.0)
      formations.js      Formationen Stand letzter Bar
    Fehlt ein Eingang, bleibt der Wert null (Missing != Zero); der Screener
    wertet null als "Bedingung nicht erfuellt" und zaehlt es im Trichter.
@@ -28,10 +30,11 @@
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
   var Fm = isNode ? require("./formations.js") : global.VUTechnical.Formations;
   var Ctx = isNode ? require("./ti/context.js") : global.VUTechnical.TIContext;
+  var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.4.0";
+  var ROW_VERSION = "technical-screen-row-1.7.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -49,8 +52,95 @@
     return {
       aboveSma200: isNum(sl) ? c > sl : null, aboveSma50: isNum(ss) ? c > ss : null,
       sma50AboveSma200: isNum(sl) && isNum(ss) ? ss > sl : null, distSma200: r(pct(c, sl)),
-      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi))
+      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi)),
+      /* Nur aus der vollen Tageshistorie (bundle.multiTimeframe) berechenbar; Schlusskurse allein reichen nicht. */
+      adx: null, macdPositive: null, stochK: null, atrPct: null, relVol: null, volAboveAvg: null, volSpike: null
     };
+  }
+
+  /**
+   * Ereignisse als "Handelstage seit" (Audit B12). Je Ereignis zwei Werte:
+   *   <feld>        Handelstage seit dem juengsten Ereignis (0 = am Stichtag), null = keines im Pruefraum
+   *   <fenster>     Laenge des Pruefraums in Handelstagen (Tage 0..W-1 geprueft), null = nicht pruefbar
+   * "Kein Ereignis" (Feld null, Fenster W) und "unzureichende Historie" (beide null) sind so unterscheidbar.
+   * Pruefraum = zusammenhaengende Bars vom Stichtag rueckwaerts, an denen das Ereignis entscheidbar ist.
+   * Linien aus chartSeries (Vollhistorie, je Bar kausal), nie aus den 270 Bars neu gerechnet; jede Pruefung an
+   * Bar i nutzt nur Bars <= i (kein Vorgriff). Zeitraeume zaehlen Bars = Handelstage.
+   * Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
+   */
+  function eventBlock(b, cs, formations) {
+    var n = b.close.length, t = n - 1, out = {};
+    /* scan: von t rueckwaerts, solange decidable(i); erstes test(i) liefert die Tage. */
+    function scan(decidable, test) {
+      var w = 0, days = null;
+      for (var i = t; i >= 0 && decidable(i); i--) { w++; if (days === null && test(i)) days = t - i; }
+      return { days: days, window: w > 0 ? w : null };
+    }
+    function both(a, z) { return function (i) { return i >= 1 && isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]); }; }
+    function crossUp(a, z) { return function (i) { return a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    function put(key, windowKey, r) { out[key] = r.days; if (windowKey) out[windowKey] = r.window; }
+    var none = { days: null, window: null };
+    var lines = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
+    put("goldenCrossDays", "smaCrossWindow", lines ? scan(both(cs.sma50, cs.sma200), crossUp(cs.sma50, cs.sma200)) : none);
+    put("deathCrossDays", null, lines ? scan(both(cs.sma50, cs.sma200), crossDown(cs.sma50, cs.sma200)) : none);
+    put("crossAboveSma200Days", "sma200CrossWindow", lines ? scan(both(b.close, cs.sma200), crossUp(b.close, cs.sma200)) : none);
+    put("crossBelowSma200Days", null, lines ? scan(both(b.close, cs.sma200), crossDown(b.close, cs.sma200)) : none);
+    var rsi = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n ? cs.rsi14 : null;
+    var l30 = [], l70 = []; for (var k = 0; k < n; k++) { l30.push(30); l70.push(70); }
+    put("rsiExitOversoldDays", "rsiEventWindow", rsi ? scan(both(rsi, l30), crossUp(rsi, l30)) : none);
+    put("rsiExitOverboughtDays", null, rsi ? scan(both(rsi, l70), crossDown(rsi, l70)) : none);
+    /* Neues 52-Wochen-Hoch: Tageshoch >= Hoch der 251 Vorbars (wie newHigh52w); entscheidbar nur mit 251 Vorbars im Fenster. */
+    put("newHigh52wDays", "high52wWindow", scan(function (i) {
+      if (i < 251 || !isNum(b.high[i])) return false;
+      for (var j = i - 251; j < i; j++) if (!isNum(b.high[j])) return false;
+      return true;
+    }, function (i) { var hi = -Infinity; for (var j = i - 251; j < i; j++) if (b.high[j] > hi) hi = b.high[j]; return b.high[i] >= hi; }));
+    /* Juengste aktive Formations-Erkennung; Pruefraum = das Analysefenster (alle Bars), sofern die Erkennung lief. */
+    if (formations === null || formations === undefined) put("formationNewDays", "formationWindow", none);
+    else {
+      var idx = {}; for (var m = 0; m < n; m++) idx[b.timestamps[m]] = m;
+      var newest = null;
+      formations.forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
+      put("formationNewDays", "formationWindow", { days: newest, window: n });
+    }
+    return out;
+  }
+
+  /**
+   * Kerzenmuster (seit 1.7.0, docs/technical/CANDLESTICKS.md): Muster an der letzten Bar je Richtung und
+   * "Tage seit" dem juengsten bullischen bzw. baerischen Muster. Neutrale Muster (Doji, Long-Legged Doji,
+   * Spinning Top) haben keine Richtung und zaehlen nur in candleNeutral. Pruefraum candleWindow = Bars vom Stichtag
+   * rueckwaerts, an denen ALLE Muster entscheidbar sind (keine NaN); jede Bar nutzt nur Bars <= i.
+   */
+  /* Feste Musterliste des Screeners (1.7.0). Neue Muster in candlesticks.js aendern die Screener-Ausgabe erst,
+     wenn sie hier ergaenzt werden (eigener Fachmodell-PR); technical-query.js CANDLE_TYPES nennt dieselben Ids. */
+  var SCREEN_CANDLES = ["doji", "dragonflyDoji", "gravestoneDoji", "longLeggedDoji", "hammer", "hangingMan", "invertedHammer", "shootingStar",
+    "marubozu", "spinningTop", "engulfing", "harami", "haramiCross", "piercing", "darkCloudCover", "tweezer", "kicking", "morningStar",
+    "eveningStar", "morningDojiStar", "eveningDojiStar", "abandonedBaby", "threeWhiteSoldiers", "threeBlackCrows", "threeInside",
+    "threeOutside", "threeMethods"];
+
+  function candleBlock(b) {
+    var out = { candleBullish: [], candleBearish: [], candleNeutral: [], candleBullDays: null, candleBearDays: null, candleWindow: null };
+    var n = b.close.length, t = n - 1, res = Cdl.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: SCREEN_CANDLES }).patterns;
+    var list = SCREEN_CANDLES.map(function (id) { return [Cdl.pattern(id), res[id]]; });
+    var w = 0;
+    for (var i = t; i >= 0; i--) {
+      var bull = false, bear = false, ok = true;
+      for (var k = 0; k < list.length; k++) {
+        var p = list[k][0], v = list[k][1][i];
+        if (!isNum(v)) { ok = false; break; }
+        if (v === 0) continue;
+        if (i === t) out[p.direction === "neutral" ? "candleNeutral" : v > 0 ? "candleBullish" : "candleBearish"].push(p.id);
+        if (p.direction !== "neutral") { if (v > 0) bull = true; else bear = true; }
+      }
+      if (!ok) { if (i === t) { out.candleBullish = null; out.candleBearish = null; out.candleNeutral = null; } break; }
+      w++;
+      if (bull && out.candleBullDays === null) out.candleBullDays = t - i;
+      if (bear && out.candleBearDays === null) out.candleBearDays = t - i;
+    }
+    out.candleWindow = w > 0 ? w : null;
+    return out;
   }
 
   /** Wochenschluesse -> Monatsschluesse (letzter Wochenschluss je Kalendermonat; laufender Monat zaehlt nicht). */
@@ -71,6 +161,8 @@
    *   bars: {timestamps, open, high, low, close, volume}   (technical-signals-v1, SPLIT_ADJUSTED)
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
+   *   multiTimeframe: bundle.multiTimeframe | null         (Wochen/Monat aus der vollen Tageshistorie; hat Vorrang)
+   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
    * }
@@ -113,6 +205,13 @@
     row.cci20 = r(lastAt(I.compute(b, "cci").values, t), 2);
     row.roc21 = r(isNum(f.roc21) ? f.roc21 : null);
     row.williamsR = r(lastAt(I.compute(b, "williamsR").values, t), 2);
+    /* ROC 63/126/252 (seit 1.7.0): Kursaenderung als Anteil wie roc21; 252 braucht 253 Bars im Fenster. */
+    [[63, "roc63"], [126, "roc126"], [252, "roc252"]].forEach(function (h) { row[h[1]] = t >= h[0] ? r(pct(c, b.close[t - h[0]])) : null; });
+
+    /* ---- Tag: Kerzen und Spannen (seit 1.7.0) ---- */
+    var ib = I.compute(b, "insideBar").values, nr = I.compute(b, "nr7").values;
+    row.insideBar = isNum(ib[t]) ? ib[t] === 1 : null;
+    row.nr7 = isNum(nr[t]) ? nr[t] === 1 : null;
 
     /* ---- Tag: Volumen ---- */
     var hasVol = b.volume && b.volume.some(function (v) { return isNum(v) && v > 0; });
@@ -158,17 +257,24 @@
       });
     } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
 
+    /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
+    Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
+    Object.assign(row, candleBlock(b));
+
     /* ---- Woche und Monat (Schlusskurse aus discover-series-long) ---- */
     var weekly = (input.weekly || []).filter(function (p) { return p && isNum(p[1]); });
     /* Nur abgeschlossene Wochen: endet die Reihe am Stichtag und ist der Stichtag kein Freitag, ist die letzte
        Woche noch offen und faellt weg (Feiertagsfreitage verlieren dadurch eine Woche - bewusst konservativ). */
     if (weekly.length && weekly[weekly.length - 1][0] === row.asOf && new Date(row.asOf + "T12:00:00Z").getUTCDay() !== 5) weekly = weekly.slice(0, -1);
     var wc = weekly.map(function (p) { return p[1]; });
-    var W = closeOnlyBlock(wc, 40, 10, 52);
+    /* Vorrang: Wochen-/Monatskennzahlen der Materialisierung aus der vollen Tageshistorie
+       (bundle.multiTimeframe, OHLCV, echter Monatsschluss). Ohne sie: Schlusskurs-Rechnung wie bisher. */
+    var mtf = input.multiTimeframe && /^technical-mtf-1\./.test(input.multiTimeframe.version || "") ? input.multiTimeframe : null;
+    var W = mtf && mtf["1W"] && mtf["1W"].values || closeOnlyBlock(wc, 40, 10, 52);
     if (W) Object.keys(W).forEach(function (k) { row[k + "@1W"] = W[k]; });
-    var mc = monthlyFromWeekly(weekly, row.asOf);
-    var M = closeOnlyBlock(mc, 10, 5, 12);
+    var M = mtf && mtf["1M"] && mtf["1M"].values || closeOnlyBlock(monthlyFromWeekly(weekly, row.asOf), 10, 5, 12);
     if (M) Object.keys(M).forEach(function (k) { row[k + "@1M"] = M[k]; });
+    row.mtfSource = mtf ? "DAILY_HISTORY" : "WEEKLY_CLOSES";
     var hi200 = wc.length >= 200 ? Math.max.apply(null, wc.slice(wc.length - 200)) : null;
     row.newHigh200w = isNum(hi200) ? wc[wc.length - 1] >= hi200 : null;
     row.distHigh200w = r(pct(wc[wc.length - 1], hi200));
@@ -189,7 +295,7 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, computeRow: computeRow, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }
 })(typeof window !== "undefined" ? window : globalThis);

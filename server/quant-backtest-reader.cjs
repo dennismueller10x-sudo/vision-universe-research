@@ -9,7 +9,7 @@ function create({directory,root=path.resolve(__dirname,'..'),enabled=false,audie
  const grants=new Set(allowedTickers),active=enabled===true&&audience==='INTERNAL_REVIEW';let service=null,store=null,freshness=null,contextKey=null;const shards=new Map();
  if(active){store=Store.create({directory,repositoryRoot:root});freshness=Freshness.create({root,directory});}
  async function context(ticker){
-  const files=['quant/config/development-preview.json','quant/config/feature-gates.json','quant/engines/display-policy.js','quant/data/universe/search-manifest.json'];
+  const files=['quant/config/development-preview.json','quant/config/feature-gates.json','quant/engines/display-policy.js','quant/data/universe/search-manifest.json','quant/engines/research-classification-evidence.cjs'];
   const values=await Promise.all(files.map(async p=>{try{return await fs.readFile(path.join(root,p));}catch(e){if(p.endsWith('search-manifest.json')&&e.code==='ENOENT')return Buffer.from('MISSING');throw e;}}));
   const shard=Master.shardKey(ticker),identityHash=hash(await fs.readFile(path.join(root,'quant/data/universe/instruments',shard+'.json')));
   return {key:hash(Buffer.concat(values)),policySource:values[2].toString(),shard,identityHash};

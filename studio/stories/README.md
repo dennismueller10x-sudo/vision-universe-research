@@ -6,7 +6,8 @@ Rezepte und Bauskript für die Videos in den Highlights von `/willkommen/`. Konz
 
 | Ort | Inhalt |
 |---|---|
-| `studio/stories/<id>/story.json` | Rezept: Quelle (Dropbox-Pfad), Version, Texteinblendungen mit Zeiten |
+| `studio/stories/<id>/story.json` | Rezept: Quelle (Dropbox-Pfad), Version, Stimme, Texteinblendungen mit Zeiten |
+| `studio/stories/<id>/voice-v<n>.m4a` | Sprecheraufnahme (Helmut), damit ein Neubau ohne neue Kosten geht |
 | `studio/stories/build-story.mjs` | baut die App-Fassung aus Quelle und Rezept |
 | `assets/stories/<id>-v<version>.mp4` und `.jpg` | ausgelieferte App-Fassung und Poster (im Repo) |
 | `willkommen/config/stories.json` | welches Highlight welche Datei zeigt |
@@ -17,9 +18,11 @@ Die Quelldateien in voller Größe (Masters) bleiben in der Dropbox des Owners u
 
 `<id>-v<version>`: `id` ist das Highlight (`start`, später zum Beispiel `discover`, `quant`), `version` zählt jede neue Fassung hoch. Ein neuer Dateiname sorgt dafür, dass kein Browser eine alte Kopie aus dem Cache zeigt. Der Test der Willkommensseite prüft, dass Dateiname und Rezept zusammenpassen.
 
+Jedes Erklärvideo hat einen Sprecher (Regel des Owners). Die Stimme liegt als `voice-v<n>.m4a` neben dem Rezept; `build-story.mjs` legt sie ab `voice.offset` über den Quellton und senkt diesen darunter ab.
+
 ## Neue Fassung, zum Beispiel wenn ein Modul dazukommt
 
-1. Text in `studio/stories/<id>/story.json` ändern (`*Wort*` färbt Lime, `\n` bricht um), `version` um eins erhöhen.
+1. Text in `studio/stories/<id>/story.json` ändern (`*Wort*` färbt Lime, `\n` bricht um), `version` um eins erhöhen. Ändert sich der gesprochene Text: neue Aufnahme mit Helmut (Kosten vorher nennen), `tighten.py`, als `voice-v<version>.m4a` ablegen, Einblendungen auf die neuen Wortzeiten legen.
 2. Quelle aus der Dropbox laden und bauen:
    ```bash
    node studio/stories/build-story.mjs studio/stories/start/story.json --source "<Pfad zu THE ARRIVAL – Original.mp4>" --apply
@@ -39,3 +42,29 @@ Die App-Fassungen liegen im Repo und werden mit der Seite ausgeliefert (GitHub P
 - Jede neue Fassung bleibt in der Git-Historie (etwa 3 MB je Fassung). Bei seltenen Änderungen ist das unkritisch.
 
 Wird es mehr (viele Videos, häufige Neufassungen, längere Filme), ziehen die Videos auf einen eigenen Speicher mit öffentlicher Adresse um, zum Beispiel einen HeyGen-Asset-Upload wie bei den Reels oder einen Cloudflare-Speicher. Dann ändert sich nur `src` in `willkommen/config/stories.json`; Seite und Rezepte bleiben gleich.
+
+## Erklärvideos im Motion-Graphics-Stil (Baukasten `kit/`)
+
+Stand 26.10.2026. Stil wie die Instagram-Reels zu Quant und Minervini: dunkler Grund mit Lime-Glow, Logo und Rubrik, große Schlagzeile mit Lime-Wort, animierte Grafik (Icons, Handy, Raster, Radar, Balken), wortgenaue Untertitel, Lichtstreifen und Kamerafahrt, Endkarte. Immer mit Helmut, Musik aus der Dropbox (`/System_Collapse_-_Dark_Hybrid_Trailer.mp3`, ab 15,6 s, Ducking) und selbst synthetisierten Effekten.
+
+| Datei | Inhalt |
+|---|---|
+| `<id>/script.txt` | Sprechertext im Skriptformat (`[[s2]]` Szenen, `[[e:name]]` Ereignisse, `{gesprochen|Anzeige}`), siehe `studio/reels/tools/build_script.py` |
+| `<id>/voice-v<n>.m4a`, `words-v<n>.json`, `timing-v<n>.json` | Aufnahme, Wortzeiten, Zeitplan (Neubau ohne neue Kosten) |
+| `<id>/scenes.js` | sechs Szenen: Schlagzeile, Grafik, Animation auf den Ereigniszeiten |
+| `kit/story.html`, `kit.css`, `kit.js` | gemeinsamer Motor (Logo, Rubrik, Untertitel, Glow, Kamerafahrt, Endkarte; `filmUntil` für einen Film darunter) |
+| `kit/render.mjs` | Bildfolge (30 fps) über einen lokalen Server im Repo-Wurzelordner |
+| `kit/sfx.py`, `kit/finish.sh` | Effekte, Mischung (−16 LUFS), Master 1080 × 1920 und App-Fassung 720 × 1280 |
+
+Ablauf (Arbeitsordner außerhalb des Repos, z. B. Scratchpad):
+
+```bash
+python3 -I studio/reels/tools/build_script.py studio/stories/<id>/script.txt tts tts.json   # Text für die Stimme (Kosten vorher nennen)
+# Aufnahme mit Helmut (POST /v3/voices/speech), dann tighten.py 1.14, Whisper prüfen
+python3 -I studio/reels/tools/build_script.py studio/stories/<id>/script.txt timing words.json timing.json
+python3 -m http.server 8765 &                                   # im Repo-Wurzelordner
+node studio/stories/kit/render.mjs v=<id> timing=timing.json out=frames [i0= i1=] [ovl=1]   # vier Prozesse parallel
+cd <arbeitsordner> && studio/stories/kit/finish.sh music.mp3 <id>-master.mp4 <id>-app.mp4 [film.mp4]
+```
+
+Für einen Neubau aus dem Repo: `voice-v<n>.m4a` nach `vo.wav` wandeln (`ffmpeg -i voice-v1.m4a -ar 48000 vo.wav`) und `timing-v<n>.json` als `timing.json` nehmen.

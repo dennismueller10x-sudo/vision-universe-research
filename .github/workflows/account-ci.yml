@@ -1,0 +1,132 @@
+name: Konten und Abos — Tests
+# Supabase-Migrationen (echtes PostgreSQL: RLS, Rechte, billing_*), Worker
+# vu-account (Einheit + Ende-zu-Ende mit simuliertem Supabase/Stripe und
+# signierten Webhooks), Kontoseiten /konto/. Kein Netz zu Supabase oder
+# Stripe, keine Konten, keine Zahlungen.
+on:
+  pull_request:
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
+      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml',
+      'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs', 'quant/index.html']
+  push:
+    branches: [main]
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/watchlist/**', 'core/watchlist-view.js',
+      'assets/watchlist-button.js', '.github/workflows/account-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-ci-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf, nur auf localhost: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SQL-Migrationen und RLS (PostgreSQL 17)
+        run: node scripts/account/sql-tests.mjs
+      - name: Worker, Ende-zu-Ende und Kontoseiten
+        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"
+      - name: Watchlist - Uebersicht und Ansicht (Core)
+        run: node --test core/tests/watchlist-view.test.mjs core/tests/watchlist-button.test.mjs
+      - name: Watchlist - Last und Speicher (1.000 Nutzer, Kurzlauf)
+        run: node scripts/account/watchlist-load.mjs --users=1000 --sizes=25,200
+      - name: Keine Schluessel im Repository
+        run: node scripts/account/assert-no-billing-secrets.mjs
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-account
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-account-bundle
+
+  browser:
+    # Kontoseiten im echten Browser gegen die lokale Simulation (scripts/account/dev-server.mjs):
+    # Chromium (Desktop, mobil) und WebKit im iPhone-Profil (Safari-Engine). Browser aus dem
+    # Playwright-Image wie in shell-ci.yml, PostgreSQL 17 als Dienst.
+    name: Browser (Chromium und WebKit/iPhone)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@postgres:5432/postgres
+    defaults:
+      run:
+        # Im Container ist die Standard-Shell sh (ohne pipefail).
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: PostgreSQL-Client
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          psql --version
+      - name: Playwright (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/account-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/account-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Browser-QA (Chromium 1280/390, WebKit iPhone 390)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/account-evidence
+          node scripts/account/dev-server.mjs --port=8790 > /tmp/account-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8790/v1/health > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/browser-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
+          node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Kopplungs-QA (lokale Beobachten-Listen, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Eigener Testserver: frischer Zaehler fuer Registrierungen (signup 5/h je IP, die Simulation meldet immer
+          # 127.0.0.1). Die Grenze selbst bleibt unveraendert. Abgemeldet rein lokal, angemeldet lokal und Konto.
+          node scripts/account/dev-server.mjs --port=8791 > /tmp/account-evidence/server-coupling.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8791/v1/health > /dev/null && break; sleep 1; done
+          status=0
+          for qa in scripts/discover/watchlist-coupling-qa.mjs scripts/account/quant-watch-coupling-qa.mjs; do
+            [ -f "$qa" ] || continue
+            node "$qa" --url=http://localhost:8791 || status=1
+            node "$qa" --engine=webkit --url=http://localhost:8791 || status=1
+          done
+          test "$status" -eq 0
+      - name: Screenshots sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: account-browser-evidence
+          path: /tmp/account-evidence

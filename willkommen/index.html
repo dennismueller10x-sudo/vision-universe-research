@@ -20,28 +20,37 @@
 <body class="wk-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="wk-skip" href="#wk-main">Zum Inhalt</a>
 <main id="wk-main" class="wk" tabindex="-1">
-  <header class="wk-hero">
-    <p class="wk-eyebrow"><span id="wk-hello">Hallo</span></p>
-    <h1>Willkommen bei Vision&nbsp;Universe.</h1>
-    <p class="wk-lead">Starte mit einer kurzen Einführung oder spring direkt in dein Modul.</p>
-  </header>
-
-  <section class="wk-section wk-section-hl" aria-labelledby="wk-hl-title">
-    <h2 id="wk-hl-title" class="wk-visually-hidden">Erklärvideos</h2>
-    <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
+  <h1 class="wk-visually-hidden">Willkommen bei Vision Universe</h1>
+  <section class="wk-hero" aria-labelledby="wk-hero-title">
+    <button id="wk-hero-play" class="wk-hero-card" type="button" aria-describedby="wk-hero-sub">
+      <span class="wk-hero-img" id="wk-hero-img" aria-hidden="true"></span>
+      <span class="wk-hero-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+      <span class="wk-hero-copy">
+        <span class="wk-eyebrow" id="wk-hello">Hallo</span>
+        <span class="wk-hero-title" id="wk-hero-title">Ein kurzer Einblick in deine Möglichkeiten.</span>
+        <span class="wk-hero-sub" id="wk-hero-sub">Vision Universe in 30&nbsp;Sekunden.</span>
+      </span>
+      <span class="wk-dur" id="wk-hero-dur"></span>
+    </button>
   </section>
 
-  <section class="wk-section" aria-labelledby="wk-products-title">
-    <div class="wk-section-head"><h2 id="wk-products-title">Deine Produkte</h2></div>
+  <section class="wk-sec" aria-labelledby="wk-hl-title">
+    <div class="wk-head"><h2 id="wk-hl-title">Weitere Videos</h2><button class="wk-link" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="wk-hl-wrap">
+      <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
+      <button class="wk-hl-more" id="wk-hl-more" type="button" aria-label="Weitere Videos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+
+  <section class="wk-sec" aria-labelledby="wk-products-title">
+    <div class="wk-head"><h2 id="wk-products-title">Deine Produktwelten</h2><button class="wk-link" id="wk-products-all" type="button">Alle Produkte<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <nav id="wk-products" aria-labelledby="wk-products-title"></nav>
   </section>
 
-  <section class="wk-section" aria-labelledby="wk-news-title">
-    <div class="wk-section-head"><h2 id="wk-news-title">Neu bei Vision Universe</h2></div>
-    <div id="wk-news" aria-busy="true"><p class="wk-empty">Neuigkeiten werden geladen …</p></div>
+  <section class="wk-sec wk-newsbox" aria-labelledby="wk-news-title">
+    <div class="wk-head"><h2 id="wk-news-title">Neu bei Vision Universe</h2><button class="wk-link" id="wk-news-all" type="button">Alle Neuigkeiten<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div id="wk-news" class="wk-news" aria-busy="true"><p class="wk-empty">Neuigkeiten werden geladen …</p></div>
   </section>
-
-  <p class="wk-note">Vision Universe zeigt Daten und Modelle, keine Anlageberatung.</p>
 </main>
 <noscript><p style="padding:24px">Die Willkommensseite benötigt JavaScript.</p></noscript>
 <script src="/willkommen/app.js"></script>

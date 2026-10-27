@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "quant-v8-setup-decision-1.0.0",
+  "status": "PROPOSED_NOT_APPROVED",
+  "contractVersion": "backtest-certification-1.0.0",
+  "contractRequirement": {
+    "independentWeeks": 20
+  },
+  "legacyEvaluator": "new Set(outcomes.events.map(e => e[2].slice(0,7))).size",
+  "legacyMeaning": "distinct calendar months with events",
+  "sourceHash": "0807a7de36717157512ac271f1246d566fa7f521f97db9a4910015072ae8db27",
+  "generatorHash": "7af343630edc2440e063895695fc45a85964e0758a856f444aee4f449e0bdfcb",
+  "observed": {
+    "events": 3995,
+    "uniqueDates": 19,
+    "from": "2026-09-24",
+    "to": "2026-10-23",
+    "legacyMonths": [
+      "2026-09",
+      "2026-10"
+    ],
+    "isoWeeks": [
+      "2026-W39",
+      "2026-W40",
+      "2026-W41",
+      "2026-W42",
+      "2026-W43"
+    ],
+    "legacyMonthCount": 2,
+    "isoWeekCount": 5
+  },
+  "proposedVersion": "backtest-certification-1.1.0",
+  "proposal": "Keep legacy calendar-month count as an audit field; introduce distinct ISO week count with ISO week-year for the named gate; neither count establishes statistical independence. Retain all maturity, M6, owner approval and OOS gates.",
+  "requires": "Owner approval of revised normative contract and separate implementation/recalculation. No active gate changed.",
+  "productionApproved": false
+}

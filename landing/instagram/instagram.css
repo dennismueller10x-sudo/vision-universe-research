@@ -1,0 +1,24 @@
+/* Instagram-Seiten: ergänzt partner.css um "bald verfügbar" und Listen. */
+.soon{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;border:2px dashed rgba(200,245,49,.6);color:var(--lime);font-weight:700;font-size:var(--body)}
+.soon::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 6px rgba(200,245,49,.16)}
+.bar .soon{min-height:40px;padding:0 16px;font-size:var(--small);margin-left:auto}
+.bar .bar-count+.soon{margin-left:0}
+.lime .soon{color:var(--on-lime);border-color:var(--on-lime)}
+.lime .soon::before{background:var(--on-lime);box-shadow:0 0 0 6px rgba(16,19,24,.14)}
+.lists{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:clamp(14px,1.6vw,24px)}
+.lists a{display:flex;flex-direction:column;gap:10px;min-height:44px;padding:clamp(24px,2.6vw,40px);border-radius:24px;background:var(--card);border:1px solid var(--line);text-decoration:none;transition:transform .2s ease,border-color .2s ease}
+.lists a:hover{transform:translateY(-4px);border-color:var(--lime)}
+.lists .tag{font-size:var(--small);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lime)}
+.lists strong{font-size:clamp(26px,2.6vw,44px);font-weight:800;line-height:1.1}
+.lists span:last-child{color:var(--ink-2)}
+.stocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,1.6vw,24px);counter-reset:s}
+.stocks li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,2.4vw,36px);display:flex;flex-direction:column;gap:10px}
+.stocks .head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.stocks .head::before{content:counter(s,decimal-leading-zero);font-weight:800;color:var(--lime);font-size:clamp(22px,2vw,32px)}
+.stocks h3{font-size:clamp(22px,2vw,32px);font-weight:700;line-height:1.2}
+.stocks .tk{font-size:var(--small);font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.stocks .role{display:inline-flex;align-self:flex-start;padding:6px 14px;border-radius:999px;background:rgba(200,245,49,.12);color:var(--lime);font-size:var(--small);font-weight:700}
+.stocks .role.second{background:transparent;border:1px solid rgba(200,245,49,.5)}
+.stocks p{color:var(--ink-2)}
+.note{color:var(--muted);font-size:var(--small);max-width:70ch}
+@media (max-width:960px){.stocks{grid-template-columns:1fr}.bar .soon{margin-left:auto}}

@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "quant-v8-technical-close-review-1.0.0",
+  "reviewedAtUtc": "2026-10-27T14:19:08.935027+00:00",
+  "pr": 976,
+  "reviewedHead": "bcfe76098b55fd919fe2dff5f3032c5b73a4f176",
+  "observedMain": "b9aa78e67930b11cf1646bd2dac05b3cce28242f",
+  "conflictFreeCandidateTree": "f78de6c540c24e0910dffa59e6926da0b7c56b0f",
+  "mergeStatus": "V8_SECURED_MERGE_BLOCKED",
+  "blocker": {
+    "kind": "EXPLICIT_NO_DEPLOYMENT_CONSTRAINT",
+    "source": ".github/workflows/pages-release.yml",
+    "pushTrigger": "main",
+    "deployJobCondition": "github.event_name != 'pull_request'",
+    "actualDeploymentStep": "actions/deploy-pages@v4",
+    "decision": "No merge or remote push pending clarification; existing production automation unchanged."
+  },
+  "branchProtection": {
+    "branchProtected": false,
+    "branchApiRequiredStatusChecks": [],
+    "applicableBranchRules": [],
+    "legacyProtectionDetails": "Details endpoint returned HTTP 403; branch metadata reports protected=false and enforcement_level=off. No absence inferred from 403."
+  },
+  "reviews": {
+    "reviews": [],
+    "reviewRequests": [],
+    "unresolvedThreads": 0
+  },
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:54:18Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179652/job/122192549556",
+      "name": "test",
+      "startedAt": "2026-10-27T12:53:13Z",
+      "status": "COMPLETED",
+      "workflowName": "CI Config"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:59:25Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179718/job/122192550178",
+      "name": "core",
+      "startedAt": "2026-10-27T12:53:48Z",
+      "status": "COMPLETED",
+      "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:49:42Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179726/job/122192550548",
+      "name": "contract",
+      "startedAt": "2026-10-27T12:48:32Z",
+      "status": "COMPLETED",
+      "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:51:05Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179731/job/122192550048",
+      "name": "package",
+      "startedAt": "2026-10-27T12:43:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant 2.0 Production Pages"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:59:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179633/job/122192549548",
+      "name": "experience",
+      "startedAt": "2026-10-27T12:44:28Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant Browser QA"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:56:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179668/job/122192549706",
+      "name": "test",
+      "startedAt": "2026-10-27T12:52:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:53:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179835/job/122192549969",
+      "name": "validate",
+      "startedAt": "2026-10-27T12:44:41Z",
+      "status": "COMPLETED",
+      "workflowName": "SEC Fundamentals CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:37:08Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179718/job/122192552406",
+      "name": "live",
+      "startedAt": "2026-10-27T12:37:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:51:06Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179731/job/122198874854",
+      "name": "deploy",
+      "startedAt": "2026-10-27T12:51:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant 2.0 Production Pages"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:37:07Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179668/job/122192551556",
+      "name": "v8-private-archive-assessment",
+      "startedAt": "2026-10-27T12:37:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:42:55Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179726/job/122192550064",
+      "name": "marker",
+      "startedAt": "2026-10-27T12:42:52Z",
+      "status": "COMPLETED",
+      "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:42:55Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179726/job/122195161004",
+      "name": "measure",
+      "startedAt": "2026-10-27T12:42:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:51:06Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179731/job/122198875887",
+      "name": "company-intelligence-live",
+      "startedAt": "2026-10-27T12:51:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant 2.0 Production Pages"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:37:07Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179668/job/122192551013",
+      "name": "v8-r2-archive-probe",
+      "startedAt": "2026-10-27T12:37:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:37:07Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40505179668/job/122192551137",
+      "name": "v8-r2-corporate-action-cases",
+      "startedAt": "2026-10-27T12:37:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Quant CI"
+    },
+    {
+      "__typename": "StatusContext",
+      "context": "Vercel",
+      "startedAt": "2026-10-27T12:37:05Z",
+      "state": "FAILURE",
+      "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-27T12:41:01Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/24cb2c3c-6e3e-418c-81ad-8f70cdbf4743",
+      "name": "Cloudflare Pages",
+      "startedAt": "2026-10-27T12:41:01Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ],
+  "regressionDecision": {
+    "sourceEdits": 0,
+    "sealedArtifactHashesVerified": 54,
+    "securedV8ResearchPaths": 88,
+    "currentMainChangedV8Paths": 0,
+    "researchBindingsChanged": 0,
+    "newNumericalRuns": 0,
+    "reason": "Only additive handoff documentation. Explicit-base three-way candidate keeps all secured V8 paths; no affected research dependency or source overlap. Existing hash-bound tests retained."
+  },
+  "handoff": {
+    "path": "docs/quant-recovery/BACKTEST_V9_HANDOFF.md",
+    "version": "1.0.0",
+    "sha256": "9ab89f46bca078a758789fa8d4b8e9e91c7b6e2d9634d192450d5636a286733a"
+  },
+  "securementManifest": {
+    "path": "docs/quant-recovery/v9/v8-securement-1.0.0.json",
+    "sha256": "3ebba9e8e36f4bbbacb376dc50265a6351421b4d955e3b3f9f884412b1f1726f"
+  },
+  "scientificStatusUnchanged": "V8_PARTIALLY_VALIDATED",
+  "merged": false,
+  "manualDeploymentRequested": false,
+  "productActivation": false,
+  "newDataPurchases": 0,
+  "productionApproved": false
+}

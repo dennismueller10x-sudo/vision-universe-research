@@ -10,17 +10,16 @@
   var MIN_S = 15, MAX_S = 45;
 
   // Produkte in der Reihenfolge des globalen Menues (assets/site-navigation.js).
+  // Produktwelten auf der Willkommensseite (4 x 2); Elliott, Hedgefonds und alle weiteren ueber "Alle Produkte" (globales Menue).
   var PRODUCTS = [
-    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken, Themenwelten und Märkte.' },
-    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren, Ereignisse und frühere Vergleichsfälle.' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Über 60 Kennzahlen aus SEC-Meldungen.' },
-    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Chartanalyse, Indikatoren und Formationen.' },
-    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur, wo sie sich belastbar lesen lässt.' },
-    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Kriterien filtern und vergleichen.' },
-    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Bewährte Methoden, feste Regeln, Backtests.' },
-    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was große Investoren halten.' },
-    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Vorsorgelücke, ETFs, Kosten und Förderung.' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in eigenen Worten, Atlas rechnet auf den Daten.' }
+    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Märkte' },
+    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Kennzahlen' },
+    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts' },
+    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden' },
+    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Aktien finden' },
+    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'ETFs & Rente' },
+    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag frei' }
   ];
 
   function storyDuration(story) {
@@ -103,57 +102,119 @@
     if (!stories) return;
     var s = seen();
     stories.stories.forEach(function (story) {
-      var b = doc.querySelector('.wk-hl[data-story="' + story.id + '"]');
+      var b = doc.querySelector('[data-story="' + story.id + '"]');
       if (!b) return;
       var done = s[story.id] === story.rev;
       b.classList.toggle('is-seen', done);
-      b.setAttribute('aria-label', story.title + ': ' + story.product + ' erklärt' + (done ? ', gesehen' : ', neu'));
+      b.setAttribute('aria-label', story.tagline + ' (' + story.product + ', ' + mmss(storyVideo(story)) + ')' + (done ? ', gesehen' : ', neu'));
     });
   }
 
   /* ---------- Abschnitte ---------- */
+  var CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function storyVideo(story) { var v = (story.slides || []).find(function (x) { return x.type === 'video'; }); return v ? v.duration : storyDuration(story); }
+  function mmss(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+  // Erstes Video gross oben, die weiteren als Karten mit Vorschaubild.
   function renderHighlights(host) {
-    var list = h('ul', 'wk-hl-list');
-    stories.stories.forEach(function (story, i) {
-      var li = h('li'), b = h('button', 'wk-hl'), cover = h('span', 'wk-hl-cover'), glyph = h('span', 'wk-hl-glyph');
-      b.type = 'button'; b.dataset.story = story.id; b.style.setProperty('--wk-turn', (i * 72) + 'deg');
-      glyph.appendChild(icon(story.icon || 'layers')); cover.appendChild(glyph);
-      b.append(cover, h('span', 'wk-hl-name', story.title));
+    var list = h('ul', 'wk-hl-list'), firstNew = null, s = seen(), all = stories.stories, top = all[0];
+    var hero = doc.getElementById('wk-hero-play');
+    if (hero && top) {
+      hero.dataset.story = top.id;
+      doc.getElementById('wk-hero-img').style.backgroundImage = 'url("' + (top.thumb || '') + '")';
+      doc.getElementById('wk-hero-title').textContent = top.tagline || top.title;
+      doc.getElementById('wk-hero-dur').textContent = mmss(storyVideo(top));
+      doc.getElementById('wk-hero-sub').textContent = 'Vision Universe in ' + Math.round(storyVideo(top)) + ' Sekunden.';
+      hero.onclick = function () { openStory(top.id, hero); };
+    }
+    all.forEach(function (story, i) {
+      if (!firstNew && s[story.id] !== story.rev) firstNew = story.id;
+      if (i === 0) return;
+      var li = h('li'), b = h('button', 'wk-vid'), th = h('span', 'wk-vid-thumb'), play = h('span', 'wk-vid-play');
+      b.type = 'button'; b.dataset.story = story.id;
+      if (story.thumb) th.style.backgroundImage = 'url("' + story.thumb + '")';
+      play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
+      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), h('span', 'wk-vid-tag', story.product));
+      b.append(th, h('span', 'wk-vid-title', story.tagline || story.title));
       b.addEventListener('click', function () { openStory(story.id, b); });
       li.appendChild(b); list.appendChild(li);
     });
     host.replaceChildren(list); host.removeAttribute('aria-busy');
+    // Pfeil rechts blaettert weiter, solange es rechts noch etwas gibt.
+    var more = doc.getElementById('wk-hl-more');
+    if (more) {
+      var sync = function () { more.hidden = host.scrollLeft + host.clientWidth >= host.scrollWidth - 4; };
+      more.onclick = function () { host.scrollBy({ left: host.clientWidth * 0.7, behavior: reduced() ? 'auto' : 'smooth' }); };
+      host.addEventListener('scroll', sync, { passive: true }); global.addEventListener('resize', sync); sync(); requestAnimationFrame(sync);
+      if (global.ResizeObserver) new ResizeObserver(sync).observe(host.firstChild || host);
+    }
+    var allBtn = doc.getElementById('wk-hl-all');
+    if (allBtn) allBtn.onclick = function () { openStory(firstNew || all[0].id, allBtn); };
     paintSeen();
   }
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), copy = h('span', 'wk-product-copy');
+      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
       a.href = p.href; a.dataset.product = p.id;
-      ic.appendChild(icon(p.id));
-      copy.append(h('strong', '', p.name), h('span', '', p.text));
-      a.append(ic, copy, h('span', 'wk-product-go', '→'));
+      ic.appendChild(icon(p.id)); go.innerHTML = CHEVRON;
+      a.append(ic, go, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
       li.appendChild(a); list.appendChild(li);
     });
     host.replaceChildren(list);
+    // "Alle Produkte" oeffnet das globale Menue mit allen Welten (auch Elliott, Hedgefonds, Dashboard, Macro, ETF ...).
+    var all = doc.getElementById('wk-products-all');
+    if (all) all.onclick = function () { var nav = doc.querySelector('vu-navigation'); if (nav && nav.openMenu) nav.openMenu(all); else global.location.href = '/discover/'; };
   }
+  function newsItem(item, tag) {
+    var li = h(tag || 'li', 'wk-news-item' + (item.pinned ? ' is-pinned' : '')), head = h('p', 'wk-news-meta'), time = h('time', '', formatDate(item.date));
+    time.dateTime = item.date; head.append(h('span', 'wk-news-tag', item.tag || 'Vision Universe'), h('span', 'wk-news-dot', '·'), time);
+    li.append(head, h('h3', '', item.title), h('p', 'wk-news-text', item.text));
+    if (item.link) { var a = h('a', 'wk-news-link', item.link.label + ' →'); a.href = item.link.href; li.appendChild(a); }
+    return li;
+  }
+  // Auf der Startseite steht nur die erste Meldung (angeheftet oder neueste); "Alle Neuigkeiten" zeigt die Liste.
   function renderNews(host, config) {
-    var items = sortNews(config.items), list = h('ol', 'wk-news'), LIMIT = 4;
-    items.forEach(function (item, i) {
-      var li = h('li', 'wk-news-item' + (item.pinned ? ' is-pinned' : '')), head = h('p', 'wk-news-meta'), time = h('time', '', formatDate(item.date));
-      time.dateTime = item.date; head.append(h('span', 'wk-news-tag', item.tag || 'Vision Universe'), time);
-      li.append(head, h('h3', '', item.title), h('p', 'wk-news-text', item.text));
-      if (item.link) { var a = h('a', 'wk-news-link', item.link.label + ' →'); a.href = item.link.href; li.appendChild(a); }
-      if (i >= LIMIT) li.hidden = true;
-      list.appendChild(li);
-    });
-    host.replaceChildren(list);
-    if (items.length > LIMIT) {
-      var more = h('button', 'wk-more', 'Ältere Neuigkeiten (' + (items.length - LIMIT) + ')'); more.type = 'button';
-      more.addEventListener('click', function () { list.querySelectorAll('[hidden]').forEach(function (n) { n.hidden = false; }); more.remove(); });
-      host.appendChild(more);
-    }
+    var items = sortNews(config.items), copy = h('div', 'wk-news-copy');
+    if (!items.length) { host.replaceChildren(h('p', 'wk-empty', 'Noch keine Neuigkeiten.')); host.removeAttribute('aria-busy'); return; }
+    var first = newsItem(items[0], 'div');
+    copy.append.apply(copy, Array.from(first.childNodes));
+    host.replaceChildren(copy, h('span', 'wk-news-art'));
+    host.querySelector('.wk-news-art').innerHTML = NEWS_ART;
     host.removeAttribute('aria-busy');
+    fitNews(); if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fitNews);
+    if (global.ResizeObserver) new ResizeObserver(function () { requestAnimationFrame(fitNews); }).observe(host); else global.addEventListener('resize', fitNews);
+    var all = doc.getElementById('wk-news-all');
+    if (all) all.onclick = function () { openNewsSheet(items, all); };
+  }
+  // Der Text der Meldung bekommt so viele Zeilen, wie auf den Bildschirm passen (Rest mit "…"), statt mitten in der Zeile abzureissen.
+  function fitNews() {
+    var box = doc.querySelector('.wk-news'), text = box && box.querySelector('.wk-news-text'), title = box && box.querySelector('.wk-news-copy h3');
+    if (!text) return;
+    text.hidden = false; if (title) title.style.webkitLineClamp = '';
+    var bottom = function () { var r = box.getBoundingClientRect(); return r.bottom - parseFloat(getComputedStyle(box).paddingBottom); };
+    for (var n = 6; n >= 1; n--) { text.style.webkitLineClamp = String(n); if (text.getBoundingClientRect().bottom <= bottom() + 1) return; }
+    text.hidden = true;
+    if (title && title.getBoundingClientRect().bottom > bottom() + 1) title.style.webkitLineClamp = '1';
+  }
+  var NEWS_ART = '<svg viewBox="0 0 160 120" aria-hidden="true"><defs><linearGradient id="wkg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#e6edd6" stop-opacity=".55"/></linearGradient></defs>' +
+    '<rect x="30" y="22" width="92" height="70" rx="12" fill="url(#wkg)" stroke="#c8f531" stroke-opacity=".55" transform="rotate(-8 76 57)"/>' +
+    '<rect x="44" y="30" width="96" height="72" rx="12" fill="#1a1d17" fill-opacity=".9" stroke="#c8f531" stroke-opacity=".6" transform="rotate(-8 92 66)"/>' +
+    '<g transform="rotate(-8 92 66)"><rect x="56" y="42" width="22" height="4" rx="2" fill="#c8f531" opacity=".8"/><rect x="56" y="50" width="34" height="3" rx="1.5" fill="#fff" opacity=".35"/>' +
+    '<circle cx="60" cy="90" r="2.4" fill="#fff" opacity=".4"/><circle cx="68" cy="90" r="2.4" fill="#fff" opacity=".4"/><circle cx="76" cy="90" r="2.4" fill="#fff" opacity=".4"/></g>' +
+    '<path d="M58 86 78 70l12 8 22-26 14 6 18-30" fill="none" stroke="#c8f531" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px rgba(200,245,49,.7))"/>' +
+    '<path d="m138 22 9-3-1 10" fill="none" stroke="#c8f531" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function openNewsSheet(items, opener) {
+    var back = h('div', 'wk-sheet'), panel = h('div', 'wk-sheet-panel'), head = h('div', 'wk-sheet-head'), close = h('button', 'wk-sheet-close', '×'), list = h('ol', 'wk-sheet-list');
+    back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Alle Neuigkeiten');
+    close.type = 'button'; close.setAttribute('aria-label', 'Schließen');
+    head.append(h('h2', '', 'Alle Neuigkeiten'), close);
+    items.forEach(function (item) { list.appendChild(newsItem(item)); });
+    panel.append(head, list); back.appendChild(panel); doc.body.appendChild(back);
+    doc.documentElement.classList.add('wk-story-open');
+    function done() { back.remove(); doc.documentElement.classList.remove('wk-story-open'); doc.removeEventListener('keydown', key, true); if (opener) opener.focus({ preventScroll: true }); }
+    function key(e) { if (e.key === 'Escape') { e.preventDefault(); done(); } }
+    close.onclick = done; back.onclick = function (e) { if (e.target === back) done(); };
+    doc.addEventListener('keydown', key, true); close.focus();
   }
 
   /* ---------- Vollbild-Ansicht der Highlights ---------- */
@@ -307,7 +368,14 @@
   }
 
   /* ---------- Start ---------- */
+  // Sichtbare Hoehe unter der Kopfleiste: die Seite passt auf dem Handy in einen Bildschirm.
+  function measureTop() {
+    var main = doc.getElementById('wk-main');
+    if (main) doc.documentElement.style.setProperty('--wk-top', Math.max(0, Math.round(main.getBoundingClientRect().top + global.scrollY)) + 'px');
+  }
   function init() {
+    measureTop(); global.addEventListener('resize', measureTop);
+    if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
     var hello = doc.getElementById('wk-hello');
     if (hello) hello.textContent = greeting(new Date().getHours());
     renderProducts(doc.getElementById('wk-products'));

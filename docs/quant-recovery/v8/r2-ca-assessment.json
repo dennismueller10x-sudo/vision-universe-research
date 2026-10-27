@@ -1,0 +1,1369 @@
+{
+  "schemaVersion": "quant-v8-r2-ca-cases-1.0.0",
+  "registeredPopulation": [
+    "AZTR",
+    "BDRX",
+    "BUUU",
+    "CHOW",
+    "COCH",
+    "GCTK",
+    "HCTI",
+    "HKPD",
+    "IPW",
+    "LHSW",
+    "PPCB",
+    "SBFM",
+    "SXTC",
+    "TWG"
+  ],
+  "selection": "All fourteen DQ-PX-4 LEVEL cases on frozen Main f10afd9666136810f0c9081db6ff4324d04065fe, selected before reading raw R2 outcomes; no winner selection.",
+  "observedAt": "2026-10-27T11:55:25.264Z",
+  "gitHead": "0ce7551d4bdbd2ecdffe343382b1b3554abe0f31",
+  "runId": "40499641294",
+  "runtime": {
+    "nodeVersion": "22.23.4",
+    "v8Version": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibcVersion": "2.39",
+    "nodeExecutableHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "credentialBindings": {
+    "VU_HISTORY_S3_ENDPOINT": true,
+    "VU_HISTORY_S3_BUCKET": true,
+    "VU_HISTORY_S3_ACCESS_KEY_ID": true,
+    "VU_HISTORY_S3_SECRET_ACCESS_KEY": true
+  },
+  "limits": {
+    "requests": 32,
+    "compressedBytesPerObject": 4194304,
+    "decompressedBytesPerObject": 67108864,
+    "rawSeries": 14
+  },
+  "networkRequests": 28,
+  "downloadedBytes": 431597,
+  "cases": [
+    {
+      "ticker": "AZTR",
+      "securityId": "ref_AZTR",
+      "rawObjectHash": "3909ea0f22a246ac1dfe4a4fd3c4325a394c5022bf6b8cc3590ca3f59ecd66ce",
+      "rawDocumentHash": "288321416a15f630112b37baf5d3f58664b6108b3aed86ab999d390389a5c09b",
+      "rawLastModified": "Tue, 27 Oct 2026 03:00:12 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "b4d89a6d687c91a96db49932d9d41f4f4d3fe858ec5b2918108a40d0d4ff7a00",
+      "dailySourceHash": "a9aee4f53fe2c76185d489c20fd753d0e5ac33c5b23f32f6650bf4724452c6d1",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2023-06-16",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "09eaa0bbb87e3e0b2e504fc058cf80cefd55e33a4de91c571f9d53b93f479551"
+      },
+      "oldWeeklyPoints": 176,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 176,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2023-06-16",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 843,
+        "oldBasisPrices": 842,
+        "oldWeeklyPoints": 176,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 176,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 5,
+              "maxAbsolutePublishedDifference": 0.010000000000000231
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 2,
+              "maxAbsolutePublishedDifference": 0.010000000000000231
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "4c97f0d7e5052fa97a437f4f7b63d8cf66cb69585401deecd6261e7d09dff65e",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "e253c50ab7725b9096637e4c7163834046d291c11547b563a77752c8c78b5678",
+        "resultHash": "d739f1bf5029c7eca9feaf1fe5f3e8885af68cb467b915e974eacfa064b5fddf",
+        "generation": "63bf5b00d6ac69cac03f1c07c47e4eacc676895d60014b412e06af67a6cc140b",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 123,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "d739f1bf5029c7eca9feaf1fe5f3e8885af68cb467b915e974eacfa064b5fddf"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "BDRX",
+      "securityId": "ref_BDRX",
+      "rawObjectHash": "f52787913d5b07e3e4b45166a94cf42dfb533ce04b23d317e2089db4249c5eb9",
+      "rawDocumentHash": "444f1dc9520b019a3aa443f906bbf1f21eb49c1c6de1d7cde2de892515ccb361",
+      "rawLastModified": "Tue, 27 Oct 2026 02:57:22 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "2c6ae2581a989fb96624a6e00eaae46c15dcab70ab67853a28c995be9815efc5",
+      "dailySourceHash": "f613b9e6ca3a991793d97683a767b3da4f778cf1b629d1e93e46664ad22fa392",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2015-12-07",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "ea4fb49417d7c24bd4300875c619c6e9a08bf27ccc98503888565e5966962bc1"
+      },
+      "oldWeeklyPoints": 568,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 568,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2015-12-11",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 2737,
+        "oldBasisPrices": 2736,
+        "oldWeeklyPoints": 568,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 568,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 10,
+              "maxAbsolutePublishedDifference": 0.010000000000218279
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "06937af00f9ea2167b76105d0a9320db4beb3f169977f4146e78c7cb959b9e16",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "388341a5d47d6cd844fc9f26802c122d1956760c61196552ecc1db2785afd264",
+        "resultHash": "cd943a2a2d3f4d813747de39d2c344719e12f49546df22e11d378b5f7dc65699",
+        "generation": "9f715097e75596439e40de833777352966f5746c0408428014200fb747fc5989",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 515,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "cd943a2a2d3f4d813747de39d2c344719e12f49546df22e11d378b5f7dc65699"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "BUUU",
+      "securityId": "ref_BUUU",
+      "rawObjectHash": "985c945f8d1db67ecf085b99a82bd8cad49bd0e60993cc6c8e060f80d5aa35cf",
+      "rawDocumentHash": "3ecabc98134ac6d533daf0cfefe6d4a9cad90dbb98f74224c8cd03d20f26aad2",
+      "rawLastModified": "Tue, 27 Oct 2026 03:00:31 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "5c777053870147550ebe70d4aaffbfc06848c7b441a01aff021402e37699e2bf",
+      "dailySourceHash": "5a628464b17da9e656602b03f01bb8597560a8c0acae30faf0898a5259b5a5c5",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2025-08-14",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "c0aa0f3d022448d8d0ea02c2761c2a9f7b2f84d6136b70defaa51b761f38642a"
+      },
+      "oldWeeklyPoints": 63,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 63,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2025-08-15",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 302,
+        "oldBasisPrices": 301,
+        "oldWeeklyPoints": 63,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 63,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 2,
+              "maxAbsolutePublishedDifference": 0.010000000000000009
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "5e55251e8092a590a1871940243aa207c98e86f6df25c8109fe6602563f3ce48",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "3d9ed26b882d50a595338a4483dd0f5212765c514b4425b903a62ac41d81a744",
+        "resultHash": "53b4beccd7824abb0ccbad53fbcfb73868cc3a8b5a436ec2698ccb30f63eb0db",
+        "generation": "a0d94609927439da16ca9b06a5edbb3334c3c0edceaaca5e40b8f6e97f9fcd86",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 10,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "53b4beccd7824abb0ccbad53fbcfb73868cc3a8b5a436ec2698ccb30f63eb0db"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0.3625131922369611,
+          "cagr": 5.009527136514951,
+          "maxDrawdown": -0.1533477321814254,
+          "fees": 99.8502246630055,
+          "slippage": 49.92511233150275
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "CHOW",
+      "securityId": "ref_CHOW",
+      "rawObjectHash": "867d44f7f05725e64a4d9f2ae12dbc2be28f08c23f54b7c15908e7d2386d82c2",
+      "rawDocumentHash": "8d9de0cb5c07691f28c8693be31c8252e510ba84beeef217e93c6877ee787e44",
+      "rawLastModified": "Tue, 27 Oct 2026 03:00:34 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "c9cc338b377f420c4008278293e2b023372c37a21c62ffa9217c1aafae3a466c",
+      "dailySourceHash": "e39c5957efad6758e1edee9c695be05749b60639a8f712319e63f9893211fada",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2025-09-16",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "09eaa0bbb87e3e0b2e504fc058cf80cefd55e33a4de91c571f9d53b93f479551"
+      },
+      "oldWeeklyPoints": 58,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 58,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2025-09-19",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 280,
+        "oldBasisPrices": 279,
+        "oldWeeklyPoints": 58,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 58,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.00009999999999998899
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 5,
+              "maxAbsolutePublishedDifference": 0.010000000000000675
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "8745e660bcc08eaf8f2a4da3e0348d76fb0378faa6701f47e7693b5b3310810c",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "cfb3249d1f54c885fc883d9525eda873c011700da8f4f90e88ce6e07b83cca55",
+        "resultHash": "19472b2fe9ad9ef22409f43461f9b84b60c878925c0f3b226a118cc56c29721e",
+        "generation": "c3a56092da71c38eb8dc43f6cc3df85adf2f1904755c332da6a4b1063539f00b",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 5,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "19472b2fe9ad9ef22409f43461f9b84b60c878925c0f3b226a118cc56c29721e"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "COCH",
+      "securityId": "ref_COCH",
+      "rawObjectHash": "8f786e96b1abbe7a943b42040ea9f06969c23291ce3576659b17a2cfb7a782e9",
+      "rawDocumentHash": "e0ead80881c8b566540d4439a64dc383a96fd03b4ed5e7961940b38b9228410f",
+      "rawLastModified": "Tue, 27 Oct 2026 02:59:18 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "e7cf0bde6f4565a3e1c582ccabe887245803ca5bf69c1c24c1d0af06c844f943",
+      "dailySourceHash": "b35b51ce10fe9283f503153d2fd9bffafbfafba0ad5d46ef0fe2ae165b9fa327",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2021-04-29",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "09eaa0bbb87e3e0b2e504fc058cf80cefd55e33a4de91c571f9d53b93f479551"
+      },
+      "oldWeeklyPoints": 287,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 287,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2021-04-30",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 1380,
+        "oldBasisPrices": 1379,
+        "oldWeeklyPoints": 287,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 287,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 8,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 4,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "fe71bd0bb496a8c4cbf4a61dcb737b6849dc3d56695e1947ad4e7418088b43c7",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "352fe4380f0489cb104081f4cabbe967c922784454bb539cc318c99677926523",
+        "resultHash": "aaad911879912078a645b03a4e604b9707401fa080b06c5486b340b9380599d0",
+        "generation": "b6075e2401ab497048f5d33f7b1da6cb5074df11d3357340cc9837e66785304a",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 2,
+          "equityObservations": 234,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "aaad911879912078a645b03a4e604b9707401fa080b06c5486b340b9380599d0"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 2,
+          "totalReturn": -0.9097042662639147,
+          "cagr": -0.41637424266325285,
+          "maxDrawdown": -0.9128825503355704,
+          "fees": 310.7289075743844,
+          "slippage": 155.3644537871922
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "GCTK",
+      "securityId": "ref_GCTK",
+      "rawObjectHash": "5d4892d547b24388cd986fb31a1284820fc30bb4a422f725b6763cdb2e564166",
+      "rawDocumentHash": "3e0c373831c4796bb866e929eebc474744606247e9dec6a888bd376c6fab2a28",
+      "rawLastModified": "Tue, 27 Oct 2026 02:56:35 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "29ea6edd6581516cd09f16207eba4529b596b5d34cf2a846ba0ccc76437b602f",
+      "dailySourceHash": "1c29fdfeb51f8e66e39f4b5c907b57b320517add13af4caee181a79c08961c98",
+      "priorWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2013-04-25",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "9b46c9ac182936461156acc0bec075272530dac65790e85f28782bc8a50ace98"
+      },
+      "oldWeeklyPoints": 705,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 705,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2013-04-26",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 3371,
+        "oldBasisPrices": 3370,
+        "oldWeeklyPoints": 705,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 705,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "43a500b0e91be8f62503255594ae42717e1a40df45ed07093a602627e27fbab7",
+      "privateWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED"
+    },
+    {
+      "ticker": "HCTI",
+      "securityId": "ref_HCTI",
+      "rawObjectHash": "2a1e6977b34995af7fc5864be04647ee29ef71c796bf749926a5bb7a46975d83",
+      "rawDocumentHash": "d8cd0f1094419424ff07ca4705fd603f3a16674e67a72775140a6b9ef3290c1c",
+      "rawLastModified": "Tue, 27 Oct 2026 02:59:40 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "39756dc60521820b806838d72e5d5c17f09ce2d06c1076507905a1feeed5089a",
+      "dailySourceHash": "3687cde9fb5dea54c3ba30a59c423d13f7b9c80bf180f29fe4820d819db4494c",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2021-10-13",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "db4cb9eed7017d4837ae1501aad5ced4c70154de58ff38b9a263b86698e0f822"
+      },
+      "oldWeeklyPoints": 263,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 263,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2021-10-15",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 1264,
+        "oldBasisPrices": 1263,
+        "oldWeeklyPoints": 263,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 263,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.00009999999999998899
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 1,
+              "maxAbsolutePublishedDifference": 0.009999999999999787
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "145eba7bcf96fa21ea11205ae1427b96a34d6b6ce60a05e606938a653729e8e9",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "e4110b359eb389313353e6f69049683175cb677eee44089b06e6e9284388e54b",
+        "resultHash": "6662cd03a45d1a75acff656bc316edf00ca135d34da59e34869e08cb9b54de12",
+        "generation": "3eed5bd22261398db510da5318e9d166e1c0f6570c9b10a841b5af00cc99cd02",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 210,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "6662cd03a45d1a75acff656bc316edf00ca135d34da59e34869e08cb9b54de12"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "HKPD",
+      "securityId": "ref_HKPD",
+      "rawObjectHash": "3aed36878b779caa1ca3a8be69f21f0c69d333d7b04625804f26c589dafe9876",
+      "rawDocumentHash": "7e016abe6465c9a5ede571f550e60a71ef26e3b6e71b9cd784cd51162dbbc159",
+      "rawLastModified": "Tue, 27 Oct 2026 03:00:55 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "422a89ec1e6d13edfd2e7ab0b74fc204cdba68fcd625f613ce911843d50d1907",
+      "dailySourceHash": "ee82d775412705b020b9e661eccf745bcbe0ce7e1c9c73273027eab46fd65a5b",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2025-01-15",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "db4cb9eed7017d4837ae1501aad5ced4c70154de58ff38b9a263b86698e0f822"
+      },
+      "oldWeeklyPoints": 93,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 93,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2025-01-17",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 447,
+        "oldBasisPrices": 446,
+        "oldWeeklyPoints": 93,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 93,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "e76adea56dd868c43222f44815c5c941e7ee48b3178d69df16f9ca9d147223b4",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "ff346c74a491fd893af35b9ea8550a5efa3f29f931f067e477bb6ce4df8fb746",
+        "resultHash": "d671a72cdab8aad7ac5adca4e9c6662d0511878956410168e9762f75ef4f3fca",
+        "generation": "1ba459986244b1ee8866e249d29ed12c35cf5d11c611685ff0efbb4b5e8d10e8",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 40,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "d671a72cdab8aad7ac5adca4e9c6662d0511878956410168e9762f75ef4f3fca"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "IPW",
+      "securityId": "ref_IPW",
+      "rawObjectHash": "ef68e69b1b361007125bae3142fa942d2120f6dbffa62857333f61a403ba69e1",
+      "rawDocumentHash": "a13d2b9c6a7a8dd1e967c68a3ea56fa4cddfa5105170b775d1daeae7d655ea8c",
+      "rawLastModified": "Tue, 27 Oct 2026 02:59:20 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "e78e060f51d2cf8a62315059bbc7089cd74e86c3863cb6433b3d83058bd529b3",
+      "dailySourceHash": "11ef6e87b6e3390699e2b8cbd43e3b189ba8b0074007c9291b870acc93df3e74",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2021-05-12",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "1d867f2287b71abd5ff36736e2649fcee4e80303f3b241c2921551befe526ff0"
+      },
+      "oldWeeklyPoints": 285,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 285,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2021-05-14",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 1371,
+        "oldBasisPrices": 1370,
+        "oldWeeklyPoints": 285,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 285,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "a2d9d369ebd0f6a1cad23e24af4668c1f93e6aef69b4f183a02ec75a42b5ab51",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "87bc99671a6fa2664ece2ed2481f0a41535a82b944cebb32bf0e45c2823cafba",
+        "resultHash": "18b8f7107db6a7bc471e3ccc510dab2edfd0c3c4109714ecfba95a4892128e30",
+        "generation": "86a942543c4ace8b46f43f553e077924905af608ac4df6a4c026e524a98f4236",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 2,
+          "equityObservations": 232,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "18b8f7107db6a7bc471e3ccc510dab2edfd0c3c4109714ecfba95a4892128e30"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 2,
+          "totalReturn": -0.8690802879166727,
+          "cagr": -0.368240064994912,
+          "maxDrawdown": -0.8690802879166727,
+          "fees": 189.06924779691536,
+          "slippage": 94.53462389845768
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "LHSW",
+      "securityId": "ref_LHSW",
+      "rawObjectHash": "f771909aacbb0963088ad73d3b94c2268c04446efd2ca7ca48d011399536ca35",
+      "rawDocumentHash": "a51edfbfed2b109a1c755edc568b0385d9bc1af9d4da79420bbe8da34f472334",
+      "rawLastModified": "Tue, 27 Oct 2026 03:01:06 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "132cf3c9c2d3fa0e391f19d0f0702d03f20954ea685846c5666e611f43900c4f",
+      "dailySourceHash": "c29c1006550cfb8073b569aab3822d724084c16505f52e3f5b33f5512ae75a96",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2025-04-03",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "ea4fb49417d7c24bd4300875c619c6e9a08bf27ccc98503888565e5966962bc1"
+      },
+      "oldWeeklyPoints": 82,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 82,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2025-04-04",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 393,
+        "oldBasisPrices": 392,
+        "oldWeeklyPoints": 82,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 82,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "54c89932f65a0687e4ab9c58bdeb690a96bfebf83cfc8aee1a759d78e27e54d5",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "b53759483779b0c5ccaaa86a26045b927d79e2d83be4823166342742074603db",
+        "resultHash": "e9d43061ad1337cdf89f4ec5622afadde93a215ef950ce0c660232b33ad0af1d",
+        "generation": "2359eb6b6529b915e07c26a3233fff8a02c23e1a8f6b8d7852898b44f7f45d5e",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 29,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "e9d43061ad1337cdf89f4ec5622afadde93a215ef950ce0c660232b33ad0af1d"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "PPCB",
+      "securityId": "ref_PPCB",
+      "rawObjectHash": "cdc33fbb2f55c1bf6adde0b5554e6a683dc837bee7d42ae981947d90862a8d97",
+      "rawDocumentHash": "430144def48124e0df01a722e6cb82e21906ed1e11285e2ed7206e191b72e3e1",
+      "rawLastModified": "Tue, 27 Oct 2026 02:56:30 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "88a67b2fcdff8657c82458b5aeb5e599a6a470c1c54e86cb7b4c8d1f29f3aeb5",
+      "dailySourceHash": "1ab8bc20dca15d2c0ea0a7b058d6e5870070befa1b56576bb8f8c27c3631408c",
+      "priorWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2012-11-12",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "09eaa0bbb87e3e0b2e504fc058cf80cefd55e33a4de91c571f9d53b93f479551"
+      },
+      "oldWeeklyPoints": 728,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 728,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2012-11-16",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 3502,
+        "oldBasisPrices": 3501,
+        "oldWeeklyPoints": 728,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 728,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 3,
+              "maxAbsolutePublishedDifference": 0.010000000000001563
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 11,
+              "maxAbsolutePublishedDifference": 0.010000000000019327
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 33,
+              "maxAbsolutePublishedDifference": 0.046875
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "a371807897f19d86c76e946bfb815b7cdfb11bb8d82b0018befa1be2da40f79f",
+      "privateWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED"
+    },
+    {
+      "ticker": "SBFM",
+      "securityId": "ref_SBFM",
+      "rawObjectHash": "af50059bff95cd3d3c91b79cbe157a19bdf6f82963495d6d1410f5bb9b080a47",
+      "rawDocumentHash": "64dec2bc5b49e825c726365fb7e56d3cc7310b934605240176c630e9ad6b326c",
+      "rawLastModified": "Tue, 27 Oct 2026 02:56:00 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "6108f2aa1d17e18672d341a8f0c8e0f50dc0a68b26c72a58b591683775ddb6b7",
+      "dailySourceHash": "4b4f57092613f985514744501de2ce3d8d5d8c833b0161d5b91ef56438d8cc26",
+      "priorWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2009-10-30",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "db4cb9eed7017d4837ae1501aad5ced4c70154de58ff38b9a263b86698e0f822"
+      },
+      "oldWeeklyPoints": 887,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 887,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2009-10-30",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 4241,
+        "oldBasisPrices": 4240,
+        "oldWeeklyPoints": 887,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 887,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "78d12f313fa71134448b670baef63ea010d3f610ed18277c3af283b3f224d0c3",
+      "privateWeeklyQualification": "CORPORATE_ACTION_UNRESOLVED"
+    },
+    {
+      "ticker": "SXTC",
+      "securityId": "ref_SXTC",
+      "rawObjectHash": "ac1931e2ab0b905a61f9f33c02708ad09d1c3d393f63619e0b030461a3c475ca",
+      "rawDocumentHash": "243dbb78d69bbe7ce72718647f0589a74ed90eab46daa62aa35fb6f53ea8b2d8",
+      "rawLastModified": "Tue, 27 Oct 2026 02:58:19 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "d0ed20bf66846e357cf2aaba6bc5e19d49e5ee5aa0da820ae4c9cbd59f585a9f",
+      "dailySourceHash": "0e0dcde373d263806ad0cae26695193de39b394519c97509cc1171589e8d356f",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2019-01-04",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "28d1fc899bcd57ded349fc3beb3e8fb5c1c1459bc885c11729c75cbadc17bd3b"
+      },
+      "oldWeeklyPoints": 408,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 408,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2019-01-04",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 1960,
+        "oldBasisPrices": 1959,
+        "oldWeeklyPoints": 408,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 408,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "d55fee1ceec9b9a9a6773dfb8f5e35653125c3990a59e428e0a6c518ab0df0ed",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "25fd450d0063ccc9106b44e28abafb8cbadc52102fc3cfa1fdb5ca570d5b2174",
+        "resultHash": "8fed74e08577e0b980be5958581aaf94294497e9e80f71354cb7a2b4b7f39004",
+        "generation": "9491d873428348209678efd49a13dd03a437a81a7a23956d917c814fc558ccfc",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 355,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "8fed74e08577e0b980be5958581aaf94294497e9e80f71354cb7a2b4b7f39004"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    },
+    {
+      "ticker": "TWG",
+      "securityId": "ref_TWG",
+      "rawObjectHash": "f8fe551a6489eb40c81e5b1026b3c1c88e6aeacda5aea386ced44049adcdc2f9",
+      "rawDocumentHash": "9b15ab71d140b5549c975f17bfa1040f33dbc5033e14acb488f0e5f739f9fdcd",
+      "rawLastModified": "Tue, 27 Oct 2026 03:01:43 GMT",
+      "rawObjectETag": null,
+      "weeklySourceHash": "57619d5b25d2aaf6a4aa34e41b7c6958cc8c26e82f241a7bc2804719821da077",
+      "dailySourceHash": "4811cc081b60e6f9697930f07dd0d80d303956a90da332457afb5a1b84cf7ed9",
+      "priorWeeklyQualification": "QUALIFIED",
+      "oldWeeklyAsOf": "2026-10-23",
+      "dailyAsOf": "2026-10-26",
+      "rawFirst": "2024-04-16",
+      "rawLast": "2026-10-26",
+      "actionEvidence": {
+        "events": 1,
+        "firstDate": "2026-10-26",
+        "lastDate": "2026-10-26",
+        "sourceEventsHash": "28d1fc899bcd57ded349fc3beb3e8fb5c1c1459bc885c11729c75cbadc17bd3b"
+      },
+      "oldWeeklyPoints": 132,
+      "oldBasisMismatches": 0,
+      "currentDailyPoints": 270,
+      "currentBasisMismatches": 0,
+      "state": "SOURCE_PROVEN_ADJUSTMENT_VINTAGE_RECONCILED",
+      "reconstructedWeeklyPoints": 132,
+      "addedCalendarPoints": 0,
+      "historicalInterval": [
+        "2024-04-19",
+        "2026-10-23"
+      ],
+      "priorPricesModifiedOnlyInPrivateGeneration": true,
+      "independentSourceParity": {
+        "state": "PASS",
+        "rawPrices": 635,
+        "oldBasisPrices": 634,
+        "oldWeeklyPoints": 132,
+        "currentDailyPoints": 270,
+        "reconstructedWeeklyPoints": 132,
+        "mismatchCounts": {
+          "newPrices": 0,
+          "newPricesDecimalPrecision": 0,
+          "oldPrices": 0,
+          "oldPricesDecimalPrecision": 0,
+          "oldWeekly": 0,
+          "currentDaily": 0,
+          "reconstructedWeekly": 0,
+          "observedWeeklyDates": 0,
+          "newSplitEvidence": 0
+        },
+        "decimalDiagnostics": {
+          "model": "Exact Decimal arithmetic on serialized source-number decimal spellings; HALF_UP cents or four significant digits",
+          "publishedDifferences": {
+            "oldWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "currentDaily": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            },
+            "reconstructedWeekly": {
+              "differentPublishedPoints": 0,
+              "maxAbsolutePublishedDifference": 0
+            }
+          }
+        },
+        "method": "Independent Python binary64 backward split-factor reconstruction and exact publisher rounding; strict published-number equality; observed dates only"
+      },
+      "reconstructedSourceHash": "6b0b975598f18ccc802ff4d14f89a6509d7b28a0bf4c14a5d72fed15ed03a70c",
+      "privateWeeklyQualification": "QUALIFIED",
+      "study": {
+        "state": "PASS",
+        "inputHash": "954bc9a7b877ac4e7f33146ccca8c6472a972b659a87e98b28cb63dcc3520008",
+        "resultHash": "d5075caa75181ef2bf9a59b9c085d4a10ba152a7b945fff3b0c8cef2e5c3aed7",
+        "generation": "f8c02d1d534803b96fd7aff6d4a2fc38cd867a667b1a1a55a73f97d8565997c1",
+        "independent": {
+          "state": "PASS",
+          "independentlyCheckedTrades": 0,
+          "equityObservations": 79,
+          "benchmark": "AVAILABLE",
+          "costModel": "PER_SIDE_NOTIONAL",
+          "resultHash": "d5075caa75181ef2bf9a59b9c085d4a10ba152a7b945fff3b0c8cef2e5c3aed7"
+        },
+        "exactRepeat": true,
+        "metrics": {
+          "completedTrades": 0,
+          "totalReturn": 0,
+          "cagr": 0,
+          "maxDrawdown": 0,
+          "fees": 0,
+          "slippage": 0
+        },
+        "returnBasis": "PRICE_RETURN",
+        "scope": "Private reconstructed price vintage at original completed-week dates; ex-post source actions, current-classified surviving listing, not PIT or market certification"
+      }
+    }
+  ],
+  "rawDataPublished": false,
+  "canonicalDataModified": false,
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "budgetSpent": {
+    "classA": 0,
+    "classB": 28,
+    "bytesUploaded": 0,
+    "bytesDownloaded": 431597,
+    "writesSkipped": 0
+  },
+  "state": "BOUNDED_SOURCE_ASSESSMENT_COMPLETED",
+  "summary": {
+    "registered": 14,
+    "assessed": 14,
+    "reconciled": 14,
+    "privatelyQualified": 11,
+    "independentlyRecomputedStudies": 11,
+    "canonicalRepairs": 0
+  },
+  "codeDependencies": {
+    "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+    "scripts/quant/recover-v8-r2-ca-cases.mjs": "e57b1180ea885bd0a343444cc6c47775610a0e472e5e14a1cff9b476c6c858e7",
+    "scripts/quant/verify-v8-r2-ca-cases.py": "ece3a93911df3bf2a2786d2cadd3ff9ef146f60ca8e547852a4f03e06497f0ef",
+    "quant/engines/history-store.js": "755804a9939a1f19e586feea6694c6831c6bf4d8d693876ac2a23cca22522493",
+    "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+    "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+    "quant/engines/published-close.js": "e0b8792d9818c0307ef4ff11d26f18d4114b04fbd235d0dd19f7e9ddb5eeef98",
+    "quant/engines/corporate-action-evidence.js": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+    "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+    "quant/engines/research-classification-evidence.cjs": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235",
+    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+    "scripts/quant/verify-real-weekly-backtest.py": "091c04248555e762e91f0f5566dde5a21f00c38e563ec0b81e7004949456f013"
+  },
+  "limitations": [
+    "R2 and published daily/weekly data share provider ancestry; arithmetic parity is not independent provider evidence.",
+    "Reconstructed sources remain private; canonical Technical and price data, old immutable results and protected contracts remain unchanged.",
+    "A source-proven adjustment vintage does not resolve all listing identity, calendar, historical corporate-action or terminal-value holds."
+  ]
+}

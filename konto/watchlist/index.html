@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Watchlist · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--wide" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title">Watchlist</h1>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/" aria-current="page">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="wl-loading" aria-hidden="true"></div>
+<div id="wl-app" hidden>
+<section class="wl-kpis" id="wl-kpis" aria-label="Kennzahlen deiner Watchlist"></section>
+<div class="wl-sources" id="wl-sources" aria-label="Datenstand"></div>
+<div class="ka-card wl-legacy" id="wl-legacy" hidden><p id="wl-legacy-text"></p><div class="ka-actions"><button class="ka-btn" type="button" id="wl-legacy-btn">Übernehmen</button></div></div>
+<div class="wl-add">
+<label class="ka-legend" for="wl-add">Aktie hinzufügen</label>
+<input class="ka-input" id="wl-add" type="search" autocomplete="off" spellcheck="false" placeholder="Name oder Kürzel, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="wl-results" aria-autocomplete="list">
+<div class="wl-results" id="wl-results" role="listbox" aria-label="Treffer" hidden></div>
+</div>
+<div class="wl-toolbar" role="group" aria-label="Ansicht">
+<input class="ka-input" id="wl-query" type="search" placeholder="In der Watchlist suchen" aria-label="In der Watchlist suchen">
+<select class="ka-select" id="wl-filter" aria-label="Filter">
+<option value="all">Alle</option><option value="validSupertrader">Supertrader gültig</option><option value="newHigh">Neues 52W-Hoch</option>
+<option value="nearHigh">52W-Hoch oder nahe</option><option value="volume">Volumen auffällig</option><option value="attention">Prüfung offen</option>
+</select>
+<select class="ka-select" id="wl-sort" aria-label="Sortierung">
+<option value="relevance">Relevanz</option><option value="signal">Signal</option><option value="company">Unternehmen</option><option value="ticker">Kürzel</option>
+<option value="added">Zuletzt hinzugefügt</option><option value="freshness">Aktualität</option>
+<option value="factor:momentum">Faktor Momentum</option><option value="factor:quality">Faktor Qualität</option><option value="factor:growth">Faktor Wachstum</option>
+<option value="factor:value">Faktor Bewertung</option><option value="factor:profitability">Faktor Profitabilität</option><option value="factor:risk">Faktor Risiko</option>
+</select>
+<label class="ka-check wl-group-toggle" for="wl-group"><input type="checkbox" id="wl-group">Nach Signal gruppieren</label>
+</div>
+<p class="wl-count ka-muted" id="wl-count"></p>
+<div id="wl-list"></div>
+<div class="ka-card" id="wl-empty" hidden><h2>Noch keine Aktien</h2><p class="ka-muted">Füge oben eine Aktie hinzu oder tippe auf einer Aktienseite auf das Lesezeichen.</p></div>
+<details class="ka-card wl-explain"><summary>Quant-Faktorverteilung und Erklärungen</summary>
+<div class="wl-dist" id="wl-dist"></div>
+<dl class="ka-kv wl-defs">
+<dt>Neues 52W-Hoch</dt><dd>Tageshoch erreicht das Hoch der letzten 252 Handelstage (split-bereinigt), nur bei aktuellem Datenstand.</dd>
+<dt>Nahe 52W-Hoch</dt><dd>Höchstens 5 % unter dem 52-Wochen-Hoch.</dd>
+<dt>52W-Hoch auf Wochen-/Monatsschluss</dt><dd>Historisches Signal aus Wochen- bzw. Monatskerzen, kein heutiges Hoch.</dd>
+<dt>Supertrader gültig</dt><dd>Nur Setups von Strategien mit erfüllten, vorab festgelegten Kriterien. Strategien in Prüfung erscheinen als „Forschung“.</dd>
+<dt>Quant</dt><dd>Sieben Faktoren mit Stufe aus der Position im Universum. Ein Gesamtscore ist nicht freigegeben.</dd>
+<dt>Veraltet</dt><dd>Der Datenstand ist älter als die Frist der Datenart; der Wert zählt dann in keiner Kennzahl mit.</dd>
+</dl>
+<p class="wl-fine">Keine Anlageberatung. Alle Werte stammen aus den veröffentlichten Daten der Produktwelten.</p>
+</details>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/core/watchlist-view.js"></script>
+<script src="/konto/watchlist.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

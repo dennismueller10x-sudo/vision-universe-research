@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Mein Konto · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="account"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title" id="ka-hello">Mein Konto</h1>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
+<div id="ka-account" hidden>
+<section class="ka-card"><h2>Überblick</h2><dl class="ka-kv" id="ka-account-facts"></dl></section>
+<div class="ka-grid ka-grid--3 ka-section">
+<a class="ka-card ka-link" href="/konto/abo/"><h2>Abonnement</h2><p class="ka-muted">Tarif, Zahlungen, Rechnungen</p></a>
+<a class="ka-card ka-link" href="/konto/tarife/"><h2>Tarife</h2><p class="ka-muted">Free, Plus und Pro im Vergleich</p></a>
+<a class="ka-card ka-link" href="/konto/einstellungen/"><h2>Einstellungen</h2><p class="ka-muted">Profil, Darstellung, Benachrichtigungen, Datenschutz</p></a>
+</div>
+<div class="ka-actions ka-section"><button class="ka-btn ka-btn--secondary" type="button" id="ka-logout">Abmelden</button></div>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

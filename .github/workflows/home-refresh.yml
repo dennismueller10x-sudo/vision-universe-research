@@ -12,6 +12,8 @@ on:
     branches: [main]
     paths:
       - "scripts/home/**"
+      # Konto-Endpunkt gesetzt -> Kuendigungslink im Footer (scripts/home/cancel-link.mjs)
+      - "konto/config.js"
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
