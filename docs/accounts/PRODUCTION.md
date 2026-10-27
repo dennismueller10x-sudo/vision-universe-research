@@ -42,12 +42,11 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“: legt Produkte `vu_plus`/`vu_pro` und den Webhook an; das
    Geheimnis geht direkt in den Worker. Preise, Kundenportal und `plan_prices` erst mit der Repository-Variable
    `VU_ACCOUNT_LIVE_PRICES` (Owner-Entscheidung).
-4. **Ende-zu-Ende** – „Konten — Ende-zu-Ende auf Produktion“ (`scripts/account/prod-e2e.mjs`, eine Freigabe): zwei
-   kurzlebige Testkonten `e2e-<lauf>-a|b@visionuniverse.de` (nur sie kommen auf die Positivliste, bestätigt über die
-   Admin-API, kein Postfach nötig). Prüft Registrierungssperre, Login/Logout, Watchlist auf zwei Geräten und Free-Grenze,
-   Trennung der Konten, Free/Plus/Pro über `billing.entitlement_overrides` (keine Zahlung), gesperrten Checkout,
-   Webhook ohne Signatur, Export und Löschung; danach ist nichts von den Testkonten übrig. Die echte Bestätigungsmail
-   prüft der Owner einmal mit der eigenen Adresse (Positivliste in der Datenbank und `VU_REGISTRATION_ALLOWLIST`).
+4. **Funktionsprüfung** – mit echten Konten des Owners, ohne eigene Testkonten-Infrastruktur: die Adresse kommt auf die
+   Positivliste (`registration_allowlist` in der Datenbank und Repository-Variable `VU_ACCOUNT_REGISTRATION_ALLOWLIST`,
+   danach ausrollen). Der Owner registriert sich auf `/konto/registrieren/`, bestätigt die E-Mail, meldet sich an und
+   nutzt die Watchlist aus Discover und Quant. Begleitend nur lesend: `/v1/health`, Zählungen und RLS in der Datenbank,
+   Zustellereignisse bei Brevo.
 5. **Freischalten** (jeweils eigener PR, eigene Freigabe):
    - Abrechnung: `STRIPE_LIVE_MODE_APPROVED = "true"` in `[env.production.vars]`, ausrollen.
    - Seiten: `konto/config.js` → `{endpoint: 'https://konto.visionuniverse.de'}`.
