@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.5.0";
+  var TEXT_VERSION = "technical-query-text-1.6.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -43,11 +43,16 @@
   function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
   var T = Q.FORMATION_TYPES, ALL_TRI = ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"];
+  var CANDLE_LOWER = {};
+  Object.keys(Q.CANDLE_TYPES).forEach(function (id) { CANDLE_LOWER[id.toLowerCase()] = id; });
   function b(field, value) { return { field: field, op: "is", value: value }; }
   function n(field, op, value) { return { field: field, op: op, value: value }; }
 
   /* Begriffe: [Muster (gefaltet), Filter[] | {formations:[]} | {confirmed:true}]. Laengere Muster zuerst geprueft. */
   var TERMS = [
+    /* Kerzen und Spannen (seit 1.6.0) */
+    ["inside[- ]bars?|innenstab", [b("insideBar", true)]],
+    ["nr 7|narrow range( 7)?", [b("nr7", true)]],
     /* Zustand "SMA 50 ueber SMA 200". "Golden/Death Cross" meint seit 1.5.0 das Ereignis (siehe Ereignisse unten). */
     ["sma ?50 (ueber|oberhalb)( der| die)? sma ?200", [b("sma50AboveSma200", true)]],
     ["sma ?50 (unter|unterhalb)( der| die)? sma ?200", [b("sma50AboveSma200", false)]],
@@ -130,6 +135,8 @@
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
     ["chaikin money flow|cmf( ?20)?", "cmf20"], ["money flow index|mfi( ?14)?", "mfi14"], ["stochastik( %k)?|%k", "stochK"],
     ["bollinger %b|%b", "bbPctB"], ["atr( ?%| in %| ?14)?", "atrPct"], ["rsi( ?14)?", "rsi14"], ["adx( ?14)?", "adx"], ["cci( ?20)?", "cci20"],
+    ["roc ?63|3-?monats-?performance|quartalsperformance", "roc63"], ["roc ?126|6-?monats-?performance|halbjahresperformance", "roc126"],
+    ["roc ?252|12-?monats-?performance|jahresperformance", "roc252"],
     ["roc( ?21)?|21-?tage-?(aenderung|performance)|monatsperformance", "roc21"], ["tagesaenderung|tagesperformance", "chg1d"],
     ["schlusskurs|aktienkurs|kurs|preis", "close"]
   ];
@@ -172,7 +179,9 @@
     ["(?:kurs |schluss )?(?:faellt|fiel|kreuzt|kreuzte|bricht|brach) (?:unter|durch) (?:die |den )?(?:sma ?200|200-?tage-?linie) nach unten|(?:kurs |schluss )?(?:faellt|fiel) unter (?:die |den )?(?:sma ?200|200-?tage-?linie)", "crossBelowSma200Days"],
     ["rsi(?: ?14)?(?: ist| hat)?(?: (?:heute|gestern))? (?:von unten )?ueber 30 (?:gestiegen|gekreuzt|gelaufen)|rsi verl(?:ae|a)sst (?:den |die )?ueberverkauft\\w*", "rsiExitOversoldDays"],
     ["rsi(?: ?14)?(?: ist| hat)?(?: (?:heute|gestern))? (?:von oben )?unter 70 (?:gefallen|gekreuzt)|rsi verl(?:ae|a)sst (?:den |die )?ueberkauft\\w*", "rsiExitOverboughtDays"],
-    ["neue[snm]? (?:formation|chartmuster|muster)", "formationNewDays"]
+    ["neue[snm]? (?:formation|chartmuster|muster)", "formationNewDays"],
+    ["bullische[snm]? kerze(?:nmuster)?|bullische[snm]? candlestick(?:-?muster)?", "candleBullDays"],
+    ["baerische[snm]? kerze(?:nmuster)?|baerische[snm]? candlestick(?:-?muster)?", "candleBearDays"]
   ];
   var WINDOW_RE = "(?:(heute|gestern)|(?:in den letzten|innerhalb (?:der letzten|von)|binnen|seit hoechstens|vor hoechstens) (\\d{1,3}) (?:handels)?(?:tagen|tage|tag))";
   function windowDays(word, num) {
@@ -208,6 +217,13 @@
       var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
       return slot({ filters: [{ field: "formationOpen", op: "in", value: types }], text: m });
+    });
+    /* "kerze-bull:hammer,engulfing" usw. (seit 1.6.0); Ids klein geschrieben, weil der Text gefaltet ist. */
+    var CANDLE_FIELD = { bull: "candleBullish", baer: "candleBearish", neutral: "candleNeutral" };
+    text = text.replace(/\bkerze-(bull|baer|neutral):([a-z0-9,]+)/g, function (m, kind, list) {
+      var ids = list.split(",").filter(Boolean).map(function (x) { return CANDLE_LOWER[x] || null; });
+      if (ids.indexOf(null) >= 0 || !ids.length) { errors.push({ code: "UNKNOWN_CANDLE", text: list }); return " "; }
+      return slot({ filters: [{ field: CANDLE_FIELD[kind], op: "in", value: ids }], text: m });
     });
     text = text.replace(/\bstruktur:([a-z,]+)/g, function (m, list) {
       var v = list.toUpperCase().split(",").filter(function (x) { return Q.STRUCTURES[x]; });
@@ -321,6 +337,8 @@
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
         if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
+        if (x.field === "candleBullish" || x.field === "candleBearish" || x.field === "candleNeutral")
+          return "kerze-" + { candleBullish: "bull", candleBearish: "baer", candleNeutral: "neutral" }[x.field] + ":" + x.value.join(",").toLowerCase();
         if (x.op === "between") return pre + x.field + " zwischen " + fmtNum(x.field, x.value) + " und " + fmtNum(x.field, x.value2);
         return pre + x.field + " " + SYM[x.op] + " " + fmtNum(x.field, x.value);
       }).join(" und ");

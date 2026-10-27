@@ -2,7 +2,7 @@
 
 Stand 27.10.2026, `technical-candlesticks-1.1.0` (58 Muster: 27 aus 1.0.0, 31 ab 1.1.0). Modul: `quant/engines/technical/candlesticks.js` (UMD, ohne Abhängigkeiten). Tests: `quant/tests/technical-candlesticks.test.mjs` (Muster aus 1.0.0), `quant/tests/technical-candlesticks-2.test.mjs` (Muster ab 1.1.0).
 
-**Nur Bibliothek.** Kein Screener-Feld, keine Chartebene, keine Materialisierung. Eine Freigabe in einer Produktfläche ist ein eigener Fachmodell-PR (TECHNICAL_LIBRARY.md, L6).
+**Bibliothek; Screener-Felder vorgeschlagen.** Keine Chartebene, keine Materialisierung. Die Screener-Felder (Muster am Stichtag, „Tage seit“) sind der Fachmodell-PR L6: [SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md).
 
 ## Schnittstelle
 
