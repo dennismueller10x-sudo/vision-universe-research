@@ -29,7 +29,7 @@ Auf #971 wurden `core` und `gates` je einmal neu gestartet. Ursache war die Infr
 | Shell Quality Gates | `57ed383` | grün |
 | Quant 2.0 Production Pages | `57ed383` | grün |
 | Supertrader Quality Gates | `57ed383` | rot – nur Quant-2.0-Regression, 1 von 3.120 (siehe unten), kein Supertrader-Test |
-| Supertrader Quality Gates (manuell neu gestartet) | `7cc3f26` | GATES_ERGEBNIS |
+| Supertrader Quality Gates (manuell neu gestartet) | `7cc3f26` | grün (Run 40461747972: Gate B–F, Discovery- und Quant-2.0-Regression, Browser-QA 390/1280 px, Secret-Prüfung) |
 
 ## Quant-Befund (nicht Supertrader)
 
