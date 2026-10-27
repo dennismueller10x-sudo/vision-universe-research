@@ -1,6 +1,6 @@
 # Supertrader 8.0 – Tageslauf der Research-Kandidaten (vorbereitet, deaktiviert)
 
-Stand 2026-10-26. Owner-Entscheidung O-2: Der Tageslauf wird als eigener PR vorbereitet und ist standardmäßig deaktiviert. Er wird nicht aktiviert, bevor die SEC-/Quant-Consumer-Pipeline nachweislich stabil ist und der Owner ihn ausdrücklich freigibt.
+Stand 2026-10-27 (Anpassung nach V1–V4: #1025, #1026, #1027). Owner-Entscheidung O-2: Der Tageslauf wird als eigener PR vorbereitet und ist standardmäßig deaktiviert. Er wird nicht aktiviert, bevor die SEC-/Quant-Consumer-Pipeline nachweislich stabil ist und der Owner ihn ausdrücklich freigibt.
 
 ## Was der PR enthält
 
@@ -23,20 +23,24 @@ Die bisherige Schutzregel `SF-PRODUCT-NO-RUN-INTEGRATION` wurde nur für genau d
    - Der Lauftag muss in der Kalenderabdeckung liegen (2022–2027).
    - Die Nebenquellen müssen ihr Höchstalter einhalten. Der Security Master trägt `generatedAt` 2026-09-11; wird er nicht erneuert, blockiert der Lauf ab dem 10.11.2026 bewusst.
 3. Der Kandidatenlauf liest nur committete Dateien. Es gibt keine Netzzugriffe, keine Secrets und keine Kosten.
-4. Datenbudget: Die öffentlichen Teile (`summary.json`, `index.json`, `strategy/`, `ticker/`) dürfen zusammen höchstens 16 MB groß sein, jede Datei höchstens 2 MB. Lauf vom 23.10.2026: 12,7 MB unkomprimiert, 1,4 MB komprimiert, größte Datei `strategy/C06.json` mit 1,25 MB.
-5. Das vollständige Ergebnis einschließlich der Vertragsdatensätze `records/` wird 14 Tage als CI-Artefakt aufbewahrt.
-6. Nur mit `commit=true` und nur, wenn `core/registry/domains.json` den Pfad `supertrader/data/sf-candidates` registriert (V2, im Workflow erzwungen), gelangen `summary.json`, `index.json`, `strategy/` und `ticker/` nach `supertrader/data/sf-candidates/`. `records/` wird nie committet.
+4. Die öffentlichen Teile (`summary.json`, `index.json`, `strategy/`, `ticker/`) werden in ein eigenes Verzeichnis kopiert; nur dieses wird geprüft und committet.
+5. Datenbudget: Die öffentlichen Teile (`summary.json`, `index.json`, `strategy/`, `ticker/`) dürfen zusammen höchstens 16 MB groß sein, jede Datei höchstens 2 MB. Lauf vom 23.10.2026: 12,7 MB unkomprimiert, 1,4 MB komprimiert, größte Datei `strategy/C06.json` mit 1,25 MB.
+6. Datenqualität V3: `node scripts/core/data-quality.mjs --only=sf8 --sf8-dir=<öffentliche Teile> --sf8-activated` prüft DQ-SF8-1..8 (Frische, Identität, Stufensperren, keine Order-/Stopmarken unter MODELED, Quarantäne, Ergebnisverträge, Budget, Preisabgleich V4) vor Upload und Commit. Rot ist jede Regel, die nicht besteht oder nichts geprüft hat, und ebenso das Fehlen der acht Regeln, etwa wenn #1027 nicht gemergt ist.
+7. Das vollständige Ergebnis wird 14 Tage als CI-Artefakt aufbewahrt: mit den Vertragsdatensätzen `records/` und dem DQ-Bericht.
+8. Commit nur mit `commit=true`. Zusätzlich muss der Eintrag `supertrader-sf8-candidates` in `core/registry/domains.json` existieren **und freigegeben sein**, also kein `activation.state PREPARED_DISABLED` mehr tragen (V2/V6, im Workflow erzwungen). Committet wird genau das geprüfte Verzeichnis; `records/` wird nie committet. Solange der Eintrag vorbereitet ist, ist ein Commit in zweifacher Hinsicht ausgeschlossen:
+   - Der Workflow bricht ab.
+   - Ein Artefakt unter einer vorbereiteten Datenart macht `core/tests/health.test.mjs` sowie DQ-SF8 rot, und `system-health` meldet FAILED (`PUBLISHED_WITHOUT_ACTIVATION`).
 
 ## Voraussetzungen vor der Aktivierung (offen)
 
 | # | Voraussetzung | Stand |
 |---|---|---|
-| V1 | SEC-/Quant-Consumer-Pipeline nachweislich stabil (mehrere aufeinanderfolgende erfolgreiche Läufe, Footprint-Test grün) | Ein erfolgreicher Lauf (40307188633, 26.10.2026, nach #963). Der Footprint-Test auf `main` ist grün (39/0). Ein einzelner Lauf ist kein Stabilitätsnachweis. |
-| V2 | Registrierung von `supertrader/data/sf-candidates` als eigene Datenart in `core/registry/domains.json` mit diesem Workflow als Erzeuger | Offen, eigener Integrationsblocker: [SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md](SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md). Braucht zuerst einen Supertrader-PR, der zwei Schutztests eng öffnet, dann einen Core-PR. Der Commit-Schritt bricht ohne Registrierung ab. |
-| V3 | DQ-Regeln für die neue Datenart in `core/data-quality.js` und `scripts/core/data-quality.mjs`: Frische, Schema, Stufensperre, keine Ordermarken unter MODELED, keine `records/`, Budget | Offen, im selben Blocker-Dokument mit sieben konkreten Regeln. |
-| V4 | Abgleich `price.close` mit `quant/engines/published-close.js` (ADR-002) | Offen. Die Kandidaten zeigen bisher den Tagesschluss der technischen Materialisierung. |
-| V5 | Freigabe der befüllten Vorschau (Inhalt und Darstellung) durch den Owner | Offen. Die Vorschau ist nur lokal und isoliert geprüft. |
-| V6 | Ausdrückliche Freigabe: Variable `SF8_CANDIDATES_ENABLED=true` setzen, danach erst einen Zeitplan in einem eigenen PR ergänzen | Offen. |
+| V1 | SEC-/Quant-Consumer-Pipeline und Marktdatenkette nachweislich stabil | **Teilweise erfüllt.** Belegt sind fail-closed und Alarm: Am 27.10. wurde der Lauf rot, Issue #986 ging auf, und der Supertrader-Anstoß wurde zurückgehalten. Außerdem waren 8 von 9 geplanten Nachtläufen grün. Offen sind die Freigabeschwelle (fünf aufeinanderfolgende geplante Nachtläufe nach 1527253 ohne manuellen Eingriff) und der Security Master, für den es keinen Erzeuger mit Zeitplan gibt; ohne Erneuerung blockiert die Eingangsprüfung ab dem 11.11.2026. Siehe `docs/SUPERTRADER_8_ACTIVATION_READINESS.md` (#1025). |
+| V2 | Registrierung von `supertrader/data/sf-candidates` in `core/registry/domains.json` | **Umgesetzt, Merge offen:** #1025 (Schutztests eng geöffnet) → #1027 (Eintrag `PREPARED_DISABLED`, Health `DISABLED/NOT_ACTIVATED`). |
+| V3 | DQ-Regeln für die neue Datenart | **Umgesetzt, Merge offen:** #1027, DQ-SF8-1..8 (alle ERROR, fail closed). Dieser Workflow wendet sie vor dem Commit an. |
+| V4 | Abgleich `price.close` mit `quant/engines/published-close.js` (ADR-002) | **Umgesetzt, Merge offen:** #1026 (`sf8-data-quality-1.1.0`). Alle 3.001 Kandidaten stimmen am 26.10. auf den Cent; Kandidaten unverändert. Zusätzlich prüft DQ-SF8-8 das committete Ergebnis. |
+| V5 | Freigabe der befüllten Vorschau (Inhalt und Darstellung) durch den Owner, Safari/WebKit | Offen (separat). |
+| V6 | Ausdrückliche Freigabe in einem eigenen PR: `activation` aus dem Registry-Eintrag entfernen und `registry-guard.mjs` (`SF8_ACTIVATION_STATE`) anpassen. Danach die Variable `SF8_CANDIDATES_ENABLED=true` setzen, einen ersten Lauf mit `commit=false` prüfen und erst dann einen Zeitplan in einem weiteren PR ergänzen. | Gesperrt. |
 
 ## Bekannte Grenze
 

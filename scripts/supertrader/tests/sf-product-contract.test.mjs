@@ -295,7 +295,14 @@ test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, 
   assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
   assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
   assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
-  assert.match(code, /domains\.json[^\n]*supertrader\/data\/sf-candidates[^\n]*\n\s*echo "::error::/, 'Commit nur mit registriertem Erzeuger (V2)');
+  assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*!d\.activation[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
+  // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
+  const dq = code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated');
+  assert.ok(dq > 0, 'DQ-SF8 auf dem Laufergebnis');
+  assert.ok(dq < code.indexOf('actions/upload-artifact') && dq < code.indexOf('if: inputs.commit == true'), 'DQ vor Upload und Commit');
+  assert.match(code, /sf8\.length !== 8\)[^\n]*process\.exit\(1\)/, 'fehlende Regeln sind rot');
+  assert.match(code, /x\.status !== "PASS" \|\| x\.checked === 0/, 'jede Regel muss geprüft und bestanden sein');
+  assert.match(code, /cp -r "\$PUB\/\." "\$ziel\/"/, 'committet wird genau das geprüfte Ergebnis');
   for (const block of code.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, 'Eingaben nur über env:');
   assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
   assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');

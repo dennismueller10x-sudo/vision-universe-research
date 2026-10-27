@@ -59,16 +59,45 @@ jobs:
           node --max-old-space-size=4096 scripts/supertrader/source-faithful/product/build-candidates.mjs \
             --out "$OUT" --stats "$STATS" --require-current "$heute" "${prev[@]}"
 
-      - name: Datenbudget (oeffentliche Teile ohne records/ hoechstens 16 MB, je Datei hoechstens 2 MB)
+      - name: Oeffentliche Teile bereitstellen (ohne records/)
         env:
           OUT: ${{ runner.temp }}/sf8-candidates
+          PUB: ${{ runner.temp }}/sf8-public
         run: |
           set -euo pipefail
-          bytes=$(find "$OUT/summary.json" "$OUT/index.json" "$OUT/strategy" "$OUT/ticker" -type f -printf '%s\n' | awk '{s+=$1} END {print s+0}')
+          rm -rf "$PUB"
+          mkdir -p "$PUB"
+          cp "$OUT/summary.json" "$OUT/index.json" "$PUB/"
+          cp -r "$OUT/strategy" "$OUT/ticker" "$PUB/"
+
+      - name: Datenbudget (oeffentliche Teile ohne records/ hoechstens 16 MB, je Datei hoechstens 2 MB)
+        env:
+          PUB: ${{ runner.temp }}/sf8-public
+        run: |
+          set -euo pipefail
+          bytes=$(find "$PUB" -type f -printf '%s\n' | awk '{s+=$1} END {print s+0}')
           echo "oeffentliche Teile: ${bytes} Bytes"
           if [ "$bytes" -gt 16777216 ]; then echo "::error::sf-candidates ${bytes} Bytes ueber dem Budget"; exit 1; fi
-          gross=$(find "$OUT/summary.json" "$OUT/index.json" "$OUT/strategy" "$OUT/ticker" -type f -size +2048k)
+          gross=$(find "$PUB" -type f -size +2048k)
           if [ -n "$gross" ]; then echo "::error::Datei ueber 2 MB: $gross"; exit 1; fi
+
+      # V3: dieselben Regeln, die core-ci.yml auf main anwendet (DQ-SF8-1..8: Frische, Identitaet, Stufensperren,
+      # keine Order-/Stopmarken unter MODELED, Quarantaene, Ergebnisvertraege, Budget, Preisabgleich V4), hier gegen
+      # das Laufergebnis VOR einem Commit. Fail closed: fehlen die Regeln (Core-PR nicht gemergt), ist das rot.
+      - name: Datenqualitaet DQ-SF8 des Laufergebnisses (rot = kein neuer Stand)
+        env:
+          PUB: ${{ runner.temp }}/sf8-public
+          REPORT: ${{ runner.temp }}/sf8-dq.json
+        run: |
+          set -euo pipefail
+          node scripts/core/data-quality.mjs --only=sf8 --sf8-dir="$PUB" --sf8-activated --json > "$REPORT"
+          node -e '
+            const r = require(process.env.REPORT);
+            const sf8 = (r.rules || []).filter((x) => /^DQ-SF8-[1-8]$/.test(x.id));
+            for (const x of sf8) console.log(x.status + " " + x.id + " " + x.title + " [" + x.failed + "/" + x.checked + "]" + (x.status === "PASS" ? "" : " " + x.samples.slice(0, 5).join("; ")));
+            if (sf8.length !== 8) { console.log("::error::DQ-SF8-Regeln fehlen (" + sf8.length + " von 8) - Core-Registrierung V2/V3 nicht gemergt"); process.exit(1); }
+            if (sf8.some((x) => x.status !== "PASS" || x.checked === 0)) { console.log("::error::DQ-SF8 nicht bestanden"); process.exit(1); }
+          '
 
       - name: Vollstaendiges Ergebnis als CI-Artefakt (inklusive Vertragsdatensaetze)
         uses: actions/upload-artifact@v4
@@ -77,25 +106,27 @@ jobs:
           path: |
             ${{ runner.temp }}/sf8-candidates
             ${{ runner.temp }}/sf8-stats.json
+            ${{ runner.temp }}/sf8-dq.json
           retention-days: 14
 
       - name: Commit (nur supertrader/data/sf-candidates, ohne records/)
         if: inputs.commit == true
         env:
-          OUT: ${{ runner.temp }}/sf8-candidates
+          PUB: ${{ runner.temp }}/sf8-public
           PUSH_OWNED_PATHS: supertrader/data/sf-candidates/
         run: |
           set -euo pipefail
           ziel=supertrader/data/sf-candidates
-          # Voraussetzung V2: ohne registrierten Erzeuger in core/registry/domains.json waeren die Dateien fremde Artefakte
-          if ! node -e 'process.exit(JSON.stringify(require("./core/registry/domains.json")).includes("supertrader/data/sf-candidates") ? 0 : 1)'; then
-            echo "::error::supertrader/data/sf-candidates ist nicht in core/registry/domains.json registriert (Voraussetzung V2) - kein Commit."
+          # V2 und V6: ohne registrierten Erzeuger waeren die Dateien fremde Artefakte; solange der Eintrag
+          # supertrader-sf8-candidates in core/registry/domains.json activation.state PREPARED_DISABLED traegt, ist
+          # ein Commit eine Veroeffentlichung ohne Freigabe (Aktivierung nur per eigenem, freigegebenem PR)
+          if ! node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && !d.activation ? 0 : 1)'; then
+            echo "::error::supertrader-sf8-candidates in core/registry/domains.json fehlt oder ist nicht freigegeben (activation.state PREPARED_DISABLED, V2/V6) - kein Commit."
             exit 1
           fi
           rm -rf "$ziel"
           mkdir -p "$ziel"
-          cp "$OUT/summary.json" "$OUT/index.json" "$ziel/"
-          cp -r "$OUT/strategy" "$OUT/ticker" "$ziel/"
+          cp -r "$PUB/." "$ziel/"
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -A "$ziel"

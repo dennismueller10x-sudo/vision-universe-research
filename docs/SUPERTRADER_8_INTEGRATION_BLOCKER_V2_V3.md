@@ -1,6 +1,6 @@
 # Supertrader 8.0 – Integrationsblocker V2/V3: Core-Registry und Datenqualität
 
-Stand 26.10.2026. Dieses Dokument gehört zu #973 (Tageslauf, deaktiviert). Es beschreibt, was fehlt, bevor `supertrader/data/sf-candidates` als Datenart existieren darf. Dass V2 und V3 offen sind, blockiert die **Aktivierung des Tageslaufs**. Die Integration von #969, #970 und #971 blockiert es nicht: Diese PRs bringen keine Daten mit, und die Vorschau bleibt ohne Daten im Leerzustand.
+Stand 26.10.2026, **Umsetzung 27.10.2026:** Schritt 1 in #1025, Schritt 2 und 3 in #1027, V4 in #1026; die Abweichungen stehen unten. Dieses Dokument gehört zu #973 (Tageslauf, deaktiviert). Es beschreibt, was fehlt, bevor `supertrader/data/sf-candidates` als Datenart existieren darf. Dass V2 und V3 offen sind, blockiert die **Aktivierung des Tageslaufs**. Die Integration von #969, #970 und #971 blockiert es nicht: Diese PRs bringen keine Daten mit, und die Vorschau bleibt ohne Daten im Leerzustand.
 
 ## Warum V2/V3 ein eigener Blocker sind
 
@@ -76,4 +76,13 @@ Neue Regeln in `core/data-quality.js` (UMD, mit Tests in `core/tests/`), aufgeru
 5. V5: Freigabe der Vorschau durch den Owner.
 6. V6: Variable setzen, erster Lauf manuell mit `commit=false`, danach ein eigener PR für einen Zeitplan.
 
-Keiner dieser Schritte ist in #969 bis #973 umgesetzt. Diese PRs ändern weder `core/` noch die Schutztests in Richtung Registry.
+## Umsetzung (27.10.2026)
+
+| Schritt | PR | Abweichung vom Entwurf oben |
+|---|---|---|
+| 1 Schutztests | #1025 | Zusätzlich muss `activation.state` auf `PREPARED_DISABLED` stehen; eine Aktivierung braucht damit einen eigenen PR. |
+| 2 Registry | #1027 | Neues Feld `activation` (`PREPARED_DISABLED`, `pendingWorkflow: PR #973`). Health meldet DISABLED/NOT_ACTIVATED statt FAILED, solange kein Artefakt existiert; ein Artefakt ohne Freigabe ist FAILED. `timestamp: []` mit reiner `asOf`-Frische, ohne `meta.json`. |
+| 3 DQ | #1027 | Acht Regeln DQ-SF8-1..8: Identität (2) und Quarantäne (5) sind eigene Regeln, `records/` ist Teil der Ergebnisverträge (6). Das Budget ist ERROR statt WARN. Der Preisabgleich ist sofort ERROR, weil V4 umgesetzt ist (#1026). |
+| V4 | #1026 | – |
+
+#973 wendet DQ-SF8 vor dem Commit an und committet nur bei freigegebenem Eintrag.
