@@ -79,6 +79,14 @@ jobs:
       - name: Core-Tests
         run: node --test "core/tests/*.test.mjs" quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs
 
+      # Die Registry darf den Supertrader-8-Produktpfad nur im einen, festgeschriebenen
+      # Eintrag nennen. Diese Schutztests liegen in der Supertrader-Welt (Gate A) und
+      # laufen dort nur bei Supertrader-Pfaden - hier laufen sie bei jeder Core-Aenderung
+      # mit. Ein Registry-Eintrag vor der Oeffnung der Schutztests (#1025) wird so im
+      # Core-PR rot, nicht erst auf main.
+      - name: Supertrader-Schutztests der Registry
+        run: node --test --test-name-pattern="SF-PRODUCT-NO-RUN-INTEGRATION|SF2-LEGACY-ISOLATION|SF8-REGISTRY-GUARD" scripts/supertrader/tests/sf-product-contract.test.mjs scripts/supertrader/tests/sf-completion.test.mjs
+
       # Zustandstests: Querverträge über ERZEUGTE Daten zweier Produkte
       # (core/tests/state/, z. B. jedes Supertrader-Signal hat eine Discover-
       # Seite). Dieselben Tests, nichts gelockert - aber ein roter Datenbefund

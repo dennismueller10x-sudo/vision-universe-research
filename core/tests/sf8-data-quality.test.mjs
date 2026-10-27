@@ -24,17 +24,18 @@ const lagFn = (d, e) => (d === e ? 0 : d === "2026-10-22" ? 1 : d === "2026-10-2
 
 /* Ansicht in der Form von records.mjs (nur die gepruefen Felder). */
 function view(c, t, stage, over = {}) {
-  const modeled = stage === "MODELED_TRADE_PLAN";
+  const modeled = stage === "MODELED_TRADE_PLAN", lv = DQ.SF8_STRUCTURE_LEVELS[c][0], kind = DQ.SF8_PIVOT_KINDS[c];
   return Object.assign({
     strategyId: "SF_" + c, candidateId: c, ticker: t, securityId: Identity.securityIdForTicker(t), shard: Identity.shardKey(t),
     stage, ceiling: DQ.SF8_CEILING[c], asOf: ASOF, close: 100.5,
-    levels: modeled ? { gapDayLow: 98, stopReference: 98 } : { gapDayLow: 98 },
-    features: modeled ? { closeVsTrigger: 0.01 } : { gap: 0.1 },
-    pivot: modeled ? null : { level: 98, kind: "GAP_DAY_LOW", distance: 0.02 },
+    levels: modeled ? { [lv]: 98, stopReference: 98 } : { [lv]: 98 },
+    features: modeled ? { closeVsTrigger: 0.01 } : { gap: 0.1, stop: "NOT_IN_SOURCE", closeVsTop: 0.02 },
+    pivot: modeled || !kind ? null : { level: 98, kind, distance: 0.02 },
     plan: modeled ? { entryType: "NEXT_OPEN", trigger: 100.5, stop: 98, hypothetical: true } : null,
     dataQuality: { status: "PASS", notPass: [], quarantinedSessions: [] }
   }, over);
 }
+const row = (v) => ({ c: v.candidateId, t: v.ticker, n: "Name", s: v.stage, r: 1, pd: null, v: null, m: null, q: v.dataQuality.status, sh: v.shard, x: v.close });
 /* Golden Case: jede Methode mit einem Titel auf ihrer Obergrenze bzw. darunter, C12 mit modelliertem Ablauf. */
 function bundle(mut) {
   const views = {};
@@ -55,7 +56,10 @@ function bundle(mut) {
     tickerShards: [...new Set(all.map((v) => v.shard))].sort()
   };
   IDS.forEach((c) => { b.strategies[c] = b.strategies[c] === undefined ? { schema: SCHEMA, strategyId: "SF_" + c, candidateId: c, asOf: ASOF, views: views[c] || [] } : b.strategies[c]; });
-  for (const k of b.summary.tickerShards) if (b.tickers[k] === undefined) b.tickers[k] = { schema: SCHEMA, asOf: ASOF, shard: k, views: all.filter((v) => v.shard === k) };
+  /* Scherben und Kurzzeilen als eigene Kopien, wie in der geschriebenen Ausgabe */
+  for (const k of b.summary.tickerShards) if (b.tickers[k] === undefined) b.tickers[k] = { schema: SCHEMA, asOf: ASOF, shard: k, views: structuredClone(all.filter((v) => v.shard === k)) };
+  if (b.index === undefined) b.index = { schema: SCHEMA, asOf: ASOF, status: structuredClone(b.summary.status), counts: structuredClone(b.summary.counts), candidates: all.map(row) };
+  if (b.summary.top === undefined) b.summary.top = Object.fromEntries(IDS.map((c) => [c, (views[c] || []).slice(0, 5).map(row)]));
   if (!b.files.length) b.files = [{ path: "summary.json", bytes: 1000 }, ...IDS.map((c) => ({ path: "strategy/" + c + ".json", bytes: 5000 }))];
   return b;
 }
@@ -70,7 +74,7 @@ test("DQ-SF8 · Golden Case: stimmiger Stand besteht alle acht Regeln, alle als 
   assert.deepEqual(r.map((x) => x.id), ["DQ-SF8-1", "DQ-SF8-2", "DQ-SF8-3", "DQ-SF8-4", "DQ-SF8-5", "DQ-SF8-6", "DQ-SF8-7", "DQ-SF8-8"]);
   assert.ok(r.every((x) => x.status === "PASS" && x.severity === "ERROR"), JSON.stringify(r.filter((x) => x.status !== "PASS")));
   assert.equal(byId(r)["DQ-SF8-2"].checked, 13);
-  assert.equal(byId(r)["DQ-SF8-4"].checked, 12, "nur Ansichten unterhalb MODELED");
+  assert.equal(byId(r)["DQ-SF8-4"].checked, 24, "nur Ansichten unterhalb MODELED, in Strategiedateien und Scherben");
   assert.equal(DQ.summarize(r).overall, "PASS");
 });
 
@@ -78,6 +82,11 @@ test("DQ-SF8 · Aktivierungszustand fail closed: vorbereitet ohne Daten PASS, so
   const none = { activation: "PREPARED_DISABLED", summary: null, strategies: {}, tickers: {}, files: [], recordsPresent: false, unreadable: [] };
   const r = DQ.sf8Rules(none, ctx());
   assert.ok(r.every((x) => x.status === "PASS" && x.checked === 0));
+  assert.ok(DQ.sf8Rules(Object.assign({}, none, { activation: "ACTIVATING" }), ctx()).every((x) => x.status === "PASS" && x.checked === 0), "freigegeben, erster Lauf ausstehend");
+  assert.deepEqual(failing(Object.assign(bundle(), { activation: "ACTIVATING" })), [], "ACTIVATING mit Daten: voll geprueft, stimmig");
+  assert.ok(failing(Object.assign(bundle((v) => { v.C04[0].stage = "MODELED_TRADE_PLAN"; }), { activation: "ACTIVATING" })).includes("DQ-SF8-3"));
+  assert.equal(failing(Object.assign({}, none, { activation: "ACTIVE" })).length, 8, "unbekannter Zustand");
+  assert.equal(failing(Object.assign({}, none, { unreadable: ["supertrader/data/sf-candidates/foo.json (unerwartete Datei)"] })).length, 8, "eine fremde Datei ist vorhandene Daten");
   const leaked = Object.assign(bundle(), { activation: "PREPARED_DISABLED" });
   assert.equal(failing(leaked).length, 8, "Daten ohne Freigabe: jede Regel rot");
   assert.equal(failing({ activation: "PREPARED_DISABLED", summary: null, strategies: {}, tickers: {}, files: [], recordsPresent: true, unreadable: [] }).length, 8, "auch nur records/");
@@ -119,11 +128,15 @@ test("DQ-SF8-3 · Stufensperren: Stufe 4, ueber der Obergrenze, geaenderte Oberg
 
 test("DQ-SF8-4 · keine Order-/Stopmarke, kein Plan, keine rueckrechenbare Kennzahl unterhalb MODELED", () => {
   for (const mut of [(x) => { x.plan = { trigger: 1 }; }, (x) => { x.levels.trigger = 101; }, (x) => { x.levels.stopReference = 97; }, (x) => { x.levels.limit = 103; },
-    (x) => { x.levels.initialStop = 97; }, (x) => { x.levels.entryPrice = 101; }, (x) => { x.features.proposedStopRiskPct = 0.03; }, (x) => { x.features.closeVsTrigger = 0; },
-    (x) => { x.pivot.kind = "ORDER_TRIGGER"; }, (x) => { x.pivot.kind = "PIVOT_PLUS_TICK"; }]) {
+    (x) => { x.levels.initialStop = 97; }, (x) => { x.levels.entryPrice = 101; }, (x) => { x.levels.box = 1; x.levels.buyPoint = 101; }, (x) => { x.features.proposedStopRiskPct = 0.03; }, (x) => { x.features.closeVsTrigger = 0; },
+    (x) => { x.features.stopLevel = 97; }, (x) => { x.features.stop = { level: 97 }; }, (x) => { x.features.entry = 101; },
+    (x) => { x.pivot.kind = "ORDER_TRIGGER"; }, (x) => { x.pivot.kind = "PIVOT_PLUS_TICK"; }, (x) => { x.pivot.kind = "PIVOT"; }]) {
     assert.ok(failing(bundle((v) => mut(v.C09[0]))).includes("DQ-SF8-4"), String(mut));
   }
-  assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen");
+  /* Methoden, deren einzige Marke der Quelle die Order ist (Turtle, Holy Grail, Pocket Pivot, Parabolic Short): keine Chartmarke */
+  assert.ok(failing(bundle((v) => { v.C01[0].pivot = { level: 99, kind: "BOX_TOP", distance: 0.01 }; })).includes("DQ-SF8-4"));
+  assert.ok(failing(bundle((v) => { v.C13[0].levels.gapDayLow = 98; })).includes("DQ-SF8-4"), "Marke einer anderen Methode");
+  assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen; Statustexte und closeVsTop sind keine Order");
 });
 
 test("DQ-SF8-5 · Quarantaene und DQ-Grenzen: Quarantaene ueber Chart, veroeffentlichtes FAIL, CAP ueberschritten", () => {
@@ -155,6 +168,23 @@ test("DQ-SF8-6 · Ergebnisvertraege: Schema, Methoden, fehlende Teile, Zaehlunge
   for (const [name, mut] of Object.entries(cases)) { const b = bundle(); mut(b); assert.ok(failing(b).includes("DQ-SF8-6"), name); }
 });
 
+test("DQ-SF8 · jede veroeffentlichte Ansicht zaehlt: Scherben, index.json, summary.top, fremde Strategiedatei (Review HIGH 2)", () => {
+  const shard = (mut) => { const b = bundle(); const k = b.summary.tickerShards[0]; mut(b.tickers[k].views[0]); return failing(b); };
+  assert.ok(shard((v) => { v.stage = "VALIDATED_TRADE_SIGNAL"; }).includes("DQ-SF8-3"), "Scherbe mit Stufe 4");
+  assert.ok(shard((v) => { if (v.stage !== "MODELED_TRADE_PLAN") { v.plan = { entry: 1, stop: 0.9 }; v.levels.stopReference = 0.9; } else { v.stage = "VALIDATED_TRADE_SIGNAL"; } }).some((x) => x === "DQ-SF8-4" || x === "DQ-SF8-3"));
+  assert.ok(shard((v) => { v.close = 1; }).includes("DQ-SF8-6"), "Scherbe weicht von der Strategiedatei ab");
+  const idx = bundle(); idx.index.candidates[0].s = "VALIDATED_TRADE_SIGNAL"; assert.ok(failing(idx).includes("DQ-SF8-3"));
+  const idx2 = bundle(); idx2.index.status.orders = "LIVE"; assert.ok(failing(idx2).includes("DQ-SF8-3"));
+  const idx3 = bundle(); idx3.index.candidates[0].x = 1; assert.ok(failing(idx3).includes("DQ-SF8-6"));
+  const idx4 = bundle(); idx4.index.candidates.pop(); assert.ok(failing(idx4).includes("DQ-SF8-6"));
+  const idx5 = bundle(); idx5.index.candidates[0].q = "FAIL"; assert.ok(failing(idx5).includes("DQ-SF8-5"));
+  const top = bundle(); top.summary.top.C04[0].s = "VALIDATED_TRADE_SIGNAL"; assert.ok(failing(top).includes("DQ-SF8-3"));
+  const top2 = bundle(); top2.summary.top.C04.push(row(view("C04", "ZZZZ", "CHART_CANDIDATE"))); assert.ok(failing(top2).includes("DQ-SF8-6"));
+  const noIdx = bundle(); noIdx.index = null; assert.ok(failing(noIdx).includes("DQ-SF8-6"), "index.json Pflicht");
+  const extra = bundle(); extra.strategies.C14 = { schema: SCHEMA, strategyId: "SF_C14", candidateId: "C14", asOf: ASOF, views: [view("C04", "ZZZZ", "VALIDATED_TRADE_SIGNAL", { candidateId: "C14" })] };
+  const f = failing(extra); assert.ok(f.includes("DQ-SF8-6") && f.includes("DQ-SF8-3"), "C14 ist keine Methode und wird trotzdem geprueft");
+});
+
 test("DQ-SF8-7 · Budget: eine Datei ueber 2 MB, zusammen ueber 16 MB", () => {
   const big = bundle(); big.files.push({ path: "strategy/C06.json", bytes: 2 * 1024 * 1024 + 1 });
   assert.ok(failing(big).includes("DQ-SF8-7"));
@@ -170,7 +200,7 @@ test("DQ-SF8-8 · eine Preiswahrheit: ohne Toleranz, gleiche Sitzung, gleiche Id
   assert.ok(!failing(bundle((v) => { v.C04[0].close = 100.504; })).includes("DQ-SF8-8"), "Rundungsregel der Veroeffentlichung");
   const id0 = Identity.securityIdForTicker("AAPL");
   for (const ref of [null, series("AAPL", { asOf: "2026-10-26", points: [[ASOF, 100.5], ["2026-10-26", 101]] }), series("AAPL", { asOf: "2026-10-22", points: [["2026-10-22", 100.5]] }),
-    series("AAPL", { currency: "EUR" }), series("AAPL", { ticker: "AAPL.L" }), series("AAPL", { securityId: "ref_X" }), series("AAPL", { dataMode: "mock" }), series("AAPL", { priceSeriesType: "RAW" })]) {
+    series("AAPL", { currency: "EUR" }), series("AAPL", { ticker: "AAPL.L" }), series("AAPL", { instrumentId: "AAPL.MX" }), series("AAPL", { securityId: "ref_X" }), series("AAPL", { dataMode: "mock" }), series("AAPL", { priceSeriesType: "RAW" })]) {
     const refs = Object.assign({}, REFS, { [id0]: ref });
     assert.ok(failing(bundle(), { referenceOf: (id) => refs[id] || null }).includes("DQ-SF8-8"), JSON.stringify(ref && { asOf: ref.asOf, currency: ref.currency, ticker: ref.ticker, dataMode: ref.dataMode, priceSeriesType: ref.priceSeriesType }));
   }

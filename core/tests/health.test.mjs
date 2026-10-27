@@ -31,18 +31,20 @@ test("Register · jede Domaene ist vollstaendig beschrieben und eindeutig", () =
 });
 
 const prepared = (d) => !!(d.activation && d.activation.state === "PREPARED_DISABLED");
+const activating = (d) => !!(d.activation && d.activation.state === "ACTIVATING");
 
 test("Register · jedes kanonische Artefakt liegt im Repository (vorbereitete Datenarten: gerade NICHT)", () => {
   for (const d of registry.domains) {
     if (prepared(d)) assert.ok(!existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": Artefakt ohne Freigabe veroeffentlicht " + d.artifact);
+    else if (activating(d)) continue; /* freigegeben, erster Lauf ausstehend: mit oder ohne Artefakt */
     else assert.ok(existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": " + d.artifact);
   }
 });
 
-test("Register · Aktivierungszustand: nur PREPARED_DISABLED, mit Entscheidung; sonst kein Feld", () => {
+test("Register · Aktivierungszustand: nur PREPARED_DISABLED oder ACTIVATING, mit Entscheidung; sonst kein Feld", () => {
   for (const d of registry.domains) {
     if (d.activation === undefined) continue;
-    assert.equal(d.activation.state, "PREPARED_DISABLED", d.id + ": unbekannter Aktivierungszustand");
+    assert.ok(["PREPARED_DISABLED", "ACTIVATING"].includes(d.activation.state), d.id + ": unbekannter Aktivierungszustand");
     assert.ok(typeof d.activation.decision === "string" && d.activation.decision.length > 20, d.id + ": ohne Entscheidung");
     assert.equal(d.critical, false, d.id + ": eine nicht freigegebene Datenart ist nie kritisch");
   }
@@ -65,7 +67,7 @@ test("Register · jeder genannte Workflow und jedes Erzeugerskript existiert", (
 test("Register · das Register liest seine Felder wirklich aus den Artefakten", () => {
   /* Ein Tippfehler im Pfad ergaebe still UNKNOWN statt eines Urteils. */
   for (const d of registry.domains) {
-    if (prepared(d)) continue; /* Artefakt existiert bewusst nicht; Felder prueft "vorbereitete Datenart" unten */
+    if (prepared(d) || (activating(d) && !existsSync(join(ROOT, d.artifact.slice(1))))) continue; /* Artefakt existiert (noch) nicht */
     const data = JSON.parse(readFileSync(join(ROOT, d.artifact.slice(1)), "utf8"));
     if (d.disabledWhen && Health.at(data, d.disabledWhen.path) === d.disabledWhen.equals) continue;
     if ((d.timestamp || []).length) assert.ok(d.timestamp.some((p) => Health.at(data, p)), d.id + ": kein Zeitstempel unter " + d.timestamp);
@@ -211,4 +213,17 @@ test("Vorbereitete Datenart · fehlt = DISABLED (NOT_ACTIVATED), liegt vor = FAI
   const ok = run(active, { asOf: "2026-10-02", counts: { candidates: 3 } });
   assert.equal(ok.status, "OK"); assert.equal(ok.records, 3);
   assert.equal(run(active, { asOf: "2026-09-28", counts: { candidates: 3 } }).status, "STALE");
+});
+
+test("Freigegebene Datenart vor dem ersten Lauf (ACTIVATING) · fehlt = DISABLED, liegt vor = normal bewertet; unbekannter Zustand = FAILED", () => {
+  const base = { timestamp: [], asOf: ["asOf"], records: "counts.candidates", freshness: { kind: "sessions", warnAfter: 1, staleAfter: 2 } };
+  const d = dom(Object.assign({}, base, { activation: { state: "ACTIVATING", decision: "Test" } }));
+  const missing = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT)).domains[0];
+  assert.equal(missing.status, "DISABLED"); assert.equal(missing.reason, "AWAITING_FIRST_RUN");
+  assert.equal(Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "HTTP 500 /x.json" } }, ctx(SAT)).domains[0].status, "FAILED");
+  assert.equal(run(d, { asOf: "2026-10-02", counts: { candidates: 3 } }).status, "OK");
+  assert.equal(run(d, { asOf: "2026-09-28", counts: { candidates: 3 } }).status, "STALE");
+  const odd = dom(Object.assign({}, base, { activation: { state: "ACTIVE", decision: "Test" } }));
+  const r = Health.evaluate({ domains: [odd] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT)).domains[0];
+  assert.equal(r.status, "FAILED"); assert.equal(r.reason, "UNKNOWN_ACTIVATION_STATE");
 });

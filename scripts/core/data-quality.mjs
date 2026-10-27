@@ -145,7 +145,7 @@ if (twArt && twArt.cols) {
   const domain = registry.domains.find((d) => d.id === "supertrader-sf8-candidates") || null;
   const activation = a["sf8-activated"] ? null : (domain && domain.activation ? domain.activation.state : null);
   const base = typeof a["sf8-dir"] === "string" ? a["sf8-dir"] : p(SF8);
-  const bundle = { activation, summary: null, strategies: {}, tickers: {}, recordsPresent: existsSync(join(base, "records")), files: [], unreadable: [] };
+  const bundle = { activation, summary: null, index: null, strategies: {}, tickers: {}, recordsPresent: existsSync(join(base, "records")), files: [], unreadable: [] };
   const readPart = (rel) => {
     const f = join(base, rel);
     if (!existsSync(f)) return null;
@@ -153,9 +153,9 @@ if (twArt && twArt.cols) {
     try { return JSON.parse(readFileSync(f, "utf8")); } catch (e) { bundle.unreadable.push(SF8 + "/" + rel); return null; }
   };
   bundle.summary = readPart("summary.json");
-  readPart("index.json");
+  bundle.index = readPart("index.json");
   for (const n of (existsSync(join(base, "strategy")) ? readdirSync(join(base, "strategy")).sort() : [])) {
-    const m = n.match(/^(C\d{2})\.json$/); const v = readPart("strategy/" + n);
+    const m = n.match(/^(C\d{2})\.json$/); const v = readPart("strategy/" + n);  // jede Cxx-Datei, auch C14: DQ-SF8-6 meldet sie
     if (m) bundle.strategies[m[1]] = v; else bundle.unreadable.push(SF8 + "/strategy/" + n + " (unerwartete Datei)");
   }
   for (const n of (existsSync(join(base, "ticker")) ? readdirSync(join(base, "ticker")).sort() : [])) {
