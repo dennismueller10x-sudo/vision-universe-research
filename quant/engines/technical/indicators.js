@@ -42,7 +42,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.4.0";
+  var INDICATORS_VERSION = "technical-indicators-1.5.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -713,6 +713,27 @@
     return F.ema(raw, period);
   }
 
+  /**
+   * Klinger Volume Oscillator (Klinger; Definition wie StockCharts):
+   *   Trend_i = +1, wenn (H+L+C)_i > (H+L+C)_{i−1}, sonst −1;  dm_i = H_i − L_i
+   *   cm_i = cm_{i−1} + dm_i bei gleichem Trend, sonst dm_{i−1} + dm_i (Start an Bar 1 wie ein Trendwechsel)
+   *   VF_i = V_i · |2·dm_i/cm_i − 1| · Trend_i · 100;  KVO = EMA_f(VF) − EMA_s(VF);  Signal = EMA_g(KVO).
+   * cm = 0 oder fehlender Wert: VF nicht definiert (NaN); die EMAs halten dort den Vorwert (feature-store.ema).
+   */
+  function klinger(high, low, close, volume, fast, slow, signal) {
+    var h = col(high), l = col(low), c = col(close), v = col(volume), n = c.length, vf = arr(n);
+    var prevTrend = 0, cm = NaN;
+    for (var i = 1; i < n; i++) {
+      if (!(isNum(h[i]) && isNum(l[i]) && isNum(c[i]) && isNum(v[i]) && isNum(h[i - 1]) && isNum(l[i - 1]) && isNum(c[i - 1]))) { prevTrend = 0; continue; }
+      var trend = h[i] + l[i] + c[i] > h[i - 1] + l[i - 1] + c[i - 1] ? 1 : -1, dm = h[i] - l[i], dmPrev = h[i - 1] - l[i - 1];
+      cm = trend === prevTrend && isNum(cm) ? cm + dm : dmPrev + dm;
+      prevTrend = trend;
+      if (cm > 0) vf[i] = v[i] * Math.abs(2 * dm / cm - 1) * trend * 100;
+    }
+    var kvo = zip2(F.ema(vf, fast), F.ema(vf, slow), function (a, b) { return a - b; });
+    return { kvo: kvo, signal: F.ema(kvo, signal) };
+  }
+
   /** Elder Ray: Bull Power = H − EMA_n(C), Bear Power = L − EMA_n(C), Standard n = 13. */
   function elderRay(high, low, close, period) {
     var e = F.ema(col(close), period);
@@ -1030,6 +1051,8 @@
       definition: "√ Mittel der quadrierten prozentualen Rueckgaenge vom n-Bar-Hoch", warmup: function (p) { return 2 * (p.period - 1); } },
     { id: "forceIndex", family: "VOLUME", name: "Force Index", params: { period: 13 }, inputs: ["close", "volume"], overlay: false, catalogOnly: true,
       definition: "EMA_n((C − C₋₁)·V)", warmup: function (p) { return p.period; } },
+    { id: "klinger", family: "VOLUME", name: "Klinger Volume Oscillator", params: { fast: 34, slow: 55, signal: 13 }, inputs: ["high", "low", "close", "volume"], overlay: false, catalogOnly: true,
+      definition: "EMA_f(VF) − EMA_s(VF), VF = V·|2·dm/cm − 1|·Trend·100; Signal EMA_g", warmup: function (p) { return p.slow; } },
     { id: "elderRay", family: "MOMENTUM", name: "Elder Ray (Bull/Bear Power)", params: { period: 13 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
       definition: "Bull = H − EMA_n(C), Bear = L − EMA_n(C)", warmup: function (p) { return p.period - 1; } },
     { id: "easeOfMovement", family: "VOLUME", name: "Ease of Movement (EMV)", params: { period: 14, scale: 100000000 }, inputs: ["high", "low", "volume"], overlay: false, catalogOnly: true,
@@ -1141,6 +1164,7 @@
       case "choppiness": v = choppiness(s.high, s.low, s.close, p.period); break;
       case "ulcerIndex": v = ulcerIndex(s.close, p.period); break;
       case "forceIndex": v = forceIndex(s.close, s.volume, p.period); break;
+      case "klinger": v = klinger(s.high, s.low, s.close, s.volume, p.fast, p.slow, p.signal); break;
       case "elderRay": v = elderRay(s.high, s.low, s.close, p.period); break;
       case "easeOfMovement": v = easeOfMovement(s.high, s.low, s.volume, p.period, p.scale); break;
       case "awesomeOscillator": v = awesomeOscillator(s.high, s.low, p.fast, p.slow); break;

@@ -142,3 +142,9 @@ Die Ausgaben aller Einträge bis 1.2.1 sind unverändert. `linreg` bekommt nur d
 | `chaikinVolatility` | Volatilität | 10 / 10 | n−1+r | Reihe | 100·(EMA(H−L)/EMA(H−L)₋ᵣ − 1) | Bausteine |
 | `envelope` | Trend | 20, 2,5 % | n−1 | middle, upper, lower | SMA ± pct % | naive Referenz |
 | `pivotsFib` / `pivotsCamarilla` / `pivotsWoodie` | Trend | – | 1 | p, r…, s… | Varianten aus der Vorbar | naive Referenz |
+
+## Neu in 1.5.0 (L2 abgeschlossen, nur Katalog)
+
+| id | Name | Definition | Referenz |
+|---|---|---|---|
+| `klinger` | Klinger Volume Oscillator | Trend = +1, wenn H+L+C über dem Vortag liegt, sonst −1; dm = H − L; cm kumuliert dm bei gleichem Trend, sonst cm = dm₋₁ + dm; VF = V·\|2·dm/cm − 1\|·Trend·100; KVO = EMA₃₄(VF) − EMA₅₅(VF); Signal EMA₁₃(KVO) | TA-Lib hat kein Gegenstück. Eine zweite, naive Umsetzung mit eigener EMA stimmt auf echten AAPL-Kursen an jeder Bar überein (`technical-indicators-catalog-klinger.test.mjs`). Erster Wert an Bar 55, Signal an Bar 67. |
