@@ -130,6 +130,7 @@ Ausgangswerte (vor Neustart, offizielle Insights): Median Reichweite 12, Ø Wied
 | H8 | Serien und Wiederholung bringen mehr als Einzel-Hits | nach 4 Wochen |
 | H9 | Angst- oder Schutz-Hook schlägt Paradox-Hook | Unitree-Reel (Angst) gegen Fassung mit „Dein nächster Bodyguard will kein Gehalt" |
 | H10 | Kommentar-Wort-Aufruf („Kommentiere Robotik") erhöht Kommentare und Reichweite | zwei Reels gleicher Bauart, eines mit Kommentar-Wort; Antworten von Hand oder per Automatisierung (Freigabe nötig) |
+| H11 | Besitz-Hook: Die Hook nennt etwas, das dem Zuschauer gehört („dein Welt-ETF", „wenn du Tesla-Aktien hast", „dein Geld"), und schlägt eine reine Themen-Hook. Abgeleitet aus dem Kanal-Lauf vom 23.10.2026, Owner will es beobachten | Tesla/Waymo Version A (27.10.2026, Hook „Wenn du Tesla-Aktien hast, schau dir das an") gegen den Median unserer Themen-Hooks (200–300 Aufrufe); Aufrufe und Wiedergabedauer nach 24 h / 72 h |
 
 ## 8. Erfahrungen aus der Entstehung
 
