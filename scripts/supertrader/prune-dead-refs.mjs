@@ -23,8 +23,9 @@
        der volle Build schreibt (Owner-Regel 04.10.2026, LOGI: Signale
        bleiben, die Seite zeigt einen Hinweis statt des Links);
      - nimmt nie einen Ausweis zurueck: ein wieder auftauchendes Kuerzel
-       kann ein neues Listing sein (Kuerzel-Neuvergabe). Das entscheidet
-       erst der volle Build;
+       kann ein neues Listing sein (Kuerzel-Neuvergabe), und der Stock-Index
+       fuehrt nur Kuerzel. Der Ausweis (Hinweis statt Link) ist die sichere
+       Richtung; zuruecknehmen darf nur der volle Build;
      - bricht ab (Exit 2, nichts geschrieben), wenn Universum oder
        Supertrader-Stand unvollstaendig, widerspruechlich oder
        unplausibel sind.
@@ -32,8 +33,11 @@
    Geschrieben werden nur signals.json, signals-core.json und die
    Aktienausschnitte stock/<SYM>.json der neu ausgewiesenen Titel. Erst
    alle Dateien in Temporaerdateien, dann Umbenennen; signals.json zuletzt.
-   Bricht der Lauf dazwischen ab, rechnet ein erneuter Lauf aus der
-   unveraenderten signals.json dasselbe Ergebnis (idempotent).
+   Atomar je Datei, nicht ueber alle Dateien: bricht der Lauf zwischen zwei
+   Umbenennungen ab, gilt ein bereits ausgewiesener Ausschnitt als erledigt,
+   und ein erneuter Lauf vervollstaendigt den Rest (idempotent). Im
+   Workflow ist der Commit die eigentliche Einheit: erst nach den
+   Integritaetstests, alles in einem Commit.
 
    Aufruf:
      node scripts/supertrader/prune-dead-refs.mjs [--root=.] [--dry-run]
@@ -43,7 +47,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { discoverAvailability, symbolsIn, trend52Symbols } from './build.mjs';
+import { discoverAvailability, symbolsIn, trend52Symbols } from './discover-availability.mjs';
 
 const Identity = createRequire(import.meta.url)('../../core/identity.js');
 
@@ -137,7 +141,10 @@ export function prune({ root, dryRun = false }) {
     const datei = path.join(data, 'stock', sym + '.json');
     const s = lies(datei, 'STATE_INVALID');
     const a = s.json.discoverAvailability;
-    if (s.json.symbol !== sym || !a || !Array.isArray(a.unavailable) || a.unavailable.length) abbruch('STATE_INCONSISTENT', 'Ausschnitt ' + sym + ' ohne passenden Ausweis');
+    if (s.json.symbol !== sym || !a || !Array.isArray(a.unavailable)) abbruch('STATE_INCONSISTENT', 'Ausschnitt ' + sym + ' ohne passenden Ausweis');
+    /* schon ausgewiesen (abgebrochener frueherer Lauf): erledigt */
+    if (a.unavailable.length === 1 && a.unavailable[0] === sym) continue;
+    if (a.unavailable.length) abbruch('STATE_INCONSISTENT', 'Ausschnitt ' + sym + ' traegt einen fremden Ausweis');
     schreiben.push({ datei, alt: s, neu: mitAusweis(s.json, [sym]) });
   }
   schreiben.push({ datei: path.join(data, 'signals-core.json'), alt: core, neu: neuCore });

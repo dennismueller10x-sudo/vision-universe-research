@@ -9,7 +9,8 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prune, planPrune, validateUniverse, LIMITS, main } from '../prune-dead-refs.mjs';
-import { discoverAvailability } from '../build.mjs';
+import { discoverAvailability } from '../discover-availability.mjs';
+import { discoverAvailability as ausBuild } from '../build.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const NOTE = 'Hinweis statt Link.';
@@ -169,6 +170,38 @@ test('gescheiterte Quant-Materialisierung: Bereinigung laeuft, ohne Markt- oder 
   const src = readFileSync(join(ROOT, 'scripts', 'supertrader', 'prune-dead-refs.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   assert.doesNotMatch(src, /quant\/|'quant'|TIINGO|MARKETSTACK|fetch\(|https?:/i, 'keine Markt-/Quant-Daten, kein Anbieter');
   assert.doesNotMatch(src, /'ledger'|ledger\//, 'Ledger unberuehrt');
+});
+
+test('nie zuruecknehmen: neu entfallener Titel und gleichzeitig wieder gefuehrtes Kuerzel', () => {
+  /* BZH entfaellt, LOGI steht wieder im Universum: BZH wird ausgewiesen, LOGI bleibt ausgewiesen. */
+  const r = repo({ universum: ['AAA', 'LOGI', 'TRD', ...BASIS] });
+  const b = prune({ root: r });
+  assert.deepEqual(b.added, ['BZH']);
+  assert.deepEqual(b.stillMarkedButListed, ['LOGI']);
+  assert.deepEqual(json(r, 'supertrader/data/signals.json').discoverAvailability.unavailable, ['BZH', 'LOGI']);
+  assert.deepEqual(json(r, 'supertrader/data/stock/LOGI.json').discoverAvailability.unavailable, ['LOGI']);
+  rmSync(r, { recursive: true, force: true });
+});
+
+test('abgebrochener Lauf (Ausschnitt schon umbenannt, signals.json noch alt): erneuter Lauf vervollstaendigt', () => {
+  const r = repo({ universum: ['AAA', 'TRD', ...BASIS] });
+  const ziel = repo({ universum: ['AAA', 'TRD', ...BASIS] });
+  prune({ root: ziel });
+  /* Zustand nach Abbruch zwischen den Umbenennungen: nur stock/BZH.json ist neu. */
+  writeFileSync(join(r, 'supertrader/data/stock/BZH.json'), readFileSync(join(ziel, 'supertrader/data/stock/BZH.json')));
+  const b = prune({ root: r });
+  assert.equal(b.action, 'PRUNE');
+  assert.deepEqual(b.files, ['supertrader/data/signals-core.json', 'supertrader/data/signals.json']);
+  assert.deepEqual(stand(r), stand(ziel), 'gleiches Ergebnis wie ein ununterbrochener Lauf');
+  assert.equal(prune({ root: r }).action, 'NOOP');
+  for (const x of [r, ziel]) rmSync(x, { recursive: true, force: true });
+});
+
+test('Bereinigung laedt keine Engines: nur die reinen Ausweis-Funktionen, dieselben wie im Build', () => {
+  const src = readFileSync(join(ROOT, 'scripts', 'supertrader', 'prune-dead-refs.mjs'), 'utf8');
+  const importe = [...src.matchAll(/^import .* from '([^']+)';$/gm)].map((m) => m[1]).sort();
+  assert.deepEqual(importe, ['./discover-availability.mjs', 'node:fs', 'node:module', 'node:path', 'node:url']);
+  assert.equal(ausBuild, discoverAvailability, 'Build und Bereinigung teilen dieselbe Funktion');
 });
 
 test('Ergebnis entspricht dem Ausweis des vollen Builds fuer dieselben Eingaben', () => {
