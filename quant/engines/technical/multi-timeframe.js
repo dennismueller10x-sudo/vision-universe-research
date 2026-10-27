@@ -27,6 +27,13 @@
      rsi14, adx (14), macdPositive (12/26/9), stochK (14, 3)
      atrPct (ATR 14 / Schluss), relVol (Volumen / Median der 20 Vorbars),
      volAboveAvg (relVol > 1), volSpike (relVol >= 2)
+   Seit 1.1.0 (L7, docs/technical/SCREENER_FIELDS_L7.md):
+     roc21/roc63/roc126/roc252  Kursaenderung ueber 1/3/6/12 Monate:
+         Woche 4/13/26/52 Bars, Monat 1/3/6/12 Bars
+     insideBar, nr7             aus dem Katalog (indicators.js), am Wochen- bzw. Monatsbar
+     candleBullish/candleBearish/candleNeutral
+                                Kerzenmuster am abgeschlossenen Bar, dieselbe feste
+                                Liste wie screen-row.js (SCREEN_CANDLES)
    Fehlt Historie, ist der Wert null, nie 0 und nie geschaetzt.
    ========================================================================= */
 (function (global) {
@@ -35,12 +42,21 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var TF = isNode ? require("./timeframe.js") : global.VUTechnical.Timeframe;
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
+  var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
 
-  var MTF_VERSION = "technical-mtf-1.0.0";
+  var MTF_VERSION = "technical-mtf-1.1.0";
+  /* roc: Feldname des Tages (Handelstage) -> Bars dieses Zeitrahmens fuer dieselbe Kalenderspanne. */
   var SPEC = {
-    "1W": { shortMa: 10, longMa: 40, highBars: 52, closedRule: "STICHTAG_FREITAG" },
-    "1M": { shortMa: 5, longMa: 10, highBars: 12, closedRule: "KEIN_WERKTAG_MEHR_IM_MONAT" }
+    "1W": { shortMa: 10, longMa: 40, highBars: 52, closedRule: "STICHTAG_FREITAG", roc: { roc21: 4, roc63: 13, roc126: 26, roc252: 52 } },
+    "1M": { shortMa: 5, longMa: 10, highBars: 12, closedRule: "KEIN_WERKTAG_MEHR_IM_MONAT", roc: { roc21: 1, roc63: 3, roc126: 6, roc252: 12 } }
   };
+  /* Dieselbe feste Musterliste wie screen-row.js SCREEN_CANDLES (ein Test prueft die Gleichheit). */
+  var CANDLES = ["doji", "dragonflyDoji", "gravestoneDoji", "longLeggedDoji", "hammer", "hangingMan", "invertedHammer", "shootingStar",
+    "marubozu", "spinningTop", "engulfing", "harami", "haramiCross", "piercing", "darkCloudCover", "tweezer", "kicking", "morningStar",
+    "eveningStar", "morningDojiStar", "eveningDojiStar", "abandonedBaby", "threeWhiteSoldiers", "threeBlackCrows", "threeInside",
+    "threeOutside", "threeMethods"];
+  /* Felder seit 1.1.0; ein Buendel 1.0.0 hat sie nicht (screen-row.js setzt sie dann auf null). */
+  var FIELDS_1_1 = ["roc21", "roc63", "roc126", "roc252", "insideBar", "nr7", "candleBullish", "candleBearish", "candleNeutral"];
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -91,6 +107,27 @@
     };
   }
 
+  /** Seit 1.1.0: ROC, Inside Bar, NR7 und Kerzenmuster am letzten Bar; nutzt nur Bars <= t. */
+  function blockL7(bars, spec) {
+    var n = bars.close.length, t = n - 1, c = bars.close[t], out = {};
+    Object.keys(spec.roc).forEach(function (k) { var h = spec.roc[k]; out[k] = t >= h ? r(pct(c, bars.close[t - h])) : null; });
+    var ib = I.compute(bars, "insideBar").values, nr = I.compute(bars, "nr7").values;
+    out.insideBar = isNum(ib[t]) ? ib[t] === 1 : null;
+    out.nr7 = isNum(nr[t]) ? nr[t] === 1 : null;
+    var res = Cdl.detect({ open: bars.open, high: bars.high, low: bars.low, close: bars.close }, { only: CANDLES }).patterns;
+    var bull = [], bear = [], neutral = [], ok = true;
+    for (var k = 0; k < CANDLES.length; k++) {
+      var p = Cdl.pattern(CANDLES[k]), v = res[CANDLES[k]][t];
+      if (!isNum(v)) { ok = false; break; }
+      if (v === 0) continue;
+      (p.direction === "neutral" ? neutral : v > 0 ? bull : bear).push(p.id);
+    }
+    out.candleBullish = ok ? bull : null;
+    out.candleBearish = ok ? bear : null;
+    out.candleNeutral = ok ? neutral : null;
+    return out;
+  }
+
   /**
    * @param {object} series CanonicalBarSeries (1D, SPLIT_ADJUSTED)
    * @returns {{version, input, "1W": object|null, "1M": object|null}}
@@ -106,12 +143,12 @@
       if (n < 2) { out[tf] = null; return; }
       var bars = { open: agg.open.slice(0, n), high: agg.high.slice(0, n), low: agg.low.slice(0, n), close: agg.close.slice(0, n), volume: agg.volume.slice(0, n) };
       out[tf] = { asOf: String(agg.timestamps[n - 1]).slice(0, 10), bars: n, closedRule: spec.closedRule, droppedOpenBar: drop === 1,
-        close: bars.close[n - 1], values: blockOf(bars, spec) };
+        close: bars.close[n - 1], values: Object.assign(blockOf(bars, spec), blockL7(bars, spec)) };
     });
     return out;
   }
 
-  var api = { MTF_VERSION: MTF_VERSION, SPEC: SPEC, compute: compute, closedAt: closedAt, blockOf: blockOf };
+  var api = { MTF_VERSION: MTF_VERSION, SPEC: SPEC, CANDLES: CANDLES, FIELDS_1_1: FIELDS_1_1, compute: compute, closedAt: closedAt, blockOf: blockOf, blockL7: blockL7 };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.MultiTimeframe = api; }
 })(typeof window !== "undefined" ? window : globalThis);

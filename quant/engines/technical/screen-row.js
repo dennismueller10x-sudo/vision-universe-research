@@ -34,7 +34,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.7.0";
+  var ROW_VERSION = "technical-screen-row-1.8.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -44,9 +44,16 @@
   function bool(v) { return v === null || v === undefined ? null : !!v; }
 
   /** Schlusskurs-basierte Kennzahlen fuer Wochen- oder Monatsschluesse (ohne Hoch/Tief/Volumen). */
+  /* Seit 1.8.0 (L7): Felder der Wochen-/Monatskennzahlen aus multi-timeframe.js 1.1.0. Fehlen sie (Buendel 1.0.0
+     oder Schlusskurs-Rechnung), sind sie null, nie geschaetzt; ROC laesst sich aus Schlusskursen rechnen. */
+  var MTF_L7 = ["roc21", "roc63", "roc126", "roc252", "insideBar", "nr7", "candleBullish", "candleBearish", "candleNeutral"];
+  var ROC_BARS = { 52: { roc21: 4, roc63: 13, roc126: 26, roc252: 52 }, 12: { roc21: 1, roc63: 3, roc126: 6, roc252: 12 } };
+
   function closeOnlyBlock(closes, longMa, shortMa, yearBars) {
     var n = closes.length;
     if (n < shortMa + 1) return null;
+    var roc = {}, spec = ROC_BARS[yearBars] || {};
+    Object.keys(spec).forEach(function (k) { roc[k] = n - 1 >= spec[k] ? r(pct(closes[n - 1], closes[n - 1 - spec[k]])) : null; });
     var c = closes[n - 1], sl = I.sma(closes, longMa)[n - 1], ss = I.sma(closes, shortMa)[n - 1], rs = I.rsi(closes, 14)[n - 1];
     var hi = n >= yearBars ? Math.max.apply(null, closes.slice(n - yearBars)) : null;
     return {
@@ -54,7 +61,9 @@
       sma50AboveSma200: isNum(sl) && isNum(ss) ? ss > sl : null, distSma200: r(pct(c, sl)),
       rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi)),
       /* Nur aus der vollen Tageshistorie (bundle.multiTimeframe) berechenbar; Schlusskurse allein reichen nicht. */
-      adx: null, macdPositive: null, stochK: null, atrPct: null, relVol: null, volAboveAvg: null, volSpike: null
+      adx: null, macdPositive: null, stochK: null, atrPct: null, relVol: null, volAboveAvg: null, volSpike: null,
+      roc21: roc.roc21, roc63: roc.roc63, roc126: roc.roc126, roc252: roc.roc252,
+      insideBar: null, nr7: null, candleBullish: null, candleBearish: null, candleNeutral: null
     };
   }
 
@@ -271,6 +280,7 @@
        (bundle.multiTimeframe, OHLCV, echter Monatsschluss). Ohne sie: Schlusskurs-Rechnung wie bisher. */
     var mtf = input.multiTimeframe && /^technical-mtf-1\./.test(input.multiTimeframe.version || "") ? input.multiTimeframe : null;
     var W = mtf && mtf["1W"] && mtf["1W"].values || closeOnlyBlock(wc, 40, 10, 52);
+    MTF_L7.forEach(function (k) { row[k + "@1W"] = null; row[k + "@1M"] = null; });
     if (W) Object.keys(W).forEach(function (k) { row[k + "@1W"] = W[k]; });
     var M = mtf && mtf["1M"] && mtf["1M"].values || closeOnlyBlock(monthlyFromWeekly(weekly, row.asOf), 10, 5, 12);
     if (M) Object.keys(M).forEach(function (k) { row[k + "@1M"] = M[k]; });
