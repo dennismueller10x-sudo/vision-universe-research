@@ -152,7 +152,11 @@ test('shared Screener and Atlas suppress raw quotes and prohibit price probing u
  for(const q of [Screener.build([{field:'price',operator:'gte',value:200,scale:'raw'}]),Screener.build([],[{field:'price',direction:'desc'}])]){
   assert.equal((await onlyDerived.screen(q)).reason,'PRICE_DISPLAY_NOT_PERMITTED');const answer=await tools.call('screenStocks',{query:q});assert.equal(answer.data.state,'UNAVAILABLE');assert.deepEqual(answer.data.stocks,[]);
  }
- const approved=await api.screen(Screener.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]));assert.equal(approved.state,'AVAILABLE');assert.ok(approved.stocks.some(s=>s.ticker==='NVDA'));
+ // The grant comparison uses the same query and page; a live ticker's
+ // momentum or rank must not decide whether this privacy check runs.
+ const approved=await api.screen(query);assert.equal(approved.state,'AVAILABLE');
+ assert.deepEqual(approved.stocks.map(s=>s.ticker),result.data.stocks.map(s=>s.ticker));
+ assert.ok(approved.stocks.some(s=>Number.isFinite(s.price.value)),'raw-granted positive control must contain a quote');
 });
 test('comparison preserves canonical evidence families and capability-driven company columns',async()=>{const result=await api.getComparison(['NVDA','MSFT','JPM','TSLA']);assert.equal(result.companies.length,4);assert.equal(result.partial,false);assert.ok(result.families.length>=5);const margin=result.families.find(f=>f.id==='quality').metrics.find(m=>m.metricId==='operatingMargin');assert.equal(margin.values[0].value,65.214);assert.ok(Number.isFinite(margin.values[3].value));assert.equal(result.ranking.state,'UNAVAILABLE');assert.equal((await api.getComparison(['NVDA','NVDA'])).reason,'INVALID_COMPARISON');});
 
