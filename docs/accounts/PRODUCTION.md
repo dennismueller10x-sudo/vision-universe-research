@@ -42,7 +42,13 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“: legt Produkte `vu_plus`/`vu_pro` und den Webhook an; das
    Geheimnis geht direkt in den Worker. Preise, Kundenportal und `plan_prices` erst mit der Repository-Variable
    `VU_ACCOUNT_LIVE_PRICES` (Owner-Entscheidung).
-4. **Freischalten** (jeweils eigener PR, eigene Freigabe):
+4. **Ende-zu-Ende** – „Konten — Ende-zu-Ende auf Produktion“ (`scripts/account/prod-e2e.mjs`, eine Freigabe): zwei
+   kurzlebige Testkonten `e2e-<lauf>-a|b@visionuniverse.de` (nur sie kommen auf die Positivliste, bestätigt über die
+   Admin-API, kein Postfach nötig). Prüft Registrierungssperre, Login/Logout, Watchlist auf zwei Geräten und Free-Grenze,
+   Trennung der Konten, Free/Plus/Pro über `billing.entitlement_overrides` (keine Zahlung), gesperrten Checkout,
+   Webhook ohne Signatur, Export und Löschung; danach ist nichts von den Testkonten übrig. Die echte Bestätigungsmail
+   prüft der Owner einmal mit der eigenen Adresse (Positivliste in der Datenbank und `VU_REGISTRATION_ALLOWLIST`).
+5. **Freischalten** (jeweils eigener PR, eigene Freigabe):
    - Abrechnung: `STRIPE_LIVE_MODE_APPROVED = "true"` in `[env.production.vars]`, ausrollen.
    - Seiten: `konto/config.js` → `{endpoint: 'https://konto.visionuniverse.de'}`.
    - Öffentliche Registrierung: `VU_REGISTRATION_ENABLED = "true"` **und** `update public.registration_gate set open = true`
