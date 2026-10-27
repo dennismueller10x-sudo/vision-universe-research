@@ -113,10 +113,17 @@
    * Spinning Top) haben keine Richtung und zaehlen nur in candleNeutral. Pruefraum candleWindow = Bars vom Stichtag
    * rueckwaerts, an denen ALLE Muster entscheidbar sind (keine NaN); jede Bar nutzt nur Bars <= i.
    */
+  /* Feste Musterliste des Screeners (1.7.0). Neue Muster in candlesticks.js aendern die Screener-Ausgabe erst,
+     wenn sie hier ergaenzt werden (eigener Fachmodell-PR); technical-query.js CANDLE_TYPES nennt dieselben Ids. */
+  var SCREEN_CANDLES = ["doji", "dragonflyDoji", "gravestoneDoji", "longLeggedDoji", "hammer", "hangingMan", "invertedHammer", "shootingStar",
+    "marubozu", "spinningTop", "engulfing", "harami", "haramiCross", "piercing", "darkCloudCover", "tweezer", "kicking", "morningStar",
+    "eveningStar", "morningDojiStar", "eveningDojiStar", "abandonedBaby", "threeWhiteSoldiers", "threeBlackCrows", "threeInside",
+    "threeOutside", "threeMethods"];
+
   function candleBlock(b) {
     var out = { candleBullish: [], candleBearish: [], candleNeutral: [], candleBullDays: null, candleBearDays: null, candleWindow: null };
-    var n = b.close.length, t = n - 1, res = Cdl.detect({ open: b.open, high: b.high, low: b.low, close: b.close }).patterns;
-    var list = Cdl.PATTERNS.map(function (p) { return [p, res[p.id]]; });
+    var n = b.close.length, t = n - 1, res = Cdl.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: SCREEN_CANDLES }).patterns;
+    var list = SCREEN_CANDLES.map(function (id) { return [Cdl.pattern(id), res[id]]; });
     var w = 0;
     for (var i = t; i >= 0; i--) {
       var bull = false, bear = false, ok = true;
@@ -288,7 +295,7 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, computeRow: computeRow, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }
 })(typeof window !== "undefined" ? window : globalThis);

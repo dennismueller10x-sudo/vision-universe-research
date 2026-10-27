@@ -90,6 +90,11 @@ test("Ruhender Titel (alle Mittel 0): Muster nicht entscheidbar, alles null stat
   assert.equal(r.insideBar, false, "gleiche Spanne ist kein Inside Bar");
 });
 
+test("Feste Musterliste: Screener und Abfrage nennen dieselben Muster, alle in candlesticks.js", () => {
+  assert.deepEqual(Object.keys(Q.CANDLE_TYPES), Row.SCREEN_CANDLES);
+  for (const id of Row.SCREEN_CANDLES) assert.ok(Cdl.pattern(id), id);
+});
+
 test("Abfrage und Text: neue Felder validierbar, Text-Rundreise, Begriffe", () => {
   for (const id of ["roc63", "roc126", "roc252", "insideBar", "nr7", "candleBullish", "candleBearish", "candleNeutral", "candleBullDays", "candleBearDays"]) assert.ok(Q.field(id), id);
   const q = Q.validate({ timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: [
