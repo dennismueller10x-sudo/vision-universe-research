@@ -274,5 +274,12 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
   assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
   assert.deepEqual(sf8RegistryViolations('{kaputt'), ['REGISTRY_NOT_JSON']);
+  // Review MEDIUM 6: keine Hintertür über freie Felder, Altmodule oder Schreibweise
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, consumers: ['scripts/supertrader/source-faithful/completion/status.mjs'] }])).includes('SF8_DOMAIN_REF_IN:consumers'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: SF8_ACTIVATION_STATE, decision: 'siehe source-faithful/product/x.mjs' } }])).includes('SF8_DOMAIN_REF_IN:activation'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, extra: 1 }])).includes('SF8_DOMAIN_UNKNOWN_FIELD:extra'));
+  for (const ref of ['scripts/supertrader/signals/research-signal.mjs', 'completion/gaps.mjs', 'Source-Faithful/product', 'SF-CANDIDATES']) {
+    assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: [ref] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), ref);
+  }
   assert.equal(SF8_DOMAIN_ID, 'supertrader-sf8-candidates');
 });
