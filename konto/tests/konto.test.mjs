@@ -99,9 +99,10 @@ test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, 
   }
 });
 
-test('Konten sind im Repository AUS: leerer Endpunkt', () => {
+test('Endpunkt ist leer (Konten aus) oder genau die Produktions-API', () => {
   const src = readFileSync(join(ROOT, 'config.js'), 'utf8');
-  assert.match(src, /VU_ACCOUNT_CONFIG = \{endpoint: ''\}/);
+  assert.match(src, /VU_ACCOUNT_CONFIG = \{endpoint: '(|https:\/\/konto\.visionuniverse\.de)'\}/);
+  assert.ok(!src.includes('account.visionuniverse.de'), 'nicht die Shopify-Kundenkonten');
 });
 
 test('keine Serverdaten per innerHTML', () => {
