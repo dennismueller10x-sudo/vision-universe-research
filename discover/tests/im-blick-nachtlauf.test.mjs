@@ -323,8 +323,12 @@ test("NL5 · Workflow: Stufe nach allen Pruefungen, kein roter Nachtlauf, gleich
   const andere = wf.replace(job, "");
   const mitNeeds = andere.split("\n").filter((z) => /needs:/.test(z) && /imblick/.test(z));
   assert.equal(mitNeeds.length, 1, "nur der Alarm-Job wartet auf imblick");
-  /* #993: der Alarm wartet zusaetzlich auf die Supertrader-Bereinigung; refresh bis imblick bleiben Pflicht */
-  assert.match(teil(wf, "\n  alarm:\n"), /needs: \[refresh, materialize, freshness-contract, imblick(?:, supertrader)?(?:, supertrader-prune)?\]/);
+  /* Alarm wartet auf die drei Vorstufen und auf imblick; danach nur die Supertrader-Stufen des Nachtlaufs, seit #993
+     auch supertrader-prune (deren Verdrahtung prueft core/tests/supertrader-chain.test.mjs). Exakt statt optionaler
+     Gruppen, damit kein Job still wegfaellt. */
+  const alarmNeeds = teil(wf, "\n  alarm:\n").match(/\n    needs: \[([^\]]+)\]/)[1].split(/,\s*/);
+  assert.deepEqual(alarmNeeds.slice(0, 4), ["refresh", "materialize", "freshness-contract", "imblick"]);
+  assert.deepEqual(alarmNeeds.slice(4), ["supertrader", "supertrader-prune"]);
   assert.match(wf, /RESULT_IMBLICK: \$\{\{ needs\.imblick\.result == 'failure' && 'failure' \|\| needs\.imblick\.outputs\.ergebnis == 'failure'/);
   assert.match(wf, /ALARM_DETAIL_FILE/);
   /* keine Anbieteranfrage in der Stufe und im Baustein */
