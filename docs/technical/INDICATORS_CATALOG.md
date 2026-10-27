@@ -1,6 +1,6 @@
 # Technical – Indikator-Katalog
 
-Stand: `technical-indicators-1.2.1` (1.2.1: Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md) (`quant/engines/technical/indicators.js`, `CATALOG`).
+Stand: `technical-indicators-1.3.0` (1.3.0: Katalogerweiterung L2a; 1.2.1: Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md) (`quant/engines/technical/indicators.js`, `CATALOG`).
 
 Alle Indikatoren werden über `compute(series, id, params)` berechnet. `series` ist ein Spaltenobjekt `{open, high, low, close, volume}`. Gemeinsame Regeln:
 
@@ -62,7 +62,7 @@ Alle drei rechnen gegen naive Referenzen auf `fixtures/technical-reference-aapl.
 | `pivots` | Trend | – | 1 | pivot, r1, r2, s1, s2 | Aus H, L, C der **Vorbar**: P = (H+L+C)/3, R1 = 2P−L, S1 = 2P−H, R2 = P+(H−L), S2 = P−(H−L). | T3 |
 | `kama` | Trend | period 10, fast 2, slow 30 | n | Reihe | ER = \|C−C₋ₙ\| / Σ\|ΔC\|; SC = (ER·(2/(f+1)−2/(s+1)) + 2/(s+1))²; KAMA += SC·(C−KAMA). Startwert C₍ₙ₋₁₎ wird nicht ausgegeben. | T3 |
 | `hma` | Trend | period 20 | n+⌊√n⌋−2 (= 22) | Reihe | WMA₍⌊√n⌋₎(2·WMA₍⌊n/2⌋₎ − WMAₙ) | T3 |
-| `linreg` | Trend | period 50, k 2 | n−1 | value, slope, upper, lower | KQ-Gerade durch die letzten n Schlüsse. Ausgaben: Endwert, Steigung je Bar und ± k·σ der Residuen (Population). | T3 |
+| `linreg` | Trend | period 50, k 2 | n−1 | value, slope, upper, lower, r2 | KQ-Gerade durch die letzten n Schlüsse. Ausgaben: Endwert, Steigung je Bar, ± k·σ der Residuen (Population) und seit 1.3.0 das Bestimmtheitsmaß R² (konstante Reihe: kein Wert). | T3, T4 |
 | `heikinAshi` | Trend | – | 0 | open, high, low, close | HC = (O+H+L+C)/4; HO = (HO₋₁+HC₋₁)/2, Start (O+C)/2; HH = max(H, HO, HC); HL = min(L, HO, HC) | T3 |
 | `roc63` | Momentum | period 63 | 63 | Reihe | Voreinstellung von `roc` (`base: "roc"`) | T3 |
 | `roc126` | Momentum | period 126 | 126 | Reihe | Voreinstellung von `roc` | T3 |
@@ -84,3 +84,31 @@ Prüfungen in T3 für jeden neuen Indikator:
 - **(d)** Die Zahl der NaN je Ausgabe entspricht der dokumentierten Aufwärmphase.
 
 Die Ausgaben aller Indikatoren aus 1.1.0 sind bitgleich geblieben. Geprüft wurde das gegen 1.1.0 auf AAPL und auf einer Lückenreihe, jeweils mit Standard- und Kurzperiode.
+
+## Neu in 1.3.0 (L2a, nur Katalog)
+
+Quelle: Ausbauplan in TECHNICAL_LIBRARY.md. Alle Einträge tragen `catalogOnly: true`; keine Produktfläche ändert sich (weiter 24 gelistete Indikatoren). Testdatei **T4**: `technical-indicators-catalog-l2.test.mjs`.
+
+| id | Familie | Standardparameter | Aufwärmphase (Index) | Ausgaben | Definition | Referenz |
+|---|---|---|---|---|---|---|
+| `dema` | Trend | period 20 | 2(n−1) | Reihe | 2·EMA − EMA(EMA) | TA-Lib DEMA, exakt |
+| `tema` | Trend | period 20 | 3(n−1) | Reihe | 3·E1 − 3·E2 + E3 | TA-Lib TEMA, exakt |
+| `trima` | Trend | period 20 | n−1 | Reihe | SMA über SMA, Gewichte 1, 2, …, 2, 1 | TA-Lib TRIMA 20 und 15, exakt |
+| `t3` | Trend | period 5, vfactor 0,7 | 6(n−1) | Reihe | Tillson: Gewichtung der EMA-Ketten 3 bis 6 | TA-Lib T3, exakt |
+| `zlema` | Trend | period 20 | ⌊(n−1)/2⌋ + n − 1 | Reihe | EMA(2·C − C₋ₗₐ𝓰) | naive Referenz |
+| `alma` | Trend | period 9, offset 0,85, sigma 6 | n−1 | Reihe | Gauss-Gewichte um offset·(n−1) | naive Referenz |
+| `mcginley` | Trend | period 14 | n−1 | Reihe | MD += (C − MD)/(n·(C/MD)⁴), Start SMA | naive Referenz |
+| `ppo` | Momentum | 12 / 26 / 9 | slow+signal−2 (PPO ab slow−1) | ppo, signal, histogram | 100·(EMA_f − EMA_s)/EMA_s | TA-Lib PPO (EMA), exakt |
+| `stochRsi` | Momentum | 14 / 14 / 3 / 3 | rsi+stoch+k+d−3 | k, d, raw | Stochastik des RSI; keine Spanne: 50 | TA-Lib STOCHRSI, exakt |
+| `natr` | Volatilität | period 14 | n−1 | Reihe | 100·ATR/C | TA-Lib NATR, Startkonvention wie ATR, gleich ab Bar 190 |
+| `adLine` | Volumen | – | 0 | Reihe | kumuliert V·CLV | TA-Lib AD, exakt |
+| `chaikinOsc` | Volumen | fast 3, slow 10 | slow−1 | Reihe | EMA₃(AD) − EMA₁₀(AD) | TA-Lib ADOSC, Startkonvention, gleich ab Bar 119 |
+| `balanceOfPower` | Momentum | period 14 | 0 (geglättet n−1) | bop, smoothed | (C − O)/(H − L) | TA-Lib BOP, exakt |
+| `momentum` | Momentum | period 10 | n | Reihe | C − C₋ₙ | TA-Lib MOM, exakt |
+| `stdDev` | Volatilität | period 20 | n−1 | Reihe | Populationsstreuung | TA-Lib STDDEV, exakt |
+
+**TA-Lib-Abgleich der 1.2.0-Einträge (L3):**
+- **Exakt gleich:** `kama`, `linreg` (Wert, Steigung, R² = CORREL²), `trix` und `ultimateOscillator`.
+- **`cmo` folgt einer anderen Definition.** TA-Lib glättet nach Wilder und ist damit identisch mit 2·RSI − 100. Die Engine rechnet nach Chande/Kroll mit einfachen Summen. T4 hält beides fest.
+
+Die Ausgaben aller Einträge bis 1.2.1 sind unverändert. `linreg` bekommt nur die zusätzliche Ausgabe `r2`.
