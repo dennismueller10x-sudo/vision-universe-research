@@ -793,15 +793,15 @@
       "cik": "0001630472",
       "name": "TPG RE Finance Trust, Inc.",
       "sic": "6798",
-      "rawFacts": 10580,
-      "mappedFacts": 3042,
-      "unmappedFacts": 7436,
+      "rawFacts": 11281,
+      "mappedFacts": 3230,
+      "unmappedFacts": 8013,
       "calendarYears": 11,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -849,9 +849,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 12,
-      "quarterlyPeriods": 43,
+      "quarterlyPeriods": 45,
       "firstPeriodEnd": "2014-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
@@ -863,7 +863,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -890,14 +890,14 @@
         },
         "net_income": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "operating_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -918,14 +918,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -948,45 +948,46 @@
         }
       },
       "quality": {
-        "HIGH": 260,
-        "MEDIUM": 21
+        "HIGH": 271,
+        "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 281,
-        "resolvedValues": 281
+        "datableValues": 291,
+        "resolvedValues": 291
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7640,
+        "total": 8231,
         "by_severity": {
-          "INFO": 7436,
-          "WARNING": 204
+          "INFO": 8013,
+          "WARNING": 218
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 184,
+          "CONCEPT_DISAGREEMENT": 198,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 7436
+          "UNKNOWN_CONCEPT": 8013
         }
       },
       "latestFiling": {
-        "accession": "0001630472-26-000026",
-        "filing_date": "2026-07-28",
+        "accession": "0001630472-26-000030",
+        "filing_date": "2026-10-26",
         "form": "10-Q",
-        "periodic_filings": 39
+        "periodic_filings": 40,
+        "acceptance_datetime": "2026-10-26T20:10:12.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.13.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "64bcb0254ce78f473c1e1f1652dfa14039e5e6ccdd3623d514b9a673402cd047",
+      "sourceDigest": "822e96512d16124d9cc897d495c36f54f8ad137609ce5a4e845e069e294844f9",
       "issuerId": "iss_cik_0001630472"
     },
     {
