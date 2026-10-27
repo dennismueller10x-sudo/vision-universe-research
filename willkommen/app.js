@@ -10,18 +10,16 @@
   var MIN_S = 15, MAX_S = 45;
 
   // Produkte in der Reihenfolge des globalen Menues (assets/site-navigation.js).
-  // Produkte in der Reihenfolge der Startseite (zwei Reihen zu fuenf auf dem iPhone).
+  // Produktwelten auf der Willkommensseite (4 x 2); Elliott, Hedgefonds und alle weiteren ueber "Alle Produkte" (globales Menue).
   var PRODUCTS = [
-    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien & Märkte' },
-    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren & Modelle' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Kennzahlen verstehen' },
-    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Chartanalyse & Formationen' },
-    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellen analysieren' },
+    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Märkte' },
+    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Kennzahlen' },
+    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts' },
+    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden' },
     { id: 'screener', name: 'Screener', href: '/screener/', text: 'Aktien finden' },
-    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden & Backtests' },
-    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Investoren verstehen' },
-    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'ETFs, Förderung & Planung' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in eigenen Worten' }
+    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'ETFs & Rente' },
+    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag frei' }
   ];
 
   function storyDuration(story) {
@@ -104,58 +102,72 @@
     if (!stories) return;
     var s = seen();
     stories.stories.forEach(function (story) {
-      var b = doc.querySelector('.wk-hl[data-story="' + story.id + '"]');
+      var b = doc.querySelector('[data-story="' + story.id + '"]');
       if (!b) return;
       var done = s[story.id] === story.rev;
       b.classList.toggle('is-seen', done);
-      b.setAttribute('aria-label', story.title + ': ' + story.product + ' erklärt' + (done ? ', gesehen' : ', neu'));
+      b.setAttribute('aria-label', story.tagline + ' (' + story.product + ', ' + mmss(storyVideo(story)) + ')' + (done ? ', gesehen' : ', neu'));
     });
   }
 
   /* ---------- Abschnitte ---------- */
   var CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function storyVideo(story) { var v = (story.slides || []).find(function (x) { return x.type === 'video'; }); return v ? v.duration : storyDuration(story); }
+  function mmss(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+  // Erstes Video gross oben, die weiteren als Karten mit Vorschaubild.
   function renderHighlights(host) {
-    var list = h('ul', 'wk-hl-list'), firstNew = null, s = seen();
-    stories.stories.forEach(function (story) {
-      var li = h('li'), b = h('button', 'wk-hl'), cover = h('span', 'wk-hl-cover'), glyph = h('span', 'wk-hl-glyph');
-      b.type = 'button'; b.dataset.story = story.id;
-      if (story.cover) { glyph.classList.add('has-image'); glyph.style.backgroundImage = 'url("' + story.cover + '")'; }
-      else glyph.appendChild(icon(story.icon || 'layers'));
-      cover.append(glyph, h('span', 'wk-hl-play'));
-      b.append(cover, h('span', 'wk-hl-name', story.title));
-      b.addEventListener('click', function () { openStory(story.id, b); });
+    var list = h('ul', 'wk-hl-list'), firstNew = null, s = seen(), all = stories.stories, top = all[0];
+    var hero = doc.getElementById('wk-hero-play');
+    if (hero && top) {
+      hero.dataset.story = top.id;
+      doc.getElementById('wk-hero-img').style.backgroundImage = 'url("' + (top.thumb || '') + '")';
+      doc.getElementById('wk-hero-title').textContent = top.tagline || top.title;
+      doc.getElementById('wk-hero-dur').textContent = mmss(storyVideo(top));
+      doc.getElementById('wk-hero-sub').textContent = 'Vision Universe in ' + Math.round(storyVideo(top)) + ' Sekunden.';
+      hero.onclick = function () { openStory(top.id, hero); };
+    }
+    all.forEach(function (story, i) {
       if (!firstNew && s[story.id] !== story.rev) firstNew = story.id;
+      if (i === 0) return;
+      var li = h('li'), b = h('button', 'wk-vid'), th = h('span', 'wk-vid-thumb'), play = h('span', 'wk-vid-play');
+      b.type = 'button'; b.dataset.story = story.id;
+      if (story.thumb) th.style.backgroundImage = 'url("' + story.thumb + '")';
+      play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
+      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), h('span', 'wk-vid-tag', story.product));
+      b.append(th, h('span', 'wk-vid-title', story.tagline || story.title));
+      b.addEventListener('click', function () { openStory(story.id, b); });
       li.appendChild(b); list.appendChild(li);
     });
     host.replaceChildren(list); host.removeAttribute('aria-busy');
-    // Pfeil rechts blaettert die Kreise weiter, solange es rechts noch etwas gibt.
+    // Pfeil rechts blaettert weiter, solange es rechts noch etwas gibt.
     var more = doc.getElementById('wk-hl-more');
     if (more) {
       var sync = function () { more.hidden = host.scrollLeft + host.clientWidth >= host.scrollWidth - 4; };
       more.onclick = function () { host.scrollBy({ left: host.clientWidth * 0.7, behavior: reduced() ? 'auto' : 'smooth' }); };
-      host.addEventListener('scroll', sync, { passive: true }); global.addEventListener('resize', sync); sync();
+      host.addEventListener('scroll', sync, { passive: true }); global.addEventListener('resize', sync); sync(); requestAnimationFrame(sync);
+      if (global.ResizeObserver) new ResizeObserver(sync).observe(host.firstChild || host);
     }
-    var all = doc.getElementById('wk-hl-all');
-    if (all) all.onclick = function () { openStory(firstNew || stories.stories[0].id, all); };
+    var allBtn = doc.getElementById('wk-hl-all');
+    if (allBtn) allBtn.onclick = function () { openStory(firstNew || all[0].id, allBtn); };
     paintSeen();
   }
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon');
+      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
       a.href = p.href; a.dataset.product = p.id;
-      ic.appendChild(icon(p.id));
-      a.append(ic, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
+      ic.appendChild(icon(p.id)); go.innerHTML = CHEVRON;
+      a.append(ic, go, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
       li.appendChild(a); list.appendChild(li);
     });
     host.replaceChildren(list);
-    // "Alle Produkte" oeffnet das globale Menue mit allen Welten (auch Dashboard, Macro, ETF ...).
+    // "Alle Produkte" oeffnet das globale Menue mit allen Welten (auch Elliott, Hedgefonds, Dashboard, Macro, ETF ...).
     var all = doc.getElementById('wk-products-all');
     if (all) all.onclick = function () { var nav = doc.querySelector('vu-navigation'); if (nav && nav.openMenu) nav.openMenu(all); else global.location.href = '/discover/'; };
   }
   function newsItem(item, tag) {
     var li = h(tag || 'li', 'wk-news-item' + (item.pinned ? ' is-pinned' : '')), head = h('p', 'wk-news-meta'), time = h('time', '', formatDate(item.date));
-    time.dateTime = item.date; head.append(h('span', 'wk-news-tag', item.tag || 'Vision Universe'), time);
+    time.dateTime = item.date; head.append(h('span', 'wk-news-tag', item.tag || 'Vision Universe'), h('span', 'wk-news-dot', '·'), time);
     li.append(head, h('h3', '', item.title), h('p', 'wk-news-text', item.text));
     if (item.link) { var a = h('a', 'wk-news-link', item.link.label + ' →'); a.href = item.link.href; li.appendChild(a); }
     return li;
