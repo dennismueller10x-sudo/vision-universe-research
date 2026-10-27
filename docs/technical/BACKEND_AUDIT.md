@@ -515,4 +515,4 @@ Der Audit-Text oben ist eine Momentaufnahme vom 26.10.2026 und bleibt unverände
 | B12 | erledigt: Ereignisfilter mit Prüfraum, Golden/Death Cross als Kreuzung, Migration gespeicherter Wortsuchen | #967 |
 | B13 | erledigt: Zeitrahmen je Filter, `nin`, verneinte Formationen (`technical-query` 1.4.0) | #954 |
 | B18 | erledigt: Goldsatz 80 + 14 Fälle, Offline-Evaluation, 80/80 exakt, 0/14 stille Fehlgriffe | #952, #954 |
-| B2 | offen: Prüfung nach dem Materialisierungslauf vom 26./27.10.2026 | – |
+| B2 | erledigt: erster Produktionslauf 27.10.2026, EMA 200 bei 4.809 von 5.657 Titeln, `measure-ema200-signal-effect` EXACT, siehe EMA200_MATERIALIZATION.md Abschnitt 8 | #988 (Wiederanlauf) |

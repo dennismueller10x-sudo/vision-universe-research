@@ -152,7 +152,17 @@ test('shared Screener and Atlas suppress raw quotes and prohibit price probing u
  for(const q of [Screener.build([{field:'price',operator:'gte',value:200,scale:'raw'}]),Screener.build([],[{field:'price',direction:'desc'}])]){
   assert.equal((await onlyDerived.screen(q)).reason,'PRICE_DISPLAY_NOT_PERMITTED');const answer=await tools.call('screenStocks',{query:q});assert.equal(answer.data.state,'UNAVAILABLE');assert.deepEqual(answer.data.stocks,[]);
  }
- const approved=await api.screen(Screener.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]));assert.equal(approved.state,'AVAILABLE');assert.ok(approved.stocks.some(s=>s.ticker==='NVDA'));
+ /* Marktunabhaengig: Die Treffer folgen dem Filter, nicht einem bestimmten Titel (NVDA fiel am 27.10.2026 unter 0 % und hielt die
+    Materialisierung an). Qualifiziert ist nur ein endlicher Wert >= 0; fehlende oder ungueltige Werte zaehlen nie als Treffer. */
+ const momentumQuery=Screener.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]);
+ const approved=await api.screen(momentumQuery);assert.equal(approved.state,'AVAILABLE');
+ const qualifies=s=>Number.isFinite(s.momentum6m.value)&&s.momentum6m.value>=0;
+ const qualified=new Set((await api.getUniverse()).stocks.filter(qualifies).map(s=>s.ticker));
+ assert.equal(approved.stocks.length,Math.min(momentumQuery.limit,qualified.size));
+ assert.ok(approved.stocks.every(s=>qualifies(s)&&qualified.has(s.ticker)));
+ /* Kein qualifizierter Titel ist ein gueltiges Ergebnis, kein Fehler. */
+ const none=await api.screen(Screener.build([{field:'momentum6m',operator:'gte',value:1e9,scale:'raw'}]));
+ assert.equal(none.state,'AVAILABLE');assert.deepEqual(none.stocks,[]);
 });
 test('comparison preserves canonical evidence families and capability-driven company columns',async()=>{const result=await api.getComparison(['NVDA','MSFT','JPM','TSLA']);assert.equal(result.companies.length,4);assert.equal(result.partial,false);assert.ok(result.families.length>=5);const margin=result.families.find(f=>f.id==='quality').metrics.find(m=>m.metricId==='operatingMargin');assert.equal(margin.values[0].value,65.214);assert.ok(Number.isFinite(margin.values[3].value));assert.equal(result.ranking.state,'UNAVAILABLE');assert.equal((await api.getComparison(['NVDA','NVDA'])).reason,'INVALID_COMPARISON');});
 

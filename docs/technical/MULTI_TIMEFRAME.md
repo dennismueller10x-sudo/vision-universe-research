@@ -1,6 +1,6 @@
 # Woche und Monat aus der vollen Tageshistorie (Audit B8, Fachmodell)
 
-Stand 26.10.2026. Fachmodell-PR, wird erst nach Owner-Freigabe gemergt.
+Stand 27.10.2026. Fachmodell, nach Owner-Freigabe gemergt (#966). Erster Produktionslauf: Abschnitt „Erster Produktionslauf“.
 
 ## Problem
 
@@ -102,6 +102,38 @@ Geprüft auf allen 5.655 Titeln des Repository-Stands (270 Tagesbars je Titel):
 2. Der nächste Materialisierungslauf schreibt `bundle.multiTimeframe` in die Shards.
 3. technical-world baut den Screener neu (05:10 UTC).
 4. `meta.counts.weeklyMonthlyFromDailyHistory` und die Spaltenabdeckung werden gegen die Erwartung in Tabelle 3 geprüft.
+
+## Erster Produktionslauf (27.10.2026)
+
+**Lauf:** Materialisierung 40459929703 (`workflow_dispatch`, ohne Anbieterabruf), Commit `c04c7a5`. Danach technical-world `0f91cf7`, Stichtag 26.10.2026 (Montag).
+
+| Prüfung | Ergebnis |
+|---|---|
+| Shards mit `bundle.multiTimeframe` (`technical-mtf-1.0.0`) | 5.657 von 5.657 |
+| `meta.counts.weeklyMonthlyFromDailyHistory` | 5.657 (vorher 0) |
+| Woche: Stichtag Montag, offene Woche verworfen | 5.629. Weitere 28 haben einen älteren Stichtag, der auf einen Freitag fällt; dort ist die Woche abgeschlossen. |
+| Woche `asOf` | 5.581 × 23.10.2026. Der Rest sind Titel mit älterem Stichtag (veraltete Kurse, 82 Titel). |
+| Monat: Oktober offen, verworfen | 5.655. 2 Titel mit Stichtag am Monatsende sind abgeschlossen. |
+| Monat `asOf` | 5.608 × 30.09.2026. Der Rest sind ältere Stichtage. |
+| `asOf` nach dem Stichtag | 0 |
+
+**Abdeckung der Screener-Spalten (5.657 Titel):**
+
+| Spalte | Woche | Monat | Grund für leere Werte |
+|---|---|---|---|
+| Linien, Abstand, 52W-Hoch, MACD (Woche), Stochastik (Woche), ATR % | 5.657 | 5.657 | – |
+| `rsi14` | 5.657 | 5.629 | Monat: weniger als 15 abgeschlossene Monate |
+| `adx` | 5.641 | 5.221 | Woche: 16 Titel mit unverändertem Kurs (ATR 0, ruhende Titel wie ADEX, CEO), dort ist ADX nicht definiert. Monat: zusätzlich weniger als 28 Monate |
+| `macdPositive` | 5.657 | 5.104 | Monat: weniger als 34 Monate |
+| `stochK` | 5.657 | 5.564 | Monat: weniger als 18 Monate |
+| `relVol`, `volAboveAvg`, `volSpike` | 5.469 | 5.375 | weniger als 21 Perioden oder kein Volumen |
+
+Leere Werte sind fehlende Werte (Historie zu kurz), nie 0 und nie geschätzt.
+
+**Filter mit echten Werten:**
+- „Wochenchart: ADX über 25“: 2.320 Treffer, 16 ohne Wert.
+- „Monatschart: MACD positiv“: 3.110 Treffer, 553 ohne Wert.
+- „Wochenchart: über der 40-Wochen-Linie und RSI über 50“: 1.814 Treffer.
 
 ## Tests
 

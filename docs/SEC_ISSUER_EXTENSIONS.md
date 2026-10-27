@@ -117,6 +117,24 @@ hat sich geändert, und die Versionsdisziplin (`test_version_discipline.py`) ver
 Factbooks neu normalisiert werden. Für NVIDIA erscheinen im Fenster die Jahre 2015–2021 neu bei Investitionen und Free
 Cashflow, in der Historie 2013–2014.
 
+### Quant Emerging Leaders (Gruppe E, FCF-Marge am Stichtag)
+
+`scripts/quant/lib/emerging-leaders-inputs.mjs#fundamentalsAt` nimmt die FCF-Marge des jüngsten bis zum Stichtag eingereichten Umsatzjahres und nur, wenn dessen Free Cashflow ebenfalls eingereicht war. Gemessen am echten NVIDIA-Bündel vor und nach der Erweiterung (26 Halbjahres-Stichtage 2014–2026):
+
+| Stichtag | vorher | nachher |
+|---|---|---|
+| bis 2016-09 | – | – |
+| 2017-03, 2017-09 | – | 16,7 % (GJ 2015) |
+| 2018-03, 2018-09 | – | 21,7 % (GJ 2016) |
+| 2019-03, 2019-09 | – | 21,6 % (GJ 2017) |
+| 2020-03, 2020-09 | – | 29,9 % (GJ 2018) |
+| 2021-03 bis 2022-03 | – | 26,8 % (GJ 2019) |
+| 2022-09 | – | 39,1 % (GJ 2020) |
+| 2023-03, 2023-09 | – | 28,1 % (GJ 2021) |
+| ab 2024-03 | unverändert | unverändert |
+
+14 Stichtage werden neu gefüllt, keiner ändert sich. Die Werte erscheinen etwa zwei Jahre nach dem Geschäftsjahr, weil das Consumer-Bündel („as of latest“) je Jahr die jüngste Meldung mit diesem Jahr trägt, das dritte Vergleichsjahr eines späteren 10-K. Das gilt für jede Kennzahl und jedes Unternehmen der Studie und ist vorsichtig (keine Vorausschau), nicht neu. Ob NVIDIA dadurch an diesen Stichtagen anders in Gruppe E einsortiert wird, zeigt erst der nächste reguläre Studienlauf (er braucht die Kursablage, `--work-dir`). Tests: `quant/tests/emerging-leaders-fcf-history.test.mjs` (Lücken nur gefüllt, nichts vor Einreichung sichtbar, kein Rückgriff auf ein älteres Jahr).
+
 ## Eine weitere Erweiterung aufnehmen
 
 1. Konzept in den Instanzdokumenten messen, nicht aus dem Gedächtnis übernehmen.
