@@ -182,6 +182,9 @@ def cover_timeline(cik, sym, covers):
 
 
 FT_FORMS = '10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K'
+# after the series start (ticker transition possible) only the filer's own periodic reports count: merger
+# prospectuses and current reports also describe partners' symbols
+FT_PERIODIC_FORMS = '10-K,10-Q,20-F,40-F'
 
 
 def efts_confirmation(cik, sym, series_from, limit_date):
@@ -297,7 +300,7 @@ def resolve_one(sid, rows, tmap, covers):
         conf = efts_confirmation(cik, sym, doc['from'], first_cover)
         if conf.get('state') == 'FOUND' and conf['filingDate'] > (iso(doc['from']) + datetime.timedelta(days=7)).isoformat():
             # after the series start only a statement of fact (not of intent) can open the usable interval
-            conf = S.fulltext_ticker_confirmation(cik, sym, (iso(doc['from']) - datetime.timedelta(days=120)).isoformat(), first_cover, FT_FORMS, factual=True)
+            conf = S.fulltext_ticker_confirmation(cik, sym, (iso(doc['from']) - datetime.timedelta(days=120)).isoformat(), first_cover, FT_PERIODIC_FORMS, factual=True)
         if conf.get('state') == 'FOUND' and conf['filingDate'] <= (iso(doc['from']) + datetime.timedelta(days=7)).isoformat():
             start, basis = doc['from'], 'FULLTEXT_TICKER_CONFIRMATION_AT_SERIES_START'
         elif conf.get('state') == 'FOUND' and conf['filingDate'] < first_cover:

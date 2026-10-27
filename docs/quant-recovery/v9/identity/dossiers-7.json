@@ -1,6 +1,6 @@
 {
  "schemaVersion": "v9-identity-dossiers-1.0.0",
- "generatedAt": "2026-10-27T19:08:07+00:00",
+ "generatedAt": "2026-10-27T19:09:26+00:00",
  "codeSha256": "8ce7d5729e169d212c2141033dd1361b355521c4c10a954301a9cddf0e928331",
  "secTickerMap": {
   "url": "https://www.sec.gov/files/company_tickers_exchange.json",
@@ -5904,20 +5904,25 @@
    ],
    "earliestSourcedTicker": {
     "state": "FOUND",
-    "accession": "0000022701-03-000002",
-    "document": "csi10k02.txt",
-    "filingDate": "2003-03-31",
+    "accession": "0001104659-06-020685",
+    "document": "a06-8005_110k.htm",
+    "filingDate": "2006-03-30",
     "form": "10-K",
-    "url": "https://www.sec.gov/Archives/edgar/data/22701/000002270103000002/csi10k02.txt",
-    "sha256": "de0a9b96d35ff5167f51e88efba7150f40a81a34fd6bcd567be25efd5436d25d",
-    "bytesRead": 170469,
+    "url": "https://www.sec.gov/Archives/edgar/data/22701/000110465906020685/a06-8005_110k.htm",
+    "sha256": "1848abc9c737b6dbd3efe4128f75f24c53ac3b3d17daaa3e8b1c7b764324f134",
+    "bytesRead": 1560738,
     "complete": true,
-    "quote": "e January 27, 2003 the Company began trading its common stock on the American Stock Exchange (\"AMEX\") under the trading symbol JCS. The table below presents the price range of high and low trades of the Company's common stock for each quarterly period indicated as reported by NAS",
+    "quote": "TERS (a) MARKET INFORMATION The Company’s common stock trades on the American Stock Exchange (“AMEX”) under the trading symbol JCS. The table below presents the price range of high and low trades of the Company’s common stock for each quarterly period indicated as reported by AME",
     "searches": [
      {
       "url": "https://efts.sec.gov/LATEST/search-index?q=%22JCS%22&ciks=0000022701&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2001-01-01&enddt=2004-01-04",
       "sha256": "280245d307f9b559537fb72a8192709be22326195f9f111e50c0446a75ea7748",
       "hits": 1
+     },
+     {
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22JCS%22&ciks=0000022701&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=2004-01-04&enddt=2007-01-06",
+      "sha256": "fbf991d695cffd3c6cfa991c5b7b46f4459fbdf9345b9b98747241d36b18007f",
+      "hits": 3
      }
     ],
     "factualOnly": true

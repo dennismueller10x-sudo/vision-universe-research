@@ -8,7 +8,7 @@
   "analysisMode": "EXPLORATORY",
   "documentSha256": "4bd65dd5c25d5a2d0347cdbd42e096a1ad81b10a3cb13d7cbb7c04ac12bf4bec"
  },
- "baseline": "6cf4f8e60de98974531ab25c7ea64b553eea0fda",
+ "baseline": "b2d1d508e229ed2f2699f138f7bcb223362f8cab",
  "runtime": {
   "node": "v22.22.0",
   "v8": "12.4.254.21-node.33",
@@ -17,7 +17,7 @@
   "glibc": "2.39",
   "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
  },
- "generatedAt": "2026-10-27T19:06:10.918Z",
+ "generatedAt": "2026-10-27T19:09:34.149Z",
  "asOf": "2026-10-26",
  "acceptanceClock": {
   "conclusion": "SUBMISSIONS_ACCEPTANCE_IS_TRUE_UTC",
@@ -39,7 +39,7 @@
   "quant/data/market/discover-series/ref_SPY.json": "f04a3ea0bc79a51bd811073d8f25ab4642affffa18aa0ed40b5552efc6dc950e"
  },
  "dependencies": {
-  "scripts/quant/v9/events/run-v9-events.cjs": "a1f08298f93f5206485a3d33495469104b67ef20ab79480cb9f1ed68fa0a3b23",
+  "scripts/quant/v9/events/run-v9-events.cjs": "5fd0191307cb3caf9adf374c108b7dfd0f33be5f782ca58a0e068e7c17d51d7e",
   "scripts/quant/v9/events/population.cjs": "82965cfd4b625e3255586e37dc6270e5a7f41e7ac20caac43f5cb5b8f3a50f65",
   "scripts/quant/v9/events/harvest_8k_items.py": "0b117b73930c84750a138afe1bab38ed39f04ed0ae20c0d4211579657cdeb126",
   "scripts/quant/v9/events/verify_acceptance_headers.py": "b809c5330d3e4f8c908ad7aa91172dff7375e839599aa99248ed5ca68c9ee92b",
@@ -86,6 +86,10 @@
   "ledgerEightKAmend": 951,
   "ledgerItem202Original": 13522,
   "ledgerItem202Amend": 82,
+  "controlExclusionSessions": {
+   "before": 10,
+   "after": 10
+  },
   "controls": 23680,
   "controlShortfallEvents": 48,
   "engineSkippedAfterAsOf": 0
