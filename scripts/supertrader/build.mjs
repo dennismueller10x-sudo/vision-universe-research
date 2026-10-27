@@ -571,7 +571,7 @@ export function build() {
     writeJson(lp, tl);
     const t52 = trend52View({ ledger: tl, preview, stocks, spy, asOf });
     writeJson(path.join(DATA, 'trend52.json'), t52);
-    TREND52_SYMBOLS = [...new Set([...t52.portfolio.positions, ...t52.prepared.candidates, ...t52.nearMisses, ...t52.closed].map((x) => x.symbol))];
+    TREND52_SYMBOLS = trend52Symbols(t52);
     log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
   }
   writeJson(path.join(DATA, 'registry.json'), registry);
@@ -1064,6 +1064,13 @@ export function signalsBySymbol(signals, extra = []) {
     out[sym] = { ...head, slice: 'stock', symbol: sym, bySymbol: signals.bySymbol && signals.bySymbol[sym] ? { [sym]: signals.bySymbol[sym] } : {}, strategies, partialChecks, discoverAvailability };
   }
   return out;
+}
+
+/** Titel des VU-Trendfolge-Depots mit eigener Aktienseite (Positionen,
+ *  Kandidaten, knappe Verfehlungen, Abgaenge). Eine Quelle fuer den Build
+ *  und den Bereinigungsmodus (prune-dead-refs.mjs). */
+export function trend52Symbols(t52) {
+  return [...new Set([...t52.portfolio.positions, ...t52.prepared.candidates, ...t52.nearMisses, ...t52.closed].map((x) => x.symbol))];
 }
 
 /** Welche Titel mit Supertrader-Seite haben (k)eine Discover-Aktienseite? */
