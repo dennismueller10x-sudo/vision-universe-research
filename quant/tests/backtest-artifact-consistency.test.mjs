@@ -15,8 +15,12 @@ test("signal readiness derives total return and SPY basis from matching canonica
   const status = C.assertSignalSourceStatus(signal, quality);
   assert.equal(status.state, "AVAILABLE");
   assert.equal(status.returnType, "TOTAL_RETURN");
-  assert.equal(status.coverage.withTotalReturn, 6036);
-  assert.equal(status.coverage.titles, 6174);
+  // Abdeckung aus dem Qualitaetsartefakt, nicht als feste Zahl: der Datenlauf
+  // erweitert das Universum (6036/6174 -> 6052/6190 am 27.10.2026).
+  assert.equal(status.coverage.withTotalReturn, quality.signalStudy.withTotalReturn);
+  assert.equal(status.coverage.titles, quality.signalStudy.titles);
+  assert.ok(status.coverage.withTotalReturn > 6000 && status.coverage.withTotalReturn <= status.coverage.titles);
+  assert.ok(status.coverage.share >= status.coverage.minimumShare);
   assert.equal(status.coverage.unit, "SECURITY_PRICE_SERIES");
   assert.equal(status.studySchemaVersion, signal.schemaVersion);
   assert.equal(status.studyEngineVersion, signal.engineVersion);
