@@ -27,7 +27,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -80,6 +80,18 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     partner=partner.replace(`"./${asset}"`,`"./${asset}?v=${version}"`);
   }
   await writeFile(resolve(output,'partner/index.html'),partner);
+  // Instagram pages reuse the partner layout and media; each list is a subpage.
+  for(const page of ['instagram/index.html','instagram/robotaxi/index.html']){
+    let html=await readFile(resolve(output,page),'utf8');
+    html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+    for(const asset of ['partner/partner.css','partner/partner.js','instagram/instagram.css']){
+      const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+      const from=relative(dirname(resolve(output,page)),resolve(output,asset)).replaceAll('\\','/');
+      const ref=from.startsWith('.')?from:'./'+from;
+      html=html.replaceAll(`"${ref}"`,`"${ref}?v=${version}"`);
+    }
+    await writeFile(resolve(output,page),html);
+  }
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
   // Pages handles apex -> www in custom-domain settings, not _redirects.
   // Static aliases keep the existing Research legal links working later.
