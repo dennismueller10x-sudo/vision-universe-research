@@ -151,6 +151,8 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 26.10.2026 | PR #967 gemergt (`8a59500`, Owner-Freigabe): Ereignisfilter (Audit B12, `screen-row`/`technical-query` 1.6.0, `query-text` 1.5.0). Golden/Death Cross = echte Kreuzung, Zustand „SMA 50 über/unter SMA 200“ getrennt, gespeicherte Wortsuchen migriert (`qv=2`), Prüfraum statt „kein Ereignis“ bei fehlender Historie. `technical/data` mit dem Erzeuger neu gebaut. |
 | 26.10.2026 | Browser-QA (`vu2-browser-qa`, Job „experience“, kein Pflicht-Check) lief bei #964, #966 und #967 jeweils beim Browser-Install in die 35-Minuten-Grenze. Gemergt auf Grundlage der Pflichtprüfungen (Technical, Quant, Core, Pages, SEC, Currency & FX). |
 | 26.10.2026 | Abschließende Prüfung auf `main` nach #966/#967, siehe Abschnitt 11. |
+| 27.10.2026 | Nächtliche Materialisierung scheiterte im Vertragstest an einer Marktannahme (NVDA mit Momentum 6M ≥ 0, real −5,3 %). Nichts committet, Frische-Vertrag rot. PR #988 (nur Test, Owner-Freigabe) gemergt (`7cc3f26`). |
+| 27.10.2026 | Wiederanlauf per `workflow_dispatch` ohne Anbieterabruf: Lauf 40459929703 grün, Produktdaten `c04c7a5` (Stichtag 26.10.). technical-world automatisch `0f91cf7` (5.657 Titel). EMA 200 bei 4.809 Titeln belastbar, 848 ohne (335 zu kurze Historie, 513 Fehlerschranke). Wochen-/Monatswerte bei allen 5.657 aus der Tageshistorie. Frische: Ablage und Produkt CURRENT. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
@@ -191,7 +193,7 @@ Die Shards tragen `bundle.multiTimeframe` und die EMA 200 erst nach dem nächste
 | „Wochenchart: über der 40-Wochen-Linie und RSI über 50“ | 1.807 (7 ohne Wert) |
 | „Wochenchart: ADX über 25“, „Monatschart: MACD positiv“, „über der EMA 200“ | 0, alle ohne Wert (siehe oben) |
 
-**Noch offen (unverändert):** EMA-200-Live-Prüfung und Abdeckung der Wochen-/Monatswerte nach dem Materialisierungslauf vom 26./27.10.2026 und dem technical-world-Lauf 05:10 UTC. Ergebnis kommt nach EMA200_MATERIALIZATION.md und MULTI_TIMEFRAME.md.
+**Nachtrag 27.10.2026:** Die EMA-200-Live-Prüfung und die Abdeckung der Wochen-/Monatswerte sind erledigt, siehe EMA200_MATERIALIZATION.md Abschnitt 8 und MULTI_TIMEFRAME.md „Erster Produktionslauf“. EMA 200 ist bei 4.809 von 5.657 Titeln belegt; Wochen-/Monatswerte stammen bei allen 5.657 aus der Tageshistorie.
 
 ## 8. Fortsetzen
 
