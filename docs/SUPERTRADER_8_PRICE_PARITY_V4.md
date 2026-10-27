@@ -28,7 +28,7 @@ Ergebnis im Datenqualitätsvertrag `sf8-data-quality-1.1.0` (Prüfungen `PRICE_P
 | Datum: neuer | Reihe schon über den Stichtag hinaus; seitdem kann nachadjustiert sein, ein Vergleich wäre nicht zeitgleich | FAIL `PRICE_REFERENCE_AHEAD` |
 | Schluss am Stichtag | `roundClose(close) === lastPoint.close`. Es gibt **keine Toleranz**: Die einzige Umformung ist die Rundungsregel der Veröffentlichung (ab 1 $ Cent, darunter vier signifikante Stellen). | FAIL `PRICE_CLOSE_MISMATCH` |
 | Verlauf | Jede gemeinsame Sitzung ist nach `roundClose` gleich; jede Sitzung liegt in beiden Reihen vor. | CAP `CHART_CANDIDATE` |
-| Legitime Adjustierungsdifferenz | Die Abweichung ist kleiner als eine Rundungseinheit **und** nach dem Datum liegt im Fenster ein Split. Ein Beispiel: 14,93 / 2 = 7,465 wird zu 7,46 veröffentlicht. | INFO (keine Stufenwirkung) |
+| Legitime Adjustierungsdifferenz | Die Abweichung ist **genau eine halbe** Rundungseinheit **und** nach dem Datum liegt im Fenster ein Split. Ein Beispiel: 14,93 / 2 = 7,465 wird zu 7,46 veröffentlicht. Am 26.10.2026 lagen alle 1.330 solchen Abweichungen genau dort. | INFO (keine Stufenwirkung) |
 
 Begründung der Schwere:
 - **FAIL am Stichtag:** Die Karte zeigt den Schluss. Ein Schluss ohne nachgewiesene Identität mit der veröffentlichten Preiswahrheit wird nicht gezeigt; der Titel wird nicht bewertet und der Grund gezählt (`dataQuality.failReasons.PRICE_PARITY`).
@@ -59,6 +59,7 @@ Abgleich je Titel:
 | Ergebnis | Titel | Bemerkung |
 |---|---|---|
 | PASS am Stichtag | 5.090 | jeder veröffentlichte Kandidat (3.001 von 3.001) |
+| `PRICE_REFERENCE_INVALID` (auch: Datei vorhanden, aber unlesbar) | 0 | – |
 | `PRICE_REFERENCE_STALE` | 9 | ACA, ATII, ELME, GETY, LRHC, PAPL, PERF, VSME, WPRT; alle schon FRESHNESS-FAIL (gleiche Ursache in beiden Reihen) |
 | Verlauf PASS | 4.900 | – |
 | Verlauf INFO (Rundung vor Split) | 188 | z. B. ADIL, ADV, AEMD, AGL; in 56 Kandidatenansichten sichtbar |
@@ -83,3 +84,16 @@ Kein Kandidat änderte seine Stufe. Eine Toleranz wäre nicht nötig gewesen: Al
   - ein ungeklärter Verlauf begrenzt alle Ansichten des Titels auf Chart-Kandidat ohne Plan.
 
 Die bestehenden Golden Cases (`SF8-GOLDEN`) sind unverändert grün. Ihre Referenz wird aus denselben eingefrorenen Reihen gebildet (`sf8-reference-fixture.mjs`).
+
+## Unabhängiges Review (27.10.2026)
+
+| Befund | Behandlung |
+|---|---|
+| LOW 7: „kleiner als eine Rundungseinheit“ erlaubte bis 0,99 Cent | Jetzt gilt nur noch genau eine halbe Einheit. Das ist die gemessene Verteilung (1.330 von 1.330). Kandidaten und Ansichten bleiben unverändert (56 INFO, 0 CAP). Gegenproben: 7,461, 7,469 und 7,456 sind jeweils ungeklärt. |
+| LOW 8: eine unlesbare Referenzdatei galt als fehlend | Sie gilt jetzt als `PRICE_REFERENCE_INVALID` (Grund `UNREADABLE`). Weiterhin FAIL. |
+| HIGH 1 (Ansicht, nicht Preisabgleich): `closeVsGapLow` (C12) und Turtle `N`/`nPct` unterhalb von MODELED | Beide bleiben bewusst; die Begründung steht unten. |
+
+Begründung zu HIGH 1:
+- `closeVsGapLow` ist der Abstand zum Tief des Gap-Tags. Dieses Tief ist als Strukturmarke (`levels.gapDayLow`, Chartmarke `GAP_DAY_LOW` mit gleichem `pivot.distance`) schon ausgewiesen. Es ist ein Chartfakt, keine Order, und erscheint ohne Plan und ohne Risiko.
+- `N`/`nPct` ist die Volatilitätseinheit. Ohne Einstiegsmarke, die unterhalb von MODELED nicht veröffentlicht wird, lässt sich daraus kein Stop bilden.
+- Eine Änderung wäre eine fachliche Änderung der Ansicht in einem eigenen PR. DQ-SF8-4 (#1027) prüft unabhängig vom Erzeuger mit festgeschriebenen Strukturmarken und Markenarten je Methode und verbietet Zahlen unter Order-, Stop-, Limit- und Einstiegsnamen.
