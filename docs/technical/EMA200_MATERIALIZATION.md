@@ -190,3 +190,75 @@ So gelaufen am 25.10.2026: 5/5 Instrumente bitgleich. Alle 646 Shards und die dr
 - **Artefaktgröße:** etwa +20 MB gzip. Wenn das zu viel ist, `chartSeries.ema20/50` weglassen (−⅔).
 - **Screener-Feld `aboveEma200`:** bewusst nicht enthalten, eigener PR.
 - **Wochen-EMA:** bewusst nicht enthalten, siehe Abschnitt 4.
+
+## 8. Erster Produktionslauf (Live-Prüfung 27.10.2026)
+
+**Ablauf:**
+- Der nächtliche Marktlauf (40433301246) materialisierte am 27.10. vollständig. Er scheiterte dann im Vertragstest an einer Marktannahme: NVDA mit Momentum 6M ≥ 0. Committet wurde nichts. Behoben mit #988, nur Test.
+- Danach wurde die Materialisierung per `workflow_dispatch` ohne Anbieterabruf und ohne `force` neu gestartet: Lauf 40459929703 auf `7cc3f26`. Ergebnis: grün, alle Schritte einschließlich Vertrags- und Regressionstests, Produktvollständigkeit und Datenhygiene.
+- Commit `c04c7a5` (07:03 UTC). technical-world baute daraufhin automatisch den Screener (`0f91cf7`, 07:08 UTC).
+
+**Datenstand:**
+- Produkt `generatedAt` 2026-10-27T06:25Z, Stichtag **26.10.2026**.
+- Frische-Messung: Ablage und Produkt CURRENT, Rückstand 0 Sitzungen.
+
+### Abdeckung (5.657 Titel mit Technical-Bundle)
+
+| | Titel |
+|---|---|
+| Bundles mit `emaSettlement` und `ema-settled-1.1.0` | 5.657 (100 %) |
+| **EMA 200 belastbar** (`SETTLED`, `featuresAtCutoff.ema200` gesetzt) | **4.809 (85,0 %)** |
+| ohne EMA 200 (`INSUFFICIENT_HISTORY`) | **848** |
+| davon: weniger als 500 Tagesbars (Mindesthistorie p + 1,5 p) | 335 |
+| davon: Fehlerschranke > 0,1 % trotz ≥ 500 Bars | 513 |
+
+**Fehlerschranke:** Die Spanne des Startfensters ist groß gegenüber dem heutigen Kurs, meist nach einem starken Kursverfall. Beispiele: ACON (Startfenster-Spanne 337.183 bei Schluss 1,93), ABAT (10,15 bei 1,28), ACTU (6,10 bei 0,53). Das ist die Regel aus Abschnitt 1. Ein Wert wird nie geschätzt.
+
+Das Startgewicht w ≤ 5 % allein sperrt keinen Titel mit ≥ 500 Bars.
+
+**Fehlerschranke der freigegebenen Werte:** Maximum 0,099 % (Regelgrenze 0,1 %). 244 Titel liegen über 0,01 %.
+
+**Außerhalb der Bundles:** Das Produktuniversum hat 6.686 Titel. 1.029 davon haben kein Technical-Bundle:
+- 996 mit unzureichender Historie für das Analysefenster;
+- 31 mit Fenster außerhalb des Kalenders;
+- 1 mit Stichtag ohne Handelstag;
+- 1 ohne Quelle.
+
+Gründe laut `technical-signals-v1/summary.json`.
+
+### Gegenproben
+
+- **Rekursion:** Für jeden der 4.809 Titel wurde die EMA über die 270 veröffentlichten Bars nachgerechnet, mit `ema_t = ema_{t-1} + 2/201 · (C_t − ema_{t-1})`.
+  - 4.808 stimmen auf < 0,05 % je Schritt.
+  - ARAV weicht um 0,23 % ab. Grund ist nur die Rundung von `chartSeries` auf 4 Nachkommastellen bei einem Kurs von 0,04 $. Der Stichtagswert selbst ist ungerundet.
+- **Stichtagswert:** Der letzte Wert von `chartSeries.ema200` ist bei allen 4.809 Titeln gleich `featuresAtCutoff.ema200`.
+- **Engines:** `verify-technical-data` (Nachrechnung mit den Engines): OK.
+- **Signalwirkung:** `measure-ema200-signal-effect.mjs`, Modus EXACT, 5.657 von 5.657 Titeln. Ergebnis:
+  - 4.808 entschieden, 1 Gleichstand.
+  - Bei 251 Titeln (5,2 %) liegen EMA 200 und SMA 200 auf verschiedenen Seiten des Kurses: 113 nur über der SMA, 138 nur über der EMA.
+  - Abstand EMA zu SMA: Median −0,19 %, 5 % / 95 % bei −8,4 % / +15,2 %.
+
+### Filter mit echten Werten (Stichtag 26.10.2026)
+
+**Technical-Screener** (`technical/data/screener-v1.json`):
+- `aboveEma200` und `distEma200` sind je 4.809 Mal belegt, 848 leer.
+- 0 Widersprüche zwischen beiden Spalten.
+
+| Abfrage | Treffer | ohne Wert |
+|---|---|---|
+| „über der EMA 200“ | 1.868 | 848 |
+| „unter der EMA 200“ | 2.941 | 848 |
+| „Abstand zur EMA 200 unter 5 %“ | 3.531 | 848 |
+| „Kurs über EMA 200 und RSI über 50“ | 1.431 | 848 |
+| `distEma200` zwischen −5 % und +5 % | 1.198 | – |
+| `distEma200` < −20 % | 1.117 | – |
+
+`distEma200 > 0` liefert 1.863 statt 1.868 Treffer. Bei 5 Titeln ist der Abstand auf 0,0000 gerundet, `aboveEma200` aber wahr.
+
+**`/screener/`** (`twEma200`, `twDistEma200`, mit dem Erzeuger in ein Prüfverzeichnis gebaut, nicht committet): 4.199 von 5.626 Titeln belegt, 1.735 davon über der EMA 200. Die Differenz zu 4.809 sind genau 610 Titel mit EMA 200, die nicht im `/screener/`-Universum stehen. Grund ist die Universumsregel `screenerEligible`: nur US-Stammaktien, keine Vorzugsaktien oder weiteren Gattungen. Kein Titel verliert dort einen vorhandenen Wert.
+
+**DQ-TW-2** (Katalogfelder belegt) ist jetzt 0/51. Vor dem Lauf warnten die beiden leeren EMA-Felder.
+
+### Offen
+
+- Ein bitgenauer Vorher/Nachher-Vergleich über den Vollbestand (`compare-ema-materialization.mjs`) braucht zwei Materialisierungen auf derselben Historie. Das geht nur im Workflow mit Zugriff auf die Ablage. Die Gegenproben oben ersetzen ihn für die neuen Felder, nicht für den Nachweis „alle bestehenden Felder bitgleich“.

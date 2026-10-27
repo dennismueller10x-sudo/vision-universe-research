@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.4.0";
+  var QUERY_VERSION = "technical-query-1.8.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -40,6 +40,17 @@
     RANGE_BREAKOUT: "Range-Ausbruch", RESISTANCE_BREAKOUT: "Ausbruch über Widerstand", VOLATILITY_CONTRACTION: "Volatilitätskontraktion",
     GAP_UP: "Kurslücke nach oben", GAP_DOWN: "Kurslücke nach unten"
   };
+  /* Kerzenmuster (candlesticks.js, docs/technical/CANDLESTICKS.md); Ids wie dort, Namen deutsch. */
+  var CANDLE_TYPES = {
+    doji: "Doji", dragonflyDoji: "Libellen-Doji", gravestoneDoji: "Grabstein-Doji", longLeggedDoji: "Long-Legged Doji",
+    hammer: "Hammer", hangingMan: "Hanging Man", invertedHammer: "Umgekehrter Hammer", shootingStar: "Shooting Star",
+    marubozu: "Marubozu", spinningTop: "Spinning Top", engulfing: "Engulfing (umschließend)", harami: "Harami",
+    haramiCross: "Harami Cross", piercing: "Piercing Line", darkCloudCover: "Dark Cloud Cover", tweezer: "Tweezer Top/Bottom",
+    kicking: "Kicker (Kicking)", morningStar: "Morning Star", eveningStar: "Evening Star", morningDojiStar: "Morning Doji Star",
+    eveningDojiStar: "Evening Doji Star", abandonedBaby: "Abandoned Baby", threeWhiteSoldiers: "Three White Soldiers",
+    threeBlackCrows: "Three Black Crows", threeInside: "Three Inside Up/Down", threeOutside: "Three Outside Up/Down",
+    threeMethods: "Rising/Falling Three Methods"
+  };
   var STRUCTURES = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur", RANGE: "Seitwärts", NEUTRAL: "Neutral" };
 
   var ALL = ["1D", "1W", "1M"], D = ["1D"];
@@ -53,7 +64,7 @@
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
     { id: "distEma200", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur EMA 200" },
     { id: "distSma200", group: "Trend", kind: "pct", tfs: ALL, label: { "1D": "Abstand zur SMA 200", "1W": "Abstand zur 40-Wochen-Linie", "1M": "Abstand zur 10-Monats-Linie" } },
-    { id: "adx", group: "Trend", kind: "num", tfs: D, label: "ADX 14 (Trendstärke)" },
+    { id: "adx", group: "Trend", kind: "num", tfs: ALL, label: { "1D": "ADX 14 (Trendstärke)", "1W": "ADX 14 (Woche)", "1M": "ADX 14 (Monat)" } },
     { id: "supertrendUp", group: "Trend", kind: "bool", tfs: D, label: "Supertrend (10, 3) aufwärts" },
     { id: "structure", group: "Trend", kind: "enum", tfs: D, label: "Marktstruktur (Swings)", values: STRUCTURES },
     { id: "psarUp", group: "Trend", kind: "bool", tfs: D, label: "Parabolic SAR unter dem Kurs (aufwärts)" },
@@ -64,26 +75,50 @@
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
     { id: "rsi14", group: "Momentum", kind: "num", tfs: ALL, label: { "1D": "RSI 14", "1W": "RSI 14 (Woche)", "1M": "RSI 14 (Monat)" } },
-    { id: "macdPositive", group: "Momentum", kind: "bool", tfs: D, label: "MACD-Histogramm positiv" },
-    { id: "stochK", group: "Momentum", kind: "num", tfs: D, label: "Stochastik %K (14, 3)" },
+    { id: "macdPositive", group: "Momentum", kind: "bool", tfs: ALL, label: { "1D": "MACD-Histogramm positiv", "1W": "MACD-Histogramm positiv (Woche)", "1M": "MACD-Histogramm positiv (Monat)" } },
+    { id: "stochK", group: "Momentum", kind: "num", tfs: ALL, label: { "1D": "Stochastik %K (14, 3)", "1W": "Stochastik %K (14, 3, Woche)", "1M": "Stochastik %K (14, 3, Monat)" } },
     { id: "cci20", group: "Momentum", kind: "num", tfs: D, label: "CCI 20" },
-    { id: "roc21", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 21 Tage (ROC)" },
+    /* ROC seit 1.8.0 (L7) auch je Woche/Monat: dieselbe Kalenderspanne in Wochen- bzw. Monatsbars. */
+    { id: "roc21", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 21 Tage (ROC)", "1W": "Kursänderung 4 Wochen (ROC)", "1M": "Kursänderung 1 Monat (ROC)" } },
+    { id: "roc63", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 63 Tage (ROC, 3 Monate)", "1W": "Kursänderung 13 Wochen (ROC)", "1M": "Kursänderung 3 Monate (ROC)" } },
+    { id: "roc126", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 126 Tage (ROC, 6 Monate)", "1W": "Kursänderung 26 Wochen (ROC)", "1M": "Kursänderung 6 Monate (ROC)" } },
+    { id: "roc252", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 252 Tage (ROC, 12 Monate)", "1W": "Kursänderung 52 Wochen (ROC)", "1M": "Kursänderung 12 Monate (ROC)" } },
     { id: "williamsR", group: "Momentum", kind: "num", tfs: D, label: "Williams %R 14 (−100 bis 0)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
-    { id: "relVol", group: "Volumen", kind: "num", tfs: D, label: "Relatives Volumen (zum 20-Tage-Median)" },
-    { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: D, label: "Volumen über Durchschnitt" },
-    { id: "volSpike", group: "Volumen", kind: "bool", tfs: D, label: "Volumenspitze (≥ 2× Median)" },
+    { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
+    { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
+    { id: "volSpike", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumenspitze (≥ 2× Median)", "1W": "Volumenspitze in der Woche (≥ 2× Median)", "1M": "Volumenspitze im Monat (≥ 2× Median)" } },
     { id: "mfi14", group: "Volumen", kind: "num", tfs: D, label: "Money Flow Index 14" },
     { id: "obvRising", group: "Volumen", kind: "bool", tfs: D, label: "OBV steigt (20 Tage)" },
     { id: "cmf20", group: "Volumen", kind: "num", tfs: D, label: "Chaikin Money Flow 20 (−1 bis 1)" },
-    { id: "atrPct", group: "Volatilität", kind: "pct", tfs: D, label: "ATR 14 in % des Kurses" },
+    { id: "atrPct", group: "Volatilität", kind: "pct", tfs: ALL, label: { "1D": "ATR 14 in % des Kurses", "1W": "ATR 14 (Woche) in % des Kurses", "1M": "ATR 14 (Monat) in % des Kurses" } },
     { id: "bbPctB", group: "Volatilität", kind: "num", tfs: D, label: "Bollinger %B (20, 2)" },
     { id: "bbSqueeze", group: "Volatilität", kind: "bool", tfs: D, label: "Bollinger-Enge (Breite im unteren 20-%-Perzentil)" },
+    { id: "insideBar", group: "Volatilität", kind: "bool", tfs: ALL, label: { "1D": "Inside Bar (Hoch und Tief innerhalb des Vortags)", "1W": "Inside Week (Hoch und Tief innerhalb der Vorwoche)", "1M": "Inside Month (Hoch und Tief innerhalb des Vormonats)" } },
+    { id: "nr7", group: "Volatilität", kind: "bool", tfs: ALL, label: { "1D": "NR7 (engste Tagesspanne der letzten 7 Tage)", "1W": "NR7 (engste Wochenspanne der letzten 7 Wochen)", "1M": "NR7 (engste Monatsspanne der letzten 7 Monate)" } },
+    /* Kerzenmuster am Stichtag bzw. an der letzten abgeschlossenen Wochen-/Monatskerze (seit 1.8.0);
+       neutral = ohne Richtung (Doji, Long-Legged Doji, Spinning Top). */
+    { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bullisches Kerzenmuster am Stichtag", "1W": "Bullisches Kerzenmuster (Wochenkerze)", "1M": "Bullisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
+    { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bärisches Kerzenmuster am Stichtag", "1W": "Bärisches Kerzenmuster (Wochenkerze)", "1M": "Bärisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
+    { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
+    /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
+       mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
+       beides leer = nicht pruefbar (fehlender Wert). Linien aus der Vollhistorie (chartSeries). */
+    { id: "goldenCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts)" },
+    { id: "deathCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts)" },
+    { id: "crossAboveSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss über SMA 200 gekreuzt" },
+    { id: "crossBelowSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss unter SMA 200 gekreuzt" },
+    { id: "rsiExitOversoldDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von unten über 30" },
+    { id: "rsiExitOverboughtDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von oben unter 70" },
+    { id: "newHigh52wDays", window: "high52wWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage)" },
+    { id: "formationNewDays", window: "formationWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit der jüngsten Formations-Erkennung" },
+    { id: "candleBullDays", window: "candleWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit einem bullischen Kerzenmuster" },
+    { id: "candleBearDays", window: "candleWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit einem bärischen Kerzenmuster" },
     { id: "close", group: "Kurs", kind: "num", tfs: D, label: "Schlusskurs (USD)" },
     { id: "chg1d", group: "Kurs", kind: "pct", tfs: D, label: "Tagesänderung" },
     { id: "hasVolume", group: "Datenqualität", kind: "bool", tfs: D, label: "Volumendaten vorhanden" },
@@ -196,7 +231,19 @@
     var a = filter.value, b = filter.value2;
     var test = { gt: function (v) { return v > a; }, gte: function (v) { return v >= a; }, lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
                  between: function (v) { return v >= a && v <= b; } }[filter.op];
-    return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    var w = f.window ? ds.column(f.window) : null;
+    if (!w) return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    /* Ereignisfeld: leerer Wert mit Pruefraum W heisst "mindestens W Tage her (oder nie)". Entschieden wird nur,
+       was daraus sicher folgt; sonst bleibt der Wert unbekannt (null), nie geraten. */
+    var whenAbsent = {
+      lte: function (W) { return a < W ? false : null; }, lt: function (W) { return a <= W ? false : null; },
+      gt: function (W) { return W > a ? true : null; }, gte: function (W) { return W >= a ? true : null; },
+      between: function (W) { return b < W ? false : null; }
+    }[filter.op];
+    return function (i) {
+      var v = c[i]; if (isNum(v)) return test(v);
+      var W = w[i]; return isNum(W) ? whenAbsent(W) : null;
+    };
   }
 
   /**
@@ -333,7 +380,7 @@
   ];
 
   var api = {
-    QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, STRUCTURES: STRUCTURES, PRESETS: PRESETS,
+    QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, PRESETS: PRESETS,
     MAX_GROUPS: MAX_GROUPS, MAX_FILTERS: MAX_FILTERS,
     field: field, labelOf: labelOf, columnKey: columnKey, opsFor: opsFor,
     validate: validate, createDataset: createDataset, evaluate: evaluate, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema

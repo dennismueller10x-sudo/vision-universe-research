@@ -14,10 +14,25 @@ name: Supertrader Signale
 # AUSLIEFERUNG: Ein Push mit GITHUB_TOKEN loest keine weiteren Workflows aus.
 # Die bestehende Pages-Auslieferung laeuft ohnehin werktags im 5-Minuten-Takt
 # ab 13:00 UTC und nimmt den Stand mit - vor US-Handelsbeginn.
+#
+# MODUS prune-dead-refs (nur workflow_dispatch): weist Titel aus, die das
+# gueltige Discover-Universum nicht mehr fuehrt - sonst nichts. Kein
+# Minutenabruf, kein voller Build, keine Markt- oder Quant-Daten; Signale,
+# Werte und Stand bleiben byte-gleich. Fuer Naechte, in denen das Universum
+# committet ist, die Materialisierung aber scheiterte (27.10.2026, BZH).
+# Siehe scripts/supertrader/prune-dead-refs.mjs.
 on:
   schedule:
     - cron: '17 6 * * 2-6'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'build = voller Strategie-Lauf; prune-dead-refs = nur entfallene Titel ausweisen'
+        type: choice
+        options:
+          - build
+          - prune-dead-refs
+        default: build
 permissions:
   contents: write
 concurrency:
@@ -27,6 +42,8 @@ jobs:
   signals:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      MODE: ${{ inputs.mode || 'build' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,17 +52,27 @@ jobs:
         with:
           node-version: '22'
       - name: Minutenquelle fuer Kauf-Stop-Tage (IEX, nur Zaehlwerte im Log, Datei ausserhalb des Repositorys)
+        if: env.MODE == 'build'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/intraday-prefetch.mjs
       - name: Strategie-Lauf (deterministisch, append-only Signalprotokoll)
+        if: env.MODE == 'build'
         env:
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/build.mjs
+      - name: Entfallene Titel ausweisen (fail closed, keine Marktdaten)
+        if: env.MODE == 'prune-dead-refs'
+        run: node scripts/supertrader/prune-dead-refs.mjs
       - name: Integritaet vor dem Commit (Lifecycle, Gates, Historie)
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       - name: Commit
         run: |
           stand=$(node -e 'console.log(require("./supertrader/data/signals.json").asOf)')
-          bash scripts/ci/commit-and-push.sh "Supertrader: Signale aktualisiert (Stand ${stand})" supertrader/
+          if [ "$MODE" = "prune-dead-refs" ]; then
+            nachricht="Supertrader: entfallene Titel ausgewiesen (Stand ${stand} unveraendert)"
+          else
+            nachricht="Supertrader: Signale aktualisiert (Stand ${stand})"
+          fi
+          bash scripts/ci/commit-and-push.sh "$nachricht" supertrader/

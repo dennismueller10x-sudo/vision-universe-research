@@ -15,7 +15,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { seriesFromCloses } from "./technical-fixtures.mjs";
+import { seriesFromCloses, tradingDays } from "./technical-fixtures.mjs";
 
 const require = createRequire(import.meta.url);
 const Fm = require("../engines/technical/formations.js");
@@ -302,4 +302,98 @@ test("Kursluecke: konstruiert; ohne Volumenspitze keine Luecke, geschlossen per 
 test("Kursluecke: Sprung mit Split-Signatur oder extremem Faktor ist Datenverdacht, keine Luecke", () => {
   for (const r of [2, 3.03, 10, 0.5, 1 / 3, 0.01, 0.162, 6]) assert.equal(Fm.suspectJump(r), true, "Verdacht " + r);
   for (const r of [1.05, 1.3, 1.566, 0.7, 0.45, 2.5, 0.3]) assert.equal(Fm.suspectJump(r), false, "echt moeglich " + r);
+});
+
+/* ---------- 1.2.1: Befunde der Formationsvalidierung (docs/technical/FORMATION_VALIDATION.md) ---------- */
+function rowsSeries(hlc, start, volume = 1e6) {
+  const days = tradingDays(start, hlc.length);
+  const rows = hlc.map(([h, l, c], i) => ({ date: days[i], open: (h + l) / 2, high: h, low: l, close: c, volume }));
+  return Canonical.fromRows(rows, { instrumentId: "SYN", exchange: "SYN", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "1.2.1" });
+}
+
+test("B-F1: Wimpel, der vor seiner Erkennung invalidiert wurde, erscheint nicht (Geometrie AMZN 29.07.–14.08.2026)", () => {
+  /* Mast, kurze Konsolidierung, Bruch unter das Konsolidierungstief (Bar 10). Der Mast-Pivot ist erst an Bar 12
+     bestaetigt; bis 1.2.0 erschien ein INVALIDATED-Wimpel mit invalidatedAt vor detectedAt. */
+  const tail = [[232.82, 226.16, 226.65], [239.82, 231.06, 235.5], [273.23, 262.01, 271.58], [287.2, 278, 284.02], [281.07, 275.82, 277.42],
+    [282.79, 270.73, 272.65], [275.48, 271.06, 272.26], [278.31, 272.75, 274.48], [280.14, 273.6, 278.09], [278.84, 271.36, 272.27],
+    [273.46, 267.1, 267.28], [269.58, 264.7, 265.13], [265.81, 262.42, 262.65]];
+  const lead = Array.from({ length: 60 }, (_, i) => { const c = 226 + 3 * Math.sin(i * 0.9); return [c + 2, c - 2, c]; });
+  const s = rowsSeries(lead.concat(tail), "2026-04-01"), prep = Ctx.prepare(s);
+  for (let t = 60; t < s.length; t++) {
+    for (const f of Fm.analyzeAt(prep, t).formations) {
+      if (f.invalidatedAt) assert.ok(f.invalidatedAt >= f.detectedAt, f.id + " invalidiert vor Erkennung, t=" + t);
+      if (f.confirmedAt) assert.ok(f.confirmedAt >= f.detectedAt, f.id + " bestaetigt vor Erkennung, t=" + t);
+    }
+    assert.equal(Fm.analyzeAt(prep, t).formations.some((f) => /PENNANT/.test(f.type)), false, "kein Wimpel, t=" + t);
+  }
+});
+
+test("B-F2: ruhender Titel ohne Volumen (O = H = L = C, ATR 0) hat keine Kursluecke", () => {
+  /* Wie ADEX: ohne Volumen entfaellt die Volumenpruefung, eine Luecke der Groesse 0 erfuellte bis 1.2.0 die Regel ≥ 0,5 ATR. */
+  const flat = Array.from({ length: 80 }, () => [5.38, 5.38, 5.38]);
+  const s = rowsSeries(flat, "2026-06-01", null);
+  const types = Fm.analyzeAt(Ctx.prepare(s), s.length - 1).formations.map((f) => f.type);
+  assert.equal(types.includes("GAP_UP"), false);
+  assert.equal(types.includes("GAP_DOWN"), false);
+});
+
+test("B-F3: jede Formation ist an ihrem Erkennungstag sichtbar (echte Titel, an denen 1.2.1 rueckdatierte)", () => {
+  /* Erkennungstag = erster Tag, an dem die Formation mit dem damaligen Wissen sichtbar war. Bis 1.2.1 datierten
+     Wimpel auf den fruehestmoeglichen Bar zurueck und Trendlinien/Wimpel massen ATR-Schwellen am Stand t. */
+  const fx = JSON.parse(readFileSync(new URL("./fixtures/technical-formations-visibility.json", import.meta.url), "utf8"));
+  let checked = 0;
+  for (const [tk, t] of Object.entries(fx.titles)) {
+    const rows = t.date.map((d, i) => ({ date: d, open: t.open[i], high: t.high[i], low: t.low[i], close: t.close[i], volume: t.volume[i] }));
+    const prep = Ctx.prepare(Canonical.fromRows(rows, { instrumentId: tk, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "visibility" }));
+    for (let T = rows.length - 60; T < rows.length; T += 3) {
+      for (const f of Fm.analyzeAt(prep, T).formations) {
+        if (f.detectedIndex < 0 || !/PENNANT|TRENDLINE/.test(f.type)) continue;
+        assert.ok(Fm.analyzeAt(prep, f.detectedIndex).formations.some((x) => x.id === f.id), tk + " " + f.id + " nicht sichtbar am Erkennungstag (Stand " + rows[T].date + ")");
+        checked++;
+      }
+    }
+  }
+  assert.ok(checked >= 20, "geprueft: " + checked);
+});
+
+test("B-F3: Erkennung erst am Ausbruchstag ist als solche gekennzeichnet und zaehlt in der Evidenz ab diesem Tag", async () => {
+  /* Wer erst am Ausbruchstag sichtbar wird, traegt confirmedAtDetection (Screener-Kennzeichen "B") und darf nicht als
+     vorher verfuegbares Einstiegssignal gelten: formation-evidence misst ab dem ersten sichtbaren Stand k (Schluss k). */
+  const fx = JSON.parse(readFileSync(new URL("./fixtures/technical-formations-visibility.json", import.meta.url), "utf8"));
+  const Ev = await import("../../scripts/technical/world/formation-evidence.mjs");
+  let atBreakout = 0;
+  for (const [tk, t] of Object.entries(fx.titles)) {
+    const rows = t.date.map((d, i) => ({ date: d, open: t.open[i], high: t.high[i], low: t.low[i], close: t.close[i], volume: t.volume[i] }));
+    const s = Canonical.fromRows(rows, { instrumentId: tk, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "visibility" });
+    const prep = Ctx.prepare(s);
+    for (const f of Fm.analyzeAt(prep, rows.length - 1).formations) {
+      if (f.confirmedAt) assert.equal(f.confirmedAtDetection, f.confirmedAt <= f.detectedAt, f.id);
+      if (f.confirmedAtDetection) atBreakout++;
+    }
+    for (const d of Ev.detectionsOf(s, 1)) {
+      /* Evidenz: Messbeginn k ist nie vor dem Erkennungstag der Formation. */
+      const f = Fm.analyzeAt(prep, d.k).formations.find((x) => x.type === d.type && x.state === d.stateAtK);
+      assert.ok(f && f.detectedIndex <= d.k, tk + " " + d.type + " k=" + d.k);
+    }
+  }
+  assert.ok(atBreakout > 0, "mindestens eine Formation mit Erkennung am Ausbruchstag im Fixture");
+});
+
+test("1.2.3: Punktpreise bei Kursen unter einem Cent werden nicht zu 0 gerundet, Werte ab 1 unveraendert", () => {
+  /* Dieselbe Reihe einmal um 100 $ und einmal auf ein Millionstel skaliert: gleiche Formationen und Zustaende,
+     jeder Punktpreis positiv und auf 4 signifikante Stellen proportional (CPTAF, FORMATION_VALIDATION.md §4). */
+  const big = synthetic("trend", CASES.trend), k = 1e-6;
+  const tiny = Canonical.fromRows(big.timestamps.map((d, i) => ({ date: d, open: big.open[i] * k, high: big.high[i] * k, low: big.low[i] * k, close: big.close[i] * k, volume: 1e6 })),
+    { instrumentId: "SUBPENNY", exchange: "SYN", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "1.2.3" });
+  const A = Fm.analyze(big).formations, B = Fm.analyze(tiny).formations;
+  assert.deepEqual(B.map((f) => f.id + ":" + f.state), A.map((f) => f.id + ":" + f.state));
+  let pts = 0;
+  B.forEach((f, j) => (f.points || []).forEach((p, i) => {
+    assert.ok(p.price > 0, f.id + " Punkt " + i + " = " + p.price);
+    const ref = A[j].points[i].price * k;
+    assert.ok(Math.abs(p.price / ref - 1) < 1e-3, f.id + " " + p.price + " vs " + ref);
+    pts++;
+  }));
+  assert.ok(pts > 0);
+  for (const f of A) for (const p of f.points || []) assert.equal(p.price, Math.round(p.price * 1e4) / 1e4, "ab 1: 4 Nachkommastellen");
 });

@@ -54,13 +54,14 @@
     "groups": [
      [
       [
-       "sma50AboveSma200",
-       "is",
-       true
+       "goldenCrossDays",
+       "lte",
+       5
       ]
      ]
     ]
-   }
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 über SMA 200\""
   },
   {
    "q": "über EMA 20",
@@ -674,9 +675,9 @@
     "groups": [
      [
       [
-       "sma50AboveSma200",
-       "is",
-       true
+       "goldenCrossDays",
+       "lte",
+       5
       ],
       [
        "adx",
@@ -692,7 +693,8 @@
       ]
      ]
     ]
-   }
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 über SMA 200\""
   },
   {
    "q": "RSI unter 30 oder Stochastik unter 20",
@@ -1112,13 +1114,14 @@
     "groups": [
      [
       [
-       "sma50AboveSma200",
-       "is",
-       false
+       "deathCrossDays",
+       "lte",
+       5
       ]
      ]
     ]
-   }
+   },
+   "note": "seit technical-query-text 1.5.0 das Ereignis (B12); der Zustand heisst \"SMA 50 unter SMA 200\""
   },
   {
    "q": "unter der SMA 50 und über der SMA 200",
@@ -1346,11 +1349,133 @@
   },
   {
    "q": "Golden Cross in den letzten 5 Tagen",
-   "unsupported": "Ereignis mit Zeitfenster (B12)"
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       5
+      ]
+     ]
+    ]
+   }
   },
   {
    "q": "RSI ist gestern über 30 gestiegen",
-   "unsupported": "Kreuzungsereignis (B12)"
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsiExitOversoldDays",
+       "lte",
+       1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Golden Cross in den letzten 20 Tagen und über SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "goldenCrossDays",
+       "lte",
+       20
+      ],
+      [
+       "aboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "heute Death Cross",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "deathCrossDays",
+       "lte",
+       0
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "RSI verlässt überverkauft mit Volumenspitze",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "rsiExitOversoldDays",
+       "lte",
+       5
+      ],
+      [
+       "volSpike",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "Kurs steigt über die SMA 200 in den letzten 3 Tagen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "crossAboveSma200Days",
+       "lte",
+       3
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "neue Formation binnen 2 Tagen",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "formationNewDays",
+       "lte",
+       2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "q": "SMA 50 über SMA 200",
+   "expect": {
+    "tf": "1D",
+    "groups": [
+     [
+      [
+       "sma50AboveSma200",
+       "is",
+       true
+      ]
+     ]
+    ]
+   }
   },
   {
    "q": "Ausbruch seit höchstens 3 Tagen",

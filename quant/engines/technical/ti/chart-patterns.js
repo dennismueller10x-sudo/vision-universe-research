@@ -45,10 +45,12 @@
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "ti-chart-patterns-1.1.0";
+  var ENGINE_VERSION = "ti-chart-patterns-1.1.1";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
-  function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
+  /* Zahlen ab Betrag 1 auf 4 Nachkommastellen, darunter 4 signifikante Stellen (wie published-close.js): Bei Kursen unter
+     einem Cent machte die feste Rundung aus 0,000001 eine 0 (CPTAF, FORMATION_VALIDATION.md §4). 0 bleibt 0. */
+  function r4(v) { return isNum(v) ? (Math.abs(v) >= 1 || v === 0 ? Math.round(v * 1e4) / 1e4 : Number(v.toPrecision(4))) : null; }
 
   var NAMES_DE = {
     DOUBLE_TOP: "Doppeltop", DOUBLE_BOTTOM: "Doppelboden", HEAD_AND_SHOULDERS: "Schulter-Kopf-Schulter", INVERSE_HEAD_AND_SHOULDERS: "Umgekehrte Schulter-Kopf-Schulter",

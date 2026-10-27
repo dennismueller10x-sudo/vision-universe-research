@@ -65,6 +65,8 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Datum | Highlight | Ergebnis und Lehre |
 |---|---|---|
 | 26.10.2026 | `start-v1` | Film „THE ARRIVAL – Original" (Dropbox, 20 s, Musik ohne Sprache) mit vier Texteinblendungen, 720 × 1280, −16 LUFS, 3,0 MB, keine Kosten. Owner wählte die Fassung mit Text statt des reinen Films (ohne Text erklärt der Film nichts). Lehre: in App-Texten keine Einschränkung auf US-Aktien. Rezept `studio/stories/start/story.json`, Neubau bei neuem Modul über `build-story.mjs`. faster-whisper liest MP4 direkt nicht (av-Version), vorher mit FFmpeg nach WAV wandeln. |
+| 26.10.2026 | `start-v2` | Owner: Erklärvideos immer mit Sprecher. Helmut-Aufnahme (40 Wörter, 21,1 s roh, 17,3 s nach tighten, 0,05 USD), Filmton per Ducking darunter, fünf Einblendungen auf den Wortzeiten, Whisper bestätigt Wortlaut und „Vision Universe". Lehre: `tighten.py` legt `_t.wav` im Arbeitsverzeichnis ab, im Repo-Wurzelordner nicht aufrufen. |
+| 26.10.2026 | Kit, 11 Videos | Owner: Erklärvideos hochwertiger, im Stil der Quant- und Minervini-Reels, immer mit Sprecher und Musik. Baukasten `studio/stories/kit/` (Motor, Renderer, Effekte, Mischung). Start mit THE ARRIVAL darunter (`filmUntil`), dazu Entdecken, Quant, Zahlen (erst vier, Owner gab frei), dann Strategie, Charts, Wellen, Filter, Vorsorge, Investoren, AI Atlas. Stimmen 0,78 USD. Lehren: Schlagzeilen höchstens zwei Zeilen à rund 16 Zeichen bei 112 px; ein Zähler startet mit der Szene, sonst steht kurz „0“; Whisper schreibt „Darvas“ als „Davos“ (Abschrift, Aussprache prüfen); Rendern mit vier Prozessen etwa 30 s je Video. |
 
 ## Recherche-Läufe (Datensätze verfallen nach der Aufbewahrungszeit)
 

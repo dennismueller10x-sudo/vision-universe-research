@@ -1,0 +1,53 @@
+name: Konten — Datenbank-Sicherung (verschluesselt)
+# Taegliche Sicherung der Produktionsdatenbank (Supabase qiytbnpoqvldsatpfkeh,
+# Free-Plan ohne herunterladbare Backups). pg_dump 17 (Docker) im Custom-Format,
+# sofort mit age an den oeffentlichen Schluessel des Owners verschluesselt; nur
+# die verschluesselte Datei wird als Artefakt (30 Tage) abgelegt. Ohne
+# Empfaengerschluessel wird nichts gesichert (fail closed) - nie unverschluesselt.
+# Wiederherstellung: docs/accounts/PRODUCTION.md, Abschnitt "Sicherung".
+#
+# Braucht (einmalig, docs/accounts/PRODUCTION.md):
+#   Repository-Secret   VU_ACCOUNT_BACKUP_DB_URL        Session-Pooler-URI
+#   Repository-Variable VU_ACCOUNT_BACKUP_AGE_RECIPIENT age1… (oeffentlich)
+# Keine Umgebung mit Pflicht-Review: ein naechtlicher Lauf kann nicht warten.
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-backup-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  backup:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sichern und verschluesseln
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_BACKUP_DB_URL }}
+          RECIPIENT: ${{ vars.VU_ACCOUNT_BACKUP_AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          [[ "$RECIPIENT" =~ ^age1[0-9a-z]{58}$ ]] || { echo "::error::VU_ACCOUNT_BACKUP_AGE_RECIPIENT fehlt (age1…) - keine Sicherung ohne Verschluesselung"; exit 1; }
+          [[ "$DB_URL" == postgresql://*qiytbnpoqvldsatpfkeh* ]] || { echo "::error::VU_ACCOUNT_BACKUP_DB_URL fehlt oder gehoert nicht zum Produktionsprojekt"; exit 1; }
+          sudo apt-get install -y -qq age > /dev/null
+          umask 077
+          out="$RUNNER_TEMP/backup"; mkdir -p "$out"
+          stamp=$(date -u +%Y%m%dT%H%MZ)
+          docker run --rm -e DB_URL postgres:17 sh -c 'pg_dump --format=custom --no-owner --no-privileges \
+              --schema=public --schema=billing --schema=auth --schema=supabase_migrations "$DB_URL"' \
+            | age -r "$RECIPIENT" -o "$out/vu-accounts-$stamp.dump.age"
+          size=$(stat -c %s "$out/vu-accounts-$stamp.dump.age")
+          [ "$size" -gt 1000 ] || { echo "::error::Sicherung verdaechtig klein ($size Bytes)"; exit 1; }
+          head -c 21 "$out/vu-accounts-$stamp.dump.age" | grep -q 'age-encryption.org' || { echo "::error::Datei ist nicht age-verschluesselt"; exit 1; }
+          echo "Sicherung verschluesselt: $size Bytes"
+          echo "FILE=$out/vu-accounts-$stamp.dump.age" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vu-accounts-backup
+          path: ${{ env.FILE }}
+          retention-days: 30
+          if-no-files-found: error

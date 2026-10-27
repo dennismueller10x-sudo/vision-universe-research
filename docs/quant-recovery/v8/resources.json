@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "quant-v8-final-versioned-resources-1.1.0",
+  "generatedAt": "2026-10-27T12:12:19.763Z",
+  "state": "OBSERVED",
+  "historicalF10": {
+    "artifact": "resources-f10-checkpoint.json",
+    "artifactSha256": "558b9747c3c75d33d7cca42aff28062aca56024a0cac46d7b51ff14cb06d1fb6",
+    "runs": {
+      "closure-full": {
+        "command": [
+          "node",
+          "scripts/quant/validate-research-v6.cjs",
+          "--out",
+          "/workspace/v8-private/validation/closure-full",
+          "--suites",
+          "quant"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 774.1372001710006,
+        "maxRssKiB": 959172,
+        "userSeconds": 682.412031,
+        "systemSeconds": 52.422703
+      },
+      "closure-remaining": {
+        "command": [
+          "node",
+          "scripts/quant/validate-research-v6.cjs",
+          "--out",
+          "/workspace/v8-private/validation/closure-remaining",
+          "--suites",
+          "core,sec,pit,consumers"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 72.13454273599928,
+        "maxRssKiB": 530116,
+        "userSeconds": 47.130039,
+        "systemSeconds": 3.193327
+      },
+      "closure-isolation": {
+        "command": [
+          "node",
+          "/workspace/v8-private/validation/closure-resume-isolation.mjs"
+        ],
+        "exitCode": 1,
+        "durationSeconds": 376.00674110600085,
+        "maxRssKiB": 1059400,
+        "userSeconds": 242.467074,
+        "systemSeconds": 31.06062
+      },
+      "closure-isolation-finalize": {
+        "command": [
+          "node",
+          "/workspace/v8-private/validation/closure-finalize-isolation.mjs"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 0.34931066900026053,
+        "maxRssKiB": 174924,
+        "userSeconds": 0.24741,
+        "systemSeconds": 0.122719
+      },
+      "closure-ca-supplement": {
+        "command": [
+          "node",
+          "/workspace/v8-private/validation/closure-ca-supplement.mjs"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 6.736986984000396,
+        "maxRssKiB": 201256,
+        "userSeconds": 1.698445,
+        "systemSeconds": 0.88927
+      },
+      "closure-public-hygiene": {
+        "command": [
+          "node",
+          "scripts/market/assert-public-data-hygiene.mjs"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 32.50940097399871,
+        "maxRssKiB": 301640,
+        "userSeconds": 19.280367,
+        "systemSeconds": 1.79489
+      },
+      "closure-secret-hygiene": {
+        "command": [
+          "node",
+          "scripts/market/assert-no-secrets.mjs"
+        ],
+        "exitCode": 0,
+        "durationSeconds": 2.1227009770009317,
+        "maxRssKiB": 128976,
+        "userSeconds": 1.024151,
+        "systemSeconds": 0.231841
+      }
+    }
+  },
+  "latestMainRuns": {
+    "final-main-data-quality": {
+      "command": [
+        "node",
+        "scripts/core/data-quality.mjs",
+        "--strict"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 71.91292783899917,
+      "maxRssKiB": 2041380,
+      "userSeconds": 45.915059,
+      "systemSeconds": 3.196802
+    },
+    "final-main-core": {
+      "command": [
+        "node",
+        "scripts/quant/validate-research-v6.cjs",
+        "--out",
+        "/workspace/v8-private/validation/final-main-core",
+        "--suites",
+        "core"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 113.35435836299803,
+      "maxRssKiB": 2910624,
+      "userSeconds": 76.303512,
+      "systemSeconds": 2.975904
+    },
+    "final-main-isolation": {
+      "command": [
+        "node",
+        "/workspace/v8-private/validation/final-main-checks.mjs"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 35.46185796999998,
+      "maxRssKiB": 905056,
+      "userSeconds": 13.520662,
+      "systemSeconds": 2.503829
+    },
+    "final-main-public-hygiene": {
+      "command": [
+        "node",
+        "scripts/market/assert-public-data-hygiene.mjs"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 47.66835136600275,
+      "maxRssKiB": 300476,
+      "userSeconds": 19.564352,
+      "systemSeconds": 1.8996879999999998
+    },
+    "final-main-secret-hygiene": {
+      "command": [
+        "node",
+        "scripts/market/assert-no-secrets.mjs"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 4.095700699999725,
+      "maxRssKiB": 128568,
+      "userSeconds": 1.093438,
+      "systemSeconds": 0.21196199999999998
+    }
+  },
+  "maximumChildRssKiB": 2910624,
+  "cgroupBeforeLatestChecks": {
+    "memory.max": "8589934592",
+    "memory.current": "7761776640",
+    "memory.peak": "8589934592",
+    "memory.events": "low 0\nhigh 0\nmax 14347\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "200000 100000"
+  },
+  "cgroupAfter": {
+    "memory.max": "8589934592",
+    "memory.current": "7787380736",
+    "memory.peak": "8589934592",
+    "memory.events": "low 0\nhigh 0\nmax 33525\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "200000 100000"
+  },
+  "cgroupBudget": {
+    "memoryMaxBytes": 8589934592,
+    "cpuQuotaCores": 2
+  },
+  "limitation": "Maximum child RSS differs from simultaneous cgroup use. Session peak includes file cache and earlier work. memory.max contacts are retained; OOM and OOM-kill counters remain explicit. Original frozen-manifest guard failure is preserved in historical F10 evidence.",
+  "productionApproved": false,
+  "reportHash": "4725eaa8fd5114d67888c06cdd0cb26525a2f51b858a65822f2122fca48e4c84"
+}

@@ -69,3 +69,25 @@ Die Änderung je betroffenem Wert liegt im Median bei 1,1 %. Große relative Spr
 **Wirkung:**
 - Screener-Filter, KI-Suche und materialisierte Daten ändern sich nicht.
 - Im Chart Studio sitzt der SAR-Punkt an solchen Umkehrbars künftig am Bar-Extrem statt in der Kerze.
+
+## Erweiterung ab indicators 1.3.0 (L2a, L3)
+
+Zweite Fixture: `quant/tests/fixtures/technical-talib-reference-aapl-ext.json`, erzeugt mit `build-talib-reference.py --set ext`. Die Fixture aus B7 bleibt bytegleich, neu erzeugt und mit `cmp` geprüft. Test: `technical-indicators-catalog-l2.test.mjs`.
+
+| Indikator | Ergebnis |
+|---|---|
+| DEMA, TEMA, TRIMA (20 und 15), T3, PPO (EMA), Momentum, Standardabweichung | an jeder Bar gleich |
+| A/D-Linie, Balance of Power, Stochastic RSI | gleich. TA-Lib gibt den rohen StochRSI erst ab der ersten geglätteten Bar aus. |
+| KAMA, Regressionskanal (LINEARREG, LINEARREG_SLOPE, R² = CORREL²), TRIX, Ultimate Oscillator | gleich (bisher nur naive Referenz) |
+| NATR | Startwert-Konvention wie ATR, gleich ab Bar 190 |
+| Chaikin-Oszillator (ADOSC 3/10) | Startwert-Konvention: TA-Lib startet beide EMA mit dem ersten A/D-Wert, die Engine mit dem SMA. Gleich ab Bar 119. |
+| CMO | andere Definition: TA-Lib = 2·RSI − 100 (Wilder-Glättung), Engine = Chande/Kroll mit einfachen Summen |
+| ZLEMA, ALMA, McGinley Dynamic | kein TA-Lib-Gegenstück, naive Referenz |
+
+## Erweiterung 1.4.0 (L2b): Zusammensetzung aus TA-Lib-Grundbausteinen
+
+Für Indikatoren ohne eigenes TA-Lib-Gegenstück ist die dokumentierte Formel ein zweites Mal aus TA-Lib-Grundfunktionen zusammengesetzt: `build-talib-reference.py --set ext2`, Fixture `technical-talib-reference-aapl-ext2.json`.
+
+Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray, Awesome Oscillator, Coppock, KST, TSI, DPO, historische Volatilität, Z-Score, PVO und Chaikin-Volatilität stimmen an jeder Bar, einschließlich der ersten (1e-8).
+
+Damit sind die Rechenkerne der Engine (EMA-Start, Fenster, Summen) gegen fremde geprüft. Die Formel selbst bleibt die dokumentierte.

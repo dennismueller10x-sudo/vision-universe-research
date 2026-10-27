@@ -1,0 +1,79 @@
+name: Konten — Kuendigungen bearbeiten
+# Bearbeitung von Kuendigungen ohne Anmeldung (§ 312k BGB), solange
+# VU_CANCELLATION_AUTO_PROCESS=false gilt. Nur von Hand, Umgebung "account-dev".
+# Ausgaben immer mit --redact: das Repository und seine Protokolle sind oeffentlich.
+# Vollstaendige Angaben (Name, Adresse, Grund) nur lokal:
+#   node scripts/account/cancellations.mjs show <id>
+# Ablauf und Pruefschritte zur Zuordnung: docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md (§ 312k).
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Aktion'
+        type: choice
+        options: [list, check, deliver, retry, drop, execute, assign, no-contract]
+        default: list
+      id:
+        description: 'Vorgangs-ID (execute, assign, no-contract, drop; retry: leer = alle)'
+        required: false
+      user:
+        description: 'Konto-ID (nur assign)'
+        required: false
+      note:
+        description: 'Begruendung (nur drop, ohne personenbezogene Daten)'
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: account-cancellations-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: account-dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ausfuehren
+        env:
+          ACTION: ${{ inputs.action }}
+          CANCELLATION_ID: ${{ inputs.id }}
+          USER_ID: ${{ inputs.user }}
+          NOTE: ${{ inputs.note }}
+          OPERATOR: ${{ github.actor }}
+          SUPABASE_URL: ${{ vars.VU_ACCOUNT_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.VU_ACCOUNT_SUPABASE_SECRET_KEY }}
+          VU_ACCOUNT_API_ORIGIN: ${{ vars.VU_ACCOUNT_API_ORIGIN }}
+          STRIPE_SECRET_KEY: ${{ secrets.VU_ACCOUNT_STRIPE_SECRET_KEY }}
+          BREVO_API_KEY: ${{ secrets.VU_ACCOUNT_BREVO_API_KEY }}
+          VU_MAIL_SENDER: ${{ vars.VU_ACCOUNT_MAIL_SENDER }}
+          VU_CANCELLATION_AUTO_PROCESS: 'false'
+        run: |
+          set -euo pipefail
+          uuid='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          case "$STRIPE_SECRET_KEY" in sk_live_*|rk_live_*) echo "::error::Stripe-LIVE-Schluessel abgelehnt."; exit 1;; esac
+          args=("$ACTION" --redact)
+          case "$ACTION" in
+            execute|no-contract|assign|drop)
+              [[ "$CANCELLATION_ID" =~ $uuid ]] || { echo "::error::Vorgangs-ID fehlt oder ist keine UUID"; exit 1; }
+              args=("$ACTION" "$CANCELLATION_ID" "--operator=github:$OPERATOR" --redact);;
+            retry)
+              args=(retry "--operator=github:$OPERATOR" --redact)
+              if [ -n "$CANCELLATION_ID" ]; then
+                [[ "$CANCELLATION_ID" =~ $uuid ]] || { echo "::error::Vorgangs-ID ist keine UUID"; exit 1; }
+                args=(retry "$CANCELLATION_ID" "--operator=github:$OPERATOR" --redact)
+              fi;;
+          esac
+          if [ "$ACTION" = "drop" ]; then
+            [[ "$NOTE" =~ ^[[:print:]]{3,200}$ && "$NOTE" != *@* ]] || { echo "::error::Begruendung fehlt (3-200 Zeichen, keine Adressen)"; exit 1; }
+            args+=("--note=$NOTE")
+          fi
+          if [ "$ACTION" = "assign" ]; then
+            [[ "$USER_ID" =~ $uuid ]] || { echo "::error::Konto-ID fehlt oder ist keine UUID"; exit 1; }
+            args+=("--user=$USER_ID")
+          fi
+          node scripts/account/cancellations.mjs "${args[@]}"
