@@ -48,11 +48,12 @@ test("Inside Bar und NR7 = Katalogwerte an jeder Bar (abgeschnittene Reihen)", (
   assert.ok(ib > 0 && nr > 0, "beide Faelle kommen in 60 Tagen vor: " + ib + "/" + nr);
 });
 
-test("Kerzenmuster am Stichtag = candlesticks.atCutoff, nach Richtung getrennt", () => {
+test("Kerzenmuster am Stichtag = candlesticks.atCutoff (feste Screener-Liste), nach Richtung getrennt", () => {
   const n = ref.date.length;
   let seen = 0;
   for (let e = n - 80; e < n; e++) {
-    const b = bars(e), r = row(b), hits = Cdl.atCutoff(b);
+    /* Der Screener fuehrt nur die feste Liste SCREEN_CANDLES (1.7.0); weitere Bibliotheksmuster (ab candlesticks 1.1.0) nicht. */
+    const b = bars(e), r = row(b), hits = Cdl.atCutoff(b).filter((x) => Row.SCREEN_CANDLES.includes(x.id));
     const dir = (id) => Cdl.pattern(id).direction;
     const want = {
       candleBullish: hits.filter((x) => dir(x.id) !== "neutral" && x.signal > 0).map((x) => x.id),
