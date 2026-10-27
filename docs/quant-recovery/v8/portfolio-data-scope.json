@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "quant-v8-portfolio-data-scope-1.0.0",
+  "assessment": "PARTIALLY_VALIDATED",
+  "existingLedgerReused": true,
+  "realEvidenceRetained": "Three V7 price-only portfolios; independent cash/drift/cost accounting",
+  "realRawArchiveAccess": "Available through authorized Actions/R2; not an access blocker",
+  "rawDailyFields": [
+    "date",
+    "close",
+    "splitFactor",
+    "dividend"
+  ],
+  "notEstablishedInCheckedDailyFormats": [
+    "dividend announcement/publication availability",
+    "documented dividend payment date",
+    "complete historical membership/identity/lifecycle evidence for long-window portfolio"
+  ],
+  "substantiveConstraint": "CASH_DIVIDEND creates a noninvestable receivable at entitlement and becomes cash only at documented payDate. Replacing payDate with exDate would incorrectly fund rebalancing.",
+  "existingModeLimits": {
+    "HISTORICAL_OBSERVED": "CUSTOM_STRATEGY_UNIVERSE supported, but actual dated evidence and lifecycle/session/event availability required",
+    "HISTORICAL_PRICE_SIMULATION": "CA/TR claims intentionally excluded"
+  },
+  "scopeDecision": "No inferred payment dates, backdated membership or new permissive mode introduced. Original dividend declarations/payment evidence would improve the remaining real cash/TR scope. Absence in checked daily fields is not proof that such documents are globally missing.",
+  "codeBindings": {
+    "quant/engines/research-portfolio.cjs": "1b9204e5609ffa9eb8cdb827e2b35d732e8d76ce5fb72afb0f58a20edeeeb8b0",
+    "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+    "providers/tiingo/adapter.js": "89ebca761dbed903e34e466b19523d6a87c0607fa551fac48bcb46f3db7166cf",
+    "quant/methodology/strategy-backtest-contract-v1.json": "277b2e1f38e9167a7d4312bcf47b123753ea58c91df1bb0b4ffe3714c992f086"
+  },
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false
+}

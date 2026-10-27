@@ -88,6 +88,8 @@ werden von Safari/Firefox blockiert. `account.visionuniverse.de` ist dieselbe Si
 Supabase vergibt im Schema `public` zunächst **alle** Rechte an `anon` und `authenticated`; die Migrationen nehmen sie zurück und vergeben nur
 die Spaltenrechte oben. Die Tests laufen gegen genau diese Standardrechte (`supabase/local/platform-stub.sql`).
 
+**Watchlist:** persönliche Auswahl (`instrumentId`, Notiz, Benachrichtigungen) in `watchlists`/`watchlist_items`; Kennzahlen kommen aus der gemeinsamen Release-Übersicht, nie aus Supabase. Details, RLS-Nachweise, Speicher und Kosten: [WATCHLIST.md](WATCHLIST.md).
+
 ### Anbieterunabhängiges Abo-Modell (Phase 4)
 
 | Begriff | Feld |

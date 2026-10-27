@@ -16,11 +16,21 @@ Fixture bewusst neu erzeugt, in einer eigenen Umgebung:
 
 `--set core` (Standard) ist der Bestand aus Audit B7 und bleibt unveraendert.
 `--set ext` sind die Katalogerweiterungen ab indicators 1.3.0 (TECHNICAL_LIBRARY.md, L2/L3).
+`--set ext2` setzt die Erweiterungen ab indicators 1.4.0 (L2b) aus TA-Lib-Grundbausteinen zusammen
+(SMA, EMA, WMA, ROC, SUM, MAX, MIN, STDDEV, MEDPRICE): Die Formel steht hier ein zweites Mal,
+unabhaengig von der Engine, und die Rechenkerne sind fremd.
 `--set candles` friert echte Tagesbars ausgewaehlter Titel aus den Technical-Shards ein und rechnet die
 TA-Lib-Candlestick-Funktionen (CDL*) darauf (candlesticks.js, L4):
 
     /tmp/talib-venv/bin/python scripts/technical/build-talib-reference.py --set candles \
         --tickers AAPL,MSFT,... --out quant/tests/fixtures/technical-talib-candles.json
+
+`--set candles2` rechnet die 31 weiteren CDL-Funktionen ab candlesticks 1.1.0 auf den EINGEFRORENEN Bars
+der ersten Fixture (keine Shards, keine Bars doppelt) und auf konstruierten Kerzenfolgen fuer die Muster,
+die in echten Kursen fast nie vorkommen (constructed_series()):
+
+    /tmp/talib-venv/bin/python scripts/technical/build-talib-reference.py --set candles2 \
+        --out quant/tests/fixtures/technical-talib-candles-2.json
 
 Die Fixture haelt Bibliotheks- und C-Kern-Version fest. Werte sind auf 10
 signifikante Stellen gerundet, NaN wird null.
@@ -47,17 +57,22 @@ def ser(a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--set", default="core", choices=["core", "ext", "candles"])
+    ap.add_argument("--set", default="core", choices=["core", "ext", "ext2", "candles", "candles2"])
     ap.add_argument("--tickers", default="")
     args = ap.parse_args()
     if args.set == "candles":
         return write_candles(args)
+    if args.set == "candles2":
+        return write_candles2(args)
 
     ref = json.load(open(SRC, encoding="utf-8"))
     o, h, l, c, v = (np.asarray(ref[k], dtype=float) for k in ("open", "high", "low", "close", "volume"))
 
     if args.set == "ext":
         series = ext_series(o, h, l, c, v)
+        return write(args, ref, c, series)
+    if args.set == "ext2":
+        series = ext2_series(o, h, l, c, v)
         return write(args, ref, c, series)
 
     macd, macd_sig, macd_hist = talib.MACD(c, 12, 26, 9)
@@ -165,6 +180,143 @@ def write_candles(args):
         json.dump(out, fh, separators=(",", ":"))
         fh.write("\n")
     print(f"{args.out}: {len(titles)} Titel, {len(CANDLE_FUNCTIONS)} Muster, TA-Lib {out['libraryVersion']}")
+
+
+CANDLE_FUNCTIONS_2 = {
+    "twoCrows": "CDL2CROWS", "threeLineStrike": "CDL3LINESTRIKE", "threeStarsInSouth": "CDL3STARSINSOUTH",
+    "advanceBlock": "CDLADVANCEBLOCK", "beltHold": "CDLBELTHOLD", "breakaway": "CDLBREAKAWAY",
+    "closingMarubozu": "CDLCLOSINGMARUBOZU", "concealingBabySwallow": "CDLCONCEALBABYSWALL",
+    "counterattack": "CDLCOUNTERATTACK", "dojiStar": "CDLDOJISTAR", "gapSideBySideWhite": "CDLGAPSIDESIDEWHITE",
+    "highWave": "CDLHIGHWAVE", "hikkake": "CDLHIKKAKE", "homingPigeon": "CDLHOMINGPIGEON",
+    "identicalThreeCrows": "CDLIDENTICAL3CROWS", "inNeck": "CDLINNECK", "ladderBottom": "CDLLADDERBOTTOM",
+    "matchingLow": "CDLMATCHINGLOW", "matHold": "CDLMATHOLD", "onNeck": "CDLONNECK", "rickshawMan": "CDLRICKSHAWMAN",
+    "separatingLines": "CDLSEPARATINGLINES", "stalledPattern": "CDLSTALLEDPATTERN", "stickSandwich": "CDLSTICKSANDWICH",
+    "takuri": "CDLTAKURI", "tasukiGap": "CDLTASUKIGAP", "thrusting": "CDLTHRUSTING", "triStar": "CDLTRISTAR",
+    "uniqueThreeRiver": "CDLUNIQUE3RIVER", "upsideGapTwoCrows": "CDLUPSIDEGAP2CROWS",
+    "xSideGapThreeMethods": "CDLXSIDEGAP3METHODS",
+}
+
+
+def quiet_base(n, level):
+    """Ruhige Grundreihe: abwechselnd weiss/schwarz, Koerper 1, Spanne 2 um `level` (wie base() im Test)."""
+    bars = []
+    for k in range(n):
+        white = k % 2 == 0
+        o, c = (level - 0.5, level + 0.5) if white else (level + 0.5, level - 0.5)
+        bars.append((o, max(o, c) + 0.5, min(o, c) - 0.5, c))
+    return bars
+
+
+# Musterkerzen (Eroeffnung, Hoch, Tief, Schluss) relativ zur Grundreihe um 100. Je Muster der Lehrbuchfall,
+# mit deutlichen Abstaenden zu allen Schwellen (keine Gleichstaende).
+CONSTRUCTED = {
+    "concealingBabySwallow": [(103, 103, 100, 100), (99.5, 99.5, 97, 97), (96.5, 97.5, 95.8, 96), (98, 98.2, 94, 94.5)],
+    "matHold": [(100, 103.1, 99.9, 103), (104, 104.2, 103.5, 103.6), (103.3, 103.4, 102.8, 102.9), (103, 103.1, 102.5, 102.6), (102.8, 105.1, 102.7, 105)],
+    # Mat Hold mit tieferem Ruecksetzer: Zwischenkoerper dringen 37 % bzw. 42 % in den ersten Koerper ein (< 50 %: Muster),
+    # und als Gegenprobe 57 % (> 50 %: kein Muster, Name endet auf -neg). Prueft die Eindringtiefe 0,5.
+    "matHold-deep": [(100, 103.1, 99.9, 103), (104, 104.2, 103.5, 103.6), (102.4, 102.5, 101.8, 101.9), (102.2, 102.3, 101.7, 101.75), (101.9, 105.1, 101.85, 105)],
+    "matHold-neg": [(100, 103.1, 99.9, 103), (104, 104.2, 103.5, 103.6), (102.4, 102.5, 101.8, 101.9), (102.2, 102.3, 101.2, 101.3), (101.9, 105.1, 101.85, 105)],
+    "upsideGapTwoCrows": [(100, 103.1, 99.9, 103), (104, 104.1, 103.5, 103.6), (104.3, 104.4, 103.1, 103.2)],
+    "threeStarsInSouth": [(103, 103.1, 96.5, 100), (101, 101.1, 98, 99.5), (99.3, 99.35, 98.9, 99)],
+    "twoCrows": [(100, 103.1, 99.9, 103), (104.5, 104.7, 103.7, 103.8), (104.2, 104.3, 101.4, 101.5)],
+    "breakaway": [(103, 103.1, 99.9, 100), (99.5, 99.6, 98.9, 99), (98.9, 99, 98.3, 98.5), (98.4, 98.5, 97.9, 98), (98.1, 99.9, 98, 99.8)],
+}
+MIRRORED = {"breakaway"}  # beidseitige Muster: zusaetzlich gespiegelt (p -> 2*Niveau - p), ergibt die Gegenrichtung
+
+
+def constructed_series():
+    """Deterministische Kerzenfolgen: je Muster drei Varianten (Grundreihe 12 Bars um 100, 15 Bars um 100,
+    12 Bars um 150 mit um 50 verschobenem Muster), bei beidseitigen Mustern zusaetzlich gespiegelt.
+    Das Muster steht an den letzten Bars; erwartet wird das Signal an der letzten Bar (bei Namen auf -neg: keines)."""
+    out = {}
+    for pid, pat in CONSTRUCTED.items():
+        variants = [("a", 12, 0.0), ("b", 15, 0.0), ("c", 12, 50.0)]
+        for tag, n, shift in variants:
+            bars = quiet_base(n, 100.0 + shift) + [tuple(round(v + shift, 4) for v in b) for b in pat]
+            out[f"{pid}-{tag}"] = bars
+            if pid in MIRRORED:
+                lvl = 100.0 + shift
+                out[f"{pid}-{tag}-mirror"] = [(round(2 * lvl - o, 4), round(2 * lvl - l, 4), round(2 * lvl - h, 4), round(2 * lvl - c, 4)) for o, h, l, c in bars]
+    return out
+
+
+def cdl_signals(fmap, o, h, l, c):
+    signals = {}
+    for pid, fn in fmap.items():
+        a = getattr(talib, fn)(o, h, l, c)
+        signals[pid] = [[int(i), int(a[i])] for i in np.nonzero(a)[0]]
+    return signals
+
+
+def write_candles2(args):
+    """Zweite Candlestick-Fixture: TA-Lib-Signale der 31 Muster ab 1.1.0 auf den Bars der ersten Fixture
+    (nur Verweis, keine Bars doppelt) und auf konstruierten Kerzenfolgen (Bars + Signale)."""
+    from talib import abstract
+    src_rel = "quant/tests/fixtures/technical-talib-candles.json"
+    src = json.load(open(os.path.join(ROOT, src_rel), encoding="utf-8"))
+    titles = {}
+    for t, ti in src["titles"].items():
+        o, h, l, c = (np.asarray(ti[k], dtype=float) for k in ("open", "high", "low", "close"))
+        titles[t] = {"bars": len(c), "signals": cdl_signals(CANDLE_FUNCTIONS_2, o, h, l, c)}
+    constructed = {}
+    for name, bars in constructed_series().items():
+        o, h, l, c = (np.asarray([b[k] for b in bars], dtype=float) for k in range(4))
+        constructed[name] = {"open": o.tolist(), "high": h.tolist(), "low": l.tolist(), "close": c.tolist(),
+                             "signals": cdl_signals(CANDLE_FUNCTIONS_2, o, h, l, c)}
+    out = {
+        "note": "TA-Lib-Candlestick-Signale der Muster ab candlesticks 1.1.0 auf den eingefrorenen echten Tagesbars von "
+                + src_rel + " (Bars dort, hier nur Signale) und auf konstruierten Kerzenfolgen fuer seltene Muster. "
+                "Erzeugt mit scripts/technical/build-talib-reference.py --set candles2. Nur fuer Tests.",
+        "library": "TA-Lib (Python)",
+        "libraryVersion": talib.__version__,
+        "coreVersion": talib.__ta_version__.decode() if isinstance(talib.__ta_version__, bytes) else str(talib.__ta_version__),
+        "set": "candles2",
+        "source": src_rel,
+        "params": {"CDLMATHOLD": {"penetration": 0.5}},
+        "lookback": {pid: abstract.Function(fn).lookback for pid, fn in CANDLE_FUNCTIONS_2.items()},
+        "functions": CANDLE_FUNCTIONS_2,
+        "titles": titles,
+        "constructed": constructed,
+    }
+    with open(args.out, "w", encoding="utf-8") as fh:
+        json.dump(out, fh, separators=(",", ":"))
+        fh.write("\n")
+    print(f"{args.out}: {len(titles)} Titel, {len(constructed)} konstruierte Reihen, {len(CANDLE_FUNCTIONS_2)} Muster, TA-Lib {out['libraryVersion']}")
+
+
+def ext2_series(o, h, l, c, v):
+    """indicators 1.4.0 (L2b), aus TA-Lib-Grundbausteinen zusammengesetzt (Formeln wie dokumentiert)."""
+    prev_c = np.concatenate([[np.nan], c[:-1]])
+    prev_h = np.concatenate([[np.nan], h[:-1]])
+    prev_l = np.concatenate([[np.nan], l[:-1]])
+    tr = np.maximum.reduce([h - l, np.abs(h - prev_c), np.abs(l - prev_c)])
+    e1 = talib.EMA(h - l, 9)
+    mx = talib.MAX(c, 14)
+    e13 = talib.EMA(c, 13)
+    mid = talib.MEDPRICE(h, l)
+    d = c - prev_c
+    k = 20 // 2 + 1
+    eh = talib.EMA(h - l, 10)
+    series = {
+        "vortexPlus": ("SUM(|H − L₋₁|,14)/SUM(TR,14)", talib.SUM(np.abs(h - prev_l), 14) / talib.SUM(tr, 14)),
+        "vortexMinus": ("SUM(|L − H₋₁|,14)/SUM(TR,14)", talib.SUM(np.abs(l - prev_h), 14) / talib.SUM(tr, 14)),
+        "massIndex": ("SUM(EMA9(H−L)/EMA9(EMA9(H−L)),25)", talib.SUM(e1 / talib.EMA(e1, 9), 25)),
+        "choppiness": ("100·log10(SUM(TR,14)/(MAX(H,14)−MIN(L,14)))/log10(14)", 100 * np.log10(talib.SUM(tr, 14) / (talib.MAX(h, 14) - talib.MIN(l, 14))) / np.log10(14)),
+        "ulcerIndex": ("sqrt(SMA((100·(C−MAX(C,14))/MAX)^2,14))", np.sqrt(talib.SMA((100 * (c - mx) / mx) ** 2, 14))),
+        "forceIndex": ("EMA((C−C₋₁)·V,13)", talib.EMA((c - prev_c) * v, 13)),
+        "elderBull": ("H − EMA(C,13)", h - e13),
+        "elderBear": ("L − EMA(C,13)", l - e13),
+        "awesomeOscillator": ("SMA(MEDPRICE,5) − SMA(MEDPRICE,34)", talib.SMA(mid, 5) - talib.SMA(mid, 34)),
+        "coppock": ("WMA(ROC14 + ROC11, 10)", talib.WMA(talib.ROC(c, 14) + talib.ROC(c, 11), 10)),
+        "kst": ("SMA10(ROC10)+2·SMA10(ROC15)+3·SMA10(ROC20)+4·SMA15(ROC30)", talib.SMA(talib.ROC(c, 10), 10) + 2 * talib.SMA(talib.ROC(c, 15), 10) + 3 * talib.SMA(talib.ROC(c, 20), 10) + 4 * talib.SMA(talib.ROC(c, 30), 15)),
+        "tsi": ("100·EMA13(EMA25(ΔC))/EMA13(EMA25(|ΔC|))", 100 * talib.EMA(talib.EMA(d, 25), 13) / talib.EMA(talib.EMA(np.abs(d), 25), 13)),
+        "dpo": ("C₋₁₁ − SMA(C,20)", np.concatenate([np.full(k, np.nan), c[:-k]]) - talib.SMA(c, 20)),
+        "historicalVolatility": ("100·STDDEV(ln C/C₋₁,20)·sqrt(20/19)·sqrt(252)", 100 * talib.STDDEV(np.log(c / prev_c), 20, 1) * np.sqrt(20 / 19) * np.sqrt(252)),
+        "zScore": ("(C − SMA20)/STDDEV(C,20)", (c - talib.SMA(c, 20)) / talib.STDDEV(c, 20, 1)),
+        "pvo": ("PPO(volume, 12, 26, EMA)", talib.PPO(v, 12, 26, 1)),
+        "chaikinVolatility": ("100·(EMA10(H−L)/EMA10(H−L)₋₁₀ − 1)", 100 * (eh / np.concatenate([np.full(10, np.nan), eh[:-10]]) - 1)),
+    }
+    return {key: {"call": call, "values": ser(vals)} for key, (call, vals) in series.items()}
 
 
 def write(args, ref, c, series):

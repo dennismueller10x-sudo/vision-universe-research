@@ -83,3 +83,11 @@ Zweite Fixture: `quant/tests/fixtures/technical-talib-reference-aapl-ext.json`, 
 | Chaikin-Oszillator (ADOSC 3/10) | Startwert-Konvention: TA-Lib startet beide EMA mit dem ersten A/D-Wert, die Engine mit dem SMA. Gleich ab Bar 119. |
 | CMO | andere Definition: TA-Lib = 2·RSI − 100 (Wilder-Glättung), Engine = Chande/Kroll mit einfachen Summen |
 | ZLEMA, ALMA, McGinley Dynamic | kein TA-Lib-Gegenstück, naive Referenz |
+
+## Erweiterung 1.4.0 (L2b): Zusammensetzung aus TA-Lib-Grundbausteinen
+
+Für Indikatoren ohne eigenes TA-Lib-Gegenstück ist die dokumentierte Formel ein zweites Mal aus TA-Lib-Grundfunktionen zusammengesetzt: `build-talib-reference.py --set ext2`, Fixture `technical-talib-reference-aapl-ext2.json`.
+
+Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray, Awesome Oscillator, Coppock, KST, TSI, DPO, historische Volatilität, Z-Score, PVO und Chaikin-Volatilität stimmen an jeder Bar, einschließlich der ersten (1e-8).
+
+Damit sind die Rechenkerne der Engine (EMA-Start, Fenster, Summen) gegen fremde geprüft. Die Formel selbst bleibt die dokumentierte.

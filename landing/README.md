@@ -66,3 +66,9 @@ Der ausschließlich manuelle Workflow landing-pages-publish.yml und seine Stagin
 ## Rechtstext-Stand 12.10.2026
 
 Alle fünf Original-Shoptexte sind vollständig gesichert. Die künftige App/Web-App mit Free/Paid-Abos erfordert eine inhaltliche Anpassung gegenüber dem PDF-Shop. [Coming-soon-Rechtsseiten, vollständige Quellen, Änderungstabelle und Abo-Entwürfe](legal-drafts/README.md). Kein erfundener Tarif, keine automatische Verlängerungsregel und keine Zahlungsanbindung angenommen. Beide Rechtsseiten sind Entwürfe; Abo-Texte und Originalquellen bleiben außerhalb des Builds. Produktionsprüfung und Brevo-Sperre bleiben unverändert.
+
+## Instagram-Seiten (`/instagram/`)
+
+Ziel des ManyChat-Aufrufs „Kommentiere AKTIE“. `instagram/index.html` übernimmt Aufbau, Videos und Stil der Partnerseite (`../partner/partner.css`, `../partner/partner.js`, `../partner/media/`), ohne App-Links: überall „App bald verfügbar“, der einzige Aufruf führt zur Newsletter-Anmeldung `../#newsletter`. Ganz unten verlinkt die Folie „Unsere Aktienlisten“ die Unterseiten, die neueste zuerst. Ergänzungen in `instagram/instagram.css`.
+
+Neue Liste: `instagram/<thema>/index.html` nach dem Muster von `instagram/robotaxi/` anlegen, in `scripts/build.mjs` (Dateiliste und Instagram-Schleife) eintragen und in `instagram/index.html` als oberste Karte verlinken. Keine Kurse oder Renditen auf den Seiten, damit sie nicht veralten; jede Liste trägt „keine Kauf- oder Verkaufsempfehlung“. `noindex`, wie die Partnerseite.

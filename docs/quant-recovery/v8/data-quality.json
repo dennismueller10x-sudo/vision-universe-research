@@ -1,0 +1,149 @@
+{
+  "version": "core-data-quality-1.0.0",
+  "overall": "WARN",
+  "failedBySeverity": {
+    "ERROR": 0,
+    "WARN": 4,
+    "INFO": 0
+  },
+  "rules": [
+    {
+      "id": "DQ-ID-1",
+      "title": "securityId folgt der kanonischen Regel",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 24904,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-ID-2",
+      "title": "Produktuniversum ohne doppelte Ticker/IDs",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 7803,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-ID-3",
+      "title": "Ein aktives Symbol = ein aktives Instrument (Company Master)",
+      "severity": "WARN",
+      "status": "PASS",
+      "checked": 7794,
+      "failed": 0,
+      "note": "Ticker-Joins (first match wins) haengen sonst Daten an das falsche Instrument."
+    },
+    {
+      "id": "DQ-PX-1",
+      "title": "Kursreihen sortiert, eindeutig, positiv, Kopf = Inhalt",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 6679,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-PX-2",
+      "title": "Kursreihen tragen die letzte Sitzung (2026-10-23)",
+      "severity": "WARN",
+      "status": "FAIL",
+      "checked": 6679,
+      "failed": 93,
+      "note": "Rueckstand in Sitzungen: {\"0\":6578,\"1\":7,\"2\":1,\"3\":2,\"4\":1,\"5+\":90}. Delistete oder ausgesetzte Titel bleiben hier stehen, bis das Universum sie entfernt."
+    },
+    {
+      "id": "DQ-PX-3",
+      "title": "Keine unplausiblen Tagesspr\u00fcnge (>|60 %|) in split-bereinigten Reihen",
+      "severity": "WARN",
+      "status": "FAIL",
+      "checked": 6679,
+      "failed": 303,
+      "note": "Ein ganzzahliger Faktor deutet auf einen nicht nachgezogenen Split; Small Caps koennen echt so springen."
+    },
+    {
+      "id": "DQ-PX-4",
+      "title": "Tages- und Wochenreihe zeigen denselben Schlusskurs",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 6188,
+      "failed": 0,
+      "note": "Verglichen wird nur an identischen Stichtagen (Wochenschluss = letzter Handelstag der ISO-Woche, der auch in der Tagesreihe steht). Toleranz: eine Rundungseinheit (published-close.js#roundClose). Typische Ursache: Split nach dem letzten Lauf der Wochenreihe; Reparatur: scripts/market/long-series-repair-plan.mjs und long-series.yml (Reparaturlauf)."
+    },
+    {
+      "id": "DQ-PX-5",
+      "title": "Aktienseite = letzter Schlusskurs der Reihe",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 6125,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-PR-1",
+      "title": "Discover-Aktienindex und Aktienseiten deckungsgleich",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 6125,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-PR-2",
+      "title": "Ausgelieferte Datenpfade existieren (keine kaputten Charts)",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 8757,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-IX-1",
+      "title": "Indexmitglieder sind aktive, geeignete Titel des Universums",
+      "severity": "WARN",
+      "status": "PASS",
+      "checked": 626,
+      "failed": 0,
+      "note": "Nicht zuordenbar (fehlen im Wertpapierstamm): SP500: SNDK (SANDISK CORP); SP500: BNY (BANK OF NEW YORK MELLON CORP); SP500: VYLR (VYLOR INC); SP500: VLTO (VERALTO CORP); SP500: Q (QNITY ELECTRONICS INC); SP500: NRG (NRG ENERGY INC); SP500: SKYD (SKYDANCE CORP); SP500: 2602335D (TPG INC); NDX: SNDK (Sandisk Corporation Common Stock)"
+    },
+    {
+      "id": "DQ-TW-1",
+      "title": "Technical-Screener folgt Materialisierung und letzter Sitzung",
+      "severity": "WARN",
+      "status": "PASS",
+      "checked": 1,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-TW-2",
+      "title": "Technical-Katalogfelder sind im Datensatz belegt",
+      "severity": "WARN",
+      "status": "FAIL",
+      "checked": 43,
+      "failed": 2,
+      "note": null
+    },
+    {
+      "id": "DQ-TW-3",
+      "title": "Technical-Schluss = Discover-Tagesreihe (eine Preiswahrheit)",
+      "severity": "ERROR",
+      "status": "PASS",
+      "checked": 5647,
+      "failed": 0,
+      "note": null
+    },
+    {
+      "id": "DQ-TW-4",
+      "title": "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)",
+      "severity": "WARN",
+      "status": "FAIL",
+      "checked": 5655,
+      "failed": 6,
+      "note": "Fehlend 6, mit Grund gezaehlt 0 ({})."
+    }
+  ],
+  "checkedAt": "2026-10-26T11:54:49.922Z",
+  "expectedSession": "2026-10-23",
+  "logSha256": "8af2f12baf1afda1eb91380d019c1b62b63a6ce660b4d263abfe3b036d587c21"
+}

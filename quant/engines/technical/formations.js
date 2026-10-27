@@ -44,7 +44,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.2.0";
+  var ENGINE_VERSION = "technical-formations-1.2.2";
 
   /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
      (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */
@@ -173,15 +173,18 @@
     if (!v) return out;
     var lows = v.confirmed.filter(function (p) { return p.side === "LOW"; }).map(pt);
     var highs = v.confirmed.filter(function (p) { return p.side === "HIGH"; }).map(pt);
-    var s = ctx.series, tol = 0.5 * ctx.atr;
+    var s = ctx.series, atrCol = ctx.prep.features.columns.atr;
     function make(list, dir, type) {
       if (list.length < 2) return;
       var a = list[list.length - 2], b = list[list.length - 1];
+      /* 1.2.2: Toleranz aus der ATR am Erkennungsbar (Bestaetigung von b), nicht am Stand t. Mit der ATR von t
+         konnte eine Linie nachtraeglich gueltig werden und trug dann ein Erkennungsdatum, an dem sie nicht sichtbar war. */
+      var detectIdx = b.confirmedIndex, atrD = atrCol && atrCol[detectIdx], tol = 0.5 * (isNum(atrD) && atrD > 0 ? atrD : ctx.atr);
       if (dir > 0 ? !(b.price > a.price + tol * 0.5) : !(b.price < a.price - tol * 0.5)) return;
-      var line = lineThrough(a, b), detectIdx = b.confirmedIndex;
+      var line = lineThrough(a, b);
       /* Zwischen a und der Bestaetigung von b darf kein Schluss die Linie gebrochen haben. */
       for (var k = a.index + 1; k <= detectIdx; k++) if (dir > 0 ? s.close[k] < line.at(k) - tol : s.close[k] > line.at(k) + tol) return;
-      var f = followLine(ctx, line, detectIdx, dir);
+      var f = followLine(ctx, line, detectIdx, dir, tol);
       var confirmIdx = f.touches.length && (f.broken < 0 || f.touches[0] < f.broken) ? f.touches[0] : -1;
       var state = f.broken >= 0 ? "INVALIDATED" : confirmIdx >= 0 ? "CONFIRMED" : "DETECTED";
       out.push(base(ctx, type, state, detectIdx, {
@@ -310,11 +313,18 @@
     return out;
   }
 
+  /* 1.2.2: Erkennungstag = erster Bar, an dem der Wimpel mit dem damaligen Wissen sichtbar ist (Konsolidierung
+     verengt sich an diesem Bar, Mast-Pivot bestaetigt, mindestens 5 Konsolidierungsbars), nicht der fruehestmoegliche
+     Bar. Mast und Tempo werden an der ATR dieses fruehestmoeglichen Bars gemessen, nicht an der ATR des Stands t. */
   function pennantFrom(ctx, p0, p1) {
-    var s = ctx.series, atr = ctx.atr;
+    var s = ctx.series;
     var pole = p1.pivotPrice - p0.pivotPrice, poleBars = Math.max(1, p1.pivotIndex - p0.pivotIndex), dir = pole > 0 ? 1 : -1;
-    if (Math.abs(pole) < 5 * atr || Math.abs(pole) / poleBars < 0.35 * atr) return null;
     var from = p1.pivotIndex + 1, maxLen = Math.max(8, Math.round(1.5 * poleBars));
+    var earliest = Math.max(from + 5, p1.confirmedIndex), atrCol = ctx.prep.features.columns.atr;
+    var atrE = atrCol && atrCol[earliest], atr = isNum(atrE) && atrE > 0 ? atrE : ctx.atr;
+    if (earliest > ctx.t) return null;
+    if (Math.abs(pole) < 5 * atr || Math.abs(pole) / poleBars < 0.35 * atr) return null;
+    var seen = -1;
     /* Scan Bar fuer Bar: Linien nur aus Bars VOR k, Ausbruch an k. */
     for (var k = from + 5; k <= Math.min(ctx.t, from + maxLen); k++) {
       var hiA = -Infinity, hiAi = -1, hiB = -Infinity, hiBi = -1, loA = Infinity, loAi = -1, loB = Infinity, loBi = -1, lowest = Infinity, highest = -Infinity;
@@ -330,7 +340,6 @@
       if (!converging) continue;          // Konsolidierung noch nicht verengt: weiter beobachten
       var up = lineThrough({ index: hiAi, price: hiA }, { index: hiBi, price: hiB });
       var lo = lineThrough({ index: loAi, price: loA }, { index: loBi, price: loB });
-      var detectIdx = Math.max(from + 5, p1.confirmedIndex);
       var invalid = dir > 0 ? lowest : highest;
       var extra = {
         points: [{ time: p0.pivotTime, price: r4(p0.pivotPrice) }, { time: p1.pivotTime, price: r4(p1.pivotPrice) }],
@@ -339,12 +348,19 @@
         levels: { pole: r4(Math.abs(pole)), invalidation: r4(invalid), upperNow: r4(up.at(k)), lowerNow: r4(lo.at(k)) }, confirmedAt: null, invalidatedAt: null
       };
       var type = dir > 0 ? "BULL_PENNANT" : "BEAR_PENNANT";
-      if (dir > 0 ? s.close[k] < invalid : s.close[k] > invalid) { extra.invalidatedAt = s.timestamps[k]; return base(ctx, type, "INVALIDATED", detectIdx, extra); }
-      if (dir > 0 ? s.close[k] > Math.max(up.at(k), hiB) : s.close[k] < Math.min(lo.at(k), loB)) {
-        if (k < detectIdx) return null;
-        extra.confirmedAt = s.timestamps[k]; return base(ctx, type, "CONFIRMED", detectIdx, extra);
+      /* 1.2.1: Invalidierung vor der Erkennung = zum Erkennungszeitpunkt nie sichtbar (wie beim Ausbruch). */
+      /* Bruch vor dem fruehestmoeglichen Erkennungsbar: nie sichtbar gewesen. Bruch danach, aber vor der ersten
+         Sichtbarkeit: sichtbar erst am Bruchtag (erkannt und bestaetigt bzw. invalidiert am selben Tag). */
+      if (dir > 0 ? s.close[k] < invalid : s.close[k] > invalid) {
+        if (k < earliest) return null;
+        extra.invalidatedAt = s.timestamps[k]; return base(ctx, type, "INVALIDATED", seen >= 0 ? seen : k, extra);
       }
-      if (k === ctx.t && k >= detectIdx) return base(ctx, type, "DETECTED", detectIdx, extra);
+      if (dir > 0 ? s.close[k] > Math.max(up.at(k), hiB) : s.close[k] < Math.min(lo.at(k), loB)) {
+        if (k < earliest) return null;
+        extra.confirmedAt = s.timestamps[k]; return base(ctx, type, "CONFIRMED", seen >= 0 ? seen : k, extra);
+      }
+      if (k >= earliest && seen < 0) seen = k;
+      if (k === ctx.t && seen >= 0) return base(ctx, type, "DETECTED", seen, extra);
     }
     return null;
   }
@@ -413,7 +429,8 @@
       for (var k = ctx.t; k >= Math.max(1, ctx.t - 19); k--) {
         var a = atrCol[k - 1], edge = dir > 0 ? s.high[k - 1] : s.low[k - 1];
         var size = dir > 0 ? s.low[k] - s.high[k - 1] : s.low[k - 1] - s.high[k];
-        if (!isNum(a) || !isNum(size) || size < 0.5 * a) continue;
+        /* 1.2.1: ATR 0 (ruhender Titel) macht jede Null-"Luecke" gross genug; ohne Bewegung keine Luecke. */
+        if (!isNum(a) || !(a > 0) || !isNum(size) || !(size > 0) || size < 0.5 * a) continue;
         if (ctx.hasVolume && !(isNum(rv[k]) && rv[k] >= 1.5)) continue;
         if (suspectJump(s.close[k] / s.close[k - 1])) continue;
         var inv = -1, conf = -1, held = 0;

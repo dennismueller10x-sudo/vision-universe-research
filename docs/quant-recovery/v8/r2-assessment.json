@@ -1,0 +1,656 @@
+{
+  "schemaVersion": "quant-v8-r2-archive-probe-1.0.0",
+  "observedAt": "2026-10-27T05:58:55.772Z",
+  "gitHead": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+  "runId": "40458303350",
+  "credentialBindings": {
+    "VU_HISTORY_S3_ENDPOINT": true,
+    "VU_HISTORY_S3_BUCKET": true,
+    "VU_HISTORY_S3_ACCESS_KEY_ID": true,
+    "VU_HISTORY_S3_SECRET_ACCESS_KEY": true
+  },
+  "limits": {
+    "maximumRequests": 4,
+    "maximumIndexGets": 2,
+    "maximumCompressedIndexBytes": 4194304,
+    "maximumDecompressedIndexBytes": 33554432,
+    "maximumPublishedSampleRecords": 100
+  },
+  "networkRequests": 3,
+  "downloadedBytes": 471733,
+  "objects": [
+    {
+      "key": "v1/tiingo/daily/US/_index.json.gz",
+      "state": "KNOWN_INDEX_NOT_FOUND"
+    },
+    {
+      "key": "v1/tiingo/daily/US/_index.json.zst",
+      "state": "INDEX_CONTENT_CONFIRMED",
+      "bytes": 0,
+      "lastModified": "Tue, 27 Oct 2026 03:01:58 GMT",
+      "compressedSha256": "237b60597752231adc2d4fa783b9160a1def110fa38c7f79bd7fd15cb7bad8b2",
+      "indexSha256": "d6a3a7effc5727a4a38f0b6bf25e246cf3f22c3d6e3d247310460fa604601e99",
+      "symbolCount": 7803,
+      "generatedAt": "2026-10-27T03:01:57.010Z",
+      "sample": [
+        {
+          "ticker": "A",
+          "first": "1999-11-18",
+          "last": "2026-10-26",
+          "barCount": 6774
+        },
+        {
+          "ticker": "AA",
+          "first": "2016-10-18",
+          "last": "2026-10-26",
+          "barCount": 2519
+        },
+        {
+          "ticker": "AAAC",
+          "first": "2025-12-11",
+          "last": "2026-10-26",
+          "barCount": 219
+        },
+        {
+          "ticker": "AAAD",
+          "first": "2026-06-03",
+          "last": "2026-10-26",
+          "barCount": 101
+        },
+        {
+          "ticker": "AAAP",
+          "first": "2026-06-23",
+          "last": "2026-10-26",
+          "barCount": 88
+        },
+        {
+          "ticker": "AACB",
+          "first": "2025-04-07",
+          "last": "2026-10-26",
+          "barCount": 391
+        },
+        {
+          "ticker": "AACBR",
+          "first": "2025-04-07",
+          "last": "2026-08-19",
+          "barCount": 343
+        },
+        {
+          "ticker": "AACBU",
+          "first": "2025-02-13",
+          "last": "2026-09-10",
+          "barCount": 395
+        },
+        {
+          "ticker": "AACG",
+          "first": "2008-01-29",
+          "last": "2026-10-26",
+          "barCount": 4712
+        },
+        {
+          "ticker": "AACI",
+          "first": "2026-03-27",
+          "last": "2026-10-26",
+          "barCount": 147
+        },
+        {
+          "ticker": "AACIW",
+          "first": "2021-11-11",
+          "last": "2026-09-10",
+          "barCount": 808
+        },
+        {
+          "ticker": "AACO",
+          "first": "2026-04-13",
+          "last": "2026-10-26",
+          "barCount": 137
+        },
+        {
+          "ticker": "AACOU",
+          "first": "2026-02-19",
+          "last": "2026-09-10",
+          "barCount": 141
+        },
+        {
+          "ticker": "AACOW",
+          "first": "2026-04-15",
+          "last": "2026-09-10",
+          "barCount": 103
+        },
+        {
+          "ticker": "AACP",
+          "first": "2026-05-28",
+          "last": "2026-10-26",
+          "barCount": 105
+        },
+        {
+          "ticker": "AACPR",
+          "first": "2026-05-28",
+          "last": "2026-09-10",
+          "barCount": 73
+        },
+        {
+          "ticker": "AACPU",
+          "first": "2026-04-07",
+          "last": "2026-09-10",
+          "barCount": 109
+        },
+        {
+          "ticker": "AACPW",
+          "first": "2026-05-28",
+          "last": "2026-09-10",
+          "barCount": 73
+        },
+        {
+          "ticker": "AACT",
+          "first": "2023-06-12",
+          "last": "2026-10-26",
+          "barCount": 753
+        },
+        {
+          "ticker": "AACTWS",
+          "first": "2026-02-06",
+          "last": "2026-09-10",
+          "barCount": 146
+        },
+        {
+          "ticker": "AADX",
+          "first": "2026-06-03",
+          "last": "2026-10-26",
+          "barCount": 101
+        },
+        {
+          "ticker": "AAL",
+          "first": "2005-09-27",
+          "last": "2026-10-26",
+          "barCount": 5303
+        },
+        {
+          "ticker": "AAME",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "AAMI",
+          "first": "2018-03-26",
+          "last": "2026-10-26",
+          "barCount": 2159
+        },
+        {
+          "ticker": "AAOG",
+          "first": "2026-05-12",
+          "last": "2026-10-26",
+          "barCount": 116
+        },
+        {
+          "ticker": "AAOI",
+          "first": "2013-09-26",
+          "last": "2026-10-26",
+          "barCount": 3290
+        },
+        {
+          "ticker": "AAON",
+          "first": "1992-12-16",
+          "last": "2026-10-26",
+          "barCount": 8523
+        },
+        {
+          "ticker": "AAP",
+          "first": "2001-11-29",
+          "last": "2026-10-26",
+          "barCount": 6266
+        },
+        {
+          "ticker": "AAPG",
+          "first": "2025-01-24",
+          "last": "2026-10-26",
+          "barCount": 441
+        },
+        {
+          "ticker": "AAPGV",
+          "first": "2026-02-06",
+          "last": "2026-10-26",
+          "barCount": 178
+        },
+        {
+          "ticker": "AAPL",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "AARD",
+          "first": "2025-02-13",
+          "last": "2026-10-26",
+          "barCount": 427
+        },
+        {
+          "ticker": "AAT",
+          "first": "2011-01-13",
+          "last": "2026-10-26",
+          "barCount": 3969
+        },
+        {
+          "ticker": "AAUC",
+          "first": "2025-06-09",
+          "last": "2026-10-26",
+          "barCount": 348
+        },
+        {
+          "ticker": "AB",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "ABAT",
+          "first": "2023-09-21",
+          "last": "2026-10-26",
+          "barCount": 777
+        },
+        {
+          "ticker": "ABBV",
+          "first": "2013-01-02",
+          "last": "2026-10-26",
+          "barCount": 3475
+        },
+        {
+          "ticker": "ABCB",
+          "first": "1994-05-19",
+          "last": "2026-10-26",
+          "barCount": 8164
+        },
+        {
+          "ticker": "ABCL",
+          "first": "2020-12-11",
+          "last": "2026-10-26",
+          "barCount": 1474
+        },
+        {
+          "ticker": "ABEO",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "ABEV",
+          "first": "1997-03-05",
+          "last": "2026-10-26",
+          "barCount": 7458
+        },
+        {
+          "ticker": "ABG",
+          "first": "2002-03-21",
+          "last": "2026-10-26",
+          "barCount": 6190
+        },
+        {
+          "ticker": "ABI",
+          "first": "2009-05-11",
+          "last": "2026-10-26",
+          "barCount": 1597
+        },
+        {
+          "ticker": "ABL",
+          "first": "2026-05-28",
+          "last": "2026-10-26",
+          "barCount": 105
+        },
+        {
+          "ticker": "ABLLW",
+          "first": "2023-07-05",
+          "last": "2026-09-10",
+          "barCount": 165
+        },
+        {
+          "ticker": "ABLV",
+          "first": "2022-09-12",
+          "last": "2026-10-26",
+          "barCount": 1034
+        },
+        {
+          "ticker": "ABLVW",
+          "first": "2023-08-18",
+          "last": "2026-09-10",
+          "barCount": 767
+        },
+        {
+          "ticker": "ABM",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "ABNB",
+          "first": "2020-12-10",
+          "last": "2026-10-26",
+          "barCount": 1475
+        },
+        {
+          "ticker": "ABOS",
+          "first": "2021-07-01",
+          "last": "2026-10-26",
+          "barCount": 1336
+        },
+        {
+          "ticker": "ABR",
+          "first": "2004-04-07",
+          "last": "2026-10-26",
+          "barCount": 5674
+        },
+        {
+          "ticker": "ABR-P-D",
+          "first": "2021-05-26",
+          "last": "2026-10-26",
+          "barCount": 1361
+        },
+        {
+          "ticker": "ABR-P-E",
+          "first": "2021-08-05",
+          "last": "2026-10-26",
+          "barCount": 1312
+        },
+        {
+          "ticker": "ABR-P-F",
+          "first": "2021-10-05",
+          "last": "2026-10-26",
+          "barCount": 1264
+        },
+        {
+          "ticker": "ABSI",
+          "first": "2021-07-22",
+          "last": "2026-10-26",
+          "barCount": 1322
+        },
+        {
+          "ticker": "ABT",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "ABTC",
+          "first": "2025-09-02",
+          "last": "2026-10-26",
+          "barCount": 290
+        },
+        {
+          "ticker": "ABTS",
+          "first": "2014-04-10",
+          "last": "2026-10-26",
+          "barCount": 3154
+        },
+        {
+          "ticker": "ABUS",
+          "first": "2015-08-03",
+          "last": "2026-10-26",
+          "barCount": 2825
+        },
+        {
+          "ticker": "ABVC",
+          "first": "2011-04-05",
+          "last": "2026-10-26",
+          "barCount": 3913
+        },
+        {
+          "ticker": "ABVX",
+          "first": "2023-10-20",
+          "last": "2026-10-26",
+          "barCount": 756
+        },
+        {
+          "ticker": "ABX",
+          "first": "2020-09-14",
+          "last": "2026-10-26",
+          "barCount": 1519
+        },
+        {
+          "ticker": "ACA",
+          "first": "2018-10-30",
+          "last": "2026-10-23",
+          "barCount": 2006
+        },
+        {
+          "ticker": "ACAA",
+          "first": "2026-04-10",
+          "last": "2026-10-26",
+          "barCount": 138
+        },
+        {
+          "ticker": "ACAAU",
+          "first": "2026-02-19",
+          "last": "2026-09-10",
+          "barCount": 141
+        },
+        {
+          "ticker": "ACAAW",
+          "first": "2026-04-14",
+          "last": "2026-09-10",
+          "barCount": 104
+        },
+        {
+          "ticker": "ACAD",
+          "first": "2004-05-27",
+          "last": "2026-10-26",
+          "barCount": 5639
+        },
+        {
+          "ticker": "ACB",
+          "first": "2014-07-11",
+          "last": "2026-10-26",
+          "barCount": 3092
+        },
+        {
+          "ticker": "ACCO",
+          "first": "2005-08-17",
+          "last": "2026-10-26",
+          "barCount": 5331
+        },
+        {
+          "ticker": "ACCS",
+          "first": "2005-02-14",
+          "last": "2026-10-26",
+          "barCount": 5459
+        },
+        {
+          "ticker": "ACDC",
+          "first": "2022-05-13",
+          "last": "2026-10-26",
+          "barCount": 1117
+        },
+        {
+          "ticker": "ACEI",
+          "first": "2025-09-25",
+          "last": "2026-10-26",
+          "barCount": 273
+        },
+        {
+          "ticker": "ACEL",
+          "first": "2019-11-21",
+          "last": "2026-10-26",
+          "barCount": 1740
+        },
+        {
+          "ticker": "ACET",
+          "first": "2018-01-26",
+          "last": "2026-10-26",
+          "barCount": 2199
+        },
+        {
+          "ticker": "ACGC",
+          "first": "2026-05-28",
+          "last": "2026-10-26",
+          "barCount": 105
+        },
+        {
+          "ticker": "ACGCU",
+          "first": "2026-04-07",
+          "last": "2026-09-10",
+          "barCount": 109
+        },
+        {
+          "ticker": "ACGCW",
+          "first": "2026-05-28",
+          "last": "2026-09-10",
+          "barCount": 73
+        },
+        {
+          "ticker": "ACGL",
+          "first": "1995-09-14",
+          "last": "2026-10-26",
+          "barCount": 7830
+        },
+        {
+          "ticker": "ACGLN",
+          "first": "2021-06-03",
+          "last": "2026-10-26",
+          "barCount": 1356
+        },
+        {
+          "ticker": "ACGLO",
+          "first": "2017-08-15",
+          "last": "2026-10-26",
+          "barCount": 2312
+        },
+        {
+          "ticker": "ACGO",
+          "first": "2026-06-03",
+          "last": "2026-10-26",
+          "barCount": 101
+        },
+        {
+          "ticker": "ACH",
+          "first": "1990-01-02",
+          "last": "2026-10-26",
+          "barCount": 9272
+        },
+        {
+          "ticker": "ACHC",
+          "first": "1994-03-04",
+          "last": "2026-10-26",
+          "barCount": 8216
+        },
+        {
+          "ticker": "ACHL",
+          "first": "2021-03-31",
+          "last": "2026-10-26",
+          "barCount": 1181
+        },
+        {
+          "ticker": "ACHR",
+          "first": "2020-12-18",
+          "last": "2026-10-26",
+          "barCount": 1469
+        },
+        {
+          "ticker": "ACHV",
+          "first": "1995-10-13",
+          "last": "2026-10-26",
+          "barCount": 7809
+        },
+        {
+          "ticker": "ACI",
+          "first": "2020-06-26",
+          "last": "2026-10-26",
+          "barCount": 1591
+        },
+        {
+          "ticker": "ACIC",
+          "first": "2007-11-07",
+          "last": "2026-10-26",
+          "barCount": 4771
+        },
+        {
+          "ticker": "ACII",
+          "first": "2026-05-28",
+          "last": "2026-10-26",
+          "barCount": 105
+        },
+        {
+          "ticker": "ACIU",
+          "first": "2016-09-23",
+          "last": "2026-10-26",
+          "barCount": 2536
+        },
+        {
+          "ticker": "ACIW",
+          "first": "1995-02-27",
+          "last": "2026-10-26",
+          "barCount": 7969
+        },
+        {
+          "ticker": "ACLO",
+          "first": "2024-11-18",
+          "last": "2026-10-26",
+          "barCount": 485
+        },
+        {
+          "ticker": "ACLS",
+          "first": "2000-07-11",
+          "last": "2026-10-26",
+          "barCount": 6613
+        },
+        {
+          "ticker": "ACLZ",
+          "first": "2026-06-24",
+          "last": "2026-10-26",
+          "barCount": 87
+        },
+        {
+          "ticker": "ACM",
+          "first": "2007-05-10",
+          "last": "2026-10-26",
+          "barCount": 4897
+        },
+        {
+          "ticker": "ACMM",
+          "first": "2026-06-24",
+          "last": "2026-10-26",
+          "barCount": 87
+        },
+        {
+          "ticker": "ACMR",
+          "first": "2017-11-03",
+          "last": "2026-10-26",
+          "barCount": 2255
+        },
+        {
+          "ticker": "ACN",
+          "first": "2001-07-19",
+          "last": "2026-10-26",
+          "barCount": 6355
+        },
+        {
+          "ticker": "ACNB",
+          "first": "1996-01-02",
+          "last": "2026-10-26",
+          "barCount": 7755
+        },
+        {
+          "ticker": "ACNT",
+          "first": "1991-12-03",
+          "last": "2026-10-26",
+          "barCount": 8786
+        }
+      ]
+    }
+  ],
+  "state": "READABLE_INDEX_PROVED",
+  "productionApproved": false,
+  "rawDataPublished": false,
+  "scope": "Known History Store index keys only; absent keys do not establish an empty bucket or absent historical archives.",
+  "budgetSpent": {
+    "classA": 0,
+    "classB": 3,
+    "bytesUploaded": 0,
+    "bytesDownloaded": 471733,
+    "writesSkipped": 0
+  },
+  "limitations": [
+    "This bounded probe does not list or qualify all objects, raw corporate actions, original SEC vintages or private backtest generations.",
+    "Index metadata is not historical listing-class or PIT-population evidence.",
+    "Bindings are observed only in the executing runtime; missing bindings do not prove missing secrets in another authorized environment."
+  ],
+  "codeHash": "75a55546d97a353f6615ee6125f4614f0762b267e331a65ab8d6e48374f30a7f"
+}

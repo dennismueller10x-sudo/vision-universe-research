@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "v8-archive-restore-provenance-1.0.0",
+  "firstAttempt": {
+    "runId": "40345969062",
+    "result": "CACHE_ACCESS_AND_DECRYPT_SUCCESS_ASSESSOR_BUDGET_FAILURE",
+    "passedAssessment": false
+  },
+  "firstCompletedAssessment": {
+    "runId": "40347386211",
+    "head": "d1dbcbf74ff30acd14bc6a60d881c549262cdf94",
+    "artifactId": 12661782382,
+    "artifactZipHash": "1e4dd2498cd4c35849939549f924e36c91acbbe74789d50a75ab3105c0b86d0d",
+    "reportHash": "845724903805803e2d6c168fd6271f6a6c6c954f7bc8907c36923701407001dc",
+    "artifact": "archive-assessment-initial.json.gz",
+    "coverage": {
+      "metadataDiscoveryComplete": true,
+      "discoveredFiles": 20228,
+      "discoveredBytes": 11771237597,
+      "processedBytes": 5133972415,
+      "opaqueFiles": 33,
+      "opaqueBytes": 775400832,
+      "candidateFiles": 20195,
+      "parsedFiles": 20091,
+      "oversizeSkipped": 76,
+      "compressedSkipped": 0,
+      "jsonParseFailures": 28,
+      "budgetEvents": [],
+      "state": "PARTIAL"
+    },
+    "summary": {
+      "files": 20228,
+      "bytes": 11771237597,
+      "dailySeries": 12492,
+      "actionCoherentSeries": 7614,
+      "additionalQualifiedWeeklySeries": 0
+    },
+    "recognizerScope": "Raw daily series, original companyfacts-shaped records; normalized factbook files parsed but their fields not counted until1.1.0",
+    "cacheRestores": {
+      "discover": {
+        "key": "discover-market-cache-40047253956",
+        "hit": true
+      },
+      "tiingo": {
+        "key": "tiingo2-encrypted-v1-main-39962041711",
+        "hit": true
+      },
+      "sec": {
+        "key": "sec-fundamentals-40087710308",
+        "hit": true
+      }
+    }
+  },
+  "noProviderRequests": true,
+  "rawDataPublished": false,
+  "productionApproved": false,
+  "normalizedAssessment": {
+    "runId": "40349290895",
+    "head": "e9c1b8d1e62e63121a8b5f7d1ba4aaddb14defd8",
+    "artifactId": 12662329322,
+    "artifactZipHash": "9117c882bf918146587cdd547f31c2e10e23619a21764c860b82b1c5baa6625a",
+    "reportHash": "bfcfa408bc829dfa7d2fce9a79dba58e4ac8f0cceaf5630697513d2c0b079cb1",
+    "artifact": "archive-assessment-normalized.json.gz",
+    "runtime": {
+      "nodeVersion": "22.23.3",
+      "v8Version": "12.4.254.21-node.57",
+      "platform": "linux",
+      "arch": "x64",
+      "glibcVersion": "2.39",
+      "nodeExecutableHash": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48"
+    },
+    "coverage": {
+      "metadataDiscoveryComplete": true,
+      "discoveredFiles": 20228,
+      "discoveredBytes": 11771237597,
+      "processedBytes": 5133972415,
+      "opaqueFiles": 33,
+      "opaqueBytes": 775400832,
+      "candidateFiles": 20195,
+      "parsedFiles": 20091,
+      "oversizeSkipped": 76,
+      "compressedSkipped": 0,
+      "jsonParseFailures": 28,
+      "budgetEvents": [],
+      "state": "PARTIAL"
+    },
+    "summary": {
+      "files": 20228,
+      "bytes": 11771237597,
+      "dailySeries": 12492,
+      "actionCoherentSeries": 7614,
+      "additionalQualifiedWeeklySeries": 0
+    },
+    "normalizedFactbooks": {
+      "files": 5481,
+      "sourceCompanyfactsHashBound": 5481,
+      "timelines": 8097124,
+      "observations": 19165389,
+      "restatedTimelines": 782206,
+      "missingAvailability": 0,
+      "dateOnlyAvailability": 331,
+      "exactAvailability": 19165058,
+      "availabilityBeforePeriodEnd": 911,
+      "provenanceAccessionPresent": 19165389,
+      "filingIndexEntries": 297864,
+      "filingIndexAcceptancePresent": 297864,
+      "qualityCounts": {
+        "MEDIUM": 1448592,
+        "HIGH": 17716797
+      },
+      "earliestAvailability": "2009-04-16T00:44:17.000Z",
+      "latestAvailability": "2026-10-24T01:03:44.000Z",
+      "earliestFiscalYear": 1968,
+      "latestFiscalYear": 43830,
+      "scope": "Stored normalized accession-specific timelines; missing first filings and original XBRL vintage completeness not established"
+    },
+    "originalTimingChecks": {
+      "accessions": 12,
+      "observations": 1607,
+      "matches": 1607,
+      "conflicts": 0,
+      "meaning": "Original acceptance timestamp parity only; not original numeric-value parity or full vintage completeness"
+    }
+  },
+  "r2IndexProbe": {
+    "runId": "40458303350",
+    "head": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+    "artifactId": 12712814622,
+    "artifactZipHash": "7468354f247d0bd3abcbaf4da85b4cfad26cb134b2ac2c0dd3f60d948ed5d0ba",
+    "reportHash": "cd2df7b938b482e97f4ea4ad1c1d6c79c0486c6747dd33e013c3b4d19112da1b",
+    "artifact": "r2-assessment.json",
+    "state": "READABLE_INDEX_PROVED",
+    "networkRequests": 3,
+    "actualDownloadedBytes": 471733,
+    "objectSizeCaveat": "HEADsize0isnotqualifiedastrueobjectsize; actualGETreceived471733bytes under independentstream cap.",
+    "rawPriceObjectsRead": 0,
+    "writes": 0,
+    "sampleRecords": 100
+  },
+  "finalCanonicalIdentityAssessment": {
+    "runId": "40458303350",
+    "head": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+    "artifactId": 12713388640,
+    "artifactZipHash": "5b2b502fa726180d90c200d758fc146c3ab0c914834c1bb51deda3886ee8c663",
+    "reportHash": "a9d18c9a4b3c17e3013625319d389c3c78c960f11be2bd84f581650ee15316d8",
+    "artifact": "archive-assessment.json.gz",
+    "runtime": {
+      "nodeVersion": "22.23.3",
+      "v8Version": "12.4.254.21-node.57",
+      "platform": "linux",
+      "arch": "x64",
+      "glibcVersion": "2.39",
+      "nodeExecutableHash": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48"
+    },
+    "coverage": {
+      "metadataDiscoveryComplete": true,
+      "discoveredFiles": 20228,
+      "discoveredBytes": 11771237597,
+      "processedBytes": 5133972415,
+      "opaqueFiles": 33,
+      "opaqueBytes": 775400832,
+      "candidateFiles": 20195,
+      "parsedFiles": 20091,
+      "oversizeSkipped": 76,
+      "compressedSkipped": 0,
+      "jsonParseFailures": 28,
+      "budgetEvents": [],
+      "state": "PARTIAL"
+    },
+    "summary": {
+      "files": 20228,
+      "bytes": 11771237597,
+      "dailySeries": 12492,
+      "actionCoherentSeries": 7614,
+      "additionalQualifiedWeeklySeries": 0
+    },
+    "normalizedFactbooks": {
+      "files": 5481,
+      "sourceCompanyfactsHashBound": 5481,
+      "timelines": 8097124,
+      "observations": 19165389,
+      "restatedTimelines": 782206,
+      "missingAvailability": 0,
+      "dateOnlyAvailability": 331,
+      "exactAvailability": 19165058,
+      "availabilityBeforePeriodEnd": 911,
+      "provenanceAccessionPresent": 19165389,
+      "filingIndexEntries": 297864,
+      "filingIndexAcceptancePresent": 297864,
+      "qualityCounts": {
+        "MEDIUM": 1448592,
+        "HIGH": 17716797
+      },
+      "earliestAvailability": "2009-04-16T00:44:17.000Z",
+      "latestAvailability": "2026-10-24T01:03:44.000Z",
+      "earliestFiscalYear": 1968,
+      "latestFiscalYear": 43830,
+      "scope": "Stored normalized accession-specific timelines; missing first filings and original XBRL vintage completeness not established"
+    },
+    "coreIdentitySourceHash": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+    "qualificationChangesFromPriorNormalizedScan": 0,
+    "meaning": "Correct core security-ID mapping and integrated Main; candidate holds remain unresolved, not reclassified for favorable status."
+  }
+}

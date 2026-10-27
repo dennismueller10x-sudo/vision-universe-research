@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "quant-v8-final-main-data-quality-1.0.0",
+  "generatedAt": "2026-10-27T12:12:19.763Z",
+  "head": "8a56478b1eda02bef146159a98548c67f86964f1",
+  "integratedMain": "1dfccf81d579da5f1da603e895b9dbe0ea5d4bd6",
+  "summaryLine": "VISION UNIVERSE DATA QUALITY  WARN  (Sitzung 2026-10-26, 2026-10-27T12:05:09.334Z)",
+  "state": "WARN",
+  "exitCode": 0,
+  "rules": [
+    {
+      "id": "DQ-ID-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "securityId folgt der kanonischen Regel",
+      "failed": 0,
+      "checked": 24904
+    },
+    {
+      "id": "DQ-ID-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Produktuniversum ohne doppelte Ticker/IDs",
+      "failed": 0,
+      "checked": 7803
+    },
+    {
+      "id": "DQ-ID-3",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ein aktives Symbol = ein aktives Instrument (Company Master)",
+      "failed": 0,
+      "checked": 7794
+    },
+    {
+      "id": "DQ-PX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Kursreihen sortiert, eindeutig, positiv, Kopf = Inhalt",
+      "failed": 0,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-2",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Kursreihen tragen die letzte Sitzung (2026-10-26)",
+      "failed": 93,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-3",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Keine unplausiblen Tagessprünge (>|60 %|) in split-bereinigten Reihen",
+      "failed": 302,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-4",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Tages- und Wochenreihe zeigen denselben Schlusskurs",
+      "failed": 0,
+      "checked": 6188
+    },
+    {
+      "id": "DQ-PX-5",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Aktienseite = letzter Schlusskurs der Reihe",
+      "failed": 0,
+      "checked": 6121
+    },
+    {
+      "id": "DQ-PR-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Discover-Aktienindex und Aktienseiten deckungsgleich",
+      "failed": 0,
+      "checked": 6121
+    },
+    {
+      "id": "DQ-PR-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ausgelieferte Datenpfade existieren (keine kaputten Charts)",
+      "failed": 0,
+      "checked": 8753
+    },
+    {
+      "id": "DQ-IX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Indexmitglieder sind aktive, geeignete Titel des Universums",
+      "failed": 0,
+      "checked": 626
+    },
+    {
+      "id": "DQ-TW-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Screener folgt Materialisierung und letzter Sitzung",
+      "failed": 0,
+      "checked": 1
+    },
+    {
+      "id": "DQ-TW-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Katalogfelder sind im Datensatz belegt",
+      "failed": 0,
+      "checked": 51
+    },
+    {
+      "id": "DQ-TW-3",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Schluss = Discover-Tagesreihe (eine Preiswahrheit)",
+      "failed": 0,
+      "checked": 5655
+    },
+    {
+      "id": "DQ-TW-4",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)",
+      "failed": 0,
+      "checked": 5657
+    }
+  ],
+  "errorRulesFailed": 0,
+  "warningRulesFailed": 2,
+  "logSha256": "76e2ce4e86ae56db0d8de01e2e6dd0edcca09d4f5a1c3f96aaca979742a262fb",
+  "resource": {
+    "command": [
+      "node",
+      "scripts/core/data-quality.mjs",
+      "--strict"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 71.91292783899917,
+    "maxRssKiB": 2041380,
+    "userSeconds": 45.915059,
+    "systemSeconds": 3.196802
+  },
+  "baselineComparison": {
+    "state": "IDENTICAL_TO_INTEGRATED_MAIN_FOR_CHECKED_PATHS",
+    "paths": [
+      "quant/data",
+      "discover/data",
+      "technical/data",
+      "core",
+      "scripts/core"
+    ]
+  },
+  "upstreamCanonicalRepairCommit": "6aa8f9757003397bd6524b79c9bd0bfdd9ff056c",
+  "interpretation": "The latest Main data remove both prior ERROR rules. Fourteen canonical weekly updates belong to upstream Main, not the V8 private source study. Remaining warnings are not waived. V8 made zero canonical data repairs.",
+  "priorFailedArtifact": "data-quality-latest-main.json",
+  "priorFailedArtifactSha256": "8204a80ac0901d197bec289854be3733d7fec4610c222a2e9972419b4f02935a",
+  "productionApproved": false,
+  "reportHash": "9717cebf1bbefba46cdfd606b2a7449166eeccce36d80473b521f245ffeb94f7"
+}

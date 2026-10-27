@@ -200,6 +200,12 @@ export async function buildRelease({root,output}){
   const {writeAvailability,AVAILABILITY_DIR}=await import('../core/stock-availability.mjs');
   writeAvailability({root,out:resolve(output,AVAILABILITY_DIR)});
  }catch(e){console.warn('STOCK_AVAILABILITY_SKIPPED',String(e&&e.message||e).slice(0,200));}
+ /* Watchlist-Uebersicht (scripts/watchlist/build-summary.mjs): eine gemeinsame Datei fuer alle persoenlichen Watchlists, nur in der
+    Auslieferung, nie committet. Faellt sie aus, zeigt /konto/watchlist/ je Abschnitt "nicht verfuegbar"; die Website bleibt ausgeliefert. */
+ try{
+  const {writeSummary,SUMMARY_DIR}=await import('../watchlist/build-summary.mjs');
+  writeSummary({root,out:resolve(output,SUMMARY_DIR)});
+ }catch(e){console.warn('WATCHLIST_SUMMARY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
   await mkdir(resolve(output,UNIVERSE_SHARD_DIR),{recursive:true});

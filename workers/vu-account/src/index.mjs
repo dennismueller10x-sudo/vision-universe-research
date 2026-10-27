@@ -18,6 +18,7 @@ import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
+import * as watchlist from './watchlist.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 
 // Gesundheit, oeffentlich und ohne Zahlen: Kuendigungen "ok" | "attention" | "unknown"
@@ -53,6 +54,11 @@ const ROUTES = [
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],
+  ['GET', '/v1/watchlist', watchlist.list],
+  ['POST', '/v1/watchlist/items', watchlist.add, {csrf: true}],
+  ['PATCH', '/v1/watchlist/items', watchlist.update, {csrf: true}],
+  ['POST', '/v1/watchlist/items/remove', watchlist.remove, {csrf: true}],
+  ['POST', '/v1/watchlist/import', watchlist.importItems, {csrf: true}],
   ['GET', '/v1/plans', billing.plans],
   ['GET', '/v1/entitlements/check', billing.entitlementCheck],
   ['POST', '/v1/billing/checkout', billing.checkout, {csrf: true}],

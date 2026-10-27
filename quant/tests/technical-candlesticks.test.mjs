@@ -25,7 +25,7 @@ function compare(roundTies) {
   for (const [t, title] of Object.entries(FX.titles)) {
     const ours = K.detect(title, { roundTies }).patterns;
     for (const p of K.PATTERNS) {
-      if (!p.ta) continue;
+      if (!p.ta || !FX.functions[p.id]) continue; /* Muster ab 1.1.0: technical-candlesticks-2.test.mjs */
       const s = (st[p.id] = st[p.id] || { both: 0, onlyUs: 0, onlyTa: 0, sign: 0, undecided: 0 });
       const ta = new Map(title.signals[p.id].map(([i, v]) => [i, Math.sign(v)]));
       const a = ours[p.id];
@@ -45,8 +45,8 @@ const rate = (s) => { const tot = s.both + s.onlyUs + s.onlyTa + s.sign; return 
 test("Fixture: TA-Lib 0.8.2, 38 Titel mit echten Tagesbars, alle 26 TA-Lib-Muster", () => {
   assert.equal(FX.libraryVersion, "0.8.2");
   assert.equal(Object.keys(FX.titles).length, 38);
-  assert.equal(K.PATTERNS.filter((p) => p.ta).length, 26);
-  for (const p of K.PATTERNS) if (p.ta) assert.equal(FX.functions[p.id], p.ta, p.id);
+  assert.equal(K.PATTERNS.filter((p) => p.ta && FX.functions[p.id]).length, 26);
+  for (const [id, fn] of Object.entries(FX.functions)) assert.equal(K.pattern(id).ta, fn, id);
 });
 
 test("(a) TA-Lib-Abgleich ohne Rundung: gleiche Regeln (≥ 99,5 % je Muster, nie verschiedene Richtung)", () => {
@@ -206,6 +206,6 @@ test("(c) Determinismus, Aufwaermphase, Wertebereich, Luecken", () => {
 test("(c) atCutoff liefert die Treffer der letzten Bar", () => {
   const list = K.atCutoff(REAL), r = K.detect(REAL).patterns, last = REAL.close.length - 1;
   assert.deepEqual(list.map((x) => x.id).sort(), K.PATTERNS.filter((p) => r[p.id][last] === 1 || r[p.id][last] === -1).map((p) => p.id).sort());
-  assert.equal(K.CANDLESTICKS_VERSION, "technical-candlesticks-1.0.0");
-  assert.equal(K.PATTERNS.length, 27);
+  assert.match(K.CANDLESTICKS_VERSION, /^technical-candlesticks-1\.\d+\.\d+$/);
+  assert.ok(K.PATTERNS.length >= 27);
 });
