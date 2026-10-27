@@ -18,6 +18,8 @@ import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, 
 import { psChartCandidate, PS_REFERENCE_CONFIG } from '../source-faithful/research/kk-ps-study.mjs';
 import { investorScreen, traderScreen } from '../source-faithful/methods/weinstein.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
+import { referenceFromBars } from './sf8-reference-fixture.mjs';
+import { truncateReference } from '../source-faithful/product/price-parity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -27,7 +29,10 @@ const READINESS = loadSf6Readiness();
 const CEIL = new Map(stageCeilings(READINESS).map((c) => [c.strategyId, c.maxStage]));
 const securities = () => F.securities.map((s) => ({ id: s.id, ticker: s.ticker, terminal: null, meta: structuredClone(s.meta), bars: s.cols.d.map((d, k) => ({ date: d, open: s.cols.o[k], high: s.cols.h[k], low: s.cols.l[k], close: s.cols.c[k], volume: s.cols.v[k] })) }));
 const WEEKLY = new Map(F.securities.map((s) => [s.id, s.weekly.map(([date, close]) => ({ date, close }))]));
-const run = (secs = securities(), asOf = F.asOf) => runPipeline({ securities: secs, asOf, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null, readiness: READINESS });
+// veröffentlichte Preiswahrheit (V4) aus den eingefrorenen, unveränderten Reihen; Abweichungen testet sf-sf8-price-parity
+const REFERENCE = new Map(securities().map((s) => [s.id, referenceFromBars(s)]));
+const refAt = (asOf) => (id) => truncateReference(REFERENCE.get(id) ?? null, asOf);
+const run = (secs = securities(), asOf = F.asOf) => runPipeline({ securities: secs, asOf, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null, priceReferenceOf: refAt(asOf), readiness: READINESS });
 const RES = run();
 const views = () => RES.strategies.flatMap((s) => s.detail.views);
 const records = () => RES.strategies.flatMap((s) => s.detail.records);
@@ -224,11 +229,11 @@ test('SF8-NEXT-SESSION-PLACEHOLDER-NO-LOOKAHEAD: Platzhalter der Folgesitzung = 
 
 test('SF8-PIT-ASOF: --as-of schneidet; spätere Balken ändern einen früheren Stichtag nicht', () => {
   const D = F.securities[0].cols.d.at(-6);
-  const base = runPipeline({ securities: truncateTo(securities(), D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null });
+  const base = runPipeline({ securities: truncateTo(securities(), D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null, priceReferenceOf: refAt(D) });
   const tampered = securities().map((s) => ({ ...s, bars: s.bars.map((b) => (b.date > D ? { ...b, high: b.high * 3, close: b.close * 3 } : b)) }));
   // auch ein künftiger Wochenschluss (nach D) darf nichts ändern (Review L4)
   const weeklyFuture = (id) => [...(WEEKLY.get(id) ?? []), { date: '2026-10-30', close: 1e6 }];
-  const again = runPipeline({ securities: truncateTo(tampered, D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: weeklyFuture });
+  const again = runPipeline({ securities: truncateTo(tampered, D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: weeklyFuture, priceReferenceOf: refAt(D) });
   assert.equal(JSON.stringify(base), JSON.stringify(again));
   for (const r of base.strategies.flatMap((s) => s.detail.records)) { assert.equal(r.asOf, D); assert.equal(r.pit.lastBarDate, D); assert.equal(r.pit.usesFutureBars, false); }
 });
