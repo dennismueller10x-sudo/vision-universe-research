@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "v8-latest-main-data-quality-1",
+  "head": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+  "integratedMain": "f10afd9666136810f0c9081db6ff4324d04065fe",
+  "summaryLine": "VISION UNIVERSE DATA QUALITY  FAIL  (Sitzung 2026-10-26, 2026-10-27T05:57:21.659Z)",
+  "state": "FAIL",
+  "exitCode": 2,
+  "rules": [
+    {
+      "id": "DQ-ID-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "securityId folgt der kanonischen Regel",
+      "failed": 0,
+      "checked": 24904
+    },
+    {
+      "id": "DQ-ID-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Produktuniversum ohne doppelte Ticker/IDs",
+      "failed": 0,
+      "checked": 7803
+    },
+    {
+      "id": "DQ-ID-3",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ein aktives Symbol = ein aktives Instrument (Company Master)",
+      "failed": 0,
+      "checked": 7794
+    },
+    {
+      "id": "DQ-PX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Kursreihen sortiert, eindeutig, positiv, Kopf = Inhalt",
+      "failed": 0,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-2",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Kursreihen tragen die letzte Sitzung (2026-10-26)",
+      "failed": 93,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-3",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Keine unplausiblen Tagesspr\u00fcnge (>|60 %|) in split-bereinigten Reihen",
+      "failed": 302,
+      "checked": 6679
+    },
+    {
+      "id": "DQ-PX-4",
+      "state": "FAIL",
+      "reportedSeverity": "ERROR",
+      "title": "Tages- und Wochenreihe zeigen denselben Schlusskurs",
+      "failed": 14,
+      "checked": 6188
+    },
+    {
+      "id": "DQ-PX-5",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Aktienseite = letzter Schlusskurs der Reihe",
+      "failed": 0,
+      "checked": 6121
+    },
+    {
+      "id": "DQ-PR-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Discover-Aktienindex und Aktienseiten deckungsgleich",
+      "failed": 0,
+      "checked": 6121
+    },
+    {
+      "id": "DQ-PR-2",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Ausgelieferte Datenpfade existieren (keine kaputten Charts)",
+      "failed": 0,
+      "checked": 8753
+    },
+    {
+      "id": "DQ-IX-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Indexmitglieder sind aktive, geeignete Titel des Universums",
+      "failed": 0,
+      "checked": 626
+    },
+    {
+      "id": "DQ-TW-1",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Screener folgt Materialisierung und letzter Sitzung",
+      "failed": 0,
+      "checked": 1
+    },
+    {
+      "id": "DQ-TW-2",
+      "state": "FAIL",
+      "reportedSeverity": "WARN",
+      "title": "Technical-Katalogfelder sind im Datensatz belegt",
+      "failed": 2,
+      "checked": 51
+    },
+    {
+      "id": "DQ-TW-3",
+      "state": "FAIL",
+      "reportedSeverity": "ERROR",
+      "title": "Technical-Schluss = Discover-Tagesreihe (eine Preiswahrheit)",
+      "failed": 13,
+      "checked": 5653
+    },
+    {
+      "id": "DQ-TW-4",
+      "state": "PASS",
+      "reportedSeverity": "PASS",
+      "title": "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)",
+      "failed": 0,
+      "checked": 5655
+    }
+  ],
+  "errorRulesFailed": 2,
+  "warningRulesFailed": 3,
+  "logSha256": "35607defc31014ffaa2a9614d0de5fbee980d5bbda179a5096cee4cae9b3d50f",
+  "resource": {
+    "command": [
+      "node",
+      "scripts/core/data-quality.mjs",
+      "--strict"
+    ],
+    "exitCode": 2,
+    "durationSeconds": 38.19713749099992,
+    "maxRssKiB": 1987936,
+    "userSeconds": 36.660752,
+    "systemSeconds": 2.347874
+  },
+  "baselineComparison": {
+    "state": "IDENTICAL_TO_INTEGRATED_MAIN_FOR_CHECKED_PATHS",
+    "paths": [
+      "quant/data",
+      "discover/data",
+      "technical/data",
+      "core",
+      "scripts/core"
+    ],
+    "command": "git diff --quiet f10afd9666136810f0c9081db6ff4324d04065fe -- quant/data discover/data technical/data core scripts/core"
+  },
+  "interpretation": "Existing latest Main cross-product data quality failures remain failures; no provider or production data writes, no weakened rule. As-of/adjustment-vintage differences are a diagnostic hypothesis, not a source-proven repair.",
+  "productionApproved": false
+}

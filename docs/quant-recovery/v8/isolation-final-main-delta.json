@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "quant-v8-final-main-isolation-delta-1.0.0",
+  "createdAt": "2026-10-27T12:05:44.033Z",
+  "head": "8a56478b1eda02bef146159a98548c67f86964f1",
+  "integratedMain": "1dfccf81d579da5f1da603e895b9dbe0ea5d4bd6",
+  "runtime": {
+    "node": "v22.23.4",
+    "v8": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibc": "2.41",
+    "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "jsonSyntax": {
+    "state": "PASS",
+    "files": 32354,
+    "scope": [
+      "quant/methodology",
+      "quant/data",
+      "quant/config"
+    ]
+  },
+  "manifest": {
+    "quant/tests/product-services.test.mjs": "862d7f69b7c86f7adcce342458101cdb39cff7358a60644dc5c3dbc4dcf1f938",
+    "quant/tests/backtest-artifact-consistency.test.mjs": "e327e37d4e519af8807fad87ab7b5ce6cb755e3e861a8445be56b0e674122789"
+  },
+  "checks": [
+    {
+      "suite": "quant/tests/product-services.test.mjs",
+      "testsExitCode": 0,
+      "violations": [],
+      "contentChanged": false,
+      "ok": true,
+      "explanation": "Der Lauf hat keine Produktionsdatei veraendert.",
+      "durationMs": 19895.042727,
+      "state": "PASS"
+    },
+    {
+      "suite": "quant/tests/backtest-artifact-consistency.test.mjs",
+      "testsExitCode": 0,
+      "violations": [],
+      "contentChanged": false,
+      "ok": true,
+      "explanation": "Der Lauf hat keine Produktionsdatei veraendert.",
+      "durationMs": 7298.602269000003,
+      "state": "PASS"
+    }
+  ],
+  "childTimeoutMs": 900000,
+  "state": "PASS",
+  "productionContentChanges": false,
+  "productionApproved": false,
+  "reportHash": "a8199a49feadca8bd41580317358897278013c671e00b407a03f2fbf8a27ccce"
+}
