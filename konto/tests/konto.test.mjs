@@ -79,7 +79,7 @@ test('Formatierung deutsch', () => {
 
 test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, keine Inline-Handler', () => {
   const list = pages();
-  assert.equal(list.length, 9);
+  assert.equal(list.length, 10);
   for (const p of list) {
     const html = readFileSync(p, 'utf8');
     const name = p.slice(ROOT.length) || '/';
@@ -105,7 +105,21 @@ test('Konten sind im Repository AUS: leerer Endpunkt', () => {
 });
 
 test('keine Serverdaten per innerHTML', () => {
-  const src = readFileSync(join(ROOT, 'konto.js'), 'utf8');
-  const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
-  assert.ok(!/innerHTML|insertAdjacentHTML|document\.write/.test(code));
+  for (const file of ['konto.js', 'watchlist.js']) {
+    const src = readFileSync(join(ROOT, file), 'utf8');
+    const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
+    assert.ok(!/innerHTML|insertAdjacentHTML|document\.write|outerHTML/.test(code), file);
+  }
+});
+
+test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesamtscore', () => {
+  const html = readFileSync(join(ROOT, 'watchlist/index.html'), 'utf8'), js = readFileSync(join(ROOT, 'watchlist.js'), 'utf8');
+  assert.ok(html.indexOf('/core/watchlist-view.js') < html.indexOf('/konto/watchlist.js'), 'Ansichtsregeln vor der Seite');
+  assert.match(js, /W\.load\(fetchJson/, 'Kennzahlen nur ueber core/watchlist-view.js#load');
+  assert.match(js, /W\.PATHS\.names/, 'Namensverzeichnis nur bei Bedarf');
+  assert.ok(!/compositeScore|quantScore|universeRank/.test(js), 'kein Gesamtscore oder Rang im Browser');
+  assert.match(html, /Gesamtscore ist nicht freigegeben/);
+  for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html', 'watchlist/index.html']) {
+    assert.match(readFileSync(join(ROOT, p), 'utf8'), /<a href="\/konto\/watchlist\/"( aria-current="page")?>Watchlist<\/a>/, p);
+  }
 });

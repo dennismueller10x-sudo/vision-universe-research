@@ -2,7 +2,7 @@
    VISION UNIVERSE TECHNICAL — candlesticks.js
    CANDLESTICK-MUSTERBIBLIOTHEK (L4, docs/technical/CANDLESTICKS.md)
 
-   Erkennt etablierte Ein-, Zwei-, Drei- und Fuenfkerzenmuster nach Nison
+   Erkennt etablierte Ein- bis Fuenfkerzenmuster nach Nison
    bzw. Morris. Die Schwellen sind relativ zur juengeren Kerzenhistorie und
    folgen den dokumentierten Standardeinstellungen von TA-Lib (CandleSettings),
    damit die Erkennung gegen eine fremde Implementierung messbar ist:
@@ -31,6 +31,14 @@
    einer benutzten Kerze). Das Signal steht an der LETZTEN Kerze des Musters.
    Kausal: Bar i nutzt nur Bars ≤ i. Keine Zufallsquellen, keine Uhrzeit.
 
+   Ab 1.1.0 (31 weitere Muster, z. B. Hikkake, Mat Hold, Tasuki Gap) folgen die
+   Regeln Bar fuer Bar den TA-Lib-Funktionen (CDL*), einschliesslich ihrer
+   Eigenheiten (Tri-Star misst alle drei Doji am Doji-Mass der ersten Kerze,
+   Mat Hold mit Eindringtiefe 0,5). Hikkake ist in TA-Lib zustandsbehaftet
+   (Muster ±100, Bestaetigung ±200 bis 3 Bars spaeter); hier wird der Zustand
+   aus den letzten 6 Bars neu bestimmt (`span`), die Bestaetigungskerze traegt
+   das Vorzeichen des Musters.
+
    Kontext: Die Kerzenform allein ist das Muster. Ein vorausgehender Trend
    wird nur dort verlangt, wo die Definition ihn enthaelt (Hammer/Hanging
    Man: Lage zum Vortagestief bzw. -hoch; Inverted Hammer/Shooting Star:
@@ -41,7 +49,9 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var CANDLESTICKS_VERSION = "technical-candlesticks-1.0.0";
+  var CANDLESTICKS_VERSION = "technical-candlesticks-1.1.0";
+  /* Mat Hold: hoechstes Eindringen der Zwischenkerzen in den ersten Koerper (TA-Lib optInPenetration, Standard 0,5). */
+  var MATHOLD_PENETRATION = 0.5;
 
   var SETTINGS = {
     BodyLong: { range: "body", period: 10, factor: 1.0 },
@@ -285,12 +295,270 @@
         for (var k = k1; k <= k3; k++) if (!(x.bottom(k) < x.h[a] && x.top(k) > x.l[a])) return 0;
         if (!(c[k2] * d < c[k1] * d && c[k3] * d < c[k2] * d && o[i] * d > c[k3] * d && c[i] * d > c[a] * d)) return 0;
         return d;
+      } },
+    /* ---------- ab 1.1.0: weitere 31 TA-Lib-Muster (Regeln wie TA-Lib, ohne Trendpruefung, wie dort) ---------- */
+    { id: "twoCrows", name: "Two Crows", candles: 3, direction: "bearish", ta: "CDL2CROWS", uses: [[2, "BodyLong"]],
+      rule: "lange weisse Kerze, schwarze Kerze mit Koerperluecke nach oben, schwarze Kerze mit Eroeffnung im zweiten Koerper und Schluss im ersten Koerper",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c;
+        return x.color(a) === 1 && x.body[a] > x.avg("BodyLong", a) && x.color(b) === -1 && bodyGapUp(x, b, a) &&
+          x.color(i) === -1 && o[i] < o[b] && o[i] > c[b] && c[i] > o[a] && c[i] < c[a] ? -1 : 0;
+      } },
+    { id: "threeLineStrike", name: "Three-Line Strike", candles: 4, direction: "both", ta: "CDL3LINESTRIKE", uses: [[3, "Near"], [2, "Near"]],
+      rule: "drei gleichfarbige Kerzen mit steigenden (weiss) bzw. fallenden (schwarz) Schluessen, die zweite und dritte eroeffnen im oder nahe am Vorkoerper (± Near), vierte Gegenkerze eroeffnet jenseits des dritten Schlusses und schliesst jenseits der ersten Eroeffnung; Vorzeichen = Farbe der dritten Kerze (TA-Lib-Konvention)",
+      fn: function (x, i) {
+        var a = i - 3, b = i - 2, d = i - 1, o = x.o, c = x.c, na = x.avg("Near", a), nb = x.avg("Near", b);
+        if (!(x.color(a) === x.color(b) && x.color(b) === x.color(d) && x.color(i) === -x.color(d))) return 0;
+        if (!(o[b] >= x.bottom(a) - na && o[b] <= x.top(a) + na && o[d] >= x.bottom(b) - nb && o[d] <= x.top(b) + nb)) return 0;
+        if (x.color(d) === 1 && c[d] > c[b] && c[b] > c[a] && o[i] > c[d] && c[i] < o[a]) return 1;
+        if (x.color(d) === -1 && c[d] < c[b] && c[b] < c[a] && o[i] < c[d] && c[i] > o[a]) return -1;
+        return 0;
+      } },
+    { id: "threeStarsInSouth", name: "Three Stars in the South", candles: 3, direction: "bullish", ta: "CDL3STARSINSOUTH",
+      uses: [[2, "BodyLong"], [2, "ShadowLong"], [1, "ShadowVeryShort"], [0, "ShadowVeryShort"], [0, "BodyShort"]],
+      rule: "drei schwarze Kerzen: lange erste mit langem unterem Schatten (> Koerper); zweite kleiner, eroeffnet ueber dem ersten Schluss bis zum ersten Hoch, Tief unter dem ersten Schluss, aber nicht unter dem ersten Tief, unterer Schatten nicht sehr kurz; dritte kurz ohne nennenswerte Schatten innerhalb der Spanne der zweiten",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, h = x.h, l = x.l, c = x.c, s1 = x.avg("ShadowVeryShort", b), s0 = x.avg("ShadowVeryShort", i);
+        return x.color(a) === -1 && x.color(b) === -1 && x.color(i) === -1 && x.body[a] > x.avg("BodyLong", a) && x.lo[a] > x.avg("ShadowLong", a) &&
+          x.body[b] < x.body[a] && o[b] > c[a] && o[b] <= h[a] && l[b] < c[a] && l[b] >= l[a] && x.lo[b] > s1 &&
+          x.body[i] < x.avg("BodyShort", i) && x.lo[i] < s0 && x.up[i] < s0 && l[i] > l[b] && h[i] < h[b] ? 1 : 0;
+      } },
+    { id: "advanceBlock", name: "Advance Block", candles: 3, direction: "bearish", ta: "CDLADVANCEBLOCK",
+      uses: [[2, "Near"], [1, "Near"], [2, "Far"], [1, "Far"], [2, "BodyLong"], [2, "ShadowShort"], [1, "ShadowShort"], [0, "ShadowShort"], [0, "ShadowLong"]],
+      rule: "drei weisse Kerzen mit steigenden Schluessen, jede eroeffnet im oder knapp ueber dem Vorkoerper (≤ Near), erste lang mit kurzem oberem Schatten; Schwaeche: Koerper schrumpfen deutlich (Far/Near) oder die spaeteren Kerzen haben lange obere Schatten (ShadowShort bzw. ShadowLong) – Kombination wie TA-Lib",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c, B = x.body;
+        if (!(x.color(a) === 1 && x.color(b) === 1 && x.color(i) === 1 && c[i] > c[b] && c[b] > c[a] && o[b] > o[a] && o[b] <= c[a] + x.avg("Near", a) &&
+          o[i] > o[b] && o[i] <= c[b] + x.avg("Near", b) && B[a] > x.avg("BodyLong", a) && x.up[a] < x.avg("ShadowShort", a))) return 0;
+        var weak = (B[b] < B[a] - x.avg("Far", a) && B[i] < B[b] + x.avg("Near", b)) || B[i] < B[b] - x.avg("Far", b) ||
+          (B[i] < B[b] && B[b] < B[a] && (x.up[i] > x.avg("ShadowShort", i) || x.up[b] > x.avg("ShadowShort", b))) ||
+          (B[i] < B[b] && x.up[i] > x.avg("ShadowLong", i));
+        return weak ? -1 : 0;
+      } },
+    { id: "beltHold", name: "Belt Hold", candles: 1, direction: "both", ta: "CDLBELTHOLD", uses: [[0, "BodyLong"], [0, "ShadowVeryShort"]],
+      rule: "langer Koerper, der an seinem Extrem eroeffnet: weiss ohne nennenswerten unteren, schwarz ohne nennenswerten oberen Schatten (< ShadowVeryShort); Richtung = Farbe",
+      fn: function (x, i) {
+        var s = x.avg("ShadowVeryShort", i);
+        if (!(x.body[i] > x.avg("BodyLong", i))) return 0;
+        return (x.color(i) === 1 && x.lo[i] < s) || (x.color(i) === -1 && x.up[i] < s) ? x.color(i) : 0;
+      } },
+    { id: "breakaway", name: "Breakaway", candles: 5, direction: "both", ta: "CDLBREAKAWAY", uses: [[4, "BodyLong"]],
+      rule: "lange Kerze, gleichfarbige zweite mit Koerperluecke in Trendrichtung, dritte und vierte setzen mit Hoch und Tief fort (vierte gleichfarbig), fuenfte Gegenkerze schliesst in der Luecke zwischen erstem Schluss und zweiter Eroeffnung; Richtung = Farbe der fuenften",
+      fn: function (x, i) {
+        var a = i - 4, b = i - 3, k = i - 2, d = i - 1, o = x.o, h = x.h, l = x.l, c = x.c;
+        if (!(x.color(a) === x.color(b) && x.color(b) === x.color(d) && x.color(d) === -x.color(i) && x.body[a] > x.avg("BodyLong", a))) return 0;
+        if (x.color(a) === -1 && bodyGapDown(x, b, a) && h[k] < h[b] && l[k] < l[b] && h[d] < h[k] && l[d] < l[k] && c[i] > o[b] && c[i] < c[a]) return x.color(i);
+        if (x.color(a) === 1 && bodyGapUp(x, b, a) && h[k] > h[b] && l[k] > l[b] && h[d] > h[k] && l[d] > l[k] && c[i] < o[b] && c[i] > c[a]) return x.color(i);
+        return 0;
+      } },
+    { id: "closingMarubozu", name: "Closing Marubozu", candles: 1, direction: "both", ta: "CDLCLOSINGMARUBOZU", uses: [[0, "BodyLong"], [0, "ShadowVeryShort"]],
+      rule: "langer Koerper, der an seinem Extrem schliesst: weiss ohne nennenswerten oberen, schwarz ohne nennenswerten unteren Schatten (< ShadowVeryShort); Richtung = Farbe",
+      fn: function (x, i) {
+        var s = x.avg("ShadowVeryShort", i);
+        if (!(x.body[i] > x.avg("BodyLong", i))) return 0;
+        return (x.color(i) === 1 && x.up[i] < s) || (x.color(i) === -1 && x.lo[i] < s) ? x.color(i) : 0;
+      } },
+    { id: "concealingBabySwallow", name: "Concealing Baby Swallow", candles: 4, direction: "bullish", ta: "CDLCONCEALBABYSWALL",
+      uses: [[3, "ShadowVeryShort"], [2, "ShadowVeryShort"], [1, "ShadowVeryShort"]],
+      rule: "vier schwarze Kerzen: zwei schwarze Marubozu (Schatten < ShadowVeryShort), dritte mit Koerperluecke nach unten und langem oberem Schatten bis in den zweiten Koerper, vierte umschliesst die dritte samt Schatten",
+      fn: function (x, i) {
+        var a = i - 3, b = i - 2, d = i - 1, sa = x.avg("ShadowVeryShort", a), sb = x.avg("ShadowVeryShort", b);
+        return x.color(a) === -1 && x.color(b) === -1 && x.color(d) === -1 && x.color(i) === -1 &&
+          x.lo[a] < sa && x.up[a] < sa && x.lo[b] < sb && x.up[b] < sb && bodyGapDown(x, d, b) &&
+          x.up[d] > x.avg("ShadowVeryShort", d) && x.h[d] > x.c[b] && x.h[i] > x.h[d] && x.l[i] < x.l[d] ? 1 : 0;
+      } },
+    { id: "counterattack", name: "Counterattack", candles: 2, direction: "both", ta: "CDLCOUNTERATTACK", uses: [[1, "BodyLong"], [0, "BodyLong"], [1, "Equal"]],
+      rule: "zwei lange gegenfarbige Kerzen mit (fast) gleichem Schluss (± Equal); Richtung = Farbe der zweiten",
+      fn: function (x, i) {
+        var b = i - 1, e = x.avg("Equal", b);
+        return x.color(b) === -x.color(i) && x.body[b] > x.avg("BodyLong", b) && x.body[i] > x.avg("BodyLong", i) &&
+          x.c[i] <= x.c[b] + e && x.c[i] >= x.c[b] - e ? x.color(i) : 0;
+      } },
+    { id: "dojiStar", name: "Doji Star", candles: 2, direction: "both", ta: "CDLDOJISTAR", uses: [[1, "BodyLong"], [0, "BodyDoji"]],
+      rule: "lange Kerze, dann Doji mit Koerperluecke in ihrer Richtung; Richtung = Gegenfarbe der ersten",
+      fn: function (x, i) {
+        var b = i - 1;
+        if (!(x.body[b] > x.avg("BodyLong", b) && x.body[i] <= x.avg("BodyDoji", i))) return 0;
+        return (x.color(b) === 1 && bodyGapUp(x, i, b)) || (x.color(b) === -1 && bodyGapDown(x, i, b)) ? -x.color(b) : 0;
+      } },
+    { id: "gapSideBySideWhite", name: "Gap Side-by-Side White Lines", candles: 3, direction: "both", ta: "CDLGAPSIDESIDEWHITE", uses: [[1, "Near"], [1, "Equal"]],
+      rule: "zwei weisse Kerzen nebeneinander, beide mit Koerperluecke zur ersten Kerze (oben: bullisch, unten: baerisch), Koerper aehnlich (± Near), Eroeffnungen gleich (± Equal)",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, n = x.avg("Near", b), e = x.avg("Equal", b), up = bodyGapUp(x, b, a) && bodyGapUp(x, i, a);
+        if (!(up || (bodyGapDown(x, b, a) && bodyGapDown(x, i, a)))) return 0;
+        return x.color(b) === 1 && x.color(i) === 1 && x.body[i] >= x.body[b] - n && x.body[i] <= x.body[b] + n &&
+          x.o[i] >= x.o[b] - e && x.o[i] <= x.o[b] + e ? (bodyGapUp(x, b, a) ? 1 : -1) : 0;
+      } },
+    { id: "highWave", name: "High Wave", candles: 1, direction: "neutral", ta: "CDLHIGHWAVE", uses: [[0, "BodyShort"], [0, "ShadowVeryLong"]],
+      rule: "kurzer Koerper (< BodyShort), beide Schatten laenger als der doppelte Koerper (ShadowVeryLong); Vorzeichen = Farbe (TA-Lib-Konvention)",
+      fn: function (x, i) {
+        var s = x.avg("ShadowVeryLong", i);
+        return x.body[i] < x.avg("BodyShort", i) && x.up[i] > s && x.lo[i] > s ? x.color(i) : 0;
+      } },
+    { id: "hikkake", name: "Hikkake", candles: 3, span: 6, direction: "both", ta: "CDLHIKKAKE", uses: [],
+      rule: "Innenstab, dann Ausbruch mit Hoch und Tief zur selben Seite: nach unten bullisch, nach oben baerisch (TA-Lib ±100). Bestaetigung (TA-Lib ±200): Schluss innerhalb der drei folgenden Bars jenseits des Hochs (bullisch) bzw. Tiefs (baerisch) des Innenstabs; gilt nur die erste Bestaetigung des juengsten Musters, ein neues Muster ersetzt das alte. Die Bestaetigungskerze traegt hier dasselbe Vorzeichen wie das Muster (+1/−1); die Bibliothek unterscheidet Muster und Bestaetigung nicht im Wert",
+      fn: function (x, i) {
+        var h = x.h, l = x.l, c = x.c;
+        function hk(k) {
+          if (!(h[k - 1] < h[k - 2] && l[k - 1] > l[k - 2])) return 0;
+          if (h[k] < h[k - 1] && l[k] < l[k - 1]) return 1;
+          if (h[k] > h[k - 1] && l[k] > l[k - 1]) return -1;
+          return 0;
+        }
+        var s = hk(i);
+        if (s) return s;
+        /* Zustand wie TA-Lib ohne Gedaechtnis: juengstes Muster p in den drei Vorbars, noch nicht bestaetigt. */
+        for (var p = i - 1; p >= i - 3; p--) {
+          var sp = hk(p);
+          if (!sp) continue;
+          /* Bestaetigt, wenn der Schluss das Hoch (bullisch) bzw. Tief (baerisch) des Innenstabs p − 1 durchbricht; nur die erste zaehlt. */
+          for (var k = p + 1; k <= i; k++) if (sp > 0 ? c[k] > h[p - 1] : c[k] < l[p - 1]) return k === i ? sp : 0;
+          return 0;
+        }
+        return 0;
+      } },
+    { id: "homingPigeon", name: "Homing Pigeon", candles: 2, direction: "bullish", ta: "CDLHOMINGPIGEON", uses: [[1, "BodyLong"], [0, "BodyShort"]],
+      rule: "lange schwarze Kerze, dann kurze schwarze Kerze (≤ BodyShort) mit Koerper innerhalb des ersten (Eroeffnung tiefer, Schluss hoeher)",
+      fn: function (x, i) {
+        var b = i - 1;
+        return x.color(b) === -1 && x.color(i) === -1 && x.body[b] > x.avg("BodyLong", b) && x.body[i] <= x.avg("BodyShort", i) &&
+          x.o[i] < x.o[b] && x.c[i] > x.c[b] ? 1 : 0;
+      } },
+    { id: "identicalThreeCrows", name: "Identical Three Crows", candles: 3, direction: "bearish", ta: "CDLIDENTICAL3CROWS",
+      uses: [[2, "ShadowVeryShort"], [1, "ShadowVeryShort"], [0, "ShadowVeryShort"], [2, "Equal"], [1, "Equal"]],
+      rule: "drei schwarze Kerzen mit fallenden Schluessen und sehr kurzen unteren Schatten, die zweite und dritte eroeffnen (fast) am Vortagesschluss (± Equal)",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c, ea = x.avg("Equal", a), eb = x.avg("Equal", b);
+        return x.color(a) === -1 && x.lo[a] < x.avg("ShadowVeryShort", a) && x.color(b) === -1 && x.lo[b] < x.avg("ShadowVeryShort", b) &&
+          x.color(i) === -1 && x.lo[i] < x.avg("ShadowVeryShort", i) && c[a] > c[b] && c[b] > c[i] &&
+          o[b] <= c[a] + ea && o[b] >= c[a] - ea && o[i] <= c[b] + eb && o[i] >= c[b] - eb ? -1 : 0;
+      } },
+    { id: "inNeck", name: "In-Neck", candles: 2, direction: "bearish", ta: "CDLINNECK", uses: [[1, "BodyLong"], [1, "Equal"]],
+      rule: "lange schwarze Kerze, weisse Kerze eroeffnet unter deren Tief und schliesst am oder knapp ueber deren Schluss (≤ Schluss + Equal)",
+      fn: function (x, i) {
+        var b = i - 1;
+        return x.color(b) === -1 && x.body[b] > x.avg("BodyLong", b) && x.color(i) === 1 && x.o[i] < x.l[b] &&
+          x.c[i] <= x.c[b] + x.avg("Equal", b) && x.c[i] >= x.c[b] ? -1 : 0;
+      } },
+    { id: "ladderBottom", name: "Ladder Bottom", candles: 5, direction: "bullish", ta: "CDLLADDERBOTTOM", uses: [[1, "ShadowVeryShort"]],
+      rule: "drei schwarze Kerzen mit fallenden Eroeffnungen und Schluessen, vierte schwarz mit oberem Schatten (> ShadowVeryShort), fuenfte weiss eroeffnet ueber der vierten Eroeffnung und schliesst ueber deren Hoch",
+      fn: function (x, i) {
+        var o = x.o, c = x.c, d = i - 1;
+        return x.color(i - 4) === -1 && x.color(i - 3) === -1 && x.color(i - 2) === -1 && o[i - 4] > o[i - 3] && o[i - 3] > o[i - 2] &&
+          c[i - 4] > c[i - 3] && c[i - 3] > c[i - 2] && x.color(d) === -1 && x.up[d] > x.avg("ShadowVeryShort", d) &&
+          x.color(i) === 1 && o[i] > o[d] && c[i] > x.h[d] ? 1 : 0;
+      } },
+    { id: "matchingLow", name: "Matching Low", candles: 2, direction: "bullish", ta: "CDLMATCHINGLOW", uses: [[1, "Equal"]],
+      rule: "zwei schwarze Kerzen mit (fast) gleichem Schluss (± Equal)",
+      fn: function (x, i) {
+        var b = i - 1, e = x.avg("Equal", b);
+        return x.color(b) === -1 && x.color(i) === -1 && x.c[i] <= x.c[b] + e && x.c[i] >= x.c[b] - e ? 1 : 0;
+      } },
+    { id: "matHold", name: "Mat Hold", candles: 5, direction: "bullish", ta: "CDLMATHOLD",
+      uses: [[4, "BodyLong"], [3, "BodyShort"], [2, "BodyShort"], [1, "BodyShort"]],
+      rule: "lange weisse Kerze, kurze schwarze mit Koerperluecke nach oben, zwei weitere kurze Kerzen fallend, die hoechstens 50 % in den ersten Koerper eindringen (TA-Lib-Standard penetration 0,5), fuenfte weiss eroeffnet ueber dem vierten Schluss und schliesst ueber den Hochs der Kerzen 2–4",
+      fn: function (x, i) {
+        var a = i - 4, b = i - 3, k = i - 2, d = i - 1, o = x.o, c = x.c, h = x.h, floor = c[a] - x.body[a] * MATHOLD_PENETRATION;
+        return x.color(a) === 1 && x.color(b) === -1 && x.color(i) === 1 && bodyGapUp(x, b, a) &&
+          x.bottom(k) < c[a] && x.bottom(d) < c[a] && x.bottom(k) > floor && x.bottom(d) > floor &&
+          x.top(k) < o[b] && x.top(d) < x.top(k) && o[i] > c[d] && c[i] > Math.max(h[b], h[k], h[d]) &&
+          x.body[a] > x.avg("BodyLong", a) && x.body[b] < x.avg("BodyShort", b) && x.body[k] < x.avg("BodyShort", k) && x.body[d] < x.avg("BodyShort", d) ? 1 : 0;
+      } },
+    { id: "onNeck", name: "On-Neck", candles: 2, direction: "bearish", ta: "CDLONNECK", uses: [[1, "BodyLong"], [1, "Equal"]],
+      rule: "lange schwarze Kerze, weisse Kerze eroeffnet unter deren Tief und schliesst (fast) an diesem Tief (± Equal)",
+      fn: function (x, i) {
+        var b = i - 1, e = x.avg("Equal", b);
+        return x.color(b) === -1 && x.body[b] > x.avg("BodyLong", b) && x.color(i) === 1 && x.o[i] < x.l[b] &&
+          x.c[i] <= x.l[b] + e && x.c[i] >= x.l[b] - e ? -1 : 0;
+      } },
+    { id: "rickshawMan", name: "Rickshaw Man", candles: 1, direction: "neutral", ta: "CDLRICKSHAWMAN", uses: [[0, "BodyDoji"], [0, "ShadowLong"], [0, "Near"]],
+      rule: "Doji mit zwei langen Schatten (> Koerper), Koerper nahe der Spannenmitte (± Near)",
+      fn: function (x, i) {
+        var s = x.avg("ShadowLong", i), n = x.avg("Near", i), mid = x.l[i] + (x.h[i] - x.l[i]) / 2;
+        return x.body[i] <= x.avg("BodyDoji", i) && x.lo[i] > s && x.up[i] > s && x.bottom(i) <= mid + n && x.top(i) >= mid - n ? 1 : 0;
+      } },
+    { id: "separatingLines", name: "Separating Lines", candles: 2, direction: "both", ta: "CDLSEPARATINGLINES", uses: [[1, "Equal"], [0, "BodyLong"], [0, "ShadowVeryShort"]],
+      rule: "Gegenkerze eroeffnet (fast) an der Vortageseroeffnung (± Equal), langer Koerper, der an seinem Extrem eroeffnet (Belt Hold); Richtung = Farbe der zweiten",
+      fn: function (x, i) {
+        var b = i - 1, e = x.avg("Equal", b), s = x.avg("ShadowVeryShort", i);
+        if (!(x.color(b) === -x.color(i) && x.o[i] <= x.o[b] + e && x.o[i] >= x.o[b] - e && x.body[i] > x.avg("BodyLong", i))) return 0;
+        return (x.color(i) === 1 && x.lo[i] < s) || (x.color(i) === -1 && x.up[i] < s) ? x.color(i) : 0;
+      } },
+    { id: "stalledPattern", name: "Stalled Pattern", candles: 3, direction: "bearish", ta: "CDLSTALLEDPATTERN",
+      uses: [[2, "BodyLong"], [1, "BodyLong"], [1, "ShadowVeryShort"], [2, "Near"], [1, "Near"], [0, "BodyShort"]],
+      rule: "zwei lange weisse Kerzen mit steigendem Schluss (zweite ohne nennenswerten oberen Schatten, eroeffnet im oder knapp ueber dem ersten Koerper), dann kurze weisse Kerze, die am oberen Ende des zweiten Koerpers aufsitzt",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c;
+        return x.color(a) === 1 && x.color(b) === 1 && x.color(i) === 1 && c[i] > c[b] && c[b] > c[a] &&
+          x.body[a] > x.avg("BodyLong", a) && x.body[b] > x.avg("BodyLong", b) && x.up[b] < x.avg("ShadowVeryShort", b) &&
+          o[b] > o[a] && o[b] <= c[a] + x.avg("Near", a) && x.body[i] < x.avg("BodyShort", i) &&
+          o[i] >= c[b] - x.body[i] - x.avg("Near", b) ? -1 : 0;
+      } },
+    { id: "stickSandwich", name: "Stick Sandwich", candles: 3, direction: "bullish", ta: "CDLSTICKSANDWICH", uses: [[2, "Equal"]],
+      rule: "schwarz, weiss mit Tief ueber dem ersten Schluss, schwarz mit (fast) gleichem Schluss wie die erste (± Equal)",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, e = x.avg("Equal", a);
+        return x.color(a) === -1 && x.color(b) === 1 && x.color(i) === -1 && x.l[b] > x.c[a] &&
+          x.c[i] <= x.c[a] + e && x.c[i] >= x.c[a] - e ? 1 : 0;
+      } },
+    { id: "takuri", name: "Takuri", candles: 1, direction: "bullish", ta: "CDLTAKURI", uses: [[0, "BodyDoji"], [0, "ShadowVeryShort"], [0, "ShadowVeryLong"]],
+      rule: "Doji ohne nennenswerten oberen Schatten (< ShadowVeryShort) mit sehr langem unterem Schatten (> doppelter Koerper, ShadowVeryLong)",
+      fn: function (x, i) {
+        return x.body[i] <= x.avg("BodyDoji", i) && x.up[i] < x.avg("ShadowVeryShort", i) && x.lo[i] > x.avg("ShadowVeryLong", i) ? 1 : 0;
+      } },
+    { id: "tasukiGap", name: "Tasuki Gap", candles: 3, direction: "both", ta: "CDLTASUKIGAP", uses: [[1, "Near"]],
+      rule: "Koerperluecke zwischen erster und zweiter Kerze, zweite in Luecken-Richtung gefaerbt, dritte Gegenkerze eroeffnet im zweiten Koerper und schliesst in der Luecke, ohne sie zu schliessen; Koerper der zweiten und dritten aehnlich (Differenz < Near); Richtung = Farbe der zweiten",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c, n = x.avg("Near", b), same = Math.abs(x.body[b] - x.body[i]) < n;
+        if (bodyGapUp(x, b, a) && x.color(b) === 1 && x.color(i) === -1 && o[i] < c[b] && o[i] > o[b] && c[i] < o[b] && c[i] > x.top(a) && same) return 1;
+        if (bodyGapDown(x, b, a) && x.color(b) === -1 && x.color(i) === 1 && o[i] < o[b] && o[i] > c[b] && c[i] > o[b] && c[i] < x.bottom(a) && same) return -1;
+        return 0;
+      } },
+    { id: "thrusting", name: "Thrusting", candles: 2, direction: "bearish", ta: "CDLTHRUSTING", uses: [[1, "BodyLong"], [1, "Equal"]],
+      rule: "lange schwarze Kerze, weisse Kerze eroeffnet unter deren Tief und schliesst deutlich ueber deren Schluss (> Schluss + Equal), aber hoechstens in der Koerpermitte",
+      fn: function (x, i) {
+        var b = i - 1;
+        return x.color(b) === -1 && x.body[b] > x.avg("BodyLong", b) && x.color(i) === 1 && x.o[i] < x.l[b] &&
+          x.c[i] > x.c[b] + x.avg("Equal", b) && x.c[i] <= x.c[b] + x.body[b] * 0.5 ? -1 : 0;
+      } },
+    { id: "triStar", name: "Tri-Star", candles: 3, direction: "both", ta: "CDLTRISTAR", uses: [[2, "BodyDoji"]],
+      rule: "drei Doji (alle gegen das Doji-Mass der ersten Kerze, wie TA-Lib), mittlerer mit Koerperluecke: nach oben und dritter tiefer → baerisch, nach unten und dritter hoeher → bullisch",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, d = x.avg("BodyDoji", a), r = 0;
+        if (!(x.body[a] <= d && x.body[b] <= d && x.body[i] <= d)) return 0;
+        if (bodyGapUp(x, b, a) && x.top(i) < x.top(b)) r = -1;
+        if (bodyGapDown(x, b, a) && x.bottom(i) > x.bottom(b)) r = 1;
+        return r;
+      } },
+    { id: "uniqueThreeRiver", name: "Unique Three River", candles: 3, direction: "bullish", ta: "CDLUNIQUE3RIVER", uses: [[2, "BodyLong"], [0, "BodyShort"]],
+      rule: "lange schwarze Kerze, schwarzer Harami-Koerper mit tieferem Tief, kurze weisse Kerze eroeffnet ueber diesem Tief",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1;
+        return x.color(a) === -1 && x.color(b) === -1 && x.color(i) === 1 && x.c[b] > x.c[a] && x.o[b] <= x.o[a] && x.l[b] < x.l[a] &&
+          x.o[i] > x.l[b] && x.body[a] > x.avg("BodyLong", a) && x.body[i] < x.avg("BodyShort", i) ? 1 : 0;
+      } },
+    { id: "upsideGapTwoCrows", name: "Upside Gap Two Crows", candles: 3, direction: "bearish", ta: "CDLUPSIDEGAP2CROWS", uses: [[2, "BodyLong"], [1, "BodyShort"]],
+      rule: "lange weisse Kerze, kurze schwarze mit Koerperluecke nach oben, schwarze Kerze umschliesst den zweiten Koerper und schliesst noch ueber dem ersten Schluss",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1;
+        return x.color(a) === 1 && x.body[a] > x.avg("BodyLong", a) && x.color(b) === -1 && x.body[b] <= x.avg("BodyShort", b) && bodyGapUp(x, b, a) &&
+          x.color(i) === -1 && x.o[i] > x.o[b] && x.c[i] < x.c[b] && x.c[i] > x.c[a] ? -1 : 0;
+      } },
+    { id: "xSideGapThreeMethods", name: "Upside/Downside Gap Three Methods", candles: 3, direction: "both", ta: "CDLXSIDEGAP3METHODS", uses: [],
+      rule: "zwei gleichfarbige Kerzen mit Koerperluecke in ihrer Richtung, dritte Gegenkerze eroeffnet im zweiten Koerper und schliesst im ersten (Luecke geschlossen); Richtung = Farbe der ersten",
+      fn: function (x, i) {
+        var a = i - 2, b = i - 1, o = x.o, c = x.c;
+        if (!(x.color(a) === x.color(b) && x.color(b) === -x.color(i) && o[i] < x.top(b) && o[i] > x.bottom(b) && c[i] < x.top(a) && c[i] > x.bottom(a))) return 0;
+        return (x.color(a) === 1 && bodyGapUp(x, b, a)) || (x.color(a) === -1 && bodyGapDown(x, b, a)) ? x.color(a) : 0;
       } }
   ];
 
+  /* Gelesene Bars je Signal: die Kerzen des Musters, bei Hikkake (Bestaetigung bis 3 Bars nach dem Muster) mehr (`span`). */
+  function span(p) { return p.span || p.candles; }
+
   /** Aufwaermphase: erste Bar, an der alle Kerzen und alle benutzten Mittel vorhanden sind. */
   function warmup(p) {
-    var w = p.candles - 1;
+    var w = span(p) - 1;
     p.uses.forEach(function (u) { var st = SETTINGS[u[1]]; w = Math.max(w, u[0] + st.period); });
     return w;
   }
@@ -303,7 +571,7 @@
     var out = arr(x.n);
     for (var i = p.warmup; i < x.n; i++) {
       var ok = true;
-      for (var k = i - p.candles + 1; k <= i; k++) if (!x.ok[k]) { ok = false; break; }
+      for (var k = i - span(p) + 1; k <= i; k++) if (!x.ok[k]) { ok = false; break; }
       for (var u = 0; ok && u < p.uses.length; u++) if (!isNum(x.avg(p.uses[u][1], i - p.uses[u][0]))) ok = false;
       if (ok) out[i] = p.fn(x, i);
     }

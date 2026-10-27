@@ -42,3 +42,12 @@ test('Kontrollierter Hauptdomain-Build lässt normale Besucher geschlossen und v
   assert.match(html,/data-ready="false" data-controlled="true"/);assert.match(html,/<fieldset disabled>/);
   assert.doesNotMatch(html,/NEWSLETTER_TEST_ACCESS_HASH|#vu-test=/);assert.match(await readFile(resolve(output,'_headers'),'utf8'),/form-action 'self'/);
 });
+test('Partnerpräsentation bleibt eigenständig, ohne fremde Quellen und außerhalb der Suche',async()=>{
+  const output=resolve(root,'tests/output/partner');await build({output});
+  const html=await readFile(resolve(output,'partner/index.html'),'utf8');
+  assert.match(html,/<meta name="robots" content="noindex, nofollow">/);assert.match(html,/Content-Security-Policy[^>]*media-src &#39;self&#39;/);
+  assert.match(html,/partner\.css\?v=[0-9a-f]{16}/);assert.match(html,/partner\.js\?v=[0-9a-f]{16}/);
+  assert.doesNotMatch(html,/(src|href)="https?:\/\/(?!(?:www|research)\.visionuniverse\.de\/)/);assert.doesNotMatch(html,/<iframe|<form/);
+  for(const src of html.matchAll(/(?:src|poster)="\.\/(media\/[^"]+)"/g))await readFile(resolve(output,'partner',src[1]));
+  assert.match(await readFile(resolve(output,'_headers'),'utf8'),/media-src 'self'/);
+});

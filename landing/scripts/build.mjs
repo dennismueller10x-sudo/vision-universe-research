@@ -27,11 +27,12 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
+  await cp(resolve(root,'partner/media'),resolve(output,'partner/media'),{recursive:true});
   if (config.privacyHtmlPath) {
     const privacy = await readFile(resolve(root,config.privacyHtmlPath),'utf8');
     if (!/<html\b/i.test(privacy) || !/<html[^>]+lang=["']de["']/i.test(privacy) || !/<title>/i.test(privacy)) throw new Error('Datenschutzhinweise müssen ein vollständiges deutsches HTML-Dokument sein.');
@@ -61,7 +62,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
 
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
   const formPolicy=ready?"'self'":"'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
+  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   // Returning browsers must not combine new preview markup with old cached
@@ -71,6 +72,14 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
   await writeFile(resolve(output,'index.html'),html);
+  // The partner presentation is shared by direct link only and stays out of search.
+  let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
+  partner=partner.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+  for(const asset of ['partner.css','partner.js']){
+    const version=createHash('sha256').update(await readFile(resolve(output,'partner',asset))).digest('hex').slice(0,16);
+    partner=partner.replace(`"./${asset}"`,`"./${asset}?v=${version}"`);
+  }
+  await writeFile(resolve(output,'partner/index.html'),partner);
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
   // Pages handles apex -> www in custom-domain settings, not _redirects.
   // Static aliases keep the existing Research legal links working later.

@@ -15,6 +15,10 @@ function create({root,directory,clock=Date.now}){
   const input=snapshot.input,changed=new Set(),source=input.sources.find(s=>s.securityId===id);if(!source)throw Error('SNAPSHOT_SOURCE_MISSING');
   if(await hash('quant/data/market/discover-series-long/'+id+'.json')!==source.sourceHash)changed.add('PRICE_SERIES');
   if(await hash('quant/data/market/security-master/us-security-master.json')!==input.masterHash)changed.add('SECURITY_MASTER');
+  // Classification evidence is an identity dependency. Legacy generations did
+  // not bind it and must be rebuilt before any financial payload is returned.
+  const classificationEvidence='quant/engines/research-classification-evidence.cjs';
+  if(!input.codes[classificationEvidence]||await hash(classificationEvidence)!==input.codes[classificationEvidence])changed.add('PRODUCT_IDENTITY');
   for(const [p,expected] of Object.entries(input.codes)){if(!/^(?:quant\/(?:api|engines)\/[A-Za-z0-9._-]+\.(?:js|cjs)|scripts\/quant\/[A-Za-z0-9._-]+\.cjs)$/.test(p))throw Error('INVALID_CODE_DEPENDENCY');if(await hash(p)!==expected)changed.add('CALCULATION_CODE');}
   for(const [p,expected] of Object.entries(input.benchmarkInputs||{})){if(!['quant/data/market/multi-asset/series/SPY.json','quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json'].includes(p))throw Error('INVALID_BENCHMARK_DEPENDENCY');if(await hash(p)!==expected)changed.add('BENCHMARK');}
   const key=C.shard(id)+'.json';if(input.productShardHashes[key]&&await hash('quant/data/universe/instruments/'+key)!==input.productShardHashes[key])changed.add('PRODUCT_IDENTITY');

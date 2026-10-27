@@ -33,6 +33,8 @@
     button.setAttribute('aria-busy', on ? 'true' : 'false');
   }
   function go(path) { window.location.assign(path); }
+  // Lesezeichen-Status der Aktienseiten (assets/watchlist-button.js) gehoert zur Sitzung.
+  function forgetWatchlist() { try { sessionStorage.removeItem('vu-watchlist-ids-v1'); } catch (e) { /* leer */ } }
   function param(name) { return new URLSearchParams(window.location.search).get(name); }
   // Nur eigene Pfade als Ziel nach dem Login (kein offener Redirect).
   function safeNext(value) {
@@ -175,6 +177,16 @@
     });
   };
 
+  // Persoenliche Watchlist: Darstellung in konto/watchlist.js (eigene Datei, nur auf dieser Seite geladen).
+  views.watchlist = function () {
+    showStatusParam();
+    if (!A.available()) return unavailable();
+    requireSession().then(function (user) {
+      if (!user) return;
+      if (window.VUWatchlistPage) window.VUWatchlistPage.start(A, notice);
+    });
+  };
+
   views.account = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
@@ -196,6 +208,7 @@
     });
     $('ka-logout').addEventListener('click', function () {
       busy(this, true);
+      forgetWatchlist();
       A.post('/v1/auth/logout').then(function () { go('/konto/anmelden/'); });
     });
   };
@@ -421,6 +434,7 @@
       var typed = $('delete-confirm').value.trim().toUpperCase();
       if (typed !== 'LÖSCHEN' && typed !== 'LOESCHEN') return notice('Bitte tippe LÖSCHEN zur Bestätigung.', 'error');
       busy(btn, true);
+      forgetWatchlist();
       A.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: $('delete-password').value}).then(function (r) {
         busy(btn, false);
         if (r.ok) return go('/konto/anmelden/?status=deleted');

@@ -14,7 +14,11 @@
    KAMA, Hull MA, Chandelier Exit, Regressionskanal, Inside Bar, NR7,
    Heikin-Ashi; seit 1.3.0 DEMA, TEMA, TRIMA, T3, ZLEMA, ALMA, McGinley,
    PPO, Stochastic RSI, NATR, A/D-Linie, Chaikin-Oszillator, Balance of
-   Power, Momentum, Standardabweichung, R² des Regressionskanals). Die
+   Power, Momentum, Standardabweichung, R² des Regressionskanals; seit 1.4.0
+   Vortex, Mass Index, Choppiness, Ulcer Index, Force Index, Elder Ray,
+   Ease of Movement, Awesome Oscillator, Coppock, KST, TSI, DPO, historische
+   Volatilitaet, Z-Score, NVI/PVI, PVO, Connors RSI, Elder Impulse,
+   Chaikin-Volatilitaet, Envelope, Pivot-Varianten Fibonacci/Camarilla/Woodie). Die
    Eintraege ab 1.2.0 tragen `catalogOnly: true`: Sie stehen
    im Katalog und in compute(), aber noch in keiner Produktflaeche
    (Methodik-Seite, Screener-Felder, Abfragekatalog). Sie dort freizugeben,
@@ -38,7 +42,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.3.0";
+  var INDICATORS_VERSION = "technical-indicators-1.4.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -647,6 +651,245 @@
   /** Standardabweichung (Population) der letzten n Schlusskurse (feature-store.js#rollingStd, wie Bollinger). */
   function stdDev(close, period) { return F.rollingStd(col(close), period); }
 
+  /* ------------------------------------------- Katalogerweiterung 1.4.0 (L2b) */
+
+  /** Summe der letzten n Werte inkl. i; fehlt einer: NaN. */
+  function rollingSum(values, period) {
+    var n = values.length, out = arr(n);
+    for (var i = period - 1; i < n; i++) {
+      var s = 0, ok = true;
+      for (var j = i - period + 1; j <= i; j++) { if (!isNum(values[j])) { ok = false; break; } s += values[j]; }
+      if (ok) out[i] = s;
+    }
+    return out;
+  }
+
+  /**
+   * Vortex (Botes/Siepman 2010): VM+ = |H_i − L_{i−1}|, VM− = |L_i − H_{i−1}|;
+   * VI+ = Σ_n VM+ / Σ_n TR, VI− = Σ_n VM− / Σ_n TR (TR mit Vorschluss). Erster Wert an Bar n.
+   */
+  function vortex(high, low, close, period) {
+    var h = col(high), l = col(low), c = col(close), n = c.length, vp = arr(n), vm = arr(n), tr = arr(n);
+    for (var i = 1; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(h[i - 1]) || !isNum(l[i - 1]) || !isNum(c[i - 1])) continue;
+      vp[i] = Math.abs(h[i] - l[i - 1]); vm[i] = Math.abs(l[i] - h[i - 1]);
+      tr[i] = Math.max(h[i] - l[i], Math.abs(h[i] - c[i - 1]), Math.abs(l[i] - c[i - 1]));
+    }
+    var sp = rollingSum(vp, period), sm = rollingSum(vm, period), st = rollingSum(tr, period);
+    return { plus: zip2(sp, st, function (a, b) { return b > 0 ? a / b : NaN; }), minus: zip2(sm, st, function (a, b) { return b > 0 ? a / b : NaN; }) };
+  }
+
+  /** Mass Index (Dorsey 1992): Σ_s (E1/E2), E1 = EMA_e(H − L), E2 = EMA_e(E1); Standard e = 9, s = 25. */
+  function massIndex(high, low, emaPeriod, sumPeriod) {
+    var r = zip2(col(high), col(low), function (a, b) { return a - b; }), e1 = F.ema(r, emaPeriod), e2 = F.ema(e1, emaPeriod);
+    return rollingSum(zip2(e1, e2, function (a, b) { return b > 0 ? a / b : NaN; }), sumPeriod);
+  }
+
+  /**
+   * Choppiness Index (Dreiss): 100·log10(Σ_n TR / (HH_n − LL_n)) / log10(n), TR mit Vorschluss;
+   * HH = LL (keine Spanne): NaN. Werte nahe 100 = Seitwaerts, nahe 0 = Trend.
+   */
+  function choppiness(high, low, close, period) {
+    var h = col(high), l = col(low), c = col(close), n = c.length, tr = arr(n), out = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(h[i]) && isNum(l[i]) && isNum(c[i - 1])) tr[i] = Math.max(h[i] - l[i], Math.abs(h[i] - c[i - 1]), Math.abs(l[i] - c[i - 1]));
+    var st = rollingSum(tr, period), hh = F.rollingMax(h, period), ll = F.rollingMin(l, period);
+    for (var k = period; k < n; k++) if (isNum(st[k]) && isNum(hh[k]) && isNum(ll[k]) && hh[k] > ll[k]) out[k] = 100 * Math.log10(st[k] / (hh[k] - ll[k])) / Math.log10(period);
+    return out;
+  }
+
+  /**
+   * Ulcer Index (Martin 1987): Rueckgang D_j = 100·(C_j − max C_{j−n+1..j}) / max,
+   * UI = √(Mittel der letzten n Werte D²). Erster Wert an Bar 2(n−1).
+   */
+  function ulcerIndex(close, period) {
+    var c = col(close), mx = F.rollingMax(c, period), d2 = c.map(function (v, i) { return isNum(v) && isNum(mx[i]) && mx[i] > 0 ? Math.pow(100 * (v - mx[i]) / mx[i], 2) : NaN; });
+    return F.sma(d2, period).map(function (v) { return isNum(v) ? Math.sqrt(v) : NaN; });
+  }
+
+  /** Force Index (Elder): EMA_n((C_i − C_{i−1})·V_i), Standard n = 13. */
+  function forceIndex(close, volume, period) {
+    var c = col(close), v = col(volume), n = c.length, raw = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(c[i]) && isNum(c[i - 1]) && isNum(v[i])) raw[i] = (c[i] - c[i - 1]) * v[i];
+    return F.ema(raw, period);
+  }
+
+  /** Elder Ray: Bull Power = H − EMA_n(C), Bear Power = L − EMA_n(C), Standard n = 13. */
+  function elderRay(high, low, close, period) {
+    var e = F.ema(col(close), period);
+    return { bull: zip2(col(high), e, function (a, b) { return a - b; }), bear: zip2(col(low), e, function (a, b) { return a - b; }) };
+  }
+
+  /**
+   * Ease of Movement (Arms): EMV = ((H+L)/2 − (H_{−1}+L_{−1})/2) / ((V/scale)/(H − L)), geglaettet SMA_n.
+   * H = L oder V = 0: nicht definiert (NaN). Standard scale = 100.000.000.
+   */
+  function easeOfMovement(high, low, volume, period, scale) {
+    var h = col(high), l = col(low), v = col(volume), n = h.length, raw = arr(n);
+    for (var i = 1; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(h[i - 1]) || !isNum(l[i - 1]) || !isNum(v[i]) || !(h[i] > l[i]) || !(v[i] > 0)) continue;
+      raw[i] = ((h[i] + l[i]) / 2 - (h[i - 1] + l[i - 1]) / 2) / ((v[i] / scale) / (h[i] - l[i]));
+    }
+    return F.sma(raw, period);
+  }
+
+  /** Awesome Oscillator (Williams): SMA_f(M) − SMA_s(M), M = (H + L)/2, Standard 5/34. */
+  function awesomeOscillator(high, low, fast, slow) {
+    var m = zip2(col(high), col(low), function (a, b) { return (a + b) / 2; });
+    return zip2(F.sma(m, fast), F.sma(m, slow), function (a, b) { return a - b; });
+  }
+
+  /** Coppock-Kurve: WMA_w(ROC_a + ROC_b), Standard 14/11/10 (Bars; Coppock rechnete in Monaten). */
+  function coppock(close, rocLong, rocShort, wmaPeriod) {
+    return wma(zip2(roc(close, rocLong), roc(close, rocShort), function (a, b) { return a + b; }), wmaPeriod);
+  }
+
+  /**
+   * Know Sure Thing (Pring): KST = 1·SMA10(ROC10) + 2·SMA10(ROC15) + 3·SMA10(ROC20) + 4·SMA15(ROC30),
+   * Signal = SMA9(KST). Perioden in Bars (Tagesvariante nach Pring).
+   */
+  function kst(close) {
+    var parts = [[10, 10, 1], [15, 10, 2], [20, 10, 3], [30, 15, 4]].map(function (q) { return F.sma(roc(close, q[0]), q[1]).map(function (v) { return v * q[2]; }); });
+    var k = parts[0].map(function (v, i) { return isNum(v) && isNum(parts[1][i]) && isNum(parts[2][i]) && isNum(parts[3][i]) ? v + parts[1][i] + parts[2][i] + parts[3][i] : NaN; });
+    return { kst: k, signal: F.sma(k, 9) };
+  }
+
+  /** True Strength Index (Blau): 100·EMA_s(EMA_l(ΔC)) / EMA_s(EMA_l(|ΔC|)), Signal = EMA_sig(TSI). Standard 25/13/7. */
+  function tsi(close, longP, shortP, signal) {
+    var c = col(close), n = c.length, m = arr(n), a = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(c[i]) && isNum(c[i - 1])) { m[i] = c[i] - c[i - 1]; a[i] = Math.abs(m[i]); }
+    var num = F.ema(F.ema(m, longP), shortP), den = F.ema(F.ema(a, longP), shortP);
+    var t = zip2(num, den, function (x, y) { return y > 0 ? 100 * x / y : NaN; });
+    return { tsi: t, signal: F.ema(t, signal) };
+  }
+
+  /**
+   * Detrended Price Oscillator, kausale Form (StockCharts): DPO_i = C_{i−k} − SMA_n(i), k = ⌊n/2⌋ + 1.
+   * Die zentrierte Lehrbuchform braucht Zukunftswerte und wird bewusst nicht angeboten.
+   */
+  function dpo(close, period) {
+    var c = col(close), s = F.sma(c, period), k = Math.floor(period / 2) + 1;
+    return s.map(function (v, i) { return isNum(v) && i - k >= 0 && isNum(c[i - k]) ? c[i - k] - v : NaN; });
+  }
+
+  /** Historische Volatilitaet: Stichprobenstreuung (n−1) der letzten n Log-Renditen · √annual, in Prozent. */
+  function historicalVolatility(close, period, annual) {
+    var c = col(close), n = c.length, r = arr(n), out = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(c[i]) && isNum(c[i - 1]) && c[i] > 0 && c[i - 1] > 0) r[i] = Math.log(c[i] / c[i - 1]);
+    for (var k = period; k < n; k++) {
+      var s = 0, ok = true;
+      for (var j = k - period + 1; j <= k; j++) { if (!isNum(r[j])) { ok = false; break; } s += r[j]; }
+      if (!ok || period < 2) continue;
+      var m = s / period, ss = 0;
+      for (var q = k - period + 1; q <= k; q++) ss += (r[q] - m) * (r[q] - m);
+      out[k] = 100 * Math.sqrt(ss / (period - 1)) * Math.sqrt(annual);
+    }
+    return out;
+  }
+
+  /** Z-Score: (C − SMA_n)/σ_n (Populationsstreuung wie Bollinger); σ = 0: NaN. */
+  function zScore(close, period) {
+    var c = col(close), m = F.sma(c, period), s = F.rollingStd(c, period);
+    return c.map(function (v, i) { return isNum(v) && isNum(m[i]) && isNum(s[i]) && s[i] > 0 ? (v - m[i]) / s[i] : NaN; });
+  }
+
+  /**
+   * Negative/Positive Volume Index (Fosback): Start 1000; NVI aendert sich nur an Tagen mit geringerem
+   * Volumen als am Vortag (um die Schlusskursrendite), PVI nur an Tagen mit hoeherem Volumen.
+   */
+  function volumeIndex(close, volume, positive) {
+    var c = col(close), v = col(volume), n = c.length, out = arr(n), x = 1000, started = false;
+    for (var i = 0; i < n; i++) {
+      if (!started) { if (isNum(c[i]) && isNum(v[i])) { started = true; out[i] = x; } continue; }
+      if (!isNum(c[i]) || !isNum(v[i]) || !isNum(c[i - 1]) || !isNum(v[i - 1])) continue;
+      if ((positive ? v[i] > v[i - 1] : v[i] < v[i - 1]) && c[i - 1] !== 0) x = x * c[i] / c[i - 1];
+      out[i] = x;
+    }
+    return out;
+  }
+  function nvi(close, volume) { return volumeIndex(close, volume, false); }
+  function pvi(close, volume) { return volumeIndex(close, volume, true); }
+
+  /** Percentage Volume Oscillator: PPO auf dem Volumen, 100·(EMA_f(V) − EMA_s(V))/EMA_s(V). */
+  function pvo(volume, fast, slow, signal) {
+    var r = ppo(volume, fast, slow, signal);
+    return { pvo: r.ppo, signal: r.signal, histogram: r.histogram };
+  }
+
+  /**
+   * Connors RSI: (RSI_a(C) + RSI_b(Serie) + Perzentilrang_p(ROC1)) / 3. Serie = Zahl der Tage in Folge
+   * mit steigendem (+) bzw. fallendem (−) Schluss, 0 bei unveraendert. Perzentilrang = Anteil der
+   * vorherigen p Tagesrenditen, die kleiner sind als die heutige, in Prozent. Standard 3/2/100.
+   */
+  function connorsRsi(close, rsiPeriod, streakPeriod, rankPeriod) {
+    var c = col(close), n = c.length, streak = arr(n), r1 = arr(n), rank = arr(n), s = 0;
+    for (var i = 1; i < n; i++) {
+      if (!isNum(c[i]) || !isNum(c[i - 1])) { s = 0; continue; }
+      var d = c[i] - c[i - 1];
+      s = d > 0 ? (s > 0 ? s + 1 : 1) : d < 0 ? (s < 0 ? s - 1 : -1) : 0;
+      streak[i] = s;
+      if (c[i - 1] !== 0) r1[i] = c[i] / c[i - 1] - 1;
+    }
+    for (var k = rankPeriod + 1; k < n; k++) {
+      if (!isNum(r1[k])) continue;
+      var less = 0, ok = true;
+      for (var j = k - rankPeriod; j < k; j++) { if (!isNum(r1[j])) { ok = false; break; } if (r1[j] < r1[k]) less++; }
+      if (ok) rank[k] = 100 * less / rankPeriod;
+    }
+    var a = F.rsi(c, rsiPeriod), b = F.rsi(streak.map(function (v, i) { return i === 0 ? NaN : v; }), streakPeriod);
+    return a.map(function (v, i) { return isNum(v) && isNum(b[i]) && isNum(rank[i]) ? (v + b[i] + rank[i]) / 3 : NaN; });
+  }
+
+  /** Elder Impulse: +1, wenn EMA_n und MACD-Histogramm beide steigen; −1, wenn beide fallen; sonst 0. */
+  function elderImpulse(close, period, fast, slow, signal) {
+    var e = F.ema(col(close), period), h = macd(close, fast, slow, signal).histogram, n = e.length, out = arr(n);
+    for (var i = 1; i < n; i++) {
+      if (!isNum(e[i]) || !isNum(e[i - 1]) || !isNum(h[i]) || !isNum(h[i - 1])) continue;
+      var de = e[i] - e[i - 1], dh = h[i] - h[i - 1];
+      out[i] = de > 0 && dh > 0 ? 1 : de < 0 && dh < 0 ? -1 : 0;
+    }
+    return out;
+  }
+
+  /** Chaikin-Volatilitaet: 100·(EMA_n(H − L)_i / EMA_n(H − L)_{i−r} − 1), Standard 10/10. */
+  function chaikinVolatility(high, low, period, rocPeriod) {
+    var e = F.ema(zip2(col(high), col(low), function (a, b) { return a - b; }), period), n = e.length, out = arr(n);
+    for (var i = rocPeriod; i < n; i++) if (isNum(e[i]) && isNum(e[i - rocPeriod]) && e[i - rocPeriod] > 0) out[i] = 100 * (e[i] / e[i - rocPeriod] - 1);
+    return out;
+  }
+
+  /** Envelope: SMA_n ± pct % (Prozentband um den Durchschnitt). */
+  function envelope(close, period, pct) {
+    var m = F.sma(col(close), period), f = pct / 100;
+    return { middle: m, upper: m.map(function (v) { return isNum(v) ? v * (1 + f) : NaN; }), lower: m.map(function (v) { return isNum(v) ? v * (1 - f) : NaN; }) };
+  }
+
+  /**
+   * Pivot-Varianten aus Hoch, Tief und Schluss der Vorbar (wie pivots()):
+   *   fibonacci: P = (H+L+C)/3, R/S1..3 = P ± {0,382; 0,618; 1,0}·(H − L)
+   *   camarilla: R/S1..4 = C ± (H − L)·1,1/{12; 6; 4; 2}, P = (H+L+C)/3
+   *   woodie:    P = (H + L + 2C)/4, R1 = 2P − L, S1 = 2P − H, R2 = P + (H − L), S2 = P − (H − L)
+   */
+  function pivotVariant(high, low, close, method) {
+    var h = col(high), l = col(low), c = col(close), n = c.length, keys = method === "camarilla" ? ["p", "r1", "r2", "r3", "r4", "s1", "s2", "s3", "s4"] : method === "fibonacci" ? ["p", "r1", "r2", "r3", "s1", "s2", "s3"] : ["p", "r1", "r2", "s1", "s2"];
+    var out = {}; keys.forEach(function (k) { out[k] = arr(n); });
+    for (var i = 1; i < n; i++) {
+      var H = h[i - 1], L = l[i - 1], C = c[i - 1];
+      if (!isNum(H) || !isNum(L) || !isNum(C)) continue;
+      var R = H - L, P;
+      if (method === "woodie") {
+        P = (H + L + 2 * C) / 4;
+        out.p[i] = P; out.r1[i] = 2 * P - L; out.s1[i] = 2 * P - H; out.r2[i] = P + R; out.s2[i] = P - R;
+      } else if (method === "fibonacci") {
+        P = (H + L + C) / 3; out.p[i] = P;
+        [0.382, 0.618, 1].forEach(function (f, k) { out["r" + (k + 1)][i] = P + f * R; out["s" + (k + 1)][i] = P - f * R; });
+      } else {
+        out.p[i] = (H + L + C) / 3;
+        [12, 6, 4, 2].forEach(function (d, k) { out["r" + (k + 1)][i] = C + R * 1.1 / d; out["s" + (k + 1)][i] = C - R * 1.1 / d; });
+      }
+    }
+    return out;
+  }
+
   /* ------------------------------------------------------- Hilfsfunktionen */
 
   /** Hoechster Schluss bzw. Hoch der letzten n Bars inkl. i (52 Wochen = 252 Tagesbars bzw. 52 Wochenbars). */
@@ -774,10 +1017,60 @@
     { id: "momentum", family: "MOMENTUM", name: "Momentum", params: { period: 10 }, inputs: ["close"], overlay: false, catalogOnly: true,
       definition: "C_i − C_{i−n} (absolute Kursaenderung)", warmup: function (p) { return p.period; } },
     { id: "stdDev", family: "VOLATILITY", name: "Standardabweichung", params: { period: 20 }, inputs: ["close"], overlay: false, catalogOnly: true,
-      definition: "Populationsstreuung der letzten n Schlusskurse", warmup: function (p) { return p.period - 1; } }
+      definition: "Populationsstreuung der letzten n Schlusskurse", warmup: function (p) { return p.period - 1; } },
+
+    /* 1.4.0 (L2b): nur Katalog; ohne TA-Lib-Gegenstueck, naive Referenzen in technical-indicators-catalog-l2b.test.mjs. */
+    { id: "vortex", family: "TREND", name: "Vortex-Indikator", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "VI+ = Σ|H − L₋₁| / ΣTR, VI− = Σ|L − H₋₁| / ΣTR ueber n Bars", warmup: function (p) { return p.period; } },
+    { id: "massIndex", family: "VOLATILITY", name: "Mass Index", params: { emaPeriod: 9, sumPeriod: 25 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "Σ_s EMA_e(H − L) / EMA_e(EMA_e(H − L))", warmup: function (p) { return 2 * (p.emaPeriod - 1) + p.sumPeriod - 1; } },
+    { id: "choppiness", family: "TREND", name: "Choppiness Index", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "100·log10(ΣTR_n / (HH_n − LL_n)) / log10(n)", warmup: function (p) { return p.period; } },
+    { id: "ulcerIndex", family: "VOLATILITY", name: "Ulcer Index", params: { period: 14 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "√ Mittel der quadrierten prozentualen Rueckgaenge vom n-Bar-Hoch", warmup: function (p) { return 2 * (p.period - 1); } },
+    { id: "forceIndex", family: "VOLUME", name: "Force Index", params: { period: 13 }, inputs: ["close", "volume"], overlay: false, catalogOnly: true,
+      definition: "EMA_n((C − C₋₁)·V)", warmup: function (p) { return p.period; } },
+    { id: "elderRay", family: "MOMENTUM", name: "Elder Ray (Bull/Bear Power)", params: { period: 13 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "Bull = H − EMA_n(C), Bear = L − EMA_n(C)", warmup: function (p) { return p.period - 1; } },
+    { id: "easeOfMovement", family: "VOLUME", name: "Ease of Movement (EMV)", params: { period: 14, scale: 100000000 }, inputs: ["high", "low", "volume"], overlay: false, catalogOnly: true,
+      definition: "SMA_n(Δ Mittelpreis / ((V/scale)/(H − L)))", warmup: function (p) { return p.period; } },
+    { id: "awesomeOscillator", family: "MOMENTUM", name: "Awesome Oscillator", params: { fast: 5, slow: 34 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "SMA_f((H+L)/2) − SMA_s((H+L)/2)", warmup: function (p) { return Math.max(p.fast, p.slow) - 1; } },
+    { id: "coppock", family: "MOMENTUM", name: "Coppock-Kurve", params: { rocLong: 14, rocShort: 11, wmaPeriod: 10 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "WMA_w(ROC_a + ROC_b)", warmup: function (p) { return Math.max(p.rocLong, p.rocShort) + p.wmaPeriod - 1; } },
+    { id: "kst", family: "MOMENTUM", name: "Know Sure Thing (KST)", params: {}, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "1·SMA10(ROC10) + 2·SMA10(ROC15) + 3·SMA10(ROC20) + 4·SMA15(ROC30); Signal SMA9", warmup: function () { return 44; } },
+    { id: "tsi", family: "MOMENTUM", name: "True Strength Index (TSI)", params: { longPeriod: 25, shortPeriod: 13, signal: 7 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "100·EMA_s(EMA_l(ΔC)) / EMA_s(EMA_l(|ΔC|)); Signal EMA", warmup: function (p) { return p.longPeriod + p.shortPeriod - 1; } },
+    { id: "dpo", family: "MOMENTUM", name: "Detrended Price Oscillator (kausal)", params: { period: 20 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "C_{i−(⌊n/2⌋+1)} − SMA_n(i)", warmup: function (p) { return Math.max(p.period - 1, Math.floor(p.period / 2) + 1); } },
+    { id: "historicalVolatility", family: "VOLATILITY", name: "Historische Volatilitaet", params: { period: 20, annual: 252 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "Stichprobenstreuung der letzten n Log-Renditen · √annual, in Prozent", warmup: function (p) { return p.period; } },
+    { id: "zScore", family: "VOLATILITY", name: "Z-Score", params: { period: 20 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "(C − SMA_n)/σ_n (Population)", warmup: function (p) { return p.period - 1; } },
+    { id: "nvi", family: "VOLUME", name: "Negative Volume Index (NVI)", params: {}, inputs: ["close", "volume"], overlay: false, catalogOnly: true,
+      definition: "Start 1000, aendert sich nur bei sinkendem Volumen um die Tagesrendite", warmup: function () { return 0; } },
+    { id: "pvi", family: "VOLUME", name: "Positive Volume Index (PVI)", params: {}, inputs: ["close", "volume"], overlay: false, catalogOnly: true,
+      definition: "Start 1000, aendert sich nur bei steigendem Volumen um die Tagesrendite", warmup: function () { return 0; } },
+    { id: "pvo", family: "VOLUME", name: "Percentage Volume Oscillator (PVO)", params: { fast: 12, slow: 26, signal: 9 }, inputs: ["volume"], overlay: false, catalogOnly: true,
+      definition: "100·(EMA_f(V) − EMA_s(V))/EMA_s(V); Signal EMA", warmup: function (p) { return p.slow + p.signal - 2; } },
+    { id: "connorsRsi", family: "MOMENTUM", name: "Connors RSI", params: { rsiPeriod: 3, streakPeriod: 2, rankPeriod: 100 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "(RSI_3(C) + RSI_2(Serie) + Perzentilrang_100(ROC1))/3", warmup: function (p) { return Math.max(p.rsiPeriod, p.streakPeriod + 1, p.rankPeriod + 1); } },
+    { id: "elderImpulse", family: "MOMENTUM", name: "Elder Impulse", params: { period: 13, fast: 12, slow: 26, signal: 9 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "+1, wenn EMA_n und MACD-Histogramm steigen; −1, wenn beide fallen; sonst 0", warmup: function (p) { return Math.max(p.period, p.slow + p.signal - 1); } },
+    { id: "chaikinVolatility", family: "VOLATILITY", name: "Chaikin-Volatilitaet", params: { period: 10, rocPeriod: 10 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "100·(EMA_n(H − L) / EMA_n(H − L)₋ᵣ − 1)", warmup: function (p) { return p.period - 1 + p.rocPeriod; } },
+    { id: "envelope", family: "TREND", name: "Envelope (Prozentband)", params: { period: 20, pct: 2.5 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "SMA_n ± pct %", warmup: function (p) { return p.period - 1; } },
+    { id: "pivotsFib", family: "TREND", name: "Pivot-Punkte (Fibonacci)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "P = (H+L+C)/3 der Vorbar, R/S1..3 = P ± {0,382; 0,618; 1}·(H − L)", warmup: function () { return 1; } },
+    { id: "pivotsCamarilla", family: "TREND", name: "Pivot-Punkte (Camarilla)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "R/S1..4 = C ± (H − L)·1,1/{12; 6; 4; 2} der Vorbar", warmup: function () { return 1; } },
+    { id: "pivotsWoodie", family: "TREND", name: "Pivot-Punkte (Woodie)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "P = (H + L + 2C)/4 der Vorbar, R1 = 2P − L, S1 = 2P − H, R2/S2 = P ± (H − L)", warmup: function () { return 1; } }
   ];
 
-  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max", "vfactor", "offset", "sigma"];
+  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max", "vfactor", "offset", "sigma", "pct"];
   function catalogEntry(id) { for (var i = 0; i < CATALOG.length; i++) if (CATALOG[i].id === id) return CATALOG[i]; return null; }
 
   /**
@@ -843,6 +1136,30 @@
       case "balanceOfPower": v = balanceOfPower(s.open, s.high, s.low, s.close, p.period); break;
       case "momentum": v = momentum(s.close, p.period); break;
       case "stdDev": v = stdDev(s.close, p.period); break;
+      case "vortex": v = vortex(s.high, s.low, s.close, p.period); break;
+      case "massIndex": v = massIndex(s.high, s.low, p.emaPeriod, p.sumPeriod); break;
+      case "choppiness": v = choppiness(s.high, s.low, s.close, p.period); break;
+      case "ulcerIndex": v = ulcerIndex(s.close, p.period); break;
+      case "forceIndex": v = forceIndex(s.close, s.volume, p.period); break;
+      case "elderRay": v = elderRay(s.high, s.low, s.close, p.period); break;
+      case "easeOfMovement": v = easeOfMovement(s.high, s.low, s.volume, p.period, p.scale); break;
+      case "awesomeOscillator": v = awesomeOscillator(s.high, s.low, p.fast, p.slow); break;
+      case "coppock": v = coppock(s.close, p.rocLong, p.rocShort, p.wmaPeriod); break;
+      case "kst": v = kst(s.close); break;
+      case "tsi": v = tsi(s.close, p.longPeriod, p.shortPeriod, p.signal); break;
+      case "dpo": v = dpo(s.close, p.period); break;
+      case "historicalVolatility": v = historicalVolatility(s.close, p.period, p.annual); break;
+      case "zScore": v = zScore(s.close, p.period); break;
+      case "nvi": v = nvi(s.close, s.volume); break;
+      case "pvi": v = pvi(s.close, s.volume); break;
+      case "pvo": v = pvo(s.volume, p.fast, p.slow, p.signal); break;
+      case "connorsRsi": v = connorsRsi(s.close, p.rsiPeriod, p.streakPeriod, p.rankPeriod); break;
+      case "elderImpulse": v = elderImpulse(s.close, p.period, p.fast, p.slow, p.signal); break;
+      case "chaikinVolatility": v = chaikinVolatility(s.high, s.low, p.period, p.rocPeriod); break;
+      case "envelope": v = envelope(s.close, p.period, p.pct); break;
+      case "pivotsFib": v = pivotVariant(s.high, s.low, s.close, "fibonacci"); break;
+      case "pivotsCamarilla": v = pivotVariant(s.high, s.low, s.close, "camarilla"); break;
+      case "pivotsWoodie": v = pivotVariant(s.high, s.low, s.close, "woodie"); break;
     }
     return { id: id, version: INDICATORS_VERSION, params: p, warmup: entry.warmup(p), values: v };
   }
@@ -861,7 +1178,12 @@
     chandelier: chandelier, linreg: linreg, insideBar: insideBar, narrowRange: narrowRange, heikinAshi: heikinAshi,
     /* 1.3.0 (L2a) */
     dema: dema, tema: tema, trima: trima, t3: t3, zlema: zlema, alma: alma, mcginley: mcginley, ppo: ppo, stochRsi: stochRsi,
-    natr: natr, adLine: adLine, chaikinOsc: chaikinOsc, balanceOfPower: balanceOfPower, momentum: momentum, stdDev: stdDev
+    natr: natr, adLine: adLine, chaikinOsc: chaikinOsc, balanceOfPower: balanceOfPower, momentum: momentum, stdDev: stdDev,
+    /* 1.4.0 (L2b) */
+    vortex: vortex, massIndex: massIndex, choppiness: choppiness, ulcerIndex: ulcerIndex, forceIndex: forceIndex, elderRay: elderRay,
+    easeOfMovement: easeOfMovement, awesomeOscillator: awesomeOscillator, coppock: coppock, kst: kst, tsi: tsi, dpo: dpo,
+    historicalVolatility: historicalVolatility, zScore: zScore, nvi: nvi, pvi: pvi, pvo: pvo, connorsRsi: connorsRsi,
+    elderImpulse: elderImpulse, chaikinVolatility: chaikinVolatility, envelope: envelope, pivotVariant: pivotVariant
   };
 
   if (isNode) module.exports = api;

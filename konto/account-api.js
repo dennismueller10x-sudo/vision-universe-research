@@ -44,7 +44,15 @@
     ORIGIN_NOT_ALLOWED: 'Diese Seite darf die Konto-Funktion nicht nutzen.',
     UPSTREAM_UNAVAILABLE: 'Der Dienst ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal.',
     NETWORK: 'Keine Verbindung. Bitte prüfe deine Internetverbindung.',
-    TIMEOUT: 'Die Antwort dauert zu lange. Bitte versuche es noch einmal.'
+    TIMEOUT: 'Die Antwort dauert zu lange. Bitte versuche es noch einmal.',
+    WATCHLIST_ITEMS_LIMIT_REACHED: 'Deine Watchlist ist voll. Mit Plus oder Pro kannst du mehr Aktien beobachten.',
+    WATCHLIST_LIMIT_REACHED: 'Du hast die Zahl der Watchlists deines Tarifs erreicht.',
+    FEATURE_NOT_IN_PLAN: 'Diese Funktion ist in deinem Tarif nicht enthalten.',
+    INSTRUMENT_INVALID: 'Diese Aktie kann nicht gespeichert werden.',
+    WATCHLIST_ITEM_NOT_FOUND: 'Dieser Eintrag ist nicht mehr auf deiner Watchlist.',
+    ALERTS_INVALID: 'Diese Benachrichtigung gibt es nicht.',
+    TEXT_TOO_LONG: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
+    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.'
   };
 
   var STATUS = {
