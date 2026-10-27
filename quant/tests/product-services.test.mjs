@@ -152,6 +152,12 @@ test('shared Screener and Atlas suppress raw quotes and prohibit price probing u
  for(const q of [Screener.build([{field:'price',operator:'gte',value:200,scale:'raw'}]),Screener.build([],[{field:'price',direction:'desc'}])]){
   assert.equal((await onlyDerived.screen(q)).reason,'PRICE_DISPLAY_NOT_PERMITTED');const answer=await tools.call('screenStocks',{query:q});assert.equal(answer.data.state,'UNAVAILABLE');assert.deepEqual(answer.data.stocks,[]);
  }
+ // The grant comparison uses the same query and page; a live ticker's
+ // momentum or rank must not decide whether this privacy check runs.
+ const rawGranted=await api.screen(query);assert.equal(rawGranted.state,'AVAILABLE');
+ assert.deepEqual(rawGranted.stocks.map(s=>s.ticker),result.data.stocks.map(s=>s.ticker));
+ assert.ok(rawGranted.stocks.some(s=>Number.isFinite(s.price.value)),'raw-granted positive control must contain a quote');
+
  /* Marktunabhaengig: Die Treffer folgen dem Filter, nicht einem bestimmten Titel (NVDA fiel am 27.10.2026 unter 0 % und hielt die
     Materialisierung an). Qualifiziert ist nur ein endlicher Wert >= 0; fehlende oder ungueltige Werte zaehlen nie als Treffer. */
  const momentumQuery=Screener.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]);

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "quant-v8-final-main-study-integration-1",
+  "reviewedMain": "1dfccf81d579da5f1da603e895b9dbe0ea5d4bd6",
+  "sourceHead": "8a56478b1eda02bef146159a98548c67f86964f1",
+  "asOf": "2026-10-23",
+  "changedSources": {
+    "quant/data/market/multi-asset/series/SPY.json": {
+      "before": "973ccda3235f32f4ab4c21e43093460d474bee6a8eee2df0a2fdbe0b3de60234",
+      "after": "e07cb8d474fb02ba1d81cc3f74db6b67d6e4e360c1a0da90852b01056af040b6"
+    },
+    "quant/data/market/multi-asset/instruments.json": {
+      "before": "2a5e7b76c5dd652639f05f388be038e030ac02c99aca19a0508860a1d68d1704",
+      "after": "1ba2beee31626cd46cc7971d0180547d441d8cbfd2429db460db8fa11a13db96"
+    }
+  },
+  "computedInputsAndResultsIdenticalToPriorF10": true,
+  "exactFilesReplayed": 27,
+  "independentParity": "real-studies-parity.json",
+  "sensitivityNumericalGenerationReused": true,
+  "sensitivityBindingCount": 17,
+  "state": "PASS",
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "unchangedNonSummaryNodeFilesComparedToPriorF10": 26,
+  "independentReportChange": "Only summary provenance hash changes with reviewed source bytes/head; numerical checks unchanged."
+}

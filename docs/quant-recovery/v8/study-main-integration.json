@@ -1,0 +1,204 @@
+{
+  "schemaVersion": "quant-v8-main-integration-studies-1.0.0",
+  "reviewedMain": "f10afd9666136810f0c9081db6ff4324d04065fe",
+  "sourceHead": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+  "priorRealSourceHead": "8fea838ea9aec792ae7dcb3f546710a03a499d2f",
+  "asOf": "2026-10-23",
+  "changedRealSources": {
+    "quant/data/market/multi-asset/series/SPY.json": {
+      "before": "b81fd6f6062e713bd9dd0991b219c1dc8b41de758b74b41f376813002e8348dc",
+      "after": "973ccda3235f32f4ab4c21e43093460d474bee6a8eee2df0a2fdbe0b3de60234"
+    },
+    "quant/data/market/multi-asset/instruments.json": {
+      "before": "18936baabca676ccc06cedaa30ae428c6f9d804b131c056fc65e9051e0907e13",
+      "after": "2a5e7b76c5dd652639f05f388be038e030ac02c99aca19a0508860a1d68d1704"
+    },
+    "quant/data/market/discover-series/ref_SPY.json": {
+      "before": "2971ed3c845b0dd4cec851ea1ef37ca02d546152bc1e1f2ddab0704bedd679f5",
+      "after": "f04a3ea0bc79a51bd811073d8f25ab4642affffa18aa0ed40b5552efc6dc950e"
+    },
+    "quant/data/market/discover-series/ref_JPM.json": {
+      "before": "4155d01910661c6f484bf7e42730f9538b961b341bb62fa2aa675dee6c3aac16",
+      "after": "dc833184dfb1865ebce04c5f2b0b40676bd81bdd708eac3bb0e76b384056b054"
+    },
+    "quant/data/market/discover-series/ref_MSFT.json": {
+      "before": "533c8b6b905d858b1246763911d4da856349aedbe026e42bfcc2b36d7971ab19",
+      "after": "a01a136e15685ced9ae7b20fdd62c71856b4bc9dd0c1b8f3cc5bee0418bf0def"
+    },
+    "quant/data/market/discover-series/ref_NVDA.json": {
+      "before": "337c3604e431368fd246e46ab2e27696435799e2818ea7b9f4b4c1829815042d",
+      "after": "7d630b0f72caa1b79dbc65a6a1676e50586209c3aed5b1692678d721efb6aa00"
+    },
+    "quant/data/market/discover-series/ref_XOM.json": {
+      "before": "8a71376b84c53dc7d6c47cff43b7b2fb9ca453dbfd35ba0a85713b13e4bd4069",
+      "after": "e301b300968a622d38eb18b168a3492dd57549bbe19eafbd9fa190c416535569"
+    }
+  },
+  "dailySourceWindows": [
+    {
+      "ticker": "JPM",
+      "oldBoundedBars": 270,
+      "newBoundedBars": 269,
+      "unchangedCommonPrices": 269,
+      "earliestBefore": "2025-09-29",
+      "earliestAfter": "2025-09-30",
+      "latestAfter": "2026-10-23",
+      "futureBarsExcluded": 1
+    },
+    {
+      "ticker": "MSFT",
+      "oldBoundedBars": 270,
+      "newBoundedBars": 269,
+      "unchangedCommonPrices": 269,
+      "earliestBefore": "2025-09-29",
+      "earliestAfter": "2025-09-30",
+      "latestAfter": "2026-10-23",
+      "futureBarsExcluded": 1
+    },
+    {
+      "ticker": "NVDA",
+      "oldBoundedBars": 270,
+      "newBoundedBars": 269,
+      "unchangedCommonPrices": 269,
+      "earliestBefore": "2025-09-29",
+      "earliestAfter": "2025-09-30",
+      "latestAfter": "2026-10-23",
+      "futureBarsExcluded": 1
+    },
+    {
+      "ticker": "XOM",
+      "oldBoundedBars": 270,
+      "newBoundedBars": 269,
+      "unchangedCommonPrices": 269,
+      "earliestBefore": "2025-09-29",
+      "earliestAfter": "2025-09-30",
+      "latestAfter": "2026-10-23",
+      "futureBarsExcluded": 1
+    }
+  ],
+  "benchmarkBarsAfterAsOfExcluded": 1,
+  "numericalComparison": {
+    "signalResultByteEquivalent": true,
+    "walkForwardPartitionsModelsAndOutcomesIdentical": true,
+    "allRegimeStatesEpisodesAndAggregatesIdentical": true,
+    "allTwelveWeeklyEventOutcomesIdentical": true,
+    "allFourDailyEventOutcomesIdentical": true
+  },
+  "sensitivityReuse": {
+    "originalComputationHead": "8fea838ea9aec792ae7dcb3f546710a03a499d2f",
+    "reviewedHead": "2c10052d07b32fe35a3e57d232caf053c2ae8c09",
+    "reportedBindingsVerified": 17,
+    "uniqueSourcePaths": 16,
+    "bindings": [
+      {
+        "group": "sources",
+        "path": "quant/data/market/discover-series-long/ref_JPM.json",
+        "sha256": "48119a4150aed22230271e5c1284fb1f6dba0378ab3b192b01aed49d0e7d5934"
+      },
+      {
+        "group": "sources",
+        "path": "quant/data/market/discover-series-long/ref_MSFT.json",
+        "sha256": "6447c671f781fd58c36faaa2891a0072e7ce0f93e6e08a80db35008916ae2e1c"
+      },
+      {
+        "group": "sources",
+        "path": "quant/data/market/discover-series-long/ref_NVDA.json",
+        "sha256": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d"
+      },
+      {
+        "group": "sources",
+        "path": "quant/data/market/security-master/us-security-master.json",
+        "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332"
+      },
+      {
+        "group": "sources",
+        "path": "quant/engines/research-classification-evidence.cjs",
+        "sha256": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/research-validation.cjs",
+        "sha256": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/research-studies.cjs",
+        "sha256": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418"
+      },
+      {
+        "group": "dependencies",
+        "path": "scripts/quant/run-v8-sensitivity.cjs",
+        "sha256": "397ccf0b28ef51221bbc06c1717d218ad2f325ced4448ca1f044f96c1549245e"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/research-contract.cjs",
+        "sha256": "a4192856ca4d70b21d8e43b834bd1dc1fb189dade04b2ea98ccf97c386e11b78"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/weekly-real-adapter.cjs",
+        "sha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/research-classification-evidence.cjs",
+        "sha256": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/corporate-action-evidence.js",
+        "sha256": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/return-series.js",
+        "sha256": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/signal-backtest.js",
+        "sha256": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/pattern-research.js",
+        "sha256": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/setup-engine.js",
+        "sha256": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618"
+      },
+      {
+        "group": "dependencies",
+        "path": "quant/engines/profile-backtest.js",
+        "sha256": "49160c3e65128e526a4a5d31dd13c56757f6c84ab98da98c5425a51058ee4731"
+      }
+    ],
+    "numericalRuntimeBinaryIdentical": true,
+    "originalByteReplayFilesVerified": {
+      "sensitivity-input.json": "87ae12ae5a5eb874e1084b09d7e204fa6354dd1e8607ad5e1316a0624ca3847d",
+      "sensitivity-result.json": "f0ea8f542f8b615c7bb318774d8def58bf5a933921cdb822601b7bb8d86670e9",
+      "sensitivity-registration.json": "8421c8cc303580d48bafd905e0a185a25020a67c789b20a472df1d60faa706ef",
+      "sensitivity-summary.json": "88e4f2488b1bbc475fc2967aa34a324e0fb03e5fced0072c3c0be37ebe8c48ec"
+    },
+    "newNumericalBootstrapRun": false,
+    "newIndependentPythonReference": {
+      "state": "PASS",
+      "reference": "Python stdlib independent source-price, circular-block RNG, pooled ratio, centered p, basic interval, Holm and neighborhood arithmetic",
+      "comparisons": 144662,
+      "sourcePriceOutcomePairs": 402,
+      "gridPoints": 36,
+      "bootstrapDesigns": 72,
+      "seconds": 2.567141179000032,
+      "independentTradingEvidence": false,
+      "inputSha256": "87ae12ae5a5eb874e1084b09d7e204fa6354dd1e8607ad5e1316a0624ca3847d",
+      "resultSha256": "f0ea8f542f8b615c7bb318774d8def58bf5a933921cdb822601b7bb8d86670e9",
+      "referenceSha256": "3ba3ded9d1b35313ac85d8d615deffc843eba0f42f4426afe2ddba48578a284f"
+    }
+  },
+  "state": "PASS",
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false
+}
