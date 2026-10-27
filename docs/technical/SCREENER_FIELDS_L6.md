@@ -68,7 +68,7 @@ Die bestehenden Rundreise-Tests (`technical-query-text.test.mjs`) erfassen die n
 
 | Bedingung | Nachweis |
 |---|---|
-| Bestehende Spalten unverändert | Neubau mit dem Erzeuger auf dem aktuellen `main` (Formationen 1.2.1): alle **94** bestehenden Spalten byte-gleich mit `main`. In der ersten Fassung dieses Dokuments stand „83“; das war ein Zählfehler, gemeint war immer der volle Spaltenbestand. |
+| Bestehende Spalten unverändert | Neubau mit dem Erzeuger nach dem Merge von #1008 (Formationen 1.2.2): alle **94** bestehenden Spalten byte-gleich mit einem Erzeugerlauf des `main`-Codes auf denselben Eingaben. In der ersten Fassung dieses Dokuments stand „83“; das war ein Zählfehler, gemeint war immer der volle Spaltenbestand. |
 | Kausal, mit echten Daten geprüft | `technical-screener-l6.test.mjs`: echte AAPL-Tagesbars, abgeschnittene Reihen je Stand, „Tage seit“ gegen die abgeschnittene Reihe am Tag t − d; Kerzenmuster selbst gegen TA-Lib auf 38 echten Titeln (#996, #1006). |
 | Fehlende Werte = `null` | Neubau: kein `undefined`, kein `NaN` in den 11 neuen Spalten. `null` bei 244 Titeln für die Kerzenlisten (nicht entscheidbar, davon 168 ruhend mit ATR 0), bei 257/260 für „Tage seit“ (zusätzlich: kein Muster im Prüfraum). ROC, Inside Bar, NR7: keine `null`, weil alle Titel 270 Bars haben. |
 | Abfrage- und Filterlogik | `technical-query`-Validierung, Text-Rundreise über alle Felder (`technical-query-text.test.mjs`), Datensatzvertrag (jede Spalte vorhanden, jede Vorlage auswertbar). |
