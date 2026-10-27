@@ -1,7 +1,7 @@
 # Supertrader · Bereinigungsmodus für entfallene Titel
 
 Stand 27.10.2026. Anlass ist BZH. Umsetzung in zwei Draft-PRs (Gate A trennt sie):
-- **PR 1:** Modus und Heap-Einstellung (Supertrader-Pfade).
+- **PR 1:** Modus und Speicher-Frühwarnung in der CI (Supertrader-Pfade).
 - **PR 2:** Anstoß im Nachtlauf (`scripts/ci`, `market-data-refresh.yml`). Erst nach PR 1 mergen, weil der Anstoß sonst mit HTTP 422 an der unbekannten Eingabe scheitert. Der Alarm würde das melden.
 
 ## Was am 27.10. passiert ist
@@ -86,6 +86,17 @@ Gemessen am 27.10.2026 auf `main` `168d611`, Node 22, 15-GB-Maschine:
 | 2.560 MB | durchgelaufen, 54 s, ~2,65 GB RSS |
 | 3.072 MB | durchgelaufen, 49 s, ~2,76 GB RSS |
 
-Der Standard-Heap von Node hängt vom Speicher der Maschine ab. Welchen Standard der GitHub-Runner hat (öffentliches Repository, 16 GB), ist nicht belegt. Der letzte Lauf am 24.10. kam mit dem Standard noch durch. Der Bedarf liegt jetzt knapp über 2,3 GB, also an der Grenze.
+Der Standard-Heap von Node hängt vom Speicher der Maschine ab. Gemessen auf dem echten GitHub-Runner (Supertrader-CI zu #992, 27.10.2026):
 
-Deshalb setzt PR 1 `NODE_OPTIONS=--max-old-space-size=3072`, nur für den Build-Schritt. Das sind etwa 20 % über dem gemessenen Bedarf und weit unter dem Runner-Speicher. Ressourcenbudgets und andere Schritte bleiben unverändert.
+| Messpunkt | Wert |
+|---|---|
+| Standard-Heap des Runners | 4.144 MB |
+| inkrementeller Build mit 3.072 MB (Grenze 3.120 MB) | durchgelaufen, 50,2 s |
+| regulärer Signallauf 40501225836 mit dem Standard | durchgelaufen |
+
+Eine feste Einstellung von 3.072 MB hätte den Spielraum also um rund 1 GB gesenkt. Der Speicherabbruch tritt nur auf Maschinen mit weniger als 16 GB auf, deren Standard bei 2.096 MB liegt.
+
+Deshalb gilt:
+- **Kein `NODE_OPTIONS` im Produktivlauf.** Der Signallauf behält den Runner-Standard, ohne Erhöhung und ohne Absenkung.
+- **Frühwarnung statt Einstellung:** Die Supertrader-CI baut bei jedem Supertrader-PR inkrementell auf einer Kopie, wie im Produktivlauf und mit dem Runner-Standard. Sie protokolliert die Heap-Grenze. Wächst der Bedarf über den Standard, wird dort ein PR rot, bevor der Signallauf scheitert.
+- **Lokal** auf kleineren Maschinen braucht ein Build `--max-old-space-size=3072`.

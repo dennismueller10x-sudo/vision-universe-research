@@ -243,6 +243,8 @@ test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne v
   assert.match(schritt(/prune-dead-refs\.mjs/), /if: env\.MODE == 'prune-dead-refs'/);
   assert.doesNotMatch(schritt(/prune-dead-refs\.mjs/), /TIINGO|secrets\./);
   assert.ok(wf.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < wf.indexOf('commit-and-push.sh'), 'Tests vor dem Commit');
-  assert.match(schritt(/supertrader\/build\.mjs/), /NODE_OPTIONS: --max-old-space-size=3072/, 'Heap nur fuer den Build');
-  assert.equal((wf.match(/max-old-space-size/g) || []).length, 1);
+  /* Heap: Runner-Standard (4144 MB gemessen) - keine Absenkung im Produktivlauf. */
+  assert.doesNotMatch(wf, /max-old-space-size|NODE_OPTIONS/);
+  const ci = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-ci.yml'), 'utf8');
+  assert.match(ci, /cp -r supertrader "\$RUNNER_TEMP\/supertrader-inkrementell"\n\s+node scripts\/supertrader\/build\.mjs --out="\$RUNNER_TEMP\/supertrader-inkrementell"/, 'Speicher-Fruehwarnung in der CI');
 });

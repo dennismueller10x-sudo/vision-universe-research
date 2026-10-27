@@ -61,10 +61,6 @@ jobs:
         if: env.MODE == 'build'
         env:
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
-          # Gemessen 27.10.2026: 2304 MB Heap brechen ab, 2560 MB reichen
-          # (Spitze ~2,7 GB RSS). Der Standard von Node haengt vom Speicher
-          # der Maschine ab (hier ~2 GB). Nur dieser Schritt, Runner 16 GB.
-          NODE_OPTIONS: --max-old-space-size=3072
         run: node scripts/supertrader/build.mjs
       - name: Entfallene Titel ausweisen (fail closed, keine Marktdaten)
         if: env.MODE == 'prune-dead-refs'
