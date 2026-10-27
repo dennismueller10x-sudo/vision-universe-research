@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.7.0";
+  var QUERY_VERSION = "technical-query-1.8.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -78,10 +78,11 @@
     { id: "macdPositive", group: "Momentum", kind: "bool", tfs: ALL, label: { "1D": "MACD-Histogramm positiv", "1W": "MACD-Histogramm positiv (Woche)", "1M": "MACD-Histogramm positiv (Monat)" } },
     { id: "stochK", group: "Momentum", kind: "num", tfs: ALL, label: { "1D": "Stochastik %K (14, 3)", "1W": "Stochastik %K (14, 3, Woche)", "1M": "Stochastik %K (14, 3, Monat)" } },
     { id: "cci20", group: "Momentum", kind: "num", tfs: D, label: "CCI 20" },
-    { id: "roc21", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 21 Tage (ROC)" },
-    { id: "roc63", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 63 Tage (ROC, 3 Monate)" },
-    { id: "roc126", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 126 Tage (ROC, 6 Monate)" },
-    { id: "roc252", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 252 Tage (ROC, 12 Monate)" },
+    /* ROC seit 1.8.0 (L7) auch je Woche/Monat: dieselbe Kalenderspanne in Wochen- bzw. Monatsbars. */
+    { id: "roc21", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 21 Tage (ROC)", "1W": "Kursänderung 4 Wochen (ROC)", "1M": "Kursänderung 1 Monat (ROC)" } },
+    { id: "roc63", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 63 Tage (ROC, 3 Monate)", "1W": "Kursänderung 13 Wochen (ROC)", "1M": "Kursänderung 3 Monate (ROC)" } },
+    { id: "roc126", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 126 Tage (ROC, 6 Monate)", "1W": "Kursänderung 26 Wochen (ROC)", "1M": "Kursänderung 6 Monate (ROC)" } },
+    { id: "roc252", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 252 Tage (ROC, 12 Monate)", "1W": "Kursänderung 52 Wochen (ROC)", "1M": "Kursänderung 12 Monate (ROC)" } },
     { id: "williamsR", group: "Momentum", kind: "num", tfs: D, label: "Williams %R 14 (−100 bis 0)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
@@ -95,12 +96,13 @@
     { id: "atrPct", group: "Volatilität", kind: "pct", tfs: ALL, label: { "1D": "ATR 14 in % des Kurses", "1W": "ATR 14 (Woche) in % des Kurses", "1M": "ATR 14 (Monat) in % des Kurses" } },
     { id: "bbPctB", group: "Volatilität", kind: "num", tfs: D, label: "Bollinger %B (20, 2)" },
     { id: "bbSqueeze", group: "Volatilität", kind: "bool", tfs: D, label: "Bollinger-Enge (Breite im unteren 20-%-Perzentil)" },
-    { id: "insideBar", group: "Volatilität", kind: "bool", tfs: D, label: "Inside Bar (Hoch und Tief innerhalb des Vortags)" },
-    { id: "nr7", group: "Volatilität", kind: "bool", tfs: D, label: "NR7 (engste Tagesspanne der letzten 7 Tage)" },
-    /* Kerzenmuster am Stichtag; neutral = ohne Richtung (Doji, Long-Legged Doji, Spinning Top). */
-    { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: D, label: "Bullisches Kerzenmuster am Stichtag", values: CANDLE_TYPES },
-    { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: D, label: "Bärisches Kerzenmuster am Stichtag", values: CANDLE_TYPES },
-    { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: D, label: "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", values: CANDLE_TYPES },
+    { id: "insideBar", group: "Volatilität", kind: "bool", tfs: ALL, label: { "1D": "Inside Bar (Hoch und Tief innerhalb des Vortags)", "1W": "Inside Week (Hoch und Tief innerhalb der Vorwoche)", "1M": "Inside Month (Hoch und Tief innerhalb des Vormonats)" } },
+    { id: "nr7", group: "Volatilität", kind: "bool", tfs: ALL, label: { "1D": "NR7 (engste Tagesspanne der letzten 7 Tage)", "1W": "NR7 (engste Wochenspanne der letzten 7 Wochen)", "1M": "NR7 (engste Monatsspanne der letzten 7 Monate)" } },
+    /* Kerzenmuster am Stichtag bzw. an der letzten abgeschlossenen Wochen-/Monatskerze (seit 1.8.0);
+       neutral = ohne Richtung (Doji, Long-Legged Doji, Spinning Top). */
+    { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bullisches Kerzenmuster am Stichtag", "1W": "Bullisches Kerzenmuster (Wochenkerze)", "1M": "Bullisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
+    { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bärisches Kerzenmuster am Stichtag", "1W": "Bärisches Kerzenmuster (Wochenkerze)", "1M": "Bärisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
+    { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
