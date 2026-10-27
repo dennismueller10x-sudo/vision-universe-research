@@ -378,3 +378,22 @@ test("B-F3: Erkennung erst am Ausbruchstag ist als solche gekennzeichnet und zae
   }
   assert.ok(atBreakout > 0, "mindestens eine Formation mit Erkennung am Ausbruchstag im Fixture");
 });
+
+test("1.2.3: Punktpreise bei Kursen unter einem Cent werden nicht zu 0 gerundet, Werte ab 1 unveraendert", () => {
+  /* Dieselbe Reihe einmal um 100 $ und einmal auf ein Millionstel skaliert: gleiche Formationen und Zustaende,
+     jeder Punktpreis positiv und auf 4 signifikante Stellen proportional (CPTAF, FORMATION_VALIDATION.md §4). */
+  const big = synthetic("trend", CASES.trend), k = 1e-6;
+  const tiny = Canonical.fromRows(big.timestamps.map((d, i) => ({ date: d, open: big.open[i] * k, high: big.high[i] * k, low: big.low[i] * k, close: big.close[i] * k, volume: 1e6 })),
+    { instrumentId: "SUBPENNY", exchange: "SYN", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "1.2.3" });
+  const A = Fm.analyze(big).formations, B = Fm.analyze(tiny).formations;
+  assert.deepEqual(B.map((f) => f.id + ":" + f.state), A.map((f) => f.id + ":" + f.state));
+  let pts = 0;
+  B.forEach((f, j) => (f.points || []).forEach((p, i) => {
+    assert.ok(p.price > 0, f.id + " Punkt " + i + " = " + p.price);
+    const ref = A[j].points[i].price * k;
+    assert.ok(Math.abs(p.price / ref - 1) < 1e-3, f.id + " " + p.price + " vs " + ref);
+    pts++;
+  }));
+  assert.ok(pts > 0);
+  for (const f of A) for (const p of f.points || []) assert.equal(p.price, Math.round(p.price * 1e4) / 1e4, "ab 1: 4 Nachkommastellen");
+});

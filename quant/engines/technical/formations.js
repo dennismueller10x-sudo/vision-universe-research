@@ -44,7 +44,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.2.2";
+  var ENGINE_VERSION = "technical-formations-1.2.3";
 
   /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
      (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */
@@ -53,7 +53,9 @@
   var CW_EXTRA = 6;
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
-  function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
+  /* Zahlen ab Betrag 1 auf 4 Nachkommastellen, darunter 4 signifikante Stellen (wie published-close.js): Bei Kursen unter
+     einem Cent machte die feste Rundung aus 0,000001 eine 0 (CPTAF, FORMATION_VALIDATION.md §4). 0 bleibt 0. */
+  function r4(v) { return isNum(v) ? (Math.abs(v) >= 1 || v === 0 ? Math.round(v * 1e4) / 1e4 : Number(v.toPrecision(4))) : null; }
 
   var STATES = { DETECTED: "Erkannt", CONFIRMED: "Bestätigt", INVALIDATED: "Invalidiert" };
 
