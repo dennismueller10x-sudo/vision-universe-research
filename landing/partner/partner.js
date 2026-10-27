@@ -2,6 +2,8 @@
 // optional greeting via ?fuer=<key>. Greetings come only from this list, so a
 // crafted link cannot place arbitrary text on the page.
 (() => {
+  // Every "App öffnen" button points here; change it in this one place.
+  const APP_URL = 'https://research.visionuniverse.de/willkommen/';
   const GROUPS = {
     'arbeitskreis-boerse': 'den Arbeitskreis Börse Mannheim',
     'skyline-investment-club': 'den Skyline Investment Club',
@@ -15,14 +17,10 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slides = [...document.querySelectorAll('.slide')];
 
+  for (const link of document.querySelectorAll('[data-app]')) link.href = APP_URL;
   const key = new URLSearchParams(location.search).get('fuer');
   if (key && Object.hasOwn(GROUPS, key)) {
-    const greeting = document.querySelector('[data-greeting]');
-    greeting.textContent = '— Produktvorstellung für ' + GROUPS[key];
-    const subject = 'Frühzugang Vision Universe – ' + GROUPS[key].replace(/^(den|die|das) /, '');
-    for (const link of document.querySelectorAll('[data-mail]')) {
-      link.href = 'mailto:info@visionuniverse.de?subject=' + encodeURIComponent(subject);
-    }
+    document.querySelector('[data-greeting]').textContent = '— Neu am Markt · vorgestellt für ' + GROUPS[key];
   }
 
   const total = document.querySelector('[data-total]');
