@@ -302,7 +302,8 @@ test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, 
   assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
   assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
   assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
-  assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*!d\.activation[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
+  assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*\(!d\.activation \|\| d\.activation\.state==="ACTIVATING"\)[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
+  assert.doesNotMatch(code, /PREPARED_DISABLED"\s*\)?\s*\?\s*0/, 'vorbereitet ist nie freigegeben');
   // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
   const dq = code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated');
   assert.ok(dq > 0, 'DQ-SF8 auf dem Laufergebnis');

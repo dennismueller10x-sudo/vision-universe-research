@@ -119,8 +119,9 @@ jobs:
           ziel=supertrader/data/sf-candidates
           # V2 und V6: ohne registrierten Erzeuger waeren die Dateien fremde Artefakte; solange der Eintrag
           # supertrader-sf8-candidates in core/registry/domains.json activation.state PREPARED_DISABLED traegt, ist
-          # ein Commit eine Veroeffentlichung ohne Freigabe (Aktivierung nur per eigenem, freigegebenem PR)
-          if ! node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && !d.activation ? 0 : 1)'; then
+          # ein Commit eine Veroeffentlichung ohne Freigabe. Freigegeben ist er erst mit ACTIVATING (eigener,
+          # freigegebener Core-PR vor dem ersten Lauf) oder ohne activation (nach dem ersten Lauf).
+          if ! node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && (!d.activation || d.activation.state==="ACTIVATING") ? 0 : 1)'; then
             echo "::error::supertrader-sf8-candidates in core/registry/domains.json fehlt oder ist nicht freigegeben (activation.state PREPARED_DISABLED, V2/V6) - kein Commit."
             exit 1
           fi
