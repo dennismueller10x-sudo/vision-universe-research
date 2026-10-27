@@ -221,7 +221,11 @@ test('Supabase-Auth: nur Entwicklungsprojekt, Hook und Redirect, Geheimnis nie i
   const logs = [];
   const smtp = {login: 'login@smtp-brevo.com', key: 'xsmtpsib-geheim', sender: 'konto@visionuniverse.de'};
   const r = await configureAuth({token, ref, apiOrigin: API, smtp, fetchImpl: dev.fetchImpl, log: m => logs.push(m)});
-  const patch = dev.calls.find(c => c.method === 'PATCH').body;
+  const patches = dev.calls.filter(c => c.method === 'PATCH').map(c => c.body);
+  assert.equal(patches.length, 2, 'SMTP zuerst, dann der Rest');
+  assert.equal(patches[0].smtp_host, 'smtp-relay.brevo.com');
+  assert.ok(!('mailer_templates_confirmation_content' in patches[0]), 'Vorlagen erst nach SMTP');
+  const patch = Object.assign({}, ...patches);
   assert.equal(patch.uri_allow_list, `${API}/v1/auth/callback**`);
   assert.equal(patch.hook_before_user_created_enabled, true);
   assert.equal(patch.mailer_autoconfirm, false);

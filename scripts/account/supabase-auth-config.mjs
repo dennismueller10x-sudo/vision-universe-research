@@ -85,7 +85,16 @@ export async function configureAuth({token, ref, apiOrigin, smtp, production = f
   const names = Object.keys(changes);
   log(names.length ? `Zu aendern: ${names.join(', ')}` : 'Auth-Einstellungen bereits wie vorgesehen.');
   if (!names.length || dryRun) return {changed: dryRun ? [] : names, planned: names};
-  await call('PATCH', `/v1/projects/${ref}/config/auth`, changes);
+  // Supabase Free nimmt eigene Vorlagen nur mit eigenem SMTP an: SMTP zuerst setzen,
+  // danach den Rest (zwei Aufrufe, jeder fuer sich vollstaendig oder gar nicht).
+  const isMail = k => k.startsWith('smtp_') || k === 'rate_limit_email_sent';
+  const mail = Object.fromEntries(Object.entries(changes).filter(([k]) => isMail(k)));
+  const rest = Object.fromEntries(Object.entries(changes).filter(([k]) => !isMail(k)));
+  if (Object.keys(mail).length) {
+    await call('PATCH', `/v1/projects/${ref}/config/auth`, mail);
+    log('SMTP gesetzt.');
+  }
+  if (Object.keys(rest).length) await call('PATCH', `/v1/projects/${ref}/config/auth`, rest);
   log('Auth-Einstellungen gesetzt.');
   return {changed: names, planned: names};
 }
