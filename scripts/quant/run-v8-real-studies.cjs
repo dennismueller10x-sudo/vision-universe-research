@@ -23,7 +23,9 @@ function main(directory,secReport){
  if(previousPlan&&C.hash(previousPlan)!==C.hash(registration))throw Error('REGISTERED_PLAN_CHANGED_USE_NEW_GENERATION');
  if(!previousPlan)write('study-plan-1.1',registration);
  write('registration',registration);
- const input={asOf,sourceMode:'HISTORICAL_SIMULATION',cohortMode:'CONDITIONAL_CURRENT_CLASSIFICATION',executionClock:'OBSERVED_WEEKLY_DATES',returnBasis:'PRICE_RETURN',currency:'USD',registration,horizonBars:13,entryDelayBars:1,costs:{basis:'PER_SIDE_NOTIONAL',feeBps:10,slippageBps:5},expectedCalendar:calendar,listings,ruleIds:RULES,benchmark:{currency:'USD',returnBasis:'PRICE_RETURN',bars:[...benchmark.byDate].map(([date,close])=>({date,close}))}};
+ // A later source refresh must not extend this study beyond its weekly cutoff.
+ // Keep the full source hash, but submit only observations known by its asOf.
+ const input={asOf,sourceMode:'HISTORICAL_SIMULATION',cohortMode:'CONDITIONAL_CURRENT_CLASSIFICATION',executionClock:'OBSERVED_WEEKLY_DATES',returnBasis:'PRICE_RETURN',currency:'USD',registration,horizonBars:13,entryDelayBars:1,costs:{basis:'PER_SIDE_NOTIONAL',feeBps:10,slippageBps:5},expectedCalendar:calendar,listings,ruleIds:RULES,benchmark:{currency:'USD',returnBasis:'PRICE_RETURN',bars:[...benchmark.byDate].filter(([date])=>date<=asOf).map(([date,close])=>({date,close}))}};
  write('signal-input',input);const signal=S.runSignalStudy(input);write('signal-result',signal);
  const byListing=new Map(listings.map(l=>[l.listingId,l.bars]));
  const wfCalendar=calendar.filter(d=>d>='2000-01-01'),calSet=new Set(wfCalendar);
@@ -49,7 +51,7 @@ function main(directory,secReport){
   sources['quant/config/market-calendar.json']=C.shaFile(path.join(ROOT,'quant/config/market-calendar.json'));sources['quant/engines/realtime/trading-session.js']=C.shaFile(path.join(ROOT,'quant/engines/realtime/trading-session.js'));
   for(const ticker of ['JPM','MSFT','NVDA','XOM']){const l=listings.find(l=>l.securityId==='ref_'+ticker),p='quant/data/market/discover-series/ref_'+ticker+'.json',d=JSON.parse(fs.readFileSync(path.join(ROOT,p)));sources[p]=C.shaFile(path.join(ROOT,p));
    if(d.dataMode!=='real'||d.priceSeriesType!=='SPLIT_ADJUSTED'||d.currency!=='USD'||d.grain!=='daily')throw Error('DAILY_PRICE_SCOPE_UNVERIFIED');
-   const bars=d.points.map(([date,close])=>{const session=T.sessionFor(date,{calendar:marketCalendar,exchange:'XNYS'});if(!T.isTradingDay(date,{calendar:marketCalendar,exchange:'XNYS'})||date<marketCalendar.coverage.from||date>marketCalendar.coverage.to)throw Error('SESSION_UNVERIFIED');return {date,close,closeAt:session.close,availableAt:session.close};});dailyListings.push({...l,bars});
+   const bars=d.points.filter(([date])=>date<=asOf).map(([date,close])=>{const session=T.sessionFor(date,{calendar:marketCalendar,exchange:'XNYS'});if(!T.isTradingDay(date,{calendar:marketCalendar,exchange:'XNYS'})||date<marketCalendar.coverage.from||date>marketCalendar.coverage.to)throw Error('SESSION_UNVERIFIED');return {date,close,closeAt:session.close,availableAt:session.close};});dailyListings.push({...l,bars});
    for(const r of report.results.filter(r=>r.ticker===ticker)){if(r.state!=='MATCH'||!r.accessionIdentity||!r.availableFrom.every(t=>t===r.acceptanceUtc))throw Error('ORIGINAL_EVENT_TIME_MISMATCH');if(r.acceptanceUtc.slice(0,10)<bars[0].date){excluded.push({ticker,accession:r.accession,reason:'BEFORE_DAILY_PRICE_COVERAGE'});continue;}eventRows.push({eventId:ticker+':'+r.accession,eventType:'ORIGINAL_SEC_ACCEPTANCE',listingId:l.listingId,occurredAt:r.acceptanceUtc,publishedAt:r.acceptanceUtc,availableAt:r.acceptanceUtc,sourceHash:r.sourceHash});}
   }
   const dailyCalendar=[...new Set(dailyListings.flatMap(l=>l.bars.map(b=>b.date)))].sort();const eventInput={...input,expectedCalendar:dailyCalendar,listings:dailyListings,events:eventRows,horizonBars:20};delete eventInput.executionClock;

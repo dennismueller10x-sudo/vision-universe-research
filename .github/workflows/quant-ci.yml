@@ -25,6 +25,10 @@ on:
         description: 'Read-only V8 private archive assessment; zero provider requests'
         type: boolean
         default: false
+      probe_v8_r2_archives:
+        description: 'Read-only existing R2 index probe; four requests maximum'
+        type: boolean
+        default: false
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
 permissions:
@@ -208,3 +212,28 @@ jobs:
       - name: Remove ephemeral private archive contents
         if: always()
         run: rm -rf -- .market-cache .sec-cache .quant-state quant/data/sec/facts
+
+  v8-r2-archive-probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.probe_v8_r2_archives == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect existing History Store index metadata without writes
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/quant/probe-v8-r2-archives.mjs .verification/v8-r2
+      - name: Assert canonical data remained unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant-v8-derived-r2-assessment
+          path: .verification/v8-r2/r2-assessment.json
+          retention-days: 14

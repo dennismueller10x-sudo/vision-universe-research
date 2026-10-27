@@ -7,6 +7,7 @@ def hash_(x): return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',
 def near(a,b): assert math.isclose(a,b,rel_tol=2e-10,abs_tol=1e-10),(a,b)
 def day(s): return datetime.date.fromisoformat(s[:10])
 observations=load('observations'); lookup={r['id']:r for r in observations}
+signal_input=load('signal-input'); assert all(b['date']<=signal_input['asOf'] for b in signal_input['benchmark']['bars'])
 for mode in ['ROLLING','EXPANDING']:
  x=load('wf-'+mode+'-input'); cfg=x['config']; partition=load('wf-'+mode+'-partition'); result=load('wf-'+mode+'-result'); models=load('wf-'+mode+'-models'); calendar=cfg['calendar']; all_test=[]; values=[]
  for i,p in enumerate(range(cfg['trainSize']+cfg['validationSize'],len(calendar)-cfg['testSize']+1,cfg['stepSize'])):
@@ -38,7 +39,7 @@ for mode in ['ROLLING','EXPANDING']:
  assert len(all_test)==len(set(all_test)); assert len(result['aggregate']['rows'])==len(values)
  for a,b in zip(result['aggregate']['rows'],values): assert a['id']==b['id'];near(a['value'],b['value'])
  near(result['aggregate']['mean'],sum(z['value'] for z in values)/len(values)); checks.append(dict(id='FULL_WF_'+mode,folds=len(partition['folds']),testOpportunities=len(values),state='PASS'))
-x=load('regime-input'); labels=load('regime-labels')['regimes']; bars=x['bars']; lb=x['lookbackBars']; vl=x['volatilityLookbackBars']; assert len(labels)==len(bars)-max(lb,vl)
+x=load('regime-input'); labels=load('regime-labels')['regimes']; bars=x['bars']; lb=x['lookbackBars']; vl=x['volatilityLookbackBars']; assert all(b['date']<=x['asOf'] for b in bars); assert len(labels)==len(bars)-max(lb,vl)
 for k in range(max(lb,vl),len(bars)):
  r=labels[k-max(lb,vl)];trend=bars[k]['close']/bars[k-lb]['close']-1;returns=[bars[j]['close']/bars[j-1]['close']-1 for j in range(k-vl+1,k+1)];mean=sum(returns)/vl;vol=(sum((z-mean)**2 for z in returns)/(vl-1)*x['annualization'])**0.5
  near(r['trendReturn'],trend);near(r['volatility'],vol);assert r['date']==bars[k]['date'];assert r['state']==('POSITIVE_TREND' if trend>x['trendBand'] else 'NEGATIVE_TREND' if trend< -x['trendBand'] else 'SIDEWAYS'); assert r['volatilityState']==('HIGH_VOLATILITY' if vol>=x['volatilityThreshold'] else 'LOW_VOLATILITY')
@@ -61,6 +62,7 @@ for axis in ['state','volatilityState']:
  checks.append(dict(id='COMPLETE_REGIME_EPISODES_'+axis,episodes=len(actual),state='PASS'))
 if (out/'original-events-result.json').exists():
  x=load('original-events-input'); r=load('original-events-result'); headers=load('sec-header-input'); known={z['ticker']+':'+z['accession']:z for z in headers['results']}; count=0
+ assert all(b['date']<=x['asOf'] for l in x['listings'] for b in l['bars'])
  for e in r['events']:
   h=known[e['eventId']];assert h['state']=='MATCH' and h['accessionIdentity'];src=next(z for z in x['events'] if z['eventId']==e['eventId']);assert src['availableAt']==h['acceptanceUtc']
   listing=next(z for z in x['listings'] if z['listingId']==e['listingId']);bars=listing['bars'];index=next(i for i,b in enumerate(bars) if b['closeAt']>h['acceptanceUtc']);assert e['entryDate']==bars[index]['date'];assert e['exitDate']==bars[index+x['horizonBars']]['date'];side=(x['costs']['feeBps']+x['costs']['slippageBps'])/10000;near(e['netReturn'],bars[index+x['horizonBars']]['close']/bars[index]['close']*(1-side)/(1+side)-1);count+=1
