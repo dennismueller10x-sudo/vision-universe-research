@@ -210,8 +210,30 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 
 | Titel | Formation | Prüfung | Befund | Status |
 |---|---|---|---|---|
-| CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Kein Datenfehler (korrigiert gegenüber Abschnitt 1): Die Tagesbars sind positiv, CPTAF notiert im Sub-Penny-Bereich (Schluss 0,0001 $, Tief bis 0,000001 $). Die Altformationen (`ti/chart-patterns.js`) runden Punktpreise auf 4 Nachkommastellen; ein Tief von 0,000001 wird dadurch 0. | **Rundungsfehler in der Ausgabe**, offen. Abhilfe: Punktpreise wie veröffentlichte Schlusskurse runden (`published-close.js`: unter 1 Cent 4 signifikante Stellen). Eigener kleiner PR mit Vorher/Nachher. |
-| CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Rundungsfehler**, offen. |
+| CPTAF | DESCENDING_TRIANGLE@2026-09-29 und @2026-09-30 | PUNKT_PREIS | Kein Datenfehler (korrigiert gegenüber Abschnitt 1): Die Tagesbars sind positiv, CPTAF notiert im Sub-Penny-Bereich (Schluss 0,0001 $, Tief bis 0,000001 $). Die Altformationen (`ti/chart-patterns.js`) runden Punktpreise auf 4 Nachkommastellen; ein Tief von 0,000001 wird dadurch 0. | **Behoben in 1.2.3** (siehe unten). |
+| CPTAF | DOUBLE_BOTTOM@2026-09-29 | PUNKT_PREIS | wie oben | **Behoben in 1.2.3.** |
 | TECTP | BEAR_PENNANT@2026-01-22 | MAST_ZU_KURZ | Mast 1,87; 5 ATR am Erkennungsbar = 0,61, also erfüllt. Ursache war ein **Validatorfehler**: Bei ATR 0 am Stichtag (ruhender Titel) fiel der Validator auf einen undefinierten Wert zurück, und jeder Vergleich scheiterte. | **Validator korrigiert**: Er misst den Mast nur noch an positiver ATR. Die Engine ist unverändert. Danach regelkonform. |
 
-**Stand nach der Validatorkorrektur:** 11.423 von 11.426 Erkennungen sind regelkonform. Offen sind nur die 3 CPTAF-Fälle: Sie entstehen durch die Rundung der Punktpreise bei einem Sub-Penny-Titel.
+**Stand nach der Validatorkorrektur:** 11.423 von 11.426 Erkennungen sind regelkonform. Offen waren danach nur die 3 CPTAF-Fälle. Sie entstanden durch die Rundung der Punktpreise bei einem Sub-Penny-Titel und sind mit 1.2.3 behoben.
+
+## 5. Rundung `technical-formations-1.2.3` / `ti-chart-patterns-1.1.1` (keine Entscheidungsänderung)
+
+**Ursache:** Beide Module runden jede Ausgabezahl auf 4 Nachkommastellen. Bei Kursen unter einem Cent wurde ein Punktpreis dadurch 0. Beispiel CPTAF: Tief 0,000001 $.
+
+**Änderung:**
+- Beträge ab 1 behalten 4 Nachkommastellen.
+- Beträge darunter bekommen 4 signifikante Stellen, wie `published-close.js` bei Schlusskursen.
+- 0 bleibt 0.
+
+**Vorher/Nachher** (5.657 Titel, alle 11.426 Formationen am Stichtag):
+
+| | Anzahl |
+|---|---|
+| Formationen mit geänderter Id, Zustand, Erkennungs-, Bestätigungs- oder Invalidierungsdatum | **0** |
+| Formationen mit genaueren Zahlen (Werte unter 1, meist Steigungen je Bar) | 2.853 (bei 2.467 Titeln) |
+| Werte ab 1 | unverändert |
+| Validator | 11.426 / 11.426 regelkonform (vorher 11.423) |
+
+**Wirkung im Produkt:** Der Screener speichert keine Formationspreise, nur Typ, Zustand, Daten und Kennzeichen. Seine Spalten ändern sich nicht. Genauer werden nur die Zahlen im Chart Studio.
+
+**Test:** Dieselbe konstruierte Reihe läuft einmal um 100 $ und einmal auf ein Millionstel skaliert. Erwartet werden gleiche Formationen und Zustände, jeder Punktpreis positiv und proportional. Der Test schlägt auf 1.2.2 fehl.
