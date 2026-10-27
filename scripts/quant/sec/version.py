@@ -134,7 +134,12 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          before the annual filing's filing date. Forward-looking durations
 #          (next year's commitments in Nutrien's 40-F) shifted every fiscal
 #          year label from 2020 on and added a phantom year 2026.
-NORMALIZATION_LOGIC_VERSION = "1.12.0"
+# 1.13.0 — reviewed issuer-specific concepts (quant/config/sec-issuer-extensions.json)
+#          map onto a metric for their own CIK only, ranked below every generic
+#          concept. companyfacts carries no extension taxonomy, so without a
+#          merged instance document nothing changes; with one, a cell that had
+#          no generic concept gets the issuer's own value (NVDA capex FY2013-2021).
+NORMALIZATION_LOGIC_VERSION = "1.13.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -165,7 +170,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "4686ffb3fd60771fe1112b13ee71cb6af3530d787ff0322b420f6633038a77e8"
+    "dfd2c618dd4abeb206e927fd886158ec7b1b01272ffbb935a30ba7f2120ff927"
 )
 
 

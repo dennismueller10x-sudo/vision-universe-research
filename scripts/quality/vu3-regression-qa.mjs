@@ -183,6 +183,7 @@ const VISUAL = [
   ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-gauge .mk-self', 'KGV im Marktvergleich'],
   ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV nach jedem Jahresbericht als Linie'],
   ['Fundamental', '/fundamental/#/KO?ansicht=vergleich', '.fu-bc.is-self .fu-b', 'Branchenvergleich: eigener Balken neben Vergleichsunternehmen'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=free_cash_flow', '.fu-mc .fu-l-m.m1', 'Mehrere Kennzahlen in einem Verlauf (KGV + Free Cashflow)'],
   ['Fundamental', '/fundamental/', '.fu-entry-list li', 'Start: Ranglisten-Einstiege mit Unternehmen'],
   ['Fundamental', '/fundamental/#/entdecken', '.fu-tile .fu-meter-bar i', 'Entdecken: Discover-Kacheln mit Kennzahlbalken']
 ];
@@ -212,7 +213,7 @@ const CONTRAST = [
   '/vorsorge/#/', '/vorsorge/#/etf/VT', '/vorsorge/#/etfs', '/vorsorge/#/plan', '/vorsorge/#/portfolio',
   '/hedgefonds/#/', '/hedgefonds/#/aktie/NVDA', '/hedgefonds/#/fonds/pershing-square', '/hedgefonds/#/investoren',
   '/elliott/', '/elliott/#/?richtung=ab', '/elliott/#/methodik',
-  '/fundamental/', '/fundamental/#/PLTR', '/fundamental/#/NVDA'
+  '/fundamental/', '/fundamental/#/PLTR', '/fundamental/#/NVDA', '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=free_cash_flow.revenue'
 ];
 if (only.has('contrast')) await guard('contrast', async () => {
   console.log('\n[4] Kontrast und Ueberlauf (' + engine + ')');

@@ -224,19 +224,53 @@ class MetricRegistry:
                 self._by_concept.setdefault((rule.taxonomy, rule.concept), []).append(
                     (metric.name, rule.priority)
                 )
+        # Firmeneigene Konzepte (quant/config/sec-issuer-extensions.json): je CIK,
+        # nie generisch. Siehe attach_issuer_rules.
+        self._by_issuer_concept = {}
+        self.issuer_extensions_version = None
 
     @classmethod
-    def load(cls, path=DEFAULT_REGISTRY_PATH):
+    def load(cls, path=DEFAULT_REGISTRY_PATH, issuer_extensions=True):
         payload = json.loads(Path(path).read_text(encoding="utf-8"))
-        return cls(payload)
+        registry = cls(payload)
+        if issuer_extensions:
+            from . import issuer_extensions as ext
+            registry.attach_issuer_rules(ext.load(ext.DEFAULT_PATH if issuer_extensions is True else issuer_extensions))
+        return registry
 
     @property
     def version(self):
         return {"schema_version": self.schema_version, "mapping_version": self.mapping_version}
 
-    def metrics_for_concept(self, taxonomy, concept):
-        """All (metric_name, priority) pairs a raw concept can feed."""
-        return list(self._by_concept.get((taxonomy, concept), ()))
+    def metrics_for_concept(self, taxonomy, concept, cik=None):
+        """All (metric_name, priority) pairs a raw concept can feed.
+
+        With `cik`, also the reviewed issuer-specific concepts of that issuer."""
+        found = list(self._by_concept.get((taxonomy, concept), ()))
+        if cik is not None and self._by_issuer_concept:
+            found += self._by_issuer_concept.get((str(cik).zfill(10), taxonomy, concept), ())
+        return found
+
+    def attach_issuer_rules(self, config):
+        """Reviewed issuer-specific concepts (issuer_extensions.load()).
+
+        Eine Regel gilt nur fuer ihre CIK und muss eine niedrigere Prioritaet
+        (groessere Zahl) haben als jedes generische Konzept ihrer Kennzahl -
+        sie schliesst eine Luecke und verdraengt nie eine Standard-Meldung.
+        """
+        for ext in config.get("extensions") or []:
+            definition = self.get(ext["metric"])
+            if definition is None:
+                raise RegistryError(f"issuer extension {ext['id']}: unknown metric {ext['metric']}")
+            if int(ext["priority"]) <= max(rule.priority for rule in definition.concepts):
+                raise RegistryError(f"issuer extension {ext['id']}: priority {ext['priority']} must be "
+                                    f"lower than every generic concept of {ext['metric']}")
+            if not definition.allows_unit(ext["unit"]):
+                raise RegistryError(f"issuer extension {ext['id']}: unit {ext['unit']} not allowed for {ext['metric']}")
+            key = (str(ext["cik"]).zfill(10), ext["taxonomy"], ext["concept"])
+            self._by_issuer_concept.setdefault(key, []).append((ext["metric"], int(ext["priority"])))
+        self.issuer_extensions_version = config.get("version")
+        return self
 
     def excluded_for(self, metric_name, taxonomy, concept, industry_id):
         """True when the concept does not mean the metric for this industry."""

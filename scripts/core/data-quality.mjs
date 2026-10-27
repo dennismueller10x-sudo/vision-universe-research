@@ -14,6 +14,7 @@
    ========================================================================= */
 import { readFileSync, readdirSync, existsSync, writeFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { args, REPO_ROOT, require } from "./lib.mjs";
 
 const a = args();
@@ -103,6 +104,29 @@ rules.push(DQ.referencedPathsExist(refs, (path) => existsSync(p(path.replace(/^\
 const ixIndex = maybe("quant/data/market/index-membership/index.json");
 const indexes = ixIndex ? ixIndex.indexes.map((i) => maybe("quant/data/market/index-membership/" + i.indexId + ".json")).filter(Boolean) : [];
 rules.push(DQ.indexMembersResolve(indexes, Object.fromEntries(decisions.map((d) => [d.securityId, d]))));
+
+/* Technical (technical/data, Erzeuger technical-world.yml) */
+const twMeta = maybe("technical/data/meta.json");
+const twArt = maybe("technical/data/screener-v1.json");
+const twSummary = maybe("quant/data/product/technical-signals-v1/summary.json");
+rules.push(DQ.technicalFreshness(twMeta, twSummary && twSummary.generatedAt, expected, lag, 2));
+if (twArt && twArt.cols) {
+  const TQ = require(join(REPO_ROOT, "quant", "engines", "technical", "technical-query.js"));
+  rules.push(DQ.technicalEmptyFields(twArt.cols, TQ.FIELDS.filter((f) => f.tfs.indexOf("1D") >= 0).map((f) => f.id)));
+  const c = twArt.cols, twPairs = [];
+  for (let i = 0; i < c.s.length; i++) {
+    let id; try { id = Identity.securityIdForTicker(c.s[i]); } catch (e) { continue; }
+    const s = byId.get(id), pt = s && s.points ? s.points.find((x) => x[0] === c.asOf[i]) : null;
+    if (pt) twPairs.push({ ticker: c.s[i], date: c.asOf[i], close: c.close[i], seriesClose: pt[1] });
+  }
+  rules.push(DQ.technicalCloseParity(twPairs));
+  const SIG = "quant/data/product/technical-signals-v1";
+  const matTickers = [];
+  for (const f of dir(SIG, /^[A-Z0-9_-]{2}\.json\.gz$/)) {
+    try { matTickers.push(...Object.keys(JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {})); } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
+  }
+  rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
+}
 
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });
 

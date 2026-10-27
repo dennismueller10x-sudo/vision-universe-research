@@ -128,7 +128,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
 
     for fact in raw_facts:
-        matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
+        matches = registry.metrics_for_concept(fact.taxonomy, fact.concept, cik=cik)
         if not matches:
             stats["unmapped"] += 1
             continue

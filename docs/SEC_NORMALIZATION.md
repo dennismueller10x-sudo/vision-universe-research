@@ -40,6 +40,11 @@ If two accepted concepts in the same filing disagree by more than 0.5 %, the
 higher-priority one is used AND a `CONCEPT_DISAGREEMENT` finding is recorded.
 Nothing is averaged.
 
+**Issuer extensions.** An issuer-specific XBRL concept (its own extension taxonomy, which companyfacts never carries) is
+not a registry mapping. A reviewed one lives in `quant/config/sec-issuer-extensions.json`: valid for its own CIK only,
+ranked below every generic concept of its metric, admitted only with a value-equal overlap against a generic concept, and
+read from pinned instance documents (SHA-256). See `docs/SEC_ISSUER_EXTENSIONS.md`.
+
 **There is no company-specific branch anywhere in `scripts/quant/sec/`.** CI
 enforces this: `sec-fundamentals-ci.yml` fails the build if a validation
 company's ticker, name or CIK appears in the pipeline source.

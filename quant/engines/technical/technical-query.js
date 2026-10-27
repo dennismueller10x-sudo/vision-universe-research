@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.0.0";
+  var QUERY_VERSION = "technical-query-1.6.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -37,7 +37,8 @@
     RECTANGLE: "Seitwärtsrange (Rechteck)", CUP_WITH_HANDLE: "Tasse mit Henkel",
     SUPPORT_TRENDLINE: "Steigende Unterstützungslinie", RESISTANCE_TRENDLINE: "Fallende Widerstandslinie",
     ASCENDING_CHANNEL: "Aufwärtskanal", DESCENDING_CHANNEL: "Abwärtskanal",
-    RANGE_BREAKOUT: "Range-Ausbruch", RESISTANCE_BREAKOUT: "Ausbruch über Widerstand", VOLATILITY_CONTRACTION: "Volatilitätskontraktion"
+    RANGE_BREAKOUT: "Range-Ausbruch", RESISTANCE_BREAKOUT: "Ausbruch über Widerstand", VOLATILITY_CONTRACTION: "Volatilitätskontraktion",
+    GAP_UP: "Kurslücke nach oben", GAP_DOWN: "Kurslücke nach unten"
   };
   var STRUCTURES = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur", RANGE: "Seitwärts", NEUTRAL: "Neutral" };
 
@@ -49,32 +50,51 @@
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
+    { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
+    { id: "distEma200", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur EMA 200" },
     { id: "distSma200", group: "Trend", kind: "pct", tfs: ALL, label: { "1D": "Abstand zur SMA 200", "1W": "Abstand zur 40-Wochen-Linie", "1M": "Abstand zur 10-Monats-Linie" } },
-    { id: "adx", group: "Trend", kind: "num", tfs: D, label: "ADX 14 (Trendstärke)" },
+    { id: "adx", group: "Trend", kind: "num", tfs: ALL, label: { "1D": "ADX 14 (Trendstärke)", "1W": "ADX 14 (Woche)", "1M": "ADX 14 (Monat)" } },
     { id: "supertrendUp", group: "Trend", kind: "bool", tfs: D, label: "Supertrend (10, 3) aufwärts" },
     { id: "structure", group: "Trend", kind: "enum", tfs: D, label: "Marktstruktur (Swings)", values: STRUCTURES },
+    { id: "psarUp", group: "Trend", kind: "bool", tfs: D, label: "Parabolic SAR unter dem Kurs (aufwärts)" },
+    { id: "aboveCloud", group: "Trend", kind: "bool", tfs: D, label: "Kurs über der Ichimoku-Wolke" },
+    { id: "aroonOsc", group: "Trend", kind: "num", tfs: D, label: "Aroon-Oszillator 25 (−100 bis 100)" },
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
     { id: "rsi14", group: "Momentum", kind: "num", tfs: ALL, label: { "1D": "RSI 14", "1W": "RSI 14 (Woche)", "1M": "RSI 14 (Monat)" } },
-    { id: "macdPositive", group: "Momentum", kind: "bool", tfs: D, label: "MACD-Histogramm positiv" },
-    { id: "stochK", group: "Momentum", kind: "num", tfs: D, label: "Stochastik %K (14, 3)" },
+    { id: "macdPositive", group: "Momentum", kind: "bool", tfs: ALL, label: { "1D": "MACD-Histogramm positiv", "1W": "MACD-Histogramm positiv (Woche)", "1M": "MACD-Histogramm positiv (Monat)" } },
+    { id: "stochK", group: "Momentum", kind: "num", tfs: ALL, label: { "1D": "Stochastik %K (14, 3)", "1W": "Stochastik %K (14, 3, Woche)", "1M": "Stochastik %K (14, 3, Monat)" } },
     { id: "cci20", group: "Momentum", kind: "num", tfs: D, label: "CCI 20" },
     { id: "roc21", group: "Momentum", kind: "pct", tfs: D, label: "Kursänderung 21 Tage (ROC)" },
+    { id: "williamsR", group: "Momentum", kind: "num", tfs: D, label: "Williams %R 14 (−100 bis 0)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
-    { id: "relVol", group: "Volumen", kind: "num", tfs: D, label: "Relatives Volumen (zum 20-Tage-Median)" },
-    { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: D, label: "Volumen über Durchschnitt" },
-    { id: "volSpike", group: "Volumen", kind: "bool", tfs: D, label: "Volumenspitze (≥ 2× Median)" },
+    { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
+    { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
+    { id: "volSpike", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumenspitze (≥ 2× Median)", "1W": "Volumenspitze in der Woche (≥ 2× Median)", "1M": "Volumenspitze im Monat (≥ 2× Median)" } },
     { id: "mfi14", group: "Volumen", kind: "num", tfs: D, label: "Money Flow Index 14" },
     { id: "obvRising", group: "Volumen", kind: "bool", tfs: D, label: "OBV steigt (20 Tage)" },
-    { id: "atrPct", group: "Volatilität", kind: "pct", tfs: D, label: "ATR 14 in % des Kurses" },
+    { id: "cmf20", group: "Volumen", kind: "num", tfs: D, label: "Chaikin Money Flow 20 (−1 bis 1)" },
+    { id: "atrPct", group: "Volatilität", kind: "pct", tfs: ALL, label: { "1D": "ATR 14 in % des Kurses", "1W": "ATR 14 (Woche) in % des Kurses", "1M": "ATR 14 (Monat) in % des Kurses" } },
     { id: "bbPctB", group: "Volatilität", kind: "num", tfs: D, label: "Bollinger %B (20, 2)" },
     { id: "bbSqueeze", group: "Volatilität", kind: "bool", tfs: D, label: "Bollinger-Enge (Breite im unteren 20-%-Perzentil)" },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
+    /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
+       mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
+       beides leer = nicht pruefbar (fehlender Wert). Linien aus der Vollhistorie (chartSeries). */
+    { id: "goldenCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts)" },
+    { id: "deathCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts)" },
+    { id: "crossAboveSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss über SMA 200 gekreuzt" },
+    { id: "crossBelowSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss unter SMA 200 gekreuzt" },
+    { id: "rsiExitOversoldDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von unten über 30" },
+    { id: "rsiExitOverboughtDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von oben unter 70" },
+    { id: "newHigh52wDays", window: "high52wWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage)" },
+    { id: "formationNewDays", window: "formationWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit der jüngsten Formations-Erkennung" },
     { id: "close", group: "Kurs", kind: "num", tfs: D, label: "Schlusskurs (USD)" },
     { id: "chg1d", group: "Kurs", kind: "pct", tfs: D, label: "Tagesänderung" },
     { id: "hasVolume", group: "Datenqualität", kind: "bool", tfs: D, label: "Volumendaten vorhanden" },
@@ -87,7 +107,8 @@
   function labelOf(f, tf) { return typeof f.label === "string" ? f.label : (f.label[tf] || f.label["1D"]); }
   /** Spaltenname im Datensatz: Tag ohne Suffix, Woche/Monat mit "@1W"/"@1M". */
   function columnKey(id, tf) { var f = field(id); return !f || f.tfIndependent || tf === "1D" ? id : id + "@" + tf; }
-  function opsFor(kind) { return kind === "bool" ? ["is"] : kind === "enum" ? ["in"] : ["gt", "gte", "lt", "lte", "between"]; }
+  /* "nin" = keiner der Werte (z. B. "ohne Kurslücke"); fehlende Werte bleiben unbekannt, nicht "erfüllt". */
+  function opsFor(kind) { return kind === "bool" ? ["is"] : kind === "enum" ? ["in", "nin"] : ["gt", "gte", "lt", "lte", "between"]; }
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
@@ -119,9 +140,13 @@
         count++;
         var f = x && field(x.field);
         if (!f) return err("UNKNOWN_FIELD", p + ".field");
-        if (TIMEFRAMES[tf] && f.tfs.indexOf(tf) < 0) return err("FIELD_NOT_AVAILABLE_FOR_TIMEFRAME", p + ".field");
+        /* Zeitrahmen je Filter (Mehrzeitrahmen): ohne Angabe gilt der Zeitrahmen der Abfrage. */
+        var ftf = x.tf === undefined || x.tf === null ? tf : x.tf;
+        if (!TIMEFRAMES[ftf]) return err("INVALID_TIMEFRAME", p + ".tf");
+        if (TIMEFRAMES[tf] && f.tfs.indexOf(ftf) < 0) return err("FIELD_NOT_AVAILABLE_FOR_TIMEFRAME", p + ".field");
         if (opsFor(f.kind).indexOf(x.op) < 0) return err("INVALID_OPERATOR", p + ".op");
         var o = { id: "f" + gi + "_" + fi, field: f.id, op: x.op };
+        if (ftf !== tf) o.tf = ftf;
         if (f.kind === "bool") { if (typeof x.value !== "boolean") return err("INVALID_VALUE", p + ".value"); o.value = x.value; }
         else if (f.kind === "enum") {
           var vals = Array.isArray(x.value) ? x.value : [];
@@ -166,21 +191,35 @@
 
   /** Praedikat: true | false | null (null = kein Wert). */
   function compile(ds, filter, tf) {
-    var f = field(filter.field), c = ds.column(columnKey(filter.field, tf));
+    var f = field(filter.field), c = ds.column(columnKey(filter.field, filter.tf || tf));
     if (!f || !c) return function () { return null; };
     if (f.kind === "bool") return function (i) { var v = c[i]; return v === null || v === undefined ? null : !!v === filter.value; };
     if (f.kind === "enum") {
       var want = {}; filter.value.forEach(function (v) { want[v] = true; });
       return function (i) {
         var v = c[i]; if (v === null || v === undefined) return null;
-        if (Array.isArray(v)) { for (var k = 0; k < v.length; k++) if (want[v[k]]) return true; return false; }
-        return !!want[v];
+        var hit = false;
+        if (Array.isArray(v)) { for (var k = 0; k < v.length && !hit; k++) if (want[v[k]]) hit = true; }
+        else hit = !!want[v];
+        return filter.op === "nin" ? !hit : hit;
       };
     }
     var a = filter.value, b = filter.value2;
     var test = { gt: function (v) { return v > a; }, gte: function (v) { return v >= a; }, lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
                  between: function (v) { return v >= a && v <= b; } }[filter.op];
-    return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    var w = f.window ? ds.column(f.window) : null;
+    if (!w) return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
+    /* Ereignisfeld: leerer Wert mit Pruefraum W heisst "mindestens W Tage her (oder nie)". Entschieden wird nur,
+       was daraus sicher folgt; sonst bleibt der Wert unbekannt (null), nie geraten. */
+    var whenAbsent = {
+      lte: function (W) { return a < W ? false : null; }, lt: function (W) { return a <= W ? false : null; },
+      gt: function (W) { return W > a ? true : null; }, gte: function (W) { return W >= a ? true : null; },
+      between: function (W) { return b < W ? false : null; }
+    }[filter.op];
+    return function (i) {
+      var v = c[i]; if (isNum(v)) return test(v);
+      var W = w[i]; return isNum(W) ? whenAbsent(W) : null;
+    };
   }
 
   /**
@@ -252,9 +291,11 @@
   function fmtValue(f, v) { return f.kind === "pct" ? (Math.round(v * 1000) / 10).toLocaleString("de-DE") + " %" : String(v).replace(".", ","); }
   function describeFilter(x, tf) {
     var f = field(x.field); if (!f) return x.field;
-    var l = labelOf(f, tf || "1D");
+    /* Eigener Zeitrahmen: Beschriftung dieses Zeitrahmens; Zusatz nur, wenn die Beschriftung ihn nicht schon nennt. */
+    var own = x.tf && x.tf !== (tf || "1D"), l = labelOf(f, x.tf || tf || "1D");
+    if (own && l === labelOf(f, tf || "1D")) l += " (" + TIMEFRAMES[x.tf] + ")";
     if (f.kind === "bool") return x.value ? l : "nicht: " + l;
-    if (f.kind === "enum") return l + ": " + x.value.map(function (v) { return f.values[v] || v; }).join(" oder ");
+    if (f.kind === "enum") return l + (x.op === "nin" ? ": keine von " : ": ") + x.value.map(function (v) { return f.values[v] || v; }).join(x.op === "nin" ? ", " : " oder ");
     if (x.op === "between") return l + " zwischen " + fmtValue(f, x.value) + " und " + fmtValue(f, x.value2);
     return l + " " + OPS_DE[x.op] + " " + fmtValue(f, x.value);
   }
@@ -274,7 +315,7 @@
    */
   function jsonSchema() {
     var filterVariants = FIELDS.map(function (f) {
-      var props = { field: { const: f.id }, op: { enum: opsFor(f.kind) } };
+      var props = { field: { const: f.id }, op: { enum: opsFor(f.kind) }, tf: { enum: f.tfs, description: "Optional: eigener Zeitrahmen dieses Filters (sonst der der Abfrage)" } };
       if (f.kind === "bool") props.value = { type: "boolean" };
       else if (f.kind === "enum") props.value = { type: "array", minItems: 1, items: { enum: Object.keys(f.values) } };
       else { props.value = { type: "number" }; props.value2 = { type: "number" }; }

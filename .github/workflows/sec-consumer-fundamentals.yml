@@ -91,6 +91,21 @@ jobs:
           open(os.environ["RUNNER_TEMP"] + "/fsds-paths.txt", "w").write(",".join(paths))'
           echo "Data Sets: $(cat "$RUNNER_TEMP/fsds-paths.txt")"
 
+      # Gepruefte firmeneigene XBRL-Konzepte, die companyfacts nie enthaelt
+      # (NVIDIA-Investitionen GJ2013-2021, quant/config/sec-issuer-extensions.json).
+      # Gelesen werden nur die gepinnten Instanzdokumente (SHA-256); ein
+      # fehlendes oder abweichendes Dokument bleibt eine Luecke, der Lauf geht weiter.
+      - name: Firmeneigene XBRL-Konzepte aus gepinnten Instanzdokumenten
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+        run: |
+          python3 -c 'import os, sys; sys.path.insert(0, "scripts");
+          from quant.sec import issuer_extensions as ie; from quant.sec.provider import SECProvider;
+          facts = ie.fetch_facts(SECProvider().client, ie.load(), os.environ["SEC_CACHE_DIR"]);
+          ie.save_facts(facts, os.environ["RUNNER_TEMP"] + "/issuer-facts.json");
+          print("Erweiterungen:", {cik: len(rows) for cik, rows in facts.items()})'
+
       - name: Consumer-Fundamentals aus companyfacts.zip
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
@@ -100,9 +115,10 @@ jobs:
           LIMIT="$IN_LIMIT"
           case "$LIMIT" in *[!0-9]*) echo "::error::limit muss eine Zahl sein"; exit 1;; esac
           FSDS="$(cat "$RUNNER_TEMP/fsds-paths.txt" 2>/dev/null || true)"
-          python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT} ${FSDS:+--fsds "$FSDS"}
-          du -sh quant/data/sec/consumer
-          node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length,fsds:c.fsdsSupplement}))'
+          ISSUER="$RUNNER_TEMP/issuer-facts.json"; [ -s "$ISSUER" ] || ISSUER=""
+          python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT} ${FSDS:+--fsds "$FSDS"} ${ISSUER:+--issuer-facts "$ISSUER"}
+          du -sh quant/data/sec/consumer quant/data/sec/consumer-history
+          node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length,fsds:c.fsdsSupplement,issuerExtensions:c.issuerExtensions}))'
 
       # Reine Messung, kein Wert aendert sich. total_debt deckt 2.645 von
       # 5.068 ausgelieferten Emittenten ab, und genau diese Zahl haelt
@@ -163,7 +179,9 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          git add quant/data/sec/consumer quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
+          # consumer-history: aeltere Geschaeftsjahre als das Fenster der Bundles (nur Fundamental liest sie);
+          # 64 gzip-Scherben ohne Laufdatum, byte-reproduzierbar - sie aendern sich nur, wenn sich ein altes Jahr aendert.
+          git add quant/data/sec/consumer quant/data/sec/consumer-history quant/data/sec/consumer_coverage.json discover/data quant/data/market/capabilities \
                   quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
           # Nur wenn die Messung wirklich entstand. 'git add' auf einen
           # fehlenden Pfad bricht mit exit 128 ab und nahm in Lauf

@@ -251,6 +251,57 @@
     return r;
   }
 
+  /* ------------------------------------------------------------- Technical */
+
+  /** DQ-TW-1: der Technical-Datensatz folgt der Materialisierung und der letzten Sitzung.
+   *  meta = technical/data/meta.json, materializedAt = summary.generatedAt der Materialisierung. */
+  function technicalFreshness(meta, materializedAt, expectedSession, lagFn, maxLag) {
+    var fail = [];
+    if (!meta) fail.push("technical/data/meta.json fehlt");
+    else {
+      if (materializedAt && meta.generatedFrom && meta.generatedFrom < materializedAt)
+        fail.push("Datensatz aus der Materialisierung " + meta.generatedFrom + ", vorliegend ist " + materializedAt + " (Erzeuger technical-world.yml nicht gelaufen)");
+      var lag = lagFn(meta.asOf, expectedSession);
+      if (lag !== null && lag > maxLag) fail.push("Stichtag " + meta.asOf + " liegt " + lag + " Sitzungen hinter " + expectedSession);
+    }
+    return result("DQ-TW-1", "Technical-Screener folgt Materialisierung und letzter Sitzung", "WARN", 1, fail);
+  }
+
+  /** DQ-TW-2: kein Katalogfeld ist im ganzen Datensatz leer (z. B. ein Feature, das die Materialisierung nicht liefert). */
+  function technicalEmptyFields(cols, fieldIds) {
+    var fail = [], n = cols && cols.s ? cols.s.length : 0;
+    (fieldIds || []).forEach(function (id) {
+      var c = cols && cols[id];
+      if (!c) { fail.push(id + ": Spalte fehlt"); return; }
+      var any = false;
+      for (var i = 0; i < c.length && !any; i++) { var v = c[i]; if (v !== null && v !== undefined) any = true; }
+      if (!any) fail.push(id + ": in allen " + n + " Zeilen leer");
+    });
+    return result("DQ-TW-2", "Technical-Katalogfelder sind im Datensatz belegt", "WARN", (fieldIds || []).length, fail);
+  }
+
+  /** DQ-TW-3: EINE Preiswahrheit - Technical-Schluss = Schluss der Discover-Tagesreihe am selben Tag (ADR-002). */
+  function technicalCloseParity(pairs, tol) {
+    var fail = [], t = typeof tol === "number" ? tol : 1e-3, checked = 0;
+    (pairs || []).forEach(function (p) {
+      if (typeof p.close !== "number" || typeof p.seriesClose !== "number") return;
+      checked++;
+      if (Math.abs(p.seriesClose / p.close - 1) > t) fail.push(p.ticker + " " + p.date + ": Technical " + p.close + " ≠ Reihe " + p.seriesClose);
+    });
+    return result("DQ-TW-3", "Technical-Schluss = Discover-Tagesreihe (eine Preiswahrheit)", "ERROR", checked, fail);
+  }
+
+  /** DQ-TW-4: jede Zeile der Materialisierung landet im Screener oder ist mit Grund gezaehlt (meta.skipped). */
+  function technicalCoverage(materializedTickers, rowTickers, skippedCounts) {
+    var have = {}, missing = [], skipped = 0;
+    (rowTickers || []).forEach(function (t) { have[t] = 1; });
+    Object.keys(skippedCounts || {}).forEach(function (r) { skipped += skippedCounts[r] || 0; });
+    (materializedTickers || []).forEach(function (t) { if (!have[t]) missing.push(t); });
+    var fail = missing.length > skipped ? missing.map(function (t) { return t + ": materialisiert, fehlt im Screener ohne gezaehlten Grund"; }) : [];
+    return result("DQ-TW-4", "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)", "WARN", (materializedTickers || []).length, fail,
+      "Fehlend " + missing.length + ", mit Grund gezaehlt " + skipped + " (" + JSON.stringify(skippedCounts || {}) + ").");
+  }
+
   /** Fasst Regelergebnisse zusammen. */
   function summarize(rules) {
     var s = { ERROR: 0, WARN: 0, INFO: 0 }, overall = "PASS";
@@ -271,6 +322,8 @@
     dailyWeeklyAgreement: dailyWeeklyAgreement, compareDailyWeekly: compareDailyWeekly, closeUnit: closeUnit,
     payloadMatchesSeries: payloadMatchesSeries,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
-    indexMembersResolve: indexMembersResolve, summarize: summarize
+    indexMembersResolve: indexMembersResolve,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
+    summarize: summarize
   };
 });

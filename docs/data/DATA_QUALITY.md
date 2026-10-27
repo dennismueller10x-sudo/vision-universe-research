@@ -18,6 +18,10 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-PR-1 | ERROR | Discover-Aktienindex und Aktienseiten sind deckungsgleich | – |
 | DQ-PR-2 | ERROR | jeder ausgelieferte Pfad (Chartreihen, Supertrader-Kartenlinks) existiert | 4 Supertrader-Charts, 11 Kartenlinks |
 | DQ-IX-1 | WARN | Indexmitglieder sind aktive, geeignete Titel; nicht zuordenbare Bestände werden genannt | TEL, DD, DOW, MRNA, COHR, P, ECHO INACTIVE; NRG, VLTO, SNDK, Q, BNY fehlen |
+| DQ-TW-1 | WARN | der Technical-Screener (`technical/data`) stammt aus der aktuellen Materialisierung und liegt höchstens zwei Sitzungen zurück | Audit 26.10.2026: `technical-world.yml` lief nie automatisch |
+| DQ-TW-2 | WARN | kein Tagesfeld des Technical-Katalogs ist in allen Zeilen leer | `aboveEma200`/`distEma200` vor dem ersten Lauf nach #927 |
+| DQ-TW-3 | ERROR | Technical-Schluss = Schluss der Discover-Tagesreihe am selben Tag (eine Preiswahrheit) | 26.10.2026: 5.647/5.647 gleich |
+| DQ-TW-4 | WARN | jeder materialisierte Titel steht im Technical-Screener oder ist in `meta.skipped` gezählt | sechs Vorzugsaktien (C-P-N, F-P-B/C/D, T-P-A/C) fielen still durch ein Dateimuster |
 
 ## Erster Lauf (03.10.2026, Repository-Stand)
 

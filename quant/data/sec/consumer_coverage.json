@@ -674,6 +674,18 @@
     "issuers": 225,
     "filings": 230
   },
+  "issuerExtensions": {
+    "version": "1.0.0",
+    "issuers": 1,
+    "filings": 11
+  },
+  "historyExtension": {
+    "dir": "consumer-history",
+    "shards": 64,
+    "issuers": 2444,
+    "years": 13710,
+    "maxYears": 22
+  },
   "withoutCikTickers": [
     "AAAC",
     "AAAD",
@@ -2065,11 +2077,11 @@
     "0002044241",
     "0002076975"
   ],
-  "asOf": "2026-10-25",
-  "generated_at_utc": "2026-10-25T10:12:19+00:00",
+  "asOf": "2026-10-26",
+  "generated_at_utc": "2026-10-26T19:22:23+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.12.0",
+    "normalization_logic": "1.13.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.0.0",
