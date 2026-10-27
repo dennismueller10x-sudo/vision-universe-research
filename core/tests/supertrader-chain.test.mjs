@@ -15,7 +15,7 @@ import { spawn } from "node:child_process";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CHAIN = join(ROOT, "scripts", "ci", "supertrader-chain.mjs");
-const { planDispatch, assessChain, CONFIG } = await import(CHAIN);
+const { planDispatch, planPrune, assessChain, CONFIG } = await import(CHAIN);
 const lies = (rel) => readFileSync(join(ROOT, rel), "utf8");
 
 const EING = { spyTo: "2026-10-13", regimeAsOf: "2026-10-13", healthSession: "2026-10-13" };
@@ -227,7 +227,7 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* der Alarm sieht nur den ANSTOSS */
   assert.match(wf, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result == 'failure' && 'failure'/);
-  assert.match(wf, /needs: \[refresh, materialize, freshness-contract, imblick, supertrader\]/);
+  assert.match(wf, /needs: \[refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune\]/);
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
   assert.match(st, /cron: '17 6 \* \* 2-6'/);
@@ -343,4 +343,82 @@ test("SC10 · Freshness-Monitor: Ergebnis des Supertrader-Jobs landet im Alarm (
   const fm = lies(".github/workflows/freshness-monitor.yml");
   assert.match(fm, /alarm:\n\s+needs: \[monitor, produktstand, supertrader\]/);
   assert.match(fm, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result \}\}/);
+});
+
+test("SC11 · Bereinigung nach gescheiterter Materialisierung (27.10.2026, BZH): nur Ausweis, nie ein voller Lauf", async () => {
+  /* Nachtlauf: Universum auf 2026-10-26 committet, Materialisierung rot -> Produktstand alt. */
+  const ROT = Object.assign({}, GUT, { QUANT_CURRENT: "FAIL", PRODUCT_MATERIALIZATION_CURRENT: "BEHIND", LATEST_PRODUCT_ASOF: "2026-10-23", LATEST_MARKET_SESSION: "2026-10-26" });
+  const p = (o) => planPrune(Object.assign({ pipeline: ROT, basisAsOf: "2026-10-26", runs: [], deadRefs: ["BZH"], universeOk: true }, o));
+  const ja = p({});
+  assert.equal(ja.action, "DISPATCH");
+  assert.equal(ja.reason, "PRUNE_DEAD_REFS");
+  assert.deepEqual(ja.inputs, { mode: "prune-dead-refs" });
+  assert.equal(p({ deadRefs: [] }).reason, "NO_DEAD_REFS");
+  assert.equal(p({ universeOk: false }).reason, "UNIVERSE_UNREADABLE");
+  assert.equal(p({ basisAsOf: "2026-10-23" }).reason, "UNIVERSE_NOT_CURRENT", "Universum nicht aus diesem Nachtlauf");
+  assert.equal(p({ pipeline: null }).reason, "UNIVERSE_NOT_CURRENT");
+  assert.equal(p({ runs: [{ status: "queued" }] }).reason, "ALREADY_QUEUED", "keinen wartenden Lauf verdraengen");
+  assert.equal(p({ runs: [{ status: "in_progress" }] }).action, "DISPATCH", "laufender Lauf: Bereinigung danach");
+  assert.equal(p({ runsKnown: false }).reason, "RUNS_UNKNOWN", "Warteschlange unbekannt: fail closed");
+  /* Der volle Anstoss bleibt an validierte Daten gebunden - unveraendert. */
+  assert.equal(planDispatch({ pipeline: ROT, basisAsOf: "2026-10-26", supertraderAsOf: "2026-10-23", runs: [], inputs: EING, deadRefs: ["BZH"], universeOk: true }).reason, "DATA_NOT_VALIDATED");
+
+  /* CLI gegen die Mini-GitHub-API: genau ein POST mit mode=prune-dead-refs. */
+  const dir = fixture({ metaAsOf: "2026-10-26", stAsOf: "2026-10-23", symbols: ["AAA", "BZH"], index: ["AAA"] });
+  try {
+    writeFileSync(join(dir, "pipeline-rot.json"), JSON.stringify(ROT));
+    let gh = await githubMock();
+    let r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 0, r.out);
+    assert.equal(gh.posts.length, 1);
+    assert.match(gh.posts[0].url, /\/actions\/workflows\/supertrader-signals\.yml\/dispatches$/);
+    assert.deepEqual(gh.posts[0].body, { ref: "main", inputs: { mode: "prune-dead-refs" } });
+    /* Laeufe-API tot: kein POST (ein wartender voller Lauf koennte verdraengt werden), Exit 1 fuer den Alarm */
+    gh = await githubMock({ runsStatus: 502 });
+    r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 1, r.out); assert.equal(gh.posts.length, 0); assert.match(r.out, /RUNS_UNKNOWN/);
+    /* voller Anstoss in derselben Lage: kein POST */
+    gh = await githubMock();
+    r = await lauf(["dispatch", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(gh.posts.length, 0, "nie ein voller Lauf auf unvalidierten Daten");
+    /* toter Verweis nur im VU-Trendfolge-Depot (kein Signal-Titel): wird ebenfalls erkannt */
+    writeFileSync(join(dir, "supertrader/data/signals.json"), JSON.stringify({ bySymbol: { AAA: {} }, discoverAvailability: { unavailable: [] } }));
+    writeFileSync(join(dir, "supertrader/data/trend52.json"), JSON.stringify({ portfolio: { positions: [{ symbol: "BZH" }] }, prepared: { candidates: [] }, nearMisses: [], closed: [] }));
+    gh = await githubMock();
+    r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 1, "gleiche Titelmenge wie Build und Bereinigung");
+    /* keine toten Verweise: kein POST */
+    writeFileSync(join(dir, "discover/data/stock-index/US_REAL.json"), JSON.stringify({ symbols: ["AAA", "BZH"] }));
+    gh = await githubMock();
+    r = await lauf(["prune", "--root=" + dir, "--pipeline=" + join(dir, "pipeline-rot.json")], { GITHUB_API_URL: gh.url });
+    gh.server.close();
+    assert.equal(r.code, 0, r.out); assert.equal(gh.posts.length, 0); assert.match(r.out, /NO_DEAD_REFS/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+
+  /* Verdrahtung: eigene Stufe nur fuer refresh gruen + Materialisierung/Vertrag nicht gruen. */
+  const wf = lies(".github/workflows/market-data-refresh.yml");
+  const i = wf.indexOf("\n  supertrader-prune:\n");
+  assert.ok(i > 0);
+  const job = wf.slice(i, wf.indexOf("\n  # ===", i + 10));
+  assert.match(job, /needs: \[refresh, materialize, freshness-contract\]/);
+  assert.match(job, /needs\.refresh\.result == 'success' &&\s*\n\s+\(needs\.materialize\.result != 'success' \|\| needs\.freshness-contract\.result != 'success'\)/);
+  assert.match(job, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(job, /github\.event_name != 'push'/);
+  assert.match(job, /permissions:\s*\n\s+contents: read\s*\n\s+actions: write/);
+  assert.doesNotMatch(job, /contents: write|TIINGO|MARKETSTACK|\$\{\{\s*inputs\./i);
+  const schritte = job.split("\n      - ").slice(1);
+  assert.equal(schritte.length, 3);
+  for (const s of schritte) { assert.match(s, /continue-on-error: true/); assert.match(s, /timeout-minutes: \d+/); }
+  assert.match(job, /node scripts\/ci\/supertrader-chain\.mjs prune\n/);
+  /* ein gescheiterter Anstoss bleibt nicht still: Ausgaben + Alarm */
+  assert.match(job, /ergebnis: \$\{\{ \(steps\.checkout\.outcome == 'failure' \|\| steps\.node\.outcome == 'failure' \|\| steps\.anstossen\.outcome == 'failure'\) && 'failure' \|\| 'success' \}\}/);
+  assert.match(job, /id: anstossen/);
+  assert.match(wf, /RESULT_SUPERTRADER_PRUNE: \$\{\{ needs\.supertrader-prune\.result == 'failure' && 'failure'/);
+  assert.match(wf, /SUPERTRADER_PRUNE_DETAIL: \$\{\{ needs\.supertrader-prune\.outputs\.detail \}\}/);
+  /* der Supertrader-Workflow kennt den Modus */
+  assert.match(lies(".github/workflows/supertrader-signals.yml"), /- prune-dead-refs/);
 });

@@ -41,6 +41,27 @@
               Kauf-Stop-Tage (intraday-prefetch.mjs); ein Wiederholungslauf
               hat keine und kostet nichts.
 
+   prune      Stufe `supertrader-prune` des Nachtlaufs, NUR wenn refresh gruen,
+              materialize oder freshness-contract aber nicht (27.10.2026, BZH:
+              Universum committet, Materialisierung rot, Signale mit totem
+              Link bis zum verspaeteten Zeitplanlauf). Stoesst
+              supertrader-signals.yml mit mode=prune-dead-refs an: der Lauf
+              weist nur entfallene Titel aus (scripts/supertrader/
+              prune-dead-refs.mjs, fail closed) - kein voller Build, keine
+              Markt- oder Quant-Daten, kein neuer Stand. Der volle Anstoss
+              (dispatch) bleibt unveraendert an validierte Daten gebunden.
+              Nur wenn:
+                - tote Verweise bestehen (Signal-Titel ohne Discover-Seite,
+                  nicht ausgewiesen) und der Aktienindex lesbar ist
+                - das Discover-Universum die letzte abgeschlossene Sitzung
+                  traegt (also aus diesem Nachtlauf stammt)
+                - kein Lauf wartet (ein wartender Lauf wuerde in der
+                  Concurrency-Gruppe verdraengt); ist die Warteschlange
+                  nicht lesbar: kein Anstoss (fail closed)
+              Tote Verweise zaehlen hier ueber alle Titel mit Supertrader-
+              Seite (Signale, VU-Trendfolge, Teilpruefungen) - dieselbe
+              Menge wie Build und Bereinigung.
+
    check      Aktualitaetsmonitor (freshness-monitor.yml). Ergebnis, nicht
               Workflow: steht Supertrader auf dem Stichtag der Produktdaten?
               Zeigt ein Signal auf einen Titel, der nicht (mehr) im Discover-
@@ -56,6 +77,7 @@
 
    Aufruf:
      node scripts/ci/supertrader-chain.mjs dispatch [--dry-run] [--root=.] [--pipeline=<datei>] [--runs=<datei>]
+     node scripts/ci/supertrader-chain.mjs prune [--dry-run] [--root=.] [--pipeline=<datei>] [--runs=<datei>]
      node scripts/ci/supertrader-chain.mjs check [--strict] [--root=.] [--now=ISO] [--pipeline=<datei>] [--runs=<datei>] [--no-api]
    Umgebung: GITHUB_TOKEN (actions: write fuer dispatch), GITHUB_REPOSITORY, GITHUB_API_URL, GITHUB_REF_NAME.
    ========================================================================= */
@@ -64,6 +86,7 @@ import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { symbolsIn, trend52Symbols } from "../supertrader/discover-availability.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, "..", "..");
@@ -108,6 +131,21 @@ export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs, input
   const laufend = (runs || []).filter((r) => r.status === "in_progress");
   if (supertraderAsOf && supertraderAsOf >= ziel) return { action: "DISPATCH", reason: "DEAD_TICKER_REFS", detail: tot.length + " Signal-Titel ohne Discover-Seite und ohne Ausweis: " + tot.slice(0, 8).join(", ") + ".", ziel };
   return { action: "DISPATCH", reason: laufend.length ? "DISPATCH_BEHIND_RUNNING" : "DISPATCH", detail: "Supertrader " + (supertraderAsOf || "-") + " < Produktstand " + ziel + ".", ziel };
+}
+
+/**
+ * Soll der Nachtlauf nach gescheiterter Materialisierung den Bereinigungsmodus
+ * anstossen? Ohne Nebenwirkung (testbar). Gibt nie einen vollen Lauf frei.
+ */
+export function planPrune({ pipeline, basisAsOf, runs, runsKnown = true, deadRefs, universeOk }) {
+  if (universeOk === false) return { action: "REFUSE", reason: "UNIVERSE_UNREADABLE", detail: "Discover-Aktienindex nicht lesbar oder leer." };
+  const tot = deadRefs || [];
+  if (!tot.length) return { action: "SKIP", reason: "NO_DEAD_REFS", detail: "Keine Signal-Titel ohne Discover-Seite." };
+  const sitzung = pipeline && pipeline.LATEST_MARKET_SESSION;
+  if (!sitzung || basisAsOf !== sitzung) return { action: "REFUSE", reason: "UNIVERSE_NOT_CURRENT", detail: "Discover-Universum " + (basisAsOf || "-") + ", letzte Sitzung " + (sitzung || "-") + ": das Universum stammt nicht aus diesem Nachtlauf." };
+  if (!runsKnown) return { action: "REFUSE", reason: "RUNS_UNKNOWN", detail: "Laeufe von supertrader-signals.yml nicht lesbar: ein wartender voller Lauf wuerde verdraengt. Kein Anstoss." };
+  if ((runs || []).some((r) => CONFIG.waitingStates.includes(r.status))) return { action: "SKIP", reason: "ALREADY_QUEUED", detail: "Ein Lauf wartet bereits; er wuerde in der Concurrency-Gruppe verdraengt." };
+  return { action: "DISPATCH", reason: "PRUNE_DEAD_REFS", detail: tot.length + " Signal-Titel ohne Discover-Seite und ohne Ausweis: " + tot.slice(0, 8).join(", ") + ". Nur Ausweis, kein voller Lauf.", inputs: { mode: "prune-dead-refs" } };
 }
 
 /* ------------------------------------------------------------ Monitor */
@@ -171,8 +209,11 @@ function zustand(root) {
   const build = lies(join(root, "supertrader", "data", "build.json"));
   const signals = lies(join(root, "supertrader", "data", "signals.json")) || {};
   const index = lies(join(root, "discover", "data", "stock-index", "US_REAL.json"));
+  let seiten = Object.keys(signals.bySymbol || {});
+  try { seiten = [...new Set([...seiten, ...trend52Symbols(lies(join(root, "supertrader", "data", "trend52.json"))), ...symbolsIn(signals.partialChecks)])]; } catch { /* ohne trend52.json: nur die Signal-Titel */ }
   return {
     basis: u ? { asOf: u.asOf, generatedAt: u.generatedAt || null } : null,
+    seiten,
     supertraderAsOf: build ? build.asOf : null,
     symbols: Object.keys(signals.bySymbol || {}),
     universe: index && Array.isArray(index.symbols) && index.symbols.length ? new Set(index.symbols) : null,
@@ -213,15 +254,18 @@ function zusammenfassung(zeilen, env) {
   if (env.GITHUB_STEP_SUMMARY) { try { appendFileSync(env.GITHUB_STEP_SUMMARY, text); } catch { /* ohne Summary */ } }
 }
 
-async function dispatch(args, env) {
+async function dispatch(args, env, art = "build") {
   const root = args.root || REPO_ROOT;
   const z = zustand(root);
   const pipeline = messePipeline(root, args);
-  let runs = [];
-  try { runs = await holeLaeufe(args, env); } catch (e) { console.log("::warning title=Supertrader-Kette::" + e.message + " - Warteschlange unbekannt, es wird trotzdem geplant."); }
-  const tot = z.universe ? z.symbols.filter((x) => !z.universe.has(x) && !new Set(z.unavailable).has(x)).sort() : [];
-  const plan = planDispatch({ pipeline, basisAsOf: z.basis && z.basis.asOf, supertraderAsOf: z.supertraderAsOf, runs, inputs: z.inputs, deadRefs: tot, universeOk: !!z.universe });
-  const kopf = ["### Supertrader nach dem Nachtlauf", "", "| Feld | Wert |", "|---|---|",
+  let runs = [], runsKnown = true;
+  try { runs = await holeLaeufe(args, env); } catch (e) { runsKnown = false; console.log("::warning title=Supertrader-Kette::" + e.message + " - Warteschlange unbekannt" + (art === "prune" ? "." : ", es wird trotzdem geplant.")); }
+  const totIn = (liste) => z.universe ? liste.filter((x) => !z.universe.has(x) && !new Set(z.unavailable).has(x)).sort() : [];
+  const tot = totIn(z.symbols);
+  const plan = art === "prune"
+    ? planPrune({ pipeline, basisAsOf: z.basis && z.basis.asOf, runs, runsKnown, deadRefs: totIn(z.seiten), universeOk: !!z.universe })
+    : planDispatch({ pipeline, basisAsOf: z.basis && z.basis.asOf, supertraderAsOf: z.supertraderAsOf, runs, inputs: z.inputs, deadRefs: tot, universeOk: !!z.universe });
+  const kopf = [art === "prune" ? "### Supertrader-Bereinigung nach gescheiterter Materialisierung" : "### Supertrader nach dem Nachtlauf", "", "| Feld | Wert |", "|---|---|",
     "| Entscheidung | " + plan.action + " / " + plan.reason + " |", "| Grund | " + plan.detail + " |",
     "| Produktstand | " + (pipeline ? pipeline.LATEST_PRODUCT_ASOF : "-") + " |", "| Discover-Basis | " + (z.basis ? z.basis.asOf : "-") + " |",
     "| Supertrader | " + (z.supertraderAsOf || "-") + " |", "| Wartende/laufende Laeufe | " + runs.filter((r) => CONFIG.waitingStates.includes(r.status)).length + " / " + runs.filter((r) => r.status === "in_progress").length + " |"];
@@ -240,7 +284,7 @@ async function dispatch(args, env) {
   let res = null, netzfehler = null;
   for (let versuch = 1; versuch <= 3; versuch++) {
     try {
-      res = await api("/actions/workflows/" + CONFIG.workflow + "/dispatches", { method: "POST", body: JSON.stringify({ ref }), headers: { "content-type": "application/json" } }, env);
+      res = await api("/actions/workflows/" + CONFIG.workflow + "/dispatches", { method: "POST", body: JSON.stringify(plan.inputs ? { ref, inputs: plan.inputs } : { ref }), headers: { "content-type": "application/json" } }, env);
       netzfehler = null;
       if (res.status === 204 || res.status < 500) break;
     } catch (e) { netzfehler = e; res = null; }
@@ -288,8 +332,9 @@ export async function main(argv, env) {
   const [befehl, ...rest] = argv;
   for (const a of rest) { const m = a.match(/^--([^=]+)(?:=(.*))?$/); if (m) args[m[1]] = m[2] === undefined ? true : m[2]; }
   if (befehl === "dispatch") return dispatch(args, env);
+  if (befehl === "prune") return dispatch(args, env, "prune");
   if (befehl === "check") return check(args, env);
-  console.error("Aufruf: supertrader-chain.mjs dispatch|check [Optionen]");
+  console.error("Aufruf: supertrader-chain.mjs dispatch|prune|check [Optionen]");
   return 2;
 }
 
