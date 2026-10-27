@@ -44,7 +44,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.2.0";
+  var ENGINE_VERSION = "technical-formations-1.2.1";
 
   /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
      (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */
@@ -339,7 +339,8 @@
         levels: { pole: r4(Math.abs(pole)), invalidation: r4(invalid), upperNow: r4(up.at(k)), lowerNow: r4(lo.at(k)) }, confirmedAt: null, invalidatedAt: null
       };
       var type = dir > 0 ? "BULL_PENNANT" : "BEAR_PENNANT";
-      if (dir > 0 ? s.close[k] < invalid : s.close[k] > invalid) { extra.invalidatedAt = s.timestamps[k]; return base(ctx, type, "INVALIDATED", detectIdx, extra); }
+      /* 1.2.1: Invalidierung vor der Erkennung = zum Erkennungszeitpunkt nie sichtbar (wie beim Ausbruch). */
+      if (dir > 0 ? s.close[k] < invalid : s.close[k] > invalid) { if (k < detectIdx) return null; extra.invalidatedAt = s.timestamps[k]; return base(ctx, type, "INVALIDATED", detectIdx, extra); }
       if (dir > 0 ? s.close[k] > Math.max(up.at(k), hiB) : s.close[k] < Math.min(lo.at(k), loB)) {
         if (k < detectIdx) return null;
         extra.confirmedAt = s.timestamps[k]; return base(ctx, type, "CONFIRMED", detectIdx, extra);
@@ -413,7 +414,8 @@
       for (var k = ctx.t; k >= Math.max(1, ctx.t - 19); k--) {
         var a = atrCol[k - 1], edge = dir > 0 ? s.high[k - 1] : s.low[k - 1];
         var size = dir > 0 ? s.low[k] - s.high[k - 1] : s.low[k - 1] - s.high[k];
-        if (!isNum(a) || !isNum(size) || size < 0.5 * a) continue;
+        /* 1.2.1: ATR 0 (ruhender Titel) macht jede Null-"Luecke" gross genug; ohne Bewegung keine Luecke. */
+        if (!isNum(a) || !(a > 0) || !isNum(size) || !(size > 0) || size < 0.5 * a) continue;
         if (ctx.hasVolume && !(isNum(rv[k]) && rv[k] >= 1.5)) continue;
         if (suspectJump(s.close[k] / s.close[k - 1])) continue;
         var inv = -1, conf = -1, held = 0;

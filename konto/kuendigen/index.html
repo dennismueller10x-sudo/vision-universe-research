@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Verträge hier kündigen · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="cancel"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--narrow" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title">Verträge hier kündigen</h1>
+<p class="ka-lead">Kündige dein Vision-Universe-Abonnement. Du bekommst sofort eine Eingangsbestätigung.</p>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<section class="ka-card" id="ka-cancel-signed-in" hidden>
+<h2>Dein Abonnement</h2><p id="ka-cancel-sub"></p>
+<p class="ka-muted">Ordentliche Kündigung zum Ende der Laufzeit. Bis dahin bleibt dein Zugang erhalten.</p>
+<div class="ka-actions"><button class="ka-btn" type="button" id="ka-cancel-now">Jetzt kündigen</button></div>
+</section>
+<form class="ka-card ka-form" id="ka-cancel-form" novalidate>
+<h2>Kündigung ohne Anmeldung</h2>
+<div class="ka-field"><label for="cancel-name">Vor- und Nachname</label><input class="ka-input" id="cancel-name" name="cancel-name" type="text" autocomplete="name" maxlength="120" required></div>
+<div class="ka-field"><label for="cancel-email">E-Mail-Adresse deines Kontos</label><input class="ka-input" id="cancel-email" name="cancel-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
+<div class="ka-field"><label for="cancel-reference">Rechnungs- oder Vertragsnummer <span class="ka-muted">(optional)</span></label><input class="ka-input" id="cancel-reference" name="cancel-reference" type="text" maxlength="120"></div>
+<div class="ka-field"><label for="cancel-kind">Art der Kündigung</label><select class="ka-select" id="cancel-kind" name="cancel-kind"><option value="ordinary">Ordentlich zum Laufzeitende</option><option value="extraordinary">Außerordentlich (fristlos)</option></select></div>
+<div class="ka-field" id="cancel-reason-field" hidden><label for="cancel-reason">Grund der außerordentlichen Kündigung</label><textarea class="ka-input ka-textarea" id="cancel-reason" name="cancel-reason" maxlength="500" rows="3"></textarea></div>
+<p class="ka-hint">Kündigung zum nächstmöglichen Zeitpunkt. Du erhältst sofort eine Eingangsbestätigung auf dieser Seite und per E-Mail mit Eingangszeitpunkt und Vertragsende.</p>
+<button class="ka-btn ka-btn--block" type="submit">Jetzt kündigen</button>
+</form>
+<section class="ka-card" id="ka-cancel-done" hidden>
+<h2>Kündigung eingegangen</h2><p data-text></p>
+<dl class="ka-kv"><dt>Eingang</dt><dd data-received></dd><dt>Bestätigungsnummer</dt><dd data-id></dd><dt>Bestätigung per E-Mail</dt><dd data-mail></dd></dl>
+<div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-cancel-print">Bestätigung speichern oder drucken</button></div>
+</section>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

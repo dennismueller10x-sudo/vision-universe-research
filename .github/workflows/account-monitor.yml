@@ -1,0 +1,38 @@
+name: Konten — Kuendigungen ueberwachen
+# Stuendlich: /v1/health des Entwicklungs-Workers. "cancellations: attention"
+# (Kuendigung > 24 h offen, Bestaetigung > 30 min nicht zugestellt oder
+# endgueltig unzustellbar) laesst den Lauf scheitern - GitHub benachrichtigt
+# dann per E-Mail. Ergaenzt den Cron-Alarm des Workers (VU_OPS_ALERT_EMAIL),
+# falls Brevo selbst ausfaellt. Ohne VU_ACCOUNT_API_ORIGIN: nichts zu pruefen.
+# Liest nur, kein Schluessel noetig.
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-monitor-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Kuendigungen und Bestaetigungen
+        env:
+          API_ORIGIN: ${{ vars.VU_ACCOUNT_API_ORIGIN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$API_ORIGIN" ]; then echo "VU_ACCOUNT_API_ORIGIN nicht gesetzt - Worker noch nicht ausgerollt."; exit 0; fi
+          [[ "$API_ORIGIN" =~ ^https://[a-z0-9.-]+$ ]] || { echo "::error::VU_ACCOUNT_API_ORIGIN muss https://<host> sein"; exit 1; }
+          body=$(curl --fail --silent --show-error --max-time 20 --retry 2 "$API_ORIGIN/v1/health")
+          state=$(printf '%s' "$body" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);console.log([h.cancellations,h.mail,h.autoProcess].join(" "))})')
+          read -r cancellations mail auto <<< "$state"
+          echo "Kuendigungen: $cancellations · E-Mail konfiguriert: $mail · Automatik: $auto"
+          [ "$auto" = "false" ] || { echo "::error::VU_CANCELLATION_AUTO_PROCESS ist nicht false"; exit 1; }
+          case "$cancellations" in
+            ok) ;;
+            attention) echo "::error::Kuendigungen brauchen Bearbeitung - Workflow 'Konten — Kuendigungen bearbeiten' (list/deliver)."; exit 1;;
+            *) echo "::error::Zustand der Kuendigungen unbekannt (Supabase erreichbar?)"; exit 1;;
+          esac

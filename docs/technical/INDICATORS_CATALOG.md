@@ -1,6 +1,6 @@
 # Technical – Indikator-Katalog
 
-Stand: `technical-indicators-1.3.0` (1.3.0: Katalogerweiterung L2a; 1.2.1: Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md) (`quant/engines/technical/indicators.js`, `CATALOG`).
+Stand: `technical-indicators-1.4.0` (1.4.0: Katalogerweiterung L2b; 1.3.0: L2a; 1.2.1: Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md) (`quant/engines/technical/indicators.js`, `CATALOG`).
 
 Alle Indikatoren werden über `compute(series, id, params)` berechnet. `series` ist ein Spaltenobjekt `{open, high, low, close, volume}`. Gemeinsame Regeln:
 
@@ -112,3 +112,33 @@ Quelle: Ausbauplan in TECHNICAL_LIBRARY.md. Alle Einträge tragen `catalogOnly: 
 - **`cmo` folgt einer anderen Definition.** TA-Lib glättet nach Wilder und ist damit identisch mit 2·RSI − 100. Die Engine rechnet nach Chande/Kroll mit einfachen Summen. T4 hält beides fest.
 
 Die Ausgaben aller Einträge bis 1.2.1 sind unverändert. `linreg` bekommt nur die zusätzliche Ausgabe `r2`.
+
+## Neu in 1.4.0 (L2b, nur Katalog)
+
+24 Einträge, alle `catalogOnly: true`. Weiter gelistet: 24 Indikatoren, der Katalog umfasst 77. Testdatei **T5**: `technical-indicators-catalog-l2b.test.mjs`.
+
+**Referenz „Bausteine“:** Die Formel ist ein zweites Mal aus TA-Lib-Grundfunktionen zusammengesetzt (SMA, EMA, WMA, ROC, SUM, MAX, MIN, STDDEV, MEDPRICE, PPO). Grundlage sind echte AAPL-Kurse, eingefroren in `technical-talib-reference-aapl-ext2.json`. Für die Einträge mit dieser Referenz stimmt jede Bar, auch die erste.
+
+| id | Familie | Standard | Aufwärmphase | Ausgaben | Definition | Referenz |
+|---|---|---|---|---|---|---|
+| `vortex` | Trend | 14 | n | plus, minus | VI± = Σ\|H − L₋₁\| bzw. Σ\|L − H₋₁\| / ΣTR | Bausteine |
+| `massIndex` | Volatilität | 9 / 25 | 2(e−1)+s−1 | Reihe | Σ_s EMA(H−L)/EMA(EMA(H−L)) | Bausteine |
+| `choppiness` | Trend | 14 | n | Reihe | 100·log10(ΣTR/(HH−LL))/log10(n) | Bausteine |
+| `ulcerIndex` | Volatilität | 14 | 2(n−1) | Reihe | √ Mittel der quadrierten %-Rückgänge vom n-Hoch | Bausteine |
+| `forceIndex` | Volumen | 13 | n | Reihe | EMA((C − C₋₁)·V) | Bausteine |
+| `elderRay` | Momentum | 13 | n−1 | bull, bear | H bzw. L − EMA(C) | Bausteine |
+| `easeOfMovement` | Volumen | 14, scale 1e8 | n | Reihe | SMA(ΔMittelpreis/((V/scale)/(H−L))); H = L oder V = 0: nicht definiert | naive Referenz |
+| `awesomeOscillator` | Momentum | 5 / 34 | s−1 | Reihe | SMA₅ − SMA₃₄ des Mittelpreises | Bausteine |
+| `coppock` | Momentum | 14 / 11 / 10 | a+w−1 | Reihe | WMA(ROC₁₄ + ROC₁₁) | Bausteine |
+| `kst` | Momentum | Pring | 44 (Signal +8) | kst, signal | 1·SMA10(ROC10) + 2·SMA10(ROC15) + 3·SMA10(ROC20) + 4·SMA15(ROC30) | Bausteine |
+| `tsi` | Momentum | 25 / 13 / 7 | l+s−1 | tsi, signal | 100·EMA(EMA(ΔC))/EMA(EMA(\|ΔC\|)) | Bausteine |
+| `dpo` | Momentum | 20 | n−1 | Reihe | **kausal:** C₋₍⌊n/2⌋₊₁₎ − SMA_n. Die zentrierte Form braucht Zukunft und fehlt bewusst. | Bausteine |
+| `historicalVolatility` | Volatilität | 20, 252 | n | Reihe | Stichprobenstreuung der Log-Renditen · √252, in % | Bausteine |
+| `zScore` | Volatilität | 20 | n−1 | Reihe | (C − SMA)/σ (Population) | Bausteine |
+| `nvi` / `pvi` | Volumen | – | 0 | Reihe | Fosback, Start 1000 | naive Referenz |
+| `pvo` | Volumen | 12 / 26 / 9 | wie PPO | pvo, signal, histogram | PPO auf dem Volumen | Bausteine (TA-Lib PPO) |
+| `connorsRsi` | Momentum | 3 / 2 / 100 | 101 | Reihe | (RSI₃ + RSI₂(Serie) + Perzentilrang₁₀₀(ROC1))/3 | naive Referenz |
+| `elderImpulse` | Momentum | 13 / 12 / 26 / 9 | 34 | +1/0/−1 | Steigung von EMA13 und MACD-Histogramm gleichgerichtet | naive Referenz |
+| `chaikinVolatility` | Volatilität | 10 / 10 | n−1+r | Reihe | 100·(EMA(H−L)/EMA(H−L)₋ᵣ − 1) | Bausteine |
+| `envelope` | Trend | 20, 2,5 % | n−1 | middle, upper, lower | SMA ± pct % | naive Referenz |
+| `pivotsFib` / `pivotsCamarilla` / `pivotsWoodie` | Trend | – | 1 | p, r…, s… | Varianten aus der Vorbar | naive Referenz |

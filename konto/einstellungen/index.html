@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Einstellungen · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="settings"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title">Einstellungen</h1>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
+<div id="ka-settings-wrap" hidden>
+<form class="ka-card ka-form" id="ka-settings" novalidate>
+<h2>Profil und Darstellung</h2>
+<div class="ka-field"><label for="display-name">Anzeigename</label><input class="ka-input" id="display-name" name="display-name" type="text" autocomplete="nickname" maxlength="80"></div>
+<div class="ka-grid ka-grid--3">
+<div class="ka-field"><label for="appearance">Darstellung</label><select class="ka-select" id="appearance" name="appearance"><option value="system">Wie Gerät</option><option value="light">Hell</option><option value="dark">Dunkel</option></select></div>
+<div class="ka-field"><label for="currency">Anzeigewährung</label><select class="ka-select" id="currency" name="currency"><option value="EUR">Euro (EUR)</option><option value="USD">US-Dollar (USD)</option><option value="CHF">Franken (CHF)</option><option value="GBP">Pfund (GBP)</option></select></div>
+<div class="ka-field"><label for="experience">Erfahrung</label><select class="ka-select" id="experience" name="experience"><option value="beginner">Einsteiger</option><option value="advanced">Fortgeschritten</option></select></div>
+</div>
+<fieldset class="ka-form ka-fieldset"><legend class="ka-legend">Benachrichtigungen (Standard: alle aus)</legend>
+<label class="ka-check"><input type="checkbox" data-notification="WATCHLIST_NEWS"><span>Neuigkeiten zu Titeln auf meiner Watchlist</span></label>
+<label class="ka-check"><input type="checkbox" data-notification="EARNINGS"><span>Neue Quartalszahlen</span></label>
+<label class="ka-check"><input type="checkbox" data-notification="PRICE_EVENT"><span>Kursereignisse (z. B. neues 52-Wochen-Hoch)</span></label>
+<label class="ka-check"><input type="checkbox" data-notification="SUPERTRADER_SIGNAL"><span>Supertrader-Signale</span></label>
+<label class="ka-check"><input type="checkbox" data-notification="QUANT_CHANGE"><span>Änderungen in Quant</span></label>
+<label class="ka-check"><input type="checkbox" data-notification="MARKET_REGIME_CHANGE"><span>Wechsel des Marktregimes</span></label>
+</fieldset>
+<label class="ka-check"><input type="checkbox" id="marketing"><span>Gelegentliche E-Mails zu neuen Funktionen (jederzeit abbestellbar)</span></label>
+<div class="ka-actions"><button class="ka-btn" type="submit">Speichern</button></div>
+</form>
+<form class="ka-card ka-form" id="ka-password" novalidate>
+<h2>Passwort ändern</h2>
+<input type="email" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
+<div class="ka-field"><label for="current-password">Aktuelles Passwort</label><div class="ka-pw"><input class="ka-input" id="current-password" name="current-password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="current-password" aria-controls="current-password" aria-pressed="false">Anzeigen</button></div></div>
+<div class="ka-field"><label for="new-password">Neues Passwort</label><div class="ka-pw"><input class="ka-input" id="new-password" name="new-password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="new-password" aria-controls="new-password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint" id="pw-rules" aria-live="polite"></ul></div>
+<div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="submit">Passwort ändern</button></div>
+</form>
+<section class="ka-card">
+<h2>Deine Daten</h2>
+<p class="ka-muted">Lade alles herunter, was zu deinem Konto gespeichert ist (Art. 15 und 20 DSGVO). Zahlungsdaten liegen nur beim Zahlungsanbieter.</p>
+<div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-export">Daten herunterladen</button></div>
+</section>
+<form class="ka-card ka-form" id="ka-delete" novalidate>
+<h2>Konto löschen</h2>
+<p class="ka-muted">Löscht dein Konto, dein Profil, deine Einstellungen und Watchlists endgültig. Ein laufendes Abonnement wird sofort beendet. Rechnungen bewahren wir ohne Bezug zu deinem Konto auf, solange das Steuerrecht es verlangt.</p>
+<div class="ka-field"><label for="delete-password">Passwort zur Bestätigung</label><div class="ka-pw"><input class="ka-input" id="delete-password" name="delete-password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="delete-password" aria-controls="delete-password" aria-pressed="false">Anzeigen</button></div></div>
+<div class="ka-field"><label for="delete-confirm">Tippe LÖSCHEN</label><input class="ka-input" id="delete-confirm" name="delete-confirm" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20"></div>
+<div class="ka-actions"><button class="ka-btn ka-btn--danger" type="submit">Konto endgültig löschen</button></div>
+</form>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>
