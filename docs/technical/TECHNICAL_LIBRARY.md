@@ -156,7 +156,7 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L3 | TA-Lib-Abgleich für KAMA, LINEARREG, TRIX, ULTOSC (Status „Markt“ der Katalogindikatoren) | Test | offen |
 | L4 | Candlestick-Bibliothek (Abschnitt 4), nur Katalog | Katalog | offen |
 | L5 | Validierung der Formationen: konstruierte Grenzfälle je Typ, Stichprobe echter Erkennungen mit Begründung | Test/Doku | offen |
-| L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | offen |
+| L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | PR offen, Freigabe nötig: [SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md) |
 | L7 | Woche/Monat: Verfügbarkeitsgrenzen je neuem Feld; aus der Tageshistorie im Materialisierungslauf | **Fachmodell** | offen |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**

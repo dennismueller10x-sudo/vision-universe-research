@@ -17,6 +17,8 @@
                         Parabolic SAR, Ichimoku-Wolke, Aroon, Williams %R, CMF
                         -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
                         (<= 77 Bars, Ichimoku-Wolke) liegen im Fenster
+     Tagesbars          ROC 63/126/252, Inside Bar, NR7 (seit 1.7.0)
+     candlesticks.js    Kerzenmuster am Stichtag und "Tage seit" (seit 1.7.0)
      formations.js      Formationen Stand letzter Bar
    Fehlt ein Eingang, bleibt der Wert null (Missing != Zero); der Screener
    wertet null als "Bedingung nicht erfuellt" und zaehlt es im Trichter.
@@ -28,10 +30,11 @@
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
   var Fm = isNode ? require("./formations.js") : global.VUTechnical.Formations;
   var Ctx = isNode ? require("./ti/context.js") : global.VUTechnical.TIContext;
+  var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.6.0";
+  var ROW_VERSION = "technical-screen-row-1.7.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -104,6 +107,35 @@
     return out;
   }
 
+  /**
+   * Kerzenmuster (seit 1.7.0, docs/technical/CANDLESTICKS.md): Muster an der letzten Bar je Richtung und
+   * "Tage seit" dem juengsten bullischen bzw. baerischen Muster. Neutrale Muster (Doji, Long-Legged Doji,
+   * Spinning Top) haben keine Richtung und zaehlen nur in candleNeutral. Pruefraum candleWindow = Bars vom Stichtag
+   * rueckwaerts, an denen ALLE Muster entscheidbar sind (keine NaN); jede Bar nutzt nur Bars <= i.
+   */
+  function candleBlock(b) {
+    var out = { candleBullish: [], candleBearish: [], candleNeutral: [], candleBullDays: null, candleBearDays: null, candleWindow: null };
+    var n = b.close.length, t = n - 1, res = Cdl.detect({ open: b.open, high: b.high, low: b.low, close: b.close }).patterns;
+    var list = Cdl.PATTERNS.map(function (p) { return [p, res[p.id]]; });
+    var w = 0;
+    for (var i = t; i >= 0; i--) {
+      var bull = false, bear = false, ok = true;
+      for (var k = 0; k < list.length; k++) {
+        var p = list[k][0], v = list[k][1][i];
+        if (!isNum(v)) { ok = false; break; }
+        if (v === 0) continue;
+        if (i === t) out[p.direction === "neutral" ? "candleNeutral" : v > 0 ? "candleBullish" : "candleBearish"].push(p.id);
+        if (p.direction !== "neutral") { if (v > 0) bull = true; else bear = true; }
+      }
+      if (!ok) { if (i === t) { out.candleBullish = null; out.candleBearish = null; out.candleNeutral = null; } break; }
+      w++;
+      if (bull && out.candleBullDays === null) out.candleBullDays = t - i;
+      if (bear && out.candleBearDays === null) out.candleBearDays = t - i;
+    }
+    out.candleWindow = w > 0 ? w : null;
+    return out;
+  }
+
   /** Wochenschluesse -> Monatsschluesse (letzter Wochenschluss je Kalendermonat; laufender Monat zaehlt nicht). */
   function monthlyFromWeekly(points, asOf) {
     var out = [], cur = null, curKey = null, openKey = asOf ? asOf.slice(0, 7) : null;
@@ -166,6 +198,13 @@
     row.cci20 = r(lastAt(I.compute(b, "cci").values, t), 2);
     row.roc21 = r(isNum(f.roc21) ? f.roc21 : null);
     row.williamsR = r(lastAt(I.compute(b, "williamsR").values, t), 2);
+    /* ROC 63/126/252 (seit 1.7.0): Kursaenderung als Anteil wie roc21; 252 braucht 253 Bars im Fenster. */
+    [[63, "roc63"], [126, "roc126"], [252, "roc252"]].forEach(function (h) { row[h[1]] = t >= h[0] ? r(pct(c, b.close[t - h[0]])) : null; });
+
+    /* ---- Tag: Kerzen und Spannen (seit 1.7.0) ---- */
+    var ib = I.compute(b, "insideBar").values, nr = I.compute(b, "nr7").values;
+    row.insideBar = isNum(ib[t]) ? ib[t] === 1 : null;
+    row.nr7 = isNum(nr[t]) ? nr[t] === 1 : null;
 
     /* ---- Tag: Volumen ---- */
     var hasVol = b.volume && b.volume.some(function (v) { return isNum(v) && v > 0; });
@@ -213,6 +252,7 @@
 
     /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
     Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
+    Object.assign(row, candleBlock(b));
 
     /* ---- Woche und Monat (Schlusskurse aus discover-series-long) ---- */
     var weekly = (input.weekly || []).filter(function (p) { return p && isNum(p[1]); });
