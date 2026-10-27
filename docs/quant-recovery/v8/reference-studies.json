@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "v6-independent-studies-1.0.0",
+  "status": "PASS",
+  "sourceMode": "SYNTHETIC_TEST",
+  "signalEvents": 25,
+  "numericComparisons": 526,
+  "resourceObservation": {
+    "fixtureSourceBars": 360,
+    "nodeWallSeconds": 1.2103074689999858,
+    "childPeakRssKiB": 171096,
+    "scope": "small synthetic validation workload; includes Node startup, runtime hashing and concurrent environment load"
+  },
+  "tolerance": {
+    "relative": 1e-12,
+    "absolute": 1e-12
+  },
+  "independentImplementation": "Python stdlib: all five signal rules/cooldown, fixed replay/pattern selection and controls, setup execution variants, net outcomes/drawdown, ranking, event timing, trend/volatility, two-way cluster inference",
+  "historicalDataEligibility": "NOT_ESTABLISHED_BY_SYNTHETIC_REFERENCE",
+  "inputSha256": "35a30c4539422e4414f98c2f12a955a8f6812d56c314b9f964774e8740e367a4"
+}
