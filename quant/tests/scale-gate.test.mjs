@@ -10,12 +10,12 @@
    ist ausschliesslich die Gegenstelle, und genau die kann ein Test nicht
    anfassen, ohne fremdes Kontingent zu verbrauchen.
    ========================================================================= */
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, mkdirSync, cpSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -119,8 +119,14 @@ function startProvider(opts = {}) {
 
 /* ------------------------------------------------------------ Aufbau */
 
+/* Jede Sandbox wird nach dem letzten Test entfernt, auch wenn ein Test scheitert oder abbricht (after() laeuft
+   immer). Ohne das blieben je Lauf rund 30 Verzeichnisse in /tmp liegen (bis 100 MB je Verzeichnis). */
+const SANDBOXES = [];
+after(() => { for (const dir of SANDBOXES) rmSync(dir, { recursive: true, force: true }); });
+
 function sandbox() {
   const dir = mkdtempSync(join(tmpdir(), "vu-scale-"));
+  SANDBOXES.push(dir);
   mkdirSync(join(dir, "scale"), { recursive: true });
   return dir;
 }
