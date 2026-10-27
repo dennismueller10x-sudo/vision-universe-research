@@ -190,6 +190,9 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 | Widerstandslinie | 8.759 → 8.544 | 4.586 → 4.550 | 57,6 → 59,0 % | 45,3 → 45,5 % | −0,38 ± 0,47 → −0,36 ± 0,47 % | nein → nein |
 | Unterstützungslinie | 9.252 → 8.966 | 4.548 → 4.480 | 61,6 → 61,4 % | 46,0 → 45,6 % | −0,06 ± 0,40 → −0,02 ± 0,40 % | nein → nein |
 
-**Lesart:** Bei den Wimpeln fällt rund ein Drittel der historischen Stichprobe weg. Das waren Fälle, die zu ihrem Datum noch nicht erkennbar waren. Keine Aussage zur Wirksamkeit ändert sich: weiterhin nirgends signifikant.
+**Lesart:**
+- Die Evidenz misst schon unter 1.2.1 ab dem ersten Stand, an dem eine Formation sichtbar war, nicht ab `detectedAt`. Ihre Renditen waren von der Rückdatierung also nicht verfälscht.
+- Bei den Wimpeln fällt rund ein Drittel der historischen Stichprobe weg. Grund ist die kausale ATR-Messung: Mast und Tempo werden jetzt an der ATR des frühestmöglichen Bars gemessen statt an der ATR des jeweiligen Stands. Wimpel, die das 5-ATR-Kriterium nur mit einer später gefallenen ATR erfüllten, entfallen.
+- Keine Aussage zur Wirksamkeit ändert sich: weiterhin nirgends signifikant.
 
 **Test:** In `technical-formations.test.mjs` prüft „B-F3“ an eingefrorenen echten Tagesbars von ADT, ABAT, ACVA und AIRG (`fixtures/technical-formations-visibility.json`): Für jeden Wimpel und jede Trendlinie in 20 Ständen muss die Formation am Erkennungstag sichtbar sein. Der Test schlägt auf 1.2.1 fehl und läuft auf 1.2.2 durch.
