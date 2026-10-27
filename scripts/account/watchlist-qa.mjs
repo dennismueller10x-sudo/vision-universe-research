@@ -51,6 +51,9 @@ async function registered(context) {
   await page.goto(`${base}/__dev/mail`);
   await page.click('a.btn');
   await page.waitForURL(/\/konto\/\?status=verified/);
+  // Die Kontoseite bestaetigt die Sitzung (/v1/session) und setzt den Merker "angemeldet"; erst danach fragen
+  // Produktseiten die Konto-API an (assets/watchlist-button.js). Wie ein Nutzer: Seite fertig laden lassen.
+  await page.waitForFunction(() => localStorage.getItem('vu-account-session-v1') === '1');
   return page;
 }
 const rows = page => page.locator('.wl-row').count();
