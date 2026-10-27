@@ -74,6 +74,34 @@ Voraussetzungen, alle offen:
 - **V5:** Freigabe der Vorschau durch den Owner.
 - **V6:** Variable setzen und ein eigener PR für den Zeitplan.
 
+## Datenlauf 27.10.: BZH in den Signalen, aber nicht mehr im Discover-Universum
+
+**Befund:** `core/tests/state/supertrader-discover.test.mjs` war auf `main` ab `f10afd9` rot. `supertrader/data/signals.json` (Stand 2026-10-23) verwies auf BZH, `discover/data/stock-index/US_REAL.json` führte BZH nicht mehr. Das ist kein Supertrader-8-Code, sondern eine Lücke in der Datenkette.
+
+**Ursache (Nachtlauf `market-data-refresh.yml`, Run 40433301246):**
+1. `refresh` war grün und committete um 03:02 UTC das Universum ohne BZH (`f10afd9`).
+2. `materialize` scheiterte am Quant-Test, behoben durch #988.
+3. `freshness-contract` war rot (fail closed).
+4. `supertrader` wurde übersprungen.
+
+Der volle Anstoß verlangt zu Recht validierte Produktdaten. Ein Weg, nur den toten Verweis zu bereinigen, fehlte. Deshalb blieb die Abweichung bis zum Zeitplanlauf von `supertrader-signals.yml` bestehen.
+
+**Behoben durch den regulären Lauf:** Run 40501225836 (Zeitplan 06:17 UTC) startete um 12:06:50 UTC, also rund 350 Minuten verspätet, und war nach 3,5 Minuten erfolgreich.
+- Er committete `fe8e83c` „Signale aktualisiert (Stand 2026-10-26)“.
+- BZH ist seitdem als `discoverAvailability.unavailable` ausgewiesen, das Signal selbst bleibt erhalten.
+- Der Zustandstest ist auf `main` grün (2/0).
+
+**Bewertung:** Die Reihenfolge der Kette ist richtig, aber nicht robust. Jeder Fehler in `materialize` oder `freshness-contract` an einem Tag mit Universumsänderung führt zum selben Befund, für mehrere Stunden.
+
+**Dauerhafte Behebung (Draft, Owner-Freigabe offen):**
+- **#992:** fail-closed-Bereinigungsmodus `prune-dead-refs`.
+  - Er weist nur entfallene Titel aus.
+  - Es entstehen keine neuen Signale, und Einstiege, Stops, Ränge, Ledger und Stand bleiben unverändert.
+  - Er liest keine Markt- oder Quant-Daten.
+  - Dazu kommt eine Heap-Einstellung für den Build.
+- **#993:** Anstoß dieses Modus im Nachtlauf, nur wenn `refresh` grün und `materialize` oder der Vertrag rot ist.
+- Beschreibung: `docs/SUPERTRADER_DEAD_REF_PRUNE.md` auf dem Branch von #992.
+
 ## Infrastruktur-Hinweis (Vorschlag, nicht umgesetzt)
 
 Die Timeouts entstehen beim Checkout aller Branches eines Repositorys mit rund 2 Millionen Git-Objekten und bei der Browser-Installation. Ein flacher Checkout nur des PR-Refs (`fetch-depth`) und eine zwischengespeicherte Browser-Installation würden sie dauerhaft beheben. Das betrifft Core- und CI-Workflows und gehört deshalb in einen eigenen, vom Owner freigegebenen PR.
