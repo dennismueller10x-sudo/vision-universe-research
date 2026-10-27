@@ -112,6 +112,8 @@ test('SF8-PX-HISTORY: legitime Differenz nur als Rundung vor einem Split; alles 
   assert.equal(historyParity(s.bars, ref, split).status, HISTORY_PARITY.ADJUSTMENT_ROUNDING);
   // ein Split VOR dem Datum erklärt nichts
   assert.equal(historyParity(s.bars, ref, [s.bars[0].date]).status, HISTORY_PARITY.UNEXPLAINED);
+  // weniger oder mehr als genau eine halbe Einheit ist keine Rundung eines Gleichstands (Review LOW 7)
+  for (const pub of [7.461, 7.469, 7.456]) { const q = referenceFromBars(s); q.points[0] = [q.points[0][0], pub]; assert.equal(historyParity(s.bars, q, split).status, HISTORY_PARITY.UNEXPLAINED, String(pub)); }
   // eine volle Rundungseinheit (ein Cent) ist mehr als Rundung
   const big = referenceFromBars(s); big.points[0] = [big.points[0][0], 7.455];
   assert.equal(historyParity(s.bars, big, split).status, HISTORY_PARITY.UNEXPLAINED);
@@ -165,6 +167,12 @@ test('SF8-PX-PIPELINE: ohne Preisquelle kein Lauf; ein Titel ohne Preisidentitä
   const jakk = capped.strategies.flatMap((s) => s.detail.views).filter((v) => v.ticker === 'JAKK');
   assert.ok(jakk.length > 0 && jakk.every((v) => v.stage === STAGE.CHART_CANDIDATE && !v.plan));
   assert.ok(jakk.every((v) => v.dataQuality.notPass.some((n) => n.id === 'PRICE_HISTORY_PARITY')));
+});
+
+test('SF8-PX-UNREADABLE: eine vorhandene, unlesbare Referenz ist vertragswidrig, nicht fehlend (Review LOW 8)', () => {
+  const s = synth([10, 11]);
+  const r = priceParity(s, { unreadable: true, source: 'x' }, ASOF);
+  assert.equal(r.status, PRICE_PARITY.REFERENCE_INVALID); assert.equal(r.reason, 'UNREADABLE');
 });
 
 test('SF8-PX-REPO: im Repository hat jeder Titel mit Tagesbalken am Stichtag seine Referenzreihe (Lesen, kein Schreiben)', () => {

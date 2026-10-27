@@ -21,9 +21,9 @@
  *
  * Verlauf (CAP CHART_CANDIDATE, wenn ungeklärt – Muster, Pivots und Pläne lesen die Historie):
  *   - jede gemeinsame Sitzung muss gleich sein (nach roundClose);
- *   - LEGITIM ist allein die Rundung eines split-adjustierten Werts: die Abweichung ist kleiner als eine Rundungseinheit
+ *   - LEGITIM ist allein die Rundung eines split-adjustierten Werts: die Abweichung ist GENAU eine halbe Rundungseinheit
  *     der Veröffentlichung UND nach dem Datum liegt im Fenster ein Split (Kapitalmaßnahme der Materialisierung). Der
- *     adjustierte Wert hat dann mehr Stellen als der Cent (z. B. 14,93 / 2 = 7,465), beide Erzeuger runden ihn;
+ *     adjustierte Wert endet dann auf einer halben Einheit (z. B. 14,93 / 2 = 7,465), die Erzeuger runden ihn verschieden;
  *   - jede andere Abweichung und jede Sitzung, die nur eine der beiden Reihen hat, ist UNGEKLÄRT.
  */
 import fs from 'node:fs';
@@ -50,7 +50,9 @@ export const HISTORY_PARITY = Object.freeze({ PASS: 'PASS', ADJUSTMENT_ROUNDING:
 /** Referenzreihe eines Titels (nur lesen); null, wenn keine Datei existiert oder sie nicht lesbar ist. */
 export function loadPriceReference(securityId, { root = ROOT } = {}) {
   const p = path.join(root, SOURCES.priceReference, `${securityId}.json`);
-  try { return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : null; } catch { return null; }
+  if (!fs.existsSync(p)) return null;
+  // vorhanden, aber unlesbar ist eine vertragswidrige Referenz, keine fehlende (Review LOW 8)
+  try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return { unreadable: true, source: `${SOURCES.priceReference}/${securityId}.json` }; }
 }
 
 /** Rundungseinheit der Veröffentlichung für einen Wert (roundClose: ab 1 $ Cent, darunter vier signifikante Stellen). */
@@ -69,6 +71,7 @@ export function priceParity(security, reference, asOf) {
   const bars = security.bars || [], last = bars.at(-1) ?? null;
   const out = (status, detail = {}) => ({ version: PRICE_PARITY_VERSION, status, ...detail });
   if (!reference) return out(PRICE_PARITY.REFERENCE_MISSING, { source: `${SOURCES.priceReference}/${security.id}.json` });
+  if (reference.unreadable) return out(PRICE_PARITY.REFERENCE_INVALID, { source: reference.source ?? null, reason: 'UNREADABLE' });
   let expectedId = null; try { expectedId = Identity.securityIdForTicker(security.ticker); } catch { expectedId = null; }
   const idFields = { securityId: reference.securityId ?? null, ticker: reference.ticker ?? null, instrumentId: reference.instrumentId ?? null, currency: reference.currency ?? null };
   if (!expectedId || security.id !== expectedId || reference.securityId !== expectedId || reference.ticker !== security.ticker || reference.instrumentId !== security.ticker || reference.currency !== 'USD') {
@@ -98,8 +101,10 @@ export function historyParity(bars, reference, splits = []) {
     const p = ref.get(d), r = PublishedClose.roundClose(c);
     if (r === p) continue;
     const unit = roundingUnit(c), splitAfter = splits.some((s) => s > d);
-    // in ganzen Rundungseinheiten gemessen (ohne Gleitkomma-Rest an der Grenze: 7,465 - 7,455 ist genau eine Einheit)
-    if (unit !== null && typeof p === 'number' && Math.round((Math.abs(p - c) / unit) * 1e6) < 1e6 && splitAfter) { rounding++; continue; }
+    // genau eine halbe Rundungseinheit: der adjustierte Wert endet auf einer halben Einheit (7,465), die beiden Erzeuger
+    // runden den Gleichstand verschieden. In Millionstel Einheiten gemessen, ohne Gleitkomma-Rest. Gemessen 26.10.2026:
+    // alle 1.330 Abweichungen vor einem Split liegen genau dort; jede andere Größe ist ungeklärt (Review LOW 7).
+    if (unit !== null && typeof p === 'number' && Math.round((Math.abs(p - c) / unit) * 1e6) === 500000 && splitAfter) { rounding++; continue; }
     unexplained.push({ date: d, close: c, published: p });
   }
   const status = unexplained.length || onlyReference.length || onlyBars.length ? HISTORY_PARITY.UNEXPLAINED : rounding ? HISTORY_PARITY.ADJUSTMENT_ROUNDING : HISTORY_PARITY.PASS;
