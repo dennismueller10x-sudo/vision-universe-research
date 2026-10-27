@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-24T13:38:41.233Z",
+ "generatedAt": "2026-10-27T11:16:00.734Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,16 +43,16 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4535,
+ "runtimeSec": 4606,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4389,
+   "ABSTAIN": 4387,
    "DATA_INVALID": 452,
    "NO_PROJECTION": 110,
    "AVAILABLE": 36,
-   "WITHHELD": 61
+   "WITHHELD": 63
   },
   "consumerVisible": 36,
   "types": {
@@ -65,39 +65,39 @@
   "weeklyForDaily": 5,
   "explore": {
    "highlights": {
-    "securities": 104,
-    "theses": 108,
+    "securities": 103,
+    "theses": 107,
     "perSecurity": {
-     "1": 100,
+     "1": 99,
      "2": 4
     },
     "direction": {
-     "DOWN": 59,
+     "DOWN": 58,
      "UP": 49
     },
     "type": {
-     "WAVE_C": 85,
+     "WAVE_C": 84,
      "WAVE_3": 23
     },
     "pattern": {
-     "ZIGZAG": 65,
+     "ZIGZAG": 64,
      "IMPULSE": 23,
      "FLAT": 19,
      "DOUBLE_ZIGZAG": 1
     },
     "failedSet": {
      "G5": 59,
-     "G2": 49
+     "G2": 48
     },
     "rankPct": {
-     "0-10": 91,
+     "0-10": 90,
      "10-25": 17,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
      "0": 46,
-     "1": 38,
+     "1": 37,
      "2": 24
     },
     "extendedMove": {
@@ -123,37 +123,37 @@
     }
    },
    "candidates": {
-    "securities": 3713,
-    "entries": 13041,
+    "securities": 3711,
+    "entries": 13034,
     "perSecurity": {
      "1": 479,
-     "2": 679,
+     "2": 678,
      "3": 766,
      "4": 667,
-     "5": 494,
+     "5": 493,
      "6": 628
     },
     "direction": {
-     "DOWN": 6713,
-     "UP": 6328
+     "DOWN": 6710,
+     "UP": 6324
     },
     "type": {
-     "WAVE_C": 9728,
-     "WAVE_3": 2876,
-     "WAVE_5": 437
+     "WAVE_C": 9723,
+     "WAVE_3": 2875,
+     "WAVE_5": 436
     },
     "failedSet": {
      "G3+G4": 1894,
-     "G2+G3+G4+G5": 1397,
      "G3+G4+G5": 587,
-     "G2+G3+G4": 3046,
-     "G2+G3": 1549,
+     "G2+G3+G4": 3045,
+     "G2+G3+G4+G5": 1395,
+     "G2+G3": 1548,
      "G3": 727,
      "G3+G5": 466,
-     "G2+G4+G5": 491,
+     "G2+G4+G5": 490,
      "G4+G5": 266,
      "G2+G3+G5": 999,
-     "G2+G4": 666,
+     "G2+G4": 664,
      "G2": 192,
      "G4": 481,
      "G5": 102,
@@ -176,37 +176,37 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-23",
+   "reference": "2026-10-26",
    "titles": 5043,
    "states": {
-    "FRESH": 4978,
-    "STALE": 58,
-    "DELAYED": 4,
+    "FRESH": 4973,
+    "DELAYED": 7,
+    "STALE": 60,
     "NON_TRADING": 3
    },
    "reasons": {
-    "REFRESH_STOPPED": 35,
+    "REFRESH_STOPPED": 40,
     "NO_NEWER_BARS": 27,
     "SECURITY_INACTIVE": 3
    },
    "reasonsKnown": 3,
-   "delayedWithNotice": 4,
+   "delayedWithNotice": 7,
    "affected": {
-    "titles": 61,
-    "primary": 52,
-    "alternative": 49,
+    "titles": 63,
+    "primary": 54,
+    "alternative": 51,
     "motiveAlternative": 0,
-    "exploreHighlights": 6,
-    "exploreCandidates": 119,
+    "exploreHighlights": 7,
+    "exploreCandidates": 125,
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
     "0-3": 4979,
-    "11-20": 22,
-    "21-40": 16,
-    "4-5": 3,
-    ">40": 18,
-    "6-10": 5
+    "11-20": 20,
+    "21-40": 17,
+    "6-10": 6,
+    ">40": 20,
+    "4-5": 1
    },
    "withheldTitles": [
     "AIXC",
@@ -214,14 +214,15 @@
     "APGE",
     "AREN",
     "ATAI",
+    "ATKR",
     "AVB",
     "BTOG",
     "CCO",
     "CRNX",
     "CSAN",
     "DBRG",
-    "DBRG-P-H",
     "DBRG-P-I",
+    "DBRG-P-H",
     "DBRG-P-J",
     "DOMO",
     "FBRX",
@@ -233,26 +234,26 @@
     "HLX",
     "IWML",
     "IWFL",
-    "JUPGF",
     "LBRDP",
-    "LBRDA",
+    "JUPGF",
     "LESL",
+    "LBRDA",
     "LEG",
     "LBRDK",
     "MDV",
-    "MAA-P-I",
     "MDV-P-A",
+    "MAA-P-I",
     "MTUL",
     "NLY-P-I",
     "NSTS",
-    "NCSM",
     "NTZ",
+    "NCSM",
     "NVNI",
     "PHGE",
     "QNCX",
     "QRVO",
-    "QULL",
     "PRIF-P-L",
+    "QULL",
     "SCDL",
     "RMAX",
     "SNYR",
@@ -260,9 +261,10 @@
     "TWO-P-C",
     "TALK",
     "TWO-P-A",
-    "VRME",
+    "UUU",
     "TWO",
     "TWO-P-B",
+    "VRME",
     "WBS",
     "VTAK",
     "WALD",
@@ -272,12 +274,12 @@
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0121,
+    "share": 0.0125,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 199,
+  "lifecycleEvents": 1,
   "tracked": 443
  }
 }

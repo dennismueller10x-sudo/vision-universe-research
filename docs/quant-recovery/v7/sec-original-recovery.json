@@ -1,0 +1,368 @@
+{
+  "schemaVersion": "v7-sec-original-poc-1",
+  "createdAt": "2026-10-26T09:30:59.420699+00:00",
+  "client": "existing SECHttpClient; configured default declaring contact",
+  "requestStats": {
+    "requests": 4,
+    "cache_hits": 12,
+    "retries": 0,
+    "deduplicated": 0
+  },
+  "maxAccessions": 8,
+  "maxBytes": 83886080,
+  "bytes": 71997151,
+  "results": [
+    {
+      "ticker": "JPM",
+      "accession": "0000019617-18-000057",
+      "url": "https://www.sec.gov/Archives/edgar/data/19617/000001961718000057/jpm-20171231.xml",
+      "sourceHash": "01d11caf560b409ba5ef77a551ec163f954aec0f822ba889342bf5d446d4b160",
+      "bytes": 24465341,
+      "checks": [
+        {
+          "metric": "revenue",
+          "periodStart": "2015-01-01",
+          "periodEnd": "2015-12-31",
+          "storedValue": 93543000000.0,
+          "originalValues": [
+            93543000000.0
+          ],
+          "availableFrom": "2018-02-27T21:23:03.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "JPM",
+      "accession": "0001628280-26-008131",
+      "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231_htm.xml",
+      "sourceHash": "9fe211a6d6f7ec3af368f81c820868b54d7ea02ca2fe9776e72d7a41e2472126",
+      "bytes": 14885065,
+      "checks": [
+        {
+          "metric": "revenue",
+          "periodStart": "2023-01-01",
+          "periodEnd": "2023-12-31",
+          "storedValue": 158104000000.0,
+          "originalValues": [
+            158104000000.0
+          ],
+          "availableFrom": "2026-02-13T21:20:00.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2024-01-01",
+          "periodEnd": "2024-12-31",
+          "storedValue": 177556000000.0,
+          "originalValues": [
+            177556000000.0
+          ],
+          "availableFrom": "2026-02-13T21:20:00.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2025-01-01",
+          "periodEnd": "2025-12-31",
+          "storedValue": 182447000000.0,
+          "originalValues": [
+            182447000000.0
+          ],
+          "availableFrom": "2026-02-13T21:20:00.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "MSFT",
+      "accession": "0001564590-17-014900",
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017014900/msft-20170630.xml",
+      "sourceHash": "8ad519cb071368833b3dabd33c4cb3c92af2cc42b5dd71fab0c7a5a9212a1205",
+      "bytes": 8924017,
+      "checks": [
+        {
+          "metric": "operating_income",
+          "periodStart": "2014-07-01",
+          "periodEnd": "2015-06-30",
+          "storedValue": 18161000000.0,
+          "originalValues": [
+            18161000000.0
+          ],
+          "availableFrom": "2017-08-02T20:15:01.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "MSFT",
+      "accession": "0001193125-26-323660",
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630_htm.xml",
+      "sourceHash": "56e56d82ee2d82cb75d37b85df51d4807ffc1e1a3cc4e02ec87513b7574aa886",
+      "bytes": 10948157,
+      "checks": [
+        {
+          "metric": "operating_income",
+          "periodStart": "2023-07-01",
+          "periodEnd": "2024-06-30",
+          "storedValue": 109433000000.0,
+          "originalValues": [
+            109433000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "operating_income",
+          "periodStart": "2024-07-01",
+          "periodEnd": "2025-06-30",
+          "storedValue": 128528000000.0,
+          "originalValues": [
+            128528000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "operating_income",
+          "periodStart": "2025-07-01",
+          "periodEnd": "2026-06-30",
+          "storedValue": 155237000000.0,
+          "originalValues": [
+            155237000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2023-07-01",
+          "periodEnd": "2024-06-30",
+          "storedValue": 245122000000.0,
+          "originalValues": [
+            245122000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2024-07-01",
+          "periodEnd": "2025-06-30",
+          "storedValue": 281724000000.0,
+          "originalValues": [
+            281724000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2025-07-01",
+          "periodEnd": "2026-06-30",
+          "storedValue": 331839000000.0,
+          "originalValues": [
+            331839000000.0
+          ],
+          "availableFrom": "2026-07-29T20:08:01.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "NVDA",
+      "accession": "0001045810-18-000010",
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000010/nvda-20180128.xml",
+      "sourceHash": "187c882aa072b25206c2b9bcf379b92647e6d39c5909c9461842628eb48e7f2d",
+      "bytes": 2719950,
+      "checks": [
+        {
+          "metric": "operating_income",
+          "periodStart": "2015-01-26",
+          "periodEnd": "2016-01-31",
+          "storedValue": 747000000.0,
+          "originalValues": [
+            747000000.0
+          ],
+          "availableFrom": "2018-02-28T21:31:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2015-01-26",
+          "periodEnd": "2016-01-31",
+          "storedValue": 5010000000.0,
+          "originalValues": [
+            5010000000.0
+          ],
+          "availableFrom": "2018-02-28T21:31:19.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "NVDA",
+      "accession": "0001045810-26-000021",
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125_htm.xml",
+      "sourceHash": "af8398105d629d98defacca572c8e85fe0d8a5f551266b01df2d8be4fa03558f",
+      "bytes": 1685733,
+      "checks": [
+        {
+          "metric": "operating_income",
+          "periodStart": "2023-01-30",
+          "periodEnd": "2024-01-28",
+          "storedValue": 32972000000.0,
+          "originalValues": [
+            32972000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "operating_income",
+          "periodStart": "2024-01-29",
+          "periodEnd": "2025-01-26",
+          "storedValue": 81453000000.0,
+          "originalValues": [
+            81453000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "operating_income",
+          "periodStart": "2025-01-27",
+          "periodEnd": "2026-01-25",
+          "storedValue": 130387000000.0,
+          "originalValues": [
+            130387000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2023-01-30",
+          "periodEnd": "2024-01-28",
+          "storedValue": 60922000000.0,
+          "originalValues": [
+            60922000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2024-01-29",
+          "periodEnd": "2025-01-26",
+          "storedValue": 130497000000.0,
+          "originalValues": [
+            130497000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2025-01-27",
+          "periodEnd": "2026-01-25",
+          "storedValue": 215938000000.0,
+          "originalValues": [
+            215938000000.0
+          ],
+          "availableFrom": "2026-02-25T21:42:19.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "XOM",
+      "accession": "0000034088-25-000010",
+      "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408825000010/xom-20241231_htm.xml",
+      "sourceHash": "8bdd04ab7d7f7aa39ac2c23a639cf4af838629a119992e2b1df4e764ae87f124",
+      "bytes": 4353418,
+      "checks": [
+        {
+          "metric": "revenue",
+          "periodStart": "2022-01-01",
+          "periodEnd": "2022-12-31",
+          "storedValue": 413680000000.0,
+          "originalValues": [
+            413680000000.0
+          ],
+          "availableFrom": "2025-02-19T21:39:37.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    },
+    {
+      "ticker": "XOM",
+      "accession": "0000034088-26-000045",
+      "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231_htm.xml",
+      "sourceHash": "981cecb1c56fcdbc6fa97434b4797e10d3f9455b68a8981260bac0aaa5d5b90a",
+      "bytes": 4015470,
+      "checks": [
+        {
+          "metric": "revenue",
+          "periodStart": "2023-01-01",
+          "periodEnd": "2023-12-31",
+          "storedValue": 344582000000.0,
+          "originalValues": [
+            344582000000.0
+          ],
+          "availableFrom": "2026-02-18T21:06:52.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2024-01-01",
+          "periodEnd": "2024-12-31",
+          "storedValue": 349585000000.0,
+          "originalValues": [
+            349585000000.0
+          ],
+          "availableFrom": "2026-02-18T21:06:52.000Z",
+          "state": "MATCH"
+        },
+        {
+          "metric": "revenue",
+          "periodStart": "2025-01-01",
+          "periodEnd": "2025-12-31",
+          "storedValue": 332238000000.0,
+          "originalValues": [
+            332238000000.0
+          ],
+          "availableFrom": "2026-02-18T21:06:52.000Z",
+          "state": "MATCH"
+        }
+      ],
+      "state": "MATCH"
+    }
+  ],
+  "scope": "Original facts for earliest/latest stored annual accessions of four selected issuers. Not complete first-filing vintage coverage, no new market universe.",
+  "productionApproved": false,
+  "totalSessionSecHttpRequests": 22,
+  "totalSessionTiingoMarketstackHttpRequests": 0,
+  "offlineReplay": {
+    "resultsIdentical": true,
+    "requests": 0
+  },
+  "originalFactChecks": 23,
+  "acceptanceHeaderCheck": {
+    "accession": "0001045810-26-000021",
+    "rawEasternTimestamp": "20260225164219",
+    "utc": "2026-02-25T21:42:19.000Z",
+    "storedRowsMatching": 204,
+    "headerPrefixHash": "14cae05a60843d2b2a17fc0c16422422cced38452830df3e3ada01bd721288bd",
+    "completeSubmissionDownloaded": false
+  },
+  "reproduction": "python3 scripts/quant/recover-v7-sec-originals.py --out /private/sec-originals --fetch; omit --fetch for cached offline verification",
+  "recoveryCodeHash": "156cd2da4fc555f46edfdba89730cbe0fdcb514d7756d028224ef47b5b2b0f26"
+}
