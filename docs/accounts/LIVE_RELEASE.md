@@ -1,5 +1,8 @@
 # Konten und Abos – Live-Freigabe
 
+> **Owner-Entscheidung 26.10.2026:** eine einzige Infrastruktur. Abschnitt B (getrenntes Produktionsprojekt, `account-prod`,
+> `account.visionuniverse.de`) ist ersetzt durch [PRODUCTION.md](PRODUCTION.md); die API heißt `konto.visionuniverse.de`.
+
 Nichts hiervon ist erledigt. Jeder Schritt braucht die **ausdrückliche Freigabe des Owners**; die Reihenfolge ist bindend. Vorher:
 [SETUP.md](SETUP.md) vollständig im Entwicklungsprojekt durchgespielt, alle Punkte aus „Testen im Entwicklungsprojekt“ grün.
 

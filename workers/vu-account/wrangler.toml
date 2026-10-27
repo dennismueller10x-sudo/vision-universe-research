@@ -72,3 +72,50 @@ VU_CANCELLATION_AUTO_PROCESS = "false"
 VU_OPS_ALERT_EMAIL = ""
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"
+
+# =============================================================================
+# PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
+#
+#   npx wrangler deploy --env production   (nur ueber den Workflow
+#   "Konten — vu-account ausrollen (Produktion)", mit Freigabe)
+#
+# Worker "vu-account" unter https://konto.visionuniverse.de (Custom Domain;
+# Cloudflare legt DNS-Eintrag und Zertifikat an). NICHT account.visionuniverse.de:
+# dieser Name gehoert den Shopify-Kundenkonten des Shops.
+# Supabase-Projekt qiytbnpoqvldsatpfkeh (Frankfurt) ist die Produktionsdatenbank.
+#
+# Schalter, die nur per eigenem, freigegebenem PR umgestellt werden:
+#   STRIPE_LIVE_MODE_APPROVED  Live-Abrechnung (zusaetzlich: Live-Preise in plan_prices)
+#   VU_REGISTRATION_ENABLED    oeffentliche Registrierung (zusaetzlich: registration_gate.open)
+#   VU_CANCELLATION_AUTO_PROCESS bleibt "false" (Owner-Vorgabe; der Workflow erzwingt es)
+# =============================================================================
+[env.production]
+name = "vu-account"
+workers_dev = false
+routes = [{ pattern = "konto.visionuniverse.de", custom_domain = true }]
+
+[env.production.observability]
+enabled = true
+
+[env.production.triggers]
+crons = ["*/10 * * * *"]
+
+[env.production.vars]
+VU_ENVIRONMENT = "production"
+VU_SITE_ORIGIN = "https://research.visionuniverse.de"
+VU_ACCOUNT_API_ORIGIN = "https://konto.visionuniverse.de"
+VU_ALLOWED_ORIGINS = ""
+SUPABASE_URL = "https://qiytbnpoqvldsatpfkeh.supabase.co"
+# Oeffentlich, setzt der Workflow aus dem Secret (Repo-Regel: Schluessel nur ueber secrets).
+SUPABASE_PUBLISHABLE_KEY = ""
+# Erst "true", wenn in Supabase Auth "Forward client IP" eingeschaltet ist.
+SUPABASE_FORWARD_CLIENT_IP = "false"
+STRIPE_API_VERSION = "2025-03-31.basil"
+STRIPE_CHECKOUT_REQUIRE_TERMS = "false"
+VU_REGISTRATION_ENABLED = "false"
+VU_REGISTRATION_ALLOWLIST = ""
+VU_MAIL_SENDER = "konto@visionuniverse.de"
+VU_MAIL_SENDER_NAME = "Vision Universe"
+VU_CANCELLATION_AUTO_PROCESS = "false"
+VU_OPS_ALERT_EMAIL = ""
+STRIPE_LIVE_MODE_APPROVED = "false"
