@@ -20,7 +20,7 @@ const normalized = JSON.parse(JSON.stringify(groups.map(({label, entries}) => [l
 // Discover shortcuts stay within Discover; the other groups link to platform products.
 test('the shared menu groups product routes and Discover destinations', () => {
   assert.deepEqual(normalized.map(([heading]) => heading),
-    ['Discover','Quant','Elliott','Fundamental','Screener','Vorsorge','Supertrader','Hedgefonds','Weitere Produkte']);
+    ['Discover','Quant','Elliott','Fundamental','Technical','Screener','Vorsorge','Supertrader','Hedgefonds','Weitere Produkte']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/elliott/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
@@ -33,7 +33,7 @@ test('the shared menu groups product routes and Discover destinations', () => {
     ['Märkte','/discover/#/maerkte'],['Watchlist','/discover/#/watchlist']
   ]);
   // Hash-Routen gehoeren zu vorhandenen Produkt-Apps; Screener nutzt Query-Routen.
-  assert.ok(routes.filter(route => route.includes('#/')).every(route => /^\/(discover|vorsorge|quant|hedgefonds|elliott|fundamental)\/#\//.test(route)));
+  assert.ok(routes.filter(route => route.includes('#/')).every(route => /^\/(discover|vorsorge|quant|hedgefonds|elliott|fundamental|technical)\/#\//.test(route)));
   for (const group of groups.filter(g=>g.id!=='more')) {
     const prefix=group.href.split('#')[0];
     assert.ok(group.entries.every(([,href])=>href.startsWith(prefix)),group.label+' stays within its product');

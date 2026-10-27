@@ -10,12 +10,13 @@
    discover-series/ref_SPY.
 
    Herkunft je Wert (wichtig fuer Vergleichbarkeit mit Quant):
-     featuresAtCutoff   SMA 50/200, EMA 20/50, RSI 14, ADX, MACD, 52W-Hoch,
+     featuresAtCutoff   SMA 50/200, EMA 20/50/200, RSI 14, ADX, MACD, 52W-Hoch,
                         relatives Volumen, ATR %, Bollinger-Breitenperzentil
                         -> auf der VOLLHISTORIE gerechnet (feature-store.js)
      indicators.js      Stochastik, CCI, MFI, Supertrend, Bollinger %B, OBV,
-                        ROC -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
-                        (<= 35 Bars) liegen weit innerhalb des Fensters
+                        Parabolic SAR, Ichimoku-Wolke, Aroon, Williams %R, CMF
+                        -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
+                        (<= 77 Bars, Ichimoku-Wolke) liegen im Fenster
      formations.js      Formationen Stand letzter Bar
    Fehlt ein Eingang, bleibt der Wert null (Missing != Zero); der Screener
    wertet null als "Bedingung nicht erfuellt" und zaehlt es im Trichter.
@@ -30,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.0.0";
+  var ROW_VERSION = "technical-screen-row-1.6.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -48,8 +49,59 @@
     return {
       aboveSma200: isNum(sl) ? c > sl : null, aboveSma50: isNum(ss) ? c > ss : null,
       sma50AboveSma200: isNum(sl) && isNum(ss) ? ss > sl : null, distSma200: r(pct(c, sl)),
-      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi))
+      rsi14: r(rs, 2), newHigh52w: isNum(hi) ? c >= hi : null, distHigh52w: r(pct(c, hi)),
+      /* Nur aus der vollen Tageshistorie (bundle.multiTimeframe) berechenbar; Schlusskurse allein reichen nicht. */
+      adx: null, macdPositive: null, stochK: null, atrPct: null, relVol: null, volAboveAvg: null, volSpike: null
     };
+  }
+
+  /**
+   * Ereignisse als "Handelstage seit" (Audit B12). Je Ereignis zwei Werte:
+   *   <feld>        Handelstage seit dem juengsten Ereignis (0 = am Stichtag), null = keines im Pruefraum
+   *   <fenster>     Laenge des Pruefraums in Handelstagen (Tage 0..W-1 geprueft), null = nicht pruefbar
+   * "Kein Ereignis" (Feld null, Fenster W) und "unzureichende Historie" (beide null) sind so unterscheidbar.
+   * Pruefraum = zusammenhaengende Bars vom Stichtag rueckwaerts, an denen das Ereignis entscheidbar ist.
+   * Linien aus chartSeries (Vollhistorie, je Bar kausal), nie aus den 270 Bars neu gerechnet; jede Pruefung an
+   * Bar i nutzt nur Bars <= i (kein Vorgriff). Zeitraeume zaehlen Bars = Handelstage.
+   * Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
+   */
+  function eventBlock(b, cs, formations) {
+    var n = b.close.length, t = n - 1, out = {};
+    /* scan: von t rueckwaerts, solange decidable(i); erstes test(i) liefert die Tage. */
+    function scan(decidable, test) {
+      var w = 0, days = null;
+      for (var i = t; i >= 0 && decidable(i); i--) { w++; if (days === null && test(i)) days = t - i; }
+      return { days: days, window: w > 0 ? w : null };
+    }
+    function both(a, z) { return function (i) { return i >= 1 && isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]); }; }
+    function crossUp(a, z) { return function (i) { return a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    function put(key, windowKey, r) { out[key] = r.days; if (windowKey) out[windowKey] = r.window; }
+    var none = { days: null, window: null };
+    var lines = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
+    put("goldenCrossDays", "smaCrossWindow", lines ? scan(both(cs.sma50, cs.sma200), crossUp(cs.sma50, cs.sma200)) : none);
+    put("deathCrossDays", null, lines ? scan(both(cs.sma50, cs.sma200), crossDown(cs.sma50, cs.sma200)) : none);
+    put("crossAboveSma200Days", "sma200CrossWindow", lines ? scan(both(b.close, cs.sma200), crossUp(b.close, cs.sma200)) : none);
+    put("crossBelowSma200Days", null, lines ? scan(both(b.close, cs.sma200), crossDown(b.close, cs.sma200)) : none);
+    var rsi = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n ? cs.rsi14 : null;
+    var l30 = [], l70 = []; for (var k = 0; k < n; k++) { l30.push(30); l70.push(70); }
+    put("rsiExitOversoldDays", "rsiEventWindow", rsi ? scan(both(rsi, l30), crossUp(rsi, l30)) : none);
+    put("rsiExitOverboughtDays", null, rsi ? scan(both(rsi, l70), crossDown(rsi, l70)) : none);
+    /* Neues 52-Wochen-Hoch: Tageshoch >= Hoch der 251 Vorbars (wie newHigh52w); entscheidbar nur mit 251 Vorbars im Fenster. */
+    put("newHigh52wDays", "high52wWindow", scan(function (i) {
+      if (i < 251 || !isNum(b.high[i])) return false;
+      for (var j = i - 251; j < i; j++) if (!isNum(b.high[j])) return false;
+      return true;
+    }, function (i) { var hi = -Infinity; for (var j = i - 251; j < i; j++) if (b.high[j] > hi) hi = b.high[j]; return b.high[i] >= hi; }));
+    /* Juengste aktive Formations-Erkennung; Pruefraum = das Analysefenster (alle Bars), sofern die Erkennung lief. */
+    if (formations === null || formations === undefined) put("formationNewDays", "formationWindow", none);
+    else {
+      var idx = {}; for (var m = 0; m < n; m++) idx[b.timestamps[m]] = m;
+      var newest = null;
+      formations.forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
+      put("formationNewDays", "formationWindow", { days: newest, window: n });
+    }
+    return out;
   }
 
   /** Wochenschluesse -> Monatsschluesse (letzter Wochenschluss je Kalendermonat; laufender Monat zaehlt nicht). */
@@ -70,6 +122,8 @@
    *   bars: {timestamps, open, high, low, close, volume}   (technical-signals-v1, SPLIT_ADJUSTED)
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
+   *   multiTimeframe: bundle.multiTimeframe | null         (Wochen/Monat aus der vollen Tageshistorie; hat Vorrang)
+   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
    * }
@@ -85,12 +139,20 @@
     row.sma50AboveSma200 = isNum(f.sma50) && isNum(f.sma200) ? f.sma50 > f.sma200 : null;
     row.aboveEma20 = isNum(f.ema20) ? c > f.ema20 : null;
     row.aboveEma50 = isNum(f.ema50) ? c > f.ema50 : null;
+    /* EMA 200 nur, wenn die Materialisierung sie als eingeschwungen veroeffentlicht (ema-settled); sonst leer, nie geschaetzt. */
+    row.aboveEma200 = isNum(f.ema200) ? c > f.ema200 : null;
+    row.distEma200 = r(pct(c, f.ema200));
     row.distSma200 = r(pct(c, f.sma200));
     row.distSma50 = r(pct(c, f.sma50));
     row.adx = r(f.adx, 2);
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;
+    var ps = I.compute(b, "psar").values;
+    row.psarUp = isNum(ps.direction[t]) ? ps.direction[t] > 0 : null;
+    var ich = I.compute(b, "ichimoku").values, ca = lastAt(ich.cloudA, t), cb = lastAt(ich.cloudB, t);
+    row.aboveCloud = isNum(ca) && isNum(cb) ? c > Math.max(ca, cb) : null;
+    row.aroonOsc = r(lastAt(I.compute(b, "aroon").values.oscillator, t), 1);
 
     /* ---- Tag: Hochs ---- */
     row.newHigh52w = isNum(f.high52w) ? b.high[t] >= f.high52w : null;
@@ -103,6 +165,7 @@
     row.stochK = r(sto.k ? lastAt(sto.k, t) : null, 2);
     row.cci20 = r(lastAt(I.compute(b, "cci").values, t), 2);
     row.roc21 = r(isNum(f.roc21) ? f.roc21 : null);
+    row.williamsR = r(lastAt(I.compute(b, "williamsR").values, t), 2);
 
     /* ---- Tag: Volumen ---- */
     var hasVol = b.volume && b.volume.some(function (v) { return isNum(v) && v > 0; });
@@ -112,6 +175,7 @@
     row.mfi14 = hasVol ? r(lastAt(I.compute(b, "mfi").values, t), 2) : null;
     var obv = hasVol ? I.compute(b, "obv").values : null;
     row.obvRising = obv && t >= 20 ? obv[t] > obv[t - 20] : null;
+    row.cmf20 = hasVol ? r(lastAt(I.compute(b, "cmf").values, t), 3) : null;
 
     /* ---- Tag: Volatilitaet ---- */
     row.atrPct = r(f.atrPct);
@@ -132,16 +196,23 @@
     }
 
     /* ---- Formationen ---- */
-    row.formationActive = []; row.formationConfirmed = []; row.formations = [];
+    row.formationActive = []; row.formationConfirmed = []; row.formationOpen = []; row.formations = [];
     try {
       var series = input.series;
       var res = Fm.analyzeAt(Ctx.prepare(series), series.length - 1);
       res.formations.forEach(function (x) {
         if (x.state !== "INVALIDATED" && row.formationActive.indexOf(x.type) < 0) row.formationActive.push(x.type);
         if (x.state === "CONFIRMED" && row.formationConfirmed.indexOf(x.type) < 0) row.formationConfirmed.push(x.type);
-        if (x.state !== "INVALIDATED") row.formations.push([x.type, x.state, x.detectedAt]);
+        if (x.state === "DETECTED" && row.formationOpen.indexOf(x.type) < 0) row.formationOpen.push(x.type);
+        /* [Typ, Zustand, erkannt, Ausbruchstag, Ausbruchsrichtung, Kennzeichen]: Kennzeichen "B" = bei Erkennung bereits
+           ausgebrochen, "V" = vorlaeufiger Kanal (4 Punkte), "O" = Richtung offen. */
+        if (x.state !== "INVALIDATED") row.formations.push([x.type, x.state, x.detectedAt, x.breakout ? x.breakout.at : null, x.breakout ? x.breakout.direction : null,
+          (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
-    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+
+    /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
+    Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
 
     /* ---- Woche und Monat (Schlusskurse aus discover-series-long) ---- */
     var weekly = (input.weekly || []).filter(function (p) { return p && isNum(p[1]); });
@@ -149,11 +220,14 @@
        Woche noch offen und faellt weg (Feiertagsfreitage verlieren dadurch eine Woche - bewusst konservativ). */
     if (weekly.length && weekly[weekly.length - 1][0] === row.asOf && new Date(row.asOf + "T12:00:00Z").getUTCDay() !== 5) weekly = weekly.slice(0, -1);
     var wc = weekly.map(function (p) { return p[1]; });
-    var W = closeOnlyBlock(wc, 40, 10, 52);
+    /* Vorrang: Wochen-/Monatskennzahlen der Materialisierung aus der vollen Tageshistorie
+       (bundle.multiTimeframe, OHLCV, echter Monatsschluss). Ohne sie: Schlusskurs-Rechnung wie bisher. */
+    var mtf = input.multiTimeframe && /^technical-mtf-1\./.test(input.multiTimeframe.version || "") ? input.multiTimeframe : null;
+    var W = mtf && mtf["1W"] && mtf["1W"].values || closeOnlyBlock(wc, 40, 10, 52);
     if (W) Object.keys(W).forEach(function (k) { row[k + "@1W"] = W[k]; });
-    var mc = monthlyFromWeekly(weekly, row.asOf);
-    var M = closeOnlyBlock(mc, 10, 5, 12);
+    var M = mtf && mtf["1M"] && mtf["1M"].values || closeOnlyBlock(monthlyFromWeekly(weekly, row.asOf), 10, 5, 12);
     if (M) Object.keys(M).forEach(function (k) { row[k + "@1M"] = M[k]; });
+    row.mtfSource = mtf ? "DAILY_HISTORY" : "WEEKLY_CLOSES";
     var hi200 = wc.length >= 200 ? Math.max.apply(null, wc.slice(wc.length - 200)) : null;
     row.newHigh200w = isNum(hi200) ? wc[wc.length - 1] >= hi200 : null;
     row.distHigh200w = r(pct(wc[wc.length - 1], hi200));
@@ -163,6 +237,10 @@
     row.hasVolume = !!hasVol;
     row.weeks = wc.length;
     row.fresh = input.universeAsOf ? row.asOf === input.universeAsOf : null;
+    /* Juengster Schlusssprung mit Datenverdacht (Split-Signatur oder Faktor ausserhalb 0,2..5) in den letzten 60 Bars:
+       nicht nachgezogene Splits oder Abspaltungen verfaelschen Indikatoren und Formationen; der Screener zeigt ihn an. */
+    row.suspectJumpAt = null;
+    for (var q = n - 1; q >= Math.max(1, n - 60); q--) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) { row.suspectJumpAt = b.timestamps[q]; break; }
 
     /* ---- Vorschau: letzte 60 Schluesse auf 0..99 normiert ---- */
     var tail = b.close.slice(Math.max(0, n - 60)), lo = Math.min.apply(null, tail), hi = Math.max.apply(null, tail);

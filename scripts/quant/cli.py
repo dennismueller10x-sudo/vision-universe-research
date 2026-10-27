@@ -1510,8 +1510,8 @@ def cmd_consumer(args):
     the raw facts come from companyfacts.zip in one request. Output: one
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
-    from quant.sec import fsds
-    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
+    from quant.sec import fsds, issuer_extensions
+    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, read_history_shards, write_history_shards, load_fiscal_year_end_hints,
                                     load_issuer_industries, load_product_universe_ciks, load_successor_issuers, summarize_bundle,
                                     with_successors)
     registry = MetricRegistry.load()
@@ -1537,9 +1537,16 @@ def cmd_consumer(args):
                 for rule in metric.concepts}
     supplement = fsds.load_supplement(fsds_paths, wanted, concepts=accepted) if fsds_paths else {}
     supplemented = {}
+    # Gepruefte firmeneigene Konzepte aus gepinnten Instanzdokumenten
+    # (quant/sec/issuer_extensions.py); companyfacts enthaelt keine.
+    issuer_facts = issuer_extensions.load_facts(args.issuer_facts) if args.issuer_facts else {}
+    extended = {}
     to_read = wanted | {p for preds in successors.values() for p in preds}
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Aeltere Geschaeftsjahre als das Fenster der Bundles, als gzip-Scherben (nur Fundamental liest sie).
+    history_dir = Path(args.history_out)
+    history_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
     print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
 
@@ -1554,16 +1561,17 @@ def cmd_consumer(args):
     else:
         source = ((cik, provider.get_company_facts(cik)) for cik in sorted(to_read))
 
-    written = set()
+    written, histories, history_years = set(), {}, []
     for cik, payload in with_successors(source, successors):
         entry = by_cik[cik]
         payload, added = fsds.supplement_company_facts(payload, supplement.get(cik))
+        payload, extension_added = issuer_extensions.supplement_company_facts(payload, issuer_facts.get(cik))
         try:
-            bundle = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
-                                           security_ids=entry["securityIds"], name=entry["name"],
-                                           fiscal_year_end_hint=year_end_hints.get(cik),
-                                           annual_years=args.annual_years, quarters=args.quarters,
-                                           provider=provider, industry=industries.get(cik))
+            bundle, history = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
+                                                    security_ids=entry["securityIds"], name=entry["name"],
+                                                    fiscal_year_end_hint=year_end_hints.get(cik),
+                                                    annual_years=args.annual_years, quarters=args.quarters,
+                                                    provider=provider, industry=industries.get(cik), with_history=True)
         except Exception as exc:  # noqa: BLE001 - one bad company must not stop 6,000
             failures.append({"cik": cik, "tickers": entry["tickers"], "error": f"{type(exc).__name__}: {exc}"})
             LOGGER.warning("cik=%s failed: %s", cik, exc)
@@ -1575,9 +1583,17 @@ def cmd_consumer(args):
         if added:
             bundle["dataSource"]["supplement"] = {"source": fsds.SOURCE_LABEL, "accessions": added}
             supplemented[cik] = added
+        if extension_added:
+            bundle["dataSource"]["issuerExtensions"] = {"source": issuer_extensions.SOURCE_LABEL,
+                                                       "version": registry.issuer_extensions_version,
+                                                       "accessions": extension_added}
+            extended[cik] = extension_added
         path = out_dir / f"CIK{cik}.json"
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
         written.add(path.name)
+        if history is not None:
+            histories[cik] = history
+            history_years.append(len(history["coverage"]["annualYears"]))
         summary = summarize_bundle(bundle)
         cov = bundle["coverage"]
         summary["file"] = f"consumer/{path.name}"
@@ -1590,6 +1606,11 @@ def cmd_consumer(args):
     unmatched = sorted(wanted - seen)
     if not args.keep_stale:
         _prune(out_dir, written)
+    # Gzip-Scherben statt einer Datei je CIK. Mit --keep-stale bleiben die Historien der
+    # Emittenten, die dieser Lauf nicht gelesen hat, erhalten (wie ihre Bundles).
+    if args.keep_stale:
+        histories = {**read_history_shards(history_dir), **histories}
+    history_shards = write_history_shards(history_dir, histories)
     by_ticker = {}
     for row in index_rows:
         for ticker in row["tickers"]:
@@ -1604,6 +1625,10 @@ def cmd_consumer(args):
     coverage["fsdsSupplement"] = {"source": fsds.SOURCE_LABEL, "archives": [Path(p).name for p in fsds_paths],
                                   "issuers": len(supplemented),
                                   "filings": sum(len(v) for v in supplemented.values())}
+    coverage["issuerExtensions"] = {"version": registry.issuer_extensions_version, "issuers": len(extended),
+                                    "filings": sum(len(v) for v in extended.values())}
+    coverage["historyExtension"] = {"dir": "consumer-history", "shards": len(history_shards), "issuers": len(histories),
+                                    "years": sum(history_years), "maxYears": max(history_years, default=0)}
     coverage["withoutCikTickers"] = without_cik
     coverage["notInCompanyFactsCiks"] = unmatched
     coverage["asOf"] = as_of
@@ -1873,6 +1898,8 @@ def build_parser():
     consumer = subparsers.add_parser("consumer", help="compact consumer fundamentals for the product universe")
     consumer.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
     consumer.add_argument("--out", default=str(DATA_DIR / "consumer"))
+    consumer.add_argument("--history-out", default=str(DATA_DIR / "consumer-history"),
+                          help="older fiscal years than the bundle window, one file per CIK (Fundamental)")
     consumer.add_argument("--as-of")
     consumer.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request) instead of per-company calls")
     consumer.add_argument("--archive", help="local companyfacts.zip instead of fetching; implies --bulk")
@@ -1888,6 +1915,9 @@ def build_parser():
     consumer.add_argument("--fsds", default="",
                           help="comma-separated local SEC Financial Statement Data Set zips; their filings "
                                "complete companyfacts where it has none of a filing (quant/sec/fsds.py)")
+    consumer.add_argument("--issuer-facts", default="",
+                          help="JSON from issuer_extensions.fetch_facts: reviewed issuer-specific concepts read from "
+                               "pinned XBRL instances (quant/sec/issuer_extensions.py)")
     consumer.set_defaults(func=cmd_consumer)
 
     census = subparsers.add_parser("concept-census",

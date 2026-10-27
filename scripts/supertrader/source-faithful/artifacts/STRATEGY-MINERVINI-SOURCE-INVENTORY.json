@@ -764,17 +764,140 @@
      "B12 PDF 398"
     ]
    }
+  ],
+  "MA-MIN7-EXIT-NOT-EVALUABLE": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "the books measure from the Stage 2 start and give no reading without one; REF exits are kept",
+    "evidence": [
+     "B12 PDF 130",
+     "B03 PDF 217"
+    ]
+   }
+  ],
+  "MA-MIN7-EXIT-PRECEDENCE": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "research design (one-at-a-time): order of REF and variant exits on one close",
+    "evidence": []
+   }
+  ],
+  "MA-MIN7-EXIT-CATCH-UP": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "simulation convention for sessions without an executable open",
+    "evidence": []
+   }
+  ],
+  "MA-MIN7-CLIMAX-RUN": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "climax ranges printed (+25-50 % in 1-3 weeks, +70-80 % in 5-10 days), steepness without a measure; lower gain over the upper window end",
+    "evidence": [
+     "B03 PDF 212"
+    ]
+   }
+  ],
+  "MA-MIN7-CLIMAX-FRACTION": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "sell part or all into strength, no fraction printed; all",
+    "evidence": [
+     "B03 PDF 212"
+    ]
+   }
+  ],
+  "MA-MIN7-BASECOUNT-BASE": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "bases are counted in the books, not detected; 20 sessions is the printed lower end of a Stage 2 base (4-5 weeks)",
+    "evidence": [
+     "B12 PDF 115",
+     "B03 PDF 207"
+    ]
+   }
+  ],
+  "MA-MIN7-BASECOUNT-MARKET-RESET": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "the count restarts after a market correction, whose size the books do not give; 10 % is a convention",
+    "evidence": [
+     "B03 PDF 207",
+     "B12 PDF 116"
+    ]
+   }
+  ],
+  "MA-MIN7-BASECOUNT-STOCK-RESET": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "bases are counted inside one Stage 2 advance whose start is not dated; the 200-day line is the Trend Template boundary; without such a reset in the data the count is flagged uncertain with the direction of the possible error",
+    "evidence": [
+     "B12 PDF 116",
+     "B12 PDF 114"
+    ]
+   }
+  ],
+  "MA-MIN7-BASECOUNT-CURRENT": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "base 1 is the first base after the reset; the setup counts its own base, a close on the setup session is never a completed base",
+    "evidence": [
+     "B03 PDF 207"
+    ]
+   }
+  ],
+  "MA-MIN7-TOPVOL": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "decline on the largest volume since the trend start: start of the trend and size of the decline not defined; two trend-start windows (Trend Template run, run above the 200-day mean) reported side by side, none chosen",
+    "evidence": [
+     "B03 PDF 217",
+     "B03 PDF 219"
+    ]
+   }
+  ],
+  "MA-MIN7-RELDEPTH": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "two to three times the market correction, without a window, a price basis or a floor for the market decline; closes on both sides, two windows (same window, trailing high) reported side by side, none chosen",
+    "evidence": [
+     "B12 PDF 280",
+     "B12 PDF 295"
+    ]
+   }
+  ],
+  "MA-MIN7-ENTRY-DISTANCE": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "no chase of more than a few percent (unquantified) and 5 / 10 / 20 cents over the pivot (no magic number): reported, not bounded; gaps read from the fill-bar open (limit fills included), non-executed orders counted only",
+    "evidence": [
+     "B07 PDF 40",
+     "B07 PDF 67",
+     "B07 PDF 87",
+     "B12 PDF 297"
+    ]
+   }
+  ],
+  "MA-MIN7-CLIMAX-EXTENDED": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "70 % up days in 7-15 days on an extended stock; extension not defined, second count inconsistent (translation doubt)",
+    "evidence": [
+     "B03 PDF 216",
+     "B03 PDF 212"
+    ]
+   }
   ]
  },
  "classCounts": {
   "SOURCE_PRESENT_ENGLISH": 6,
   "PROJECT_AVAILABILITY": 1,
-  "OPERATIONALIZATION_OPEN": 22,
+  "OPERATIONALIZATION_OPEN": 31,
   "SOURCE_PRESENT_TRANSLATION": 21,
   "SOURCE_CONFLICT_TRANSLATION": 1,
   "DATA_MISSING": 6,
   "METHOD_DISCRETION": 12,
-  "ABSENT_FROM_MATERIAL": 6
+  "ABSENT_FROM_MATERIAL": 10
  },
  "dataOnlyProblems": [
   {
@@ -864,29 +987,29 @@
    "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
    "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 and longestUpRun over the first 10 sessions (G-UPDAYS, diagnostic)",
    "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (volume above the 50-day mean reading) and lowerLowsCleared (third day closes up or in the upper half of its range on volume above the mean); the rising-volume-each-day reading is not computed (G-LOWERLOWS, diagnostic)",
-   "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
+   "F7-B03-047-016": "IMPLEMENTED as research variant EXIT-MA20-HALF (owner decision E7-7: pre-registered, SOURCE_DERIVED_RESEARCH_VARIANT, never a reference or original rule) besides the diagnostic closeBelowMa20InWindow",
    "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
    "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
    "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice, price below its own 252-session high (at a setup the close is always below the pivot) (G-RSLINE-HIGH, evidence)",
-   "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
-   "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
-   "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
-   "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
-   "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
-   "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic)",
-   "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
-   "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
-   "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
-   "F7-B07-067-140": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
-   "F7-B07-070-142": "DEFERRED: stop-fallback variant (percent stop instead of rejection); changes trades as a variant, owner may pre-register",
-   "F7-B07-087-150": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
-   "F7-B12-092-180": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
-   "F7-B12-116-203": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
-   "F7-B12-116-205": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
-   "F7-B12-185-240": "DEFERRED: evidence on rolling 2-quarter EPS / sales acceleration; depends on the same EPS data-quality fix as G-PE-EXPANSION",
+   "F7-B03-207-082": "IMPLEMENTED: diagnostic baseCountAt (G-BASECOUNT, package 1.4.0) under MA-MIN7-BASECOUNT-BASE / -MARKET-RESET / -STOCK-RESET / -CURRENT; early (1-2), late (3-4) and likely-failure (>= 5) bases counted on the REF setups; no entry filter, no sell rule",
+   "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved; re-checked for 1.4.0: a subset without the derived Q4 values leaves a gap in every fiscal year, so TTM and rolling two-quarter series are not PIT-complete",
+   "F7-B03-212-085": "IMPLEMENTED as research variant EXIT-CLIMAX (owner decision E7-7: pre-registered, MA-MIN7-CLIMAX-RUN / -FRACTION, never a reference or original rule)",
+   "F7-B03-216-086": "IMPLEMENTED as research variant EXIT-CLIMAX-UPCLOSES (owner decision E7-7: pre-registered, translation doubt flagged, only the 70 % share used, MA-MIN7-CLIMAX-EXTENDED, never a reference or original rule)",
+   "F7-B03-217-087": "IMPLEMENTED: diagnostic topVolumeDecline (G-TOPVOL, package 1.4.0, MA-MIN7-TOPVOL): first post-entry down close on the highest volume since the trend start, before the exit session, in two trend-start windows side by side (Trend Template run, run above the 200-day mean; none chosen); churning and the high-volume reversal stay QUALITATIVE",
+   "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic); E7-7 research variants EXIT-LARGEST-DECLINE-WEEKLY and (with B12 PDF 130) EXIT-LARGEST-DECLINE-DAILY",
+   "F7-B03-225-092": "IMPLEMENTED: diagnostic signalsByBaseNumber (package 1.4.0): the signals of EXIT-CLIMAX / EXIT-CLIMAX-UPCLOSES counted by the point-in-time base number of their trade; \"the last base\" of the paraphrase is known only in hindsight and is not mechanised; suppressing base-1 climax signals stays DEFERRED (it would change trades and rests on the base-count model assumptions; needs its own pre-registration)",
+   "F7-B07-032-109": "DEFERRED: beginner sizing progression (equity +25 % / +50 % before larger positions) changes position sizes and reads the equity path (sealed metrics); not a rule for the reference account; owner may pre-register (re-checked for 1.4.0)",
+   "F7-B07-040-117": "IMPLEMENTED: diagnostic entryDistanceTally.buyStopBuffer (package 1.4.0, MA-MIN7-ENTRY-DISTANCE): REF fills a buy stop 5 / 10 / 20 cents (raw dollars) over the pivot would not have triggered on the fill bar; the order variant stays DEFERRED (it changes fills; no magic number, F7-B07-040-119)",
+   "F7-B07-067-140": "IMPLEMENTED: diagnostic entryDistanceTally.gapOpenAbovePivot (every REF fill whose fill-bar open is at or above the pivot, limit fills after the open included) / fillAbovePivot / ordersNotExecutedAboveLimit (package 1.4.0, MA-MIN7-ENTRY-DISTANCE, reporting buckets, no k chosen); the gap / chase-limit variant stays DEFERRED: a few percent is unquantified, any k is a model assumption that changes fills",
+   "F7-B07-070-142": "DEFERRED: stop-fallback variant (percent stop instead of rejection) would make rejected setups tradable; the affected setups are already public as eligibilityBlockers.PLANNED_LOSS_ABOVE_10PCT; owner may pre-register (re-checked for 1.4.0)",
+   "F7-B07-087-150": "IMPLEMENTED: diagnostic entryDistanceTally.fillAbovePivot (package 1.4.0, MA-MIN7-ENTRY-DISTANCE, reporting buckets, no k chosen); the chase-limit variant stays DEFERRED: a few percent is unquantified, any k is a model assumption that changes fills",
+   "F7-B12-092-180": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved; re-checked for 1.4.0: a subset without the derived Q4 values leaves a gap in every fiscal year, so TTM and rolling two-quarter series are not PIT-complete",
+   "F7-B12-116-203": "IMPLEMENTED: diagnostic baseCountAt lateStage (base >= 4, G-BASECOUNT, package 1.4.0, MA-MIN7-BASECOUNT-*)",
+   "F7-B12-116-205": "IMPLEMENTED: diagnostic baseCountAt baseNumber buckets 1 / 2 / 3 (G-BASECOUNT, package 1.4.0, MA-MIN7-BASECOUNT-*); the entry filter (base <= 3) stays DEFERRED as a variant: it would change trades and rests on the base-count model assumptions",
+   "F7-B12-185-240": "DEFERRED: evidence on rolling 2-quarter EPS / sales acceleration; depends on the same EPS data-quality fix as G-PE-EXPANSION; re-checked for 1.4.0: a subset without the derived Q4 values leaves a gap in every fiscal year, so TTM and rolling two-quarter series are not PIT-complete",
    "F7-B12-250-264": "IMPLEMENTED: baseDepthAbove50 (evidence)",
-   "F7-B12-280-275": "DEFERRED: setup-filter variant (would change trades as a variant); needs a pre-registered market-drawdown window",
-   "F7-B12-297-283": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B12-280-275": "IMPLEMENTED: diagnostic relativeBaseDepth above 2x / 3x the market decline (G-RELDEPTH, package 1.4.0, MA-MIN7-RELDEPTH, closes on both sides, windows SAME_WINDOW and TRAILING_HIGH side by side, market floor 10 %); the setup filter stays DEFERRED as a variant (it would change trades)",
+   "F7-B12-297-283": "IMPLEMENTED: diagnostic entryDistanceTally.fillAbovePivot (package 1.4.0, MA-MIN7-ENTRY-DISTANCE, reporting buckets, no k chosen); the chase-limit variant stays DEFERRED: a few percent is unquantified, any k is a model assumption that changes fills",
    "F7-B12-311-297": "IMPLEMENTED: closeBelowMa20InWindow (G-MA20, diagnostic)",
    "F7-B12-327-302": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
    "F7-B12-330-304": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
@@ -894,10 +1017,11 @@
    "F7-B12-353-317": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)"
   },
   "dispositionCounts": {
-   "DEFERRED": 16,
-   "IMPLEMENTED": 8,
-   "IMPLEMENTED as diagnostic only": 1,
-   "OWNER": 2,
+   "DEFERRED": 6,
+   "IMPLEMENTED": 18,
+   "IMPLEMENTED as research variant EXIT-MA20-HALF (owner decision E7-7": 1,
+   "IMPLEMENTED as research variant EXIT-CLIMAX (owner decision E7-7": 1,
+   "IMPLEMENTED as research variant EXIT-CLIMAX-UPCLOSES (owner decision E7-7": 1,
    "NOT_IN_SCOPE": 4
   }
  },
@@ -918,6 +1042,93 @@
    "source": "B03 PDF 143"
   }
  ],
+ "mechanical14": {
+  "version": "sf7-minervini-mechanical-1.2.0",
+  "registrySha256": "a122022acf1d436c1fa6eeaab47c4ae947aaa0805836ef854abf316f1ac766e9",
+  "modelAssumptions": [
+   "MA-MIN7-BASECOUNT-BASE",
+   "MA-MIN7-BASECOUNT-MARKET-RESET",
+   "MA-MIN7-BASECOUNT-STOCK-RESET",
+   "MA-MIN7-BASECOUNT-CURRENT",
+   "MA-MIN7-TOPVOL",
+   "MA-MIN7-RELDEPTH",
+   "MA-MIN7-ENTRY-DISTANCE"
+  ],
+  "kind": "DIAGNOSTICS_ONLY_NO_TRADE_CHANGE"
+ },
+ "exitVariants7": {
+  "ownerDecision": "E7-7",
+  "registrySha256": "df0379aee2827fa901ae8590017aaa3c082893837799aa64ea5812c079a9de79",
+  "variants": [
+   {
+    "id": "EXIT-LARGEST-DECLINE-DAILY",
+    "strategies": [
+     "SEPA",
+     "POWER_PLAY"
+    ],
+    "status": "SOURCE_DERIVED_RESEARCH_VARIANT",
+    "findings": [
+     "F7-B12-130-210",
+     "F7-B03-217-088"
+    ],
+    "source": "B12 PDF 130, B03 PDF 217",
+    "translationDoubt": false
+   },
+   {
+    "id": "EXIT-LARGEST-DECLINE-WEEKLY",
+    "strategies": [
+     "SEPA",
+     "POWER_PLAY"
+    ],
+    "status": "SOURCE_DERIVED_RESEARCH_VARIANT",
+    "findings": [
+     "F7-B03-217-088",
+     "F7-B12-130-210"
+    ],
+    "source": "B03 PDF 217, B12 PDF 130",
+    "translationDoubt": false
+   },
+   {
+    "id": "EXIT-MA20-HALF",
+    "strategies": [
+     "SEPA",
+     "POWER_PLAY"
+    ],
+    "status": "SOURCE_DERIVED_RESEARCH_VARIANT",
+    "findings": [
+     "F7-B03-047-016"
+    ],
+    "source": "B03 PDF 47",
+    "translationDoubt": false
+   },
+   {
+    "id": "EXIT-CLIMAX",
+    "strategies": [
+     "SEPA",
+     "POWER_PLAY"
+    ],
+    "status": "SOURCE_DERIVED_RESEARCH_VARIANT",
+    "findings": [
+     "F7-B03-212-085"
+    ],
+    "source": "B03 PDF 212",
+    "translationDoubt": false
+   },
+   {
+    "id": "EXIT-CLIMAX-UPCLOSES",
+    "strategies": [
+     "SEPA",
+     "POWER_PLAY"
+    ],
+    "status": "SOURCE_DERIVED_RESEARCH_VARIANT",
+    "findings": [
+     "F7-B03-216-086"
+    ],
+    "source": "B03 PDF 216",
+    "translationDoubt": true
+   }
+  ]
+ },
  "statusChange": "no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)",
  "validation": {
   "ok": true,

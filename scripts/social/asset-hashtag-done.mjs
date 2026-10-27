@@ -84,9 +84,14 @@ function quelle(p) {
   const voll = join(ROOT, p);
   return existsSync(voll) ? readFileSync(voll, "utf8") : null;
 }
+/* maxBuffer: Die Dateiliste gegen main waechst mit jedem Datenlauf auf
+   main (ein weit zurueckliegender Zweig: >1 MB). Mit der Voreinstellung
+   (1 MB) bricht execFileSync ab, und die Messung meldete "origin/main
+   nicht feststellbar", obwohl main geholt war. */
 function git(...a) {
   try {
     return execFileSync("git", a, { cwd: ROOT, encoding: "utf8",
+      maxBuffer: 256 * 1024 * 1024,
       stdio: ["ignore", "pipe", "ignore"] }).trim();
   } catch { return null; }
 }

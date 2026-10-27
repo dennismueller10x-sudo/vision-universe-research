@@ -1,0 +1,440 @@
+{
+  "schemaVersion": "v7-post-merge-acceptance-1",
+  "gitHead": "da1a82dcd17a1d4454e9fca75237c85cca9e16ee",
+  "state": "PASS",
+  "researchAndFundamental": {
+    "tests": 122,
+    "pass": 122,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "repeat": {
+    "state": "PASS",
+    "checks": 47
+  },
+  "pythonParity": {
+    "state": "PASS",
+    "checks": 40
+  },
+  "dataIsolation": {
+    "state": "PASS",
+    "suite": "quant/tests/sec*.test.mjs",
+    "childExitCode": 0,
+    "logHash": "2790e4aa855c6ebefff1831a2a384c5ce7f85af777086c06652182825b7cffe3"
+  },
+  "validation": {
+    "schemaVersion": "quant-v6-validation-1.0.0",
+    "createdAt": "2026-10-26T11:20:19.186Z",
+    "baseMain": "675eeb97f2fbe924a991d32fa72387502ded67c5",
+    "gitHead": "da1a82dcd17a1d4454e9fca75237c85cca9e16ee",
+    "runtime": {
+      "node": "v22.23.4",
+      "v8": "12.4.254.21-node.57",
+      "platform": "linux",
+      "arch": "x64",
+      "glibc": "2.41",
+      "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+    },
+    "suites": [
+      "core",
+      "sec",
+      "pit",
+      "consumers",
+      "real"
+    ],
+    "checks": [
+      {
+        "id": "core",
+        "command": [
+          "/home/agent/.npm/_npx/52027bd8fc0022aa/node_modules/node/bin/node",
+          "--test",
+          "core/tests/*.test.mjs"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 30522.728791999998,
+        "logHash": "068def8b35e6d3813dc0628f87ae844d11193ec4588f37a426b5efdd0687649e",
+        "tests": 239,
+        "pass": 239,
+        "fail": 0,
+        "skipped": 0
+      },
+      {
+        "id": "sec-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/quant/tests",
+          "-p",
+          "test_*.py"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 25549.647935,
+        "logHash": "c68e001fbabb095396d5bc61ee6395f7b40c11ec545fe9d0026a226e72080b31"
+      },
+      {
+        "id": "sec-pit-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/vu2",
+          "-p",
+          "test*.py"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 1088.4231160000054,
+        "logHash": "4c88e7f513053d0a3512dfa28753242fc9ddb1332f292499bda6812d3d703d34"
+      },
+      {
+        "id": "consumers",
+        "command": [
+          "/home/agent/.npm/_npx/52027bd8fc0022aa/node_modules/node/bin/node",
+          "--test",
+          "worker/tests/*.test.mjs",
+          "discover/tests/live-stream.test.mjs",
+          "discover/tests/live-hub.test.mjs"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 710.180002000001,
+        "logHash": "782d6aae9de33024bf15c7eddae35e0b0cace9e4e8f0f0b220c35cf1d54eb3d7",
+        "tests": 66,
+        "pass": 66,
+        "fail": 0,
+        "skipped": 0
+      },
+      {
+        "id": "real-NVDA-1Y-determinism",
+        "state": "PASS",
+        "inputHash": "ff979c8568dde9b7c51ff974ddc00ee7677017c8244944d59b4f4ce38f55192f",
+        "resultHash": "9b5ca6fd568749ede04dff84d1be64729511f9dd147ad857fff7c1f931cad811",
+        "completedTrades": 0,
+        "equityObservations": 53
+      },
+      {
+        "id": "real-NVDA-1Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/v7-private/secure-v7/post-validation/real-NVDA-1Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 44.74267500000133,
+        "logHash": "e6943cdf662cfd4ae4a62afaad58e47d32de60e9cae8667caf8fbd538cfe4575"
+      },
+      {
+        "id": "real-NVDA-3Y-determinism",
+        "state": "PASS",
+        "inputHash": "f3fd4e8e2c6d1b29eeedbb6767d3b958d8ea56e3156fff20a37e3bca172ce3c4",
+        "resultHash": "63ec1cdc9d883bdd69b64f6985d53005dadac1df5d38ef2c05c30add8af3f8fa",
+        "completedTrades": 2,
+        "equityObservations": 157
+      },
+      {
+        "id": "real-NVDA-3Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/v7-private/secure-v7/post-validation/real-NVDA-3Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 36.47508499999822,
+        "logHash": "9e44d437f0a02504427d66a51325e6ef42c02a91dc53b7381545fb40cd3afe43"
+      },
+      {
+        "id": "real-NVDA-5Y-determinism",
+        "state": "PASS",
+        "inputHash": "ef4fc6a6e919ad322ed95445ca9ed006cc17ddf7937ef543e7508b008dcab80f",
+        "resultHash": "00d56dc3b6212324e74e8a00e378c79b0f15f8adc5d3dded8ef14513b88b2f5f",
+        "completedTrades": 3,
+        "equityObservations": 262
+      },
+      {
+        "id": "real-NVDA-5Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/v7-private/secure-v7/post-validation/real-NVDA-5Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 37.50231899999926,
+        "logHash": "11f732bb4b5023a08cb04dbe6e754b54358affbb949070535cbbd7db7be1cba1"
+      },
+      {
+        "id": "real-NVDA-10Y-determinism",
+        "state": "PASS",
+        "inputHash": "23bc1c850a4b9991d237c0b4831e283af6ab319d122cc3b396772726add03b88",
+        "resultHash": "958f43c6a958e8cb68abd735416342c79442207992e6974ccb130b101c269431",
+        "completedTrades": 7,
+        "equityObservations": 522
+      },
+      {
+        "id": "real-NVDA-10Y-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/v7-private/secure-v7/post-validation/real-NVDA-10Y.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 36.532846999994945,
+        "logHash": "c4bfe9f3c55ec823b5b2167cc5656de26f6e19a33527a5427c854f28579db73d"
+      },
+      {
+        "id": "real-NVDA-MAX-determinism",
+        "state": "PASS",
+        "inputHash": "d6a21d4d5148b2ca1ee99677d21f071a47d9be4e88c8c2a1e85282db7b8139aa",
+        "resultHash": "9af6e85cffb4ae456e2e968a77aeff183541bd2b3ec8279d7fce120bea7091c7",
+        "completedTrades": 21,
+        "equityObservations": 1396
+      },
+      {
+        "id": "real-NVDA-MAX-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-real-weekly-backtest.py",
+          "/workspace/v7-private/secure-v7/post-validation/real-NVDA-MAX.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 53.861958999994386,
+        "logHash": "c0659a9295657b0133cae39e067ca4e88a1feb4bf49f841e489a337334c7347a"
+      },
+      {
+        "id": "mc-TRADE_IID-source",
+        "state": "PASS",
+        "scope": "LIMITED_SOURCE_NOT_CERTIFIED",
+        "sourceEvidence": {
+          "schemaVersion": "research-weekly-source-1.0.0",
+          "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+          "period": "MAX",
+          "sourceInputHash": "d6a21d4d5148b2ca1ee99677d21f071a47d9be4e88c8c2a1e85282db7b8139aa",
+          "sourceResultHash": "9af6e85cffb4ae456e2e968a77aeff183541bd2b3ec8279d7fce120bea7091c7",
+          "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+          "identityHash": "4e9dd7dd4d4ce2dd1a7b05fcc0c9a09cfcc8d85d6c472893331d35dc57122bcd",
+          "sampledObservations": 21,
+          "completedTrades": 21,
+          "equityPoints": 1396,
+          "endCapital": 4853701.423043009,
+          "openPosition": true,
+          "sourceWarnings": [
+            "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+            "DIVIDENDS_EXCLUDED",
+            "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+            "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+            "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+            "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+          ],
+          "limitations": [
+            "SINGLE_SELECTED_LISTING",
+            "PRICE_RETURN_EXCLUDES_DIVIDENDS",
+            "NO_UNTOUCHED_HOLDOUT",
+            "NO_MARKET_POPULATION_COMPLETENESS",
+            "OPEN_POSITION_AND_IDLE_TIME_EXCLUDED_FROM_TRADE_RESAMPLING"
+          ],
+          "dataEligibility": "LIMITED_SOURCE_NOT_CERTIFIED",
+          "certification": "NOT_CERTIFIED",
+          "productionApproved": false,
+          "evidenceHash": "1a4f1138bf27f53333472902f5b8e26312ba7cbed7783cf46fdf3537da77f95c"
+        },
+        "inputHash": "628f0fe0ff5afd03cd52e428aa1a95e4452c0f9bd0b295226b9702063b5dd730",
+        "resultHash": "e1e6467f4ac1882d205ac5adf5038a979767f9a94723a66521b2105aeecf39cd"
+      },
+      {
+        "id": "mc-TRADE_IID-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-research-monte-carlo.py",
+          "/workspace/v7-private/secure-v7/post-validation/mc-TRADE_IID-input.json",
+          "/workspace/v7-private/secure-v7/post-validation/mc-TRADE_IID-result.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 222.33988300000055,
+        "logHash": "1cc3c2c27f06a7feebc95f44058e484b2d4360c6f10e7d42947e5aab21efce13"
+      },
+      {
+        "id": "mc-CIRCULAR_BLOCK-source",
+        "state": "PASS",
+        "scope": "LIMITED_SOURCE_NOT_CERTIFIED",
+        "sourceEvidence": {
+          "schemaVersion": "research-weekly-source-1.0.0",
+          "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+          "period": "MAX",
+          "sourceInputHash": "d6a21d4d5148b2ca1ee99677d21f071a47d9be4e88c8c2a1e85282db7b8139aa",
+          "sourceResultHash": "9af6e85cffb4ae456e2e968a77aeff183541bd2b3ec8279d7fce120bea7091c7",
+          "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+          "identityHash": "4e9dd7dd4d4ce2dd1a7b05fcc0c9a09cfcc8d85d6c472893331d35dc57122bcd",
+          "sampledObservations": 1395,
+          "completedTrades": 21,
+          "equityPoints": 1396,
+          "endCapital": 4853701.423043009,
+          "openPosition": true,
+          "sourceWarnings": [
+            "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+            "DIVIDENDS_EXCLUDED",
+            "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+            "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+            "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+            "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+          ],
+          "limitations": [
+            "SINGLE_SELECTED_LISTING",
+            "PRICE_RETURN_EXCLUDES_DIVIDENDS",
+            "NO_UNTOUCHED_HOLDOUT",
+            "NO_MARKET_POPULATION_COMPLETENESS",
+            "OPEN_POSITION_MARKS_AND_PAID_COSTS_INCLUDED_NO_FORCED_EXIT"
+          ],
+          "dataEligibility": "LIMITED_SOURCE_NOT_CERTIFIED",
+          "certification": "NOT_CERTIFIED",
+          "productionApproved": false,
+          "evidenceHash": "53095b5b09c8723b090e3fc081d8dee5f0678a46743ddcad2ae46a860b5ef3ad"
+        },
+        "inputHash": "23eb5f39fc014084735112de0488f84a6757a15d25937cbe6b969a4f39b59c8c",
+        "resultHash": "4a36e2dbece0a58a510c393a0257afbecfc90ba5b2b51adddd2425ce48b7305d"
+      },
+      {
+        "id": "mc-CIRCULAR_BLOCK-python",
+        "command": [
+          "python3",
+          "scripts/quant/verify-research-monte-carlo.py",
+          "/workspace/v7-private/secure-v7/post-validation/mc-CIRCULAR_BLOCK-input.json",
+          "/workspace/v7-private/secure-v7/post-validation/mc-CIRCULAR_BLOCK-result.json"
+        ],
+        "exitCode": 0,
+        "signal": null,
+        "state": "PASS",
+        "durationMs": 288.66751400000066,
+        "logHash": "05ec486d8307c3a2cf060ac6dbd9cb930ad2fb43a4cb23dfb994e6b954f37b7d"
+      },
+      {
+        "id": "blocked-ref_AAPL",
+        "state": "PASS",
+        "reason": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2000-09-29\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]",
+        "performancePayload": false
+      },
+      {
+        "id": "blocked-ref_BGC",
+        "state": "PASS",
+        "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+        "performancePayload": false
+      },
+      {
+        "id": "blocked-ref_AAAC",
+        "state": "PASS",
+        "reason": "INSUFFICIENT_HISTORY",
+        "performancePayload": false
+      },
+      {
+        "id": "blocked-ref_AACT",
+        "state": "PASS",
+        "reason": "MISSING_WEEKS:[{\"after\":\"2025-09-24\",\"before\":\"2026-02-06\"}]",
+        "performancePayload": false
+      },
+      {
+        "id": "young-ARM-1Y",
+        "state": "PASS",
+        "complete": true,
+        "inputHash": "84c458ef6a0487ed1b8e3004f509a2e02b22b5436979d74ee0337875e253b11d",
+        "resultHash": "4a12242f702e5285568699563b80135540ed37d25932ad760619e1938fa2cb22"
+      },
+      {
+        "id": "young-ARM-3Y",
+        "state": "PASS",
+        "complete": false,
+        "inputHash": "9e40611e5d7022e768a7cc4fb35e3224f11662f81897a1484a70f14166e29d0f",
+        "resultHash": "dd2aac0d95e62d941167be599a16dc3595562c0fba9d625e8dc6b9c90b18b9dd"
+      },
+      {
+        "id": "young-ARM-5Y",
+        "state": "PASS",
+        "complete": false,
+        "inputHash": "5d4863c70d8d451ad34234c7d86db1066573a8f1ac27471e82c582719baa8baa",
+        "resultHash": "547ccbb158d53157be4793f7f221d3bc456dfebf568f601724413864246f5a0c"
+      },
+      {
+        "id": "young-ARM-10Y",
+        "state": "PASS",
+        "complete": false,
+        "inputHash": "43793fa915b0d238b79429d24f57d75939f8592c220ef7154b94f3e7b05e9774",
+        "resultHash": "cfd220e4d5b4012c025e36a4ba37ab88d3cfbfbbef1f3964c73add4f1cff4845"
+      },
+      {
+        "id": "young-ARM-MAX",
+        "state": "PASS",
+        "complete": true,
+        "inputHash": "59a45f456037c411960beba7f05947d80a025a4b4dfdd76c6452f87814b6682c",
+        "resultHash": "d4d48e362bdac0cf39b6eb1c13109c6b589e87162e7963ec3c059eacc5f4accd"
+      }
+    ],
+    "state": "PASS",
+    "certification": "NOT_CERTIFIED",
+    "productionApproved": false,
+    "limitation": "Engine validation and observed reference checks do not establish full historical universes or independent predictive evidence.",
+    "reportHash": "cd4b390fb6d6cada04d2be187aeef9d16d2303305e69245548c0f729a64e273e"
+  },
+  "mainPreservation": {
+    "schemaVersion": "v7-main-preservation-1",
+    "mergeCommit": "da1a82dcd17a1d4454e9fca75237c85cca9e16ee",
+    "firstParent": "a0bd3d704408aea62f94c5ed39d75c3750b907cb",
+    "tree": "f8c2907adb11543ecc458b5163b3d2507a73fb52",
+    "matchesVerifiedMergeCandidate": true,
+    "v7FilesPreserved": true,
+    "v5V6V7ReportsPreserved": true,
+    "activeContractsPreserved": 53,
+    "frontendAndOtherWorldsIdenticalToMainFirstParent": true,
+    "changedFiles": [
+      "docs/quant-recovery/BACKTEST_V7_DATA_RECOVERY.md",
+      "docs/quant-recovery/BACKTEST_V7_EVIDENCE_MATRIX.md",
+      "docs/quant-recovery/BACKTEST_V7_FINAL.md",
+      "docs/quant-recovery/BACKTEST_V7_METHODOLOGY_DECISIONS.md",
+      "docs/quant-recovery/BACKTEST_V7_REAL_STUDIES.md",
+      "docs/quant-recovery/BACKTEST_V7_VALIDATION.md",
+      "docs/quant-recovery/BACKTEST_V7_WORKLOG.md",
+      "docs/quant-recovery/v7/artifact-manifest.json",
+      "docs/quant-recovery/v7/evidence-matrix.json",
+      "docs/quant-recovery/v7/final-checks.json",
+      "docs/quant-recovery/v7/independent-validation.json",
+      "docs/quant-recovery/v7/isolation.json",
+      "docs/quant-recovery/v7/monte-carlo-diagnostics.json.gz",
+      "docs/quant-recovery/v7/real-studies.json.gz",
+      "docs/quant-recovery/v7/scope-validation.json",
+      "docs/quant-recovery/v7/sec-original-recovery.json",
+      "docs/quant-recovery/v7/source-inventory.json.gz",
+      "docs/quant-recovery/v7/validation.json",
+      "quant/engines/research-portfolio.cjs",
+      "quant/engines/research-studies.cjs",
+      "quant/tests/research-v7-scope.test.mjs",
+      "scripts/quant/analyze-v7-monte-carlo.py",
+      "scripts/quant/recover-v7-sec-originals.py",
+      "scripts/quant/run-v7-real-studies.cjs",
+      "scripts/quant/verify-v7-real-studies.py",
+      "scripts/quant/verify-v7-scope.cjs"
+    ],
+    "productionApproved": false,
+    "state": "PASS"
+  }
+}

@@ -197,8 +197,8 @@ Folge (1.1.0): Die 8 echten Bewegungen der ersten Fassung halten der strengeren 
 - D3 (Turtle) und D4 (Minervini) betrafen die OPTIMISTIC-Alternativen. Nach E7-3 sind sie als neue, versionierte Lesarten behoben (#911). Die alten Lesarten laufen weiter als ersetzt. SF6-PAPER-2027 1.1.0 pinnt die neuen Fingerabdrücke und ist nicht aktiviert.
 - Neu geprüft ohne Fehler (13 Regressionstests in #898): Kostensymmetrie, Positionslimit bei gleichzeitigen Signalen und Unabhängigkeit von der Eingabereihenfolge, Aktienbilanz je Trade, Dividende am Einstiegstag, Gaps, Drawdown.
 - Offen bleiben:
-  - EP-Stops werden nur gegen IEX-Tiefs geprüft (MEDIUM, dokumentiert);
-  - die 6.0-Code-Fingerabdrücke enthalten `lifecycle-engine.mjs` nicht (LOW, eigener PR vorgeschlagen).
+  - EP-Stops werden nur gegen IEX-Tiefs geprüft (MEDIUM; seit [SUPERTRADER_7_EXECUTION_VALIDATION.md](SUPERTRADER_7_EXECUTION_VALIDATION.md) gezählt: 180 von 222 über Nacht gehaltenen REF-Trades mit konsolidiertem Tagestief unter dem IEX-Stop);
+  - die 6.0-Code-Fingerabdrücke enthalten `lifecycle-engine.mjs` nicht (LOW; additiv gelöst durch Abdeckungsprüfung und Zusatz-Fingerabdruck, siehe dort §5).
 
 ## 7. Minervini SEPA/VCP
 
