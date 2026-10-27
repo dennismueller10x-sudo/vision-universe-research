@@ -12,6 +12,7 @@ Produktwelt `/fundamental/` (Hash-Routen, ohne Abhängigkeiten). Zahlen und Abde
 | `#/<T>` | Überblick: Kurs, Kennzahlen, Entwicklung, Umsatz & Gewinn, Branche |
 | `#/<T>?ansicht=kennzahlen` | Katalog aller Kennzahlen mit Suche und Kategorien; Kopfzeile: definiert · mit Wert · mit Verlauf |
 | `#/<T>?ansicht=kennzahl&k=<id>[&p=q]` | Detail: jährlich/quartalsweise, 3J/5J/10J/Max, Balken oder Linie, Vergleich mit Branchenmedian oder Wettbewerbern, Einordnung, CAGR, Tabelle mit Veränderung und SEC-Quelle; Bewertung mit geprüftem Verlauf zum GJ-Ende |
+| `#/<T>?ansicht=kennzahl&k=<id>&plus=<id>.<id>[&d=achsen\|index\|getrennt]` | Dieselbe Detailansicht mit bis zu drei weiteren Kennzahlen im gemeinsamen Verlauf („+ Kennzahl“), siehe „Mehrere Kennzahlen im Verlauf“ |
 | `#/<T>?ansicht=vergleich[&t=sektor]` | Branchenvergleich: Branche oder Sektor, Wettbewerber „Größte“ oder „Ähnliche Größe“, Anzahl gültiger Werte, Lage ohne Wertung, Entwicklung zum Branchenmedian |
 | `#/<T>?ansicht=finanzen[&t=bilanz\|cashflow][&p=q]` | GuV, Bilanz, Cashflow (5J/10J/Alle bzw. 4Q/8Q/Alle) |
 | `#/<T>?ansicht=mehr` und `?ansicht=dividende\|analysten\|bewertung\|aktie\|unternehmen\|quellen` | Weitere Bereiche |
@@ -22,7 +23,7 @@ Unteransichten stehen im Query-Teil, damit `core/stock-context.js#parse` die Adr
 
 | Quelle | Pfad (ausgeliefert) | Erzeuger | Inhalt |
 |---|---|---|---|
-| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `scripts/fundamental/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert |
+| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `scripts/fundamental/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert; ältere Geschäftsjahre aus `quant/data/sec/consumer-history` (derselbe Erzeuger), siehe [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md) |
 | Discover-Aktiendatei | `/discover/data/stocks/US_REAL/<T>.json` | Discover | Kurs, Bewertung (KGV, KUV, Börsenwert, FCF-Rendite), Ersatz-Reihen |
 | Screener-Universum | `/screener/data/universe-US_REAL.json` | Screener im Release | Querschnitt: Branche, KBV, EV-Kennzahlen, ROIC … aller US-Aktien |
 | Branchenmediane | `/fundamental/data/history/industry/<sic4-NNNN\|sic-NN\|sec-ID>.json` | `build-history.mjs#industryMedians` im Release | Median je Geschäftsjahr und Anzahl Unternehmen (mind. 5) für Quoten, Renditen, Wachstum und geprüfte Bewertung |
@@ -96,6 +97,25 @@ Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht
 
 Quelle des Codes: `quant/data/product/sic-peer-taxonomy-v1.json` (wie Screener), Bezeichnung: `quant/data/sec/sic-history/sic-codes.json` (SEC, englisch). Median, Lage, Balken, Tabelle und Verlauf zum Median kommen immer aus derselben gewählten Gruppe; die Anzahl der Unternehmen mit gültigem Wert steht dabei. Kennzahl-Detail und Überblick nutzen die engste verfügbare Gruppe. Keine redaktionelle Auswahl: Der Code ist die offizielle, je Unternehmen von der SEC geführte Klassifikation; er kann veraltet sein oder Geschäftsmodelle grob zusammenfassen.
 
+## Mehrere Kennzahlen im Verlauf
+
+In jeder Kennzahl-Detailansicht mit Verlauf (alle außer PEG) blendet „+ Kennzahl“ bis zu drei weitere Kennzahlen desselben Unternehmens ein: Auswahl mit Suche, Kategorien und Vorschlägen. Jede lässt sich einzeln entfernen; die Hauptkennzahl bleibt. Die Auswahl steht in der Adresse (`&plus=`, `&d=`). Dann gibt es keinen Branchen- oder Wettbewerbervergleich und kein Balkendiagramm. Entfernt man alle weiteren Kennzahlen, ist die Ansicht wieder wie vorher, einschließlich Diagrammart und gewählter Vergleichsgruppe.
+
+`fundamental/engine/compare.js` rechnet keine Kennzahl neu. Jede Reihe kommt unverändert aus `catalog.js#seriesOf`; compare.js legt nur fest, was sich zeitlich zusammenführen lässt:
+- **Eine Zeitraum-Art je Diagramm:** Geschäftsjahre oder eigenständige Quartale, zusammengeführt über den Schlüssel des Zeitraums (gleiches Unternehmen, gleiche Geschäftsjahre). LTM wird nicht mit Jahren oder Quartalen gemischt.
+- **Bewertung nur je Jahresbericht:** Kurs = erster Wochenschluss nach Einreichung des 10-K, mit den Zahlen desselben Geschäftsjahres. Diese Zahlen waren zum Kursdatum veröffentlicht. Liegt ein Kursdatum nicht nach der Veröffentlichung, wird der Wert verworfen (`LOOKAHEAD`). In Quartalsansichten gibt es keine Bewertung (`VALUATION_ANNUAL_ONLY`).
+- **Berichtszeitraum und Veröffentlichung getrennt:** Beim Ablesen stehen das Ende des Berichtszeitraums und das Datum des Jahresberichts (Quartale: jüngste SEC-Meldung mit diesem Wert), bei Bewertung dazu Kurs und Kursdatum.
+- **Lücken bleiben Lücken:** Es wird nicht interpoliert und keine Linie über eine Lücke gezogen. Eine Kennzahl ohne mindestens zwei Werte in der gewählten Zeitraum-Art steht nicht im Verlauf, mit Grund (z. B. `ANNUAL_ONLY` für ROE quartalsweise).
+- **Einheiten:** Verschiedene Einheiten (Betrag, je Aktie, Aktien, Prozent, Faktor) teilen nie eine Achse.
+  - Eine Einheit: eine Achse.
+  - Zwei Einheiten: links und rechts (Hauptkennzahl links), mit Hinweis, dass Schnittpunkte nichts bedeuten.
+  - Mehr Einheiten: „Index 100“ oder „Getrennt“ (ein Diagramm je Kennzahl, gemeinsame Zeitachse und gemeinsames Ablesen).
+- **Index 100:** Jeder Wert ÷ Wert im ersten Zeitraum, in dem alle indexierten Kennzahlen positiv sind, × 100. Wachstumsraten werden nicht indexiert.
+
+„Max“ zeigt alle verfügbaren Zeiträume und nennt das erste Jahr je Kennzahl („Max: alle verfügbaren Geschäftsjahre – KGV seit GJ 2009 (17 Jahre) · Umsatz seit GJ 2007 …“); die Achse folgt der längsten Reihe, kürzere haben davor Lücken. „10J“ bleibt fest zehn Jahre.
+
+Farben je Platz der Auswahl (`--fu-m0` … `--fu-m3`, hell und dunkel getrennt gestuft und auf Farbsehschwächen geprüft); eine entfernte Kennzahl färbt die übrigen nicht um. „Alle Werte im Vergleich“ zeigt die Tabelle mit Grund je Lücke; „Vergrößern“ öffnet das Diagramm im Dialog.
+
 ## Vergleich ohne Wertung
 
 Lage = „höher als x % der Gruppe“ (Anteil mit niedrigerem Wert). Ein höheres KGV oder ein höherer Verschuldungsgrad ist nicht „besser“; deshalb gibt es im Unternehmensvergleich keinen Platz und keine Farbe für gut oder schlecht. Ranglisten der Startseite sortieren eine Kennzahl mit sichtbarer Regel – sie sind getrennt von jeder Einordnung und keine Empfehlung.
@@ -108,6 +128,7 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 
 - **Segmentdaten** stehen nicht in den SEC-Companyfacts; nicht enthalten.
 - **Quartale** reichen nur acht bis zehn Quartale zurück (Umfang der SEC-Verbraucherdateien).
+- **Jahre:** so weit, wie SEC companyfacts maschinenlesbare Werte enthält (XBRL ab 2009, mit Vorjahresspalten meist ab 2006–2008). Bewertung je Jahresbericht ab dem ersten 10-K mit Datum im SIC-Verlauf (ab 2009). Einzelheiten und Vergleich je Unternehmen: [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md).
 - **Nachfolge-CIK** (z. B. XOM nach Umstrukturierung): Ist die neue CIK in den Companyfacts noch leer, zeigt Fundamental den Leerzustand. Die Zuordnung zur Vorgänger-CIK gehört in die SEC-Pipeline (`quant/data/universe/sec-universe.json#successor_cik`), nicht in Fundamental.
 - **Banken und Versicherer** melden keinen Bruttogewinn, oft kein operatives Ergebnis und keine Finanzschulden im Sinne der Industrie; diese Kennzahlen bleiben leer.
 - **Analysten** nur für 11 Titel.
@@ -117,4 +138,4 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 
 ## Tests
 
-`node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs`.
+`node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs` · `scripts/quality/fundamental-compare-qa.mjs` (Kennzahlenvergleich, WebKit iPhone und Chromium).

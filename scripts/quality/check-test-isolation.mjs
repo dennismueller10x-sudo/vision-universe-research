@@ -26,6 +26,10 @@
      node scripts/quality/check-test-isolation.mjs --suite "quant/tests/*.test.mjs"
    ========================================================================= */
 import { execFileSync } from "node:child_process";
+// In einem Datenlauf liegen frisch erzeugte, noch nicht committete Artefakte in den geschuetzten Baeumen;
+// ihr Diff ist dann viele Megabyte gross. Der Standardpuffer von execFileSync (1 MB) brach dort mit
+// ENOBUFS ab (sec-consumer-fundamentals.yml, Lauf 40294140924).
+const GIT_PUFFER = 1 << 30;
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -52,7 +56,7 @@ const GESCHUETZTE_BAEUME = ["quant/data", "social/data", "discover/data",
 
 /** Ein Abdruck des Arbeitsbaums: Pfad -> Zustand, plus der Inhalt. */
 function abdruck() {
-  const zeilen = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT })
+  const zeilen = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT, maxBuffer: GIT_PUFFER })
     .toString().split("\n").filter(Boolean);
   const map = new Map();
   for (const z of zeilen) map.set(z.slice(3).trim(), z.slice(0, 2));
@@ -82,7 +86,7 @@ function abdruck() {
      der Grund, warum diese Pruefung existiert und nicht die einzige
      Verteidigung ist. */
   const inhalt = execFileSync("git",
-    ["diff", "--no-color", "--", ...GESCHUETZTE_BAEUME], { cwd: ROOT }).toString();
+    ["diff", "--no-color", "--", ...GESCHUETZTE_BAEUME], { cwd: ROOT, maxBuffer: GIT_PUFFER }).toString();
   return { map, inhalt };
 }
 

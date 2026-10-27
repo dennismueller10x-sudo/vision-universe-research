@@ -110,6 +110,11 @@ Wirkung auf die Readiness: keine Zertifizierungsänderung. EP und PS bleiben `VA
 
 **Owner-Entscheidung nötig:** Freigabe von Option B als zusätzliche Intraday-Abrufe.
 
+**Entschieden (25.10.2026):** Option B ist freigegeben (einmalig, höchstens 550 Anfragen) und ausgeführt.
+- **Anfragen:** 481.
+- **Ergebnis:** Zusatzstichprobe `CLEAN_EXT_E7_6` neben den unveränderten Referenzen.
+- **Einzelheiten:** `SUPERTRADER_7_EPPS_SAMPLE_E7_6.md`.
+
 ## E7-7: Minervini-Ausstiegsvarianten
 
 Die Kandidaten stammen aus Quellen und sind heute nur als Diagnose umgesetzt:

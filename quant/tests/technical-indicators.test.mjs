@@ -170,8 +170,11 @@ test("Aufwaermperiode im Katalog stimmt mit dem ersten Wert ueberein", () => {
   for (const entry of I.CATALOG) {
     const r = I.compute(S, entry.id);
     assert.ok(!r.error, entry.id + ": " + r.error);
-    const v = r.values, main = Array.isArray(v) ? v : v.line || v.adx || v.macd || v.k || v.upper || v.middle;
-    const expected = entry.id === "macd" ? r.params.slow - 1 : entry.id === "stochastic" ? r.params.kPeriod + r.params.smooth - 2 : r.warmup;
+    const v = r.values, main = Array.isArray(v) ? v : v.line || v.adx || v.macd || v.k || v.upper || v.middle || v.sar || v.cloudB || v.up
+      || v[Object.keys(v)[0]]; /* 1.2.0: Hauptreihe neuer Mehrfachausgaben ist die erste (pivot, trix, long, open) */
+    /* MACD und PPO: Hauptreihe startet vor dem Signal (warmup = Histogramm); Stochastik und Stochastic RSI: %K vor %D. */
+    const expected = entry.id === "macd" || entry.id === "ppo" || entry.id === "pvo" ? r.params.slow - 1 : entry.id === "stochastic" ? r.params.kPeriod + r.params.smooth - 2
+      : entry.id === "stochRsi" ? r.params.rsiPeriod + r.params.stochPeriod + r.params.kSmooth - 2 : r.warmup;
     assert.equal(firstFinite(main), expected, entry.id + " Aufwaermphase");
     assert.ok(entry.definition && entry.name && entry.family, entry.id + " dokumentiert");
   }

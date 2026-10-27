@@ -133,12 +133,12 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 });
 
 
-test('compact menu preserves every old destination in eight products and one additional group', () => {
-  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','elliott','fundamental','screener','vorsorge','supertrader','hedgefonds','more']);
+test('compact menu preserves every old destination in nine products and one additional group', () => {
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','elliott','fundamental','technical','screener','vorsorge','supertrader','hedgefonds','more']);
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
   const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
   for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
-  for(const g of groups.slice(0,8)) assert.equal(g.href, g.entries[0][1]);
+  for(const g of groups.filter(g=>g.id!=='more')) assert.equal(g.href, g.entries[0][1]);
   assert.equal(groups.find(g=>g.id==='quant').entries.find(([,href])=>href==='/quant/#/screener')[0],'Quant Screener');
 });
 
@@ -180,7 +180,7 @@ test('accordion and original product symbols retain accessible shell behavior', 
     assert.match(icon,new RegExp('data-href="/assets/product-icons\\.svg#'+group.icon+'"'));
     assert.doesNotMatch(icon,/<use href=/,'hidden menu must not request its sprite');
   }
-  for(const group of groups.filter(g=>['discover','quant','elliott','fundamental','screener','vorsorge','supertrader'].includes(g.id))) {
+  for(const group of groups.filter(g=>['discover','quant','elliott','fundamental','technical','screener','vorsorge','supertrader'].includes(g.id))) {
     const original=sprite.match(new RegExp('<symbol id="'+group.icon+'"[^>]*>([\\s\\S]*?)</symbol>'))[1];
     assert.equal(DOCK_PRODUCT_ICONS[group.icon],original,group.icon+': exact original geometry and presentation');
     assert.doesNotMatch(dockProductIcon(group.icon),/use|href/,'dock requires no sprite request');
@@ -276,9 +276,8 @@ test('Fundamental is a first-class product with its own menu group, dock and sta
   assert.equal(DOCK_PRODUCT_ICONS.fundamental.length > 0, true);
 });
 
-/* Technical ist ein eigenes Produkt: eigene Leiste, Menueeintrag unter "Weitere Produkte" (eine eigene Menuegruppe
-   aendert die in discover/tests festgeschriebene Gruppenliste und folgt deshalb getrennt), Dock-Symbol = Sprite. */
-test('Technical has its own dock, a menu entry and the exact sprite geometry', () => {
+/* Technical ist ein eigenes Produkt: eigene Leiste, eigene Menuegruppe nach Fundamental, Dock-Symbol = Sprite. */
+test('Technical has its own dock, its own menu group and the exact sprite geometry', () => {
   const dock = PRODUCTS.find(p => p.id === 'technical');
   assert.equal(dock.active(loc('/technical/')), 'technical');
   assert.equal(dock.active(loc('/technical/#/screener?muster=dreieck')), 'screener');
@@ -286,8 +285,19 @@ test('Technical has its own dock, a menu entry and the exact sprite geometry', (
   assert.equal(dock.active(loc('/technical/#/chart/NVDA/signale')), 'chart');
   assert.equal(dock.active(loc('/technical/#/methodik')), 'methodik');
   for (const url of ['/technical/', '/technical/#/chart/NVDA']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
-  const more = groups.find(g => g.id === 'more');
-  assert.deepEqual(Array.from(more.entries[0]).slice(0, 2), ['Technical', '/technical/']);
+  /* Eigene Menuegruppe direkt nach Fundamental (Owner-Freigabe 25.10.2026); "Weitere Produkte" fuehrt Technical nicht mehr. */
+  const ids = Array.from(groups, g => g.id);
+  assert.equal(ids.indexOf('technical'), ids.indexOf('fundamental') + 1);
+  const tg = groups.find(g => g.id === 'technical');
+  assert.equal(tg.href, '/technical/#/');
+  assert.equal(tg.icon, 'technical');
+  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener/gespeichert', '/technical/#/methodik']);
+  assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/technical/')));
+  const state = url => menuState(loc(url));
+  assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/'))), { group: 'technical', href: '/technical/#/', expanded: null });
+  assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/chart/NVDA/signale'))), { group: 'technical', href: '/technical/#/chart', expanded: 'technical' });
+  assert.equal(state('/technical/#/screener/gespeichert').href, '/technical/#/screener/gespeichert');
+  assert.equal(state('/technical/#/screener?muster=dreieck').href, '/technical/#/screener');
   const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
   assert.equal(DOCK_PRODUCT_ICONS.technical, sprite.match(/<symbol id="technical"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
 });

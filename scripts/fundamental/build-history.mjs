@@ -12,6 +12,12 @@
 // Zuordnung Kuerzel -> CIK nur ueber die Discover-Aktiendatei (fundamentals.cik),
 // dieselbe Quelle, die die Seite liest; Scherben ueber core/identity.js#shardKey.
 //
+// Aeltere Geschaeftsjahre als das Fenster der Verbraucherdatei stehen in
+// quant/data/sec/consumer-history/NN.json.gz (gzip-Scherben nach CIK; derselbe Erzeuger, dieselbe
+// Normalisierung, nur die Jahre davor). Sie werden vor die Jahresreihen gelegt
+// und genauso geprueft; passt eine Historie nicht zur Verbraucherdatei (andere
+// Identitaet, anderer Lauf), bleibt es beim Fenster.
+//
 // Aufruf: node scripts/fundamental/build-history.mjs [--root=.] --out=<dir>
 import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -58,8 +64,60 @@ function checkRows(rows, { asOf, quarterly }) {
   return out.sort((a, b) => a[0] - b[0] || String(a[1]).localeCompare(String(b[1])));
 }
 
-/** Eine Verbraucherdatei -> kompakte Historie oder null (ungueltige Herkunft). */
-export function projectHistory(source, ticker) {
+export const CONSUMER_HISTORY_SCHEMA = 'vu-consumer-history-1.0.0';
+/* Aeltere Jahre aus derselben Normalisierung vor die Jahresreihen legen. Nur, wenn die Historie zu genau dieser
+ * Verbraucherdatei gehoert (Schema, CIK, Politik, Spalten, Quelle) und an ihrem ersten Jahr endet - sonst null. */
+export const CONSUMER_HISTORY_SHARD_SCHEMA = 'vu-consumer-history-shard-1.0.0';
+/** Map cik -> Historie aus den Scherben (scripts/quant/sec/consumer.py#write_history_shards).
+ * Eine unlesbare oder beschaedigte Scherbe bricht ab (CONSUMER_HISTORY_SHARD_INVALID), statt still ein
+ * Vierundsechzigstel der Historien wegzulassen: ein Release mit stumm verkuerzter Historie waere falsch. */
+export async function consumerHistories(dir) {
+  const out = new Map();
+  if (!existsSync(dir)) return out;
+  const bad = (n, why) => Error(`CONSUMER_HISTORY_SHARD_INVALID: ${join(dir, n)}: ${why}`);
+  for (const n of (await readdir(dir)).filter((x) => /^\d{2}\.json\.gz$/.test(x)).sort()) {
+    let raw, doc;
+    try { raw = gunzipSync(await readFile(join(dir, n))); } catch (e) { throw bad(n, `kein gueltiges gzip (${e.code || e.message})`); }
+    try { doc = JSON.parse(raw); } catch (e) { throw bad(n, `kein gueltiges JSON (${e.message})`); }
+    if (doc?.schema !== CONSUMER_HISTORY_SHARD_SCHEMA) throw bad(n, `Schema ${JSON.stringify(doc?.schema)} statt ${CONSUMER_HISTORY_SHARD_SCHEMA}`);
+    if (doc.shard !== n.slice(0, 2)) throw bad(n, `Scherbe ${JSON.stringify(doc.shard)} passt nicht zum Dateinamen`);
+    if (!doc.issuers || typeof doc.issuers !== 'object' || Array.isArray(doc.issuers)) throw bad(n, 'issuers fehlt');
+    for (const [cik, h] of Object.entries(doc.issuers)) {
+      if (!/^\d{10}$/.test(cik) || String(Number(cik) % 64).padStart(2, '0') !== doc.shard) throw bad(n, `CIK ${cik} gehoert nicht in diese Scherbe`);
+      if (out.has(cik)) throw bad(n, `CIK ${cik} steht in mehreren Scherben`);
+      out.set(cik, h);
+    }
+  }
+  // Uebergang: bis der erste Erzeugerlauf die Scherben schreibt, liegen noch Einzeldateien je CIK im Repository.
+  if (!out.size) {
+    for (const n of (await readdir(dir)).filter((x) => /^CIK\d{10}\.json$/.test(x))) {
+      try { out.set(n.slice(3, 13), JSON.parse(await readFile(join(dir, n), 'utf8'))); } catch { /* unlesbar: ohne Historie */ }
+    }
+  }
+  return out;
+}
+
+export function withConsumerHistory(source, history) {
+  if (!history || history.schema !== CONSUMER_HISTORY_SCHEMA || history.consumerSchema !== source?.schema || history.cik !== source.cik
+    || history.policy !== source.policy || JSON.stringify(history.columns) !== JSON.stringify(COLUMNS)
+    || history.dataSource?.provider !== 'sec_edgar' || history.dataSource?.isMock !== false) return null;
+  const first = Number(history.coverage?.bundleFirstYear), window = source.coverage?.annualYears;
+  if (!Number.isInteger(first) || !Array.isArray(window) || window[0] !== first) return null;
+  const annual = {}, units = { ...(source.units || {}) };
+  for (const [metric, rows] of Object.entries(source.annual || {})) annual[metric] = rows;
+  for (const [metric, rows] of Object.entries(history.annual || {})) {
+    if (!Array.isArray(rows) || !rows.length || rows.some((r) => !Array.isArray(r) || !(r[0] < first))) return null;
+    const unit = history.units?.[metric];
+    if (units[metric] && units[metric] !== unit) return null;
+    units[metric] = unit;
+    annual[metric] = rows.concat(annual[metric] || []);
+  }
+  return { ...source, units, annual };
+}
+
+/** Eine Verbraucherdatei (und ihre aeltere Historie) -> kompakte Historie oder null (ungueltige Herkunft). */
+export function projectHistory(source, ticker, history = null) {
+  if (history) source = withConsumerHistory(source, history) || source;
   if (source?.schema !== 'vu-consumer-fundamentals-1.0.0' || source.dataSource?.isMock !== false || source.dataSource?.provider !== 'sec_edgar'
     || source.policy !== 'as_of_latest' || !/^\d{10}$/.test(source.cik || '') || !isDate(source.asOf) || JSON.stringify(source.columns) !== JSON.stringify(COLUMNS)) return null;
   const filings = [], index = new Map();
@@ -95,11 +153,11 @@ export function projectHistory(source, ticker) {
 /** Alle Scherben aus dem Repository: { shards: {key: payload}, stats }. */
 export async function buildHistory({ root }) {
   root = resolve(root);
-  const stockDir = join(root, 'discover/data/stocks/US_REAL'), consumerDir = join(root, 'quant/data/sec/consumer');
+  const stockDir = join(root, 'discover/data/stocks/US_REAL'), consumerDir = join(root, 'quant/data/sec/consumer'), historyDir = join(root, 'quant/data/sec/consumer-history');
   if (!existsSync(consumerDir)) throw Error('CONSUMER_SOURCE_MISSING');
-  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0, consumerAsOf: null };
+  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0, history: 0, historyRejected: 0, consumerAsOf: null };
   const sic = await sicByTicker(root), members = [];
-  const tenK = await annualReportDates(root), sec = await secProcessed(root);
+  const tenK = await annualReportDates(root), sec = await secProcessed(root), histories = await consumerHistories(historyDir);
   const names = (await readdir(stockDir)).filter((n) => /^[A-Z0-9.-]+\.json$/.test(n)).sort();
   for (const name of names) {
     stats.stocks++;
@@ -109,7 +167,10 @@ export async function buildHistory({ root }) {
     if (!f || f.available !== true || !/^\d{10}$/.test(f.cik || '')) { stats.noFundamentals++; continue; }
     const path = join(consumerDir, 'CIK' + f.cik + '.json');
     if (!existsSync(path)) { stats.noSource++; continue; }
-    const projected = projectHistory(JSON.parse(await readFile(path, 'utf8')), ticker);
+    const older = histories.get(f.cik) || null;
+    const source = JSON.parse(await readFile(path, 'utf8')), merged = older ? withConsumerHistory(source, older) : null;
+    if (older) stats[merged ? 'history' : 'historyRejected']++;
+    const projected = projectHistory(merged || source, ticker);
     if (!projected || projected.cik !== f.cik) { stats.invalid++; continue; }
     const key = Identity.shardKey(ticker);
     if (!/^[A-Z0-9_]{1,2}$/.test(key)) { stats.invalid++; continue; }
@@ -144,12 +205,17 @@ export async function annualReportDates(root) {
   }
   return out;
 }
+/* Der Bericht muss zu DIESEM Geschaeftsjahr gehoeren: er liegt nach dessen Ende und spaetestens am Ende des folgenden
+ * Geschaeftsjahres. Fehlt das eigene 10-K in den Daten, ist das naechste gefundene das des Folgejahres - dessen Datum
+ * waere ein Kurs zu einem schon veralteten Gewinn; dann gibt es kein Datum (und keine Bewertung) statt eines falschen. */
 export function publicationDates(projected, tenKDates) {
   const ends = {}, filed = new Set(tenKDates || []);
   for (const rows of Object.values(projected.annual || {})) for (const r of rows) { ends[r[0]] ||= r[1]; const f = projected.filings[r[3]]; if (f) filed.add(f[1]); }
-  const dates = [...filed].sort(), out = {};
+  const dates = [...filed].sort(), out = {}, periodEnds = [...new Set(Object.values(ends))].sort();
   for (const [fy, end] of Object.entries(ends)) {
-    const limit = new Date(Date.parse(end) + PUBLICATION_WINDOW_DAYS * 864e5).toISOString().slice(0, 10);
+    const next = periodEnds.find((x) => x > end); // naechstes Geschaeftsjahresende nach Datum, nicht nach Beschriftung
+    let limit = new Date(Date.parse(end) + PUBLICATION_WINDOW_DAYS * 864e5).toISOString().slice(0, 10);
+    if (next && next < limit) limit = next;
     const d = dates.find((x) => x > end && x <= limit);
     if (d) out[fy] = d;
   }

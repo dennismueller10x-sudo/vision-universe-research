@@ -1,0 +1,25 @@
+{
+  "id": "start",
+  "version": 3,
+  "kind": "kit",
+  "title": "Vision Universe in 30 Sekunden",
+  "script": "script.txt",
+  "scenes": "scenes.js",
+  "timing": "timing-v3.json",
+  "words": "words-v3.json",
+  "voice": {
+    "file": "voice-v3.m4a",
+    "speaker": "Helmut (HeyGen, ElevenLabs eleven_v3, voice_id e8b866d761284bd6b188848f3c9f5d4e)",
+    "tempo": 1.14
+  },
+  "music": {
+    "dropbox": "/System_Collapse_-_Dark_Hybrid_Trailer.mp3",
+    "start": 15.6
+  },
+  "build": "studio/stories/README.md, Abschnitt Erklärvideos im Motion-Graphics-Stil",
+  "film": {
+    "dropbox": "/THE ARRIVAL – Original.mp4",
+    "until": 20,
+    "note": "Eigenes Video des Owners, nur in der Dropbox. Bildfolge mit ovl=1 rendern und mit finish.sh über den Film legen."
+  }
+}
