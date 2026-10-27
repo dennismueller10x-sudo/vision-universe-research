@@ -12,7 +12,10 @@
    seit 1.1.0 Williams %R, Aroon, Parabolic SAR, Ichimoku, CMF, VWMA;
    seit 1.2.0 Pivot-Punkte, ROC 63/126/252, TRIX, Ultimate Oscillator, CMO,
    KAMA, Hull MA, Chandelier Exit, Regressionskanal, Inside Bar, NR7,
-   Heikin-Ashi). Die 1.2.0-Eintraege tragen `catalogOnly: true`: Sie stehen
+   Heikin-Ashi; seit 1.3.0 DEMA, TEMA, TRIMA, T3, ZLEMA, ALMA, McGinley,
+   PPO, Stochastic RSI, NATR, A/D-Linie, Chaikin-Oszillator, Balance of
+   Power, Momentum, Standardabweichung, R² des Regressionskanals). Die
+   Eintraege ab 1.2.0 tragen `catalogOnly: true`: Sie stehen
    im Katalog und in compute(), aber noch in keiner Produktflaeche
    (Methodik-Seite, Screener-Felder, Abfragekatalog). Sie dort freizugeben,
    ist eine Fachmodellaenderung mit eigenem PR. Uebersicht:
@@ -35,7 +38,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.2.1";
+  var INDICATORS_VERSION = "technical-indicators-1.3.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -434,10 +437,11 @@
   /**
    * Linearer Regressionskanal ueber die letzten n Schlusskurse (x = 0..n−1, KQ-Gerade):
    * value = Gerade am juengsten Punkt (x = n−1), slope = Steigung je Bar,
-   * upper/lower = value ± k·σ der Residuen (Populationsstreuung, wie Bollinger). Fehlt ein Wert: NaN.
+   * upper/lower = value ± k·σ der Residuen (Populationsstreuung, wie Bollinger), r2 = Bestimmtheitsmass
+   * 1 − SS_res/SS_tot (seit 1.3.0; konstante Reihe: NaN, weil es nichts zu erklaeren gibt). Fehlt ein Wert: NaN.
    */
   function linreg(close, period, k) {
-    var c = col(close), n = c.length, val = arr(n), slope = arr(n), up = arr(n), lo = arr(n);
+    var c = col(close), n = c.length, val = arr(n), slope = arr(n), up = arr(n), lo = arr(n), r2 = arr(n);
     var mx = (period - 1) / 2, sxx = 0;
     for (var x = 0; x < period; x++) sxx += (x - mx) * (x - mx);
     for (var i = period - 1; i < n; i++) {
@@ -447,12 +451,13 @@
       my /= period;
       var sxy = 0;
       for (var q = 0; q < period; q++) sxy += (q - mx) * (c[i - period + 1 + q] - my);
-      var b = sxx > 0 ? sxy / sxx : 0, a0 = my - b * mx, ss = 0;
-      for (var r = 0; r < period; r++) { var e = c[i - period + 1 + r] - (a0 + b * r); ss += e * e; }
+      var b = sxx > 0 ? sxy / sxx : 0, a0 = my - b * mx, ss = 0, st = 0;
+      for (var r = 0; r < period; r++) { var y0 = c[i - period + 1 + r], e = y0 - (a0 + b * r); ss += e * e; st += (y0 - my) * (y0 - my); }
       var sd = Math.sqrt(ss / period);
       val[i] = a0 + b * (period - 1); slope[i] = b; up[i] = val[i] + k * sd; lo[i] = val[i] - k * sd;
+      if (st > 0) r2[i] = 1 - ss / st;
     }
-    return { value: val, slope: slope, upper: up, lower: lo };
+    return { value: val, slope: slope, upper: up, lower: lo, r2: r2 };
   }
 
   /** Inside Bar: H_i < H_{i−1} und L_i > L_{i−1} (strikt). 1/0, NaN ohne Vorbar oder bei fehlendem Wert. */
@@ -493,6 +498,154 @@
     }
     return { open: ho, high: hh, low: hl, close: hc };
   }
+
+  /* ------------------------------------------- Katalogerweiterung 1.3.0 (L2a) */
+
+  /** Elementweise Verknuepfung zweier Reihen; NaN, sobald ein Eingang fehlt. */
+  function zip2(a, b, f) { return a.map(function (v, i) { return isNum(v) && isNum(b[i]) ? f(v, b[i]) : NaN; }); }
+
+  /**
+   * DEMA (Mulloy 1994): 2·E1 − E2, E1 = EMA_n(C), E2 = EMA_n(E1). Jede EMA wie feature-store.js
+   * (Start SMA_n ihrer Eingabe), E2 startet also n − 1 Bars nach E1.
+   */
+  function dema(close, period) {
+    var e1 = F.ema(col(close), period), e2 = F.ema(e1, period);
+    return zip2(e1, e2, function (a, b) { return 2 * a - b; });
+  }
+
+  /** TEMA (Mulloy 1994): 3·E1 − 3·E2 + E3, E3 = EMA_n(E2). */
+  function tema(close, period) {
+    var e1 = F.ema(col(close), period), e2 = F.ema(e1, period), e3 = F.ema(e2, period);
+    return e1.map(function (v, i) { return isNum(v) && isNum(e2[i]) && isNum(e3[i]) ? 3 * v - 3 * e2[i] + e3[i] : NaN; });
+  }
+
+  /**
+   * TRIMA (dreieckig gewichteter Durchschnitt): SMA_a(SMA_b(C)), ungerades n: a = b = (n+1)/2,
+   * gerades n: a = n/2, b = n/2 + 1. Gewichte 1, 2, …, Mitte, …, 2, 1 (wie TA-Lib).
+   */
+  function trima(close, period) {
+    var a = period % 2 ? (period + 1) / 2 : period / 2, b = period % 2 ? a : period / 2 + 1;
+    return F.sma(F.sma(col(close), b), a);
+  }
+
+  /**
+   * T3 (Tillson 1998): sechsfach verkettete EMA_n, T3 = c1·E6 + c2·E5 + c3·E4 + c4·E3 mit
+   * Volumenfaktor v: c1 = −v³, c2 = 3v² + 3v³, c3 = −6v² − 3v − 3v³, c4 = 1 + 3v + v³ + 3v².
+   */
+  function t3(close, period, vfactor) {
+    var v = vfactor, e = [F.ema(col(close), period)];
+    for (var k = 1; k < 6; k++) e.push(F.ema(e[k - 1], period));
+    var c1 = -v * v * v, c2 = 3 * v * v + 3 * v * v * v, c3 = -6 * v * v - 3 * v - 3 * v * v * v, c4 = 1 + 3 * v + v * v * v + 3 * v * v;
+    return e[5].map(function (x, i) { return isNum(x) && isNum(e[4][i]) && isNum(e[3][i]) && isNum(e[2][i]) ? c1 * x + c2 * e[4][i] + c3 * e[3][i] + c4 * e[2][i] : NaN; });
+  }
+
+  /**
+   * ZLEMA (Ehlers/Way 2010): EMA_n(2·C_i − C_{i−lag}), lag = ⌊(n−1)/2⌋. Der Vorgriff auf die
+   * Steigung kompensiert die Verzoegerung; kausal, weil nur C_{i−lag} benutzt wird.
+   */
+  function zlema(close, period) {
+    var c = col(close), lag = Math.floor((period - 1) / 2), x = arr(c.length);
+    for (var i = lag; i < c.length; i++) if (isNum(c[i]) && isNum(c[i - lag])) x[i] = 2 * c[i] - c[i - lag];
+    return F.ema(x, period);
+  }
+
+  /**
+   * ALMA (Arnaud Legoux): Gauss-Gewichte w_j = exp(−(j − m)²/(2s²)), j = 0 (aeltester) … n−1,
+   * m = offset·(n − 1), s = n/sigma; Wert = Σ w_j·C_j / Σ w_j. Fehlt ein Wert im Fenster: NaN.
+   */
+  function alma(close, period, offset, sigma) {
+    var c = col(close), n = c.length, out = arr(n), m = offset * (period - 1), s = period / sigma, w = [], ws = 0;
+    for (var j = 0; j < period; j++) { w.push(Math.exp(-((j - m) * (j - m)) / (2 * s * s))); ws += w[j]; }
+    for (var i = period - 1; i < n; i++) {
+      var acc = 0, ok = true;
+      for (var q = 0; q < period; q++) { var y = c[i - period + 1 + q]; if (!isNum(y)) { ok = false; break; } acc += w[q] * y; }
+      if (ok) out[i] = acc / ws;
+    }
+    return out;
+  }
+
+  /**
+   * McGinley Dynamic (1990): MD_i = MD_{i−1} + (C_i − MD_{i−1}) / (n·(C_i/MD_{i−1})⁴).
+   * Start MD_{n−1} = SMA_n (wie die EMA). Lueckenbar: NaN, der Zustand bleibt.
+   */
+  function mcginley(close, period) {
+    var c = col(close), n = c.length, out = arr(n), seed = F.sma(c, period), prev = NaN;
+    for (var i = 0; i < n; i++) {
+      if (!isNum(prev)) { if (isNum(seed[i])) { prev = seed[i]; out[i] = prev; } continue; }
+      if (!isNum(c[i]) || prev <= 0 || c[i] <= 0) continue;
+      prev = prev + (c[i] - prev) / (period * Math.pow(c[i] / prev, 4));
+      out[i] = prev;
+    }
+    return out;
+  }
+
+  /** PPO (Percentage Price Oscillator): 100·(EMA_f − EMA_s)/EMA_s, Signal = EMA_sig(PPO), Histogramm = PPO − Signal. */
+  function ppo(close, fast, slow, signal) {
+    var c = col(close), f = F.ema(c, fast), s = F.ema(c, slow);
+    var p = zip2(f, s, function (a, b) { return b !== 0 ? 100 * (a - b) / b : NaN; }), sig = F.ema(p, signal);
+    return { ppo: p, signal: sig, histogram: zip2(p, sig, function (a, b) { return a - b; }) };
+  }
+
+  /**
+   * Stochastic RSI (Chande/Kroll 1994): roh = 100·(RSI − min RSI_m)/(max RSI_m − min RSI_m) ueber m Bars,
+   * %K = SMA_k(roh), %D = SMA_d(%K). Keine Spanne (max = min): 50 (Mitte), wie stochastic().
+   */
+  function stochRsi(close, rsiPeriod, stochPeriod, kSmooth, dPeriod) {
+    var r = F.rsi(col(close), rsiPeriod), hh = F.rollingMax(r, stochPeriod), ll = F.rollingMin(r, stochPeriod), n = r.length, raw = arr(n);
+    for (var i = 0; i < n; i++) {
+      if (!isNum(r[i]) || !isNum(hh[i]) || !isNum(ll[i])) continue;
+      var span = hh[i] - ll[i];
+      raw[i] = span > 0 ? 100 * (r[i] - ll[i]) / span : 50;
+    }
+    var k = kSmooth > 1 ? F.sma(raw, kSmooth) : raw;
+    return { k: k, d: F.sma(k, dPeriod), raw: raw };
+  }
+
+  /** NATR = 100·ATR_n/C (ATR nach Wilder wie atr()), in Prozent des Schlusskurses. */
+  function natr(high, low, close, period) {
+    return zip2(atr(high, low, close, period), col(close), function (a, c) { return c !== 0 ? 100 * a / c : NaN; });
+  }
+
+  /**
+   * Akkumulation/Distribution (Chaikin): AD_i = AD_{i−1} + V_i·((C−L) − (H−C))/(H−L); H = L: Beitrag 0.
+   * Start mit dem Beitrag der ersten Bar. Fehlende Bar: NaN, die Summe laeuft weiter.
+   */
+  function adLine(high, low, close, volume) {
+    var h = col(high), l = col(low), c = col(close), v = col(volume), n = c.length, out = arr(n), sum = 0;
+    for (var i = 0; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(c[i]) || !isNum(v[i])) continue;
+      var span = h[i] - l[i];
+      sum += span > 0 ? v[i] * ((c[i] - l[i]) - (h[i] - c[i])) / span : 0;
+      out[i] = sum;
+    }
+    return out;
+  }
+
+  /** Chaikin-Oszillator: EMA_f(AD) − EMA_s(AD) (EMA wie feature-store.js, Start SMA). */
+  function chaikinOsc(high, low, close, volume, fast, slow) {
+    var ad = adLine(high, low, close, volume);
+    return zip2(F.ema(ad, fast), F.ema(ad, slow), function (a, b) { return a - b; });
+  }
+
+  /**
+   * Balance of Power (Livshits 2001): BOP = (C − O)/(H − L), H = L: 0. Bereich −1 … +1.
+   * `smoothed` = SMA_n(BOP), die uebliche Lesart.
+   */
+  function balanceOfPower(open, high, low, close, period) {
+    var o = col(open), h = col(high), l = col(low), c = col(close), n = c.length, b = arr(n);
+    for (var i = 0; i < n; i++) if (isNum(o[i]) && isNum(h[i]) && isNum(l[i]) && isNum(c[i])) b[i] = h[i] > l[i] ? (c[i] - o[i]) / (h[i] - l[i]) : 0;
+    return { bop: b, smoothed: F.sma(b, period) };
+  }
+
+  /** Momentum: C_i − C_{i−n} (absolute Kursaenderung, im Gegensatz zum prozentualen ROC). */
+  function momentum(close, period) {
+    var c = col(close), n = c.length, out = arr(n);
+    for (var i = period; i < n; i++) if (isNum(c[i]) && isNum(c[i - period])) out[i] = c[i] - c[i - period];
+    return out;
+  }
+
+  /** Standardabweichung (Population) der letzten n Schlusskurse (feature-store.js#rollingStd, wie Bollinger). */
+  function stdDev(close, period) { return F.rollingStd(col(close), period); }
 
   /* ------------------------------------------------------- Hilfsfunktionen */
 
@@ -568,7 +721,7 @@
     { id: "hma", family: "TREND", name: "Hull Moving Average (HMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
       definition: "WMA_{⌊√n⌋}(2·WMA_{⌊n/2⌋} − WMA_n)", warmup: function (p) { return p.period + Math.floor(Math.sqrt(p.period)) - 2; } },
     { id: "linreg", family: "TREND", name: "Linearer Regressionskanal", params: { period: 50, k: 2 }, inputs: ["close"], overlay: true, catalogOnly: true,
-      definition: "KQ-Gerade durch die letzten n Schlusskurse: Endwert, Steigung je Bar, Kanal ± k·Standardabweichung (Population) der Residuen", warmup: function (p) { return p.period - 1; } },
+      definition: "KQ-Gerade durch die letzten n Schlusskurse: Endwert, Steigung je Bar, Kanal ± k·Standardabweichung (Population) der Residuen, R² (seit 1.3.0)", warmup: function (p) { return p.period - 1; } },
     { id: "heikinAshi", family: "TREND", name: "Heikin-Ashi", params: {}, inputs: ["open", "high", "low", "close"], overlay: true, catalogOnly: true,
       definition: "HC = (O+H+L+C)/4, HO = (HO_{−1} + HC_{−1})/2 (Start (O+C)/2), HH = max(H, HO, HC), HL = min(L, HO, HC)", warmup: function () { return 0; } },
     { id: "roc63", family: "MOMENTUM", name: "Rate of Change 63 (3 Monate)", base: "roc", params: { period: 63 }, inputs: ["close"], overlay: false, catalogOnly: true,
@@ -588,10 +741,43 @@
     { id: "insideBar", family: "VOLATILITY", name: "Inside Bar", params: {}, inputs: ["high", "low"], overlay: false, catalogOnly: true,
       definition: "1, wenn H < H_{−1} und L > L_{−1}, sonst 0", warmup: function () { return 1; } },
     { id: "nr7", family: "VOLATILITY", name: "Narrow Range (NR7)", params: { period: 7 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
-      definition: "1, wenn die Spanne H − L die kleinste der letzten n Bars ist (Gleichstand zaehlt), sonst 0", warmup: function (p) { return p.period - 1; } }
+      definition: "1, wenn die Spanne H − L die kleinste der letzten n Bars ist (Gleichstand zaehlt), sonst 0", warmup: function (p) { return p.period - 1; } },
+
+    /* 1.3.0 (L2a): nur Katalog und compute(); Referenz TA-Lib, wo es ein Gegenstueck gibt (INDICATORS_EXTERNAL_REFERENCE.md). */
+    { id: "dema", family: "TREND", name: "Double Exponential Moving Average (DEMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "2·EMA_n(C) − EMA_n(EMA_n(C))", warmup: function (p) { return 2 * (p.period - 1); } },
+    { id: "tema", family: "TREND", name: "Triple Exponential Moving Average (TEMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "3·E1 − 3·E2 + E3, E1 = EMA_n(C), E2 = EMA_n(E1), E3 = EMA_n(E2)", warmup: function (p) { return 3 * (p.period - 1); } },
+    { id: "trima", family: "TREND", name: "Dreieckig gewichteter Durchschnitt (TRIMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "SMA ueber SMA: ungerades n je (n+1)/2, gerades n: n/2 und n/2+1; Gewichte 1, 2, …, Mitte, …, 2, 1", warmup: function (p) { return p.period - 1; } },
+    { id: "t3", family: "TREND", name: "Tillson T3", params: { period: 5, vfactor: 0.7 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "sechsfach verkettete EMA_n, T3 = c1·E6 + c2·E5 + c3·E4 + c4·E3 mit Volumenfaktor v (c1 = −v³ …)", warmup: function (p) { return 6 * (p.period - 1); } },
+    { id: "zlema", family: "TREND", name: "Zero-Lag EMA (ZLEMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "EMA_n(2·C − C_{−lag}), lag = ⌊(n−1)/2⌋", warmup: function (p) { return Math.floor((p.period - 1) / 2) + p.period - 1; } },
+    { id: "alma", family: "TREND", name: "Arnaud Legoux Moving Average (ALMA)", params: { period: 9, offset: 0.85, sigma: 6 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "Gauss-gewichteter Durchschnitt: w_j = exp(−(j − m)²/(2s²)), m = offset·(n−1), s = n/sigma", warmup: function (p) { return p.period - 1; } },
+    { id: "mcginley", family: "TREND", name: "McGinley Dynamic", params: { period: 14 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "MD += (C − MD)/(n·(C/MD)⁴), Start SMA_n", warmup: function (p) { return p.period - 1; } },
+    { id: "ppo", family: "MOMENTUM", name: "Percentage Price Oscillator (PPO)", params: { fast: 12, slow: 26, signal: 9 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "100·(EMA_fast − EMA_slow)/EMA_slow; Signal = EMA_signal(PPO); Histogramm = Differenz", warmup: function (p) { return p.slow + p.signal - 2; } },
+    { id: "stochRsi", family: "MOMENTUM", name: "Stochastic RSI", params: { rsiPeriod: 14, stochPeriod: 14, kSmooth: 3, dPeriod: 3 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "Stochastik auf dem RSI: 100·(RSI − min)/(max − min) ueber m Bars, %K = SMA_k, %D = SMA_d(%K)",
+      warmup: function (p) { return p.rsiPeriod + p.stochPeriod - 1 + p.kSmooth - 1 + p.dPeriod - 1; } },
+    { id: "natr", family: "VOLATILITY", name: "Normalisierte ATR (NATR)", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "100·ATR_n/C, ATR nach Wilder", warmup: function (p) { return p.period - 1; } },
+    { id: "adLine", family: "VOLUME", name: "Akkumulation/Distribution (A/D-Linie)", params: {}, inputs: ["high", "low", "close", "volume"], overlay: false, catalogOnly: true,
+      definition: "kumuliert V·((C−L) − (H−C))/(H−L), H = L zaehlt 0", warmup: function () { return 0; } },
+    { id: "chaikinOsc", family: "VOLUME", name: "Chaikin-Oszillator", params: { fast: 3, slow: 10 }, inputs: ["high", "low", "close", "volume"], overlay: false, catalogOnly: true,
+      definition: "EMA_fast(A/D) − EMA_slow(A/D)", warmup: function (p) { return Math.max(p.fast, p.slow) - 1; } },
+    { id: "balanceOfPower", family: "MOMENTUM", name: "Balance of Power (BOP)", params: { period: 14 }, inputs: ["open", "high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "(C − O)/(H − L), H = L: 0; geglaettet SMA_n", warmup: function () { return 0; } },
+    { id: "momentum", family: "MOMENTUM", name: "Momentum", params: { period: 10 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "C_i − C_{i−n} (absolute Kursaenderung)", warmup: function (p) { return p.period; } },
+    { id: "stdDev", family: "VOLATILITY", name: "Standardabweichung", params: { period: 20 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "Populationsstreuung der letzten n Schlusskurse", warmup: function (p) { return p.period - 1; } }
   ];
 
-  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max"];
+  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max", "vfactor", "offset", "sigma"];
   function catalogEntry(id) { for (var i = 0; i < CATALOG.length; i++) if (CATALOG[i].id === id) return CATALOG[i]; return null; }
 
   /**
@@ -642,6 +828,21 @@
       case "chandelier": v = chandelier(s.high, s.low, s.close, p.period, p.multiplier); break;
       case "insideBar": v = insideBar(s.high, s.low); break;
       case "nr7": v = narrowRange(s.high, s.low, p.period); break;
+      case "dema": v = dema(s.close, p.period); break;
+      case "tema": v = tema(s.close, p.period); break;
+      case "trima": v = trima(s.close, p.period); break;
+      case "t3": v = t3(s.close, p.period, p.vfactor); break;
+      case "zlema": v = zlema(s.close, p.period); break;
+      case "alma": v = alma(s.close, p.period, p.offset, p.sigma); break;
+      case "mcginley": v = mcginley(s.close, p.period); break;
+      case "ppo": v = ppo(s.close, p.fast, p.slow, p.signal); break;
+      case "stochRsi": v = stochRsi(s.close, p.rsiPeriod, p.stochPeriod, p.kSmooth, p.dPeriod); break;
+      case "natr": v = natr(s.high, s.low, s.close, p.period); break;
+      case "adLine": v = adLine(s.high, s.low, s.close, s.volume); break;
+      case "chaikinOsc": v = chaikinOsc(s.high, s.low, s.close, s.volume, p.fast, p.slow); break;
+      case "balanceOfPower": v = balanceOfPower(s.open, s.high, s.low, s.close, p.period); break;
+      case "momentum": v = momentum(s.close, p.period); break;
+      case "stdDev": v = stdDev(s.close, p.period); break;
     }
     return { id: id, version: INDICATORS_VERSION, params: p, warmup: entry.warmup(p), values: v };
   }
@@ -657,7 +858,10 @@
     psar: psar, ichimoku: ichimoku, vwma: vwma, williamsR: williamsR, aroon: aroon, cmf: cmf,
     /* 1.2.0 (B6) */
     pivots: pivots, trix: trix, ultimateOscillator: ultimateOscillator, cmo: cmo, kama: kama, hma: hma,
-    chandelier: chandelier, linreg: linreg, insideBar: insideBar, narrowRange: narrowRange, heikinAshi: heikinAshi
+    chandelier: chandelier, linreg: linreg, insideBar: insideBar, narrowRange: narrowRange, heikinAshi: heikinAshi,
+    /* 1.3.0 (L2a) */
+    dema: dema, tema: tema, trima: trima, t3: t3, zlema: zlema, alma: alma, mcginley: mcginley, ppo: ppo, stochRsi: stochRsi,
+    natr: natr, adLine: adLine, chaikinOsc: chaikinOsc, balanceOfPower: balanceOfPower, momentum: momentum, stdDev: stdDev
   };
 
   if (isNode) module.exports = api;

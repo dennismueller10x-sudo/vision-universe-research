@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Konto erstellen · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="register"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--narrow" id="main">
+<p class="ka-eyebrow">Konto</p>
+<h1 class="ka-title">Konto erstellen</h1>
+<p class="ka-lead">Ein Konto für alle Vision-Universe-Welten. Wir speichern nur, was dein Konto braucht.</p>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<form class="ka-card ka-form" id="ka-register" novalidate>
+<div class="ka-field"><label for="email">E-Mail-Adresse</label><input class="ka-input" id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required maxlength="254"></div>
+<div class="ka-field"><label for="display-name">Anzeigename <span class="ka-muted">(optional)</span></label><input class="ka-input" id="display-name" name="display-name" type="text" autocomplete="nickname" maxlength="80"></div>
+<div class="ka-field"><label for="password">Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint" id="pw-rules" aria-live="polite"></ul></div>
+<label class="ka-check"><input id="terms" name="terms" type="checkbox" required><span>Ich habe die <a class="ka-link" href="/landing/datenschutz/">Datenschutzhinweise</a> gelesen und akzeptiere die Nutzungsbedingungen.</span></label>
+<button class="ka-btn ka-btn--block" type="submit">Konto erstellen</button>
+<p class="ka-hint">Nach dem Absenden bekommst du eine E-Mail mit einem Bestätigungslink.</p>
+</form>
+<section class="ka-card" id="ka-register-done" hidden><h2>Fast geschafft</h2><p>Wir haben einen Bestätigungslink an <strong data-email></strong> geschickt. Öffne ihn, um dein Konto zu aktivieren. Keine E-Mail? Sieh im Spam-Ordner nach.</p></section>
+<nav class="ka-links" aria-label="Weitere Möglichkeiten"><a class="ka-link" href="/konto/anmelden/">Ich habe schon ein Konto</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

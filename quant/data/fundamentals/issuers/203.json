@@ -326,9 +326,9 @@
       "cik": "0001901203",
       "name": "CN Healthy Food Tech Group Corp.",
       "sic": "2000",
-      "rawFacts": 1475,
-      "mappedFacts": 622,
-      "unmappedFacts": 899,
+      "rawFacts": 1701,
+      "mappedFacts": 709,
+      "unmappedFacts": 1074,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -345,25 +345,25 @@
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "eps_diluted": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 5,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -379,25 +379,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 13,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 1.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
         },
         "revenue": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -438,44 +438,45 @@
         }
       },
       "quality": {
-        "HIGH": 81
+        "HIGH": 96
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 81,
-        "resolvedValues": 81
+        "datableValues": 96,
+        "resolvedValues": 96
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 971,
+        "total": 1158,
         "by_severity": {
-          "INFO": 899,
-          "WARNING": 72
+          "INFO": 1074,
+          "WARNING": 84
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 14,
-          "RESTATEMENT_CONFLICT": 58,
-          "UNKNOWN_CONCEPT": 899
+          "CONCEPT_DISAGREEMENT": 20,
+          "RESTATEMENT_CONFLICT": 64,
+          "UNKNOWN_CONCEPT": 1074
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089578",
-        "filing_date": "2026-08-14",
-        "form": "10-Q",
-        "periodic_filings": 12
+        "accession": "0001213900-26-112531",
+        "filing_date": "2026-10-26",
+        "form": "10-K/A",
+        "periodic_filings": 13,
+        "acceptance_datetime": "2026-10-26T21:07:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.13.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d78bf16f49ce8466398391650e96010830b65ee5745612a82e393f05fac282e0",
+      "sourceDigest": "f7fb56b49843c427598de7ade88f5c109954322c2e3e9aaca19caae2e10d7ff6",
       "issuerId": "iss_cik_0001901203"
     },
     {
