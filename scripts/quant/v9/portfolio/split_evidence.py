@@ -39,9 +39,15 @@ def extract(t, kind):
     if m:
         out["recordDate"] = iso(*m.groups()[-3:])
         out["recordQuote"] = flat[max(0, m.start() - 150):m.end() + 60][:300]
-    m = first(r"(?:trading|trade)\s+(?:on\s+a\s+|at\s+)?split-adjusted\s+(?:basis\s+)?(?:at\s+market\s+open\s+)?(?:on|beginning(?:\s+on)?|starting(?:\s+on)?)\s+" + DATE, flat)
+    m = first(r"Trading[^.]{0,60}?(?:begin|commence)\s+on\s+a\s+(?:stock\s+)?split-adjusted\s+basis\s+(?:at\s+market\s+open\s+)?on\s+(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday),?\s+)?(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:\s*,\s*(\d{4}))?", flat)
     if m:
-        out["splitAdjustedTradingDate"] = iso(*m.groups()[-3:])
+        year = m.group(3)
+        if not year:  # year omitted in the sentence: taken from the same document's dated record/distribution sentence
+            dm = first(r"(?:distributed|of record)[^.]{0,120}?" + DATE, flat)
+            year = dm.groups()[-1] if dm else None
+            out["splitAdjustedTradingYearFrom"] = "same document record/distribution sentence"
+        if year:
+            out["splitAdjustedTradingDate"] = iso(m.group(1), m.group(2), year)
         out["tradingQuote"] = flat[max(0, m.start() - 200):m.end() + 40][:300]
     m = first(r"(?:distributed|payable|distribution)[^.]{0,60}?(?:after the close of (?:market|trading|business)\s+on|on)\s+" + DATE, flat)
     if m:

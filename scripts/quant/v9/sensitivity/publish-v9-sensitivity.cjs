@@ -48,7 +48,15 @@ function main(directory) {
     }
   }
   const decision = { schemaVersion: 'v9-sensitivity-decision-1.0.0', ...head, method: 'PARAMETER_SENSITIVITY', previousStatus: 'PARTIALLY_VALIDATED (V8)', decision: s.decision,
-    criteria: reg.registration.decisionCriteria };
+    criteria: reg.registration.decisionCriteria,
+    secondaryEndpointStatus: Object.fromEntries(Object.entries(s.populations).map(([n, p]) => [n, { counts: p.endpoints.secondary.criteriaCounts, status: p.endpoints.secondary.populationStatus }])),
+    scope: s.decision.methodStatus === 'ACCEPTED_WITH_DEFINED_SCOPE' ? {
+      accepted: 'Descriptive robustness of the registered 36-point grid plus conditional, dependence-aware circular calendar-block inference (b=52, 1999 replicates, Holm within grid) for the PRIMARY endpoint (pooled net price return incl. market drift) of NEW_52W_HIGH on the registered current-classification populations P1/P2, signal dates 2000-2025.',
+      excluded: ['Benchmark-excess (secondary) endpoint: stationarity diagnostics reject (KPSS/CUSUM/split-period) on P1 and P2 - time-varying mean excess; block inference for it is NOT accepted.',
+        'V8 survivor trio: C5/C6 fail on 12/36 points (primary); block length is supported there but stationarity is contradicted for some horizon/delay combinations.',
+        'Any other rule, population, period, endpoint or block design.'],
+      notEstablished: reg.registration.decisionCriteria.notProvable.concat(['Non-rejection of KPSS/CUSUM/split tests is not evidence of stationarity; heteroskedastic z (growing cross-section) affects their asymptotic size.', 'Event intensity N_t is clearly non-stationary (KPSS on counts rejects) because the unbalanced panel grows over time.', 'No economic advantage: primary endpoint contains equity drift; benchmark-excess grid shows no Holm rejection in any population.'])
+    } : null };
   fs.writeFileSync(path.join(OUT, 'diagnostics-summary.json'), JSON.stringify(diagnostics) + '\n');
   fs.writeFileSync(path.join(OUT, 'population-summary.json'), JSON.stringify(grid) + '\n');
   fs.writeFileSync(path.join(OUT, 'decision.json'), JSON.stringify(decision, null, 1) + '\n');

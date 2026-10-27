@@ -93,5 +93,65 @@
    "Survivorship: current classification conditions on survival.",
    "Explored history; no untouched holdout; P2 shares calendar shocks with P1 (not independent)."
   ]
+ },
+ "secondaryEndpointStatus": {
+  "TRIO": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 36,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 36,
+    "C6_SPLIT": 36
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": true,
+    "STATIONARITY_NOT_CONTRADICTED": true
+   }
+  },
+  "P1": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 30,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 0,
+    "C6_SPLIT": 0
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": false,
+    "STATIONARITY_NOT_CONTRADICTED": false
+   }
+  },
+  "P2": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 12,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 0,
+    "C6_SPLIT": 0
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": false,
+    "STATIONARITY_NOT_CONTRADICTED": false
+   }
+  }
+ },
+ "scope": {
+  "accepted": "Descriptive robustness of the registered 36-point grid plus conditional, dependence-aware circular calendar-block inference (b=52, 1999 replicates, Holm within grid) for the PRIMARY endpoint (pooled net price return incl. market drift) of NEW_52W_HIGH on the registered current-classification populations P1/P2, signal dates 2000-2025.",
+  "excluded": [
+   "Benchmark-excess (secondary) endpoint: stationarity diagnostics reject (KPSS/CUSUM/split-period) on P1 and P2 - time-varying mean excess; block inference for it is NOT accepted.",
+   "V8 survivor trio: C5/C6 fail on 12/36 points (primary); block length is supported there but stationarity is contradicted for some horizon/delay combinations.",
+   "Any other rule, population, period, endpoint or block design."
+  ],
+  "notEstablished": [
+   "Mixing/weak stationarity cannot be proven by finite-sample diagnostics; non-rejection is not proof.",
+   "Survivorship: current classification conditions on survival.",
+   "Explored history; no untouched holdout; P2 shares calendar shocks with P1 (not independent).",
+   "Non-rejection of KPSS/CUSUM/split tests is not evidence of stationarity; heteroskedastic z (growing cross-section) affects their asymptotic size.",
+   "Event intensity N_t is clearly non-stationary (KPSS on counts rejects) because the unbalanced panel grows over time.",
+   "No economic advantage: primary endpoint contains equity drift; benchmark-excess grid shows no Holm rejection in any population."
+  ]
  }
 }

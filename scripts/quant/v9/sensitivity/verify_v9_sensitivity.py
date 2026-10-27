@@ -304,7 +304,9 @@ def main(private, root, out_path=None):
                     vals.append((e['signalDate'], v))
                 sums = [0.0] * T; counts = [0] * T
                 for d, v in vals: sums[sidx[d]] += v; counts[sidx[d]] += 1
-                n = len(vals); est = sum(sums) / n; sums = np.array(sums); counts = np.array(counts, dtype=np.int64); z = sums - est * counts
+                n = len(vals); tot = 0.0
+                for x_ in sums: tot += x_  # sequential (Python>=3.12 sum() is compensated)
+                est = tot / n; sums = np.array(sums); counts = np.array(counts, dtype=np.int64); z = sums - est * counts
                 jdp = jd['diagnostics'][pi]; jfp = jf['diagnosticsFull'][pi]
                 assert jdp['parameters'] == p
                 P.eq(list(map(float, sums)), jfp['sums'], 'sums'); P.eq(list(map(int, counts)), jfp['counts'], 'counts'); P.eq(est, jdp['estimate'], 'estimate')

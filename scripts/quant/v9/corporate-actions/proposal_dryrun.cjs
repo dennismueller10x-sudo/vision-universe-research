@@ -24,11 +24,10 @@ const QUOTES = arg('--quotes') ? JSON.parse(fs.readFileSync(arg('--quotes'), 'ut
 const master = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/market/security-master/us-security-master.json'), 'utf8'));
 const canon = new Map(master.rows.filter(r => r.baseline_security_id).map(r => [r.baseline_security_id, r.canonical_id]));
 
-/* Manually confirmed spin-off / distribution resolutions (quote + accession required; see ca-evidence-quotes.json). */
-const MANUAL_DISTRIBUTIONS = {
-  'ref_ABT|2013-01-04': { distribution: 'AbbVie Inc. (CIK 0001551152) common stock, 1 AbbVie share per Abbott share', distributionDate: '2013-01-01',
-    sourceAccessions: ['0001047469-13-000015', '0001104659-12-080568'] },
-};
+/* Manual review verdicts bound to quoted original SEC documents (build_manual_review.py). */
+const REVIEW = JSON.parse(fs.readFileSync(arg('--review'), 'utf8'));
+const reviewByKey = new Map(REVIEW.reviews.map(r => [r.key, r]));
+const MANUAL_DISTRIBUTIONS = Object.fromEntries(REVIEW.reviews.filter(r => /_CONFIRMED$/.test(r.verdict) && r.distribution).map(r => [r.key, { verdict: r.verdict, ...r.distribution, documents: r.documents }]));
 const ACCEPT_RULE = {
   version: 'ca-evidence-registry-acceptance-1.0.0',
   GENUINE_MOVE: 'accept iff: SEC share count (dei:EntityCommonStockSharesOutstanding, else us-gaap:CommonStockSharesOutstanding; original as-reported value = earliest filing per period end) from two filings bracketing the event: pre.end <= prevWeek and >= prevWeek-200d, post.end >= max(maxDailyDate, week-start) and <= week+200d; |ln(post/pre)| <= ln(1.25); no STRONG split filing (8-K with item 3.03/5.03 containing a split phrase, or XBRL StockholdersEquityNoteStockSplitConversionRatio1 = k or 1/k with end within +-30d), no WEAK split mention (split phrase in any 8-K/6-K non-exhibit-10 document filed within +-30d), no distribution/spin-off indicator for DOWN moves, no provider split in the week, event week >= 2001-01-01 (EDGAR full-text coverage), not a round trip (move reverses by >= half (log) within 4 weeks), identity check CONSISTENT (dei:EntityPublicFloat / (raw series price x shares) in [0.2, 1.1] for at least one float fact within +-730d).',
@@ -37,7 +36,7 @@ const ACCEPT_RULE = {
   PROVIDER_SPLIT_UNSUPPORTED: 'never accepted by the registry; provider split factor contradicted by SEC share counts -> producer must remove the factor and re-publish.',
   bindings: 'every entry binds securityId, canonicalId, event week, prevWeek, weeklyRatio (6 dp) and the sha256 of the series bytes it was derived from; any mismatch invalidates the entry.',
 };
-const entries = [];
+const entries = [], rejectedOnReview = [];
 for (const r of RES.rows) {
   if (r.resolution === 'ENGINE_RESOLVED') continue;
   let resolution = null, accepted = false, effect = null;
@@ -50,8 +49,13 @@ for (const r of RES.rows) {
     resolution = 'SPIN_OFF_DISTRIBUTION';
     accepted = !!manual;
     effect = manual ? 'RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED' : 'NOT_ACCEPTED_DISTRIBUTION_NOT_CONFIRMED';
-  } else if (r.resolution === 'SPLIT_CONFIRMED_SERIES_UNADJUSTED') {
+    if (!manual) { rejectedOnReview.push({ key: r.id + '|' + r.week, automated: r.resolution, review: 'NOT_CONFIRMED_AS_DISTRIBUTION_OF_THIS_ISSUER_AT_THIS_DATE' }); continue; }
+  } else if (r.resolution === 'SPLIT_CONFIRMED_SERIES_UNADJUSTED' || reviewByKey.get(r.id + '|' + r.week)?.verdict === 'SPLIT_CONFIRMED_SERIES_UNADJUSTED') {
+    const rv = reviewByKey.get(r.id + '|' + r.week);
+    if (!rv || rv.verdict !== 'SPLIT_CONFIRMED_SERIES_UNADJUSTED') { rejectedOnReview.push({ key: r.id + '|' + r.week, automated: r.resolution, review: rv ? rv.verdict : 'NOT_REVIEWED', reason: rv?.reason }); continue; }
     resolution = 'SPLIT_UNADJUSTED'; effect = 'DATA_DEFECT_REQUIRES_CORRECTED_SERIES';
+  } else if (reviewByKey.get(r.id + '|' + r.week)?.verdict === 'GENUINE_MOVE_SUPPORTED_MANUAL_PRE2001') {
+    resolution = 'GENUINE_MOVE'; accepted = true; effect = 'RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE_MANUAL_PRE2001';
   } else if (r.resolution === 'PROVIDER_SPLIT_UNSUPPORTED') {
     resolution = 'PROVIDER_SPLIT_UNSUPPORTED'; effect = 'DATA_DEFECT_REQUIRES_PRODUCER_FIX';
   } else continue;
@@ -65,17 +69,19 @@ for (const r of RES.rows) {
     priceFactorCorrection: resolution === 'SPLIT_UNADJUSTED' ? { multiplyClosesOnOrBefore: r.prevWeek, factor: r.direction === 'DOWN' ? 1 / r.k : r.k, note: 'proposal only; must be produced by the series producer from provider daily bars, never by editing the weekly file' } : undefined,
     distribution: resolution === 'SPIN_OFF_DISTRIBUTION' ? (manual || null) : undefined,
     returnBasisRestriction: resolution === 'SPIN_OFF_DISTRIBUTION' ? 'PRICE_RETURN_ONLY' : undefined,
-    evidence: { shareConcept: r.evidence.shareConcept, bracket: r.evidence.bracket, splitSearch: r.evidence.splitSearch && { url: r.evidence.splitSearch.url, sha256: r.evidence.splitSearch.sha256, total: r.evidence.splitSearch.total, strong: r.evidence.splitSearch.strong.length, weak: r.evidence.splitSearch.weak.length, proxy: r.evidence.splitSearch.proxy.length },
+    manualReview: reviewByKey.get(r.id + '|' + r.week) || null,
+    evidence: !r.evidence ? null : { shareConcept: r.evidence.shareConcept, bracket: r.evidence.bracket, splitSearch: r.evidence.splitSearch && { url: r.evidence.splitSearch.url, sha256: r.evidence.splitSearch.sha256, total: r.evidence.splitSearch.total, strong: r.evidence.splitSearch.strong.length, weak: r.evidence.splitSearch.weak.length, proxy: r.evidence.splitSearch.proxy.length },
       distSearch: r.evidence.distSearch && { url: r.evidence.distSearch.url, sha256: r.evidence.distSearch.sha256, total: r.evidence.distSearch.total, strong: r.evidence.distSearch.strong.map(h => h.id) },
       xbrlSplitRatioFacts: r.evidence.xbrlSplitRatioFacts, items303or503: r.evidence.items303or503, items201: r.evidence.items201,
       companyfacts: r.evidence.companyfacts, submissions: r.evidence.submissions, identity: r.identity, documents: q },
     bindings: { seriesSha256: sha(bytes) },
   });
 }
+const proposalHead = 0;
 const proposal = { schemaVersion: 'ca-evidence-registry-proposal-1.0.0', status: 'PROPOSAL_NOT_ACTIVE', productionApproved: false,
   acceptanceRule: ACCEPT_RULE, classifierRule: RES.rule, classifierCodeSha256: RES.codeSha256, secEvidenceSha256: RES.secEvidenceSha256,
   negativeEvidenceNote: 'GENUINE_MOVE is negative evidence: it shows that no split/reverse split (share-count change by ~k) and no split/distribution filing occurred around the date. It does not prove the correctness of the individual price print.',
-  entries };
+  rejectedOnReview, entries };
 
 /* ---- dry run ---- */
 const accepted = new Map(entries.filter(e => e.accepted).map(e => [e.securityId + '|' + e.week, e]));
@@ -113,6 +119,14 @@ const dry = { schemaVersion: 'v9-ca-dryrun-1.0.0', note: 'Dry run with an extern
   proposalEntries: entries.length, acceptedEntries: accepted.size, entriesByEffect: count(entries, e => e.effect),
   before, after, delta: { QUALIFIED: (after.QUALIFIED || 0) - (before.QUALIFIED || 0), CORPORATE_ACTION_UNRESOLVED: (after.CORPORATE_ACTION_UNRESOLVED || 0) - (before.CORPORATE_ACTION_UNRESOLVED || 0) },
   newlyQualified: newly, newlyQualifiedPriceReturnOnly: newly.filter(x => x.priceReturnOnly).length, stillHeldBreakdown: blockedBy, productionApproved: false };
+/* hypothetical: in-memory corrected series for confirmed unadjusted splits (no file written, NOT counted) */
+const hypothetical = entries.filter(e => e.resolution === 'SPLIT_UNADJUSTED').map(e => {
+  const doc = JSON.parse(fs.readFileSync(path.join(dir, e.securityId + '.json'), 'utf8'));
+  doc.points = doc.points.map(([d, p]) => [d, d <= e.priceFactorCorrection.multiplyClosesOnOrBefore ? p * e.priceFactorCorrection.factor : p]);
+  let st = 'QUALIFIED'; try { loader(e.securityId, JSON.stringify(doc)); } catch (x) { st = String(x.message).split(':')[0]; }
+  return { securityId: e.securityId, week: e.week, factor: e.priceFactorCorrection.factor, correctedSeriesStatusInMemory: st, note: 'hypothetical only; publisher rounding of corrected closes not reproduced; requires producer-side regeneration' };
+});
+dry.hypotheticalCorrectedSeries = hypothetical;
 fs.writeFileSync(arg('--proposal'), JSON.stringify(proposal, null, 1));
 fs.writeFileSync(arg('--dryrun'), JSON.stringify(dry, null, 1));
 console.log(JSON.stringify({ entries: entries.length, accepted: accepted.size, byEffect: dry.entriesByEffect, before, after, delta: dry.delta, stillHeld: blockedBy, priceReturnOnly: dry.newlyQualifiedPriceReturnOnly }, null, 1));
