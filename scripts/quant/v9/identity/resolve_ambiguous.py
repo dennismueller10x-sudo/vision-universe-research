@@ -180,64 +180,13 @@ def cover_timeline(cik, sym, covers):
     return out, filings
 
 
+FT_FORMS = '10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K'
+
+
 def efts_confirmation(cik, sym, series_from, limit_date):
-    """Earliest EDGAR full-text hit (this CIK) whose text names `sym` as trading symbol."""
+    """Earliest venue-checked full-text ticker statement of this CIK from (series start - 120 days) on."""
     start = (iso(series_from) - datetime.timedelta(days=120)).isoformat()
-    start = max(start, '2001-01-01')
-    end = min(limit_date, (iso(start) + datetime.timedelta(days=3 * 366)).isoformat())
-    if end <= start:
-        return {'state': 'NOT_SEARCHED_WINDOW_EMPTY'}
-    q = sym.replace('_P_', ' PR').replace('_', '.')
-    url = ('https://efts.sec.gov/LATEST/search-index?q=%%22%s%%22&ciks=%010d&forms=10-K,10-Q,424B4,424B1,424B3,S-1,F-1,F-10,20-F,40-F,6-K,8-K'
-           '&dateRange=custom&startdt=%s&enddt=%s' % (q.replace(' ', '%20'), int(cik), start, end))
-    try:
-        body, meta = S.get(url)
-        hits = json.loads(body)['hits']['hits']
-    except Exception as e:  # noqa: BLE001
-        return {'state': 'SEARCH_FAILED', 'error': str(e)[:160], 'searchUrl': url}
-    main_forms = ('10-K', '10-Q', '424B4', '424B1', '424B3', 'S-1', 'F-1', 'F-10', '20-F', '40-F')
-    hits.sort(key=lambda h: (h['_source'].get('file_date', '')[:7], h['_source'].get('form') not in main_forms, h['_source'].get('file_date', ''), h['_id']))
-    if len(q) < 2:
-        return {'state': 'SKIPPED_SINGLE_LETTER_TICKER'}
-    t = re.escape(q)
-    # ticker matched case-sensitively and as a whole token, next to the word 'symbol'
-    pat = re.compile(r'(?i:symbols?)\W{0,6}(?:is\W{0,3})?["\u201c\u2018\'(]?%s["\u201d\u2019\')]?(?![A-Za-z0-9])|["\u201c(]%s["\u201d)].{0,60}(?i:symbol)' % (t, t))
-    tried = 0
-    for h in hits:
-        if tried >= 10:
-            break
-        acc, fname = h['_id'].split(':', 1)
-        tried += 1
-        try:
-            doc, dmeta = S.get(S.doc_url(cik, acc, fname), prefix=True)
-        except Exception:  # noqa: BLE001
-            continue
-        text = S._text(doc.decode('utf-8', errors='replace'))
-        m = pat.search(text)
-        quote = text[max(0, m.start() - 90):m.start() + 190] if m else None
-        if quote:
-            return {'state': 'FOUND', 'accession': acc, 'document': fname, 'filingDate': h['_source'].get('file_date'),
-                    'form': h['_source'].get('form'), 'url': dmeta['url'], 'sha256': dmeta['sha256'],
-                    'bytesRead': dmeta['bytesRead'], 'complete': dmeta['complete'], 'quote': quote,
-                    'search': {'url': url, 'sha256': meta['sha256']}}
-    return {'state': 'NOT_FOUND', 'search': {'url': url, 'sha256': meta['sha256']}, 'hitsTried': tried}
-
-
-def cik_candidates(sym, tmap):
-    n = S.norm_symbol(sym)
-    exact = [r for r in tmap if S.norm_symbol(r['ticker']) == n]
-    if exact:
-        return exact, 'SEC_MAP_NORMALISED_EXACT'
-    base = None
-    if '_P_' in sym or '_' in sym:
-        base = sym.split('_')[0]
-    elif re.fullmatch(r'[A-Z]{5}', sym) and sym[-1] in 'PLMNOZRUW':
-        base = sym[:4]
-    if base:
-        b = [r for r in tmap if r['ticker'] == base]
-        if b:
-            return b, 'SEC_MAP_BASE_TICKER_%s' % base
-    return [], 'NO_SEC_MAP_ENTRY'
+    return S.fulltext_ticker_confirmation(cik, sym, start, limit_date, FT_FORMS)
 
 
 def efts_cik_candidates(sym, as_of):

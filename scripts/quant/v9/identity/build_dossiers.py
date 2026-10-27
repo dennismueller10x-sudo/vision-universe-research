@@ -142,28 +142,8 @@ def fetch_doc(cik, acc, prim):
 
 
 def earliest_ticker_confirmation(ticker, cik, series_from):
-    """Earliest EDGAR full-text-search (2001+) 10-K/10-Q of this CIK whose text quotes the ticker next to
-    'symbol'. Gives a sourced lower bound for the ticker/issuer binding."""
-    start = max('2001-01-01', series_from)
-    end = (datetime.date.fromisoformat(start) + datetime.timedelta(days=3 * 366)).isoformat()
-    url = ('https://efts.sec.gov/LATEST/search-index?q=%%22%s%%22&ciks=%010d&forms=10-K,10-K405,10-Q&dateRange=custom&startdt=%s&enddt=%s'
-           % (ticker, cik, start, end))
-    body, meta = S.get(url)
-    hits = json.loads(body)['hits']['hits']
-    hits.sort(key=lambda h: h['_source'].get('file_date', ''))
-    for h in hits[:6]:
-        acc, fname = h['_id'].split(':', 1)
-        try:
-            doc, dmeta = fetch_doc(cik, acc, fname)
-        except Exception:  # EFTS file path not served under this CIK folder; try next hit
-            continue
-        q = S.quote(doc, r'symbol\W{0,3}["“]?%s\b|\b%s\b.{0,40}symbol' % (ticker, ticker))
-        if q:
-            return {'state': 'FOUND', 'ticker': ticker, 'cik': '%010d' % cik, 'accession': acc, 'document': fname,
-                    'filingDate': h['_source'].get('file_date'), 'form': h['_source'].get('form'),
-                    'url': dmeta['url'], 'sha256': dmeta['sha256'], 'bytesRead': dmeta['bytesRead'], 'complete': dmeta['complete'],
-                    'quote': q, 'search': {'url': url, 'sha256': meta['sha256']}}
-    return {'state': 'NOT_FOUND', 'ticker': ticker, 'search': {'url': url, 'sha256': meta['sha256']}}
+    """Earliest venue-checked (US national exchange) full-text 10-K/10-Q statement of the ticker by this CIK."""
+    return S.fulltext_ticker_confirmation(cik, ticker, series_from, datetime.date.today().isoformat(), '10-K,10-K405,10-Q')
 
 
 GLOBAL_EXCLUDE = re.compile(r'would have (had )?a value|reference range|implied|represented (an )?(aggregate )?value|exercise price|value of approximately|in value for each', re.I)

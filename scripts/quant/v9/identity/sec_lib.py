@@ -231,3 +231,40 @@ def ticker_symbol_statements(text, sym):
             continue
         out.append((m.start(), text[max(0, m.start() - 120):m.start() + 160]))
     return out
+
+
+def fulltext_ticker_confirmation(cik, sym, start, limit, forms, windows=8, per_window=10):
+    """Earliest EDGAR full-text-search (2001+) document of this CIK with a venue-checked ticker statement
+    (ticker_symbol_statements). Searches consecutive 3-year windows from `start` until `limit`."""
+    import datetime as _dt
+    q = sym.replace('_P_', ' PR').replace('_', '.')
+    if len(q) < 2:
+        return {'state': 'SKIPPED_SINGLE_LETTER_TICKER'}
+    lo = max(start, '2001-01-01')
+    searches = []
+    for _ in range(windows):
+        if lo >= limit:
+            break
+        hi = min(limit, (_dt.date.fromisoformat(lo) + _dt.timedelta(days=3 * 366)).isoformat())
+        url = ('https://efts.sec.gov/LATEST/search-index?q=%%22%s%%22&ciks=%010d&forms=%s&dateRange=custom&startdt=%s&enddt=%s'
+               % (q.replace(' ', '%20'), int(cik), forms, lo, hi))
+        try:
+            body, meta = get(url)
+            hits = json.loads(body)['hits']['hits']
+        except Exception as e:  # noqa: BLE001
+            return {'state': 'SEARCH_FAILED', 'error': str(e)[:160], 'searches': searches + [{'url': url}]}
+        searches.append({'url': url, 'sha256': meta['sha256'], 'hits': len(hits)})
+        hits.sort(key=lambda h: (h['_source'].get('file_date', ''), h['_id']))
+        for h in hits[:per_window]:
+            acc, fname = h['_id'].split(':', 1)
+            try:
+                doc, dmeta = get(doc_url(cik, acc, fname), prefix=True)
+            except Exception:  # noqa: BLE001
+                continue
+            st = ticker_symbol_statements(_text(doc.decode('utf-8', errors='replace')), q)
+            if st:
+                return {'state': 'FOUND', 'accession': acc, 'document': fname, 'filingDate': h['_source'].get('file_date'),
+                        'form': h['_source'].get('form'), 'url': dmeta['url'], 'sha256': dmeta['sha256'],
+                        'bytesRead': dmeta['bytesRead'], 'complete': dmeta['complete'], 'quote': st[0][1][:300], 'searches': searches}
+        lo = hi
+    return {'state': 'NOT_FOUND', 'searches': searches}
