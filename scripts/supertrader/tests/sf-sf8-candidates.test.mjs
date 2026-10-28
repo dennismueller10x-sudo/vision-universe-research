@@ -10,6 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
+import { rawTickAdjusted } from '../source-faithful/common/series.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex, commonFeatures } from '../source-faithful/product/detectors.mjs';
 import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
 import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, ORDER_DERIVED_SUBFIELDS_BY_METHOD, TREND_HIDDEN_BY_METHOD, planView, chartMarks, publicFeatures, publicTrend } from '../source-faithful/product/records.mjs';
@@ -363,7 +364,7 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
   assert.equal(sorted.length, 55);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), 'e7f62354ac3c6a5e0bf0054c2ae986ca999531a9c73047edc7c5c3c9878fc809');
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '0e00fff9f905437bd72dbf6f39bb31d9e58646b16b478780e295266d32300be3');
 });
 
 // Review B1/N1 (28.10.2026): das ausgeblendete 52-Wochen-Hoch darf sich auch nicht aus einem veröffentlichten Abstand
@@ -403,21 +404,48 @@ test('SF8-HIGH252-NOT-DERIVABLE: SEPA, Power Play, Holy Grail unterhalb von MODE
 });
 
 // Owner-Entscheidung 28.10.2026 (Rückrechenbarkeit): auch zusammen mit den öffentlichen Tageskursen darf kein veröffentlichtes Feld
-// einen Einstieg, Stop oder Orderparameter ergeben. Jede Ganzzahl, deren Name ein Zeitfenster ausweist (…Sessions, …Days, …Weeks,
-// …Length, …Window, …Bars), gilt als Fenster in Sitzungen (± 1, endend am Stichtag oder am Vortag; Wochen × 5), jedes Datum als Anker (Hoch/Tief an dem Tag, höchstes Hoch/tiefstes Tief seitdem). Ein Treffer zählt nur, wenn ein Fenster
-// ohne das Feld (2–6 Sitzungen und das allgemeine 52-Wochen-Fenster) denselben Wert nicht schon liefert: das ist Chartinformation.
-const BAR_BASELINE = [2, 3, 4, 5, 6, 252], WINDOW_NAME = /(sessions|days|weeks|length|window|bars)$/i;
+// einen Einstieg, Stop oder Orderparameter ergeben. Durchsucht werden features, trend, levels, pivot und sortKeys samt Listen:
+// - Ganzzahl mit Fensternamen (…Sessions, …Days, …Weeks × 5, …Length, …Window, …Bars): Fenster ± 1, endend am Stichtag oder Vortag;
+// - Datum: Hoch/Tief an dem Tag, höchstes Hoch/tiefstes Tief seitdem;
+// - Volumenquote (Name mit Volume/Vs50d/Ratio): ein Tag, dessen Volumen genau diese Quote zum Schnitt der 50 Sitzungen davor hat,
+//   oder (nur ungerundet) ein Fenster, dessen Durchschnittsvolumen genau diese Quote zum 50-Tage-Schnitt vor dem Stichtag hat; nur ein eindeutiger
+//   Treffer zählt (Fingerabdruck), daraus Hoch/Tief am Anfang und Ende, höchstes Hoch seitdem, tiefstes Tief danach.
+// Verglichen wird auf ± 1 Tick (Kaufstopps liegen einen Tick über einer Marke). Ein Treffer zählt nur, wenn ein Fenster ohne das
+// Feld (2–6 Sitzungen, 252) denselben Wert nicht schon liefert, und nur für Order-Größen, die nicht schon als zulässige Struktur
+// (± 1 Tick) veröffentlicht sind (Box-Obergrenze, Widerstand, Gap-Tief: eigene Owner-Entscheidungen, eigene Tests). Zur Vergleichs-
+// basis gehören auch Stichtag und Vortag (öffentlich bekannt) und die Kanallängen der Turtle-Regel (Regelparameter der Quelle,
+// 20/55 bzw. 10/20 Tage, im Katalog veröffentlicht: der Trigger folgt aus der Regel, nicht aus dem Feld; Owner-Punkt).
+const BAR_BASELINE = [2, 3, 4, 5, 6, 252], RULE_PARAMETERS = new Set(['levels.channelDays', 'levels.exitChannelDays']), WINDOW_NAME = /(sessions|days|weeks|length|window|bars)$/i, VOLUME_NAME = /(volume|vs50d|ratio)/i;
 function barReconstructions(v, bars, orderValues) {
-  const i = bars.length - 1, same = (a, b) => Number.isFinite(a) && Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(b));
-  const windows = (n) => [i, i - 1].flatMap((end) => [-1, 0, 1].flatMap((d) => { const w = bars.slice(Math.max(0, end - (n + d) + 1), end + 1); return w.length ? [Math.max(...w.map((b) => b.high)), Math.min(...w.map((b) => b.low))] : []; }));
-  const baseline = BAR_BASELINE.flatMap(windows), out = [];
-  const leaves = (o, p) => (o && typeof o === 'object' && !Array.isArray(o) ? Object.entries(o).flatMap(([k, x]) => leaves(x, `${p}.${k}`)) : [[p, o]]);
-  for (const [p, x] of [...leaves(v.features ?? {}, 'features'), ...leaves(v.trend ?? {}, 'trend')]) {
+  const i = bars.length - 1, tick = rawTickAdjusted(bars[i]);
+  const near = (a, b) => Number.isFinite(a) && Math.abs(a - b) <= tick + 1e-9 * Math.max(1, Math.abs(b));
+  const hi = (a, z) => Math.max(...bars.slice(a, z + 1).map((b) => b.high)), lo = (a, z) => Math.min(...bars.slice(a, z + 1).map((b) => b.low));
+  const windows = (n) => [i, i - 1].flatMap((end) => [-1, 0, 1].flatMap((d) => { const a = Math.max(0, end - (n + d) + 1); return a <= end ? [hi(a, end), lo(a, end)] : []; }));
+  const fromDay = (k) => { const out = [bars[k].high, bars[k].low]; for (const end of [i, i - 1]) if (k <= end) { out.push(hi(k, end), lo(k, end)); let p = k; for (let j = k; j <= end; j++) if (bars[j].high > bars[p].high) p = j; if (p < end) out.push(lo(p + 1, end)); } return out; };
+  const avg = (a, z) => { let t = 0; for (let j = a; j <= z; j++) t += bars[j].volume; return t / (z - a + 1); };
+  const ratioMatch = (x) => { const d = Math.round(x * 1e4) / 1e4 === x ? 5e-5 : 1e-9 * Math.max(1, x); return (r) => Math.abs(r - x) <= d; };
+  const fingerprints = (x) => {
+    const hit = ratioMatch(x), days = [], wins = [];
+    // beide Lesarten der Tagesquote: Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor (Power-Play-Start)
+    for (let k = 50; k <= i; k++) { const base = avg(k - 50, k - 1); if (base > 0 && (hit(bars[k].volume / base) || (k < i && hit(bars[k + 1].volume / base)))) days.push(k); }
+    // Fenstersuche nur für ungerundete Quoten: auf 4 Stellen gerundet passt unter ~31.000 Fenstern zufällig eines
+    const v50 = i >= 50 && Math.round(x * 1e4) / 1e4 !== x ? avg(i - 50, i - 1) : 0;
+    if (v50 > 0) for (let a = Math.max(0, i - 251); a <= i; a++) { let t = 0; for (let z = a; z <= i; z++) { t += bars[z].volume; if (z > a && hit(t / (z - a + 1) / v50)) wins.push([a, z]); } }
+    return [...(days.length === 1 ? fromDay(days[0]).concat(days[0] > 0 ? fromDay(days[0] - 1) : []) : []), ...(wins.length === 1 ? [bars[wins[0][0]].high, bars[wins[0][1]].low, hi(...wins[0]), lo(...wins[0])] : [])];
+  };
+  const leaves = (o, p) => (Array.isArray(o) ? o.flatMap((x, j) => leaves(x, `${p}[${j}]`)) : o && typeof o === 'object' ? Object.entries(o).flatMap(([k, x]) => leaves(x, `${p}.${k}`)) : [[p, o]]);
+  const published = [...leaves(v.features ?? {}, 'features'), ...leaves(v.trend ?? {}, 'trend'), ...leaves(v.levels ?? {}, 'levels'), ...leaves(v.pivot ?? {}, 'pivot'), ...leaves(v.sortKeys ?? {}, 'sortKeys')];
+  const structure = leaves(v.levels ?? {}, 'levels').concat(leaves(v.pivot ?? {}, 'pivot')).map(([, x]) => x).filter(Number.isFinite);
+  const guarded = orderValues.filter((o) => !structure.some((x) => near(x, o)));
+  const baseline = [...BAR_BASELINE.flatMap(windows), ...fromDay(i), ...fromDay(i - 1)], out = [];
+  for (const [p, x] of published) {
+    if (RULE_PARAMETERS.has(p)) continue;
+    const key = p.replace(/\[\d+\]$/, '').split('.').pop();
     let cands = [];
-    const key = p.split('.').pop();
     if (Number.isInteger(x) && x >= 2 && WINDOW_NAME.test(key)) cands = /weeks/i.test(key) ? windows(x * 5) : x <= 400 ? windows(x) : [];
-    else if (typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x)) { const k = bars.findIndex((b) => b.date === x); if (k >= 0) cands = [i, i - 1].flatMap((end) => { const w = bars.slice(k, end + 1); return w.length ? [bars[k].high, bars[k].low, Math.max(...w.map((b) => b.high)), Math.min(...w.map((b) => b.low))] : []; }); }
-    for (const o of orderValues) if (cands.some((c) => same(c, o)) && !baseline.some((c) => same(c, o))) out.push(`${p} → ${o}`);
+    else if (typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x)) { const k = bars.findIndex((b) => b.date === x); if (k >= 0) cands = fromDay(k); }
+    else if (Number.isFinite(x) && !Number.isInteger(x) && x > 0 && x < 100 && VOLUME_NAME.test(key)) cands = fingerprints(x);
+    for (const o of guarded) if (cands.some((c) => near(c, o)) && !baseline.some((c) => near(c, o))) out.push(`${p} → ${o}`);
   }
   return [...new Set(out)];
 }
@@ -429,7 +457,8 @@ test('SF8-NO-BAR-RECONSTRUCTION: kein veröffentlichtes Feld ergibt mit den Tage
   // Gegenproben: das ungekürzte Detektorfeld fiele auf (je Methode in mindestens einer Ansicht)
   const det = (v) => { const s = secs.find((x) => x.ticker === v.ticker); return DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null }); };
   for (const [c, put] of [['C04', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C05', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C06', (w, f) => { w.features.baseLengthSessions = f.baseLengthSessions; }], ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, baseSessions: f.vcpFootprint?.baseSessions }; }],
-    ['C07', (w, f) => { w.features.consolidationSessions = f.consolidationSessions; }], ['C13', (w, f) => { w.features.impulseHighDate = f.impulseHighDate; }], ['C13', (w, f) => { w.features.adxAbove30Since = f.adxAbove30Since; }]]) {
+    ['C07', (w, f) => { w.features.consolidationSessions = f.consolidationSessions; }], ['C07', (w, f) => { w.features.startVolumeVs50d = f.startVolumeVs50d; }],
+    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: f.vcpFootprint?.lastContractionVolumeVs50d }; }], ['C13', (w, f) => { w.features.impulseHighDate = f.impulseHighDate; }], ['C13', (w, f) => { w.features.adxAbove30Since = f.adxAbove30Since; }]]) {
     const leaks = below.filter((v) => v.candidateId === c).filter((v) => { const w = structuredClone(v); put(w, det(v).features ?? {}); return barReconstructions(w, barsOf(v), ov.get(v.recordId)).length; });
     assert.ok(leaks.length >= 1, `${c} ${put}`);
   }
@@ -510,8 +539,8 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
     // die Korrekturtiefe ist rechnerisch der geplante Verlust am Pivot (1 - Stop / Pivot): wie plannedLossAtPivot ausgeblendet
     for (const k of ['plannedLossAtPivot', 'correction']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
   }
-  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C04: ['baseWeeks'], C05: ['baseWeeks'], C06: ['pctBelowHigh52w', 'largestCorrection', 'baseLengthSessions'], C07: ['correction', 'consolidationSessions'], C13: ['impulseHighDate', 'adxAbove30Since'] });
-  assert.deepEqual(ORDER_DERIVED_SUBFIELDS_BY_METHOD, { C06: { vcpFootprint: ['depths', 'baseSessions'] } });
+  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C04: ['baseWeeks'], C05: ['baseWeeks'], C06: ['pctBelowHigh52w', 'largestCorrection', 'baseLengthSessions'], C07: ['correction', 'consolidationSessions', 'startVolumeVs50d'], C13: ['impulseHighDate', 'adxAbove30Since'] });
+  assert.deepEqual(ORDER_DERIVED_SUBFIELDS_BY_METHOD, { C06: { vcpFootprint: ['depths', 'baseSessions', 'lastContractionVolumeVs50d'] } });
   // Owner-Entscheidung 28.10.2026: SEPA, Power Play, Holy Grail ohne 52-Wochen-Hoch (und ohne den Abstand dazu) unterhalb von MODELED
   assert.deepEqual(TREND_HIDDEN_BY_METHOD, { C06: ['high252', 'belowHigh252'], C07: ['high252', 'belowHigh252'], C13: ['high252', 'belowHigh252'] });
   for (const v of below) {

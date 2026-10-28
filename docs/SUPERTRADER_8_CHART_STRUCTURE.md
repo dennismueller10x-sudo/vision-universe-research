@@ -88,29 +88,41 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 
 **Regel des Owners:** Ein Feld ist rückrechenbar, wenn sich daraus zusammen mit den öffentlich verfügbaren Kursdaten ein geschützter Einstiegs-, Stop- oder Orderparameter zuverlässig rekonstruieren lässt. Solche Felder fehlen unterhalb von `MODELED_TRADE_PLAN` im ausgelieferten Kandidatendatensatz (`strategy/`, `ticker/`), nicht nur in der Anzeige. Die Research-Engines, Detektoren, Golden Cases und Referenzdaten bleiben unverändert.
 
-**Messung** (voller Lauf 26.10., alle 13 Methoden unterhalb von MODELED, Sonde `SF8-NO-BAR-RECONSTRUCTION`):
-- Jede Ganzzahl, deren Name ein Zeitfenster ausweist (`…Sessions`, `…Days`, `…Weeks` × 5, `…Length`, `…Window`, `…Bars`), wird als Fenster gedeutet (± 1 Sitzung, endend am Stichtag oder Vortag) und liefert das höchste Hoch und das tiefste Tief.
-- Jedes Datum wird als Anker gedeutet: Hoch und Tief an dem Tag, höchstes Hoch und tiefstes Tief seitdem.
-- Ein Treffer zählt nur, wenn ein Fenster **ohne** das Feld (2–6 Sitzungen, das allgemeine 52-Wochen-Fenster) denselben Wert nicht schon liefert. Das trennt die Information des Feldes von allgemeiner Chartinformation.
+**Was das garantiert und was nicht:** Kein veröffentlichtes Feld liefert mehr einen direkten Anker (Fenster, Datum, Volumen-Fingerabdruck) auf einen geschützten Wert. Manche Werte folgen aber schon aus der öffentlichen Regel und der bloßen Tatsache, dass ein Kandidat existiert. Das kann kein Ausblenden eines Feldes verhindern (unten „ohne Feld“).
 
-| Methode | Feld | rekonstruiert | Treffer | Entscheidung |
-|---|---|---|---|---|
-| C06 SEPA | `baseLengthSessions` und `vcpFootprint.baseSessions` (gleicher Wert) | Pivot bzw. Stopreferenz = Hoch/Tief der Basis | 77 von 238 | **ausgeblendet** |
-| C07 Power Play | `consolidationSessions` | Pivot und Stop | 7 von 15 | **ausgeblendet** |
-| C13 Holy Grail | `impulseHighDate` | Impulshoch = Hoch an dem Tag, Stop = tiefstes Tief seitdem | 90 von 171 | **ausgeblendet** |
-| C13 Holy Grail | `adxAbove30Since` | Impulshoch = höchstes Hoch ab dem Tag (Quelle: `holy-grail-lifecycle.mjs`) | 81 von 171 | **ausgeblendet** (über die Liste des Owners hinaus, nach derselben Regel) |
-| C04/C05 Weinstein | `baseWeeks` | Stopreferenz = tiefstes Tief der Basis | 141 von 329 / 282 von 379 | **ausgeblendet** (über die Liste des Owners hinaus, nach derselben Regel) |
-| C04/C05 | `breakoutDay` | Trigger (Widerstand + 1 Tick; der Widerstand ist ohnehin als Chartstruktur veröffentlicht) | 7 von 422 / 3 von 379 | bleibt (nicht zuverlässig, Struktur bereits zulässig) |
-| C03 Darvas | `boxTopDate`, `boxBottomDate`, `boxCompleteDate` | Stopreferenz | höchstens 2 von 229 | bleibt (nicht zuverlässig) |
-| C06 | `vcpFootprint.contractions` | – (kein Zeitfenster; ein kleines Fenster trifft den Stop auch ohne das Feld in 167 von 238, mit dem Feld zusätzlich nur 2) | – | bleibt |
-| alle | `trend.windowSessions` (= 252) | allgemeines 52-Wochen-Fenster | – | bleibt (allgemeine Chartinformation) |
+**Messung** (voller Lauf 26.10., alle 13 Methoden unterhalb von MODELED). „Roh“ heißt: Die Kandidatenwerte des Feldes enthalten den geschützten Wert. „Feldspezifisch“ heißt: Ein Fenster ohne das Feld (2–6 Sitzungen, 252, Stichtag, Vortag) liefert ihn nicht schon. Beide Raten stammen aus dem unabhängigen Review.
+
+| Methode | Feld | rekonstruiert | roh | feldspezifisch | Entscheidung |
+|---|---|---|---|---|---|
+| C06 SEPA | `baseLengthSessions` = `vcpFootprint.baseSessions` | Pivot / Stopreferenz (Hoch / Tief der Basis) | 178 bzw. 173 von 238 | 77 von 238 | **ausgeblendet** |
+| C06 SEPA | `vcpFootprint.lastContractionVolumeVs50d` (ungerundet) | eindeutiges Fenster der letzten Kontraktion: Hoch am Anfang = Pivot, Tief am Ende = Stop | 238 von 238 | – | **ausgeblendet** (Review B1) |
+| C07 Power Play | `consolidationSessions` | Pivot und Stop | 15 von 15 | 7 von 15 | **ausgeblendet** |
+| C07 Power Play | `startVolumeVs50d` | eindeutiger Starttag des Laufs: höchstes Hoch seitdem = Pivot, tiefstes Tief danach = Stop | 19 von 19 | 5 von 19 | **ausgeblendet** (Review B2) |
+| C13 Holy Grail | `impulseHighDate` | Impulshoch, Stop (Swing-Tief) | 171 von 171 | 90 von 171 | **ausgeblendet** |
+| C13 Holy Grail | `adxAbove30Since` | Impulshoch (höchstes Hoch ab dem Tag) | 171 von 171 | 81 von 171 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 Weinstein | `baseWeeks` | Stopreferenz (tiefstes Tief der Basis) | 207/329 bzw. 347/379 | 141/329 bzw. 282/379 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 | `breakoutDay` | Trigger (= veröffentlichter Widerstand + 1 Tick) | 9/422 bzw. 3/379 | – | bleibt (sporadisch, Struktur zulässig) |
+| C03 Darvas | Box-Daten | Stopreferenz | bis 8 von 229 (± Tick) | – | bleibt (sporadisch; Obergrenze ± Bruchteil ist ohnehin zulässig) |
+| C06 | `vcpFootprint.contractions` | bei genau 1 Kontraktion: Stop = tiefstes Tief seit dem 52-Wochen-Hoch | 129 von 129 | 24 | bleibt (nahe an allgemeiner Chartinformation; Owner-Punkt) |
+| C11, alle | `downDays`, `trend.windowSessions`, `trend.volumeVs50d`, Index- und Übersichtszeilen, `sortKeys` | – | – | 0 | bleibt |
+
+**Offen für den Owner (nicht Teil dieses PR):**
+1. **Weinstein-Stop über den veröffentlichten Widerstand.** Die Woche, deren Hoch dem Widerstand gleicht, plus das tiefste Wochentief bis zur Ausbruchswoche ergibt die Stopreferenz: C05 379 von 379 (311 feldspezifisch), C04 159 von 422 (149). Das Ausblenden von `baseWeeks` schützt den C05-Stop also nicht vollständig. Der Widerstand ist vom Owner zugelassene Chartstruktur. Entscheidung: Widerstand unterhalb von MODELED ausblenden oder hinnehmen.
+2. **Turtle C01 / C02.** `levels.channelDays` ist der Regelparameter (20/55 bzw. 10/20 Tage). Mit der öffentlichen Regel ergibt sich der Trigger (Kanalhoch + Tick) in 269 von 269 bzw. 224 von 224 Fällen, und Trigger − 2·`N` ergibt die Stopreferenz in 268 von 269 bzw. 224 von 224. `N` war bisher eine ausdrückliche Owner-Ausnahme und ist nach der neuen Regel neu zu bestätigen.
+3. **Ohne Feld** (durch Ausblenden nicht lösbar):
+   - C13 Trigger = Hoch am Stichtag + Tick (171 von 171); Impulshoch und Swing-Tief lassen sich aus der öffentlichen ADX-Regel nachrechnen.
+   - C03 Obergrenze ± Bruchteil, C09 / C12 Gap-Tief und C11 Signaltagstief (Tief am Stichtag): bereits zugelassene Owner-Entscheidungen.
 
 **Vorher/Nachher:**
 - Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze (`records/`) inhaltsgleich bis auf `provenance.codeSha256`, dieselbe Reihenfolge, 0 Rangänderungen, MODELED 0 Änderungen.
-- Geändert: nur `features` in 1.659 Ansichten (C04 422, C05 379, C06 668, C07 19, C13 171).
+- Geändert: nur `features` in den Ansichten von C04, C05, C06, C07 und C13.
 
 **Tests:**
-- `SF8-NO-BAR-RECONSTRUCTION` (neu): die Golden Cases (C04, C05, C06, C07, C13) haben keinen Treffer.
-- Gegenproben: jedes der ausgeblendeten Felder, wieder eingesetzt, wird in mindestens einer Ansicht rot. Die Rücknahme jeder Ausblendung im Erzeuger macht den Test rot.
+- `SF8-NO-BAR-RECONSTRUCTION` (neu) durchsucht `features`, `trend`, `levels`, `pivot` und `sortKeys` samt Listen.
+  - Fenster und Daten werden wie oben gedeutet.
+  - Volumenquoten werden als Fingerabdruck gesucht: ein Tag (Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor) oder, nur bei ungerundeten Werten, ein Fenster (Durchschnittsvolumen gegen den 50-Tage-Schnitt). Nur ein eindeutiger Treffer zählt.
+  - Verglichen wird auf ± 1 Tick, gegen die Order-Größen, die nicht schon als zugelassene Struktur veröffentlicht sind.
+  - Die Turtle-Kanallängen gelten als Regelparameter (Owner-Punkt 2).
+- Gegenproben: Jedes ausgeblendete Feld wird, wieder eingesetzt, rot. Die Rücknahme jeder Ausblendung im Erzeuger wird rot.
 - Golden-Hash der 55 Ansichten neu eingefroren.
-- Abgleich mit dem Core: Die Sperrlisten des Core sind eine Teilmenge der Erzeugerlisten (der Core ist nie strenger als der Erzeuger). Jede Seite schreibt ihre Listen explizit fest. Merge-Reihenfolge: Erzeuger zuerst, dann Core; jeder Zwischenstand bleibt grün.
+- Abgleich mit dem Core: Die Sperrlisten des Core sind eine Teilmenge der Erzeugerlisten (der Core ist nie strenger als der Erzeuger). Jede Seite schreibt ihre Listen explizit fest. Merge-Reihenfolge: Erzeuger zuerst, dann Core.
