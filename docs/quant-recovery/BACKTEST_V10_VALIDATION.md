@@ -55,11 +55,11 @@ Jede Version trägt einen eigenen Hash und wurde vor dem Lauf, auf den sie wirkt
 ## Tests
 
 Stand nach Integration und Korrekturen (Befehle aus CLAUDE.md, lokal):
-- `node --test "quant/tests/*.test.mjs"`: siehe Abschlussbericht (vollständiger Lauf am Ende).
+- `node --test "quant/tests/*.test.mjs"`: **3.429/3.429** (Endstand, nach allen Korrekturen).
 - `node --test "core/tests/*.test.mjs"`: 295/295.
 - `python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'`: 585 OK (inkl. Bulk-Archiv-Wächter; kein V10-Skript nennt das Bulk-submissions-Archiv).
 - V10-Tests: `quant/tests/v10-{population,corporate-actions,studies,factor,setup}.test.mjs`.
-- `node scripts/quality/check-test-isolation.mjs`: siehe Abschlussbericht.
+- `node scripts/quality/check-test-isolation.mjs`: „Der Lauf hat keine Produktionsdatei veraendert.“
 
 Isolation: Diff gegen main ohne Änderung unter `quant/data`, `discover/data`, `supertrader/data`, `social/data`, `technical/data`, `.github`, Frontend; Produktadapter und `corporate-action-evidence.js` byte-identisch; Engine-Änderungen nur in Research-Modulen (`research-weekly-loader.cjs`, `research-identity-evidence.cjs`, `research-ca-evidence.cjs`, neu `research-listing-lifecycle.cjs`).
 
