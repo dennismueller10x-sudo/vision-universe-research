@@ -9,6 +9,7 @@
  *   quant/data/market/listing-continuity-v1.json                Reihenschnitte (Listing-Schutz)
  *   quant/data/market/discover-series-long/<securityId>.json    Wochenschlüsse (nur Quarantäne-Rückblick vor dem Tagesfenster)
  *   quant/config/market-calendar.json                           XNYS-Sitzungen
+ *   quant/data/market/discover-series/<securityId>.json         veröffentlichte Tagesreihe (nur Preisabgleich V4, price-parity.mjs)
  *
  * Er erzeugt die Research-Form der Engines ({ id, bars[{date, open, high, low, close, volume}], terminal }) – dieselbe
  * Form, die runner/snapshot-input.mjs für den eingefrorenen Snapshot liefert. Es gibt keine zweite Normalisierung:
@@ -33,7 +34,7 @@ export const ROOT = path.resolve(HERE, '..', '..', '..', '..');
 const require = createRequire(import.meta.url);
 const Identity = require(path.join(ROOT, 'core/identity.js'));
 
-export const EOD_ADAPTER_VERSION = 'sf8-eod-adapter-1.0.0';
+export const EOD_ADAPTER_VERSION = 'sf8-eod-adapter-1.1.0';
 export const SOURCES = Object.freeze({
   dailyBars: 'quant/data/product/technical-signals-v1',
   universe: 'discover/data/stock-index/US_REAL.json',
@@ -43,6 +44,8 @@ export const SOURCES = Object.freeze({
   weeklyLong: 'quant/data/market/discover-series-long',
   calendar: 'quant/config/market-calendar.json',
   sic: 'quant/data/product/sic-peer-taxonomy-v1.json',
+  // die eine veröffentlichte Preiswahrheit (ADR-002) für den Abgleich der Research-Kurse (V4, price-parity.mjs)
+  priceReference: 'quant/data/market/discover-series',
 });
 /** SEC-SIC 6770 "Blank Checks": verlässliches Stammdatenmerkmal einer Mantelgesellschaft (SPAC), Owner-Entscheidung O-5. */
 export const SIC_BLANK_CHECK = '6770';
