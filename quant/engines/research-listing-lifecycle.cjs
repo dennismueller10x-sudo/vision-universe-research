@@ -522,7 +522,7 @@ module.exports = {
           "url": "https://www.sec.gov/Archives/edgar/data/1018399/000119312525029668/d843045ddefm14a.htm",
           "sha256": "5cc344d541d502529a72c9f1e7d9bf6477338f5eda094a01225656c9e25233cf",
           "sha256Normalized": "5cc344d541d502529a72c9f1e7d9bf6477338f5eda094a01225656c9e25233cf",
-          "quote": "ding immediately prior to the Effective Time (other than shares described in Section 2.01(b) above) shall become and be converted into the right to receive (i) $2.00 in cash (the “ Cash Consideration ”) and (ii) 0"
+          "quote": "ding immediately prior to the Effective Time (other than shares described in Section 2.01(b) above) shall become and be converted into the right to receive (i) $2.00 in cash (the “ Cash Consideration ”) and (ii) 0.60 shares"
         }
       ]
     },
