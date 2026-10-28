@@ -130,3 +130,10 @@ Keine SEC-Abrufe (nur vorhandene PIT-Dokumente), keine Datei unter `*/data` geä
 ## Grenzen
 
 Survivor-lastige Population (Abdeckung 15–49 % der 10-K-Melder); Kursrendite ohne Dividenden; Fundamentaldaten erst ab 2011, Banken/Versicherer/REITs ohne Margen-/Bewertungsmerkmale, Mehrfach-Listings und Auslandswährungsmelder ohne Marktkap.; Fiskalkalender der PIT-Dokumente aus heutigem Stand (V10-Grenze); überlappende Kohorten mit wenigen unabhängigen Blöcken; 2000–2025 ist durch V7–V10 bekannte Historie. Regime/Zinsphase sind nachlaufend gemessen (SPY 26 W, 10J-Rendite 52 W), aber als Teilmengenbeschreibung, nicht als Signal.
+
+## Nachträge aus der unabhängigen V11-Prüfung
+
+- **M1:** Die nicht registrierte Sensitivität mit 99.999 Replikaten (AUC 85/156, Effekt 90/156) ist für 3J-/5J-Fundamentalmerkmale nicht belastbar: Der Blockbootstrap hat dort nur 2 (5J) bzw. 3–4 (3J) Blöcke; 45 der 85 AUC-Ablehnungen beruhen auf ≤ 4 Blöcken (z. B. `5Y|top1|revenueCagr3y` p 1e-5 bei 2 Blöcken). Qualitativ tragen nur große, gleichgerichtete Effekte (Volatilität AUC 0,72, Größe).
+- **M2:** Die U-Form des Momentums und „Gewinner aus Erholungen“ sind teilweise Survivor-Artefakt: Spätere Pleiten mit schwachem Vormomentum fehlen im Frame (unteres 12-1-Quintil 1J: Mittel +7,4 Pp, Median −0,9 Pp).
+- **m3:** 38 Kohortenmitglieder tragen XBRL-skalenfehlerhafte Marktkapitalisierungen > 5e12 USD (u. a. EEFT 7,4e18, ORCL 1,5e17, YUM 2,3e16), ≈ 2,1 % der Mitglieder weichen > 5× vom Listing-Median der impliziten Aktienzahl ab; Wirkung auf die AUC ≤ 0,006 (vom Prüfer nachgerechnet).
+- **m9:** Die Python-Gegenrechnung prüft weder AUC noch Bootstrap/Holm; die Inferenz ist nicht unabhängig bestätigt.

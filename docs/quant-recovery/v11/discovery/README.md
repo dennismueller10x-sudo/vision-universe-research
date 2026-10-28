@@ -226,3 +226,14 @@ Private Zwischenstände (Scratchpad `v11-private/discovery/`): TRAIN-Log mit Int
 - Die Walk-Forward-Intervalle überlappen nicht, die Varianten sind aber stark korreliert.
 - Der Blockbootstrap hat nur 8–14 Blöcke je Periode.
 - Die Oracle-CAGR sind astronomisch und nur als Obergrenze lesbar.
+
+## Nachträge aus der unabhängigen V11-Prüfung
+
+- **m1:** H1 „signifikant schlechter als SPY“ ist fragil: Blockbootstrap p 0,0185 bei 10 Blöcken (Holm 0,037), Newey-West t −2,11 (p ≈ 0,035, Holm ≈ 0,07), Robustheit mit 52-W-Blöcken nur 5 Blöcke. Richtung und Größe tragen, die Signifikanz nicht sicher.
+- **m2:** Die genannten XBRL-Fehlergrößen sind falsch: Panel-Maxima ON 3,86e15 (2013-05-31), YUM 3,15e16 (2016-10-28), CB 2,01e16; größter Wert EEFT 7,9e18 (2021); 149 Zeilen > 5e12. Die Plausibilitätsregel und ihre Wirkung sind davon unberührt (der Text in `rules.cjs`/`evaluate.cjs` nennt die alten Zahlen).
+- **M2 (Survivorship):** Auch der Vergleich mit dem EW-Eigenuniversum ist regelabhängig verzerrt (VALIDATION ohne Delisting-Fall); „nur dieser Vergleich ist aussagekräftig“ ist zu stark.
+- **m5:** Die Fundamental-TRAIN-Exploration (2011–2016) prüfte Momentum-Rangsummen über 2013–2016 = Kurs-VALIDATION, bevor die Kurskandidaten eingefroren wurden; das begünstigt die Kurskandidaten, deren VALIDATION trotzdem null blieb.
+- **m6:** Die Einmal-Sperre ist mit `--out-dir` umgehbar; Dateisystem und Reflog zeigen keine weiteren Läufe.
+- **m8:** „Spezifisch“ ist der Residualterm; Momentum-Exposure einer Momentum-Regel ist mechanisch. Für MOM3-Regeln (CP04–06) heben sich mom12 und mom3 fast auf, der Beitrag ist überwiegend spezifisch (+3,1 … +5,6 % p. a.). OLS auf Rohrenditen, fehlende Werte als 0.
+- **m9:** Die Python-Gegenrechnung prüft 5 Zellen; der Bootstrap ist derselbe portierte Generator (Seed 1729) – „p identisch“ ist konstruktionsbedingt.
+- **m11:** `canEnter` verlangt einen Schluss in der Folgewoche, und in der letzten Woche einer Reihe wird nicht gekauft (kleiner Look-ahead); bei H1/H2 ohne Wirkung (0 erzwungene Ausstiege).
