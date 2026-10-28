@@ -42,7 +42,19 @@ const CHART = {
   supertrendUp: [(S, t) => dir(I.compute(S, "supertrend").values.direction[t]), 0],
   psarUp: [(S, t) => dir(I.compute(S, "psar").values.direction[t]), 0],
   aboveEma20: [(S, t) => S.close[t] > I.compute(S, "ema", { period: 20 }).values[t], 0],
-  aboveEma50: [(S, t) => S.close[t] > I.compute(S, "ema", { period: 50 }).values[t], 0]
+  aboveEma50: [(S, t) => S.close[t] > I.compute(S, "ema", { period: 50 }).values[t], 0],
+  /* Unterfenster und Schichten seit AP5b: was Chart Studio zeigt, in der Einheit der Spalte */
+  roc21: [(S, t) => num(I.compute(S, "roc", { period: 21 }).values[t] / 100), 0.00006],
+  roc63: [(S, t) => num(I.compute(S, "roc", { period: 63 }).values[t] / 100), 0.00006],
+  connorsRsi: [(S, t) => num(I.compute(S, "connorsRsi").values[t]), 0.006],
+  zScore20: [(S, t) => num(I.compute(S, "zScore").values[t]), 0.0006],
+  elderImpulse: [(S, t) => num(I.compute(S, "elderImpulse").values[t]), 0],
+  vortexBull: [(S, t) => { const v = I.compute(S, "vortex").values; return Number.isFinite(v.plus[t]) && Number.isFinite(v.minus[t]) ? v.plus[t] > v.minus[t] : null; }, 0],
+  choppiness14: [(S, t) => num(I.compute(S, "choppiness").values[t]), 0.006],
+  histVol20: [(S, t) => num(I.compute(S, "historicalVolatility").values[t] / 100), 0.00006],
+  ulcer14: [(S, t) => num(I.compute(S, "ulcerIndex").values[t] / 100), 0.00006],
+  hmaRising: [(S, t) => { const h = I.compute(S, "hma").values; return Number.isFinite(h[t]) && Number.isFinite(h[t - 1]) ? h[t] > h[t - 1] : null; }, 0],
+  distChandelierLong: [(S, t) => { const l = I.compute(S, "chandelier").values.long[t]; return Number.isFinite(l) && l > 0 ? S.close[t] / l - 1 : null; }, 0.00006]
 };
 
 function sample() {
@@ -62,7 +74,7 @@ function sample() {
 const titles = sample();
 const enough = titles.length >= 100;
 
-test("Indikatorwerte: Trefferzeile = Chart Studio (15 Spalten, Stichprobe)", { skip: enough ? false : "zu wenige vergleichbare Titel (" + titles.length + "), Materialisierung und Screener-Lauf liegen auseinander" }, () => {
+test("Indikatorwerte: Trefferzeile = Chart Studio (26 Spalten, Stichprobe)", { skip: enough ? false : "zu wenige vergleichbare Titel (" + titles.length + "), Materialisierung und Screener-Lauf liegen auseinander" }, () => {
   const off = [];
   for (const { tk, i, b } of titles) {
     const S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume }, t = b.close.length - 1;
@@ -123,4 +135,21 @@ test("Kerzenmuster: Chartmarken am letzten Bar = Spalten candleBullish/-Bearish/
   }
   assert.deepEqual(off, []);
   assert.ok(marked > titles.length, "Marken vorhanden (" + marked + ")");
+});
+
+test("Jedes Indikatorfeld des Screeners hat eine Darstellung in Chart Studio (model.js#FIELD_CHART)", () => {
+  const Model = require(join(root, "technical/engine/model.js"));
+  const layers = new Set(Model.CHART_LAYERS.map((x) => x[0])), panes = new Set(Model.CHART_PANES.map((x) => x[0]));
+  const skip = new Set(["Ereignisse", "Kurs", "Datenqualität", "Chartmuster", "Kerzenmuster"]);
+  const open = [];
+  for (const f of Q.FIELDS.filter((x) => !skip.has(x.group))) {
+    assert.ok(f.id in Model.FIELD_CHART, "ohne Eintrag: " + f.id);
+    const m = Model.FIELD_CHART[f.id];
+    if (m === null) { open.push(f.id); continue; }
+    if (m[0] === "layer") assert.ok(layers.has(m[1]), f.id + " -> Schicht " + m[1]);
+    else if (m[0] === "pane") assert.ok(panes.has(m[1]), f.id + " -> Unterfenster " + m[1]);
+    else assert.ok(["price", "weekly", "signals"].includes(m[0]), f.id);
+  }
+  /* bewusst offen (TECHNICAL_COMPLETION_PLAN.md G4): relative Staerke braucht die SPY-Reihe im Browser */
+  assert.deepEqual(open.sort(), ["rs3m", "rs6m", "rsPositive"]);
 });

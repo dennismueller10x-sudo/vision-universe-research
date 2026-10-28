@@ -175,6 +175,15 @@ async function main() {
       assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster bullisch" }).count() === 1, "Legende Kerzenmuster fehlt");
       await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length === n, m0);
+      /* AP5b: jedes Screener-Indikatorfeld hat eine Darstellung; neue Unterfenster und Schichten zeichnen. */
+      for (const [btn, title] of [["Vortex", /Vortex/], ["ROC", /ROC 21/], ["Elder Impulse", /Elder/], ["Connors RSI", /Connors/], ["Ulcer", /Ulcer/]]) {
+        await page.getByRole("button", { name: btn, exact: true }).click();
+        await page.waitForFunction((src) => new RegExp(src).test((document.querySelector(".tc-chart .tc-pane-title") || {}).textContent || ""), title.source);
+      }
+      const ov = await page.locator(".tc-chart .tc-overlay").count();
+      await page.getByRole("button", { name: "Hull MA 20", exact: true }).click();
+      await page.getByRole("button", { name: "Chandelier-Stop", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 2, ov);
       await clean("Chart Studio");
     });
 
