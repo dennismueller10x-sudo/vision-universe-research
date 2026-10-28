@@ -27,7 +27,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 |---|---|---|
 | Kandidaten, Stufen | 3.001 (2.023 / 953 / 25) | 3.001 (2.023 / 953 / 25), dieselben Datensätze |
 | MODELED-Ansichten | – | **0 geändert** |
-| Kennzahlen | – | nur unterhalb von MODELED: C07 `correction` (19 Ansichten); C06 `pctBelowHigh52w`, `largestCorrection`, `vcpFootprint.depths` (668 Ansichten) |
+| Kennzahlen | – | nur unterhalb von MODELED: C07 `correction` (19 Ansichten); C06 `pctBelowHigh52w`, `largestCorrection` (668 Ansichten), `vcpFootprint.depths` (238 Ansichten mit VCP-Spur) |
 | Trendübersicht | – | nur C06/C07/C13 unterhalb von MODELED: `high252` und `belowHigh252` ausgeblendet (668 / 19 / 171 Ansichten) |
 | Vertragsdatensätze (`records/`) | – | Inhalt gleich bis auf `provenance.codeSha256` (Code-Fingerabdruck); nur die Reihenfolge in C03–C05 folgt den neuen Rängen |
 | Ansichten mit Strukturmarken unterhalb von MODELED | 0 | 2.957 |
@@ -58,7 +58,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
   - Korrektur: alle drei bei C06 unterhalb von MODELED ausgeblendet (`ORDER_DERIVED_BY_METHOD`, `ORDER_DERIVED_SUBFIELDS_BY_METHOD`). Eine Rundung auf ganze Prozent wurde geprüft und verworfen: eine flache Basis landete auf dem groben Raster zufällig wieder auf 0,01 % am Hoch.
   - Es bleiben `pctAboveLow52w`, `vcpProxyState`, Zahl und Verlauf der Kontraktionen, Basislänge, `rangesContracting`.
   - Der Test sucht über alle Zahlen der Ansicht (Abstand mit Schluss, `low252`, Durchschnitten, Strukturmarken; relative Toleranz 2·10⁻⁴). Gegenproben: der Detektorwert `pctBelowHigh52w` in jeder SEPA-Ansicht und eine Basistiefe am 52-Wochen-Tief werden rot.
-  - Im vollen Lauf bleiben nur einzelne Zufallstreffer aus allgemeinen Kursdaten (z. B. Schluss = Hoch, wenn die Aktie am Hoch schließt; Vortagesschluss über `change1d`). Diese Werte zeigt der normale Aktienchart ohnehin; keine strategiebezogene Kennzahl trifft mehr.
+  - Im vollen Lauf bleiben nur einzelne Zufallstreffer aus allgemeinen Kursdaten (z. B. Schluss = Hoch, wenn die Aktie am Hoch schließt; Vortagesschluss über `change1d`). Diese Werte zeigt der normale Aktienchart ohnehin; keine strategiebezogene Kennzahl der Ansicht trifft mehr (Zufallsniveau: 1–3 Treffer je Formel bei 858 Ansichten).
 - Die 55 Ansichten unterhalb von MODELED der Golden Cases sind per SHA-256 eingefroren.
 - `SF8-STRUCTURE-MARKS`: Marken je Methode in den Golden Cases. Prüft Darvas, BGU und C07 einzeln sowie das fail-closed-Verhalten.
 - Golden Case C07 unterhalb von MODELED:
@@ -83,3 +83,15 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 2. Core DQ-SF8-4 zieht in einem eigenen, eng begrenzten Core-PR nach (Strukturmarken, Chartmarkenarten, C07-Korrekturtiefe, 52-Wochen-Hoch bei C06/C07/C13). Merge erst nach diesem PR.
 3. Regeltexte wie „Einstiegsmarke knapp über dem Box-Hoch“ (DAR-SF-ENTRY) beschreiben die Regel der Quelle ohne Preis. Sie sind unverändert.
 4. Box-Obergrenze und Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.
+
+## Offen für den Owner: Rückrechnung zusammen mit den öffentlichen Tageskursen (unabhängiges Review 28.10.2026)
+
+Die Prüfung oben gilt für die Zahlen **in der Ansicht**. Zusammen mit den öffentlichen Tageskursen (OHLC) lassen sich aus Zeitfenstern der Ansicht Marken nachbauen. Alle vier Felder standen schon vor diesem PR in den Ansichten; dieser PR ändert sie nicht.
+
+| Methode | Feld | nachgebaut aus den Tageskursen | Treffer |
+|---|---|---|---|
+| C06 | `baseLengthSessions` (= `vcpFootprint.baseSessions`) | Pivot = höchstes Hoch im Fenster; Stopreferenz = tiefstes Tief | 171 bzw. 173 von 238 |
+| C07 | `consolidationSessions` | Pivot und Stop = Hoch/Tief im Fenster | 19 von 19 |
+| C13 | `impulseHighDate` | `impulseHigh` = Hoch an dem Tag; `swingLow` = tiefstes Tief seitdem | 170 von 171 |
+
+Ob „rückrechenbar“ auch die Kombination mit dem öffentlichen Chart umfasst, ist eine Owner-Entscheidung. Falls ja: eigener PR nach demselben Muster (Felder unterhalb von MODELED ausblenden oder nur als Status, Core-Gegenstück in DQ-SF8-4).
