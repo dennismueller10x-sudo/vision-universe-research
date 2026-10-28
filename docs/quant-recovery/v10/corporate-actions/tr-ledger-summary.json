@@ -1,0 +1,444 @@
+{
+ "schemaVersion": "v10-tr-ledger-summary-1.0.0",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "register": "docs/quant-recovery/v10/corporate-actions/tr-register-1.0.0.json",
+ "registerSha256": "b804cf83c53b8baf784ae8b9ce66f28ef1ab53aaf964b66abbd0e04e8e1637b6",
+ "engine": "quant/engines/research-portfolio.cjs (unchanged)",
+ "engineSha256": "d7f401388b20f4e8a9b53a13cb1a3160079d48347b8673aa3bc4cf5797cce5bc",
+ "codeSha256": "9a13b91edab26b73657d9874d9192b6b699f66e505c9e80497d14dbc835ae181",
+ "runtime": {
+  "node": "v22.22.0"
+ },
+ "mechanics": "single title, buy at first execution session with weight 1 and zero costs, hold; CASH_DIVIDEND at entitlementSession (first weekly session on/after the DERIVED ex-date), cash credited at first weekly session on/after the SOURCED payDate, not reinvested; open receivables at the end are counted as equity by the engine and reported separately",
+ "returnBasisNote": "NO_EVENTS = same window, price-only (split-adjusted closes); the difference is the dividend cash only. Not a strategy result.",
+ "titles": [
+  {
+   "ticker": "A",
+   "securityId": "ref_A",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2024-01-01",
+    "to": "2024-12-31",
+    "quarters": 4,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 52,
+     "from": "2024-01-05",
+     "to": "2024-12-27",
+     "executionDate": "2024-01-12",
+     "endCapital": 104191.81859966293,
+     "endCash": 361.5749961697564,
+     "endReceivables": 0,
+     "units": 766.0487206986364,
+     "buyPrice": 130.54,
+     "dividendEvents": 2,
+     "eventsEntitled": 2,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.04191818599662933,
+     "cagr": 0.04290737797649835,
+     "inputHash": "ed4e4d44ed498abac6095d1908bbc2762372fdeaf4d5950cb7ca515d34413b19",
+     "resultHash": "2720ef12ff18903223641d29e9f33ca325a887998d6663950b4d0ede5376d358"
+    },
+    "NO_EVENTS": {
+     "sessions": 52,
+     "from": "2024-01-05",
+     "to": "2024-12-27",
+     "executionDate": "2024-01-12",
+     "endCapital": 103830.24360349317,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 766.0487206986364,
+     "buyPrice": 130.54,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.038302436034931775,
+     "cagr": 0.03920470730675807,
+     "inputHash": "59f8b89ef3dc16c60208bf1f2b8f9c3583424dc220e81bc5c521cfadce7f5a5a",
+     "resultHash": "4f6fbc09271606c76057f7ff984832d137b3628c8a757250052fd963b973e9a6"
+    }
+   },
+   "trMinusPrCagr": 0.0037026706697402822
+  },
+  {
+   "ticker": "IBM",
+   "securityId": "ref_IBM",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2015-01-01",
+    "to": "2021-11-03",
+    "quarters": 28,
+    "cutBy": [
+     "2021-11-04"
+    ]
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 357,
+     "from": "2015-01-02",
+     "to": "2021-10-29",
+     "executionDate": "2015-01-09",
+     "endCapital": 104056.72758958652,
+     "endCash": 25429.418405443477,
+     "endReceivables": 0,
+     "units": 657.4189731115639,
+     "buyPrice": 152.11,
+     "dividendEvents": 27,
+     "eventsEntitled": 27,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.04056727589586506,
+     "cagr": 0.005845485475066248,
+     "inputHash": "218aec9ab68d947e11da340cda49eb041c0d0b40f4ef721d044dca0c685b3ccc",
+     "resultHash": "06b62c0b749145a692884a46790ccc4f4b0154ade4588b38798afee13df04556"
+    },
+    "NO_EVENTS": {
+     "sessions": 357,
+     "from": "2015-01-02",
+     "to": "2021-10-29",
+     "executionDate": "2015-01-09",
+     "endCapital": 78627.30918414304,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 657.4189731115639,
+     "buyPrice": 152.11,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": -0.21372690815856954,
+     "cagr": -0.034628890902788534,
+     "inputHash": "44cc8c90cf7b13170bdd728e58016e30286f450b979069561316e3727e66bc7c",
+     "resultHash": "47e15160ab08a37d748dca1e5d172a47bfb799e787b2303ed501ef8ae0cb7734"
+    }
+   },
+   "trMinusPrCagr": 0.04047437637785478
+  },
+  {
+   "ticker": "JPM",
+   "securityId": "ref_JPM",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2015-01-01",
+    "to": "2018-12-31",
+    "quarters": 16,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 209,
+     "from": "2015-01-02",
+     "to": "2018-12-28",
+     "executionDate": "2015-01-09",
+     "endCapital": 176053.25244354564,
+     "endCash": 12874.957869902259,
+     "endReceivables": 0,
+     "units": 1685.2039096730703,
+     "buyPrice": 59.34,
+     "dividendEvents": 16,
+     "eventsEntitled": 15,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.7605325244354564,
+     "cagr": 0.1524494968901593,
+     "inputHash": "f1ed2ea897a923593a6d9d997c40252e19f492d20308d4f8d70289c91763437d",
+     "resultHash": "279e4b79b2d60de6eb87df7832170fad0627d428826051e593f45a3b6085fcec"
+    },
+    "NO_EVENTS": {
+     "sessions": 209,
+     "from": "2015-01-02",
+     "to": "2018-12-28",
+     "executionDate": "2015-01-09",
+     "endCapital": 163178.2945736434,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 1685.2039096730703,
+     "buyPrice": 59.34,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.6317829457364339,
+     "cagr": 0.130702029367173,
+     "inputHash": "aff98566d0fd5e7875562bd87af13cccf858d1f633e456fdd462ff95e06a8928",
+     "resultHash": "ca66102dea4c65f0cf686c3f2a152d4d9d648e35ee79145f2aa907a0ba87cd2c"
+    }
+   },
+   "trMinusPrCagr": 0.021747467522986286
+  },
+  {
+   "ticker": "META",
+   "securityId": "ref_META",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2024-01-01",
+    "to": "2024-03-31",
+    "quarters": 1,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 13,
+     "from": "2024-01-05",
+     "to": "2024-03-28",
+     "executionDate": "2024-01-12",
+     "endCapital": 129797.85842078562,
+     "endCash": 133.5149136158509,
+     "endReceivables": 0,
+     "units": 267.0298272317018,
+     "buyPrice": 374.49,
+     "dividendEvents": 1,
+     "eventsEntitled": 1,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.29797858420785617,
+     "cagr": 2.150977862681568,
+     "inputHash": "9b3a20e20b7379157fd863ceabb2b287e8be6b90ae2fef18f73130671682dd1b",
+     "resultHash": "a36dde6d4492b93b8f6128de94289defea9b4539f3b5a403038af274ba49a5e7"
+    },
+    "NO_EVENTS": {
+     "sessions": 13,
+     "from": "2024-01-05",
+     "to": "2024-03-28",
+     "executionDate": "2024-01-12",
+     "endCapital": 129664.34350716976,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 267.0298272317018,
+     "buyPrice": 374.49,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.29664343507169755,
+     "cagr": 2.1367394977625653,
+     "inputHash": "59f33e7d16f657f6a8185e6e2e6d82ea81e42cfbe87296cced4ead97869da954",
+     "resultHash": "de9b28c040f787ec457360b0fa5ccbfb4e1c125b6db8f00de354d78af79a7e68"
+    }
+   },
+   "trMinusPrCagr": 0.014238364919002766
+  },
+  {
+   "ticker": "MSFT",
+   "securityId": "ref_MSFT",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2015-01-01",
+    "to": "2026-09-30",
+    "quarters": 47,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 613,
+     "from": "2015-01-02",
+     "to": "2026-09-25",
+     "executionDate": "2015-01-09",
+     "endCapital": 1150794.6598855688,
+     "endCash": 56982.411527866105,
+     "endReceivables": 0,
+     "units": 2119.0930281839373,
+     "buyPrice": 47.19,
+     "dividendEvents": 47,
+     "eventsEntitled": 47,
+     "openReceivables": 0,
+     "cumulativeReturn": 10.507946598855687,
+     "cagr": 0.23157176758867126,
+     "inputHash": "3387a749980320af76640da410fc14a88bf82b69f6e539c39790143c5d22ea17",
+     "resultHash": "f55940bc7441b74c8bb486c3acb4f96336d822e53eda002bae5d1945babcdb5d"
+    },
+    "NO_EVENTS": {
+     "sessions": 613,
+     "from": "2015-01-02",
+     "to": "2026-09-25",
+     "executionDate": "2015-01-09",
+     "endCapital": 1093812.2483577027,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 2119.0930281839373,
+     "buyPrice": 47.19,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 9.938122483577027,
+     "cagr": 0.22625087518666742,
+     "inputHash": "698b8e7cf0a623d7319f99394a40b26c5428f3f080117fae774ea8c5a7cb877b",
+     "resultHash": "5e55931ebffc0f382077790a4ee2c0cd84472def51f9bc5bbda350e6303f3e2e"
+    }
+   },
+   "trMinusPrCagr": 0.005320892402003841
+  },
+  {
+   "ticker": "NVDA",
+   "securityId": "ref_NVDA",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2020-07-01",
+    "to": "2026-09-30",
+    "quarters": 25,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 326,
+     "from": "2020-07-02",
+     "to": "2026-09-25",
+     "executionDate": "2020-07-10",
+     "endCapital": 2151431.2977099232,
+     "endCash": 1431.2977099236641,
+     "endReceivables": 2385.4961832061067,
+     "units": 9541.984732824427,
+     "buyPrice": 10.48,
+     "dividendEvents": 25,
+     "eventsEntitled": 25,
+     "openReceivables": 1,
+     "cumulativeReturn": 20.514312977099234,
+     "cagr": 0.636344172491363,
+     "inputHash": "a424dafff50fe439ff9a7e3c51086368508c46cf512819115a627b8f8c62c5a5",
+     "resultHash": "e231595e8360104270474213347eda1e22dbfd902065f24cf3be6b9b42f3c7e6"
+    },
+    "NO_EVENTS": {
+     "sessions": 326,
+     "from": "2020-07-02",
+     "to": "2026-09-25",
+     "executionDate": "2020-07-10",
+     "endCapital": 2147614.5038167937,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 9541.984732824427,
+     "buyPrice": 10.48,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 20.476145038167935,
+     "cagr": 0.6358779561499865,
+     "inputHash": "598f376124979bd69a07aa1751bdbcf9383e0e303c68b185176145145cde0a92",
+     "resultHash": "98721008e4265af394ed7bbe519e210cf4c8dc339d963e3511055d3e803017ba"
+    }
+   },
+   "trMinusPrCagr": 0.0004662163413764464
+  },
+  {
+   "ticker": "WMT",
+   "securityId": "ref_WMT",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2015-01-01",
+    "to": "2026-09-30",
+    "quarters": 47,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 613,
+     "from": "2015-01-02",
+     "to": "2026-09-25",
+     "executionDate": "2015-01-09",
+     "endCapital": 392385.82941571524,
+     "endCash": 29793.485560779038,
+     "endReceivables": 0,
+     "units": 3357.9583613163195,
+     "buyPrice": 29.78,
+     "dividendEvents": 47,
+     "eventsEntitled": 47,
+     "openReceivables": 0,
+     "cumulativeReturn": 2.9238582941571525,
+     "cagr": 0.12362001081107987,
+     "inputHash": "46256a0048d007d76ca34fa6f8f94962ed904aa164042dc95c7fcd0bb982a15d",
+     "resultHash": "e70cbdb148fa576ccd7c1cff26f6de1c17083d85358fd03335be39695b34ea35"
+    },
+    "NO_EVENTS": {
+     "sessions": 613,
+     "from": "2015-01-02",
+     "to": "2026-09-25",
+     "executionDate": "2015-01-09",
+     "endCapital": 362592.3438549362,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 3357.9583613163195,
+     "buyPrice": 29.78,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 2.625923438549362,
+     "cagr": 0.1160805273976484,
+     "inputHash": "0831137633d7da2c26d6baa27bb700e41e32cc007aab2737e1303e9998aca799",
+     "resultHash": "7b396a26e43031b28c3828d8e6b04f559179932596a23cdad57a5dc6cf91b771"
+    }
+   },
+   "trMinusPrCagr": 0.007539483413431469
+  },
+  {
+   "ticker": "XOM",
+   "securityId": "ref_XOM",
+   "loader": {
+    "status": "QUALIFIED",
+    "returnBasis": "PRICE_RETURN"
+   },
+   "window": {
+    "from": "2023-01-01",
+    "to": "2026-06-30",
+    "quarters": 14,
+    "cutBy": []
+   },
+   "runs": {
+    "TR_PAYDATE": {
+     "sessions": 182,
+     "from": "2023-01-06",
+     "to": "2026-06-26",
+     "executionDate": "2023-01-13",
+     "endCapital": 132673.44233318605,
+     "endCash": 12001.767565178967,
+     "endReceivables": 0,
+     "units": 883.7825894829872,
+     "buyPrice": 113.15,
+     "dividendEvents": 14,
+     "eventsEntitled": 14,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.32673442333186054,
+     "cagr": 0.08491595765601478,
+     "inputHash": "c6864177d281ea76fa65be8a7eb947ff9a7c25be1dc260116085bef3fa47dc6a",
+     "resultHash": "c323ef7447771f792bdc71df4e4d57883b350fe0d7b07492e2104442435ec94c"
+    },
+    "NO_EVENTS": {
+     "sessions": 182,
+     "from": "2023-01-06",
+     "to": "2026-06-26",
+     "executionDate": "2023-01-13",
+     "endCapital": 120671.67476800707,
+     "endCash": 0,
+     "endReceivables": 0,
+     "units": 883.7825894829872,
+     "buyPrice": 113.15,
+     "dividendEvents": 0,
+     "eventsEntitled": 0,
+     "openReceivables": 0,
+     "cumulativeReturn": 0.20671674768007064,
+     "cagr": 0.05566260700352932,
+     "inputHash": "6c6ff0f61d1f224362a2bde52863f2e9ea270cc89e59f69e6a0d6909b43082a4",
+     "resultHash": "98efe57454143ac88bb28599ad89b0d23d32f25c222b94df41173f61121b7c73"
+    }
+   },
+   "trMinusPrCagr": 0.029253350652485466
+  }
+ ]
+}
