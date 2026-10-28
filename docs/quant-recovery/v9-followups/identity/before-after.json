@@ -1,0 +1,316 @@
+{
+ "schemaVersion": "v9-followup-identity-before-after-1.0.0",
+ "productionApproved": false,
+ "baseline": {
+  "ref": "07dfe5dd5553df61efd5062e0d0d4b606530ac01",
+  "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a"
+ },
+ "current": {
+  "adapterSha256": "d707f3bfd9723658d8166e4a8672ab458b0c1f09a1bda22fd20a0e84ca4dc5ef",
+  "registrySha256": "53e85ec60277efa56fa0a08634c3431f1a0cf2be82fcd357a09e51e8c09614ea",
+  "registrySchemaVersion": "research-identity-evidence-1.0.0",
+  "boundSecurityIds": [
+   "ref_BGC",
+   "ref_COHR",
+   "ref_DCOM",
+   "ref_SGI",
+   "ref_TRAK"
+  ]
+ },
+ "inputs": {
+  "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "seriesIds": 6190,
+  "seriesDirectorySha256": "c84000929281b4bbf2f423ea0c1bac17e2495a2d778bab219b5c08200a16d64e"
+ },
+ "codeSha256": "005824f5c4e63945d1722fe214f693d1a27194d986c3bb6957bb5089aa112283",
+ "runtime": {
+  "nodeVersion": "22.22.0",
+  "v8Version": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibcVersion": "2.39",
+  "nodeExecutableHash": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "defaultPathParity": {
+  "method": "sha256(JSON.stringify(loader output)) or sha256(\"ERR:\"+message) per id; baseline adapter vs current createLoader(root)",
+  "ids": 6190,
+  "identical": 6190,
+  "mismatches": [],
+  "aggregateBaseline": "72ee6ac3a4619fa30045097929e74d899f61dd7ddc67e2ecb3e26b1f10ea09d1",
+  "aggregateCurrent": "72ee6ac3a4619fa30045097929e74d899f61dd7ddc67e2ecb3e26b1f10ea09d1"
+ },
+ "counts": {
+  "baselineDefault": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "default": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "optIn": {
+   "QUALIFIED": 4453,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "optInCoverPageOnly": {
+   "QUALIFIED": 4454,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  }
+ },
+ "qualified": {
+  "baselineDefault": 4449,
+  "default": 4449,
+  "optIn": 4453,
+  "optInCoverPageOnly": 4454
+ },
+ "changedVsDefault": {
+  "optIn": [
+   "ref_BGC",
+   "ref_COHR",
+   "ref_DCOM",
+   "ref_SGI"
+  ],
+  "optInCoverPageOnly": [
+   "ref_BGC",
+   "ref_COHR",
+   "ref_DCOM",
+   "ref_SGI",
+   "ref_TRAK"
+  ]
+ },
+ "perBoundId": {
+  "ref_BGC": {
+   "baselineDefault": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "default": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "optIn": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0001094831:BGC:2018-12-07",
+    "from": "2018-12-07",
+    "to": "2026-10-23",
+    "bars": 412,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2018-12-07",
+     "coverAgeDays": 74,
+     "lastConfirmedCover": "0001628280-26-055187"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   },
+   "optInCoverPageOnly": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0001094831:BGC:2018-12-07",
+    "from": "2018-12-07",
+    "to": "2026-10-23",
+    "bars": 412,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2018-12-07",
+     "coverAgeDays": 74,
+     "lastConfirmedCover": "0001628280-26-055187"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   }
+  },
+  "ref_COHR": {
+   "baselineDefault": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "default": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "optIn": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0000820318:COHR:2001-09-28",
+    "from": "2001-09-28",
+    "to": "2026-10-23",
+    "bars": 1309,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2001-09-28",
+     "coverAgeDays": 53,
+     "lastConfirmedCover": "0001193125-26-375462"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   },
+   "optInCoverPageOnly": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0000820318:COHR:2001-09-28",
+    "from": "2001-09-28",
+    "to": "2026-10-23",
+    "bars": 1309,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2001-09-28",
+     "coverAgeDays": 53,
+     "lastConfirmedCover": "0001193125-26-375462"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   }
+  },
+  "ref_DCOM": {
+   "baselineDefault": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "default": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "optIn": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0000846617:DCOM:2011-03-11",
+    "from": "2011-03-11",
+    "to": "2026-10-23",
+    "bars": 816,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2011-03-11",
+     "coverAgeDays": 1,
+     "lastConfirmedCover": "0000846617-26-000049"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   },
+   "optInCoverPageOnly": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0000846617:DCOM:2011-03-11",
+    "from": "2011-03-11",
+    "to": "2026-10-23",
+    "bars": 816,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2011-03-11",
+     "coverAgeDays": 1,
+     "lastConfirmedCover": "0000846617-26-000049"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   }
+  },
+  "ref_SGI": {
+   "baselineDefault": {
+    "reason": "LISTING_IDENTITY_MISMATCH"
+   },
+   "default": {
+    "reason": "LISTING_IDENTITY_MISMATCH"
+   },
+   "optIn": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0001206264:SGI:2004-04-02",
+    "from": "2004-04-02",
+    "to": "2026-10-23",
+    "bars": 1178,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2004-04-02",
+     "coverAgeDays": 58,
+     "lastConfirmedCover": "0001206264-26-000121"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   },
+   "optInCoverPageOnly": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0001206264:SGI:2004-04-02",
+    "from": "2004-04-02",
+    "to": "2026-10-23",
+    "bars": 1178,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+     "validFrom": "2004-04-02",
+     "coverAgeDays": 58,
+     "lastConfirmedCover": "0001206264-26-000121"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   }
+  },
+  "ref_TRAK": {
+   "baselineDefault": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "default": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "optIn": {
+    "reason": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+   },
+   "optInCoverPageOnly": {
+    "reason": "QUALIFIED",
+    "listingId": "v9-sec-binding:0000050471:TRAK:2024-10-11",
+    "from": "2024-10-11",
+    "to": "2026-10-23",
+    "bars": 107,
+    "corporateActionQuality": "CLEAN",
+    "binding": {
+     "evidenceLevel": "COVER_PAGE_ONLY",
+     "validFrom": "2024-10-11",
+     "coverAgeDays": 23,
+     "lastConfirmedCover": "0001437749-26-031604"
+    },
+    "addedWarnings": [
+     "SOURCE_RESOLVED_IDENTITY_BINDING",
+     "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+    ]
+   }
+  }
+ },
+ "note": "Opt-in modes are research-only and not used by any productive caller. Bound ids pass the unchanged validate() on their sourced interval."
+}
