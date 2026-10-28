@@ -167,6 +167,14 @@ async function main() {
       const before = await page.locator(".tc-chart .tc-overlay").count();
       await page.getByRole("button", { name: "Ichimoku", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 3, before);
+      /* Kerzenmuster (AP5): Marken erscheinen, hoechstens je Richtung eine Beschriftung, Schicht wieder abschaltbar. */
+      const marks = () => page.locator(".tc-chart circle.tc-marker").count();
+      const m0 = await marks();
+      await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length > n, m0, { timeout: 15000 });
+      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster bullisch" }).count() === 1, "Legende Kerzenmuster fehlt");
+      await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length === n, m0);
       await clean("Chart Studio");
     });
 

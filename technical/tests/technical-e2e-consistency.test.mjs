@@ -102,3 +102,25 @@ test("Abfrage-Budget: komplexe Suche ueber das ganze Universum unter 100 ms (Med
   times.sort((a, b) => a - b);
   assert.ok(times[4] < 100, "Median " + times[4].toFixed(1) + " ms");
 });
+
+test("Kerzenmuster: Chartmarken am letzten Bar = Spalten candleBullish/-Bearish/-Neutral der Trefferzeile", { skip: enough ? false : "zu wenige vergleichbare Titel" }, () => {
+  const K = require(join(root, "quant/engines/technical/candlesticks.js"));
+  const Model = require(join(root, "technical/engine/model.js"));
+  const off = [];
+  let marked = 0;
+  for (const { tk, i, b } of titles) {
+    const t = b.close.length - 1, S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume };
+    const pats = K.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: Object.keys(Q.CANDLE_TYPES) }).patterns;
+    const marks = Model.candleMarks(S, pats, K.PATTERNS, Q.CANDLE_TYPES, Math.max(0, t - 62));
+    const last = (kind) => (marks.find((m) => m.time === b.timestamps[t] && m.kind === kind) || { ids: [] }).ids.slice().sort();
+    marked += marks.length;
+    for (const [kind, col] of [["bull", "candleBullish"], ["bear", "candleBearish"], ["neutral", "candleNeutral"]]) {
+      if (c[col][i] === null) continue;
+      if (JSON.stringify(last(kind)) !== JSON.stringify(c[col][i].slice().sort())) off.push(tk + " " + col + " chart=" + last(kind) + " screener=" + c[col][i]);
+    }
+    for (const m of marks) assert.ok(m.kind === "neutral" ? m.price === S.close[S.dates.indexOf(m.time)] : m.kind === "bull" ? m.price === S.low[S.dates.indexOf(m.time)] : m.price === S.high[S.dates.indexOf(m.time)]);
+    assert.ok(marks.filter((m) => m.label).length <= 2, "hoechstens eine Beschriftung je Richtung");
+  }
+  assert.deepEqual(off, []);
+  assert.ok(marked > titles.length, "Marken vorhanden (" + marked + ")");
+});
