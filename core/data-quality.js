@@ -508,8 +508,12 @@
   /* Unterhalb von MODELED ausgeblendet, weil rechnerisch eine Order-Groesse (Owner-Entscheidungen 28.10.2026,
      Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD und #TREND_HIDDEN_BY_METHOD): die Power-Play-Korrekturtiefe ist
      der geplante Verlust am Pivot; das 52-Wochen-Hoch (und der Abstand dazu) faellt bei SEPA, Power Play und
-     Holy Grail mit der Einstiegsmarke zusammen. Das allgemeine 52-Wochen-Hoch anderer Methoden bleibt. */
-  var SF8_FEATURES_HIDDEN = { C07: ["correction"] };
+     Holy Grail mit der Einstiegsmarke zusammen. Das allgemeine 52-Wochen-Hoch anderer Methoden bleibt.
+     Erzeuger-Gegenstueck von SF8_SUBFIELDS_HIDDEN: records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
+  /* SEPA (#1056, Review 28.10.2026): pctBelowHigh52w ist der Abstand zum ausgeblendeten 52-Wochen-Hoch, die Basistiefen
+     (largestCorrection, vcpFootprint.depths) ergeben mit dem Basistief das Basishoch und damit Hoch und Pivot */
+  var SF8_FEATURES_HIDDEN = { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] };
+  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
      28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
@@ -697,9 +701,11 @@
         if (SF8_ORDER_KEY.test(k)) fail.push(where + ": Marke levels." + k);
         else if (allowed.indexOf(k) < 0) fail.push(where + ": levels." + k + " ist keine Strukturmarke dieser Methode");
       });
-      var described = SF8_DESCRIPTIVE_FEATURES[v.candidateId] || [], hiddenF = SF8_FEATURES_HIDDEN[v.candidateId] || [], hiddenT = SF8_TREND_HIDDEN[v.candidateId] || [];
+      var described = SF8_DESCRIPTIVE_FEATURES[v.candidateId] || [], hiddenF = SF8_FEATURES_HIDDEN[v.candidateId] || [], hiddenT = SF8_TREND_HIDDEN[v.candidateId] || [], hiddenS = SF8_SUBFIELDS_HIDDEN[v.candidateId] || {};
       Object.keys(v.trend || {}).forEach(function (k) { if (hiddenT.indexOf(k) >= 0) fail.push(where + ": trend." + k + " faellt bei dieser Methode mit der Einstiegsmarke zusammen"); });
       Object.keys(v.features || {}).forEach(function (k) {
+        var sub = v.features[k];
+        if (hiddenS[k] && sub && typeof sub === "object") hiddenS[k].forEach(function (j) { if (j in sub) fail.push(where + ": features." + k + "." + j + " ergibt bei dieser Methode eine Order-Groesse"); });
         if (SF8_ORDER_FEATURES.indexOf(k) >= 0) fail.push(where + ": Kennzahl features." + k);
         else if (hiddenF.indexOf(k) >= 0) fail.push(where + ": features." + k + " ist bei dieser Methode eine Order-Groesse");
         else if (described.indexOf(k) < 0) fail.push(where + ": features." + k + " ist keine beschreibende Kennzahl dieser Methode");
@@ -879,7 +885,7 @@
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
-    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize
