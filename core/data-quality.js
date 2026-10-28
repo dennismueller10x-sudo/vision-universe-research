@@ -358,7 +358,7 @@
      28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
      Orderparameter). ALLOWLIST je Methode statt Namens-Sperrliste: ein umbenannter Orderpreis (orderPrice,
      buyPoint, channelHigh) faellt so auf (unabhaengige Nachpruefung, Mutationen M4/M6/M7). Abgeleitet aus den
-     features-Objekten von scripts/supertrader/source-faithful/product/detectors.mjs ohne die order-abgeleiteten
+     features-Objekten der SF8-Detektoren (Supertrader, product/detectors.mjs) ohne die order-abgeleiteten
      Kennzahlen; eine neue Kennzahl ist eine fachliche Aenderung in einem eigenen PR. Namen mit Order-Wortteilen
      (stop, entry, trailing ...) duerfen nur Statustexte tragen. */
   var SF8_DESCRIPTIVE_FEATURES = {
