@@ -1,0 +1,45 @@
+name: Konten — Stripe Live pruefen (lesend, Produktion)
+# Vor dem ersten echten Pro-Abschluss (PayPal): scripts/account/stripe-live-check.mjs --probe-checkout.
+# Liest Pro-Preis, Zahlungsmethoden, Konto-Faehigkeiten, Webhook und Kundenportal. Die Probe legt eine Abo-Checkout-
+# Sitzung ohne Kunde an, liest die zugelassenen Zahlungsmethoden und beendet sie sofort: keine Zahlung, kein Link in
+# der Ausgabe, keine Aenderung an Produkt, Preis, Portal, Webhook, Worker oder Datenbank.
+on:
+  push:
+    branches: [ops/supabase-dev-migrations]
+    paths: ['.github/workflows/account-production-stripe-check.yml', 'ops/production/stripe-check.trigger']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-production-stripe-check-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: account-production
+    steps:
+      - name: Freigabe pruefen (fail closed)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pruefen
+        env:
+          STRIPE_LIVE_KEY: ${{ secrets.VU_ACCOUNT_STRIPE_SECRET_KEY }}
+          STRIPE_LIVE_SETUP_APPROVED: 'true'
+          VU_ACCOUNT_API_ORIGIN: https://konto.visionuniverse.de
+        run: |
+          set -euo pipefail
+          node scripts/account/stripe-live-check.mjs --probe-checkout
+          echo "--- Worker (oeffentlich) ---"
+          curl -fsS https://konto.visionuniverse.de/v1/plans | jq -c 'del(.features) | .plans |= map(select(.id=="pro") | .prices)' || echo "Worker /v1/plans nicht lesbar"
