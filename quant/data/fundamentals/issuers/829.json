@@ -636,9 +636,9 @@
       "cik": "0001009829",
       "name": "JAKKS PACIFIC INC",
       "sic": "3944",
-      "rawFacts": 21357,
-      "mappedFacts": 7145,
-      "unmappedFacts": 14184,
+      "rawFacts": 21668,
+      "mappedFacts": 7265,
+      "unmappedFacts": 14502,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -648,28 +648,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 68,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -689,21 +689,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -717,14 +717,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -747,50 +747,52 @@
         }
       },
       "quality": {
-        "HIGH": 608,
+        "HIGH": 615,
         "MEDIUM": 29
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 637,
-        "resolvedValues": 637
+        "datableValues": 644,
+        "resolvedValues": 644
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14892,
+        "rules_version": "1.1.0",
+        "total": 15215,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 14184,
-          "WARNING": 707
+          "INFO": 14502,
+          "WARNING": 712
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 558,
           "FISCAL_PERIOD_CONFLICT": 47,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 98,
+          "RESTATEMENT_CONFLICT": 102,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 14184
+          "UNKNOWN_CONCEPT": 14502
         }
       },
       "latestFiling": {
-        "accession": "0001185185-26-003186",
-        "filing_date": "2026-07-31",
+        "accession": "0001437749-26-033558",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 121
+        "periodic_filings": 122,
+        "acceptance_datetime": "2026-10-27T11:00:56.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c7f08691312854cd78d4fa04330210a945040b1a1b48d789c2526db70e8cbfc3",
+      "sourceDigest": "02b911342b2c69c1827cc75ca72db1a1a0901a25c563b1708581527e6cc39eb3",
       "issuerId": "iss_cik_0001009829"
     },
     {

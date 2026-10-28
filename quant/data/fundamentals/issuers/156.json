@@ -7,9 +7,9 @@
       "name": "CMS ENERGY CORP",
       "sic": "4931",
       "rawFacts": 25946,
-      "mappedFacts": 6229,
+      "mappedFacts": 6230,
       "unmappedFacts": 19026,
-      "calendarYears": 19,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -56,7 +56,7 @@
         },
         "long_term_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -84,28 +84,28 @@
         },
         "short_term_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -121,46 +121,47 @@
         }
       },
       "quality": {
-        "HIGH": 542,
-        "MEDIUM": 218
+        "HIGH": 547,
+        "MEDIUM": 217
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 760,
-        "resolvedValues": 760
+        "datableValues": 764,
+        "resolvedValues": 764
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 20361,
+        "rules_version": "1.1.0",
+        "total": 20231,
         "by_severity": {
           "INFO": 19026,
-          "WARNING": 1335
+          "WARNING": 1205
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1263,
+          "CONCEPT_DISAGREEMENT": 1151,
           "FISCAL_PERIOD_CONFLICT": 10,
-          "RESTATEMENT_CONFLICT": 62,
+          "RESTATEMENT_CONFLICT": 44,
           "UNKNOWN_CONCEPT": 19026
         }
       },
       "latestFiling": {
-        "accession": "0000811156-26-000028",
-        "filing_date": "2026-07-28",
+        "accession": "0000811156-26-000032",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 136
+        "periodic_filings": 137,
+        "acceptance_datetime": "2026-10-27T15:09:00.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c2f81a205c6e9ad15aba2e37fd350e3bf7e1417d0556b26905fd0240285d7c31",
+      "sourceDigest": "9b4fb964c5f979372c750760d94ad9a633a1a8dd4d6a31bcb4c1c1583dfb3b31",
       "issuerId": "iss_cik_0000811156"
     },
     {

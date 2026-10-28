@@ -2,38 +2,40 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1880424,
+      "RESOLVED_VALUES": 1881193,
       "ISSUERS_WITH_VALUES": 5343
     },
     "byState": {
-      "VALID": 1710668,
-      "WARNING": 169756
+      "VALID": 1711410,
+      "WARNING": 169783
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49741801
+      "RAW_XBRL_FACTS_WITH_FINDING": 49767928
     },
     "byState": {
-      "AMBIGUOUS": 1324822,
-      "RESTATED": 312142,
-      "NON_COMPARABLE": 70533,
-      "MISSING": 48014818,
-      "WARNING": 19486
+      "AMBIGUOUS": 1321158,
+      "RESTATED": 311658,
+      "NON_COMPARABLE": 70528,
+      "MISSING": 48045146,
+      "WARNING": 19438
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48014818,
-      "CONCEPT_DISAGREEMENT": 1316629,
-      "RESTATEMENT_CONFLICT": 312142,
-      "UNEXPECTED_DURATION": 54413,
-      "PERIOD_MISMATCH": 14859,
-      "FISCAL_PERIOD_CONFLICT": 14653,
-      "FUTURE_DATA_LEAK": 7480,
+      "UNKNOWN_CONCEPT": 48045146,
+      "CONCEPT_DISAGREEMENT": 1312825,
+      "RESTATEMENT_CONFLICT": 311658,
+      "UNEXPECTED_DURATION": 54405,
+      "PERIOD_MISMATCH": 14862,
+      "FISCAL_PERIOD_CONFLICT": 14586,
+      "FUTURE_DATA_LEAK": 7481,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2244,
       "UNIT_MISMATCH": 1261,
-      "UNPLACEABLE_PERIOD": 713
+      "UNPLACEABLE_PERIOD": 852,
+      "FUTURE_PERIOD_END": 17,
+      "IMPLAUSIBLE_FILING_FY": 2
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
   },
@@ -105,14 +107,14 @@
   },
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.13.0",
+    "normalization_logic": "1.14.0",
     "formula": "1.2.0",
     "provider_adapter": "sec-edgar-1.0.0",
-    "quality_rules": "1.0.0",
+    "quality_rules": "1.1.0",
     "metric_registry": {
       "schema_version": 1,
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-27T12:21:40+00:00"
+  "generatedAtUtc": "2026-10-28T13:02:11+00:00"
 }

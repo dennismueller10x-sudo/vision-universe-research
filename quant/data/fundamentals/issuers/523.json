@@ -323,9 +323,9 @@
       "cik": "0001587523",
       "name": "Knowles Corp",
       "sic": "3651",
-      "rawFacts": 21566,
-      "mappedFacts": 5498,
-      "unmappedFacts": 16004,
+      "rawFacts": 22538,
+      "mappedFacts": 5676,
+      "unmappedFacts": 16830,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -335,28 +335,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 15,
-      "quarterlyPeriods": 55,
+      "quarterlyPeriods": 57,
       "firstPeriodEnd": "2011-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "eps_diluted": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -369,28 +369,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -404,21 +404,21 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_debt": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0,
@@ -434,45 +434,46 @@
         }
       },
       "quality": {
-        "HIGH": 504,
-        "MEDIUM": 72
+        "HIGH": 520,
+        "MEDIUM": 74
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 576,
-        "resolvedValues": 576
+        "datableValues": 594,
+        "resolvedValues": 594
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16854,
+        "rules_version": "1.1.0",
+        "total": 17634,
         "by_severity": {
-          "INFO": 16004,
-          "WARNING": 850
+          "INFO": 16830,
+          "WARNING": 804
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 663,
-          "RESTATEMENT_CONFLICT": 187,
-          "UNKNOWN_CONCEPT": 16004
+          "CONCEPT_DISAGREEMENT": 616,
+          "RESTATEMENT_CONFLICT": 188,
+          "UNKNOWN_CONCEPT": 16830
         }
       },
       "latestFiling": {
-        "accession": "0001587523-26-000030",
-        "filing_date": "2026-07-28",
+        "accession": "0001587523-26-000035",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 51
+        "periodic_filings": 52,
+        "acceptance_datetime": "2026-10-27T20:05:46.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1d13ffb4818522d743066e7684eb8945b16350bb71b02601921d0d63c2ca8901",
+      "sourceDigest": "db185d1704f316c25415249a7ad579bb07fd6a747948239098b6ba8cd2bb174f",
       "issuerId": "iss_cik_0001587523"
     },
     {

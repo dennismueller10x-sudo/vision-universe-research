@@ -570,9 +570,9 @@
       "cik": "0001718405",
       "name": "HYCROFT MINING HOLDING CORP",
       "sic": "1040",
-      "rawFacts": 7965,
-      "mappedFacts": 2858,
-      "unmappedFacts": 5313,
+      "rawFacts": 8195,
+      "mappedFacts": 2954,
+      "unmappedFacts": 5507,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -583,28 +583,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 9,
-      "quarterlyPeriods": 36,
+      "quarterlyPeriods": 37,
       "firstPeriodEnd": "2017-08-27",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 28,
-          "firstAvailablePeriod": "2019-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
-        },
-        "eps_diluted": {
           "annualPeriods": 7,
           "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
+        "eps_diluted": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -624,14 +624,14 @@
         },
         "net_income": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "operating_cash_flow": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -652,14 +652,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -682,47 +682,48 @@
         }
       },
       "quality": {
-        "HIGH": 316,
+        "HIGH": 322,
         "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 330,
-        "resolvedValues": 330
+        "datableValues": 336,
+        "resolvedValues": 336
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5647,
+        "rules_version": "1.1.0",
+        "total": 5837,
         "by_severity": {
-          "INFO": 5313,
-          "WARNING": 334
+          "INFO": 5507,
+          "WARNING": 330
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 192,
+          "CONCEPT_DISAGREEMENT": 188,
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 123,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 5313
+          "UNKNOWN_CONCEPT": 5507
         }
       },
       "latestFiling": {
-        "accession": "0001718405-26-000020",
-        "filing_date": "2026-07-28",
+        "accession": "0001718405-26-000030",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 36
+        "periodic_filings": 37,
+        "acceptance_datetime": "2026-10-26T21:42:57.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "9b30041cadd33a8c690f07135aa4f4c2271d94c76bcf5d1201e274acbb6f20e9",
+      "sourceDigest": "62caf8591867e9022ad7e3a9ff67e0239750ea260ba75c403e3cce83fc143bca",
       "issuerId": "iss_cik_0001718405"
     }
   ]

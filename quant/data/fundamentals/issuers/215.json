@@ -418,9 +418,9 @@
       "cik": "0001101215",
       "name": "BREAD FINANCIAL HOLDINGS, INC.",
       "sic": "6141",
-      "rawFacts": 26408,
-      "mappedFacts": 8265,
-      "unmappedFacts": 18023,
+      "rawFacts": 26823,
+      "mappedFacts": 8255,
+      "unmappedFacts": 18443,
       "calendarYears": 18,
       "industry": "BANK",
       "industryMetrics": {
@@ -433,7 +433,7 @@
         },
         "available_for_sale_debt_securities": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -447,28 +447,28 @@
         },
         "deposits": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "interest_and_dividend_income": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "interest_and_fee_income_loans": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "interest_expense_deposits": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -482,7 +482,7 @@
         },
         "net_interest_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -496,7 +496,7 @@
         },
         "noninterest_expense": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -517,7 +517,7 @@
         },
         "time_deposits": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -531,9 +531,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 72,
+      "quarterlyPeriods": 73,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
@@ -545,7 +545,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -572,14 +572,14 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -600,14 +600,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -630,48 +630,49 @@
         }
       },
       "quality": {
-        "HIGH": 587,
-        "MEDIUM": 58
+        "HIGH": 591,
+        "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 645,
-        "resolvedValues": 645
+        "datableValues": 650,
+        "resolvedValues": 650
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 19176,
+        "rules_version": "1.1.0",
+        "total": 19476,
         "by_severity": {
-          "INFO": 18023,
+          "INFO": 18443,
           "ERROR": 11,
-          "WARNING": 1142
+          "WARNING": 1022
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 916,
+          "CONCEPT_DISAGREEMENT": 824,
           "FUTURE_DATA_LEAK": 11,
           "PERIOD_MISMATCH": 83,
-          "RESTATEMENT_CONFLICT": 143,
-          "UNKNOWN_CONCEPT": 18023
+          "RESTATEMENT_CONFLICT": 115,
+          "UNKNOWN_CONCEPT": 18443
         }
       },
       "latestFiling": {
-        "accession": "0001101215-26-000074",
-        "filing_date": "2026-07-28",
+        "accession": "0001101215-26-000092",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 102
+        "periodic_filings": 103,
+        "acceptance_datetime": "2026-10-26T21:48:26.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e08c5356b58365530ec040f8ef674cf2ca4fa1de7563d010b1d09b67a097d88e",
+      "sourceDigest": "f9c2a269038621d8a8e2829b88e35633bc1d10feec5865436b032211e6c948df",
       "issuerId": "iss_cik_0001101215"
     },
     {
