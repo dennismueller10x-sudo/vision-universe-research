@@ -61,10 +61,11 @@ function run(ctx, period, comparators, grid) {
   const out = { cells: [], gaps: [] };
   for (const g of grid) {
     const per = periodFor(period, g.universeFamily);
-    const oS = oracleSpec(g, g.N), sch = R.schedule(ctx, oS, per[0], per[1]);
+    const oS = oracleSpec(g, g.N); let sch;
+    try { sch = R.schedule(ctx, oS, per[0], per[1]); } catch (e) { out.cells.push({ label: 'ORACLE_LOOKAHEAD', period, cadence: 'WEEKS_' + g.rebalanceWeeks, N: g.N, universe: { family: g.universeFamily, filters: g.filters || [] }, state: 'UNAVAILABLE:' + e.message + ' (last holding window ends after the data)' }); continue; }
     const table = decisionTable(ctx, oS, sch), oF = funded(ctx, oS, sch), pF = funded(ctx, R.popSpec({ ...oS, family: g.universeFamily === 'FUND' ? 'FUND' : 'PRICE', ranks: [] }), sch);
     const spyM = L.pathMetrics(oF.sim.equity.map(e => ctx.spy[e.s]), oF.sim.equity.map(e => e.date));
-    const cell = { label: 'ORACLE_LOOKAHEAD', period, decisions: [ctx.cal[sch.decisions[0]], ctx.cal[sch.decisions.at(-1)], sch.decisions.length], valuationTo: ctx.cal[sch.endExec], universe: { family: g.universeFamily, filters: g.filters || [], minMarketCap: g.minMarketCap || null }, cadence: g.cadence || 'WEEKS_' + g.rebalanceWeeks, N: g.N,
+    const cell = { label: 'ORACLE_LOOKAHEAD', period, decisions: [ctx.cal[sch.decisions[0]], ctx.cal[sch.decisions.at(-1)], sch.decisions.length], valuationTo: ctx.cal[sch.endExec], universe: { family: g.universeFamily, filters: g.filters || [], minMarketCap: g.minMarketCap || null }, cadence: g.cadence ? g.cadence + '_EVERY_' + (g.rebalanceMonths || 1) : 'WEEKS_' + g.rebalanceWeeks, N: g.N,
       oracleFundedCagrNet: oF.cagr, oracleTotalReturnNet: oF.totalReturn, oracleMaxDrawdown: oF.maxDrawdown, populationEwFundedCagrNet: pF.cagr, spyCagr: spyM.cagr,
       perIntervalOracleGross: L.mean(table.map(t => t.oracle)), perIntervalPopulationGross: L.mean(table.map(t => t.pop)), avgUniverse: L.mean(table.map(t => t.n)), turnoverPerYear: oF.sim.metrics.turnoverSum / ((Date.parse(ctx.cal[sch.endExec]) - Date.parse(ctx.cal[sch.decisions[0]])) / (365.25 * 864e5)) };
     out.cells.push(cell);
