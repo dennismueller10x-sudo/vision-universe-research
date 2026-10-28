@@ -350,7 +350,8 @@
    * Eingefrorene Reihe (seit 1.10.0): Die Tagesreihe endet mit >= 5 exakt gleichen Schluessen (core/listing-staleness.js,
    * STALE_TAIL). Das ist ein Datenqualitaetshinweis, kein bestaetigtes Delisting; auch illiquide Titel koennen so enden. Die Bars nach `since` sind keine
    * Kurse; jede Kennzahl am Stichtag waere aus ihnen gerechnet. Deshalb sind alle Analysefelder `keys` (je Zeitrahmen)
-   * leer; Schlusskurs, Stand und Datenqualitaet bleiben, `frozenSince` nennt den letzten echten Handelstag.
+   * leer; Schlusskurs, Stand und Datenqualitaet bleiben, `frozenSince` nennt den ersten Tag
+   * des gleichen Schlusses im Fenster der Tagesbars (bei Reihen, die im ganzen Fenster stehen, dessen Anfang: "spaetestens seit").
    */
   function markFrozen(row, since, keys) {
     markStale(row);

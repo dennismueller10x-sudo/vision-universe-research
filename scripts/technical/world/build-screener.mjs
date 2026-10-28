@@ -109,7 +109,8 @@ export function build(options = {}) {
           benchmark, universeAsOf: options.universeAsOf || null
         });
         if (!bundle) row.noBundle = true;
-        /* Eingefrorenes Kursende (core/listing-staleness.js, dieselbe Schwelle wie DQ-PX-6): letzter echter Handelstag. */
+        /* Eingefrorenes Kursende (core/listing-staleness.js, dieselbe Schwelle wie DQ-PX-6): erster Tag des
+           gleichen Schlusses im Fenster der Tagesbars. */
         const tail = Staleness.tailRun(inst.bars.timestamps.map((d, i) => [d, inst.bars.close[i]]));
         row.frozenSince = tail && tail.run >= Staleness.DEFAULTS.dailyMinRun ? tail.since : null;
         rows.push(row);

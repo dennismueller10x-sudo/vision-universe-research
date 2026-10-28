@@ -29,10 +29,11 @@ Für Titel mit `fresh = false` gilt:
 | Zustände am Stichtag (Tag, Woche, Monat) | `newHigh52w`, `relVol`, `volAboveAvg`, `volSpike`, `insideBar`, `nr7`, `candleBullish`, `candleBearish`, `candleNeutral`, jeweils auch `@1W` und `@1M` | `null` |
 | Niveaus und Lagen | RSI, Abstände, Lage zu Linien, ROC, Volatilität, Formationszustände, Schlusskurs | Stand des letzten Kurses, erkennbar an `fresh = false` und `asOf`. Die Oberfläche zeigt „Kurs vom …“. |
 
-**Eingefrorene Reihe** (`frozenSince` = letzter echter Handelstag, neu als Spalte):
+**Eingefrorene Reihe** (`frozenSince`, neu als Spalte):
+- `frozenSince` ist der erste Tag des gleichen Schlusskurses innerhalb der 270 Tagesbars der Materialisierung. Bei 42 der 233 Titel steht der Kurs im ganzen Fenster; dann ist `frozenSince` der Fensteranfang und heißt „spätestens seit“. Die Anzeige „Kurs unverändert seit …“ bleibt damit richtig.
 - Endet die Tagesreihe mit mindestens `ListingStaleness.DEFAULTS.dailyMinRun` (5) exakt gleichen Schlüssen, ist der Titel nie `fresh`.
 - Zusätzlich zu den Feldern oben sind **alle Analysefelder** leer, das heißt jedes Abfragefeld außer Kurs und Datenqualität, je Tag/Woche/Monat, sowie die Formationsliste.
-- Grund: Die Bars nach `frozenSince` sind keine Kurse. Auch Niveaus wären aus ihnen gerechnet.
+- Grund: Die Bars nach `frozenSince` tragen keine Kursänderung. Jede Kennzahl, auch ein Niveau, wäre aus ihnen gerechnet und ohne Aussage.
 - Es bleiben `close`, `asOf`, `bars`, `hasVolume`, `spark` und `frozenSince`. Die Trefferliste zeigt „Kurs unverändert seit …“.
 - Grenzfälle: 67 der 233 Titel zeigen nach dem Einfrieren noch einzelne Bars mit Volumen oder Spanne bei gleichem Schluss. Teils füllt der Anbieter auf, teils sind es illiquide Vorzugsaktien und Aktienklassen ohne Kursänderung. Auch dort entsteht kein Signal mit Gehalt: Ohne Kursänderung gibt es keinen Ausbruch, kein Momentum und keinen Trend. Leer ist also vorsichtig, aber nicht falsch.
 
