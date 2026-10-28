@@ -151,8 +151,8 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #              (Annahme, nie vor dem Einreichungsdatum) endet, ist keine
 #              berichtete Periode (Faelligkeitsplan, fuer das Folgequartal
 #              erklaerte Dividende, Deckblattdatum nach Annahme). Er wird als
-#              FUTURE_PERIOD_END quarantaeniert, nicht umdatiert. V9: 900
-#              solche Beobachtungen bei 224 Emittenten.
+#              FUTURE_PERIOD_END quarantaeniert, nicht umdatiert. Nachbau mit
+#              companyfacts 27.10.2026: 1.084 (Fakt, Kennzahl) bei 398 Emittenten.
 NORMALIZATION_LOGIC_VERSION = "1.14.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the

@@ -1,0 +1,393 @@
+{
+ "schemaVersion": "v9-followup-sec-pipeline-independent-check-1.0.0",
+ "generatedBy": "scripts/quant/v9_followups/sec_pipeline/independent_check.py",
+ "codeSha256": "173d635993853fb524d25d6a8ecbff56a5399535af71d5b838ce9023685350fd",
+ "importsPipeline": false,
+ "scope": "duration-anchor path of the fiscal calendar (P1) and per-(fact, metric) quarantine (P2) on the consumer path (availability = filing date); issuer-specific extension concepts not modelled",
+ "tally": {
+  "ciks": 5063,
+  "p1Anchors": 23,
+  "p1Issuers": 19,
+  "p2Pairs": 1084,
+  "p2Issuers": 398,
+  "p1Parity": 5063,
+  "p2Parity": 5063
+ },
+ "p1LabelEffect": [
+  {
+   "cik": "0000011544",
+   "tickers": [
+    "WRB"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2022-12-31",
+     "claimedFy": 2020,
+     "publishedLabelsBefore": [
+      2022
+     ],
+     "publishedLabelsAfter": [
+      2022
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0000102729",
+   "tickers": [
+    "VMI"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2021-12-25",
+     "claimedFy": 2019,
+     "publishedLabelsBefore": [
+      2021
+     ],
+     "publishedLabelsAfter": [
+      2021
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0000110471",
+   "tickers": [
+    "WWW"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2026-01-03",
+     "claimedFy": 2024,
+     "publishedLabelsBefore": [
+      2026
+     ],
+     "publishedLabelsAfter": [
+      2026
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0000704532",
+   "tickers": [
+    "ONTO"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2026-01-03",
+     "claimedFy": 2024,
+     "publishedLabelsBefore": [
+      2026
+     ],
+     "publishedLabelsAfter": [
+      2026
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0000855658",
+   "tickers": [
+    "LSCC"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2016-01-02",
+     "claimedFy": 2014,
+     "publishedLabelsBefore": [
+      2016
+     ],
+     "publishedLabelsAfter": [
+      2016
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0000922224",
+   "tickers": [
+    "PPL"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2023-12-31",
+     "claimedFy": 2021,
+     "publishedLabelsBefore": [
+      2023
+     ],
+     "publishedLabelsAfter": [
+      2023
+     ]
+    },
+    {
+     "periodEnd": "2024-12-31",
+     "claimedFy": 2021,
+     "publishedLabelsBefore": [
+      2024
+     ],
+     "publishedLabelsAfter": [
+      2024
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001013488",
+   "tickers": [
+    "BJRI"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2025-12-30",
+     "claimedFy": 2023,
+     "publishedLabelsBefore": [
+      2024
+     ],
+     "publishedLabelsAfter": [
+      2024
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001045609",
+   "tickers": [
+    "PLD"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2008-12-31",
+     "claimedFy": 2010,
+     "publishedLabelsBefore": [],
+     "publishedLabelsAfter": []
+    }
+   ]
+  },
+  {
+   "cik": "0001061894",
+   "tickers": [
+    "GIL"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2022-01-02",
+     "claimedFy": 2020,
+     "publishedLabelsBefore": [
+      2022
+     ],
+     "publishedLabelsAfter": [
+      2022
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001062822",
+   "tickers": [
+    "LXRX"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2021-12-31",
+     "claimedFy": 2019,
+     "publishedLabelsBefore": [
+      2021
+     ],
+     "publishedLabelsAfter": [
+      2021
+     ]
+    },
+    {
+     "periodEnd": "2022-12-31",
+     "claimedFy": 2019,
+     "publishedLabelsBefore": [
+      2022
+     ],
+     "publishedLabelsAfter": [
+      2022
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2025-06-27",
+     "claimedFy": 2027,
+     "publishedLabelsBefore": [
+      2027
+     ],
+     "publishedLabelsAfter": [
+      2025
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001140536",
+   "tickers": [
+    "WTW"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2023-12-31",
+     "claimedFy": 2021,
+     "publishedLabelsBefore": [
+      2023
+     ],
+     "publishedLabelsAfter": [
+      2023
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2017-12-31",
+     "claimedFy": 2107,
+     "publishedLabelsBefore": [
+      2107
+     ],
+     "publishedLabelsAfter": [
+      2017
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001177609",
+   "tickers": [
+    "FIVE"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2018-02-03",
+     "claimedFy": 2016,
+     "publishedLabelsBefore": [
+      2017
+     ],
+     "publishedLabelsAfter": [
+      2017
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001521951",
+   "tickers": [
+    "FBIZ"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2023-12-31",
+     "claimedFy": 2021,
+     "publishedLabelsBefore": [
+      2023
+     ],
+     "publishedLabelsAfter": [
+      2023
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001552033",
+   "tickers": [
+    "TRU"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2012-12-31",
+     "claimedFy": 2014,
+     "publishedLabelsBefore": [],
+     "publishedLabelsAfter": []
+    }
+   ]
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2018-12-31",
+     "claimedFy": 43465,
+     "publishedLabelsBefore": [
+      43465
+     ],
+     "publishedLabelsAfter": [
+      2018
+     ]
+    },
+    {
+     "periodEnd": "2019-12-31",
+     "claimedFy": 43830,
+     "publishedLabelsBefore": [
+      43830
+     ],
+     "publishedLabelsAfter": [
+      2019
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001702780",
+   "tickers": [
+    "OPTU"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2022-12-31",
+     "claimedFy": 2020,
+     "publishedLabelsBefore": [
+      2022
+     ],
+     "publishedLabelsAfter": [
+      2022
+     ]
+    }
+   ]
+  },
+  {
+   "cik": "0001856525",
+   "tickers": [
+    "CNM"
+   ],
+   "anchors": [
+    {
+     "periodEnd": "2025-02-02",
+     "claimedFy": 2023,
+     "publishedLabelsBefore": [
+      2024
+     ],
+     "publishedLabelsAfter": [
+      2024
+     ]
+    },
+    {
+     "periodEnd": "2026-02-01",
+     "claimedFy": 2023,
+     "publishedLabelsBefore": [
+      2025
+     ],
+     "publishedLabelsAfter": [
+      2025
+     ]
+    }
+   ]
+  }
+ ],
+ "mismatches": []
+}

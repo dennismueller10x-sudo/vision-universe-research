@@ -24,7 +24,7 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-TW-4 | WARN | jeder materialisierte Titel steht im Technical-Screener oder ist in `meta.skipped` gezählt | sechs Vorzugsaktien (C-P-N, F-P-B/C/D, T-P-A/C) fielen still durch ein Dateimuster |
 | DQ-SEC-1 | WARN | jedes veröffentlichte Geschäftsjahreslabel der SEC-Bundles (`quant/data/sec/consumer`) liegt höchstens ein Jahr neben dem Kalenderjahr seines Periodenendes | V9: WTBA FY 2107 für 2017, STX FY 2027 für das Jahr bis 2025-06-27, PRTH 43465/43830 |
 | DQ-SEC-2 | WARN | keine veröffentlichte SEC-Zeile endet nach ihrem Einreichungsdatum (Fälligkeitsplan, erklärte Dividende, Deckblattdatum nach Annahme) | V9: ASLE Aktienzahl zum 2034-03-05 aus einem Filing von 2024, AXR 2033, PFIS 2028, AAL 2027 |
-| DQ-SEC-3 | INFO | zählt je Emittent, was die Normalisierung abgelehnt hat: fy-Anker `IMPLAUSIBLE_FILING_FY` und Zukunftsperioden `FUTURE_PERIOD_END` (Bundle-Feld `quality`). INFO, weil die Ablehnung die richtige Behandlung ist; die Zahl macht Wiederkehr sichtbar | V9: 5 Emittenten mit unplausiblem fy, 900 Zukunftsbeobachtungen |
+| DQ-SEC-3 | INFO | zählt je Emittent, was die Normalisierung abgelehnt hat: fy-Anker `IMPLAUSIBLE_FILING_FY` und Zukunftsperioden `FUTURE_PERIOD_END` (Bundle-Feld `quality`). INFO, weil die Ablehnung die richtige Behandlung ist; die Zahl macht Wiederkehr sichtbar | Nachbau 27.10.2026 (5.063 Bundles): IMPLAUSIBLE_FILING_FY 23 bei 19 Emittenten, FUTURE_PERIOD_END 1.084 bei 398 Emittenten; danach DQ-SEC-1 nur noch CAPS (Kalenderluecke, eigene Ursache), DQ-SEC-2 0 |
 
 ## Erster Lauf (03.10.2026, Repository-Stand)
 
