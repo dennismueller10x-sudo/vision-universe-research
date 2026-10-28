@@ -12,6 +12,7 @@ import {
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
+import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE } from '../source-faithful/product/registry-guard.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -252,5 +253,33 @@ test('SF-PRODUCT-NO-RUN-INTEGRATION: kein Workflow, kein Frontend, keine Domain-
   for (const f of fs.readdirSync(wf)) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === 'data' ? [] : walk(path.join(d, e.name))) : /\.(m?js|html)$/.test(e.name) ? [path.join(d, e.name)] : []);
   for (const f of walk(path.join(ROOT, 'supertrader'))) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /candidate-contract|source-faithful\/product/, f);
-  assert.doesNotMatch(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8'), /candidate-contract|supertraderCandidates|source-faithful\/product/);
+  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen
+  // (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  assert.deepEqual(sf8RegistryViolations(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8')), []);
+});
+
+test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung nur per eigenem PR (Gegenproben)', () => {
+  const entry = { ...SF8_DOMAIN_PINNED, label: 'x', activation: { state: SF8_ACTIVATION_STATE } };
+  const other = { id: 'supertrader', artifact: '/supertrader/data/signals.json', producer: 'scripts/supertrader/build.mjs' };
+  const txt = (domains, extra = {}) => JSON.stringify({ ...extra, domains });
+  assert.deepEqual(sf8RegistryViolations(txt([other])), [], 'ohne Eintrag zulässig');
+  assert.deepEqual(sf8RegistryViolations(txt([other, entry])), [], 'der eine Eintrag ist zulässig');
+  assert.ok(sf8RegistryViolations(txt([other, entry, entry])).includes('SF8_DOMAIN_DUPLICATE'));
+  for (const k of Object.keys(SF8_DOMAIN_PINNED).filter((k) => k !== 'id')) {
+    assert.ok(sf8RegistryViolations(txt([{ ...entry, [k]: k === 'critical' ? true : 'anders' }])).includes(`SF8_DOMAIN_FIELD:${k}`), k);
+  }
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: 'ACTIVE' } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
+  assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: ['scripts/supertrader/source-faithful/product/x.mjs'] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
+  assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
+  assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
+  assert.deepEqual(sf8RegistryViolations('{kaputt'), ['REGISTRY_NOT_JSON']);
+  // Review MEDIUM 6: keine Hintertür über freie Felder, Altmodule oder Schreibweise
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, consumers: ['scripts/supertrader/source-faithful/completion/status.mjs'] }])).includes('SF8_DOMAIN_REF_IN:consumers'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: SF8_ACTIVATION_STATE, decision: 'siehe source-faithful/product/x.mjs' } }])).includes('SF8_DOMAIN_REF_IN:activation'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, extra: 1 }])).includes('SF8_DOMAIN_UNKNOWN_FIELD:extra'));
+  for (const ref of ['scripts/supertrader/signals/research-signal.mjs', 'completion/gaps.mjs', 'Source-Faithful/product', 'SF-CANDIDATES']) {
+    assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: [ref] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), ref);
+  }
+  assert.equal(SF8_DOMAIN_ID, 'supertrader-sf8-candidates');
 });
