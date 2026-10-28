@@ -113,7 +113,8 @@ export function build(options = {}) {
   const freq = {};
   rows.forEach((r) => { freq[r.asOf] = (freq[r.asOf] || 0) + 1; });
   const asOf = Object.keys(freq).sort((a, b) => freq[b] - freq[a] || (a < b ? 1 : -1))[0] || null;
-  rows.forEach((r) => { r.fresh = r.asOf === asOf; });
+  /* Veraltete Titel: keine Ereignisse und keine Stichtagszustaende (screen-row.js#markStale, SCREENER_FRESHNESS.md). */
+  rows.forEach((r) => { r.fresh = r.asOf === asOf; if (!r.fresh) Row.markStale(r); });
   rows.sort((a, b) => (a.s < b.s ? -1 : a.s > b.s ? 1 : 0));
 
   /* Quelle der Wochen-/Monatswerte nur als Zaehlung in meta, nicht als Spalte. */

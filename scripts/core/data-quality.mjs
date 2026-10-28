@@ -149,6 +149,9 @@ if (twArt && twArt.cols) {
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
   const MTF = require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js"));
   rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries(MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"])), [...mtfVersions]));
+  const Row = require(join(REPO_ROOT, "quant", "engines", "technical", "screen-row.js"));
+  const staleFields = Row.STALE_EVENT_FIELDS.concat(Row.STALE_DAY_FIELDS, ...Row.STALE_TF_FIELDS.map((k) => [k, k + "@1W", k + "@1M"]));
+  rules.push(DQ.technicalStaleEvents(c, staleFields));
 }
 
 }

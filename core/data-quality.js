@@ -450,6 +450,21 @@
       (waiting.length ? "Wartet auf Materialisierung (" + waiting.length + "): " + waiting.join(", ") + ". " : "") + "Belegung: " + fill.join(", ") + ".");
   }
 
+  /** DQ-TW-6: Titel mit veraltetem Kurs (fresh = false) tragen keine Ereignisse und keine Stichtagszustaende
+      (screen-row.js#markStale, docs/technical/SCREENER_FRESHNESS.md). Sonst meldet ein Ereignisfilter einen alten Kurs
+      als aktuellen Treffer. `fields` = die Spalten, die fuer veraltete Titel leer sein muessen (aus screen-row.js). */
+  function technicalStaleEvents(cols, fields) {
+    var fail = [], n = cols && cols.s ? cols.s.length : 0, stale = 0, keys = (fields || []).filter(function (k) { return cols && cols[k]; });
+    for (var i = 0; i < n; i++) {
+      if (cols.fresh[i] !== false) continue;
+      stale++;
+      var bad = keys.filter(function (k) { return cols[k][i] !== null && cols[k][i] !== undefined; });
+      if (bad.length) fail.push(cols.s[i] + " (Kurs vom " + cols.asOf[i] + "): " + bad.slice(0, 4).join(", ") + (bad.length > 4 ? " … (" + bad.length + ")" : ""));
+    }
+    return result("DQ-TW-6", "Technical: veraltete Titel tragen keine Ereignisse und keine Stichtagszustaende", "WARN", stale, fail,
+      stale + " veraltete Titel, " + keys.length + " gepruefte Spalten.");
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -866,7 +881,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,

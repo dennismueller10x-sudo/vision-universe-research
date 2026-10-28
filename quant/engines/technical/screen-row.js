@@ -34,7 +34,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.9.0";
+  var ROW_VERSION = "technical-screen-row-1.10.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -316,6 +316,7 @@
     row.hasVolume = !!hasVol;
     row.weeks = wc.length;
     row.fresh = input.universeAsOf ? row.asOf === input.universeAsOf : null;
+    if (row.fresh === false) markStale(row);
     /* Juengster Schlusssprung mit Datenverdacht (Split-Signatur oder Faktor ausserhalb 0,2..5) in den letzten 60 Bars:
        nicht nachgezogene Splits oder Abspaltungen verfaelschen Indikatoren und Formationen; der Screener zeigt ihn an. */
     row.suspectJumpAt = null;
@@ -327,7 +328,26 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
+  /**
+   * Zeitbezug veralteter Titel (seit 1.10.0, docs/technical/SCREENER_FRESHNESS.md). Ein Titel, dessen letzter Bar vor dem
+   * Stichtag des Universums liegt, kann zum Stichtag kein Ereignis "seit N Tagen" und keinen Zustand "am Stichtag"
+   * belegen: zwischen seinem letzten Bar und dem Stichtag fehlen Kurse. Diese Felder werden null (nicht entscheidbar),
+   * die Pruefraeume ebenfalls, damit "kein Ereignis im Pruefraum" nicht als Wissen gilt. Niveaus (RSI, Abstaende,
+   * Lage zu Linien, Formationszustaende) bleiben Stand des letzten Kurses und sind ueber fresh = false und asOf erkennbar.
+   */
+  var STALE_EVENT_FIELDS = ["goldenCrossDays", "deathCrossDays", "crossAboveSma200Days", "crossBelowSma200Days", "rsiExitOversoldDays",
+    "rsiExitOverboughtDays", "newHigh52wDays", "formationNewDays", "candleBullDays", "candleBearDays",
+    "smaCrossWindow", "sma200CrossWindow", "rsiEventWindow", "high52wWindow", "formationWindow", "candleWindow"];
+  var STALE_DAY_FIELDS = ["chg1d", "newHigh20d", "newLow20d"];
+  var STALE_TF_FIELDS = ["newHigh52w", "relVol", "volAboveAvg", "volSpike", "insideBar", "nr7", "candleBullish", "candleBearish", "candleNeutral"];
+  function markStale(row) {
+    STALE_EVENT_FIELDS.concat(STALE_DAY_FIELDS).forEach(function (k) { if (k in row) row[k] = null; });
+    STALE_TF_FIELDS.forEach(function (k) { ["", "@1W", "@1M"].forEach(function (tf) { if ((k + tf) in row) row[k + tf] = null; }); });
+    return row;
+  }
+
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale,
+              STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }
 })(typeof window !== "undefined" ? window : globalThis);

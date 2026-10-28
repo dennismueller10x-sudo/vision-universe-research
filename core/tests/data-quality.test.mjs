@@ -136,3 +136,12 @@ test("Zusammenfassung · ERROR macht FAIL, nur WARN macht WARN", () => {
   assert.equal(DQ.summarize([pass, warn, err]).overall, "FAIL");
   assert.equal(DQ.summarize([pass]).overall, "PASS");
 });
+
+test("DQ-TW-6 · veraltete Titel tragen keine Ereignisse und keine Stichtagszustaende", () => {
+  const cols = { s: ["A", "B", "C"], asOf: ["2026-10-26", "2026-10-16", "2026-08-17"], fresh: [true, false, false],
+    nr7: [true, null, true], goldenCrossDays: [3, null, null], "volSpike@1W": [true, null, null], rsi14: [40, 25, 30] };
+  const r = DQ.technicalStaleEvents(cols, ["nr7", "goldenCrossDays", "volSpike@1W", "fehltImArtefakt"]);
+  assert.equal(r.checked, 2, "nur veraltete Titel");
+  assert.deepEqual(r.samples, ["C (Kurs vom 2026-08-17): nr7"], "frischer Titel mit Ereignis und Niveau rsi14 sind erlaubt");
+  assert.equal(DQ.technicalStaleEvents({ ...cols, nr7: [true, null, null] }, ["nr7"]).failed, 0);
+});
