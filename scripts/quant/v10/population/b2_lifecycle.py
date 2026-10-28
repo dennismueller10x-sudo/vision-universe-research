@@ -164,6 +164,13 @@ def consideration(text):
     return cash, stock, tm, election
 
 
+def consideration_quote(c):
+    # Mixed consideration parsed from the cash tail: the stock quote spans cash and share component.
+    if c[0] and c[1] and c[0].get('mixedTail'):
+        return c[1]['quote']
+    return (c[0] or c[1])['quote']
+
+
 def series_gate(points, ltd, frozen_close, daily=False):
     after = [p for p in points if p[0] > ltd]
     if any(p[1] != frozen_close for p in after):
@@ -223,7 +230,7 @@ def research(sid, ticker, weekly, daily, wrun, drun, cikmap, master_rows_):
                 src['definitionQuote'] = x['definitionQuote']
         if (c[0] or c[1]) and not cons:
             cons = {'cash': c[0], 'stock': c[1], 'tickersInDoc': c[2], 'election': c[3], 'accession': f['accessionNumber'], 'effectiveFiling': f['filingDate']}
-            src['considerationQuote'] = (c[0] or c[1])['quote']
+            src['considerationQuote'] = consideration_quote(c)
         if 'lastTradeQuote' in src or 'considerationQuote' in src:
             out['sources'].append(src)
     if not cons and k8 and any('2.01' in (f.get('items') or '') for f in k8):
@@ -240,7 +247,7 @@ def research(sid, ticker, weekly, daily, wrun, drun, cikmap, master_rows_):
                 cons = {'cash': c[0], 'stock': c[1], 'tickersInDoc': c[2], 'election': c[3], 'accession': f['accessionNumber'], 'effectiveFiling': None}
                 out['sources'].append({'role': f['form'], 'accession': f['accessionNumber'], 'filingDate': f['filingDate'], 'url': meta['url'], 'sha256': meta['sha256'],
                                        'sha256Normalized': meta['sha256Normalized'], 'bytesRead': meta['bytesRead'], 'complete': meta['complete'],
-                                       'considerationQuote': (c[0] or c[1])['quote']})
+                                       'considerationQuote': consideration_quote(c)})
                 break
     for f in delist[:2]:
         out['sources'].append({'role': 'FORM_' + f['form'], 'accession': f['accessionNumber'], 'filingDate': f['filingDate'],
