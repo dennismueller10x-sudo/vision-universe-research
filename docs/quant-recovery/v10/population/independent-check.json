@@ -192,6 +192,13 @@
      },
      {
       "securityId": "ref_CZR",
+      "date": "2024-01-26",
+      "price": 23.39,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
+      "ratio": 1.9021
+     },
+     {
+      "securityId": "ref_CZR",
       "date": "2023-01-27",
       "price": 23.39,
       "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
@@ -206,10 +213,10 @@
      },
      {
       "securityId": "ref_CZR",
-      "date": "2024-01-26",
-      "price": 23.39,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
-      "ratio": 1.9021
+      "date": "2022-01-28",
+      "price": 33.42,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
+      "ratio": 2.1834
      },
      {
       "securityId": "ref_CZR",
@@ -220,31 +227,10 @@
      },
      {
       "securityId": "ref_CZR",
-      "date": "2022-01-28",
-      "price": 33.42,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
-      "ratio": 2.1834
-     },
-     {
-      "securityId": "ref_CZR",
       "date": "2023-01-27",
       "price": 33.42,
       "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
       "ratio": 1.5682
-     },
-     {
-      "securityId": "ref_CZR",
-      "date": "2023-01-27",
-      "price": 46.88,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
-      "ratio": 1.118
-     },
-     {
-      "securityId": "ref_CZR",
-      "date": "2022-01-28",
-      "price": 46.88,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
-      "ratio": 1.5565
      },
      {
       "securityId": "ref_CZR",
@@ -256,9 +242,16 @@
      {
       "securityId": "ref_CZR",
       "date": "2022-01-28",
-      "price": 41.6,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312523124567/d419445ddef14a.htm",
-      "ratio": 1.7541
+      "price": 46.88,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
+      "ratio": 1.5565
+     },
+     {
+      "securityId": "ref_CZR",
+      "date": "2023-01-27",
+      "price": 46.88,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
+      "ratio": 1.118
      },
      {
       "securityId": "ref_CZR",
@@ -269,10 +262,10 @@
      },
      {
       "securityId": "ref_CZR",
-      "date": "2021-01-29",
-      "price": 93.53,
-      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312522116438/d209936ddef14a.htm",
-      "ratio": 0.7526
+      "date": "2022-01-28",
+      "price": 41.6,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312523124567/d419445ddef14a.htm",
+      "ratio": 1.7541
      },
      {
       "securityId": "ref_CZR",
@@ -280,6 +273,13 @@
       "price": 93.53,
       "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312522116438/d209936ddef14a.htm",
       "ratio": 0.4448
+     },
+     {
+      "securityId": "ref_CZR",
+      "date": "2021-01-29",
+      "price": 93.53,
+      "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312522116438/d209936ddef14a.htm",
+      "ratio": 0.7526
      },
      {
       "securityId": "ref_CZR",
@@ -456,12 +456,7 @@
   },
   "lifecycle": {
    "resolvedCases": 30,
-   "disagreements": [
-    {
-     "securityId": "ref_EBTC",
-     "what": "RATIO_NOT_IN_QUOTE"
-    }
-   ]
+   "disagreements": []
   },
   "registers": {
    "v10Records": 62,
@@ -475,5 +470,5 @@
    "missingCount": 0
   }
  },
- "verdict": "DIFFERENCES_REPORTED"
+ "verdict": "PASS_DECISIONS_AGREE_RESCAN_HITS_NEED_ADJUDICATION"
 }
