@@ -1,0 +1,144 @@
+{
+ "schemaVersion": "quant-v9-setup-independence-1.0.0",
+ "status": "ANALYSIS_ONLY_NO_GATE_CHANGE",
+ "sources": {
+  "quant/data/product/setup-outcomes-v1.json": "dfd8f98181aeaf69d6536e2a54581d547fa5de75625507fcd47fca18863ef546",
+  "quant/data/market/discover-series/ref_SPY.json": "f04a3ea0bc79a51bd811073d8f25ab4642affffa18aa0ed40b5552efc6dc950e"
+ },
+ "model": {
+  "horizonSessions": 126,
+  "covariance": "rho_ij * overlap/H; rho_ij=1 same title else mean pairwise daily-return correlation",
+  "correlationWindow": [
+   "2026-04-27",
+   "2026-10-26"
+  ],
+  "titlesInCorrelation": 1333,
+  "rhoRaw": 0.0614957432220812,
+  "rhoSpyExcess": 0.0792810364010414,
+  "limitations": [
+   "Equal variances and no serial correlation assumed",
+   "Correlation estimated on the last ~6 months only; regime dependent",
+   "Sector/size clustering beyond the mean correlation ignored (understates dependence)",
+   "Yardstick for design, not an inferential result"
+  ]
+ },
+ "observed": {
+  "events": 4137,
+  "titles": 1404,
+  "eventDates": 20,
+  "isoWeeks": 6,
+  "calendarMonths": 2,
+  "maxEventsOnOneDate": 650,
+  "byKind": {
+   "ALL": {
+    "n": 4137,
+    "nEffRaw": 17.13160862533324,
+    "nEffExcess": 13.340373264740375
+   },
+   "SETUP_NEW": {
+    "n": 1791,
+    "nEffRaw": 17.06218205541903,
+    "nEffExcess": 13.295863196504833
+   },
+   "SETUP_CONFIRMED": {
+    "n": 147,
+    "nEffRaw": 14.938029203923113,
+    "nEffExcess": 12.006628425920104
+   }
+  },
+  "nonOverlappingM6Blocks": 1
+ },
+ "counterfactualDesigns": [
+  {
+   "weeks": 6,
+   "titlesPerWeek": 1,
+   "n": 6,
+   "spanSessions": 25,
+   "nonOverlappingM6Blocks": 1,
+   "nEffRaw": 4.691133925989084,
+   "nEffExcess": 4.412734863532474
+  },
+  {
+   "weeks": 6,
+   "titlesPerWeek": 200,
+   "n": 1200,
+   "spanSessions": 25,
+   "nonOverlappingM6Blocks": 1,
+   "nEffRaw": 17.38139296746644,
+   "nEffExcess": 13.526137003101136
+  },
+  {
+   "weeks": 20,
+   "titlesPerWeek": 1,
+   "n": 20,
+   "spanSessions": 95,
+   "nonOverlappingM6Blocks": 1,
+   "nEffRaw": 10.846820765256892,
+   "nEffExcess": 9.578947774024503
+  },
+  {
+   "weeks": 20,
+   "titlesPerWeek": 200,
+   "n": 4000,
+   "spanSessions": 95,
+   "nonOverlappingM6Blocks": 1,
+   "nEffRaw": 21.976898530559268,
+   "nEffExcess": 17.06780807832958
+  },
+  {
+   "weeks": 52,
+   "titlesPerWeek": 1,
+   "n": 52,
+   "spanSessions": 255,
+   "nonOverlappingM6Blocks": 3,
+   "nEffRaw": 23.230298650673546,
+   "nEffExcess": 20.02594142678232
+  },
+  {
+   "weeks": 52,
+   "titlesPerWeek": 200,
+   "n": 10400,
+   "spanSessions": 255,
+   "nonOverlappingM6Blocks": 3,
+   "nEffRaw": 39.85761008619934,
+   "nEffExcess": 30.942865757859273
+  },
+  {
+   "weeks": 104,
+   "titlesPerWeek": 1,
+   "n": 104,
+   "spanSessions": 515,
+   "nonOverlappingM6Blocks": 5,
+   "nEffRaw": 44.00213484370883,
+   "nEffExcess": 37.71028627400528
+  },
+  {
+   "weeks": 104,
+   "titlesPerWeek": 200,
+   "n": 20800,
+   "spanSessions": 515,
+   "nonOverlappingM6Blocks": 5,
+   "nEffRaw": 72.74202704758835,
+   "nEffExcess": 56.46794576928401
+  }
+ ],
+ "findings": [
+  "Observed: 4137 events on 20 dates / 6 ISO weeks / 2 months; all M6 windows overlap (1 non-overlapping M6 block).",
+  "Mean pairwise daily-return correlation 0.061 raw, 0.079 SPY-excess.",
+  "N_eff for the mean M6 outcome of all events: raw 17.1, SPY-excess 13.3 (n=4137).",
+  "20 consecutive weeks x 200 titles (n=4000) give raw N_eff 22.0: twenty calendar weeks are not twenty independent observations of an M6 outcome; overlapping horizons and the common market factor dominate.",
+  "Neither a month count nor an ISO-week count measures independence. A dependence-aware criterion (minimum N_eff from a declared cluster/block model, plus a minimum number of non-overlapping horizon blocks) is required to make the gate meaningful."
+ ],
+ "recommendationUpdate": {
+  "status": "NOT_APPROVED_RECOMMENDATION",
+  "supersedes": "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json (ISO-week counter alone is insufficient)",
+  "proposal": [
+   "Keep the active gate (calendar months, independentWeeks=20) unchanged until owner approval.",
+   "If changed: rename the field to what is counted (eventCalendarWeeks) and add a separate independence gate: minimum effective sample size of the M6 endpoint under a pre-registered calendar-block/cluster model (e.g. N_eff >= 30 on SPY-excess returns) AND at least k non-overlapping M6 horizon blocks (e.g. k >= 4, i.e. >= ~2 years of history).",
+   "Report raw and market-excess N_eff on every certification build; never infer independence from event counts."
+  ],
+  "consequence": "A real independence requirement for M6 outcomes is materially stricter than either counter: with ~1 non-overlapping M6 block today, setup certification cannot be justified on independence grounds before multiple years of forward-collected history."
+ },
+ "activeGateChanged": false,
+ "productionApproved": false
+}

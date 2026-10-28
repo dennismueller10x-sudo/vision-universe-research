@@ -1,0 +1,1850 @@
+{
+ "schemaVersion": "v9-identity-dry-run-1.0.0",
+ "generatedAt": "2026-10-27T19:12:19.832Z",
+ "productionApproved": false,
+ "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+ "proposalSha256": "ccf117f195b7ab7cdc9d9bc1a924ca92e6e3d79af9f9a6230f71d0b6da0cb054",
+ "codeSha256": "44a44366bc61f7cccb022d7aea014f568c1affbb4221d8683f63bd85530bad42",
+ "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+ "runtime": {
+  "nodeVersion": "22.22.0",
+  "v8Version": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibcVersion": "2.39",
+  "nodeExecutableHash": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "total": 6190,
+ "before": {
+  "QUALIFIED": 4449,
+  "INSUFFICIENT_HISTORY": 439,
+  "MISSING_WEEKS": 218,
+  "CORPORATE_ACTION_UNRESOLVED": 600,
+  "INELIGIBLE_EQUITY_LISTING": 295,
+  "AMBIGUOUS_LISTING_IDENTITY": 180,
+  "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+  "LISTING_IDENTITY_MISMATCH": 3,
+  "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+ },
+ "after": {
+  "QUALIFIED": 4565,
+  "INSUFFICIENT_HISTORY": 452,
+  "MISSING_WEEKS": 219,
+  "CORPORATE_ACTION_UNRESOLVED": 607,
+  "INELIGIBLE_EQUITY_LISTING": 295,
+  "AMBIGUOUS_LISTING_IDENTITY": 48,
+  "LISTING_IDENTITY_MISMATCH": 2,
+  "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+ },
+ "newlyQualified": 116,
+ "newlyQualifiedIds": [
+  "ref_ACB",
+  "ref_ACI",
+  "ref_ADCT",
+  "ref_ADSE",
+  "ref_ADT",
+  "ref_AERT",
+  "ref_ALC",
+  "ref_ALTI",
+  "ref_ARRY",
+  "ref_BAM",
+  "ref_BBAI",
+  "ref_BCTX",
+  "ref_BEAM",
+  "ref_BGC",
+  "ref_BHVN",
+  "ref_BNL",
+  "ref_BOLT",
+  "ref_BRAG",
+  "ref_BTDR",
+  "ref_BTU",
+  "ref_BUR",
+  "ref_BV",
+  "ref_CCSI",
+  "ref_CGAU",
+  "ref_CGNT",
+  "ref_CHRD",
+  "ref_CNH",
+  "ref_CNR",
+  "ref_COCO",
+  "ref_COGT",
+  "ref_COHR",
+  "ref_COR",
+  "ref_CRC",
+  "ref_CSR",
+  "ref_CWBC",
+  "ref_CZR",
+  "ref_DCBO",
+  "ref_DCOM",
+  "ref_DERM",
+  "ref_DNA",
+  "ref_DOC",
+  "ref_DOLE",
+  "ref_DOW",
+  "ref_ECVT",
+  "ref_EE",
+  "ref_ERO",
+  "ref_ESI",
+  "ref_EVER",
+  "ref_EVTL",
+  "ref_FBRT",
+  "ref_FG",
+  "ref_FRSH",
+  "ref_FSBC",
+  "ref_FTRE",
+  "ref_FUN",
+  "ref_GAME",
+  "ref_HCC",
+  "ref_HITI",
+  "ref_HR",
+  "ref_HUT",
+  "ref_ICCM",
+  "ref_IFS",
+  "ref_IHS",
+  "ref_IMCC",
+  "ref_INCR",
+  "ref_INM",
+  "ref_INMD",
+  "ref_IOT",
+  "ref_LAB",
+  "ref_LSPD",
+  "ref_MDXH",
+  "ref_MIR",
+  "ref_MOVE",
+  "ref_MRNA",
+  "ref_MXCT",
+  "ref_NCRA",
+  "ref_NMG",
+  "ref_NMIH",
+  "ref_NU",
+  "ref_NYAX",
+  "ref_OPEN",
+  "ref_OPTX",
+  "ref_PAY",
+  "ref_PD",
+  "ref_PL",
+  "ref_POET",
+  "ref_PPTA",
+  "ref_PRM",
+  "ref_RELY",
+  "ref_RKT",
+  "ref_RPRX",
+  "ref_RPT",
+  "ref_S",
+  "ref_SAFE",
+  "ref_SANG",
+  "ref_SDRL",
+  "ref_SEVN",
+  "ref_SGI",
+  "ref_SGML",
+  "ref_SIRI",
+  "ref_SNOW",
+  "ref_STRR",
+  "ref_TEL",
+  "ref_TEN",
+  "ref_TIL",
+  "ref_TRAK",
+  "ref_TW",
+  "ref_UHAL_B",
+  "ref_UK",
+  "ref_UWMC",
+  "ref_VOXR",
+  "ref_VS",
+  "ref_WEST",
+  "ref_WMG",
+  "ref_WOOF",
+  "ref_XRTX"
+ ],
+ "bindingsEvaluated": 137,
+ "bindingsNotQualified": [
+  {
+   "securityId": "ref_AHRT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_ARIS",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_AVIR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2021-10-22\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_SPLIT_SIZED_JUMP\"}]"
+  },
+  {
+   "securityId": "ref_B",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_BEAT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-21\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_CD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_DD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-07\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_ECHO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_HOLO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "MISSING_WEEKS",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "MISSING_WEEKS:[{\"after\":\"2022-09-21\",\"before\":\"2022-12-23\"}]"
+  },
+  {
+   "securityId": "ref_MLTX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2023-06-30\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_MRDN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_NYXH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2026-06-05\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_SPLIT_SIZED_JUMP\"}]"
+  },
+  {
+   "securityId": "ref_OSG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_P",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_PARA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_RENT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2022-12-09\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"},{\"time\":\"2024-04-12\",\"status\":\"RESOLVED_GENUINE_MOVE\",\"reason\":\"NO_PROVIDER_SPLIT_AND_MULT"
+  },
+  {
+   "securityId": "ref_RJET",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_STEX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_TEAD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-07\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_VIP",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_VISN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  }
+ ],
+ "bindings": [
+  {
+   "securityId": "ref_ACB",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-01",
+    "to": "2026-10-23",
+    "bars": 265,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ACI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-06-26",
+    "to": "2026-10-23",
+    "bars": 331,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ADCT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-05-15",
+    "to": "2026-10-23",
+    "bars": 337,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ADSE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-12-23",
+    "to": "2026-10-23",
+    "bars": 253,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ADT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-05-10",
+    "to": "2026-10-23",
+    "bars": 390,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_AERT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-11-17",
+    "to": "2026-10-23",
+    "bars": 154,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_AHRT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_ALC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-02-28",
+    "to": "2026-10-23",
+    "bars": 348,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ALTI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-01-06",
+    "to": "2026-10-23",
+    "bars": 199,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ARIS",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_ARRY",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-10-16",
+    "to": "2026-10-23",
+    "bars": 315,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_AVIR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2021-10-22\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_SPLIT_SIZED_JUMP\"}]"
+  },
+  {
+   "securityId": "ref_B",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_BAM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-04-06",
+    "to": "2026-10-23",
+    "bars": 186,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BBAI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-12-17",
+    "to": "2026-10-23",
+    "bars": 254,
+    "corporateActionQuality": "RESOLVED"
+   }
+  },
+  {
+   "securityId": "ref_BCTX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-08-05",
+    "to": "2026-10-23",
+    "bars": 221,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BEAM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-02-07",
+    "to": "2026-10-23",
+    "bars": 351,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BEAT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-21\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_BGC",
+   "before": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "after": "QUALIFIED",
+   "origin": "DOSSIER",
+   "detail": {
+    "from": "2018-12-07",
+    "to": "2026-10-23",
+    "bars": 412,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BHVN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-11-11",
+    "to": "2026-10-23",
+    "bars": 207,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BNL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-26",
+    "to": "2026-10-23",
+    "bars": 292,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BOLT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-05-14",
+    "to": "2026-10-23",
+    "bars": 285,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BRAG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-08-27",
+    "to": "2026-10-23",
+    "bars": 270,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BTDR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-04-14",
+    "to": "2026-10-23",
+    "bars": 185,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BTU",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2017-04-07",
+    "to": "2026-10-23",
+    "bars": 499,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BUR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-01",
+    "to": "2026-10-23",
+    "bars": 239,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_BV",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2018-06-29",
+    "to": "2026-10-23",
+    "bars": 435,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CCSI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-08",
+    "to": "2026-10-23",
+    "bars": 264,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_CGAU",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-03-25",
+    "to": "2026-10-23",
+    "bars": 240,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CGNT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-04-30",
+    "to": "2026-10-23",
+    "bars": 287,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CHRD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-07-08",
+    "to": "2026-10-23",
+    "bars": 225,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CNH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2024-05-31",
+    "to": "2026-10-23",
+    "bars": 126,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CNR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2025-01-17",
+    "to": "2026-10-23",
+    "bars": 93,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_COCO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-22",
+    "to": "2026-10-23",
+    "bars": 262,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_COGT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-08-20",
+    "to": "2026-10-23",
+    "bars": 271,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_COHR",
+   "before": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "after": "QUALIFIED",
+   "origin": "DOSSIER",
+   "detail": {
+    "from": "2001-09-28",
+    "to": "2026-10-23",
+    "bars": 1309,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_COR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-09-01",
+    "to": "2026-10-23",
+    "bars": 165,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CRC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-10-30",
+    "to": "2026-10-23",
+    "bars": 313,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CSR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-01-08",
+    "to": "2026-10-23",
+    "bars": 303,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CWBC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2024-04-05",
+    "to": "2026-10-23",
+    "bars": 134,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_CZR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-07-24",
+    "to": "2026-10-23",
+    "bars": 327,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DCBO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-12",
+    "to": "2026-10-23",
+    "bars": 294,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DCOM",
+   "before": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "after": "QUALIFIED",
+   "origin": "DOSSIER",
+   "detail": {
+    "from": "2011-03-11",
+    "to": "2026-10-23",
+    "bars": 816,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-07\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_DERM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-11-12",
+    "to": "2026-10-23",
+    "bars": 259,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DNA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-24",
+    "to": "2026-10-23",
+    "bars": 266,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DOC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2024-03-15",
+    "to": "2026-10-23",
+    "bars": 137,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DOLE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-03-25",
+    "to": "2026-10-23",
+    "bars": 240,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_DOW",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-10-25",
+    "to": "2026-10-23",
+    "bars": 366,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ECHO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_ECVT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-08-06",
+    "to": "2026-10-23",
+    "bars": 273,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_EE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-14",
+    "to": "2026-10-23",
+    "bars": 237,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ERO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-03-11",
+    "to": "2026-10-23",
+    "bars": 242,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ESI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-03-01",
+    "to": "2026-10-23",
+    "bars": 400,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_EVER",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2018-06-29",
+    "to": "2026-10-23",
+    "bars": 435,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_EVTL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-29",
+    "to": "2026-10-23",
+    "bars": 235,
+    "corporateActionQuality": "RESOLVED"
+   }
+  },
+  {
+   "securityId": "ref_FBRT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-22",
+    "to": "2026-10-23",
+    "bars": 262,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_FG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-11-25",
+    "to": "2026-10-23",
+    "bars": 205,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_FRSH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-24",
+    "to": "2026-10-23",
+    "bars": 266,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_FSBC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-05-07",
+    "to": "2026-10-23",
+    "bars": 286,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_FTRE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-07-07",
+    "to": "2026-10-23",
+    "bars": 173,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_FUN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2024-07-05",
+    "to": "2026-10-23",
+    "bars": 121,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_GAME",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-12-30",
+    "to": "2026-10-23",
+    "bars": 200,
+    "corporateActionQuality": "RESOLVED"
+   }
+  },
+  {
+   "securityId": "ref_HCC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2017-04-13",
+    "to": "2026-10-23",
+    "bars": 498,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_HITI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-02-04",
+    "to": "2026-10-23",
+    "bars": 247,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_HOLO",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "MISSING_WEEKS",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "MISSING_WEEKS:[{\"after\":\"2022-09-21\",\"before\":\"2022-12-23\"}]"
+  },
+  {
+   "securityId": "ref_HR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-07-22",
+    "to": "2026-10-23",
+    "bars": 223,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_HUT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-12-22",
+    "to": "2026-10-23",
+    "bars": 149,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_ICCM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-01",
+    "to": "2026-10-23",
+    "bars": 239,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_IFS",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-08-09",
+    "to": "2026-10-23",
+    "bars": 377,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_IHS",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-15",
+    "to": "2026-10-23",
+    "bars": 263,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_IMCC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-04-30",
+    "to": "2026-10-23",
+    "bars": 287,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_INCR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-03",
+    "to": "2026-10-23",
+    "bars": 269,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_INM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-02-12",
+    "to": "2026-10-23",
+    "bars": 298,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_INMD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-08-09",
+    "to": "2026-10-23",
+    "bars": 377,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_IOT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-12-17",
+    "to": "2026-10-23",
+    "bars": 254,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_LAB",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-08",
+    "to": "2026-10-23",
+    "bars": 238,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_LSPD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-05-21",
+    "to": "2026-10-23",
+    "bars": 284,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_MDXH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-11-05",
+    "to": "2026-10-23",
+    "bars": 260,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_MIR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-10-29",
+    "to": "2026-10-23",
+    "bars": 261,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_MLTX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2023-06-30\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_MOVE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-26",
+    "to": "2026-10-23",
+    "bars": 292,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_MRDN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_MRNA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2018-12-07",
+    "to": "2026-10-23",
+    "bars": 412,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_MXCT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-17",
+    "to": "2026-10-23",
+    "bars": 267,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NCRA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-08-12",
+    "to": "2026-10-23",
+    "bars": 220,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NMG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-01",
+    "to": "2026-10-23",
+    "bars": 239,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NMIH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2013-11-08",
+    "to": "2026-10-23",
+    "bars": 677,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NU",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-12-10",
+    "to": "2026-10-23",
+    "bars": 255,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NYAX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-03-03",
+    "to": "2026-10-23",
+    "bars": 191,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_NYXH",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2026-06-05\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_SPLIT_SIZED_JUMP\"}]"
+  },
+  {
+   "securityId": "ref_OPEN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-05",
+    "to": "2026-10-23",
+    "bars": 295,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_OPTX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-11-10",
+    "to": "2026-10-23",
+    "bars": 155,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_OSG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_P",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_PARA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_PAY",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-05-28",
+    "to": "2026-10-23",
+    "bars": 283,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_PD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-04-12",
+    "to": "2026-10-23",
+    "bars": 394,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_PL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-12-17",
+    "to": "2026-10-23",
+    "bars": 254,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_POET",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-03-31",
+    "to": "2026-10-23",
+    "bars": 187,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_PPTA",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-02-19",
+    "to": "2026-10-23",
+    "bars": 297,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_PRM",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-11-12",
+    "to": "2026-10-23",
+    "bars": 259,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_RELY",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-24",
+    "to": "2026-10-23",
+    "bars": 266,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_RENT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2022-12-09\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"},{\"time\":\"2024-04-12\",\"status\":\"RESOLVED_GENUINE_MOVE\",\"reason\":\"NO_PROVIDER_SPLIT_AND_MULT"
+  },
+  {
+   "securityId": "ref_RJET",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_RKT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-08-07",
+    "to": "2026-10-23",
+    "bars": 325,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_RPRX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-06-19",
+    "to": "2026-10-23",
+    "bars": 332,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_RPT",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2024-12-06",
+    "to": "2026-10-23",
+    "bars": 99,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_S",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-09-10",
+    "to": "2026-10-23",
+    "bars": 268,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SAFE",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-04-06",
+    "to": "2026-10-23",
+    "bars": 186,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SANG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-11-12",
+    "to": "2026-10-23",
+    "bars": 259,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SDRL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-04-21",
+    "to": "2026-10-23",
+    "bars": 184,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SEVN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-11-05",
+    "to": "2026-10-23",
+    "bars": 260,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SGI",
+   "before": "LISTING_IDENTITY_MISMATCH",
+   "after": "QUALIFIED",
+   "origin": "DOSSIER",
+   "detail": {
+    "from": "2004-04-02",
+    "to": "2026-10-23",
+    "bars": 1178,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SGML",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-04-08",
+    "to": "2026-10-23",
+    "bars": 238,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SIRI",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2003-03-28",
+    "to": "2026-10-23",
+    "bars": 1231,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_SNOW",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-09-18",
+    "to": "2026-10-23",
+    "bars": 319,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_STEX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_STRR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2025-09-12",
+    "to": "2026-10-23",
+    "bars": 59,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_TEAD",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2025-11-07\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_DOMINATES_WEEK\"}]"
+  },
+  {
+   "securityId": "ref_TEL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2013-11-15",
+    "to": "2026-10-23",
+    "bars": 676,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_TEN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2025-04-11",
+    "to": "2026-10-23",
+    "bars": 81,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_TIL",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-19",
+    "to": "2026-10-23",
+    "bars": 293,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_TRAK",
+   "before": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "after": "QUALIFIED",
+   "origin": "DOSSIER",
+   "detail": {
+    "from": "2024-10-11",
+    "to": "2026-10-23",
+    "bars": 107,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_TW",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2019-04-05",
+    "to": "2026-10-23",
+    "bars": 395,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_UHAL_B",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-11-18",
+    "to": "2026-10-23",
+    "bars": 206,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_UK",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-05-21",
+    "to": "2026-10-23",
+    "bars": 284,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_UWMC",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-03-05",
+    "to": "2026-10-23",
+    "bars": 295,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_VIP",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_VISN",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "INSUFFICIENT_HISTORY",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "securityId": "ref_VOXR",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2023-03-17",
+    "to": "2026-10-23",
+    "bars": 189,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_VS",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-01-15",
+    "to": "2026-10-23",
+    "bars": 302,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_WEST",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-09-02",
+    "to": "2026-10-23",
+    "bars": 217,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_WMG",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2020-08-07",
+    "to": "2026-10-23",
+    "bars": 325,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_WOOF",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2021-01-15",
+    "to": "2026-10-23",
+    "bars": 302,
+    "corporateActionQuality": "CLEAN"
+   }
+  },
+  {
+   "securityId": "ref_XRTX",
+   "before": "AMBIGUOUS_LISTING_IDENTITY",
+   "after": "QUALIFIED",
+   "origin": "AMBIGUOUS_RESOLUTION",
+   "detail": {
+    "from": "2022-05-06",
+    "to": "2026-10-23",
+    "bars": 234,
+    "corporateActionQuality": "CLEAN"
+   }
+  }
+ ],
+ "note": "Dry run only. Bound ids are evaluated on their SEC-sourced usable interval with the unchanged adapter validate(); every other adapter check (history >=55 bars, gaps, corporate actions, classification conflicts) still applies."
+}

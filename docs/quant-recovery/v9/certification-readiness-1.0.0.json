@@ -1,0 +1,301 @@
+{
+ "schemaVersion": "quant-v9-certification-readiness-1.0.0",
+ "asOf": "2026-10-27",
+ "sources": {
+  "quant/data/product/backtest-certification-v1.json": "872f871dc805755bb52ce897826645485bd31155e7970572b4118344829a8a26",
+  "quant/methodology/backtest-certification-v1.json": "392f5657702e23598c4ee5ebcf36e120687f3975d31d9deb57e2e661882ad6ce",
+  "quant/data/product/setup-outcomes-v1.json": "dfd8f98181aeaf69d6536e2a54581d547fa5de75625507fcd47fca18863ef546",
+  "scripts/quant/build-backtest-certification.mjs": "7af343630edc2440e063895695fc45a85964e0758a856f444aee4f449e0bdfcb"
+ },
+ "kinds": [
+  {
+   "kind": "SAME_STOCK_REPLAY",
+   "status": "LIMITED",
+   "trust": "LIMITED",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "SURVIVOR_BY_CONSTRUCTION",
+     "value": "Eine Aktie mit langer Historie hat überlebt",
+     "required": null,
+     "blockerClass": "STRUCTURAL_BY_DESIGN",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "ruleTest",
+     "category": "QUALITY",
+     "reason": "DESCRIPTIVE_NOT_A_TEST",
+     "value": "beschreibt, prüft keine Regel",
+     "required": null,
+     "blockerClass": "STRUCTURAL_BY_DESIGN",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "STRUCTURAL_BY_DESIGN"
+   ],
+   "certifiable": false
+  },
+  {
+   "kind": "PATTERN_EVIDENCE",
+   "status": "LIMITED",
+   "trust": "LIMITED",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+     "value": "teilweise nicht quantifiziert",
+     "required": null,
+     "blockerClass": "EVIDENCE_MISSING",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+     "value": "Diese Musterstudie verwendet Kursrendite",
+     "required": null,
+     "blockerClass": "EVIDENCE_MISSING",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "certifiedAsBacktest",
+     "category": "QUALITY",
+     "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+     "value": "Häufigkeitsauswertung",
+     "required": null,
+     "blockerClass": "STRUCTURAL_BY_DESIGN",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "EVIDENCE_MISSING",
+    "STRUCTURAL_BY_DESIGN"
+   ],
+   "certifiable": false
+  },
+  {
+   "kind": "SIGNAL_BACKTEST",
+   "status": "LIMITED",
+   "trust": "LIMITED",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "PARTIAL_SENSITIVITY_ONLY",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+     "required": null,
+     "blockerClass": "EVIDENCE_MISSING",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "ruleCertified",
+     "category": "QUALITY",
+     "reason": "NO_RULE_CERTIFIED",
+     "value": "0 von 5",
+     "required": null,
+     "blockerClass": "EVIDENCE_MISSING",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "EVIDENCE_MISSING"
+   ],
+   "certifiable": false
+  },
+  {
+   "kind": "SETUP_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "trust": "NOT_READY",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "historyDates",
+     "category": "HISTORY",
+     "reason": "SETUP_HISTORY_TOO_SHORT",
+     "value": 21,
+     "required": 120,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "historySpan",
+     "category": "HISTORY",
+     "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
+     "value": "46 Tage",
+     "required": "180 Tage",
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2027-03-10",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "completedOutcomes",
+     "category": "HISTORY",
+     "reason": "COMPLETED_OUTCOMES_TOO_FEW",
+     "value": 0,
+     "required": 100,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "titles",
+     "category": "HISTORY",
+     "reason": "TOO_FEW_TITLES",
+     "value": 0,
+     "required": 20,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "independence",
+     "category": "HISTORY",
+     "reason": "EVENTS_CLUSTERED_IN_TIME",
+     "value": 2,
+     "required": 20,
+     "blockerClass": "NORMATIVE",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "required": null,
+     "blockerClass": "EVIDENCE_MISSING",
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "entryVariant",
+     "category": "QUALITY",
+     "reason": "VARIANTS_NOT_MEASURABLE_YET",
+     "value": "noch nicht messbar",
+     "required": "Δ Median ≤ 1 Pp",
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "oos",
+     "category": "QUALITY",
+     "reason": "OOS_NOT_MEASURABLE_YET",
+     "value": "erst mit abgeschlossenen Ergebnissen messbar",
+     "required": null,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "EVIDENCE_MISSING",
+    "NORMATIVE",
+    "TIME_ACCUMULATION"
+   ],
+   "certifiable": false
+  },
+  {
+   "kind": "STRATEGY_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "trust": "NOT_READY",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "membershipHistory",
+     "category": "HISTORY",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "value": "2 (6 Stände seit 2026-09-15)",
+     "required": 24,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "factorHistory",
+     "category": "HISTORY",
+     "reason": "FACTOR_HISTORY_TOO_SHORT",
+     "value": "2 (21 Stände seit 2026-09-23)",
+     "required": 24,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "TIME_ACCUMULATION"
+   ],
+   "certifiable": false
+  },
+  {
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "trust": "NOT_READY",
+   "hardGatesPass": true,
+   "blockers": [
+    {
+     "gate": "factorHistory",
+     "category": "HISTORY",
+     "reason": "FACTOR_HISTORY_TOO_SHORT",
+     "value": 2,
+     "required": 24,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "completedForward",
+     "category": "HISTORY",
+     "reason": "FORWARD_OUTCOMES_TOO_FEW",
+     "value": 0,
+     "required": 12,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2028-01-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "membershipHistory",
+     "category": "HISTORY",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "value": 2,
+     "required": 24,
+     "blockerClass": "TIME_ACCUMULATION",
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    }
+   ],
+   "blockerClasses": [
+    "TIME_ACCUMULATION"
+   ],
+   "certifiable": false
+  }
+ ],
+ "certifiedKinds": 0,
+ "setupIndependenceCounts": {
+  "events": 4137,
+  "uniqueDates": 20,
+  "from": "2026-09-24",
+  "to": "2026-10-26",
+  "legacyMonthCount": 2,
+  "isoWeekCount": 6,
+  "activeRequirement": 20,
+  "legacyEvaluator": "scripts/quant/build-backtest-certification.mjs: new Set(outcomes.events.map(e => e[2].slice(0,7))).size"
+ },
+ "interpretation": "No kind is certifiable on 2026-10-27. Hard PIT/lookahead gates pass where defined; remaining blockers are forward-collected history (time), missing evidence, structural design limits, and one normative contract question. Historical research studies do not substitute forward-collected published history.",
+ "activeGatesChanged": false,
+ "productionApproved": false
+}

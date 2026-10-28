@@ -1,0 +1,2437 @@
+{
+ "schemaVersion": "v9-ca-stale-tail-1.0.0",
+ "rule": "last >= 8 weekly closes exactly identical",
+ "byStatus": {
+  "QUALIFIED": 96,
+  "MISSING_WEEKS": 94,
+  "INSUFFICIENT_HISTORY": 125,
+  "AMBIGUOUS_LISTING_IDENTITY": 9,
+  "CORPORATE_ACTION_UNRESOLVED": 5,
+  "INELIGIBLE_EQUITY_LISTING": 3
+ },
+ "qualifiedWithStaleTail": [
+  "ref_AACB",
+  "ref_ADEX",
+  "ref_AFBI",
+  "ref_ALOT",
+  "ref_ANSC",
+  "ref_APAD",
+  "ref_ARAV",
+  "ref_ARD",
+  "ref_ASLN",
+  "ref_AVNS",
+  "ref_BAYA",
+  "ref_BLFY",
+  "ref_BMAC",
+  "ref_BOWN",
+  "ref_BWNB",
+  "ref_CALT",
+  "ref_CASI",
+  "ref_CCCX",
+  "ref_CCIX",
+  "ref_CCLDO",
+  "ref_CEO",
+  "ref_CHL",
+  "ref_CHU",
+  "ref_CMPOV",
+  "ref_CREV",
+  "ref_EFTY",
+  "ref_ELSE",
+  "ref_EMPG",
+  "ref_EQC",
+  "ref_ESHA",
+  "ref_EVE",
+  "ref_FSNB",
+  "ref_FTAIN",
+  "ref_GECCO",
+  "ref_GLDD",
+  "ref_GOCOQ",
+  "ref_HCHL",
+  "ref_HNNAZ",
+  "ref_HTBK",
+  "ref_ISPO",
+  "ref_JFB",
+  "ref_KNL",
+  "ref_LANDM",
+  "ref_LAWR",
+  "ref_LGV",
+  "ref_LN",
+  "ref_LPSN",
+  "ref_MAGH",
+  "ref_MAMK",
+  "ref_MBT",
+  "ref_MGIC",
+  "ref_MIXT",
+  "ref_MOFG",
+  "ref_MOR",
+  "ref_NHPAP",
+  "ref_OAKU",
+  "ref_ORGN",
+  "ref_ORIS",
+  "ref_OZON",
+  "ref_PC",
+  "ref_PLT",
+  "ref_PLTS",
+  "ref_PPHP",
+  "ref_PTNM",
+  "ref_PVG",
+  "ref_REE",
+  "ref_REVG",
+  "ref_RILYK",
+  "ref_ROSS",
+  "ref_RWAYZ",
+  "ref_RZB",
+  "ref_SDM",
+  "ref_SELX",
+  "ref_SNBR",
+  "ref_SNCR",
+  "ref_SVA",
+  "ref_SVAC",
+  "ref_TBHC",
+  "ref_TBMC",
+  "ref_TECTP",
+  "ref_THR",
+  "ref_TIRX",
+  "ref_TTM",
+  "ref_UBFO",
+  "ref_UCFI",
+  "ref_VCIC",
+  "ref_VECT",
+  "ref_VEDL",
+  "ref_VIASP",
+  "ref_VSTA",
+  "ref_XOMAO",
+  "ref_XOMAP",
+  "ref_XPVVV",
+  "ref_XTKG",
+  "ref_ZEUS",
+  "ref_ZZK"
+ ],
+ "rows": [
+  {
+   "id": "ref_AACB",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 11,
+   "firstIdenticalWeek": "2026-08-14",
+   "close": 10.59
+  },
+  {
+   "id": "ref_AACT",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-24",
+   "close": 9.49
+  },
+  {
+   "id": "ref_AAPGV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 17.38
+  },
+  {
+   "id": "ref_ACHL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-03-21",
+   "close": 1.48
+  },
+  {
+   "id": "ref_ACV_A",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 15.31
+  },
+  {
+   "id": "ref_ADEX",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 147,
+   "firstIdenticalWeek": "2024-01-05",
+   "close": 5.38
+  },
+  {
+   "id": "ref_ADVM",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-09",
+   "close": 4.36
+  },
+  {
+   "id": "ref_AFAR",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 73,
+   "firstIdenticalWeek": "2024-07-19",
+   "close": 11.68
+  },
+  {
+   "id": "ref_AFBI",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 13,
+   "firstIdenticalWeek": "2026-07-31",
+   "close": 23
+  },
+  {
+   "id": "ref_AGR",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 36.02
+  },
+  {
+   "id": "ref_AILE",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.42
+  },
+  {
+   "id": "ref_AITR",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-04-17",
+   "close": 11
+  },
+  {
+   "id": "ref_AKLI",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.432
+  },
+  {
+   "id": "ref_AL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 27,
+   "firstIdenticalWeek": "2026-04-09",
+   "close": 65
+  },
+  {
+   "id": "ref_ALE",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-12",
+   "close": 67.9
+  },
+  {
+   "id": "ref_ALIM",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 5.54
+  },
+  {
+   "id": "ref_ALOT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-08-28",
+   "close": 28.99
+  },
+  {
+   "id": "ref_ALPN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 64.97
+  },
+  {
+   "id": "ref_ANGIV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-03-31",
+   "close": 15.76
+  },
+  {
+   "id": "ref_ANSC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 11,
+   "firstIdenticalWeek": "2026-08-14",
+   "close": 11.46
+  },
+  {
+   "id": "ref_ANSS",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-17",
+   "close": 374.3
+  },
+  {
+   "id": "ref_APAD",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 25,
+   "firstIdenticalWeek": "2026-05-08",
+   "close": 8.03
+  },
+  {
+   "id": "ref_APLT",
+   "status": "CORPORATE_ACTION_UNRESOLVED",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.103
+  },
+  {
+   "id": "ref_ARAV",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 144,
+   "firstIdenticalWeek": "2024-01-26",
+   "close": 0.0401
+  },
+  {
+   "id": "ref_ARBKL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-12",
+   "close": 5.3
+  },
+  {
+   "id": "ref_ARD",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 24.75
+  },
+  {
+   "id": "ref_ASLN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 119,
+   "firstIdenticalWeek": "2024-07-19",
+   "close": 0.6
+  },
+  {
+   "id": "ref_ASTR",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.539
+  },
+  {
+   "id": "ref_ATCOL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-03",
+   "close": 25.32
+  },
+  {
+   "id": "ref_ATMC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 45,
+   "firstIdenticalWeek": "2025-12-12",
+   "close": 15.6
+  },
+  {
+   "id": "ref_AVGR",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 59,
+   "firstIdenticalWeek": "2025-02-14",
+   "close": 0.474
+  },
+  {
+   "id": "ref_AVNS",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 14,
+   "firstIdenticalWeek": "2026-07-24",
+   "close": 24.99
+  },
+  {
+   "id": "ref_AXLA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.4009
+  },
+  {
+   "id": "ref_BACA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.64
+  },
+  {
+   "id": "ref_BAYA",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 16,
+   "firstIdenticalWeek": "2026-07-10",
+   "close": 12.14
+  },
+  {
+   "id": "ref_BBCQ",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-08-28",
+   "close": 9.79
+  },
+  {
+   "id": "ref_BCSA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.58
+  },
+  {
+   "id": "ref_BFIIW",
+   "status": "INELIGIBLE_EQUITY_LISTING",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.009
+  },
+  {
+   "id": "ref_BGFV",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-09-26",
+   "close": 1.44
+  },
+  {
+   "id": "ref_BHAT",
+   "status": "CORPORATE_ACTION_UNRESOLVED",
+   "identicalTailWeeks": 33,
+   "firstIdenticalWeek": "2026-03-13",
+   "close": 0.675
+  },
+  {
+   "id": "ref_BIOR",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.22
+  },
+  {
+   "id": "ref_BLEU",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.03
+  },
+  {
+   "id": "ref_BLFY",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 13.24
+  },
+  {
+   "id": "ref_BMAC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 151,
+   "firstIdenticalWeek": "2023-12-08",
+   "close": 10.6
+  },
+  {
+   "id": "ref_BMTX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 5
+  },
+  {
+   "id": "ref_BNOX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.2531
+  },
+  {
+   "id": "ref_BOCN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.72
+  },
+  {
+   "id": "ref_BOWN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 67,
+   "firstIdenticalWeek": "2025-07-18",
+   "close": 9.19
+  },
+  {
+   "id": "ref_BSII",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-06-05",
+   "close": 9.99
+  },
+  {
+   "id": "ref_BWNB",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 12,
+   "firstIdenticalWeek": "2026-08-07",
+   "close": 25.16
+  },
+  {
+   "id": "ref_BYU",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.179
+  },
+  {
+   "id": "ref_CALT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 111,
+   "firstIdenticalWeek": "2024-09-13",
+   "close": 40
+  },
+  {
+   "id": "ref_CASI",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 35,
+   "firstIdenticalWeek": "2026-02-27",
+   "close": 0.2075
+  },
+  {
+   "id": "ref_CBCY",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-11-19",
+   "close": 23.75
+  },
+  {
+   "id": "ref_CBO_P_A",
+   "status": "INELIGIBLE_EQUITY_LISTING",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25
+  },
+  {
+   "id": "ref_CCCX",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-13",
+   "close": 13.66
+  },
+  {
+   "id": "ref_CCIX",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 14,
+   "firstIdenticalWeek": "2026-07-24",
+   "close": 10.88
+  },
+  {
+   "id": "ref_CCLDO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 24,
+   "firstIdenticalWeek": "2026-05-15",
+   "close": 27.44
+  },
+  {
+   "id": "ref_CCLDP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-03-14",
+   "close": 19.43
+  },
+  {
+   "id": "ref_CEO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 121.76
+  },
+  {
+   "id": "ref_CFB",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-02-28",
+   "close": 15.99
+  },
+  {
+   "id": "ref_CFFS",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 62,
+   "firstIdenticalWeek": "2024-12-20",
+   "close": 11.28
+  },
+  {
+   "id": "ref_CGBDL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-11-28",
+   "close": 25.48
+  },
+  {
+   "id": "ref_CHL",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 27.51
+  },
+  {
+   "id": "ref_CHU",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 6.03
+  },
+  {
+   "id": "ref_CITE",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.85
+  },
+  {
+   "id": "ref_CMCSV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-12-26",
+   "close": 27.36
+  },
+  {
+   "id": "ref_CMPOV",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 87,
+   "firstIdenticalWeek": "2025-02-28",
+   "close": 13
+  },
+  {
+   "id": "ref_CMRX",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-04-17",
+   "close": 8.54
+  },
+  {
+   "id": "ref_CONN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.0975
+  },
+  {
+   "id": "ref_CORX",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-23",
+   "close": 9.51
+  },
+  {
+   "id": "ref_CREV",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.4021
+  },
+  {
+   "id": "ref_CSCI",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-03",
+   "close": 2.72
+  },
+  {
+   "id": "ref_CSLM",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.69
+  },
+  {
+   "id": "ref_CSWI",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 305.1
+  },
+  {
+   "id": "ref_CVAC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-06",
+   "close": 4.66
+  },
+  {
+   "id": "ref_CVII",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 9.99
+  },
+  {
+   "id": "ref_DCPH",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.59
+  },
+  {
+   "id": "ref_DENN",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-16",
+   "close": 6.25
+  },
+  {
+   "id": "ref_DPCS",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 12.6
+  },
+  {
+   "id": "ref_DRNL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-08-28",
+   "close": 5.36
+  },
+  {
+   "id": "ref_DUET",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.33
+  },
+  {
+   "id": "ref_DYCQ",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 48,
+   "firstIdenticalWeek": "2025-11-21",
+   "close": 11.18
+  },
+  {
+   "id": "ref_EBR_B",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-11-07",
+   "close": 11.68
+  },
+  {
+   "id": "ref_EBTC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-01",
+   "close": 39.64
+  },
+  {
+   "id": "ref_EFTY",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 56,
+   "firstIdenticalWeek": "2025-10-03",
+   "close": 15.02
+  },
+  {
+   "id": "ref_ELSE",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 13,
+   "firstIdenticalWeek": "2026-07-31",
+   "close": 7.74
+  },
+  {
+   "id": "ref_EMPG",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 55,
+   "firstIdenticalWeek": "2025-10-10",
+   "close": 17.36
+  },
+  {
+   "id": "ref_ENFN",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-04-17",
+   "close": 10.76
+  },
+  {
+   "id": "ref_EPWK",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-22",
+   "close": 0.7535
+  },
+  {
+   "id": "ref_EQC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 79,
+   "firstIdenticalWeek": "2025-04-25",
+   "close": 1.58
+  },
+  {
+   "id": "ref_ESEAV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-03-17",
+   "close": 27.85
+  },
+  {
+   "id": "ref_ESHA",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 26,
+   "firstIdenticalWeek": "2026-05-01",
+   "close": 11.57
+  },
+  {
+   "id": "ref_ETWO",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 3.3
+  },
+  {
+   "id": "ref_EVBG",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 35
+  },
+  {
+   "id": "ref_EVE",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 98,
+   "firstIdenticalWeek": "2024-12-13",
+   "close": 11.27
+  },
+  {
+   "id": "ref_EVGR",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-12",
+   "close": 11.95
+  },
+  {
+   "id": "ref_FATAV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 3.42
+  },
+  {
+   "id": "ref_FATBV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 4.9
+  },
+  {
+   "id": "ref_FEXD",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.86
+  },
+  {
+   "id": "ref_FFNW",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-04-25",
+   "close": 22.56
+  },
+  {
+   "id": "ref_FITBM",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 20,
+   "firstIdenticalWeek": "2026-06-12",
+   "close": 26
+  },
+  {
+   "id": "ref_FL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-05",
+   "close": 24.01
+  },
+  {
+   "id": "ref_FLIC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-05-30",
+   "close": 11.87
+  },
+  {
+   "id": "ref_FNA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-04-17",
+   "close": 13.09
+  },
+  {
+   "id": "ref_FNVT",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.62
+  },
+  {
+   "id": "ref_FOSLL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 17.01
+  },
+  {
+   "id": "ref_FRBN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 21.7
+  },
+  {
+   "id": "ref_FREE",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 4.87
+  },
+  {
+   "id": "ref_FRES",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.85
+  },
+  {
+   "id": "ref_FRGE",
+   "status": "CORPORATE_ACTION_UNRESOLVED",
+   "identicalTailWeeks": 35,
+   "firstIdenticalWeek": "2026-02-27",
+   "close": 45
+  },
+  {
+   "id": "ref_FRLN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 6.48
+  },
+  {
+   "id": "ref_FSNB",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 159,
+   "firstIdenticalWeek": "2023-10-13",
+   "close": 10.49
+  },
+  {
+   "id": "ref_FTAIN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 20,
+   "firstIdenticalWeek": "2026-06-12",
+   "close": 24.99
+  },
+  {
+   "id": "ref_FTAIO",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-14",
+   "close": 25.46
+  },
+  {
+   "id": "ref_FTAIP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.37
+  },
+  {
+   "id": "ref_GAINL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-15",
+   "close": 25.22
+  },
+  {
+   "id": "ref_GAQ",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.4
+  },
+  {
+   "id": "ref_GECCM",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.03
+  },
+  {
+   "id": "ref_GECCO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 22,
+   "firstIdenticalWeek": "2026-05-29",
+   "close": 25.25
+  },
+  {
+   "id": "ref_GENE",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 59,
+   "firstIdenticalWeek": "2025-01-03",
+   "close": 0.765
+  },
+  {
+   "id": "ref_GHIX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.18
+  },
+  {
+   "id": "ref_GHLD",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-11-28",
+   "close": 20.01
+  },
+  {
+   "id": "ref_GHSI",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 3.22
+  },
+  {
+   "id": "ref_GIFI",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-16",
+   "close": 12
+  },
+  {
+   "id": "ref_GLADZ",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-10-10",
+   "close": 25.23
+  },
+  {
+   "id": "ref_GLBAV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-14",
+   "close": 30.51
+  },
+  {
+   "id": "ref_GLDD",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 17
+  },
+  {
+   "id": "ref_GLIBR",
+   "status": "INELIGIBLE_EQUITY_LISTING",
+   "identicalTailWeeks": 45,
+   "firstIdenticalWeek": "2025-12-19",
+   "close": 8.49
+  },
+  {
+   "id": "ref_GLT",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 21.05
+  },
+  {
+   "id": "ref_GLYC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.157
+  },
+  {
+   "id": "ref_GOCOQ",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 14,
+   "firstIdenticalWeek": "2026-07-24",
+   "close": 0.337
+  },
+  {
+   "id": "ref_GOEV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.37
+  },
+  {
+   "id": "ref_GORV",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 23,
+   "firstIdenticalWeek": "2025-11-28",
+   "close": 0.4211
+  },
+  {
+   "id": "ref_GRCL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.25
+  },
+  {
+   "id": "ref_GRTS",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.0322
+  },
+  {
+   "id": "ref_GTAC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.48
+  },
+  {
+   "id": "ref_HAIA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.86
+  },
+  {
+   "id": "ref_HBI",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-11-28",
+   "close": 6.47
+  },
+  {
+   "id": "ref_HCHL",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 20,
+   "firstIdenticalWeek": "2026-06-12",
+   "close": 3.96
+  },
+  {
+   "id": "ref_HHGC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.12
+  },
+  {
+   "id": "ref_HMNF",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 27.99
+  },
+  {
+   "id": "ref_HNNAZ",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 17,
+   "firstIdenticalWeek": "2026-07-02",
+   "close": 24.9
+  },
+  {
+   "id": "ref_HOLI",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 26.42
+  },
+  {
+   "id": "ref_HONE",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-10-31",
+   "close": 12.1
+  },
+  {
+   "id": "ref_HONIV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-06-26",
+   "close": 256.01
+  },
+  {
+   "id": "ref_HRYU",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.2878
+  },
+  {
+   "id": "ref_HSII",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-10",
+   "close": 59.01
+  },
+  {
+   "id": "ref_HTBK",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 28,
+   "firstIdenticalWeek": "2026-04-17",
+   "close": 13.45
+  },
+  {
+   "id": "ref_HTLF",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 64.67
+  },
+  {
+   "id": "ref_HTLFP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.05
+  },
+  {
+   "id": "ref_HUDA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 12.56
+  },
+  {
+   "id": "ref_HYZN",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 51,
+   "firstIdenticalWeek": "2025-01-31",
+   "close": 0.6399
+  },
+  {
+   "id": "ref_IACVV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-03-28",
+   "close": 40.24
+  },
+  {
+   "id": "ref_IBTX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 60.67
+  },
+  {
+   "id": "ref_ICCH",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-03-07",
+   "close": 23.49
+  },
+  {
+   "id": "ref_ILMNV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 107.25
+  },
+  {
+   "id": "ref_IMGN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 31.23
+  },
+  {
+   "id": "ref_INFA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 24,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 24.79
+  },
+  {
+   "id": "ref_ISPO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 4.26
+  },
+  {
+   "id": "ref_IVCB",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.59
+  },
+  {
+   "id": "ref_JFB",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 8,
+   "firstIdenticalWeek": "2026-09-04",
+   "close": 4.95
+  },
+  {
+   "id": "ref_JUPGF",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 31,
+   "firstIdenticalWeek": "2026-01-08",
+   "close": 15
+  },
+  {
+   "id": "ref_KACL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 12.33
+  },
+  {
+   "id": "ref_KNL",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 25.04
+  },
+  {
+   "id": "ref_KRNL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.3
+  },
+  {
+   "id": "ref_KRTX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 329.83
+  },
+  {
+   "id": "ref_LANDM",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-29",
+   "close": 25.07
+  },
+  {
+   "id": "ref_LATG",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.9
+  },
+  {
+   "id": "ref_LAWR",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 53,
+   "firstIdenticalWeek": "2025-10-24",
+   "close": 3.75
+  },
+  {
+   "id": "ref_LBDAV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-14",
+   "close": 91.86
+  },
+  {
+   "id": "ref_LBDKV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-14",
+   "close": 90.65
+  },
+  {
+   "id": "ref_LCW",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.87
+  },
+  {
+   "id": "ref_LGV",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 10.09
+  },
+  {
+   "id": "ref_LILM",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.052
+  },
+  {
+   "id": "ref_LMNX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-08-28",
+   "close": 9.16
+  },
+  {
+   "id": "ref_LN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 51.98
+  },
+  {
+   "id": "ref_LPSN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 8,
+   "firstIdenticalWeek": "2026-09-04",
+   "close": 3.1
+  },
+  {
+   "id": "ref_LSXMA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 22.29
+  },
+  {
+   "id": "ref_LSXMB",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 22.51
+  },
+  {
+   "id": "ref_LSXMK",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 22.29
+  },
+  {
+   "id": "ref_MAGH",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 47,
+   "firstIdenticalWeek": "2025-12-05",
+   "close": 6.76
+  },
+  {
+   "id": "ref_MAMK",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 50,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 13
+  },
+  {
+   "id": "ref_MBIEL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.44
+  },
+  {
+   "id": "ref_MBINO",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25
+  },
+  {
+   "id": "ref_MBNKP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-03",
+   "close": 25.43
+  },
+  {
+   "id": "ref_MBT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 5.5
+  },
+  {
+   "id": "ref_MCAA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 68,
+   "firstIdenticalWeek": "2024-11-08",
+   "close": 11.39
+  },
+  {
+   "id": "ref_MCACR",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.2194
+  },
+  {
+   "id": "ref_MCACU",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 5.22
+  },
+  {
+   "id": "ref_MCTA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 50,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 29.36
+  },
+  {
+   "id": "ref_MDRRP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.11
+  },
+  {
+   "id": "ref_MESA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 1.4
+  },
+  {
+   "id": "ref_METCL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 25.26
+  },
+  {
+   "id": "ref_MGIC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 35,
+   "firstIdenticalWeek": "2026-02-27",
+   "close": 17.38
+  },
+  {
+   "id": "ref_MINDP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 13.3
+  },
+  {
+   "id": "ref_MIXT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 135,
+   "firstIdenticalWeek": "2024-03-28",
+   "close": 14.55
+  },
+  {
+   "id": "ref_MMV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.48
+  },
+  {
+   "id": "ref_MODV",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-08-27",
+   "close": 0.4319
+  },
+  {
+   "id": "ref_MOFG",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-13",
+   "close": 49.31
+  },
+  {
+   "id": "ref_MOR",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 117,
+   "firstIdenticalWeek": "2024-08-02",
+   "close": 18.96
+  },
+  {
+   "id": "ref_MRTX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 58.7
+  },
+  {
+   "id": "ref_MURA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-05",
+   "close": 2.04
+  },
+  {
+   "id": "ref_MYNA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-02-14",
+   "close": 0.2628
+  },
+  {
+   "id": "ref_NCNC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 31,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.1045
+  },
+  {
+   "id": "ref_NHPAP",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 9,
+   "firstIdenticalWeek": "2026-08-28",
+   "close": 25.24
+  },
+  {
+   "id": "ref_NKLA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-25",
+   "close": 0.183
+  },
+  {
+   "id": "ref_NNAG",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.55
+  },
+  {
+   "id": "ref_NOVV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 37
+  },
+  {
+   "id": "ref_NPAB",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 59,
+   "firstIdenticalWeek": "2024-11-08",
+   "close": 10.9
+  },
+  {
+   "id": "ref_NTBL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.2479
+  },
+  {
+   "id": "ref_NURO",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-05-01",
+   "close": 4.58
+  },
+  {
+   "id": "ref_NWLI",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 499.98
+  },
+  {
+   "id": "ref_OAKU",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 31,
+   "firstIdenticalWeek": "2026-03-27",
+   "close": 12.2
+  },
+  {
+   "id": "ref_OCFCP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-05-16",
+   "close": 25
+  },
+  {
+   "id": "ref_ODP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-12-10",
+   "close": 28
+  },
+  {
+   "id": "ref_OLK",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 26.08
+  },
+  {
+   "id": "ref_OMGA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-24",
+   "close": 0.1426
+  },
+  {
+   "id": "ref_ONCT",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 60,
+   "firstIdenticalWeek": "2024-12-06",
+   "close": 0.5266
+  },
+  {
+   "id": "ref_ONYX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.39
+  },
+  {
+   "id": "ref_ORGN",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 17,
+   "firstIdenticalWeek": "2026-07-02",
+   "close": 0.9501
+  },
+  {
+   "id": "ref_ORIS",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 18,
+   "firstIdenticalWeek": "2026-06-26",
+   "close": 1.83
+  },
+  {
+   "id": "ref_OXLCP",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 22,
+   "firstIdenticalWeek": "2026-05-29",
+   "close": 25.01
+  },
+  {
+   "id": "ref_OXSQZ",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-18",
+   "close": 25.2
+  },
+  {
+   "id": "ref_OZON",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 85,
+   "firstIdenticalWeek": "2025-03-14",
+   "close": 11.6
+  },
+  {
+   "id": "ref_PC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 54,
+   "firstIdenticalWeek": "2025-10-17",
+   "close": 9.4
+  },
+  {
+   "id": "ref_PET",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 23,
+   "firstIdenticalWeek": "2025-07-29",
+   "close": 0.0469
+  },
+  {
+   "id": "ref_PFTA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.76
+  },
+  {
+   "id": "ref_PIK",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 2.38
+  },
+  {
+   "id": "ref_PIXY",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 67,
+   "firstIdenticalWeek": "2024-10-25",
+   "close": 6.53
+  },
+  {
+   "id": "ref_PLT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-26",
+   "close": 12.38
+  },
+  {
+   "id": "ref_PLTS",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 56,
+   "firstIdenticalWeek": "2025-10-03",
+   "close": 17.5
+  },
+  {
+   "id": "ref_PLYA",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 42,
+   "firstIdenticalWeek": "2025-06-06",
+   "close": 13.48
+  },
+  {
+   "id": "ref_PPHP",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 132,
+   "firstIdenticalWeek": "2024-04-19",
+   "close": 11.07
+  },
+  {
+   "id": "ref_PRLH",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 62,
+   "firstIdenticalWeek": "2024-12-20",
+   "close": 11.32
+  },
+  {
+   "id": "ref_PTNM",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 56,
+   "firstIdenticalWeek": "2025-10-03",
+   "close": 10.39
+  },
+  {
+   "id": "ref_PVBC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 13.5
+  },
+  {
+   "id": "ref_PVG",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 15.05
+  },
+  {
+   "id": "ref_PXDT",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.5799
+  },
+  {
+   "id": "ref_PXSAP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 24.97
+  },
+  {
+   "id": "ref_QHUOY",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 22,
+   "firstIdenticalWeek": "2026-05-29",
+   "close": 5
+  },
+  {
+   "id": "ref_QMMM",
+   "status": "CORPORATE_ACTION_UNRESOLVED",
+   "identicalTailWeeks": 57,
+   "firstIdenticalWeek": "2025-09-26",
+   "close": 119.4
+  },
+  {
+   "id": "ref_QOMO",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.55
+  },
+  {
+   "id": "ref_QRTEA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.3588
+  },
+  {
+   "id": "ref_QRTEB",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 2
+  },
+  {
+   "id": "ref_RCFA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.45
+  },
+  {
+   "id": "ref_RCM",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 14.31
+  },
+  {
+   "id": "ref_RDUS",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 30
+  },
+  {
+   "id": "ref_REE",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 16,
+   "firstIdenticalWeek": "2026-07-10",
+   "close": 0.0769
+  },
+  {
+   "id": "ref_REEDD",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 6.32
+  },
+  {
+   "id": "ref_RENE",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-05-13",
+   "close": 11.75
+  },
+  {
+   "id": "ref_REVG",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-30",
+   "close": 63.9
+  },
+  {
+   "id": "ref_RHLDV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-27",
+   "close": 31.63
+  },
+  {
+   "id": "ref_RILYK",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 31,
+   "firstIdenticalWeek": "2026-03-27",
+   "close": 25.23
+  },
+  {
+   "id": "ref_RILYM",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-02-21",
+   "close": 25.11
+  },
+  {
+   "id": "ref_ROSS",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 137,
+   "firstIdenticalWeek": "2024-03-15",
+   "close": 11.08
+  },
+  {
+   "id": "ref_RVNC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-02-06",
+   "close": 3.65
+  },
+  {
+   "id": "ref_RWAYZ",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 34,
+   "firstIdenticalWeek": "2026-03-06",
+   "close": 24.99
+  },
+  {
+   "id": "ref_RYZB",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 62.49
+  },
+  {
+   "id": "ref_RZB",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 20,
+   "firstIdenticalWeek": "2026-06-12",
+   "close": 25.34
+  },
+  {
+   "id": "ref_SACC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 24.98
+  },
+  {
+   "id": "ref_SASR",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-03-31",
+   "close": 27.95
+  },
+  {
+   "id": "ref_SBT",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-04-04",
+   "close": 4.84
+  },
+  {
+   "id": "ref_SCCC",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-29",
+   "close": 24.99
+  },
+  {
+   "id": "ref_SDM",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 57,
+   "firstIdenticalWeek": "2025-09-26",
+   "close": 1.85
+  },
+  {
+   "id": "ref_SEDA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.3
+  },
+  {
+   "id": "ref_SELX",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 21,
+   "firstIdenticalWeek": "2026-06-05",
+   "close": 0.34
+  },
+  {
+   "id": "ref_SEPA",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 10.32
+  },
+  {
+   "id": "ref_SEVCF",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-09-04",
+   "close": 8.79
+  },
+  {
+   "id": "ref_SGEN",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 228.74
+  },
+  {
+   "id": "ref_SHLT",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-04-04",
+   "close": 2.05
+  },
+  {
+   "id": "ref_SLRN",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-05-21",
+   "close": 2.27
+  },
+  {
+   "id": "ref_SNBR",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 18,
+   "firstIdenticalWeek": "2026-06-26",
+   "close": 0.125
+  },
+  {
+   "id": "ref_SNCR",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-13",
+   "close": 9
+  },
+  {
+   "id": "ref_SNCRL",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-05-09",
+   "close": 25.14
+  },
+  {
+   "id": "ref_SOL",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 1.94
+  },
+  {
+   "id": "ref_SOVO",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 22.98
+  },
+  {
+   "id": "ref_SP",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 53.99
+  },
+  {
+   "id": "ref_SPLK",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 156.9
+  },
+  {
+   "id": "ref_STBX",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 2.11
+  },
+  {
+   "id": "ref_STEC",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 23,
+   "firstIdenticalWeek": "2025-12-23",
+   "close": 1.53
+  },
+  {
+   "id": "ref_STRM",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-08-12",
+   "close": 5.33
+  },
+  {
+   "id": "ref_SVA",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 85,
+   "firstIdenticalWeek": "2025-03-14",
+   "close": 6.47
+  },
+  {
+   "id": "ref_SVAC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 16,
+   "firstIdenticalWeek": "2026-07-10",
+   "close": 9.12
+  },
+  {
+   "id": "ref_SVMH",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 34,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.7303
+  },
+  {
+   "id": "ref_TBHC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 0.9399
+  },
+  {
+   "id": "ref_TBMC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 31,
+   "firstIdenticalWeek": "2026-03-27",
+   "close": 7.33
+  },
+  {
+   "id": "ref_TBNK",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-04-02",
+   "close": 8.33
+  },
+  {
+   "id": "ref_TCGL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-30",
+   "close": 172.84
+  },
+  {
+   "id": "ref_TECTP",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-13",
+   "close": 9.99
+  },
+  {
+   "id": "ref_TETE",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 12.5
+  },
+  {
+   "id": "ref_TFFP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 56,
+   "firstIdenticalWeek": "2024-12-13",
+   "close": 0.065
+  },
+  {
+   "id": "ref_THR",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 22,
+   "firstIdenticalWeek": "2026-05-29",
+   "close": 61.14
+  },
+  {
+   "id": "ref_THRD",
+   "status": "AMBIGUOUS_LISTING_IDENTITY",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 5.38
+  },
+  {
+   "id": "ref_TIRX",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 34,
+   "firstIdenticalWeek": "2026-03-06",
+   "close": 0.0303
+  },
+  {
+   "id": "ref_TMTC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 2.2
+  },
+  {
+   "id": "ref_TOROV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-04-14",
+   "close": 1.65
+  },
+  {
+   "id": "ref_TRINL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.07
+  },
+  {
+   "id": "ref_TRML",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-10-24",
+   "close": 47.98
+  },
+  {
+   "id": "ref_TRUE",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-21",
+   "close": 2.54
+  },
+  {
+   "id": "ref_TSRI",
+   "status": "CORPORATE_ACTION_UNRESOLVED",
+   "identicalTailWeeks": 122,
+   "firstIdenticalWeek": "2024-06-28",
+   "close": 13.38
+  },
+  {
+   "id": "ref_TTM",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 25.14
+  },
+  {
+   "id": "ref_TWOU",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 1.58
+  },
+  {
+   "id": "ref_UBFO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 10.51
+  },
+  {
+   "id": "ref_UCFI",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 56,
+   "firstIdenticalWeek": "2025-10-03",
+   "close": 5.51
+  },
+  {
+   "id": "ref_UMBFP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-07-11",
+   "close": 25
+  },
+  {
+   "id": "ref_VBIV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.0653
+  },
+  {
+   "id": "ref_VBTX",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-10-17",
+   "close": 30.26
+  },
+  {
+   "id": "ref_VCIC",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 11
+  },
+  {
+   "id": "ref_VECT",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 173,
+   "firstIdenticalWeek": "2023-07-07",
+   "close": 16.85
+  },
+  {
+   "id": "ref_VEDL",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 16.5
+  },
+  {
+   "id": "ref_VIASP",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 17,
+   "firstIdenticalWeek": "2026-07-02",
+   "close": 25.62
+  },
+  {
+   "id": "ref_VIVKD",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 27,
+   "firstIdenticalWeek": "2026-04-24",
+   "close": 2.21
+  },
+  {
+   "id": "ref_VLCN",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-30",
+   "close": 10.57
+  },
+  {
+   "id": "ref_VSAC",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 11.7
+  },
+  {
+   "id": "ref_VSTA",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2026-01-30",
+   "close": 4.9
+  },
+  {
+   "id": "ref_WDCVV",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-02-21",
+   "close": 52.15
+  },
+  {
+   "id": "ref_WKME",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 13.95
+  },
+  {
+   "id": "ref_WRNT",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 0.2716
+  },
+  {
+   "id": "ref_WSBCP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-11-14",
+   "close": 24.99
+  },
+  {
+   "id": "ref_WTFCM",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 39,
+   "firstIdenticalWeek": "2025-07-14",
+   "close": 25
+  },
+  {
+   "id": "ref_WTFCP",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-07-11",
+   "close": 25
+  },
+  {
+   "id": "ref_XOMAO",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 15,
+   "firstIdenticalWeek": "2026-07-17",
+   "close": 25
+  },
+  {
+   "id": "ref_XOMAP",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 15,
+   "firstIdenticalWeek": "2026-07-17",
+   "close": 24.98
+  },
+  {
+   "id": "ref_XPVVV",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 65,
+   "firstIdenticalWeek": "2025-08-01",
+   "close": 44
+  },
+  {
+   "id": "ref_XTKG",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 30,
+   "firstIdenticalWeek": "2026-04-02",
+   "close": 0.5936
+  },
+  {
+   "id": "ref_ZEUS",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 37,
+   "firstIdenticalWeek": "2026-02-13",
+   "close": 47.86
+  },
+  {
+   "id": "ref_ZIMV",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 40,
+   "firstIdenticalWeek": "2025-10-17",
+   "close": 18.99
+  },
+  {
+   "id": "ref_ZIONL",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25
+  },
+  {
+   "id": "ref_ZIONO",
+   "status": "INSUFFICIENT_HISTORY",
+   "identicalTailWeeks": 38,
+   "firstIdenticalWeek": "2026-02-06",
+   "close": 25.04
+  },
+  {
+   "id": "ref_ZK",
+   "status": "MISSING_WEEKS",
+   "identicalTailWeeks": 41,
+   "firstIdenticalWeek": "2025-12-12",
+   "close": 26.73
+  },
+  {
+   "id": "ref_ZZK",
+   "status": "QUALIFIED",
+   "identicalTailWeeks": 69,
+   "firstIdenticalWeek": "2025-07-03",
+   "close": 25.32
+  }
+ ],
+ "productionApproved": false
+}
