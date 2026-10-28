@@ -148,3 +148,26 @@ Die Ausgaben aller Einträge bis 1.2.1 sind unverändert. `linreg` bekommt nur d
 | id | Name | Definition | Referenz |
 |---|---|---|---|
 | `klinger` | Klinger Volume Oscillator | Trend = +1, wenn H+L+C über dem Vortag liegt, sonst −1; dm = H − L; cm kumuliert dm bei gleichem Trend, sonst cm = dm₋₁ + dm; VF = V·\|2·dm/cm − 1\|·Trend·100; KVO = EMA₃₄(VF) − EMA₅₅(VF); Signal EMA₁₃(KVO) | TA-Lib hat kein Gegenstück. Eine zweite, naive Umsetzung mit eigener EMA stimmt auf echten AAPL-Kursen an jeder Bar überein (`technical-indicators-catalog-klinger.test.mjs`). Erster Wert an Bar 55, Signal an Bar 67. |
+
+## Neu in 1.6.0 (L12, nur Katalog)
+
+14 weitere verbreitete Indikatoren, jeder mit fremder Referenz auf echten AAPL-Kursen (`technical-indicators-l12.test.mjs`, INDICATORS_EXTERNAL_REFERENCE.md L12). Sie stehen nur im Katalog und erscheinen in keiner Produktfläche. Bestehende Ausgaben bleiben bitgleich.
+
+| id | Familie | Standard | erster Wert | Ausgabe | Definition | Referenz |
+|---|---|---|---|---|---|---|
+| `apo` | Momentum | 12 / 26 | s−1 | Reihe | EMA_fast(C) − EMA_slow(C) | TA-Lib APO |
+| `midprice` | Trend | 14 | n−1 | Reihe | (HH_n + LL_n)/2 | TA-Lib MIDPRICE |
+| `tsf` | Trend | 14 | n−1 | Reihe | Regressionsgerade der letzten n Schlüsse, einen Bar fortgeschrieben | TA-Lib TSF |
+| `adxr` | Trend | 14 | 3n−2 | Reihe | (ADX + ADX₋₍ₙ₋₁₎)/2 | TA-Lib ADXR (ADX-Konvention geerbt) |
+| `stochFast` | Momentum | 14 / 3 | n−1 | k, d | %K ungeglättet, %D = SMA₃ | TA-Lib STOCHF |
+| `fisher` | Momentum | 9 | n−1 | fisher, signal | Ehlers: x = (HL2 − LL)/(HH − LL) − 0,5; v = 0,66x + 0,67v₋₁ (±0,999); F = 0,5·ln((1+v)/(1−v)) + 0,5·F₋₁; Signal = F₋₁ | pandas-ta fisher |
+| `stc` | Momentum | 23 / 50 / 10, f 0,5 | s+2c−3 | Reihe | doppelt geglättete Stochastik des MACD | TA-Lib EMA + numpy nach Schaff |
+| `rvgi` | Momentum | 10 | n+2 | rvgi, signal | Σ SWMA₄(C − O)/Σ SWMA₄(H − L), Signal SWMA₄ | pandas-ta rvgi |
+| `pvt` | Volumen | – | 1 | Reihe | kumuliert V·(C − C₋₁)/C₋₁ | pandas-ta pvt / 100 |
+| `vhf` | Trend | 28 | n | Reihe | (max − min der Schlüsse)/Σ\|ΔC\| | pandas-ta vhf |
+| `efficiencyRatio` | Trend | 10 | n | Reihe | \|C − C₋ₙ\|/Σ\|ΔC\| (Kaufman) | pandas-ta er |
+| `qstick` | Momentum | 10 | n−1 | Reihe | SMA(C − O) | pandas-ta qstick |
+| `alligator` | Trend | 13/8, 8/5, 5/3 | 20 | jaw, teeth, lips | SMMA des Medianpreises; am Bar i der Wert von i − Versatz (kausal) | numpy SMMA |
+| `fractals` | Trend | – | 4 | up, down (1/0), upPrice, downPrice | Williams: Extrem strikt über/unter den zwei Bars davor und danach. **Ausgewiesen am Bestätigungsbar** (zwei Bars später), nie am Extrem selbst | numpy nach Williams |
+
+**Kein Vorgriff:** Der Test rechnet jeden der 14 Indikatoren auf abgeschnittenen Reihen (Stand 120, 200, 280) nach. Jeder Wert an Bar i ist gleich dem Wert aus der vollen Reihe. Beim Alligator zeigt der übliche Versatz in die Zukunft. Am Bar i steht deshalb der geglättete Wert von Bar i − Versatz.

@@ -58,10 +58,12 @@ test("Klinger: Kleinstbeispiel und Vorzeichen", () => {
   assert.ok(dn.kvo[2] <= 0);
 });
 
-test("Vertrag 1.5.0: Klinger nur im Katalog, 78 Eintraege, Produktflaechen unveraendert", () => {
-  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.5.0");
+test("Vertrag ab 1.5.0: Klinger nur im Katalog, Produktflaechen unveraendert", () => {
+  /* Spaetere Katalogerweiterungen (1.6.0 L12) haengen nur an; der Stand 1.5.0 bleibt vollstaendig erhalten. */
+  assert.match(I.INDICATORS_VERSION, /^technical-indicators-1\.(5|6)\.\d+$/);
   const e = I.catalogEntry("klinger");
   assert.ok(e && e.catalogOnly === true && e.definition && e.family === "VOLUME");
-  assert.equal(I.CATALOG.length, 78);
+  assert.ok(I.CATALOG.length >= 78);
+  assert.equal(I.CATALOG.findIndex((x) => x.id === "pivotsWoodie"), 77, "die 78 Eintraege von 1.5.0 stehen unveraendert vorn");
   assert.equal(I.CATALOG.filter((x) => !x.catalogOnly).length, 24, "gelistete Indikatoren unveraendert");
 });

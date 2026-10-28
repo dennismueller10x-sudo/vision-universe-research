@@ -1,8 +1,8 @@
 # Technical-Analysebibliothek – Inventur und Ausbaustand
 
-Stand 28.10.2026, `main` nach #1037. Versionen: `indicators` 1.5.0, `candlesticks` 1.1.0 (Erkennung seit #1032 doppelt so schnell, Ausgabe byte-gleich), `formations` 1.3.0, `ti-chart-patterns` 1.2.0, `screen-row` 1.9.0 (L9, #1035), `technical-query` 1.9.0, `technical-mtf` 1.1.0.
+Stand 28.10.2026, `main` nach #1047 und L12. Versionen: `indicators` 1.6.0 (L12), `candlesticks` 1.1.0 (Erkennung seit #1032 doppelt so schnell, Ausgabe byte-gleich), `formations` 1.4.0, `ti-chart-patterns` 1.3.0 (#1047), `screen-row` 1.9.0 (L9, #1035), `technical-query` 1.9.0, `technical-mtf` 1.1.0.
 
-Zur Freigabe offen (Fachmodell, mit Vorher/Nachher): #1047 (Dreieckskanten nach Typ, `ti-chart-patterns` 1.3.0, `formations` 1.4.0, FORMATION_VALIDATION.md §7).
+Zur Freigabe offen: keine.
 
 Die Inventur unten (Abschnitte 1–3) ist der Stand vor dem Ausbau (nach #991). Der aktuelle Gesamtstand steht in Abschnitt 0, die Einzelheiten der neuen Einträge in INDICATORS_CATALOG.md, CANDLESTICKS.md und FORMATION_VALIDATION.md.
 
@@ -12,10 +12,10 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
-| Indikatoren (`indicators.js` 1.5.0) | 78 | 78 | 78 | 26 | 20 ●, Rest ○ |
+| Indikatoren (`indicators.js` 1.6.0) | 92 | 92 | 92 | 26 | 20 ●, Rest ○ |
 | Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
 | Chartformationen (`formations.js` 1.2.3 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
-| **gesamt** | **160** | **160** | **159** | **77** | **44 ●** |
+| **gesamt** | **174** | **174** | **173** | **77** | **44 ●** |
 
 **Herkunft „Markt“:**
 - **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
@@ -196,7 +196,8 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L8 | Zweite fremde Referenz für die 26 Indikatoren ohne TA-Lib-Gegenstück | Test | erledigt (#1021) |
 | L9 | Weitere Tagesfelder im Screener: Vortex, Choppiness, 20-Tage-Hoch/-Tief (Donchian), Elder Impulse, Z-Score, Hull steigend, Ulcer, historische Volatilität, Connors RSI, Abstand zum Chandelier-Stopp | **Fachmodell** | erledigt (#1035, Owner-Freigabe 28.10.2026): [SCREENER_FIELDS_L9.md](SCREENER_FIELDS_L9.md); bestehende 123 Spalten byte-gleich |
 | L10 | Dreiecksklassifikation: gelten aufsteigend und absteigend zugleich, ist das Muster symmetrisch (Spiegeltest) | **Fachmodell** | erledigt (#1037, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §6, 19 Titel |
-| L11 | Dreieckskanten nach Typ: aufsteigend oben waagrecht/unten durch die Tiefs, absteigend umgekehrt; Kantenprüfung im Validator | **Fachmodell** | PR #1047 wartet auf Freigabe; FORMATION_VALIDATION.md §7 |
+| L11 | Dreieckskanten nach Typ: aufsteigend oben waagrecht/unten durch die Tiefs, absteigend umgekehrt; Kantenprüfung im Validator | **Fachmodell** | erledigt (#1047, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §7 |
+| L12 | 14 weitere Katalogindikatoren: APO, Midprice, TSF, ADXR, schnelle Stochastik, Fisher Transform, Schaff Trend Cycle, RVGI, PVT, VHF, Efficiency Ratio, QStick, Williams Alligator, Williams Fractals; je fremde Referenz (TA-Lib, pandas-ta oder Formel) | Katalog, kein Fachmodell | erledigt (indicators 1.6.0): INDICATORS_CATALOG.md, INDICATORS_EXTERNAL_REFERENCE.md L12 |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**
 - **Tag:** Der Browser und `screen-row` sehen 270 Tagesbars. Indikatoren mit einer Aufwärmphase über 269 Bars sind auf Tagesbasis nur im Materialisierungslauf exakt rechenbar, der die volle Historie hat (Muster EMA 200).
