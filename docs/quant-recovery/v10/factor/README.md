@@ -36,7 +36,7 @@ Skripte: `scripts/quant/v10/factor/` (`fetch_companyfacts.py`, `jobs.cjs`, `pit_
   - Branchenvorlagen (Banken, Versicherer, REITs) nicht rekonstruiert: diese Titel haben dort NOT_APPLICABLE und keinen Gesamtrang;
   - keine FSDS-Ergänzung;
   - Rangpopulation = heutige Survivors statt kanonisches Produktuniversum.
-  - **Zusätzlich:** Der Fiskalkalender je Emittent wird aus allen Fakten bis heute gebildet. Das betrifft nur die Fiskaljahr-Etiketten, nicht die Werte oder deren Sichtbarkeit.
+  - **Zusätzlich:** Der Fiskalkalender je Emittent wird aus allen Fakten bis heute gebildet. Das betrifft die Fiskaljahr-Etiketten und über `calendar.assign` auch die Zuordnung zu Geschäftsjahr/Periode und damit, welcher Wert gewählt wird (V10-Prüfung, Befund 10); die Sichtbarkeit (`filed < Stichtag`) bleibt unberührt.
 
 ## Population und Abdeckung
 
@@ -47,7 +47,7 @@ Skripte: `scripts/quant/v10/factor/` (`fetch_companyfacts.py`, `jobs.cjs`, `pit_
   - 28 belegte Nicht-Aktien.
 - **Emittenten:** 4.026 CIKs, 114 Listings ohne CIK.
 - **PIT-Dokumente:** 3.957 Emittenten. Ohne Dokument blieben 30 (nicht in companyfacts), 38 (keine periodischen Fakten) und 1 (Fehler „CIK must not be None“).
-- **Survivors:** Alle Frame-Listings sind heutige Survivors; keines endet vor dem Bewertungsende. Delistings kommen deshalb nicht vor. Das ist Selektion, kein Befund.
+- **Survivors:** Die Frame-Listings sind heutige Anbieter-Survivors; Delistings kommen praktisch nicht vor. Das ist Selektion, kein Befund. Korrektur nach der V10-Prüfung (Befund 5): 79 Frame-Listings enden mit ≥ 4 fortgeschriebenen identischen Wochenschlüssen (Start 2024-12 bis 2026-10); diese Balken gehen hier als beobachtete Kurse ein (u. a. Volatilität 0 → bester Risk-Score). Wirkung < 0,1 % der Beobachtungen; der Lifecycle-Loader schneidet sie, ein Faktor-Neulauf damit steht aus.
 - **Stichtage:** 192 Monatsend-Wochenschlüsse von 2010-01-29 bis 2025-12-26.
 
 | Stichtag | Population | Gesamtrang | Value | Quality | Profitability | ohne sichtbares Filing |
@@ -60,7 +60,7 @@ Skripte: `scripts/quant/v10/factor/` (`fetch_companyfacts.py`, `jobs.cjs`, `pit_
 
 Momentum und Risk decken über den ganzen Zeitraum rund 98 % der Population ab.
 
-Die XBRL-Pflicht wurde 2009–2011 eingeführt. Fundamentalfaktoren erreichen das Universumsminimum von 200 Werten deshalb erst ab 2010/2011; der Gesamtrang zählt ab 2011-06 (160 Stichtage).
+Die XBRL-Pflicht wurde 2009–2011 eingeführt. Fundamentalfaktoren erreichen das Universumsminimum von 200 Werten deshalb erst ab 2010/2011; der Gesamtrang ist ab 2011-06 für die Strategie verfügbar (Querschnitte ab 55 bewerteten Titeln); die IC-Reihe des Gesamtrangs beginnt am 2012-09-28 (160 Stichtage, Korrektur nach V10-Prüfung Befund 9).
 
 ## Ergebnisse Faktorstudie (PRICE_RETURN, brutto)
 
@@ -256,3 +256,11 @@ Ein getrennter, früher nutzbarer **„rekonstruierter Research-Scope“** wäre
   ```
   `jobs.json` erzeugt `node scripts/quant/v10/factor/jobs.cjs <priv>` (erstes Monatsende je CIK ab der ersten Wochenschlussnotierung; byte-identisch nachgeprüft).
 - **Optionen:** `--loader-options '{"identityEvidence":true,"corporateActionEvidence":true,"listingLifecycleEvidence":true}'` wird durchgereicht, sobald die Option existiert. Das Feld `listingLifecycle` wird defensiv gelesen. Die Terminal-Barabfindung ist in diesem Stand noch nicht ausgewertet, denn ohne die Option gibt es keine Terminalfälle.
+
+## Nachträge aus der unabhängigen V10-Prüfung
+
+- **Reproduzierbarkeit:** Diese Ergebnisse wurden mit dem CA-Register vor seiner V10-Erweiterung erzeugt (`{identityEvidence, corporateActionEvidence}` → 4.476 QUALIFIED, Stand Commit `77e4189e83`). Auf dem integrierten Stand liefert dieselbe Option 4.481 (+ACAD, ARLO, MGNX, MOH, NSIT, RDN, −VSTS). Exakte Reproduktion: Worktree auf `77e4189e83` auschecken und dort die obigen Befehle ausführen. Der Faktor-Strang hat keinen Manifest-Wächter; ein Neulauf auf HEAD rechnet auf dem neuen Frame.
+- **Python-Gegenrechnung (Befund 8):** Teil D vergleicht nur 8 Stichtage; IC-Mittel, Block-/NW-p und Holm über alle Stichtage wurden von der Prüfung aus `factor-study-perdate` nachgerechnet (identisch, gleiche Engine). 11/302 Marktkapitalisierungs-Abweichungen der einfacheren Konzeptwahl (u. a. ATYR, BANC, ENOV) sind gezählt, nicht entschieden.
+- **E3-Schranke:** Die registrierte Schranke „letzter beobachteter Kurs“ ist als 0 % Rendite umgesetzt; heute ohne Wirkung (`q5Censored` = 0).
+- **Split in derselben Woche vor dem Aktienzahl-Stichtag** wird in `weeklySplitFactors`/`marketCapAt` doppelt gezählt (seltener Randfall, nicht quantifiziert).
+- **Strategie-Membership** ist der Top-100-Kandidatenpool je Stichtag (Engine-Budget), nicht die volle Rangpopulation – im Artefakt offengelegt.

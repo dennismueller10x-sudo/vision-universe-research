@@ -263,6 +263,7 @@ function lifecycleIndex() {
   return { registryHash: hash(reg), protocolSha256: reg.protocolSha256, byId: new Map(reg.records.map(r => [r.securityId, r])) };
 }
 
+const isoWeekOf = d => { const t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - (t.getUTCDay() + 6) % 7); return t.toISOString().slice(0, 10); };
 function createResearchLoader(root, options) {
   const opts = loaderOptions(options);
   const base = Adapter.createLoader(root);
@@ -299,19 +300,30 @@ function createResearchLoader(root, options) {
     if (!/^ref_[A-Za-z0-9_.-]+$/.test(securityId)) throw Error('INVALID_SECURITY_ID');
     const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel(securityId)), 'utf8') : suppliedBytes;
     const doc = JSON.parse(bytes), rec = lc.byId.get(securityId);
-    if (!rec) { // unchanged result, unless the series ends frozen: repeated closes are not trades; without a sourced last trading day it fails closed
-      const r = inner(securityId, bytes);
-      if (frozenTailRun(doc.points) >= FROZEN_TAIL_MIN_RUN) throw Error('FROZEN_TAIL_UNRESOLVED');
-      return r;
+    if (!rec) { // unchanged result, unless the series ends frozen: repeated closes are not trades
+      const run = Array.isArray(doc.points) ? frozenTailRun(doc.points) : 0;
+      if (run < FROZEN_TAIL_MIN_RUN) return inner(securityId, bytes);
+      // Without a sourced last trading day the listing is kept up to its last observed close (the first bar of the frozen
+      // run) and everything after is removed: outcomes beyond it are censored with an UNKNOWN terminal value. Excluding the
+      // whole listing would select on the later outcome (delisting) - V10 review finding 4.
+      const keep = doc.points.length - run + 1, lastObserved = doc.points[keep - 1][0];
+      const r = inner(securityId, bytes, (d, identity) => check({ ...d, points: d.points.slice(0, keep), to: lastObserved }, identity), true);
+      return { ...r, warnings: r.warnings.concat(['FROZEN_TAIL_CUT_AT_LAST_OBSERVED_CLOSE', 'REPEATED_CLOSES_REMOVED_TERMINAL_UNKNOWN']),
+        listingLifecycle: { schemaVersion: LIFECYCLE_SCHEMA, registryHash: lc.registryHash, protocolSha256: lc.protocolSha256, status: 'FROZEN_TAIL_UNSOURCED_CENSORED', category: null, cik: null,
+          lastTradeDate: null, lastObservedDate: lastObserved, frozenTailBarsRemoved: run - 1,
+          terminal: { kind: 'UNKNOWN', cashPerShare: null, stockRatio: null, acquirerTicker: null, paymentDate: null, evidence: [] } } };
     }
     const g = rec.historyGuard, ltd = rec.lastTradeDate;
     if (doc.ticker !== rec.ticker || !Array.isArray(doc.points)) throw Error('LISTING_LIFECYCLE_CONFLICT');
     if (hash(doc.points.filter(p => p[0] >= g.checkedFrom && p[0] <= g.checkedTo)) !== g.pointsSha256) throw Error('LISTING_LIFECYCLE_HISTORY_GUARD_MISMATCH');
     if (doc.points.some(p => p[0] > ltd && p[1] !== rec.frozenClose)) throw Error('LISTING_LIFECYCLE_CONFLICT'); // the series moves after the sourced last trading day
-    let terminalOverride = false, cutRemoved = 0;
+    let terminalOverride = false, cutRemoved = 0, lastBarAfterLtd = false, cutLast = null;
     const cutCheck = (d, identity) => {
-      const pts = d.points.filter(p => p[0] <= ltd);
-      cutRemoved = d.points.length - pts.length;
+      // A last trading day inside a week leaves that week's bar labelled after it; its close is the real last close
+      // (the frozen value). Keep that one bar under its own label, never the repeats after it - V10 review finding 6.
+      const pts = d.points.filter(p => p[0] <= ltd), next = d.points[pts.length];
+      if (next && isoWeekOf(next[0]) === isoWeekOf(ltd)) { pts.push(next); lastBarAfterLtd = true; }
+      cutRemoved = d.points.length - pts.length; cutLast = pts.length ? pts.at(-1)[0] : null;
       if (!pts.length) throw Error('INSUFFICIENT_HISTORY');
       // INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED is satisfied only by a sourced terminal kind.
       terminalOverride = !!identity && identity.active_status !== 'ACTIVE' && rec.terminal.kind !== 'UNKNOWN';
@@ -320,7 +332,7 @@ function createResearchLoader(root, options) {
     const r = inner(securityId, bytes, cutCheck, true);
     return { ...r, warnings: r.warnings.concat(['SERIES_CUT_AT_SOURCED_LAST_TRADE_DATE', 'REPEATED_CLOSES_AFTER_LAST_TRADE_REMOVED'], terminalOverride ? ['INACTIVE_LISTING_TERMINAL_VALUE_SOURCE_VERIFIED'] : []),
       listingLifecycle: { schemaVersion: LIFECYCLE_SCHEMA, registryHash: lc.registryHash, protocolSha256: lc.protocolSha256, status: rec.status, category: rec.category, cik: rec.cik,
-        lastTradeDate: ltd, frozenTailBarsRemoved: cutRemoved,
+        lastTradeDate: ltd, lastObservedDate: cutLast, lastBarLabelAfterLastTradeDate: lastBarAfterLtd, frozenTailBarsRemoved: cutRemoved,
         terminal: { kind: rec.terminal.kind, cashPerShare: rec.terminal.cashPerShare, stockRatio: rec.terminal.stockRatio, acquirerTicker: rec.terminal.acquirerTicker,
           paymentDate: rec.terminal.paymentDate, evidence: rec.sources.map(s => ({ role: s.role, accession: s.accession, url: s.url, sha256: s.sha256, quote: s.quote })) } } };
   };

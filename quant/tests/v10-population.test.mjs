@@ -125,25 +125,32 @@ test('listing lifecycle register: schema fail-closed and source-bound',()=>{
  for(const mutate of broken){const copy=structuredClone(Lifecycle);mutate(copy);assert.throws(()=>R.validateLifecycleRegistry(copy),/^Error: INVALID_RESEARCH_LISTING_LIFECYCLE/);}
 });
 
-test('listingLifecycleEvidence: cut at the sourced last trading day, frozen without record fails closed, everything else unchanged',()=>{
+test('listingLifecycleEvidence: cut at the sourced last trading day, frozen without record censored at the last observed close, everything else unchanged',()=>{
  const L=R.createResearchLoader(root,{listingLifecycleEvidence:true}),D=A.createLoader(root);
  // non-frozen series without record: exactly the default result
  for(const id of ['ref_NVDA','ref_MSFT','ref_JPM','ref_FRMEP','ref_COHR'])assert.deepEqual(outcome(()=>L(id)),outcome(()=>D(id)),id);
- // a frozen tail without record fails closed (synthetic: freeze the last four weeks of NVDA)
+ // a frozen tail without record is cut after its first bar (last observed close), terminal UNKNOWN (synthetic: freeze the last four weeks of NVDA)
  const nv=JSON.parse(seriesBytes('ref_NVDA'));for(let k=2;k<=4;k++)nv.points.at(-k)[1]=nv.points.at(-1)[1];
- assert.throws(()=>L('ref_NVDA',JSON.stringify(nv)),/^Error: FROZEN_TAIL_UNRESOLVED$/);
+ const cut=L('ref_NVDA',JSON.stringify(nv));
+ assert.equal(cut.points.length,nv.points.length-3);assert.deepEqual(cut.points.at(-1),nv.points.at(-4));
+ assert.equal(cut.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED');assert.equal(cut.listingLifecycle.lastTradeDate,null);
+ assert.equal(cut.listingLifecycle.lastObservedDate,nv.points.at(-4)[0]);assert.equal(cut.listingLifecycle.terminal.kind,'UNKNOWN');assert.equal(cut.listingLifecycle.frozenTailBarsRemoved,3);
  assert.equal(outcome(()=>D('ref_NVDA',JSON.stringify(nv))).ok,true);
  // real frozen ids without a record
  const lcIds=new Set(LC.map(r=>r.securityId));
  const cases=EV('lifecycle-cases.json').cases.filter(c=>c.weeklyFrozen&&!lcIds.has(c.securityId)&&c.defaultReason==='QUALIFIED').slice(0,5);
- for(const c of cases)assert.throws(()=>L(c.securityId),/^Error: FROZEN_TAIL_UNRESOLVED$/,c.securityId);
+ for(const c of cases){const o=outcome(()=>L(c.securityId));if(!o.ok)continue;const r=L(c.securityId);
+  assert.equal(r.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED',c.securityId);assert.ok(R.frozenTailRun(r.points)<R.FROZEN_TAIL_MIN_RUN||r.points.length<2,c.securityId);}
  // records: cut + listingLifecycle contract
  let ok=0;
  for(const rec of LC){
   const o=outcome(()=>L(rec.securityId));if(!o.ok)continue;ok++;
   const r=L(rec.securityId),ll=r.listingLifecycle;
-  assert.ok(r.points.at(-1)[0]<=rec.lastTradeDate);assert.equal(ll.lastTradeDate,rec.lastTradeDate);assert.equal(ll.status,'DELISTED_SOURCE_VERIFIED');
-  assert.equal(ll.frozenTailBarsRemoved,JSON.parse(seriesBytes(rec.securityId)).points.filter(p=>p[0]>rec.lastTradeDate).length);
+  // only the week bar of the last trading day may carry a later label (its close is the real last close)
+  const after=r.points.filter(p=>p[0]>rec.lastTradeDate);assert.ok(after.length<=1);assert.equal(ll.lastBarLabelAfterLastTradeDate,after.length===1);
+  if(after.length)assert.equal(after[0][1],rec.frozenClose);
+  assert.equal(ll.lastTradeDate,rec.lastTradeDate);assert.equal(ll.status,'DELISTED_SOURCE_VERIFIED');assert.equal(ll.lastObservedDate,r.points.at(-1)[0]);
+  assert.equal(ll.frozenTailBarsRemoved,JSON.parse(seriesBytes(rec.securityId)).points.filter(p=>p[0]>rec.lastTradeDate).length-after.length);
   for(const k of ['kind','cashPerShare','stockRatio','acquirerTicker','paymentDate','evidence'])assert.ok(k in ll.terminal);
   assert.ok(r.warnings.includes('SERIES_CUT_AT_SOURCED_LAST_TRADE_DATE'));
  }

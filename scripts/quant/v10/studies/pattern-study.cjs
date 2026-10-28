@@ -86,7 +86,7 @@ function cellFor(ctx, events, cs, h, endpoint, calIndex, inWindow, lifecycleById
     ci: primary.ci, pValue: primary.pValue, blockLength: B, block: primary, robustness104: { ci: robust.ci, pValue: robust.pValue, blockLength: 104 }, cluster: K.clusterInference(rows), distribution: K.distribution(rows.map(r => r.value)),
     regimes: K.regimeTable(rows, ctx.regimes), subperiods: K.subperiodTable(rows),
     costSensitivity: ctx.R.costs.sensitivity.map(c => { const rr = rowsFor(events, endpoint, c, cs, calIndex, inWindow); return { ...c, n: rr.length, mean: K.mean(rr.map(r => r.value)) }; }),
-    survivorship: K.survivorshipSensitivity(rows, censored.map(e => ({ securityId: e.securityId, entryDate: e.entryDate, entryClose: e.entryClose, expectedExitDate: e.expectedExitDate, lastClose: e.lastClose })), lifecycleById, base, ctx.benchmark, endpoint) };
+    survivorship: K.survivorshipSensitivity(rows, censored.map(e => ({ securityId: e.securityId, entryDate: e.entryDate, entryClose: e.entryClose, expectedExitDate: e.expectedExitDate, lastClose: e.lastClose, controlNet: (c => cs.cnt[c] > 0 ? K.netOf(cs.sum[c] / cs.cnt[c], base.feeBps, base.slippageBps) : null)(calIndex.get(e.signalDate)) })), lifecycleById, base, ctx.benchmark, endpoint) };
 }
 function coverageOf(events, inWindow, cs, calIndex) {
   const ev = events.filter(e => inWindow(e.signalDate)), obs = ev.filter(e => e.state === 'OBSERVED');

@@ -113,11 +113,23 @@ test('survivorship sensitivity is NOT_EVALUABLE without lifecycle and uses termi
   const lc = new Map([['A', null], ['B', { lastTradeDate: '2010-06-04', terminal: { kind: 'CASH_MERGER', cashPerShare: 12 } }], ['C', { lastTradeDate: '2011-01-07', terminal: { kind: 'UNKNOWN', cashPerShare: null } }]]);
   const cens = [{ securityId: 'B', entryDate: '2010-03-05', entryClose: 10, expectedExitDate: '2010-07-02', lastClose: 11 }, { securityId: 'C', entryDate: '2010-12-03', entryClose: 5, expectedExitDate: '2011-03-04', lastClose: 4 }];
   const r = K.survivorshipSensitivity([{ securityId: 'A', value: 0.1 }, { securityId: 'B', value: 0.0 }], cens, lc, { feeBps: 0, slippageBps: 0 }, bm, 'RAW_NET');
-  assert.equal(r.state, 'EVALUATED'); assert.equal(r.censoredBeyondLastTrade.terminalConsideration, 1); assert.equal(r.censoredBeyondLastTrade.unresolved, 1);
+  assert.equal(r.state, 'EVALUATED'); assert.equal(r.censoredBeyondSeriesEnd.terminalConsideration, 1); assert.equal(r.censoredBeyondSeriesEnd.unresolved, 1);
   assert.ok(Math.abs(r.withTerminalConsideration.mean - (0.1 + 0 + 0.2) / 3) < 1e-12);
   assert.ok(Math.abs(r.boundMinus100.mean - (0.1 + 0 + 0.2 - 1) / 4) < 1e-12);
   assert.ok(Math.abs(r.boundLastClose.mean - (0.1 + 0 + 0.2 - 0.2) / 4) < 1e-12);
-  assert.equal(r.withoutDelisted.n, 1);
+  assert.equal(r.withoutEndedListings.n, 1);
+  // BASE_RATE_EXCESS: terminal and bound rows are expressed net of the same-week control mean (review finding 3).
+  const cb = cens.map(c => ({ ...c, controlNet: 0.05 }));
+  const b = K.survivorshipSensitivity([{ securityId: 'A', value: 0.1 }, { securityId: 'B', value: 0.0 }], cb, lc, { feeBps: 0, slippageBps: 0 }, bm, 'BASE_RATE_EXCESS');
+  assert.ok(Math.abs(b.withTerminalConsideration.mean - (0.1 + 0 + 0.15) / 3) < 1e-12);
+  assert.ok(Math.abs(b.boundMinus100.mean - (0.1 + 0 + 0.15 - 1.05) / 4) < 1e-12);
+  const nb = K.survivorshipSensitivity([{ securityId: 'A', value: 0.1 }], cens, lc, { feeBps: 0, slippageBps: 0 }, bm, 'BASE_RATE_EXCESS');
+  assert.equal(nb.censoredBeyondSeriesEnd.terminalConsideration, 0); assert.equal(nb.withTerminalConsideration.n, 1); // no control -> no value
+  // Unsourced frozen tail: censored at the last observed close, terminal UNKNOWN -> bounds only.
+  const lu = new Map([['A', null], ['D', { lastTradeDate: null, lastObservedDate: '2012-01-06', terminal: { kind: 'UNKNOWN' } }]]);
+  const u = K.survivorshipSensitivity([{ securityId: 'A', value: 0.1 }], [{ securityId: 'D', entryDate: '2011-11-04', entryClose: 10, expectedExitDate: '2012-02-03', lastClose: 8 }], lu, { feeBps: 0, slippageBps: 0 }, bm, 'RAW_NET');
+  assert.equal(u.endedListings, 1); assert.equal(u.delistedListingsSourced, 0); assert.equal(u.censoredBeyondSeriesEnd.unresolved, 1);
+  assert.ok(Math.abs(u.boundLastClose.mean - (0.1 - 0.2) / 2) < 1e-12);
 });
 
 test('CLI parses --loader-options and tags configurations; outputs must stay outside the repository', () => {

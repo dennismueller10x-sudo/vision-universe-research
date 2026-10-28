@@ -111,7 +111,7 @@ async function run(ctx) {
           ci: primary.ci, pValue: primary.pValue, blockLength: B, block: primary, robustness104: { ci: robust.ci, pValue: robust.pValue, blockLength: 104 }, cluster: K.clusterInference(rows), distribution: K.distribution(rows.map(r => r.value)),
           regimes: K.regimeTable(rows, ctx.regimes), subperiods: K.subperiodTable(rows),
           costSensitivity: R.costs.sensitivity.map(c => { const rr = cellRows(ev, endpoint, c, cs, calIndex); return { ...c, n: rr.length, mean: K.mean(rr.map(r => r.value)) }; }),
-          survivorship: K.survivorshipSensitivity(rows, censored.map(e => ({ securityId: e.securityId, entryDate: e.entryDate, entryClose: e.entryClose, expectedExitDate: e.expectedExitDate, lastClose: e.lastClose })), lifecycleById, base, ctx.benchmark, endpoint),
+          survivorship: K.survivorshipSensitivity(rows, censored.map(e => ({ securityId: e.securityId, entryDate: e.entryDate, entryClose: e.entryClose, expectedExitDate: e.expectedExitDate, lastClose: e.lastClose, controlNet: (m => m ? K.netOf(m.mean, base.feeBps, base.slippageBps) : null)(controlMeanGross(cs, rule, calIndex.get(e.signalDate))) })), lifecycleById, base, ctx.benchmark, endpoint),
           coverage };
         if (rule === 'NEW_52W_HIGH') cell.v9Subsets = v9Subsets(rows, ctx);
         cells.push(cell);

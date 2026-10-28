@@ -186,29 +186,33 @@ function regimeTable(rows, regimes) {
 function survivorshipSensitivity(rows, censored, lifecycleById, costs, benchmark, endpoint) {
   const anyLifecycle = [...lifecycleById.values()].some(x => x);
   if (!anyLifecycle) return { state: 'NOT_EVALUABLE_WITHOUT_LISTING_LIFECYCLE_EVIDENCE', cohort: 'SURVIVOR_COHORT_ONLY',
-    note: 'Loader ran without listingLifecycleEvidence: every listing in the frame is a current survivor; delisted issuers are absent, so with/without-delisted and censoring bounds cannot be computed. Results are conditional on survival to the data date.' };
-  const delisted = new Set([...lifecycleById].filter(([, lc]) => lc && lc.lastTradeDate).map(([id]) => id));
+    note: 'Loader ran without listingLifecycleEvidence: frozen series ends count as observed prices and delisted issuers are largely absent, so with/without-ended and censoring bounds cannot be computed. Results are conditional on survival to the data date.' };
+  // Series end: sourced last trading day, or (unsourced frozen tail, terminal UNKNOWN) the last observed close.
+  const endOf = lc => lc ? (lc.lastTradeDate || lc.lastObservedDate || null) : null;
+  const ended = new Set([...lifecycleById].filter(([, lc]) => endOf(lc)).map(([id]) => id));
+  // Every value is expressed in the cell's endpoint units: RAW_NET as is, SPY_EXCESS minus SPY over the same dates,
+  // BASE_RATE_EXCESS minus the net same-week control mean (c.controlNet) - V10 review finding 3.
+  const inUnits = (c, net) => endpoint === 'SPY_EXCESS' ? (s => s === null ? null : net - s)(benchmark.ret(c.entryDate, c.expectedExitDate))
+    : endpoint === 'BASE_RATE_EXCESS' ? (Number.isFinite(c.controlNet) ? net - c.controlNet : null) : net;
   const terminalRows = [], unresolved = [];
   for (const c of censored) {
-    const lc = lifecycleById.get(c.securityId);
-    if (!lc || !lc.lastTradeDate || c.expectedExitDate === null || c.expectedExitDate <= lc.lastTradeDate || !(c.entryClose > 0)) continue;
+    const lc = lifecycleById.get(c.securityId), end = endOf(lc);
+    if (!end || c.expectedExitDate === null || c.expectedExitDate <= end || !(c.entryClose > 0)) continue;
     const t = lc.terminal || {};
     if (t.kind === 'CASH_MERGER' && Number.isFinite(t.cashPerShare) && t.cashPerShare > 0) {
-      const gross = t.cashPerShare / c.entryClose - 1, net = netOf(gross, costs.feeBps, costs.slippageBps);
-      const spy = benchmark.ret(c.entryDate, c.expectedExitDate);
-      terminalRows.push({ ...c, value: endpoint === 'SPY_EXCESS' ? (spy === null ? null : net - spy) : net, valueKind: 'TERMINAL_CONSIDERATION' });
+      const net = netOf(t.cashPerShare / c.entryClose - 1, costs.feeBps, costs.slippageBps);
+      terminalRows.push({ ...c, value: inUnits(c, net), valueKind: 'TERMINAL_CONSIDERATION' });
     } else unresolved.push(c);
   }
   const boundRows = kind => unresolved.map(c => {
-    const gross = kind === 'MINUS_100' ? -1 : c.lastClose / c.entryClose - 1, net = kind === 'MINUS_100' ? -1 : netOf(gross, costs.feeBps, costs.slippageBps);
-    const spy = benchmark.ret(c.entryDate, c.expectedExitDate);
-    return { ...c, value: endpoint === 'SPY_EXCESS' ? (spy === null ? null : net - spy) : net };
+    const net = kind === 'MINUS_100' ? -1 : netOf(c.lastClose / c.entryClose - 1, costs.feeBps, costs.slippageBps);
+    return { ...c, value: inUnits(c, net) };
   }).filter(r => Number.isFinite(r.value));
   const m = rs => ({ n: rs.length, mean: mean(rs.map(r => r.value)) });
   const tv = terminalRows.filter(r => Number.isFinite(r.value));
-  return { state: 'EVALUATED', delistedListings: delisted.size,
-    observedOnly: m(rows), withoutDelisted: m(rows.filter(r => !delisted.has(r.securityId))), withTerminalConsideration: m(rows.concat(tv)),
-    censoredBeyondLastTrade: { terminalConsideration: tv.length, unresolved: unresolved.length },
+  return { state: 'EVALUATED', endedListings: ended.size, delistedListingsSourced: [...lifecycleById].filter(([, lc]) => lc && lc.lastTradeDate).length,
+    observedOnly: m(rows), withoutEndedListings: m(rows.filter(r => !ended.has(r.securityId))), withTerminalConsideration: m(rows.concat(tv)),
+    censoredBeyondSeriesEnd: { terminalConsideration: tv.length, unresolved: unresolved.length },
     boundMinus100: m(rows.concat(tv, boundRows('MINUS_100'))), boundLastClose: m(rows.concat(tv, boundRows('LAST_CLOSE'))) };
 }
 

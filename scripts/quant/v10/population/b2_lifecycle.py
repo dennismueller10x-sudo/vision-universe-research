@@ -32,6 +32,7 @@ LT_RULES = [
 ]
 CASH_RX = re.compile(r'(?:converted into|exchanged for|cancell?ed and converted into|automatically converted into)[^.]{0,80}?right to receive[^.$]{0,60}?\$\s?(?P<cash>\d{1,5}(?:,\d{3})*(?:\.\d{1,6})?)(?!\s*(?:million|billion))(?P<tail>[^.]{0,160})', re.I)
 STOCK_RX = re.compile(r'right to receive[^.]{0,80}?(?P<ratio>\d{1,3}\.\d{2,6})\s+(?:of\s+a\s+)?(?:validly issued[^.]{0,60}?)?(?:fully paid[^.]{0,40}?)?(?:share|shares)\s+of\s+(?P<what>[^.]{0,120}?)(?:common stock|common shares|ordinary shares|Class [A-C] common)', re.I)
+MIXED_TAIL_RX = re.compile(r'[^;]{0,120}?(?:\band\b|\bplus\b)\s*(?:\(ii\)\s*(?:(?P<ratio>\d{1,3}\.\d{1,6})\s+)?|(?P<ratio2>\d{1,3}\.\d{1,6})\s+)(?:of\s+a\s+)?(?:validly issued\s+|fully paid\s+)*(?:share|shares)\b', re.I)
 ELECTION_RX = re.compile(r'election|prorat|contingent value right|\bCVR\b', re.I)
 COMMON_CTX_RX = re.compile(r'(?:each|every)[^.]{0,40}?(?:share|outstanding share)[^.]{0,200}?common', re.I)
 TICKER_PAREN_RX = re.compile(r'\((?:NYSE|NASDAQ|Nasdaq|NYSE American|NYSEAMERICAN)\s*:\s*(?P<t>[A-Z]{1,5}(?:\.[A-Z])?)\)')
@@ -142,8 +143,17 @@ def consideration(text):
         ctx = text[max(0, m.start() - 320):m.start()]
         if COMMON_CTX_RX.search(ctx) and not re.search(r'option|restricted stock unit|RSU|preferred|warrant|performance', ctx[-160:], re.I):
             cash = {'amount': float(m.group('cash').replace(',', '')), 'quote': text[max(0, m.start() - 120):m.end()][-300:]}
+            # V10 review: a cash amount followed by a share component ("$2.00 in cash ... and (ii) 0.60 shares") is mixed
+            # consideration; the sentence-bounded tail stops at the decimal point of the ratio, so read past it.
+            after = text[m.end('cash'):m.end('cash') + 260]
+            mix = MIXED_TAIL_RX.match(after)
+            if mix:
+                cash['mixedTail'] = after[:mix.end()]
+                if stock is None and (mix.group('ratio') or mix.group('ratio2')):
+                    stock = {'ratio': float(mix.group('ratio') or mix.group('ratio2')), 'quote': text[max(0, m.start() - 120):m.end('cash') + mix.end()][-300:]}
+                cash['mixedUnparsed'] = stock is None
             break
-    for m in STOCK_RX.finditer(text):
+    for m in STOCK_RX.finditer(text) if stock is None else ():
         ctx = text[max(0, m.start() - 320):m.start()]
         if COMMON_CTX_RX.search(ctx) and not re.search(r'option|restricted stock unit|RSU|preferred|warrant', ctx[-160:], re.I):
             stock = {'ratio': float(m.group('ratio')), 'quote': text[max(0, m.start() - 120):m.end()][-300:]}
@@ -258,7 +268,7 @@ def research(sid, ticker, weekly, daily, wrun, drun, cikmap, master_rows_):
     # terminal
     if out['category'] in ('MERGER_TERMINAL_CONSIDERATION', 'DELISTED_FORM25', 'DEREGISTERED_FORM15'):
         kind, cash, ratio, acq = 'UNKNOWN', None, None, None
-        if cons and not cons['election']:
+        if cons and not cons['election'] and not (cons['cash'] or {}).get('mixedUnparsed'):
             cash = cons['cash']['amount'] if cons['cash'] else None
             ratio = cons['stock']['ratio'] if cons['stock'] else None
             kind = 'CASH_AND_STOCK' if cash is not None and ratio is not None else ('CASH_MERGER' if cash is not None else 'STOCK_MERGER')

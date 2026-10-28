@@ -417,6 +417,8 @@ def main():
                 ldis.append({'securityId': sid, 'what': 'CASH_NOT_IN_QUOTE'})
             elif hcheck(cs['url'], cs['sha256'], (cs.get('bytesRead'),)) is None:
                 ldis.append({'securityId': sid, 'what': 'CONSIDERATION_BODY_MISSING'})
+        if t.get('kind') == 'CASH_MERGER' and cs and re.search(r'(?:\band\b|\bplus\b)\s*(?:\(ii\)\s*)?\d', cs['considerationQuote'].split('$')[-1]):
+            ldis.append({'securityId': sid, 'what': 'CASH_ONLY_KIND_BUT_QUOTE_NAMES_SECOND_COMPONENT'})
         if t.get('stockRatio') is not None and (not cs or str(t['stockRatio']).rstrip('0') not in cs['considerationQuote']):
             ldis.append({'securityId': sid, 'what': 'RATIO_NOT_IN_QUOTE'})
     report['checks']['lifecycle'] = {'resolvedCases': lres, 'disagreements': ldis}

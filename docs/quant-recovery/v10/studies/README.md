@@ -40,7 +40,18 @@ Retrospektive Entwicklungsstudien (`evidenceKind: HISTORICAL_DEVELOPMENT_STUDY`)
 
 ## Survivorship
 
-Ohne `listingLifecycleEvidence` (noch nicht im Loader, Option liefert `INVALID_LOADER_OPTIONS`) ist jede Zelle `NOT_EVALUABLE_WITHOUT_LISTING_LIFECYCLE_EVIDENCE` – nur bedingt gültig (Survivor-Kohorte). Der Code wertet `result.listingLifecycle` defensiv aus: mit/ohne delistete Listings, `TERMINAL_CONSIDERATION` (cashPerShare), Schranken −100 % und letzter Kurs, Zählung zensierter Outcomes.
+Der Primärlauf ([ca-id/](ca-id/)) läuft ohne `listingLifecycleEvidence`: jede Zelle `NOT_EVALUABLE_WITHOUT_LISTING_LIFECYCLE_EVIDENCE`, nur bedingt gültig (Survivor-Kohorte); 79 Frame-Listings enden dort mit fortgeschriebenen Schlusskursen, die als 0-%-Renditen eingehen (< 0,1 % der Beobachtungen, V10-Prüfung Befund 5).
+
+Der Lifecycle-Lauf ([ca-id-lifecycle/](ca-id-lifecycle/)) wertet `result.listingLifecycle` aus: Reihenende = belegter letzter Handelstag oder (unbelegtes eingefrorenes Ende) letzter beobachteter Schluss; mit/ohne beendete Listings, `TERMINAL_CONSIDERATION` (nur `CASH_MERGER` mit cashPerShare), Schranken −100 % und letzter Kurs, Zählung zensierter Outcomes – jeweils in den Einheiten des Endpunkts (Basisrate-Überschuss netto der gleichwöchigen Kontrolle).
+
+## Korrekturen nach der unabhängigen V10-Prüfung
+
+- **Befund 1 (Reproduzierbarkeit):** Der Primärlauf `ca-id` wurde mit dem CA-Register vor dessen V10-Erweiterung gerechnet (Frame 4.282, Manifest `1b41ff84…`). Auf dem integrierten Stand ergibt `{identityEvidence, corporateActionEvidence}` 4.287 Frame-Listings (+ACAD, ARLO, MGNX, MOH, NSIT, RDN, −VSTS), und `run` bricht registrierungsgemäß mit `PRIMARY_FRAME_CHANGED_SINCE_REGISTRATION` ab. Exakte Reproduktion des Primärlaufs: Worktree auf `79bf2d5742` (Ergebnis-Commit) auschecken und dort `run` ausführen. Der Lifecycle-Lauf ist auf dem integrierten Stand gerechnet und enthält damit Lifecycle- **und** CA-Registeränderung; die Differenz zum Primärlauf ist deshalb nicht allein der Lifecycle-Effekt.
+- **Befund 3:** Schranken- und Terminalzeilen wurden beim Endpunkt `BASE_RATE_EXCESS` als Roh-Nettorendite eingemischt; korrigiert (Abzug der netto Kontrollmittel der Signalwoche), Regressionstest ergänzt, Lifecycle-Lauf neu gerechnet.
+- **Befund 4:** Unbelegte eingefrorene Enden schlossen das ganze Listing aus (Selektion auf späteres Ergebnis); jetzt am letzten beobachteten Schluss geschnitten und zensiert (Terminalwert UNKNOWN).
+- **Befund 6:** Liegt der letzte Handelstag innerhalb einer Woche, bleibt der Wochenbalken mit dem echten letzten Schluss erhalten (z. B. COLA 2,86 statt 10,45).
+- **Befund 2:** EBTC (und BLFS) waren als reine Barfusion registriert, tatsächlich bar + Aktie → jetzt `CASH_AND_STOCK` (kein Terminalwert, Schranken).
+- **Befund 7:** Der Persistenztest D1 bei h = 52 hat keine Sperrzone zwischen den Hälften; überlappende Fenster an der Grenze erzeugen mechanisch positive Korrelation. Der nominelle Treffer ρ +0,17 (Holm 0,18) ist deshalb nicht interpretierbar.
 
 ## Neulauf mit anderer Loader-Konfiguration (< 30 min)
 
