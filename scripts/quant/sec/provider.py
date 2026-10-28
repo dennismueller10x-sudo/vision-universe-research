@@ -17,7 +17,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from .http_client import SECHttpClient, SECHTTPError
-from .model import CompanyProfile, RawFact
+from .model import ACCEPTANCE_SOURCE_API, CompanyProfile, RawFact
 from .version import PROVIDER_ADAPTER_VERSION
 
 LOGGER = logging.getLogger("vu.sec.provider")
@@ -189,6 +189,8 @@ class SECProvider:
                     recent.setdefault(column, [])
                     recent[column].extend(values)
         payload["_retrieved_at"] = _utcnow_iso()
+        # Availability may come only from this API (model.ACCEPTANCE_SOURCE_*).
+        payload["_acceptance_source"] = ACCEPTANCE_SOURCE_API
         return payload
 
     def get_company_profile(self, cik, submissions=None):
@@ -258,6 +260,9 @@ class SECProvider:
                 "primary_document": primary_documents[index],
                 "is_amendment": form in AMENDMENT_FORMS,
                 "is_xbrl": bool(is_xbrl_column[index]),
+                # Carried so normalize.build_availability_map can refuse a
+                # timestamp from the bulk submissions archive.
+                "acceptance_source": data.get("_acceptance_source"),
             })
         rows.sort(key=lambda row: (row["filing_date"] or "", row["accession"] or ""), reverse=True)
         return rows

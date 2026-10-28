@@ -1,0 +1,1 @@
+Archivo Black (Omnibus-Type), Nunito (Vernon Adams u. a.), Bangers (Vernon Adams) und Old Standard TT Bold (Alexey Kryukov), alle SIL Open Font License 1.1, geladen von Google Fonts (lateinischer Teilsatz). Freie Nutzung, auch kommerziell, Weitergabe nur zusammen mit der Lizenz: https://openfontlicense.org

@@ -1,0 +1,100 @@
+{
+ "schemaVersion": "v9-followup-identity-independent-check-1.0.0",
+ "codeSha256": "6ee0bd59a4ec5d25788553862bf6113e548a0f81a1780a9194afe6f5d3c73b3c",
+ "registrySha256": "bb4d674b851b62c4e92ec39789db5d2d4f62dd01bd15613a85dd4288af9951d9",
+ "beforeAfterSha256": "c072c181db460513cfc35809256600849d35d00c8318360bdc728326a7418338",
+ "masterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+ "records": {
+  "ref_BGC": {
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "default": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "optIn": "QUALIFIED",
+   "optInCoverPageOnly": "QUALIFIED",
+   "boundDetail": {
+    "from": "2018-12-07",
+    "to": "2026-10-23",
+    "bars": 412,
+    "coverAgeDays": 74,
+    "listingId": "v9-sec-binding:0001094831:BGC:2018-12-07"
+   },
+   "sourceCount": 9,
+   "priceEvidenceCount": 11
+  },
+  "ref_COHR": {
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "default": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "optIn": "QUALIFIED",
+   "optInCoverPageOnly": "QUALIFIED",
+   "boundDetail": {
+    "from": "2001-09-28",
+    "to": "2026-10-23",
+    "bars": 1309,
+    "coverAgeDays": 53,
+    "listingId": "v9-sec-binding:0000820318:COHR:2001-09-28"
+   },
+   "sourceCount": 9,
+   "priceEvidenceCount": 11
+  },
+  "ref_DCOM": {
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "default": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "optIn": "QUALIFIED",
+   "optInCoverPageOnly": "QUALIFIED",
+   "boundDetail": {
+    "from": "2011-03-11",
+    "to": "2026-10-23",
+    "bars": 816,
+    "coverAgeDays": 1,
+    "listingId": "v9-sec-binding:0000846617:DCOM:2011-03-11"
+   },
+   "sourceCount": 9,
+   "priceEvidenceCount": 14
+  },
+  "ref_SGI": {
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "default": "LISTING_IDENTITY_MISMATCH",
+   "optIn": "QUALIFIED",
+   "optInCoverPageOnly": "QUALIFIED",
+   "boundDetail": {
+    "from": "2004-04-02",
+    "to": "2026-10-23",
+    "bars": 1178,
+    "coverAgeDays": 58,
+    "listingId": "v9-sec-binding:0001206264:SGI:2004-04-02"
+   },
+   "sourceCount": 8,
+   "priceEvidenceCount": 9
+  },
+  "ref_TRAK": {
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "default": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "optIn": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED",
+   "optInCoverPageOnly": "QUALIFIED",
+   "boundDetail": {
+    "from": "2024-10-11",
+    "to": "2026-10-23",
+    "bars": 107,
+    "coverAgeDays": 23,
+    "listingId": "v9-sec-binding:0000050471:TRAK:2024-10-11"
+   },
+   "sourceCount": 5,
+   "priceEvidenceCount": 0
+  }
+ },
+ "qualifiedAmongBound": {
+  "default": 0,
+  "optIn": 4,
+  "optInCoverPageOnly": 5
+ },
+ "countDeltaConsistent": {
+  "optIn": true,
+  "optInCoverPageOnly": true
+ },
+ "sourceHashes": {
+  "checked": 40,
+  "ok": 40,
+  "missing": []
+ },
+ "mismatches": [],
+ "verdict": "PASS"
+}

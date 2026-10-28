@@ -1,0 +1,31 @@
+{
+ "checks": {
+  "sha256 0001157523-13-005314": true,
+  "quote 0001157523-13-005314": true,
+  "record date in 0001157523-13-005314": true,
+  "distribution date in 0001157523-13-005314": true,
+  "sha256 0001104659-14-013226": true,
+  "quote 0001104659-14-013226": true,
+  "record date in 0001104659-14-013226": true,
+  "distribution date in 0001104659-14-013226": true,
+  "exDate = first business day after payable": true,
+  "pointsChanged parity": true,
+  "ambiguous parity": true,
+  "lastChanged parity": true,
+  "only the ex-week was split-sized before": true,
+  "no split-sized week after": true,
+  "ex-week ratio parity (+-rounding)": true,
+  "around parity": true,
+  "max-range return parity": true
+ },
+ "exDateComputed": "2013-12-30",
+ "pointsChanged": 1073,
+ "pointsAmbiguousByCentRounding": 535,
+ "movesBefore": [
+  "2014-01-03"
+ ],
+ "movesAfter": [],
+ "exWeekRatioAfter": 1.024569,
+ "maxRangeReturnAfter": 8.044444,
+ "allPass": true
+}

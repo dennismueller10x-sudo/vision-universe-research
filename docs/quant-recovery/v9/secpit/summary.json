@@ -1,0 +1,159 @@
+{
+ "schemaVersion": "v9-secpit-summary-1.0.0",
+ "productionApproved": false,
+ "sources": {
+  "companyfacts.zip": {
+   "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+   "bytes": 1411732130,
+   "sha256": "330324c4064779199c8ceaa2818d0b6fdf37ec4b1d786573601e8fadd82e7582",
+   "retrievedUtc": "2026-10-27"
+  },
+  "submissions.zip": {
+   "url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+   "bytes": 1571149765,
+   "sha256": "c354fa662fc9734179830ff32cd24867a6dce2b35d3e65c8150063c6621700a1",
+   "retrievedUtc": "2026-10-27"
+  }
+ },
+ "reproduction": {
+  "populationCiks": 5479,
+  "statusCounts": {
+   "BULK_COMPANYFACTS_WITHOUT_CIK": 1,
+   "NO_BULK_COMPANYFACTS": 40,
+   "OK": 5438
+  },
+  "code": "scripts/quant/v9/secpit/reproduce.py (repo pipeline normalize_company/FiscalCalendar unchanged, normalization logic 1.13.0); first 3,840 CIKs ran before per-CIK error capture was added (first pass aborted on one bulk payload without 'cik'), remaining with codeSha256 960dc7b633bad5d04d69a78ac7505ab49addb91ee2b917365bfa63a6bc9bab38; OK-path logic identical",
+  "availabilityNote": "acceptance from bulk submissions.zip (+4/+5h later than truth for part of filers); predicate evaluated with 5h-early candidates, boundary rows resolved via data.sec.gov API"
+ },
+ "v8ArchiveVsTodayVintage": {
+  "factbooks": [
+   5481,
+   5438
+  ],
+  "timelines": [
+   8097124,
+   8117215
+  ],
+  "observations": [
+   19165389,
+   19117050
+  ],
+  "restatedTimelines": [
+   782206,
+   751472
+  ],
+  "dateOnlyAvailability": [
+   331,
+   451
+  ],
+  "fiscalYearBounds": [
+   [
+    1968,
+    43830
+   ],
+   [
+    1968,
+    43830
+   ]
+  ],
+  "availabilityBeforePeriodEnd": [
+   911,
+   904
+  ],
+  "explanation": "Archive = factbooks built across runs (normalization logic 1.9.0-1.13.0, API submissions, companyfacts vintages up to 2026-10-24); today = bulk companyfacts 2026-10-27, repo population 5,479 CIKs, logic 1.13.0. Differences come from issuers without bulk companyfacts (40) or an empty payload (1), filings added since, SEC re-derivations of companyfacts, and normalization-version differences. The archive's 911 rows are not available here (private Actions cache); today's 904 are listed and classified."
+ },
+ "availabilityClasses": {
+  "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD": 285,
+  "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS": 182,
+  "DIVIDEND_DECLARED_FOR_LATER_PERIOD": 175,
+  "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD": 92,
+  "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD": 48,
+  "DURATION_STRADDLING_REPORT_PERIOD_END": 45,
+  "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD": 42,
+  "COVER_DATE_YEAR_SHIFT": 12,
+  "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": 10,
+  "SINGLE_FUTURE_INSTANT_OTHER": 6,
+  "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": 5,
+  "SINGLE_FUTURE_DURATION_OTHER": 2
+ },
+ "availabilitySampleVerification": {
+  "sample": 79,
+  "originalInstances": 77,
+  "verdicts": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 73,
+   "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE": 6
+  },
+  "counterpartMinus1yByClass": {
+   "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": {
+    "ABSENT": 4
+   },
+   "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": {
+    "ABSENT": 4
+   },
+   "COVER_DATE_YEAR_SHIFT": {
+    "ABSENT": 4
+   },
+   "DIVIDEND_DECLARED_FOR_LATER_PERIOD": {
+    "ABSENT": 6,
+    "DIFFERENT_VALUE": 6
+   },
+   "DURATION_STRADDLING_REPORT_PERIOD_END": {
+    "DIFFERENT_VALUE": 2,
+    "ABSENT": 2
+   },
+   "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS": {
+    "DIFFERENT_VALUE": 12
+   },
+   "SINGLE_FUTURE_DURATION_OTHER": {
+    "ABSENT": 2
+   },
+   "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD": {
+    "DIFFERENT_VALUE": 2,
+    "ABSENT": 4
+   },
+   "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD": {
+    "DIFFERENT_VALUE": 3,
+    "SAME_VALUE": 1
+   },
+   "SINGLE_FUTURE_INSTANT_OTHER": {
+    "ABSENT": 4
+   },
+   "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD": {
+    "ABSENT": 14,
+    "SAME_VALUE": 3,
+    "DIFFERENT_VALUE": 2
+   },
+   "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD": {
+    "SAME_VALUE": 2,
+    "DIFFERENT_VALUE": 1,
+    "ABSENT": 1
+   }
+  }
+ },
+ "files": {
+  "docs/quant-recovery/v9/secpit/acceptance-timezone-check.json": "5fe7c4c1ea92cbff1de840849b055a2eb327c751985f98b7af84867223ad542c",
+  "docs/quant-recovery/v9/secpit/availability-before-period-end.json": "3250147b6f7bbe5822fedf31259699a0fc3c110c795d6685e05c9ca0537c2783",
+  "docs/quant-recovery/v9/secpit/availability-sample-registration.json": "e9967dbba80cfa253373e73314109acdb4be0d644f57ff77469c0e83e86e14c8",
+  "docs/quant-recovery/v9/secpit/availability-sample-verification.json": "85c439c1b6c6393af7c7a3d88867d342713b4b1d37bbdf676ab2530964f4afd0",
+  "docs/quant-recovery/v9/secpit/factor-impact.json": "490072de9b70849dc5c1fd5849a83d8da7469f365db7ed51ecfdc70e1928d204",
+  "docs/quant-recovery/v9/secpit/fy-anomaly-dossier.json": "061f3175a88ed46fc6facb40f4b126c97199f6e0ef8f7248e8d2607700336ebd",
+  "docs/quant-recovery/v9/secpit/independent-check.json": "cddf7b5eef78b212af1da5659d00679e702a21416cc5bbffd0d7687c8f314d6d",
+  "docs/quant-recovery/v9/secpit/parity-registration.json": "de1638aa6d2d2c73b020d33c21cd14797b41384fb4c618e51c518e386690492d",
+  "docs/quant-recovery/v9/secpit/parity-restatement-pairs.json": "fa6d9400dad8e2a0a47b6239bac32f86545ef6b543af3e9b26c44db2892901ef",
+  "docs/quant-recovery/v9/secpit/parity-results.json": "5030529a6ffb6cb8b977291d971e874d6ee90f68222a3bb455f9501929b157ca",
+  "docs/quant-recovery/v9/secpit/proposal-effect.json": "a9d952270603b6b4a28c32fe2a1f69be946d217099fda8f5728b996b07f2d689",
+  "docs/quant-recovery/v9/secpit/proposals.json": "267ff91c68c5a59d6fe850417b2e0acf0c2dad13a161c593553874f055f3ac7b",
+  "scripts/quant/v9/secpit/avail_classify.py": "a04e53ddc555a6eaab12b9dd2acaedbe0250fe30d453eb4a5ab0797a122cea18",
+  "scripts/quant/v9/secpit/common.py": "b93b4764f25cf0f9b7747652933f0a2a60535bf9080c7ba2c909ec9c83e58bbd",
+  "scripts/quant/v9/secpit/fetch_bulk.py": "27016d5bd940ad4a30ec6d3269b0a231ed5173d9d2025f0675a54d4346be71a2",
+  "scripts/quant/v9/secpit/fy_dossier.py": "8388e217476a5f641e8a2f5010ec54ba0819bc70ccec54849592b07b1916a428",
+  "scripts/quant/v9/secpit/impact.mjs": "f1752bd501c6360542e52519fcf301b069f9b2a5412b6d33a6dfb07dbf4780b4",
+  "scripts/quant/v9/secpit/impact.py": "3998a5cdc1f53207bbdc2245e667d7ddab56a50e699bc5c10717ab08aa81ba42",
+  "scripts/quant/v9/secpit/independent_check.py": "2e131a41e0bc4f1b1478895b286038431c79b26db240bb4860d8846e452894a7",
+  "scripts/quant/v9/secpit/parity.py": "da34d6d5288447fc76f903f772819b88b805a6e30a4ddf7b3db0b267536b4d5e",
+  "scripts/quant/v9/secpit/proposal_effect.py": "3b6969cd40e62f009491d9e733d779cd7be10fe4748760d68538e1a83cdf7261",
+  "scripts/quant/v9/secpit/reproduce.py": "960dc7b633bad5d04d69a78ac7505ab49addb91ee2b917365bfa63a6bc9bab38",
+  "scripts/quant/v9/secpit/tz_check.py": "11c6f6778d72eb45d502af8bcdfddcaa3d57223559317225ef515116fa1d1081",
+  "scripts/quant/v9/secpit/xbrl.py": "d5e0edc36cd7c7303f4d96e16ab495f45a7757644422dfb57dc855607d6895e0"
+ }
+}

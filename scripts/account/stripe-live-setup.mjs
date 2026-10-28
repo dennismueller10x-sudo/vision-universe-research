@@ -2,26 +2,33 @@
 // Vision Universe — Stripe LIVE einrichten (idempotent, ohne SDK).
 //
 //   STRIPE_LIVE_KEY=rk_live_… STRIPE_LIVE_SETUP_APPROVED=true VU_ACCOUNT_API_ORIGIN=https://konto.visionuniverse.de \
-//   [VU_ACCOUNT_LIVE_PRICES='{"plus_month":990,"plus_year":9900,"pro_month":1990,"pro_year":19900}'] \
-//     node scripts/account/stripe-live-setup.mjs --secret-out=<datei> --sql-out=<datei> [--dry-run]
+//     node scripts/account/stripe-live-setup.mjs --secret-out=<datei> --sql-out=<datei> --portal-out=<datei> [--dry-run]
 //
-// Legt an bzw. gleicht ab:
-//   * Produkte vu_plus / vu_pro (immer)
-//   * Preise NUR aus VU_ACCOUNT_LIVE_PRICES (Owner-Entscheidung, Cent, brutto inkl. USt).
-//     Ohne diese Angabe: keine Preise, kein Kundenportal-Tarifwechsel, kein Checkout.
-//     Ein Live-Preis wird nie geaendert, nur ergaenzt (Stripe-Preise sind unveraenderlich).
-//   * Kundenportal (nur mit Preisen): Kuendigung zum Laufzeitende, Tarifwechsel, Rechnungen
+// Legt an bzw. gleicht ab (Owner-Entscheidung 28.10.2026, Tarife Free und Pro):
+//   * Produkt vu_pro "Vision Universe Pro"
+//   * Preise genau aus LIVE_CATALOG (Cent, brutto inkl. USt). Ein Live-Preis wird nie geaendert,
+//     nur ergaenzt; der Nachschlageschluessel wandert zum neuen Preis (Stripe-Preise sind unveraenderlich).
+//     Ein neuer Preis ist ein eigener PR mit Aenderung an LIVE_CATALOG.
+//   * Kundenportal: Kuendigung zum Laufzeitende, Zahlungsmethode, Rechnungen, Rechnungsadresse
+//     (kein Tarifwechsel: es gibt nur einen bezahlten Tarif)
 //   * Webhook <API-Origin>/v1/billing/webhook/stripe mit den verarbeiteten Ereignissen
-// Testschluessel werden abgelehnt (dafuer stripe-test-setup.mjs), ebenso Standard-
-// Secret-Keys (nur Restricted Keys). Das Webhook-Geheimnis landet nur in --secret-out.
+// Es wird nichts bezahlt und kein Checkout gestartet. Testschluessel werden abgelehnt (dafuer
+// stripe-test-setup.mjs), ebenso Standard-Secret-Keys (nur Restricted Keys).
+// Das Webhook-Geheimnis landet nur in --secret-out.
 import {writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {formEncode} from '../../workers/vu-account/src/stripe.mjs';
-import {API_VERSION, CATALOG, WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
+import {API_VERSION, WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 
 const LEGAL = {privacy: 'https://www.visionuniverse.de/policies/privacy-policy', terms: 'https://www.visionuniverse.de/policies/terms-of-service'};
-const PRICE_KEYS = ['plus_month', 'plus_year', 'pro_month', 'pro_year'];
+
+// Pro: Einfuehrungspreis 1,00 EUR im Monat (interner Testpreis). free hat keinen Preis.
+export const LIVE_CATALOG = Object.freeze([
+  {product: 'vu_pro', name: 'Vision Universe Pro', plan: 'pro',
+    description: 'Monatliches Abonnement. Derzeit derselbe Funktionsumfang wie der kostenlose Tarif Free.',
+    prices: [['month', 100]]},
+]);
 
 export function assertLiveKey(key, approved) {
   const k = String(key || '');
@@ -29,17 +36,6 @@ export function assertLiveKey(key, approved) {
   if (/^sk_live_/.test(k)) throw new Error('Standard-Secret-Key abgelehnt: bitte einen Restricted Key (rk_live_) verwenden.');
   if (!/^rk_live_[A-Za-z0-9]+$/.test(k)) throw new Error('STRIPE_LIVE_KEY fehlt oder ist kein rk_live_-Schluessel.');
   if (String(approved) !== 'true') throw new Error('STRIPE_LIVE_SETUP_APPROVED=true fehlt (Freigabe des Owners).');
-}
-
-// Preise sind eine Owner-Entscheidung: nur ganze Cent-Betraege > 0 fuer genau die vier Schluessel.
-export function parseLivePrices(raw) {
-  if (raw === undefined || raw === null || String(raw).trim() === '') return null;
-  let data;
-  try { data = JSON.parse(raw); } catch { throw new Error('VU_ACCOUNT_LIVE_PRICES ist kein JSON.'); }
-  const keys = Object.keys(data || {}).sort();
-  if (keys.join(',') !== [...PRICE_KEYS].sort().join(',')) throw new Error(`VU_ACCOUNT_LIVE_PRICES braucht genau: ${PRICE_KEYS.join(', ')}`);
-  for (const k of PRICE_KEYS) if (!Number.isInteger(data[k]) || data[k] <= 0 || data[k] > 100000) throw new Error(`Preis ${k} ungueltig (Cent, 1-100000)`);
-  return data;
 }
 
 function client(key, fetchImpl) {
@@ -68,58 +64,58 @@ export function livePriceSql(rows) {
     + `  currency = excluded.currency, livemode = true, active = true;\ncommit;\n`;
 }
 
-export async function setupStripeLive({key, approved, apiOrigin, prices: priceConfig = null, fetchImpl = fetch, dryRun = false, log = console.log}) {
+export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_CATALOG, fetchImpl = fetch, dryRun = false, log = console.log}) {
   assertLiveKey(key, approved);
   if (!/^https:\/\/[a-z0-9.-]+$/.test(String(apiOrigin || ''))) throw new Error('VU_ACCOUNT_API_ORIGIN fehlt (https://<host>, ohne Pfad).');
   const stripe = client(key, fetchImpl);
   const write = (label, fn) => dryRun ? (log(`[Probelauf] wuerde: ${label}`), null) : fn();
   const prices = [];
 
-  for (const item of CATALOG) {
+  for (const item of catalog) {
+    const productParams = {name: item.name, description: item.description, metadata: {vu_plan: item.plan}};
     let product = await stripe('GET', `/v1/products/${item.product}`);
-    if (!product) product = await write(`Produkt ${item.product} anlegen`, () => stripe('POST', '/v1/products', {id: item.product, name: item.name,
-      metadata: {vu_plan: item.plan}}));
-    else log(`Produkt ${item.product} vorhanden.`);
-    if (!priceConfig) continue;
-    for (const interval of ['month', 'year']) {
-      const amount = priceConfig[`${item.plan}_${interval}`];
+    if (!product) product = await write(`Produkt ${item.product} "${item.name}" anlegen`, () => stripe('POST', '/v1/products', {id: item.product, ...productParams}));
+    else if (product.name !== item.name || product.description !== item.description || product.active === false) {
+      await write(`Produkt ${item.product} abgleichen ("${item.name}", aktiv)`, () => stripe('POST', `/v1/products/${item.product}`, {...productParams, active: 'true'}));
+    } else log(`Produkt ${item.product} vorhanden.`);
+    for (const [interval, amount] of item.prices) {
+      if (!Number.isInteger(amount) || amount <= 0 || amount > 100000) throw new Error(`Preis ${item.plan}_${interval} ungueltig (Cent, 1-100000)`);
       const lk = lookupKey(item.product, interval);
       const found = (await stripe('GET', '/v1/prices', {lookup_keys: [lk], active: 'true', limit: 1}))?.data?.[0];
       const fits = found && found.unit_amount === amount && found.currency === 'eur' && found.recurring?.interval === interval
-        && found.tax_behavior === 'inclusive' && (found.product === item.product || found.product?.id === item.product);
+        && found.recurring?.interval_count === 1 && found.tax_behavior === 'inclusive'
+        && (found.product === item.product || found.product?.id === item.product);
       let price = fits ? found : null;
       if (!price) {
-        price = await write(`Preis ${lk} anlegen (${(amount / 100).toFixed(2)} EUR)`, () => stripe('POST', '/v1/prices', {product: item.product,
-          currency: 'eur', unit_amount: amount, tax_behavior: 'inclusive', recurring: {interval}, lookup_key: lk, transfer_lookup_key: 'true',
-          metadata: {vu_plan: item.plan, vu_interval: interval}}));
+        price = await write(`Preis ${lk} anlegen (${(amount / 100).toFixed(2)} EUR je ${interval === 'month' ? 'Monat' : 'Jahr'}, inkl. USt)`,
+          () => stripe('POST', '/v1/prices', {product: item.product, currency: 'eur', unit_amount: amount, tax_behavior: 'inclusive',
+            recurring: {interval, interval_count: 1}, lookup_key: lk, transfer_lookup_key: 'true', nickname: `${item.name} ${(amount / 100).toFixed(2)} EUR/${interval}`,
+            metadata: {vu_plan: item.plan, vu_interval: interval}}));
       } else log(`Preis ${lk} vorhanden (${price.id}).`);
       prices.push({plan: item.plan, interval, amount, priceId: price?.id || `price_probelauf_${lk}`});
     }
   }
-  if (!priceConfig) log('Keine Live-Preise vorgegeben: keine Preise, kein Kundenportal-Tarifwechsel, Checkout bleibt aus.');
 
-  let portalId = null;
-  if (prices.length) {
-    const portalParams = {
-      business_profile: {headline: 'Vision Universe – Abonnement verwalten', privacy_policy_url: LEGAL.privacy, terms_of_service_url: LEGAL.terms},
-      default_return_url: 'https://research.visionuniverse.de/konto/abo/',
-      features: {
-        customer_update: {enabled: 'true', allowed_updates: ['email', 'address', 'tax_id']},
-        invoice_history: {enabled: 'true'},
-        payment_method_update: {enabled: 'true'},
-        subscription_cancel: {enabled: 'true', mode: 'at_period_end', proration_behavior: 'none'},
-        subscription_update: {enabled: 'true', default_allowed_updates: ['price'], proration_behavior: 'create_prorations',
-          products: CATALOG.map(c => ({product: c.product, prices: prices.filter(p => p.plan === c.plan).map(p => p.priceId)}))},
-      },
-      metadata: {vu_managed: 'true'},
-    };
-    const portals = (await stripe('GET', '/v1/billing_portal/configurations', {active: 'true', limit: 100}))?.data || [];
-    const own = portals.find(p => p.metadata?.vu_managed === 'true');
-    const portal = own
-      ? await write(`Portal ${own.id} abgleichen`, () => stripe('POST', `/v1/billing_portal/configurations/${own.id}`, portalParams))
-      : await write('Portal-Konfiguration anlegen', () => stripe('POST', '/v1/billing_portal/configurations', portalParams));
-    portalId = portal?.id || own?.id || null;
-  }
+  // Kundenportal: Kuendigung zum Laufzeitende (Zugang bis dahin), Zahlungsmethode, Rechnungen.
+  const portalParams = {
+    business_profile: {headline: 'Vision Universe – Abonnement verwalten', privacy_policy_url: LEGAL.privacy, terms_of_service_url: LEGAL.terms},
+    default_return_url: 'https://research.visionuniverse.de/konto/abo/',
+    features: {
+      customer_update: {enabled: 'true', allowed_updates: ['email', 'address', 'tax_id']},
+      invoice_history: {enabled: 'true'},
+      payment_method_update: {enabled: 'true'},
+      subscription_cancel: {enabled: 'true', mode: 'at_period_end', proration_behavior: 'none',
+        cancellation_reason: {enabled: 'true', options: ['too_expensive', 'unused', 'missing_features', 'other']}},
+      subscription_update: {enabled: 'false'},
+    },
+    metadata: {vu_managed: 'true'},
+  };
+  const portals = (await stripe('GET', '/v1/billing_portal/configurations', {active: 'true', limit: 100}))?.data || [];
+  const ownPortal = portals.find(p => p.metadata?.vu_managed === 'true');
+  const portal = ownPortal
+    ? await write(`Portal ${ownPortal.id} abgleichen`, () => stripe('POST', `/v1/billing_portal/configurations/${ownPortal.id}`, portalParams))
+    : await write('Portal-Konfiguration anlegen', () => stripe('POST', '/v1/billing_portal/configurations', portalParams));
+  const portalId = portal?.id || ownPortal?.id || null;
 
   const url = `${apiOrigin}/v1/billing/webhook/stripe`;
   const endpoints = (await stripe('GET', '/v1/webhook_endpoints', {limit: 100}))?.data || [];
@@ -143,11 +139,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const dryRun = process.argv.includes('--dry-run');
   const e = process.env;
   Promise.resolve().then(() => setupStripeLive({key: e.STRIPE_LIVE_KEY, approved: e.STRIPE_LIVE_SETUP_APPROVED, apiOrigin: e.VU_ACCOUNT_API_ORIGIN,
-    prices: parseLivePrices(e.VU_ACCOUNT_LIVE_PRICES), dryRun})).then(r => {
-    for (const p of r.prices) console.log(`${p.plan}_${p.interval} -> ${p.priceId}`);
+    dryRun})).then(r => {
+    for (const p of r.prices) console.log(`${p.plan}_${p.interval} ${(p.amount / 100).toFixed(2)} EUR -> ${p.priceId}`);
     console.log(`Portal-Konfiguration: ${r.portalId || '-'}`);
     console.log(`Webhook: ${r.webhookId || '-'}${r.webhookCreated && !dryRun ? ' (neu angelegt)' : ''}`);
     if (opt('sql-out') && !dryRun && r.prices.length) writeFileSync(opt('sql-out'), livePriceSql(r.prices), {mode: 0o600});
+    if (opt('portal-out') && !dryRun && r.portalId) writeFileSync(opt('portal-out'), r.portalId, {mode: 0o600});
     if (r.webhookSecret) {
       if (!opt('secret-out')) throw new Error('Webhook neu angelegt, aber --secret-out fehlt: Geheimnis in Stripe neu erzeugen (Roll secret).');
       writeFileSync(opt('secret-out'), r.webhookSecret, {mode: 0o600});

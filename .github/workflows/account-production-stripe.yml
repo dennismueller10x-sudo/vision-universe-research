@@ -1,13 +1,14 @@
 name: Konten — Stripe Live einrichten (Produktion)
-# Legt im Stripe-LIVE-Konto die Produkte vu_plus/vu_pro und den Webhook auf
-# https://konto.visionuniverse.de/v1/billing/webhook/stripe an
-# (scripts/account/stripe-live-setup.mjs). Preise, Kundenportal und Eintraege
-# in plan_prices NUR, wenn die Repository-Variable VU_ACCOUNT_LIVE_PRICES
-# gesetzt ist (Owner-Entscheidung, Cent brutto, z. B.
-# {"plus_month":990,"plus_year":9900,"pro_month":1990,"pro_year":19900}).
-# Startet als Probelauf. Das Webhook-Geheimnis geht direkt als Worker-Secret
-# nach Cloudflare und erscheint nirgends. Keine Zahlung, kein Checkout:
-# die Abrechnung bleibt aus, bis STRIPE_LIVE_MODE_APPROVED per PR "true" wird.
+# Tarife Free und Pro (Owner-Entscheidung 28.10.2026). Legt im Stripe-LIVE-Konto an bzw. gleicht ab
+# (scripts/account/stripe-live-setup.mjs, Katalog LIVE_CATALOG im Code, keine Repository-Variable):
+#   * Produkt vu_pro "Vision Universe Pro", Preis 1,00 EUR je Monat (inkl. USt, wiederkehrend)
+#   * Kundenportal (Kuendigung zum Laufzeitende, Zahlungsmethode, Rechnungen); die Konfigurations-ID
+#     geht als STRIPE_PORTAL_CONFIGURATION in den Worker
+#   * Webhook https://konto.visionuniverse.de/v1/billing/webhook/stripe; das Geheimnis geht direkt als
+#     Worker-Secret nach Cloudflare und erscheint nirgends
+#   * plan_prices: Zeile pro_month_live (Job preise-eintragen, Umgebung account-dev)
+# Startet als Probelauf. Keine Zahlung, kein Checkout: wer den Checkout nutzen darf, regelt der Worker
+# (VU_CHECKOUT_ACCESS = "testers": nur Konten mit Rolle billing_tester).
 on:
   workflow_dispatch:
     inputs:
@@ -48,7 +49,6 @@ jobs:
           STRIPE_LIVE_KEY: ${{ secrets.VU_ACCOUNT_STRIPE_SECRET_KEY }}
           STRIPE_LIVE_SETUP_APPROVED: 'true'
           VU_ACCOUNT_API_ORIGIN: https://konto.visionuniverse.de
-          VU_ACCOUNT_LIVE_PRICES: ${{ vars.VU_ACCOUNT_LIVE_PRICES }}
           DRY_RUN: ${{ inputs.dry_run }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -57,11 +57,14 @@ jobs:
           umask 077
           out="$RUNNER_TEMP/stripe"; mkdir -p "$out"
           if [ "$DRY_RUN" = "true" ]; then node scripts/account/stripe-live-setup.mjs --dry-run; echo "has_prices=false" >> "$GITHUB_OUTPUT"; exit 0; fi
-          node scripts/account/stripe-live-setup.mjs --secret-out="$out/whsec" --sql-out="$RUNNER_TEMP/live-prices.sql"
+          node scripts/account/stripe-live-setup.mjs --secret-out="$out/whsec" --sql-out="$RUNNER_TEMP/live-prices.sql" --portal-out="$out/portal"
           if [ -s "$out/whsec" ]; then
             ( cd workers/vu-account && npx --yes wrangler@4.147.0 secret put STRIPE_WEBHOOK_SECRET --env production < "$out/whsec" > /dev/null 2>&1 ) \
               && echo "STRIPE_WEBHOOK_SECRET im Worker hinterlegt" || { echo "::error::Webhook-Geheimnis nicht hinterlegt (Worker ausgerollt?) - in Stripe 'Roll secret' und erneut starten"; exit 1; }
           fi
+          grep -qE '^bpc_[A-Za-z0-9]+$' "$out/portal" || { echo "::error::Keine Portal-Konfiguration erhalten"; exit 1; }
+          ( cd workers/vu-account && npx --yes wrangler@4.147.0 secret put STRIPE_PORTAL_CONFIGURATION --env production < "$out/portal" > /dev/null 2>&1 ) \
+            && echo "STRIPE_PORTAL_CONFIGURATION im Worker hinterlegt" || { echo "::error::Portal-Konfiguration nicht hinterlegt"; exit 1; }
           rm -rf "$out"
           if [ -s "$RUNNER_TEMP/live-prices.sql" ]; then echo "has_prices=true" >> "$GITHUB_OUTPUT"; else echo "has_prices=false" >> "$GITHUB_OUTPUT"; fi
       - name: Preis-IDs weitergeben (keine Geheimnisse)
@@ -97,6 +100,8 @@ jobs:
           set -euo pipefail
           [[ "$DB_URL" == *qiytbnpoqvldsatpfkeh* ]] || { echo "::error::DB-URL gehoert nicht zum Produktionsprojekt"; exit 1; }
           f="$RUNNER_TEMP/prices/live-prices.sql"
-          grep -qE "^  \('(plus|pro)_(month|year)_live', '(plus|pro)', 'stripe', 'price_[A-Za-z0-9]+', '(month|year)', 'EUR', [0-9]+, true, true\),?$" "$f" || { echo "::error::Preis-SQL hat unerwartete Form"; exit 1; }
+          # Genau eine Zeile: Pro, monatlich, 1,00 EUR.
+          [ "$(grep -c "^  (" "$f")" = 1 ] && grep -qE "^  \('pro_month_live', 'pro', 'stripe', 'price_[A-Za-z0-9]+', 'month', 'EUR', 100, true, true\)$" "$f" \
+            || { echo "::error::Preis-SQL hat unerwartete Form"; exit 1; }
           psql -X -q -v ON_ERROR_STOP=1 -d "$DB_URL" -f "$f"
           psql -X -q -t -A -d "$DB_URL" -c "select id || ' ' || unit_amount || ' ' || billing_interval from public.plan_prices where livemode and active order by id"

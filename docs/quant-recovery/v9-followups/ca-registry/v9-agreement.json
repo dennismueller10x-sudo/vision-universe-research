@@ -1,0 +1,1519 @@
+{
+ "schemaVersion": "v9-followup-ca-v9-agreement-1.0.0",
+ "factsSha256": "c3244a2dd3abb02a4f9a5d00ad5bf8287285982e5f1c1cbdb4bc3f245c8a1c45",
+ "note": "V9 files were read only after the verdicts (facts) were frozen; facts sha256 recorded before this comparison.",
+ "events": 1087,
+ "eventMatrix": {
+  "V9_ONLY_ADMIT": 130,
+  "AGREE_HOLD": 928,
+  "AGREE_ADMIT": 23,
+  "OURS_ONLY_ADMIT": 6
+ },
+ "whyV9AdmitButNotOurs": [
+  {
+   "ours": "IDENTITY_UNVERIFIED",
+   "detail": "IDENTITY_TICKER_NOT_NAMED",
+   "events": 64
+  },
+  {
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "detail": null,
+   "events": 20
+  },
+  {
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "events": 13
+  },
+  {
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "detail": null,
+   "events": 10
+  },
+  {
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_8K",
+   "events": 8
+  },
+  {
+   "ours": "INSUFFICIENT_FILINGS",
+   "detail": "INSUFFICIENT_FILINGS",
+   "events": 7
+  },
+  {
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_XBRL",
+   "events": 7
+  },
+  {
+   "ours": "IDENTITY_UNVERIFIED",
+   "detail": "IDENTITY_EXCHANGE_UNCONFIRMED",
+   "events": 1
+  }
+ ],
+ "series": {
+  "v9NewlyQualified": 81,
+  "oursAdmissible": 23,
+  "both": [
+   "ref_ACRS",
+   "ref_ALEC",
+   "ref_ALNY",
+   "ref_BKSY",
+   "ref_BMEA",
+   "ref_CPIX",
+   "ref_ERII",
+   "ref_FMC",
+   "ref_GRAL",
+   "ref_GRCE",
+   "ref_MIRA",
+   "ref_MVST",
+   "ref_NTLA",
+   "ref_OM",
+   "ref_PACB",
+   "ref_PBYI",
+   "ref_REPL",
+   "ref_SRPT",
+   "ref_VRRM"
+  ],
+  "v9Only": 62,
+  "oursOnly": [
+   "ref_HYFM",
+   "ref_MDRR",
+   "ref_SSRM",
+   "ref_VSTS"
+  ]
+ },
+ "rows": [
+  {
+   "securityId": "ref_ACRS",
+   "week": "2023-11-17",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_ALEC",
+   "week": "2025-10-24",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_ALNY",
+   "week": "2016-10-07",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_BIVI",
+   "week": "2023-12-01",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_BKSY",
+   "week": "2022-05-27",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_BMEA",
+   "week": "2023-03-31",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_CPIX",
+   "week": "2021-12-03",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_CPIX",
+   "week": "2025-02-07",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_ERII",
+   "week": "2015-10-23",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_FMC",
+   "week": "2025-10-31",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_GRAL",
+   "week": "2026-02-20",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_GRCE",
+   "week": "2026-04-24",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_MGNX",
+   "week": "2020-05-08",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_MIRA",
+   "week": "2024-07-26",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_MVST",
+   "week": "2024-11-15",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_NTLA",
+   "week": "2025-10-31",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_OM",
+   "week": "2023-10-13",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_PACB",
+   "week": "2024-04-19",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_PBYI",
+   "week": "2018-11-02",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_REPL",
+   "week": "2025-10-24",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_SRPT",
+   "week": "2016-09-23",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_SVRA",
+   "week": "2019-06-14",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_VRRM",
+   "week": "2026-05-29",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "AGREE_ADMIT"
+  },
+  {
+   "securityId": "ref_HYFM",
+   "week": "2026-08-07",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPLIT_MENTION_NEAR_DATE_REVIEW",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MDRR",
+   "week": "2020-10-16",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPLIT_MENTION_NEAR_DATE_REVIEW",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MYGN",
+   "week": "2025-05-09",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPLIT_MENTION_NEAR_DATE_REVIEW",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PRTA",
+   "week": "2018-04-27",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPIN_OFF_OR_DISTRIBUTION_CANDIDATE",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SSRM",
+   "week": "2024-02-16",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPIN_OFF_OR_DISTRIBUTION_CANDIDATE",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_VSTS",
+   "week": "2024-05-03",
+   "ours": "GENUINE_MOVE",
+   "oursDetail": null,
+   "v9": "SPIN_OFF_OR_DISTRIBUTION_CANDIDATE",
+   "v9Effect": null,
+   "agreement": "OURS_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AAPL",
+   "week": "2000-09-29",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE_MANUAL_PRE2001",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ABT",
+   "week": "2013-01-04",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "SPIN_OFF_DISTRIBUTION:ACCEPTED",
+   "v9Effect": "RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ABVC",
+   "week": "2012-08-24",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ABVC",
+   "week": "2013-12-13",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ABVC",
+   "week": "2015-01-23",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ABVC",
+   "week": "2015-02-27",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ACCS",
+   "week": "2010-07-16",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ACCS",
+   "week": "2011-03-11",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ACET",
+   "week": "2023-06-30",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ACHV",
+   "week": "2019-02-22",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AEON",
+   "week": "2024-05-03",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AIMD",
+   "week": "2015-12-24",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AIMD",
+   "week": "2016-10-28",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ALT",
+   "week": "2025-06-27",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ANAB",
+   "week": "2017-10-13",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_APRE",
+   "week": "2020-12-31",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ASMB",
+   "week": "2020-11-06",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ATEC",
+   "week": "2015-08-07",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ATLX",
+   "week": "2015-09-25",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ATNM",
+   "week": "2013-03-22",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ATNM",
+   "week": "2024-08-09",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_EXCHANGE_UNCONFIRMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ATRA",
+   "week": "2026-01-16",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AVTX",
+   "week": "2016-12-02",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_AZIO",
+   "week": "2020-06-12",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BATL",
+   "week": "2026-01-30",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BCHT",
+   "week": "2012-12-21",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BESS",
+   "week": "2019-07-12",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BESS",
+   "week": "2020-06-12",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BGLC",
+   "week": "2023-02-17",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BNAI",
+   "week": "2025-10-03",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BRLS",
+   "week": "2024-05-24",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BRTX",
+   "week": "2020-07-24",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BWEN",
+   "week": "2023-01-13",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_BYSI",
+   "week": "2024-03-08",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CELU",
+   "week": "2026-08-28",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CHGA",
+   "week": "2017-08-04",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CLDX",
+   "week": "2018-04-20",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CLSK",
+   "week": "2017-11-03",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CMT",
+   "week": "2019-11-15",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CPRI",
+   "week": "2024-10-25",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CPS",
+   "week": "2022-08-05",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CRBP",
+   "week": "2020-09-11",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_CTEV",
+   "week": "2024-12-27",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_DMRA",
+   "week": "2023-08-18",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_DTST",
+   "week": "2011-08-26",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_DWTX",
+   "week": "2024-01-26",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_EDSA",
+   "week": "2020-06-19",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ELTX",
+   "week": "2021-10-29",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ERNA",
+   "week": "2020-06-19",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_EYPT",
+   "week": "2011-11-11",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_GALT",
+   "week": "2024-12-20",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_GBR",
+   "week": "2018-06-29",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_GCTK",
+   "week": "2019-07-26",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_GLSI",
+   "week": "2020-12-11",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_GOSS",
+   "week": "2026-02-27",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_HOUR",
+   "week": "2024-12-27",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_IGC",
+   "week": "2019-02-22",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_INOD",
+   "week": "2024-11-08",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_IOVA",
+   "week": "2025-05-09",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_IVF",
+   "week": "2015-11-06",
+   "ours": "INSUFFICIENT_FILINGS",
+   "oursDetail": "INSUFFICIENT_FILINGS",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_IZEA",
+   "week": "2012-05-11",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_JCI",
+   "week": "2012-10-05",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "SPIN_OFF_DISTRIBUTION:ACCEPTED",
+   "v9Effect": "RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_JOB",
+   "week": "2014-12-19",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_KOSS",
+   "week": "2024-07-05",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_KYNB",
+   "week": "2024-02-02",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_LAW",
+   "week": "2022-08-12",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_LFMD",
+   "week": "2015-10-09",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_LXRX",
+   "week": "2020-12-11",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MAMO",
+   "week": "2026-02-06",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MARA",
+   "week": "2012-11-16",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MDGL",
+   "week": "2015-10-23",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MGNX",
+   "week": "2019-02-08",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MGRX",
+   "week": "2026-03-27",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MLSS",
+   "week": "2011-11-25",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MTNB",
+   "week": "2023-08-11",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_MXC",
+   "week": "2020-07-24",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NBIX",
+   "week": "2014-01-10",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NHTC",
+   "week": "2011-04-08",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NIXX",
+   "week": "2016-12-30",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NIXX",
+   "week": "2017-05-05",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NIXX",
+   "week": "2017-08-04",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NKTR",
+   "week": "2023-02-24",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NVNO",
+   "week": "2025-08-22",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NXPL",
+   "week": "2017-08-18",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_NXPL",
+   "week": "2017-09-22",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ODYS",
+   "week": "2022-08-12",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ODYS",
+   "week": "2023-08-18",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLB",
+   "week": "2013-07-19",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLB",
+   "week": "2014-02-28",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLB",
+   "week": "2016-09-16",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLB",
+   "week": "2017-06-09",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLB",
+   "week": "2019-03-08",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OLMA",
+   "week": "2021-12-03",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ONMD",
+   "week": "2024-05-24",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_ORMP",
+   "week": "2023-01-13",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_OTLK",
+   "week": "2023-09-01",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PASG",
+   "week": "2026-04-24",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PAYS",
+   "week": "2011-08-05",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PAYS",
+   "week": "2011-11-18",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PMTS",
+   "week": "2016-05-13",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PPCB",
+   "week": "2013-10-04",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PPCB",
+   "week": "2014-05-09",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PROP",
+   "week": "2020-05-15",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_PRTA",
+   "week": "2022-09-30",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_QURE",
+   "week": "2025-09-26",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_QXL",
+   "week": "2023-09-15",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_RVP",
+   "week": "2017-08-18",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_RXT",
+   "week": "2026-02-20",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SBFM",
+   "week": "2017-06-23",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SCWO",
+   "week": "2019-02-15",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SGLY",
+   "week": "2022-04-14",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_PERIODIC_TEXT",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SIEB",
+   "week": "2017-12-15",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SLNG",
+   "week": "2018-06-08",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SLSN",
+   "week": "2020-05-01",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SNWV",
+   "week": "2015-05-08",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SOBR",
+   "week": "2013-10-18",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SOBR",
+   "week": "2016-06-10",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SOBR",
+   "week": "2018-05-04",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SPXC",
+   "week": "2015-10-02",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "SPIN_OFF_DISTRIBUTION:ACCEPTED",
+   "v9Effect": "RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_SVRA",
+   "week": "2019-10-04",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_8K",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_TENX",
+   "week": "2017-02-03",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_TNDM",
+   "week": "2016-11-04",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_TNXP",
+   "week": "2018-07-27",
+   "ours": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "oursDetail": "SPLIT_EVIDENCE_XBRL",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_TVRD",
+   "week": "2021-04-30",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_TXMD",
+   "week": "2011-02-18",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_VAI",
+   "week": "2025-06-13",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_VATE",
+   "week": "2013-08-30",
+   "ours": "IDENTITY_UNVERIFIED",
+   "oursDetail": "IDENTITY_TICKER_NOT_NAMED",
+   "v9": "SPIN_OFF_DISTRIBUTION:ACCEPTED",
+   "v9Effect": "RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_WKHS",
+   "week": "2021-02-26",
+   "ours": "NEGATIVE_EVIDENCE_ONLY",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_WKSP",
+   "week": "2011-03-04",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  },
+  {
+   "securityId": "ref_WKSP",
+   "week": "2016-05-13",
+   "ours": "OUT_OF_FRAME_PRE_XBRL",
+   "oursDetail": null,
+   "v9": "GENUINE_MOVE:ACCEPTED",
+   "v9Effect": "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE",
+   "agreement": "V9_ONLY_ADMIT"
+  }
+ ]
+}

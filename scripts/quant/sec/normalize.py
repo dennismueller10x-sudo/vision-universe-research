@@ -12,6 +12,12 @@ Rules this layer obeys without exception:
     downstream can mistake six months of revenue for a quarter.
   - Every observation carries the concept actually used, its accession, its form
     and when it became publicly available.
+  - A fact whose period ends after the filing became available is not a
+    reported period (maturity schedule, dividend declared for a later quarter,
+    mis-dated context, cover date after acceptance). It is quarantined as
+    FUTURE_PERIOD_END, never re-dated: moving its availability to the period
+    end would, once that date passes, publish a schedule amount or a
+    declaration as that period's reported value.
 """
 import logging
 from collections import Counter, defaultdict
@@ -19,7 +25,7 @@ from collections import Counter, defaultdict
 from .fiscal import FiscalCalendar
 from .model import (
     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM,
-    UNIT_MISMATCH, PERIOD_MISMATCH,
+    UNIT_MISMATCH, PERIOD_MISMATCH, ACCEPTANCE_SOURCE_BULK_SUBMISSIONS,
 )
 from .registry import KIND_DURATION, KIND_INSTANT
 from .restatements import CompanyFactBook, Observation
@@ -39,6 +45,7 @@ ISSUE_UNKNOWN_CONCEPT = "UNKNOWN_CONCEPT"
 ISSUE_DUPLICATE_FACT = "DUPLICATE_FACT"
 ISSUE_CONCEPT_DISAGREEMENT = "CONCEPT_DISAGREEMENT"
 ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
+ISSUE_FUTURE_PERIOD_END = "FUTURE_PERIOD_END"
 
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
@@ -79,14 +86,45 @@ def build_availability_map(filing_metadata):
     `acceptanceDateTime` is the exact dissemination moment. Where the SEC does
     not provide it we fall back to the filing date, and the PIT layer then works
     at date granularity — one day coarser, never one day earlier.
+
+    A row whose acceptance timestamp comes from the bulk submissions archive
+    (acceptance_source = ACCEPTANCE_SOURCE_BULK_SUBMISSIONS, see model.py) never
+    supplies availability: that archive shifts acceptanceDateTime by +4/+5 hours
+    for part of the filers. The official filing date is used instead.
     """
     availability = {}
+    ignored = 0
     for row in filing_metadata or []:
         accession = row.get("accession")
         if not accession:
             continue
-        availability[accession] = row.get("acceptance_datetime") or row.get("filing_date")
+        acceptance = row.get("acceptance_datetime")
+        if acceptance and row.get("acceptance_source") == ACCEPTANCE_SOURCE_BULK_SUBMISSIONS:
+            acceptance = None
+            ignored += 1
+        availability[accession] = acceptance or row.get("filing_date")
+    if ignored:
+        LOGGER.warning("%d acceptance timestamps from %s ignored; filing dates used",
+                       ignored, ACCEPTANCE_SOURCE_BULK_SUBMISSIONS)
     return availability
+
+
+def availability_date(fact, availability):
+    """ISO date from which a fact is knowable: acceptance date, never before the filing date.
+
+    An acceptance timestamp can fall on the evening before the official filing
+    date (normalization 1.4.0); a cover date on the filing date is then not in
+    the future. Date granularity on purpose: a period end has no time of day.
+    """
+    accepted = fact.available_from or availability.get(fact.accession) or fact.filed
+    candidates = [str(value)[:10] for value in (accepted, fact.filed) if value]
+    return max(candidates) if candidates else None
+
+
+def is_future_period(fact, availability):
+    """True when the fact's own period ends after the filing became available."""
+    known = availability_date(fact, availability)
+    return bool(fact.end and known and str(fact.end)[:10] > known)
 
 
 class NormalizationResult:
@@ -125,7 +163,8 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     # the company's other facts for the same period were measured on.
     observed_period_ends = defaultdict(Counter)
     seen_fact_ids = set()
-    stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
+    stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0,
+             "future_period_quarantined": 0}
 
     for fact in raw_facts:
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept, cik=cik)
@@ -158,6 +197,18 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             if definition.kind == KIND_DURATION and is_instant:
                 issues.append(_issue(ISSUE_PERIOD_MISMATCH, fact,
                                      f"{metric_name} is a duration metric but the fact is an instant",
+                                     metric=metric_name))
+                continue
+
+            # Quarantine BEFORE any placement: the raw end date is checked, so a
+            # cover date after acceptance is refused even where the cover-date
+            # logic below would have re-dated it onto an earlier quarter end.
+            # Quarantined facts also lend no period end to a cover date.
+            if is_future_period(fact, availability):
+                stats["future_period_quarantined"] += 1
+                issues.append(_issue(ISSUE_FUTURE_PERIOD_END, fact,
+                                     "period ends %s, after the filing became available (%s)" % (
+                                         fact.end, availability_date(fact, availability)),
                                      metric=metric_name))
                 continue
 

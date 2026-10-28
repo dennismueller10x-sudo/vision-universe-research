@@ -89,6 +89,13 @@
     return { value: value, status: status };
   }
 
+  /** Genauigkeit der ausgelieferten Dateien: Nicht-Ganzzahlen auf 6 Nachkommastellen (build-discover-data.mjs#write).
+   *  Wer aus einer Zahl Text bildet, rechnet auf diesem Wert, sonst weicht der Text von der ausgelieferten Zahl ab
+   *  (Nachtlauf 28.10.2026: CUBE-Nettomarge 0,294999… -> "29 %", ausgeliefert 0,295 -> "30 %"). */
+  function shippedNumber(v) {
+    return typeof v === "number" && !Number.isInteger(v) ? Math.round(v * 1e6) / 1e6 : v;
+  }
+
   function valueOf(f) {
     if (f === null || f === undefined) return null;
     if (typeof f === "object" && "value" in f) return f.value;
@@ -338,7 +345,7 @@
     CONTRACT_VERSION: CONTRACT_VERSION,
     FIELD_STATUS: FIELD_STATUS, DATA_MODES: DATA_MODES,
     SIGNALS: SIGNALS, METRICS: METRICS, TI_STATUS: TI_STATUS,
-    field: field, valueOf: valueOf, statusOf: statusOf,
+    field: field, shippedNumber: shippedNumber, valueOf: valueOf, statusOf: statusOf,
     normalizeStock: normalizeStock, assertStock: assertStock, toCard: toCard,
     toMiniCard: toMiniCard
   };

@@ -123,3 +123,26 @@ Erzeuger: `scripts/technical/build-pandasta-reference.py`, Fixture `technical-pa
 - **Keltner:** pandas-ta nimmt für die Bandbreite die Länge der Mittellinie. Die Engine hat eine eigene ATR-Länge (10).
 
 Damit hat jeder der 78 Katalogindikatoren eine fremde Referenz auf echten Kursen.
+
+## Erweiterung L12 (indicators 1.6.0): 14 neue Katalogindikatoren
+
+Erzeuger: `scripts/technical/build-l12-reference.py`, Fixture `technical-l12-reference-aapl.json`, Test `technical-indicators-l12.test.mjs`. Die Stichprobe ist derselbe AAPL-Ausschnitt (315 Tagesbars). Die Bibliotheken sind TA-Lib 0.8.2 und pandas-ta 0.4.71b0, beide nur in einer temporären Umgebung, keine Projektabhängigkeit.
+
+**Ergebnis: 20 Ausgabereihen, alle gleich (1e-8).** 18 Reihen stimmen ab ihrer ersten Bar.
+
+| Indikator | Referenz | Ergebnis |
+|---|---|---|
+| APO, MIDPRICE, TSF | TA-Lib | gleich ab der ersten Bar |
+| schnelle Stochastik %D | TA-Lib STOCHF | gleich ab der ersten Bar |
+| schnelle Stochastik %K | TA-Lib STOCHF | gleich ab Bar 15. TA-Lib gibt %K erst ab der ersten %D-Bar aus, die Engine ab Bar 13 (wie bei der langsamen Stochastik) |
+| ADXR | TA-Lib ADXR | **geerbte Startwert-Konvention:** ADXR nutzt ADX und ADX₋₁₃. ADX ist gleich ab Bar 264 (siehe oben), ADXR daher ab Bar 274. Die Formel selbst prüft der Test an jeder Bar gegen die ADX-Reihe der Engine. |
+| Fisher (Wert, Signal), RVGI (Wert, Signal), VHF, Efficiency Ratio, QStick | pandas-ta | gleich ab der ersten Bar |
+| PVT | pandas-ta pvt / 100 | gleich ab der ersten Bar. pandas-ta nimmt die Tagesrendite in Prozent; die übliche Definition (TradingView) und die Engine nehmen den Anteil. |
+| Schaff Trend Cycle | TA-Lib EMA + numpy nach Schaff | gleich ab der ersten Bar |
+| Williams Alligator (3 Reihen), Williams Fractals (Preise) | numpy nach Formel | gleich ab der ersten Bar |
+
+**Wo pandas-ta anders rechnet (deshalb nicht direkt als Referenz):**
+- **Schaff Trend Cycle:** pandas-ta berechnet den ersten Stochastik-Schritt nur, wenn das MACD-Tief des Fensters positiv ist, sonst friert er den Vorwert ein. Bei negativem MACD bewegt sich der STC deshalb nicht. Schaff, und mit ihm die Engine, verlangt nur eine Spanne > 0.
+- **PVT:** Faktor 100, siehe oben.
+
+Damit haben alle 92 Katalogindikatoren eine fremde Referenz auf echten Kursen.

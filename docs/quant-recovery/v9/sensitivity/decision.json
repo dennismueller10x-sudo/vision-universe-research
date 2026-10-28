@@ -1,0 +1,157 @@
+{
+ "schemaVersion": "v9-sensitivity-decision-1.0.0",
+ "gitHead": "3ebd26e907f480c8aa947fba8a70e6f7531b61f7",
+ "runtime": {
+  "node": "v22.22.0",
+  "v8": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.39",
+  "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "code": {
+  "scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs": "c5e0f3fb83f7c26eea5a61f0109c49112297519a00af05d6c3d3f8d7aae1cf04",
+  "scripts/quant/v9/sensitivity/dependence.cjs": "6f60bb3651410bd58dd204b927a284e8c49fd5c3ae1f90dd479223825a4cc2a9",
+  "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+  "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+  "quant/engines/research-contract.cjs": "a4192856ca4d70b21d8e43b834bd1dc1fb189dade04b2ea98ccf97c386e11b78",
+  "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+  "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+  "quant/engines/research-classification-evidence.cjs": "9f24fb679b971b0b64b542cddb173cae420b7fbefd42f24f7b51f189dcfc6235",
+  "quant/engines/corporate-action-evidence.js": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+  "quant/engines/return-series.js": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54",
+  "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+  "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+  "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+  "quant/engines/profile-backtest.js": "49160c3e65128e526a4a5d31dd13c56757f6c84ab98da98c5425a51058ee4731"
+ },
+ "registrationHash": "5196adfe16748dea470dc40ff8e7224811e45801da4b3cc7bd1c0b7026e2da01",
+ "sourceManifestHash": "1e97fb5bbea8635ed3bfd241244276eb3d4f62cb3337f109548d571da3f173ba",
+ "runSummarySha256": "fd5db2738287c53ae28e6f9146b249644c9c2034acd597ff2877391793d37fbd",
+ "productionApproved": false,
+ "method": "PARAMETER_SENSITIVITY",
+ "previousStatus": "PARTIALLY_VALIDATED (V8)",
+ "decision": {
+  "rule": "ACCEPTED_WITH_DEFINED_SCOPE iff P1 and P2 both satisfy C1-C6 (scope: conditional dependence-aware inference with empirically supported block length on the registered current-classification survivor populations, explored 2000-2025 history; trio included in scope only if it also satisfies C1-C6). Otherwise PARTIALLY_VALIDATED with the failing criteria named. Significance of grid points never enters the decision.",
+  "perPopulationPrimary": {
+   "TRIO": {
+    "allCriteria": false,
+    "failing": [
+     "C5_STATIONARITY",
+     "C6_SPLIT"
+    ],
+    "counts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 30,
+     "C6_SPLIT": 30
+    }
+   },
+   "P1": {
+    "allCriteria": true,
+    "failing": [],
+    "counts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 36,
+     "C6_SPLIT": 36
+    }
+   },
+   "P2": {
+    "allCriteria": true,
+    "failing": [],
+    "counts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 36,
+     "C6_SPLIT": 36
+    }
+   }
+  },
+  "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
+  "trioInScope": false,
+  "productionApproved": false
+ },
+ "criteria": {
+  "threshold": "A criterion holds for a population if it holds for >= 33 of 36 grid points (primary endpoint). The 36 points share events and are not independent checks.",
+  "C1_PW": "b=52 >= PW b_CB",
+  "C2_PLATEAU": "max/min of CBB SE over b in {39,52,78,104} <= 1.25",
+  "C3_METHODS": "|SE_SB(52)/SE_CBB(52)-1| <= 0.20 and |SE_MBB(52)/SE_CBB(52)-1| <= 0.20",
+  "C4_LRV": "|SE_NW(bw=52)/SE_CBB(52)-1| <= 0.25",
+  "C5_STATIONARITY": "KPSS(z, bw 52) and CUSUM(z, bw 52) both not rejected at 5%",
+  "C6_SPLIT": "split-period Wald p > 0.01",
+  "populationStatus": "BLOCK_DESIGN_SUPPORTED iff C1-C4; STATIONARITY_NOT_CONTRADICTED iff C5-C6",
+  "methodDecision": "ACCEPTED_WITH_DEFINED_SCOPE iff P1 and P2 both satisfy C1-C6 (scope: conditional dependence-aware inference with empirically supported block length on the registered current-classification survivor populations, explored 2000-2025 history; trio included in scope only if it also satisfies C1-C6). Otherwise PARTIALLY_VALIDATED with the failing criteria named. Significance of grid points never enters the decision.",
+  "notProvable": [
+   "Mixing/weak stationarity cannot be proven by finite-sample diagnostics; non-rejection is not proof.",
+   "Survivorship: current classification conditions on survival.",
+   "Explored history; no untouched holdout; P2 shares calendar shocks with P1 (not independent)."
+  ]
+ },
+ "secondaryEndpointStatus": {
+  "TRIO": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 36,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 36,
+    "C6_SPLIT": 36
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": true,
+    "STATIONARITY_NOT_CONTRADICTED": true
+   }
+  },
+  "P1": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 30,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 0,
+    "C6_SPLIT": 0
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": false,
+    "STATIONARITY_NOT_CONTRADICTED": false
+   }
+  },
+  "P2": {
+   "counts": {
+    "C1_PW": 36,
+    "C2_PLATEAU": 12,
+    "C3_METHODS": 36,
+    "C4_LRV": 36,
+    "C5_STATIONARITY": 0,
+    "C6_SPLIT": 0
+   },
+   "status": {
+    "BLOCK_DESIGN_SUPPORTED": false,
+    "STATIONARITY_NOT_CONTRADICTED": false
+   }
+  }
+ },
+ "scope": {
+  "accepted": "Descriptive robustness of the registered 36-point grid plus conditional, dependence-aware circular calendar-block inference (b=52, 1999 replicates, Holm within grid) for the PRIMARY endpoint (pooled net price return incl. market drift) of NEW_52W_HIGH on the registered current-classification populations P1/P2, signal dates 2000-2025.",
+  "excluded": [
+   "Benchmark-excess (secondary) endpoint: stationarity diagnostics reject (KPSS/CUSUM/split-period) on P1 and P2 - time-varying mean excess; block inference for it is NOT accepted.",
+   "V8 survivor trio: C5/C6 fail on 12/36 points (primary); block length is supported there but stationarity is contradicted for some horizon/delay combinations.",
+   "Any other rule, population, period, endpoint or block design."
+  ],
+  "notEstablished": [
+   "Mixing/weak stationarity cannot be proven by finite-sample diagnostics; non-rejection is not proof.",
+   "Survivorship: current classification conditions on survival.",
+   "Explored history; no untouched holdout; P2 shares calendar shocks with P1 (not independent).",
+   "Non-rejection of KPSS/CUSUM/split tests is not evidence of stationarity; heteroskedastic z (growing cross-section) affects their asymptotic size.",
+   "Event intensity N_t is clearly non-stationary (KPSS on counts rejects) because the unbalanced panel grows over time.",
+   "No economic advantage: primary endpoint contains equity drift; benchmark-excess grid shows no Holm rejection in any population."
+  ]
+ }
+}

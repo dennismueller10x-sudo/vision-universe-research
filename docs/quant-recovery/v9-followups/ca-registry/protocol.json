@@ -1,0 +1,85 @@
+{
+ "schemaVersion": "v9-followup-ca-verification-protocol-1.0.0",
+ "status": "REGISTERED_BEFORE_OUTCOMES",
+ "registration": "The git commit that adds this file is the registration; its commit timestamp precedes every SEC fetch for candidate verification and every read of V9 workstream-B classifications. The sha256 of this file is stored next to it (protocol.sha256) and repeated in every derived evidence file. Any later change requires a new protocol version and a new registration; verdicts under a changed protocol are not comparable.",
+ "ownerDecision": "2026-10-28: further corporate-action corrections only after independent source verification; no blanket activation of the 81 V9 dry-run cases. V9 workstream B (docs/quant-recovery/v9/corporate-actions/*, scripts/quant/v9/corporate-actions/* on claude/vision-universe-quant-v9-dsvle1) is a candidate list only.",
+ "independence": {
+  "v9ClassificationsReadOnlyAfterFreeze": "V9 classifications, proposals, dry-run results, manual reviews and quotes are not read before all verdicts of this protocol are written to the private verdict file and its sha256 is recorded. They are then used only for the agreement table.",
+  "rawCacheReuse": "Raw SEC response bodies cached by V9 (url-keyed http cache) may be served instead of a network fetch; they are identical bytes for the same URL. No V9 derived file (events, resolutions, sec-evidence, quotes, manual-review, dry-run) is read for decisions.",
+  "secAccess": "scripts/quant/sec/http_client.py, declaring User-Agent, token bucket rate <= 2 requests/second, burst 1; private cache under scratchpad/v9-private/followups/ca-registry/http-cache (gitignored location outside the repo).",
+  "noTuningAfterViewing": "Regular expressions, windows and thresholds below are fixed. Code may be fixed for bugs (parse failures, crashes) without changing a rule; each such fix is logged in the evidence file."
+ },
+ "candidateFrame": {
+  "universe": "Every UNRESOLVED item of quant/engines/corporate-action-evidence.js#resolve over the weekly series quant/data/market/discover-series-long/*.json, restricted to series whose load with research-weekly-loader createResearchLoader(root, { identityEvidence: true }) fails with CORPORATE_ACTION_UNRESOLVED (i.e. corporate action is the first and only remaining gate reached).",
+  "expectedSizeAtBase": { "events": 1087, "series": 600, "baseCommit": "a99a1eb76a (claude/v9-fu-identity-registry on main 07dfe5dd55)" },
+  "verificationSubset": "Series whose EVERY unresolved event week is >= 2011-07-01 (XBRL era: all domestic filers tag dei cover facts for periods after 2011-06-15). Expected 432 series / 647 events at base.",
+  "outOfSubset": "Events of series with any unresolved week < 2011-07-01 get class OUT_OF_FRAME_PRE_XBRL and are not verified; such series cannot qualify.",
+  "seriesRule": "A series becomes qualifiable only if EVERY one of its unresolved events receives an admissible class. Partial verification of a multi-event series leaves the series unresolved; verified single events of such series are not written to the registry."
+ },
+ "eventDefinition": {
+  "week": "series point date t of the suspected week (closing date of week t)",
+  "prevWeek": "series point date of the preceding week",
+  "jumpDay": "corporateActions.moves[week].maxDailyDate of the series (largest daily move inside the week); if null, jumpDay = week",
+  "direction": "UP if close/prevClose > 1 else DOWN"
+ },
+ "identity": {
+  "candidateCik": "Discovery only (not evidence): SEC company_tickers_exchange.json (current), exact ticker match after normalising '.', '-' and '/' class separators. No candidate => IDENTITY_NO_CANDIDATE_CIK.",
+  "ID1_ownFilingNamesTicker": "Each of the two bracketing ORIGINAL periodic filings (form exactly 10-K or 10-Q, not /A; see shareContinuity) of the candidate CIK has an XBRL instance (inline-extracted _htm.xml or classic instance .xml from the filing index) whose non-dimensional or class-dimensional dei:TradingSymbol equals the series ticker (normalised, case-insensitive). Both filings within 400 days of the event week (before: filingDate >= week-400d; after: filingDate <= week+400d).",
+  "ID2_exchange": "The listing's exchange (security-master row 'exchange') must be named for that ticker: dei:SecurityExchangeName in either bracketing instance (NASDAQ->'NASDAQ'; NYSE->'NYSE'; AMEX|NYSE MKT->'NYSEAMER'|'NYSEMKT'), or, when no instance tags SecurityExchangeName, the cover page of the candidate CIK's original 10-K filed within +-400 days of the event week (first 20,000 characters of the tag-stripped primary document) contains the exchange name (NASDAQ: /nasdaq/i; NYSE: /new york stock exchange|\\bnyse\\b/i AND NOT only /nyse (american|mkt|amex|arca)/i occurrences; AMEX|NYSE MKT: /nyse american|nyse mkt|nyse amex|american stock exchange/i). Otherwise IDENTITY_EXCHANGE_UNCONFIRMED.",
+  "ID3_tickerReuse": "Ticker reuse by a different issuer around the event is excluded by bracketing: an exchange symbol is unique on its exchange at any time, so the same CIK naming the same symbol before (ID1 before filing) and after (ID1 after filing) the event within 400 days excludes another issuer holding it at the event. If any bracketing instance names a DIFFERENT trading symbol for the same (non-dimensional) common class, or the candidate CIK's tickers between the two filings cannot be established, => IDENTITY_TICKER_REUSE_OR_CHANGE.",
+  "ID4_noHeuristics": "Public float, market-cap bands, name similarity or price plausibility are never identity evidence."
+ },
+ "shareContinuity": {
+  "source": "As-filed dei:EntityCommonStockSharesOutstanding read from the XBRL instance of the bracketing filings themselves (not companyfacts, not amendments).",
+  "beforeFiling": "Latest original 10-K/10-Q of the CIK whose dei:EntityCommonStockSharesOutstanding context date (cover as-of date) is <= prevWeek, filed >= week-400d.",
+  "afterFiling": "Earliest original 10-K/10-Q of the CIK whose cover as-of date is >= week, filed <= week+400d.",
+  "multipleClasses": "If the instance reports class-dimensional counts, the count of the class whose dei:TradingSymbol context equals the ticker is used; if that mapping is not tagged, the sum of all non-dimensional facts if exactly one non-dimensional fact exists, else SHARE_COUNT_AMBIGUOUS.",
+  "ratio": "after/before must lie in [0.8, 1.25]; else SHARE_COUNT_DISCONTINUITY (class SPLIT_OR_SHARE_CHANGE_EVIDENCE).",
+  "missing": "No qualifying before or after filing => INSUFFICIENT_FILINGS."
+ },
+ "splitEvidence": {
+  "providerSplitInWeek": "Series item reason PROVIDER_SPLIT_IN_WEEK => class PROVIDER_SPLIT_RECORDED (never admissible).",
+  "xbrl": "companyfacts us-gaap StockholdersEquityNoteStockSplitConversionRatio1 or StockholdersEquityNoteStockSplitConversionRatio facts of the CIK whose 'end' lies in [prevWeek-400d, week+400d] => SPLIT_EVIDENCE.",
+  "eightK": "Every 8-K (and 8-K/A) of the CIK with reportDate or filingDate in [prevWeek-90d, week+45d] whose items include any of 3.01, 3.03, 5.03, 7.01, 8.01 is fetched as complete submission text (all documents incl. exhibits); a match of SPLIT_REGEX => SPLIT_EVIDENCE.",
+  "periodicText": "The primary document of the afterFiling (tag-stripped) is searched with SPLIT_REGEX_STRONG; a match => SPLIT_EVIDENCE.",
+  "SPLIT_REGEX": "(?i)\\b(reverse\\s+(stock\\s+|share\\s+)?split|stock\\s+split|share\\s+split|share\\s+consolidation|stock\\s+dividend|split[- ]adjusted|\\d+(\\.\\d+)?\\s*-?\\s*for\\s*-?\\s*\\d+(\\.\\d+)?\\s+(reverse|forward|stock|share|split)|one[- ]for[- ](two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|twenty-five|thirty|forty|fifty|one hundred))",
+  "SPLIT_REGEX_STRONG": "(?i)\\b(reverse\\s+(stock\\s+|share\\s+)?split|stock\\s+split|share\\s+consolidation|\\d+(\\.\\d+)?\\s*-?\\s*for\\s*-?\\s*\\d+(\\.\\d+)?\\s+(reverse|forward|stock|share|split)|one[- ]for[- ](two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|twenty-five|thirty|forty|fifty|one hundred))",
+  "note": "SPLIT_EVIDENCE is evidence against GENUINE_MOVE regardless of whether the matched text concerns this event; the protocol prefers false rejections over false admissions."
+ },
+ "spinoff": {
+  "rule": "Direction DOWN; an 8-K of the CIK with reportDate or filingDate in [week-120d, week+14d] whose complete submission text matches SPINOFF_REGEX and contains a calendar date in (prevWeek, week] (formats 'Month D, YYYY' or 'MM/DD/YYYY') within 400 characters after a match of DISTRIBUTION_DATE_REGEX; identity ID1-ID3 pass; shareContinuity ratio in [0.8, 1.25]; no XBRL/periodic split evidence (8-K split language from the same spin-off 8-K is NOT disqualifying only when it is the term 'stock dividend' used for the distribution itself; any reverse/forward split match disqualifies).",
+  "SPINOFF_REGEX": "(?i)\\b(spin[- ]?off|spun[- ]off|separation and distribution|pro rata distribution)\\b",
+  "DISTRIBUTION_DATE_REGEX": "(?i)(distribution date|ex-distribution|ex-dividend date|distribution (is|was|will be) (made|effective|completed)|completed the (spin[- ]?off|separation|distribution))",
+  "returnBasis": "PRICE_RETURN_ONLY: the series is a parent price series; the distributed value is not in the series. Admissible only with that flag.",
+  "class": "SPINOFF_DISTRIBUTION"
+ },
+ "affirmativeSource": {
+  "rule": "An 8-K (not /A) of the CIK with items intersecting {1.01, 1.02, 1.03, 2.01, 2.02, 2.05, 2.06, 3.01, 4.02, 5.01, 7.01, 8.01} whose reportDate or filingDate lies in [jumpDay-3d, jumpDay+1d], fetched in full, with no SPLIT_REGEX match. Its accession, url, sha256 and a quote (the first 400 characters of tag-stripped text after the first 'Item <n>.<nn>' heading of an intersecting item, else the first 400 characters of the first EX-99 document) are recorded.",
+  "limits": "Co-occurrence of a material-event 8-K with the jump day is an affirmative second source that a disclosed event happened on the jump day; it is not proof of causation. 10-Q/10-K narrative and press releases outside EDGAR are not used.",
+  "spikeReversalGuard": "If within the two weekly points after `week` the close returns to within 25% (log distance <= ln 1.25) of prevClose, the event is SPIKE_REVERSAL (not admissible), regardless of sources."
+ },
+ "classes": {
+  "GENUINE_MOVE": { "admissible": true, "returnBasis": "PRICE_RETURN", "requires": "identity ID1-ID3, shareContinuity in band, no split evidence (all three channels), affirmativeSource, no spike reversal" },
+  "SPINOFF_DISTRIBUTION": { "admissible": true, "returnBasis": "PRICE_RETURN_ONLY", "requires": "see spinoff.rule" },
+  "NEGATIVE_EVIDENCE_ONLY": { "admissible": false, "meaning": "identity, continuity and absence of split evidence pass, but no affirmative source. Not admissible in this protocol version; listed in the evidence file only." },
+  "SPLIT_UNADJUSTED": { "admissible": false, "meaning": "Never admissible here; a producer fix (separate PR, e.g. PZZA) is the remedy." },
+  "PROVIDER_SPLIT_RECORDED": { "admissible": false },
+  "SPLIT_OR_SHARE_CHANGE_EVIDENCE": { "admissible": false, "meaning": "SPLIT_EVIDENCE or SHARE_COUNT_DISCONTINUITY. Includes likely split-unadjusted cases; this protocol does not try to prove SPLIT_UNADJUSTED." },
+  "SPIKE_REVERSAL": { "admissible": false },
+  "IDENTITY_UNVERIFIED": { "admissible": false, "subreasons": ["IDENTITY_NO_CANDIDATE_CIK", "IDENTITY_TICKER_NOT_NAMED", "IDENTITY_EXCHANGE_UNCONFIRMED", "IDENTITY_TICKER_REUSE_OR_CHANGE"] },
+  "INSUFFICIENT_FILINGS": { "admissible": false, "meaning": "no bracketing original periodic filing with an instance / share count, or fetch failure after retries" },
+  "OUT_OF_FRAME_PRE_XBRL": { "admissible": false }
+ },
+ "decisionOrder": ["OUT_OF_FRAME_PRE_XBRL", "PROVIDER_SPLIT_RECORDED", "IDENTITY_UNVERIFIED (candidate, bracketing filings, ID1-ID3)", "INSUFFICIENT_FILINGS", "SPLIT_OR_SHARE_CHANGE_EVIDENCE (share ratio, XBRL split facts, periodic text)", "SPINOFF_DISTRIBUTION (checked before 8-K split language, see spinoff.rule)", "SPLIT_OR_SHARE_CHANGE_EVIDENCE (8-K split language)", "SPIKE_REVERSAL", "GENUINE_MOVE if affirmativeSource else NEGATIVE_EVIDENCE_ONLY"],
+ "registryBinding": {
+  "file": "quant/engines/research-ca-evidence.cjs",
+  "perRecord": ["securityId", "canonicalId (security-master canonical_id of the series' single row at verification)", "ticker", "cik", "week", "prevWeek", "prevClose", "close", "weeklyRatio", "class", "returnBasis", "identity (both bracketing filings: accession, form, filingDate, tradingSymbol, exchange evidence)", "shareContinuity (before/after counts, dates, ratio)", "sources [{role, accession, url, sha256, quote}]", "protocolSha256", "verifiedAt"],
+  "matchRule": "An UNRESOLVED item is resolved only if a record exists with the same securityId, canonicalId equal to the listing's canonical_id, week and prevWeek equal to the series' points, |close - record.close| <= 1e-5 * record.close, |prevClose - record.prevClose| <= 1e-5 * record.prevClose and |close/prevClose - record.weeklyRatio| <= 1e-5. Any mismatch leaves the item UNRESOLVED (fail closed, the unchanged validate() error is raised). No whole-file hash binding.",
+  "optIn": "createResearchLoader(root, { corporateActionEvidence: true }) only; default off; weekly-real-adapter.cjs and corporate-action-evidence.js stay byte-identical to main; no productive caller imports the new files."
+ },
+ "reporting": {
+  "beforeAfter": "QUALIFIED counts default / identityEvidence / identityEvidence + corporateActionEvidence, newly qualified ids with class.",
+  "agreementWithV9": "Per verified event: this protocol's class vs V9 B classification/proposal (after freeze).",
+  "independentCheck": "Python stdlib re-derivation of every class decision from the stored facts and the series files; parity reported."
+ }
+}

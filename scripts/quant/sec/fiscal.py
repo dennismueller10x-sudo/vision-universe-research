@@ -51,6 +51,21 @@ FY_BOUNDARY_TOLERANCE_DAYS = 5
 
 QUARTER_LENGTH_DAYS = 91.31
 
+# An annual filing's own `fy` may differ from the calendar year its fiscal year
+# ends in by at most one: 0 for "ends Jan 2024 = FY2024" (Walmart), -1 for
+# "ends Feb 2024 = fiscal 2023" (Target), +1 for a filer that names the year
+# after the one it ends in (a convention, rare but consistent). Anything further away is not a naming
+# convention but a wrong value in the filing. Measured in V9 on the bulk archive:
+# Excel serial dates (PRTH 43465/43830), a transposition (WTBA 2107), a +2 error
+# (STX 2027 for the year ending 2025-06-27), and filings whose companyfacts
+# annual durations end two years before their own DocumentPeriodEndDate
+# (PLD 2008 tagged 2010, TRU 2012 tagged 2014).
+MAX_FILING_FY_DISTANCE = 1
+
+# Why an annual filing's `fy` was not used as a fiscal-year label.
+REJECTED_IMPLAUSIBLE_FILING_FY = "IMPLAUSIBLE_FILING_FY"
+REJECTED_LABEL_NOT_INCREASING = "LABEL_NOT_INCREASING"
+
 def _base_form(form):
     """'10-K/A' -> '10-K'; None -> ''."""
     return str(form or "").split("/")[0].strip().upper()
@@ -106,7 +121,10 @@ class FiscalCalendar:
         self.fiscal_year_end_hint = fiscal_year_end_hint
         self._extrapolated = set()
         # Filled by from_raw_facts: annual filings whose own `fy` field was
-        # refused because it would repeat or precede the previous fiscal year.
+        # refused, as (period_end, claimed_fy, used_fy, reason). reason is
+        # IMPLAUSIBLE_FILING_FY (more than MAX_FILING_FY_DISTANCE away from the
+        # year the period ends in) or LABEL_NOT_INCREASING (would repeat or
+        # precede the previous fiscal year).
         self.rejected_anchors = []
         # Where the year ends were learned from (see from_raw_facts).
         self.anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if fy_ends else ANCHOR_SOURCE_NONE
@@ -179,11 +197,19 @@ class FiscalCalendar:
                 anchor_source = ANCHOR_SOURCE_YEAR_END_PROJECTED
 
         # An annual filing's own reporting period is its latest annual period end.
+        # Its `fy` names that year only within MAX_FILING_FY_DISTANCE of the
+        # year the period ends in. An implausible one is neither a label nor a
+        # vote for the label offset; it is recorded, never silently used.
         anchors = {}
+        implausible = defaultdict(set)
         for bucket in anchors_by_accession.values():
             if bucket["fy"] is None or not bucket["ends"]:
                 continue
-            anchors[max(bucket["ends"])] = bucket["fy"]
+            end = max(bucket["ends"])
+            if abs(bucket["fy"] - end.year) > MAX_FILING_FY_DISTANCE:
+                implausible[end].add(bucket["fy"])
+                continue
+            anchors[end] = bucket["fy"]
 
         offsets = Counter(fy - end.year for end, fy in anchors.items())
         if offsets:
@@ -198,18 +224,30 @@ class FiscalCalendar:
         fy_ends = cls._cluster(annual_ends)
         labels, rejected = cls._label_years(fy_ends, anchors, label_offset)
         calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint)
+        for end in sorted(implausible):
+            for claimed in sorted(implausible[end]):
+                rejected.append((end.isoformat(), claimed, calendar.fiscal_year_for(end),
+                                 REJECTED_IMPLAUSIBLE_FILING_FY))
+        rejected.sort(key=lambda row: (row[0], row[3], row[1]))
         calendar.rejected_anchors = rejected
         calendar.anchor_source = anchor_source
         LOGGER.info(
             "fiscal calendar cik=%s years=%d offset=%+d anchors=%d rejected=%d",
             cik, len(fy_ends), label_offset, len(anchors), len(rejected),
         )
-        for end, claimed, used in rejected:
-            LOGGER.warning(
-                "cik=%s fiscal year ending %s is tagged fy=%s by its own 10-K, which "
-                "would repeat or precede the previous fiscal year; using %s",
-                cik, end, claimed, used,
-            )
+        for end, claimed, used, reason in rejected:
+            if reason == REJECTED_IMPLAUSIBLE_FILING_FY:
+                LOGGER.warning(
+                    "cik=%s fiscal year ending %s is tagged fy=%s by its own annual report, "
+                    "more than %d year from the year it ends in (%s); using %s",
+                    cik, end, claimed, MAX_FILING_FY_DISTANCE, reason, used,
+                )
+            else:
+                LOGGER.warning(
+                    "cik=%s fiscal year ending %s is tagged fy=%s by its own 10-K, which "
+                    "would repeat or precede the previous fiscal year; using %s",
+                    cik, end, claimed, used,
+                )
         return calendar
 
     @staticmethod
@@ -336,7 +374,7 @@ class FiscalCalendar:
             fallback = end.year + label_offset
             label = anchors.get(end, fallback)
             if previous is not None and label <= previous:
-                rejected.append((end.isoformat(), label, fallback))
+                rejected.append((end.isoformat(), label, fallback, REJECTED_LABEL_NOT_INCREASING))
                 label = fallback
             labels[end] = label
             previous = label
@@ -557,7 +595,7 @@ class FiscalCalendar:
                 for end in self.fy_ends
             ],
             "rejected_anchors": [
-                {"period_end": end, "filing_claimed_fy": claimed, "used_fy": used}
-                for end, claimed, used in self.rejected_anchors
+                {"period_end": end, "filing_claimed_fy": claimed, "used_fy": used, "reason": reason}
+                for end, claimed, used, reason in self.rejected_anchors
             ],
         }

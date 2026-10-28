@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--ink:#1d2433;--cream:#fbf7ef;--bull:#1f9d55;--bear:#8a5a2b;--red:#e2453a;--gold:#f2c230}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);font-family:Nunito,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:540px 960px}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.bg{position:absolute;inset:-200px;background:var(--c)}
+.dots{position:absolute;inset:-200px;background-image:radial-gradient(rgba(0,0,0,.10) 22%,transparent 24%);background-size:34px 34px}
+.rays{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;
+ background:repeating-conic-gradient(rgba(255,255,255,.22) 0 9deg,transparent 9deg 18deg)}
+/* duo */
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.fig{position:absolute;bottom:-60px;height:1220px}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-40px;width:600px}#baer{right:-50px;width:660px}
+/* icons */
+.ico{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;opacity:0;z-index:8;filter:drop-shadow(0 12px 0 rgba(0,0,0,.22))}
+.ico img{width:100%;height:100%;object-fit:contain}
+/* chart scenes */
+.card{position:absolute;left:60px;right:60px;background:#fff;border:8px solid var(--ink);border-radius:36px;box-shadow:0 16px 0 var(--ink)}
+.h1{position:absolute;top:170px;left:0;right:0;text-align:center;font-family:Bangers;font-size:118px;letter-spacing:3px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;text-shadow:8px 10px 0 var(--ink);transform:rotate(-2deg)}
+.lab{font-family:Archivo;font-size:44px}
+.big{font-family:Bangers;letter-spacing:2px;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill;text-shadow:7px 9px 0 var(--ink)}
+.stamp{position:absolute;font-family:Bangers;letter-spacing:3px;color:var(--red);border:14px solid var(--red);border-radius:26px;padding:0 34px;background:rgba(255,255,255,.94);white-space:nowrap;opacity:0;z-index:9}
+/* captions */
+#cap{position:absolute;left:30px;right:30px;text-align:center;font-family:Archivo;font-size:84px;line-height:1.08;z-index:20;text-transform:uppercase;
+ -webkit-text-stroke:18px var(--ink);paint-order:stroke fill;color:#fff}
+#cap .w{display:inline-block;margin:0 10px}
+#cap .w.on{color:var(--hl)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none}
+#end{position:absolute;inset:0;background:var(--cream);opacity:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
+#end .logo{width:420px;height:420px;border-radius:50%;box-shadow:0 12px 0 rgba(0,0,0,.12)}
+#end .nm{font-family:Archivo;font-size:132px;line-height:.95}#end .nm i{font-style:normal;color:var(--bull)}#end .nm u{text-decoration:none;color:var(--bear)}
+#end .h{font-family:Archivo;font-size:44px;opacity:.8}
+#end .btn{font-family:Archivo;font-size:56px;background:var(--ink);color:#fff;padding:18px 60px;border-radius:24px}
+#end .fine{font-size:34px;font-weight:800;opacity:.7}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="world">
+ <div class="scene" id="duo"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div id="cam"><div class="fig" id="bulle"></div><div class="fig" id="baer"></div></div></div>
+ <div class="scene" id="d1"><div class="bg"></div><div class="dots"></div><div class="h1">80+ JAHRE INVESTIERT</div>
+  <div class="card" style="top:520px;height:560px"><svg id="tl" viewBox="0 0 960 560" width="944" height="544"></svg></div></div>
+ <div class="scene" id="d2"><div class="bg"></div><div class="dots"></div><div class="h1">BUFFETTS VERMÖGEN</div>
+  <div class="card" style="top:470px;height:880px"><svg id="cv" viewBox="0 0 960 880" width="944" height="864"></svg></div></div>
+ <div class="scene" id="d4"><div class="bg"></div><div class="dots"></div><div class="h1">GLEICHE RENDITE, WENIGER ZEIT</div>
+  <div class="card" id="cA" style="top:470px;height:420px;right:auto;width:470px;left:40px"></div>
+  <div class="card" id="cB" style="top:470px;height:420px;left:auto;width:470px;right:40px"></div></div>
+ <div class="scene" id="d5"><div class="bg"></div><div class="rays"></div><div class="dots"></div></div>
+</div>
+<div id="cap"></div><div id="flash"></div>
+<div id="end"><img class="logo" src="../../profil/icon-a-gold.png"><div class="nm"><i>AKTIEN</i><u>ZOO</u></div><div class="h">@aktienzoo</div><div class="btn">FOLGEN</div><div class="fine">Keine Anlageberatung</div></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp;
+const FIG={bulle:'../../figuren/entwurf-1/outfits/outfit-sakko/',baer:'../../figuren/entwurf-1/outfits/outfit-pullover/'};
+const ICON='../../icons/';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3),easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const OPEN={bulle:0.62,baer:0.5},HALF={bulle:0.16,baer:0.16};
+const loads=[];const img=(src,parent,cls)=>{const im=new Image();im.src=src;if(cls)im.className=cls;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
+// ---------- figures
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
+const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
+const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
+// ---------- scene colours (each line gets its own colour)
+const PAL=['#f2c230','#7fd0a8','#86c1f2','#f5a08f','#c9a7f0','#f2c230','#7fd0a8','#86c1f2','#f5a08f','#f2c230','#e2453a','#86c1f2','#7fd0a8','#f2c230'];
+// ---------- spoken numbers as digits
+const NUM=[['zehn Jahren','10 Jahren'],['achtzig Jahre','80 Jahre'],['Achtzig Jahre?','80 Jahre?'],['vierundachtzig Milliarden Dollar','84 Mrd. $'],['vierundachtzig Milliarden.','84 Mrd.'],
+ ['neunundneunzig Prozent','99 %'],['fünfzigsten','50.'],['Fünfzigsten?!','50.?!'],['dreißig','30'],['sechzig','60'],['zwölf Millionen Dollar.','12 Mio. $'],['neunundneunzig Komma neun Prozent','99,9 %']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
+ const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:bare(disp)+(disp.match(/[.,!?:]+$/)?disp.match(/[.,!?:]+$/)[0]:tail),e:last.e});break}}
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+// ---------- icons triggered by words (max 3 per line, fixed slots)
+const KEY={reich:'geldbuendel',investor:'pokal',trick:'gluehbirne','10':'kalender','80':'sanduhr',bestseller:'lupe','84':'geldsack','50.':'torte',zinseszins:'muenzstapel',gewinne:'chart-hoch',schneeball:'schneeball',
+ wächst:'chart-hoch',sprünge:'rakete',später:'sanduhr',rendite:'taschenrechner','12':'sparschwein',milliarden:'tresor',weniger:'chart-runter',zeit:'sanduhr',geheimnis:'gluehbirne',heute:'rakete',investieren:'boerse'};
+const SLOTS={duo:[[250,560],[830,520],[540,330]],d1:[[230,1300],[850,1300],[540,1420]],d2:[[860,1480],[220,1480],[540,1560]],d4:[[270,1150],[810,1150],[540,1380]],d5:[[250,1350],[830,1350],[540,500]]};
+const POPS=[];{const per={};for(const w of W){const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
+ const seg=S[w.line];const sc=seg.scene==='dia'?'d'+(seg.step===3?2:seg.step):'duo';const el=document.createElement('div');el.className='ico';img(ICON+ic+'.png',el);
+ const [x,y]=SLOTS[sc][n];el.style.left=x+'px';el.style.top=y+'px';document.getElementById(sc).appendChild(el);POPS.push({el,t0:w.s,t1:seg.e+0.05,rot:(n%2?8:-8)})}}
+// ---------- d1 timeline
+const tl=document.getElementById('tl');const ax=a=>80+a*8.6;
+tl.innerHTML=`<line x1="80" y1="330" x2="900" y2="330" stroke="#1d2433" stroke-width="10" stroke-linecap="round"/>
+${[0,20,40,60,80].map(a=>`<line x1="${ax(a)}" y1="315" x2="${ax(a)}" y2="345" stroke="#1d2433" stroke-width="6"/><text x="${ax(a)}" y="400" font-family="Archivo" font-size="38" text-anchor="middle">${a}</text>`).join('')}
+<text x="490" y="470" font-family="Archivo" font-size="36" text-anchor="middle" fill="#555">Alter in Jahren</text>
+<rect id="tlbar" x="${ax(10)}" y="290" height="80" width="0" rx="20" fill="#1f9d55"/>
+<g id="tl10" opacity="0"><circle cx="${ax(10)}" cy="330" r="34" fill="#f2c230" stroke="#1d2433" stroke-width="7"/><text x="40" y="200" font-family="Bangers" font-size="84" text-anchor="start" fill="#1d2433">START MIT 10</text></g>
+<g id="tl90" opacity="0"><text x="${ax(85)}" y="200" font-family="Bangers" font-size="84" text-anchor="middle" fill="#1f9d55">90+</text></g>`;
+// ---------- d2 curve: Housel's figures (age 50: 0.3, mid-60s: 3.0, age 89: 84.5 bn $)
+const cv=document.getElementById('cv');const X=a=>90+(a-10)*10.2,Y=v=>780-v*7.8;
+const pts=[];for(let a=10;a<=89;a+=1){const v=a<50?0.3*Math.pow((a-10)/40,3):a<65?0.3*Math.pow(10,(a-50)/15):3*Math.pow(84.5/3,(a-65)/24);pts.push([X(a),Y(v)])}
+cv.innerHTML=`<line x1="90" y1="780" x2="900" y2="780" stroke="#1d2433" stroke-width="8"/><line x1="90" y1="100" x2="90" y2="780" stroke="#1d2433" stroke-width="8"/>
+${[10,30,50,70,89].map(a=>`<text x="${X(a)}" y="840" font-family="Archivo" font-size="36" text-anchor="middle">${a}</text>`).join('')}
+${[0,20,40,60,80].map(v=>`<text x="70" y="${Y(v)+12}" font-family="Archivo" font-size="30" text-anchor="end">${v}</text>`).join('')}
+<text x="110" y="80" font-family="Archivo" font-size="32" fill="#555">Mrd. $ · laut Housel</text>
+<path id="cvarea" d="M${X(50)},780 ${pts.filter(p=>p[0]>=X(50)).map(p=>'L'+p.join(',')).join(' ')} L${X(89)},780Z" fill="#7fd0a8" opacity="0"/>
+<polyline id="cvline" points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#1f9d55" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+<line id="cv50" x1="${X(50)}" y1="120" x2="${X(50)}" y2="780" stroke="#e2453a" stroke-width="7" stroke-dasharray="20 14" opacity="0"/>
+<text id="cv50t" x="${X(50)-16}" y="170" font-family="Bangers" font-size="62" text-anchor="end" fill="#e2453a" opacity="0">50. GEBURTSTAG</text>
+<circle id="cvball" r="20" fill="#fff" stroke="#1d2433" stroke-width="7" opacity="0"/>`;
+const cvline=document.getElementById('cvline');const CVL=cvline.getTotalLength();cvline.style.strokeDasharray=CVL;
+// ---------- d4 split cards
+document.getElementById('cA').innerHTML=`<div style="padding:34px;text-align:center"><div class="lab">10 → 90 JAHRE</div><div class="big" id="vA" style="font-size:150px;color:#7fd0a8;margin-top:30px">84,5 MRD. $</div></div>`;
+document.getElementById('cB').innerHTML=`<div style="padding:34px;text-align:center"><div class="lab">30 → 60 JAHRE</div><div class="big" id="vB" style="font-size:150px;color:#f5a08f;margin-top:30px">11,9 MIO. $</div></div>`;
+// ---------- d5 stamp
+const st=document.createElement('div');st.className='stamp';st.style.cssText+='left:540px;top:860px;font-size:240px;transform:translate(-50%,-50%) rotate(-8deg)';st.textContent='−99,9 %';document.getElementById('d5').appendChild(st);
+const st99=document.createElement('div');st99.className='stamp';st99.style.cssText+='left:130px;top:700px;font-size:110px';st99.textContent='99 % NACH 50';document.getElementById('d2').appendChild(st99);
+const cap=document.getElementById('cap'),world=document.getElementById('world'),cam=document.getElementById('cam'),flash=document.getElementById('flash'),end=document.getElementById('end');
+function fit(){let f=84;cap.style.fontSize=f+'px';while(cap.scrollWidth>1020&&f>48){f-=4;cap.style.fontSize=f+'px'}}
+const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
+const SCENES=['duo','d1','d2','d4','d5'];
+function render(t){
+ const seg=segAt(t);const id=seg.scene==='dia'?'d'+(seg.step===3?2:seg.step):'duo';
+ for(const s of SCENES)document.getElementById(s).style.display=s===id?'block':'none';
+ document.getElementById(id).style.setProperty('--c',PAL[seg.line%PAL.length]);
+ for(const r of document.querySelectorAll('.rays'))r.style.transform=`rotate(${t*6}deg)`;
+ // cuts: punch-in at every line start, whip slide when the scene type changes, flash + shake on shock
+ const k=t-seg.s;const prev=S[seg.line-1];const whip=prev&&prev.scene!==seg.scene;
+ let tx=0,sc=1+0.10*(1-easeOut(k/0.22)),rot=0;
+ if(whip&&k<0.22){tx=(1-easeOut(k/0.22))*(seg.line%2?-1:1)*700;world.style.filter=`blur(${(1-k/0.22)*14}px)`}else world.style.filter='none';
+ const shock=seg.face==='schock'||(seg.scene==='dia'&&seg.step===5);
+ if(shock&&k<0.5){tx+=Math.sin(k*90)*18*(1-k/0.5);rot=Math.sin(k*70)*1.4*(1-k/0.5)}
+ flash.style.opacity=shock?clamp(1-k/0.18)*0.9:0;
+ world.style.transform=`translateX(${tx}px) scale(${sc}) rotate(${rot}deg)`;
+ // captions
+ const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
+ if(g&&t<END){cap.style.setProperty('--hl',g[0].who==='bulle'?'#7dffb0':'#ffd36b');
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[,:]$/,'').replace(/\.$/,'')}</span>`).join('');
+  cap.style.transform=`scale(${0.88+0.12*back((t-g[0].s)/0.18)}) rotate(${gi%2?1.5:-1.5}deg)`}else cap.innerHTML='';
+ cap.style.top=id==='duo'?'230px':'1640px';fit();
+ // icons
+ for(const p of POPS){const on=t>=p.t0&&t<p.t1;const q=(t-p.t0)/0.3;p.el.style.opacity=on?1:0;
+  p.el.style.transform=`scale(${on?back(q):0}) rotate(${p.rot+Math.sin(t*3+p.rot)*3}deg) translateY(${Math.sin(t*2.4+p.rot)*8}px)`}
+ if(id==='duo'){
+  const close=(seg.e-seg.s)>2.4&&seg.line%2===0;const z=close?1.45:1;const fx=seg.who==='bulle'?300:770;
+  cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+180}px) scale(${z})`:'none';
+  for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
+   if(speaking){const a=amp(t);const face=seg.face;
+    if(face&&k<0.6)f=face;else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>OPEN[who]?'mund-offen':a>HALF[who]?'mund-halb':'basis')}
+   else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
+   else if(blinkAt(who,t))f='blinzeln';
+   show(who,f)}
+ }
+ if(id==='d1'){const s=S.find(x=>x.step===1).s;const p=easeIO((t-s-1.2)/2.6);document.getElementById('tlbar').setAttribute('width',(ax(90)-ax(10))*p);
+  document.getElementById('tl10').setAttribute('opacity',clamp((t-s-0.3)/0.3));document.getElementById('tl90').setAttribute('opacity',clamp((t-s-3.8)/0.3))}
+ if(id==='d2'){const s=S.find(x=>x.step===2).s;const step3=seg.step===3;const p=step3?1:easeIO((t-s-0.4)/3.2);cvline.style.strokeDashoffset=CVL*(1-p);
+  const m=step3?1:clamp((t-s-4.6)/0.4);document.getElementById('cv50').setAttribute('opacity',m);document.getElementById('cv50t').setAttribute('opacity',m);
+  document.getElementById('cvarea').setAttribute('opacity',m*0.55);
+  const sk=t-s-5.6;st99.style.opacity=!step3&&sk>0?1:0;st99.style.transform=`rotate(-6deg) scale(${1+1.2*(1-back(sk/0.25))})`;
+  const b=document.getElementById('cvball');if(step3){const q=clamp((t-seg.s)/(seg.e-seg.s));const pt=cvline.getPointAtLength(CVL*(0.35+0.65*q));
+   b.setAttribute('cx',pt.x);b.setAttribute('cy',pt.y-10-q*40);b.setAttribute('r',16+q*60);b.setAttribute('opacity',1)}else b.setAttribute('opacity',0)}
+ if(id==='d4'){const s=seg.s;const a=easeOut((t-s-0.2)/0.3),bb=easeOut((t-s-3.4)/0.3);
+  document.getElementById('cA').style.transform=`translateX(${(1-a)*-600}px)`;document.getElementById('cB').style.transform=`translateX(${(1-bb)*600}px)`}
+ if(id==='d5'){const q=(t-seg.s-0.9)/0.3;st.style.opacity=q>0?1:0;st.style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${1+1.6*(1-back(q))})`}
+ end.style.opacity=clamp((t-END-0.1)/0.3);
+}
+// sound events for audio.py mix (same moments as the visuals above)
+window.EVENTS=[...POPS.map(p=>({t:p.t0,type:'pop'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene!==s.scene).map(s=>({t:s.s-0.05,type:'whoosh'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene===s.scene).map(s=>({t:s.s,type:'punch'})),
+ ...S.filter(s=>s.face==='schock'||(s.scene==='dia'&&s.step===5)).map(s=>({t:s.s,type:'hit'})),
+ {t:S.find(x=>x.step===2).s+5.6,type:'stamp'},{t:S.find(x=>x.step===5).s+0.9,type:'stamp'},
+ {t:S.find(x=>x.step===1).s+1.2,type:'riser'},{t:S.find(x=>x.step===2).s+0.4,type:'riser'}].sort((a,b)=>a.t-b.t);
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
+</script></body></html>

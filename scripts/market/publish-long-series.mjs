@@ -36,6 +36,7 @@ import { createRequire } from "node:module";
 import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
 import { splitAdjustedCloses } from "./publish-discover-series.mjs";
 import { benchmarkSpec } from "./benchmark-reference.mjs";
+import { applySupplements, supplementedEntries } from "./lib/split-evidence-supplements.mjs";
 
 const require = createRequire(import.meta.url);
 const DEFAULT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -132,7 +133,12 @@ async function einer(s) {
   if (!reihe || !reihe.bars || !reihe.bars.length) { bilanz.missing++; return; }
   /* Nur das juengste Listing: nach mehr als einem Jahr ohne Kerze traegt
      das Kuerzel eine andere Firma (survivorship-control.js). */
-  const aktuell = SC.currentListingSegment(reihe.bars).bars;
+  /* SEC-belegte Splits, die der Anbieter nicht fuehrt (quant/config/split-evidence-supplements.json): als korrigierte
+     splitFactor-Spalte einer Kopie der Rohbalken. Die Bereinigung rechnet unveraendert return-series.js#splitFactors
+     (ADR-002), der Beleg unveraendert corporate-action-evidence.js; ohne Eintrag ist `aktuell` dasselbe Array. */
+  const belegt = applySupplements(SC.currentListingSegment(reihe.bars).bars, s.securityId);
+  for (const e of belegt.items) if (e.status !== "APPLIED") console.warn(`::warning::${s.ticker}: Split-Ergaenzung ${e.id} nicht angewandt (${e.reason})`);
+  const aktuell = belegt.bars;
   const closes = splitAdjustedCloses(aktuell).filter((b) => Number.isFinite(b.close) && b.close > 0);
   const weekly = Sampling.weeklyPoints(closes.map((b) => [b.date, b.close]));
   if (weekly.length < MIN_WEEKS) { bilanz.tooShort++; return; }
@@ -156,6 +162,10 @@ async function einer(s) {
     note: "Lange Reihe fuer Discover (5J, Max): Schlusskurs des letzten Handelstags jeder ISO-Woche, split-bereinigt, " +
           weekly.length + " Wochen ab " + weekly[0][0] + ". Kein Intraday, keine Volumina, keine OHLC, nichts interpoliert."
   };
+  /* Herkunft: welche Eintraege in corporateActions.splits aus der SEC-Ergaenzung stammen statt vom Anbieter.
+     Ohne angewandte Ergaenzung kein Feld - das Dokument bleibt bytegleich. */
+  const supplemented = supplementedEntries(belegt.items);
+  if (supplemented.length && doc.corporateActions) doc.corporateActions.supplemented = supplemented;
   const f = join(OUT_DIR, s.securityId + ".json");
   const text = JSON.stringify(doc);
   geschrieben.add(s.securityId + ".json");

@@ -1,0 +1,40 @@
+{
+ "schemaVersion": "quant-v9-setup-decision-recommendation-1.0.0",
+ "status": "RECOMMENDATION_NOT_APPROVED_NOT_ACTIVATED",
+ "supersedesForDiscussion": "docs/quant-recovery/v8/setup-decision-current.json (1.0.1, preserved unchanged)",
+ "readinessSource": {
+  "path": "docs/quant-recovery/v9/certification-readiness-1.0.0.json",
+  "sha256": "a93e6ccbd65638136b32064d1473e1ccddb7f62054137e76d3498767468d2a3d"
+ },
+ "observedAt": "2026-10-27",
+ "observed": {
+  "events": 4137,
+  "uniqueDates": 20,
+  "from": "2026-09-24",
+  "to": "2026-10-26",
+  "legacyMonthCount": 2,
+  "isoWeekCount": 6,
+  "activeRequirement": 20,
+  "legacyEvaluator": "scripts/quant/build-backtest-certification.mjs: new Set(outcomes.events.map(e => e[2].slice(0,7))).size"
+ },
+ "question": "Active contract backtest-certification-1.0.0 names SETUP_BACKTEST.requirements.independentWeeks=20; the producer counts distinct calendar months (date.slice(0,7)). Which count is normative?",
+ "projectionIfPublicationContinuesWeekly": {
+  "isoWeekCountReaches20Approx": "2027-02-01",
+  "legacyMonthCountReaches20Approx": "2028-04-01",
+  "firstPossibleM6Maturity": "2027-03-26",
+  "interpretation": "Under an ISO-week reading the independence gate would no longer be the binding constraint (M6 maturity, 100 completed outcomes, 120 dates and 180-day span bind later or similarly). Under the month reading it binds until roughly 2028-04-01. The choice therefore changes the earliest possible certification date by more than a year."
+ },
+ "recommendation": {
+  "option": "B: adopt contract 1.1.0 with an explicit ISO-week counter (ISO week-year) for the gate named independentWeeks, keep the legacy month count as audit field",
+  "rationale": [
+   "The contract text names weeks; the code deviates. Correcting code to text is the minimal normative change.",
+   "Neither count proves statistical independence. Add a mandatory companion requirement: setup outcome inference must use calendar-week clustered (or calendar-block) uncertainty, and overlapping M6 windows must be reported.",
+   "All other gates (M6 maturity, 100 completed outcomes, 20 titles, 120 dates, 180 days, OOS >= 30 per segment, total return, owner approval) remain unchanged."
+  ],
+  "alternativeA": "Keep months and rename the contract field to independentMonths (stricter, ~18 additional months).",
+  "notRecommended": "Any count of event days (20 already reached) — event days within one season are strongly dependent."
+ },
+ "requires": "Explicit owner approval; then a separate PR changing quant/methodology/backtest-certification-v1.json to 1.1.0 and build-backtest-certification.mjs with before/after.",
+ "activeGateChanged": false,
+ "productionApproved": false
+}
