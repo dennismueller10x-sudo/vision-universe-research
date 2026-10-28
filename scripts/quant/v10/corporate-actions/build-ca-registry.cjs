@@ -15,7 +15,7 @@ const opt = k => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : null
 const factsPath = opt('--facts'), out = opt('--out'), verdictsOut = opt('--verdicts'), peOut = opt('--provider-errors');
 if (!factsPath || !out || !verdictsOut || !peOut) { console.error('usage: --facts <jsonl> --out <cjs> --verdicts <json> --provider-errors <json>'); process.exit(2); }
 const CA = require(path.join(root, 'quant/engines/corporate-action-evidence.js'));
-const PROTOCOL_REL = 'docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json';
+const PROTOCOL_REL = 'docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json';
 const protocolSha256 = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, PROTOCOL_REL))).digest('hex');
 const ADMISSIBLE = { GENUINE_MOVE: 'PRICE_RETURN', SPINOFF_DISTRIBUTION: 'PRICE_RETURN_ONLY' };
 const accOf = url => { const m = /\/(\d{10})(\d{2})(\d{6})\//.exec(url || ''); return m ? m[1] + '-' + m[2] + '-' + m[3] : null; };
@@ -97,7 +97,7 @@ for (const [id, rs] of bySeries) {
   heldSeriesReason[blocking] = (heldSeriesReason[blocking] || 0) + 1;
 }
 fs.writeFileSync(verdictsOut, JSON.stringify({
-  schemaVersion: 'v10-ca-verdicts-1.1.1', protocol: PROTOCOL_REL, protocolSha256, factsSha256: crypto.createHash('sha256').update(factsBytes).digest('hex'),
+  schemaVersion: 'v10-ca-verdicts-1.1.2', protocol: PROTOCOL_REL, protocolSha256, factsSha256: crypto.createHash('sha256').update(factsBytes).digest('hex'),
   series: bySeries.size, events: rows.length, byVerdict: count(rows, r => r[3]), byVerdictDetail: count(rows, r => r[3] + '|' + r[4]),
   admissibleSeries, heldSeriesByBlockingClasses: heldSeriesReason, splitUnadjustedProposals: providerErrors.length,
   registryRecords: records.length, columns: ['securityId', 'week', 'providerReason', 'verdict', 'detail'], rows

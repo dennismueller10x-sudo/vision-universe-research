@@ -1,8 +1,8 @@
-"""Independent check (Python stdlib only) for the V10 corporate-action registry under protocol 1.1.1.
+"""Independent check (Python stdlib only) for the V10 corporate-action registry under protocol 1.1.2.
 
 Separate implementation; imports nothing from the repository. Re-derives from raw inputs:
   1. the unresolved split-sized events per series from the weekly series files (own split-size / resolve logic),
-  2. every class decision of protocol 1.1.1 from the stored facts plus the series (decision order, windows, share ratio,
+  2. every class decision of protocol 1.1.2 from the stored facts plus the series (decision order, windows, share ratio,
      E4 inverse-share test, spike reversal from the series points),
   3. E1 text identity and E2 text covers of every REGISTERED record re-parsed from the cached raw bodies (own tag stripping),
   4. the registry content (admissible series only, closes bound to the series points),
@@ -134,7 +134,7 @@ def decide(s, e, series_ev):
     if any(abs(math.log(p[1] / e["prevClose"])) <= math.log(1.25) for p in e["next"]):
         return "SPIKE_REVERSAL"
     for c in e.get("affirmativeCandidates", []):
-        if set(c["items"]) & AFFIRM and any_date_in(c, shift(e["jumpDay"], -3), shift(e["jumpDay"], 1)) and not c["splitMatch"]:
+        if set(c["items"]) & AFFIRM and any_date_in(c, shift(e["jumpDay"], -3), shift(e["jumpDay"], 1)) and not c["splitMatch"] and not c.get("spinoffMatch"):
             return "GENUINE_MOVE"
     return "NEGATIVE_EVIDENCE_ONLY"
 
@@ -196,7 +196,7 @@ def main():
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     root = a.root
-    proto_sha = hashlib.sha256(open(os.path.join(root, "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json"), "rb").read()).hexdigest()
+    proto_sha = hashlib.sha256(open(os.path.join(root, "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json"), "rb").read()).hexdigest()
     facts = [json.loads(l) for l in open(a.facts) if l.strip()]
     series_dir = os.path.join(root, "quant/data/market/discover-series-long")
     frame_mismatch, decision_mismatch, verdicts, events_total = [], [], {}, 0

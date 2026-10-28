@@ -1,6 +1,6 @@
-"""V10 corporate actions: verify the CA candidate frame under protocol 1.1.1 (= 1.1.0 + E2 anchor amendment).
+"""V10 corporate actions: verify the CA candidate frame under protocol 1.1.2 (= 1.1.0 + E2 anchor amendment + E6).
 
-Implements docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json. Every 1.0.0 rule is taken from the frozen V9
+Implements docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json. Every 1.0.0 rule is taken from the frozen V9
 verifier module (scripts/quant/v9-followups/ca-registry/verify_ca_events.py, imported read-only as a library: regexes,
 instance parsing, cover facts, exchange check, split concepts, 8-K texts). This file adds E1-E5 and the 1.1.0 decision order.
 Raw SEC bodies: fetched through scripts/quant/sec/http_client.py at <= 1 request/s into a private cache outside the repo.
@@ -25,7 +25,7 @@ V9 = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(V9)
 http_client = V9.http_client
 
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json"
 P = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 assert P["supersedes"]["sha256"] == V9.PROTOCOL_SHA, "1.0.0 protocol changed"
@@ -333,14 +333,17 @@ def verify_series(sec, s, tickers_map):
         for f in [f for f in eights if f["form"] == "8-K" and V9.in_window(f, add(ev["jumpDay"], -3), add(ev["jumpDay"], 1)) and V9.AFFIRM_ITEMS & set(f["items"])]:
             url, h, text = text_of(f)
             mm = V9.SPLIT_RE.search(text)
+            so = V9.SPINOFF_RE.search(text)
             aff.append({"accession": f["accession"], "items": f["items"], "filingDate": f["filingDate"], "reportDate": f["reportDate"], "url": url, "sha256": h,
-                        "splitMatch": snippet(text, mm) if mm else None, "quote": V9.quote_for(text, V9.AFFIRM_ITEMS & set(f["items"]))})
+                        "splitMatch": snippet(text, mm) if mm else None, "spinoffMatch": snippet(text, so)[:300] if so else None,
+                        "quote": V9.quote_for(text, V9.AFFIRM_ITEMS & set(f["items"]))})
         ev["affirmativeCandidates"] = aff
-        ok = [x for x in aff if not x["splitMatch"]]
+        valid = [x for x in aff if not x["splitMatch"]]
+        ok = [x for x in valid if not x["spinoffMatch"]]  # E6 (protocol 1.1.2)
         if ok:
             ev.update(verdict="GENUINE_MOVE", detail=None, affirmative=ok[0])
         else:
-            ev.update(verdict="NEGATIVE_EVIDENCE_ONLY", detail=None)
+            ev.update(verdict="NEGATIVE_EVIDENCE_ONLY", detail="AFFIRMATIVE_8K_MENTIONS_SPINOFF" if valid else None)
     return facts
 
 

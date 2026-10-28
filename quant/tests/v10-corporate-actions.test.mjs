@@ -18,15 +18,16 @@ const Loader = require(path.join(root, 'quant/engines/research-weekly-loader.cjs
 const Registry = require(path.join(root, 'quant/engines/research-ca-evidence.cjs'));
 const CA = require(path.join(root, 'quant/engines/corporate-action-evidence.js'));
 
-test('protocols: 1.0.0 frozen hash unchanged, 1.1.0/1.1.1 hashes match their sidecars, registry bound to 1.1.1', () => {
+test('protocols: 1.0.0 frozen hash unchanged, 1.1.x hashes match their sidecars and chain, registry bound to 1.1.2', () => {
   assert.equal(sha('docs/quant-recovery/v9-followups/ca-registry/protocol.json'), 'db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2');
-  for (const v of ['1.1.0', '1.1.1']) assert.equal(fs.readFileSync(path.join(root, D, `protocol-${v}.sha256`), 'utf8').split(/\s+/)[0], sha(`${D}/protocol-${v}.json`));
+  for (const v of ['1.1.0', '1.1.1', '1.1.2']) assert.equal(fs.readFileSync(path.join(root, D, `protocol-${v}.sha256`), 'utf8').split(/\s+/)[0], sha(`${D}/protocol-${v}.json`));
   assert.equal(fs.readFileSync(path.join(root, D, 'tr-protocol-1.0.0.sha256'), 'utf8').split(/\s+/)[0], sha(`${D}/tr-protocol-1.0.0.json`));
-  const p111 = read(`${D}/protocol-1.1.1.json`);
-  assert.equal(p111.supersedes.sha256, sha('docs/quant-recovery/v9-followups/ca-registry/protocol.json'));
+  const p112 = read(`${D}/protocol-1.1.2.json`), p111 = read(`${D}/protocol-1.1.1.json`);
+  assert.equal(p112.supersedes.sha256, sha('docs/quant-recovery/v9-followups/ca-registry/protocol.json'));
   assert.equal(p111.amends.sha256, sha(`${D}/protocol-1.1.0.json`));
-  assert.equal(Registry.protocolSha256, sha(`${D}/protocol-1.1.1.json`));
-  assert.equal(Registry.protocol, `${D}/protocol-1.1.1.json`);
+  assert.equal(p112.amends.sha256, sha(`${D}/protocol-1.1.1.json`));
+  assert.equal(Registry.protocolSha256, sha(`${D}/protocol-1.1.2.json`));
+  assert.equal(Registry.protocol, `${D}/protocol-1.1.2.json`);
 });
 
 test('registry passes the loader validation; every record has >= 3 hashed sources and its class-specific source', () => {
@@ -94,7 +95,7 @@ test('build-ca-registry writes only its --out paths (synthetic facts, temp dir)'
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'v10-ca-'));
   try {
     const facts = path.join(dir, 'facts.jsonl');
-    fs.writeFileSync(facts, JSON.stringify({ securityId: 'ref_ZZZZ', ticker: 'ZZZZ', canonicalId: 'x', exchange: 'NASDAQ', protocolSha256: sha(`${D}/protocol-1.1.1.json`), verifiedAt: '2026-10-28T00:00:00+00:00',
+    fs.writeFileSync(facts, JSON.stringify({ securityId: 'ref_ZZZZ', ticker: 'ZZZZ', canonicalId: 'x', exchange: 'NASDAQ', protocolSha256: sha(`${D}/protocol-1.1.2.json`), verifiedAt: '2026-10-28T00:00:00+00:00',
       events: [{ week: '2020-01-10', prevWeek: '2020-01-03', reason: 'SINGLE_DAY_DOMINATES_WEEK', verdict: 'NEGATIVE_EVIDENCE_ONLY', detail: null }] }) + '\n');
     const outs = ['reg.cjs', 'verdicts.json', 'pe.json'].map(f => path.join(dir, f));
     execFileSync(process.execPath, [path.join(root, 'scripts/quant/v10/corporate-actions/build-ca-registry.cjs'), '--facts', facts, '--out', outs[0], '--verdicts', outs[1], '--provider-errors', outs[2]], { stdio: 'pipe' });

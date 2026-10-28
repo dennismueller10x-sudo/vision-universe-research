@@ -152,14 +152,21 @@ def main():
         gap_log = []
         for q in gaps:
             qs, qe = qbounds(q)
-            lo, hi = (qs - dt.timedelta(days=100)).isoformat(), (qe + dt.timedelta(days=45)).isoformat()
+            # Bug fix 1 (no rule change): EDGAR full-text search answers HTTP 500 for an end date after today; clamp to the scan end.
+            lo, hi = (qs - dt.timedelta(days=100)).isoformat(), min((qe + dt.timedelta(days=45)).isoformat(), SCAN_TO)
             found = {}
             for query in TP["sources"]["GAP_QUERIES"]:
                 start, total = 0, None
                 while True:
                     u = ("https://efts.sec.gov/LATEST/search-index?q=" + urllib.parse.quote(query) + "&ciks=%010d" % cik
                          + "&forms=8-K,10-Q,10-K&dateRange=custom&startdt=" + lo + "&enddt=" + hi + "&from=" + str(start))
-                    dj = cl.json(u)
+                    try:
+                        dj = cl.json(u)
+                        if "hits" not in dj:
+                            raise ValueError("FTS_NO_HITS_FIELD " + json.dumps(dj)[:100])
+                    except Exception as e:  # recorded, never silently dropped
+                        gap_log.append({"quarter": q, "query": query, "ftsError": str(e)[:160]})
+                        break
                     hits = dj["hits"]["hits"]
                     total = dj["hits"]["total"]["value"]
                     for h in hits:
