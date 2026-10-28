@@ -1,0 +1,146 @@
+{
+ "schemaVersion": "v11-discovery-python-check-1.0.0",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "implementation": "python3 -I stdlib, separate implementation from exported loader output (not a holdout)",
+ "checks": [
+  {
+   "stage": "VALIDATION",
+   "id": "CF06",
+   "python": {
+    "cagr": 0.31415530994224317,
+    "maxDrawdown": -0.3430013637334145,
+    "sharpe": 1.1798276789703552,
+    "excessVsSpyAnnualised": 0.15663907501014215,
+    "pValueBlock26": 0.013,
+    "weeks": 210
+   },
+   "javascript": {
+    "cagr": 0.31415530994224405,
+    "maxDrawdown": -0.3430013637334144,
+    "sharpe": 1.1798276789703575,
+    "excessVsSpyAnnualised": 0.15663907501014268,
+    "pValueBlock26": 0.013,
+    "weeks": 210
+   },
+   "absDiff": {
+    "cagr": 8.881784197001252e-16,
+    "maxDrawdown": 1.1102230246251565e-16,
+    "sharpe": 2.220446049250313e-15,
+    "excessVsSpyAnnualised": 5.273559366969494e-16,
+    "pValueBlock26": 0.0,
+    "weeks": 0
+   },
+   "pass": true
+  },
+  {
+   "stage": "VALIDATION",
+   "id": "CF10",
+   "python": {
+    "cagr": 0.28181143738085,
+    "maxDrawdown": -0.3540847159829488,
+    "sharpe": 1.0460223587972195,
+    "excessVsSpyAnnualised": 0.13538717475061493,
+    "pValueBlock26": 0.014,
+    "weeks": 210
+   },
+   "javascript": {
+    "cagr": 0.28181143738085046,
+    "maxDrawdown": -0.3540847159829488,
+    "sharpe": 1.0460223587972197,
+    "excessVsSpyAnnualised": 0.13538717475061496,
+    "pValueBlock26": 0.014,
+    "weeks": 210
+   },
+   "absDiff": {
+    "cagr": 4.440892098500626e-16,
+    "maxDrawdown": 0.0,
+    "sharpe": 2.220446049250313e-16,
+    "excessVsSpyAnnualised": 2.7755575615628914e-17,
+    "pValueBlock26": 0.0,
+    "weeks": 0
+   },
+   "pass": true
+  },
+  {
+   "stage": "TEST",
+   "id": "H1",
+   "python": {
+    "cagr": -0.025451575246182356,
+    "maxDrawdown": -0.3295128236178655,
+    "sharpe": 0.013187866442931195,
+    "excessVsSpyAnnualised": -0.13371463772979125,
+    "pValueBlock26": 0.0185,
+    "weeks": 262
+   },
+   "javascript": {
+    "cagr": -0.025451575246181912,
+    "maxDrawdown": -0.32951282361786516,
+    "sharpe": 0.013187866442931838,
+    "excessVsSpyAnnualised": -0.1337146377297911,
+    "pValueBlock26": 0.0185,
+    "weeks": 262
+   },
+   "absDiff": {
+    "cagr": 4.440892098500626e-16,
+    "maxDrawdown": 3.3306690738754696e-16,
+    "sharpe": 6.435824095873954e-16,
+    "excessVsSpyAnnualised": 1.3877787807814457e-16,
+    "pValueBlock26": 0.0,
+    "weeks": 0
+   },
+   "pass": true
+  },
+  {
+   "stage": "TEST",
+   "id": "H2",
+   "python": {
+    "cagr": 0.04499947635155177,
+    "maxDrawdown": -0.34238384319469717,
+    "sharpe": 0.2968732143952771,
+    "excessVsSpyAnnualised": -0.0560605787298529,
+    "pValueBlock26": 0.3755,
+    "weeks": 262
+   },
+   "javascript": {
+    "cagr": 0.04499947635155199,
+    "maxDrawdown": -0.34238384319469706,
+    "sharpe": 0.2968732143952785,
+    "excessVsSpyAnnualised": -0.056060578729852525,
+    "pValueBlock26": 0.3755,
+    "weeks": 262
+   },
+   "absDiff": {
+    "cagr": 2.220446049250313e-16,
+    "maxDrawdown": 1.1102230246251565e-16,
+    "sharpe": 1.3877787807814457e-15,
+    "excessVsSpyAnnualised": 3.7470027081099033e-16,
+    "pValueBlock26": 0.0,
+    "weeks": 0
+   },
+   "pass": true
+  },
+  {
+   "stage": "TRAIN",
+   "id": "ORACLE_LOOKAHEAD PRICE PX5 WEEKS_52 N20",
+   "python": {
+    "oracleFundedCagrNet": 1.7616966179550193,
+    "perIntervalOracleGross": 1.8503304327055714,
+    "perIntervalPopulationGross": 0.13146171557579617
+   },
+   "javascript": {
+    "oracleFundedCagrNet": 1.7616966179550198,
+    "perIntervalOracleGross": 1.8503304327055718,
+    "perIntervalPopulationGross": 0.1314617155757964
+   },
+   "relDiff": {
+    "oracleFundedCagrNet": 2.520804123274994e-16,
+    "perIntervalOracleGross": 2.4000535363876107e-16,
+    "perIntervalPopulationGross": 1.6890438707001955e-15
+   },
+   "pass": true
+  }
+ ],
+ "allPass": true,
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

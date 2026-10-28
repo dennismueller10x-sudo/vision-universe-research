@@ -1,0 +1,1310 @@
+{
+ "schemaVersion": "v11-discovery-candidates-frozen-1.0.0",
+ "studyId": "V11-DISCOVERY:CANDIDATES",
+ "frozenBeforeAnyValidationOutcome": true,
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "rule": "R2",
+ "choiceCriteria": "Chosen on TRAIN evidence only: own-universe excess > 0 with preference for positive excess in both TRAIN halves, cost-stress excess vs SPY > 0, diversity of signal/holding/weighting types, and the explicitly requested hypothesis types (concentration, market filter, let-winners-run, quality/value/profitability combinations). Not simply the top-12 in-sample: the TRAIN walk-forward showed that picking the best explored variant has no out-of-sample value.",
+ "trainWarnings": [
+  "Walk-forward within TRAIN (quoted price >= 5 universe): best-variant selection earned -0.53%/interval vs own EW out of sample, below the average variant (-0.23%); FUND -0.09% vs -0.12%.",
+  "No TRAIN own-universe excess survives a correction for 203 trials.",
+  "Oracle TRAIN: explored rules capture 0-3% of the oracle premium; mean forward percentile of picks 0.49-0.52."
+ ],
+ "trialsBehindThisSet": {
+  "total": 203,
+  "price": 108,
+  "fund": 66,
+  "v10Baselines": 10,
+  "smokeIncludedInCounts": true
+ },
+ "families": {
+  "PRICE": {
+   "period": [
+    "2013-01-01",
+    "2018-12-31"
+   ],
+   "candidates": [
+    {
+     "candidateId": "CP01",
+     "variantId": "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+     "spec": {
+      "id": "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "BUFFER",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ],
+       [
+        "r1",
+        -1,
+        0.5
+       ]
+      ],
+      "keepRankPct": 0.9
+     },
+     "rationale": "strongest TRAIN own-universe excess; buffer halves turnover vs FULL",
+     "train": {
+      "cagr": 0.2140188243954857,
+      "sharpe": 0.7924674911599355,
+      "maxDrawdown": -0.7068393831069746,
+      "turnoverPerYear": 8.276351414694506,
+      "exVsSpy": {
+       "ann": 0.20849816825776663,
+       "p": 0.0015
+      },
+      "exVsOwnEw": {
+       "ann": 0.1205749011713358,
+       "p": 0.019
+      },
+      "stressExVsSpyAnn": 0.15071377903264885,
+      "halvesVsOwnEw": [
+       0.27678597035421415,
+       -0.03317227102127648
+      ]
+     }
+    },
+    {
+     "candidateId": "CP02",
+     "variantId": "P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+     "spec": {
+      "id": "P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 30,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ],
+       [
+        "r1",
+        -1,
+        0.5
+       ]
+      ]
+     },
+     "rationale": "same signal, broader, positive in both halves",
+     "train": {
+      "cagr": 0.18127288327114677,
+      "sharpe": 0.7347079480527734,
+      "maxDrawdown": -0.678985955914033,
+      "turnoverPerYear": 11.496337072808503,
+      "exVsSpy": {
+       "ann": 0.17456422227706483,
+       "p": 0.0025
+      },
+      "exVsOwnEw": {
+       "ann": 0.08664095519063382,
+       "p": 0.042
+      },
+      "stressExVsSpyAnn": 0.09432245377015779,
+      "halvesVsOwnEw": [
+       0.17221481298348554,
+       0.002416842788836683
+      ]
+     }
+    },
+    {
+     "candidateId": "CP03",
+     "variantId": "P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+     "spec": {
+      "id": "P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "INVVOL",
+      "ranks": [
+       [
+        "r12_1",
+        1,
+        1
+       ],
+       [
+        "r1",
+        -1,
+        0.5
+       ]
+      ]
+     },
+     "rationale": "12-1 momentum + 1-month reversal, inverse-vol weights; positive in both halves",
+     "train": {
+      "cagr": 0.18410686932113585,
+      "sharpe": 0.701980565828576,
+      "maxDrawdown": -0.641702062601943,
+      "turnoverPerYear": 11.972154408268358,
+      "exVsSpy": {
+       "ann": 0.18486287382035926,
+       "p": 0.0005
+      },
+      "exVsOwnEw": {
+       "ann": 0.09693960673392835,
+       "p": 0.0195
+      },
+      "stressExVsSpyAnn": 0.10134311176572254,
+      "halvesVsOwnEw": [
+       0.16736473086761344,
+       0.027625288974591836
+      ]
+     }
+    },
+    {
+     "candidateId": "CP04",
+     "variantId": "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+     "spec": {
+      "id": "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "BUFFER",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r3",
+        1,
+        1
+       ]
+      ],
+      "keepRankPct": 0.9
+     },
+     "rationale": "3-month momentum with buffer; positive in both halves",
+     "train": {
+      "cagr": 0.16957235151726535,
+      "sharpe": 0.6460528993478089,
+      "maxDrawdown": -0.6164481419903654,
+      "turnoverPerYear": 4.946624887177102,
+      "exVsSpy": {
+       "ann": 0.17767060983017405,
+       "p": 0.006
+      },
+      "exVsOwnEw": {
+       "ann": 0.08974734274374328,
+       "p": 0.0825
+      },
+      "stressExVsSpyAnn": 0.14313108537432076,
+      "halvesVsOwnEw": [
+       0.15080587315278518,
+       0.02965188063768287
+      ]
+     }
+    },
+    {
+     "candidateId": "CP05",
+     "variantId": "P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+     "spec": {
+      "id": "P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "INVVOL",
+      "ranks": [
+       [
+        "r3",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "3-month momentum inverse-vol; positive in both halves",
+     "train": {
+      "cagr": 0.16027823504302297,
+      "sharpe": 0.6493656148667272,
+      "maxDrawdown": -0.5183123859523255,
+      "turnoverPerYear": 8.56096210552282,
+      "exVsSpy": {
+       "ann": 0.16100184489244396,
+       "p": 0.0085
+      },
+      "exVsOwnEw": {
+       "ann": 0.07307857780601307,
+       "p": 0.135
+      },
+      "stressExVsSpyAnn": 0.10113347524294232,
+      "halvesVsOwnEw": [
+       0.10938518938472071,
+       0.03734462571592845
+      ]
+     }
+    },
+    {
+     "candidateId": "CP06",
+     "variantId": "P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+     "spec": {
+      "id": "P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 50,
+      "rebalanceWeeks": 4,
+      "holding": "BUFFER",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r3",
+        1,
+        1
+       ]
+      ],
+      "keepRankPct": 0.9
+     },
+     "rationale": "diversified 3-month momentum; positive in both halves",
+     "train": {
+      "cagr": 0.13756655985601274,
+      "sharpe": 0.6029323064240117,
+      "maxDrawdown": -0.5315448645760255,
+      "turnoverPerYear": 5.391693888499518,
+      "exVsSpy": {
+       "ann": 0.1362514782878381,
+       "p": 0.004
+      },
+      "exVsOwnEw": {
+       "ann": 0.048328211201406956,
+       "p": 0.1725
+      },
+      "stressExVsSpyAnn": 0.09856565747883889,
+      "halvesVsOwnEw": [
+       0.06871032525050196,
+       0.028267581601035863
+      ]
+     }
+    },
+    {
+     "candidateId": "CP07",
+     "variantId": "P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+     "spec": {
+      "id": "P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ],
+       [
+        "vol",
+        "lte",
+        0.6
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "6-month momentum excluding annualised vol > 60%",
+     "train": {
+      "cagr": 0.1626573399858724,
+      "sharpe": 0.7183992781318507,
+      "maxDrawdown": -0.6216733263665467,
+      "turnoverPerYear": 6.566913967635923,
+      "exVsSpy": {
+       "ann": 0.151863066131716,
+       "p": 0.0045
+      },
+      "exVsOwnEw": {
+       "ann": 0.07474702305458732,
+       "p": 0.0835
+      },
+      "stressExVsSpyAnn": 0.10608193168898428,
+      "halvesVsOwnEw": [
+       0.15427430112324536,
+       -0.003525881542956166
+      ]
+     }
+    },
+    {
+     "candidateId": "CP08",
+     "variantId": "P2-MOM6-N20-R13-FULL-EW-PX5",
+     "spec": {
+      "id": "P2-MOM6-N20-R13-FULL-EW-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 13,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "quarterly rebalanced 6-month momentum (low turnover)",
+     "train": {
+      "cagr": 0.17331743735676075,
+      "sharpe": 0.6515642918611549,
+      "maxDrawdown": -0.7481532738710474,
+      "turnoverPerYear": 3.066415582474148,
+      "exVsSpy": {
+       "ann": 0.17980145446070928,
+       "p": 0.0135
+      },
+      "exVsOwnEw": {
+       "ann": 0.09573427365165861,
+       "p": 0.135
+      },
+      "stressExVsSpyAnn": 0.15840755466596973,
+      "halvesVsOwnEw": [
+       0.19555316363019176,
+       0.00020208446974998956
+      ]
+     }
+    },
+    {
+     "candidateId": "CP09",
+     "variantId": "P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+     "spec": {
+      "id": "P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 50,
+      "rebalanceWeeks": 4,
+      "holding": "BUFFER",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ]
+      ],
+      "keepRankPct": 0.9,
+      "marketFilter": "SPY_SMA40"
+     },
+     "rationale": "momentum with SPY 40-week market filter: drawdown control (MDD -25%), positive in both halves",
+     "train": {
+      "cagr": 0.16608818721620144,
+      "sharpe": 0.857547602015718,
+      "maxDrawdown": -0.24563437161555746,
+      "turnoverPerYear": 2.742977981341903,
+      "exVsSpy": {
+       "ann": 0.14280384098539725,
+       "p": 0.008
+      },
+      "exVsOwnEw": {
+       "ann": 0.05488057389896629,
+       "p": 0.29
+      },
+      "stressExVsSpyAnn": 0.12357318176803207,
+      "halvesVsOwnEw": [
+       0.028496909804339682,
+       0.08084809187222654
+      ]
+     }
+    },
+    {
+     "candidateId": "CP10",
+     "variantId": "P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+     "spec": {
+      "id": "P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 50,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "slope_r2",
+        1,
+        1
+       ]
+      ],
+      "marketFilter": "SPY_SMA40"
+     },
+     "rationale": "trend stability (slope x R2) with market filter; positive in both halves",
+     "train": {
+      "cagr": 0.15205601705737148,
+      "sharpe": 0.826772542238603,
+      "maxDrawdown": -0.2861352704951443,
+      "turnoverPerYear": 2.7744781188800864,
+      "exVsSpy": {
+       "ann": 0.12891063581546333,
+       "p": 0.012
+      },
+      "exVsOwnEw": {
+       "ann": 0.04098736872903248,
+       "p": 0.4235
+      },
+      "stressExVsSpyAnn": 0.10946701685658997,
+      "halvesVsOwnEw": [
+       0.02738646395040619,
+       0.05437374819569306
+      ]
+     }
+    },
+    {
+     "candidateId": "CP11",
+     "variantId": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+     "spec": {
+      "id": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ],
+       [
+        "r1",
+        -1,
+        0.5
+       ]
+      ],
+      "marketFilter": "SPY_SMA40"
+     },
+     "rationale": "momentum+reversal with market filter; positive in both halves",
+     "train": {
+      "cagr": 0.14941504596574773,
+      "sharpe": 0.7794999803188458,
+      "maxDrawdown": -0.2819254448981814,
+      "turnoverPerYear": 7.283794242103576,
+      "exVsSpy": {
+       "ann": 0.12888391053309856,
+       "p": 0.0285
+      },
+      "exVsOwnEw": {
+       "ann": 0.04096064344666776,
+       "p": 0.474
+      },
+      "stressExVsSpyAnn": 0.07786171393979807,
+      "halvesVsOwnEw": [
+       0.026656817783411536,
+       0.05503885671775906
+      ]
+     }
+    },
+    {
+     "candidateId": "CP12",
+     "variantId": "P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+     "spec": {
+      "id": "P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+      "family": "PRICE",
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "positions": 20,
+      "rebalanceWeeks": 4,
+      "holding": "RUN",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "r6",
+        1,
+        1
+       ]
+      ],
+      "entryRankPct": 0.95,
+      "exitRankPct": 0.5,
+      "trendExit": true
+     },
+     "rationale": "let-winners-run representative (owner hypothesis); best RUN variant, weak in TRAIN",
+     "train": {
+      "cagr": 0.08937425386691311,
+      "sharpe": 0.42992414095895565,
+      "maxDrawdown": -0.7079488698965228,
+      "turnoverPerYear": 1.6527526806101183,
+      "exVsSpy": {
+       "ann": 0.10518377539405767,
+       "p": 0.1165
+      },
+      "exVsOwnEw": {
+       "ann": 0.017260508307626626,
+       "p": 0.768
+      },
+      "stressExVsSpyAnn": 0.09339613139033434,
+      "halvesVsOwnEw": [
+       0.1442166495152379,
+       -0.10769317010491192
+      ]
+     }
+    }
+   ]
+  },
+  "FUND": {
+   "period": [
+    "2017-01-01",
+    "2020-12-31"
+   ],
+   "candidates": [
+    {
+     "candidateId": "CF01",
+     "variantId": "F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 3,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ],
+       [
+        "f.p",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "value + profitability + 12-1 momentum, quarterly; positive in both halves",
+     "train": {
+      "cagr": 0.1766498953005453,
+      "sharpe": 0.994546757659792,
+      "maxDrawdown": -0.1388980920196643,
+      "turnoverPerYear": 2.0122258246954283,
+      "exVsSpy": {
+       "ann": 0.07184317654050845,
+       "p": 0.006
+      },
+      "exVsOwnEw": {
+       "ann": 0.02633867233644493,
+       "p": 0.2455
+      },
+      "stressExVsSpyAnn": 0.05785793716591204,
+      "halvesVsOwnEw": [
+       0.02913689864301237,
+       0.02371317604880141
+      ]
+     }
+    },
+    {
+     "candidateId": "CF02",
+     "variantId": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ],
+       [
+        "f.p",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "same, monthly",
+     "train": {
+      "cagr": 0.16165660555592543,
+      "sharpe": 0.885458694403164,
+      "maxDrawdown": -0.2035750653619357,
+      "turnoverPerYear": 3.9845088109538276,
+      "exVsSpy": {
+       "ann": 0.06081617747675689,
+       "p": 0.0235
+      },
+      "exVsOwnEw": {
+       "ann": 0.032987894457888814,
+       "p": 0.197
+      },
+      "stressExVsSpyAnn": 0.03299054858840021,
+      "halvesVsOwnEw": [
+       0.04149649419049581,
+       0.025004516930998307
+      ]
+     }
+    },
+    {
+     "candidateId": "CF03",
+     "variantId": "F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+     "spec": {
+      "id": "F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "INVVOL",
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ],
+       [
+        "f.p",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "same, inverse-vol weights",
+     "train": {
+      "cagr": 0.16116901698843344,
+      "sharpe": 0.9356279556507172,
+      "maxDrawdown": -0.185283635984425,
+      "turnoverPerYear": 4.103570493593399,
+      "exVsSpy": {
+       "ann": 0.057991315984449204,
+       "p": 0.0185
+      },
+      "exVsOwnEw": {
+       "ann": 0.03016303296558113,
+       "p": 0.2235
+      },
+      "stressExVsSpyAnn": 0.029333489045542133,
+      "halvesVsOwnEw": [
+       0.027916167321731647,
+       0.03227120319931645
+      ]
+     }
+    },
+    {
+     "candidateId": "CF04",
+     "variantId": "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "BUFFER",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ]
+      ],
+      "keepRankPct": 0.9
+     },
+     "rationale": "PIT value score with buffer; equal excess in both halves",
+     "train": {
+      "cagr": 0.162415338314706,
+      "sharpe": 0.8285024455949425,
+      "maxDrawdown": -0.2527185734136804,
+      "turnoverPerYear": 1.4581506133614914,
+      "exVsSpy": {
+       "ann": 0.06488921214807236,
+       "p": 0.2395
+      },
+      "exVsOwnEw": {
+       "ann": 0.04989452220382963,
+       "p": 0.2315
+      },
+      "stressExVsSpyAnn": 0.05469388652723646,
+      "halvesVsOwnEw": [
+       0.04963833863925525,
+       0.05013489196812163
+      ]
+     }
+    },
+    {
+     "candidateId": "CF05",
+     "variantId": "F2-VALUE-N20-M3-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-VALUE-N20-M3-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 3,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "PIT value score quarterly",
+     "train": {
+      "cagr": 0.13004799113913879,
+      "sharpe": 0.6883860440914072,
+      "maxDrawdown": -0.31230661545268656,
+      "turnoverPerYear": 1.856976191751293,
+      "exVsSpy": {
+       "ann": 0.036961810783165995,
+       "p": 0.5095
+      },
+      "exVsOwnEw": {
+       "ann": 0.024729309504926224,
+       "p": 0.5425
+      },
+      "stressExVsSpyAnn": 0.024109788265264,
+      "halvesVsOwnEw": [
+       0.02730060328733225,
+       0.022316737560940318
+      ]
+     }
+    },
+    {
+     "candidateId": "CF06",
+     "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 3,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 10,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.q",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "concentrated quality, quarterly",
+     "train": {
+      "cagr": 0.17322220177287484,
+      "sharpe": 0.9554236305188271,
+      "maxDrawdown": -0.16056398983795028,
+      "turnoverPerYear": 1.4679460267022315,
+      "exVsSpy": {
+       "ann": 0.06970469578947759,
+       "p": 0.0815
+      },
+      "exVsOwnEw": {
+       "ann": 0.04554588332205098,
+       "p": 0.0945
+      },
+      "stressExVsSpyAnn": 0.05945444211056286,
+      "halvesVsOwnEw": [
+       0.06509508315117374,
+       0.027203424223120977
+      ]
+     }
+    },
+    {
+     "candidateId": "CF07",
+     "variantId": "F2-QUAL-N50-M1-FULL-INVVOL-PX5-MC300",
+     "spec": {
+      "id": "F2-QUAL-N50-M1-FULL-INVVOL-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 50,
+      "holding": "FULL",
+      "weighting": "INVVOL",
+      "ranks": [
+       [
+        "f.q",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "diversified quality, inverse vol",
+     "train": {
+      "cagr": 0.12275279756726554,
+      "sharpe": 0.8519843818780292,
+      "maxDrawdown": -0.17819106827108955,
+      "turnoverPerYear": 1.887437434862455,
+      "exVsSpy": {
+       "ann": 0.019948646163398046,
+       "p": 0.444
+      },
+      "exVsOwnEw": {
+       "ann": 0.017509259509835406,
+       "p": 0.3125
+      },
+      "stressExVsSpyAnn": 0.006775173562703517,
+      "halvesVsOwnEw": [
+       0.0054124110086178345,
+       0.028859388967767945
+      ]
+     }
+    },
+    {
+     "candidateId": "CF08",
+     "variantId": "F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 3,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.q",
+        1,
+        1
+       ],
+       [
+        "vol",
+        -1,
+        1
+       ]
+      ]
+     },
+     "rationale": "defensive quality: best TRAIN Sharpe (1.32), MDD -9.5%",
+     "train": {
+      "cagr": 0.1517231756875117,
+      "sharpe": 1.3248494503486685,
+      "maxDrawdown": -0.09506526967924578,
+      "turnoverPerYear": 1.431083901078501,
+      "exVsSpy": {
+       "ann": 0.04057234373235929,
+       "p": 0.0795
+      },
+      "exVsOwnEw": {
+       "ann": 0.016413531264932675,
+       "p": 0.505
+      },
+      "stressExVsSpyAnn": 0.030591776022424848,
+      "halvesVsOwnEw": [
+       -0.0016415882809368947,
+       0.033354137258588074
+      ]
+     }
+    },
+    {
+     "candidateId": "CF09",
+     "variantId": "F2-QUAL_LOWVOL-N20-M1-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-QUAL_LOWVOL-N20-M1-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.q",
+        1,
+        1
+       ],
+       [
+        "vol",
+        -1,
+        1
+       ]
+      ]
+     },
+     "rationale": "defensive quality monthly",
+     "train": {
+      "cagr": 0.12855919104203273,
+      "sharpe": 1.126978753732876,
+      "maxDrawdown": -0.12606236436922036,
+      "turnoverPerYear": 2.0869139311645486,
+      "exVsSpy": {
+       "ann": 0.020464053967093453,
+       "p": 0.2805
+      },
+      "exVsOwnEw": {
+       "ann": 0.018024667313530817,
+       "p": 0.5085
+      },
+      "stressExVsSpyAnn": 0.005897521852351025,
+      "halvesVsOwnEw": [
+       0.00961272994688216,
+       0.02591734928717647
+      ]
+     }
+    },
+    {
+     "candidateId": "CF10",
+     "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 3,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "FULL",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.p",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ]
+     },
+     "rationale": "profitability + momentum quarterly (V10 IC prior)",
+     "train": {
+      "cagr": 0.15461927149625532,
+      "sharpe": 0.8530497547587227,
+      "maxDrawdown": -0.21426455081495954,
+      "turnoverPerYear": 1.853119382806536,
+      "exVsSpy": {
+       "ann": 0.05487955382797917,
+       "p": 0.186
+      },
+      "exVsOwnEw": {
+       "ann": 0.009851569560860054,
+       "p": 0.752
+      },
+      "stressExVsSpyAnn": 0.04201206198326938,
+      "halvesVsOwnEw": [
+       0.012172881615762163,
+       0.0076735483735444945
+      ]
+     }
+    },
+    {
+     "candidateId": "CF11",
+     "variantId": "F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+     "spec": {
+      "id": "F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "ranks": [
+       [
+        "f.v",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ],
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 50,
+      "holding": "FULL",
+      "weighting": "EW"
+     },
+     "rationale": "value + momentum diversified; positive in both halves",
+     "train": {
+      "cagr": 0.1214242510735084,
+      "sharpe": 0.6996494961076584,
+      "maxDrawdown": -0.25241080954223394,
+      "turnoverPerYear": 3.989414169382586,
+      "exVsSpy": {
+       "ann": 0.025627650785853155,
+       "p": 0.3205
+      },
+      "exVsOwnEw": {
+       "ann": 0.010632960841610424,
+       "p": 0.6355
+      },
+      "stressExVsSpyAnn": -0.0022065557132829893,
+      "halvesVsOwnEw": [
+       0.010883916417622076,
+       0.010397496350537765
+      ]
+     }
+    },
+    {
+     "candidateId": "CF12",
+     "variantId": "F2-PROF_MOM-N20-M1-RUN-E95-X50-TX-PEXIT40-PX5-MC300",
+     "spec": {
+      "id": "F2-PROF_MOM-N20-M1-RUN-E95-X50-TX-PEXIT40-PX5-MC300",
+      "family": "FUND",
+      "cadence": "MONTHLY",
+      "rebalanceMonths": 1,
+      "filters": [
+       [
+        "rawPx",
+        "gte",
+        5
+       ]
+      ],
+      "minMarketCap": 300000000,
+      "positions": 20,
+      "holding": "RUN",
+      "weighting": "EW",
+      "ranks": [
+       [
+        "f.p",
+        1,
+        1
+       ],
+       [
+        "r12_1",
+        1,
+        1
+       ]
+      ],
+      "entryRankPct": 0.95,
+      "exitRankPct": 0.5,
+      "trendExit": true,
+      "exitFilters": [
+       [
+        "f.p",
+        "lt",
+        40
+       ]
+      ]
+     },
+     "rationale": "let-winners-run with quality (profitability) and trend exit (owner hypothesis); weak in TRAIN",
+     "train": {
+      "cagr": 0.10835119199640131,
+      "sharpe": 0.6059196173428434,
+      "maxDrawdown": -0.2700435747925912,
+      "turnoverPerYear": 1.3760333603819581,
+      "exVsSpy": {
+       "ann": 0.01693222509175227,
+       "p": 0.7325
+      },
+      "exVsOwnEw": {
+       "ann": -0.010163310128180957,
+       "p": 0.796
+      },
+      "stressExVsSpyAnn": 0.007166648783616051,
+      "halvesVsOwnEw": [
+       0.0034917159970796704,
+       -0.022975433406203276
+      ]
+     }
+    }
+   ]
+  }
+ },
+ "validationPlan": {
+  "computedOnce": true,
+  "primaryEndpoint": "VALIDATION/TEST: mean weekly return difference strategy (base costs) minus SPY (price), two-sided block-bootstrap p, Holm within the frozen family (<= 12)",
+  "primaryHolmFamily": "per family (12 tests each), p vs SPY (block 26 w)",
+  "secondaryHolmFamily": "per family, p vs own-universe EW",
+  "inference": {
+   "method": "research-validation.inferTemporalBlockMean on the weekly return difference (circular calendar blocks)",
+   "blockLengthWeeks": 26,
+   "robustnessBlockLengthWeeks": 52,
+   "replicates": 1999,
+   "seed": 1729,
+   "alpha": 0.05,
+   "neweyWestLag": 8
+  },
+  "costs": {
+   "base": {
+    "feeBps": 10,
+    "slippageBps": 5
+   },
+   "stress": {
+    "feeBps": 20,
+    "slippageBps": 30
+   },
+   "basis": "per side on traded notional"
+  },
+  "benchmarks": [
+   "SPY PRICE_RETURN buy-and-hold on the same sessions, no costs",
+   "equal-weighted own eligible universe of the rule (same decisions, same costs)",
+   "equal-weighted frame population (same decisions, same costs)",
+   "PIT cap-weighted frame population from panel market cap (2010+, same decisions, same costs)"
+  ],
+  "firstYearSeparately": true,
+  "ledger": "research-portfolio.cjs official ledger + simulator parity per candidate"
+ },
+ "finalSelectionRule": {
+  "statedBefore": "VALIDATION outcomes (repeated verbatim in the candidates file)",
+  "eligible": "VALIDATION point estimates: weekly excess vs SPY > 0 AND vs own-universe EW > 0 AND stress-cost excess vs SPY > 0",
+  "ranking": "Holm-adjusted p vs SPY within family ascending, then raw p vs own-universe EW ascending",
+  "limits": "max 3 overall, max 2 per family",
+  "ifFewerThanTwoEligible": "add the best-ranked remaining candidate of each family not yet represented (labelled DIAGNOSTIC_NOT_VALIDATED) up to 3 in total, so that TEST measures persistence; such entries are not hypotheses expected to work"
+ },
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}
