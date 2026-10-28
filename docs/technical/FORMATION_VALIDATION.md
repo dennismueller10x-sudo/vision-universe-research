@@ -349,3 +349,45 @@ Erklärung der Fälle ohne direktes Gegenstück:
 - Vercel meldete am selben Morgen sein Tageslimit.
 
 Den tatsächlichen Bau belegen der Pflichtjob `package` (Pages-Paket, grün) und der Cloudflare-Lauf auf dem neuen Kopf dieses PRs.
+
+## 7. Dreieckskanten nach Typ `ti-chart-patterns-1.3.0` / `technical-formations-1.4.0` (Fachmodell, Owner-Freigabe nötig)
+
+**Befund (28.10.2026, Prüfung vor dem Merge von §6):** Bei aufsteigenden und absteigenden Dreiecken passten die gezeichneten Kanten nicht immer zum Typ: aufsteigend 210 von 355, absteigend 324 von 544 (Stand 1.3.0). Zwei Ursachen:
+1. `chart-patterns.js` wählte die Kanten nach „flach“, nicht nach dem Typ. Galt auch die Gegenkante als flach (die Bereiche „flach“ und „steigend/fallend“ überlappen, §6), wurde sie waagrecht gezeichnet. Ein aufsteigendes Dreieck bekam so eine waagrechte Unterkante, obwohl die Tiefs steigen (ABEV 26.10.: Tiefs 2,75 → 2,83, Kante 2,75 → 2,75). Diese Kante bestimmt auch die Invalidierung.
+2. `formations.js` ließ jede Kante am Preis des ersten Pivots beginnen. Eine waagrechte Kante begann damit schief (ABEV: 3,3296 → 3,35 statt 3,35 → 3,35).
+
+**Korrektur:**
+- Waagrecht ist nur die Oberkante des aufsteigenden und die Unterkante des absteigenden Dreiecks (beim Rechteck beide). Die Gegenkante ist die Linie durch die Pivots.
+- Jede Kante beginnt auf ihrem eigenen Wert am ersten Pivot (`upperFrom`/`lowerFrom`).
+- Die Klassifikation selbst ist unverändert.
+
+**Neue Validatorregel** `LINIEN_PASSEN_NICHT_ZUM_TYP` (`validate-formations.mjs`):
+- symmetrisch: oben fallend, unten steigend;
+- aufsteigend: oben waagrecht, unten steigend;
+- absteigend: unten waagrecht, oben fallend.
+
+**Vorher/Nachher (5.657 Titel, Stand 26.10.2026, Daten mit dem Erzeuger gebaut):**
+
+| | 1.3.0 | 1.4.0 |
+|---|---|---|
+| Regelkonform (alle Regeln inkl. Kanten) | 10.892 / 11.426 | 11.387 / 11.387 |
+| Kanten passend: aufsteigend / absteigend / symmetrisch | 145/355 · 220/544 · 445/445 | 325/325 · 535/535 · 445/445 |
+| nicht sichtbar am Erkennungstag, bestätigt oder invalidiert vor Erkennung | 0 | 0 |
+| Spiegeltest aufsteigend / absteigend | – | 294/325 · 478/535 |
+
+- **Screener:** 44 Titel ändern sich, nur in den fünf Formationsspalten.
+  - Es fallen 31 aufsteigende (3 davon bestätigt) und 15 absteigende Dreiecke weg; neu kommt keines hinzu.
+  - Grund: Mit der steigenden Unterkante bzw. fallenden Oberkante schließt der Kurs früher jenseits der Gegenkante. Nach den bestehenden Regeln ist das Muster dann invalidiert (bei Bruch vor der Erkennung nie gültig) und fällt aus der Liste.
+  - Titel: ABEV (aufst. 2026-10-26), ALCYF (aufst. 2026-10-16), AUBN (aufst. 2026-09-29), BBDC (aufst. 2026-09-03), BML-P-J (abst. 2026-08-31), BML-P-L (aufst. 2026-10-15), BRIA (abst. 2026-10-05), BRK-A (aufst. 2026-09-21 bestätigt), BRK-B (aufst. 2026-09-21 bestätigt), BSAC (aufst. 2026-09-16), CLGN (aufst. 2026-10-02), CMS-P-B (aufst. 2026-10-16), CVBF (abst. 2026-10-20), EFC-P-C (abst. 2026-06-30), FEDU (aufst. 2026-10-19), FSHP (aufst. 2026-08-27), FUSB (abst. 2026-10-13, abst. 2026-10-05), GLAD (aufst. 2026-09-14), GRFS (aufst. 2026-10-16), HOLA (aufst. 2026-10-20), JBDI (aufst. 2026-09-03 bestätigt), KEY-P-L (aufst. 2026-07-27), KMB (abst. 2026-10-15), KNSA (aufst. 2026-10-26), MDLZ (abst. 2026-10-12), MGA (aufst. 2026-09-15), NBN (abst. 2026-09-15), OXLCO (aufst. 2026-10-02), PCG-P-C (aufst. 2026-10-01), PEB-P-H (aufst. 2026-07-20), RF-P-C (aufst. 2026-09-28), RGS (aufst. 2026-09-30), SB-P-D (aufst. 2026-09-10), SGU (abst. 2026-09-09), SPME (abst. 2026-09-29), SPOK (abst. 2026-09-18), SST (aufst. 2026-09-10), VBNK (abst. 2026-09-04), WBS-P-G (abst. 2026-08-05), WHLRD (abst. 2026-10-26), WRBY (aufst. 2026-08-06), WW (aufst. 2026-09-29), XRN-P-A (aufst. 2026-10-15, aufst. 2026-10-14), YETI (aufst. 2026-10-07).
+- **Historische Evidenz** (`formation-evidence.json`, gleiche Stichprobe):
+
+| Typ | n | bestätigt bis +20 | invalidiert bis +20 | Überrendite +20 (Mittel) | signifikant |
+|---|---|---|---|---|---|
+| aufsteigend | 2.292 → 2.240 | 40,2 % → 40,4 % | 62,1 % → 66,3 % | −0,23 % → −0,15 % | nein → nein |
+| absteigend | 2.850 → 2.817 | 36,8 % → 36,5 % | 59,8 % → 62,2 % | +0,19 % → +0,18 % | nein → nein |
+| symmetrisch, Rechteck | unverändert | | | | |
+
+**Tests:**
+- `technical-formations-validation.test.mjs`: konstruierte Kanten. Waagrechte statt steigender Unterkante und schief beginnende waagrechte Kante werden erkannt.
+- `technical-formations-triangles.test.mjs`: Versionen.
+- Daten bringt der PR nicht mit. Nach der Freigabe baut der Erzeuger `technical/data` neu.

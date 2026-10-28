@@ -94,6 +94,17 @@ export function check(f, ctx) {
       if (t === "SYMMETRICAL_TRIANGLE" && !(h2 < h1 && l2 > l1)) v.push("GEOMETRIE");
       if (t === "RECTANGLE" && !(flatH && flatL && Math.max(h1, h2) - Math.min(l1, l2) >= 3 * Math.min(atr, atrD) * 0.95)) v.push("GEOMETRIE");
     }
+    /* Die gezeichneten Kanten tragen den Typ (FORMATION_VALIDATION.md §6): symmetrisch = oben fallend und unten steigend,
+       aufsteigend = oben waagrecht und unten steigend, absteigend = unten waagrecht und oben fallend. */
+    if (t !== "RECTANGLE") {
+      const u = line(f, "upper"), lo = line(f, "lower");
+      if (!u || !lo) v.push("LINIEN_FEHLEN");
+      else {
+        const du = u.to.price - u.from.price, dl = lo.to.price - lo.from.price;
+        const ok = t === "SYMMETRICAL_TRIANGLE" ? du < 0 && dl > 0 : t === "ASCENDING_TRIANGLE" ? du === 0 && dl > 0 : dl === 0 && du < 0;
+        if (!ok) v.push("LINIEN_PASSEN_NICHT_ZUM_TYP");
+      }
+    }
   }
   if (t === "RISING_WEDGE" || t === "FALLING_WEDGE" || t === "ASCENDING_CHANNEL" || t === "DESCENDING_CHANNEL") {
     const u = line(f, "upper"), lo = line(f, "lower");
