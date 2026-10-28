@@ -1,0 +1,150 @@
+{
+  "job_id": "bulle-baer-mund-posen-1",
+  "purpose": "Mund- und Gesichtsvarianten für Bulle und Bär (Entwurf 1), damit die Figuren per Bildwechsel sprechen statt zu wackeln. Nur interne Produktion, keine Veröffentlichung.",
+  "images": [
+    {
+      "id": "bulle-mund-halb",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: mouth slightly open as if speaking a syllable, same happy expression, eyes unchanged."
+    },
+    {
+      "id": "bulle-mund-offen",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: mouth wide open as if speaking loudly, same eyes."
+    },
+    {
+      "id": "bulle-augen-zu",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: eyes closed (blinking), mouth closed in the same smile."
+    },
+    {
+      "id": "bulle-schock",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: shocked face: eyes wide open with small pupils, eyebrows raised high, mouth open in a round O."
+    },
+    {
+      "id": "bulle-lacht",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: laughing face: eyes squeezed shut in happy arcs, big open laughing mouth."
+    },
+    {
+      "id": "bulle-verwirrt",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/bulle-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: confused face: one eyebrow raised, eyes looking up to the side, mouth a small crooked line."
+    },
+    {
+      "id": "baer-mund-halb",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: mouth slightly open as if speaking a syllable, same calm skeptical expression, eyes unchanged."
+    },
+    {
+      "id": "baer-mund-offen",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: mouth open wider as if speaking clearly, same eyes."
+    },
+    {
+      "id": "baer-augen-zu",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: eyes closed (blinking) behind the glasses, mouth closed, same calm expression."
+    },
+    {
+      "id": "baer-laecheln",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: gentle knowing smile with closed mouth, eyes slightly narrowed and friendly."
+    },
+    {
+      "id": "baer-augenrollen",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: annoyed face: eyes rolled upwards, flat unimpressed mouth."
+    },
+    {
+      "id": "baer-ueber-brille",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "seed": 2026,
+      "negative_prompt": "different pose, different clothing, moved arms, cropped, background, text, shadow change, style change",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/baer-vorlage.png"
+      ],
+      "prompt": "Keep the character, body, pose, clothing, outlines, colors, proportions, framing and the plain white background exactly identical. Change only the face as described: looking over the top of the glasses with raised eyebrows, mouth closed in a flat line."
+    }
+  ]
+}
