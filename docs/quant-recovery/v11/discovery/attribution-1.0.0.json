@@ -1,0 +1,3310 @@
+{
+ "schemaVersion": "v11-discovery-attribution-1.0.0",
+ "studyId": "V11-DISCOVERY:ATTRIBUTION",
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "periods": [
+  "VALIDATION (all 24 frozen candidates)",
+  "TEST (final hypotheses)"
+ ],
+ "returnBasis": "PRICE_RETURN",
+ "costs": {
+  "feeBps": 10,
+  "slippageBps": 5
+ },
+ "size": "log PIT market cap with plausibility filter 1.0.1 (2010+)",
+ "characteristics": [
+  "momentum12_1",
+  "momentum3",
+  "volatility",
+  "sizeLogMcap",
+  "quality",
+  "value",
+  "growth",
+  "profitability"
+ ],
+ "limitations": [
+  "Characteristic slopes are per-interval cross-sectional OLS on a survivor frame; missing characteristics set to 0 (neutral).",
+  "Interval returns are buy-and-hold at decision weights; small differences to the funded ledger (drift, costs) are reported via observed/costs fields.",
+  "Fundamental characteristics come from the V10 PIT panel (fiscal calendar from today, XBRL scale errors in market-cap-based value yields)."
+ ],
+ "results": [
+  {
+   "id": "CP01",
+   "stage": "VALIDATION",
+   "variantId": "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.1329127996803026,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.02474017603876366,
+    "strategyCagrNet": 0.10824770507447568,
+    "strategyCagrGross": 0.13356868682504386
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.009739466823280566,
+    "beta": 1.318746478557296,
+    "betaContributionAnnualised": 0.14265226650358317,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.02798965600571754,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.06690509152135064,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.0512271019595187,
+     "momentum3": 0.00044361902697964516,
+     "volatility": 0.011220107725584117,
+     "sizeLogMcap": 0.0038133690470171567,
+     "quality": -0.0026219330935648697,
+     "value": 0.003317633311330056,
+     "growth": 0.0014595323768590057,
+     "profitability": 0.00016371807676343866
+    },
+    "specificSelectionPerYear": -0.002118056909136598,
+    "averageExposures": {
+     "momentum12_1": 2.3277027095078004,
+     "momentum3": 0.40173973038917066,
+     "volatility": 1.879328818059609,
+     "sizeLogMcap": -0.4676514538041055,
+     "quality": -0.23715017814845413,
+     "value": -0.417803845287714,
+     "growth": 0.09369254624905543,
+     "profitability": -0.031004429036235584
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 570,
+    "top5": [
+     {
+      "id": "ref_GRVY",
+      "relativeContribution": 0.06412496534237098
+     },
+     {
+      "id": "ref_NOAH",
+      "relativeContribution": 0.062322906470935184
+     },
+     {
+      "id": "ref_ABEO",
+      "relativeContribution": 0.04824736173841903
+     },
+     {
+      "id": "ref_QNST",
+      "relativeContribution": 0.037983214244929314
+     },
+     {
+      "id": "ref_AMD",
+      "relativeContribution": 0.037838680086111465
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_PBYI",
+      "relativeContribution": -0.027200374570471454
+     },
+     {
+      "id": "ref_GLNG",
+      "relativeContribution": -0.027307817574334627
+     },
+     {
+      "id": "ref_MTEX",
+      "relativeContribution": -0.027644013477277827
+     },
+     {
+      "id": "ref_TVTX",
+      "relativeContribution": -0.02819945483526015
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.03553603159148239
+     }
+    ],
+    "top5ShareOfNetRelative": 0.6161614394704172,
+    "top5ShareOfPositiveRelative": 0.10006330255963945,
+    "netRelativeSum": 0.40657709462974867,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.13356868682504386,
+    "cagrNet": 0.10824770507447568,
+    "costDragCagr": 0.025320981750568183
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP02",
+   "stage": "VALIDATION",
+   "variantId": "P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.11468945950825624,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.006516835866717308,
+    "strategyCagrNet": 0.09575336197528528,
+    "strategyCagrGross": 0.13416230701292653
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.024295308908849882,
+    "beta": 1.28484235417708,
+    "betaContributionAnnualised": 0.13898476841710614,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.009766315833671185,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.05921056000224486,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.044288132847866306,
+     "momentum3": -0.005080171944396177,
+     "volatility": 0.0057685417014702225,
+     "sizeLogMcap": 0.003616663009761289,
+     "quality": -0.001931768305492066,
+     "value": 0.0006485571359467424,
+     "growth": 0.002710879980032064,
+     "profitability": 0.00022848189078776885
+    },
+    "specificSelectionPerYear": 0.008961243686268718,
+    "averageExposures": {
+     "momentum12_1": 2.0836761986389765,
+     "momentum3": 0.692694031345846,
+     "volatility": 1.498976937131552,
+     "sizeLogMcap": -0.38885875602591735,
+     "quality": -0.19178413602400238,
+     "value": -0.37982390281174766,
+     "growth": 0.09774172552103821,
+     "profitability": -0.035010917601283637
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 1004,
+    "top5": [
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.037737784925130795
+     },
+     {
+      "id": "ref_MGPI",
+      "relativeContribution": 0.030142620007432515
+     },
+     {
+      "id": "ref_VCYT",
+      "relativeContribution": 0.027235331421294178
+     },
+     {
+      "id": "ref_EVI",
+      "relativeContribution": 0.026352504776270515
+     },
+     {
+      "id": "ref_ABEO",
+      "relativeContribution": 0.02561348981006761
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_MTEX",
+      "relativeContribution": -0.01977695947300906
+     },
+     {
+      "id": "ref_PBYI",
+      "relativeContribution": -0.019996923106045277
+     },
+     {
+      "id": "ref_DXR",
+      "relativeContribution": -0.020147151817672328
+     },
+     {
+      "id": "ref_OPTT",
+      "relativeContribution": -0.023427230734685667
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.0380621548717443
+     }
+    ],
+    "top5ShareOfNetRelative": 0.4087669971712148,
+    "top5ShareOfPositiveRelative": 0.06316308867552756,
+    "netRelativeSum": 0.359818018475179,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.13416230701292653,
+    "cagrNet": 0.09575336197528528,
+    "costDragCagr": 0.03840894503764125
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP03",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.1615991076766915,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.05342648403515257,
+    "strategyCagrNet": 0.14385690107145344,
+    "strategyCagrGross": 0.18571962622473626
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.022504977555483575,
+    "beta": 1.2858533466113968,
+    "betaContributionAnnualised": 0.13909413012120794,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.05667596400210645,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.08834276205005855,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.06015584170448773,
+     "momentum3": 0.008573993264781544,
+     "volatility": 0.004256899094952809,
+     "sizeLogMcap": 0.002605908409043119,
+     "quality": -0.0025775348417651197,
+     "value": -0.0017736013002208346,
+     "growth": 0.00039685079800168857,
+     "profitability": 0.000337111780069204
+    },
+    "specificSelectionPerYear": 0.01636729314070841,
+    "averageExposures": {
+     "momentum12_1": 2.946764132536175,
+     "momentum3": -0.19399804773132084,
+     "volatility": 1.3888569972522486,
+     "sizeLogMcap": -0.32588376020214904,
+     "quality": -0.20650435717581708,
+     "value": -0.3293117550343791,
+     "growth": 0.2417706450325249,
+     "profitability": -0.01076640467670212
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 723,
+    "top5": [
+     {
+      "id": "ref_PBYI",
+      "relativeContribution": 0.06830352058638944
+     },
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.037583310918998004
+     },
+     {
+      "id": "ref_TCI",
+      "relativeContribution": 0.033098000188951204
+     },
+     {
+      "id": "ref_NVDA",
+      "relativeContribution": 0.03147298020388713
+     },
+     {
+      "id": "ref_LITE",
+      "relativeContribution": 0.030034339351327405
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_CRD_B",
+      "relativeContribution": -0.021345313195878478
+     },
+     {
+      "id": "ref_ONCT",
+      "relativeContribution": -0.02216013485591118
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.027401170659447582
+     },
+     {
+      "id": "ref_OPCH",
+      "relativeContribution": -0.02948876481921761
+     },
+     {
+      "id": "ref_MCHX",
+      "relativeContribution": -0.03259960260180265
+     }
+    ],
+    "top5ShareOfNetRelative": 0.3734587707462885,
+    "top5ShareOfPositiveRelative": 0.07746178701102077,
+    "netRelativeSum": 0.5368521693811249,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.18571962622473626,
+    "cagrNet": 0.14385690107145344,
+    "costDragCagr": 0.04186272515328282
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP04",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.1282608748719534,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.020088251230414467,
+    "strategyCagrNet": 0.09940234478398913,
+    "strategyCagrGross": 0.11496172560433537
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.014972873246168354,
+    "beta": 1.3241219755635025,
+    "betaContributionAnnualised": 0.14323374811812176,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.023337731197368344,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.04470727916646199,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.04007464195536375,
+     "momentum3": -0.03777961223245458,
+     "volatility": 0.008074113793207955,
+     "sizeLogMcap": 0.0025079840825282993,
+     "quality": -0.000998374821338306,
+     "value": 0.0010310105033582853,
+     "growth": 0.0007066507734094355,
+     "profitability": -0.0003213130690468908
+    },
+    "specificSelectionPerYear": 0.03141217818143408,
+    "averageExposures": {
+     "momentum12_1": 2.519380936466579,
+     "momentum3": 4.3260576293406645,
+     "volatility": 2.5071515702025415,
+     "sizeLogMcap": -0.533410688499108,
+     "quality": -0.3443409660900227,
+     "value": -0.5258196857082621,
+     "growth": 0.07485141099318382,
+     "profitability": -0.06853884395320782
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 378,
+    "top5": [
+     {
+      "id": "ref_ANIP",
+      "relativeContribution": 0.0702034107159782
+     },
+     {
+      "id": "ref_DQ",
+      "relativeContribution": 0.07011193290807932
+     },
+     {
+      "id": "ref_ACAD",
+      "relativeContribution": 0.0696088100287899
+     },
+     {
+      "id": "ref_GRVY",
+      "relativeContribution": 0.06637035989800648
+     },
+     {
+      "id": "ref_CDNA",
+      "relativeContribution": 0.05755230906640102
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_MNKD",
+      "relativeContribution": -0.043391052927528095
+     },
+     {
+      "id": "ref_KNDI",
+      "relativeContribution": -0.04451015497976544
+     },
+     {
+      "id": "ref_ABUS",
+      "relativeContribution": -0.04632231097559014
+     },
+     {
+      "id": "ref_OPTT",
+      "relativeContribution": -0.049822963952655966
+     },
+     {
+      "id": "ref_GLBS",
+      "relativeContribution": -0.055565717189574135
+     }
+    ],
+    "top5ShareOfNetRelative": 1.2288115030921545,
+    "top5ShareOfPositiveRelative": 0.13234597287614056,
+    "netRelativeSum": 0.27168269647311244,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.11496172560433537,
+    "cagrNet": 0.09940234478398913,
+    "costDragCagr": 0.015559380820346247
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP05",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.11453860372678845,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.006365980085249523,
+    "strategyCagrNet": 0.08993723710275114,
+    "strategyCagrGross": 0.11794881885558506
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.01221666023734852,
+    "beta": 1.1717869059382067,
+    "betaContributionAnnualised": 0.126755263964137,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.0096154600522034,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.047724220409648035,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.021611115427452834,
+     "momentum3": -0.0403480103861808,
+     "volatility": 0.0072201663713590035,
+     "sizeLogMcap": 0.0031816571216552424,
+     "quality": -0.00408648874255005,
+     "value": 0.002462595875497464,
+     "growth": 0.0010474274167811084,
+     "profitability": 0.00024123993804738464
+    },
+    "specificSelectionPerYear": 0.056394517387585864,
+    "averageExposures": {
+     "momentum12_1": 1.6331547441412593,
+     "momentum3": 4.525883445167392,
+     "volatility": 1.8833520306881226,
+     "sizeLogMcap": -0.5351398976326078,
+     "quality": -0.2964712630187413,
+     "value": -0.4933700013434711,
+     "growth": 0.09684666255111304,
+     "profitability": -0.05066251076033062
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 563,
+    "top5": [
+     {
+      "id": "ref_ANIP",
+      "relativeContribution": 0.0671887638813369
+     },
+     {
+      "id": "ref_TPST",
+      "relativeContribution": 0.06457576081113295
+     },
+     {
+      "id": "ref_GRVY",
+      "relativeContribution": 0.05428993646284206
+     },
+     {
+      "id": "ref_EVI",
+      "relativeContribution": 0.0522727645332433
+     },
+     {
+      "id": "ref_EDUC",
+      "relativeContribution": 0.04275890606082536
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_ARL",
+      "relativeContribution": -0.03290946837366458
+     },
+     {
+      "id": "ref_MDXG",
+      "relativeContribution": -0.033403416476340306
+     },
+     {
+      "id": "ref_OMER",
+      "relativeContribution": -0.03603856384063368
+     },
+     {
+      "id": "ref_KEN",
+      "relativeContribution": -0.0443877198903179
+     },
+     {
+      "id": "ref_ABUS",
+      "relativeContribution": -0.05058247404221926
+     }
+    ],
+    "top5ShareOfNetRelative": 0.9692076583146118,
+    "top5ShareOfPositiveRelative": 0.10559572650376854,
+    "netRelativeSum": 0.29001641633555686,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.11794881885558506,
+    "cagrNet": 0.08993723710275114,
+    "costDragCagr": 0.028011581752833914
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP06",
+   "stage": "VALIDATION",
+   "variantId": "P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.12545891063194983,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.017286286990410904,
+    "strategyCagrNet": 0.10931134233448048,
+    "strategyCagrGross": 0.12614510654041622
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.004231213534481918,
+    "beta": 1.198918171719651,
+    "betaContributionAnnualised": 0.12969012416643175,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.02053576695736478,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.042467715894210986,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.02704079782703957,
+     "momentum3": -0.029673308717342372,
+     "volatility": 0.00891867304800866,
+     "sizeLogMcap": 0.003728592920759552,
+     "quality": -0.0022429203948512535,
+     "value": 0.0033942343517076685,
+     "growth": -0.0005271882132018019,
+     "profitability": -0.00026987503497615146
+    },
+    "specificSelectionPerYear": 0.032098710107067115,
+    "averageExposures": {
+     "momentum12_1": 1.6612537354877925,
+     "momentum3": 3.2520999336206473,
+     "volatility": 1.825420127410831,
+     "sizeLogMcap": -0.438386297447553,
+     "quality": -0.2510764938766139,
+     "value": -0.46142581591315696,
+     "growth": 0.09123552740228222,
+     "profitability": -0.052541220495366275
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 782,
+    "top5": [
+     {
+      "id": "ref_GRVY",
+      "relativeContribution": 0.04416869914972487
+     },
+     {
+      "id": "ref_ANIP",
+      "relativeContribution": 0.031270839488978915
+     },
+     {
+      "id": "ref_NFLX",
+      "relativeContribution": 0.029250019452961715
+     },
+     {
+      "id": "ref_TPST",
+      "relativeContribution": 0.028270603565072445
+     },
+     {
+      "id": "ref_EVI",
+      "relativeContribution": 0.0259232830512472
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_GLBS",
+      "relativeContribution": -0.022226286875829643
+     },
+     {
+      "id": "ref_ERII",
+      "relativeContribution": -0.023561481712810146
+     },
+     {
+      "id": "ref_VUZI",
+      "relativeContribution": -0.025174445485460734
+     },
+     {
+      "id": "ref_MDXG",
+      "relativeContribution": -0.026252507194288344
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.029588435219090024
+     }
+    ],
+    "top5ShareOfNetRelative": 0.615653006683776,
+    "top5ShareOfPositiveRelative": 0.08407002985855871,
+    "netRelativeSum": 0.2580730427417437,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.12614510654041622,
+    "cagrNet": 0.10931134233448048,
+    "costDragCagr": 0.016833764205935742
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP07",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.1264911281170826,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.018318504475543673,
+    "strategyCagrNet": 0.10621516476721515,
+    "strategyCagrGross": 0.12883618053663448
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.013597737763955505,
+    "beta": 1.2950491646136164,
+    "betaContributionAnnualised": 0.1400888658810381,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.003913027956521695,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.012925261635360397,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.022231532432065368,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.03778133774719616,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.055393015037974565,
+     "momentum3": 0.0040351993226658825,
+     "volatility": 0.009595071484322999,
+     "sizeLogMcap": 0.002037244703915915,
+     "quality": -0.0033708833147549893,
+     "value": 0.006182858356953118,
+     "growth": -0.0008493063446507595,
+     "profitability": 0.0006380966123277706
+    },
+    "specificSelectionPerYear": -0.03587995811155834,
+    "averageExposures": {
+     "momentum12_1": 2.7582298877198155,
+     "momentum3": 2.8229091093417087,
+     "volatility": 1.638106643709159,
+     "sizeLogMcap": -0.3312242497697591,
+     "quality": -0.19533080360078622,
+     "value": -0.43808602934950397,
+     "growth": 0.3098393028506442,
+     "profitability": -0.033964278817336824
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7449455881341982,
+     "quality": 0.5489409853982217,
+     "value": 0.49625664175330614,
+     "growth": 0.6429293653062057,
+     "profitability": 0.08683796058886951
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 517,
+    "top5": [
+     {
+      "id": "ref_TPST",
+      "relativeContribution": 0.07368239720306308
+     },
+     {
+      "id": "ref_ADUS",
+      "relativeContribution": 0.06203066816109874
+     },
+     {
+      "id": "ref_WLDN",
+      "relativeContribution": 0.05328445145075851
+     },
+     {
+      "id": "ref_TSLA",
+      "relativeContribution": 0.05120299211514524
+     },
+     {
+      "id": "ref_NXST",
+      "relativeContribution": 0.04307833628595941
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_TCI",
+      "relativeContribution": -0.026263681766608173
+     },
+     {
+      "id": "ref_MDXG",
+      "relativeContribution": -0.030786238485194885
+     },
+     {
+      "id": "ref_CORT",
+      "relativeContribution": -0.036335476899094506
+     },
+     {
+      "id": "ref_TLYS",
+      "relativeContribution": -0.03919092966960106
+     },
+     {
+      "id": "ref_ARL",
+      "relativeContribution": -0.03924886163934289
+     }
+    ],
+    "top5ShareOfNetRelative": 1.2338236006015426,
+    "top5ShareOfPositiveRelative": 0.1305902263781031,
+    "netRelativeSum": 0.22959428323296316,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.12883618053663448,
+    "cagrNet": 0.10621516476721515,
+    "costDragCagr": 0.022621015769419328
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP08",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM6-N20-R13-FULL-EW-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.06047684028682523,
+    "spyAnnMeanWeekly": 0.1159536664119086,
+    "excessVsSpy": -0.055476826125083374,
+    "strategyCagrNet": 0.022247445004322852,
+    "strategyCagrGross": 0.03214324950710479
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.10936295128738481,
+    "beta": 1.4647211841571168,
+    "betaContributionAnnualised": 0.16983979157421006,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.002595416318031493,
+    "capWeightedMinusSpy": 0.014244987842836454,
+    "ownUniverseEwMinusCapWeighted": -0.016840404160867947,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.05288140980705188,
+    "intervalsAnalysed": 25,
+    "cashIntervals": 0,
+    "intervalsPerYear": 4,
+    "grossExcessPerYear": -0.04806476785825585,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.01670269935753808,
+     "momentum3": -0.000765339171876267,
+     "volatility": 0.028718754374549748,
+     "sizeLogMcap": 0.00021507795765173836,
+     "quality": -0.0016333345192872798,
+     "value": 0.008307143735757532,
+     "growth": 0.004408260802667463,
+     "profitability": -0.00007094570144356365
+    },
+    "specificSelectionPerYear": -0.10394708469381328,
+    "averageExposures": {
+     "momentum12_1": 3.1255247685164678,
+     "momentum3": 3.345610963634074,
+     "volatility": 2.4905151227372344,
+     "sizeLogMcap": -0.4782501997116971,
+     "quality": -0.386338399036563,
+     "value": -0.5840412375033407,
+     "growth": 0.13704085281447687,
+     "profitability": -0.05090396665710023
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7465253249287832,
+     "quality": 0.5491419983543873,
+     "value": 0.5003384681521954,
+     "growth": 0.6365638609949503,
+     "profitability": 0.07533883134116746
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 315,
+    "top5": [
+     {
+      "id": "ref_TPST",
+      "relativeContribution": 0.10104474260703807
+     },
+     {
+      "id": "ref_EVI",
+      "relativeContribution": 0.07156649162420882
+     },
+     {
+      "id": "ref_CSIQ",
+      "relativeContribution": 0.05853290620655661
+     },
+     {
+      "id": "ref_EGAN",
+      "relativeContribution": 0.054107462785018476
+     },
+     {
+      "id": "ref_WLDN",
+      "relativeContribution": 0.04808486424501586
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_TLYS",
+      "relativeContribution": -0.035106784716745845
+     },
+     {
+      "id": "ref_MNKD",
+      "relativeContribution": -0.03916547806281662
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.04661978486316215
+     },
+     {
+      "id": "ref_PBYI",
+      "relativeContribution": -0.04694856990423081
+     },
+     {
+      "id": "ref_IMNN",
+      "relativeContribution": -0.048018075996966475
+     }
+    ],
+    "top5ShareOfNetRelative": -1.1096243084360047,
+    "top5ShareOfPositiveRelative": 0.1809609459882414,
+    "netRelativeSum": -0.3004047991140979,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.03214324950710479,
+    "cagrNet": 0.022247445004322852,
+    "costDragCagr": 0.009895804502781935
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9938837920489296,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP09",
+   "stage": "VALIDATION",
+   "variantId": "P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.10851699519129668,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.0003443715497577493,
+    "strategyCagrNet": 0.09262707405311676,
+    "strategyCagrGross": 0.1032733921062352
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.009056807897579166,
+    "beta": 0.919458028708885,
+    "betaContributionAnnualised": 0.09946018729371751,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.003593851516711627,
+    "intervalsAnalysed": 68,
+    "cashIntervals": 11,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.06004704506452198,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.05885638493211352,
+     "momentum3": -0.0006615647620940887,
+     "volatility": 0.023284598371544802,
+     "sizeLogMcap": 0.0023629869305754926,
+     "quality": -0.0013357559586632815,
+     "value": 0.00999103690988953,
+     "growth": 0.002488225376089789,
+     "profitability": 0.0008227188245186334
+    },
+    "specificSelectionPerYear": -0.03576158555945245,
+    "averageExposures": {
+     "momentum12_1": 2.653748644178342,
+     "momentum3": 2.0959646977323882,
+     "volatility": 1.9292012995100416,
+     "sizeLogMcap": -0.3381230369739126,
+     "quality": -0.2599389821997525,
+     "value": -0.46905118687539255,
+     "growth": 0.14511252055583243,
+     "profitability": -0.03449945874718698
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7452197848989824,
+     "quality": 0.5461280321876614,
+     "value": 0.49974793998980427,
+     "growth": 0.633277566847584,
+     "profitability": 0.09573923238397386
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 582,
+    "top5": [
+     {
+      "id": "ref_CSIQ",
+      "relativeContribution": 0.035227446762683204
+     },
+     {
+      "id": "ref_VIPS",
+      "relativeContribution": 0.03391584784746958
+     },
+     {
+      "id": "ref_ACAD",
+      "relativeContribution": 0.0308871954919427
+     },
+     {
+      "id": "ref_EVI",
+      "relativeContribution": 0.02723423776691329
+     },
+     {
+      "id": "ref_WB",
+      "relativeContribution": 0.026832880873827226
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_ABUS",
+      "relativeContribution": -0.017174867471608724
+     },
+     {
+      "id": "ref_IMNN",
+      "relativeContribution": -0.017710881292301812
+     },
+     {
+      "id": "ref_WATT",
+      "relativeContribution": -0.017715212801805713
+     },
+     {
+      "id": "ref_OPTT",
+      "relativeContribution": -0.01992918558106238
+     },
+     {
+      "id": "ref_MNKD",
+      "relativeContribution": -0.02177627433851929
+     }
+    ],
+    "top5ShareOfNetRelative": 0.4906126010678303,
+    "top5ShareOfPositiveRelative": 0.0945959621527091,
+    "netRelativeSum": 0.31409223572211314,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.1032733921062352,
+    "cagrNet": 0.09262707405311676,
+    "costDragCagr": 0.010646318053118442
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.8553459119496856,
+    "weeksMostlyCash": 45,
+    "spyAnnMeanInCashWeeks": 0.27769305938504857,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP10",
+   "stage": "VALIDATION",
+   "variantId": "P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.13048057813629355,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": 0.022307954494754617,
+    "strategyCagrNet": 0.11863139353619623,
+    "strategyCagrGross": 0.13032387557010616
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.03406267475536957,
+    "beta": 0.8913336862423935,
+    "betaContributionAnnualised": 0.09641790338092397,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.025557434461708495,
+    "intervalsAnalysed": 68,
+    "cashIntervals": 11,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.08152749752288066,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.07647864240207125,
+     "momentum3": -0.0028583511260956837,
+     "volatility": 0.014839784355863852,
+     "sizeLogMcap": 0.0019088743312659063,
+     "quality": -0.00010441080719054756,
+     "value": 0.008185588263442005,
+     "growth": 0.001683866681513913,
+     "profitability": 0.000495152432804418
+    },
+    "specificSelectionPerYear": -0.019101649010794447,
+    "averageExposures": {
+     "momentum12_1": 3.5056425663052044,
+     "momentum3": 1.0584393272118222,
+     "volatility": 1.4775963346575824,
+     "sizeLogMcap": -0.19372767471526342,
+     "quality": -0.22511250738752422,
+     "value": -0.4038831461530727,
+     "growth": 0.2725332159892106,
+     "profitability": -0.008163580679632411
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7452197848989824,
+     "quality": 0.5461280321876614,
+     "value": 0.49974793998980427,
+     "growth": 0.633277566847584,
+     "profitability": 0.09573923238397386
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 659,
+    "top5": [
+     {
+      "id": "ref_VIPS",
+      "relativeContribution": 0.04114089624685623
+     },
+     {
+      "id": "ref_NVDA",
+      "relativeContribution": 0.03846586731673118
+     },
+     {
+      "id": "ref_ACAD",
+      "relativeContribution": 0.034901645612009674
+     },
+     {
+      "id": "ref_CDNA",
+      "relativeContribution": 0.03160257125576419
+     },
+     {
+      "id": "ref_SRPT",
+      "relativeContribution": 0.027539777208115634
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_VICR",
+      "relativeContribution": -0.013690776702871294
+     },
+     {
+      "id": "ref_DQ",
+      "relativeContribution": -0.013775807765434297
+     },
+     {
+      "id": "ref_GLBS",
+      "relativeContribution": -0.013976805535093922
+     },
+     {
+      "id": "ref_IMNN",
+      "relativeContribution": -0.017710881292301812
+     },
+     {
+      "id": "ref_AXON",
+      "relativeContribution": -0.021373424699832378
+     }
+    ],
+    "top5ShareOfNetRelative": 0.4071992882054473,
+    "top5ShareOfPositiveRelative": 0.1074567960262468,
+    "netRelativeSum": 0.426451525504297,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.13032387557010616,
+    "cagrNet": 0.11863139353619623,
+    "costDragCagr": 0.011692482033909934
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.8553459119496856,
+    "weeksMostlyCash": 45,
+    "spyAnnMeanInCashWeeks": 0.27769305938504857,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP11",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.10345719099840785,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": -0.004715432643131082,
+    "strategyCagrNet": 0.08570819345522263,
+    "strategyCagrGross": 0.11908114260315283
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.006157362130720523,
+    "beta": 0.8994866315724971,
+    "betaContributionAnnualised": 0.09729982886768732,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.001465952676177204,
+    "intervalsAnalysed": 68,
+    "cashIntervals": 11,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": 0.10666908497916797,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.05205603934651354,
+     "momentum3": 0.0036846550647029394,
+     "volatility": 0.016233485415330578,
+     "sizeLogMcap": 0.00463393250330816,
+     "quality": -0.0001904201170804372,
+     "value": 0.007014463524247115,
+     "growth": 0.004301012862041686,
+     "profitability": 0.000274618030820808
+    },
+    "specificSelectionPerYear": 0.01866129834928357,
+    "averageExposures": {
+     "momentum12_1": 2.3391002292805285,
+     "momentum3": 0.7825620735110332,
+     "volatility": 1.7910756299011934,
+     "sizeLogMcap": -0.42406837567432737,
+     "quality": -0.2237167509174963,
+     "value": -0.41066942386001326,
+     "growth": 0.07863876852681546,
+     "profitability": -0.0553945543311917
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7452197848989824,
+     "quality": 0.5461280321876614,
+     "value": 0.49974793998980427,
+     "growth": 0.633277566847584,
+     "profitability": 0.09573923238397386
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 723,
+    "top5": [
+     {
+      "id": "ref_ABEO",
+      "relativeContribution": 0.05206321128282522
+     },
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.048629356055372476
+     },
+     {
+      "id": "ref_CDNA",
+      "relativeContribution": 0.037413446777352075
+     },
+     {
+      "id": "ref_VRDN",
+      "relativeContribution": 0.03291869776373088
+     },
+     {
+      "id": "ref_RGNX",
+      "relativeContribution": 0.03108968021715937
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_DXR",
+      "relativeContribution": -0.023926655237839916
+     },
+     {
+      "id": "ref_PLSE",
+      "relativeContribution": -0.02687723781129965
+     },
+     {
+      "id": "ref_DQ",
+      "relativeContribution": -0.027695144058013016
+     },
+     {
+      "id": "ref_CYTK",
+      "relativeContribution": -0.029875633514702054
+     },
+     {
+      "id": "ref_OPTT",
+      "relativeContribution": -0.035140846102028486
+     }
+    ],
+    "top5ShareOfNetRelative": 0.36223725124885325,
+    "top5ShareOfPositiveRelative": 0.08235301761920745,
+    "netRelativeSum": 0.5579613675833399,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.11908114260315283,
+    "cagrNet": 0.08570819345522263,
+    "costDragCagr": 0.03337294914793021
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.8553459119496856,
+    "weeksMostlyCash": 45,
+    "spyAnnMeanInCashWeeks": 0.27769305938504857,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CP12",
+   "stage": "VALIDATION",
+   "variantId": "P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.10015316343721226,
+    "spyAnnMeanWeekly": 0.10817262364153893,
+    "excessVsSpy": -0.008019460204326673,
+    "strategyCagrNet": 0.06737550477979593,
+    "strategyCagrGross": 0.07244576016613302
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.0509755180493461,
+    "beta": 1.3971065543105128,
+    "betaContributionAnnualised": 0.15112868148655836,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.0032494799669538776,
+    "capWeightedMinusSpy": -0.01683828959188209,
+    "ownUniverseEwMinusCapWeighted": 0.013588809624928214,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.004769980237372795,
+    "intervalsAnalysed": 79,
+    "cashIntervals": 0,
+    "intervalsPerYear": 13,
+    "grossExcessPerYear": -0.008450935599301575,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.06611303961233843,
+     "momentum3": -0.014039649017507325,
+     "volatility": 0.013872698674510279,
+     "sizeLogMcap": 0.0014787364505330976,
+     "quality": -0.0003327621592376622,
+     "value": -0.0007505053055276285,
+     "growth": 0.003055443723815799,
+     "profitability": 0.0012024709186185195
+    },
+    "specificSelectionPerYear": -0.07905040849684511,
+    "averageExposures": {
+     "momentum12_1": 4.323590963920953,
+     "momentum3": 2.043186386149945,
+     "volatility": 2.401178873772766,
+     "sizeLogMcap": -0.2922101639861806,
+     "quality": -0.4234138644840298,
+     "value": -0.4987099224723918,
+     "growth": 0.2947225183351724,
+     "profitability": -0.017127836320400224
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.7457769324208877,
+     "quality": 0.5484857151759236,
+     "value": 0.5000240705936304,
+     "growth": 0.6363869809358386,
+     "profitability": 0.09010577124934722
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 206,
+    "top5": [
+     {
+      "id": "ref_NVDA",
+      "relativeContribution": 0.14997539936519452
+     },
+     {
+      "id": "ref_CDNA",
+      "relativeContribution": 0.13649918042370662
+     },
+     {
+      "id": "ref_MGPI",
+      "relativeContribution": 0.10446850332777897
+     },
+     {
+      "id": "ref_VIPS",
+      "relativeContribution": 0.06373171729458194
+     },
+     {
+      "id": "ref_CSIQ",
+      "relativeContribution": 0.060183962821771714
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_BOSC",
+      "relativeContribution": -0.030672144931810016
+     },
+     {
+      "id": "ref_IMNN",
+      "relativeContribution": -0.04427720323075454
+     },
+     {
+      "id": "ref_GLBS",
+      "relativeContribution": -0.0449362838403292
+     },
+     {
+      "id": "ref_DQ",
+      "relativeContribution": -0.05574242793085991
+     },
+     {
+      "id": "ref_SRPT",
+      "relativeContribution": -0.09340196101969671
+     }
+    ],
+    "top5ShareOfNetRelative": -10.025350797459934,
+    "top5ShareOfPositiveRelative": 0.38370937559083707,
+    "netRelativeSum": -0.051355685564985966,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.07244576016613302,
+    "cagrNet": 0.06737550477979593,
+    "costDragCagr": 0.005070255386337097
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9937106918238994,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.24868483978956757,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF01",
+   "stage": "VALIDATION",
+   "variantId": "F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.11557668424817122,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": -0.03424018296745521,
+    "strategyCagrNet": 0.08239455517203642,
+    "strategyCagrGross": 0.08971544068040793
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.06502261484937455,
+    "beta": 1.2054670642499499,
+    "betaContributionAnnualised": 0.18059929909754574,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.05626545864658411,
+    "capWeightedMinusSpy": -0.13348389723224707,
+    "ownUniverseEwMinusCapWeighted": 0.18974935587883118,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.09050564161403932,
+    "intervalsAnalysed": 16,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9808612440191387,
+    "grossExcessPerYear": -0.09578919771084939,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": -0.003845799816795077,
+     "momentum3": -0.0042304667918449,
+     "volatility": -0.0052325043871964275,
+     "sizeLogMcap": 0.0061748832930211,
+     "quality": -0.00555864433213598,
+     "value": -0.07935141079553165,
+     "growth": 0.00026046853780393255,
+     "profitability": 0.02889237575442504
+    },
+    "specificSelectionPerYear": -0.03289809917259543,
+    "averageExposures": {
+     "momentum12_1": 0.8529173467452228,
+     "momentum3": 0.14072998854799532,
+     "volatility": 0.07414329211753451,
+     "sizeLogMcap": 0.14102830627630408,
+     "quality": 0.23328357011821527,
+     "value": 0.9343397586167385,
+     "growth": 0.17488564519317615,
+     "profitability": 1.1411088835812355
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9969513878641609,
+     "quality": 0.9803668993429898,
+     "value": 1,
+     "growth": 0.9757149758419009,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 123,
+    "top5": [
+     {
+      "id": "ref_DECK",
+      "relativeContribution": 0.04421595302242036
+     },
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.04112688633112251
+     },
+     {
+      "id": "ref_LRCX",
+      "relativeContribution": 0.03576828294139979
+     },
+     {
+      "id": "ref_ZUMZ",
+      "relativeContribution": 0.024735558479202946
+     },
+     {
+      "id": "ref_ALGN",
+      "relativeContribution": 0.024634465859628397
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_INTC",
+      "relativeContribution": -0.02487298868021355
+     },
+     {
+      "id": "ref_FF",
+      "relativeContribution": -0.02610466744863392
+     },
+     {
+      "id": "ref_USNA",
+      "relativeContribution": -0.034985921860654724
+     },
+     {
+      "id": "ref_RGR",
+      "relativeContribution": -0.03536331222322089
+     },
+     {
+      "id": "ref_VHI",
+      "relativeContribution": -0.04663301645518943
+     }
+    ],
+    "top5ShareOfNetRelative": -0.4428094488267305,
+    "top5ShareOfPositiveRelative": 0.4111133542265598,
+    "netRelativeSum": -0.38499889079937527,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.08971544068040793,
+    "cagrNet": 0.08239455517203642,
+    "costDragCagr": 0.007320885508371511
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF02",
+   "stage": "VALIDATION",
+   "variantId": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.15157082579209274,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.001753958576466319,
+    "strategyCagrNet": 0.12174757339581443,
+    "strategyCagrGross": 0.13624774620284352
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.022489074754446815,
+    "beta": 1.1618177831473468,
+    "betaContributionAnnualised": 0.17405990054653953,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.05841842826368657,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.08069605517158959,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.05666446968722025,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": -0.04803399918119802,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.005719545293588604,
+     "momentum3": -0.002089531769003672,
+     "volatility": -0.0030090088440034293,
+     "sizeLogMcap": 0.009215259457416535,
+     "quality": -0.0009069791504109088,
+     "value": -0.07862127797524515,
+     "growth": 0.005660755383373775,
+     "profitability": 0.03131371526326277
+    },
+    "specificSelectionPerYear": -0.01531647684017651,
+    "averageExposures": {
+     "momentum12_1": 0.9058248507654224,
+     "momentum3": 0.11063912861851015,
+     "volatility": 0.12492476093880467,
+     "sizeLogMcap": 0.11023467404905396,
+     "quality": 0.19188416959782997,
+     "value": 0.9488151157676264,
+     "growth": 0.17156157260584945,
+     "profitability": 1.1333385747757598
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9968854277220588,
+     "quality": 0.9802044741788093,
+     "value": 1,
+     "growth": 0.9754584657604913,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 150,
+    "top5": [
+     {
+      "id": "ref_LRCX",
+      "relativeContribution": 0.040819748667288894
+     },
+     {
+      "id": "ref_DECK",
+      "relativeContribution": 0.03626964870695593
+     },
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.033422864565994456
+     },
+     {
+      "id": "ref_TER",
+      "relativeContribution": 0.03182986491494877
+     },
+     {
+      "id": "ref_AZO",
+      "relativeContribution": 0.03150780644130903
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_BIIB",
+      "relativeContribution": -0.02923712359803251
+     },
+     {
+      "id": "ref_AAOI",
+      "relativeContribution": -0.029889062776925046
+     },
+     {
+      "id": "ref_RGR",
+      "relativeContribution": -0.03102410932641802
+     },
+     {
+      "id": "ref_VHI",
+      "relativeContribution": -0.03112160264270363
+     },
+     {
+      "id": "ref_USNA",
+      "relativeContribution": -0.04272006127062946
+     }
+    ],
+    "top5ShareOfNetRelative": -0.9004981803678282,
+    "top5ShareOfPositiveRelative": 0.3079321400772307,
+    "netRelativeSum": -0.1930597274782768,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.13624774620284352,
+    "cagrNet": 0.12174757339581443,
+    "costDragCagr": 0.014500172807029088
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF03",
+   "stage": "VALIDATION",
+   "variantId": "F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.14239223646420865,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": -0.007424630751417777,
+    "strategyCagrNet": 0.11627343015973168,
+    "strategyCagrGross": 0.1307012731790902
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.02164057790364964,
+    "beta": 1.0948888293850874,
+    "betaContributionAnnualised": 0.1640328143678583,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.05841842826368657,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.08069605517158959,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.06584305901510434,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": -0.05840721463076671,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.006068990845861736,
+     "momentum3": -0.0042630129540813496,
+     "volatility": -0.012303249514589738,
+     "sizeLogMcap": 0.009275624883895786,
+     "quality": -0.0005933597804136169,
+     "value": -0.07593401186853581,
+     "growth": 0.004600535079689923,
+     "profitability": 0.03201262192094659
+    },
+    "specificSelectionPerYear": -0.017271353243540222,
+    "averageExposures": {
+     "momentum12_1": 0.7925708215051271,
+     "momentum3": 0.11937225783902422,
+     "volatility": -0.1314006656603934,
+     "sizeLogMcap": 0.21553658662944422,
+     "quality": 0.2480018446597045,
+     "value": 0.9243393670943388,
+     "growth": 0.1678850454398095,
+     "profitability": 1.153101248155272
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9968854277220588,
+     "quality": 0.9802044741788093,
+     "value": 1,
+     "growth": 0.9754584657604913,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 150,
+    "top5": [
+     {
+      "id": "ref_AZO",
+      "relativeContribution": 0.04533847277889036
+     },
+     {
+      "id": "ref_LRCX",
+      "relativeContribution": 0.03972624442460922
+     },
+     {
+      "id": "ref_DECK",
+      "relativeContribution": 0.0376048224479691
+     },
+     {
+      "id": "ref_TER",
+      "relativeContribution": 0.030750853641717802
+     },
+     {
+      "id": "ref_UPBD",
+      "relativeContribution": 0.024002315107415247
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_WMK",
+      "relativeContribution": -0.026091740574794194
+     },
+     {
+      "id": "ref_BIIB",
+      "relativeContribution": -0.02874608925306671
+     },
+     {
+      "id": "ref_GNTX",
+      "relativeContribution": -0.032462158098613254
+     },
+     {
+      "id": "ref_USNA",
+      "relativeContribution": -0.04005972225432068
+     },
+     {
+      "id": "ref_RGR",
+      "relativeContribution": -0.04492673985731233
+     }
+    ],
+    "top5ShareOfNetRelative": -0.7557876070467667,
+    "top5ShareOfPositiveRelative": 0.35278922500235066,
+    "netRelativeSum": -0.23475207418904281,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.1307012731790902,
+    "cagrNet": 0.11627343015973168,
+    "costDragCagr": 0.01442784301935851
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF04",
+   "stage": "VALIDATION",
+   "variantId": "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.051398894737387665,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": -0.09841797247823876,
+    "strategyCagrNet": -0.024471169355623656,
+    "strategyCagrGross": -0.01984087382808386
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.1873669073433739,
+    "beta": 1.593717760344794,
+    "betaContributionAnnualised": 0.23876580208076156,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.0359250493611126,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.058202676269015624,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.13434302183935137,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": -0.12082959158991596,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": -0.01384737067006431,
+     "momentum3": 0.01834707618656185,
+     "volatility": 0.055161861529720184,
+     "sizeLogMcap": 0.005929060042894854,
+     "quality": -0.0019667649179721893,
+     "value": -0.12870517663862685,
+     "growth": -0.013529353340743245,
+     "profitability": 0.00007200283727257613
+    },
+    "specificSelectionPerYear": -0.042290926618958835,
+    "averageExposures": {
+     "momentum12_1": -0.4716157601155299,
+     "momentum3": -0.34048247580597363,
+     "volatility": 0.3388948927295783,
+     "sizeLogMcap": -0.20919252898484966,
+     "quality": 0.012906401385053603,
+     "value": 2.02355838394486,
+     "growth": -0.2689089251402547,
+     "profitability": -0.01866816178682339
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9971481800445438,
+     "quality": 0.9740857030557648,
+     "value": 1,
+     "growth": 0.9256717521890997,
+     "profitability": 0.5015878108474551
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 80,
+    "top5": [
+     {
+      "id": "ref_GIII",
+      "relativeContribution": 0.07322313417475129
+     },
+     {
+      "id": "ref_EFC",
+      "relativeContribution": 0.06646796964798025
+     },
+     {
+      "id": "ref_MTH",
+      "relativeContribution": 0.03945634683951297
+     },
+     {
+      "id": "ref_WCC",
+      "relativeContribution": 0.026531285964267334
+     },
+     {
+      "id": "ref_FOR",
+      "relativeContribution": 0.022213983852187515
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_TUSK",
+      "relativeContribution": -0.03546973354537804
+     },
+     {
+      "id": "ref_RYAM",
+      "relativeContribution": -0.03966987280816002
+     },
+     {
+      "id": "ref_AR",
+      "relativeContribution": -0.05478619848115235
+     },
+     {
+      "id": "ref_M",
+      "relativeContribution": -0.06417157098796004
+     },
+     {
+      "id": "ref_FOSL",
+      "relativeContribution": -0.06529151728197786
+     }
+    ],
+    "top5ShareOfNetRelative": -0.4692607202064382,
+    "top5ShareOfPositiveRelative": 0.5680090601431483,
+    "netRelativeSum": -0.485642012351778,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": -0.01984087382808386,
+    "cagrNet": -0.024471169355623656,
+    "costDragCagr": 0.004630295527539796
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF05",
+   "stage": "VALIDATION",
+   "variantId": "F2-VALUE-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.055954780523919716,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": -0.0938620866917067,
+    "strategyCagrNet": -0.018006502467841856,
+    "strategyCagrGross": -0.011639228884680719
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.1780419239650221,
+    "beta": 1.5618849121451601,
+    "betaContributionAnnualised": 0.2339967044889418,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.031135490052926817,
+    "capWeightedMinusSpy": -0.13348389723224707,
+    "ownUniverseEwMinusCapWeighted": 0.1646193872851739,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.12499757674463352,
+    "intervalsAnalysed": 16,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9808612440191387,
+    "grossExcessPerYear": -0.13478310972311458,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": -0.00586848737854389,
+     "momentum3": -0.03178717112920778,
+     "volatility": 0.047136450545120785,
+     "sizeLogMcap": 0.0091055969538321,
+     "quality": -0.0024181756775203383,
+     "value": -0.1486139744199314,
+     "growth": -0.006425892958791114,
+     "profitability": 0.0028732378714807732
+    },
+    "specificSelectionPerYear": 0.0012153064704463127,
+    "averageExposures": {
+     "momentum12_1": -0.5989805979447285,
+     "momentum3": -0.5461618334208465,
+     "volatility": 0.3968878492053026,
+     "sizeLogMcap": -0.254378978384182,
+     "quality": 0.061853370498053235,
+     "value": 2.114763596180407,
+     "growth": -0.15778119483835118,
+     "profitability": 0.0038552493599561116
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9970382731675645,
+     "quality": 0.974411346131278,
+     "value": 1,
+     "growth": 0.925154956967852,
+     "profitability": 0.501581477433396
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 116,
+    "top5": [
+     {
+      "id": "ref_GIII",
+      "relativeContribution": 0.043413619273594925
+     },
+     {
+      "id": "ref_GPI",
+      "relativeContribution": 0.0363758152896342
+     },
+     {
+      "id": "ref_SHOE",
+      "relativeContribution": 0.030673571495531682
+     },
+     {
+      "id": "ref_GAP",
+      "relativeContribution": 0.027666874882536406
+     },
+     {
+      "id": "ref_URBN",
+      "relativeContribution": 0.026476851355114045
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_TUSK",
+      "relativeContribution": -0.03316002723827717
+     },
+     {
+      "id": "ref_GME",
+      "relativeContribution": -0.03878417384228933
+     },
+     {
+      "id": "ref_AR",
+      "relativeContribution": -0.04316600767504643
+     },
+     {
+      "id": "ref_M",
+      "relativeContribution": -0.05075102070816016
+     },
+     {
+      "id": "ref_FOSL",
+      "relativeContribution": -0.07588139250831308
+     }
+    ],
+    "top5ShareOfNetRelative": -0.30385695324211726,
+    "top5ShareOfPositiveRelative": 0.359664766561477,
+    "netRelativeSum": -0.5417244217717487,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": -0.011639228884680719,
+    "cagrNet": -0.018006502467841856,
+    "costDragCagr": 0.006367273583161137
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF06",
+   "stage": "VALIDATION",
+   "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.3064559422257692,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.1566390750101428,
+    "strategyCagrNet": 0.31415530994224405,
+    "strategyCagrGross": 0.3221297086743291
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.1441165169171288,
+    "beta": 1.0835857692511395,
+    "betaContributionAnnualised": 0.16233942530864037,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.02712734312268139,
+    "capWeightedMinusSpy": -0.13348389723224707,
+    "ownUniverseEwMinusCapWeighted": 0.16061124035492846,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.1295117318874614,
+    "intervalsAnalysed": 16,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9808612440191387,
+    "grossExcessPerYear": 0.13365031448599282,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.004827462996374401,
+     "momentum3": 0.0002353944615607791,
+     "volatility": 0.004479944551378433,
+     "sizeLogMcap": 0.010251253975570163,
+     "quality": 0.025774908974331108,
+     "value": -0.007040362849138465,
+     "growth": -0.004903162381845911,
+     "profitability": 0.01006186559078698
+    },
+    "specificSelectionPerYear": 0.08996300916697533,
+    "averageExposures": {
+     "momentum12_1": 0.24579416441610732,
+     "momentum3": 0.2037900573803879,
+     "volatility": -0.008157548512878756,
+     "sizeLogMcap": -0.2527284865835057,
+     "quality": 2.2420576247808244,
+     "value": 0.06303049048514137,
+     "growth": -0.07185192269185385,
+     "profitability": 0.2767918120064906
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9971181764122613,
+     "quality": 1,
+     "value": 0.9515296550345749,
+     "growth": 0.9464932906629372,
+     "profitability": 0.482622772652837
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 59,
+    "top5": [
+     {
+      "id": "ref_CMG",
+      "relativeContribution": 0.11425871534226158
+     },
+     {
+      "id": "ref_PETS",
+      "relativeContribution": 0.0916607049499123
+     },
+     {
+      "id": "ref_FIVE",
+      "relativeContribution": 0.09008336810581423
+     },
+     {
+      "id": "ref_LRN",
+      "relativeContribution": 0.08093792566554625
+     },
+     {
+      "id": "ref_PRSU",
+      "relativeContribution": 0.07880168282348304
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_WHG",
+      "relativeContribution": -0.021457570845003254
+     },
+     {
+      "id": "ref_CTSH",
+      "relativeContribution": -0.02413422467719848
+     },
+     {
+      "id": "ref_GME",
+      "relativeContribution": -0.02863634333277167
+     },
+     {
+      "id": "ref_SHOE",
+      "relativeContribution": -0.03185380713823313
+     },
+     {
+      "id": "ref_HCKT",
+      "relativeContribution": -0.06026056819863328
+     }
+    ],
+    "top5ShareOfNetRelative": 0.848411417886179,
+    "top5ShareOfPositiveRelative": 0.5224205997165036,
+    "netRelativeSum": 0.5371714562994705,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.3221297086743291,
+    "cagrNet": 0.31415530994224405,
+    "costDragCagr": 0.007974398732085053
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF07",
+   "stage": "VALIDATION",
+   "variantId": "F2-QUAL-N50-M1-FULL-INVVOL-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.19924052252182617,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.04942365530619974,
+    "strategyCagrNet": 0.18971560629844975,
+    "strategyCagrGross": 0.19710374993578683
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.04107375383625619,
+    "beta": 1.0557340546837481,
+    "betaContributionAnnualised": 0.15816676868556998,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.03113600067468897,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.053413627582591994,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.018287654631510775,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": 0.0217047745448146,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.00012822139665876769,
+     "momentum3": -0.0016727778914728405,
+     "volatility": -0.021098252774191136,
+     "sizeLogMcap": 0.0011762281229942616,
+     "quality": 0.02569910743924591,
+     "value": -0.0040020697992578244,
+     "growth": -0.0005640793893586713,
+     "profitability": 0.005303244306168636
+    },
+    "specificSelectionPerYear": 0.01673515313402749,
+    "averageExposures": {
+     "momentum12_1": 0.0471323559673986,
+     "momentum3": 0.05389116269239522,
+     "volatility": -0.27128917789209384,
+     "sizeLogMcap": -0.14897785377567782,
+     "quality": 1.8496321972735237,
+     "value": 0.09037335620532257,
+     "growth": 0.001344475894169741,
+     "profitability": 0.32299468587893837
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.997249984305777,
+     "quality": 1,
+     "value": 0.9502564432956744,
+     "growth": 0.9470058908726853,
+     "profitability": 0.4821297753361913
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 214,
+    "top5": [
+     {
+      "id": "ref_SPSC",
+      "relativeContribution": 0.019937416741292832
+     },
+     {
+      "id": "ref_PETS",
+      "relativeContribution": 0.018620874850157617
+     },
+     {
+      "id": "ref_SEDG",
+      "relativeContribution": 0.016513514170448714
+     },
+     {
+      "id": "ref_FIVE",
+      "relativeContribution": 0.016271798556633986
+     },
+     {
+      "id": "ref_LRN",
+      "relativeContribution": 0.013529615324349278
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_CAKE",
+      "relativeContribution": -0.011136386961052087
+     },
+     {
+      "id": "ref_AEO",
+      "relativeContribution": -0.011285737282556739
+     },
+     {
+      "id": "ref_CVLT",
+      "relativeContribution": -0.011517431348912602
+     },
+     {
+      "id": "ref_WMK",
+      "relativeContribution": -0.012541840880901302
+     },
+     {
+      "id": "ref_TG",
+      "relativeContribution": -0.014991966840522706
+     }
+    ],
+    "top5ShareOfNetRelative": 0.9729095262941618,
+    "top5ShareOfPositiveRelative": 0.15850029541625724,
+    "netRelativeSum": 0.08723649768973563,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.19710374993578683,
+    "cagrNet": 0.18971560629844975,
+    "costDragCagr": 0.007388143637337086
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF08",
+   "stage": "VALIDATION",
+   "variantId": "F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.1697192317548269,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.019902364539200468,
+    "strategyCagrNet": 0.16391991229371228,
+    "strategyCagrGross": 0.1701860716707424
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.03292657821713513,
+    "beta": 0.9130657720990164,
+    "betaContributionAnnualised": 0.13679265353769177,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.02712734312268139,
+    "capWeightedMinusSpy": -0.13348389723224707,
+    "ownUniverseEwMinusCapWeighted": 0.16061124035492846,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.007224978583480923,
+    "intervalsAnalysed": 16,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9808612440191387,
+    "grossExcessPerYear": -0.007698992104070106,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.0013885709658458274,
+     "momentum3": 0.0054538748199158375,
+     "volatility": -0.0722711087878115,
+     "sizeLogMcap": -0.002462135615680394,
+     "quality": 0.016618664976570087,
+     "value": 0.008767458627525777,
+     "growth": -0.0013478906204616985,
+     "profitability": 0.0023884142451330737
+    },
+    "specificSelectionPerYear": 0.03376515928489288,
+    "averageExposures": {
+     "momentum12_1": 0.05140686208762954,
+     "momentum3": 0.02122502221630175,
+     "volatility": -1.036150083164011,
+     "sizeLogMcap": 0.5332396159462403,
+     "quality": 1.4711049852365117,
+     "value": -0.09576969998379019,
+     "growth": -0.053993876823760625,
+     "profitability": 0.3099573969217035
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9971181764122613,
+     "quality": 1,
+     "value": 0.9515296550345749,
+     "growth": 0.9464932906629372,
+     "profitability": 0.482622772652837
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 99,
+    "top5": [
+     {
+      "id": "ref_PETS",
+      "relativeContribution": 0.05210500951542538
+     },
+     {
+      "id": "ref_NRC",
+      "relativeContribution": 0.03314314098315867
+     },
+     {
+      "id": "ref_CHE",
+      "relativeContribution": 0.024369492400079233
+     },
+     {
+      "id": "ref_TYL",
+      "relativeContribution": 0.021981426154078075
+     },
+     {
+      "id": "ref_KWR",
+      "relativeContribution": 0.017504737324360902
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_JJSF",
+      "relativeContribution": -0.018264988744298192
+     },
+     {
+      "id": "ref_CHRW",
+      "relativeContribution": -0.01835744233250694
+     },
+     {
+      "id": "ref_BCPC",
+      "relativeContribution": -0.02078885250206343
+     },
+     {
+      "id": "ref_EBF",
+      "relativeContribution": -0.023862287552176176
+     },
+     {
+      "id": "ref_WMK",
+      "relativeContribution": -0.02427103493698041
+     }
+    ],
+    "top5ShareOfNetRelative": -4.818500559220532,
+    "top5ShareOfPositiveRelative": 0.38358417295188063,
+    "netRelativeSum": -0.0309440259567433,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.1701860716707424,
+    "cagrNet": 0.16391991229371228,
+    "costDragCagr": 0.006266159377030123
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF09",
+   "stage": "VALIDATION",
+   "variantId": "F2-QUAL_LOWVOL-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.16901027651075085,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.01919340929512442,
+    "strategyCagrNet": 0.16808629683245857,
+    "strategyCagrGross": 0.17751351853931752
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.05129676910084104,
+    "beta": 0.7857159851065946,
+    "betaContributionAnnualised": 0.1177135074099098,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.03113600067468897,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.053413627582591994,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.011942591379564549,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": -0.009080703639971072,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.0009538263162598431,
+     "momentum3": -0.006902623298277319,
+     "volatility": -0.0682615746363199,
+     "sizeLogMcap": -0.00021302325573072122,
+     "quality": 0.019956745795415204,
+     "value": 0.005104680127106451,
+     "growth": -0.0009484446339710842,
+     "profitability": 0.0033259634436190464
+    },
+    "specificSelectionPerYear": 0.037903746501927404,
+    "averageExposures": {
+     "momentum12_1": 0.06770361655270105,
+     "momentum3": 0.027808208660074277,
+     "volatility": -1.0422456156152797,
+     "sizeLogMcap": 0.5534238460709198,
+     "quality": 1.4570764622534906,
+     "value": -0.08318219643065465,
+     "growth": -0.052133613668427066,
+     "profitability": 0.3087851269104174
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.997249984305777,
+     "quality": 1,
+     "value": 0.9502564432956744,
+     "growth": 0.9470058908726853,
+     "profitability": 0.4821297753361913
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 118,
+    "top5": [
+     {
+      "id": "ref_PETS",
+      "relativeContribution": 0.027954044042382678
+     },
+     {
+      "id": "ref_INTU",
+      "relativeContribution": 0.018656323515623505
+     },
+     {
+      "id": "ref_WMT",
+      "relativeContribution": 0.01825575542687232
+     },
+     {
+      "id": "ref_NRC",
+      "relativeContribution": 0.01660762344987489
+     },
+     {
+      "id": "ref_GRMN",
+      "relativeContribution": 0.01602349100871725
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_WMK",
+      "relativeContribution": -0.014488251180910763
+     },
+     {
+      "id": "ref_DRI",
+      "relativeContribution": -0.015234331873369393
+     },
+     {
+      "id": "ref_BMY",
+      "relativeContribution": -0.01825149460555672
+     },
+     {
+      "id": "ref_HSTM",
+      "relativeContribution": -0.01969117455369308
+     },
+     {
+      "id": "ref_JJSF",
+      "relativeContribution": -0.028934962540732335
+     }
+    ],
+    "top5ShareOfNetRelative": -2.6713442958678093,
+    "top5ShareOfPositiveRelative": 0.2775417973367483,
+    "netRelativeSum": -0.03649744347603753,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.17751351853931752,
+    "cagrNet": 0.16808629683245857,
+    "costDragCagr": 0.009427221706858946
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF10",
+   "stage": "VALIDATION",
+   "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.2852040419662414,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.13538717475061496,
+    "strategyCagrNet": 0.28181143738085046,
+    "strategyCagrGross": 0.2889805347947709
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.10639753204467961,
+    "beta": 1.193500526641046,
+    "betaContributionAnnualised": 0.17880650992156177,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.05421266900157984,
+    "capWeightedMinusSpy": -0.13348389723224707,
+    "ownUniverseEwMinusCapWeighted": 0.1876965662338269,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.08117450574903512,
+    "intervalsAnalysed": 16,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9808612440191387,
+    "grossExcessPerYear": 0.07502398342386325,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": -0.010994249463964191,
+     "momentum3": 0.006240640912432567,
+     "volatility": 0.0016617499778586002,
+     "sizeLogMcap": -0.002398878235946933,
+     "quality": 0.0019190374807686386,
+     "value": 0.048637158450657865,
+     "growth": 0.025557164076508262,
+     "profitability": 0.0403455273095007
+    },
+    "specificSelectionPerYear": -0.035944167083952275,
+    "averageExposures": {
+     "momentum12_1": 1.509385753549226,
+     "momentum3": 0.5871528466131547,
+     "volatility": 0.08379559635347279,
+     "sizeLogMcap": 0.46674130561002636,
+     "quality": 0.2820759165479965,
+     "value": -0.5651062355243595,
+     "growth": 0.7888875588433899,
+     "profitability": 1.5741747317211656
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9969913303972668,
+     "quality": 0.9725121275831263,
+     "value": 0.9870304018717033,
+     "growth": 0.9757737208607652,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 97,
+    "top5": [
+     {
+      "id": "ref_ENPH",
+      "relativeContribution": 0.08124807872583666
+     },
+     {
+      "id": "ref_ALGN",
+      "relativeContribution": 0.07743431844826518
+     },
+     {
+      "id": "ref_SLP",
+      "relativeContribution": 0.0693183302333104
+     },
+     {
+      "id": "ref_TREX",
+      "relativeContribution": 0.05401687432739448
+     },
+     {
+      "id": "ref_UI",
+      "relativeContribution": 0.05216914017425943
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_MNST",
+      "relativeContribution": -0.02132613340651166
+     },
+     {
+      "id": "ref_OLED",
+      "relativeContribution": -0.030016153290016844
+     },
+     {
+      "id": "ref_EGAN",
+      "relativeContribution": -0.033316046505041705
+     },
+     {
+      "id": "ref_DPZ",
+      "relativeContribution": -0.03890377400872776
+     },
+     {
+      "id": "ref_PETS",
+      "relativeContribution": -0.04669801832174427
+     }
+    ],
+    "top5ShareOfNetRelative": 1.10827147234933,
+    "top5ShareOfPositiveRelative": 0.40949845318997946,
+    "netRelativeSum": 0.3015387026074507,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.2889805347947709,
+    "cagrNet": 0.28181143738085046,
+    "costDragCagr": 0.007169097413920467
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF11",
+   "stage": "VALIDATION",
+   "variantId": "F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.0951115187644788,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": -0.05470534845114762,
+    "strategyCagrNet": 0.05525315169437395,
+    "strategyCagrGross": 0.06986151728062606
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.0974818584380588,
+    "beta": 1.2855253269002371,
+    "betaContributionAnnualised": 0.19259337720253758,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.0359250493611126,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.058202676269015624,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.09063039781226022,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": -0.07759159701975983,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.012953409297793012,
+     "momentum3": 0.002430201003066546,
+     "volatility": 0.005383477003204855,
+     "sizeLogMcap": 0.003985981437238082,
+     "quality": 0.0013082875730044581,
+     "value": -0.08013171318514471,
+     "growth": -0.00009366159526044453,
+     "profitability": 0.0018341778229494224
+    },
+    "specificSelectionPerYear": -0.025261756376611065,
+    "averageExposures": {
+     "momentum12_1": 0.880532483013219,
+     "momentum3": 0.15508544253213158,
+     "volatility": 0.16467137537394913,
+     "sizeLogMcap": -0.2351971850678607,
+     "quality": 0.16148526168344896,
+     "value": 1.2146823551491732,
+     "growth": 0.001644002349611251,
+     "profitability": 0.09313166083200065
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9971481800445438,
+     "quality": 0.9740857030557648,
+     "value": 1,
+     "growth": 0.9256717521890997,
+     "profitability": 0.5015878108474551
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 404,
+    "top5": [
+     {
+      "id": "ref_RH",
+      "relativeContribution": 0.035502673669813876
+     },
+     {
+      "id": "ref_ADNT",
+      "relativeContribution": 0.014801655227523766
+     },
+     {
+      "id": "ref_CTRN",
+      "relativeContribution": 0.013456515582994162
+     },
+     {
+      "id": "ref_LNTH",
+      "relativeContribution": 0.013312661008890175
+     },
+     {
+      "id": "ref_MEDP",
+      "relativeContribution": 0.013162293216626621
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_WMK",
+      "relativeContribution": -0.013288295613375922
+     },
+     {
+      "id": "ref_LRN",
+      "relativeContribution": -0.01418714727682827
+     },
+     {
+      "id": "ref_BIIB",
+      "relativeContribution": -0.01456647612055046
+     },
+     {
+      "id": "ref_KOP",
+      "relativeContribution": -0.015016639584535633
+     },
+     {
+      "id": "ref_STX",
+      "relativeContribution": -0.018252612905930356
+     }
+    ],
+    "top5ShareOfNetRelative": -0.28934849881339764,
+    "top5ShareOfPositiveRelative": 0.15719286797425788,
+    "netRelativeSum": -0.31185853417557263,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.06986151728062606,
+    "cagrNet": 0.05525315169437395,
+    "costDragCagr": 0.014608365586252114
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "CF12",
+   "stage": "VALIDATION",
+   "variantId": "F2-PROF_MOM-N20-M1-RUN-E95-X50-TX-PEXIT40-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.3164140331406965,
+    "spyAnnMeanWeekly": 0.14981686721562643,
+    "excessVsSpy": 0.16659716592507007,
+    "strategyCagrNet": 0.31759675160230905,
+    "strategyCagrGross": 0.3234814092165925
+   },
+   "marketBeta": {
+    "alphaAnnualised": 0.1302882697834632,
+    "beta": 1.2423551954890943,
+    "betaContributionAnnualised": 0.18612576335723327,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": 0.056460352494521304,
+    "capWeightedMinusSpy": -0.022277626907903025,
+    "ownUniverseEwMinusCapWeighted": 0.07873797940242433,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": 0.11013681343054876,
+    "intervalsAnalysed": 48,
+    "cashIntervals": 0,
+    "intervalsPerYear": 11.942583732057415,
+    "grossExcessPerYear": 0.10341930297886419,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.013704710439279622,
+     "momentum3": -0.014996364355291359,
+     "volatility": -0.0010011916690277072,
+     "sizeLogMcap": -0.0035600795749258732,
+     "quality": 0.001698829702727896,
+     "value": 0.05384211379635373,
+     "growth": 0.03041606607195842,
+     "profitability": 0.041447275133596764
+    },
+    "specificSelectionPerYear": -0.018132056565807336,
+    "averageExposures": {
+     "momentum12_1": 1.4946254252039395,
+     "momentum3": 0.5516762037559381,
+     "volatility": 0.11555300718147528,
+     "sizeLogMcap": 0.4756367709420459,
+     "quality": 0.2710066048876584,
+     "value": -0.6606022454594839,
+     "growth": 0.8834161963680774,
+     "profitability": 1.5575209860142183
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9969263934937539,
+     "quality": 0.9724650099272661,
+     "value": 0.9870474990461272,
+     "growth": 0.9755226675141806,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 94,
+    "top5": [
+     {
+      "id": "ref_ENPH",
+      "relativeContribution": 0.19368022807178906
+     },
+     {
+      "id": "ref_SLP",
+      "relativeContribution": 0.053070732040958024
+     },
+     {
+      "id": "ref_ANET",
+      "relativeContribution": 0.04867063497092265
+     },
+     {
+      "id": "ref_ALGN",
+      "relativeContribution": 0.047141678777254004
+     },
+     {
+      "id": "ref_SEDG",
+      "relativeContribution": 0.046580355529836415
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_IRMD",
+      "relativeContribution": -0.015216500350887351
+     },
+     {
+      "id": "ref_USNA",
+      "relativeContribution": -0.016368077138073204
+     },
+     {
+      "id": "ref_OLED",
+      "relativeContribution": -0.023857577081859052
+     },
+     {
+      "id": "ref_DPZ",
+      "relativeContribution": -0.02707022030936959
+     },
+     {
+      "id": "ref_PETS",
+      "relativeContribution": -0.033262283860479344
+     }
+    ],
+    "top5ShareOfNetRelative": 0.9361929712212558,
+    "top5ShareOfPositiveRelative": 0.4875678877043829,
+    "netRelativeSum": 0.41566604466504975,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.3234814092165925,
+    "cagrNet": 0.31759675160230905,
+    "costDragCagr": 0.005884657614283473
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.990521327014218,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 0.08402847534611713,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "H1",
+   "stage": "TEST",
+   "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.003182061054351696,
+    "spyAnnMeanWeekly": 0.1368966987841428,
+    "excessVsSpy": -0.13371463772979109,
+    "strategyCagrNet": -0.025451575246181912,
+    "strategyCagrGross": -0.019960314598086337
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.14744723770380727,
+    "beta": 1.100313594819913,
+    "betaContributionAnnualised": 0.15062929875815897,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.05421383219310241,
+    "capWeightedMinusSpy": -0.01453203468285276,
+    "ownUniverseEwMinusCapWeighted": -0.03968179751024965,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.07950080553668869,
+    "intervalsAnalysed": 20,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9846743295019156,
+    "grossExcessPerYear": -0.07059989264408884,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.004381377637965526,
+     "momentum3": -0.011172451131547769,
+     "volatility": -0.0018016588001642942,
+     "sizeLogMcap": -0.011096397866030162,
+     "quality": 0.00046389613776823735,
+     "value": 0.014356331351599525,
+     "growth": 0.0016199140305284737,
+     "profitability": -0.0034846656714109417
+    },
+    "specificSelectionPerYear": -0.06386623833279742,
+    "averageExposures": {
+     "momentum12_1": -0.09393940778860359,
+     "momentum3": -0.009108559347669179,
+     "volatility": -0.023004013347091005,
+     "sizeLogMcap": -0.29660081465816607,
+     "quality": 2.337147051401249,
+     "value": 0.12921521642556885,
+     "growth": 0.08979263709779024,
+     "profitability": 0.16728118498818562
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9966860300453473,
+     "quality": 1,
+     "value": 0.9192850288405164,
+     "growth": 0.9521303978234841,
+     "profitability": 0.45983918111470884
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 71,
+    "top5": [
+     {
+      "id": "ref_HWKN",
+      "relativeContribution": 0.0553060031822116
+     },
+     {
+      "id": "ref_QNST",
+      "relativeContribution": 0.04916137278306387
+     },
+     {
+      "id": "ref_WMK",
+      "relativeContribution": 0.04719295650167025
+     },
+     {
+      "id": "ref_HCKT",
+      "relativeContribution": 0.04705898748300163
+     },
+     {
+      "id": "ref_ENVX",
+      "relativeContribution": 0.04691672386654067
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_AGNT",
+      "relativeContribution": -0.03849758627952013
+     },
+     {
+      "id": "ref_IPI",
+      "relativeContribution": -0.040516804054090305
+     },
+     {
+      "id": "ref_TREX",
+      "relativeContribution": -0.052006932056919586
+     },
+     {
+      "id": "ref_ALGN",
+      "relativeContribution": -0.060259535186049415
+     },
+     {
+      "id": "ref_SPSC",
+      "relativeContribution": -0.09367653264381254
+     }
+    ],
+    "top5ShareOfNetRelative": -0.6931877666799247,
+    "top5ShareOfPositiveRelative": 0.4376552863008431,
+    "netRelativeSum": -0.3543571534635997,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": -0.019960314598086337,
+    "cagrNet": -0.025451575246181912,
+    "costDragCagr": 0.005491260648095575
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9923954372623575,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 2.4786661982868043,
+    "note": "cash earns 0; market filter / exits"
+   }
+  },
+  {
+   "id": "H2",
+   "stage": "TEST",
+   "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "observed": {
+    "strategyAnnMeanWeekly": 0.08083612005429028,
+    "spyAnnMeanWeekly": 0.1368966987841428,
+    "excessVsSpy": -0.05606057872985251,
+    "strategyCagrNet": 0.04499947635155199,
+    "strategyCagrGross": 0.051444311926488684
+   },
+   "marketBeta": {
+    "alphaAnnualised": -0.0952296055505822,
+    "beta": 1.2861210472466613,
+    "betaContributionAnnualised": 0.17606572560487246,
+    "note": "weekly OLS r_strategy = alpha + beta r_SPY (price returns)"
+   },
+   "universeVsSpy": {
+    "ownUniverseEwMinusSpy": -0.05597253397683251,
+    "capWeightedMinusSpy": -0.01453203468285276,
+    "ownUniverseEwMinusCapWeighted": -0.04144049929397975,
+    "note": "equal-weight/size effect of the rule universe (survivor frame)"
+   },
+   "selectionVsOwnUniverse": {
+    "strategyMinusOwnEwWeekly": -0.00008804475302000292,
+    "intervalsAnalysed": 20,
+    "cashIntervals": 0,
+    "intervalsPerYear": 3.9846743295019156,
+    "grossExcessPerYear": -0.004862836332144178,
+    "characteristicContributionsPerYear": {
+     "momentum12_1": 0.04085312420853907,
+     "momentum3": 0.01072362959337501,
+     "volatility": -0.0119926110513962,
+     "sizeLogMcap": 0.013299682777157928,
+     "quality": -0.003069164646446405,
+     "value": -0.012229830982057693,
+     "growth": 0.006803847476185539,
+     "profitability": -0.0182884954267851
+    },
+    "specificSelectionPerYear": -0.030963018280716355,
+    "averageExposures": {
+     "momentum12_1": 1.25868436619973,
+     "momentum3": 0.46133802838592286,
+     "volatility": 0.2759735841258118,
+     "sizeLogMcap": 0.5634639556830494,
+     "quality": -0.01526706865892917,
+     "value": -0.07603859499424988,
+     "growth": 0.7810932158887338,
+     "profitability": 1.4895132574828938
+    },
+    "averageCoverage": {
+     "momentum12_1": 1,
+     "momentum3": 1,
+     "volatility": 1,
+     "sizeLogMcap": 0.9968739487513524,
+     "quality": 0.9701435765849528,
+     "value": 0.9867743470973187,
+     "growth": 0.9691485032687124,
+     "profitability": 1
+    },
+    "method": "per decision interval: OLS of forward gross price returns of the eligible universe on cross-sectional z-scores (characteristics with >= 30% coverage; missing = 0); portfolio excess over the universe mean = sum(exposure x slope) + specific; annualised by intervals per year. Buy-and-hold within the interval; weights of the decision target."
+   },
+   "concentration": {
+    "distinctNames": 131,
+    "top5": [
+     {
+      "id": "ref_PLTR",
+      "relativeContribution": 0.08930171792699075
+     },
+     {
+      "id": "ref_ACLS",
+      "relativeContribution": 0.05131346384229515
+     },
+     {
+      "id": "ref_DECK",
+      "relativeContribution": 0.04874934531406552
+     },
+     {
+      "id": "ref_AVGO",
+      "relativeContribution": 0.04489447650320039
+     },
+     {
+      "id": "ref_ANET",
+      "relativeContribution": 0.0410860023367648
+     }
+    ],
+    "bottom5": [
+     {
+      "id": "ref_CODX",
+      "relativeContribution": -0.027281896674256807
+     },
+     {
+      "id": "ref_LQDT",
+      "relativeContribution": -0.02811393935795102
+     },
+     {
+      "id": "ref_SFM",
+      "relativeContribution": -0.028202473116264486
+     },
+     {
+      "id": "ref_LRN",
+      "relativeContribution": -0.028665540418521703
+     },
+     {
+      "id": "ref_NSSC",
+      "relativeContribution": -0.03957719352222744
+     }
+    ],
+    "top5ShareOfNetRelative": -11.281072422762673,
+    "top5ShareOfPositiveRelative": 0.31048203874308383,
+    "netRelativeSum": -0.02440769774403116,
+    "note": "relative contribution = sum over intervals of weight x (name forward return - universe mean); additive approximation"
+   },
+   "costs": {
+    "cagrGross": 0.051444311926488684,
+    "cagrNet": 0.04499947635155199,
+    "costDragCagr": 0.0064448355749366915
+   },
+   "timingCash": {
+    "averageInvestedShare": 0.9923954372623575,
+    "weeksMostlyCash": 1,
+    "spyAnnMeanInCashWeeks": 2.4786661982868043,
+    "note": "cash earns 0; market filter / exits"
+   }
+  }
+ ],
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}
