@@ -564,6 +564,12 @@
         });
       });
     });
+    /* abgelehnte Datensaetze (Vertragsfehler) und Aenderungsliste: nur Codes, kein Preis (fuenfte Nachpruefung) */
+    (((b.index || {}).rejectedRecords) || []).forEach(function (r) {
+      Object.keys(r || {}).forEach(function (k) { if (["strategyId", "ticker", "reason", "stage", "checks", "errors"].indexOf(k) < 0) fail.push("index.json rejectedRecords " + (r && r.ticker) + ": Feld " + k + " ist nicht vorgesehen"); });
+      if (hasNumber(r) || sf8PriceInText(r)) fail.push("index.json rejectedRecords " + (r && r.ticker) + ": Zahl oder Preis in einem Ablehnungsgrund");
+    });
+    if (sf8PriceInText(((b.index || {}).changes) || null)) fail.push("index.json changes: Preis in der Aenderungsliste");
     sf8Rows(b).forEach(function (x) {
       Object.keys(x.r).forEach(function (k) { if (SF8_ROW_KEYS.indexOf(k) < 0) fail.push(x.where + " " + x.r.c + " " + x.r.t + ": Feld " + k + " gehoert nicht zur Kurzzeile"); });
     });

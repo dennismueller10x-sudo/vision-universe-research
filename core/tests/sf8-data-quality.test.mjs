@@ -177,6 +177,10 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
   assert.ok(!rd({ ruleId: "MOKA-SF-BGU-VOLWINDOW", reading: "MA-MOKA-BGU-VOLWINDOW 50 sessions (owner decision D-BGU-VOLWINDOW)" }), "echte Lesart bleibt gruen");
   const rowProbe = bundle(); rowProbe.summary.top = { C03: [{ c: "C03", t: "AAPL", s: "CHART_CANDIDATE", q: "PASS", trigger: 101.2 }] };
   assert.ok(failing(rowProbe).includes("DQ-SF8-4"), "Feld in einer Kurzzeile");
+  const rj = (r) => { const b = bundle(); b.index.rejectedRecords = [r]; return failing(b).includes("DQ-SF8-4"); };
+  assert.ok(rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stage: "MODELED_TRADE_PLAN", errors: ["PLAN_STOP_NOT_BELOW_ENTRY:98.2>=97.1"] }), "Preis im Ablehnungsgrund");
+  assert.ok(rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stop: 98 }), "Feld im Ablehnungsgrund");
+  assert.ok(!rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stage: "MODELED_TRADE_PLAN", errors: ["PLAN_STOP_NOT_BELOW_ENTRY", "UNKNOWN_FIELD:security.x"] }), "echte Codes bleiben gruen");
   /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur, Box als Objekt */
   assert.ok(!failing(bundle((v) => {
     v.C06[0].features = { vcpFootprint: { contractions: 3, depths: [0.23, 0.07], contractingLeftToRight: false, lastContractionVolumeVs50d: 0.95, baseSessions: 58 } };
