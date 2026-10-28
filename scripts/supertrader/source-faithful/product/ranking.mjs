@@ -14,7 +14,8 @@ export const SORT_KEYS = Object.freeze({
   pivot: { label: 'Abstand zur Chartmarke (absolut)', dir: 'asc', key: (v) => (v.pivot && Number.isFinite(v.pivot.distance) ? Math.abs(v.pivot.distance) : null) },
   volume: { label: 'Volumen ggü. 50-Tage-Schnitt', dir: 'desc', key: (v) => v.trend?.volumeVs50d ?? null },
   momentum: { label: 'bestes 1/3/6-Monats-Perzentil', dir: 'desc', key: (v) => v.features?.momentum?.best ?? null },
-  setupState: { label: 'VCP-Proxy erkannt (Pivot vorhanden)', dir: 'asc', key: (v) => (v.features?.vcpProxyState === undefined ? null : v.features.vcpProxyState === 'SETUP_DETECTED' ? 0 : 1) },
+  // Owner-Entscheidung 28.10.2026: eine Kontraktion allein ist kein bestätigtes VCP; der Schlüssel ordnet nur nach vorhandenem Pivot
+  setupState: { label: 'Pivot vorhanden (VCP nicht bestätigt)', dir: 'asc', key: (v) => (v.features?.vcpProxyState === undefined ? null : v.features.vcpProxyState === 'SETUP_DETECTED' ? 0 : 1) },
   streak: { label: 'Länge der Aufwärtsserie', dir: 'desc', key: (v) => v.features?.upStreak ?? null },
   trend: { label: '63-Tage-Rendite', dir: 'desc', key: (v) => v.trend?.ret63 ?? null },
   dataQuality: { label: 'Datenqualität', dir: 'asc', key: (v) => (v.dataQuality?.status === 'PASS' ? 0 : 1) },

@@ -106,12 +106,24 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 | C06 | `vcpFootprint.contractions` | bei genau 1 Kontraktion: Stop = tiefstes Tief seit dem 52-Wochen-Hoch | 129 von 129 | 24 | bleibt (nahe an allgemeiner Chartinformation; Owner-Punkt) |
 | C11, alle | `downDays`, `trend.windowSessions`, `trend.volumeVs50d`, Index- und Übersichtszeilen, `sortKeys` | – | – | 0 | bleibt |
 
-**Offen für den Owner (nicht Teil dieses PR):**
-1. **Weinstein-Stop über den veröffentlichten Widerstand.** Die Woche, deren Hoch dem Widerstand gleicht, plus das tiefste Wochentief bis zur Ausbruchswoche ergibt die Stopreferenz: C05 379 von 379 (311 feldspezifisch), C04 159 von 422 (149). Das Ausblenden von `baseWeeks` schützt den C05-Stop also nicht vollständig. Der Widerstand ist vom Owner zugelassene Chartstruktur. Entscheidung: Widerstand unterhalb von MODELED ausblenden oder hinnehmen.
-2. **Turtle C01 / C02.** `levels.channelDays` ist der Regelparameter (20/55 bzw. 10/20 Tage). Mit der öffentlichen Regel ergibt sich der Trigger (Kanalhoch + Tick) in 269 von 269 bzw. 224 von 224 Fällen, und Trigger − 2·`N` ergibt die Stopreferenz in 268 von 269 bzw. 224 von 224. `N` war bisher eine ausdrückliche Owner-Ausnahme und ist nach der neuen Regel neu zu bestätigen.
-3. **Ohne Feld** (durch Ausblenden nicht lösbar):
-   - C13 Trigger = Hoch am Stichtag + Tick (171 von 171); Impulshoch und Swing-Tief lassen sich aus der öffentlichen ADX-Regel nachrechnen.
-   - C03 Obergrenze ± Bruchteil, C09 / C12 Gap-Tief und C11 Signaltagstief (Tief am Stichtag): bereits zugelassene Owner-Entscheidungen.
+**Owner-Entscheidungen vom 28.10.2026 zu den offenen Punkten (umgesetzt im Folge-PR):**
+1. **Weinstein C04/C05.** Beschreibende Widerstandszonen dürfen Teil der Chartanalyse bleiben. Die genaue Widerstandsmarke ergibt aber mit den Wochenkursen den Stop und ist deshalb unterhalb von MODELED kein numerisches Research-Feld mehr (`levels.resistance` und Chartmarke `WEEKLY_RESISTANCE` entfernt). Es bleiben die 30-Wochen-Linie, die Ausbruchswoche und der Ausbruchstag.
+2. **Turtle C01/C02.** Die Ausnahme für `N` gilt unterhalb von MODELED nicht mehr: `N` und `nPct` sind entfernt. Die Kanallängen (`channelDays`, `exitChannelDays`) sind Regelparameter der Quelle und bleiben.
+3. **SEPA mit genau einer Kontraktion.** Die bisherige Einstufung trägt die Entscheidung schon:
+   - Die Stufenobergrenze von C06 ist CHART_CANDIDATE, also gibt es weder ein bestätigtes Setup noch einen modellierten Plan.
+   - Der Research-Lebenszyklus blockiert eine Kontraktion mit `VCP_PROXY_NOT_MET`. „≥ 2 Kontraktionen“ ist dort die ausgewiesene Modellannahme `MA-MIN-SEPA-SETUP-PROXY`; nach der Quelle ist die Zahl typisch, keine Grenze (MIN-VCP-02/03). Eine neue Mindestzahl als Originalregel wird nicht eingeführt.
+   - Geändert ist nur die Beschriftung des Sortierschlüssels: aus „VCP-Proxy erkannt (Pivot vorhanden)“ wird „Pivot vorhanden (VCP nicht bestätigt)“. Der Schlüssel ordnet nur danach, ob ein Pivot vorhanden ist.
+
+**Was ohne Feld rekonstruierbar bleibt** (Regelwissen, durch Ausblenden nicht lösbar):
+- **Weinstein:** Widerstand und Stop folgen aus der öffentlichen Regel und den Wochenkursen. Beim Trader ist das das letzte Wochen-Swinghoch (`lastSwingHigh`): 379 von 379. Beim Investor ist es der Basisbeginn, an dem die 30-Wochen-Linie aufhört zu fallen; allein über das Swinghoch sind es 108 von 422.
+- **Turtle:** Der Trigger ist das Kanalhoch + Tick, `N` lässt sich aus den Tageskursen nachrechnen.
+- **Weitere:** C13-Trigger = Hoch am Stichtag + Tick; Darvas-Obergrenze ± Bruchteil, Gap-Tief und C11-Signaltagstief sind zugelassene Struktur.
+- **Garantie:** Kein veröffentlichtes Feld ist mehr ein direkter Anker. Die öffentliche Regel selbst bleibt öffentlich.
+
+**Vorher/Nachher des Folge-PR** (voller Lauf 26.10. gegen die Ausgabe von `main` nach #1083):
+- Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze inhaltsgleich bis auf `provenance.codeSha256`, MODELED 0 Änderungen.
+- Geändert: C01/C02 `features` (ohne `N`, `nPct`, 493 Ansichten); C04/C05 `levels` und Chartmarke (801 Ansichten). Dazu die Ränge in C04/C05 (797), weil die Sortierung „Abstand zur Chartmarke“ dort keine Marke mehr hat, und die Beschriftung des SEPA-Sortierschlüssels.
+- Probe des Reviews auf der neuen Ausgabe: Trigger − 2·`N` = Stop 0 (vorher 268/269 und 224/224); Widerstand + Tick = Trigger 0 (vorher 422/422 C04); Widerstandswoche → Stop 0. Es bleiben Regelwissen (Turtle-Kanal) und sporadische Ausbruchstag-Treffer (9 von 422 bzw. 7 von 379).
 
 **Vorher/Nachher:**
 - Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze (`records/`) inhaltsgleich bis auf `provenance.codeSha256`, dieselbe Reihenfolge, 0 Rangänderungen, MODELED 0 Änderungen.

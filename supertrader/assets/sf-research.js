@@ -80,7 +80,7 @@
     return e;
   }
   // Chartstruktur unterhalb des modellierten Ablaufs (records.mjs#STRUCTURE_MARK): beschreibende Marken, nie Einstieg oder Stop
-  var STRUCT_TXT = { BOX_TOP: 'Box-Obergrenze', WEEKLY_RESISTANCE: 'Widerstand (Woche)', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch (10 Tage)', GAP_DAY_LOW: 'Gap-Tief' };
+  var STRUCT_TXT = { BOX_TOP: 'Box-Obergrenze', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch (10 Tage)', GAP_DAY_LOW: 'Gap-Tief' };
   // nur belegte Strukturarten; die Engine-Marke eines modellierten Ablaufs (Einstieg) ist keine Chartstruktur
   function structOf(p) { return p && fin(p.level) && STRUCT_TXT[p.kind] ? p : null; }
   var cache = {};
