@@ -9,6 +9,7 @@ import zlib from 'node:zlib';
 import { createCalendar, loadUniverse, loadEodSecurities, loadContinuity, marketAsOf, inputsSha256, toResearchBars, corporateActionDates, securityIdOf } from '../source-faithful/product/eod-adapter.mjs';
 import { assessSecurity, assessStrategyHistory, quarantinedSessions, weeklyLookbackCheck, STRATEGY_DATA_NEEDS, MAX_MISSING_SESSIONS } from '../source-faithful/product/data-quality.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
+import { referenceFromBars } from './sf8-reference-fixture.mjs';
 
 const CAL = createCalendar({ calendar: { coverage: { from: '2022-01-01', to: '2027-12-31', specialClosures: {} }, exchanges: { XNYS: { weekdays: [1, 2, 3, 4, 5], holidays: ['2026-01-01', '2026-01-19', '2026-02-16', '2026-04-03', '2026-05-25', '2026-06-19', '2026-07-03', '2026-09-07', '2026-11-26', '2026-12-25', '2025-11-27', '2025-12-25'] } } } });
 
@@ -20,7 +21,7 @@ function makeBars(n, to = '2026-10-23', { start = 50, step = 0.05, volume = 1_00
 const meta = (x = {}) => ({ instrumentType: 'EQUITY_COMMON', activeStatus: 'ACTIVE', adjustmentStatus: 'adjusted', caReconciliation: 'PASS', splitEvents: 0, ...x });
 const sec = (bars, m = {}) => ({ id: 'ref_TEST', ticker: 'TEST', bars, terminal: null, meta: meta(m) });
 const weeklyCovering = (asOf) => { const out = []; for (let d = CAL.addDays(asOf, -460); d <= asOf; d = CAL.addDays(d, 7)) out.push({ date: d, close: 50 }); return out; };
-const assess = (s, extra = {}) => assessSecurity(s, { asOf: '2026-10-23', calendar: CAL, weekly: weeklyCovering('2026-10-23'), continuity: { bySecurityId: new Map() }, ...extra });
+const assess = (s, extra = {}) => assessSecurity(s, { asOf: '2026-10-23', calendar: CAL, weekly: weeklyCovering('2026-10-23'), continuity: { bySecurityId: new Map() }, priceReference: referenceFromBars(s), ...extra });
 const chk = (r, id) => r.checks.find((c) => c.id === id);
 
 test('SF8-CAL: XNYS-Sitzungen, Folgesitzung über Wochenende und Feiertag', () => {
@@ -179,7 +180,7 @@ test('SF8-DQ-HISTORY: Datenbedarf für alle 13 Strategien deklariert; zu kurze H
 });
 
 test('SF8-ADAPTER-READ-ONLY: Adapter und DQ schreiben nichts und rufen nichts aus dem Netz', () => {
-  for (const f of ['eod-adapter.mjs', 'data-quality.mjs']) {
+  for (const f of ['eod-adapter.mjs', 'data-quality.mjs', 'price-parity.mjs']) {
     const src = fs.readFileSync(new URL(`../source-faithful/product/${f}`, import.meta.url), 'utf8');
     assert.doesNotMatch(src, /writeFileSync|appendFileSync|mkdirSync|createWriteStream|fetch\(|https?:\/\/|child_process/, f);
   }

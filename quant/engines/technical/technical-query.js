@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.8.0";
+  var QUERY_VERSION = "technical-query-1.9.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -84,6 +84,18 @@
     { id: "roc126", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 126 Tage (ROC, 6 Monate)", "1W": "Kursänderung 26 Wochen (ROC)", "1M": "Kursänderung 6 Monate (ROC)" } },
     { id: "roc252", group: "Momentum", kind: "pct", tfs: ALL, label: { "1D": "Kursänderung 252 Tage (ROC, 12 Monate)", "1W": "Kursänderung 52 Wochen (ROC)", "1M": "Kursänderung 12 Monate (ROC)" } },
     { id: "williamsR", group: "Momentum", kind: "num", tfs: D, label: "Williams %R 14 (−100 bis 0)" },
+    /* L9 (seit 1.9.0): weitere Katalogindikatoren am Stichtag, nur Tag. */
+    { id: "connorsRsi", group: "Momentum", kind: "num", tfs: D, label: "Connors RSI (3/2/100)" },
+    { id: "zScore20", group: "Momentum", kind: "num", tfs: D, label: "Z-Score 20 (Abstand zum 20-Tage-Mittel in Standardabweichungen)" },
+    { id: "elderImpulse", group: "Momentum", kind: "num", tfs: D, label: "Elder Impulse (+1 grün, 0 blau, −1 rot)" },
+    { id: "vortexBull", group: "Trend", kind: "bool", tfs: D, label: "Vortex: VI+ über VI− (14)" },
+    { id: "hmaRising", group: "Trend", kind: "bool", tfs: D, label: "Hull MA 20 steigt" },
+    { id: "distChandelierLong", group: "Trend", kind: "pct", tfs: D, label: "Abstand zum Chandelier-Stop (lang, 22/3)" },
+    { id: "newHigh20d", group: "Hochs", kind: "bool", tfs: D, label: "Schluss über dem 20-Tage-Hoch (Donchian-Ausbruch)" },
+    { id: "newLow20d", group: "Hochs", kind: "bool", tfs: D, label: "Schluss unter dem 20-Tage-Tief (Donchian-Ausbruch)" },
+    { id: "choppiness14", group: "Volatilität", kind: "num", tfs: D, label: "Choppiness Index 14 (unter 38,2 Trend, über 61,8 seitwärts)" },
+    { id: "histVol20", group: "Volatilität", kind: "pct", tfs: D, label: "Historische Volatilität 20 Tage (annualisiert)" },
+    { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },

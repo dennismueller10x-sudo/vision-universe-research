@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.6.0";
+  var TEXT_VERSION = "technical-query-text-1.7.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -53,6 +53,15 @@
     /* Kerzen und Spannen (seit 1.6.0) */
     ["inside[- ]bars?|innenstab", [b("insideBar", true)]],
     ["nr 7|narrow range( 7)?", [b("nr7", true)]],
+    /* L9 (seit 1.7.0) */
+    ["(neues? )?20-?tage-?hoch|donchian-?ausbruch( nach oben)?", [b("newHigh20d", true)]],
+    ["(neues? )?20-?tage-?tief|donchian-?ausbruch nach unten", [b("newLow20d", true)]],
+    ["vortex (positiv|bullisch|aufwaerts)", [b("vortexBull", true)]],
+    ["vortex (negativ|baerisch|abwaerts)", [b("vortexBull", false)]],
+    ["hull(-? ?ma)? steigt|steigende hull(-? ?ma)?", [b("hmaRising", true)]],
+    ["hull(-? ?ma)? faellt|fallende hull(-? ?ma)?", [b("hmaRising", false)]],
+    ["elder[- ]impuls(e)? (gruen|positiv)", [n("elderImpulse", "gt", 0)]],
+    ["elder[- ]impuls(e)? (rot|negativ)", [n("elderImpulse", "lt", 0)]],
     /* Zustand "SMA 50 ueber SMA 200". "Golden/Death Cross" meint seit 1.5.0 das Ereignis (siehe Ereignisse unten). */
     ["sma ?50 (ueber|oberhalb)( der| die)? sma ?200", [b("sma50AboveSma200", true)]],
     ["sma ?50 (unter|unterhalb)( der| die)? sma ?200", [b("sma50AboveSma200", false)]],
@@ -130,6 +139,9 @@
 
   /* Kennzahlen fuer Vergleiche (gefaltete Aliasse; Feld-IDs selbst gelten immer). */
   var METRICS = [
+    ["connors[- ]rsi|crsi", "connorsRsi"], ["z-?score( ?20)?", "zScore20"], ["elder[- ]impuls(e)?", "elderImpulse"],
+    ["choppiness( index)?( ?14)?|chop( ?14)?", "choppiness14"], ["historische volatilitaet|hist\\. volatilitaet|hv ?20", "histVol20"],
+    ["ulcer( index)?", "ulcer14"], ["abstand zum chandelier(-?stop)?", "distChandelierLong"],
     ["abstand zur sma ?200|abstand zum 200er", "distSma200"], ["abstand zur ema ?200", "distEma200"], ["abstand zum 52-?wochen-?hoch", "distHigh52w"], ["abstand zum 200-?wochen-?hoch", "distHigh200w"],
     ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
