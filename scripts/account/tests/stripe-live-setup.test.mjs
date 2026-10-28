@@ -1,15 +1,19 @@
 // Stripe-LIVE-Einrichtung ohne Netz: nachgebildetes Stripe (livemode=true).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {setupStripeLive, assertLiveKey, livePriceSql, LIVE_CATALOG} from '../stripe-live-setup.mjs';
+import {setupStripeLive, assertLiveKey, livePriceSql, LIVE_CATALOG, PAYMENT_METHODS} from '../stripe-live-setup.mjs';
 import {WEBHOOK_EVENTS} from '../stripe-test-setup.mjs';
 
 const LIVE_KEY = ['rk', 'live', 'abc123'].join('_');
 const API = 'https://konto.visionuniverse.de';
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
 
-function fakeStripe() {
-  const state = {products: new Map(), prices: [], portals: [], hooks: [], calls: []};
+const PM = (available, value = 'off') => ({available, display_preference: {preference: value, value}});
+function fakeStripe({pmcStatus = 200} = {}) {
+  const state = {products: new Map(), prices: [], portals: [], hooks: [], calls: [],
+    pmc: {id: 'pmc_live1', is_default: true, active: true, parent: null, application: null, livemode: true,
+      card: PM(true, 'on'), apple_pay: PM(true, 'on'), google_pay: PM(true, 'off'), sepa_debit: PM(true, 'off'),
+      paypal: PM(false), klarna: PM(false), link: PM(true, 'on')}};
   let n = 0;
   const fetchImpl = async (url, {method = 'GET', body} = {}) => {
     const u = new URL(url);
@@ -49,6 +53,15 @@ function fakeStripe() {
       if (!c) { c = {id: `bpc_live${++n}`, metadata: {vu_managed: 'true'}, livemode: true}; state.portals.push(c); }
       c.form = Object.fromEntries(form.entries());
       return json(200, c);
+    }
+    if (p.startsWith('/v1/payment_method_configurations') && pmcStatus !== 200) return json(pmcStatus, {error: {type: 'invalid_request_error', code: 'secret_key_required'}});
+    if (method === 'GET' && p === '/v1/payment_method_configurations') return json(200, {data: [state.pmc]});
+    if (method === 'POST' && p === '/v1/payment_method_configurations/pmc_live1') {
+      for (const [k, v] of form.entries()) {
+        const m = /^([a-z_]+)\[display_preference\]\[preference\]$/.exec(k);
+        if (m && state.pmc[m[1]]?.available) state.pmc[m[1]].display_preference = {preference: v, value: v};
+      }
+      return json(200, state.pmc);
     }
     if (method === 'GET' && p === '/v1/webhook_endpoints') return json(200, {data: state.hooks});
     if (method === 'POST' && p === '/v1/webhook_endpoints') {
@@ -134,4 +147,34 @@ test('bricht ab, wenn Stripe Testmodus meldet', async () => {
 
 test('Preis-SQL nimmt nur echte Preis-IDs', () => {
   assert.throws(() => livePriceSql([{plan: 'plus', interval: 'month', amount: 990, priceId: "price_x'; drop table x;--"}]), /ungueltig/);
+});
+
+test('Zahlungsmethoden: verfuegbare einschalten, fehlende Freischaltung melden, Link unberuehrt', async () => {
+  const s = fakeStripe();
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.deepEqual(PAYMENT_METHODS.map(m => m.key), ['card', 'apple_pay', 'google_pay', 'paypal', 'sepa_debit', 'klarna']);
+  const state = Object.fromEntries(r.paymentMethods.map(m => [m.key, m.state]));
+  assert.deepEqual(state, {card: 'aktiv', apple_pay: 'aktiv', google_pay: 'eingeschaltet', paypal: 'Freischaltung im Dashboard noetig',
+    sepa_debit: 'eingeschaltet', klarna: 'Freischaltung im Dashboard noetig'});
+  assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'on');
+  assert.equal(s.state.pmc.paypal.display_preference.value, 'off', 'nicht freigeschaltete Methode bleibt aus');
+  assert.equal(s.state.pmc.link.display_preference.value, 'on');
+  const again = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(again.paymentMethods.find(m => m.key === 'sepa_debit').state, 'aktiv', 'idempotent');
+});
+
+test('Zahlungsmethoden: fehlendes Recht des Schluessels bricht die Einrichtung nicht ab', async () => {
+  const s = fakeStripe({pmcStatus: 403});
+  const logs = [];
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: m => logs.push(m)});
+  assert.ok(r.prices.length === 1 && r.webhookId, 'Produkt, Preis, Webhook trotzdem eingerichtet');
+  assert.ok(r.paymentMethods.every(m => m.state === 'unbekannt'));
+  assert.ok(logs.some(l => /im Stripe-Dashboard pruefen/.test(l)));
+});
+
+test('Zahlungsmethoden: Probelauf schaltet nichts ein', async () => {
+  const s = fakeStripe();
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, dryRun: true, log: () => {}});
+  assert.equal(r.paymentMethods.find(m => m.key === 'sepa_debit').state, 'wird eingeschaltet');
+  assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'off');
 });
