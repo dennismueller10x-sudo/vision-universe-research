@@ -361,12 +361,16 @@ class NoBulkAcceptanceTest(QuietTest):
         self.assertEqual(build_availability_map(rows), {"a-1": self.TRUE_ACCEPTANCE})
 
     def test_no_production_module_reads_the_bulk_submissions_archive(self):
-        """Only model.py may name the archive (to document the guard)."""
+        """Only model.py may name the archive (to document the guard).
+
+        Offline research scripts (v9/, v9_followups/) are not production modules:
+        they read the archive only to measure its acceptance-time offset and never
+        feed the pipeline. They stay excluded; everything else is scanned."""
         root = Path(__file__).resolve().parents[1]
         offenders = []
         for path in sorted(root.rglob("*.py")):
             rel = path.relative_to(root).as_posix()
-            if rel.startswith("tests/") or rel == "sec/model.py":
+            if rel.startswith(("tests/", "v9/", "v9_followups/", "v9-followups/")) or rel == "sec/model.py":
                 continue
             if re.search(r"bulkdata/submissions|submissions\.zip", path.read_text(encoding="utf-8")):
                 offenders.append(rel)
