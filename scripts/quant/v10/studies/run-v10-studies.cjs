@@ -37,7 +37,7 @@ function register(args) {
   console.log(JSON.stringify({ registrationHash: doc.registrationHash, frame: fr.frame.length, manifestHash, detectionCounts }));
 }
 
-function run(args) {
+async function run(args) {
   const out = K.privateDir(args.out), tag = K.loaderTag(args.loaderOptions), dir = path.join(out, tag);
   fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   const reg = K.readRegistration(), R = reg.registration, t0 = Date.now();
@@ -50,7 +50,7 @@ function run(args) {
   ctx.studyCalendar = fr.calendar.filter(d => d >= R.window.signalDates[0] && d <= R.window.signalDates[1]);
   console.error('frame', fr.frame.length, 'tag', tag, (Date.now() - t0) / 1000, 's');
   const timings = {};
-  if (args.studies.includes('signal')) { const t = Date.now(); require('./signal-study.cjs').run(ctx); timings.signal = (Date.now() - t) / 1000; }
+  if (args.studies.includes('signal')) { const t = Date.now(); await require('./signal-study.cjs').run(ctx); timings.signal = (Date.now() - t) / 1000; }
   if (args.studies.includes('pattern') || args.studies.includes('replay')) { const t = Date.now(); require('./pattern-study.cjs').run(ctx, args.studies); timings.patternAndReplay = (Date.now() - t) / 1000; }
   const meta = { schemaVersion: 'v10-studies-run-1.0.0', tag, loaderOptions: args.loaderOptions, isPrimary, registrationHash: reg.registrationHash, sourceManifestHash: manifestHash, frame: fr.frame.length,
     gitHead: K.gitHead(), runtime: K.C.runtime(), code: K.codeHashes(['scripts/quant/v10/studies/plan.cjs', 'scripts/quant/v10/studies/run-v10-studies.cjs', 'scripts/quant/v10/studies/signal-study.cjs', 'scripts/quant/v10/studies/pattern-study.cjs']),
@@ -64,7 +64,7 @@ function publish(args) {
   const meta = K.readJson(path.join(dir, 'run-meta.json'));
   if (meta.registrationHash !== K.readRegistration().registrationHash) throw Error('REGISTRATION_MISMATCH');
   fs.mkdirSync(target, { recursive: true });
-  for (const f of ['run-meta.json', 'signal-backtest-evidence.json', 'funded-strategy-evidence.json', 'pattern-evidence.json', 'same-stock-replay-evidence.json', 'parity-engine.json']) {
+  for (const f of ['run-meta.json', 'signal-backtest-evidence.json', 'funded-strategy-evidence.json', 'pattern-evidence.json', 'same-stock-replay-evidence.json', 'parity-engine-signal.json', 'parity-engine-pattern.json']) {
     const src = path.join(dir, f); if (fs.existsSync(src)) fs.copyFileSync(src, path.join(target, f));
   }
   const pyParity = path.join(dir, 'python-parity.json'); if (fs.existsSync(pyParity)) fs.copyFileSync(pyParity, path.join(target, 'python-parity.json'));
@@ -76,6 +76,6 @@ if (require.main === module) {
   const args = K.parseArgs(process.argv.slice(2));
   const stages = { register, run, publish };
   if (!stages[args.stage]) throw Error('STAGE_REQUIRED: register|run|publish');
-  stages[args.stage](args);
+  Promise.resolve(stages[args.stage](args)).catch(e => { console.error(e); process.exit(1); });
 }
 module.exports = { register, run, publish };

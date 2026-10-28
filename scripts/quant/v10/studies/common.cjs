@@ -158,7 +158,7 @@ function blockInference(calendar, rows, blockLength) {
 // Two-way cluster (date x issuer) asymptotic interval of the engine (research-studies.inference).
 function clusterInference(rows) {
   const r = S.inference(rows.map(x => ({ value: x.value, v: x.value, timeCluster: x.date, issuerId: x.issuer })), 'v');
-  return { n: r.n, mean: r.mean, median: r.median ?? null, se: r.standardError ?? null, ci: r.interval95, timeClusters: r.timeClusters ?? null, issuerClusters: r.issuerClusters ?? null, state: r.state };
+  return { n: r.n, mean: r.mean, median: r.median ?? null, se: r.standardError ?? null, ci: r.interval95, timeClusters: r.timeClusters ?? null, issuerClusters: r.issuerClusters ?? null, inferenceState: r.state };
 }
 function distribution(values) { const s = Signal.summarize(values); return { n: s.n, hitRate: s.positiveShare, hitRateWilson: s.positiveInterval, mean: s.mean, p10: s.p10, p25: s.p25, median: s.median, p75: s.p75, p90: s.p90, avgWin: s.avgWin, avgLoss: s.avgLoss }; }
 function holmFamily(cells, alpha = INFERENCE.alpha) {
@@ -212,6 +212,36 @@ function survivorshipSensitivity(rows, censored, lifecycleById, costs, benchmark
     boundMinus100: m(rows.concat(tv, boundRows('MINUS_100'))), boundLastClose: m(rows.concat(tv, boundRows('LAST_CLOSE'))) };
 }
 
+// ---------- parallel engine calls (worker_threads, unchanged engine per listing) ----------
+function engineInput(ctx, extra = {}) {
+  const R = ctx.R;
+  return { asOf: ctx.fr.calendar.at(-1), sourceMode: 'HISTORICAL_SIMULATION', cohortMode: 'CONDITIONAL_CURRENT_CLASSIFICATION', executionClock: 'OBSERVED_WEEKLY_DATES', returnBasis: 'PRICE_RETURN', currency: 'USD',
+    registration: { id: R.id, version: R.version, frozenAt: R.registeredAt, analysisMode: 'EXPLORATORY', selection: 'V10 registered frame' }, entryDelayBars: 1,
+    costs: { basis: 'PER_SIDE_NOTIONAL', ...R.costs.base }, benchmark: { currency: 'USD', returnBasis: 'PRICE_RETURN' }, ...extra };
+}
+function workerListing(p) { return { id: p.id, listingId: p.listingId, listingStart: p.listingStart, mic: p.mic, identityHash: p.doc.identityHash, availableAt: p.doc.masterGeneratedAt || p.doc.asOf + 'T00:00:00Z', dates: p.dates, closes: Array.from(p.closes) }; }
+async function runEngineParallel(ctx, kind, panel, horizons, extra = {}, workers = Number(process.env.V10_STUDIES_WORKERS || 3)) {
+  const { Worker } = require('node:worker_threads');
+  const chunks = Array.from({ length: Math.max(1, Math.min(workers, panel.length)) }, () => []);
+  panel.forEach((p, i) => chunks[Math.floor(i * chunks.length / panel.length)].push(workerListing(p)));
+  const benchmark = benchmarkBars(ctx.benchmark, ctx.fr.calendar), base = engineInput(ctx);
+  const results = await Promise.all(chunks.map(listings => new Promise((resolve, reject) => {
+    const w = new Worker(path.join(__dirname, 'engine-worker.cjs'), { workerData: { kind, listings, calendar: ctx.fr.calendar, benchmark, base, horizons, extra } });
+    w.once('message', resolve); w.once('error', reject); w.once('exit', code => { if (code) reject(Error('ENGINE_WORKER_EXIT_' + code)); });
+  })));
+  return Object.fromEntries(horizons.map(h => [h, results.flatMap(r => r[h])]));
+}
+// Same calls in the main thread with the FULL calendar and benchmark (no slicing): identity check for a subsample.
+function runEngineDirect(ctx, kind, panel, h, extra = {}) {
+  const W = require('./engine-worker.cjs'), out = [];
+  for (const p of panel) {
+    const x = workerListing(p), input = { ...engineInput(ctx, extra), horizonBars: h, expectedCalendar: ctx.fr.calendar, benchmark: { currency: 'USD', returnBasis: 'PRICE_RETURN', bars: benchmarkBars(ctx.benchmark, ctx.fr.calendar) }, listings: [W.listingOf(x)] };
+    const r = kind === 'signal' ? S.runSignalStudy(input) : S.runReplayValidation(input);
+    for (const e of r.events) out.push({ rule: e.ruleId ?? null, securityId: p.id, signalDate: e.signalDate, state: e.state, gross: e.completed ? e.grossReturn : null, bench: e.completed ? e.benchmarkReturn : null, expectedExitDate: e.expectedExitDate });
+  }
+  return out;
+}
+
 // ---------- evidence envelope ----------
 function evidence(fields) {
   const required = ['studyId', 'ruleVersion', 'dataSource', 'listingIdentity', 'population', 'inclusionsExclusions', 'period', 'dataAsOf', 'availability', 'returnBasis', 'costs', 'benchmark', 'maturedOutcomes', 'performance', 'uncertainty', 'multipleTesting', 'scope'];
@@ -234,4 +264,4 @@ function readJson(file) { const b = fs.readFileSync(file); return JSON.parse(fil
 module.exports = { ROOT, C, L, S, V, B, Signal, SERIES_DIR, DOCS_DIR, REG_FILE, MIC, WINDOW, PRIMARY_LOADER_OPTIONS, SIGNAL_FEATURE_LOOKBACK, SUBPERIODS, REGIME_CONFIG, INFERENCE,
   blockLengthFor, sha, weekOf, gitHead, netOf, mean, parseArgs, loaderTag, privateDir, codeHashes, micOf, buildFrame, lifecycleOf, sourceManifest, buildPanel, eligibleAt, forwardGross,
   listingOf, loadBenchmark, benchmarkBars, regimeLabels, blockInference, clusterInference, distribution, holmFamily, splitBy, subperiodTable, regimeTable, survivorshipSensitivity,
-  evidence, readRegistration, writeJson, readJson };
+  evidence, readRegistration, writeJson, readJson, engineInput, workerListing, runEngineParallel, runEngineDirect };
