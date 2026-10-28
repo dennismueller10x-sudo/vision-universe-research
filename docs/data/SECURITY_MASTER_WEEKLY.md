@@ -118,13 +118,14 @@ Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.
 | `quant/data/product/survivorship-control-v1.json` | inaktive Stammaktien-Zeilen | 191 → 180 (die 11 Zwei-Zeilen-IDs); Test `survivorship-control.test.mjs` erwartet 191 |
 | `quant/data/product/emerging-leaders-v1/study.json` | `commonEquityIds`, `inactiveEquityIds` | Eingangsmenge −138 IDs, inaktive −11; Wirkung auf die Studie misst der Neuaufbau |
 | `capabilities-v1`, `sic-peer-taxonomy-v1`, `naming-contract-v1`, `total-return-quality-v1` | eigene Inventare | nennen 116 / 113 / 9 / 1 der 127 IDs; werden durch den Wechsel **nicht** neu gebaut |
-| `docs/quant-recovery/**` (v7–v9, eingefroren) | – | v9-Evidenz nennt einzelne der 127 IDs (`v9-followups/stale-tails/before-after.json` 35, `v9/corporate-actions/ca-missing-weeks.json` 12, `ca-stale-tail-finding.json` 27, `v9/sensitivity/registration-1.0.0.json` 27). Sie belegt den Stand 1.1.0 und bleibt **unverändert**; eine neue Generation verweist auf sie, schreibt sie nie neu |
+| `docs/quant-recovery/**` (v7–v9, eingefroren) | – | v8- und v9-Evidenz nennt einzelne der 127 als `securityId` (z. B. `v9-followups/stale-tails/before-after.json` 35, `v9/corporate-actions/ca-missing-weeks.json` 12, `ca-stale-tail-finding.json` 27, `v9/sensitivity/registration-1.0.0.json` 27; `BACKTEST_V8_DATA_RECOVERY.md`: FRMEP, MBINM), als Ticker oder Listung (u. a. `v8/r2-assessment.json`, `v9/identity/*`, `v9/secpit/*`). Die Zählung im Nachweis erfasst nur die `"ref_…"`-Form. Die Evidenz belegt den Stand 1.1.0 und bleibt **unverändert**; eine neue Generation verweist auf sie, schreibt sie nie neu |
 | `build-factor-evidence`, `build-quant-radar` | Engine-Modul, nicht die Stammdatei | keine |
 
 ### P3 – Sonderfreigabe statt Lockerung
 
 - Ohne Freigabe blockiert G7 den Wechsel (138 > 25 Typwechsel, 138 > 50 Eignungswechsel). Die Grenzen bleiben 25 / 25 / 50 / 50 / 25.
 - `--approved-changes <datei>` nimmt **genau** die belegten Paare (`securityId`, vorher, nachher) aus der G7-Zählung. Jeder andere Wechsel, auch derselbe Titel mit anderem Ziel, zählt weiter. Alle übrigen Gates (G1–G6, G8–G10, Deaktivierungen, Ticker) bleiben unberührt.
+- Einträge sind streng typisiert (`securityId` und Typen als Text, Eignung als Wahrheitswert), ohne Doppelungen; `--approved-changes` ohne Datei ist G10.
 - Die Freigabe gilt nur, wenn alles zutrifft, sonst BLOCKED:
   - zusammen mit `allow_version_change`;
   - Quellversion = 1.1.0 und Zielversion = 1.3.0;

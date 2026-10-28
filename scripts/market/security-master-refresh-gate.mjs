@@ -137,6 +137,16 @@ export const APPROVED_CHANGES_SCHEMA = "security-master-approved-changes-1.0.0";
 function applyApproval(cmp, approved, ctx, fail) {
   const ok = approved && approved.schema === APPROVED_CHANGES_SCHEMA && Array.isArray(approved.instrumentTypeChanges) && Array.isArray(approved.eligibilityFlips);
   if (!ok) { fail.push("G10 Sonderfreigabe unlesbar oder falsches Schema"); return null; }
+  // Einträge streng: securityId und Typen als Text, Eignung als Wahrheitswert, keine Doppelungen (kein stilles Umdeuten)
+  const shape = { instrumentTypeChanges: "string", eligibilityFlips: "boolean" };
+  for (const k of Object.keys(shape)) {
+    const seen = new Set();
+    for (const x of approved[k]) {
+      if (!x || typeof x.securityId !== "string" || typeof x.from !== shape[k] || typeof x.to !== shape[k] || x.from === x.to) { fail.push(`G10 Sonderfreigabe: ungültiger Eintrag in ${k}`); return null; }
+      if (seen.has(x.securityId)) { fail.push(`G10 Sonderfreigabe: doppelte securityId ${x.securityId} in ${k}`); return null; }
+      seen.add(x.securityId);
+    }
+  }
   if (!ctx.allowVersionChange) fail.push("G8 Sonderfreigabe nur zusammen mit --allow-version-change");
   if (approved.fromVersion !== ctx.prevVersion || approved.toVersion !== ctx.nextVersion) fail.push(`G8 Sonderfreigabe gilt für ${approved.fromVersion} → ${approved.toVersion}, nicht für ${ctx.prevVersion} → ${ctx.nextVersion}`);
   if (!ctx.prevMasterSha256 || approved.prevMasterSha256 !== ctx.prevMasterSha256) fail.push("G8 Sonderfreigabe gehört zu einem anderen Ausgangsstamm (SHA-256)");
@@ -215,7 +225,8 @@ function main() {
   let thresholds = DEFAULT_THRESHOLDS, res;
   // Sonderfreigabe: Datei unlesbar → G10; der SHA-256 kommt aus den Bytes des Ausgangsstamms, nicht aus der Datei selbst
   const approvalArgs = () => {
-    if (!arg("--approved-changes")) return {};
+    if (!argv.includes("--approved-changes")) return {};
+    if (!arg("--approved-changes") || arg("--approved-changes").startsWith("--")) throw new Error("G10 --approved-changes ohne Datei");
     const a = loadFile(arg("--approved-changes")); if (!a) throw new Error("G10 --approved-changes nicht lesbar");
     const pm = prev && join(prev, "us-security-master.json");
     return { approvedChanges: a, prevMasterSha256: pm && existsSync(pm) ? createHash("sha256").update(readFileSync(pm)).digest("hex") : null };

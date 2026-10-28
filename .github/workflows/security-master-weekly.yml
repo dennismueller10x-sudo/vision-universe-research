@@ -29,7 +29,7 @@ on:
         type: boolean
         default: false
       approved_changes:
-        description: 'Einmalige G7-Sonderfreigabe v1.2.x → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
+        description: 'Einmalige G7-Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
         type: boolean
         default: false
 
@@ -147,7 +147,7 @@ jobs:
           {
             echo '### Security Master + Firmennamen'
             if [ -f "$REPORT" ]; then
-              node -e 'const r=require(process.env.REPORT);console.log("Gate: "+(r.pass?"PASS":"BLOCKED")+" · Entscheidung "+r.decision);for(const f of r.failures)console.log("- "+f);if(r.report)console.log("\nAenderungen: "+JSON.stringify(r.report.counts)+" · fachlich "+r.report.materialChanges+" · Alter "+r.report.ageDays+" Tage")'
+              node -e 'const r=require(process.env.REPORT);console.log("Gate: "+(r.pass?"PASS":"BLOCKED")+" · Entscheidung "+r.decision);for(const f of r.failures)console.log("- "+f);if(r.report)console.log("\nAenderungen: "+JSON.stringify(r.report.counts)+" · fachlich "+r.report.materialChanges+" · Alter "+r.report.ageDays+" Tage");if(r.report&&r.report.approval)console.log("Sonderfreigabe "+r.report.approval.fromVersion+" → "+r.report.approval.toVersion+": angewandt "+JSON.stringify(r.report.approval.applied)+" · ungenutzt "+JSON.stringify(r.report.approval.unused))'
             else
               echo 'Kein Gate-Bericht (Abbruch vor dem Gate).'
             fi

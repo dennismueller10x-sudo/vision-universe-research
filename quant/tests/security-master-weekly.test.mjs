@@ -191,6 +191,11 @@ test("SMW-9 · Sonderfreigabe: nimmt genau die belegten Wechsel aus G7, gebunden
   assert.match(fails(ok, { allowVersionChange: true, prevMasterSha256: null }), /anderen Ausgangsstamm/);
   assert.match(fails({ ...ok, schema: "x" }), /G10 Sonderfreigabe/);
   assert.match(fails({ ...ok, eligibilityFlips: null }), /G10 Sonderfreigabe/);
+  // Einträge streng: kein Umdeuten von Typen, keine Doppelungen
+  assert.match(fails({ ...ok, eligibilityFlips: ok.eligibilityFlips.map((c) => ({ ...c, from: "true" })) }), /G10 Sonderfreigabe: ungültiger Eintrag/);
+  assert.match(fails({ ...ok, instrumentTypeChanges: ok.instrumentTypeChanges.map((c) => ({ ...c, to: ["PREFERRED"] })) }), /G10 Sonderfreigabe: ungültiger Eintrag/);
+  assert.match(fails({ ...ok, instrumentTypeChanges: [...ok.instrumentTypeChanges, ok.instrumentTypeChanges[0]] }), /G10 Sonderfreigabe: doppelte securityId/);
+  assert.match(fails({ ...ok, instrumentTypeChanges: [...ok.instrumentTypeChanges, null] }), /G10 Sonderfreigabe: ungültiger Eintrag/);
   // exakt (securityId, from, to): anderes Ziel oder andere Richtung zählt weiter
   const wrongTo = { ...ok, instrumentTypeChanges: ok.instrumentTypeChanges.map((c) => ({ ...c, to: "TEST_SECURITY" })) };
   assert.match(fails(wrongTo), /^G7 30 .*ohne die freigegebenen/m);
@@ -214,12 +219,12 @@ test("SMW-9 · Sonderfreigabe: nimmt genau die belegten Wechsel aus G7, gebunden
   assert.deepEqual([DEFAULT_THRESHOLDS.maxInstrumentTypeChanges, DEFAULT_THRESHOLDS.maxEligibilityFlips], [25, 50]);
 });
 
-test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- und 138 Eignungswechsel, Freigabedatei deckt genau diese ab", async () => {
+test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- und 138 Eignungswechsel, Freigabedatei deckt genau diese ab", async (t) => {
   const { reclassify, buildEvidence, approvedChanges, listsMarkdown } = await import("../../scripts/market/security-master-v130-evidence.mjs");
   const bytes = readFileSync(join(ROOT, SM, "us-security-master.json")), prev = JSON.parse(bytes.toString("utf8"));
   const committed = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-approved-changes.json"), "utf8"));
   const { createHash } = await import("node:crypto"), sha = createHash("sha256").update(bytes).digest("hex");
-  if (committed.prevMasterSha256 !== sha) return; // der Stamm hat sich seitdem geändert: die Freigabe gilt dann ohnehin nicht mehr (G8)
+  if (committed.prevMasterSha256 !== sha) return t.skip("Stamm seit der Freigabe geändert: sie gilt dann ohnehin nicht mehr (G8)");
   const next = reclassify(prev, JSON.parse(readFileSync(join(ROOT, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8")).securities);
   const ev = buildEvidence({ prevBytes: bytes, prev, next });
   assert.equal(ev.counts.instrumentTypeChanges, 138); assert.equal(ev.counts.eligibilityFlips, 138);
@@ -233,7 +238,7 @@ test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- u
   assert.deepEqual(snap.eligibilityFlips, JSON.parse(JSON.stringify(ev.eligibilityFlips)));
   assert.deepEqual(snap.backtestableLost.map((x) => x.securityId), ev.backtestableLost.map((x) => x.securityId));
   assert.ok(typeof listsMarkdown(ev) === "string");
-  assert.ok(ev.backtestableLost.every((x) => x.identityConsistent));
+  assert.ok(ev.backtestableLost.every((x) => x.identityConsistent && !x.inDiscoverUniverse));
   const cmp = compareMasters(prev, next);
   assert.equal(cmp.instrumentTypeChanges.length, 138); assert.ok(cmp.eligibilityFlips.every((f) => f.from === true && f.to === false));
 });
