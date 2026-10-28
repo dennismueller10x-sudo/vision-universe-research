@@ -422,6 +422,10 @@
       var src = SF8_PIVOT_LEVEL[v.candidateId];
       if (src && (!v.levels || v.levels[src] !== v.pivot.level)) out.push(where + ": Chartmarke " + v.pivot.level + " ist nicht die Strukturmarke levels." + src);
     }
+    /* Zahlen nur in den Zahlenfeldern; in Codes, Gruenden und Datenqualitaet steht keine Zahl (auch kein gerundeter Preis) */
+    var NUMERIC = ["close", "rank", "features", "trend", "sortKeys", "levels", "pivot"];
+    var hasNum = function (x) { return typeof x === "number" || (Array.isArray(x) ? x.some(hasNum) : !!x && typeof x === "object" && Object.keys(x).some(function (k) { return hasNum(x[k]); })); };
+    Object.keys(v).forEach(function (k) { if (NUMERIC.indexOf(k) < 0 && hasNum(v[k])) out.push(where + ": Zahl in " + k); });
     var texts = {}; Object.keys(v).forEach(function (k) { if (k !== "companyName" && k !== "features" && k !== "levels" && k !== "trend" && k !== "sortKeys" && k !== "pivot") texts[k] = v[k]; });
     if (sf8PriceInText(texts) || sf8PriceInText(v.features) ) out.push(where + ": Preis in einem Text");
     return out;

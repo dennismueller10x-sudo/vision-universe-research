@@ -164,7 +164,10 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
     "Feld in pivot": (v) => { v.C03[0].pivot = { level: 98, kind: "BOX_TOP", distance: 0.02, stop: 90 }; },
     "Preis im Text": (v) => { v.C03[0].planBlockers = ["BUY_STOP_22.9065_STOP_20.75"]; },
     "Preis in why": (v) => { v.C03[0].why = [{ code: "SETUP", detail: "Einstieg ab $22" }]; },
-    "trailing als Zahl": (v) => { v.C13[0].features = { trailing: 41.2 }; }
+    "trailing als Zahl": (v) => { v.C13[0].features = { trailing: 41.2 }; },
+    "Zahl in why": (v) => { v.C03[0].why = [{ code: "SETUP", ref: 23 }]; },
+    "Zahl in dataQuality": (v) => { v.C03[0].dataQuality = { status: "PASS", notPass: [], quarantinedSessions: [], level: 22.9 }; },
+    "Zahl in planBlockers": (v) => { v.C03[0].planBlockers = [23]; }
   };
   for (const [name, mut] of Object.entries(probes)) assert.ok(failing(bundle(mut)).includes("DQ-SF8-4"), name);
   /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur, Box als Objekt */
