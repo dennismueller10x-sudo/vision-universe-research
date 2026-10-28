@@ -16,8 +16,9 @@ const OPS = { gt: (a, b) => a > b, gte: (a, b) => a >= b, lt: (a, b) => a < b, l
 
 // Month-end decision dates (last calendar week of each month), as in the V10 factor frame.
 function monthEnds(ctx) {
+  if (ctx._monthEnds) return ctx._monthEnds;
   const last = new Map(); ctx.cal.forEach((d, j) => last.set(d.slice(0, 7), j));
-  return [...last.values()].sort((a, b) => a - b);
+  return (ctx._monthEnds = [...last.values()].sort((a, b) => a - b));
 }
 // Decision calendar and final liquidation session for a period [from, to] (decision dates).
 function schedule(ctx, spec, from, to) {
@@ -45,6 +46,10 @@ function v10Events(ctx, ruleId) {
   }
   return ctx._v10.get(ruleId);
 }
+function nextExec(ctx, spec, j) {
+  if (spec.cadence === 'MONTHLY') { const me = monthEnds(ctx), k = me.indexOf(j); return me[k + (spec.rebalanceMonths || 1)] + 1; }
+  return j + spec.rebalanceWeeks + 1;
+}
 function eligibleRows(ctx, spec, j) {
   const rows = L.featuresAt(ctx, j).filter(r => r.canEnter);
   let out = rows;
@@ -54,19 +59,20 @@ function eligibleRows(ctx, spec, j) {
     // Deterministic hash tie-break as in the V10 funded strategy (one path of many).
     return out.map(r => ({ ...r, hashKey: L.sha('V11-DISCOVERY-V10RULE|' + r.id + '|' + ctx.cal[j]) }));
   }
-  if (spec.family === 'ORACLE_LOOKAHEAD') {
-    // FUTURE KNOWLEDGE (R5): realised forward price return from execution j+1 to j+1+h. Upper bound only.
-    const h = spec.rebalanceWeeks;
-    return rows.map(r => { const l = ctx.byId.get(r.id), a = L.closeAt(l, j + 1), b = L.closeAt(l, Math.min(j + 1 + h, l.last)); return { ...r, fwd: b / a - 1 }; }).filter(r => L.finite(r.fwd));
-  }
-  if (spec.family === 'FUND') {
+  if (spec.family === 'FUND' || spec.universeFamily === 'FUND') {
     const fd = ctx.fund.byJ.get(j); if (!fd) return [];
     out = rows.map(r => ({ ...r, fund: fd.rows.get(r.id) || null })).filter(r => r.fund);
     if (spec.minMarketCap) out = out.filter(r => L.finite(r.fund.mcap) && r.fund.mcap >= spec.minMarketCap);
   }
-  const need = [...(spec.ranks || []).map(x => x[0]), ...(spec.filters || []).map(x => x[0])];
+  const need = [...(spec.ranks || []).map(x => x[0]), ...(spec.filters || []).map(x => x[0]), ...(spec.requireFeatures || [])];
   out = out.filter(r => need.every(n => L.finite(featureValue(r, n))));
   for (const [n, op, v] of spec.filters || []) out = out.filter(r => OPS[op](featureValue(r, n), v));
+  if (spec.family === 'ORACLE_LOOKAHEAD') {
+    // FUTURE KNOWLEDGE (R5): realised forward price return from execution j+1 to the next scheduled execution
+    // (or the last bar of the series if earlier). Upper bound and attribution only; never a candidate source.
+    const end = nextExec(ctx, spec, j);
+    out = out.map(r => { const l = ctx.byId.get(r.id), a = L.closeAt(l, j + 1), b = L.closeAt(l, Math.min(end, l.last)); return { ...r, fwd: b / a - 1 }; }).filter(r => L.finite(r.fwd));
+  }
   return out;
 }
 function scored(ctx, spec, j) {
@@ -115,6 +121,7 @@ function makeStrategy(ctx, spec) {
           const feat = r || L.featuresAt(ctx, j).find(x => x.id === id);
           let exit = !r || r.rankPct < spec.exitRankPct;
           if (spec.trendExit && feat && feat.sma40 < 1) exit = true;
+          if (r && (spec.exitFilters || []).some(([n, op, v]) => OPS[op](featureValue(r, n), v))) exit = true;
           if (spec.maxHoldWeeks && j + 1 - pos.entry >= spec.maxHoldWeeks) exit = true;
           if (spec.trimAbove && pos.value / view.total > spec.trimAbove) { out.set(id, spec.trimAbove); held++; continue; }
           if (!exit) { out.set(id, 'KEEP'); held++; }
@@ -130,7 +137,7 @@ function makeStrategy(ctx, spec) {
 
 // Population benchmarks on the same decision calendar: equal-weighted eligible universe of a spec, and the
 // PIT cap-weighted frame population (panel market cap of the latest rank date <= j; 2010+).
-function popSpec(spec) { return { ...spec, id: (spec.id || 'x') + ':POP_EW', selectAll: true, holding: 'FULL', weighting: 'EW', marketFilter: null, ranks: [], filters: spec.filters || [] }; }
+function popSpec(spec) { return { ...spec, id: (spec.id || 'x') + ':POP_EW', selectAll: true, holding: 'FULL', weighting: 'EW', marketFilter: null, requireFeatures: (spec.ranks || []).map(x => x[0]), ranks: [], filters: spec.filters || [] }; }
 function frameEwStrategy(ctx) {
   return { decide(j) { return new Map(L.featuresAt(ctx, j).filter(r => r.canEnter).map((r, _, a) => [r.id, 1 / a.length])); } };
 }
@@ -149,4 +156,4 @@ function run(ctx, spec, from, to, costs, opts = {}) {
   return { sch, sim };
 }
 
-module.exports = { featureValue, monthEnds, schedule, eligibleRows, scored, makeStrategy, popSpec, frameEwStrategy, capWeightStrategy, run, spyBelowSma };
+module.exports = { nextExec, featureValue, monthEnds, schedule, eligibleRows, scored, makeStrategy, popSpec, frameEwStrategy, capWeightStrategy, run, spyBelowSma };

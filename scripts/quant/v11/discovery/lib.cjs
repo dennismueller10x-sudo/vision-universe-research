@@ -62,6 +62,14 @@ function buildContext({ withPanel = true } = {}) {
       ended: !!end, lifecycle: lc ? { status: lc.status ?? null, lastTradeDate: lc.lastTradeDate ?? null, lastObservedDate: lc.lastObservedDate ?? null, terminalKind: lc.terminal?.kind ?? null, cashPerShare: lc.terminal?.cashPerShare ?? null } : null };
   });
   for (const l of listings) if (l.cal0 + l.n - 1 !== l.last) throw Error('CALENDAR_GAP_IN_FRAME:' + l.id); // frame has no gaps (checked)
+  // Quoted (unadjusted) close at week k = split-adjusted close x product of provider split factors dated after k.
+  // The quoted price was public at k; later split factors only undo the provider's back-adjustment.
+  for (const l of listings) {
+    const splits = (fr.docs.get(l.id).corporateActions?.splits || []).map(([d, f]) => [d, f]).sort((a, b) => a[0] < b[0] ? -1 : 1);
+    const dates = panel[l.i].dates, rf = new Float64Array(l.n); let acc = 1, q = splits.length - 1;
+    for (let k = l.n - 1; k >= 0; k--) { while (q >= 0 && splits[q][0] > dates[k]) { acc *= splits[q][1]; q--; } rf[k] = acc; }
+    l.rawFactor = rf;
+  }
   const ctx = { fr, cal, T, calIndex, bench, spy, listings, byId: new Map(listings.map(l => [l.id, l])), manifestHash: C.hash(K.sourceManifest(fr)), seconds: null };
   if (withPanel) ctx.fund = loadFundamentals(ctx);
   ctx.seconds = (Date.now() - t0) / 1000;
@@ -148,7 +156,7 @@ function featuresAt(ctx, j) {
     if (spyOk) { let ma = 0, mb = 0, cnt = 0; const pr = []; for (let k = j - 51; k <= j; k++) { const a = c(k) / c(k - 1) - 1, b = ctx.spy[k] / ctx.spy[k - 1] - 1; if (finite(b)) { pr.push([a, b]); ma += a; mb += b; cnt++; } }
       if (cnt >= 50) { ma /= cnt; mb /= cnt; let cv = 0, vb = 0; for (const [a, b] of pr) { cv += (a - ma) * (b - mb); vb += (b - mb) ** 2; } beta = vb > 0 ? cv / vb : null; } }
     out.push({ i: l.i, id: l.id, r12_1: c4 / c52 - 1, r6: c0 / c26 - 1, r3: c0 / c13 - 1, r1: c0 / c4 - 1, r12: c0 / c52 - 1, vol, r2, slope, upShare: up / n, hi52: c0 / hi, sma40: c0 / (s40 / 40),
-      rs12_1: spyOk ? Math.log(c4 / c52) - Math.log(ctx.spy[j - 4] / ctx.spy[j - 52]) : null, beta, canEnter: alive(l, j + 1) });
+      rawPx: c0 * l.rawFactor[j - l.cal0], zeroShare: lr.filter(x => x === 0).length / n, rs12_1: spyOk ? Math.log(c4 / c52) - Math.log(ctx.spy[j - 4] / ctx.spy[j - 52]) : null, beta, canEnter: alive(l, j + 1) });
   }
   ctx._feat.set(j, out);
   return out;
@@ -165,7 +173,7 @@ function pctRank(rows, key, dir = 1) {
 // strategy.decide(j, view) -> null (no trade) or Map(id -> number | 'KEEP' | 'FILL'); ids absent are sold.
 // Execution at j+1 close. Forced exit at a listing's last bar (series end) with others KEEP.
 // Returns the equity path, trades, rebalances and resolved numeric targets (for the research-portfolio bridge).
-function simulate(ctx, strategy, { decisions, endExec, costs, delistValue = 'LAST_CLOSE', record = true }) {
+function simulate(ctx, strategy, { decisions, endExec, costs, delistValue = 'LAST_CLOSE', record = true, relativeTolerance = false }) {
   const rate = (costs.feeBps + costs.slippageBps) / 10000, feeRate = costs.feeBps / 10000, slipRate = costs.slippageBps / 10000, init = LEDGER_CAPITAL;
   const start = decisions[0], decSet = new Set(decisions);
   let cash = init, turnover = 0, fees = 0, slips = 0;
@@ -213,18 +221,21 @@ function simulate(ctx, strategy, { decisions, endExec, costs, delistValue = 'LAS
       let traded = 0, f = 0, sl = 0;
       const deltas = keys.map(k => ({ k, delta: (weights[k] || 0) * after2 - (marked.get(k) || 0) })).sort((a, b) => a.delta - b.delta || (a.k < b.k ? -1 : a.k > b.k ? 1 : 0));
       for (const { k, delta } of deltas) {
-        if (Math.abs(delta) <= 1e-12 * init) continue;
+        if (Math.abs(delta) <= 1e-12 * (relativeTolerance ? Math.max(init, before) : init)) continue;
         const px = price(k), notional = Math.abs(delta), fee = notional * feeRate, slip = notional * slipRate, units = delta / px;
         cash -= delta + fee + slip;
         const nu = (holdings.get(k) || 0) + units;
-        if (nu < -1e-10) throw Error('SIM_NEGATIVE_UNITS');
-        if (Math.abs(nu) <= 1e-12) { holdings.delete(k); const m = meta.get(k); if (m) { exits.push({ id: k, entry: m.entry, exit: s, entryPrice: m.entryPrice, exitPrice: px, forced: forced.includes(k) }); meta.delete(k); } }
+        if (nu < -1e-10 && !(relativeTolerance && Math.abs(nu * px) <= 1e-9 * Math.max(init, before))) throw Error('SIM_NEGATIVE_UNITS');
+        if (Math.abs(nu) <= 1e-12 || (relativeTolerance && Math.abs(nu * px) <= 1e-12 * Math.max(init, before))) { holdings.delete(k); const m = meta.get(k); if (m) { exits.push({ id: k, entry: m.entry, exit: s, entryPrice: m.entryPrice, exitPrice: px, forced: forced.includes(k) }); meta.delete(k); } }
         else { holdings.set(k, nu); if (!meta.has(k)) meta.set(k, { entry: s, entryPrice: px }); }
         if (record) trades.push([s, k, delta > 0 ? 1 : -1, units, px, notional, fee + slip]);
         traded += notional; f += fee; sl += slip;
       }
-      if (cash < -1e-9 * init) throw Error('SIM_NEGATIVE_CASH');
-      if (Math.abs(cash) < 1e-12 * init) cash = 0;
+      // Engine tolerances are absolute (initial capital); oracle paths grow by many orders of magnitude, so they
+      // use the same tolerances relative to the pre-trade equity (relativeTolerance, oracle only).
+      const tol = relativeTolerance ? Math.max(init, before) : init;
+      if (cash < -1e-9 * tol) throw Error('SIM_NEGATIVE_CASH');
+      if (Math.abs(cash) < 1e-12 * tol) cash = 0;
       fees += f; slips += sl; const turn = before > 0 ? traded / (2 * before) : 0; turnover += turn;
       rebalances.push({ s, decision: decisionJ, forced: forced.length, turnover: turn, cost: f + sl });
       targets.push({ decision: decisionJ, exec: s, weights, forced: forced.slice() });

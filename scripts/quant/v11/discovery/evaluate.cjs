@@ -33,7 +33,9 @@ function evaluateSpec(ctx, spec, from, to, { stress = true, engine = false, infe
   const sch = R.schedule(ctx, spec, from, to);
   const base = L.simulate(ctx, R.makeStrategy(ctx, spec), { ...sch, costs: L.COSTS.base });
   const eq = base.equity, dates = eq.slice(1).map(e => e.date), rs = weeklyReturns(eq), rspy = spyReturns(ctx, eq);
-  const own = L.simulate(ctx, R.makeStrategy(ctx, R.popSpec(spec)), { ...sch, costs: L.COSTS.base, record: false });
+  const ownKey = JSON.stringify(['own', sch.decisions, sch.endExec, spec.family, (spec.ranks || []).map(x => x[0]).sort(), spec.filters || [], spec.minMarketCap || null, spec.v10Rule || null, spec.signalWindowWeeks || null]);
+  if (!benchCache.has(ownKey)) benchCache.set(ownKey, L.simulate(ctx, R.makeStrategy(ctx, R.popSpec(spec)), { ...sch, costs: L.COSTS.base, record: false }));
+  const own = benchCache.get(ownKey);
   const bm = benchmarks(ctx, spec, from, to, sch, L.COSTS.base);
   const rown = weeklyReturns(own.equity), rfew = weeklyReturns(bm.frameEw.equity), rcap = bm.cap ? weeklyReturns(bm.cap.equity) : null;
   const spyPath = eq.map(e => ({ value: ctx.spy[e.s], date: e.date }));
