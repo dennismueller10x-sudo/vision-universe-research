@@ -59,10 +59,12 @@ const FIG={bulle:'../../figuren/entwurf-1/outfits/outfit-sakko/',baer:'../../fig
 const ICON='../../icons/';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3),easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
 const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
-const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-1;k<=i+1;k++)m=Math.max(m,AMP[k]||0);return m};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const OPEN={bulle:0.62,baer:0.5},HALF={bulle:0.16,baer:0.16};
 const loads=[];const img=(src,parent,cls)=>{const im=new Image();im.src=src;if(cls)im.className=cls;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
 // ---------- figures
-const FACES={bulle:['basis','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
 const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
 const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
 const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
@@ -140,7 +142,7 @@ function render(t){
   cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+180}px) scale(${z})`:'none';
   for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
    if(speaking){const a=amp(t);const face=seg.face;
-    if(face&&k<0.6)f=face;else f=a>0.55?'mund-offen':a>0.18?'mund-halb':'basis'}
+    if(face&&k<0.6)f=face;else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>OPEN[who]?'mund-offen':a>HALF[who]?'mund-halb':'basis')}
    else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
    else if(blinkAt(who,t))f='blinzeln';
    show(who,f)}
