@@ -108,7 +108,8 @@ function main() {
   const monthTarget = (() => { const [y, m] = eventMonths.at(-1).split('-').map(Number); const t = new Date(Date.UTC(y, m - 1 + monthsMissing, 1)); const first = t.toISOString().slice(0, 10); return L.isSession(first) ? first : L.nextSession(first); })();
   const firstM6 = maturity[0].m6;
   const evaluatorText = fs.readFileSync(path.join(ROOT, EVALUATOR), 'utf8').split('\n');
-  const oosLine = evaluatorText.findIndex(l => /G\("oos"/.test(l)) + 1, titlesLine = evaluatorText.findIndex(l => /const completedTitles/.test(l)) + 1, monthsLine = evaluatorText.findIndex(l => /const eventWeeks/.test(l)) + 1;
+  const setupStart = evaluatorText.findIndex(l => /const setupGates/.test(l));
+  const oosLine = setupStart + evaluatorText.slice(setupStart).findIndex(l => /G\("oos"/.test(l)) + 1, titlesLine = evaluatorText.findIndex(l => /const completedTitles/.test(l)) + 1, monthsLine = evaluatorText.findIndex(l => /const eventWeeks/.test(l)) + 1;
   const gates = [
     { gate: 'historyDates', required: req.historyDates, observed: dates.length, earliest: future[needDates - 1], basis: `${needDates} weitere Veroeffentlichungen an aufeinanderfolgenden NYSE-Sitzungen ab ${future[0]}` },
     { gate: 'historySpanDays', required: req.historySpanDays, observed: Math.round((L.utc(last) - L.utc(dates[0])) / 86400000), earliest: spanDate, basis: `erster Stand ${dates[0]} + ${req.historySpanDays} Kalendertage, naechste Sitzung` },
