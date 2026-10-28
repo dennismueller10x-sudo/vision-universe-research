@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "v9-events-registration-1.0.0",
+  "id": "V9-EVENTS-8K-ITEM202-RETRO",
+  "version": "1.1.0",
+  "frozenAt": "2026-10-27T19:08:00.000Z",
+  "analysisMode": "EXPLORATORY",
+  "engineContract": {
+    "engine": "quant/engines/research-studies.cjs#runEventStudy (unchanged, sha256 474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418)",
+    "sourceMode": "HISTORICAL_SIMULATION",
+    "cohortMode": "CONDITIONAL_CURRENT_CLASSIFICATION",
+    "returnBasis": "PRICE_RETURN",
+    "currency": "USD",
+    "entryDelayBars": 1,
+    "entryModel": "FIRST_EXPLICIT_SESSION_CLOSE_STRICTLY_AFTER_AVAILABILITY (session close times from quant/engines/realtime/trading-session.js + quant/config/market-calendar.json, XNYS, incl. early closes)",
+    "horizonsBars": [
+      1,
+      5,
+      20
+    ],
+    "costs": {
+      "basis": "PER_SIDE_NOTIONAL",
+      "feeBps": 10,
+      "slippageBps": 5
+    },
+    "benchmark": "SPY daily split-adjusted price series quant/data/market/discover-series/ref_SPY.json (sha256 f04a3ea0bc79a51bd811073d8f25ab4642affffa18aa0ed40b5552efc6dc950e), passive, no costs",
+    "asOf": "2026-10-26",
+    "registrationTimestampMeaning": "Wall-clock freeze of rule before any event outcome was computed. Retrospective window is historical data; this is NOT an untouched preregistration in the confirmatory sense (see priorExposure)."
+  },
+  "eventDefinition": {
+    "category": "Original Form 8-K (form field exactly '8-K') whose SEC submissions JSON 'items' field contains '2.02' (Results of Operations and Financial Condition).",
+    "notEarningsClaim": "Item 2.02 is a disclosure category; it is not verified to be a quarterly earnings release in every case.",
+    "source": "https://data.sec.gov/submissions/CIK##########.json (recent block; older 'files' pages only when recent does not reach 2025-08-15). Accession number and acceptanceDateTime per filing.",
+    "availabilityClock": "SEC acceptance time. Interpretation of submissions acceptanceDateTime (true UTC vs Eastern digits labelled Z) is fixed by the stratified header-parity sample (>=200 original filings, seed V9-EVENTS-HEADER-PARITY-1) against SGML <ACCEPTANCE-DATETIME> (US Eastern). If the sample is INCONSISTENT the study is not run.",
+    "availabilityMeaning": "Acceptance is an UPPER BOUND on public availability. The company press release (e.g. newswire) may precede it; then next-close entry is look-ahead-free but possibly late. publishedAt is set equal to acceptance for engine purposes only; company publication time is NOT established.",
+    "window": "acceptanceUtc > 2025-09-30T20:00:00.000Z (first daily close in the series) and <= 2026-10-26T23:59:59.999Z. Earlier acceptances = PRE_WINDOW (counted; used only for control exclusion). Later acceptances before the prospective freeze = GAP_NOT_EVALUATED (counted).",
+    "amendments": "8-K/A (with or without Item 2.02) are counted, never treated as original events. An 8-K/A Item 2.02 still blocks control eligibility.",
+    "sameEntryDuplicates": "Per issuer (CIK), several original Item 2.02 8-Ks mapping to the same calendar entry session: keep earliest acceptance (tie: accession); others counted SAME_ENTRY_DUPLICATE."
+  },
+  "population": {
+    "candidateSource": "quant/data/market/discover-series/ref_*.json (daily, SPLIT_ADJUSTED, real, USD, 2025-09-30..2026-10-26) built by scripts/quant/v9/events/population.cjs (population.json sha256 b67744ba7fc3c758767aaf98b196e4dab84055c322421a3486df726d1fc8bbcd: 6679 files, 4431 eligible).",
+    "listingGuardsInOrder": [
+      "1 security master (sha256 26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332): unique baseline_security_id row, instrument_type EQUITY_COMMON, eligible_us_equity, primary_listing, exchange NYSE->XNYS, NASDAQ->XNAS, AMEX/NYSE MKT->XASE (others excluded); master ticker equals series ticker",
+      "2 currently weekly-QUALIFIED via weekly-real-adapter createLoader",
+      "3 ticker present in SEC company_tickers_exchange.json (current mapping) with exactly one CIK",
+      "4 SEC exchange compatible with master: NASDAQ<->'Nasdaq'; NYSE/AMEX/NYSE MKT<->'NYSE'; else EXCHANGE_MISMATCH",
+      "5 submissions JSON (and needed pages) retrieved",
+      "6 no formerNames entry with 'to' >= 2025-08-15 (NAME_CHANGE_IN_WINDOW; ticker reuse / identity change guard)",
+      "7 submissions 'tickers' contains the ticker (TICKER_NOT_IN_SUBMISSIONS)",
+      "8 daily series must not start before master listing start date (DAILY_PRECEDES_LISTING_START)",
+      "9 every daily date is an XNYS trading day in the study calendar",
+      "10 one listing per CIK: the ticker that appears first in submissions 'tickers'; others SECONDARY_LISTING_SAME_CIK",
+      "11 issuer has >=1 original Item 2.02 8-K accepted in [2025-08-15, 2026-10-26]; else NO_ITEM202_REPORTER (excluded from events and controls)"
+    ],
+    "survivorship": "Current listings and current SEC ticker map only. Delisted/acquired issuers in the window are absent. Results are conditional on survival to 2026-10-26 and current classification."
+  },
+  "controls": {
+    "design": "Pre-registered placebo control listings (eventType CONTROL) run through the same engine with the event's acceptance time as availableAt, hence identical entry session and horizons.",
+    "k": 2,
+    "seed": "V9-EVENTS-CONTROL-1",
+    "candidates": "Retained listings of other issuers with a daily bar on the event's calendar entry session and on the preceding session, and with NO Item 2.02 filing (8-K or 8-K/A, any harvested date incl. after asOf) whose calendar entry session lies within [-10, +21] sessions of the event's entry session (extended XNYS session list from the market calendar).",
+    "selection": "Rank candidates by sha256(seed + '|' + eventId + '|' + listingId) ascending; take first k.",
+    "exclusionSessions": {
+      "before": 10,
+      "after": 21
+    }
+  },
+  "outcomes": {
+    "abnormalReturn": "AR = engine grossReturn - engine benchmarkReturn (SPY close-to-close over identical entry/exit dates).",
+    "netExcess": "engine benchmarkExcess = netReturn (10+5 bps per side) - benchmarkReturn.",
+    "entrySessionRule": "If the engine entry date differs from the first calendar session whose close is strictly after acceptance (listing gap), the row is ENTRY_SESSION_GAP and excluded from endpoints (counted).",
+    "maturity": "Engine IMMATURE/CENSORED/INELIGIBLE states counted per horizon; IMMATURE rows are reported with expected maturity, never dropped silently."
+  },
+  "primaryEndpoints": {
+    "A_h": "Mean over events (OBSERVED, no entry gap, >=1 OBSERVED control) of D = |AR_event| - mean_controls |AR_control|. Positive-control hypothesis: D > 0 (earnings-type disclosures raise return variance). Two-sided test of mean D = 0.",
+    "B_h": "Mean engine benchmarkExcess of the same events. Expected ~0. Two-sided test of mean = 0. No trading-strategy claim in either direction.",
+    "horizons": [
+      1,
+      5,
+      20
+    ],
+    "family": "6 tests: A1,A5,A20,B1,B5,B20"
+  },
+  "inference": {
+    "primary": "Two-way cluster SE via research-studies.cjs#inference (time cluster = event entry session date, issuer cluster = CIK); two-sided normal p-value; Holm (research-validation.cjs#holm) across the 6 endpoints, alpha 0.05.",
+    "robustness": "research-validation.cjs#inferTemporalBlockMean: circular calendar-block bootstrap over the study session calendar, observation date = entry session, blockLength 20, minimumBlockLength 20, replicates 9999, seed 20261027, alpha 0.05, assumption CONDITIONAL_WEAK_STATIONARITY_AND_MIXING.",
+    "methodValidityCriterion": "Positive control DETECTED iff A1 mean > 0, Holm-adjusted p < 0.05 AND block-bootstrap 95% CI for A1 excludes 0. Otherwise NOT_DETECTED (reported as such).",
+    "secondaryNotInFamily": [
+      "mean |AR| events and controls separately",
+      "event-minus-control signed AR difference",
+      "pre-entry move diagnostic",
+      "clustering diagnostics",
+      "time-of-day buckets"
+    ],
+    "multiplicityNote": "1.1.0 is a post-hoc sensitivity; its p-values are not confirmatory and are not pooled with 1.0.0."
+  },
+  "diagnostics": {
+    "preEntryMove": "For each event: last session close at or before acceptance -> entry close (gross, and minus SPY over same dates); summarised by acceptance bucket in US Eastern: PRE_OPEN (<09:30), REGULAR (09:30-close), POST_CLOSE (>=close same day), NON_SESSION_DAY.",
+    "clustering": "events per entry date (top dates, share in largest 20 dates), events per issuer, same-issuer overlapping 20-bar windows, month distribution."
+  },
+  "independentReference": "scripts/quant/v9/events/reference_check.py (stdlib) re-derives listing guards, events, controls, session closes (zoneinfo), entry/exit, returns, AR, cluster SEs and bootstrap from raw inputs; parity declared at abs tolerance 1e-12 for returns and 1e-9 relative for SEs/p-values.",
+  "priorExposure": "No 8-K Item 2.02 outcome in this window was computed before this freeze. Before freezing, ~36 raw acceptanceDateTime strings were viewed (no prices). The daily window 2025-09-30..2026-10-26 was used in V8 for 11 named survivors and V8 used 12 SEC acceptance headers (JPM, MSFT, NVDA, XOM); the price window is therefore explored history, and this study is retrospective/exploratory evidence, not an independent holdout.",
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "supersedes": null,
+  "relationTo_1_0_0": {
+    "registration1_0_0Sha256": "4bd65dd5c25d5a2d0347cdbd42e096a1ad81b10a3cb13d7cbb7c04ac12bf4bec",
+    "status": "POST_HOC_SENSITIVITY_AFTER_SEEING_1_0_0_RESULTS; 1.0.0 remains the registered primary analysis and is reported unchanged.",
+    "reason": "Design defect found in 1.0.0: control exclusion of +-10 sessions is shorter than the 20-bar horizon, so a control may contain its own Item 2.02 announcement inside bars 11-20 after entry, while the event window starts after its own announcement reaction. This biases A20 (and in principle A5 is unaffected since 5 <= 10) against events. 1.0.0 showed A20 mean D < 0 (events |AR| 0.1002 vs controls 0.1176).",
+    "onlyChange": "controls.exclusionSessions = {before: 10, after: 21}: no Item 2.02 filing (8-K or 8-K/A) whose calendar entry session j satisfies si-10 <= j <= si+21 (covers the full 20-bar outcome window plus one session). Everything else identical."
+  }
+}

@@ -23,8 +23,8 @@ import logging
 from datetime import date, datetime, timezone
 
 from .derived import reconstruct
-from .fiscal import FiscalCalendar
-from .normalize import normalize_company
+from .fiscal import REJECTED_IMPLAUSIBLE_FILING_FY, FiscalCalendar
+from .normalize import ISSUE_FUTURE_PERIOD_END, normalize_company
 from .periods import PeriodResolver
 from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import KIND_INSTANT
@@ -213,6 +213,29 @@ def _horizons(annual_revenue_rows):
     }
 
 
+def quality_block(calendar, result):
+    """What normalization refused for this issuer, for the data-quality report.
+
+    implausibleFilingFy: annual filings whose own `fy` was not used as a label
+    (fiscal.REJECTED_IMPLAUSIBLE_FILING_FY). futurePeriodEnd: mapped facts whose
+    period ends after their filing date, quarantined (normalize.FUTURE_PERIOD_END).
+    Empty dict when nothing was refused.
+    """
+    block = {}
+    implausible = [{"periodEnd": end, "filingClaimedFy": claimed, "usedFy": used}
+                   for end, claimed, used, reason in calendar.rejected_anchors
+                   if reason == REJECTED_IMPLAUSIBLE_FILING_FY]
+    if implausible:
+        block["implausibleFilingFy"] = implausible
+    future = [issue for issue in result.issues if issue["code"] == ISSUE_FUTURE_PERIOD_END]
+    if future:
+        by_metric = {}
+        for issue in future:
+            by_metric[issue["metric"]] = by_metric.get(issue["metric"], 0) + 1
+        block["futurePeriodEnd"] = {"quarantined": len(future), "byMetric": dict(sorted(by_metric.items()))}
+    return block
+
+
 def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), security_ids=(),
                           name=None, fiscal_year_end_hint=None, annual_years=DEFAULT_ANNUAL_YEARS,
                           quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None,
@@ -322,6 +345,10 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         "quarterly": quarterly,
         "ttm": ttm,
     }
+    quality = quality_block(calendar, result)
+    if quality:
+        # Only where something was refused, so an unaffected bundle keeps its shape.
+        bundle["quality"] = quality
     if not with_history:
         return bundle
     history = None
@@ -577,6 +604,8 @@ def summarize_bundle(bundle):
         "h3": h["3y"], "h5": h["5y"], "h10": h["10y"],
         "latestAnnual": cov["latestAnnual"], "latestQuarter": cov["latestQuarter"],
         "metrics": sorted(set(cov["annualMetrics"]) | set(cov["quarterlyMetrics"]) | set(cov["ttmMetrics"])),
+        "implausibleFilingFy": len((bundle.get("quality") or {}).get("implausibleFilingFy") or []),
+        "futurePeriodEnd": ((bundle.get("quality") or {}).get("futurePeriodEnd") or {}).get("quarantined", 0),
     }
 
 
@@ -605,4 +634,16 @@ def aggregate_coverage(index_rows, product_count, cik_mapped, without_cik, unmat
         "history5y": count(lambda r: r["h5"]),
         "history10y": count(lambda r: r["h10"]),
         "perMetric": per_metric,
+        # Read by core/data-quality.js (DQ-SEC-1/2): what normalization refused.
+        "secQuality": {
+            "implausibleFilingFy": {
+                "issuers": count(lambda r: r.get("implausibleFilingFy")),
+                "anchors": sum(r.get("implausibleFilingFy") or 0 for r in index_rows),
+                "ciks": sorted(r["cik"] for r in index_rows if r.get("implausibleFilingFy")),
+            },
+            "futurePeriodEnd": {
+                "issuers": count(lambda r: r.get("futurePeriodEnd")),
+                "quarantined": sum(r.get("futurePeriodEnd") or 0 for r in index_rows),
+            },
+        },
     }

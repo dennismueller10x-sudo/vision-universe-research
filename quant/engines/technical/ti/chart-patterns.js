@@ -45,7 +45,7 @@
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "ti-chart-patterns-1.1.1";
+  var ENGINE_VERSION = "ti-chart-patterns-1.3.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   /* Zahlen ab Betrag 1 auf 4 Nachkommastellen, darunter 4 signifikante Stellen (wie published-close.js): Bei Kursen unter
@@ -168,10 +168,18 @@
         var flatH = Math.abs(hA.pivotPrice - hB.pivotPrice) <= tol, flatL = Math.abs(lA.pivotPrice - lB.pivotPrice) <= tol;
         var fallingH = hB.pivotPrice < hA.pivotPrice - tol * 0.5, risingL = lB.pivotPrice > lA.pivotPrice + tol * 0.5;
         var width = Math.max(hA.pivotPrice, hB.pivotPrice) - Math.min(lA.pivotPrice, lB.pivotPrice);
-        var type = flatH && risingL ? "ASCENDING_TRIANGLE" : flatL && fallingH ? "DESCENDING_TRIANGLE" : fallingH && risingL ? "SYMMETRICAL_TRIANGLE" : flatH && flatL && width >= 3 * atr ? "RECTANGLE" : null;
+        /* Seit 1.2.0: "Flach" (Abstand <= tol) und "steigend/fallend" (> 0,5 tol) ueberlappen. Gelten aufsteigendes
+           (Hochs flach, Tiefs steigen) und absteigendes Dreieck (Tiefs flach, Hochs fallen) zugleich, fallen die Hochs und
+           steigen die Tiefs: das Muster konvergiert und ist symmetrisch. Vorher entschied die Reihenfolge ("aufsteigend"),
+           und das Spiegelbild war wieder "aufsteigend" statt "absteigend". Beide Kanten sind dann Linien durch die Pivots. */
+        var both = flatH && risingL && flatL && fallingH;
+        var type = both ? "SYMMETRICAL_TRIANGLE" : flatH && risingL ? "ASCENDING_TRIANGLE" : flatL && fallingH ? "DESCENDING_TRIANGLE" : fallingH && risingL ? "SYMMETRICAL_TRIANGLE" : flatH && flatL && width >= 3 * atr ? "RECTANGLE" : null;
         if (type && width >= 2.5 * atr) {
-          var upper = flatH ? function () { return Math.max(hA.pivotPrice, hB.pivotPrice); } : lineThrough(hA, hB);
-          var lower = flatL ? function () { return Math.min(lA.pivotPrice, lB.pivotPrice); } : lineThrough(lA, lB);
+          /* Seit 1.3.0: die Kanten folgen dem Typ, nicht "flach" allein. Waagrecht ist nur die Oberkante des aufsteigenden
+             und die Unterkante des absteigenden Dreiecks (beide beim Rechteck); die Gegenkante ist die Linie durch die Pivots.
+             Vorher wurde jede "flache" Kante waagrecht gezeichnet, auch die steigende Unterkante eines aufsteigenden Dreiecks. */
+          var upper = type === "ASCENDING_TRIANGLE" || type === "RECTANGLE" ? function () { return Math.max(hA.pivotPrice, hB.pivotPrice); } : lineThrough(hA, hB);
+          var lower = type === "DESCENDING_TRIANGLE" || type === "RECTANGLE" ? function () { return Math.min(lA.pivotPrice, lB.pivotPrice); } : lineThrough(lA, lB);
           var lastP = win[win.length - 1];
           var upIdx = firstCross(rctx, lastP.pivotIndex, upper, 1), dnIdx = firstCross(rctx, lastP.pivotIndex, lower, -1);
           var dir3 = upIdx >= 0 && (dnIdx < 0 || upIdx < dnIdx) ? 1 : dnIdx >= 0 ? -1 : (type === "ASCENDING_TRIANGLE" ? 1 : type === "DESCENDING_TRIANGLE" ? -1 : 0);
@@ -185,7 +193,7 @@
           else res3 = resolve(rctx, lastP, dir3 > 0 ? upper : lower, dir3, life ? (dir3 > 0 ? lower : upper) : (dir3 > 0 ? lower(ctx.t) : upper(ctx.t)));
           var bl = dir3 >= 0 ? upper(U) : lower(U);
           found.push(pack(rctx, type, dir3 >= 0 ? 1 : -1, win, res3, isNum(res3.breakoutLevel) ? res3.breakoutLevel : bl, width, dir3 >= 0 ? lower(U) : upper(U),
-            { bias: dir3 === 0 ? "OPEN" : null, upperNow: r4(upper(U)), lowerNow: r4(lower(U)) }));
+            { bias: dir3 === 0 ? "OPEN" : null, upperNow: r4(upper(U)), lowerNow: r4(lower(U)), upperFrom: r4(upper(hA.pivotIndex)), lowerFrom: r4(lower(lA.pivotIndex)) }));
         }
       }
     }

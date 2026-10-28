@@ -94,9 +94,20 @@
       for (var j = 0; j < n; j++) { var v = src[key][j]; s[j + 1] = s[j] + (isNum(v) ? v : 0); g[j + 1] = g[j] + (isNum(v) ? 0 : 1); }
       pre[key] = { s: s, g: g };
     });
+    /* Zwischenspeicher je Einstellung und Bar: Die Muster fragen dieselben Mittel vielfach ab; avg ist rein,
+       der Speicher aendert keinen Wert (spart die wiederholte Rundung ueber toPrecision). */
+    var memo = {};
     function avg(name, k) {
+      if (k < 0 || k >= n) return NaN;
+      var m = memo[name] || (memo[name] = { v: new Array(n), done: new Uint8Array(n) });
+      if (m.done[k]) return m.v[k];
+      var r = avgOnce(name, k);
+      m.v[k] = r; m.done[k] = 1;
+      return r;
+    }
+    function avgOnce(name, k) {
       var st = SETTINGS[name];
-      if (k < 0 || k >= n || !ok[k]) return NaN;
+      if (!ok[k]) return NaN;
       var base;
       if (st.period === 0) base = src[st.range][k];
       else {

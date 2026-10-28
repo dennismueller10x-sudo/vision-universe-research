@@ -1,0 +1,1970 @@
+{
+ "schemaVersion": "v9-secpit-fy-dossier-1.0.0",
+ "codeSha256": "8388e217476a5f641e8a2f5010ec54ba0819bc70ccec54849592b07b1916a428",
+ "reproduceMeta": {
+  "populationCiks": 5479,
+  "companyfactsZipSha256": "330324c4064779199c8ceaa2818d0b6fdf37ec4b1d786573601e8fadd82e7582",
+  "submissionsZipSha256": "c354fa662fc9734179830ff32cd24867a6dce2b35d3e65c8150063c6621700a1",
+  "codeSha256": "960dc7b633bad5d04d69a78ac7505ab49addb91ee2b917365bfa63a6bc9bab38",
+  "fyWindow": [
+   1990,
+   2027
+  ]
+ },
+ "plausibleWindow": [
+  1990,
+  2027
+ ],
+ "population": {
+  "ciks": 2,
+  "processed": 5438,
+  "statusCounts": {
+   "null": 2
+  }
+ },
+ "mechanism": {
+  "sourceField": "companyfacts entry.fy (= the filing's dei:DocumentFiscalYearFocus as reported); provider.iter_raw_facts -> RawFact.filing_fy",
+  "codePath": "fiscal.FiscalCalendar.from_raw_facts: anchors[max(ends of a 10-K/20-F/40-F with fp=FY)] = int(filing_fy); _label_years accepts any anchor that is greater than the previous label (no plausibility bound), so a too-large fy becomes the label of that fiscal year and the NEXT correct anchor is rejected as 'repeating or preceding'; normalize assigns timeline fiscal_year from calendar labels (not from fy directly).",
+  "downstream": "consumer.build_consumer_bundle orders fiscal years by label: annual_scope = years[-N:], quarter slots from reversed(years), latestAnnual/latestQuarter = max(fy); PeriodResolver.latest_quarters/latest_instant iterate reversed(fiscal_years())."
+ },
+ "counts": {
+  "rawEntriesWithImplausibleFy": 20785,
+  "accessionsWithImplausibleFy": 42,
+  "issuersWithImplausibleFy": 27,
+  "periodicAccessions": 13,
+  "originsVerified": {
+   "FILER_ORIGINAL_XBRL": 12,
+   "NON_PERIODIC_FORM_NOT_VERIFIED": 29,
+   "NO_DOCUMENT_FISCAL_YEAR_FOCUS_IN_INSTANCE": 1
+  },
+  "patterns": {
+   "DIGIT_TRANSPOSITION": 1,
+   "EXCEL_SERIAL_OF_PERIOD_END": 7,
+   "EXCEL_SERIAL_OTHER_DATE": 4,
+   "OTHER": 30
+  },
+  "pipelineLabelAnomalies": 9,
+  "issuersWithPipelineLabelAnomaly": 8,
+  "timelinesWithImplausibleLabel": 568,
+  "observationsWithImplausibleLabel": 1438,
+  "fiscalYearMin": 1968,
+  "fiscalYearMax": 43830
+ },
+ "accessions": [
+  {
+   "cik": "0000002969",
+   "tickers": [
+    "APD"
+   ],
+   "accession": "0000002969-17-000024",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2017-06-05",
+   "acceptance": "2017-06-06T00:39:29.000Z",
+   "reportDate": "2017-06-05",
+   "factsWithThisFy": 927,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000003570",
+   "tickers": [
+    "LNG"
+   ],
+   "accession": "0000003570-18-000097",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2018-05-23",
+   "acceptance": "2018-05-23T20:09:31.000Z",
+   "reportDate": "2018-05-23",
+   "factsWithThisFy": 479,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000010456",
+   "tickers": [
+    "BAX"
+   ],
+   "accession": "0001564590-18-022264",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2018-08-23",
+   "acceptance": "2018-08-24T00:17:10.000Z",
+   "reportDate": "2018-08-23",
+   "factsWithThisFy": 691,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000016732",
+   "tickers": [
+    "CPB"
+   ],
+   "accession": "0000016732-15-000061",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2015-12-10",
+   "acceptance": "2015-12-10T18:18:02.000Z",
+   "reportDate": "2015-12-10",
+   "factsWithThisFy": 758,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000023194",
+   "tickers": [
+    "CRK"
+   ],
+   "accession": "0001193125-16-665830",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-08-01",
+   "acceptance": "2016-08-01T13:17:14.000Z",
+   "reportDate": "2016-08-01",
+   "factsWithThisFy": 466,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000024545",
+   "tickers": [
+    "TAP",
+    "TAP-A"
+   ],
+   "accession": "0000024545-16-000093",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-06-28",
+   "acceptance": "2016-06-28T15:15:26.000Z",
+   "reportDate": "2016-06-28",
+   "factsWithThisFy": 748,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000024545",
+   "tickers": [
+    "TAP",
+    "TAP-A"
+   ],
+   "accession": "0000024545-16-000094",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-06-28",
+   "acceptance": "2016-06-28T15:21:41.000Z",
+   "reportDate": "2016-06-28",
+   "factsWithThisFy": 273,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000031235",
+   "tickers": [
+    "KODK"
+   ],
+   "accession": "0001193125-16-676861",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-08-09",
+   "acceptance": "2016-08-09T20:47:40.000Z",
+   "reportDate": "2016-08-09",
+   "factsWithThisFy": 344,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000031462",
+   "tickers": [
+    "ECL"
+   ],
+   "accession": "0001558370-20-011283",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2020-09-25",
+   "acceptance": "2020-09-26T00:05:09.000Z",
+   "reportDate": "2019-12-31",
+   "factsWithThisFy": 798,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000051253",
+   "tickers": [
+    "IFF"
+   ],
+   "accession": "0000051253-20-000026",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2020-06-18",
+   "acceptance": "2020-06-18T20:37:12.000Z",
+   "reportDate": "2020-06-18",
+   "factsWithThisFy": 580,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000067088",
+   "tickers": [
+    "MUFG",
+    "MBFJF"
+   ],
+   "accession": "0001193125-20-014674",
+   "form": "6-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2020-01-27",
+   "acceptance": "2020-01-27T11:20:00.000Z",
+   "reportDate": "2019-09-30",
+   "factsWithThisFy": 615,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000067088",
+   "tickers": [
+    "MUFG",
+    "MBFJF"
+   ],
+   "accession": "0001193125-20-328263",
+   "form": "6-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2020-12-29",
+   "acceptance": "2020-12-29T12:22:12.000Z",
+   "reportDate": "2020-09-30",
+   "factsWithThisFy": 547,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000072971",
+   "tickers": [
+    "WFC",
+    "WFC-PY",
+    "WFC-PL",
+    "WFC-PC",
+    "WFCNP",
+    "WFC-PA",
+    "WFC-PD",
+    "WFC-PZ"
+   ],
+   "accession": "0000072971-19-000225",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2019-02-26",
+   "acceptance": "2019-02-26T16:23:35.000Z",
+   "reportDate": "2019-02-26",
+   "factsWithThisFy": 997,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000074303",
+   "tickers": [
+    "OLN"
+   ],
+   "accession": "0001193125-16-664678",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-07-29",
+   "acceptance": "2016-07-29T20:45:14.000Z",
+   "reportDate": "2016-07-29",
+   "factsWithThisFy": 1257,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000074303",
+   "tickers": [
+    "OLN"
+   ],
+   "accession": "0001193125-16-699707",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-09-01",
+   "acceptance": "2016-09-01T20:52:18.000Z",
+   "reportDate": "2016-09-01",
+   "factsWithThisFy": 568,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000086312",
+   "tickers": [
+    "TRV"
+   ],
+   "accession": "0001104659-17-040284",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2017-06-20",
+   "acceptance": "2017-06-20T14:52:41.000Z",
+   "reportDate": "2017-04-01",
+   "factsWithThisFy": 635,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000086312",
+   "tickers": [
+    "TRV"
+   ],
+   "accession": "0001104659-17-040286",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2017-06-20",
+   "acceptance": "2017-06-20T14:56:09.000Z",
+   "reportDate": "2017-04-01",
+   "factsWithThisFy": 249,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000093751",
+   "tickers": [
+    "STT",
+    "STT-PG"
+   ],
+   "accession": "0000093751-19-000390",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2019-05-02",
+   "acceptance": "2019-05-02T18:47:33.000Z",
+   "reportDate": "2019-05-02",
+   "factsWithThisFy": 737,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000096021",
+   "tickers": [
+    "SYY"
+   ],
+   "accession": "0000950123-11-096224",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2011-11-08",
+   "acceptance": "2011-11-08T18:45:57.000Z",
+   "reportDate": "2011-11-08",
+   "factsWithThisFy": 636,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000098222",
+   "tickers": [
+    "TDW",
+    "TDDWW",
+    "TDGMW"
+   ],
+   "accession": "0001193125-18-263846",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2018-08-31",
+   "acceptance": "2018-08-31T02:11:04.000Z",
+   "reportDate": "2018-08-30",
+   "factsWithThisFy": 224,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000110471",
+   "tickers": [
+    "WWW"
+   ],
+   "accession": "0000110471-16-000055",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-04-28",
+   "acceptance": "2016-04-27T21:33:22.000Z",
+   "reportDate": "2016-04-27",
+   "factsWithThisFy": 12,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000110471",
+   "tickers": [
+    "WWW"
+   ],
+   "accession": "0000110471-16-000078",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2016-08-16",
+   "acceptance": "2016-08-16T11:32:09.000Z",
+   "reportDate": "2016-08-16",
+   "factsWithThisFy": 708,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000202058",
+   "tickers": [
+    "LHX"
+   ],
+   "accession": "0000202058-18-000147",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2018-12-13",
+   "acceptance": "2018-12-14T02:54:48.000Z",
+   "reportDate": "2018-12-13",
+   "factsWithThisFy": 503,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000720672",
+   "tickers": [
+    "SF",
+    "SF-PB",
+    "SFB",
+    "SF-PC",
+    "SF-PD"
+   ],
+   "accession": "0001564590-17-017398",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2017-08-11",
+   "acceptance": "2017-08-12T00:03:34.000Z",
+   "reportDate": "2017-08-11",
+   "factsWithThisFy": 828,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000827054",
+   "tickers": [
+    "MCHP",
+    "MCHPP"
+   ],
+   "accession": "0000827054-10-000049",
+   "form": "10-Q",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2010-02-09",
+   "acceptance": "2010-02-10T00:36:34.000Z",
+   "reportDate": "2009-12-31",
+   "factsWithThisFy": 212,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/827054/000082705410000049/mchp-20091231.xml",
+   "instanceSha256": "a7a03998ee383f3f5b7f5e793df90bfa40b71965483bcfa76edd9133e7c062fa",
+   "dei": {
+    "DocumentFiscalYearFocus": [],
+    "DocumentFiscalPeriodFocus": [],
+    "DocumentPeriodEndDate": [
+     "2009-12-31"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "NO_DOCUMENT_FISCAL_YEAR_FOCUS_IN_INSTANCE",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000832988",
+   "tickers": [
+    "SIG"
+   ],
+   "accession": "0001193125-14-194909",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2014-05-12",
+   "acceptance": "2014-05-13T00:28:01.000Z",
+   "reportDate": "2014-05-12",
+   "factsWithThisFy": 572,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000880807",
+   "tickers": [
+    "AMSC"
+   ],
+   "accession": "0001193125-12-162694",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2012-04-13",
+   "acceptance": "2012-04-13T20:30:45.000Z",
+   "reportDate": "2012-04-13",
+   "factsWithThisFy": 214,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0000937098",
+   "tickers": [
+    "TNET"
+   ],
+   "accession": "0000937098-19-000182",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43646
+   ],
+   "companyfactsFp": [
+    "Q2"
+   ],
+   "filed": "2019-07-25",
+   "acceptance": "2019-07-25T21:13:17.000Z",
+   "reportDate": "2019-06-30",
+   "factsWithThisFy": 359,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/937098/000093709819000182/tnet-063019x10q_htm.xml",
+   "instanceSha256": "cafc795935d0a57044560da8af8fc9edc58dd7aaf55dbaea0ae59ef3e518afc4",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43646"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentPeriodEndDate": [
+     "2019-06-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2019-06-30"
+  },
+  {
+   "cik": "0000937098",
+   "tickers": [
+    "TNET"
+   ],
+   "accession": "0000937098-19-000216",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43738
+   ],
+   "companyfactsFp": [
+    "Q3"
+   ],
+   "filed": "2019-10-24",
+   "acceptance": "2019-10-24T22:59:27.000Z",
+   "reportDate": "2019-09-30",
+   "factsWithThisFy": 356,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/937098/000093709819000216/tnet-093019x10q_htm.xml",
+   "instanceSha256": "e63c35cff973e9aa110dafc85e93bd4f8f7a32a89cb2efae2156d3c27d6c275f",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43738"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentPeriodEndDate": [
+     "2019-09-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2019-09-30"
+  },
+  {
+   "cik": "0000937098",
+   "tickers": [
+    "TNET"
+   ],
+   "accession": "0000937098-20-000145",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43921
+   ],
+   "companyfactsFp": [
+    "Q1"
+   ],
+   "filed": "2020-04-28",
+   "acceptance": "2020-04-28T20:51:20.000Z",
+   "reportDate": "2020-03-31",
+   "factsWithThisFy": 256,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/937098/000093709820000145/tnet-033120x10q_htm.xml",
+   "instanceSha256": "a7903770fa7ed5226afbbdb3118f7765df8258b65f3d1549085fe41d7899e24a",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43921"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentPeriodEndDate": [
+     "2020-03-31"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2020-03-31"
+  },
+  {
+   "cik": "0000937098",
+   "tickers": [
+    "TNET"
+   ],
+   "accession": "0000937098-20-000203",
+   "form": "10-Q",
+   "companyfactsFy": [
+    44012
+   ],
+   "companyfactsFp": [
+    "Q2"
+   ],
+   "filed": "2020-07-27",
+   "acceptance": "2020-07-27T20:50:41.000Z",
+   "reportDate": "2020-06-30",
+   "factsWithThisFy": 334,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/937098/000093709820000203/tnet-063020x10q_htm.xml",
+   "instanceSha256": "dd5ba7ab6e5f179b4ba29949752bf75cfbe84c166144aa9ea01b063982f8e2e3",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "44012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentPeriodEndDate": [
+     "2020-06-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2020-06-30"
+  },
+  {
+   "cik": "0001070750",
+   "tickers": [
+    "HST"
+   ],
+   "accession": "0001193125-11-247174",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2011-09-14",
+   "acceptance": "2011-09-13T23:51:24.000Z",
+   "reportDate": "2010-01-01",
+   "factsWithThisFy": 259,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0001070750",
+   "tickers": [
+    "HST"
+   ],
+   "accession": "0001193125-12-197407",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2012-05-01",
+   "acceptance": "2012-05-01T00:43:41.000Z",
+   "reportDate": "2011-01-01",
+   "factsWithThisFy": 262,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0001070750",
+   "tickers": [
+    "HST"
+   ],
+   "accession": "0001193125-12-312458",
+   "form": "8-K",
+   "companyfactsFy": [
+    0
+   ],
+   "companyfactsFp": [
+    ""
+   ],
+   "filed": "2012-07-24",
+   "acceptance": "2012-07-24T21:01:28.000Z",
+   "reportDate": "2011-01-01",
+   "factsWithThisFy": 263,
+   "becamePipelineFiscalYearLabel": [],
+   "origin": "NON_PERIODIC_FORM_NOT_VERIFIED",
+   "note": "form outside PERIODIC_FORMS; never read by the pipeline",
+   "pattern": "OTHER",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "accession": "0001166928-18-000014",
+   "form": "10-K",
+   "companyfactsFy": [
+    2107
+   ],
+   "companyfactsFp": [
+    "FY"
+   ],
+   "filed": "2018-03-01",
+   "acceptance": "2018-03-01T13:16:41.000Z",
+   "reportDate": "2017-12-31",
+   "factsWithThisFy": 700,
+   "becamePipelineFiscalYearLabel": [
+    {
+     "periodEnd": "2017-12-31",
+     "label": 2107
+    }
+   ],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1166928/000116692818000014/wtba-20171231.xml",
+   "instanceSha256": "0fa30eae162f7e2fffd5127711105ccf52d40f60d891b2ed9f985ceea01a4cbb",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2107"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentPeriodEndDate": [
+     "2017-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "DIGIT_TRANSPOSITION",
+   "excelSerialDate": null
+  },
+  {
+   "cik": "0001401521",
+   "tickers": [
+    "ACIC"
+   ],
+   "accession": "0001401521-18-000052",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43101
+   ],
+   "companyfactsFp": [
+    "Q1"
+   ],
+   "filed": "2018-05-09",
+   "acceptance": "2018-05-10T00:48:51.000Z",
+   "reportDate": "2018-03-31",
+   "factsWithThisFy": 300,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1401521/000140152118000052/uihc-20180417.xml",
+   "instanceSha256": "2a91da7880c805c022da24129e2c4ba5501cccf6514b9a27a67b104d3052d88a",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43101"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentPeriodEndDate": [
+     "2018-03-31"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OTHER_DATE",
+   "excelSerialDate": "2018-01-01"
+  },
+  {
+   "cik": "0001401521",
+   "tickers": [
+    "ACIC"
+   ],
+   "accession": "0001401521-18-000085",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43101
+   ],
+   "companyfactsFp": [
+    "Q2"
+   ],
+   "filed": "2018-08-03",
+   "acceptance": "2018-08-04T00:01:55.000Z",
+   "reportDate": "2018-06-30",
+   "factsWithThisFy": 411,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1401521/000140152118000085/uihc-20180630.xml",
+   "instanceSha256": "c3e8c05f3561ac91296b54c9a7f0823b7116549c84974156d7662fbb3e5a0afb",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43101"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentPeriodEndDate": [
+     "2018-06-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OTHER_DATE",
+   "excelSerialDate": "2018-01-01"
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "accession": "0001628280-18-014379",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43465
+   ],
+   "companyfactsFp": [
+    "Q3"
+   ],
+   "filed": "2018-11-14",
+   "acceptance": "2018-11-15T03:10:30.000Z",
+   "reportDate": "2018-09-30",
+   "factsWithThisFy": 322,
+   "becamePipelineFiscalYearLabel": [
+    {
+     "periodEnd": "2018-12-31",
+     "label": 43465
+    }
+   ],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1653558/000162828018014379/prioritytechnology-930_htm.xml",
+   "instanceSha256": "3babd9cd6c0385433059a33299120cb30870052c6446e04cbe1523977b4a2e3d",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43465"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentPeriodEndDate": [
+     "2018-09-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OTHER_DATE",
+   "excelSerialDate": "2018-12-31"
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "accession": "0001628280-19-003666",
+   "form": "10-K",
+   "companyfactsFy": [
+    43465
+   ],
+   "companyfactsFp": [
+    "FY"
+   ],
+   "filed": "2019-03-29",
+   "acceptance": "2019-03-30T00:38:40.000Z",
+   "reportDate": "2018-12-31",
+   "factsWithThisFy": 439,
+   "becamePipelineFiscalYearLabel": [
+    {
+     "periodEnd": "2018-12-31",
+     "label": 43465
+    }
+   ],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1653558/000162828019003666/prioritytechnology-10k_htm.xml",
+   "instanceSha256": "7f5decb908543c1f97241e75993407119aa2c3de1dbe6c11182f4a6a10fde9d2",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43465"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentPeriodEndDate": [
+     "2018-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2018-12-31"
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "accession": "0001628280-19-006766",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43555
+   ],
+   "companyfactsFp": [
+    "Q1"
+   ],
+   "filed": "2019-05-15",
+   "acceptance": "2019-05-15T02:12:28.000Z",
+   "reportDate": "2019-03-31",
+   "factsWithThisFy": 200,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1653558/000162828019006766/prioritytechnology10q_htm.xml",
+   "instanceSha256": "fe47ef1a334c2d6dfd07f35fbbfd205e42d3ce3cdff3b322df1ba0b6ff212bd8",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43555"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentPeriodEndDate": [
+     "2019-03-31"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2019-03-31"
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "accession": "0001628280-19-010770",
+   "form": "10-Q",
+   "companyfactsFy": [
+    43555
+   ],
+   "companyfactsFp": [
+    "Q2"
+   ],
+   "filed": "2019-08-14",
+   "acceptance": "2019-08-15T00:35:45.000Z",
+   "reportDate": "2019-06-30",
+   "factsWithThisFy": 259,
+   "becamePipelineFiscalYearLabel": [],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1653558/000162828019010770/prioritytechnology-630_htm.xml",
+   "instanceSha256": "8a33485f04d34e2f58d26db8123313d720efc236eec8a8898d3aedf84a656b6a",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43555"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentPeriodEndDate": [
+     "2019-06-30"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OTHER_DATE",
+   "excelSerialDate": "2019-03-31"
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "accession": "0001653558-20-000015",
+   "form": "10-K",
+   "companyfactsFy": [
+    43830
+   ],
+   "companyfactsFp": [
+    "FY"
+   ],
+   "filed": "2020-03-30",
+   "acceptance": "2020-03-31T01:15:30.000Z",
+   "reportDate": "2019-12-31",
+   "factsWithThisFy": 487,
+   "becamePipelineFiscalYearLabel": [
+    {
+     "periodEnd": "2019-12-31",
+     "label": 43830
+    }
+   ],
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1653558/000165355820000015/prioritytechnology-10k_htm.xml",
+   "instanceSha256": "7ca9fa09ff80af32acbc82dde0de4a8f1f2120f3899c1193978814dfbeabd2f8",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "43830"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentPeriodEndDate": [
+     "2019-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "origin": "FILER_ORIGINAL_XBRL",
+   "pattern": "EXCEL_SERIAL_OF_PERIOD_END",
+   "excelSerialDate": "2019-12-31"
+  }
+ ],
+ "pipelineLabelAnomalies": [
+  {
+   "cik": "0000064803",
+   "tickers": [
+    "CVS"
+   ],
+   "periodEnd": "1989-12-31",
+   "label": 1989,
+   "labelMinusEndYear": 0,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": []
+  },
+  {
+   "cik": "0000276720",
+   "tickers": [
+    "PCYO"
+   ],
+   "periodEnd": "1987-12-31",
+   "label": 1987,
+   "labelMinusEndYear": 0,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": []
+  },
+  {
+   "cik": "0001045609",
+   "tickers": [
+    "PLD",
+    "PLDGP"
+   ],
+   "periodEnd": "2008-12-31",
+   "label": 2010,
+   "labelMinusEndYear": 2,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2009-12-31",
+     "filing_claimed_fy": 2009,
+     "used_fy": 2009
+    }
+   ]
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "periodEnd": "2025-06-27",
+   "label": 2027,
+   "labelMinusEndYear": 2,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2026-07-03",
+     "filing_claimed_fy": 2026,
+     "used_fy": 2026
+    }
+   ]
+  },
+  {
+   "cik": "0001157647",
+   "tickers": [
+    "WNEB"
+   ],
+   "periodEnd": "1987-12-31",
+   "label": 1987,
+   "labelMinusEndYear": 0,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": []
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "periodEnd": "2017-12-31",
+   "label": 2107,
+   "labelMinusEndYear": 90,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2018-12-31",
+     "filing_claimed_fy": 2018,
+     "used_fy": 2018
+    }
+   ]
+  },
+  {
+   "cik": "0001552033",
+   "tickers": [
+    "TRU"
+   ],
+   "periodEnd": "2012-12-31",
+   "label": 2014,
+   "labelMinusEndYear": 2,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2013-12-31",
+     "filing_claimed_fy": 2013,
+     "used_fy": 2013
+    }
+   ]
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "periodEnd": "2018-12-31",
+   "label": 43465,
+   "labelMinusEndYear": 41447,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2020-12-31",
+     "filing_claimed_fy": 2020,
+     "used_fy": 2020
+    }
+   ]
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "periodEnd": "2019-12-31",
+   "label": 43830,
+   "labelMinusEndYear": 41811,
+   "labelOffset": 0,
+   "anchorSource": "ANNUAL_DURATIONS",
+   "rejectedAnchors": [
+    {
+     "period_end": "2020-12-31",
+     "filing_claimed_fy": 2020,
+     "used_fy": 2020
+    }
+   ]
+  }
+ ],
+ "plausibleRangeAnchorsVerified": [
+  {
+   "cik": "0001045609",
+   "tickers": [
+    "PLD",
+    "PLDGP"
+   ],
+   "accession": "0000950123-11-015736",
+   "filed": "2011-02-18",
+   "anchorPeriodEnd": "2008-12-31",
+   "label": 2010,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1045609/000095012311015736/amb-20101231.xml",
+   "instanceSha256": "225c06f62b5b893b687a0183a8b3b1fdef648ff06546d8c9672c52e37c913692",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2010"
+    ],
+    "DocumentPeriodEndDate": [
+     "2010-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "PIPELINE_ANCHOR_END_NOT_DOCUMENT_PERIOD_END"
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "accession": "0001137789-25-000157",
+   "filed": "2025-08-01",
+   "anchorPeriodEnd": "2025-06-27",
+   "label": 2027,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1137789/000113778925000157/stx-20250627_htm.xml",
+   "instanceSha256": "9b74621bd11e9e533707e8a991064022dae8b24fe9dc15a7052b7526f2eff5a4",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2027"
+    ],
+    "DocumentPeriodEndDate": [
+     "2025-06-27"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "FILER_DOCUMENT_FISCAL_YEAR_FOCUS_WRONG"
+  },
+  {
+   "cik": "0001552033",
+   "tickers": [
+    "TRU"
+   ],
+   "accession": "0001552033-15-000013",
+   "filed": "2015-03-30",
+   "anchorPeriodEnd": "2012-12-31",
+   "label": 2014,
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1552033/000155203315000013/ck0001552033-20141231.xml",
+   "instanceSha256": "fb379436de90749f23f7f07bdde7bfafc934ff5c5f444eddd6e24165cd71a755",
+   "dei": {
+    "DocumentFiscalYearFocus": [
+     "2014"
+    ],
+    "DocumentPeriodEndDate": [
+     "2014-12-31"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "diagnosis": "PIPELINE_ANCHOR_END_NOT_DOCUMENT_PERIOD_END"
+  }
+ ],
+ "timelinesWithImplausibleLabel": [
+  {
+   "cik": "0000006207",
+   "tickers": [
+    "AXR"
+   ],
+   "fiscalYear": 2034,
+   "timelines": 1,
+   "observations": 1,
+   "periodEnds": [
+    "2033-09-12"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0000034956",
+   "tickers": [
+    "TENX"
+   ],
+   "fiscalYear": 1968,
+   "timelines": 1,
+   "observations": 5,
+   "periodEnds": [
+    "1967-05-25",
+    "1967-08-25"
+   ],
+   "metrics": 1,
+   "periodEndCount": 2
+  },
+  {
+   "cik": "0000727273",
+   "tickers": [
+    "CDZI",
+    "CDZIP"
+   ],
+   "fiscalYear": 1988,
+   "timelines": 3,
+   "observations": 10,
+   "periodEnds": [
+    "1988-05-31",
+    "1988-12-31"
+   ],
+   "metrics": 1,
+   "periodEndCount": 2
+  },
+  {
+   "cik": "0000740664",
+   "tickers": [
+    "RFIL"
+   ],
+   "fiscalYear": 1987,
+   "timelines": 1,
+   "observations": 2,
+   "periodEnds": [
+    "1987-04-16",
+    "1987-04-17"
+   ],
+   "metrics": 1,
+   "periodEndCount": 2
+  },
+  {
+   "cik": "0000872912",
+   "tickers": [
+    "DCTH"
+   ],
+   "fiscalYear": 1988,
+   "timelines": 2,
+   "observations": 4,
+   "periodEnds": [
+    "1988-08-04",
+    "1988-08-05"
+   ],
+   "metrics": 2,
+   "periodEndCount": 2
+  },
+  {
+   "cik": "0000873303",
+   "tickers": [
+    "SRPT"
+   ],
+   "fiscalYear": 1980,
+   "timelines": 2,
+   "observations": 3,
+   "periodEnds": [
+    "1980-07-21"
+   ],
+   "metrics": 2,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001001614",
+   "tickers": [
+    "REPX"
+   ],
+   "fiscalYear": 2029,
+   "timelines": 1,
+   "observations": 1,
+   "periodEnds": [
+    "2029-04-03"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001056943",
+   "tickers": [
+    "PFIS"
+   ],
+   "fiscalYear": 2028,
+   "timelines": 1,
+   "observations": 1,
+   "periodEnds": [
+    "2028-08-01"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001134115",
+   "tickers": [
+    "THM"
+   ],
+   "fiscalYear": 2033,
+   "timelines": 1,
+   "observations": 1,
+   "periodEnds": [
+    "2033-10-31"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "fiscalYear": 2107,
+   "timelines": 204,
+   "observations": 545,
+   "periodEnds": [
+    "2017-03-31",
+    "2017-06-30",
+    "2017-09-30",
+    "2017-12-31"
+   ],
+   "metrics": 38,
+   "periodEndCount": 4
+  },
+  {
+   "cik": "0001173420",
+   "tickers": [
+    "NG"
+   ],
+   "fiscalYear": 1984,
+   "timelines": 2,
+   "observations": 4,
+   "periodEnds": [
+    "1984-12-04"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001436208",
+   "tickers": [
+    "LEGH"
+   ],
+   "fiscalYear": 2033,
+   "timelines": 1,
+   "observations": 1,
+   "periodEnds": [
+    "2033-03-31"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT",
+    "PMT-PA",
+    "PMT-PB",
+    "PMT-PC",
+    "PMTU",
+    "PMTV",
+    "PMTW"
+   ],
+   "fiscalYear": 2028,
+   "timelines": 5,
+   "observations": 13,
+   "periodEnds": [
+    "2028-03-31",
+    "2028-06-30",
+    "2028-09-30",
+    "2028-12-31"
+   ],
+   "metrics": 1,
+   "periodEndCount": 4
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT",
+    "PMT-PA",
+    "PMT-PB",
+    "PMT-PC",
+    "PMTU",
+    "PMTV",
+    "PMTW"
+   ],
+   "fiscalYear": 2029,
+   "timelines": 5,
+   "observations": 8,
+   "periodEnds": [
+    "2029-03-31",
+    "2029-06-30",
+    "2029-09-30",
+    "2029-12-31"
+   ],
+   "metrics": 1,
+   "periodEndCount": 4
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT",
+    "PMT-PA",
+    "PMT-PB",
+    "PMT-PC",
+    "PMTU",
+    "PMTV",
+    "PMTW"
+   ],
+   "fiscalYear": 2030,
+   "timelines": 3,
+   "observations": 3,
+   "periodEnds": [
+    "2030-03-31",
+    "2030-06-30",
+    "2030-09-30"
+   ],
+   "metrics": 1,
+   "periodEndCount": 3
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "fiscalYear": 43465,
+   "timelines": 160,
+   "observations": 398,
+   "periodEnds": [
+    "2018-03-31",
+    "2018-06-30",
+    "2018-09-30",
+    "2018-12-31"
+   ],
+   "metrics": 35,
+   "periodEndCount": 4
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH",
+    "PRTHU"
+   ],
+   "fiscalYear": 43830,
+   "timelines": 173,
+   "observations": 436,
+   "periodEnds": [
+    "2019-03-31",
+    "2019-06-30",
+    "2019-09-30",
+    "2019-12-31"
+   ],
+   "metrics": 35,
+   "periodEndCount": 4
+  },
+  {
+   "cik": "0001754170",
+   "tickers": [
+    "ASLE"
+   ],
+   "fiscalYear": 2033,
+   "timelines": 2,
+   "observations": 2,
+   "periodEnds": [
+    "2034-03-05"
+   ],
+   "metrics": 1,
+   "periodEndCount": 1
+  }
+ ],
+ "committedConsumerBundlesWithImplausibleFy": [
+  {
+   "cik": "0000006207",
+   "tickers": [
+    "AXR"
+   ],
+   "file": "quant/data/sec/consumer/CIK0000006207.json",
+   "badFiscalYears": [
+    2034
+   ],
+   "coverageAnnualYears": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2027,
+    2034
+   ]
+  },
+  {
+   "cik": "0001056943",
+   "tickers": [
+    "PFIS"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001056943.json",
+   "badFiscalYears": [
+    2028
+   ],
+   "coverageAnnualYears": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2028
+   ]
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001166928.json",
+   "badFiscalYears": [
+    2107
+   ],
+   "coverageAnnualYears": [
+    2014,
+    2015,
+    2016,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2107
+   ]
+  },
+  {
+   "cik": "0001436208",
+   "tickers": [
+    "LEGH"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001436208.json",
+   "badFiscalYears": [
+    2033
+   ],
+   "coverageAnnualYears": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2033
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001464423.json",
+   "badFiscalYears": [
+    2028,
+    2029
+   ],
+   "coverageAnnualYears": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2027,
+    2028,
+    2029,
+    2030
+   ]
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001653558.json",
+   "badFiscalYears": [
+    43465,
+    43830
+   ],
+   "coverageAnnualYears": [
+    2015,
+    2016,
+    2017,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    43465,
+    43830
+   ]
+  },
+  {
+   "cik": "0001754170",
+   "tickers": [
+    "ASLE"
+   ],
+   "file": "quant/data/sec/consumer/CIK0001754170.json",
+   "badFiscalYears": [
+    2033
+   ],
+   "coverageAnnualYears": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2033
+   ]
+  }
+ ],
+ "requestStats": {
+  "requests": 0,
+  "cache_hits": 32,
+  "retries": 0,
+  "deduplicated": 0
+ },
+ "productionApproved": false
+}

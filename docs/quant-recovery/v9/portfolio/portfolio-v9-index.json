@@ -1,0 +1,80 @@
+{
+ "schemaVersion": "v9-portfolio-index-1.0.0",
+ "workstream": "E portfolio",
+ "suggestedStatus": {
+  "PORTFOLIO_REBALANCING_MECHANICS": "ACCEPTED_WITH_SCOPE (proposal; lead decides)",
+  "strategyCertification": "NOT_ADDRESSED",
+  "productionApproved": false,
+  "acceptedScope": [
+   "cash/unit/cost/drift ledger with SEC-sourced cash dividends credited at sourced pay dates (receivable non-investable until paid)",
+   "sourced forward splits (NVDA 4:1 2021, NVDA 10:1 2024, WMT 3:1 2024) with raw-price reconstruction; equals split-adjusted price run to <=6.7e-16",
+   "real terminal cash (CRNX $85.00) and real terminal stock exchange (LBRDK -> 0.236 CHTR Class A)",
+   "independent Decimal parity on every equity value, PASS (<=8.7e-15 rel)"
+  ],
+  "notAccepted": [
+   "company dividend completeness outside MSFT/WMT (gaps listed)",
+   "ex-dates (rule-derived, never sourced)",
+   "terminal cash credit dates (not stated in sources)",
+   "spin-offs (IBM/Kyndryl), mixed consideration into ADS (WBS->SAN): not representable",
+   "historical membership / PIT population"
+  ]
+ },
+ "completeness": {
+  "A": {
+   "expected": 47,
+   "found": 28,
+   "gaps": 21
+  },
+  "IBM": {
+   "expected": 47,
+   "found": 43,
+   "gaps": 4
+  },
+  "JPM": {
+   "expected": 47,
+   "found": 15,
+   "gaps": 42
+  },
+  "META": {
+   "expected": 11,
+   "found": 1,
+   "gaps": 10
+  },
+  "MSFT": {
+   "expected": 47,
+   "found": 47,
+   "gaps": 0
+  },
+  "NVDA": {
+   "expected": 47,
+   "found": 46,
+   "gaps": 1
+  },
+  "WMT": {
+   "expected": 47,
+   "found": 47,
+   "gaps": 0
+  },
+  "XOM": {
+   "expected": 47,
+   "found": 14,
+   "gaps": 33
+  }
+ },
+ "files": {
+  "dividend-evidence.json": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
+  "ledger-L1.json": "f5a5fb08c561a582b25af3e5112854d078181afa7a10118da584127119cd7379",
+  "ledger-L2.json": "9037be37f188ea3a91d56eaa039e3f55962056d6f0a821d803695f6cb4346eda",
+  "ledger-L3.json": "1ef86f953492e0a58a599abaac73f70c70e6e8dae2a565e5f39024d4081ce84a",
+  "ledger-terminal-daily.json": "149d612a8f2b7cf6b5f55d4210483d6362128f900a0cc5ca5789e7ed29db371f",
+  "parity-L1.json": "9e55a89aad4624c0a51a6b621b2d4cd204f1b7b7e9cc950f99ae064e3562e8b8",
+  "parity-L2.json": "fd9d4bc42e020b373b64a2942a7fbbc6dd892e07e5c1558daf62adf27602ce42",
+  "parity-L3.json": "49262a87c7f53a1cf97428fe1902c5a352ffe76bf726eec0190179381da72263",
+  "parity-terminal-daily.json": "295c80bc9d1d6d5a4dc289dc20d703c36317187aaed7559818f2d88231d2cc66",
+  "split-evidence.json": "1c32c458133fa0d12c460c16ba375c10a26b62092d0810944229757f376e25a4",
+  "terminal-evidence.json": "e5a4535581def94a87144f3e202a28b64bb8248b2b37fe14dc658de910124738",
+  "terminal-ledger-events.json": "6be891aa23b8246a535695034b09284643b01fe1bff640e45d76f0624b9c44b7"
+ },
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false
+}

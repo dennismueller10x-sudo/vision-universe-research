@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--bg:#fbf7ef;--ink:#1d2433;--bull:#1f9d55;--bear:#8a5a2b;--red:#d93a3a;--gold:#e8a917;--navy:#2b3446}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);font-family:Nunito,sans-serif;color:var(--ink)}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.paper{position:absolute;inset:0;background:
+ radial-gradient(circle at 20% 15%,rgba(232,169,23,.10),transparent 45%),
+ radial-gradient(circle at 85% 35%,rgba(31,157,85,.08),transparent 45%),
+ repeating-linear-gradient(0deg,rgba(29,36,51,.035) 0 2px,transparent 2px 64px),
+ repeating-linear-gradient(90deg,rgba(29,36,51,.035) 0 2px,transparent 2px 64px)}
+/* duo scene */
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.fig{position:absolute;bottom:-60px;height:1220px}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-40px;width:600px}#baer{right:-50px;width:660px}
+.name{position:absolute;font-family:Archivo;font-size:34px;color:#fff;padding:6px 20px;border-radius:14px;bottom:110px}
+/* chart scene */
+#chart h1{position:absolute;top:150px;left:0;right:0;text-align:center;font-family:Archivo;font-size:66px;line-height:1.05}
+#chart h1 span{background:var(--gold);padding:6px 22px;border-radius:12px;display:inline-block;transform:rotate(-1.5deg)}
+#chart .sub{position:absolute;top:345px;left:0;right:0;text-align:center;font-size:40px;font-weight:900;opacity:.75}
+.row{position:absolute;left:60px;width:960px;height:170px;opacity:0}
+.row .lab{font-family:Archivo;font-size:48px;letter-spacing:.3px}
+.row .bar{position:absolute;left:0;top:68px;height:88px;border-radius:16px;box-shadow:0 7px 0 rgba(0,0,0,.14)}
+.row .val{position:absolute;top:76px;font-family:Archivo;font-size:62px;white-space:nowrap}
+.note{position:absolute;left:540px;transform:translate(-50%,-50%);font-family:Archivo;font-size:36px;background:#fff;border:5px solid var(--navy);border-radius:20px;padding:12px 26px;white-space:nowrap;opacity:0;box-shadow:0 7px 0 var(--navy)}
+.note b{color:var(--red)}.note i{font-style:normal;color:var(--bull)}
+/* captions */
+#cap{position:absolute;left:40px;right:40px;text-align:center;font-family:Archivo;font-size:84px;line-height:1.08;z-index:20;text-transform:uppercase;
+ -webkit-text-stroke:16px var(--bg);paint-order:stroke fill}
+#cap .w{display:inline-block;margin:0 10px;color:var(--ink)}
+#cap .w.on{color:var(--c)}
+#end{position:absolute;inset:0;background:var(--bg);opacity:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
+#end .nm{font-family:Archivo;font-size:120px;line-height:.95;text-align:center}
+#end .nm i{font-style:normal;color:var(--bull)}#end .nm u{text-decoration:none;color:var(--bear)}
+#end .btn{font-family:Archivo;font-size:56px;background:var(--ink);color:#fff;padding:18px 60px;border-radius:24px}
+#end .fine{font-size:34px;font-weight:800;opacity:.7}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div class="scene" id="duo"><div class="paper"></div><div id="cam">
+ <div class="fig" id="bulle"></div><div class="fig" id="baer"></div>
+</div></div>
+<div class="scene" id="chart"><div class="paper"></div>
+ <h1><span>DEIN SPARPLAN<br>NACH 30 JAHREN</span></h1>
+ <div class="sub">100 € im Monat · 7 % Rendite im Jahr</div>
+</div>
+<div id="cap"></div>
+<div id="end"><div class="nm"><i>BULLE</i> &amp;<br><u>BÄR</u></div><div class="btn">FOLGEN</div><div class="fine">Keine Anlageberatung</div></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp,FIG='../../figuren/entwurf-1/v2/';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3);
+const back=x=>{x=clamp(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-1;k<=i+1;k++)m=Math.max(m,AMP[k]||0);return m};
+// ---- figures: one <img> per face, only one visible at a time
+const FACES={bulle:['basis','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};const loads=[];
+for(const [who,list] of Object.entries(FACES)){IMG[who]={};const box=document.getElementById(who);
+ for(const f of list){const im=new Image();im.src=FIG+who+'-'+f+'.png';box.appendChild(im);IMG[who][f]=im;loads.push(im.decode().catch(()=>{}))}}
+function show(who,f){for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'}
+const blinkAt=(who,t)=>{const p=who==='bulle'?3.3:4.1,o=who==='bulle'?0.7:2.2;return ((t+o)%p)<0.12};
+// ---- chart rows
+const chart=document.getElementById('chart');const MAX=122710,BW=560;
+const ROWS=[{step:1,lab:'Eingezahlt',v:36000,c:'var(--navy)'},{step:2,lab:'Mit Rendite',v:122710,c:'var(--gold)'},
+ {step:3,lab:'− ETF-Kosten',v:4750,c:'var(--red)',neg:1},{step:5,lab:'− Steuer',v:14870,c:'var(--red)',neg:1},{step:6,lab:'Bleibt dir',v:103090,c:'var(--bull)'}];
+ROWS.forEach((r,i)=>{const e=document.createElement('div');e.className='row';e.style.top=(480+i*196)+'px';
+ e.innerHTML=`<div class="lab" style="color:${r.neg?'var(--red)':'var(--ink)'}">${r.lab}</div><div class="bar" style="background:${r.c}"></div><div class="val" style="color:${r.c}"></div>`;chart.appendChild(e);r.el=e});
+const NOTES=[{step:4,y:1470,html:'Gewinn ≈ 81.960 € · Steuer <b>26,4 %</b>'},{step:5,y:1470,html:'<i>30 % steuerfrei</i> + <i>1.000 € Freibetrag</i>'}];
+NOTES.forEach(n=>{const e=document.createElement('div');e.className='note';e.style.top=n.y+'px';e.innerHTML=n.html;chart.appendChild(e);n.el=e});
+const fmt=v=>Math.round(v).toLocaleString('de-DE')+' €';
+const stepStart={};for(const s of S)if(s.scene==='dia'&&stepStart[s.step]===undefined)stepStart[s.step]=s.s;
+// ---- spoken numbers shown as digits
+const NUM=[['null Komma zwei Prozent','0,2 %'],['sechsundzwanzig Komma vier Prozent','26,4 %'],['sieben Prozent','7 %'],['dreißig Prozent','30 %'],
+ ['null Euro','0 €'],['hundert Euro','100 €'],['sechsunddreißigtausend Euro','36.000 €'],['hundertdreiundzwanzigtausend Euro','123.000 €'],['fünftausend Euro','5.000 €'],
+ ['zweiundachtzigtausend Euro','82.000 €'],['tausend Euro','1.000 €'],['fünfzehntausend Euro','15.000 €'],['hundertdreitausend Euro','103.000 €'],
+ ['Fünfzehntausend','15.000'],['sechsunddreißigtausend','36.000'],['dreißig Jahre','30 Jahre'],['dreißig Jahren','30 Jahren']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const parts=ph.split(' ');if(parts.every((p,k)=>W[i+k]&&bare(W[i+k].w)===p&&W[i+k].line===W[i].line)){
+ const last=W[i+parts.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,parts.length,{...W[i],w:disp+tail,e:last.e});break}}
+// ---- captions: groups of up to 3 words, broken at punctuation
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+const cap=document.getElementById('cap'),duo=document.getElementById('duo'),cam=document.getElementById('cam'),end=document.getElementById('end');
+function fit(){cap.style.fontSize='84px';let f=84;while(cap.scrollWidth>1000&&f>48){f-=4;cap.style.fontSize=f+'px'}}
+function segAt(t){let s=S[0];for(const x of S)if(t>=x.s-0.12)s=x;return s}
+function render(t){
+ const seg=segAt(t);const dia=seg.scene==='dia';
+ duo.style.display=dia?'none':'block';chart.style.display=dia?'block':'none';
+ // captions
+ const g=GROUPS.find(g=>t>=g[0].s-0.05&&t<(GROUPS[GROUPS.indexOf(g)+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);
+ if(g&&t<END){const col=g[0].who==='bulle'?'var(--bull)':'var(--bear)';cap.style.setProperty('--c',col);
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[.,:]$/,'')}</span>`).join('');
+  const k=t-g[0].s;cap.style.transform=`scale(${0.9+0.1*back(k/0.18)})`}else cap.innerHTML='';
+ cap.style.top=dia?'1600px':'250px';
+ fit();
+ if(!dia){
+  // camera: hard cut per line between wide and close on the speaker
+  const close=(seg.e-seg.s)>2.2&&seg.line%2===1;const z=close?1.45:1;
+  const fx=seg.who==='bulle'?300:770,fy=900;cam.style.transform=close?`translate(${540-fx*z}px,${760-fy*z+180}px) scale(${z})`:'none';
+  for(const who of ['bulle','baer']){
+   let f='basis';const speaking=seg.who===who&&t<=seg.e;
+   if(speaking){const a=amp(t);const k=t-seg.s;const face=seg.face;
+    if(face&&(who==='bulle'&&(face==='lacht'||face==='schock')))f=face;
+    else if(face&&k<0.7)f=face;
+    else f=a>0.55?'mund-offen':a>0.18?'mund-halb':'basis'}
+   else if(blinkAt(who,t))f='blinzeln';
+   show(who,f);document.getElementById(who).style.filter=speaking||seg.line===0?'none':'saturate(.85)'}
+ }else{
+  for(const r of ROWS){const t0=stepStart[r.step];if(t0===undefined)continue;const k=t-t0-0.35;
+   r.el.style.opacity=clamp(k/0.25);const p=easeOut(k/1.1);r.el.querySelector('.bar').style.width=(BW*r.v/MAX*p)+'px';
+   const v=r.el.querySelector('.val');v.textContent=(r.neg?'− ':'')+fmt(r.v*p);v.style.left=(BW*r.v/MAX*p+22)+'px';
+   const cur=segAt(t).step;r.el.style.filter=(cur>=r.step&&cur<r.step+ (r.step===3?2:1))||r.step===6?'none':'grayscale(.6) opacity(.55)';
+   if(r.step===6){r.el.style.transform=`scale(${k>0?1+0.06*Math.sin(clamp(k/0.6)*Math.PI):1})`;r.el.style.transformOrigin='0 50%'}}
+  for(const n of NOTES){const t0=stepStart[n.step];const k=t-(t0??1e9)-0.6;const on=k>=0&&segAt(t).step===n.step;
+   n.el.style.opacity=on?clamp(k/0.2):0;n.el.style.transform=`translate(-50%,-50%) scale(${on?back(k/0.3):0.6})`}
+ }
+ end.style.opacity=clamp((t-END-0.1)/0.3);
+}
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>document.fonts.load('900 80px Archivo')).then(()=>{render(0);window.__ready=true});
+</script></body></html>

@@ -12,6 +12,7 @@ import {
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
+import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE } from '../source-faithful/product/registry-guard.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -29,6 +30,8 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 
 // changing a stage, a block reason, a status, a disclaimer or the price truth is a contract change (own PR)
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
+
+const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
 
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
@@ -249,8 +252,66 @@ test('SF-PRODUCT-NO-RUN-INTEGRATION: kein Workflow, kein Frontend, keine Domain-
   const src = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/product/candidate-contract.mjs'), 'utf8');
   assert.doesNotMatch(src, /writeFileSync|appendFileSync|mkdirSync|createWriteStream|fetch\(|https?:\/\/|child_process/);
   const wf = path.join(ROOT, '.github/workflows');
-  for (const f of fs.readdirSync(wf)) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
+  // Einzige Ausnahme: der vorbereitete, standardmäßig deaktivierte Tageslauf (O-2). Seine Abschaltung prüft
+  // SF8-DAILY-DISABLED unten; jeder andere Workflow bleibt ohne Bezug zum Produktpfad.
+  for (const f of fs.readdirSync(wf)) if (f !== SF8_DAILY_WORKFLOW) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === 'data' ? [] : walk(path.join(d, e.name))) : /\.(m?js|html)$/.test(e.name) ? [path.join(d, e.name)] : []);
   for (const f of walk(path.join(ROOT, 'supertrader'))) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /candidate-contract|source-faithful\/product/, f);
-  assert.doesNotMatch(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8'), /candidate-contract|supertraderCandidates|source-faithful\/product/);
+  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen
+  // (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  assert.deepEqual(sf8RegistryViolations(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8')), []);
+});
+
+test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung nur per eigenem PR (Gegenproben)', () => {
+  const entry = { ...SF8_DOMAIN_PINNED, label: 'x', activation: { state: SF8_ACTIVATION_STATE } };
+  const other = { id: 'supertrader', artifact: '/supertrader/data/signals.json', producer: 'scripts/supertrader/build.mjs' };
+  const txt = (domains, extra = {}) => JSON.stringify({ ...extra, domains });
+  assert.deepEqual(sf8RegistryViolations(txt([other])), [], 'ohne Eintrag zulässig');
+  assert.deepEqual(sf8RegistryViolations(txt([other, entry])), [], 'der eine Eintrag ist zulässig');
+  assert.ok(sf8RegistryViolations(txt([other, entry, entry])).includes('SF8_DOMAIN_DUPLICATE'));
+  for (const k of Object.keys(SF8_DOMAIN_PINNED).filter((k) => k !== 'id')) {
+    assert.ok(sf8RegistryViolations(txt([{ ...entry, [k]: k === 'critical' ? true : 'anders' }])).includes(`SF8_DOMAIN_FIELD:${k}`), k);
+  }
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: 'ACTIVE' } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
+  assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: ['scripts/supertrader/source-faithful/product/x.mjs'] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
+  assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
+  assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
+  assert.deepEqual(sf8RegistryViolations('{kaputt'), ['REGISTRY_NOT_JSON']);
+  // Review MEDIUM 6: keine Hintertür über freie Felder, Altmodule oder Schreibweise
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, consumers: ['scripts/supertrader/source-faithful/completion/status.mjs'] }])).includes('SF8_DOMAIN_REF_IN:consumers'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: SF8_ACTIVATION_STATE, decision: 'siehe source-faithful/product/x.mjs' } }])).includes('SF8_DOMAIN_REF_IN:activation'));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, extra: 1 }])).includes('SF8_DOMAIN_UNKNOWN_FIELD:extra'));
+  for (const ref of ['scripts/supertrader/signals/research-signal.mjs', 'completion/gaps.mjs', 'Source-Faithful/product', 'SF-CANDIDATES']) {
+    assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: [ref] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), ref);
+  }
+  assert.equal(SF8_DOMAIN_ID, 'supertrader-sf8-candidates');
+});
+
+
+test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, Eingangsprüfung und ADR-005', () => {
+  const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
+  if (!fs.existsSync(p)) return;
+  const y = fs.readFileSync(p, 'utf8');
+  const code = y.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+  assert.doesNotMatch(code, /^\s*(schedule|cron|push|pull_request|workflow_run)\s*:/m, 'kein automatischer Auslöser');
+  assert.match(code, /^on:\n\s+workflow_dispatch:/m);
+  assert.match(code, /^\s+if: vars\.SF8_CANDIDATES_ENABLED == 'true'$/m, 'Job nur mit freigeschalteter Variable');
+  assert.match(code, /--require-current "\$heute"/, 'Eingangsprüfung gegen veraltete Eingaben');
+  assert.match(code, /ref: \$\{\{ github\.ref \}\}/);
+  assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
+  assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
+  assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
+  assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*\(!d\.activation \|\| d\.activation\.state==="ACTIVATING"\)[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
+  assert.doesNotMatch(code, /PREPARED_DISABLED"\s*\)?\s*\?\s*0/, 'vorbereitet ist nie freigegeben');
+  // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
+  const dq = code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated');
+  assert.ok(dq > 0, 'DQ-SF8 auf dem Laufergebnis');
+  assert.ok(dq < code.indexOf('actions/upload-artifact') && dq < code.indexOf('if: inputs.commit == true'), 'DQ vor Upload und Commit');
+  assert.match(code, /sf8\.length !== 8\)[^\n]*process\.exit\(1\)/, 'fehlende Regeln sind rot');
+  assert.match(code, /x\.status !== "PASS" \|\| x\.checked === 0/, 'jede Regel muss geprüft und bestanden sein');
+  assert.match(code, /cp -r "\$PUB\/\." "\$ziel\/"/, 'committet wird genau das geprüfte Ergebnis');
+  for (const block of code.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, 'Eingaben nur über env:');
+  assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
+  assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');
 });

@@ -44,7 +44,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.2.3";
+  var ENGINE_VERSION = "technical-formations-1.4.0";
 
   /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
      (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */
@@ -501,8 +501,9 @@
     /* Ober-/Unterkante beginnen am ersten Hoch bzw. Tief der Formation (nicht am ersten Punkt schlechthin). */
     var firstHigh = p.points.filter(function (q) { return q.side === "HIGH"; })[0], firstLow = p.points.filter(function (q) { return q.side === "LOW"; })[0];
     var endT = s.timestamps[ctx.t];
-    if (isNum(p.upperNow) && firstHigh) lines.push({ role: "upper", from: { time: firstHigh.time, price: firstHigh.price }, to: { time: endT, price: p.upperNow } });
-    if (isNum(p.lowerNow) && firstLow) lines.push({ role: "lower", from: { time: firstLow.time, price: firstLow.price }, to: { time: endT, price: p.lowerNow } });
+    /* Die Kante beginnt auf ihrem eigenen Wert am ersten Pivot (upperFrom/lowerFrom): eine waagrechte Kante bleibt waagrecht. */
+    if (isNum(p.upperNow) && firstHigh) lines.push({ role: "upper", from: { time: firstHigh.time, price: isNum(p.upperFrom) ? p.upperFrom : firstHigh.price }, to: { time: endT, price: p.upperNow } });
+    if (isNum(p.lowerNow) && firstLow) lines.push({ role: "lower", from: { time: firstLow.time, price: isNum(p.lowerFrom) ? p.lowerFrom : firstLow.price }, to: { time: endT, price: p.lowerNow } });
     /* Ein Fehlausbruch war erst bestaetigt, dann invalidiert: beide Zeitpunkte bleiben sichtbar. */
     var confirmedAt = (state === "CONFIRMED" || p.status === "FAILED_BREAKOUT") && p.detectionTime ? p.detectionTime : null;
     return {
