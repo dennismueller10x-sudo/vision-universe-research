@@ -38,7 +38,7 @@ The manual `produce-single-t2v` action supports one continuous text-to-video ord
 
 `images.py` and `.github/workflows/brand-media-higgsfield-images.yml` generate still images, for example character drafts and pose sheets for HyperFrames compositions. They share the client, secret handling and concurrency group with the video path but do not change it.
 
-A job is a reviewed JSON file in `image-jobs/` with a `job_id`, a `purpose` and 1–12 `images`. Each image names one model and only the fields that model documents (schemas from docs.higgsfield.ai, checked 2026-10-28):
+A job is a reviewed JSON file at `brand-media/<area>/image-jobs/<job>.json` (each channel or brand keeps its own jobs, e.g. `brand-media/kanal-2/image-jobs/`) with a `job_id`, a `purpose` and 1–12 `images`. Each image names one model and only the fields that model documents (schemas from docs.higgsfield.ai, checked 2026-10-28):
 
 | `model` | Endpoint | References | Extra fields |
 |---|---|---|---|
@@ -56,4 +56,4 @@ Actions:
 - `estimate` uploads references and asks the estimate endpoint for every image. The documented response is `{"usd": "…"}`; a missing value is reported as unknown, never as zero.
 - `generate` needs `budget_usd` and `APPROVE-HIGGSFIELD-IMAGE-JOB`. It blocks when the summed estimate exceeds the budget. If the provider returns no price, only `APPROVE-HIGGSFIELD-IMAGE-JOB-WITHOUT-ESTIMATE` lets it continue. Images are submitted once each, sequentially, with run-specific idempotency keys and no retries; reruns are blocked. Images, `manifest.json` and a `contact-sheet.jpg` are kept as a 14-day workflow artifact. Nothing is published.
 
-Local check: `python brand-media/higgsfield/images.py --action validate --job brand-media/higgsfield/image-jobs/<job>.json`.
+Local check: `python brand-media/higgsfield/images.py --action validate --job brand-media/<area>/image-jobs/<job>.json`.

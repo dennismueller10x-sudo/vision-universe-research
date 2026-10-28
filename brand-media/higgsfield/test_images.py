@@ -9,7 +9,7 @@ from unittest.mock import patch
 import images
 from higgsfield import HiggsfieldError
 
-JOB = "brand-media/higgsfield/image-jobs/bulle-baer-entwurf-1.json"
+JOB = "brand-media/kanal-2/image-jobs/bulle-baer-entwurf-1.json"
 REFERENCE = "brand-media/higgsfield/references/the-arrival-final-master.jpg"
 
 
@@ -105,6 +105,8 @@ class ImageJobTests(unittest.TestCase):
     def test_job_file_location_is_fixed(self):
         with self.assertRaisesRegex(HiggsfieldError, "image-jobs"):
             images.load_job("brand-media/higgsfield/registry.json")
+        with self.assertRaisesRegex(HiggsfieldError, "image-jobs"):
+            images.load_job("docs/image-jobs/x.json")
 
     def test_estimate_parsing_never_defaults_to_zero(self):
         self.assertEqual(str(images.parse_usd({"usd": "0.094"})), "0.094")

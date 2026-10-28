@@ -1,6 +1,6 @@
 """Higgsfield image jobs: character drafts, pose sheets and reference edits. Python standard library only.
 
-A job is a reviewed JSON file in the repository (see image-jobs/). Paid submission requires an
+A job is a reviewed JSON file at brand-media/<area>/image-jobs/<job>.json. Paid submission requires an
 explicit approval phrase, a budget and a single workflow attempt; there are no retries or fallbacks.
 """
 from __future__ import annotations
@@ -139,8 +139,10 @@ def build_params(item):
 
 def load_job(path):
     candidate = Path(path)
-    if candidate.is_absolute() or ".." in candidate.parts or not candidate.as_posix().startswith("brand-media/higgsfield/image-jobs/"):
-        raise HiggsfieldError("Job files must live in brand-media/higgsfield/image-jobs/")
+    parts = candidate.parts
+    if (candidate.is_absolute() or ".." in parts or len(parts) != 4 or parts[0] != "brand-media"
+            or parts[2] != "image-jobs" or candidate.suffix != ".json"):
+        raise HiggsfieldError("Job files must live in brand-media/<area>/image-jobs/")
     try:
         job = json.loads(candidate.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
