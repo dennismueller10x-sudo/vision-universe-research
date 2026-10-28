@@ -84,14 +84,33 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 3. Regeltexte wie „Einstiegsmarke knapp über dem Box-Hoch“ (DAR-SF-ENTRY) beschreiben die Regel der Quelle ohne Preis. Sie sind unverändert.
 4. Box-Obergrenze und Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.
 
-## Offen für den Owner: Rückrechnung zusammen mit den öffentlichen Tageskursen (unabhängiges Review 28.10.2026)
+## Rückrechnung zusammen mit den öffentlichen Tageskursen (Owner-Entscheidung 28.10.2026, umgesetzt)
 
-Die Prüfung oben gilt für die Zahlen **in der Ansicht**. Zusammen mit den öffentlichen Tageskursen (OHLC) lassen sich aus Zeitfenstern der Ansicht Marken nachbauen. Alle vier Felder standen schon vor diesem PR in den Ansichten; dieser PR ändert sie nicht.
+**Regel des Owners:** Ein Feld ist rückrechenbar, wenn sich daraus zusammen mit den öffentlich verfügbaren Kursdaten ein geschützter Einstiegs-, Stop- oder Orderparameter zuverlässig rekonstruieren lässt. Solche Felder fehlen unterhalb von `MODELED_TRADE_PLAN` im ausgelieferten Kandidatendatensatz (`strategy/`, `ticker/`), nicht nur in der Anzeige. Die Research-Engines, Detektoren, Golden Cases und Referenzdaten bleiben unverändert.
 
-| Methode | Feld | nachgebaut aus den Tageskursen | Treffer |
-|---|---|---|---|
-| C06 | `baseLengthSessions` (= `vcpFootprint.baseSessions`) | Pivot = höchstes Hoch im Fenster; Stopreferenz = tiefstes Tief | 171 bzw. 173 von 238 |
-| C07 | `consolidationSessions` | Pivot und Stop = Hoch/Tief im Fenster | 19 von 19 |
-| C13 | `impulseHighDate` | `impulseHigh` = Hoch an dem Tag; `swingLow` = tiefstes Tief seitdem | 170 von 171 |
+**Messung** (voller Lauf 26.10., alle 13 Methoden unterhalb von MODELED, Sonde `SF8-NO-BAR-RECONSTRUCTION`):
+- Jede Ganzzahl, deren Name ein Zeitfenster ausweist (`…Sessions`, `…Days`, `…Weeks` × 5, `…Length`, `…Window`, `…Bars`), wird als Fenster gedeutet (± 1 Sitzung, endend am Stichtag oder Vortag) und liefert das höchste Hoch und das tiefste Tief.
+- Jedes Datum wird als Anker gedeutet: Hoch und Tief an dem Tag, höchstes Hoch und tiefstes Tief seitdem.
+- Ein Treffer zählt nur, wenn ein Fenster **ohne** das Feld (2–6 Sitzungen, das allgemeine 52-Wochen-Fenster) denselben Wert nicht schon liefert. Das trennt die Information des Feldes von allgemeiner Chartinformation.
 
-Ob „rückrechenbar“ auch die Kombination mit dem öffentlichen Chart umfasst, ist eine Owner-Entscheidung. Falls ja: eigener PR nach demselben Muster (Felder unterhalb von MODELED ausblenden oder nur als Status, Core-Gegenstück in DQ-SF8-4).
+| Methode | Feld | rekonstruiert | Treffer | Entscheidung |
+|---|---|---|---|---|
+| C06 SEPA | `baseLengthSessions` und `vcpFootprint.baseSessions` (gleicher Wert) | Pivot bzw. Stopreferenz = Hoch/Tief der Basis | 77 von 238 | **ausgeblendet** |
+| C07 Power Play | `consolidationSessions` | Pivot und Stop | 7 von 15 | **ausgeblendet** |
+| C13 Holy Grail | `impulseHighDate` | Impulshoch = Hoch an dem Tag, Stop = tiefstes Tief seitdem | 90 von 171 | **ausgeblendet** |
+| C13 Holy Grail | `adxAbove30Since` | Impulshoch = höchstes Hoch ab dem Tag (Quelle: `holy-grail-lifecycle.mjs`) | 81 von 171 | **ausgeblendet** (über die Liste des Owners hinaus, nach derselben Regel) |
+| C04/C05 Weinstein | `baseWeeks` | Stopreferenz = tiefstes Tief der Basis | 141 von 329 / 282 von 379 | **ausgeblendet** (über die Liste des Owners hinaus, nach derselben Regel) |
+| C04/C05 | `breakoutDay` | Trigger (Widerstand + 1 Tick; der Widerstand ist ohnehin als Chartstruktur veröffentlicht) | 7 von 422 / 3 von 379 | bleibt (nicht zuverlässig, Struktur bereits zulässig) |
+| C03 Darvas | `boxTopDate`, `boxBottomDate`, `boxCompleteDate` | Stopreferenz | höchstens 2 von 229 | bleibt (nicht zuverlässig) |
+| C06 | `vcpFootprint.contractions` | – (kein Zeitfenster; ein kleines Fenster trifft den Stop auch ohne das Feld in 167 von 238, mit dem Feld zusätzlich nur 2) | – | bleibt |
+| alle | `trend.windowSessions` (= 252) | allgemeines 52-Wochen-Fenster | – | bleibt (allgemeine Chartinformation) |
+
+**Vorher/Nachher:**
+- Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze (`records/`) inhaltsgleich bis auf `provenance.codeSha256`, dieselbe Reihenfolge, 0 Rangänderungen, MODELED 0 Änderungen.
+- Geändert: nur `features` in 1.659 Ansichten (C04 422, C05 379, C06 668, C07 19, C13 171).
+
+**Tests:**
+- `SF8-NO-BAR-RECONSTRUCTION` (neu): die Golden Cases (C04, C05, C06, C07, C13) haben keinen Treffer.
+- Gegenproben: jedes der ausgeblendeten Felder, wieder eingesetzt, wird in mindestens einer Ansicht rot. Die Rücknahme jeder Ausblendung im Erzeuger macht den Test rot.
+- Golden-Hash der 55 Ansichten neu eingefroren.
+- Abgleich mit dem Core: Die Sperrlisten des Core sind eine Teilmenge der Erzeugerlisten (der Core ist nie strenger als der Erzeuger). Jede Seite schreibt ihre Listen explizit fest. Merge-Reihenfolge: Erzeuger zuerst, dann Core; jeder Zwischenstand bleibt grün.

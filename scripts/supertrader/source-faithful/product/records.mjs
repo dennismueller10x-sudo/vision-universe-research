@@ -186,10 +186,17 @@ export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposed
 // SEPA: pctBelowHigh52w ist genau trend.belowHigh252 (close / (1 − x) ergäbe das ausgeblendete 52-Wochen-Hoch, Owner 28.10.2026);
 // die Basistiefen (largestCorrection, vcpFootprint.depths = 1 − Tief / Basishoch) ergeben mit dem Basistief (oft Schluss oder
 // 52-Wochen-Tief) das Basishoch, also Hoch und Pivot (Review 28.10.: 22 von 668 SEPA-Ansichten über low252). Eine Rundung
-// schützt nicht verlässlich (eine flache Basis landet auf einem groben Raster zufällig wieder nahe am Hoch). Es bleiben Zahl und
-// Verlauf der Kontraktionen und die Basislänge.
-export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C06: Object.freeze(['pctBelowHigh52w', 'largestCorrection']), C07: Object.freeze(['correction']) });
-export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.freeze({ vcpFootprint: Object.freeze(['depths']) }) });
+// schützt nicht verlässlich (eine flache Basis landet auf einem groben Raster zufällig wieder nahe am Hoch).
+// Owner-Entscheidung 28.10.2026 (Rückrechenbarkeit): ein Feld ist auch dann eine Order-Größe, wenn es zusammen mit den öffentlichen
+// Tageskursen einen Einstieg, Stop oder Orderparameter zuverlässig ergibt. Gemessen im vollen Lauf 26.10. (unterhalb von MODELED,
+// nur Treffer, die kein Fenster ohne das Feld liefert; docs/SUPERTRADER_8_CHART_STRUCTURE.md):
+// SEPA-Basislänge (baseLengthSessions = vcpFootprint.baseSessions): Pivot bzw. Stopreferenz = Hoch/Tief im Fenster (77 von 238);
+// Power-Play-Konsolidierungsdauer: Pivot und Stop (7 von 15); Holy Grail impulseHighDate: Impulshoch = Hoch an dem Tag, Stop =
+// tiefstes Tief seitdem (90 von 171), adxAbove30Since: Impulshoch = höchstes Hoch ab dem Tag (81 von 171); Weinstein baseWeeks:
+// Stopreferenz = tiefstes Tief der Basis (C04 141 von 329, C05 282 von 379). Es bleiben Zahl und Verlauf der Kontraktionen,
+// Ausbruchstag und Box-Daten (Einzeltreffer unter 2 %) und die allgemeinen Chartangaben (trend.windowSessions = 252).
+export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C04: Object.freeze(['baseWeeks']), C05: Object.freeze(['baseWeeks']), C06: Object.freeze(['pctBelowHigh52w', 'largestCorrection', 'baseLengthSessions']), C07: Object.freeze(['correction', 'consolidationSessions']), C13: Object.freeze(['impulseHighDate', 'adxAbove30Since']) });
+export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.freeze({ vcpFootprint: Object.freeze(['depths', 'baseSessions']) }) });
 // Owner-Entscheidung 28.10.2026: Bei SEPA, Power Play und Holy Grail fällt das 52-Wochen-Hoch oft genau mit der Einstiegsmarke
 // zusammen (Pivot bzw. Touch-Hoch am Hoch). Unterhalb von MODELED trägt die strategiebezogene Ansicht es deshalb nicht, auch
 // nicht den Abstand dazu (close / (1 − belowHigh252) ergäbe es wieder). Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt.
