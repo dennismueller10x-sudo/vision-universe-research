@@ -41,6 +41,16 @@ async function shown() {
   return page.locator('.v2-watch-button');
 }
 
+/* wartet auf die Schreibanfrage des Knopfs ins Konto (POST, Antwort da) */
+const saved = path => page.waitForResponse(r => new URL(r.url()).pathname === path && r.request().method() === 'POST', {timeout: 20000}).catch(() => null);
+/* wartet, bis der Knopf den Kontostand zeigt (Neuzeichnen nach "vu-watchlist-ready"); faellt sonst ohne Fehler durch */
+const pressed = (btn, value) => btn.evaluate((el, v) => new Promise(done => {
+  if (el.getAttribute('aria-pressed') === v) return done();
+  const o = new MutationObserver(() => { if (document.querySelector('.v2-watch-button')?.getAttribute('aria-pressed') === v) { o.disconnect(); done(); } });
+  o.observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['aria-pressed']});
+  setTimeout(() => { o.disconnect(); done(); }, 20000);
+}), value);
+
 // Abgemeldet
 let btn = await stock('NVDA');
 check(await btn.getAttribute('aria-pressed') === 'false', 'abgemeldet: NVDA nicht beobachtet');
@@ -64,8 +74,9 @@ btn = await stock('AAPL');
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: nur lokaler Eintrag AAPL bleibt sichtbar');
 check(JSON.stringify(await central()) === '[]', 'angemeldet: AAPL wurde nicht von selbst ins Konto uebernommen');
 btn = await stock('NVDA');
-await btn.click();
-await page.waitForTimeout(800);
+/* Der Knopf schreibt ins Konto, sobald Kontostand und Instrument-ID geladen sind (assets/watchlist-button.js#follow);
+   auf einem kalten Server dauert das laenger als eine feste Wartezeit - deshalb auf die Anfrage selbst warten. */
+await Promise.all([saved('/v1/watchlist/items'), btn.click()]);
 check(JSON.stringify(await local()) === '["NVDA","AAPL"]', 'angemeldet: Klick speichert lokal');
 check(JSON.stringify(await central()) === '["NVDA"]', 'angemeldet: Klick speichert im Konto');
 // Ein Titel nur im Konto (anderes Geraet): ueber die API anlegen, lokal fehlt er.
@@ -74,9 +85,9 @@ await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'P
 // Ein anderes Geraet zeigt sich nach dem Neuladen (oder nach 5 Minuten Zwischenspeicher) - nicht mitten in derselben Seite.
 await stock('MSFT'); await page.reload();
 btn = await shown();
+await pressed(btn, 'true');
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: Titel nur im Konto wird als beobachtet gezeigt');
-await btn.click();
-await page.waitForTimeout(800);
+await Promise.all([saved('/v1/watchlist/items/remove'), btn.click()]);
 check(!(await central()).includes('MSFT'), 'angemeldet: Ausschalten entfernt ihn im Konto');
 check(JSON.stringify(await local()) === '["NVDA","AAPL"]', 'angemeldet: lokale Liste dabei unveraendert');
 
