@@ -80,11 +80,19 @@ jobs:
         working-directory: ${{ runner.temp }}/sb
         run: |
           set -euo pipefail
-          npx "$SUPABASE_CLI" db push --dry-run --db-url "$DB_URL" | tee "$RUNNER_TEMP/plan.txt"
-          if grep -q 'up to date' "$RUNNER_TEMP/plan.txt"; then echo "Bereits eingespielt."; exit 0; fi
-          grep -q "${MIGRATION%.sql}" "$RUNNER_TEMP/plan.txt" || { echo "::error::Unerwarteter Plan"; exit 1; }
-          [ "$(grep -cE '^ ?• [0-9]{14}_' "$RUNNER_TEMP/plan.txt" || true)" -le 1 ] || { echo "::error::Mehr als eine offene Migration"; exit 1; }
+          # Die CLI schreibt den Plan auf stderr, auf stdout nur "Finished ..." / "up to date": beide Stroeme auswerten
+          # (Lauf #40681925021). Erlaubt ist nur "nichts offen" oder genau $MIGRATION; alles andere bricht ab.
+          npx "$SUPABASE_CLI" db push --dry-run --db-url "$DB_URL" > "$RUNNER_TEMP/plan.txt" 2>&1
+          cat "$RUNNER_TEMP/plan.txt"
+          plan=$(node "$GITHUB_WORKSPACE/scripts/account/supabase-push-plan.mjs" --expect="$MIGRATION" "$RUNNER_TEMP/plan.txt") \
+            || { echo "::error::Unerwarteter Plan - nichts eingespielt"; exit 1; }
+          if [ "$plan" = up-to-date ]; then echo "Bereits eingespielt."; exit 0; fi
+          echo "Plan geprueft: genau $MIGRATION offen."
           npx "$SUPABASE_CLI" db push --yes --db-url "$DB_URL"
+          # Danach darf nichts mehr offen sein.
+          npx "$SUPABASE_CLI" db push --dry-run --db-url "$DB_URL" > "$RUNNER_TEMP/after.txt" 2>&1
+          after=$(node "$GITHUB_WORKSPACE/scripts/account/supabase-push-plan.mjs" --expect="$MIGRATION" "$RUNNER_TEMP/after.txt") || true
+          [ "$after" = up-to-date ] || { cat "$RUNNER_TEMP/after.txt"; echo "::error::Nach dem Einspielen ist noch etwas offen"; exit 1; }
 
       - name: Nachkontrolle
         env:
