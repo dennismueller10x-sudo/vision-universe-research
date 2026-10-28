@@ -50,12 +50,21 @@ Damit ist SETUP_BACKTEST unter dem heutigen Auswerter zu keinem Datum zertifizie
 ### Machbarkeit
 
 - **Engine: ja.** Die vier Punkt-in-der-Zeit-Zustände hängen nur an Technical-Feldern aus Tages-OHLCV (≥ 300 Balken) und am Schlusskurs. `quantV2.factorEvidence` geht in keine Kaskadenregel ein.
-- **Parität:** Das Produkt-Replay `setup-replay-v1` (160 Titel) hat 3.177 von 3.177 Stände mit 0 Abweichungen. Die Neuberechnung von AAPL ist zeilengleich mit dem Replay-Artefakt.
+- **Parität:** Das Produkt-Replay `setup-replay-v1` (160 Titel) hat 3.177 von 3.177 Stände mit 0 Abweichungen. Die Neuberechnung von AAPL ist zeilengleich mit dem Replay-Artefakt (551 von 551 Zeilen).
 - **Research-Frame: nein.** Der Frame aus `createResearchLoader` liefert nur Wochenschlüsse, ohne Hoch/Tief und ohne Volumen. Die Ablation zeigt, was jeweils fehlt:
-  - Ohne Volumen kann CONFIRMED nicht entstehen, denn `technicalVolumeState` ist Pflichtbedingung.
-  - Ohne Hoch/Tief verschieben sich Struktur, Volatilität und Marken.
-  - Auf Wochenbalken stimmen die Zustände nur noch selten.
-  - Zahlen: `setup-reconstruction-feasibility-1.0.0.json`, Abschnitt `ablation.totals`.
+  - Gemessen an 2.780 Wochenstichtagen der 5 Titel mit Tages-OHLCV (2016–2026), Vergleich mit voller Tages-OHLCV:
+
+    | Input | gleicher Zustand | gleicher Zustand + Marken |
+    |---|---|---|
+    | + SPY-Benchmark (wie Produktion) | 100 % | 97,1 % |
+    | ohne Volumen | 97,5 % | 97,5 % |
+    | nur Tagesschluss | 73,3 % | 6,3 % |
+    | Wochenschluss des Frames (2.220 Stichtage, AAPL vom Loader ausgeschlossen) | 46,7 % | 1,4 % |
+
+  - Ohne Volumen kann CONFIRMED nicht entstehen (alle 70 CONFIRMED fallen auf WATCH/SETUP_FORMING), denn `technicalVolumeState` ist Pflichtbedingung.
+  - Ohne Hoch/Tief verschieben sich Struktur, Volatilität und vor allem die Marken.
+  - Der fehlende Input ist also konkret: Tageshoch, Tagestief und Tagesvolumen, je mindestens 300 Tagesbalken bis zum Stichtag.
+  - Der Benchmark ändert keinen Zustand, aber 2,9 % der Marken (Szenario-Bias über die relative Stärke).
 - Die Tages-OHLCV des Universums liegt nur im runner-privaten Speicher der Pipeline. Im Repository haben nur 5 Titel Tages-OHLCV, und zwar ab 2015.
 - **Gewählter Weg:**
   - Zustände aus dem vom Produkt-Erzeuger berechneten Replay;
