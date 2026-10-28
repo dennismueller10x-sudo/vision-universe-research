@@ -139,7 +139,21 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          concept. companyfacts carries no extension taxonomy, so without a
 #          merged instance document nothing changes; with one, a cell that had
 #          no generic concept gets the issuer's own value (NVDA capex FY2013-2021).
-NORMALIZATION_LOGIC_VERSION = "1.13.0"
+# 1.14.0 — V9 SEC/PIT (docs/quant-recovery/v9/secpit).
+#          (a) Das `fy` eines Jahresberichts benennt sein Geschaeftsjahr nur,
+#              wenn es hoechstens ein Jahr vom Kalenderjahr des Periodenendes
+#              abweicht. Sonst ist es ein Fehler im Filing (PRTH 43465/43830,
+#              WTBA 2107, STX 2027 fuer das Jahr bis 2025-06-27, PLD/TRU mit
+#              Jahresdauern zwei Jahre vor dem DocumentPeriodEndDate): kein
+#              Label, keine Stimme fuer den Offset, sichtbar als
+#              rejected_anchors[reason=IMPLAUSIBLE_FILING_FY].
+#          (b) Ein gemappter Fakt, dessen Periode nach seiner Verfuegbarkeit
+#              (Annahme, nie vor dem Einreichungsdatum) endet, ist keine
+#              berichtete Periode (Faelligkeitsplan, fuer das Folgequartal
+#              erklaerte Dividende, Deckblattdatum nach Annahme). Er wird als
+#              FUTURE_PERIOD_END quarantaeniert, nicht umdatiert. V9: 900
+#              solche Beobachtungen bei 224 Emittenten.
+NORMALIZATION_LOGIC_VERSION = "1.14.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -154,7 +168,9 @@ FORMULA_VERSION = "1.2.0"
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
 
 # Data quality rule set.
-QUALITY_RULES_VERSION = "1.0.0"
+# 1.1.0 — IMPLAUSIBLE_FILING_FY (abgelehnter Jahresanker) und
+#         FUTURE_PERIOD_END (quarantaenierte Zukunftsperiode) als WARNING.
+QUALITY_RULES_VERSION = "1.1.0"
 
 
 # Files whose content defines NORMALIZATION_LOGIC_VERSION. Changing any of them
@@ -170,7 +186,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "dfd2c618dd4abeb206e927fd886158ec7b1b01272ffbb935a30ba7f2120ff927"
+    "366ea08025fbf9f377c5a1fa2343f89ea2e03f94a12ac5e9d6dc5680c563c7b2"
 )
 
 
