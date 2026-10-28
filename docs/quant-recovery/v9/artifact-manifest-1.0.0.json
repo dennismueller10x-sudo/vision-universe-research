@@ -1,6 +1,6 @@
 {
  "schemaVersion": "quant-v9-evidence-matrix-1.0.0",
- "gitHeadAtBuild": "bce19075f8b003a7af283f7b7cf1807e63bff477",
+ "gitHeadAtBuild": "e14d7d127920eb24a818b27d3bfd03ad292bbf50",
  "matrix": [
   {
    "area": "SAME_STOCK_REPLAY",
@@ -31,10 +31,11 @@
   {
    "area": "SETUP_BACKTEST",
    "methodStatus": "PARTIAL",
-   "summary": "4,137 events / 20 dates / 2 months / 6 ISO weeks; blockers are forward-time accumulation plus one normative question (recommendation prepared, not approved).",
+   "summary": "4,137 events / 20 dates / 2 months / 6 ISO weeks but N_eff ~17 for the M6 mean (independence analysis); blockers are forward-time accumulation plus one normative question (owner: ISO-week change NOT approved; week counter alone insufficient).",
    "evidence": [
     "docs/quant-recovery/v9/certification-readiness-1.0.0.json",
-    "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json"
+    "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json",
+    "docs/quant-recovery/v9/setup-independence-1.0.0.json"
    ],
    "certification": "NOT_CERTIFIED"
   },
@@ -114,7 +115,7 @@
   {
    "area": "PORTFOLIO_REBALANCING",
    "methodStatus": "ACCEPTED_WITH_DEFINED_SCOPE",
-   "summary": "NEW (bookkeeping mechanics only): SEC-sourced cash dividends credited at pay date (MSFT/WMT 47/47 quarters), sourced splits, one real cash (CRNX) and one real stock (LBRDK->CHTR) terminal event; 22/22 exact Python ledger parities. Spin-offs, ADS consideration and unstated pay dates excluded; no strategy certification.",
+   "summary": "NEW (bookkeeping mechanics only): SEC-sourced cash dividends credited at pay date (MSFT/WMT 47/47 quarters), sourced splits, one real cash (CRNX) and one real stock (LBRDK->CHTR) terminal event; 22/22 exact Python ledger parities. Spin-offs, ADS consideration and unstated pay dates excluded; owner 2026-10-28: accepted only for the evidenced bookkeeping mechanics, not for all corporate actions, historical strategies or unknown events; no strategy certification.",
    "evidence": [
     "docs/quant-recovery/v9/portfolio/portfolio-v9-index.json"
    ],
@@ -128,10 +129,16 @@
   "certifiedBacktestKinds": "0/6"
  },
  "finalStatus": "V9_METHODS_ACCEPTED_WITH_LIMITED_SCOPE",
+ "ownerDecision20261028": {
+  "methodsAcceptance": "METHODOLOGICAL_ONLY_WITHIN_DOCUMENTED_LIMITED_SCOPE",
+  "setupIsoWeekChange": "NOT_APPROVED",
+  "activeGatesUnchanged": true
+ },
  "files": {
   "docs/quant-recovery/v9/baseline-1.0.0.json": "491b7b6431fa8aca193a2f81dbf09eb067a74168fb86b0433fc9fc0a59e54ba6",
   "docs/quant-recovery/v9/certification-readiness-1.0.0.json": "a93e6ccbd65638136b32064d1473e1ccddb7f62054137e76d3498767468d2a3d",
   "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json": "84aad4408f57b79130c9d84ef8e72bb70cbc8a5ddc858f32e8ef539e557726a3",
+  "docs/quant-recovery/v9/setup-independence-1.0.0.json": "e42340e3fd582620983652a5981811baf569f439a12025de93176cd8f94b8108",
   "docs/quant-recovery/v9/technical-close-review-1.0.0.json": "bb9aadd7c2d957fa4b30062e14d33282b617465bad3306598535630be8ebf821",
   "docs/quant-recovery/v9/technical-close-review-1.0.1.json": "f7df6405fd5d5ea176160aaec472a0fb55d3287415330d5163dccb101f5e3757",
   "docs/quant-recovery/v9/v8-securement-1.0.0.json": "3ebba9e8e36f4bbbacb376dc50265a6351421b4d955e3b3f9f884412b1f1726f",
@@ -197,8 +204,9 @@
   "docs/quant-recovery/v9/secpit/summary.json": "e3243e68959c8d26e929d9f65aae8ecc32e0619c6218221dc17f3136afe44f5e"
  },
  "code": {
-  "scripts/quant/v9/build-v9-manifest.py": "86d1ade6c88b3d3e69e2344d2394ab77a992b319f42c45f05610dfd4dff0eda6",
+  "scripts/quant/v9/build-v9-manifest.py": "65da4c089ddf23b1f6d966a9598dfec336e62166af818c814c0209b2a281c12c",
   "scripts/quant/v9/certification-readiness.py": "9ab6f5eeb8deb8f9a111f81fd52ac47619c3abfe36e09e4ca8503db57c4bb949",
+  "scripts/quant/v9/setup-independence.py": "8fd862af65750263381dcdfa54c6e6681750d0b09866ea07fb49293892da42f5",
   "scripts/quant/v9/identity/build_dossiers.py": "8ce7d5729e169d212c2141033dd1361b355521c4c10a954301a9cddf0e928331",
   "scripts/quant/v9/identity/build_proposal.py": "cac8568fd82086362a6200b83c823ed1e27c7cdc7eaa1aee4cb098f939fc8610",
   "scripts/quant/v9/identity/check_identity.py": "d2d30d1fec0d49422ff66fa7cad49ec96cbfea45e4418abb3c494a2e905317a1",

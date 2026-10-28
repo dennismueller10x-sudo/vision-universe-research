@@ -30,4 +30,4 @@ Die V7-/V8-Abnahmen (Monte Carlo, OOS-Verwaltung, Walk-Forward, Marktregime) ble
 
 ## Normative Entscheidung
 
-[Setup-Empfehlung 1.0.0](v9/setup-decision-recommendation-1.0.0.json): ISO-Wochenzähler (Vertrag 1.1.0) plus Pflicht zu wochengeclusterter Unsicherheit; der Monatszähler bleibt Auditfeld. Nicht genehmigt, nicht aktiviert.
+[Setup-Empfehlung 1.0.0](v9/setup-decision-recommendation-1.0.0.json) (ISO-Wochenzähler) wurde vom Owner nicht genehmigt. Die daraufhin erstellte [Unabhängigkeitsanalyse](v9/setup-independence-1.0.0.json) zeigt: Für M6-Ausgänge bestimmen überlappende Horizonte und der gemeinsame Marktfaktor die Abhängigkeit; 4.137 Ereignisse entsprechen N_eff ≈ 17 (roh) / ≈ 13 (Überschuss), 20 Wochen × 200 Titel nur ≈ 22 / 17. Kalenderzähler messen keine Unabhängigkeit. Vorschlag (nicht genehmigt): Zählfeld ehrlich benennen und ein eigenes Gate aus Mindest-N_eff unter vorregistriertem Modell plus Mindestzahl nicht überlappender Horizontblöcke. Das Modell setzt gleiche Varianzen und eine mittlere Korrelation voraus; Sektor-Clustering würde die Abhängigkeit eher erhöhen. Aktive Gates unverändert.

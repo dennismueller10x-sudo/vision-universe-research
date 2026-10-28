@@ -36,8 +36,17 @@ Die wichtigste Erschließung: **SEC EDGAR ist aus der Arbeitsumgebung direkt err
 
 ## Offene Entscheidungen für den Owner
 
-1. **Setup-Unabhängigkeit** ([Empfehlung](v9/setup-decision-recommendation-1.0.0.json)): ISO-Wochenzähler (Vertrag 1.1.0) statt Monatszähler. Verschiebt den frühesten möglichen Zertifizierungszeitpunkt um über ein Jahr. Nicht genehmigt, nicht aktiviert.
+1. **Setup-Unabhängigkeit** ([ursprüngliche Empfehlung](v9/setup-decision-recommendation-1.0.0.json), durch die [Unabhängigkeitsanalyse](v9/setup-independence-1.0.0.json) als unzureichend ersetzt – siehe Owner-Entscheidungen unten). Nicht genehmigt, nicht aktiviert.
 2. **Folge-PRs mit Vorher/Nachher** (je eigene Produktwelt): SEC-Pipeline P1–P4; Adapter-Integration der Identitäts-Registry (zunächst die fünf Dossierfälle) und der CA-Registry; Stale-Tail-/Delisting-Prüfung; PZZA-Neubau durch den Erzeuger; Ledger-Erweiterungen (Spin-off, ADS, Informations- vs. Anspruchszeit).
 3. **Abnahme-Lesart Portfolio**: V9 zählt die Buchführungsmechanik als abgenommen; der Strang selbst empfahl die engere Lesart „Methode insgesamt PARTIAL“. Bei engerer Lesart: 6/7 bzw. 6/13.
+
+## Owner-Entscheidungen vom 28.10.2026
+
+1. **7/7 nur als methodische Abnahme im dokumentierten begrenzten Scope.** Portfolio-Rebalancing ist für die belegte Buchführungsmechanik abgenommen – ausdrücklich **nicht** für sämtliche Corporate Actions, historische Strategien oder unbekannte Ereignisse. Keine Abnahme ist eine Zertifizierung.
+2. **Setup-Änderung auf ISO-Wochen nicht genehmigt.** Die bestehenden Gates bleiben unverändert. Die angeforderte Prüfung der statistischen Unabhängigkeit liegt vor ([Analyse](v9/setup-independence-1.0.0.json)):
+   - 4.137 Ereignisse auf 20 Tagen haben für den mittleren M6-Ausgang nur **N_eff ≈ 17** (roh) bzw. **≈ 13** (SPY-Überschuss). Alle M6-Fenster überlappen sich (ein einziger nicht überlappender Horizontblock); mittlere paarweise Tageskorrelation 0,061 bzw. 0,079.
+   - 20 aufeinanderfolgende Wochen mit je 200 Titeln ergäben ebenfalls nur N_eff ≈ 22 (roh) bzw. 17 – **20 Kalenderwochen sind keine 20 unabhängigen Beobachtungen** eines Sechsmonatsausgangs. Erst rund zwei Jahre wöchentlicher Ereignisse erreichen N_eff ≈ 57–73 und vier nicht überlappende Blöcke.
+   - Folgerung: Weder Monats- noch Wochenzähler messen Unabhängigkeit. Die frühere ISO-Wochen-Empfehlung ist damit **unzureichend** und wird ersetzt durch: Feld nach dem benennen, was gezählt wird, und ein separates Unabhängigkeitsgate aus Mindest-N_eff unter vorregistriertem Block-/Clustermodell plus Mindestzahl nicht überlappender Horizontblöcke. Ebenfalls nicht genehmigt; nichts aktiviert.
+3. **Folgekorrekturen** werden in getrennten Draft-PRs mit Vorher/Nachher-Nachweis, Regressionen und unabhängiger Gegenprüfung vorbereitet (P0 SEC-Pipeline; P1 Identitätsregistry der fünf Bindungen, eingefrorene Kursenden/Delisting-Zuordnung, PZZA im Erzeuger; P2 weitere CA-Fälle nur nach unabhängiger Quellenprüfung, Ledger-Typen). Keine pauschale Aktivierung der 81 CA-Trockenlauffälle.
 
 [Evidenzmatrix](BACKTEST_V9_EVIDENCE_MATRIX.md) · [Datenrettung](BACKTEST_V9_DATA_RECOVERY.md) · [Methoden](BACKTEST_V9_METHOD_VALIDATION.md) · [Realstudien](BACKTEST_V9_REAL_STUDIES.md) · [Validierung](BACKTEST_V9_VALIDATION.md) · [Manifest](v9/artifact-manifest-1.0.0.json)
