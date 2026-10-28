@@ -1,0 +1,249 @@
+{
+ "schemaVersion": "split-supplement-effect-1.0.0",
+ "note": "Vorher/Nachher einer belegten Split-Ergaenzung, deterministisch auf der committeten Wochenreihe berechnet (scripts/market/split-supplement-effect.mjs). Der echte Neubau entsteht erst im Lauf des Herausgebers (long-series.yml) aus den Tagesbalken; Werte mit exact:false koennen dort um einen Cent abweichen.",
+ "supplementsFile": "quant/config/split-evidence-supplements.json",
+ "supplementsSha256": "48aafe49eb4fa919bee556e1cde51086e82c00c0d46e0d6f0d5dfd42549b5cb3",
+ "codeSha256": {
+  "quant/engines/return-series.js": "8d46f91b542eb760087d2d0a519a50fba9140dd6005c6772fddf7ef0efe04721",
+  "quant/engines/split-evidence-supplements.js": "7a5c83ef847d804f723f9d2ce5e5a0118ccf00245888aa337e1128be2b0cc625",
+  "quant/engines/corporate-action-evidence.js": "46d2531172d5f6b1258fdfdbfb956eb8e369248ff01f7d136ad635ec15a938d8",
+  "scripts/market/publish-long-series.mjs": "06c34348ddf0224e096bffbb2eb7b10d1568a99ece0dcab2b5989454bb1505fc",
+  "scripts/market/publish-discover-series.mjs": "c21228c9d97382764574f0b3cfc599c283eed0f2e40d2e62f0b4609de7b9bed1",
+  "scripts/market/split-supplement-effect.mjs": "a9b3f7f5fa3ad790c8b2de4406b409a2d8ac4095cc7537d566f91fc1c266808e"
+ },
+ "rows": [
+  {
+   "id": "PZZA-2013-12-30-2FOR1",
+   "securityId": "ref_PZZA",
+   "ticker": "PZZA",
+   "exDate": "2013-12-30",
+   "ratio": 2,
+   "file": "quant/data/market/discover-series-long/ref_PZZA.json",
+   "sha256Before": "c25f802bf30372355cc4e86603fe23cc3bf0c7bbec1f786794fafc730b3c2252",
+   "sha256AfterExpected": "e15912c5d483dc0854d6f773826fd05a271f33a674a82f3319575b565abb2004",
+   "points": 1742,
+   "pointsChanged": 1073,
+   "firstChanged": "1993-06-11",
+   "lastChanged": "2013-12-27",
+   "pointsUnchanged": 669,
+   "pointsAmbiguousByCentRounding": 535,
+   "ambiguousSample": [
+    {
+     "date": "1993-06-25",
+     "before": 4.61,
+     "lo": 2.3,
+     "hi": 2.31
+    },
+    {
+     "date": "1993-07-09",
+     "before": 4.83,
+     "lo": 2.41,
+     "hi": 2.42
+    },
+    {
+     "date": "1993-07-16",
+     "before": 4.83,
+     "lo": 2.41,
+     "hi": 2.42
+    },
+    {
+     "date": "1993-07-23",
+     "before": 4.61,
+     "lo": 2.3,
+     "hi": 2.31
+    },
+    {
+     "date": "1993-08-13",
+     "before": 4.89,
+     "lo": 2.44,
+     "hi": 2.45
+    }
+   ],
+   "exWeek": {
+    "week": "2014-01-03",
+    "ratioBefore": 0.512285,
+    "ratioAfter": 1.024455,
+    "splitSizedBefore": true,
+    "splitSizedAfter": false
+   },
+   "around": [
+    {
+     "week": "2013-12-13",
+     "before": 86.16,
+     "after": 43.08
+    },
+    {
+     "week": "2013-12-20",
+     "before": 88.46,
+     "after": 44.23
+    },
+    {
+     "week": "2013-12-27",
+     "before": 89.95,
+     "after": 44.98
+    },
+    {
+     "week": "2014-01-03",
+     "before": 46.08,
+     "after": 46.08
+    },
+    {
+     "week": "2014-01-10",
+     "before": 46.66,
+     "after": 46.66
+    },
+    {
+     "week": "2014-01-17",
+     "before": 47.48,
+     "after": 47.48
+    }
+   ],
+   "firstPoint": {
+    "before": [
+     "1993-06-11",
+     4.5
+    ],
+    "after": [
+     "1993-06-11",
+     2.25
+    ]
+   },
+   "lastPoint": {
+    "before": [
+     "2026-10-23",
+     18.1
+    ],
+    "after": [
+     "2026-10-23",
+     18.1
+    ]
+   },
+   "maxRangeReturn": {
+    "before": 4.022222,
+    "after": 8.044444
+   },
+   "allTimeHigh": {
+    "before": [
+     "2021-12-31",
+     133.47
+    ],
+    "after": [
+     "2021-12-31",
+     133.47
+    ]
+   },
+   "corporateActions": {
+    "before": {
+     "version": "corporate-action-evidence-1.0.0",
+     "source": "PROVIDER_SPLIT_FACTOR",
+     "splits": [
+      [
+       "1996-03-26",
+       1.5
+      ],
+      [
+       "1996-11-25",
+       1.5
+      ],
+      [
+       "2006-01-17",
+       2
+      ]
+     ],
+     "moves": [
+      {
+       "week": "2014-01-03",
+       "weeklyRatio": 0.512285,
+       "maxDailyRatio": 0.511395,
+       "maxDailyDate": "2013-12-30",
+       "splitInWeek": false
+      }
+     ]
+    },
+    "afterExpected": {
+     "version": "corporate-action-evidence-1.0.0",
+     "source": "PROVIDER_SPLIT_FACTOR",
+     "splits": [
+      [
+       "1996-03-26",
+       1.5
+      ],
+      [
+       "1996-11-25",
+       1.5
+      ],
+      [
+       "2006-01-17",
+       2
+      ],
+      [
+       "2013-12-30",
+       2
+      ]
+     ],
+     "moves": [],
+     "supplemented": [
+      {
+       "date": "2013-12-30",
+       "factor": 2,
+       "id": "PZZA-2013-12-30-2FOR1",
+       "accession": "0001157523-13-005314",
+       "source": "SEC_FILING_SUPPLEMENT"
+      }
+     ]
+    },
+    "unresolvedMoves": []
+   },
+   "weeklyAdapter": {
+    "before": {
+     "ok": false,
+     "error": "CORPORATE_ACTION_UNRESOLVED:[{\"time\":\"2014-01-03\",\"status\":\"UNRESOLVED\",\"reason\":\"SINGLE_DAY_SPLIT_SIZED_JUMP\"}]"
+    },
+    "after": {
+     "ok": true,
+     "corporateActionQuality": "CLEAN",
+     "items": []
+    }
+   },
+   "fundamentalHistoricalPe": {
+    "stateBefore": "AVAILABLE",
+    "stateAfter": "AVAILABLE",
+    "fiscalYears": [
+     2013,
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025
+    ],
+    "splitsAfter": [
+     [
+      "1996-03-26",
+      1.5
+     ],
+     [
+      "1996-11-25",
+      1.5
+     ],
+     [
+      "2006-01-17",
+      2
+     ],
+     [
+      "2013-12-30",
+      2
+     ]
+    ],
+    "rowsChanged": 0,
+    "changed": [],
+    "firstFyBefore": 2013
+   }
+  }
+ ]
+}
