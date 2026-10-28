@@ -238,7 +238,7 @@
       return slot({ filters: [{ field: CANDLE_FIELD[kind], op: "in", value: ids }], text: m });
     });
     text = text.replace(/\bstruktur:([a-z,]+)/g, function (m, list) {
-      var v = list.toUpperCase().split(",").filter(function (x) { return Q.STRUCTURES[x]; });
+      var v = list.toUpperCase().split(",").filter(function (x) { return Q.STRUCTURES[x] || Q.STRUCTURES_LEGACY[x]; });
       return v.length ? slot({ filters: [{ field: "structure", op: "in", value: v }], text: m }) : " ";
     });
 

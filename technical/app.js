@@ -117,7 +117,7 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -514,10 +514,7 @@
 
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
-  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
-    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["volumen", "Volumen"]];
-  var PANE_LIST = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
-    ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"]];
+  var LAYERS = M.CHART_LAYERS, PANE_LIST = M.CHART_PANES;
   var PANES = {};
   PANE_LIST.forEach(function (p) { PANES[p[0]] = 1; });
   var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["5J", 260], ["Max", 0]];
@@ -571,9 +568,14 @@
       var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values,
         bb: VT.Indicators.compute(S, "bollinger").values, rsi: VT.Indicators.compute(S, "rsi").values, macd: VT.Indicators.compute(S, "macd").values, stoch: VT.Indicators.compute(S, "stochastic").values };
       /* Weitere Katalog-Indikatoren; ohne Volumen liefert compute() einen Fehler und die Schicht bleibt leer. */
-      ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf"].forEach(function (id) {
+      ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf",
+        "hma", "chandelier", "vortex", "choppiness", "elderImpulse", "zScore", "ulcerIndex", "historicalVolatility", "connorsRsi"].forEach(function (id) {
         var r2 = VT.Indicators.compute(S, id); ind[id] = r2.error ? null : r2.values;
       });
+      /* ROC wie die Screener-Felder roc21/roc63 (Prozent statt Anteil). */
+      ind.roc21 = VT.Indicators.compute(S, "roc", { period: 21 }).values; ind.roc63 = VT.Indicators.compute(S, "roc", { period: 63 }).values;
+      /* Kerzenmuster der Screener-Liste (dieselbe Erkennung wie die Spalten candleBullish/-Bearish/-Neutral). */
+      ind.candles = VT.Candlesticks ? VT.Candlesticks.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: Object.keys(Q.CANDLE_TYPES) }).patterns : null;
       var cs = bundle.chartSeries || {}, F = bundle.featuresAtCutoff || {};
       body.removeAttribute("aria-busy");
       if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D);
@@ -684,6 +686,12 @@
       for (var pi = from; pi < S.dates.length; pi++) if (isNum(ex.psar.sar[pi])) markers.push({ time: S.dates[pi], price: ex.psar.sar[pi], tone: ex.psar.direction[pi] > 0 ? "positive" : "negative", size: 1.6 });
       legend.push(["Parabolic SAR", "var(--tc-watch)"]);
     }
+    if (L.hma && ex.hma) { overlays.push({ id: "hma", label: "Hull MA 20", values: ex.hma, color: "var(--tc-c3)" }); legend.push(["Hull MA 20", "var(--tc-c3)"]); }
+    if (L.chandelier && ex.chandelier) { overlays.push({ id: "chl", label: "Chandelier lang 22/3", values: ex.chandelier.long, color: "var(--tc-down)", dash: "5 3" }); legend.push(["Chandelier-Stop lang 22/3", "var(--tc-down)"]); }
+    if (L.kerzen && ex.candles) {
+      M.candleMarks(S, ex.candles, global.VUTechnical.Candlesticks.PATTERNS, Q.CANDLE_TYPES, from).forEach(function (m) { markers.push(m); });
+      legend.push(["Kerzenmuster bullisch", "var(--tc-up)"], ["Kerzenmuster bärisch", "var(--tc-down)"]);
+    }
     if (L.bb) {
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
       overlays.push({ id: "bbl", label: "Bollinger unten", values: X.ind.bb.lower, color: "var(--tc-c5)", dash: "2 3" }); legend.push(["Bollinger 20/2", "var(--tc-c5)"]);
@@ -727,6 +735,14 @@
     if (L.mfi) pane = ex.mfi ? { title: "Money Flow Index 14", min: 0, max: 100, guides: [20, 80], series: [{ label: "MFI", values: ex.mfi, color: "var(--tc-c1)" }] } : null;
     if (L.obv) pane = ex.obv ? { title: "On-Balance-Volume", series: [{ label: "OBV", values: ex.obv, color: "var(--tc-c1)" }] } : null;
     if (L.cmf) pane = ex.cmf ? { title: "Chaikin Money Flow 20", guides: [0], series: [{ label: "CMF", values: ex.cmf, bars: true }] } : null;
+    if (L.roc) pane = { title: "ROC 21 / 63 (%)", guides: [0], series: [{ label: "ROC 21", values: ex.roc21, color: "var(--tc-c1)" }, { label: "ROC 63", values: ex.roc63, color: "var(--tc-c2)" }] };
+    if (L.crsi) pane = ex.connorsRsi ? { title: "Connors RSI 3/2/100", min: 0, max: 100, guides: [10, 90], series: [{ label: "Connors RSI", values: ex.connorsRsi, color: "var(--tc-c1)" }] } : null;
+    if (L.zscore) pane = ex.zScore ? { title: "Z-Score 20", guides: [-2, 0, 2], series: [{ label: "Z-Score", values: ex.zScore, color: "var(--tc-c1)" }] } : null;
+    if (L.elder) pane = ex.elderImpulse ? { title: "Elder Impulse 13 (+1 grün, −1 rot)", min: -1, max: 1, guides: [0], series: [{ label: "Impuls", values: ex.elderImpulse, bars: true }] } : null;
+    if (L.vortex) pane = ex.vortex ? { title: "Vortex 14", guides: [1], series: [{ label: "VI+", values: ex.vortex.plus, color: "var(--tc-up)" }, { label: "VI−", values: ex.vortex.minus, color: "var(--tc-down)" }] } : null;
+    if (L.chop) pane = ex.choppiness ? { title: "Choppiness 14", min: 0, max: 100, guides: [38.2, 61.8], series: [{ label: "Choppiness", values: ex.choppiness, color: "var(--tc-c1)" }] } : null;
+    if (L.hv) pane = ex.historicalVolatility ? { title: "Historische Volatilität 20 (% p. a.)", min: 0, series: [{ label: "HV 20", values: ex.historicalVolatility, color: "var(--tc-c1)" }] } : null;
+    if (L.ulcer) pane = ex.ulcerIndex ? { title: "Ulcer Index 14 (%)", min: 0, series: [{ label: "Ulcer", values: ex.ulcerIndex, color: "var(--tc-c1)" }] } : null;
     return { title: X.T + " Tageschart", mode: "candles", window: win, data: S, overlays: overlays, lines: lines, zones: zones, levels: levels, markers: markers, volume: !!L.volumen, pane: pane, legend: legend };
   }
 

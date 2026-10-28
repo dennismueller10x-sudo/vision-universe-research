@@ -323,9 +323,9 @@
       "cik": "0001361658",
       "name": "Travel & Leisure Co.",
       "sic": "7011",
-      "rawFacts": 32354,
-      "mappedFacts": 8173,
-      "unmappedFacts": 24063,
+      "rawFacts": 32846,
+      "mappedFacts": 8140,
+      "unmappedFacts": 24567,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -335,28 +335,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -369,28 +369,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -404,14 +404,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -434,47 +434,48 @@
         }
       },
       "quality": {
-        "HIGH": 643,
+        "HIGH": 651,
         "MEDIUM": 53
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 696,
-        "resolvedValues": 696
+        "datableValues": 704,
+        "resolvedValues": 704
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 24930,
+        "rules_version": "1.1.0",
+        "total": 25310,
         "by_severity": {
-          "INFO": 24063,
-          "WARNING": 867
+          "INFO": 24567,
+          "WARNING": 743
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 647,
+          "CONCEPT_DISAGREEMENT": 580,
           "NEGATIVE_WHERE_IMPOSSIBLE": 10,
-          "RESTATEMENT_CONFLICT": 206,
+          "RESTATEMENT_CONFLICT": 149,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 24063
+          "UNKNOWN_CONCEPT": 24567
         }
       },
       "latestFiling": {
-        "accession": "0001361658-26-000053",
-        "filing_date": "2026-07-22",
+        "accession": "0001361658-26-000064",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 82
+        "periodic_filings": 83,
+        "acceptance_datetime": "2026-10-27T14:39:23.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "877d35e7bdb91ee542591bc0e456e76a09268766ab5ac332fb250e7bd79ddf32",
+      "sourceDigest": "8f4c71234be10d5581fbb83c177acf99754aba5ed8f6b37724bca48ed9ef3aa2",
       "issuerId": "iss_cik_0001361658"
     },
     {

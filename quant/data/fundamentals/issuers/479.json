@@ -163,9 +163,9 @@
       "cik": "0001364479",
       "name": "HERC HOLDINGS INC",
       "sic": "7350",
-      "rawFacts": 24214,
-      "mappedFacts": 6694,
-      "unmappedFacts": 17850,
+      "rawFacts": 24566,
+      "mappedFacts": 6799,
+      "unmappedFacts": 18233,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -175,28 +175,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -216,21 +216,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -244,14 +244,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -274,45 +274,46 @@
         }
       },
       "quality": {
-        "HIGH": 616,
-        "MEDIUM": 35
+        "HIGH": 622,
+        "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 651,
-        "resolvedValues": 651
+        "datableValues": 658,
+        "resolvedValues": 658
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 18485,
+        "rules_version": "1.1.0",
+        "total": 18672,
         "by_severity": {
-          "INFO": 17850,
-          "WARNING": 635
+          "INFO": 18233,
+          "WARNING": 439
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 431,
-          "RESTATEMENT_CONFLICT": 204,
-          "UNKNOWN_CONCEPT": 17850
+          "CONCEPT_DISAGREEMENT": 242,
+          "RESTATEMENT_CONFLICT": 197,
+          "UNKNOWN_CONCEPT": 18233
         }
       },
       "latestFiling": {
-        "accession": "0001364479-26-000109",
-        "filing_date": "2026-07-28",
+        "accession": "0001628280-26-067396",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 80
+        "periodic_filings": 81,
+        "acceptance_datetime": "2026-10-27T10:36:14.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f65804db341a354a3d80d1779fa49566418e6baf97b3363da022779d9c2c692b",
+      "sourceDigest": "56682765b27430b56de04b3fe3713737b32ec7e8cbe61c46708cc454e2f50fbf",
       "issuerId": "iss_cik_0001364479"
     },
     {
