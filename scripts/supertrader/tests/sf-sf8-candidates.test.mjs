@@ -320,6 +320,28 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '91be182a5ab9abece651959818717eda79615416927dc164f99276b1dd9a88fa');
 });
 
+test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste Konfigurationstexte ohne Preis; die Vorschau zeigt nur die Regel', () => {
+  // vierte Nachprüfung (M2): readings stammen aus der ersten Erkennung je Strategie und werden strategieweit veröffentlicht
+  const READINGS = {
+    C01: [{ ruleId: 'TUR-SF-S1-OPEN-BREAKOUT', reading: 'MA-TUR-S1-OPEN-BREAKOUT reference openBreakout=SKIP' }, { ruleId: 'TUR-SF-FAILSAFE-EXIT', reading: "MA-TUR-FAILSAFE-EXIT reference failsafeExit='10D'" }],
+    C02: [], C03: [{ ruleId: 'DAR-SF-BOTTOM-START', reading: 'MA-DAR-BOTTOM-START reference AFTER_TOP_DAY' }], C04: [], C05: [], C06: [], C07: [], C08: [],
+    C09: [{ ruleId: 'KK-SF-EP-EXIT', reading: 'not modelled (chart candidate only)' }], C10: [],
+    C11: [{ ruleId: 'MOKA-SF-EXIT-VIOLATION', reading: 'MA-MOKA-VIOLATION-READING reference LATER_DAYS' }],
+    C12: [{ ruleId: 'MOKA-SF-BGU-VOLWINDOW', reading: 'MA-MOKA-BGU-VOLWINDOW 50 sessions (owner decision D-BGU-VOLWINDOW)' }, { ruleId: 'MOKA-SF-EXIT-VIOLATION', reading: 'MA-MOKA-VIOLATION-READING reference LATER_DAYS' }],
+    C13: [{ ruleId: 'RAS-SF-SIZE', reading: 'not disclosed in the sources: no size is shown' }],
+  };
+  assert.deepEqual(Object.fromEntries(RES.strategies.map((s) => [s.candidateId, s.readings])), READINGS);
+  // auch aus jeder anderen Erkennung: die Lesart hängt nie vom Titel ab (sonst trüge sie einen Preis des ersten Titels)
+  const secs = securities();
+  for (const v of views()) {
+    const s = secs.find((x) => x.ticker === v.ticker);
+    const det = DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null });
+    if (det.detected) assert.deepEqual(det.ambiguousReadings, READINGS[v.candidateId], `${v.candidateId} ${v.ticker}`);
+  }
+  const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
+  assert.deepEqual([...ui.matchAll(/readings[^;\n]{0,80}/g)].map((m) => m[0]).filter((x) => /\.reading\b/.test(x)), [], 'die Vorschau zeigt nur die ruleId einer Lesart');
+});
+
 test('SF8-STRUCTURE-MARKS-PINNED: unterhalb von MODELED heute keine Marken und keine Chartmarke (bekannter Schlüsselfehler, Owner-Entscheidung)', () => {
   // chartMarks liest STRUCTURE_LEVELS/STRUCTURE_MARK über det.strategyId (SF_…), die Tabellen sind nach Cxx geschlüsselt: unterhalb
   // von MODELED entstehen deshalb nie Strukturmarken. Die Korrektur zeigt Box, Widerstand und Gap-Tief (C12: zugleich die
