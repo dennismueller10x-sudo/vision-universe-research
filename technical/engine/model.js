@@ -297,6 +297,40 @@
   }
 
   /** Befundkarten fuer das Chart Studio: Formationen + nachvollziehbare Indikatorzustaende. */
+  /**
+   * Kerzenmuster als Chartmarken (AP5): je Bar ab `from` die erkannten Muster der Screener-Liste, eingeteilt wie
+   * screen-row.js#candleBlock: neutral (Doji, Spinning Top …) nach Musterart, sonst Vorzeichen des Werts (+1 bullisch,
+   * −1 baerisch; "both"-Muster je Fall). Bullisch unter dem Tief, baerisch ueber dem Hoch, neutral am Schluss (klein).
+   * Beschriftet wird nur die juengste Marke je Richtung, damit der Chart lesbar bleibt.
+   * @param patterns Candlesticks.detect(...).patterns   @param meta Candlesticks.PATTERNS   @param names Query.CANDLE_TYPES
+   * @returns [{ time, price, tone, size, label?, kind, ids }]
+   */
+  function candleMarks(S, patterns, meta, names, from) {
+    var byId = {}, out = [], lastOf = {};
+    (meta || []).forEach(function (p) { byId[p.id] = p; });
+    var ids = Object.keys(patterns || {}).filter(function (id) { return byId[id] && names && names[id]; });
+    for (var i = Math.max(0, from || 0); i < S.close.length; i++) {
+      var hit = { bull: [], bear: [], neutral: [] };
+      ids.forEach(function (id) {
+        var v = patterns[id][i];
+        if (typeof v !== "number" || !isFinite(v) || v === 0) return;
+        hit[byId[id].direction === "neutral" ? "neutral" : v > 0 ? "bull" : "bear"].push(id);
+      });
+      ["bull", "bear", "neutral"].forEach(function (k) {
+        if (!hit[k].length) return;
+        var price = k === "bull" ? S.low[i] : k === "bear" ? S.high[i] : S.close[i];
+        out.push({ time: S.dates[i], price: price, tone: k === "bull" ? "positive" : k === "bear" ? "negative" : "muted", size: k === "neutral" ? 2 : 3.5, kind: k, ids: hit[k] });
+        if (k !== "neutral") lastOf[k] = out.length - 1;
+      });
+    }
+    Object.keys(lastOf).forEach(function (k) {
+      var m = out[lastOf[k]], first = names[m.ids[0]];
+      m.label = first + (m.ids.length > 1 ? " +" + (m.ids.length - 1) : "");
+      m.badge = "muted";
+    });
+    return out;
+  }
+
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
@@ -396,7 +430,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, candleMarks: candleMarks, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

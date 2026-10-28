@@ -50,7 +50,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | C1 62 Muster gegen TA-Lib bzw. konstruierte Fälle, Kausalität und Aufwärmphase | ✔ | `technical-candlesticks*.test.mjs`, CANDLESTICKS.md | – |
 | C2 Muster im Screener (heute, Fenster, Tag/Woche/Monat) | ◐ | 27 Muster im Tages-Screener. Woche/Monat (L7) sind bis zur Materialisierung `null`, Prüfung am 29.10. | P1 |
-| C3 Muster im Chart sichtbar (Marker je Bar) | ✘ | 0 von 62 im Chart Studio. → **AP5** | P1 |
+| C3 Muster im Chart sichtbar (Marker je Bar) | ✔ (nach Merge AP5) | Schicht „Kerzenmuster“ in Chart Studio, mit denselben 27 Mustern wie der Screener (`model.js#candleMarks`). Der E2E-Test prüft, dass die Marken am letzten Bar den Spalten der Trefferzeile entsprechen; die Browser-QA prüft Ein- und Ausschalten. Die übrigen 35 Muster stehen nur im Katalog (P2). | P1 |
 | C4 Evidenz mit Grenzen dokumentiert | ✔ | CANDLESTICK_EVIDENCE.md inkl. Marktphasen (#1071) | – |
 
 ### D. Chartformationen und geometrische Korrektheit
@@ -89,7 +89,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | G1 Kurs, 13 Schichten, 11 Unterfenster, Formationen mit Linien, Zeitraum, Hell/Dunkel, 390/1280 px | ✔ | Browser-QA in `technical-ci.yml` | – |
 | G2 Gezeichnete Linien = Rechnung (Bar-Raum) | ✔ | `chart.js` x = Bar-Index. Validator §8 | – |
-| G3 Kerzenmuster als Marker | ✘ | → AP5 | P1 |
+| G3 Kerzenmuster als Marker | ✔ (nach Merge AP5) | siehe C3 | P1 |
 | G4 Relevante Katalogindikatoren wählbar | ◐ | 24 von 92 → AP5 | P1 |
 
 ### H. Historische Evidenz und methodische Grenzen

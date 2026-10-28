@@ -117,7 +117,7 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -515,7 +515,7 @@
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
   var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
-    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["volumen", "Volumen"]];
+    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["kerzen", "Kerzenmuster"], ["volumen", "Volumen"]];
   var PANE_LIST = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
     ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"]];
   var PANES = {};
@@ -574,6 +574,8 @@
       ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf"].forEach(function (id) {
         var r2 = VT.Indicators.compute(S, id); ind[id] = r2.error ? null : r2.values;
       });
+      /* Kerzenmuster der Screener-Liste (dieselbe Erkennung wie die Spalten candleBullish/-Bearish/-Neutral). */
+      ind.candles = VT.Candlesticks ? VT.Candlesticks.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: Object.keys(Q.CANDLE_TYPES) }).patterns : null;
       var cs = bundle.chartSeries || {}, F = bundle.featuresAtCutoff || {};
       body.removeAttribute("aria-busy");
       if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D);
@@ -683,6 +685,10 @@
     if (L.psar) {
       for (var pi = from; pi < S.dates.length; pi++) if (isNum(ex.psar.sar[pi])) markers.push({ time: S.dates[pi], price: ex.psar.sar[pi], tone: ex.psar.direction[pi] > 0 ? "positive" : "negative", size: 1.6 });
       legend.push(["Parabolic SAR", "var(--tc-watch)"]);
+    }
+    if (L.kerzen && ex.candles) {
+      M.candleMarks(S, ex.candles, global.VUTechnical.Candlesticks.PATTERNS, Q.CANDLE_TYPES, from).forEach(function (m) { markers.push(m); });
+      legend.push(["Kerzenmuster bullisch", "var(--tc-up)"], ["Kerzenmuster bärisch", "var(--tc-down)"]);
     }
     if (L.bb) {
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
