@@ -397,3 +397,8 @@ test("1.2.3: Punktpreise bei Kursen unter einem Cent werden nicht zu 0 gerundet,
   assert.ok(pts > 0);
   for (const f of A) for (const p of f.points || []) assert.equal(p.price, Math.round(p.price * 1e4) / 1e4, "ab 1: 4 Nachkommastellen");
 });
+
+test("Regeltext der Keile nennt den Ausbruchsabstand von 0,1 ATR (FORMATION_VALIDATION.md §8)", () => {
+  /* Die Engine bestaetigt Keile erst mit 0,1 ATR Abstand zur Ausbruchslinie; der Text in Chart Studio muss das sagen. */
+  for (const t of ["RISING_WEDGE", "FALLING_WEDGE"]) assert.match(Fm.RULES[t].confirm, /0,1 ATR/, t);
+});
