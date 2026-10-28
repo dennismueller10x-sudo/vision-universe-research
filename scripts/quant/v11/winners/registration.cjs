@@ -109,7 +109,22 @@ const registration = {
   evidenceKind: 'HISTORICAL_DEVELOPMENT_STUDY', certificationStatus: 'NOT_CERTIFIED', productionApproved: false
 };
 
+// Amendment 1.0.1 (committed before any winner/feature comparison was computed).
+const AMENDMENT_1_0_1 = {
+  id: 'V11-WINNERS', version: '1.0.1', amends: { version: '1.0.0', registrationHash: V.hash(registration) },
+  reason: 'Outcome-free availability check of the built member set (feature counts per cohort; no forward return compared with any feature): salesYield (revenue/EV) and netDebtToAssets need a net-debt figure and are finite for only 2-9 % of fundamental members (e.g. 2016-03: 78 resp. 100 of 2,273 members). They stay in the tables (counted) but cannot carry the valuation/leverage questions.',
+  added: [['salesToMarketCap', 'revenue TTM (PIT document ttm.revenue, version filed < t) / PIT market cap = inverse price-to-sales; substitute for EV/Sales', 'valuation'],
+    ['equityToAssets', 'fundamental-inputs raws.equityToAssets (balance-sheet leverage; higher = less leverage); substitute for netDebtToAssets', 'quality']],
+  unchanged: 'All other definitions, classes, endpoints, inference and splits of 1.0.0.',
+  disclosure: 'Decided after seeing feature availability counts and the forward return of the pre-named case NVDA at 2016-03 (a known ex-post fact named by the owner), before any winner/feature comparison was computed.'
+};
+
 function main() {
+  if (process.argv.includes('--amendment-1.0.1')) {
+    const out = path.join(ROOT, 'docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json');
+    const doc = { schemaVersion: 'v11-winners-registration-amendment-1.0.1', registeredAt: new Date().toISOString(), amendmentHash: V.hash(AMENDMENT_1_0_1), amendment: AMENDMENT_1_0_1 };
+    fs.writeFileSync(out, JSON.stringify(doc, null, 1) + '\n'); console.log(out, doc.amendmentHash); return;
+  }
   const i = process.argv.indexOf('--out');
   const out = i > 0 ? process.argv[i + 1] : path.join(ROOT, 'docs/quant-recovery/v11/winners/registration-1.0.0.json');
   const doc = { schemaVersion: 'v11-winners-registration-1.0.0', registeredAt: new Date().toISOString(), registrationHash: V.hash(registration), registration };
@@ -118,4 +133,4 @@ function main() {
   console.log(out, doc.registrationHash);
 }
 if (require.main === module) main();
-module.exports = { registration, PRICE_FEATURES, FUNDAMENTAL_FEATURES, PROTOCOL_SHA };
+module.exports = { registration, AMENDMENT_1_0_1, PRICE_FEATURES, FUNDAMENTAL_FEATURES, PROTOCOL_SHA };
