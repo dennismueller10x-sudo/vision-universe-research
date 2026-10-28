@@ -37,7 +37,7 @@ for(let y=0;y<2040;y+=250){for(let x=0;x<1200;x+=275){
  const kind=rnd();let body=[...Array(3+Math.floor(rnd()*3))].map(()=>`<div class="ln" style="width:${60+rnd()*40}%"></div>`).join('');
  if(c.big)body=`<div class="big">${c.big}</div>`+body;else if(kind<.35)body+=spark(c.up!==false);else if(kind<.6)body+=bars();
  e.innerHTML=`<h3>${c.h}</h3>${body}`;col.appendChild(e)}}
-document.getElementById('fig').src='../../figuren/entwurf-1/v2/'+C.figure+'.png';
+document.getElementById('fig').src='../../figuren/entwurf-1/'+(C.figure.includes('/')?C.figure:'v2/'+C.figure)+'.png';
 const t=document.getElementById('title');
 for(const line of C.title){const d=document.createElement('div');d.textContent=line;t.appendChild(d)}
 const tag=document.getElementById('tag');tag.textContent=C.tag||'';

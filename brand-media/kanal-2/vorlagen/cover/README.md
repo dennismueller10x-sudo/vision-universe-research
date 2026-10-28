@@ -13,7 +13,7 @@ node cover.mjs data=../../reels/<reel>/cover.json out=/tmp/cover.jpg   # PW=<pfa
 |---|---|
 | `title` | 2–3 Zeilen, je Zeile automatisch auf höchstens 960 px Breite gesetzt |
 | `color` | `gelb` (Standard), `blau`, `rot` (dringend), `gruen` |
-| `figure` | Bildname aus `figuren/entwurf-1/v2/` ohne `.png`, z. B. `bulle-schock`, `baer-ueber-brille` |
+| `figure` | Bildname aus `figuren/entwurf-1/v2/` ohne `.png`, z. B. `bulle-schock`; für Outfits mit Pfad, z. B. `outfits/outfit-sakko/bulle-schock` |
 | `tag` | optional, z. B. `TEIL 1` oder `RECAP 28.10.` |
 | `clippings` | Schlagzeilen für die Collage, `{h, big?, up?}`; `big` setzt eine große Zahl, `up` die Richtung der Linie |
 | `seed` | feste Zufallszahl, damit das Cover bei jedem Rendern gleich aussieht |
