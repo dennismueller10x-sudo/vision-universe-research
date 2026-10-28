@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: harvest cash-dividend statements from SEC originals (tr-protocol-1.0.3).
+"""V10 TR register: harvest cash-dividend statements from SEC originals (tr-protocol-1.0.4).
 
 Discovery (protocol sources.discovery):
   (a) every attestation document of the V9 dividend evidence (candidate list only; re-fetched here),
@@ -22,7 +22,7 @@ import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json"
 TP = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 sys.path.insert(0, str(ROOT / "scripts" / "quant" / "sec"))

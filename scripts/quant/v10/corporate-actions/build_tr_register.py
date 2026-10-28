@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.3).
+"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.4).
 
 Admission, completeness windows, split consistency and the derived (never sourced) ex-date follow the protocol. Network use:
 split statements (re-fetched), index-headers of each admitted event's earliest source (acceptance time), companyfacts cross-check;
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "scripts" / "quant" / "sec"))
 import http_client  # noqa: E402
 
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json"
 TP = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 PERIOD = (TP["period"]["recordDateFrom"], TP["period"]["recordDateTo"])
@@ -253,13 +253,23 @@ def main():
                 windows.append((run[0], run[-1]))
             run = []
         tr_windows = []
+        recs = sorted(ev["recordDate"] for ev in events)
         for q0, q1 in windows:
             lo, hi = qstart(q0), min(qend(q1), "2026-10-23")
-            bounds = [lo] + [c for c in cuts if lo < c <= hi] + [hi]
-            for i in range(len(bounds) - 1):
-                w_lo, w_hi = bounds[i], bounds[i + 1] if i + 2 == len(bounds) else (dt.date.fromisoformat(bounds[i + 1]) - dt.timedelta(days=1)).isoformat()
-                tr_windows.append({"from": w_lo, "to": w_hi, "quarters": len([q for q in expected if q0 <= q <= q1 and qend(q) >= w_lo and qstart(q) <= w_hi]),
-                                   "cutBy": [c for c in cuts if c == bounds[i + 1]] if i + 2 < len(bounds) else []})
+            # tr-protocol 1.0.4 cadenceCut: consecutive record dates > 120 days apart split the run (left ends at r1, right starts at r2)
+            segs, cur = [], [lo, hi, []]
+            inrun = [r for r in recs if lo <= r <= hi]
+            for r1, r2 in zip(inrun, inrun[1:]):
+                if (dt.date.fromisoformat(r2) - dt.date.fromisoformat(r1)).days > 120:
+                    segs.append([cur[0], r1, ["CADENCE_GAP:%s..%s" % (r1, r2)]])
+                    cur = [r2, hi, []]
+            segs.append(cur)
+            for s_lo, s_hi, why in segs:
+                bounds = [s_lo] + [c for c in cuts if s_lo < c <= s_hi] + [s_hi]
+                for i in range(len(bounds) - 1):
+                    w_lo, w_hi = bounds[i], bounds[i + 1] if i + 2 == len(bounds) else (dt.date.fromisoformat(bounds[i + 1]) - dt.timedelta(days=1)).isoformat()
+                    tr_windows.append({"from": w_lo, "to": w_hi, "quarters": len([q for q in expected if q0 <= q <= q1 and qend(q) >= w_lo and qstart(q) <= w_hi]),
+                                       "cutBy": ([c for c in cuts if c == bounds[i + 1]] if i + 2 < len(bounds) else []) + (why if i + 2 == len(bounds) else [])})
         covered = sum(s["status"] == "COVERED" for s in status)
         # cross-check only (protocol splitConsistency.check): quarterly us-gaap:CommonStockDividendsPerShareDeclared vs admitted amounts
         xc = {"match": 0, "matchAnyEventInPeriod": 0, "mismatch": 0, "noEventInPeriod": 0, "rows": []}
@@ -294,7 +304,7 @@ def main():
                                 for ev in events if ev["entitlementSession"] and ev["informationAvailableAt"]],
         })
     reg = {
-        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json", "protocolSha256": PROTOCOL_SHA,
+        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json", "protocolSha256": PROTOCOL_SHA,
         "evidenceKind": "SOURCE_EVIDENCE", "certificationStatus": "NOT_CERTIFIED", "productionApproved": False,
         "returnBasisLabels": {"PRICE_RETURN": "split-adjusted closes only (default everywhere)", "TOTAL_RETURN": "only for holding periods fully inside a totalReturnWindow of the title, dividends credited at payDate",
                               "CA_UNRESOLVED": "series not QUALIFIED by createResearchLoader {identityEvidence, corporateActionEvidence}: no return basis", "TERMINAL_UNKNOWN": "terminal proceeds without sourced pay date: never credited (research-portfolio NOT_STATED)"},
