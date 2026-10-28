@@ -112,6 +112,8 @@
   views.login = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
+    // Bestaetigungslink auf einem anderen Geraet: die Tarifwahl kommt ueber den Link mit.
+    if (param('plan') === 'pro') rememberChoice('pro');
     $('ka-login').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = $('email').value.trim(), pw = $('password').value, btn = e.submitter || this.querySelector('button[type=submit]');
@@ -129,6 +131,7 @@
   views.register = function () {
     if (!A.available()) return unavailable();
     if (param('plan') === 'pro') rememberChoice('pro');
+    if (param('plan') === 'free') forgetChoice();
     if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
     passwordHints($('password'), $('pw-rules'));
     $('ka-register').addEventListener('submit', function (e) {
@@ -141,7 +144,7 @@
       if (!$('terms').checked) return notice(A.message('TERMS_REQUIRED'), 'error');
       busy(btn, true);
       A.post('/v1/auth/signup', {email: email, password: pw, displayName: $('display-name').value.trim() || null,
-        acceptTerms: true, termsVersion: 'entwurf-2026-10'}).then(function (r) {
+        acceptTerms: true, termsVersion: 'entwurf-2026-10', plan: pendingChoice() === 'pro' ? 'pro' : null}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
         $('ka-register').hidden = true;
@@ -209,6 +212,8 @@
     requireSession().then(function (user) {
       if (!user) return;
       // Pro gewaehlt (vor der Registrierung): weiter zur Bestaetigung, nicht direkt zur Zahlung.
+      // Die Wahl steht im lokalen Speicher und, ueber den Bestaetigungslink, als ?plan=pro in der Adresse.
+      if (param('plan') === 'pro') rememberChoice('pro');
       if (pendingChoice() === 'pro') return go('/konto/tarife/?plan=pro' + (param('status') === 'verified' ? '&status=verified' : ''));
       return A.get('/v1/me').then(function (r) {
         if (!r.ok) return fail(r);

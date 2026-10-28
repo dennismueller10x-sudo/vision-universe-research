@@ -84,6 +84,21 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.ok(redirect.location.startsWith('https://research.sim/'), 'kein offener Redirect');
   });
 
+  await t.test('Tarifwahl Pro reist im Bestaetigungslink mit (gleiches und anderes Geraet)', async () => {
+    const browser = env.browser();
+    const {location, mail} = await register(env, browser, 'pia.pro@example.test', {plan: 'pro'});
+    assert.match(decodeURIComponent(mail.link), /callback\?flow=signup&plan=pro/);
+    const other = env.browser();
+    assert.equal((await other.open(location)).location, 'https://research.sim/konto/anmelden/?status=verified_other_device&plan=pro');
+    assert.equal((await browser.open(location)).location, 'https://research.sim/konto/?status=verified&plan=pro');
+    // Nur "pro" wird weitergegeben; alles andere faellt weg.
+    const odd = env.browser();
+    const {mail: oddMail} = await register(env, odd, 'olaf.plan@example.test', {plan: 'enterprise'});
+    assert.doesNotMatch(decodeURIComponent(oddMail.link), /plan=/);
+    const forged = await env.browser().open('https://account.sim/v1/auth/callback?flow=signup&code=abcdefgh123&plan=https://evil.example');
+    assert.equal(forged.location, 'https://research.sim/konto/anmelden/?status=verified_other_device');
+  });
+
   await t.test('Login: falsches Passwort, unbestaetigt, Herkunft und CSRF-Kopf', async () => {
     const browser = env.browser();
     await browser.post('/v1/auth/signup', {email: 'carla@example.test', password: PASSWORD, acceptTerms: true});
