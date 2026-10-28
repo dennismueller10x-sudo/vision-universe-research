@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { evaluateRefresh, compareMasters, DEFAULT_THRESHOLDS } from "../../scripts/market/security-master-refresh-gate.mjs";
+import { evaluateRefresh, compareMasters, DEFAULT_THRESHOLDS, APPROVED_CHANGES_SCHEMA } from "../../scripts/market/security-master-refresh-gate.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WF = join(ROOT, ".github", "workflows", "security-master-weekly.yml");
@@ -154,4 +154,82 @@ test("SMW-8 · Erzeuger: derselbe Lauf mit derselben Anbieterliste und --stamp e
     for (const f of Object.keys(first)) assert.equal(readFileSync(join(out, f), "utf8"), first[f], `${f} bitgleich`);
     const s = JSON.parse(first["summary.json"]); assert.equal(s.status, "OK"); assert.equal(s.generatedAt, "2026-10-28T00:00:00Z");
   } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+// ── G7-Sonderfreigabe für den einmaligen Klassifiziererwechsel (Owner P1/P3, 28.10.2026) ─────────────────────────────
+const SHA = "a".repeat(64);
+const approval = (over = {}) => ({ schema: APPROVED_CHANGES_SCHEMA, fromVersion: "us-security-master-1.1.0", toVersion: "us-security-master-1.3.0", prevMasterSha256: SHA,
+  instrumentTypeChanges: [], eligibilityFlips: [], ...over });
+// 30 Vorzugsaktien wechseln den Typ und verlieren die Eignung: ohne Freigabe über G7 (25), mit genau dieser Freigabe zulässig
+const switchCase = () => {
+  const ids = Array.from({ length: 30 }, (_, i) => `P${String(i).padStart(2, "0")}`);
+  const x = base();
+  x.prevMaster = master([...IDS, ...ids].map((i) => row(i)), { version: "us-security-master-1.1.0" });
+  x.nextMaster = master([...IDS.map((i) => row(i)), ...ids.map((i) => row(i, { instrument_type: "PREFERRED", eligible_us_equity: false }))], { generatedAt: "2026-10-28T00:00:00Z" });
+  x.prevSummary = summary(33); x.nextSummary = summary(33);
+  const ok = approval({ instrumentTypeChanges: ids.map((i) => ({ securityId: `ref_${i}`, from: "EQUITY_COMMON", to: "PREFERRED" })), eligibilityFlips: ids.map((i) => ({ securityId: `ref_${i}`, from: true, to: false })) });
+  return { x, ids, ok };
+};
+
+test("SMW-9 · Sonderfreigabe: nimmt genau die belegten Wechsel aus G7, gebunden an Version und Ausgangsstamm; keine generelle Lockerung", () => {
+  const { x, ids, ok } = switchCase(), o = { allowVersionChange: true, prevMasterSha256: SHA };
+  // ohne Freigabe: G7 für Typ und Eignung
+  const plain = run(x, { allowVersionChange: true });
+  assert.equal(plain.pass, false); assert.deepEqual(plain.failures.filter((f) => /^G7/.test(f)), ["G7 30 Instrumenttyp-Wechsel (Grenze 25)"]);
+  // mit genau dieser Freigabe: zulässig, Zählung bleibt im Bericht vollständig
+  const r = run(x, { ...o, approvedChanges: ok });
+  assert.equal(r.pass, true, r.failures.join("|")); assert.equal(r.decision, "COMMIT");
+  assert.equal(r.report.counts.instrumentTypeChanges, 30); assert.equal(r.report.counts.eligibilityFlips, 30);
+  assert.deepEqual(r.report.approval.applied, { instrumentTypeChanges: 30, eligibilityFlips: 30 });
+  assert.deepEqual(r.report.approval.unused, { instrumentTypeChanges: 0, eligibilityFlips: 0 });
+  const fails = (approved, opts = o) => { const z = run(x, { ...opts, approvedChanges: approved }); assert.equal(z.pass, false); return z.failures.join("|"); };
+  // Bindung: Versionsfreigabe, Quell-/Zielversion, SHA-256, Schema
+  assert.match(fails(ok, { prevMasterSha256: SHA }), /G8 Sonderfreigabe nur zusammen/);
+  assert.match(fails({ ...ok, fromVersion: "us-security-master-1.2.0" }), /G8 Sonderfreigabe gilt für/);
+  assert.match(fails({ ...ok, toVersion: "us-security-master-1.4.0" }), /G8 Sonderfreigabe gilt für/);
+  assert.match(fails(ok, { allowVersionChange: true, prevMasterSha256: "b".repeat(64) }), /anderen Ausgangsstamm/);
+  assert.match(fails(ok, { allowVersionChange: true, prevMasterSha256: null }), /anderen Ausgangsstamm/);
+  assert.match(fails({ ...ok, schema: "x" }), /G10 Sonderfreigabe/);
+  assert.match(fails({ ...ok, eligibilityFlips: null }), /G10 Sonderfreigabe/);
+  // exakt (securityId, from, to): anderes Ziel oder andere Richtung zählt weiter
+  const wrongTo = { ...ok, instrumentTypeChanges: ok.instrumentTypeChanges.map((c) => ({ ...c, to: "TEST_SECURITY" })) };
+  assert.match(fails(wrongTo), /^G7 30 .*ohne die freigegebenen/m);
+  const wrongDir = { ...ok, eligibilityFlips: ok.eligibilityFlips.map((c) => ({ ...c, from: false, to: true })) };
+  const rw = run(x, { ...o, approvedChanges: wrongDir }); // 30 ungedeckte Eignungswechsel zählen wieder (Grenze 50 → hier noch zulässig)
+  assert.deepEqual(rw.report.approval.applied.eligibilityFlips, 0); assert.equal(rw.report.approval.unused.eligibilityFlips, 30);
+  assert.match(fails(wrongDir, { ...o, thresholds: { ...DEFAULT_THRESHOLDS, maxEligibilityFlips: 25 } }), /G7 30 Eignungswechsel \(Grenze 25, ohne die freigegebenen\)/);
+  // nicht belegte Wechsel zählen gegen die unveränderten Grenzen: 5 freigegebene weniger → 25 bleiben zulässig, 4 weniger → 26 blockiert
+  const part = (n) => ({ ...ok, instrumentTypeChanges: ok.instrumentTypeChanges.slice(n), eligibilityFlips: ok.eligibilityFlips.slice(n) });
+  assert.equal(run(x, { ...o, approvedChanges: part(25) }).pass, true);
+  assert.match(fails(part(26)), /G7 26/);
+  // andere Wechselarten bleiben unberührt (z. B. Deaktivierungen über der Grenze)
+  const y = switchCase(); for (const i of ids) y.x.nextMaster.rows.find((r) => r.ticker === i).active_status = "DELISTED";
+  const rd = run(y.x, { ...o, approvedChanges: y.ok, thresholds: { ...DEFAULT_THRESHOLDS, maxDeactivations: 25 } });
+  assert.equal(rd.pass, false); assert.ok(rd.failures.some((f) => /^G7 30/.test(f) && !/ohne die freigegebenen/.test(f)), rd.failures.join("|"));
+  // Wiederverwendung im nächsten Wochenlauf (gleiche Version): G8
+  const again = switchCase(); again.x.prevMaster.version = "us-security-master-1.3.0";
+  const ra = run(again.x, { ...o, approvedChanges: again.ok });
+  assert.equal(ra.pass, false); assert.ok(ra.failures.some((f) => /G8 Sonderfreigabe gilt für/.test(f)), ra.failures.join("|"));
+  // Grenzen selbst unverändert
+  assert.deepEqual([DEFAULT_THRESHOLDS.maxInstrumentTypeChanges, DEFAULT_THRESHOLDS.maxEligibilityFlips], [25, 50]);
+});
+
+test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- und 138 Eignungswechsel, Freigabedatei deckt genau diese ab", async () => {
+  const { reclassify, buildEvidence, approvedChanges, listsMarkdown } = await import("../../scripts/market/security-master-v130-evidence.mjs");
+  const bytes = readFileSync(join(ROOT, SM, "us-security-master.json")), prev = JSON.parse(bytes.toString("utf8"));
+  const committed = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-approved-changes.json"), "utf8"));
+  const { createHash } = await import("node:crypto"), sha = createHash("sha256").update(bytes).digest("hex");
+  if (committed.prevMasterSha256 !== sha) return; // der Stamm hat sich seitdem geändert: die Freigabe gilt dann ohnehin nicht mehr (G8)
+  const next = reclassify(prev, JSON.parse(readFileSync(join(ROOT, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8")).securities);
+  const ev = buildEvidence({ prevBytes: bytes, prev, next });
+  assert.equal(ev.counts.instrumentTypeChanges, 138); assert.equal(ev.counts.eligibilityFlips, 138);
+  assert.equal(ev.counts.canonicalIdChanges, 0); assert.equal(ev.counts.backtestable.lost, 127); assert.equal(ev.counts.backtestable.gained, 0);
+  assert.deepEqual(approvedChanges(ev), committed, "Freigabedatei = Erzeugerausgabe");
+  assert.equal(listsMarkdown(ev), readFileSync(join(ROOT, "docs/data/security-master/v130-switch-lists.md"), "utf8"), "Listen = Erzeugerausgabe");
+  assert.deepEqual(JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-switch-evidence.json"), "utf8")), JSON.parse(JSON.stringify(ev)), "Nachweis = Erzeugerausgabe");
+  // eingefrorene Quant-Evidenz nennt keine der entfallenden IDs; archivierte Generationen bleiben unberührt
+  assert.ok(!Object.keys(ev.quantReferences.files).some((f) => f.startsWith("docs/quant-recovery/")));
+  assert.ok(ev.backtestableLost.every((x) => x.identityConsistent && !x.inDiscoverUniverse));
+  const cmp = compareMasters(prev, next);
+  assert.equal(cmp.instrumentTypeChanges.length, 138); assert.ok(cmp.eligibilityFlips.every((f) => f.from === true && f.to === false));
 });

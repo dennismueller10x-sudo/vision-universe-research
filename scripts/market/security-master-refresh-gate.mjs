@@ -32,6 +32,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Identity = createRequire(import.meta.url)(join(ROOT, "core", "identity.js"));
@@ -126,7 +127,28 @@ const days = (from, to) => (Date.parse(`${to}T00:00:00Z`) - Date.parse(String(fr
  * Gesamturteil (rein). inputs: { prevMaster, nextMaster, prevSummary, nextSummary, nextReconciliation, prevNames,
  * nextNames } – fehlende Namen = Namen nicht Teil dieses Laufs.
  */
-export function evaluateRefresh(inputs, { today, allowVersionChange = false, thresholds = DEFAULT_THRESHOLDS } = {}) {
+/**
+ * Sonderfreigabe für den einmaligen Klassifiziererwechsel (Owner P1/P3, 28.10.2026): nimmt GENAU die belegten Typ- und
+ * Eignungswechsel (securityId, from, to) aus der G7-Zählung. Gebunden an Quell-/Zielversion und den SHA-256 des
+ * Ausgangsstamms; nur zusammen mit allowVersionChange. Jeder andere Wechsel zählt weiter gegen die unveränderten Grenzen.
+ * Erzeugt von scripts/market/security-master-v130-evidence.mjs.
+ */
+export const APPROVED_CHANGES_SCHEMA = "security-master-approved-changes-1.0.0";
+function applyApproval(cmp, approved, ctx, fail) {
+  const ok = approved && approved.schema === APPROVED_CHANGES_SCHEMA && Array.isArray(approved.instrumentTypeChanges) && Array.isArray(approved.eligibilityFlips);
+  if (!ok) { fail.push("G10 Sonderfreigabe unlesbar oder falsches Schema"); return null; }
+  if (!ctx.allowVersionChange) fail.push("G8 Sonderfreigabe nur zusammen mit --allow-version-change");
+  if (approved.fromVersion !== ctx.prevVersion || approved.toVersion !== ctx.nextVersion) fail.push(`G8 Sonderfreigabe gilt für ${approved.fromVersion} → ${approved.toVersion}, nicht für ${ctx.prevVersion} → ${ctx.nextVersion}`);
+  if (!ctx.prevMasterSha256 || approved.prevMasterSha256 !== ctx.prevMasterSha256) fail.push("G8 Sonderfreigabe gehört zu einem anderen Ausgangsstamm (SHA-256)");
+  const key = (x) => `${x.securityId}|${x.from}|${x.to}`, used = { instrumentTypeChanges: 0, eligibilityFlips: 0 }, out = { ...cmp };
+  for (const k of ["instrumentTypeChanges", "eligibilityFlips"]) {
+    const allow = new Set(approved[k].map(key));
+    out[k] = cmp[k].filter((x) => { const hit = allow.has(key(x)); if (hit) used[k]++; return !hit; });
+  }
+  return { cmp: out, applied: used, unused: { instrumentTypeChanges: approved.instrumentTypeChanges.length - used.instrumentTypeChanges, eligibilityFlips: approved.eligibilityFlips.length - used.eligibilityFlips } };
+}
+
+export function evaluateRefresh(inputs, { today, allowVersionChange = false, thresholds = DEFAULT_THRESHOLDS, approvedChanges = null, prevMasterSha256 = null } = {}) {
   const t = { ...DEFAULT_THRESHOLDS, ...thresholds }, fail = [], { prevMaster, nextMaster, prevSummary, nextSummary, nextReconciliation } = inputs;
   if (!prevMaster || !nextMaster || !prevSummary || !nextSummary || !nextReconciliation) return { version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: ["G10 Eingaben fehlen"], report: null };
   // Grenzen nur als endliche, nicht negative Zahlen (sonst gingen Vergleiche wie n > "x" still durch)
@@ -147,7 +169,9 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
   const knownDup = new Set(identityFindings(prevMaster).duplicateCanonicalIds), newDup = idf.duplicateCanonicalIds.filter((k) => !knownDup.has(k));
   if (newDup.length) fail.push(`G6 ${newDup.length} neue doppelte canonical_id (z. B. ${newDup.slice(0, 5).join(", ")})`);
   const lim = [["canonicalIdChanges", "maxCanonicalIdChanges", "canonical_id-Wechsel"], ["instrumentTypeChanges", "maxInstrumentTypeChanges", "Instrumenttyp-Wechsel"], ["deactivations", "maxDeactivations", "aktiv → inaktiv (Delistings)"], ["eligibilityFlips", "maxEligibilityFlips", "Eignungswechsel"], ["tickerChanges", "maxTickerChanges", "Tickerwechsel je securityId"]];
-  for (const [k, tk, label] of lim) if (cmp[k].length > t[tk]) fail.push(`G7 ${cmp[k].length} ${label} (Grenze ${t[tk]})`);
+  const approval = approvedChanges ? applyApproval(cmp, approvedChanges, { allowVersionChange, prevVersion: prevMaster.version, nextVersion: nextMaster.version, prevMasterSha256 }, fail) : null;
+  const counted = approval ? approval.cmp : cmp;
+  for (const [k, tk, label] of lim) if (counted[k].length > t[tk]) fail.push(`G7 ${counted[k].length} ${label} (Grenze ${t[tk]}${approval && (k === "instrumentTypeChanges" || k === "eligibilityFlips") ? ", ohne die freigegebenen" : ""})`);
   const versionChanged = prevMaster.version !== nextMaster.version;
   if (versionChanged && !allowVersionChange) fail.push(`G8 Klassifikator-Version ${prevMaster.version} → ${nextMaster.version}: nur mit --allow-version-change nach Vorher/Nachher-Prüfung`);
   let names = null;
@@ -172,6 +196,7 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
       prev: { version: prevMaster.version, generatedAt: prevMaster.generatedAt, rowsDelivered: prevMaster.rowsDelivered, providerRows: pr },
       next: { version: nextMaster.version, generatedAt: nextMaster.generatedAt, rowsDelivered: nextMaster.rowsDelivered, providerRows: nr, newProviderListings: h.NEW_ELIGIBLE_ADDITIONS ?? null, redistribution: nextMaster.redistribution ?? null },
       ageDays, materialChanges: material, versionChanged,
+      approval: approval && { fromVersion: approvedChanges.fromVersion, toVersion: approvedChanges.toVersion, prevMasterSha256: approvedChanges.prevMasterSha256, applied: approval.applied, unused: approval.unused },
       counts: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, v.length])),
       samples: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, s(v)])),
       identity: { nonCanonicalIds: s(idf.nonCanonicalIds), duplicateCanonicalIds: s(idf.duplicateCanonicalIds), newDuplicateCanonicalIds: s(newDup) },
@@ -188,6 +213,13 @@ function main() {
   const load = (dir, f) => { const p = dir && join(dir, f); try { return p && existsSync(p) ? readJson(p) : null; } catch { return null; } };
   const loadFile = (p) => { try { return p && existsSync(p) ? readJson(p) : null; } catch { return null; } };
   let thresholds = DEFAULT_THRESHOLDS, res;
+  // Sonderfreigabe: Datei unlesbar → G10; der SHA-256 kommt aus den Bytes des Ausgangsstamms, nicht aus der Datei selbst
+  const approvalArgs = () => {
+    if (!arg("--approved-changes")) return {};
+    const a = loadFile(arg("--approved-changes")); if (!a) throw new Error("G10 --approved-changes nicht lesbar");
+    const pm = prev && join(prev, "us-security-master.json");
+    return { approvedChanges: a, prevMasterSha256: pm && existsSync(pm) ? createHash("sha256").update(readFileSync(pm)).digest("hex") : null };
+  };
   // jeder Ausgang schreibt eine Entscheidung (BLOCKED bei jedem Fehler), auch bei unlesbaren Grenzen oder einer Ausnahme
   try {
   if (arg("--thresholds")) { const t = loadFile(arg("--thresholds")); if (!t || typeof t !== "object") throw new Error("G10 --thresholds nicht lesbar"); thresholds = t; }
@@ -196,7 +228,7 @@ function main() {
     prevSummary: load(prev, "summary.json"), nextSummary: load(next, "summary.json"), nextReconciliation: load(next, "reconciliation.json"),
     prevNames: arg("--prev-names") ? loadFile(arg("--prev-names")) ?? undefined : undefined,
     nextNames: arg("--next-names") ? loadFile(arg("--next-names")) ?? undefined : undefined,
-  }, { today: arg("--today"), allowVersionChange: argv.includes("--allow-version-change"), thresholds });
+  }, { today: arg("--today"), allowVersionChange: argv.includes("--allow-version-change"), thresholds, ...approvalArgs() });
   if (arg("--prev-names") && !res.report?.names && res.pass) { res.pass = false; res.decision = "BLOCKED"; res.failures.push("G10 Firmennamen angegeben, aber nicht lesbar"); }
   } catch (e) { res = blocked(String(e && e.message || e).startsWith("G10") ? String(e.message) : `G10 Ausnahme im Gate: ${e && e.message}`); }
   if (arg("--out")) writeFileSync(arg("--out"), JSON.stringify(res, null, 2) + "\n");

@@ -28,6 +28,10 @@ on:
         description: 'Klassifikator-Version darf wechseln (nur nach Vorher/Nachher-Pruefung durch den Owner)'
         type: boolean
         default: false
+      approved_changes:
+        description: 'Einmalige G7-Sonderfreigabe v1.2.x → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -86,11 +90,13 @@ jobs:
           NEXT: ${{ runner.temp }}/sm-next
           REPORT: ${{ runner.temp }}/sm-gate.json
           IN_ALLOW_VERSION: ${{ inputs.allow_version_change }}
+          IN_APPROVED: ${{ inputs.approved_changes }}
         run: |
           set -euo pipefail
           heute="$(date -u +%F)"
           extra=()
           if [ "$IN_ALLOW_VERSION" = "true" ]; then extra=(--allow-version-change); fi
+          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes.json); fi
           node scripts/market/security-master-refresh-gate.mjs --prev "$PREV" --next "$NEXT" \
             --prev-names "$PREV/company-names.json" --next-names quant/data/market/security-master/company-names.json \
             --today "$heute" --out "$REPORT" "${extra[@]}"

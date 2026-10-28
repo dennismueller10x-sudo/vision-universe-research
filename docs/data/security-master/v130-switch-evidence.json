@@ -1,0 +1,4035 @@
+{
+ "version": "security-master-v130-evidence-1.0.0",
+ "inputs": {
+  "masterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "masterVersion": "us-security-master-1.1.0",
+  "masterGeneratedAt": "2026-09-11T14:43:20.305Z",
+  "engineVersion": "us-security-master-1.3.0",
+  "rules": "us-security-master-rules-1.3.3",
+  "baselineRows": 8021
+ },
+ "counts": {
+  "rows": {
+   "prev": 8021,
+   "next": 8021
+  },
+  "canonicalIdChanges": 0,
+  "lostIds": 0,
+  "newIds": 0,
+  "deactivations": 0,
+  "reactivations": 0,
+  "tickerChanges": 0,
+  "instrumentTypeChanges": 138,
+  "eligibilityFlips": 138,
+  "backtestable": {
+   "prev": 6397,
+   "next": 6270,
+   "lost": 127,
+   "gained": 0
+  },
+  "lostWithLongSeries": 110
+ },
+ "byTransition": {
+  "instrumentType": {
+   "EQUITY_COMMON->PREFERRED": 127,
+   "EQUITY_COMMON->TEST_SECURITY": 11
+  },
+  "eligibility": {
+   "true->false": 138
+  }
+ },
+ "instrumentTypeChanges": [
+  {
+   "securityId": "ref_ACGLN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ACGLN"
+  },
+  {
+   "securityId": "ref_ACGLO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ACGLO"
+  },
+  {
+   "securityId": "ref_ADAMM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ADAMM"
+  },
+  {
+   "securityId": "ref_ADAMN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ADAMN"
+  },
+  {
+   "securityId": "ref_ADAMO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ADAMO"
+  },
+  {
+   "securityId": "ref_AGNCM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "AGNCM"
+  },
+  {
+   "securityId": "ref_AGNCN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "AGNCN"
+  },
+  {
+   "securityId": "ref_AGNCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "AGNCO"
+  },
+  {
+   "securityId": "ref_AGNCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "AGNCP"
+  },
+  {
+   "securityId": "ref_AIRTP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "AIRTP"
+  },
+  {
+   "securityId": "ref_ATLCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ATLCP"
+  },
+  {
+   "securityId": "ref_BANFP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BANFP"
+  },
+  {
+   "securityId": "ref_BHFAM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BHFAM"
+  },
+  {
+   "securityId": "ref_BHFAN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BHFAN"
+  },
+  {
+   "securityId": "ref_BHFAO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BHFAO"
+  },
+  {
+   "securityId": "ref_BHFAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BHFAP"
+  },
+  {
+   "securityId": "ref_BPOPM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BPOPM"
+  },
+  {
+   "securityId": "ref_BPYPM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BPYPM"
+  },
+  {
+   "securityId": "ref_BPYPN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BPYPN"
+  },
+  {
+   "securityId": "ref_BPYPO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BPYPO"
+  },
+  {
+   "securityId": "ref_BPYPP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BPYPP"
+  },
+  {
+   "securityId": "ref_BRKRP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BRKRP"
+  },
+  {
+   "securityId": "ref_BUSEP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BUSEP"
+  },
+  {
+   "securityId": "ref_BWBBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "BWBBP"
+  },
+  {
+   "securityId": "ref_CCLDO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CCLDO"
+  },
+  {
+   "securityId": "ref_CCLDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CCLDP"
+  },
+  {
+   "securityId": "ref_CCNEP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CCNEP"
+  },
+  {
+   "securityId": "ref_CDZIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CDZIP"
+  },
+  {
+   "securityId": "ref_CHSCM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CHSCM"
+  },
+  {
+   "securityId": "ref_CHSCN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CHSCN"
+  },
+  {
+   "securityId": "ref_CHSCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CHSCO"
+  },
+  {
+   "securityId": "ref_CHSCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CHSCP"
+  },
+  {
+   "securityId": "ref_CHTRP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CHTRP"
+  },
+  {
+   "securityId": "ref_CNOBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "CNOBP"
+  },
+  {
+   "securityId": "ref_DCOMP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "DCOMP"
+  },
+  {
+   "securityId": "ref_EFSCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "EFSCP"
+  },
+  {
+   "securityId": "ref_FBIOP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FBIOP"
+  },
+  {
+   "securityId": "ref_FCNCN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FCNCN"
+  },
+  {
+   "securityId": "ref_FCNCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FCNCO"
+  },
+  {
+   "securityId": "ref_FCNCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FCNCP"
+  },
+  {
+   "securityId": "ref_FGBIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FGBIP"
+  },
+  {
+   "securityId": "ref_FGNXP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FGNXP"
+  },
+  {
+   "securityId": "ref_FITBM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FITBM"
+  },
+  {
+   "securityId": "ref_FITBO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FITBO"
+  },
+  {
+   "securityId": "ref_FITBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FITBP"
+  },
+  {
+   "securityId": "ref_FRMEP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FRMEP"
+  },
+  {
+   "securityId": "ref_FTAIM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FTAIM"
+  },
+  {
+   "securityId": "ref_FTAIN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FTAIN"
+  },
+  {
+   "securityId": "ref_FTAIO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FTAIO"
+  },
+  {
+   "securityId": "ref_FTAIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FTAIP"
+  },
+  {
+   "securityId": "ref_FULTP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "FULTP"
+  },
+  {
+   "securityId": "ref_GECCM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "GECCM"
+  },
+  {
+   "securityId": "ref_GECCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "GECCO"
+  },
+  {
+   "securityId": "ref_GOODN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "GOODN"
+  },
+  {
+   "securityId": "ref_GOODO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "GOODO"
+  },
+  {
+   "securityId": "ref_HBANM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "HBANM"
+  },
+  {
+   "securityId": "ref_HBANP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "HBANP"
+  },
+  {
+   "securityId": "ref_HOVNP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "HOVNP"
+  },
+  {
+   "securityId": "ref_HTLFP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "HTLFP"
+  },
+  {
+   "securityId": "ref_IMPPP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "IMPPP"
+  },
+  {
+   "securityId": "ref_LANDM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LANDM"
+  },
+  {
+   "securityId": "ref_LANDO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LANDO"
+  },
+  {
+   "securityId": "ref_LANDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LANDP"
+  },
+  {
+   "securityId": "ref_LBRDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LBRDP"
+  },
+  {
+   "securityId": "ref_LFMDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LFMDP"
+  },
+  {
+   "securityId": "ref_LILAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "LILAP"
+  },
+  {
+   "securityId": "ref_MBINM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MBINM"
+  },
+  {
+   "securityId": "ref_MBINN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MBINN"
+  },
+  {
+   "securityId": "ref_MBINO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MBINO"
+  },
+  {
+   "securityId": "ref_MBNKO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MBNKO"
+  },
+  {
+   "securityId": "ref_MBNKP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MBNKP"
+  },
+  {
+   "securityId": "ref_MCHPP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MCHPP"
+  },
+  {
+   "securityId": "ref_MDRRP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MDRRP"
+  },
+  {
+   "securityId": "ref_MINDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MINDP"
+  },
+  {
+   "securityId": "ref_MNSBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MNSBP"
+  },
+  {
+   "securityId": "ref_MSBIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "MSBIP"
+  },
+  {
+   "securityId": "ref_NEEPN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NEEPN"
+  },
+  {
+   "securityId": "ref_NEWTO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NEWTO"
+  },
+  {
+   "securityId": "ref_NEWTP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NEWTP"
+  },
+  {
+   "securityId": "ref_NHPAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NHPAP"
+  },
+  {
+   "securityId": "ref_NHPBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NHPBP"
+  },
+  {
+   "securityId": "ref_NTRSO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "NTRSO"
+  },
+  {
+   "securityId": "ref_OCCIM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OCCIM"
+  },
+  {
+   "securityId": "ref_OCCIN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OCCIN"
+  },
+  {
+   "securityId": "ref_OCFCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OCFCP"
+  },
+  {
+   "securityId": "ref_OFSSO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OFSSO"
+  },
+  {
+   "securityId": "ref_ONBPO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ONBPO"
+  },
+  {
+   "securityId": "ref_ONBPP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ONBPP"
+  },
+  {
+   "securityId": "ref_OXLCM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OXLCM"
+  },
+  {
+   "securityId": "ref_OXLCN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OXLCN"
+  },
+  {
+   "securityId": "ref_OXLCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OXLCO"
+  },
+  {
+   "securityId": "ref_OXLCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OXLCP"
+  },
+  {
+   "securityId": "ref_OZKAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "OZKAP"
+  },
+  {
+   "securityId": "ref_POWWP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "POWWP"
+  },
+  {
+   "securityId": "ref_PXSAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "PXSAP"
+  },
+  {
+   "securityId": "ref_QRTEP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "QRTEP"
+  },
+  {
+   "securityId": "ref_REGCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "REGCO"
+  },
+  {
+   "securityId": "ref_REGCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "REGCP"
+  },
+  {
+   "securityId": "ref_RILYM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "RILYM"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "RILYN"
+  },
+  {
+   "securityId": "ref_RILYP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "RILYP"
+  },
+  {
+   "securityId": "ref_SIGIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "SIGIP"
+  },
+  {
+   "securityId": "ref_SLMBP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "SLMBP"
+  },
+  {
+   "securityId": "ref_SLNHP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "SLNHP"
+  },
+  {
+   "securityId": "ref_SMCIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "SMCIP"
+  },
+  {
+   "securityId": "ref_SQFTP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "SQFTP"
+  },
+  {
+   "securityId": "ref_TCBIO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "TCBIO"
+  },
+  {
+   "securityId": "ref_TECTP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "TECTP"
+  },
+  {
+   "securityId": "ref_TFINP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "TFINP"
+  },
+  {
+   "securityId": "ref_UMBFO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "UMBFO"
+  },
+  {
+   "securityId": "ref_UMBFP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "UMBFP"
+  },
+  {
+   "securityId": "ref_VIASP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "VIASP"
+  },
+  {
+   "securityId": "ref_VLYPN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "VLYPN"
+  },
+  {
+   "securityId": "ref_VLYPO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "VLYPO"
+  },
+  {
+   "securityId": "ref_VLYPP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "VLYPP"
+  },
+  {
+   "securityId": "ref_WAFDP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WAFDP"
+  },
+  {
+   "securityId": "ref_WHLRP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WHLRP"
+  },
+  {
+   "securityId": "ref_WSBCO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WSBCO"
+  },
+  {
+   "securityId": "ref_WSBCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WSBCP"
+  },
+  {
+   "securityId": "ref_WTFCM",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WTFCM"
+  },
+  {
+   "securityId": "ref_WTFCN",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WTFCN"
+  },
+  {
+   "securityId": "ref_WTFCP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WTFCP"
+  },
+  {
+   "securityId": "ref_WVVIP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "WVVIP"
+  },
+  {
+   "securityId": "ref_XOMAO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "XOMAO"
+  },
+  {
+   "securityId": "ref_XOMAP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "XOMAP"
+  },
+  {
+   "securityId": "ref_ZAZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZAZZT"
+  },
+  {
+   "securityId": "ref_ZBZX",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZBZX"
+  },
+  {
+   "securityId": "ref_ZBZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZBZZT"
+  },
+  {
+   "securityId": "ref_ZCZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZCZZT"
+  },
+  {
+   "securityId": "ref_ZIONO",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ZIONO"
+  },
+  {
+   "securityId": "ref_ZIONP",
+   "from": "EQUITY_COMMON",
+   "to": "PREFERRED",
+   "ticker": "ZIONP"
+  },
+  {
+   "securityId": "ref_ZJZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZJZZT"
+  },
+  {
+   "securityId": "ref_ZTST",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZTST"
+  },
+  {
+   "securityId": "ref_ZVV",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZVV"
+  },
+  {
+   "securityId": "ref_ZVZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZVZZT"
+  },
+  {
+   "securityId": "ref_ZWZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZWZZT"
+  },
+  {
+   "securityId": "ref_ZXYZ_A",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZXYZ-A"
+  },
+  {
+   "securityId": "ref_ZXZZT",
+   "from": "EQUITY_COMMON",
+   "to": "TEST_SECURITY",
+   "ticker": "ZXZZT"
+  }
+ ],
+ "eligibilityFlips": [
+  {
+   "securityId": "ref_ACGLN",
+   "from": true,
+   "to": false,
+   "ticker": "ACGLN"
+  },
+  {
+   "securityId": "ref_ACGLO",
+   "from": true,
+   "to": false,
+   "ticker": "ACGLO"
+  },
+  {
+   "securityId": "ref_ADAMM",
+   "from": true,
+   "to": false,
+   "ticker": "ADAMM"
+  },
+  {
+   "securityId": "ref_ADAMN",
+   "from": true,
+   "to": false,
+   "ticker": "ADAMN"
+  },
+  {
+   "securityId": "ref_ADAMO",
+   "from": true,
+   "to": false,
+   "ticker": "ADAMO"
+  },
+  {
+   "securityId": "ref_AGNCM",
+   "from": true,
+   "to": false,
+   "ticker": "AGNCM"
+  },
+  {
+   "securityId": "ref_AGNCN",
+   "from": true,
+   "to": false,
+   "ticker": "AGNCN"
+  },
+  {
+   "securityId": "ref_AGNCO",
+   "from": true,
+   "to": false,
+   "ticker": "AGNCO"
+  },
+  {
+   "securityId": "ref_AGNCP",
+   "from": true,
+   "to": false,
+   "ticker": "AGNCP"
+  },
+  {
+   "securityId": "ref_AIRTP",
+   "from": true,
+   "to": false,
+   "ticker": "AIRTP"
+  },
+  {
+   "securityId": "ref_ATLCP",
+   "from": true,
+   "to": false,
+   "ticker": "ATLCP"
+  },
+  {
+   "securityId": "ref_BANFP",
+   "from": true,
+   "to": false,
+   "ticker": "BANFP"
+  },
+  {
+   "securityId": "ref_BHFAM",
+   "from": true,
+   "to": false,
+   "ticker": "BHFAM"
+  },
+  {
+   "securityId": "ref_BHFAN",
+   "from": true,
+   "to": false,
+   "ticker": "BHFAN"
+  },
+  {
+   "securityId": "ref_BHFAO",
+   "from": true,
+   "to": false,
+   "ticker": "BHFAO"
+  },
+  {
+   "securityId": "ref_BHFAP",
+   "from": true,
+   "to": false,
+   "ticker": "BHFAP"
+  },
+  {
+   "securityId": "ref_BPOPM",
+   "from": true,
+   "to": false,
+   "ticker": "BPOPM"
+  },
+  {
+   "securityId": "ref_BPYPM",
+   "from": true,
+   "to": false,
+   "ticker": "BPYPM"
+  },
+  {
+   "securityId": "ref_BPYPN",
+   "from": true,
+   "to": false,
+   "ticker": "BPYPN"
+  },
+  {
+   "securityId": "ref_BPYPO",
+   "from": true,
+   "to": false,
+   "ticker": "BPYPO"
+  },
+  {
+   "securityId": "ref_BPYPP",
+   "from": true,
+   "to": false,
+   "ticker": "BPYPP"
+  },
+  {
+   "securityId": "ref_BRKRP",
+   "from": true,
+   "to": false,
+   "ticker": "BRKRP"
+  },
+  {
+   "securityId": "ref_BUSEP",
+   "from": true,
+   "to": false,
+   "ticker": "BUSEP"
+  },
+  {
+   "securityId": "ref_BWBBP",
+   "from": true,
+   "to": false,
+   "ticker": "BWBBP"
+  },
+  {
+   "securityId": "ref_CCLDO",
+   "from": true,
+   "to": false,
+   "ticker": "CCLDO"
+  },
+  {
+   "securityId": "ref_CCLDP",
+   "from": true,
+   "to": false,
+   "ticker": "CCLDP"
+  },
+  {
+   "securityId": "ref_CCNEP",
+   "from": true,
+   "to": false,
+   "ticker": "CCNEP"
+  },
+  {
+   "securityId": "ref_CDZIP",
+   "from": true,
+   "to": false,
+   "ticker": "CDZIP"
+  },
+  {
+   "securityId": "ref_CHSCM",
+   "from": true,
+   "to": false,
+   "ticker": "CHSCM"
+  },
+  {
+   "securityId": "ref_CHSCN",
+   "from": true,
+   "to": false,
+   "ticker": "CHSCN"
+  },
+  {
+   "securityId": "ref_CHSCO",
+   "from": true,
+   "to": false,
+   "ticker": "CHSCO"
+  },
+  {
+   "securityId": "ref_CHSCP",
+   "from": true,
+   "to": false,
+   "ticker": "CHSCP"
+  },
+  {
+   "securityId": "ref_CHTRP",
+   "from": true,
+   "to": false,
+   "ticker": "CHTRP"
+  },
+  {
+   "securityId": "ref_CNOBP",
+   "from": true,
+   "to": false,
+   "ticker": "CNOBP"
+  },
+  {
+   "securityId": "ref_DCOMP",
+   "from": true,
+   "to": false,
+   "ticker": "DCOMP"
+  },
+  {
+   "securityId": "ref_EFSCP",
+   "from": true,
+   "to": false,
+   "ticker": "EFSCP"
+  },
+  {
+   "securityId": "ref_FBIOP",
+   "from": true,
+   "to": false,
+   "ticker": "FBIOP"
+  },
+  {
+   "securityId": "ref_FCNCN",
+   "from": true,
+   "to": false,
+   "ticker": "FCNCN"
+  },
+  {
+   "securityId": "ref_FCNCO",
+   "from": true,
+   "to": false,
+   "ticker": "FCNCO"
+  },
+  {
+   "securityId": "ref_FCNCP",
+   "from": true,
+   "to": false,
+   "ticker": "FCNCP"
+  },
+  {
+   "securityId": "ref_FGBIP",
+   "from": true,
+   "to": false,
+   "ticker": "FGBIP"
+  },
+  {
+   "securityId": "ref_FGNXP",
+   "from": true,
+   "to": false,
+   "ticker": "FGNXP"
+  },
+  {
+   "securityId": "ref_FITBM",
+   "from": true,
+   "to": false,
+   "ticker": "FITBM"
+  },
+  {
+   "securityId": "ref_FITBO",
+   "from": true,
+   "to": false,
+   "ticker": "FITBO"
+  },
+  {
+   "securityId": "ref_FITBP",
+   "from": true,
+   "to": false,
+   "ticker": "FITBP"
+  },
+  {
+   "securityId": "ref_FRMEP",
+   "from": true,
+   "to": false,
+   "ticker": "FRMEP"
+  },
+  {
+   "securityId": "ref_FTAIM",
+   "from": true,
+   "to": false,
+   "ticker": "FTAIM"
+  },
+  {
+   "securityId": "ref_FTAIN",
+   "from": true,
+   "to": false,
+   "ticker": "FTAIN"
+  },
+  {
+   "securityId": "ref_FTAIO",
+   "from": true,
+   "to": false,
+   "ticker": "FTAIO"
+  },
+  {
+   "securityId": "ref_FTAIP",
+   "from": true,
+   "to": false,
+   "ticker": "FTAIP"
+  },
+  {
+   "securityId": "ref_FULTP",
+   "from": true,
+   "to": false,
+   "ticker": "FULTP"
+  },
+  {
+   "securityId": "ref_GECCM",
+   "from": true,
+   "to": false,
+   "ticker": "GECCM"
+  },
+  {
+   "securityId": "ref_GECCO",
+   "from": true,
+   "to": false,
+   "ticker": "GECCO"
+  },
+  {
+   "securityId": "ref_GOODN",
+   "from": true,
+   "to": false,
+   "ticker": "GOODN"
+  },
+  {
+   "securityId": "ref_GOODO",
+   "from": true,
+   "to": false,
+   "ticker": "GOODO"
+  },
+  {
+   "securityId": "ref_HBANM",
+   "from": true,
+   "to": false,
+   "ticker": "HBANM"
+  },
+  {
+   "securityId": "ref_HBANP",
+   "from": true,
+   "to": false,
+   "ticker": "HBANP"
+  },
+  {
+   "securityId": "ref_HOVNP",
+   "from": true,
+   "to": false,
+   "ticker": "HOVNP"
+  },
+  {
+   "securityId": "ref_HTLFP",
+   "from": true,
+   "to": false,
+   "ticker": "HTLFP"
+  },
+  {
+   "securityId": "ref_IMPPP",
+   "from": true,
+   "to": false,
+   "ticker": "IMPPP"
+  },
+  {
+   "securityId": "ref_LANDM",
+   "from": true,
+   "to": false,
+   "ticker": "LANDM"
+  },
+  {
+   "securityId": "ref_LANDO",
+   "from": true,
+   "to": false,
+   "ticker": "LANDO"
+  },
+  {
+   "securityId": "ref_LANDP",
+   "from": true,
+   "to": false,
+   "ticker": "LANDP"
+  },
+  {
+   "securityId": "ref_LBRDP",
+   "from": true,
+   "to": false,
+   "ticker": "LBRDP"
+  },
+  {
+   "securityId": "ref_LFMDP",
+   "from": true,
+   "to": false,
+   "ticker": "LFMDP"
+  },
+  {
+   "securityId": "ref_LILAP",
+   "from": true,
+   "to": false,
+   "ticker": "LILAP"
+  },
+  {
+   "securityId": "ref_MBINM",
+   "from": true,
+   "to": false,
+   "ticker": "MBINM"
+  },
+  {
+   "securityId": "ref_MBINN",
+   "from": true,
+   "to": false,
+   "ticker": "MBINN"
+  },
+  {
+   "securityId": "ref_MBINO",
+   "from": true,
+   "to": false,
+   "ticker": "MBINO"
+  },
+  {
+   "securityId": "ref_MBNKO",
+   "from": true,
+   "to": false,
+   "ticker": "MBNKO"
+  },
+  {
+   "securityId": "ref_MBNKP",
+   "from": true,
+   "to": false,
+   "ticker": "MBNKP"
+  },
+  {
+   "securityId": "ref_MCHPP",
+   "from": true,
+   "to": false,
+   "ticker": "MCHPP"
+  },
+  {
+   "securityId": "ref_MDRRP",
+   "from": true,
+   "to": false,
+   "ticker": "MDRRP"
+  },
+  {
+   "securityId": "ref_MINDP",
+   "from": true,
+   "to": false,
+   "ticker": "MINDP"
+  },
+  {
+   "securityId": "ref_MNSBP",
+   "from": true,
+   "to": false,
+   "ticker": "MNSBP"
+  },
+  {
+   "securityId": "ref_MSBIP",
+   "from": true,
+   "to": false,
+   "ticker": "MSBIP"
+  },
+  {
+   "securityId": "ref_NEEPN",
+   "from": true,
+   "to": false,
+   "ticker": "NEEPN"
+  },
+  {
+   "securityId": "ref_NEWTO",
+   "from": true,
+   "to": false,
+   "ticker": "NEWTO"
+  },
+  {
+   "securityId": "ref_NEWTP",
+   "from": true,
+   "to": false,
+   "ticker": "NEWTP"
+  },
+  {
+   "securityId": "ref_NHPAP",
+   "from": true,
+   "to": false,
+   "ticker": "NHPAP"
+  },
+  {
+   "securityId": "ref_NHPBP",
+   "from": true,
+   "to": false,
+   "ticker": "NHPBP"
+  },
+  {
+   "securityId": "ref_NTRSO",
+   "from": true,
+   "to": false,
+   "ticker": "NTRSO"
+  },
+  {
+   "securityId": "ref_OCCIM",
+   "from": true,
+   "to": false,
+   "ticker": "OCCIM"
+  },
+  {
+   "securityId": "ref_OCCIN",
+   "from": true,
+   "to": false,
+   "ticker": "OCCIN"
+  },
+  {
+   "securityId": "ref_OCFCP",
+   "from": true,
+   "to": false,
+   "ticker": "OCFCP"
+  },
+  {
+   "securityId": "ref_OFSSO",
+   "from": true,
+   "to": false,
+   "ticker": "OFSSO"
+  },
+  {
+   "securityId": "ref_ONBPO",
+   "from": true,
+   "to": false,
+   "ticker": "ONBPO"
+  },
+  {
+   "securityId": "ref_ONBPP",
+   "from": true,
+   "to": false,
+   "ticker": "ONBPP"
+  },
+  {
+   "securityId": "ref_OXLCM",
+   "from": true,
+   "to": false,
+   "ticker": "OXLCM"
+  },
+  {
+   "securityId": "ref_OXLCN",
+   "from": true,
+   "to": false,
+   "ticker": "OXLCN"
+  },
+  {
+   "securityId": "ref_OXLCO",
+   "from": true,
+   "to": false,
+   "ticker": "OXLCO"
+  },
+  {
+   "securityId": "ref_OXLCP",
+   "from": true,
+   "to": false,
+   "ticker": "OXLCP"
+  },
+  {
+   "securityId": "ref_OZKAP",
+   "from": true,
+   "to": false,
+   "ticker": "OZKAP"
+  },
+  {
+   "securityId": "ref_POWWP",
+   "from": true,
+   "to": false,
+   "ticker": "POWWP"
+  },
+  {
+   "securityId": "ref_PXSAP",
+   "from": true,
+   "to": false,
+   "ticker": "PXSAP"
+  },
+  {
+   "securityId": "ref_QRTEP",
+   "from": true,
+   "to": false,
+   "ticker": "QRTEP"
+  },
+  {
+   "securityId": "ref_REGCO",
+   "from": true,
+   "to": false,
+   "ticker": "REGCO"
+  },
+  {
+   "securityId": "ref_REGCP",
+   "from": true,
+   "to": false,
+   "ticker": "REGCP"
+  },
+  {
+   "securityId": "ref_RILYM",
+   "from": true,
+   "to": false,
+   "ticker": "RILYM"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "from": true,
+   "to": false,
+   "ticker": "RILYN"
+  },
+  {
+   "securityId": "ref_RILYP",
+   "from": true,
+   "to": false,
+   "ticker": "RILYP"
+  },
+  {
+   "securityId": "ref_SIGIP",
+   "from": true,
+   "to": false,
+   "ticker": "SIGIP"
+  },
+  {
+   "securityId": "ref_SLMBP",
+   "from": true,
+   "to": false,
+   "ticker": "SLMBP"
+  },
+  {
+   "securityId": "ref_SLNHP",
+   "from": true,
+   "to": false,
+   "ticker": "SLNHP"
+  },
+  {
+   "securityId": "ref_SMCIP",
+   "from": true,
+   "to": false,
+   "ticker": "SMCIP"
+  },
+  {
+   "securityId": "ref_SQFTP",
+   "from": true,
+   "to": false,
+   "ticker": "SQFTP"
+  },
+  {
+   "securityId": "ref_TCBIO",
+   "from": true,
+   "to": false,
+   "ticker": "TCBIO"
+  },
+  {
+   "securityId": "ref_TECTP",
+   "from": true,
+   "to": false,
+   "ticker": "TECTP"
+  },
+  {
+   "securityId": "ref_TFINP",
+   "from": true,
+   "to": false,
+   "ticker": "TFINP"
+  },
+  {
+   "securityId": "ref_UMBFO",
+   "from": true,
+   "to": false,
+   "ticker": "UMBFO"
+  },
+  {
+   "securityId": "ref_UMBFP",
+   "from": true,
+   "to": false,
+   "ticker": "UMBFP"
+  },
+  {
+   "securityId": "ref_VIASP",
+   "from": true,
+   "to": false,
+   "ticker": "VIASP"
+  },
+  {
+   "securityId": "ref_VLYPN",
+   "from": true,
+   "to": false,
+   "ticker": "VLYPN"
+  },
+  {
+   "securityId": "ref_VLYPO",
+   "from": true,
+   "to": false,
+   "ticker": "VLYPO"
+  },
+  {
+   "securityId": "ref_VLYPP",
+   "from": true,
+   "to": false,
+   "ticker": "VLYPP"
+  },
+  {
+   "securityId": "ref_WAFDP",
+   "from": true,
+   "to": false,
+   "ticker": "WAFDP"
+  },
+  {
+   "securityId": "ref_WHLRP",
+   "from": true,
+   "to": false,
+   "ticker": "WHLRP"
+  },
+  {
+   "securityId": "ref_WSBCO",
+   "from": true,
+   "to": false,
+   "ticker": "WSBCO"
+  },
+  {
+   "securityId": "ref_WSBCP",
+   "from": true,
+   "to": false,
+   "ticker": "WSBCP"
+  },
+  {
+   "securityId": "ref_WTFCM",
+   "from": true,
+   "to": false,
+   "ticker": "WTFCM"
+  },
+  {
+   "securityId": "ref_WTFCN",
+   "from": true,
+   "to": false,
+   "ticker": "WTFCN"
+  },
+  {
+   "securityId": "ref_WTFCP",
+   "from": true,
+   "to": false,
+   "ticker": "WTFCP"
+  },
+  {
+   "securityId": "ref_WVVIP",
+   "from": true,
+   "to": false,
+   "ticker": "WVVIP"
+  },
+  {
+   "securityId": "ref_XOMAO",
+   "from": true,
+   "to": false,
+   "ticker": "XOMAO"
+  },
+  {
+   "securityId": "ref_XOMAP",
+   "from": true,
+   "to": false,
+   "ticker": "XOMAP"
+  },
+  {
+   "securityId": "ref_ZAZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZAZZT"
+  },
+  {
+   "securityId": "ref_ZBZX",
+   "from": true,
+   "to": false,
+   "ticker": "ZBZX"
+  },
+  {
+   "securityId": "ref_ZBZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZBZZT"
+  },
+  {
+   "securityId": "ref_ZCZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZCZZT"
+  },
+  {
+   "securityId": "ref_ZIONO",
+   "from": true,
+   "to": false,
+   "ticker": "ZIONO"
+  },
+  {
+   "securityId": "ref_ZIONP",
+   "from": true,
+   "to": false,
+   "ticker": "ZIONP"
+  },
+  {
+   "securityId": "ref_ZJZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZJZZT"
+  },
+  {
+   "securityId": "ref_ZTST",
+   "from": true,
+   "to": false,
+   "ticker": "ZTST"
+  },
+  {
+   "securityId": "ref_ZVV",
+   "from": true,
+   "to": false,
+   "ticker": "ZVV"
+  },
+  {
+   "securityId": "ref_ZVZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZVZZT"
+  },
+  {
+   "securityId": "ref_ZWZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZWZZT"
+  },
+  {
+   "securityId": "ref_ZXYZ_A",
+   "from": true,
+   "to": false,
+   "ticker": "ZXYZ-A"
+  },
+  {
+   "securityId": "ref_ZXZZT",
+   "from": true,
+   "to": false,
+   "ticker": "ZXZZT"
+  }
+ ],
+ "backtestableLost": [
+  {
+   "securityId": "ref_ACGLN",
+   "ticker": "ACGLN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 282,
+    "from": "2021-06-04",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ACGLO",
+   "ticker": "ACGLO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 480,
+    "from": "2017-08-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ADAMO",
+   "ticker": "ADAMO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 41,
+    "from": "2026-01-16",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_AGNCM",
+   "ticker": "AGNCM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 400,
+    "from": "2019-03-01",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_AGNCN",
+   "ticker": "AGNCN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 480,
+    "from": "2017-08-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_AGNCO",
+   "ticker": "AGNCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 370,
+    "from": "2019-09-27",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_AIRTP",
+   "ticker": "AIRTP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 385,
+    "from": "2019-06-14",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ATLCP",
+   "ticker": "ATLCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 280,
+    "from": "2021-06-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BANFP",
+   "ticker": "BANFP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 1180,
+    "from": "2004-03-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BHFAM",
+   "ticker": "BHFAM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 259,
+    "from": "2021-11-12",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BHFAN",
+   "ticker": "BHFAN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 311,
+    "from": "2020-11-13",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BHFAO",
+   "ticker": "BHFAO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 336,
+    "from": "2020-05-22",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BHFAP",
+   "ticker": "BHFAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 397,
+    "from": "2019-03-22",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BPOPM",
+   "ticker": "BPOPM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 936,
+    "from": "2008-11-21",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BPYPM",
+   "ticker": "BPYPM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 274,
+    "from": "2021-07-30",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BPYPN",
+   "ticker": "BPYPN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 350,
+    "from": "2020-02-14",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BPYPO",
+   "ticker": "BPYPO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 376,
+    "from": "2019-08-16",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BPYPP",
+   "ticker": "BPYPP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 398,
+    "from": "2019-03-15",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BRKRP",
+   "ticker": "BRKRP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 59,
+    "from": "2025-09-12",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BUSEP",
+   "ticker": "BUSEP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 73,
+    "from": "2025-06-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_BWBBP",
+   "ticker": "BWBBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 271,
+    "from": "2021-08-20",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CCLDO",
+   "ticker": "CCLDO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 247,
+    "from": "2022-02-04",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CCLDP",
+   "ticker": "CCLDP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 529,
+    "from": "2015-11-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CCNEP",
+   "ticker": "CCNEP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 323,
+    "from": "2020-08-21",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CDZIP",
+   "ticker": "CDZIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 278,
+    "from": "2021-07-02",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CHSCM",
+   "ticker": "CHSCM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 632,
+    "from": "2014-09-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CHSCN",
+   "ticker": "CHSCN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 660,
+    "from": "2014-03-07",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CHSCO",
+   "ticker": "CHSCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 683,
+    "from": "2013-09-27",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CHSCP",
+   "ticker": "CHSCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 1231,
+    "from": "2003-03-28",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CHTRP",
+   "ticker": "CHTRP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_CNOBP",
+   "ticker": "CNOBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 271,
+    "from": "2021-08-13",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_DCOMP",
+   "ticker": "DCOMP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 352,
+    "from": "2020-01-31",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_EFSCP",
+   "ticker": "EFSCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 259,
+    "from": "2021-11-12",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FBIOP",
+   "ticker": "FBIOP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 467,
+    "from": "2017-11-17",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FCNCN",
+   "ticker": "FCNCN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 37,
+    "from": "2026-02-13",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FCNCO",
+   "ticker": "FCNCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 251,
+    "from": "2022-01-07",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FCNCP",
+   "ticker": "FCNCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 347,
+    "from": "2020-03-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FGBIP",
+   "ticker": "FGBIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 288,
+    "from": "2021-04-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FGNXP",
+   "ticker": "FGNXP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 449,
+    "from": "2018-03-02",
+    "to": "2026-09-28"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FITBM",
+   "ticker": "FITBM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FITBO",
+   "ticker": "FITBO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FITBP",
+   "ticker": "FITBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FRMEP",
+   "ticker": "FRMEP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 239,
+    "from": "2022-04-01",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FTAIM",
+   "ticker": "FTAIM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 189,
+    "from": "2023-03-17",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FTAIN",
+   "ticker": "FTAIN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 293,
+    "from": "2021-03-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FTAIO",
+   "ticker": "FTAIO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 311,
+    "from": "2019-11-29",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FTAIP",
+   "ticker": "FTAIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_FULTP",
+   "ticker": "FULTP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 314,
+    "from": "2020-10-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_GECCM",
+   "ticker": "GECCM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_GECCO",
+   "ticker": "GECCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 279,
+    "from": "2021-06-25",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_HBANM",
+   "ticker": "HBANM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 281,
+    "from": "2021-06-11",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_HOVNP",
+   "ticker": "HOVNP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 1091,
+    "from": "2005-12-02",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_HTLFP",
+   "ticker": "HTLFP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_IMPPP",
+   "ticker": "IMPPP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 255,
+    "from": "2021-12-10",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_LANDM",
+   "ticker": "LANDM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 302,
+    "from": "2021-01-15",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_LANDO",
+   "ticker": "LANDO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 314,
+    "from": "2020-10-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_LBRDP",
+   "ticker": "LBRDP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 296,
+    "from": "2020-12-24",
+    "to": "2026-08-21"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_LFMDP",
+   "ticker": "LFMDP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 264,
+    "from": "2021-10-08",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_LILAP",
+   "ticker": "LILAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MBINM",
+   "ticker": "MBINM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 214,
+    "from": "2022-09-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MBINO",
+   "ticker": "MBINO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MBNKO",
+   "ticker": "MBNKO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 75,
+    "from": "2025-05-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MBNKP",
+   "ticker": "MBNKP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 328,
+    "from": "2019-12-20",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_MCHPP",
+   "ticker": "MCHPP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 83,
+    "from": "2025-03-28",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MDRRP",
+   "ticker": "MDRRP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MINDP",
+   "ticker": "MINDP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MNSBP",
+   "ticker": "MNSBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 319,
+    "from": "2020-09-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_MSBIP",
+   "ticker": "MSBIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 219,
+    "from": "2022-08-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_NEEPN",
+   "ticker": "NEEPN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 396,
+    "from": "2019-03-22",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_NEWTO",
+   "ticker": "NEWTO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_NEWTP",
+   "ticker": "NEWTP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 61,
+    "from": "2025-08-29",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_NHPAP",
+   "ticker": "NHPAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 359,
+    "from": "2019-12-13",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_NHPBP",
+   "ticker": "NHPBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 264,
+    "from": "2021-10-08",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_NTRSO",
+   "ticker": "NTRSO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 365,
+    "from": "2019-11-01",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OCCIM",
+   "ticker": "OCCIM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 108,
+    "from": "2024-10-04",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OCCIN",
+   "ticker": "OCCIN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 255,
+    "from": "2021-12-10",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OCFCP",
+   "ticker": "OCFCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 302,
+    "from": "2020-05-08",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OFSSO",
+   "ticker": "OFSSO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 66,
+    "from": "2025-07-25",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_ONBPO",
+   "ticker": "ONBPO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 245,
+    "from": "2022-02-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ONBPP",
+   "ticker": "ONBPP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 245,
+    "from": "2022-02-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OXLCM",
+   "ticker": "OXLCM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_OZKAP",
+   "ticker": "OZKAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 261,
+    "from": "2021-10-29",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_POWWP",
+   "ticker": "POWWP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 284,
+    "from": "2021-05-21",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_PXSAP",
+   "ticker": "PXSAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_QRTEP",
+   "ticker": "QRTEP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_REGCO",
+   "ticker": "REGCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 166,
+    "from": "2023-08-25",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_REGCP",
+   "ticker": "REGCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 166,
+    "from": "2023-08-25",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_RILYM",
+   "ticker": "RILYM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 302,
+    "from": "2020-02-14",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "ticker": "RILYN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 370,
+    "from": "2019-09-27",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_RILYP",
+   "ticker": "RILYP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 369,
+    "from": "2019-10-04",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_SIGIP",
+   "ticker": "SIGIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 307,
+    "from": "2020-12-11",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_SLMBP",
+   "ticker": "SLMBP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 1111,
+    "from": "2005-07-15",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_SLNHP",
+   "ticker": "SLNHP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 271,
+    "from": "2021-08-20",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_SMCIP",
+   "ticker": "SMCIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_SQFTP",
+   "ticker": "SQFTP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 281,
+    "from": "2021-06-11",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_TCBIO",
+   "ticker": "TCBIO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 296,
+    "from": "2021-02-26",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_TECTP",
+   "ticker": "TECTP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 387,
+    "from": "2019-05-31",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_TFINP",
+   "ticker": "TFINP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 309,
+    "from": "2020-06-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_UMBFO",
+   "ticker": "UMBFO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 72,
+    "from": "2025-06-13",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_UMBFP",
+   "ticker": "UMBFP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 62,
+    "from": "2025-02-07",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_VIASP",
+   "ticker": "VIASP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 503,
+    "from": "2017-03-10",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_VLYPN",
+   "ticker": "VLYPN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 117,
+    "from": "2024-08-02",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_VLYPO",
+   "ticker": "VLYPO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 483,
+    "from": "2017-07-28",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_VLYPP",
+   "ticker": "VLYPP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 593,
+    "from": "2015-06-19",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WAFDP",
+   "ticker": "WAFDP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 299,
+    "from": "2021-02-05",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WHLRP",
+   "ticker": "WHLRP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 631,
+    "from": "2014-09-26",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WSBCO",
+   "ticker": "WSBCO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 55,
+    "from": "2025-10-10",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WSBCP",
+   "ticker": "WSBCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 314,
+    "from": "2020-08-07",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WTFCM",
+   "ticker": "WTFCM",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 562,
+    "from": "2015-07-10",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WTFCN",
+   "ticker": "WTFCN",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 75,
+    "from": "2025-05-23",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WTFCP",
+   "ticker": "WTFCP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 310,
+    "from": "2020-05-08",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_WVVIP",
+   "ticker": "WVVIP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 539,
+    "from": "2016-07-01",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_XOMAO",
+   "ticker": "XOMAO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 289,
+    "from": "2021-04-16",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_XOMAP",
+   "ticker": "XOMAP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "REVIEW",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 306,
+    "from": "2020-12-18",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "REVIEW"
+  },
+  {
+   "securityId": "ref_ZAZZT",
+   "ticker": "ZAZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZBZX",
+   "ticker": "ZBZX",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZBZZT",
+   "ticker": "ZBZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZCZZT",
+   "ticker": "ZCZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZIONO",
+   "ticker": "ZIONO",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 38,
+    "from": "2026-02-06",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ZIONP",
+   "ticker": "ZIONP",
+   "name": null,
+   "instrumentType": "PREFERRED",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": {
+    "dataMode": "real",
+    "priceSeriesType": "SPLIT_ADJUSTED",
+    "bars": 631,
+    "from": "2014-09-26",
+    "to": "2026-10-23"
+   },
+   "inDiscoverUniverse": false,
+   "productEligibility": "SEPARATE_CLASS"
+  },
+  {
+   "securityId": "ref_ZJZZT",
+   "ticker": "ZJZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZTST",
+   "ticker": "ZTST",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZVV",
+   "ticker": "ZVV",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZVZZT",
+   "ticker": "ZVZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZWZZT",
+   "ticker": "ZWZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZXYZ_A",
+   "ticker": "ZXYZ-A",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  },
+  {
+   "securityId": "ref_ZXZZT",
+   "ticker": "ZXZZT",
+   "name": null,
+   "instrumentType": "TEST_SECURITY",
+   "eligible": false,
+   "activeStatus": "ACTIVE",
+   "classificationStatus": "CLASSIFIED",
+   "identityConsistent": true,
+   "longSeries": null,
+   "inDiscoverUniverse": false,
+   "productEligibility": "EXCLUDED"
+  }
+ ],
+ "backtestableGained": [],
+ "quantReferences": {
+  "scanned": [
+   "docs/quant-recovery",
+   "quant/data/product"
+  ],
+  "files": {
+   "quant/data/product/capabilities-v1.json": 116,
+   "quant/data/product/naming-contract-v1.json": 9,
+   "quant/data/product/sic-peer-taxonomy-v1.json": 113,
+   "quant/data/product/total-return-quality-v1.json": 1
+  }
+ },
+ "unchangedCategories": {
+  "canonicalIdChanges": [],
+  "deactivations": [],
+  "reactivations": [],
+  "tickerChanges": [],
+  "lostIds": [],
+  "newIds": []
+ }
+}
