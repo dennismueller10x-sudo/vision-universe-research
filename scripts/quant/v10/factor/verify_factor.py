@@ -210,7 +210,23 @@ def main():
     zpath = sys.argv[2]
     out_path = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else None
     rng = random.Random(20261028)
-    panel = json.loads(gzip.open(private / "panel.json.gz").read())
+    with gzip.open(private / "panel.jsonl.gz", "rt", encoding="utf-8") as handle:
+        lines = handle.read().splitlines()
+    header, trailer = json.loads(lines[0]), json.loads(lines[-1])
+    assert trailer.get("trailer"), "PANEL_TRUNCATED"
+    ids = header["componentIds"]
+    raw_lines = {line[9:19]: line for line in lines[1:-1]}
+    assert all(line.startswith('{"date":"') for line in raw_lines.values())
+    del lines
+    day_cache = {}
+
+    def day_of(d):
+        if d not in day_cache:
+            x = json.loads(raw_lines[d])
+            day_cache[d] = {"date": x["date"], "rows": [{"id": r[0], "scores": r[1], "raws": {c: v for c, v in zip(ids, r[2]) if v is not None},
+                                                         "template": r[3], "marketCap": r[4]} for r in x["rows"]]}
+        return day_cache[d]
+    panel = {"rankDates": header["rankDates"]}
     perdate = json.loads(gzip.open(private / "study-perdate.json.gz").read())
     spy_doc = json.loads((ROOT / "quant/data/market/multi-asset/series/SPY.json").read_text())
     spy = {d: p for d, p in spy_doc["points"]}
@@ -225,7 +241,7 @@ def main():
     b_n = b_fail = 0
     b_examples = []
     for d in sample_dates:
-        day = next(x for x in panel["dates"] if x["date"] == d)
+        day = day_of(d)
         for row in rng.sample(day["rows"], min(60, len(day["rows"]))):
             doc = series(row["id"])
             dates = [p[0] for p in doc["points"]]
@@ -244,7 +260,7 @@ def main():
     c_n = c_fail = 0
     c_examples = []
     for d in sample_dates[:12]:
-        day = next(x for x in panel["dates"] if x["date"] == d)
+        day = day_of(d)
         mine = score_date(day["rows"])
         for r, s in zip(day["rows"], mine):
             for f in list(WEIGHTS) + ["composite"]:
@@ -259,7 +275,7 @@ def main():
     d_n = d_fail = 0
     d_examples = []
     for d in sample_dates[:8]:
-        day = next(x for x in panel["dates"] if x["date"] == d)
+        day = day_of(d)
         for h in (4, 13, 26, 52):
             for sig in list(WEIGHTS) + ["composite"]:
                 rec = next((x for x in perdate["%s:%d" % (sig, h)] if x["date"] == d), None)
@@ -295,7 +311,7 @@ def main():
     names = set(z.namelist())
     a_cases = []
     for d in sample_dates:
-        day = next(x for x in panel["dates"] if x["date"] == d)
+        day = day_of(d)
         cand = [r for r in day["rows"] if cik_of.get(r["id"]) and ("equityToAssets" in r["raws"] or r.get("marketCap"))]
         a_cases += [(d, r) for r in rng.sample(cand, min(15, len(cand)))]
     eq_n = eq_ok = mc_n = mc_ok = 0

@@ -2,7 +2,7 @@
 'use strict';
 // V10 FACTOR (RECONSTRUCTION): registered factor-ranking study on the PIT panel.
 // Usage: node study.cjs <private_dir> [--loader-options '<json>'] [--out <evidence_dir>]
-// Reads <private_dir>/panel.json.gz; writes <private_dir>/study-events.json.gz and the compact evidence
+// Reads <private_dir>/panel.jsonl.gz; writes <private_dir>/study-perdate.json.gz and the compact evidence
 // <out>/factor-study-1.0.0.json (default docs/quant-recovery/v10/factor). Engines: research-studies.runFactorStudy,
 // research-validation.inferTemporalBlockMean/holm, research-studies.classifyRegimes, V9 bartlettLrv.
 const fs = require('node:fs'), path = require('node:path'), zlib = require('node:zlib');
@@ -46,7 +46,7 @@ function listingOf(l, from, to) {
 function run(privateDir, loaderOptions, outDir) {
   const t0 = Date.now();
   const reg = JSON.parse(fs.readFileSync(REG_PATH, 'utf8')), registrationHash = C.hash(reg);
-  const panel = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(privateDir, 'panel.json.gz'))));
+  const panel = require('./panel.cjs').readPanel(path.join(privateDir, 'panel.jsonl.gz'), { withRaws: false });
   if (C.hash(panel.loaderOptions) !== C.hash(loaderOptions)) throw Error('PANEL_LOADER_OPTIONS_MISMATCH');
   const frame = F.buildFrame(loaderOptions), spy = F.spyWeekly(frame.calendar);
   const byId = new Map(frame.listings.map(l => [l.securityId, l]));
@@ -57,10 +57,13 @@ function run(privateDir, loaderOptions, outDir) {
     registration, costs: { basis: 'PER_SIDE_NOTIONAL', feeBps: 0, slippageBps: 0 }, expectedCalendar: frame.calendar, entryDelayBars: 1, buckets: BUCKETS,
     benchmark: { currency: 'USD', returnBasis: 'PRICE_RETURN', bars: spy.bars } };
   const years = [...new Set(panel.rankDates.map(d => d.slice(0, 4)))];
+  // One vintage hash per (listing, rank date) over all signal scores, computed once.
+  const rowHash = new Map(panel.dates.map(s => [s.date, new Map(s.rows.map(r => [r.id, C.hash([r.id, s.date, r.scores])]))]));
   const perDate = {}, coverage = {}, eventsOut = {}, engineHashes = [];
   for (const signal of X.SIGNALS) for (const h of HORIZONS) {
     const key = signal + ':' + h; perDate[key] = []; coverage[key] = { expected: 0, observed: 0, immature: 0, censored: 0, ineligible: 0, datesExcludedTooFewScored: 0, datesExcludedTooFewObserved: 0, censoredReasons: {} };
     eventsOut[key] = [];
+    process.stderr.write(key + ' ' + Math.round((Date.now() - t0) / 1000) + 's\n');
     for (const y of years) {
       const snaps = panel.dates.filter(d => d.date.slice(0, 4) === y);
       const lastIdx = calIndex.get(snaps.at(-1).date);
@@ -70,9 +73,11 @@ function run(privateDir, loaderOptions, outDir) {
       const factorSnapshots = snaps.map(s => {
         const availableAt = s.date + 'T23:59:59.999Z';
         return { date: s.date, availableAt, sourceHash: C.hash({ date: s.date, signal }),
-          rows: s.rows.map(r => ({ listingId: r.id, value: X.finite(r.scores[signal]) ? r.scores[signal] : null, availableAt, sourceHash: C.hash([r.id, s.date, r.scores[signal] ?? null]) })) };
+          rows: s.rows.map(r => ({ listingId: r.id, value: X.finite(r.scores[signal]) ? r.scores[signal] : null, availableAt, sourceHash: rowHash.get(s.date).get(r.id) })) };
       });
-      const res = S.runFactorStudy({ ...base, listings, horizonBars: h, factorId: signal, factorSnapshots });
+      // Calendar restricted to the chunk window (identical contiguity checks, bars lie inside it); exits beyond the data end stay IMMATURE.
+      const expectedCalendar = frame.calendar.slice(calIndex.get(snaps[0].date), calIndex.get(to) + 1);
+      const res = S.runFactorStudy({ ...base, expectedCalendar, listings, horizonBars: h, factorId: signal, factorSnapshots });
       engineHashes.push(res.resultHash);
       const c = coverage[key];
       for (const k of ['expected', 'observed', 'immature', 'censored', 'ineligible']) c[k] += res.coverage[k];

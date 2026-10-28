@@ -107,7 +107,7 @@ function main() {
   const outDir = path.resolve(arg('--out') || path.join(F.ROOT, 'docs/quant-recovery/v10/factor'));
   const t0 = Date.now();
   const reg = JSON.parse(fs.readFileSync(REG_PATH, 'utf8'));
-  const panel = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(privateDir, 'panel.json.gz'))));
+  const panel = require('./panel.cjs').readPanel(path.join(privateDir, 'panel.jsonl.gz'), { withRaws: false });
   const frame = F.buildFrame(loaderOptions), spy = F.spyWeekly(frame.calendar);
   const sel = selections(panel).filter(s => s.top.length > 0);
   const runs = {}, ledgers = {};
