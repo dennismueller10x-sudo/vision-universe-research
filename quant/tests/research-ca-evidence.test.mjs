@@ -55,7 +55,7 @@ test('registry schema: protocol-bound records with SEC sources pass; every broke
 });
 
 test('opt-in only: default, identity-only and unknown options leave every registry id unresolved and never load the registry',()=>{
- assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence']);
+ assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence','identityEvidenceProtocolV10','listingLifecycleEvidence']);
  for(const bad of [{corporateActionEvidance:true},{corporateActionEvidence:'yes'},{corporateActionEvidence:1}])assert.throws(()=>R.createResearchLoader(root,bad),/^Error: INVALID_LOADER_OPTIONS/);
  const base=A.createLoader(root);
  for(const L of [R.createResearchLoader(root),R.createResearchLoader(root,{corporateActionEvidence:false}),R.createResearchLoader(root,{identityEvidence:true})]){

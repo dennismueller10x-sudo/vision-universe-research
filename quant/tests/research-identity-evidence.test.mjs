@@ -79,7 +79,7 @@ test('default off: createResearchLoader(root) delegates to the unchanged single-
 test('loader options fail closed on unknown keys, non-boolean values and a dangling cover-page flag',()=>{
  for(const bad of [{identityEvidance:true},{identityEvidence:'yes'},{identityEvidence:1},{identityEvidenceAllowCoverPageOnly:true},[],null,'identityEvidence',new (class X{})()])
   assert.throws(()=>R.createResearchLoader(root,bad),/^Error: INVALID_LOADER_OPTIONS/);
- assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence']);
+ assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence','identityEvidenceProtocolV10','listingLifecycleEvidence']);
 });
 
 test('opt-in qualifies the four price-backed bindings on their sourced interval; TRAK needs the extra cover-page flag',()=>{
