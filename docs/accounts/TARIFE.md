@@ -24,6 +24,21 @@ Quelle: `supabase/migrations/20261028000200_free_pro.sql`.
   rechnet die Datenbank automatisch Free (`effective_entitlements`). Fehlgeschlagene Zahlung: `past_due` mit Kulanzfrist,
   Hinweis auf `/konto/abo/`, danach Free.
 
+## Zahlungsmethoden
+
+Stripe Checkout mit dynamischen Zahlungsmethoden (kein `payment_method_types` im Code): Stripe zeigt je Kunde nur, was
+für ein monatliches EUR-Abo, Land und Betrag zulässig ist. Die Einrichtung (`stripe-live-setup.mjs`, `PAYMENT_METHODS`)
+schaltet in der Standard-Konfiguration ein, was das Konto freigeschaltet hat, und meldet den Rest:
+
+| Methode | Abo über Checkout | Hinweis |
+|---|---|---|
+| Kreditkarte, Apple Pay, Google Pay | ja | Apple Pay/Google Pay ohne Domain-Verifizierung (Stripe-gehostete Seite) |
+| SEPA-Lastschrift | ja | Erstzahlung nach einigen Tagen bestätigt; Mandat im Checkout |
+| PayPal | ja | wiederkehrende Zahlungen ggf. im Dashboard separat aktivieren (bis ca. 5 Werktage) |
+| Klarna | ja, je nach Konto/Land | für Abos ggf. Freigabe durch Stripe; im Kundenportal nicht änderbar (Kündigung geht) |
+
+Kein weiterer Zahlungsdienstleister.
+
 ## Sicherungen
 
 - Checkout serverseitig: Preis aus `plan_prices`, vorher bei Stripe abgeglichen; ein gültiges Abo verhindert ein zweites
