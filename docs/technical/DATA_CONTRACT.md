@@ -129,7 +129,7 @@ technical-screener-contract-1.0.0, 135 Spalten.
 | `formationWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `formations` | formations | ja |  | aktive Formationen [Typ, Zustand, erkannt, Ausbruchstag, Richtung, Kennzeichen] |
 | `fresh` | bool | nein |  | Kursstand aktuell |
-| `frozenSince` | date | ja |  | letzter echter Handelstag bei eingefrorenem Kurs (ab screen-row 1.10.0) (optional) |
+| `frozenSince` | date | ja |  | erster Tag des unveränderten Schlusskurses im Fenster der Tagesbars (Datenqualitätshinweis, ab screen-row 1.10.0) (optional) |
 | `goldenCrossDays` | int, Prüfraum `smaCrossWindow` | ja | 0 … ∞ | Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts) |
 | `hasVolume` | bool | nein |  | Volumendaten vorhanden |
 | `high52wWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |

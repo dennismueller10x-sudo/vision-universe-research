@@ -450,6 +450,30 @@
       (waiting.length ? "Wartet auf Materialisierung (" + waiting.length + "): " + waiting.join(", ") + ". " : "") + "Belegung: " + fill.join(", ") + ".");
   }
 
+  /** DQ-TW-6: Titel mit veraltetem Kurs (fresh = false) tragen keine Ereignisse und keine Stichtagszustaende
+      (screen-row.js#markStale, docs/technical/SCREENER_FRESHNESS.md). Sonst meldet ein Ereignisfilter einen alten Kurs
+      als aktuellen Treffer. `fields` = die Spalten, die fuer veraltete Titel leer sein muessen (aus screen-row.js).
+      Eingefrorene Reihen (`frozenSince`) sind nie aktuell und zusaetzlich ohne jedes Analysefeld (`frozenFields`).
+      `frozenByTicker` (optional): Kuerzel -> Datum seit dem der Kurs eingefroren ist, unabhaengig aus den Bars bestimmt. */
+  function technicalStaleEvents(cols, fields, frozenFields, frozenByTicker) {
+    var fail = [], n = cols && cols.s ? cols.s.length : 0, stale = 0, frozen = 0, has = function (k) { return cols && cols[k]; };
+    var keys = (fields || []).filter(has), fkeys = keys.concat((frozenFields || []).filter(has));
+    for (var i = 0; i < n; i++) {
+      var fz = cols.frozenSince ? cols.frozenSince[i] : null, seen = frozenByTicker ? frozenByTicker[cols.s[i]] || null : undefined;
+      /* Unabhaengig aus den Tagesbars ermittelt (frozenByTicker): der Erzeuger muss dasselbe Datum melden. */
+      if (seen !== undefined && seen !== fz) fail.push(cols.s[i] + ": eingefroren laut Tagesbars " + (seen || "nein") + ", laut Screener " + (fz || "nein"));
+      fz = fz || seen || null;
+      if (fz && cols.fresh[i] !== false) { fail.push(cols.s[i] + ": Kurs unveraendert seit " + fz + ", aber als aktuell gefuehrt"); continue; }
+      if (cols.fresh[i] !== false) continue;
+      stale++;
+      if (fz) frozen++;
+      var bad = (fz ? fkeys : keys).filter(function (k) { return cols[k][i] !== null && cols[k][i] !== undefined; });
+      if (bad.length) fail.push(cols.s[i] + " (Kurs vom " + cols.asOf[i] + "): " + bad.slice(0, 4).join(", ") + (bad.length > 4 ? " … (" + bad.length + ")" : ""));
+    }
+    return result("DQ-TW-6", "Technical: veraltete Titel tragen keine Ereignisse und keine Stichtagszustaende", "WARN", stale, fail,
+      stale + " veraltete Titel (davon " + frozen + " mit eingefrorenem Kurs), " + keys.length + " bzw. " + fkeys.length + " gepruefte Spalten.");
+  }
+
   /** DQ-TW-7: Technical-Artefakte erfuellen den Datenvertrag (quant/engines/technical/screener-contract.js,
       docs/technical/DATA_CONTRACT.md). `verdict` = ScreenerContract.check(screener, meta, index). */
   function technicalContract(verdict) {
@@ -896,7 +920,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalContract: technicalContract,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,

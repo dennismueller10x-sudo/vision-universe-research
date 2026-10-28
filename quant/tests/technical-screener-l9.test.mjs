@@ -23,7 +23,7 @@ const L9 = ["vortexBull", "choppiness14", "newHigh20d", "newLow20d", "elderImpul
 const near = (a, b, tol) => a !== null && Math.abs(a - b) <= tol;
 
 test("Versionen und Felder: jedes L9-Feld im Abfragekatalog (nur Tag) und als Spalte der Zeile", () => {
-  assert.match(Row.ROW_VERSION, /1\.9\.0$/);
+  assert.match(Row.ROW_VERSION, /1\.(9|\d{2,})\.\d+$/, "ab 1.9.0");
   assert.match(Q.QUERY_VERSION, /1\.(9|\d{2,})\.\d+$/, "ab 1.9.0");
   const r = row(bars());
   for (const id of L9) {

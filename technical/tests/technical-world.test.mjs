@@ -246,3 +246,47 @@ test("Gespeicherte Suchstrategien: umbenennen, exportieren, importieren (validie
   assert.equal(M.importScreens(st2, "{kaputt").error, "KEIN_JSON");
   assert.equal(M.importScreens(st2, JSON.stringify({ screens: [] })).error, "FORMAT");
 });
+
+test("Chart Studio: eingefrorene Reihe wie im Screener erkannt (core/listing-staleness.js, Schwelle dailyMinRun)", () => {
+  const Staleness = require(join(root, "core/listing-staleness.js"));
+  const dates = Array.from({ length: 12 }, (_, i) => "2026-10-" + String(10 + i).padStart(2, "0"));
+  const moving = dates.map((_, i) => 10 + i);
+  const n = Staleness.DEFAULTS.dailyMinRun;
+  const frozen = moving.map((v, i) => (i >= dates.length - n ? moving[dates.length - n] : v));
+  assert.deepEqual(M.seriesState(dates, moving, "2026-10-21", Staleness), { asOf: "2026-10-21", universeAsOf: "2026-10-21", frozenSince: null, frozenIndex: -1, frozenRun: 0, behind: false });
+  const f = M.seriesState(dates, frozen, "2026-10-21", Staleness);
+  assert.equal(f.frozenSince, dates[dates.length - n]);
+  assert.equal(f.frozenIndex, dates.length - n);
+  assert.equal(f.frozenRun, n);
+  /* eine Sitzung weniger: noch nicht eingefroren (3 und 4 gleiche Schluesse kommen bei illiquiden Titeln vor) */
+  const short = moving.map((v, i) => (i >= dates.length - n + 1 ? moving[dates.length - n + 1] : v));
+  assert.equal(M.seriesState(dates, short, "2026-10-21", Staleness).frozenSince, null);
+  /* Kurs hinter dem Stichtag */
+  const b = M.seriesState(dates, moving, "2026-10-23", Staleness);
+  assert.equal(b.behind, true);
+  assert.equal(M.seriesState(dates, moving, null, Staleness).behind, false);
+  /* ohne geladene Erkennung: keine Behauptung */
+  assert.equal(M.seriesState(dates, frozen, "2026-10-21", null).frozenSince, null);
+});
+
+test("Kerzenmarken enden auf Wunsch vor einem Index (eingefrorene Bars ohne Marken)", () => {
+  const S = { dates: ["a", "b", "c", "d"], open: [1, 1, 1, 1], high: [2, 2, 2, 2], low: [0, 0, 0, 0], close: [1, 1, 1, 1] };
+  const pats = { X: [100, 100, 100, 100] }, meta = [{ id: "X", direction: "bullish" }], names = { X: "Muster" };
+  assert.deepEqual(M.candleMarks(S, pats, meta, names, 0).map((m) => m.time), ["a", "b", "c", "d"]);
+  const cut = M.candleMarks(S, pats, meta, names, 0, 2);
+  assert.deepEqual(cut.map((m) => m.time), ["a", "b"]);
+  assert.equal(cut[1].label, "Muster", "Beschriftung an der letzten gezeigten Marke");
+});
+
+test("Relative Staerke: nur bei gleichem Datum in beiden Reihen, Rendite minus SPY-Rendite", () => {
+  const dates = ["d0", "d1", "d2", "d3"], close = [100, 110, 121, 133.1];
+  const bm = { dates: ["d0", "d1", "d2", "d3"], close: [100, 100, 105, 110] };
+  const rs = M.relativeStrength(dates, close, bm, 2);
+  assert.ok(Number.isNaN(rs[0]) && Number.isNaN(rs[1]));
+  assert.ok(Math.abs(rs[2] - (0.21 - 0.05)) < 1e-12);
+  assert.ok(Math.abs(rs[3] - ((133.1 / 110 - 1) - 0.1)) < 1e-12);
+  /* Luecke in der Vergleichsreihe: kein Wert statt einer Annahme */
+  const gap = M.relativeStrength(dates, close, { dates: ["d0", "d2", "d3"], close: [100, 105, 110] }, 2);
+  assert.ok(gap.every((v) => Number.isNaN(v)));
+  assert.ok(M.relativeStrength(dates, close, null, 2).every((v) => Number.isNaN(v)));
+});

@@ -105,10 +105,13 @@ export async function signup(ctx) {
   await ctx.limit('signup', ctx.ip || email);
   const password = v.password(body.password);
   if (body.acceptTerms !== true) throw new HttpError(400, 'TERMS_REQUIRED');
+  // Tarifwahl vor der Registrierung: reist im Bestaetigungslink mit (auch auf ein anderes Geraet).
+  // Nur ein Hinweis fuer die Seite; bezahlt wird erst nach Anmeldung, Bestaetigung und Checkout-Pruefung.
+  const plan = body.plan === 'pro' ? '&plan=pro' : '';
   const {verifier, challenge} = await pkcePair();
   try {
     await ctx.sb.auth.signUp({email, password, ip: ctx.ip, codeChallenge: challenge,
-      redirectTo: ctx.cfg.apiOrigin + '/v1/auth/callback?flow=signup',
+      redirectTo: ctx.cfg.apiOrigin + '/v1/auth/callback?flow=signup' + plan,
       data: {display_name: v.displayName(body.displayName), terms_accepted_at: new Date(ctx.now()).toISOString(),
         terms_version: String(body.termsVersion || '').slice(0, 20) || null}});
   } catch (e) {
@@ -144,7 +147,8 @@ export async function callback(ctx) {
   const flow = url.searchParams.get('flow') === 'recovery' ? 'recovery' : 'signup';
   const code = url.searchParams.get('code') || '';
   const site = path => ctx.cfg.siteOrigin + path;
-  const fail = status => redirect(site((flow === 'recovery' ? '/konto/passwort/' : SITE_PATHS.login) + '?status=' + status),
+  const plan = flow === 'signup' && url.searchParams.get('plan') === 'pro' ? '&plan=pro' : '';
+  const fail = status => redirect(site((flow === 'recovery' ? '/konto/passwort/' : SITE_PATHS.login) + '?status=' + status + plan),
     {cookies: [clearCookie(ctx.cfg, PKCE)]});
   if (!/^[A-Za-z0-9-]{8,128}$/.test(code)) return fail('link_invalid');
   const verifier = cookieValue(ctx.cfg, ctx.cookies, PKCE);
@@ -153,7 +157,7 @@ export async function callback(ctx) {
   let result;
   try { result = await ctx.sb.auth.exchangeCode({authCode: code, codeVerifier: verifier, ip: ctx.ip}); }
   catch (e) { if (e instanceof SupabaseError && e.status < 500) return fail('link_expired'); throw e; }
-  const target = flow === 'recovery' ? SITE_PATHS.newPassword : SITE_PATHS.account + '?status=verified';
+  const target = flow === 'recovery' ? SITE_PATHS.newPassword : SITE_PATHS.account + '?status=verified' + plan;
   return redirect(site(target), {cookies: [...sessionCookies(ctx, result), clearCookie(ctx.cfg, PKCE)]});
 }
 
