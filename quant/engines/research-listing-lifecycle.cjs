@@ -485,9 +485,9 @@ module.exports = {
         "pointsSha256": "fe2b315aa76298138c794f441879362b1eca7a5bcc3f7a931e3f00ffe8611000"
       },
       "terminal": {
-        "kind": "CASH_MERGER",
+        "kind": "CASH_AND_STOCK",
         "cashPerShare": 2,
-        "stockRatio": null,
+        "stockRatio": 0.6,
         "acquirerTicker": null,
         "paymentDate": null,
         "paymentDateNote": "PAYMENT_DATE_NOT_STATED"
