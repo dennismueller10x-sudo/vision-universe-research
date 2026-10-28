@@ -83,7 +83,7 @@ Die Grenzen sind ein Vorschlag und eine **Owner-Entscheidung**. Gemessen ist bis
 
 ### P1 – der einmalige Wechsel 1.1.0 → 1.3.0, gemessen
 
-Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.0 auf dem committeten Stamm (`26c82617…6498332`) mit derselben, aus seinen Anbieterzeilen rekonstruierten Anbieterliste, demselben Bestand und demselben Zeitstempel. Gezählt wird mit der Vergleichslogik des Gates (`compareMasters`, je stabiler `securityId`). Ergebnis committet unter `docs/data/security-master/` (Test SMW-10 baut es nach und vergleicht bitgenau):
+Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.0 auf dem committeten Stamm (`26c82617…6498332`) mit derselben, aus seinen Anbieterzeilen rekonstruierten Anbieterliste, demselben Bestand und demselben Zeitstempel. Gezählt wird mit der Vergleichslogik des Gates (`compareMasters`, je stabiler `securityId`). Ergebnis committet unter `docs/data/security-master/`, Stand 28.10.2026 auf `main`. Test SMW-10 baut die Wechsel, die Freigabedatei und die Menge der entfallenden IDs aus Stamm und Engine nach und vergleicht sie genau. Langreihen, Produkteignung und Fundstellen im Nachweis sind ein datierter Stand und wachsen mit den Datenläufen:
 
 | Datei | Inhalt |
 |---|---|
@@ -118,7 +118,7 @@ Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.
 | `quant/data/product/survivorship-control-v1.json` | inaktive Stammaktien-Zeilen | 191 → 180 (die 11 Zwei-Zeilen-IDs); Test `survivorship-control.test.mjs` erwartet 191 |
 | `quant/data/product/emerging-leaders-v1/study.json` | `commonEquityIds`, `inactiveEquityIds` | Eingangsmenge −138 IDs, inaktive −11; Wirkung auf die Studie misst der Neuaufbau |
 | `capabilities-v1`, `sic-peer-taxonomy-v1`, `naming-contract-v1`, `total-return-quality-v1` | eigene Inventare | nennen 116 / 113 / 9 / 1 der 127 IDs; werden durch den Wechsel **nicht** neu gebaut |
-| `docs/quant-recovery/**` (v7–v9, eingefroren) | – | nennt **keine** der 127 IDs; bleibt unberührt |
+| `docs/quant-recovery/**` (v7–v9, eingefroren) | – | v9-Evidenz nennt einzelne der 127 IDs (`v9-followups/stale-tails/before-after.json` 35, `v9/corporate-actions/ca-missing-weeks.json` 12, `ca-stale-tail-finding.json` 27, `v9/sensitivity/registration-1.0.0.json` 27). Sie belegt den Stand 1.1.0 und bleibt **unverändert**; eine neue Generation verweist auf sie, schreibt sie nie neu |
 | `build-factor-evidence`, `build-quant-radar` | Engine-Modul, nicht die Stammdatei | keine |
 
 ### P3 – Sonderfreigabe statt Lockerung

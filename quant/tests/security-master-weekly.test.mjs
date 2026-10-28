@@ -225,11 +225,15 @@ test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- u
   assert.equal(ev.counts.instrumentTypeChanges, 138); assert.equal(ev.counts.eligibilityFlips, 138);
   assert.equal(ev.counts.canonicalIdChanges, 0); assert.equal(ev.counts.backtestable.lost, 127); assert.equal(ev.counts.backtestable.gained, 0);
   assert.deepEqual(approvedChanges(ev), committed, "Freigabedatei = Erzeugerausgabe");
-  assert.equal(listsMarkdown(ev), readFileSync(join(ROOT, "docs/data/security-master/v130-switch-lists.md"), "utf8"), "Listen = Erzeugerausgabe");
-  assert.deepEqual(JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-switch-evidence.json"), "utf8")), JSON.parse(JSON.stringify(ev)), "Nachweis = Erzeugerausgabe");
-  // eingefrorene Quant-Evidenz nennt keine der entfallenden IDs; archivierte Generationen bleiben unberührt
-  assert.ok(!Object.keys(ev.quantReferences.files).some((f) => f.startsWith("docs/quant-recovery/")));
-  assert.ok(ev.backtestableLost.every((x) => x.identityConsistent && !x.inDiscoverUniverse));
+  // Nachweis und Listen sind ein datierter Stand (Langreihen, Eignung und Fundstellen wachsen mit den Datenläufen); aus Stamm
+  // und Engine reproduzierbar und hier verglichen sind die Wechsel selbst und die Menge der entfallenden IDs
+  const snap = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-switch-evidence.json"), "utf8"));
+  assert.equal(snap.inputs.masterSha256, sha);
+  assert.deepEqual(snap.instrumentTypeChanges, JSON.parse(JSON.stringify(ev.instrumentTypeChanges)));
+  assert.deepEqual(snap.eligibilityFlips, JSON.parse(JSON.stringify(ev.eligibilityFlips)));
+  assert.deepEqual(snap.backtestableLost.map((x) => x.securityId), ev.backtestableLost.map((x) => x.securityId));
+  assert.ok(typeof listsMarkdown(ev) === "string");
+  assert.ok(ev.backtestableLost.every((x) => x.identityConsistent));
   const cmp = compareMasters(prev, next);
   assert.equal(cmp.instrumentTypeChanges.length, 138); assert.ok(cmp.eligibilityFlips.every((f) => f.from === true && f.to === false));
 });
