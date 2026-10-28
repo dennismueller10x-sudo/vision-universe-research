@@ -305,8 +305,8 @@ class FiscalYearLabelTests(unittest.TestCase):
     def test_a_rejected_anchor_is_reported_not_silently_replaced(self):
         _, rejected = FiscalCalendar._label_years(
             self.NVDA_ENDS, self.NVDA_ANCHORS, 0)
-        self.assertEqual(rejected[0], ("2011-01-30", 2010, 2011),
-                         "the report must name what the filing claimed and what was used")
+        self.assertEqual(rejected[0], ("2011-01-30", 2010, 2011, "LABEL_NOT_INCREASING"),
+                         "the report must name what the filing claimed, what was used and why")
 
     def test_a_consistent_anchor_set_is_left_alone(self):
         """The four other validation companies must be unaffected."""
