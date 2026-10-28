@@ -138,12 +138,16 @@ if (twArt && twArt.cols) {
   }
   rules.push(DQ.technicalCloseParity(twPairs));
   const SIG = "quant/data/product/technical-signals-v1";
-  const matTickers = [], mtfVersions = new Set();
+  const matTickers = [], mtfVersions = new Set(), frozenByTicker = {};
   for (const f of dir(SIG, /^[A-Z0-9_-]{2}\.json\.gz$/)) {
     try {
       const inst = JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {};
       matTickers.push(...Object.keys(inst));
       for (const v of Object.values(inst)) { const m = v && v.bundle && v.bundle.multiTimeframe; if (m && m.version) mtfVersions.add(m.version); }
+      for (const [tk, v] of Object.entries(inst)) {
+        const b = v && v.bars, tail = b && b.timestamps ? Staleness.tailRun(b.timestamps.map((d, i) => [d, b.close[i]])) : null;
+        frozenByTicker[tk] = tail && tail.run >= Staleness.DEFAULTS.dailyMinRun ? tail.since : null;
+      }
     } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
   }
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
@@ -151,7 +155,8 @@ if (twArt && twArt.cols) {
   rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries(MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"])), [...mtfVersions]));
   const Row = require(join(REPO_ROOT, "quant", "engines", "technical", "screen-row.js"));
   const staleFields = Row.STALE_EVENT_FIELDS.concat(Row.STALE_DAY_FIELDS, ...Row.STALE_TF_FIELDS.map((k) => [k, k + "@1W", k + "@1M"]));
-  rules.push(DQ.technicalStaleEvents(c, staleFields));
+  const analytic = TQ.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
+  rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
 }
 
 }

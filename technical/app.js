@@ -423,7 +423,8 @@
         var right = sortField ? [el("span", { text: Q.labelOf(Q.field(sortField), query.timeframe) }), el("b", { class: "num", text: valueText(sortField, row[Q.columnKey(sortField, query.timeframe)]) })]
           : [el("span", { text: "Bedingungen" }), el("b", { class: "num", text: total ? Math.min(total, res.matched[i]) + "/" + total : "–" })];
         var flags = [];
-        if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
+        if (row.frozenSince) flags.push(el("span", { class: "tc-flag", title: "Der Anbieter meldet seitdem denselben Kurs (Delisting oder Übernahme?); keine Kennzahlen", text: "Kurs unverändert seit " + M.dateDe(row.frozenSince) }));
+        else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
         if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [

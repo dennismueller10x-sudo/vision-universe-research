@@ -346,7 +346,21 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale,
+  /**
+   * Eingefrorene Reihe (seit 1.10.0): Der Anbieter schreibt nach einem Delisting oder einer Uebernahme den letzten Kurs
+   * weiter (core/listing-staleness.js, STALE_TAIL: >= 5 exakt gleiche Schluesse). Die Bars nach `since` sind keine
+   * Kurse; jede Kennzahl am Stichtag waere aus ihnen gerechnet. Deshalb sind alle Analysefelder `keys` (je Zeitrahmen)
+   * leer; Schlusskurs, Stand und Datenqualitaet bleiben, `frozenSince` nennt den letzten echten Handelstag.
+   */
+  function markFrozen(row, since, keys) {
+    markStale(row);
+    (keys || []).forEach(function (k) { ["", "@1W", "@1M"].forEach(function (tf) { if ((k + tf) in row) row[k + tf] = null; }); });
+    if ("formations" in row) row.formations = null;
+    row.frozenSince = since;
+    return row;
+  }
+
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen,
               STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }

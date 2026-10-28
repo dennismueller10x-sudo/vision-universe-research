@@ -145,3 +145,18 @@ test("DQ-TW-6 · veraltete Titel tragen keine Ereignisse und keine Stichtagszust
   assert.deepEqual(r.samples, ["C (Kurs vom 2026-08-17): nr7"], "frischer Titel mit Ereignis und Niveau rsi14 sind erlaubt");
   assert.equal(DQ.technicalStaleEvents({ ...cols, nr7: [true, null, null] }, ["nr7"]).failed, 0);
 });
+
+test("DQ-TW-6 · eingefrorene Reihe: nie aktuell, ohne jedes Analysefeld", () => {
+  const cols = { s: ["Z", "Y"], asOf: ["2026-10-26", "2026-10-26"], fresh: [false, true], frozenSince: ["2025-09-25", "2025-10-01"],
+    rsi14: [0, null], nr7: [null, null], close: [13, 9] };
+  const r = DQ.technicalStaleEvents(cols, ["nr7"], ["rsi14"]);
+  assert.deepEqual(r.samples, ["Z (Kurs vom 2026-10-26): rsi14", "Y: Kurs unveraendert seit 2025-10-01, aber als aktuell gefuehrt"]);
+  assert.match(r.note, /davon 1 mit eingefrorenem Kurs/);
+  assert.equal(DQ.technicalStaleEvents({ ...cols, fresh: [false, false], rsi14: [null, null] }, ["nr7"], ["rsi14"]).failed, 0, "Schlusskurs bleibt erlaubt");
+});
+
+test("DQ-TW-6 · Einfrieren unabhaengig aus den Bars: Screener muss dasselbe Datum melden", () => {
+  const cols = { s: ["Z", "Y"], asOf: ["2026-10-26", "2026-10-26"], fresh: [true, false], rsi14: [40, null] };
+  const r = DQ.technicalStaleEvents(cols, [], ["rsi14"], { Z: "2025-09-25", Y: null });
+  assert.deepEqual(r.samples, ["Z: eingefroren laut Tagesbars 2025-09-25, laut Screener nein", "Z: Kurs unveraendert seit 2025-09-25, aber als aktuell gefuehrt"]);
+});

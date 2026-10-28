@@ -52,3 +52,14 @@ test("Abfrage: veralteter Titel ist bei Ereignisfiltern unbekannt (null), bei Ni
   assert.ok(!hit([{ field: "candleBullDays", op: "gt", value: 1000 }]).includes("OLD"), "kein Pruefraum: auch 'lange her' ist unbekannt");
   assert.ok(hit([{ field: "williamsR", op: "lte", value: 0 }]).includes("OLD"), "Niveau bleibt filterbar");
 });
+
+test("eingefrorene Reihe: alle Analysefelder leer, Kurs, Stand und Datenqualitaet bleiben", async () => {
+  const { analyticFields } = await import("../../scripts/technical/world/build-screener.mjs");
+  const keys = analyticFields();
+  assert.ok(keys.includes("rsi14") && keys.includes("formationActive") && !keys.includes("close") && !keys.includes("fresh"));
+  const fresh = row(asOf), frozen = Row.markFrozen(row(asOf), "2025-09-25", keys);
+  assert.equal(frozen.frozenSince, "2025-09-25");
+  for (const k of keys) for (const tf of ["", "@1W", "@1M"]) if ((k + tf) in frozen) assert.equal(frozen[k + tf], null, k + tf);
+  assert.equal(frozen.formations, null);
+  for (const k of ["close", "asOf", "s", "bars", "hasVolume", "spark"]) assert.deepEqual(frozen[k], fresh[k], k);
+});

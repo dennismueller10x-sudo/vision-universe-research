@@ -13,6 +13,11 @@ Die Ereignis- und Stichtagsfelder dieser Titel zählten ab ihrem **eigenen** let
 
 Ein solches Signal ist rückdatiert, ohne dass es als rückdatiert erkennbar ist.
 
+**Zweiter Befund: eingefrorene Reihen.** Für 233 Titel liefert der Anbieter seit Wochen bis über ein Jahr denselben Schlusskurs, meist ohne Volumen. Das ist typisch nach Delisting oder Übernahme, z. B. CHL, TTM, CEO, OZON und ANSS. `core/listing-staleness.js` erkennt das als `STALE_TAIL`: mindestens 5 exakt gleiche Schlüsse, Schwelle und Verteilung sind dort begründet. Diese Titel galten trotzdem als „aktuell“, weil ihr letzter Bar auf den Stichtag fällt. Alle Kennzahlen entstanden aus erfundenen Bars:
+- Ein konstanter Kurs ist immer sein eigenes 52-Wochen-Hoch. 64 der 188 Treffer für „Neues 52-Wochen-Hoch“ kamen daher.
+- Flache Bars sind immer NR7. Das betraf 273 der 1.255 NR7-Treffer.
+- RSI-Werte von 0 oder 100 hingen allein von der Rechenkonvention ab. Chart (270 Bars) und Screener (Vollhistorie) zeigten deshalb bei 36 Titeln verschiedene RSI-Werte, bis zu 100 Punkte auseinander.
+
 ## Regel (ab 1.10.0)
 
 Für Titel mit `fresh = false` gilt:
@@ -23,6 +28,13 @@ Für Titel mit `fresh = false` gilt:
 | Zustände am Stichtag (Tag) | `chg1d`, `newHigh20d`, `newLow20d` | `null` |
 | Zustände am Stichtag (Tag, Woche, Monat) | `newHigh52w`, `relVol`, `volAboveAvg`, `volSpike`, `insideBar`, `nr7`, `candleBullish`, `candleBearish`, `candleNeutral`, jeweils auch `@1W` und `@1M` | `null` |
 | Niveaus und Lagen | RSI, Abstände, Lage zu Linien, ROC, Volatilität, Formationszustände, Schlusskurs | Stand des letzten Kurses, erkennbar an `fresh = false` und `asOf`. Die Oberfläche zeigt „Kurs vom …“. |
+
+**Eingefrorene Reihe** (`frozenSince` = letzter echter Handelstag, neu als Spalte):
+- Endet die Tagesreihe mit mindestens `ListingStaleness.DEFAULTS.dailyMinRun` (5) exakt gleichen Schlüssen, ist der Titel nie `fresh`.
+- Zusätzlich zu den Feldern oben sind **alle Analysefelder** leer, das heißt jedes Abfragefeld außer Kurs und Datenqualität, je Tag/Woche/Monat, sowie die Formationsliste.
+- Grund: Die Bars nach `frozenSince` sind keine Kurse. Auch Niveaus wären aus ihnen gerechnet.
+- Es bleiben `close`, `asOf`, `bars`, `hasVolume`, `spark` und `frozenSince`. Die Trefferliste zeigt „Kurs unverändert seit …“.
+- Grenzfälle: 67 der 233 Titel zeigen nach dem Einfrieren noch einzelne Bars mit Volumen oder Spanne bei gleichem Schluss. Teils füllt der Anbieter auf, teils sind es illiquide Vorzugsaktien und Aktienklassen ohne Kursänderung. Auch dort entsteht kein Signal mit Gehalt: Ohne Kursänderung gibt es keinen Ausbruch, kein Momentum und keinen Trend. Leer ist also vorsichtig, aber nicht falsch.
 
 **Warum `null` und nicht „Tage + Rückstand“:**
 - Zwischen dem letzten Bar und dem Stichtag fehlen Kurse. Ein Ereignis in dieser Lücke ist weder belegt noch ausgeschlossen.
@@ -39,8 +51,15 @@ Für Titel mit `fresh = false` gilt:
 - `quant/engines/technical/screen-row.js`:
   - `markStale(row)` und die Listen `STALE_EVENT_FIELDS`, `STALE_DAY_FIELDS`, `STALE_TF_FIELDS`;
   - `computeRow` wendet `markStale` an, wenn `universeAsOf` bekannt ist und abweicht.
-- `scripts/technical/world/build-screener.mjs`: Nachdem der Stichtag bestimmt ist, gilt `fresh = false` → `markStale`.
-- **DQ-TW-6** (`core/data-quality.js`, WARN): Kein veralteter Titel trägt einen Wert in diesen Spalten. Die Liste stammt aus `screen-row.js`.
+- `screen-row.js#markFrozen(row, since, keys)`.
+- `scripts/technical/world/build-screener.mjs`:
+  - `frozenSince` je Titel aus `ListingStaleness.tailRun` (dieselbe Schwelle wie DQ-PX-6).
+  - Nachdem der Stichtag bestimmt ist: `fresh = asOf = Stichtag und nicht eingefroren`. Eingefroren → `markFrozen` mit `analyticFields()` (Abfragekatalog ohne Kurs und Datenqualität). Sonst gilt: `fresh = false` → `markStale`.
+- Trefferliste (`technical/app.js`): Hinweis „Kurs unverändert seit …“ statt „Kurs vom …“. Sonst keine Oberflächenänderung.
+- **DQ-TW-6** (`core/data-quality.js`, WARN):
+  - Kein veralteter Titel trägt einen Wert in diesen Spalten. Die Liste stammt aus `screen-row.js`.
+  - Kein eingefrorener Titel trägt ein Analysefeld oder gilt als aktuell.
+  - Das Einfrieren ermittelt die DQ-Prüfung **unabhängig** aus den Tagesbars der Materialisierung, und `frozenSince` muss damit übereinstimmen.
 - Tests:
   - `quant/tests/technical-screener-freshness.test.mjs`:
     - frischer Titel unverändert;
@@ -51,43 +70,45 @@ Für Titel mit `fresh = false` gilt:
 
 ## Vorher/Nachher
 
-Datenstand 26.10.2026, 5.657 Titel, 82 veraltet. Erzeuger `build-screener.mjs --out`, vorher = `main` (`db2bec0`), nachher = dieser PR.
+Datenstand 26.10.2026, 5.657 Titel. Erzeuger `build-screener.mjs --out`, vorher = `main` (`db2bec0`), nachher = dieser PR.
 
-- **Frische Titel:** 0 Abweichungen in allen 134 Spalten.
-- **Veraltete Titel:** alle 82 geändert, nur in den Spalten der Regel. Kein Titel kommt hinzu oder fällt weg, die Spaltenliste bleibt gleich.
+| Titel | Anzahl | geändert |
+|---|---|---|
+| aktuell (`fresh`) | 5.347 | 0 (keine Abweichung in allen 134 Spalten) |
+| Kurs hinter dem Stichtag | 77 | 77, nur Ereignis- und Stichtagsfelder |
+| eingefroren (`frozenSince`), davon vorher als aktuell geführt | 233, davon 228 | 233, alle Analysefelder |
 
-| Abfrage (Tag) | Treffer vorher | Treffer nachher | davon veraltet: vorher → nachher | Beispiele, die wegfallen |
-|---|---|---|---|---|
-| Golden Cross ≤ 10 Tage | 96 | 95 | 1 → 0 | WBD (Kurs vom 07.10.) |
-| Schluss über SMA 200 gekreuzt ≤ 5 Tage | 481 | 473 | 8 → 0 | AIXC (29.09.), ANY (15.09.), AVB (17.08.) |
-| Neues 52-Wochen-Hoch | 188 | 182 | 6 → 0 | ATKR (16.10.), CCO (14.10.), DBRG (30.09.) |
-| Volumenspitze | 541 | 515 | 26 → 0 | AIXC, AREN (28.08.), ATKR |
-| NR7 | 1.255 | 1.207 | 48 → 0 | ACA (23.10.), APGE (04.09.), ATAI (11.09.) |
-| Inside Bar | 748 | 724 | 24 → 0 | ACA, ANY, ATAI |
-| Bullisches Kerzenmuster (5 Hauptmuster) | 293 | 290 | 3 → 0 | AREN, TWO-P-B, VRME |
-| Neue Formation ≤ 5 Tage | 1.576 | 1.545 | 31 → 0 | ACA, AIXC, ANY |
-| Tagesänderung > 5 % | 209 | 203 | 6 → 0 | AREN, HWH, MIMI |
-| RSI 14 < 30 (Niveau, Gegenprobe) | 740 | 740 | 10 → 10 | unverändert, wie vorgesehen |
+Neue Spalte: `frozenSince`. Es entfällt keine Spalte, und kein Titel kommt hinzu oder fällt weg.
 
-**Betroffene Spalten** (Zahl veralteter Titel mit vorher belegtem Wert):
+Wie lange die 233 Titel schon eingefroren sind (Handelstage, ungefähr):
 
-| Spalten | veraltete Titel |
-|---|---|
-| `chg1d`, `newHigh52w` (Tag, Woche, Monat), `newHigh20d`, `newLow20d`, `insideBar`, `nr7`, alle sechs Prüfräume | 82 |
-| `relVol`, `volAboveAvg`, `volSpike` | 81 (Woche 81, Monat 78) |
-| Kerzenfelder | 76 |
-| `crossBelowSma200Days` | 73 |
-| `rsiExitOverboughtDays` | 73 |
-| `rsiExitOversoldDays` | 68 |
-| `crossAboveSma200Days` | 67 |
-| `formationNewDays` | 58 |
-| `deathCrossDays` | 50 |
-| `goldenCrossDays` | 48 |
-| `newHigh52wDays` | 20 |
+| ≥ 5 | ≥ 10 | ≥ 20 | ≥ 60 | ≥ 120 | ≥ 250 |
+|---|---|---|---|---|---|
+| 229 | 215 | 202 | 187 | 164 | 104 |
+
+| Abfrage (Tag) | Treffer vorher | Treffer nachher | weg |
+|---|---|---|---|
+| Golden Cross ≤ 10 Tage | 96 | 89 | 7 |
+| Schluss über SMA 200 gekreuzt ≤ 5 Tage | 481 | 470 | 11 |
+| Neues 52-Wochen-Hoch | 188 | 124 | **64** |
+| Volumenspitze | 541 | 512 | 29 |
+| NR7 | 1.255 | 982 | **273** |
+| Inside Bar | 748 | 724 | 24 |
+| Neue Formation ≤ 5 Tage | 1.576 | 1.543 | 33 |
+| Tagesänderung > 5 % | 209 | 203 | 6 |
+| RSI 14 < 30 | 740 | 704 | 36 |
+| RSI 14 > 70 | 327 | 273 | 54 |
+| Kurs über SMA 200 | 2.032 | 1.936 | 96 |
+| ADX > 25 | 2.788 | 2.644 | 144 |
+| Formation bestätigt (beliebiger Typ) | 2.613 | 2.585 | 28 |
+
+Bei Niveaufiltern (RSI, SMA, ADX) fallen nur eingefrorene Titel weg. Titel, deren Kurs nur hinter dem Stichtag liegt, bleiben dort Treffer, wie vorgesehen.
 
 **DQ-TW-6:**
-- mit den Daten von `main`: WARN, 82 / 82 veraltete Titel verletzen die Regel;
-- mit der Ausgabe dieses PRs: PASS, 82 geprüft, 0 Verstöße, 46 Spalten.
+- mit den Daten von `main`: FAIL, 543 Verstöße. Darunter sind 82 veraltete Titel mit Ereignissen und eingefrorene Titel, die als aktuell geführt werden, beides unabhängig aus den Bars erkannt.
+- mit der Ausgabe dieses PRs: PASS, 310 geprüft (77 hinter dem Stichtag, 233 eingefroren), 0 Verstöße.
+
+**Chart ↔ Screener:** Für alle 5.657 Titel wurde RSI 14 im Chart (aus 270 Bars) mit dem Screener-Wert (aus der Vollhistorie) verglichen. Median der Abweichung 0,003, 95. Perzentil 0,005; das ist Rundung. Die 36 Ausreißer über 1 Punkt sind ausschließlich eingefrorene Titel. Beim ADX gilt dasselbe für die Ausreißer.
 
 ## Nach der Freigabe
 
