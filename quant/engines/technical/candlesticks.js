@@ -49,7 +49,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var CANDLESTICKS_VERSION = "technical-candlesticks-1.1.0";
+  var CANDLESTICKS_VERSION = "technical-candlesticks-1.2.0";
   /* Mat Hold: hoechstes Eindringen der Zwischenkerzen in den ersten Koerper (TA-Lib optInPenetration, Standard 0,5). */
   var MATHOLD_PENETRATION = 0.5;
 
@@ -561,6 +561,44 @@
         var a = i - 2, b = i - 1, o = x.o, c = x.c;
         if (!(x.color(a) === x.color(b) && x.color(b) === -x.color(i) && o[i] < x.top(b) && o[i] > x.bottom(b) && c[i] < x.top(a) && c[i] > x.bottom(a))) return 0;
         return (x.color(a) === 1 && bodyGapUp(x, b, a)) || (x.color(a) === -1 && bodyGapDown(x, b, a)) ? x.color(a) : 0;
+      } },
+    /* 1.2.0 (L13): die vier restlichen TA-Lib-Muster. */
+    { id: "longLine", name: "Long Line (lange Kerze)", candles: 1, direction: "both", ta: "CDLLONGLINE", uses: [[0, "BodyLong"], [0, "ShadowShort"]],
+      rule: "langer Koerper (> BodyLong), beide Schatten < ShadowShort; Richtung = Farbe",
+      fn: function (x, i) { var s = x.avg("ShadowShort", i); return x.body[i] > x.avg("BodyLong", i) && x.up[i] < s && x.lo[i] < s ? x.color(i) : 0; } },
+    { id: "shortLine", name: "Short Line (kurze Kerze)", candles: 1, direction: "both", ta: "CDLSHORTLINE", uses: [[0, "BodyShort"], [0, "ShadowShort"]],
+      rule: "kurzer Koerper (< BodyShort), beide Schatten < ShadowShort; Richtung = Farbe",
+      fn: function (x, i) { var s = x.avg("ShadowShort", i); return x.body[i] < x.avg("BodyShort", i) && x.up[i] < s && x.lo[i] < s ? x.color(i) : 0; } },
+    { id: "kickingByLength", name: "Kicker nach Laenge", candles: 2, direction: "both", ta: "CDLKICKINGBYLENGTH", uses: [[1, "BodyLong"], [1, "ShadowVeryShort"], [0, "BodyLong"], [0, "ShadowVeryShort"]],
+      rule: "zwei gegenfarbige Marubozu mit Kerzenluecke in Richtung der zweiten; Richtung = Farbe des laengeren Marubozu (bei gleicher Laenge des ersten)",
+      fn: function (x, i) {
+        var a = i - 1;
+        function maru(k) { var s = x.avg("ShadowVeryShort", k); return x.body[k] > x.avg("BodyLong", k) && x.up[k] < s && x.lo[k] < s; }
+        if (x.color(a) === x.color(i) || !maru(a) || !maru(i)) return 0;
+        if (!((x.color(a) === -1 && candleGapUp(x, i, a)) || (x.color(a) === 1 && candleGapDown(x, i, a)))) return 0;
+        return x.color(x.body[i] > x.body[a] ? i : a);
+      } },
+    { id: "hikkakeMod", name: "Modifizierter Hikkake", candles: 4, span: 7, direction: "both", ta: "CDLHIKKAKEMOD", uses: [[2, "Near"]],
+      rule: "zweite Kerze innerhalb der ersten, dritte innerhalb der zweiten, vierte mit tieferem Hoch und Tief (bullisch; zweiter Schluss nahe seinem Tief, ≤ Tief + Near) bzw. hoeherem Hoch und Tief (baerisch; zweiter Schluss nahe seinem Hoch). Bestaetigung wie Hikkake: erster Schluss innerhalb der drei folgenden Bars jenseits des Hochs (bullisch) bzw. Tiefs (baerisch) der dritten Kerze; ein neues Muster ersetzt das alte. Die Bestaetigung traegt das Vorzeichen des Musters (TA-Lib ±200)",
+      fn: function (x, i) {
+        var h = x.h, l = x.l, c = x.c;
+        function hm(k) {
+          if (k < 3 || !(h[k - 2] < h[k - 3] && l[k - 2] > l[k - 3] && h[k - 1] < h[k - 2] && l[k - 1] > l[k - 2])) return 0;
+          var near = x.avg("Near", k - 2);
+          if (!isNum(near)) return 0;
+          if (h[k] < h[k - 1] && l[k] < l[k - 1] && c[k - 2] <= l[k - 2] + near) return 1;
+          if (h[k] > h[k - 1] && l[k] > l[k - 1] && c[k - 2] >= h[k - 2] - near) return -1;
+          return 0;
+        }
+        var s = hm(i);
+        if (s) return s;
+        for (var p = i - 1; p >= i - 3; p--) {
+          var sp = hm(p);
+          if (!sp) continue;
+          for (var k = p + 1; k <= i; k++) if (sp > 0 ? c[k] > h[p - 1] : c[k] < l[p - 1]) return k === i ? sp : 0;
+          return 0;
+        }
+        return 0;
       } }
   ];
 

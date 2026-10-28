@@ -13,9 +13,9 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
 | Indikatoren (`indicators.js` 1.6.0) | 92 | 92 | 92 | 26 | 20 ●, Rest ○ |
-| Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
-| Chartformationen (`formations.js` 1.2.3 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
-| **gesamt** | **174** | **174** | **173** | **77** | **44 ●** |
+| Candlestick-Muster (`candlesticks.js` 1.2.0) | 62 | 62 | 61 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
+| Chartformationen (`formations.js` 1.4.0 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
+| **gesamt** | **178** | **178** | **177** | **77** | **44 ●** |
 
 **Herkunft „Markt“:**
 - **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
@@ -198,6 +198,7 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L10 | Dreiecksklassifikation: gelten aufsteigend und absteigend zugleich, ist das Muster symmetrisch (Spiegeltest) | **Fachmodell** | erledigt (#1037, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §6, 19 Titel |
 | L11 | Dreieckskanten nach Typ: aufsteigend oben waagrecht/unten durch die Tiefs, absteigend umgekehrt; Kantenprüfung im Validator | **Fachmodell** | erledigt (#1047, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §7 |
 | L12 | 14 weitere Katalogindikatoren: APO, Midprice, TSF, ADXR, schnelle Stochastik, Fisher Transform, Schaff Trend Cycle, RVGI, PVT, VHF, Efficiency Ratio, QStick, Williams Alligator, Williams Fractals; je fremde Referenz (TA-Lib, pandas-ta oder Formel) | Katalog, kein Fachmodell | erledigt (indicators 1.6.0): INDICATORS_CATALOG.md, INDICATORS_EXTERNAL_REFERENCE.md L12 |
+| L13 | Candlestick-Bibliothek vervollständigt: Long Line, Short Line, Kicking by Length, Modifizierter Hikkake (alle 61 TA-Lib-CDL-Funktionen abgedeckt) | Katalog, kein Fachmodell | erledigt (candlesticks 1.2.0): CANDLESTICKS.md |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**
 - **Tag:** Der Browser und `screen-row` sehen 270 Tagesbars. Indikatoren mit einer Aufwärmphase über 269 Bars sind auf Tagesbasis nur im Materialisierungslauf exakt rechenbar, der die volle Historie hat (Muster EMA 200).

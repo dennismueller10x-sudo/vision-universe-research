@@ -1,6 +1,6 @@
 # Candlestick-Muster (`candlesticks.js`, L4)
 
-Stand 27.10.2026, `technical-candlesticks-1.1.0` (58 Muster: 27 aus 1.0.0, 31 ab 1.1.0). Modul: `quant/engines/technical/candlesticks.js` (UMD, ohne Abhängigkeiten). Tests: `quant/tests/technical-candlesticks.test.mjs` (Muster aus 1.0.0), `quant/tests/technical-candlesticks-2.test.mjs` (Muster ab 1.1.0).
+Stand 28.10.2026, `technical-candlesticks-1.2.0` (62 Muster: 27 aus 1.0.0, 31 ab 1.1.0, 4 ab 1.2.0). Modul: `quant/engines/technical/candlesticks.js` (UMD, ohne Abhängigkeiten). Tests: `quant/tests/technical-candlesticks.test.mjs` (Muster aus 1.0.0), `quant/tests/technical-candlesticks-2.test.mjs` (ab 1.1.0), `quant/tests/technical-candlesticks-3.test.mjs` (ab 1.2.0).
 
 **Bibliothek; Screener-Felder vorgeschlagen.** Keine Chartebene, keine Materialisierung. Die Screener-Felder (Muster am Stichtag, „Tage seit“) sind der Fachmodell-PR L6: [SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md).
 
@@ -279,3 +279,40 @@ Muster ab 1.1.0:
 Nicht entscheidbar sind je Muster rund 37.000 bis 44.000 Bars (2,4–2,9 %), meist durch Mittelungsfenster ohne Bewegung oder durch Kurslücken. Engulfing, Three Outside, Hikkake und Upside/Downside Gap Three Methods nutzen kein Mittel und haben 0. Advance Block nutzt neun Mittel und hat mit 51.255 die meisten.
 
 Die Häufigkeit ist keine Aussage über die Wirkung. Trefferquoten mit Definition, Stichprobe und Mehrfachtest-Korrektur sind ein eigener Schritt (wie `formation-evidence.json`).
+
+## Muster ab 1.2.0 (L13, 4): Vervollständigung gegen TA-Lib
+
+Damit hat jede der 61 CDL-Funktionen von TA-Lib 0.8.2 ein Gegenstück in der Bibliothek. Dazu kommt Tweezer als einziges Muster ohne TA-Lib-Vorlage, zusammen 62 Muster. Die 58 Muster von 1.1.0 sind unverändert.
+
+| id | Kerzen | Richtung | TA-Lib | Regel (Kurzform) |
+|---|---|---|---|---|
+| `longLine` | 1 | beide | CDLLONGLINE | Körper > BodyLong, beide Schatten < ShadowShort; Richtung = Farbe |
+| `shortLine` | 1 | beide | CDLSHORTLINE | Körper < BodyShort, beide Schatten < ShadowShort; Richtung = Farbe |
+| `kickingByLength` | 2 | beide | CDLKICKINGBYLENGTH | zwei gegenfarbige Marubozu mit Kerzenlücke; **Richtung = Farbe des längeren Marubozu** (bei gleicher Länge des ersten). Der klassische Kicker folgt dagegen der Lücke. |
+| `hikkakeMod` | 4 (+3 Bestätigung) | beide | CDLHIKKAKEMOD | zweite Kerze innerhalb der ersten, dritte innerhalb der zweiten; vierte mit tieferem Hoch und Tief (bullisch, zweiter Schluss ≤ Tief + Near) bzw. höherem Hoch und Tief (bärisch, zweiter Schluss ≥ Hoch − Near). Bestätigung wie Hikkake: erster Schluss jenseits des Hochs bzw. Tiefs der dritten Kerze innerhalb von drei Bars; ein neues Muster ersetzt das alte. Die Bestätigung trägt das Vorzeichen des Musters (TA-Lib ±200). |
+
+**Prüfung** (`technical-candlesticks-3.test.mjs`, Fixture `technical-talib-candles-3.json`, erzeugt mit `build-talib-reference.py --set candles3`). Grundlage sind dieselben 38 echten Titel wie bei 1.0/1.1 und konstruierte Folgen für Kicking by Length.
+
+| Muster | TA-Lib-Treffer | gleich | Abweichung im Produktmodus | ohne Rundung |
+|---|---|---|---|---|
+| longLine | 1.914 | 1.767 | 1 Gleichstand (MCGA@115) | 0 |
+| shortLine | 1.777 | 1.776 | 1 Gleichstand (STRC@148) | 0 |
+| kickingByLength | 15 (9 echt, 6 konstruiert) | 15 | 0 | 0 |
+| hikkakeMod | 14 (8 Muster, 6 Bestätigungen) | 14 | 0 | 0 |
+
+- Nie eine Richtungsabweichung.
+- Wo TA-Lib einen Treffer hat und die Engine „nicht entscheidbar“ meldet, hat das Mittelungsfenster nachweislich die Spanne 0.
+- Kein Vorgriff: Auf abgeschnittenen Reihen ist jedes Signal an Bar i gleich.
+
+**Häufigkeit im Universum** (5.657 Titel, 1.527.390 Tagesbars, Stand 26.10.2026):
+
+| Muster | bullisch | bärisch | an der letzten Bar | nicht entscheidbar |
+|---|---|---|---|---|
+| longLine | 126.405 | 141.618 | 722 | 102.695 |
+| shortLine | 124.751 | 107.826 | 940 | 102.695 |
+| kickingByLength | 42 | 35 | 1 | 99.960 |
+| hikkakeMod | 1.211 | 1.139 | 8 | 82.044 |
+
+Long und Short Line sind häufig (je rund 15 % der Bars). Als Einzelsignal taugen sie wenig, als Baustein für Kerzenstatistik sind sie nützlich. „Nicht entscheidbar“ liegt hier höher als bei den übrigen Mustern (rund 6,7 % statt 2,4–2,9 %). ShadowShort mittelt die Schattensumme. Bei sehr ruhigen und illiquiden Titeln ist sie im Zehnbarfenster öfter 0.
+
+Die neuen Muster stehen nur in der Bibliothek. Die feste Kerzenliste des Screeners (27 Muster) und der Wochen- und Monatsbündel bleibt unverändert.
