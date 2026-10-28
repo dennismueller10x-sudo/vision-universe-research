@@ -260,6 +260,28 @@ test("fundamentale Reihe: derselbe wahre Satz steht nicht sechsmal untereinander
   for (const id of new Set(ids)) assert.ok(ids.filter((x) => x === id).length <= K.MAX_JE_REIHE, id);
 });
 
+/* Nachtlauf 28.10.2026: die Pruefung rechnet den Text aus der ausgelieferten Karte nach. Die SEC-Nettomarge von CUBE
+   (0,29499959932686914) ergab im Bau "29 %", ausgeliefert stand 0,295, nachgerechnet "30 %". Texte muessen auf dem
+   ausgelieferten Wert entstehen (Contract.shippedNumber, gleiche Rundung wie build-discover-data.mjs#write). */
+test("Klartext-Zahl entsteht auf dem ausgelieferten Wert: Bau und Nachrechnung stimmen ueberein", () => {
+  const C = require(join(root, "discover", "engines", "contract.js"));
+  const roh = 0.29499959932686914;
+  const karte = (m) => K.karte(jung({ metrics: { return12M: null, return6M: null, return3M: 0.02, return1M: 0.01,
+    f_revenueGrowth3y: 0.02, f_netMargin: m, f_fcfMargin: 0.05 }, signals: Object.assign(jung().signals, { netCash: false }) }), {});
+  const ausgeliefert = (x) => JSON.parse(JSON.stringify(x, (k, v) => C.shippedNumber(v)));
+  assert.notEqual(karte(roh).zahl.wert, karte(ausgeliefert(roh)).zahl.wert, "der Fall trennt ungerundet und ausgeliefert");
+  const gebaut = karte(C.shippedNumber(roh));
+  assert.deepEqual(ausgeliefert(gebaut.zahl), karte(ausgeliefert(C.shippedNumber(roh))).zahl);
+  assert.match(gebaut.zahl.wert, /^30\s%$/u);
+  assert.equal(C.shippedNumber(ausgeliefert(1.23456789)), 1.234568, "idempotent");
+  assert.equal(C.shippedNumber(7), 7); assert.equal(C.shippedNumber(null), null);
+  /* Der Erzeuger rundet jede SEC-Kennzahl, bevor Texte entstehen, und schreibt mit derselben Funktion. */
+  const bau = readFileSync(join(root, "scripts", "discover", "build-discover-data.mjs"), "utf8");
+  const attach = bau.slice(bau.indexOf("function attachFundamentals("), bau.indexOf("stock.hook = fundamentalHook(model, sig);"));
+  assert.match(attach, /if \(key\.indexOf\("f_"\) === 0\) m\[key\] = Contract\.shippedNumber\(m\[key\]\);/);
+  assert.match(bau, /JSON\.stringify\(data, \(k, v\) => Contract\.shippedNumber\(v\)\)/);
+});
+
 test("keine fundamentale Geschichte behauptet Staerke ueber einer negativen Zahl", () => {
   const s = jung({ metrics: { f_revenueGrowth3y: -0.2, f_netMargin: -0.05 }, signals: { netCash: false } });
   const k = K.karte(s, { rowId: "umsatz-waechst-stark" });
