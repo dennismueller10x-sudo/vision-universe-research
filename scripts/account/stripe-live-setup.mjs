@@ -12,6 +12,7 @@
 //   * Kundenportal: Kuendigung zum Laufzeitende, Zahlungsmethode, Rechnungen, Rechnungsadresse
 //     (kein Tarifwechsel: es gibt nur einen bezahlten Tarif)
 //   * Webhook <API-Origin>/v1/billing/webhook/stripe mit den verarbeiteten Ereignissen
+//   * Zahlungsmethoden (PAYMENT_METHODS) in der Standard-Konfiguration einschalten, soweit freigeschaltet
 // Es wird nichts bezahlt und kein Checkout gestartet. Testschluessel werden abgelehnt (dafuer
 // stripe-test-setup.mjs), ebenso Standard-Secret-Keys (nur Restricted Keys).
 // Das Webhook-Geheimnis landet nur in --secret-out.
@@ -28,6 +29,18 @@ export const LIVE_CATALOG = Object.freeze([
   {product: 'vu_pro', name: 'Vision Universe Pro', plan: 'pro',
     description: 'Monatliches Abonnement. Derzeit derselbe Funktionsumfang wie der kostenlose Tarif Free.',
     prices: [['month', 100]]},
+]);
+
+// Zahlungsmethoden fuer den Checkout (dynamisch, ohne payment_method_types): Stripe zeigt je Kunde nur, was fuer
+// Abo, Betrag, Land und Waehrung zulaessig ist. Das Skript schaltet sie in der Standard-Konfiguration ein, soweit das
+// Konto sie freigeschaltet hat (available); was fehlt, muss der Owner im Stripe-Dashboard aktivieren.
+export const PAYMENT_METHODS = Object.freeze([
+  {key: 'card', label: 'Kreditkarte'},
+  {key: 'apple_pay', label: 'Apple Pay'},
+  {key: 'google_pay', label: 'Google Pay'},
+  {key: 'paypal', label: 'PayPal', note: 'Wiederkehrende Zahlungen ggf. separat aktivieren (Einstellungen > Zahlungsmethoden > PayPal > Wiederkehrende Zahlungen)'},
+  {key: 'sepa_debit', label: 'SEPA-Lastschrift', note: 'Erstzahlung wird erst nach einigen Tagen bestaetigt'},
+  {key: 'klarna', label: 'Klarna', note: 'Abos je nach Konto erst nach Freigabe durch Stripe; im Kundenportal nicht aenderbar'},
 ]);
 
 export function assertLiveKey(key, approved) {
@@ -117,6 +130,8 @@ export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_
     : await write('Portal-Konfiguration anlegen', () => stripe('POST', '/v1/billing_portal/configurations', portalParams));
   const portalId = portal?.id || ownPortal?.id || null;
 
+  const paymentMethods = await configurePaymentMethods(stripe, write, log);
+
   const url = `${apiOrigin}/v1/billing/webhook/stripe`;
   const endpoints = (await stripe('GET', '/v1/webhook_endpoints', {limit: 100}))?.data || [];
   const own = endpoints.find(e => e.url === url);
@@ -131,7 +146,42 @@ export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_
     webhookSecret = created?.secret || null;
     webhookId = created?.id || null;
   }
-  return {prices, portalId, webhookId, webhookSecret, webhookCreated: !own};
+  return {prices, portalId, webhookId, webhookSecret, webhookCreated: !own, paymentMethods};
+}
+
+// Standard-Konfiguration der Zahlungsmethoden: einschalten, was verfuegbar ist; der Rest ist ein Hinweis, kein Fehler
+// (fehlt dem Restricted Key das Recht "Payment Method Configurations", laeuft die Einrichtung trotzdem weiter).
+export async function configurePaymentMethods(stripe, write, log) {
+  let config;
+  try {
+    const list = (await stripe('GET', '/v1/payment_method_configurations', {limit: 100}))?.data || [];
+    config = list.find(c => c.is_default && c.active && !c.parent && !c.application) || list.find(c => c.is_default);
+  } catch (e) {
+    log(`Zahlungsmethoden nicht lesbar (${e.message}) - bitte im Stripe-Dashboard pruefen.`);
+    return PAYMENT_METHODS.map(m => ({...m, state: 'unbekannt'}));
+  }
+  if (!config) { log('Keine Standard-Konfiguration der Zahlungsmethoden gefunden.'); return PAYMENT_METHODS.map(m => ({...m, state: 'unbekannt'})); }
+  const result = [];
+  const enable = {};
+  for (const m of PAYMENT_METHODS) {
+    const entry = config[m.key];
+    if (!entry) result.push({...m, state: 'nicht angeboten'});
+    else if (!entry.available) result.push({...m, state: 'Freischaltung im Dashboard noetig'});
+    else if (entry.display_preference?.value === 'on') result.push({...m, state: 'aktiv'});
+    else { enable[m.key] = {display_preference: {preference: 'on'}}; result.push({...m, state: 'wird eingeschaltet'}); }
+  }
+  if (Object.keys(enable).length) {
+    try {
+      const updated = await write(`Zahlungsmethoden einschalten: ${Object.keys(enable).join(', ')}`,
+        () => stripe('POST', `/v1/payment_method_configurations/${config.id}`, enable));
+      if (updated) for (const r of result) if (r.state === 'wird eingeschaltet') r.state = 'eingeschaltet';
+    } catch (e) {
+      log(`Zahlungsmethoden nicht aenderbar (${e.message}) - bitte im Stripe-Dashboard einschalten.`);
+      for (const r of result) if (r.state === 'wird eingeschaltet') r.state = 'im Dashboard einschalten';
+    }
+  }
+  for (const r of result) log(`Zahlungsmethode ${r.label}: ${r.state}${r.note ? ` (${r.note})` : ''}`);
+  return result;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
