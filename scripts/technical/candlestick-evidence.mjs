@@ -24,13 +24,14 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadPhases, midDate, slicesOf, stable, SLICES } from "./evidence-phases.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Cdl = require(join(root, "quant/engines/technical/candlesticks.js"));
 const SHARDS = join(root, "quant/data/product/technical-signals-v1");
 
-export const CANDLE_EVIDENCE_VERSION = "technical-candlestick-evidence-1.0.0";
+export const CANDLE_EVIDENCE_VERSION = "technical-candlestick-evidence-1.1.0";
 export const HORIZONS = [5, 10, 20], MIN_N = 100;
 
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -91,11 +92,13 @@ export function build({ limit = 0 } = {}) {
     });
   }
   /* 3. Ueberrenditen je Muster und Richtung. */
+  /* Marktphase (SPY ueber/unter SMA 200 am Ereignisdatum) und Zeithaelfte (Mitteldatum des Fensters). */
+  const phases = loadPhases(), mid = midDate(titles.flatMap((t) => t.events.map((e) => t.dates[e[2]])));
   const rows = new Map();
   for (const t of titles) {
     for (const [id, dir, i] of t.events) {
       const key = id + "|" + dir;
-      const row = rows.get(key) || { id, dir, titles: new Set(), x: HORIZONS.map(() => []) };
+      const row = rows.get(key) || { id, dir, titles: new Set(), x: HORIZONS.map(() => []), ph: Object.fromEntries(SLICES.map((k) => [k, []])) };
       row.titles.add(t.ticker);
       HORIZONS.forEach((H, h) => {
         if (i + H >= t.close.length) return;
@@ -103,15 +106,20 @@ export function build({ limit = 0 } = {}) {
         if (!(a > 0) || !(z > 0) || !m || m.n < 50) return;
         const ex = (z / a - 1) - m.s / m.n;
         row.x[h].push([t.dates[i], dir < 0 ? -ex : ex]);
+        if (h === HORIZONS.length - 1) for (const k of slicesOf(t.dates[i], phases, mid)) row.ph[k].push([t.dates[i], dir < 0 ? -ex : ex]);
       });
       rows.set(key, row);
     }
   }
   const reported = [...rows.values()].filter((r) => r.x[HORIZONS.length - 1].length >= MIN_N);
   const z = zFor(0.05 / Math.max(1, reported.length * HORIZONS.length));
+  /* Teilmengen nur fuer H = 20, eigene Bonferroni-Schranke ueber Zeilen x 4 Teilmengen. */
+  const zPhase = zFor(0.05 / Math.max(1, reported.length * SLICES.length)), H_LAST = HORIZONS[HORIZONS.length - 1];
   const out = reported.map((r) => {
     const p = Cdl.pattern(r.id), o = { pattern: r.id, name: p.name, direction: r.dir > 0 ? "BULLISH" : r.dir < 0 ? "BEARISH" : "NEUTRAL", titles: r.titles.size };
     HORIZONS.forEach((H, h) => { const s = stats(r.x[h]); o["h" + H] = { n: s.n, dates: s.dates, mean: s.mean, median: s.median, ci95: s.ci95, hitRate: s.hitRate, hitRateCi95: s.hitRateCi95, significant: Math.abs(s.t) > z }; });
+    o.phases = Object.fromEntries(SLICES.map((k) => { const s = r.ph[k].length ? stats(r.ph[k]) : null; return [k, s ? { n: s.n, dates: s.dates, mean: s.mean, ci95: s.ci95, hitRate: s.hitRate, significant: Math.abs(s.t) > zPhase } : null]; }));
+    o.stableSign = stable(o.phases, 30);
     return o;
   }).sort((a, b) => b.h20.n - a.h20.n);
   const dates = titles.flatMap((t) => [t.dates[0], t.dates[t.dates.length - 1]]).sort();
@@ -119,7 +127,7 @@ export function build({ limit = 0 } = {}) {
     schemaVersion: CANDLE_EVIDENCE_VERSION, engine: Cdl.CANDLESTICKS_VERSION, titles: titles.length,
     window: { from: dates[0], to: dates[dates.length - 1] }, horizons: HORIZONS, minN: MIN_N,
     method: "Ereignis am Schluss des Musterbars; Rendite Schluss i -> i+H minus Querschnittsmittel desselben Datums (>= 50 Titel); baerisch mit umgekehrtem Vorzeichen; Mittel und Intervall ueber Datums-Cluster; Bonferroni ueber Zeilen x Horizonte.",
-    bonferroniZ: r4(z), patterns: out,
+    bonferroniZ: r4(z), phaseSplit: { horizon: H_LAST, mid, phaseRule: "SPY-Schluss ueber/unter SMA 50 am Ereignisdatum (kausal)", bonferroniZ: r4(zPhase), stableRule: "gleiches Vorzeichen des Mittels in UP, DOWN, H1, H2 (je >= 30 Ereignisse); 0 = widerspruechlich, null = zu wenig" }, patterns: out,
     notReported: [...rows.values()].filter((r) => r.x[HORIZONS.length - 1].length < MIN_N).map((r) => ({ pattern: r.id, direction: r.dir, n20: r.x[HORIZONS.length - 1].length }))
   };
 }
