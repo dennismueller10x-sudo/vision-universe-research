@@ -45,7 +45,10 @@ def ret_n(c, i, w):
 def sma(c, i, w):
     if i - w + 1 < 0:
         return None
-    return sum(c[i - w + 1:i + 1]) / w
+    acc = 0.0  # plain left-to-right float addition (Python >= 3.12 sum() is compensated and differs at ties)
+    for x in c[i - w + 1:i + 1]:
+        acc += x
+    return acc / w
 
 
 def pmax(c, i, w):
@@ -238,11 +241,14 @@ def main():
         eq.append(val); sessions.append(cal[s]); inv_share.append((val - cash) / val)
     yrs = (datetime.date.fromisoformat(sessions[-1]) - datetime.date.fromisoformat(sessions[0])).days / 365.25
     cagr = eq[-1] ** (1 / yrs) - 1
-    spy_cagr = (spy[sessions[-1]] / spy[sessions[0]]) ** (1 / yrs) - 1
+    # weekly-benchmark.compare uses 365.2425-day years while research-portfolio uses 365.25 (V10 reporting convention, reported)
+    yrs_b = (datetime.date.fromisoformat(sessions[-1]) - datetime.date.fromisoformat(sessions[0])).days / 365.2425
+    spy_cagr = (spy[sessions[-1]] / spy[sessions[0]]) ** (1 / yrs_b) - 1
+    spy_cagr_engine_years = (spy[sessions[-1]] / spy[sessions[0]]) ** (1 / yrs) - 1
     port = json.load(open(JS_PORT))
     jr = next(r for r in port['results'] if r['rule'] == 'NEW_52W_HIGH' and r['N'] == 10 and r['weighting'] == 'EQUAL' and r['tie'] == 'HASH_V10' and r['group'] == 'EQUAL_N10')
     res['funded'] = {'rule': 'NEW_52W_HIGH', 'N': N, 'sessions': len(sessions), 'from': sessions[0], 'to': sessions[-1], 'cagr': cagr, 'spyCagr': spy_cagr, 'jsCagr': jr['cagr'], 'jsSpyCagr': jr['spyCagr'],
-                     'cagrAbsDiff': abs(cagr - jr['cagr']), 'spyCagrAbsDiff': abs(spy_cagr - jr['spyCagr']), 'meanInvestedShare': sum(inv_share) / len(inv_share), 'jsMeanInvestedShare': jr['averageInvestedShare'],
+                     'cagrAbsDiff': abs(cagr - jr['cagr']), 'spyCagrWith36525DayYears': spy_cagr_engine_years, 'yearConventionNote': 'strategy CAGR (research-portfolio) uses 365.25-day years, SPY CAGR (weekly-benchmark.compare) 365.2425; effect on the excess CAGR ~1e-6', 'spyCagrAbsDiff': abs(spy_cagr - jr['spyCagr']), 'meanInvestedShare': sum(inv_share) / len(inv_share), 'jsMeanInvestedShare': jr['averageInvestedShare'],
                      'sessionDatesAllOnSpy': all(d in spy for d in sessions), 'sessionCountEqualJs': len(sessions) == jr['sessions'], 'firstLastEqualJs': sessions[0] == jr['from'] and sessions[-1] == jr['to']}
     res['definitions'] = {
         'strategyReturn': 'PRICE_RETURN: split-adjusted weekly closes of the provider series; no dividends; costs 10+5 bps per side on traded notional; uninvested weight in cash at 0 % interest',

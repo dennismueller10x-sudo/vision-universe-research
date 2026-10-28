@@ -45,6 +45,7 @@ function main() {
   const py = rd(path.join(a.run, 'python-reference.json'));
   const spyd = rd(path.join(a.run, 'spy-distributions.json'));
   const divs = rd(path.join(a.run, 'signal-dividends.json'));
+  const popIdx = fs.existsSync(path.join(a.run, 'population-index.json')) ? rd(path.join(a.run, 'population-index.json')) : null;
   const v10 = rd(path.join(K.ROOT, 'docs/quant-recovery/v10/studies/ca-id-lifecycle/signal-backtest-evidence.json'));
   const v10f = rd(path.join(K.ROOT, 'docs/quant-recovery/v10/studies/ca-id-lifecycle/funded-strategy-evidence.json'));
   fs.mkdirSync(a.out, { recursive: true });
@@ -126,7 +127,9 @@ function main() {
     A1_decomposition: { definition: R.analyses.A1_DECOMPOSITION.identity, multipleTesting: ev.A1.multipleTesting, cells: A1, capWeightedCoverageByYear: capCoverage, marketCapPanel: ev.marketCapPanel },
     A2_entryExit: { entryDelay: ev.A2.entryDelay.map(c => ({ ...c, spyExcessNet: { ...c.spyExcessNet, estimate: r6(c.spyExcessNet.estimate) }, populationExcessGross: { ...c.populationExcessGross, estimate: r6(c.populationExcessGross.estimate) } })), entryMultipleTesting: ev.A2.entryMultipleTesting,
       fixedHorizons: ev.A2.fixedHorizons, exitVariants: ev.A2.exitVariants, exitMultipleTesting: ev.A2.exitMultipleTesting, ewIndexNote: ev.A2.ewIndexNote, eventTimeCurve: ev.A2.eventTimeCurve },
-    A3_portfolio: { v10Reproduction: v10Check, variants: A3, holmPerVariant: holmVariants, replicaParity: { paths: parityAll.length, maxCagrAbsDiff: Math.max(...parityAll.map(p => p.cagrAbsDiff)), maxEquityRelDiff: Math.max(...parityAll.map(p => p.maxEquityRelDiff)) } },
+    A3_portfolio: { v10Reproduction: v10Check,
+      fundedAttribution: popIdx ? { supplementary: popIdx.supplementary, from: popIdx.from, to: popIdx.to, spyPriceCagr: r6(popIdx.spyPriceCagr), ewFrameIndexCagr: r6(popIdx.ewFrameIndex.cagr), ewFundedUniverseIndexCagr: r6(popIdx.ewFundedUniverseIndex.cagr), definition: popIdx.definition,
+        byRule: R.analyses.A3_PORTFOLIO.rules.map(rule => { const h = A3[rule].EQUAL_N10.hashPath, rt = A3[rule].EQUAL_N10.randomTieBreaks; return { rule, strategyCagrHash: h.cagr, excessVsSpy: h.excessCagr, populationPartEwIndexMinusSpy: r6(popIdx.ewFrameIndex.cagr - popIdx.spyPriceCagr), strategyMinusEwIndexHash: r6(h.cagr - popIdx.ewFrameIndex.cagr), strategyMinusEwIndexRandomMedian: r6(rt.cagr.median - popIdx.ewFrameIndex.cagr), costDragPerYear: h.costDragPerYear }; }) } : null, variants: A3, holmPerVariant: holmVariants, replicaParity: { paths: parityAll.length, maxCagrAbsDiff: Math.max(...parityAll.map(p => p.cagrAbsDiff)), maxEquityRelDiff: Math.max(...parityAll.map(p => p.maxEquityRelDiff)) } },
     A4_costs: { events: A4events, funded: costGrid },
     A7_regimeTime: A7, sourceRun: { eventsCode: ev.code, gitHeadAtRun: ev.gitHead, eventsSeconds: ev.seconds } };
   fs.writeFileSync(path.join(a.out, 'decomposition-results.json'), JSON.stringify(results, null, 0) + '\n');
@@ -136,7 +139,7 @@ function main() {
     const h = A3[rule].EQUAL_N10.hashPath, years = (Date.parse(h.to) - Date.parse(h.from)) / (365.25 * 86400000), y = meanSpyYield(h.from, h.to);
     const spyTR = (1 + h.spyCagr) * (1 + y) - 1;
     return { rule, from: h.from, to: h.to, years: r6(years), strategyCagrPriceReturn: h.cagr, spyCagrPriceReturn: h.spyCagr, spyMeanDistributionYield: r6(y), spyCagrTotalReturnEstimate: r6(spyTR), excessCagrPriceVsPrice: h.excessCagr, excessCagrPriceVsSpyTotalEstimate: r6(h.cagr - spyTR),
-      signalTitleYield2010: divs.rules[rule]?.meanYield ?? null, note: 'ESTIMATE: SPY TR CAGR ~ (1+PR CAGR)(1+mean distribution yield of the covered fiscal years)-1; the strategy itself is price return (its own dividends of ~1.3-1.5 % p.a. 2010+ are missing on the strategy side as well).' };
+      signalTitleYield2010: divs.rules[rule]?.meanYield ?? null, excessCagrBothTotalEstimate: r6(h.excessCagr + (divs.rules[rule].meanYield - y)), note: 'ESTIMATE: SPY TR CAGR ~ (1+PR CAGR)(1+mean distribution yield of the covered fiscal years)-1; the strategy itself is price return (its own dividends of ~1.3-1.5 % p.a. 2010+ are missing on the strategy side as well).' };
   });
   const eventDiv = rules.map(rule => { const d = divs.rules[rule]; const ySpy = meanSpyYield('2010-01-01', '2025-12-31');
     return { rule, signalTitleYield2010: r6(d.meanYield), populationYieldSameDates: r6(d.populationMeanSameRankDates), spyDistributionYield2010to2025: r6(ySpy), eventsWithYield: d.withYield, eventsUnknownYield: d.unknown,
