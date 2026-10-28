@@ -2,8 +2,8 @@
 """V10 FACTOR: download SEC bulk companyfacts.zip once into the strand's private scratch.
 
 One request through the existing fair-access client (User-Agent from http_client,
-<= 2 requests/s). submissions.zip is NOT downloaded (its acceptanceDateTime carries a
-+4/5 h offset and is never used). Only the manifest (url, bytes, sha256) is printed.
+<= 2 requests/s). The bulk filing-index archive is NOT downloaded (its acceptance
+times carry a +4/5 h offset and are never used). Only the manifest (url, bytes, sha256) is printed.
 Usage: python3 -I fetch_companyfacts.py <private_dir>
 """
 import hashlib
