@@ -22,6 +22,7 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-TW-2 | WARN | kein Tagesfeld des Technical-Katalogs ist in allen Zeilen leer | `aboveEma200`/`distEma200` vor dem ersten Lauf nach #927 |
 | DQ-TW-3 | ERROR | Technical-Schluss = Schluss der Discover-Tagesreihe am selben Tag (eine Preiswahrheit) | 26.10.2026: 5.647/5.647 gleich |
 | DQ-TW-4 | WARN | jeder materialisierte Titel steht im Technical-Screener oder ist in `meta.skipped` gezählt | sechs Vorzugsaktien (C-P-N, F-P-B/C/D, T-P-A/C) fielen still durch ein Dateimuster |
+| DQ-TW-5 | WARN | jede Wochen-/Monatsspalte (`feld@1W`, `feld@1M`) ist belegt, sobald ein Bündel der Materialisierung die nötige `technical-mtf`-Version trägt; Felder, die noch kein Bündel liefern kann, stehen als „wartet“ in der Notiz (L7: 18 Spalten bis `technical-mtf-1.1.0`) | Absicherung für L7 (#1017): ohne die Regel blieben die neuen Spalten nach der Materialisierung unbemerkt leer |
 
 ## Erster Lauf (03.10.2026, Repository-Stand)
 

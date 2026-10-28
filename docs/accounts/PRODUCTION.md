@@ -42,16 +42,19 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“: legt Produkte `vu_plus`/`vu_pro` und den Webhook an; das
    Geheimnis geht direkt in den Worker. Preise, Kundenportal und `plan_prices` erst mit der Repository-Variable
    `VU_ACCOUNT_LIVE_PRICES` (Owner-Entscheidung).
-4. **Funktionsprüfung** – mit echten Konten des Owners, ohne eigene Testkonten-Infrastruktur: die Adresse kommt auf die
-   Positivliste (`registration_allowlist` in der Datenbank und Repository-Variable `VU_ACCOUNT_REGISTRATION_ALLOWLIST`,
-   danach ausrollen). Der Owner registriert sich auf `/konto/registrieren/`, bestätigt die E-Mail, meldet sich an und
-   nutzt die Watchlist aus Discover und Quant. Begleitend nur lesend: `/v1/health`, Zählungen und RLS in der Datenbank,
-   Zustellereignisse bei Brevo.
-5. **Freischalten** (jeweils eigener PR, eigene Freigabe):
-   - Abrechnung: `STRIPE_LIVE_MODE_APPROVED = "true"` in `[env.production.vars]`, ausrollen.
-   - Seiten: `konto/config.js` → `{endpoint: 'https://konto.visionuniverse.de'}`.
-   - Öffentliche Registrierung: `VU_REGISTRATION_ENABLED = "true"` **und** `update public.registration_gate set open = true`
-     – erst wenn Bestätigungsmails nachweislich über Brevo ankommen.
+4. **Öffentliche Registrierung** (Owner-Entscheidung 27.10.2026: jede gültige Adresse, **keine Positivliste**):
+   - `VU_REGISTRATION_ENABLED = "true"` in `[env.production.vars]`; `VU_REGISTRATION_ALLOWLIST` bleibt leer (der Deploy prüft das).
+   - Datenbank: `update public.registration_gate set open = true` – erst danach lässt der Hook „Before User Created“
+     neue Konten zu. `registration_allowlist` bleibt leer.
+   - Ein Konto entsteht erst nach bestätigter E-Mail (Supabase Auth, `mailer_autoconfirm = false`, Mails über Brevo-SMTP).
+   - Schutz bleibt: Ratenbegrenzung im Worker (je Isolate und über alle Isolates mit `VU_ACCOUNT_LIMITER`), Grenzen von
+     Supabase Auth (u. a. 30 Auth-Mails/Stunde), Passwortregeln, CSRF-Schutz, RLS auf allen Konto-Tabellen.
+   - Zurück (geschlossen): `update public.registration_gate set open = false` wirkt sofort, ohne Ausrollen.
+5. **Funktionsprüfung** – mit echten Konten, ohne eigene Testkonten-Infrastruktur: registrieren auf
+   `/konto/registrieren/`, E-Mail bestätigen, anmelden, Watchlist aus Discover und Quant. Begleitend nur lesend:
+   `/v1/health`, Zählungen und RLS in der Datenbank, Zustellereignisse bei Brevo.
+6. **Abrechnung** (eigener PR, eigene Freigabe): `STRIPE_LIVE_MODE_APPROVED = "true"` in `[env.production.vars]`, ausrollen –
+   erst wenn Preise, Zugänge und Rechtliches geklärt sind.
 
 ## Schutz der Testpreise
 

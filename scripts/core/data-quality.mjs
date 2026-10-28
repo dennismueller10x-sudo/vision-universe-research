@@ -121,11 +121,17 @@ if (twArt && twArt.cols) {
   }
   rules.push(DQ.technicalCloseParity(twPairs));
   const SIG = "quant/data/product/technical-signals-v1";
-  const matTickers = [];
+  const matTickers = [], mtfVersions = new Set();
   for (const f of dir(SIG, /^[A-Z0-9_-]{2}\.json\.gz$/)) {
-    try { matTickers.push(...Object.keys(JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {})); } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
+    try {
+      const inst = JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {};
+      matTickers.push(...Object.keys(inst));
+      for (const v of Object.values(inst)) { const m = v && v.bundle && v.bundle.multiTimeframe; if (m && m.version) mtfVersions.add(m.version); }
+    } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
   }
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
+  const MTF = require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js"));
+  rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries(MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"])), [...mtfVersions]));
 }
 
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });

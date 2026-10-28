@@ -97,6 +97,14 @@ routes = [{ pattern = "konto.visionuniverse.de", custom_domain = true }]
 [env.production.observability]
 enabled = true
 
+# Oeffentliche Registrierung: Ratenbegrenzung ueber alle Isolates (Cloudflare Rate Limiting Binding,
+# docs/accounts/SETUP.md C3). Schluessel je Art und Client-IP (src/limits.mjs); dazu bleibt der Zaehler je
+# Isolate (signup 5/h, login 10/5 min, recover 5/h) und die Grenzen von Supabase Auth.
+[[env.production.ratelimits]]
+name = "VU_ACCOUNT_LIMITER"
+namespace_id = "1101"
+simple = { limit = 20, period = 60 }
+
 [env.production.triggers]
 crons = ["*/10 * * * *"]
 
@@ -112,7 +120,9 @@ SUPABASE_PUBLISHABLE_KEY = ""
 SUPABASE_FORWARD_CLIENT_IP = "false"
 STRIPE_API_VERSION = "2025-03-31.basil"
 STRIPE_CHECKOUT_REQUIRE_TERMS = "false"
-VU_REGISTRATION_ENABLED = "false"
+# Oeffentliche Registrierung fuer jede gueltige Adresse (Owner-Entscheidung 27.10.2026), keine Positivliste.
+# Konto erst nach bestaetigter E-Mail (Supabase Auth, mailer_autoconfirm = false); dazu registration_gate.open.
+VU_REGISTRATION_ENABLED = "true"
 VU_REGISTRATION_ALLOWLIST = ""
 VU_MAIL_SENDER = "konto@visionuniverse.de"
 VU_MAIL_SENDER_NAME = "Vision Universe"
