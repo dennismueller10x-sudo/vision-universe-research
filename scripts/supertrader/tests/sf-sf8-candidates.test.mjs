@@ -408,13 +408,15 @@ test('SF8-HIGH252-NOT-DERIVABLE: SEPA, Power Play, Holy Grail unterhalb von MODE
 // - Ganzzahl mit Fensternamen (…Sessions, …Days, …Weeks × 5, …Length, …Window, …Bars): Fenster ± 1, endend am Stichtag oder Vortag;
 // - Datum: Hoch/Tief an dem Tag, höchstes Hoch/tiefstes Tief seitdem;
 // - Volumenquote (Name mit Volume/Vs50d/Ratio): ein Tag, dessen Volumen genau diese Quote zum Schnitt der 50 Sitzungen davor hat,
-//   oder (nur ungerundet) ein Fenster, dessen Durchschnittsvolumen genau diese Quote zum 50-Tage-Schnitt vor dem Stichtag hat; nur ein eindeutiger
+//   oder (unter features, dort auch gerundet) ein Fenster, dessen Durchschnittsvolumen genau diese Quote zum 50-Tage-Schnitt vor dem Stichtag hat; nur ein eindeutiger
 //   Treffer zählt (Fingerabdruck), daraus Hoch/Tief am Anfang und Ende, höchstes Hoch seitdem, tiefstes Tief danach.
 // Verglichen wird auf ± 1 Tick (Kaufstopps liegen einen Tick über einer Marke). Ein Treffer zählt nur, wenn ein Fenster ohne das
 // Feld (2–6 Sitzungen, 252) denselben Wert nicht schon liefert, und nur für Order-Größen, die nicht schon als zulässige Struktur
-// (± 1 Tick) veröffentlicht sind (Box-Obergrenze, Widerstand, Gap-Tief: eigene Owner-Entscheidungen, eigene Tests). Zur Vergleichs-
+// (± 1 Tick) unter einem vom Owner zugelassenen Strukturschlüssel veröffentlicht sind (STRUCTURE_ORDER_ANCHORS: Box, Widerstand,
+// Konsolidierungshoch, Gap-Tief, Chartmarke; eigene Owner-Entscheidungen, eigene Tests), nicht schon neben einem Durchschnitt. Zur Vergleichs-
 // basis gehören auch Stichtag und Vortag (öffentlich bekannt) und die Kanallängen der Turtle-Regel (Regelparameter der Quelle,
 // 20/55 bzw. 10/20 Tage, im Katalog veröffentlicht: der Trigger folgt aus der Regel, nicht aus dem Feld; Owner-Punkt).
+const STRUCTURE_ORDER_ANCHORS = { C03: ['levels.top', 'levels.bottom', 'levels.box.top', 'levels.box.bottom', 'pivot.level'], C04: ['levels.resistance', 'pivot.level'], C05: ['levels.resistance', 'pivot.level'], C08: ['levels.breakoutLevel', 'pivot.level'], C09: ['levels.gapDayLow', 'pivot.level'], C12: ['levels.gapDayLow', 'pivot.level'] };
 const BAR_BASELINE = [2, 3, 4, 5, 6, 252], RULE_PARAMETERS = new Set(['levels.channelDays', 'levels.exitChannelDays']), WINDOW_NAME = /(sessions|days|weeks|length|window|bars)$/i, VOLUME_NAME = /(volume|vs50d|ratio)/i;
 function barReconstructions(v, bars, orderValues) {
   const i = bars.length - 1, tick = rawTickAdjusted(bars[i]);
@@ -424,18 +426,20 @@ function barReconstructions(v, bars, orderValues) {
   const fromDay = (k) => { const out = [bars[k].high, bars[k].low]; for (const end of [i, i - 1]) if (k <= end) { out.push(hi(k, end), lo(k, end)); let p = k; for (let j = k; j <= end; j++) if (bars[j].high > bars[p].high) p = j; if (p < end) out.push(lo(p + 1, end)); } return out; };
   const avg = (a, z) => { let t = 0; for (let j = a; j <= z; j++) t += bars[j].volume; return t / (z - a + 1); };
   const ratioMatch = (x) => { const d = Math.round(x * 1e4) / 1e4 === x ? 5e-5 : 1e-9 * Math.max(1, x); return (r) => Math.abs(r - x) <= d; };
-  const fingerprints = (x) => {
+  const fingerprints = (x, windowsToo) => {
     const hit = ratioMatch(x), days = [], wins = [];
     // beide Lesarten der Tagesquote: Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor (Power-Play-Start)
     for (let k = 50; k <= i; k++) { const base = avg(k - 50, k - 1); if (base > 0 && (hit(bars[k].volume / base) || (k < i && hit(bars[k + 1].volume / base)))) days.push(k); }
-    // Fenstersuche nur für ungerundete Quoten: auf 4 Stellen gerundet passt unter ~31.000 Fenstern zufällig eines
-    const v50 = i >= 50 && Math.round(x * 1e4) / 1e4 !== x ? avg(i - 50, i - 1) : 0;
+    // Fenstersuche für Kennzahlen unter features (auch gerundet: ein eindeutiger Treffer trifft dort Pivot und Stop); trend und
+    // sortKeys tragen nur die allgemeine Tagesquote des Stichtags
+    const v50 = i >= 50 && windowsToo ? avg(i - 50, i - 1) : 0;
     if (v50 > 0) for (let a = Math.max(0, i - 251); a <= i; a++) { let t = 0; for (let z = a; z <= i; z++) { t += bars[z].volume; if (z > a && hit(t / (z - a + 1) / v50)) wins.push([a, z]); } }
     return [...(days.length === 1 ? fromDay(days[0]).concat(days[0] > 0 ? fromDay(days[0] - 1) : []) : []), ...(wins.length === 1 ? [bars[wins[0][0]].high, bars[wins[0][1]].low, hi(...wins[0]), lo(...wins[0])] : [])];
   };
   const leaves = (o, p) => (Array.isArray(o) ? o.flatMap((x, j) => leaves(x, `${p}[${j}]`)) : o && typeof o === 'object' ? Object.entries(o).flatMap(([k, x]) => leaves(x, `${p}.${k}`)) : [[p, o]]);
   const published = [...leaves(v.features ?? {}, 'features'), ...leaves(v.trend ?? {}, 'trend'), ...leaves(v.levels ?? {}, 'levels'), ...leaves(v.pivot ?? {}, 'pivot'), ...leaves(v.sortKeys ?? {}, 'sortKeys')];
-  const structure = leaves(v.levels ?? {}, 'levels').concat(leaves(v.pivot ?? {}, 'pivot')).map(([, x]) => x).filter(Number.isFinite);
+  const anchors = STRUCTURE_ORDER_ANCHORS[v.candidateId] ?? [];
+  const structure = published.filter(([p]) => anchors.includes(p)).map(([, x]) => x).filter(Number.isFinite);
   const guarded = orderValues.filter((o) => !structure.some((x) => near(x, o)));
   const baseline = [...BAR_BASELINE.flatMap(windows), ...fromDay(i), ...fromDay(i - 1)], out = [];
   for (const [p, x] of published) {
@@ -444,7 +448,7 @@ function barReconstructions(v, bars, orderValues) {
     let cands = [];
     if (Number.isInteger(x) && x >= 2 && WINDOW_NAME.test(key)) cands = /weeks/i.test(key) ? windows(x * 5) : x <= 400 ? windows(x) : [];
     else if (typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x)) { const k = bars.findIndex((b) => b.date === x); if (k >= 0) cands = fromDay(k); }
-    else if (Number.isFinite(x) && !Number.isInteger(x) && x > 0 && x < 100 && VOLUME_NAME.test(key)) cands = fingerprints(x);
+    else if (Number.isFinite(x) && !Number.isInteger(x) && x > 0 && x < 100 && VOLUME_NAME.test(key)) cands = fingerprints(x, p.startsWith('features.'));
     for (const o of guarded) if (cands.some((c) => near(c, o)) && !baseline.some((c) => near(c, o))) out.push(`${p} → ${o}`);
   }
   return [...new Set(out)];
@@ -458,7 +462,9 @@ test('SF8-NO-BAR-RECONSTRUCTION: kein veröffentlichtes Feld ergibt mit den Tage
   const det = (v) => { const s = secs.find((x) => x.ticker === v.ticker); return DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null }); };
   for (const [c, put] of [['C04', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C05', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C06', (w, f) => { w.features.baseLengthSessions = f.baseLengthSessions; }], ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, baseSessions: f.vcpFootprint?.baseSessions }; }],
     ['C07', (w, f) => { w.features.consolidationSessions = f.consolidationSessions; }], ['C07', (w, f) => { w.features.startVolumeVs50d = f.startVolumeVs50d; }],
-    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: f.vcpFootprint?.lastContractionVolumeVs50d }; }], ['C13', (w, f) => { w.features.impulseHighDate = f.impulseHighDate; }], ['C13', (w, f) => { w.features.adxAbove30Since = f.adxAbove30Since; }]]) {
+    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: f.vcpFootprint?.lastContractionVolumeVs50d }; }],
+    // Review 28.10.: auch auf 4 Stellen gerundet bleibt das Fenster eindeutig (Rundung schützt nicht)
+    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: Math.round(f.vcpFootprint?.lastContractionVolumeVs50d * 1e4) / 1e4 }; }], ['C13', (w, f) => { w.features.impulseHighDate = f.impulseHighDate; }], ['C13', (w, f) => { w.features.adxAbove30Since = f.adxAbove30Since; }]]) {
     const leaks = below.filter((v) => v.candidateId === c).filter((v) => { const w = structuredClone(v); put(w, det(v).features ?? {}); return barReconstructions(w, barsOf(v), ov.get(v.recordId)).length; });
     assert.ok(leaks.length >= 1, `${c} ${put}`);
   }

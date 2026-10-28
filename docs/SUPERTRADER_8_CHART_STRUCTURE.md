@@ -120,8 +120,8 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 **Tests:**
 - `SF8-NO-BAR-RECONSTRUCTION` (neu) durchsucht `features`, `trend`, `levels`, `pivot` und `sortKeys` samt Listen.
   - Fenster und Daten werden wie oben gedeutet.
-  - Volumenquoten werden als Fingerabdruck gesucht: ein Tag (Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor) oder, nur bei ungerundeten Werten, ein Fenster (Durchschnittsvolumen gegen den 50-Tage-Schnitt). Nur ein eindeutiger Treffer zählt.
-  - Verglichen wird auf ± 1 Tick, gegen die Order-Größen, die nicht schon als zugelassene Struktur veröffentlicht sind.
+  - Volumenquoten werden als Fingerabdruck gesucht: ein Tag (Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor) oder, bei Kennzahlen unter `features` auch gerundet, ein Fenster (Durchschnittsvolumen gegen den 50-Tage-Schnitt). Nur ein eindeutiger Treffer zählt. Rundung schützt nicht: Auf 4 Stellen gerundet bleibt das Kontraktionsfenster eindeutig (Gegenprobe im Test).
+  - Verglichen wird auf ± 1 Tick, gegen die Order-Größen, die nicht schon unter einem vom Owner zugelassenen Strukturschlüssel veröffentlicht sind (Box, Widerstand, Konsolidierungshoch, Gap-Tief, Chartmarke; nicht bloß neben einem Durchschnitt).
   - Die Turtle-Kanallängen gelten als Regelparameter (Owner-Punkt 2).
 - Gegenproben: Jedes ausgeblendete Feld wird, wieder eingesetzt, rot. Die Rücknahme jeder Ausblendung im Erzeuger wird rot.
 - Golden-Hash der 55 Ansichten neu eingefroren.
