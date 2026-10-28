@@ -12,7 +12,8 @@
    eindeutig (x,xx5 liegt genau auf der Rundungskante): solche Punkte
    tragen [unten, oben] und `exact: false`.
 
-   Daneben: der Kapitalmassnahmen-Beleg (splits + supplemented, moves neu),
+   Daneben: der Kapitalmassnahmen-Beleg, wie ihn der Herausgeber aus der
+   korrigierten splitFactor-Spalte bildet (splits + supplemented, moves neu),
    das Urteil des Wochen-Adapters (weekly-real-adapter.cjs, createLoader mit
    der korrigierten Kopie im Speicher) und - falls vorhanden - das
    historische KGV der Fundamental-Seite (fundamental/engine/catalog.js).
@@ -26,13 +27,13 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
+import { loadConfig, supplementedEntries } from "./lib/split-evidence-supplements.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const argv = process.argv.slice(2);
 const arg = (n, f) => { const h = argv.find((a) => a.startsWith(n + "=")); return h ? h.slice(n.length + 1) : f; };
 
-const Supplements = require(join(ROOT, "quant", "engines", "split-evidence-supplements.js"));
 const PublishedClose = require(join(ROOT, "quant", "engines", "published-close.js"));
 const CorporateActions = require(join(ROOT, "quant", "engines", "corporate-action-evidence.js"));
 const Adapter = require(join(ROOT, "quant", "engines", "weekly-real-adapter.cjs"));
@@ -63,7 +64,7 @@ export function correctedDoc(doc, entry) {
   const unresolvedMoves = [];
   if (ca) {
     ca.splits = ca.splits.concat([[entry.exDate, r6(entry.ratio)]]).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
-    ca.supplemented = [{ date: entry.exDate, factor: r6(entry.ratio), id: entry.id, accession: entry.evidence[0].accession, source: "SEC_FILING_SUPPLEMENT" }];
+    ca.supplemented = supplementedEntries([{ status: "APPLIED", exDate: entry.exDate, ratio: entry.ratio, id: entry.id, accession: entry.evidence[0].accession }]);
     const byWeek = new Map(ca.moves.map((m) => [m.week, m]));
     ca.moves = [];
     for (let w = 1; w < points.length; w++) {
@@ -110,7 +111,7 @@ async function historicalPe(ticker, before, after) {
 export async function effect(root = ROOT, only = null) {
   const loader = Adapter.createLoader(root);
   const out = [];
-  for (const entry of Supplements.config.entries) {
+  for (const entry of loadConfig(root).entries) {
     if (only && !only.has(entry.ticker)) continue;
     const rel = join("quant", "data", "market", "discover-series-long", entry.securityId + ".json");
     const text = readFileSync(join(root, rel), "utf8");
@@ -152,7 +153,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     note: "Vorher/Nachher einer belegten Split-Ergaenzung, deterministisch auf der committeten Wochenreihe berechnet (scripts/market/split-supplement-effect.mjs). Der echte Neubau entsteht erst im Lauf des Herausgebers (long-series.yml) aus den Tagesbalken; Werte mit exact:false koennen dort um einen Cent abweichen.",
     supplementsFile: "quant/config/split-evidence-supplements.json",
     supplementsSha256: sha(readFileSync(join(ROOT, "quant", "config", "split-evidence-supplements.json"))),
-    codeSha256: Object.fromEntries(["quant/engines/return-series.js", "quant/engines/split-evidence-supplements.js", "quant/engines/corporate-action-evidence.js",
+    codeSha256: Object.fromEntries(["quant/engines/return-series.js", "quant/engines/corporate-action-evidence.js", "scripts/market/lib/split-evidence-supplements.mjs",
       "scripts/market/publish-long-series.mjs", "scripts/market/publish-discover-series.mjs", "scripts/market/split-supplement-effect.mjs"].map((p) => [p, sha(readFileSync(join(ROOT, p)))])),
     rows
   };
