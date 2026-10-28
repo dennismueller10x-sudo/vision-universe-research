@@ -59,6 +59,9 @@ const GOLDEN = {
   "BIO-B": ['C06:CHART_CANDIDATE',  'C13:CONFIRMED_RESEARCH_SETUP'],
   MYND: ['C09:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP',  'C12:CONFIRMED_RESEARCH_SETUP'],
   CCZ: ['C13:CONFIRMED_RESEARCH_SETUP'],
+  // Golden Case C07 unterhalb von MODELED (Owner 28.10.2026): Power Play als Chart-Kandidat (manuelle Prüfung) und als bestätigtes Setup
+  WDAY: ['C05:CHART_CANDIDATE',  'C07:CHART_CANDIDATE'],
+  MGLD: ['C03:CHART_CANDIDATE',  'C06:CHART_CANDIDATE',  'C07:CONFIRMED_RESEARCH_SETUP'],
 };
 
 test('SF8-GOLDEN: erkannte Strategien und Stufen je Titel (eingefrorene echte Reihen)', () => {
@@ -129,6 +132,14 @@ test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle (O-1), EP, PS, Pocke
 
 // Owner-Entscheidung 28.10.2026 (Review HIGH 1): closeVsGapLow (C12) und Turtle-N/nPct (C01/C02) dürfen als beschreibende
 // Research- bzw. Chartkennzahlen auch unterhalb von MODELED erscheinen – aber nie als Einstiegs-, Stop- oder Orderparameter.
+// Chartstruktur der Golden Cases unterhalb von MODELED: Methode:Marken:Art der Chartmarke -> Anzahl (Stand 28.10.2026)
+const GOLDEN_STRUCTURE_SHOWN = {
+  'C01:channelDays+exitChannelDays:-': 6, 'C02:channelDays+exitChannelDays:-': 5, 'C03:bottom+box+top:BOX_TOP': 5,
+  'C04:breakoutDay+breakoutWeek+ma30w+resistance:WEEKLY_RESISTANCE': 5, 'C05:breakoutDay+breakoutWeek+ma30w+resistance:WEEKLY_RESISTANCE': 6,
+  'C06:ma150+ma200+ma50:-': 9, 'C07:-:-': 2, 'C08:breakoutLevel:CONSOLIDATION_10_LEVEL': 2, 'C09:gapDayLow+priorClose:GAP_DAY_LOW': 2,
+  'C10:ma10+ma20:-': 1, 'C11:ma10+ma50:-': 7, 'C12:gapDayLow+priorClose:GAP_DAY_LOW': 2, 'C13:ema20:-': 3,
+};
+
 test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow und Turtle-N nur beschreibend, nie als Einstieg, Stop oder Order', () => {
   const ORDERISH = /trigger|stop|limit|entry|plannedloss|risk/i;
   const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
@@ -243,6 +254,16 @@ const SORT_KEYS = ['stage', 'pivot', 'volume', 'momentum', 'setupState', 'streak
 const FEATURE_OBJECTS = { momentum: ['p1m', 'p3m', 'p6m', 'best', 'r1m', 'r3m', 'r6m'], vcpFootprint: ['contractions', 'depths', 'contractingLeftToRight', 'lastContractionVolumeVs50d', 'baseSessions'] };
 const prim = (x) => x === null || ['string', 'number', 'boolean'].includes(typeof x);
 const primOrList = (x) => prim(x) || (Array.isArray(x) && x.every(prim));
+// Strukturmarken unterhalb von MODELED (Owner-Entscheidung 28.10.2026), unabhängig von records.mjs#STRUCTURE_LEVELS festgeschrieben:
+// Box, Widerstand, Konsolidierungshoch, Gap-Tief, gleitende Durchschnitte. Nicht: C06/C07-Pivot (= Einstiegsorder), C13 swingLow
+// (= Stop) und impulseHigh, C11 signalDayLow. Eine neue Marke ist eine fachliche Änderung mit eigenem Review.
+const EXPECTED_STRUCTURE = {
+  C01: ['channelDays', 'exitChannelDays'], C02: ['channelDays', 'exitChannelDays'], C03: ['top', 'bottom', 'box'],
+  C04: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'], C05: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'],
+  C06: ['ma50', 'ma150', 'ma200'], C07: [], C08: ['breakoutLevel'], C09: ['gapDayLow', 'priorClose'],
+  C10: ['ma10', 'ma20'], C11: ['ma10', 'ma50'], C12: ['gapDayLow', 'priorClose'], C13: ['ema20'],
+};
+const EXPECTED_MARK = { C03: ['top', 'BOX_TOP'], C04: ['resistance', 'WEEKLY_RESISTANCE'], C05: ['resistance', 'WEEKLY_RESISTANCE'], C08: ['breakoutLevel', 'CONSOLIDATION_10_LEVEL'], C09: ['gapDayLow', 'GAP_DAY_LOW'], C12: ['gapDayLow', 'GAP_DAY_LOW'] };
 function shapeFindings(v) {
   const out = [];
   for (const k of Object.keys(v)) if (!VIEW_KEYS.includes(k)) out.push(`Feld ${k}`);
@@ -251,14 +272,21 @@ function shapeFindings(v) {
     if (!(DESCRIPTIVE_FEATURES[v.candidateId] ?? []).includes(k)) out.push(`features.${k}`);
     else if (!primOrList(x) && !(FEATURE_OBJECTS[k] && Object.entries(x).every(([j, y]) => FEATURE_OBJECTS[k].includes(j) && primOrList(y)))) out.push(`features.${k} (Form)`);
   }
-  // unterhalb von MODELED trägt die Ansicht heute weder Marken noch Chartmarke (siehe SF8-STRUCTURE-MARKS-PINNED)
-  if (Object.keys(v.levels ?? {}).length) out.push('levels');
-  if (v.pivot !== null) out.push('pivot');
+  // Marken nur aus der unabhängig festgeschriebenen Strukturtabelle; die Chartmarke ist genau die Strukturmarke ihrer Art
+  for (const [k, x] of Object.entries(v.levels ?? {})) {
+    if (!(EXPECTED_STRUCTURE[v.candidateId] ?? []).includes(k)) out.push(`levels.${k}`);
+    else if (!prim(x) && !(k === 'box' && x && typeof x === 'object' && Object.entries(x).every(([j, y]) => ['from', 'to', 'top', 'bottom'].includes(j) && prim(y)))) out.push(`levels.${k} (Form)`);
+  }
+  if (v.pivot !== null) {
+    const mark = EXPECTED_MARK[v.candidateId];
+    if (!mark) out.push('pivot ohne Strukturmarke');
+    else if (Object.keys(v.pivot).some((k) => !['level', 'kind', 'distance'].includes(k)) || v.pivot.kind !== mark[1] || v.pivot.level !== v.levels?.[mark[0]]) out.push(`pivot ${JSON.stringify(v.pivot)}`);
+  }
   if (v.plan !== null) out.push('plan');
   // Zahlen nur in den Zahlenfeldern; in Codes, Gründen und Datenqualität steht keine Zahl (auch kein gerundeter Preis)
   const hasNum = (x) => typeof x === 'number' || (x && typeof x === 'object' && Object.values(x).some(hasNum));
   for (const [k, x] of Object.entries(v)) if (!['close', 'rank', 'features', 'trend', 'sortKeys', 'levels', 'pivot'].includes(k) && hasNum(x)) out.push(`Zahl in ${k}`);
-  const { companyName, features, trend, sortKeys, ...texts } = v;
+  const { companyName, features, trend, sortKeys, levels, pivot, ...texts } = v;
   if (/\d[.,]\d|[$€]/.test(JSON.stringify(texts).replace(/"close":[\d.]+/, ''))) out.push('Preis im Text');
   for (const x of Object.values(features ?? {})) if (typeof x === 'string' && /\d[.,]\d|[$€]/.test(x)) out.push('Preis in einem Statustext');
   return out;
@@ -273,7 +301,8 @@ test('SF8-VIEW-SHAPE-BELOW-MODEL: die ganze Ansicht unterhalb von MODELED folgt 
   const probes = [
     [avbc, (v) => { v.buyPoint = 22.9065; }], [avbc, (v) => { v.trend.buyPoint = 22.9065; }], [avbc, (v) => { v.sortKeys.entry = 22.9; }],
     [bolt, (v) => { v.features.momentum = { ...(v.features.momentum ?? {}), buyPoint: 4.68 }; }], [bolt, (v) => { v.features.priorMove = { stop: 4.1 }; }],
-    [avbc, (v) => { v.levels = { top: 22.9, box: { top: 22.9, bottom: 20.75 } }; }], [avbc, (v) => { v.pivot = { level: 22.9065, kind: 'BOX_TOP', distance: 0.01 }; }],
+    [avbc, (v) => { v.levels = { ...v.levels, box: { ...v.levels.box, protective: 20.75 } }; }], [avbc, (v) => { v.pivot = { ...v.pivot, level: 22.9065 }; }],
+    [avbc, (v) => { v.levels = { ...v.levels, trigger: 22.9065 }; }], [avbc, (v) => { v.pivot = { ...v.pivot, kind: 'BOX_TOP_PLUS_FRACTION' }; }], [avbc, (v) => { v.pivot = { ...v.pivot, stop: 20.75 }; }],
     [avbc, (v) => { v.planBlockers = ['BUY_STOP_22.9065_STOP_20.75']; }], [avbc, (v) => { v.why = [{ code: 'SETUP', detail: 'Einstieg ab $23' }]; }],
     [c13, (v) => { v.features.trailing = 'TRAIL_41.20'; }], [avbc, (v) => { v.why = [...v.why, { code: 'SETUP', ref: 23 }]; }], [avbc, (v) => { v.dataQuality = { ...v.dataQuality, level: 22.9 }; }],
   ];
@@ -292,15 +321,29 @@ function detectorOrderValues() {
   for (const v of views()) {
     const s = secs.find((x) => x.ticker === v.ticker);
     const det = DETECTORS[v.strategyId](s, { dq: dq.get(s.id), weekly: WEEKLY.get(s.id) ?? null, momentum, nextSession, benchWeekly: null, asOf, listingStart: s.meta?.listingStart ?? null });
-    const lv = det.levels ?? {};
-    out.set(v.recordId, [lv.trigger, lv.stopReference, lv.limit, det.plan?.trigger, det.plan?.stop, det.plan?.limit, ...ORDER_DERIVED_FEATURES.map((k) => det.features?.[k])].filter((x) => Number.isFinite(x) && x !== 0));
+    const lv = det.levels ?? {}, pl = det.plan ?? {};
+    // Order-Größen jeder Quelle: Trigger, Stop-/Risikoreferenz, Limit, der Plan (entry.trigger, stop, limit), die Detektor-Marke
+    // (bei C01–C07, C10, C11, C13 der Orderpreis), der Minervini-Pivot (= Einstiegsorder) und Holy-Grail swingLow/impulseHigh
+    const orderMark = ['C08', 'C09', 'C12'].includes(v.candidateId) ? null : det.pivot?.level;
+    out.set(v.recordId, [lv.trigger, lv.stopReference, lv.limit, pl.entry?.trigger, pl.trigger, typeof pl.stop === 'object' ? pl.stop?.initial : pl.stop, pl.limit, orderMark,
+      ['C06', 'C07'].includes(v.candidateId) ? lv.pivot : null, v.candidateId === 'C13' ? lv.swingLow : null, v.candidateId === 'C13' ? lv.impulseHigh : null,
+      ...ORDER_DERIVED_FEATURES.map((k) => det.features?.[k])].filter((x) => Number.isFinite(x) && x !== 0));
   }
   return out;
 }
 const numbersOf = (x, p = '') => (x && typeof x === 'object' ? Object.entries(x).flatMap(([k, y]) => numbersOf(y, `${p}.${k}`)) : typeof x === 'number' ? [[p, x]] : []);
+// Einzige benannte Ausnahme (Owner-Entscheidung 28.10.2026): das Gap-Tief von EP und BGU ist zugleich Chartstruktur und die
+// Risikoreferenz der Quelle (KK-034 Tagestief, MOKA12-007). Es erscheint als „Gap-Tief“ (GAP_DAY_LOW), nie als Stop und ohne
+// Plan; der Stop selbst (levels.stopReference) bleibt unveröffentlicht. Jede andere Übereinstimmung ist ein Fehler.
+const GAP_LOW_STRUCTURE = (v, p) => ['C09', 'C12'].includes(v.candidateId) && (p === '.levels.gapDayLow' || (p === '.pivot.level' && v.pivot?.kind === 'GAP_DAY_LOW' && v.pivot.level === v.levels?.gapDayLow));
+// Beschreibende Kennzahlen, die fachlich mit einer Order-Größe zusammenfallen (Owner-Punkt, wie closeVsGapLow): das 52-Wochen-Hoch
+// der Trendübersicht ist bei SEPA, Power Play und Holy Grail oft genau der Pivot bzw. das Touch-Hoch (Ausbruch am Hoch); die
+// Korrekturtiefe des Power Play ist der geplante Verlust am Pivot (Stop am Tief der Korrektur). Beide werden nie als Einstieg oder
+// Stop beschriftet; jede andere Übereinstimmung bleibt ein Fehler.
+const DESCRIPTIVE_COINCIDENCE = (v, p) => (p === '.trend.high252' && ['C06', 'C07', 'C13'].includes(v.candidateId)) || (p === '.features.correction' && v.candidateId === 'C07');
 function orderValueLeaks(vs, ov) {
   const out = [];
-  for (const v of vs) for (const [p, x] of numbersOf(v)) if (p !== '.close' && p !== '.trend.close') for (const o of ov.get(v.recordId) ?? []) if (Math.abs(x - o) < 1e-9) out.push(`${v.candidateId} ${v.ticker} ${p} = ${o}`);
+  for (const v of vs) for (const [p, x] of numbersOf(v)) if (p !== '.close' && p !== '.trend.close' && !GAP_LOW_STRUCTURE(v, p) && !DESCRIPTIVE_COINCIDENCE(v, p)) for (const o of ov.get(v.recordId) ?? []) if (Math.abs(x - o) < 1e-9) out.push(`${v.candidateId} ${v.ticker} ${p} = ${o}`);
   return out;
 }
 
@@ -310,14 +353,16 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   assert.deepEqual(orderValueLeaks(below, ov), []);
   // Gegenproben: echter Preis unter erlaubtem Namen (N1, N5) oder als ganze Zahl in einer Kennzahl
   const acva = below.find((v) => v.candidateId === 'C06' && v.ticker === 'ACVA'), avbc = below.find((v) => v.candidateId === 'C03');
-  for (const [base, mut] of [[acva, (v, o) => { v.features.ma200OneMonthAgo = o[0]; }], [avbc, (v, o) => { v.trend.high252 = o[0]; }], [avbc, (v, o) => { v.sortKeys.trend = o[o.length - 1]; }]]) {
+  const wenn = below.find((v) => v.candidateId === 'C12' && v.ticker === 'WENN');
+  for (const [base, mut] of [[acva, (v, o) => { v.features.ma200OneMonthAgo = o[0]; }], [avbc, (v, o) => { v.trend.high252 = o[0]; }], [avbc, (v, o) => { v.sortKeys.trend = o[o.length - 1]; }],
+    [avbc, (v, o) => { v.levels.top = o[0]; v.pivot.level = o[0]; }], [wenn, (v, o) => { v.levels.priorClose = v.levels.gapDayLow; }], [wenn, (v, o) => { v.pivot = { ...v.pivot, kind: 'GAP_DAY_LOW_STOP' }; }]]) {
     const v = structuredClone(base); mut(v, ov.get(v.recordId)); assert.notDeepEqual(orderValueLeaks([v], ov), [], mut.toString());
   }
   // jede Zahl unterhalb von MODELED ist eingefroren: eine neue oder geänderte Zahl (auch ein Preis in einer Liste, N2) ist eine
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
-  assert.equal(sorted.length, 50);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '91be182a5ab9abece651959818717eda79615416927dc164f99276b1dd9a88fa');
+  assert.equal(sorted.length, 55);
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '67e9f420567a8d1ae75197d9d316620ef56051e14b968719be4a8f02f8a53e30');
 });
 
 test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste Konfigurationstexte ohne Preis; die Vorschau zeigt nur die Regel', () => {
@@ -342,13 +387,44 @@ test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste 
   assert.deepEqual([...ui.matchAll(/readings[^;\n]{0,80}/g)].map((m) => m[0]).filter((x) => /\.reading\b/.test(x)), [], 'die Vorschau zeigt nur die ruleId einer Lesart');
 });
 
-test('SF8-STRUCTURE-MARKS-PINNED: unterhalb von MODELED heute keine Marken und keine Chartmarke (bekannter Schlüsselfehler, Owner-Entscheidung)', () => {
-  // chartMarks liest STRUCTURE_LEVELS/STRUCTURE_MARK über det.strategyId (SF_…), die Tabellen sind nach Cxx geschlüsselt: unterhalb
-  // von MODELED entstehen deshalb nie Strukturmarken. Die Korrektur zeigt Box, Widerstand und Gap-Tief (C12: zugleich die
-  // Risikoreferenz MOKA12-007) als Chartlinie – eine fachliche Änderung der Ansichten mit Vorher/Nachher in einem eigenen PR.
+test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, Widerstand, Gap-Tief), nie eine Einstiegs-, Stop- oder Ordermarke', () => {
+  // Korrektur 28.10.2026: chartMarks las die nach Cxx geschlüsselten Tabellen mit der strategyId und fand nie eine Marke.
+  assert.deepEqual(Object.fromEntries(Object.entries(STRUCTURE_LEVELS).map(([c, ks]) => [c, [...ks]])), EXPECTED_STRUCTURE, 'Produkttabelle = festgeschriebene Strukturtabelle');
   const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
-  assert.equal(below.filter((v) => Object.keys(v.levels).length || v.pivot).length, 0);
-  assert.ok(!Object.keys(STRUCTURE_LEVELS).some((k) => k.startsWith('SF_')), 'Strukturtabelle weiter nach Cxx geschlüsselt');
+  // Golden Cases: welche Methode zeigt unterhalb von MODELED welche Marke (Änderung = fachliche Änderung mit Vorher/Nachher)
+  const shown = {};
+  for (const v of below) {
+    const key = `${v.candidateId}:${Object.keys(v.levels).sort().join('+') || '-'}:${v.pivot ? v.pivot.kind : '-'}`;
+    shown[key] = (shown[key] || 0) + 1;
+  }
+  assert.deepEqual(shown, GOLDEN_STRUCTURE_SHOWN);
+  // Darvas: Box-Obergrenze als Chartmarke, Box und Unterkante als Struktur, nie Trigger (Obergrenze + Bruchteil) oder Stop
+  const avbc = below.find((v) => v.candidateId === 'C03' && v.ticker === 'AVBC');
+  assert.equal(avbc.pivot.kind, 'BOX_TOP'); assert.equal(avbc.pivot.level, avbc.levels.top); assert.equal(avbc.levels.box.top, avbc.levels.top);
+  assert.ok(avbc.levels.bottom < avbc.levels.top && !('trigger' in avbc.levels) && !('stopReference' in avbc.levels));
+  // Buyable Gap-Up: Gap-Tief als Chartstruktur (Art GAP_DAY_LOW), der Stop der Quelle (stopReference) bleibt unveröffentlicht
+  for (const v of below.filter((x) => x.candidateId === 'C12')) {
+    assert.equal(v.pivot.kind, 'GAP_DAY_LOW', v.ticker); assert.equal(v.pivot.level, v.levels.gapDayLow, v.ticker);
+    assert.ok(!('stopReference' in v.levels) && v.plan === null, v.ticker);
+  }
+  // Methoden, deren einzige Marke die Order ist, oder deren Pivot/Swing-Tief der Orderpreis ist: keine Chartmarke
+  for (const v of below.filter((x) => ['C01', 'C02', 'C06', 'C07', 'C10', 'C11', 'C13'].includes(x.candidateId))) {
+    assert.equal(v.pivot, null, `${v.candidateId} ${v.ticker}`);
+    for (const k of ['pivot', 'swingLow', 'impulseHigh', 'signalDayLow', 'trigger', 'stopReference', 'limit']) assert.ok(!(k in v.levels), `${v.candidateId} ${v.ticker} ${k}`);
+  }
+  // Power Play (C07) unterhalb von MODELED: der Pivot ist die Einstiegsorder (order.level = pivot), also weder Marke noch
+  // Abstand dazu; der geplante Verlust am Pivot (plannedLossAtPivot) bleibt eine order-abgeleitete Kennzahl
+  const c07 = below.filter((v) => v.candidateId === 'C07');
+  assert.deepEqual(c07.map((v) => `${v.ticker}:${v.stage}`).sort(), ['MGLD:CONFIRMED_RESEARCH_SETUP', 'WDAY:CHART_CANDIDATE']);
+  for (const v of c07) { assert.deepEqual(v.levels, {}); assert.equal(v.pivot, null); assert.equal(v.sortKeys.pivot, null); assert.ok(!('plannedLossAtPivot' in v.features), v.ticker); }
+  // Katalog: das Gap-Tief ist Chartstruktur, kein bestätigter Stop; die Risikoreferenz gehört nur zum modellierten Ablauf
+  const bgu = STRATEGY_CATALOG.find((c) => c.candidateId === 'C12');
+  assert.match(bgu.short, /Gap-Tief ist Chartstruktur, kein bestätigter Stop/); assert.doesNotMatch(bgu.short, /Risikoreferenz/);
+  assert.match(RULE_LABELS['MOKA-SF-BGU-SELLGUIDE'], /nur im modellierten Ablauf/);
+  // fail closed: eine unbekannte Strategie bekommt keine Marke
+  assert.deepEqual(chartMarks({ strategyId: 'SF_UNKNOWN', levels: { top: 9 } }, 'CHART_CANDIDATE', 10), { pivot: null, levels: {} });
+  // die Kandidaten-ID ergibt sich aus dem Vertrag, nicht aus dem Namen: alle 13 strategyIds finden ihre Tabelle
+  for (const c of CONTRACTS) assert.ok(c.candidateId in EXPECTED_STRUCTURE, c.strategyId);
 });
 
 test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vorschau nur aus v.plan', () => {
@@ -358,7 +434,13 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // jede Marke des Charts ist genau eine dieser Zeilen; Einstieg und Stop nur im Zweig `if (v.plan)`, aus v.plan
   const pushes = draw.split('\n').filter((l) => /levels\.push\(/.test(l));
   assert.equal(pushes.length, 2, pushes.join('\n'));
-  assert.match(pushes[0], /^\s*if \(v\.pivot && fin\(v\.pivot\.level\)\) levels\.push\(\{ id: 'pivot', label: 'Chartmarke', value: v\.pivot\.level,/);
+  assert.match(pushes[0], /^\s*if \(v\.pivot && fin\(v\.pivot\.level\)\) levels\.push\(\{ id: 'pivot', label: 'Chartstruktur: ' \+ structTxt\(v\.pivot\.kind\), value: v\.pivot\.level, color: 'var\(--chart-box-base\)'/);
+  // die Beschriftung der Struktur kommt aus einer festen Tabelle ohne Orderwort, nicht in der Farbe des Triggers
+  const structTable = ui.slice(ui.indexOf('var STRUCT_TXT = {'), ui.indexOf('function structTxt('));
+  assert.ok(structTable.length > 20);
+  assert.deepEqual([...structTable.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko|Pivot/i.test(x)), []);
+  assert.match(ui, /function structTxt\(kind\) \{ return STRUCT_TXT\[kind\] \|\| 'Chartstruktur'; \}/);
+  assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
   assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
   const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
@@ -374,7 +456,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.ok(card.length > 500, 'card gefunden');
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
   assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
-  assert.match(card, /pair\('Chartmarke', usd\(p\.level\)/);
+  assert.match(card, /pair\('Chartstruktur', usd\(p\.level\), structTxt\(p\.kind\) \+ ' · ' \+ pct\(p\.distance, 1, true\)\)/);
   for (const m of card.matchAll(/(?<!function )pair\(([^,]+),/g)) assert.match(m[1].trim(), /^'[^']*'$/, `Kartenzeile ${m[1]}`);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;

@@ -138,31 +138,42 @@ function stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }) {
  * Erkennung + DQ -> { record, view } oder { rejected }. readiness / ceilings werden einmal je Lauf übergeben.
  */
 /**
- * Öffentliche Chartmarken einer Karte (Review SF8-R2 BLOCKING/HIGH).
+ * Öffentliche Chartmarken einer Karte (Review SF8-R2 BLOCKING/HIGH, Owner-Entscheidung 28.10.2026).
  *
  * Unterhalb von MODELED_TRADE_PLAN gehen keine Order-, Stop- oder Limitmarken der Quelle in die Ansicht, auch nicht
- * umbenannt. Denn der Vertrag erlaubt sie erst mit einem modellierten Ablauf (STAGE_MIXING). Übrig bleibt nur die
- * Chartstruktur, an der die Methode erkannt wurde: Boxgrenzen, Widerstand, Basis- oder Gap-Tief, gleitende
- * Durchschnitte. Wo die einzige Marke der Quelle die Einstiegsorder ist (Turtle-Kanal, Holy-Grail-Touch-Hoch),
- * gibt es unterhalb von MODELED keine Marke. In MODELED zeigt die Karte die Engine-Marken und den Plan.
+ * umbenannt. Denn der Vertrag erlaubt sie erst mit einem modellierten Ablauf (STAGE_MIXING). Übrig bleibt nur fachlich
+ * belegte Chartstruktur: Boxgrenzen (Darvas), Widerstand (Weinstein), Konsolidierungshoch (KK), Gap-Tief (EP, BGU) und
+ * gleitende Durchschnitte. Ausgeschlossen ist jede Marke, die in ihrer Quelle selbst der Orderpreis ist:
+ *  - C06/C07 Pivot: Einstiegsorder genau am Pivot (research/minervini-lifecycle.mjs, entryEligibility: order.level = pivot);
+ *  - C13 swingLow (= Stop, MA-RAS-SWING-LOW) und impulseHigh (Teil der Order); C11 signalDayLow (keine Strukturmarke der
+ *    Quelle, die Pocket-Pivot-Quelle nennt keinen Preisstop);
+ *  - Turtle (Kanal = Einstiegsorder), Holy Grail (Touch-Hoch + Tick), Parabolic Short: keine Marke.
+ * Das Gap-Tief (C09, C12) fällt mit der Risikoreferenz der Quelle zusammen (KK-034 Tagestief, MOKA12-007). Es erscheint als
+ * Chartstruktur „Gap-Tief“, nie als Stop, ohne Plan und ohne Risiko (Owner-Entscheidung 28.10.2026).
+ * In MODELED zeigt die Karte die Engine-Marken und den Plan.
  */
 export const STRUCTURE_LEVELS = Object.freeze({
   C01: ['channelDays', 'exitChannelDays'], C02: ['channelDays', 'exitChannelDays'],
   C03: ['top', 'bottom', 'box'], C04: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'], C05: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'],
-  C06: ['pivot', 'ma50', 'ma150', 'ma200'], C07: ['pivot'], C08: ['breakoutLevel'], C09: ['gapDayLow', 'priorClose'],
-  C10: ['ma10', 'ma20'], C11: ['ma10', 'ma50', 'signalDayLow'], C12: ['gapDayLow', 'priorClose'], C13: ['ema20', 'impulseHigh', 'swingLow'],
+  C06: ['ma50', 'ma150', 'ma200'], C07: [], C08: ['breakoutLevel'], C09: ['gapDayLow', 'priorClose'],
+  C10: ['ma10', 'ma20'], C11: ['ma10', 'ma50'], C12: ['gapDayLow', 'priorClose'], C13: ['ema20'],
 });
 // Chartmarke je Strategie unterhalb von MODELED: [Schlüssel in levels, Art] oder null (die einzige Marke wäre die Order)
 const STRUCTURE_MARK = Object.freeze({
   C01: null, C02: null, C03: ['top', 'BOX_TOP'], C04: ['resistance', 'WEEKLY_RESISTANCE'], C05: ['resistance', 'WEEKLY_RESISTANCE'],
-  C06: ['pivot', 'VCP_PROXY_PIVOT'], C07: ['pivot', 'RUN_UP_HIGH'], C08: ['breakoutLevel', 'CONSOLIDATION_10_LEVEL'], C09: ['gapDayLow', 'GAP_DAY_LOW'],
+  C06: null, C07: null, C08: ['breakoutLevel', 'CONSOLIDATION_10_LEVEL'], C09: ['gapDayLow', 'GAP_DAY_LOW'],
   C10: null, C11: null, C12: ['gapDayLow', 'GAP_DAY_LOW'], C13: null,
 });
+// Die Strukturtabellen sind nach der Kandidaten-ID (C01–C13) geschlüsselt, die Erkennung trägt die strategyId (SF_…).
+// Bis 28.10.2026 las chartMarks die Tabellen mit der strategyId und fand nie einen Eintrag: unterhalb von MODELED fehlten
+// alle Strukturmarken. Eine unbekannte Strategie bekommt weiterhin keine Marke (fail closed).
+const candidateIdOf = (strategyId) => (STRUCTURE_LEVELS[strategyId] ? strategyId : contractOf(strategyId)?.candidateId ?? null);
 export function chartMarks(det, stage, close) {
   if (stage === STAGE.MODELED_TRADE_PLAN) return { pivot: det.pivot ?? null, levels: det.levels ?? {} };
-  const src = det.levels ?? {}, keep = STRUCTURE_LEVELS[det.strategyId] ?? [];
+  const cid = candidateIdOf(det.strategyId);
+  const src = det.levels ?? {}, keep = (cid && STRUCTURE_LEVELS[cid]) || [];
   const levels = Object.fromEntries(keep.filter((k) => src[k] !== undefined && src[k] !== null).map((k) => [k, src[k]]));
-  const mark = STRUCTURE_MARK[det.strategyId], level = mark ? src[mark[0]] : null;
+  const mark = cid ? STRUCTURE_MARK[cid] : null, level = mark ? src[mark[0]] : null;
   const pivot = Number.isFinite(level) && level > 0 ? { level, kind: mark[1], distance: Number.isFinite(close) ? Math.round((close / level - 1) * 1e4) / 1e4 : null } : null;
   return { pivot, levels };
 }
