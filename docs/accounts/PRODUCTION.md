@@ -12,7 +12,7 @@ und D gelten weiter.
 | Datenbank | Supabase `qiytbnpoqvldsatpfkeh` (Frankfurt, Free) | heißt historisch `vision-universe-dev`; 8 Migrationen, RLS, Tests 01–08 grün |
 | API | Worker `vu-account` unter `https://konto.visionuniverse.de` | `wrangler.toml` `[env.production]`; **nicht** `account.visionuniverse.de` (Shopify-Kundenkonten) |
 | Seiten | `/konto/` auf research.visionuniverse.de, hinter der Research-Passwortmaske | `konto/config.js` bleibt leer bis zur Freischaltung |
-| Abrechnung | Stripe Live, Restricted Key `rk_live_` | Abrechnung aus, bis `STRIPE_LIVE_MODE_APPROVED = "true"` (eigener PR) |
+| Abrechnung | Stripe Live, Restricted Key `rk_live_` | Live angebunden; Checkout nur für Konten mit Rolle `billing_tester` (`VU_CHECKOUT_ACCESS = "testers"`), siehe [TARIFE.md](TARIFE.md) |
 | E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Kündigungsbestätigungen über die Brevo-API |
 | Sicherung | `account-backup.yml`, täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
 
@@ -39,9 +39,9 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
    `https://konto.visionuniverse.de/v1/auth/callback**`, E-Mail-Bestätigung, Passwort ≥ 10 mit Groß/Klein/Ziffer, Hook
    „Before User Created“, deutsche Vorlagen (Registrierung, Passwort, E-Mail-Änderung) und – mit
    `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` in `account-dev` – SMTP über Brevo.
-3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“: legt Produkte `vu_plus`/`vu_pro` und den Webhook an; das
-   Geheimnis geht direkt in den Worker. Preise, Kundenportal und `plan_prices` erst mit der Repository-Variable
-   `VU_ACCOUNT_LIVE_PRICES` (Owner-Entscheidung).
+3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“ (erst Probelauf, dann zwei Freigaben): legt Produkt
+   `vu_pro` „Vision Universe Pro“, den Monatspreis 1,00 EUR (Katalog im Code, `LIVE_CATALOG`), Kundenportal und Webhook an;
+   Webhook-Geheimnis und Portal-ID gehen direkt in den Worker, `pro_month_live` in `plan_prices`.
 4. **Öffentliche Registrierung** (Owner-Entscheidung 27.10.2026: jede gültige Adresse, **keine Positivliste**):
    - `VU_REGISTRATION_ENABLED = "true"` in `[env.production.vars]`; `VU_REGISTRATION_ALLOWLIST` bleibt leer (der Deploy prüft das).
    - Datenbank: `update public.registration_gate set open = true` – erst danach lässt der Hook „Before User Created“
@@ -53,8 +53,9 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 5. **Funktionsprüfung** – mit echten Konten, ohne eigene Testkonten-Infrastruktur: registrieren auf
    `/konto/registrieren/`, E-Mail bestätigen, anmelden, Watchlist aus Discover und Quant. Begleitend nur lesend:
    `/v1/health`, Zählungen und RLS in der Datenbank, Zustellereignisse bei Brevo.
-6. **Abrechnung** (eigener PR, eigene Freigabe): `STRIPE_LIVE_MODE_APPROVED = "true"` in `[env.production.vars]`, ausrollen –
-   erst wenn Preise, Zugänge und Rechtliches geklärt sind.
+6. **Abrechnung** (Owner-Entscheidung 28.10.2026): `STRIPE_LIVE_MODE_APPROVED = "true"`, `VU_CHECKOUT_ACCESS = "testers"`.
+   Den Checkout nutzen nur Konten mit Rolle `billing_tester`; öffentlicher Pro-Checkout nur per eigenem Freigabe-PR
+   (`"public"`, der Deploy-Workflow lehnt ihn bis dahin ab). Ablauf und Tarife: [TARIFE.md](TARIFE.md).
 
 ## Schutz der Testpreise
 
