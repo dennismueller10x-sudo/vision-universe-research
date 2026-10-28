@@ -21,9 +21,10 @@ const CA = require(path.join(root, 'quant/engines/corporate-action-evidence.js')
 test('protocols: 1.0.0 frozen hash unchanged, 1.1.x hashes match their sidecars and chain, registry bound to 1.1.2', () => {
   assert.equal(sha('docs/quant-recovery/v9-followups/ca-registry/protocol.json'), 'db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2');
   for (const v of ['1.1.0', '1.1.1', '1.1.2']) assert.equal(fs.readFileSync(path.join(root, D, `protocol-${v}.sha256`), 'utf8').split(/\s+/)[0], sha(`${D}/protocol-${v}.json`));
-  for (const v of ['1.0.0', '1.0.1', '1.0.2']) assert.equal(fs.readFileSync(path.join(root, D, `tr-protocol-${v}.sha256`), 'utf8').split(/\s+/)[0], sha(`${D}/tr-protocol-${v}.json`));
+  for (const v of ['1.0.0', '1.0.1', '1.0.2', '1.0.3']) assert.equal(fs.readFileSync(path.join(root, D, `tr-protocol-${v}.sha256`), 'utf8').split(/\s+/)[0], sha(`${D}/tr-protocol-${v}.json`));
   assert.equal(read(`${D}/tr-protocol-1.0.1.json`).amends.sha256, sha(`${D}/tr-protocol-1.0.0.json`));
   assert.equal(read(`${D}/tr-protocol-1.0.2.json`).amends.sha256, sha(`${D}/tr-protocol-1.0.1.json`));
+  assert.equal(read(`${D}/tr-protocol-1.0.3.json`).amends.sha256, sha(`${D}/tr-protocol-1.0.2.json`));
   const p112 = read(`${D}/protocol-1.1.2.json`), p111 = read(`${D}/protocol-1.1.1.json`);
   assert.equal(p112.supersedes.sha256, sha('docs/quant-recovery/v9-followups/ca-registry/protocol.json'));
   assert.equal(p111.amends.sha256, sha(`${D}/protocol-1.1.0.json`));

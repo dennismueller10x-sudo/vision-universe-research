@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.2).
+"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.3).
 
 Admission, completeness windows, split consistency and the derived (never sourced) ex-date follow the protocol. Network use:
 split statements (re-fetched), index-headers of each admitted event's earliest source (acceptance time), companyfacts cross-check;
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "scripts" / "quant" / "sec"))
 import http_client  # noqa: E402
 
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json"
 TP = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 PERIOD = (TP["period"]["recordDateFrom"], TP["period"]["recordDateTo"])
@@ -29,6 +29,7 @@ HOL = set(CAL["exchanges"]["XNYS"]["holidays"])
 CAL_FROM = CAL["coverage"]["from"]
 V9_SPLITS = json.loads((ROOT / "docs/quant-recovery/v9/portfolio/split-evidence.json").read_text())
 RATIO_WORDS = {2: "two", 3: "three", 4: "four", 10: "ten"}
+AMOUNT_RE = re.compile(r"\$\s?(\d*\.\d+)(?=.{0,30}?\bper\s+(?:common\s+)?share)", re.I)
 
 
 def quarter(d):
@@ -149,7 +150,7 @@ def main():
         weeks = [p[0] for p in series["points"]]
         pf = provider_factors(cl, tk, series)
         splits = [p for p in pf if p["kind"] == "STOCK_SPLIT" and p["confirmed"]]
-        groups, partial, errors, docs = {}, {}, [], 0
+        groups, partial, errors, docs, ambiguous = {}, {}, [], 0, []
         for r in ext["documents"]:
             if r.get("error"):
                 errors.append({"accession": r["accession"], "file": r["file"], "error": r["error"]})
@@ -161,6 +162,9 @@ def main():
                         partial.setdefault(quarter(e["payDate"]), []).append({"accession": r["accession"], "payDate": e["payDate"], "amount": norm(e["amount"])})
                     continue
                 if not (PERIOD[0] <= e["recordDate"] <= PERIOD[1]) or e.get("intentOnly"):
+                    continue
+                if e["pattern"] == "SENTENCE" and len(set(AMOUNT_RE.findall(e["quote"][:300]))) > 1:  # tr-protocol 1.0.3 ambiguousAmount
+                    ambiguous.append({"recordDate": e["recordDate"], "accession": r["accession"], "quote": e["quote"][:300]})
                     continue
                 groups.setdefault(e["recordDate"], []).append({"accession": r["accession"], "file": r["file"], "url": r["url"], "form": r["form"],
                                                                "fileDate": r["fileDate"], "sha256": r["sha256"], "discovery": r.get("discovery"),
@@ -257,18 +261,40 @@ def main():
                 tr_windows.append({"from": w_lo, "to": w_hi, "quarters": len([q for q in expected if q0 <= q <= q1 and qend(q) >= w_lo and qstart(q) <= w_hi]),
                                    "cutBy": [c for c in cuts if c == bounds[i + 1]] if i + 2 < len(bounds) else []})
         covered = sum(s["status"] == "COVERED" for s in status)
+        # cross-check only (protocol splitConsistency.check): quarterly us-gaap:CommonStockDividendsPerShareDeclared vs admitted amounts
+        xc = {"match": 0, "matchAnyEventInPeriod": 0, "mismatch": 0, "noEventInPeriod": 0, "rows": []}
+        try:
+            cf = json.loads(cl.get("https://data.sec.gov/api/xbrl/companyfacts/CIK%010d.json" % cik))
+            vals = cf.get("facts", {}).get("us-gaap", {}).get("CommonStockDividendsPerShareDeclared", {}).get("units", {})
+            seen = set()
+            for unit, facts in vals.items():
+                for f in facts:
+                    if not f.get("start") or (f["start"], f["end"]) in seen or not (80 <= (dt.date.fromisoformat(f["end"]) - dt.date.fromisoformat(f["start"])).days <= 100):
+                        continue
+                    if f["end"] < PERIOD[0] or f["start"] > PERIOD[1]:
+                        continue
+                    seen.add((f["start"], f["end"]))
+                    inp = [ev for ev in events if f["start"] <= (ev["declarationDate"] or ev["recordDate"]) <= f["end"]]
+                    v = Decimal(str(f["val"]))
+                    state = "NO_EVENT_IN_PERIOD" if not inp else ("MATCH" if sum(Decimal(e["amount"]) for e in inp) == v else
+                                                                  "MATCH_ANY_EVENT" if any(Decimal(e["amount"]) == v for e in inp) else "MISMATCH")
+                    xc[{"MATCH": "match", "MATCH_ANY_EVENT": "matchAnyEventInPeriod", "MISMATCH": "mismatch", "NO_EVENT_IN_PERIOD": "noEventInPeriod"}[state]] += 1
+                    xc["rows"].append({"period": [f["start"], f["end"]], "xbrl": str(f["val"]), "accn": f.get("accn"), "events": [e["recordDate"] for e in inp], "state": state})
+        except Exception as e:  # cross-check only; recorded
+            xc["error"] = str(e)[:160]
         titles.append({
+            "companyFactsCrossCheck": {"concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact", **xc},
             "ticker": tk, "cik": cik, "securityId": "ref_" + tk, "documentsScanned": docs, "documentErrors": errors,
             "expectedQuarters": len(expected), "coveredQuarters": covered, "complete": covered == len(expected),
             "v9Covered": next((c["eventsInExpectedQuartersWithPayDateAndAmount"] for c in json.loads((ROOT / "docs/quant-recovery/v9/portfolio/dividend-evidence.json").read_text())["companies"] if c["ticker"] == tk), None),
             "gapSearch": {"gapsAfterPass1": ext.get("gapsAfterPass1"), "log": ext.get("gapSearch")},
-            "providerFactors": pf, "totalReturnWindows": tr_windows, "quarterStatus": status, "rejectedRecordDates": rejected, "events": events,
+            "ambiguousAmountStatements": ambiguous, "providerFactors": pf, "totalReturnWindows": tr_windows, "quarterStatus": status, "rejectedRecordDates": rejected, "events": events,
             "portfolioEvents": [{"id": ev["id"], "type": "CASH_DIVIDEND", "effectiveDate": ev["entitlementSession"], "payDate": ev["payDate"], "amount": ev["amountSeriesUnits"],
                                  "currency": "USD", "informationAvailableAt": ev["informationAvailableAt"], "sourceHash": ev["sources"][0]["sha256"], "sequence": 0}
                                 for ev in events if ev["entitlementSession"] and ev["informationAvailableAt"]],
         })
     reg = {
-        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json", "protocolSha256": PROTOCOL_SHA,
+        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json", "protocolSha256": PROTOCOL_SHA,
         "evidenceKind": "SOURCE_EVIDENCE", "certificationStatus": "NOT_CERTIFIED", "productionApproved": False,
         "returnBasisLabels": {"PRICE_RETURN": "split-adjusted closes only (default everywhere)", "TOTAL_RETURN": "only for holding periods fully inside a totalReturnWindow of the title, dividends credited at payDate",
                               "CA_UNRESOLVED": "series not QUALIFIED by createResearchLoader {identityEvidence, corporateActionEvidence}: no return basis", "TERMINAL_UNKNOWN": "terminal proceeds without sourced pay date: never credited (research-portfolio NOT_STATED)"},
