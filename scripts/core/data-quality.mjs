@@ -59,12 +59,23 @@ const daily = dir(SERIES, /^ref_.*\.json$/).map((f) => maybe(SERIES + "/" + f)).
 rules.push(DQ.seriesIntegrity(daily));
 rules.push(DQ.seriesFreshness(daily, expected, lag, 2));
 rules.push(DQ.implausibleJumps(daily, 0.6));
+const weekly = dir(LONG, /^ref_.*\.json$/).map((f) => maybe(LONG + "/" + f)).filter(Boolean);
+const weeklyById = new Map(weekly.map((w) => [w.securityId, w]));
 const pairs = [];
 for (const s of daily) {
-  const w = maybe(LONG + "/" + s.securityId + ".json");
+  const w = weeklyById.get(s.securityId);
   if (w) pairs.push({ securityId: s.securityId, daily: s, weekly: w });
 }
 rules.push(DQ.dailyWeeklyAgreement(pairs));
+/* Eingefrorene Kursenden, Stamm <-> Reihe (core/listing-staleness.js). Nur Bericht, kein Ausschluss. */
+const Staleness = require(join(REPO_ROOT, "core", "listing-staleness.js"));
+const usMaster = maybe("quant/data/market/security-master/us-security-master.json");
+if (usMaster) {
+  const mIdx = Staleness.masterIndex(usMaster);
+  rules.push(DQ.staleTails(daily, mIdx, Staleness, "daily"));
+  rules.push(DQ.staleTails(weekly, mIdx, Staleness, "weekly"));
+  rules.push(DQ.masterSeriesConsistency(daily, mIdx, Staleness, expected, lag, 2));
+}
 const byId = new Map(daily.map((s) => [s.securityId, s]));
 const stockIndex = maybe("discover/data/stock-index/US_REAL.json");
 const indexSymbols = stockIndex ? stockIndex.symbols : [];
