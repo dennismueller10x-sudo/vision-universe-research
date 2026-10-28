@@ -140,7 +140,7 @@ function render(t){
   cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+180}px) scale(${z})`:'none';
   for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
    if(speaking){const a=amp(t);const face=seg.face;
-    if(face&&who==='bulle'&&(face==='lacht'||face==='schock'))f=face;else if(face&&k<0.7)f=face;else f=a>0.55?'mund-offen':a>0.18?'mund-halb':'basis'}
+    if(face&&k<0.6)f=face;else f=a>0.55?'mund-offen':a>0.18?'mund-halb':'basis'}
    else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
    else if(blinkAt(who,t))f='blinzeln';
    show(who,f)}
