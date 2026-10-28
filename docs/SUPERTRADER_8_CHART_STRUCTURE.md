@@ -28,6 +28,8 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 | Kandidaten, Stufen | 3.001 (2.023 / 953 / 25) | 3.001 (2.023 / 953 / 25), dieselben Datensätze |
 | MODELED-Ansichten | – | **0 geändert** |
 | Kennzahlen | – | nur C07 unterhalb von MODELED: `correction` ausgeblendet (19 Ansichten) |
+| Trendübersicht | – | nur C06/C07/C13 unterhalb von MODELED: `high252` und `belowHigh252` ausgeblendet (668 / 19 / 171 Ansichten) |
+| Vertragsdatensätze (`records/`) | – | Inhalt gleich bis auf `provenance.codeSha256` (Code-Fingerabdruck); nur die Reihenfolge in C03–C05 folgt den neuen Rängen |
 | Ansichten mit Strukturmarken unterhalb von MODELED | 0 | 2.957 |
 | davon mit Chartmarke | 0 | 1.237 (Box 229, Widerstand 801, Konsolidierung 22, Gap-Tief 185) |
 | Order-, Stop-, Limit-, Pivot-, swingLow-, signalDayLow-Felder unterhalb von MODELED | 0 | **0** |
@@ -49,7 +51,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
   - Neu verglichen werden auch die Detektor-Marke, der Minervini-Pivot und Holy-Grail `swingLow` und `impulseHigh`.
 - Benannte Ausnahmen, nur für genau diese Pfade:
   - das Gap-Tief von C09/C12 (Owner-Entscheidung);
-  - `trend.high252` bei C06/C07/C13: das 52-Wochen-Hoch ist oft der Pivot (offene Owner-Entscheidung, unten Punkt 1).
+  - keine weitere: `trend.high252` und `belowHigh252` sind bei C06/C07/C13 unterhalb von MODELED ausgeblendet (Owner-Entscheidung 28.10.2026). Der Test baut für ACVA, SLAB, BIO-B (C06), MGLD (C07) und BIO-B (C13) das echte 52-Wochen-Hoch aus den Kursen nach. Jedes gleicht einer Order-Größe und wird rot.
 - Die 55 Ansichten unterhalb von MODELED der Golden Cases sind per SHA-256 eingefroren.
 - `SF8-STRUCTURE-MARKS`: Marken je Methode in den Golden Cases. Prüft Darvas, BGU und C07 einzeln sowie das fail-closed-Verhalten.
 - Golden Case C07 unterhalb von MODELED:
@@ -70,7 +72,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 
 ## Offene Owner-Punkte
 
-1. `trend.high252` (C06/C07/C13) ist das 52-Wochen-Hoch der Trendübersicht. Es wird für jede Aktie gezeigt und ist im Chart sichtbar. Es ist oft genau der Pivot, also der Einstieg der Quelle. Optionen: zulassen, weil es eine allgemeine Marktzahl ist und nie als Einstieg beschriftet wird (Empfehlung), oder für diese drei Methoden unterhalb von MODELED ausblenden. Der Test hält die Ausnahme ausdrücklich als offene Owner-Entscheidung fest.
-2. Core DQ-SF8-4 (`SF8_STRUCTURE_LEVELS`, `SF8_PIVOT_KINDS`) erlaubt weiter den C06/C07-Pivot und die C11/C13-Marken. Der Erzeuger ist jetzt strenger. Empfehlung: den Core in einem eigenen Core-PR nachziehen.
+1. **Entschieden 28.10.2026:** Das 52-Wochen-Hoch wird bei SEPA, Power Play und Holy Grail unterhalb von MODELED nicht als strategiebezogene Kennzahl ausgegeben, und ebenso nicht der Abstand dazu. Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt (`records.mjs#TREND_HIDDEN_BY_METHOD`).
+2. Core DQ-SF8-4 zieht in einem eigenen, eng begrenzten Core-PR nach (Strukturmarken, Chartmarkenarten, C07-Korrekturtiefe, 52-Wochen-Hoch bei C06/C07/C13). Merge erst nach diesem PR.
 3. Regeltexte wie „Einstiegsmarke knapp über dem Box-Hoch“ (DAR-SF-ENTRY) beschreiben die Regel der Quelle ohne Preis. Sie sind unverändert.
 4. Box-Obergrenze und Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.

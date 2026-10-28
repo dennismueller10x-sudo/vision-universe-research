@@ -10,9 +10,9 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
-import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex } from '../source-faithful/product/detectors.mjs';
+import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex, commonFeatures } from '../source-faithful/product/detectors.mjs';
 import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
-import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, planView, chartMarks, publicFeatures } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, TREND_HIDDEN_BY_METHOD, planView, chartMarks, publicFeatures, publicTrend } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG, RULE_LABELS } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
@@ -336,11 +336,9 @@ const numbersOf = (x, p = '') => (x && typeof x === 'object' ? Object.entries(x)
 // Risikoreferenz der Quelle (KK-034 Tagestief, MOKA12-007). Es erscheint als „Gap-Tief“ (GAP_DAY_LOW), nie als Stop und ohne
 // Plan; der Stop selbst (levels.stopReference) bleibt unveröffentlicht. Jede andere Übereinstimmung ist ein Fehler.
 const GAP_LOW_STRUCTURE = (v, p) => ['C09', 'C12'].includes(v.candidateId) && (p === '.levels.gapDayLow' || (p === '.pivot.level' && v.pivot?.kind === 'GAP_DAY_LOW' && v.pivot.level === v.levels?.gapDayLow));
-// OFFENE OWNER-ENTSCHEIDUNG (docs/SUPERTRADER_8_CHART_STRUCTURE.md, Punkt 1): das 52-Wochen-Hoch der Trendübersicht (für jede Aktie
-// und Methode gleich, im Chart sichtbar, nie als Einstieg beschriftet) ist bei SEPA, Power Play und Holy Grail oft genau der Pivot
-// bzw. das Touch-Hoch. Lehnt der Owner ab, entfällt diese Ausnahme und trend.high252 wird für diese Methoden ausgeblendet.
-// Jede andere Übereinstimmung bleibt ein Fehler (die Power-Play-Korrekturtiefe ist seit 28.10. unterhalb von MODELED ausgeblendet).
-const DESCRIPTIVE_COINCIDENCE = (v, p) => p === '.trend.high252' && ['C06', 'C07', 'C13'].includes(v.candidateId);
+// Keine weitere Ausnahme (Owner-Entscheidung 28.10.2026): das 52-Wochen-Hoch fällt bei SEPA, Power Play und Holy Grail oft mit der
+// Einstiegsmarke zusammen und ist dort unterhalb von MODELED ausgeblendet (records.mjs#TREND_HIDDEN_BY_METHOD).
+const DESCRIPTIVE_COINCIDENCE = () => false;
 function orderValueLeaks(vs, ov) {
   const out = [];
   for (const v of vs) for (const [p, x] of numbersOf(v)) if (p !== '.close' && p !== '.trend.close' && !GAP_LOW_STRUCTURE(v, p) && !DESCRIPTIVE_COINCIDENCE(v, p)) for (const o of ov.get(v.recordId) ?? []) if (Math.abs(x - o) < 1e-9) out.push(`${v.candidateId} ${v.ticker} ${p} = ${o}`);
@@ -355,14 +353,17 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   const acva = below.find((v) => v.candidateId === 'C06' && v.ticker === 'ACVA'), avbc = below.find((v) => v.candidateId === 'C03');
   const wenn = below.find((v) => v.candidateId === 'C12' && v.ticker === 'WENN');
   for (const [base, mut] of [[acva, (v, o) => { v.features.ma200OneMonthAgo = o[0]; }], [avbc, (v, o) => { v.trend.high252 = o[0]; }], [avbc, (v, o) => { v.sortKeys.trend = o[o.length - 1]; }],
-    [avbc, (v, o) => { v.levels.top = o[0]; v.pivot.level = o[0]; }], [wenn, (v, o) => { v.levels.priorClose = v.levels.gapDayLow; }], [wenn, (v, o) => { v.pivot = { ...v.pivot, kind: 'GAP_DAY_LOW_STOP' }; }]]) {
+    [avbc, (v, o) => { v.levels.top = o[0]; v.pivot.level = o[0]; }],
+    // Owner-Entscheidung 28.10.: käme das 52-Wochen-Hoch bei SEPA zurück, gliche es dem Pivot (= Einstieg)
+    ...[['C06', 'ACVA'], ['C06', 'SLAB'], ['C06', 'BIO-B'], ['C07', 'MGLD'], ['C13', 'BIO-B']].map(([c, t]) => [below.find((x) => x.candidateId === c && x.ticker === t),
+      (v) => { v.trend.high252 = commonFeatures(securities().find((x) => x.ticker === v.ticker).bars).high252; }]), [wenn, (v, o) => { v.levels.priorClose = v.levels.gapDayLow; }], [wenn, (v, o) => { v.pivot = { ...v.pivot, kind: 'GAP_DAY_LOW_STOP' }; }]]) {
     const v = structuredClone(base); mut(v, ov.get(v.recordId)); assert.notDeepEqual(orderValueLeaks([v], ov), [], mut.toString());
   }
   // jede Zahl unterhalb von MODELED ist eingefroren: eine neue oder geänderte Zahl (auch ein Preis in einer Liste, N2) ist eine
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
   assert.equal(sorted.length, 55);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), 'c3963d8df8763cd1e71200efe2e27421fb5c3e0e8502e187713fcb24f90f5c96');
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '2dd18a20f20b45da363d28cdaa5fcb153d5a268fa6f58f6edc8a92262ae03d2e');
 });
 
 test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste Konfigurationstexte ohne Preis; die Vorschau zeigt nur die Regel', () => {
@@ -422,6 +423,17 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
     for (const k of ['plannedLossAtPivot', 'correction']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
   }
   assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C07: ['correction'] });
+  // Owner-Entscheidung 28.10.2026: SEPA, Power Play, Holy Grail ohne 52-Wochen-Hoch (und ohne den Abstand dazu) unterhalb von MODELED
+  assert.deepEqual(TREND_HIDDEN_BY_METHOD, { C06: ['high252', 'belowHigh252'], C07: ['high252', 'belowHigh252'], C13: ['high252', 'belowHigh252'] });
+  for (const v of below) {
+    const hidden = ['C06', 'C07', 'C13'].includes(v.candidateId);
+    for (const k of ['high252', 'belowHigh252']) assert.equal(k in v.trend, !hidden, `${v.candidateId} ${v.ticker} trend.${k}`);
+  }
+  // in MODELED und bei allen anderen Methoden bleibt die allgemeine Trendübersicht vollständig
+  const full = { close: 10, high252: 12, belowHigh252: 0.1667, ret63: 0.1 };
+  assert.deepEqual(publicTrend({ strategyId: 'SF_MINERVINI_SEPA_VCP' }, 'MODELED_TRADE_PLAN', full), full);
+  assert.deepEqual(publicTrend({ strategyId: 'SF_DARVAS_BOX' }, 'CHART_CANDIDATE', full), full);
+  assert.deepEqual(publicTrend({ strategyId: 'SF_RASCHKE_HOLY_GRAIL' }, 'CONFIRMED_RESEARCH_SETUP', full), { close: 10, ret63: 0.1 });
   // Katalog: das Gap-Tief ist Chartstruktur, kein bestätigter Stop; die Risikoreferenz gehört nur zum modellierten Ablauf
   const bgu = STRATEGY_CATALOG.find((c) => c.candidateId === 'C12');
   assert.match(bgu.short, /Gap-Tief ist Chartstruktur, kein bestätigter Stop/); assert.doesNotMatch(bgu.short, /Risikoreferenz/);

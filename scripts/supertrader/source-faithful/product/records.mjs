@@ -184,6 +184,15 @@ export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposed
 // Je Methode: Kennzahlen, die rechnerisch eine Order-Größe sind. Power Play: die Korrekturtiefe ist genau der geplante Verlust
 // am Pivot (Stop am Tief der Korrektur, research/minervini-lifecycle.mjs: plannedLossAtPivot = 1 - stop / pivot).
 export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C07: Object.freeze(['correction']) });
+// Owner-Entscheidung 28.10.2026: Bei SEPA, Power Play und Holy Grail fällt das 52-Wochen-Hoch oft genau mit der Einstiegsmarke
+// zusammen (Pivot bzw. Touch-Hoch am Hoch). Unterhalb von MODELED trägt die strategiebezogene Ansicht es deshalb nicht, auch
+// nicht den Abstand dazu (close / (1 − belowHigh252) ergäbe es wieder). Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt.
+export const TREND_HIDDEN_BY_METHOD = Object.freeze({ C06: Object.freeze(['high252', 'belowHigh252']), C07: Object.freeze(['high252', 'belowHigh252']), C13: Object.freeze(['high252', 'belowHigh252']) });
+export function publicTrend(det, stage, trend) {
+  if (stage === STAGE.MODELED_TRADE_PLAN || !trend) return trend;
+  const cid = candidateIdOf(det.strategyId), hide = (cid && TREND_HIDDEN_BY_METHOD[cid]) || [];
+  return hide.length ? Object.fromEntries(Object.entries(trend).filter(([k]) => !hide.includes(k))) : trend;
+}
 export function publicFeatures(det, stage) {
   const f = det.features ?? {};
   if (stage === STAGE.MODELED_TRADE_PLAN) return f;
@@ -230,7 +239,7 @@ export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, 
     pending: (det.setupRules || []).filter((r) => r.pending).map((r) => ({ ruleId: r.ruleId, status: r.pending })),
     interpretations: det.interpretations ?? [],
     notMet: (det.setupRules || []).filter((r) => !r.met && !r.pending).map((r) => r.ruleId),
-    ...chartMarks(det, stage, record.price.close), features: publicFeatures(det, stage), trend: common,
+    ...chartMarks(det, stage, record.price.close), features: publicFeatures(det, stage), trend: publicTrend(det, stage, common),
     plan, planBlockers: stage === STAGE.MODELED_TRADE_PLAN ? [] : det.planBlockers ?? [],
     why: stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }),
     dataQuality: { status: dq.status, notPass: dq.checks.filter((c) => c.status !== 'PASS').map((c) => ({ id: c.id, status: c.status, ...(c.caps ? { caps: c.caps } : {}) })), quarantinedSessions: dq.quarantinedSessions },
