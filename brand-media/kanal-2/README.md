@@ -1,4 +1,4 @@
-# Kanal 2 (Arbeitstitel „Bulle & Bär“)
+# Kanal 2: Aktienzoo (@aktienzoo)
 
 Zweiter Instagram/TikTok-Kanal für Börsen- und Finanzwissen mit zwei Comic-Figuren. Ziel ist Reichweite. Später, nach Entscheidung des Owners, kann der Kanal auf Vision Universe hinweisen. Stand 2026-10-28.
 
