@@ -11,9 +11,9 @@ import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION } from '../source-faithful/product/detectors.mjs';
-import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, planView } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, planView, chartMarks, publicFeatures } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
-import { STRATEGY_CATALOG } from '../source-faithful/product/catalog.mjs';
+import { STRATEGY_CATALOG, RULE_LABELS } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
 import { psChartCandidate, PS_REFERENCE_CONFIG } from '../source-faithful/research/kk-ps-study.mjs';
 import { investorScreen, traderScreen } from '../source-faithful/methods/weinstein.mjs';
@@ -124,6 +124,59 @@ test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle (O-1), EP, PS, Pocke
   assert.ok(ps.length && ps.every((v) => v.features.direction === 'SHORT_RESEARCH_MODEL' && /DATA_BLOCKED/.test(v.features.borrow)));
   assert.ok(views().filter((v) => v.candidateId === 'C09').every((v) => /DATA_BLOCKED/.test(v.features.catalyst)));
   for (const t of views().filter((v) => v.candidateId === 'C01')) assert.ok(t.why.some((w) => w.code === 'PLAN_NOT_MODELLED' || w.code.startsWith('DATA_') || w.code === 'SETUP_RULE_NOT_MET'), t.ticker);
+});
+
+// Owner-Entscheidung 28.10.2026 (Review HIGH 1): closeVsGapLow (C12) und Turtle-N/nPct (C01/C02) dürfen als beschreibende
+// Research- bzw. Chartkennzahlen auch unterhalb von MODELED erscheinen – aber nie als Einstiegs-, Stop- oder Orderparameter.
+test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow und Turtle-N nur beschreibend, nie als Einstieg, Stop oder Order', () => {
+  const ORDERISH = /trigger|stop|limit|entry|plannedloss|risk/i;
+  const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
+  const c12 = below.filter((v) => v.candidateId === 'C12'), turtle = below.filter((v) => ['C01', 'C02'].includes(v.candidateId));
+  assert.ok(c12.length > 0 && turtle.length > 0, 'Golden Cases decken C12 und Turtle unterhalb von MODELED ab');
+  for (const v of [...c12, ...turtle]) {
+    const where = `${v.candidateId} ${v.ticker} ${v.stage}`;
+    // nur unter features, als Zahl, ohne Plan und ohne Order-/Stop-/Limitmarke
+    assert.equal(v.plan, null, where);
+    assert.ok(!Object.keys(v.levels).some((k) => ORDERISH.test(k)), `${where}: ${Object.keys(v.levels)}`);
+    assert.ok(!Object.keys(v.features).some((k) => ORDERISH.test(k) && typeof v.features[k] === 'number'), where);
+    // weder Sortierschlüssel noch Chartmarke: die Kennzahl ist kein Preis, an dem gehandelt würde
+    for (const k of ['closeVsGapLow', 'N', 'nPct']) assert.ok(!(k in (v.sortKeys || {})), `${where}: ${k} als Sortierschlüssel`);
+    if (v.pivot) assert.doesNotMatch(v.pivot.kind, ORDERISH, where);
+    for (const r of v.why ?? []) assert.doesNotMatch(String(r), /closeVsGapLow|nPct|\bN\b/, where);
+  }
+  for (const v of c12) {
+    assert.equal(typeof v.features.closeVsGapLow, 'number', `${v.ticker}: beschreibend vorhanden`);
+    assert.ok(Math.abs(v.features.closeVsGapLow) < 1, `${v.ticker}: Verhältnis, kein Preis`);
+    assert.ok(!('stopReference' in v.levels), `${v.ticker}: keine Risikoreferenz unterhalb MODELED`);
+  }
+  for (const v of turtle) {
+    assert.equal(typeof v.features.N, 'number', `${v.ticker}: N beschreibend vorhanden`);
+    assert.equal(v.pivot, null, `${v.ticker}: Turtle ohne Chartmarke (die einzige Marke der Quelle ist die Order)`);
+    assert.ok(!('closeVsTrigger' in v.features), `${v.ticker}: kein Abstand zur Einstiegsorder`);
+  }
+  // C01/C02 bilden nach O-1 nie einen Plan: N kann nirgends zu einem Stop (Einstieg - 2N) werden
+  assert.ok(views().filter((v) => ['C01', 'C02'].includes(v.candidateId)).every((v) => v.stage !== 'MODELED_TRADE_PLAN' && v.plan === null));
+  // erst im modellierten Ablauf ist der Stop ein Orderparameter – und dort steht er im Plan, nicht in den Kennzahlen
+  for (const v of views().filter((x) => x.candidateId === 'C12' && x.stage === 'MODELED_TRADE_PLAN')) {
+    assert.ok(v.plan && Number.isFinite(v.plan.stop?.initial ?? v.plan.stop), `${v.ticker}: Stop im Plan`);
+  }
+  // direkt an der Ansichtsbildung, unabhängig vom Schlüssel der Strukturtabelle (SF_… bzw. Cxx): eine Risikoreferenz oder
+  // ein Trigger gelangt unterhalb von MODELED nie in die Marken; die beschreibende Kennzahl bleibt eine Kennzahl
+  for (const strategyId of ['SF_MOKA_BUYABLE_GAP_UP', 'C12', 'SF_TURTLE_S1', 'C01']) {
+    const det = { strategyId, levels: { gapDayLow: 9, priorClose: 8, stopReference: 9, trigger: 10, limit: 11 }, pivot: { level: 9, kind: 'GAP_DAY_LOW (MOKA12-007 Risikoreferenz)' }, features: { closeVsGapLow: 0.05, N: 0.4, nPct: 0.04, closeVsTrigger: 0.01 } };
+    for (const stage of ['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP']) {
+      const m = chartMarks(det, stage, 10);
+      assert.ok(!Object.keys(m.levels).some((k) => ORDERISH.test(k)), `${strategyId} ${stage}: ${Object.keys(m.levels)}`);
+      if (m.pivot) assert.doesNotMatch(m.pivot.kind, ORDERISH, `${strategyId} ${stage}`);
+      const f = publicFeatures(det, stage);
+      assert.ok(!('closeVsTrigger' in f), `${strategyId} ${stage}: Abstand zur Order entfällt`);
+      assert.equal(f.closeVsGapLow, 0.05); assert.equal(f.N, 0.4);
+    }
+  }
+  // Oberfläche und Beschriftungen: keine Kennzahl wird als Einstieg, Stop oder Order beschriftet oder gezeichnet
+  const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
+  assert.doesNotMatch(ui, /closeVsGapLow|nPct|features\.N\b|\.features\b/, 'die Vorschau liest diese Kennzahlen nicht');
+  for (const [id, label] of Object.entries(RULE_LABELS)) if (/closeVsGapLow|nPct/.test(id)) assert.doesNotMatch(label, /Stop|Einstieg|Order|Kauf/i, id);
 });
 
 test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop- oder Limitmarke in der Ansicht (Review SF8-R2)', () => {
