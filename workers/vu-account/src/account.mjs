@@ -6,6 +6,7 @@
 import {HttpError, json, readJson} from './http.mjs';
 import {requireUser, reauthenticate, clearSession} from './auth.mjs';
 import {billingBlocker} from './config.mjs';
+import {checkoutAllowed} from './billing.mjs';
 import * as v from './validate.mjs';
 
 const one = rows => (Array.isArray(rows) ? rows[0] || null : null);
@@ -28,6 +29,7 @@ export async function me(ctx) {
     roles: (roles || []).map(r => r.role),
     entitlements,
     billingAvailable: !billingBlocker(ctx.cfg),
+    checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
 }
 
@@ -65,6 +67,7 @@ export async function billingOverview(ctx) {
     invoices: (invoices || []).map(i => ({number: i.number, status: i.status, currency: i.currency, amountDue: i.amount_due,
       amountPaid: i.amount_paid, issuedAt: i.issued_at, paidAt: i.paid_at, url: i.hosted_invoice_url, pdf: i.invoice_pdf})),
     billingAvailable: !billingBlocker(ctx.cfg),
+    checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
 }
 

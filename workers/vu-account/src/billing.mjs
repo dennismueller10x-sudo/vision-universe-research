@@ -38,7 +38,7 @@ export async function plans(ctx) {
         .map(x => ({key: x.id, interval: x.billing_interval, currency: x.currency, unitAmount: x.unit_amount})),
     }));
     catalogCache = {at: ctx.now(), body: {plans: data, features: featureRows.map(f => ({key: f.key, description: f.description})),
-      mode: ctx.cfg.stripe.mode === 'live' ? 'live' : 'test'}};
+      mode: ctx.cfg.stripe.mode === 'live' ? 'live' : 'test', checkout: billingBlocker(ctx.cfg) ? 'off' : ctx.cfg.stripe.checkoutAccess}};
   }
   return json(ctx.request, ctx.cfg, 200, catalogCache.body, {headers: {'Cache-Control': 'public, max-age=300'}});
 }
@@ -52,11 +52,27 @@ async function ensureCustomer(ctx, user) {
   return customer.id;
 }
 
+// Darf dieses Konto den Checkout starten? Bei "testers" nur mit Rolle billing_tester
+// (user_roles ist fuer Nutzer nur lesbar; vergeben wird die Rolle ausschliesslich per Service).
+export async function checkoutAllowed(ctx, user) {
+  const access = ctx.cfg.stripe.checkoutAccess;
+  if (access === 'public') return true;
+  if (access !== 'testers') return false;
+  const rows = await ctx.sb.user.select(user.accessToken, 'user_roles', {user_id: `eq.${user.id}`, role: 'eq.billing_tester'});
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+// Vor dem Checkout bestaetigt das Konto: wiederkehrender Preis, Kuendigung zum Laufzeitende,
+// sofortiger Beginn mit Kenntnis der Folgen fuer das Widerrufsrecht. Ohne Bestaetigung kein Checkout.
+export const CHECKOUT_CONFIRMATION_VERSION = 'abo-2026-10';
+
 export async function checkout(ctx) {
   assertBilling(ctx);
   const user = await requireUser(ctx);
   await ctx.limit('sensitive', user.id);
+  if (!await checkoutAllowed(ctx, user)) throw new HttpError(403, 'CHECKOUT_NOT_OPEN');
   const body = await readJson(ctx.request);
+  if (body.confirm !== true) throw new HttpError(400, 'CHECKOUT_CONFIRMATION_REQUIRED');
   const key = v.priceKey(body.price);
   const live = ctx.cfg.stripe.mode === 'live';
   const [price] = await ctx.sb.anon.select('plan_prices', {id: `eq.${key}`, provider: 'eq.stripe', active: 'is.true'});
@@ -80,7 +96,8 @@ export async function checkout(ctx) {
     mode: 'subscription', customer, client_reference_id: user.id,
     line_items: [{price: price.provider_price_id, quantity: 1}],
     subscription_data: {metadata: {vu_user_id: user.id, vu_price_key: key}},
-    metadata: {vu_user_id: user.id, vu_price_key: key},
+    metadata: {vu_user_id: user.id, vu_price_key: key, vu_confirmation: CHECKOUT_CONFIRMATION_VERSION,
+      vu_confirmed_at: new Date(ctx.now()).toISOString()},
     success_url: `${site}${SITE_PATHS.subscription}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${site}${SITE_PATHS.plans}?checkout=canceled`,
     locale: 'de', allow_promotion_codes: 'true', billing_address_collection: 'auto',

@@ -33,7 +33,7 @@ async function signedIn(env, email) {
 }
 
 async function subscribe(env, browser, price = 'plus_month') {
-  const res = await browser.post('/v1/billing/checkout', {price});
+  const res = await browser.post('/v1/billing/checkout', {price, confirm: true});
   assert.equal(res.status, 200, JSON.stringify(res.data));
   const sessionId = res.data.url.split('/').pop();
   const sub = env.stripe.sim.completeCheckout(sessionId);
@@ -171,20 +171,34 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
   await t.test('Tarife, Checkout, Webhooks, Freischaltung, Rechnung', async () => {
     const plans = await env.browser().get('/v1/plans');
     assert.equal(plans.status, 200);
-    assert.deepEqual(plans.data.plans.map(p => p.id), ['free', 'plus', 'pro']);
+    // Oeffentlich nur Free und Pro mit gleichem Umfang; plus ist verborgen (hat keinen Live-Preis, Testpreise nur fuer die Simulation).
+    assert.deepEqual(plans.data.plans.map(p => p.id), ['free', 'pro']);
     assert.equal(plans.data.mode, 'test');
-    assert.deepEqual(plans.data.plans[1].prices.map(p => p.key).sort(), ['plus_month', 'plus_year']);
+    assert.equal(plans.data.checkout, 'public');
+    assert.deepEqual(plans.data.plans[1].prices.map(p => p.key).sort(), ['pro_month', 'pro_year']);
+    assert.deepEqual(plans.data.plans[0].features, plans.data.plans[1].features, 'Free = Pro');
+    assert.deepEqual(plans.data.plans[0].features, {'watchlist.lists': 25, 'watchlist.items': 500, 'ask.daily_questions': 3});
     assert.ok(!JSON.stringify(plans.data).includes('price_test_'), 'Anbieter-IDs bleiben serverseitig');
 
     const b = await signedIn(env, 'fiona@example.test');
-    assert.equal((await b.post('/v1/billing/checkout', {price: 'gratis'})).status, 404);
-    const first = await b.post('/v1/billing/checkout', {price: 'plus_month'});
-    const again = await b.post('/v1/billing/checkout', {price: 'plus_month'});
+    assert.equal((await b.post('/v1/billing/checkout', {price: 'gratis', confirm: true})).status, 404);
+    // Ohne Bestaetigung von Preis, Kuendigung und Widerrufsfolgen kein Checkout.
+    const sessionsBefore = env.stripe.sim.sessions.size;
+    for (const confirm of [undefined, false, 'true', 1]) {
+      const r = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm});
+      assert.deepEqual([r.status, r.data.state], [400, 'CHECKOUT_CONFIRMATION_REQUIRED']);
+    }
+    assert.equal(env.stripe.sim.sessions.size, sessionsBefore, 'keine Checkout-Sitzung ohne Bestaetigung');
+    const first = await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true});
+    const again = await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true});
     assert.equal(first.data.url, again.data.url, 'Doppelklick -> dieselbe Checkout-Sitzung');
     assert.ok(first.data.url.startsWith('https://checkout.stripe.com/'));
     assert.equal(env.stripe.sim.customers.size >= 1, true);
     const session = env.stripe.sim.sessions.get(first.data.url.split('/').pop());
     assert.match(session.success_url, /^https:\/\/research\.sim\/konto\/abo\/\?checkout=success/);
+    assert.equal(session.cancel_url, 'https://research.sim/konto/tarife/?checkout=canceled');
+    assert.equal(session.metadata.vu_confirmation, 'abo-2026-10');
+    assert.ok(Date.parse(session.metadata.vu_confirmed_at) > 0);
 
     // Vor der Zahlung: free.
     assert.equal((await b.get('/v1/me')).data.entitlements.plan_id, 'free');
@@ -199,11 +213,11 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal(billing.data.invoices[0].amountPaid, 990);
     assert.ok(billing.data.invoices[0].url.startsWith('https://'));
     const check = await b.get('/v1/entitlements/check?feature=quant.screener.full');
-    assert.deepEqual([check.data.allowed, check.data.plan], [true, 'plus']);
+    assert.deepEqual([check.data.allowed, check.data.plan], [false, 'plus'], 'Quant-Gesamtscore in keinem Tarif');
     assert.equal((await b.get('/v1/entitlements/check?feature=export.csv')).data.allowed, false);
 
     // Zweiter Checkout trotz aktivem Abo -> abgewiesen.
-    const twice = await b.post('/v1/billing/checkout', {price: 'pro_month'});
+    const twice = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
     assert.deepEqual([twice.status, twice.data.state, twice.data.detail.manage], [409, 'ALREADY_SUBSCRIBED', 'portal']);
     const portal = await b.post('/v1/billing/portal');
     assert.ok(portal.data.url.startsWith('https://billing.stripe.com/'));
@@ -288,7 +302,7 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.deepEqual([billing.data.subscriptions[0].status, billing.data.entitlements.plan_id], ['canceled', 'free']);
     assert.equal((await b.post('/v1/billing/cancel')).status, 404);
     // Nach Ablauf wieder buchbar.
-    assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month'})).status, 200);
+    assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true})).status, 200);
 
     const signedInRow = await env.pg.json(`select to_json(r) from (select source, status, confirmation_status, ends_at is not null as has_end
       from billing.cancellation_requests where id = :'id') r`, {id: res.data.confirmationId});
@@ -513,12 +527,12 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     const b = await signedIn(env, 'mara@example.test');
     env.stripe.sim.overridePrice('price_test_plus_month', {unit_amount: 1490}); // im Dashboard geaendert, Datenbank nicht
     const sessionsBefore = env.stripe.sim.sessions.size;
-    const res = await b.post('/v1/billing/checkout', {price: 'plus_month'});
+    const res = await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true});
     assert.deepEqual([res.status, res.data.state], [409, 'PRICE_NOT_AVAILABLE']);
     assert.equal(env.stripe.sim.sessions.size, sessionsBefore, 'keine Checkout-Sitzung zu falschem Preis');
     assert.ok(env.logs.some(l => l.message === 'PRICE_MISMATCH'));
     env.stripe.sim.overridePrice('price_test_plus_month', {active: false});
-    assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month'})).status, 409);
+    assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true})).status, 409);
     env.stripe.sim.overridePrice('price_test_plus_month', {});
 
     const {signStripePayload} = await import('../src/stripe.mjs');
@@ -535,7 +549,7 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal((await anon.get('/v1/watchlist')).status, 401, 'ohne Anmeldung keine Liste');
     const a = await signedIn(env, 'wl-anna@example.test'), b = await signedIn(env, 'wl-ben@example.test');
     const empty = await a.get('/v1/watchlist');
-    assert.deepEqual([empty.status, empty.data.items, empty.data.limits], [200, [], {plan: 'free', items: 20, lists: 1}]);
+    assert.deepEqual([empty.status, empty.data.items, empty.data.limits], [200, [], {plan: 'free', items: 500, lists: 25}], 'Free im Early Access: gleiche Grenzen wie Pro');
     assert.match(empty.headers.get('Cache-Control'), /private, no-store/);
 
     const added = await a.post('/v1/watchlist/items', {instrumentId: nvda, ticker: 'nvda'});
@@ -565,10 +579,15 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal((await b.post('/v1/watchlist/items', {instrumentId: nvda, ticker: 'NVDA'})).status, 201);
     assert.equal((await a.get('/v1/watchlist')).data.items[0].note, 'Q4 abwarten', 'Annas Notiz unberuehrt');
 
-    // Free: 20 Titel; die Grenze setzt die Datenbank durch.
+    // Grenze setzt die Datenbank durch. Geprueft mit einem eingeschraenkten Free (spaetere Variante A), danach zurueck.
+    const freeItems = n => env.pg.json(`with x as (update public.plan_features set limit_value = ${n}
+      where plan_id = 'free' and feature_key = 'watchlist.items' returning 1) select to_json(count(*)) from x`);
+    assert.equal(await freeItems(20), 1);
     for (let i = 1; i < 20; i++) assert.equal((await a.post('/v1/watchlist/items', {instrumentId: `vu_${String(i).padStart(10, '0')}`})).status, 201);
     const full = await a.post('/v1/watchlist/items', {instrumentId: 'vu_ffffffffff'});
     assert.deepEqual([full.status, full.data.state], [409, 'WATCHLIST_ITEMS_LIMIT_REACHED']);
+    assert.equal(await freeItems(500), 1);
+    assert.equal((await a.post('/v1/watchlist/items', {instrumentId: 'vu_ffffffffff'})).status, 201, 'Early Access: keine Grenze bei 20');
 
     const rm = await a.post('/v1/watchlist/items/remove', {instrumentId: nvda});
     assert.deepEqual(rm.data, {state: 'REMOVED', removed: 1});
@@ -592,8 +611,8 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.deepEqual([imp.status, imp.data.added, imp.data.skipped, imp.data.limitReached], [200, 200, 1, false]);
     assert.equal((await c.post('/v1/watchlist/import', {items})).data.alreadyPresent, 200, 'zweiter Import idempotent');
     const free = await signedIn(env, 'wl-free@example.test');
-    const capped = await free.post('/v1/watchlist/import', {items: items.slice(0, 25)});
-    assert.deepEqual([capped.data.added, capped.data.skipped, capped.data.limitReached], [20, 5, true], 'Free: an der Grenze gestoppt');
+    const same = await free.post('/v1/watchlist/import', {items});
+    assert.deepEqual([same.data.added, same.data.limitReached], [200, false], 'Free: derselbe Umfang wie Pro');
     const runs = [];
     for (let i = 0; i < 5; i++) { const t0 = performance.now(); const r = await c.get('/v1/watchlist'); runs.push(performance.now() - t0); assert.equal(r.data.items.length, 200); }
     const body = JSON.stringify((await c.get('/v1/watchlist')).data);
@@ -634,7 +653,7 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     for (const path of ['/v1/me', '/v1/me/billing', '/v1/me/export', '/v1/entitlements/check?feature=export.csv']) {
       assert.equal((await anon.get(path)).status, 401, path);
     }
-    assert.equal((await anon.post('/v1/billing/checkout', {price: 'plus_month'})).status, 401);
+    assert.equal((await anon.post('/v1/billing/checkout', {price: 'plus_month', confirm: true})).status, 401);
     const unsigned = ['{"alg":"none"}', '{"sub":"x"}'].map(p => Buffer.from(p).toString('base64url')).join('.') + '.';
     assert.equal((await anon.get('/v1/me', {headers: {Authorization: ['Bearer', unsigned].join(' ')}})).status, 401);
     // Native App: meldet sich bei Supabase an und schickt das JWT (kein Cookie, kein CSRF-Kopf noetig).
@@ -690,10 +709,38 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     const live = await createEnvironment({envOverrides: {STRIPE_SECRET_KEY: 'sk_live_simulation'}});
     try {
       const b = await signedIn(live, 'kim@example.test');
-      const res = await b.post('/v1/billing/checkout', {price: 'plus_month'});
+      const res = await b.post('/v1/billing/checkout', {price: 'plus_month', confirm: true});
       assert.deepEqual([res.status, res.data.state], [503, 'BILLING_LIVE_MODE_NOT_APPROVED']);
       assert.equal(live.stripe.sim.customers.size, 0, 'kein Aufruf bei Stripe');
       assert.equal((await b.get('/v1/me')).data.billingAvailable, false);
     } finally { await live.close(); }
+  });
+
+  await t.test('Checkout nur fuer Tester (VU_CHECKOUT_ACCESS = testers), Abbruch bleibt Free', async () => {
+    const gated = await createEnvironment({envOverrides: {VU_CHECKOUT_ACCESS: 'testers'}});
+    try {
+      assert.equal((await gated.browser().get('/v1/plans')).data.checkout, 'testers');
+      const b = await signedIn(gated, 'lea@example.test');
+      const denied = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+      assert.deepEqual([denied.status, denied.data.state], [403, 'CHECKOUT_NOT_OPEN']);
+      assert.equal(gated.stripe.sim.customers.size, 0, 'kein Stripe-Kunde fuer Nicht-Tester');
+      assert.equal((await b.get('/v1/me/billing')).data.checkoutAllowed, false);
+      // Selbst vergeben geht nicht (nur lesbar); der Betrieb vergibt die Rolle per Service.
+      assert.equal(await gated.pg.json(`with x as (insert into public.user_roles (user_id, role)
+        select id, 'billing_tester' from auth.users where email = 'lea@example.test' returning 1) select to_json(count(*)) from x`), 1);
+      assert.equal((await b.get('/v1/me/billing')).data.checkoutAllowed, true);
+      const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+      assert.equal(ok.status, 200, JSON.stringify(ok.data));
+      // Abbruch im Checkout: kein Abo, kein Webhook, das Konto bleibt Free.
+      assert.equal((await gated.deliverWebhooks()).length, 0);
+      assert.equal((await b.get('/v1/me')).data.entitlements.plan_id, 'free');
+      const other = await signedIn(gated, 'max@example.test');
+      assert.equal((await other.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 403, 'Rolle gilt nur fuer das eine Konto');
+    } finally { await gated.close(); }
+    const off = await createEnvironment({envOverrides: {VU_CHECKOUT_ACCESS: 'off'}});
+    try {
+      const b = await signedIn(off, 'nina@example.test');
+      assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 403);
+    } finally { await off.close(); }
   });
 });
