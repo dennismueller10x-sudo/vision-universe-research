@@ -136,3 +136,11 @@ test("Zusammenfassung · ERROR macht FAIL, nur WARN macht WARN", () => {
   assert.equal(DQ.summarize([pass, warn, err]).overall, "FAIL");
   assert.equal(DQ.summarize([pass]).overall, "PASS");
 });
+
+test("DQ-TW-7 · Datenvertrag: Verstoesse werden einzeln gemeldet, fehlendes Artefakt ist ein Befund", () => {
+  const ok = DQ.technicalContract({ contract: "c-1.0.0", checked: 3, errors: [], counts: {} });
+  assert.equal(ok.status, "PASS");
+  const bad = DQ.technicalContract({ contract: "c-1.0.0", checked: 3, errors: [{ code: "RANGE", column: "rsi14", ticker: "A", value: 101 }], counts: { RANGE: 1 } });
+  assert.deepEqual(bad.samples, ["RANGE rsi14 A = 101"]);
+  assert.equal(DQ.technicalContract(null).failed, 1);
+});
