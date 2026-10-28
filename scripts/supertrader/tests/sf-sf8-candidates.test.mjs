@@ -12,7 +12,7 @@ import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } fro
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex } from '../source-faithful/product/detectors.mjs';
 import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
-import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, planView, chartMarks, publicFeatures } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, planView, chartMarks, publicFeatures } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG, RULE_LABELS } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
@@ -336,11 +336,11 @@ const numbersOf = (x, p = '') => (x && typeof x === 'object' ? Object.entries(x)
 // Risikoreferenz der Quelle (KK-034 Tagestief, MOKA12-007). Es erscheint als „Gap-Tief“ (GAP_DAY_LOW), nie als Stop und ohne
 // Plan; der Stop selbst (levels.stopReference) bleibt unveröffentlicht. Jede andere Übereinstimmung ist ein Fehler.
 const GAP_LOW_STRUCTURE = (v, p) => ['C09', 'C12'].includes(v.candidateId) && (p === '.levels.gapDayLow' || (p === '.pivot.level' && v.pivot?.kind === 'GAP_DAY_LOW' && v.pivot.level === v.levels?.gapDayLow));
-// Beschreibende Kennzahlen, die fachlich mit einer Order-Größe zusammenfallen (Owner-Punkt, wie closeVsGapLow): das 52-Wochen-Hoch
-// der Trendübersicht ist bei SEPA, Power Play und Holy Grail oft genau der Pivot bzw. das Touch-Hoch (Ausbruch am Hoch); die
-// Korrekturtiefe des Power Play ist der geplante Verlust am Pivot (Stop am Tief der Korrektur). Beide werden nie als Einstieg oder
-// Stop beschriftet; jede andere Übereinstimmung bleibt ein Fehler.
-const DESCRIPTIVE_COINCIDENCE = (v, p) => (p === '.trend.high252' && ['C06', 'C07', 'C13'].includes(v.candidateId)) || (p === '.features.correction' && v.candidateId === 'C07');
+// OFFENE OWNER-ENTSCHEIDUNG (docs/SUPERTRADER_8_CHART_STRUCTURE.md, Punkt 1): das 52-Wochen-Hoch der Trendübersicht (für jede Aktie
+// und Methode gleich, im Chart sichtbar, nie als Einstieg beschriftet) ist bei SEPA, Power Play und Holy Grail oft genau der Pivot
+// bzw. das Touch-Hoch. Lehnt der Owner ab, entfällt diese Ausnahme und trend.high252 wird für diese Methoden ausgeblendet.
+// Jede andere Übereinstimmung bleibt ein Fehler (die Power-Play-Korrekturtiefe ist seit 28.10. unterhalb von MODELED ausgeblendet).
+const DESCRIPTIVE_COINCIDENCE = (v, p) => p === '.trend.high252' && ['C06', 'C07', 'C13'].includes(v.candidateId);
 function orderValueLeaks(vs, ov) {
   const out = [];
   for (const v of vs) for (const [p, x] of numbersOf(v)) if (p !== '.close' && p !== '.trend.close' && !GAP_LOW_STRUCTURE(v, p) && !DESCRIPTIVE_COINCIDENCE(v, p)) for (const o of ov.get(v.recordId) ?? []) if (Math.abs(x - o) < 1e-9) out.push(`${v.candidateId} ${v.ticker} ${p} = ${o}`);
@@ -362,7 +362,7 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
   assert.equal(sorted.length, 55);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '67e9f420567a8d1ae75197d9d316620ef56051e14b968719be4a8f02f8a53e30');
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), 'c3963d8df8763cd1e71200efe2e27421fb5c3e0e8502e187713fcb24f90f5c96');
 });
 
 test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste Konfigurationstexte ohne Preis; die Vorschau zeigt nur die Regel', () => {
@@ -416,7 +416,12 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
   // Abstand dazu; der geplante Verlust am Pivot (plannedLossAtPivot) bleibt eine order-abgeleitete Kennzahl
   const c07 = below.filter((v) => v.candidateId === 'C07');
   assert.deepEqual(c07.map((v) => `${v.ticker}:${v.stage}`).sort(), ['MGLD:CONFIRMED_RESEARCH_SETUP', 'WDAY:CHART_CANDIDATE']);
-  for (const v of c07) { assert.deepEqual(v.levels, {}); assert.equal(v.pivot, null); assert.equal(v.sortKeys.pivot, null); assert.ok(!('plannedLossAtPivot' in v.features), v.ticker); }
+  for (const v of c07) {
+    assert.deepEqual(v.levels, {}); assert.equal(v.pivot, null); assert.equal(v.sortKeys.pivot, null);
+    // die Korrekturtiefe ist rechnerisch der geplante Verlust am Pivot (1 - Stop / Pivot): wie plannedLossAtPivot ausgeblendet
+    for (const k of ['plannedLossAtPivot', 'correction']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
+  }
+  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C07: ['correction'] });
   // Katalog: das Gap-Tief ist Chartstruktur, kein bestätigter Stop; die Risikoreferenz gehört nur zum modellierten Ablauf
   const bgu = STRATEGY_CATALOG.find((c) => c.candidateId === 'C12');
   assert.match(bgu.short, /Gap-Tief ist Chartstruktur, kein bestätigter Stop/); assert.doesNotMatch(bgu.short, /Risikoreferenz/);
@@ -434,12 +439,16 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // jede Marke des Charts ist genau eine dieser Zeilen; Einstieg und Stop nur im Zweig `if (v.plan)`, aus v.plan
   const pushes = draw.split('\n').filter((l) => /levels\.push\(/.test(l));
   assert.equal(pushes.length, 2, pushes.join('\n'));
-  assert.match(pushes[0], /^\s*if \(v\.pivot && fin\(v\.pivot\.level\)\) levels\.push\(\{ id: 'pivot', label: 'Chartstruktur: ' \+ structTxt\(v\.pivot\.kind\), value: v\.pivot\.level, color: 'var\(--chart-box-base\)'/);
+  assert.match(pushes[0], /^\s*if \(structOf\(v\.pivot\)\) levels\.push\(\{ id: 'pivot', label: 'Chartstruktur: ' \+ STRUCT_TXT\[v\.pivot\.kind\], value: v\.pivot\.level, color: 'var\(--chart-box-base\)'/);
   // die Beschriftung der Struktur kommt aus einer festen Tabelle ohne Orderwort, nicht in der Farbe des Triggers
-  const structTable = ui.slice(ui.indexOf('var STRUCT_TXT = {'), ui.indexOf('function structTxt('));
+  const structTable = ui.slice(ui.indexOf('var STRUCT_TXT = {'), ui.indexOf('function structOf('));
   assert.ok(structTable.length > 20);
-  assert.deepEqual([...structTable.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko|Pivot/i.test(x)), []);
-  assert.match(ui, /function structTxt\(kind\) \{ return STRUCT_TXT\[kind\] \|\| 'Chartstruktur'; \}/);
+  // wörtlich festgeschrieben (Review: ein Etikett wie „Gap-Tief (Ausstieg)“ darf nicht durchgehen); nur belegte Strukturarten
+  assert.match(structTable, /^var STRUCT_TXT = \{ BOX_TOP: 'Box-Obergrenze', WEEKLY_RESISTANCE: 'Widerstand \(Woche\)', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch \(10 Tage\)', GAP_DAY_LOW: 'Gap-Tief' \};\s*\/\/[^\n]*\n\s*$/);
+  assert.deepEqual([...structTable.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Verkauf|Trigger|Risiko|Pivot|Ausstieg|Exit|Verlust|Ziel/i.test(x)), []);
+  assert.deepEqual(Object.keys(EXPECTED_MARK).map((c) => EXPECTED_MARK[c][1]).filter((k, i, a) => a.indexOf(k) === i).sort(), ['BOX_TOP', 'CONSOLIDATION_10_LEVEL', 'GAP_DAY_LOW', 'WEEKLY_RESISTANCE']);
+  // eine Engine-Marke des modellierten Ablaufs (z. B. RUN_UP_HIGH = Einstieg) wird nie als Chartstruktur gezeigt
+  assert.match(ui, /function structOf\(p\) \{ return p && fin\(p\.level\) && STRUCT_TXT\[p\.kind\] \? p : null; \}/);
   assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
   assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
@@ -456,7 +465,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.ok(card.length > 500, 'card gefunden');
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
   assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
-  assert.match(card, /pair\('Chartstruktur', usd\(p\.level\), structTxt\(p\.kind\) \+ ' · ' \+ pct\(p\.distance, 1, true\)\)/);
+  assert.match(card, /pair\('Chartstruktur', usd\(p\.level\), STRUCT_TXT\[p\.kind\] \+ ' · ' \+ pct\(p\.distance, 1, true\)\)/);
+  assert.match(card, /var p = structOf\(v\.pivot\)/);
   for (const m of card.matchAll(/(?<!function )pair\(([^,]+),/g)) assert.match(m[1].trim(), /^'[^']*'$/, `Kartenzeile ${m[1]}`);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;

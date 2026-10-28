@@ -181,10 +181,14 @@ export function chartMarks(det, stage, close) {
 // Kennzahlen, aus denen sich Order- oder Stopmarken der Quelle zurückrechnen ließen (Abstand zum Trigger, Risiko
 // bis zum Stop, Verkaufsführung): unterhalb von MODELED nicht öffentlich.
 export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposedStopRiskPct', 'riskGuide15pct', 'plannedLossAtPivot', 'sellGuide']);
+// Je Methode: Kennzahlen, die rechnerisch eine Order-Größe sind. Power Play: die Korrekturtiefe ist genau der geplante Verlust
+// am Pivot (Stop am Tief der Korrektur, research/minervini-lifecycle.mjs: plannedLossAtPivot = 1 - stop / pivot).
+export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C07: Object.freeze(['correction']) });
 export function publicFeatures(det, stage) {
   const f = det.features ?? {};
   if (stage === STAGE.MODELED_TRADE_PLAN) return f;
-  return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k)));
+  const cid = candidateIdOf(det.strategyId), extra = (cid && ORDER_DERIVED_BY_METHOD[cid]) || [];
+  return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k) && !extra.includes(k)));
 }
 
 /**

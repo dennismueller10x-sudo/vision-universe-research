@@ -81,7 +81,8 @@
   }
   // Chartstruktur unterhalb des modellierten Ablaufs (records.mjs#STRUCTURE_MARK): beschreibende Marken, nie Einstieg oder Stop
   var STRUCT_TXT = { BOX_TOP: 'Box-Obergrenze', WEEKLY_RESISTANCE: 'Widerstand (Woche)', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch (10 Tage)', GAP_DAY_LOW: 'Gap-Tief' };
-  function structTxt(kind) { return STRUCT_TXT[kind] || 'Chartstruktur'; }
+  // nur belegte Strukturarten; die Engine-Marke eines modellierten Ablaufs (Einstieg) ist keine Chartstruktur
+  function structOf(p) { return p && fin(p.level) && STRUCT_TXT[p.kind] ? p : null; }
   var cache = {};
   function getJSON(rel) { if (!cache[rel]) cache[rel] = fetch(DATA + rel, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); return cache[rel]; }
   function fin(v) { return typeof v === 'number' && isFinite(v); }
@@ -267,14 +268,14 @@
   /* ----------------------------------------------- Kandidatenkarte */
   function card(v, s, L, opts) {
     opts = opts || {};
-    var p = v.pivot, t = v.trend || {};
+    var p = structOf(v.pivot), t = v.trend || {};
     var head = h('div', { class: 'sf-card-h' }, [
       h('div', { class: 'sf-card-id' }, opts.compact ? [h('a', { class: 'sf-sym', href: stockUrl(v.ticker), text: v.ticker }), h('span', { class: 'sf-nm', text: v.companyName || '' })] : [h('strong', { class: 'sf-meth', text: s ? s.name : 'Methode' })]),
       stageBadge(v.stage),
     ]);
     var nums = h('dl', { class: 'sf-nums' }, [
       pair('Schluss', usd(v.close)),
-      p ? pair('Chartstruktur', usd(p.level), structTxt(p.kind) + ' · ' + pct(p.distance, 1, true)) : null,
+      p ? pair('Chartstruktur', usd(p.level), STRUCT_TXT[p.kind] + ' · ' + pct(p.distance, 1, true)) : null,
       pair('Volumen', times(t.volumeVs50d), '50-Tage-Schnitt'),
       pair('Trend', pct(t.ret63, 0, true), '63 Tage'),
     ]);
@@ -362,7 +363,7 @@
       [[10, 'var(--ma10)', ['C08', 'C10', 'C11']], [20, 'var(--ma20)', ['C08', 'C13']], [50, 'var(--ma50)', null], [200, 'var(--ma200)', ['C06']]].forEach(function (m) { overlays.push({ id: 'ma' + m[0], label: m[0] + '-Tage-Linie', color: m[1], values: STChart.sma(bars.close, m[0]), on: m[2] ? m[2].indexOf(v.candidateId) >= 0 : true }); });
       if (weekly) overlays.push({ id: 'ma150', label: '30-Wochen-Linie (≈150 Tage)', color: 'var(--ma30w)', values: STChart.sma(bars.close, 150) });
       // Einstiegs- und Stop-Marken nur im modellierten Ablauf; sonst nur die Chartstruktur der Methode (Review M2, Owner 28.10.2026)
-      if (v.pivot && fin(v.pivot.level)) levels.push({ id: 'pivot', label: 'Chartstruktur: ' + structTxt(v.pivot.kind), value: v.pivot.level, color: 'var(--chart-box-base)', dash: '6 4' });
+      if (structOf(v.pivot)) levels.push({ id: 'pivot', label: 'Chartstruktur: ' + STRUCT_TXT[v.pivot.kind], value: v.pivot.level, color: 'var(--chart-box-base)', dash: '6 4' });
       if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Modell-Einstiegsmarke', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Modell-Stop', value: v.plan.stop, color: 'var(--chart-stop)' }); }
       if (lv.box && fin(lv.box.top)) boxes.push({ from: lv.box.from, to: null, top: lv.box.top, bottom: lv.box.bottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box' });
       STChart.render(box, { bars: bars, mode: 'candles', window: weekly ? 180 : 120, overlays: overlays, levels: levels, boxes: boxes, markers: [], showVolume: true, title: v.ticker, status: 'Marken der Methode ' + (s ? s.name : '') + '. Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
