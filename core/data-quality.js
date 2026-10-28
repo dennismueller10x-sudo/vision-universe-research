@@ -384,6 +384,7 @@
   var SF8_FEATURE_OBJECTS = { momentum: ["p1m", "p3m", "p6m", "best", "r1m", "r3m", "r6m"], vcpFootprint: ["contractions", "depths", "contractingLeftToRight", "lastContractionVolumeVs50d", "baseSessions"] };
   var SF8_LEVEL_OBJECTS = { box: ["from", "to", "top", "bottom"] };
   var SF8_PIVOT_KEYS = ["level", "kind", "distance"];
+  var SF8_ROW_KEYS = ["c", "t", "n", "s", "r", "pd", "v", "m", "q", "sh", "x"];
   /* Schluessel in levels, aus dem die Chartmarke stammt (records.mjs#STRUCTURE_MARK) */
   var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C06: "pivot", C07: "pivot", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
   function sf8Primitive(x) { return x === null || ["string", "number", "boolean"].indexOf(typeof x) >= 0; }
@@ -551,6 +552,20 @@
         if (!SF8_PIVOT_KINDS[v.candidateId]) fail.push(where + ": Chartmarke, obwohl die einzige Marke der Quelle die Order ist");
         else if (v.pivot.kind !== SF8_PIVOT_KINDS[v.candidateId]) fail.push(where + ": Chartmarke " + v.pivot.kind + " (erwartet " + SF8_PIVOT_KINDS[v.candidateId] + ")");
       }
+    });
+    /* vierte Nachpruefung: auch die Strategie-Eintraege (Lesarten der Referenz) und die Kurzzeilen tragen keine Orderpreise */
+    var strategyLists = [["index.json", ((b.index || {}).strategies) || []], ["summary.json", ((b.summary || {}).strategies) || []]];
+    Object.keys(b.strategies || {}).forEach(function (c) { if (b.strategies[c]) strategyLists.push(["strategy/" + c, [b.strategies[c]]]); });
+    strategyLists.forEach(function (l) {
+      l[1].forEach(function (st) {
+        (st.readings || []).forEach(function (r) {
+          Object.keys(r || {}).forEach(function (k) { if (["ruleId", "reading"].indexOf(k) < 0) fail.push(l[0] + " " + st.candidateId + ": readings." + k + " ist nicht vorgesehen"); });
+          if (sf8PriceInText(r) || hasNumber(r)) fail.push(l[0] + " " + st.candidateId + ": Preis oder Zahl in einer Lesart (" + r.ruleId + ")");
+        });
+      });
+    });
+    sf8Rows(b).forEach(function (x) {
+      Object.keys(x.r).forEach(function (k) { if (SF8_ROW_KEYS.indexOf(k) < 0) fail.push(x.where + " " + x.r.c + " " + x.r.t + ": Feld " + k + " gehoert nicht zur Kurzzeile"); });
     });
     return result("DQ-SF8-4", "SF8 ohne Order-/Stopmarken unterhalb des modellierten Ablaufs", "ERROR", checked, fail);
   }

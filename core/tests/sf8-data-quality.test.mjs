@@ -170,6 +170,13 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
     "Zahl in planBlockers": (v) => { v.C03[0].planBlockers = [23]; }
   };
   for (const [name, mut] of Object.entries(probes)) assert.ok(failing(bundle(mut)).includes("DQ-SF8-4"), name);
+  /* vierte Nachpruefung (M2): Lesarten der Strategie und Kurzzeilen */
+  const rd = (r) => { const b = bundle(); b.summary.strategies[0].readings = [r]; return failing(b).includes("DQ-SF8-4"); };
+  assert.ok(rd({ ruleId: "TUR-SF-S1-OPEN-BREAKOUT", reading: "openBreakout=SKIP (Kanalhoch 348.37)" }), "Preis in einer Lesart");
+  assert.ok(rd({ ruleId: "TUR-SF-S1-OPEN-BREAKOUT", reading: "x", level: 348 }), "Feld in einer Lesart");
+  assert.ok(!rd({ ruleId: "MOKA-SF-BGU-VOLWINDOW", reading: "MA-MOKA-BGU-VOLWINDOW 50 sessions (owner decision D-BGU-VOLWINDOW)" }), "echte Lesart bleibt gruen");
+  const rowProbe = bundle(); rowProbe.summary.top = { C03: [{ c: "C03", t: "AAPL", s: "CHART_CANDIDATE", q: "PASS", trigger: 101.2 }] };
+  assert.ok(failing(rowProbe).includes("DQ-SF8-4"), "Feld in einer Kurzzeile");
   /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur, Box als Objekt */
   assert.ok(!failing(bundle((v) => {
     v.C06[0].features = { vcpFootprint: { contractions: 3, depths: [0.23, 0.07], contractingLeftToRight: false, lastContractionVolumeVs50d: 0.95, baseSessions: 58 } };
