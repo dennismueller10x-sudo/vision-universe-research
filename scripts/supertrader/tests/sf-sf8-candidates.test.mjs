@@ -480,8 +480,8 @@ test('SF8-NO-BAR-RECONSTRUCTION: kein veröffentlichtes Feld ergibt mit den Tage
 // Widerstand, Trigger oder Stopreferenz (Weinstein) bzw. ergibt als N/nPct den Stop (Turtle: Trigger − 2·x, − 2·x·Schluss).
 // Ausgenommen sind Zielwerte, die schon allgemeine Chartinformation sind (52-Wochen-Hoch, Stichtag und Vortag, ± 1 Tick).
 // Review 28.10.: zusätzlich die Suche über alle früheren Wochenhochs r als möglichen Widerstand – ein Feld ist ein Anker, wenn es
-// als Quote zwischen r, r + Tick oder max(Eröffnung am Ausbruchstag, r + Tick) und dem nächsthöheren Wochenhoch oder dem
-// Schluss genau einen Kandidaten übrig lässt und das der echte Widerstand ist (so fiel overheadDistance auf).
+// als Quote des nächsthöheren Wochenhochs zu max(Eröffnung am Ausbruchstag, r + Tick) genau einen Kandidaten übrig lässt und das
+// der echte Widerstand ist (so fiel overheadDistance auf; geprüft werden die strategiebezogenen Kennzahlen unter features).
 // Was die öffentliche Regel allein aus den Kursen ergibt (Weinstein: letztes Wochen-Swinghoch bzw. Basisbeginn; Turtle:
 // Kanalhoch + Tick, N aus den Kursen), ist Regelwissen ohne Feld und nicht Gegenstand dieses Tests (Owner-Bericht).
 function weinsteinTurtleLeaks(v, bars, det) {
@@ -500,11 +500,12 @@ function weinsteinTurtleLeaks(v, bars, det) {
     const wk = weeklyBars(bars), w = wk.findIndex((b) => b.key === (v.levels ?? {}).breakoutWeek), bd = bars.find((b) => b.date === (v.levels ?? {}).breakoutDay);
     if (w > 0 && bd && Number.isFinite(lv.resistance) && !general.some((g) => exact(g, lv.resistance))) {
       const wt = rawTickAdjusted(wk[w - 1]), highs = [...new Set(wk.slice(0, w).map((b) => b.high))].sort((a, b) => a - b);
-      const near5 = (a, b) => Math.abs(a - b) <= 5e-5 * Math.max(1, Math.abs(b));
+      const r4 = (y) => Math.round(y * 1e4) / 1e4;
       for (const [p, x] of nums) {
-        if (!(Math.abs(x) < 1 && x !== 0 && !Number.isInteger(x))) continue;
-        // je Kandidat r: nächsthöheres Wochenhoch h; Quoten h / c − 1 und c / h − 1 sowie der Abstand zum Schluss
-        const hit = highs.filter((r, j) => { const h = highs[j + 1]; return [r, r + wt, Math.max(bd.open, r + wt)].some((c) => (h !== undefined && (near5(h / c - 1, x) || near5(c / h - 1, x))) || near5(bars[i].close / c - 1, x) || near5(c / bars[i].close - 1, x)); });
+        if (Number.isInteger(x) || !p.startsWith('features.')) continue;
+        // je Kandidat r: nächsthöheres Wochenhoch h, Quote h / max(Eröffnung, r + Tick) − 1 auf 4 Stellen (Form der Überkopf-Distanz);
+        // enger als eine Suche über viele Quoten, die mehrere Kandidaten übrig ließe (Review 28.10.: Erkennung 149 → 238 von 422)
+        const hit = highs.filter((r, j) => highs[j + 1] !== undefined && r4(highs[j + 1] / Math.max(bd.open, r + wt) - 1) === x);
         if (hit.length === 1 && Math.abs(hit[0] - lv.resistance) < 1e-9) out.push(`${p} → Widerstand (eindeutig über die Wochenhochs)`);
       }
     }
@@ -526,11 +527,10 @@ test('SF8-WEINSTEIN-TURTLE-ADVERSARIAL: kein Feld ergibt mit Wochen- oder Tagesk
   assert.deepEqual(below.flatMap((v) => weinsteinTurtleLeaks(v, barsOf(v), det(v)).map((d) => `${v.candidateId} ${v.ticker} ${d}`)), []);
   // Gegenproben: der genaue Widerstand bzw. N, wieder eingesetzt, fiele auf
   for (const [c, put] of [['C04', (w, d) => { w.levels.resistance = d.levels.resistance; }], ['C05', (w, d) => { w.levels.resistance = d.levels.resistance; }], ['C04', (w, d) => { w.pivot = { level: d.levels.resistance, kind: 'WEEKLY_RESISTANCE', distance: 0 }; }],
-    // overheadDistance = nächstes höheres Wochenhoch / max(Eröffnung, Trigger) − 1; eröffnet die Ausbruchssitzung unter dem Trigger
-    // (290/422 C04, 282/379 C05 im Volllauf), steht der Trigger selbst im Nenner – so nachgestellt, da die Golden Cases darüber eröffnen
-    ['C04', (w, d, b) => { const od = d.features.overheadDistance, o = b.find((x) => x.date === d.levels.breakoutDay)?.open; if (Number.isFinite(od)) w.features.overheadDistance = Math.round(((1 + od) * Math.max(o, d.levels.trigger) / d.levels.trigger - 1) * 1e4) / 1e4; }],
+    // overheadDistance = nächsthöheres Wochenhoch / max(Eröffnung, Trigger) − 1: der Detektorwert, wieder eingesetzt
+    ['C04', (w, d) => { w.features.overheadDistance = d.features.overheadDistance; }], ['C05', (w, d) => { w.features.overheadDistance = d.features.overheadDistance; }],
     ['C01', (w, d) => { w.features.N = d.features.N; }], ['C02', (w, d) => { w.features.nPct = d.features.nPct; }]]) {
-    const hits = below.filter((v) => v.candidateId === c).filter((v) => { const d = det(v), w = structuredClone(v); put(w, d, barsOf(v)); return weinsteinTurtleLeaks(w, barsOf(v), d).length; });
+    const hits = below.filter((v) => v.candidateId === c).filter((v) => { const d = det(v), w = structuredClone(v); put(w, d); return weinsteinTurtleLeaks(w, barsOf(v), d).length; });
     assert.ok(hits.length >= 1, `${c} ${put}`);
   }
 });
