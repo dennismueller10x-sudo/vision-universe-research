@@ -30,13 +30,32 @@ test("Register · jede Domaene ist vollstaendig beschrieben und eindeutig", () =
   }
 });
 
-test("Register · jedes kanonische Artefakt liegt im Repository", () => {
-  for (const d of registry.domains) assert.ok(existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": " + d.artifact);
+const prepared = (d) => !!(d.activation && d.activation.state === "PREPARED_DISABLED");
+const activating = (d) => !!(d.activation && d.activation.state === "ACTIVATING");
+
+test("Register · jedes kanonische Artefakt liegt im Repository (vorbereitete Datenarten: gerade NICHT)", () => {
+  for (const d of registry.domains) {
+    if (prepared(d)) assert.ok(!existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": Artefakt ohne Freigabe veroeffentlicht " + d.artifact);
+    else if (activating(d)) continue; /* freigegeben, erster Lauf ausstehend: mit oder ohne Artefakt */
+    else assert.ok(existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": " + d.artifact);
+  }
+});
+
+test("Register · Aktivierungszustand: nur PREPARED_DISABLED oder ACTIVATING, mit Entscheidung; sonst kein Feld", () => {
+  for (const d of registry.domains) {
+    if (d.activation === undefined) continue;
+    assert.ok(["PREPARED_DISABLED", "ACTIVATING"].includes(d.activation.state), d.id + ": unbekannter Aktivierungszustand");
+    assert.ok(typeof d.activation.decision === "string" && d.activation.decision.length > 20, d.id + ": ohne Entscheidung");
+    assert.equal(d.critical, false, d.id + ": eine nicht freigegebene Datenart ist nie kritisch");
+  }
+  assert.ok(typeof registry.activation === "string", "Kopf erklaert den Aktivierungszustand");
 });
 
 test("Register · jeder genannte Workflow und jedes Erzeugerskript existiert", () => {
   for (const d of registry.domains) {
     for (const wf of String(d.workflow || "").match(/[\w-]+\.yml/g) || []) {
+      /* Einzige Ausnahme: eine vorbereitete Datenart, deren (abgeschalteter) Workflow noch in einem offenen PR liegt. */
+      if (prepared(d) && !existsSync(join(ROOT, ".github", "workflows", wf))) { assert.match(String(d.activation.pendingWorkflow), /^PR #\d+$/, d.id + ": Workflow " + wf); continue; }
       assert.ok(existsSync(join(ROOT, ".github", "workflows", wf)), d.id + ": Workflow " + wf);
     }
     for (const p of String(d.producer).match(/scripts\/[\w/.-]+\.(?:mjs|py|js)/g) || []) {
@@ -48,6 +67,7 @@ test("Register · jeder genannte Workflow und jedes Erzeugerskript existiert", (
 test("Register · das Register liest seine Felder wirklich aus den Artefakten", () => {
   /* Ein Tippfehler im Pfad ergaebe still UNKNOWN statt eines Urteils. */
   for (const d of registry.domains) {
+    if (prepared(d) || (activating(d) && !existsSync(join(ROOT, d.artifact.slice(1))))) continue; /* Artefakt existiert (noch) nicht */
     const data = JSON.parse(readFileSync(join(ROOT, d.artifact.slice(1)), "utf8"));
     if (d.disabledWhen && Health.at(data, d.disabledWhen.path) === d.disabledWhen.equals) continue;
     if ((d.timestamp || []).length) assert.ok(d.timestamp.some((p) => Health.at(data, p)), d.id + ": kein Zeitstempel unter " + d.timestamp);
@@ -171,4 +191,39 @@ test("Register · repositoryOnly stimmt mit der Release-Regel ueberein", async (
     const ausgeliefert = permitted(d.artifact.slice(1));
     assert.equal(!!d.repositoryOnly, !ausgeliefert, d.id + ": repositoryOnly=" + !!d.repositoryOnly + ", ausgeliefert=" + ausgeliefert);
   }
+});
+
+test("Vorbereitete Datenart · fehlt = DISABLED (NOT_ACTIVATED), liegt vor = FAILED, unlesbar bleibt FAILED", () => {
+  const d = dom({ timestamp: [], asOf: ["asOf"], records: "counts.candidates", freshness: { kind: "sessions", warnAfter: 1, staleAfter: 2 }, activation: { state: "PREPARED_DISABLED", decision: "Test" } });
+  const missing = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT));
+  assert.equal(missing.domains[0].status, "DISABLED"); assert.equal(missing.domains[0].reason, "NOT_ACTIVATED");
+  assert.equal(missing.overall, "OK", "zieht die Plattform nicht herunter");
+  const site = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "HTTP 404 /x.json" } }, ctx(SAT));
+  assert.equal(site.domains[0].status, "DISABLED");
+  for (const error of ["Unexpected token } in JSON", "HTTP 500 /x.json", "ausserhalb des Repositorys: /x.json", undefined]) {
+    const r = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error } }, ctx(SAT)).domains[0];
+    assert.equal(r.status, "FAILED", String(error)); assert.equal(r.reason, "ARTIFACT_UNREADABLE");
+  }
+  assert.equal(Health.evaluate({ domains: [d] }, {}, ctx(SAT)).domains[0].status, "FAILED", "nicht geladen ist nicht fehlend");
+  const published = run(d, { asOf: "2026-10-02", counts: { candidates: 3 } });
+  assert.equal(published.status, "FAILED"); assert.equal(published.reason, "PUBLISHED_WITHOUT_ACTIVATION");
+  /* ohne den Zustand: dieselbe Datenart ist normal bewertet - fehlt = FAILED, frisch = OK, Zaehlfeld gelesen */
+  const active = Object.assign({}, d, { activation: undefined });
+  assert.equal(run(active, undefined).status, "FAILED");
+  const ok = run(active, { asOf: "2026-10-02", counts: { candidates: 3 } });
+  assert.equal(ok.status, "OK"); assert.equal(ok.records, 3);
+  assert.equal(run(active, { asOf: "2026-09-28", counts: { candidates: 3 } }).status, "STALE");
+});
+
+test("Freigegebene Datenart vor dem ersten Lauf (ACTIVATING) · fehlt = DISABLED, liegt vor = normal bewertet; unbekannter Zustand = FAILED", () => {
+  const base = { timestamp: [], asOf: ["asOf"], records: "counts.candidates", freshness: { kind: "sessions", warnAfter: 1, staleAfter: 2 } };
+  const d = dom(Object.assign({}, base, { activation: { state: "ACTIVATING", decision: "Test" } }));
+  const missing = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT)).domains[0];
+  assert.equal(missing.status, "DISABLED"); assert.equal(missing.reason, "AWAITING_FIRST_RUN");
+  assert.equal(Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "HTTP 500 /x.json" } }, ctx(SAT)).domains[0].status, "FAILED");
+  assert.equal(run(d, { asOf: "2026-10-02", counts: { candidates: 3 } }).status, "OK");
+  assert.equal(run(d, { asOf: "2026-09-28", counts: { candidates: 3 } }).status, "STALE");
+  const odd = dom(Object.assign({}, base, { activation: { state: "ACTIVE", decision: "Test" } }));
+  const r = Health.evaluate({ domains: [odd] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT)).domains[0];
+  assert.equal(r.status, "FAILED"); assert.equal(r.reason, "UNKNOWN_ACTIVATION_STATE");
 });
