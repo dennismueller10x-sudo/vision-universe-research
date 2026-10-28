@@ -41,8 +41,8 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | B1 Jeder Indikator mit naiver Referenzformel, Aufwärmphase, Kausalität und Determinismus getestet | ✔ | 92/92: `technical-indicators*.test.mjs` | – |
 | B2 Jeder Indikator gegen eine fremde Implementierung auf echten Kursen geprüft (TA-Lib 0.8.2 oder pandas-ta) | ✔ | 92/92: INDICATORS_EXTERNAL_REFERENCE.md, Fixtures unter `quant/tests/fixtures` | – |
-| B3 Eine Rechnung für Screener und Chart: Screener-Wert = `Indicators.compute` auf demselben Bündel | ◐ | Universumsvergleich am 28.10. (DATA_CONTRACT.md): RSI 14 und ADX im Chart (270 Bars) gegen den Screener (Vollhistorie). Median der Abweichung 0,003, also Rundung. Alle Ausreißer sind eingefrorene Reihen (AP1). MACD-Vorzeichen stimmt bis auf Histogramm = 0. Ein dauerhafter Test für weitere Spalten fehlt noch (AP3). | P0 |
-| B4 Fachlich wichtige Katalogindikatoren sind im Produkt nutzbar (Screener-Feld und/oder Chart) | ◐ | 24 von 92 integriert. Auswahl nach Relevanz statt Anzahl (Liste in AP5). | P1 |
+| B3 Eine Rechnung für Screener und Chart: Screener-Wert = `Indicators.compute` auf demselben Bündel | ✔ | Dauerhafter E2E-Test `technical/tests/technical-e2e-consistency.test.mjs` (#1080, erweitert in AP5b): 26 Indikatorspalten, Formationen und Kerzenmuster der Trefferzeile entsprechen Chart Studio. Universumsvergleich am 28.10.: Median der Abweichung 0,003; alle Ausreißer waren eingefrorene Reihen (AP1). | – |
+| B4 Fachlich wichtige Katalogindikatoren sind im Produkt nutzbar (Screener-Feld und/oder Chart) | ◐ | Jedes Indikatorfeld des Screeners ist in Chart Studio darstellbar (AP5b, `model.js#FIELD_CHART`, Test). Ausnahme ist die relative Stärke (G4). Weitere Katalogindikatoren nur nach Relevanz (P2). | P1 |
 
 ### C. Candlestick-Erkennung
 
@@ -50,7 +50,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | C1 62 Muster gegen TA-Lib bzw. konstruierte Fälle, Kausalität und Aufwärmphase | ✔ | `technical-candlesticks*.test.mjs`, CANDLESTICKS.md | – |
 | C2 Muster im Screener (heute, Fenster, Tag/Woche/Monat) | ◐ | 27 Muster im Tages-Screener. Woche/Monat (L7) sind bis zur Materialisierung `null`, Prüfung am 29.10. | P1 |
-| C3 Muster im Chart sichtbar (Marker je Bar) | ✘ | 0 von 62 im Chart Studio. → **AP5** | P1 |
+| C3 Muster im Chart sichtbar (Marker je Bar) | ✔ (nach Merge AP5) | Schicht „Kerzenmuster“ in Chart Studio, mit denselben 27 Mustern wie der Screener (`model.js#candleMarks`). Der E2E-Test prüft, dass die Marken am letzten Bar den Spalten der Trefferzeile entsprechen; die Browser-QA prüft Ein- und Ausschalten. Die übrigen 35 Muster stehen nur im Katalog (P2). | P1 |
 | C4 Evidenz mit Grenzen dokumentiert | ✔ | CANDLESTICK_EVIDENCE.md inkl. Marktphasen (#1071) | – |
 
 ### D. Chartformationen und geometrische Korrektheit
@@ -89,8 +89,8 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | G1 Kurs, 13 Schichten, 11 Unterfenster, Formationen mit Linien, Zeitraum, Hell/Dunkel, 390/1280 px | ✔ | Browser-QA in `technical-ci.yml` | – |
 | G2 Gezeichnete Linien = Rechnung (Bar-Raum) | ✔ | `chart.js` x = Bar-Index. Validator §8 | – |
-| G3 Kerzenmuster als Marker | ✘ | → AP5 | P1 |
-| G4 Relevante Katalogindikatoren wählbar | ◐ | 24 von 92 → AP5 | P1 |
+| G3 Kerzenmuster als Marker | ✔ (nach Merge AP5) | siehe C3 | P1 |
+| G4 Relevante Katalogindikatoren wählbar | ◐ (nach Merge AP5b) | 30 Indikatoren im Chart. 49 von 52 Indikatorfeldern des Screeners haben eine Darstellung, Werte gleich der Trefferzeile (E2E, 26 Spalten). Offen: relative Stärke ggü. SPY (`rs3m`, `rs6m`, `rsPositive`); dafür bräuchte der Browser die SPY-Reihe. | P1 |
 
 ### H. Historische Evidenz und methodische Grenzen
 
