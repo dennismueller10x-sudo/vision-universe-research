@@ -1,0 +1,88 @@
+name: Brand Media · Higgsfield Bilder
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: validate (no API call), estimate (price query only) or generate (paid, needs approval and budget)
+        type: choice
+        required: true
+        options: [validate, estimate, generate]
+      job:
+        description: Job file under brand-media/higgsfield/image-jobs/
+        type: string
+        required: true
+      budget_usd:
+        description: Spending cap in USD for generate; blocks when the estimate is higher
+        type: string
+        required: false
+      paid_approval:
+        description: APPROVE-HIGGSFIELD-IMAGE-JOB, or APPROVE-HIGGSFIELD-IMAGE-JOB-WITHOUT-ESTIMATE when the provider returns no price
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: higgsfield-paid-generation
+  cancel-in-progress: false
+
+jobs:
+  images:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted main branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Run image job; generate submits each image once, sequentially, without retries
+        env:
+          HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
+          INPUT_ACTION: ${{ inputs.action }}
+          INPUT_JOB: ${{ inputs.job }}
+          INPUT_BUDGET_USD: ${{ inputs.budget_usd }}
+          INPUT_APPROVAL: ${{ inputs.paid_approval }}
+        run: |
+          set -euo pipefail
+          args=(--action "$INPUT_ACTION" --job "$INPUT_JOB")
+          if [ "$INPUT_ACTION" = generate ]; then
+            args+=(--budget-usd "$INPUT_BUDGET_USD" --approval "$INPUT_APPROVAL")
+          fi
+          python brand-media/higgsfield/images.py "${args[@]}"
+      - name: Contact sheet for review
+        if: inputs.action == 'generate'
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for dir in brand-media/output/higgsfield-images/*/; do
+            files=("$dir"*.png "$dir"*.jpg "$dir"*.jpeg "$dir"*.webp)
+            [ "${#files[@]}" -gt 0 ] || continue
+            inputs=(); filters=""
+            for i in "${!files[@]}"; do
+              inputs+=(-i "${files[$i]}")
+              filters+="[$i:v]scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:white[v$i];"
+            done
+            stack=""; for i in "${!files[@]}"; do stack+="[v$i]"; done
+            n=${#files[@]}; cols=$(( n < 3 ? n : 3 ))
+            layout=""; for i in "${!files[@]}"; do layout+="$(( (i % cols) * 512 ))_$(( (i / cols) * 512 ))|"; done
+            if [ "$n" -eq 1 ]; then
+              ffmpeg -nostdin -v error -y "${inputs[@]}" -filter_complex "${filters}[v0]null" -frames:v 1 "${dir}contact-sheet.jpg"
+            else
+              ffmpeg -nostdin -v error -y "${inputs[@]}" -filter_complex "${filters}${stack}xstack=inputs=$n:layout=${layout%|}:fill=white" -frames:v 1 "${dir}contact-sheet.jpg"
+            fi
+          done
+      - name: Upload images
+        if: always() && inputs.action == 'generate'
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+        with:
+          name: higgsfield-images-${{ github.run_id }}
+          path: brand-media/output/higgsfield-images/
+          if-no-files-found: warn
+          retention-days: 14

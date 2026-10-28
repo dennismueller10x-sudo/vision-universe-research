@@ -33,3 +33,27 @@ These tests use mocked responses and do not contact Higgsfield or incur charges.
 The official Wan 3.0 text-to-video schema documents `POST /alibaba/wan-3.0/text-to-video`, 2–30 seconds, 480p/720p/1080p, 9:16, `generate_audio`, and `enable_thinking`. Source: <https://docs.higgsfield.ai/docs/models/wan-3/text-to-video.md>. The manual `produce-three` action accepts only Wan 3.0 text-to-video, 1080p, 9:16, native audio, and exactly three independent prompts. It submits 6s, 6s, and 8s jobs sequentially, without references, estimate calls, retries, parallel submissions, or model fallbacks. It requires `APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS` and rejects workflow reruns. Each request uses a run-and-shot idempotency key. The phrase is not consumed across distinct workflow dispatches, so a new manual dispatch can authorize another set. Provider billing has no repository-enforced ceiling; actual costs may not be returned, and native audio does not guarantee only the requested natural effects. If a job remains nonterminal after polling, its request ID is recorded in the manifest for read-only retrieval; no replacement generation is submitted. Independent text-only clips cannot guarantee identical human identity between shots.
 
 The manual `produce-single-t2v` action supports one continuous text-to-video order: exactly 20 seconds, 1080p, 9:16, native audio, and no reference image or asset ID. It requires `APPROVE-WAN-3.0-SINGLE-CONTINUOUS-T2V-NO-ESTIMATE`, skips estimate calls, rejects workflow reruns, and submits one request with a run-specific idempotency key. Its manifest records the request ID immediately after submission, including when the provider job is still processing. The action never retries, changes models, or requests a top-up. The approval phrase is not consumed across separate manual dispatches; each new dispatch is a distinct paid authorization. The provider decides whether the account can accept the request, and this workflow does not impose a billing ceiling or guarantee the actual cost is returned. The generated original and JSON manifest are uploaded as the workflow artifact; a compressed preview can be made from the original after download.
+
+## Image jobs
+
+`images.py` and `.github/workflows/brand-media-higgsfield-images.yml` generate still images, for example character drafts and pose sheets for HyperFrames compositions. They share the client, secret handling and concurrency group with the video path but do not change it.
+
+A job is a reviewed JSON file in `image-jobs/` with a `job_id`, a `purpose` and 1–12 `images`. Each image names one model and only the fields that model documents (schemas from docs.higgsfield.ai, checked 2026-10-28):
+
+| `model` | Endpoint | References | Extra fields |
+|---|---|---|---|
+| `recraft-v4.1` | `recraft/v4.1/text-to-image` (1k) | none | `colors`, `background_color`, `output_format` |
+| `recraft-v4.1-pro` | `recraft/v4.1/pro/text-to-image` (2k) | none | `colors`, `background_color`, `output_format` |
+| `grok-image-2` | `xai/grok-imagine-image-2.0` (1k/2k) | 0–10 | `quality` |
+| `qwen-image-3` | `alibaba/qwen-image-3/text-to-image` (1k/2k) | none | `seed`, `negative_prompt` |
+| `qwen-image-3-edit` | `alibaba/qwen-image-3/edit` (1k/2k) | 1–3 | `seed`, `negative_prompt` |
+
+Unknown fields fail the job. References are PNG/JPEG paths under `brand-media/`. Qwen prompt rewriting is switched off so the character description stays as written.
+
+Actions:
+
+- `validate` checks the job file without an API call.
+- `estimate` uploads references and asks the estimate endpoint for every image. The documented response is `{"usd": "…"}`; a missing value is reported as unknown, never as zero.
+- `generate` needs `budget_usd` and `APPROVE-HIGGSFIELD-IMAGE-JOB`. It blocks when the summed estimate exceeds the budget. If the provider returns no price, only `APPROVE-HIGGSFIELD-IMAGE-JOB-WITHOUT-ESTIMATE` lets it continue. Images are submitted once each, sequentially, with run-specific idempotency keys and no retries; reruns are blocked. Images, `manifest.json` and a `contact-sheet.jpg` are kept as a 14-day workflow artifact. Nothing is published.
+
+Local check: `python brand-media/higgsfield/images.py --action validate --job brand-media/higgsfield/image-jobs/<job>.json`.
