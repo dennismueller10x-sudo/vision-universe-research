@@ -11,12 +11,15 @@ import datetime as dt
 import gzip
 import io
 import json
+import re
 
 import v10lib as L
 from v10lib import sec_lib
 
 YEARS = list(range(2000, 2027))
 PRIMARY = {'NYSE': 'XNYS', 'NASDAQ': 'XNAS', 'NYSE MKT': 'XASE', 'AMEX': 'XASE', 'NYSE AMERICAN': 'XASE'}
+# Nasdaq fifth-letter convention for 5-letter symbols (M/N/O/P preferred, R rights, U units, W warrants) and provider suffixes.
+NON_COMMON_SYMBOL = re.compile(r'(?:_P_|_WS?$|_U$|_R$|^[A-Z]{4}[MNOPRUW]$)')
 FRAME_OPTIONS = {'identityEvidence': True, 'identityEvidenceProtocolV10': True, 'corporateActionEvidence': True, 'listingLifecycleEvidence': True}
 
 
@@ -78,7 +81,7 @@ def main():
     assert cfg['options'] == FRAME_OPTIONS, cfg['options']
     master, by = L.master_rows()
     reg = None
-    ids, excluded, perYear = [], {}, {str(y): {'providerSeries': 0, 'qualified': 0, 'laterDelisted': 0, 'survivors': 0, 'foreignOrNonPrimaryExcluded': 0} for y in YEARS}
+    ids, excluded, perYear = [], {}, {str(y): {'providerSeries': 0, 'qualified': 0, 'laterDelisted': 0, 'survivors': 0} for y in YEARS}
     lifecycle = {}
     try:
         lc = json.loads(open(L.ROOT / 'docs/quant-recovery/v10/population/lifecycle-cases.json').read())
@@ -106,6 +109,10 @@ def main():
                 reg = json.loads(subprocess.check_output(['node', '-e', "process.stdout.write(JSON.stringify(require('./quant/engines/research-identity-evidence.cjs')))"], cwd=str(L.ROOT)))
             rec = next(x for x in reg['records'] if x['canonicalId'] == lid)
             exch = {'XNAS': 'NASDAQ', 'XNYS': 'NYSE', 'XASE': 'NYSE MKT'}[rec['mic']]
+        if NON_COMMON_SYMBOL.search(sid[4:]):
+            # the master marks many Nasdaq preferred/notes symbols EQUITY_COMMON; the symbol convention decides here
+            excluded['NON_COMMON_SYMBOL_CONVENTION'] = excluded.get('NON_COMMON_SYMBOL_CONVENTION', 0) + 1
+            continue
         if exch not in PRIMARY or (row and row.get('instrument_type') != 'EQUITY_COMMON'):
             excluded['NOT_PRIMARY_US_COMMON_VENUE'] = excluded.get('NOT_PRIMARY_US_COMMON_VENUE', 0) + 1
             continue
@@ -134,7 +141,7 @@ def main():
         p['coverageVs10KFilers'] = round(p['qualified'] / tk, 4) if tk else None
         p['survivorShare'] = round(p['survivors'] / p['qualified'], 4) if p['qualified'] else None
     idlist = [x['securityId'] for x in ids]
-    rule = {'loaderOptions': FRAME_OPTIONS, 'include': 'createResearchLoader(root, loaderOptions) QUALIFIED and listing exchange NYSE/NASDAQ/NYSE MKT(AMEX) and master instrument_type EQUITY_COMMON (or SEC-bound common)',
+    rule = {'loaderOptions': FRAME_OPTIONS, 'include': 'createResearchLoader(root, loaderOptions) QUALIFIED and listing exchange NYSE/NASDAQ/NYSE MKT(AMEX) and master instrument_type EQUITY_COMMON (or SEC-bound common) and symbol not a preferred/right/unit/warrant by the Nasdaq fifth-letter or provider suffix convention (_P_, _W, _WS, _U, _R, 4 letters + M/N/O/P/R/U/W)',
             'perYear': 'listing counted in ISO year y when its qualified weekly series has >= 1 bar in y (series are gap-free by validate())',
             'laterDelisted': 'listingLifecycle.status == DELISTED_SOURCE_VERIFIED (SEC-sourced last trading day)'}
     frame = {'schemaVersion': 'v10-population-frame-1.0.0', 'evidenceKind': 'SOURCE_EVIDENCE', 'certificationStatus': 'NOT_CERTIFIED', 'productionApproved': False,

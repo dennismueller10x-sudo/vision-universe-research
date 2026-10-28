@@ -17,7 +17,9 @@ from v10lib import sec_lib
 WEEKLY_MIN_RUN, DAILY_MIN_RUN = 4, 5
 DELIST = {'25', '25-NSE', '15-12B', '15-12G', '15-15D'}
 PERIODIC = {'10-K', '10-Q', '20-F', '40-F', '6-K', '8-K', '10-K/A', '10-Q/A'}
-NOT_COMMON_RX = re.compile(r'(?:_P_|_W$|_U$|_R$|WS$)')
+# Nasdaq fifth-letter convention for 5-letter symbols: M/N/O/P preferred classes, R rights, U units, W warrants
+# (protocol B2 NOT_OPERATING_COMMON; the master marks several of them EQUITY_COMMON).
+NOT_COMMON_RX = re.compile(r'(?:_P_|_WS?$|_U$|_R$|^[A-Z]{4}[MNOPRUW]$)')
 TODAY = '2026-10-28'
 
 DATE = r'(?P<date>(?:%s)\.? \d{1,2},? \d{4})' % L.MONTHS

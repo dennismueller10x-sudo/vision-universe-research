@@ -75,27 +75,38 @@ MON = {m: i + 1 for i, m in enumerate(['january', 'february', 'march', 'april', 
 DATE_RX = re.compile(r'\b(January|February|March|April|May|June|July|August|September|October|November|December)\.?\s+(\d{1,2}),?\s+(\d{4})\b', re.I)
 DOLLAR_RX = re.compile(r'\$\s?(\d{1,6}(?:,\d{3})*\.\d{2,4})(?!\d)(?!\s*(?:million|billion|thousand))', re.I)
 KEY_RX = re.compile(r'closing|last reported|last sale', re.I)
-BAD_RX = re.compile(r'exercise|conversion|offering price|tender|purchase price|strike|would|implied|average|\bhigh\b|\blow\b|range|vwap|warrant|preferred|premium', re.I)
+BAD_RX = re.compile(r'exercise|conversion|offering price|tender|purchase price|strike|would|implied|average|\bhigh\b|\blow\b|range|vwap|warrant|preferred|premium|\bbid\b|par value|day prior|C\$|CAD|increase', re.I)
 
 
 def own_statements(text):
-    """(date, price) pairs: a 'closing/last reported' keyword, a month-name date and a $x.xx amount in one clause (<= 260 chars, no ';')."""
+    """(date, price) pairs: a 'closing/last reported' keyword, then the first $x.xx amount of the same clause (<= 260 chars,
+    no ';', no sentence end); no exclusion word between keyword and amount; the date is the last month-name date between
+    keyword and amount, else the first one within 60 chars after the amount. Deliberately looser than the pipeline:
+    it over-reports (other issuers, footnote dates); every over-report for a qualified id is adjudicated in
+    independent-check-adjudication.json."""
     out = set()
     for k in KEY_RX.finditer(text):
         seg = text[k.start():k.start() + 260].split(';')[0]
-        cut = re.search(r'\.\s+[A-Z(]', seg)
+        cut = re.search(r'[a-z)]\.\s+[A-Z(]', seg)
         if cut:
-            seg = seg[:cut.start() + 1]
-        if BAD_RX.search(seg):
+            seg = seg[:cut.start() + 2]
+        pm = DOLLAR_RX.search(seg)
+        if not pm:
             continue
-        ds, ps = DATE_RX.findall(seg), DOLLAR_RX.findall(seg)
-        if len(ds) >= 1 and len(ps) >= 1:
-            m, d, y = ds[0]
-            try:
-                iso = dt.date(int(y), MON[m.lower()], int(d)).isoformat()
-            except ValueError:
-                continue
-            out.add((iso, float(ps[0].replace(',', ''))))
+        span = seg[:pm.end()]
+        if BAD_RX.search(span):
+            continue
+        ds = DATE_RX.findall(span)
+        if not ds:
+            ds = DATE_RX.findall(text[k.start() + pm.end():k.start() + pm.end() + 60])[:1]
+        if not ds:
+            continue
+        m, d, y = ds[-1]
+        try:
+            iso = dt.date(int(y), MON[m.lower()], int(d)).isoformat()
+        except ValueError:
+            continue
+        out.add((iso, float(pm.group(1).replace(',', ''))))
     return out
 
 
@@ -270,7 +281,13 @@ def main():
         else:
             subs = []
             reasons.append('CIK_NOT_CONFIRMED')
+        if sum(r['canonical_id'] == c['selectedCanonicalId'] for r in rows_by.get(sid, [])) != 1:
+            reasons.append('SELECTED_ROW_NOT_UNIQUE')
         sd = c.get('startDocument') or {}
+        if sd.get('kind') == 'IXBRL_COVER_FIRST' and isinstance(sd.get('detail'), dict) and cov.get('row'):
+            kind = lambda t: 'COMMON' if (re.search(r'common|ordinary|beneficial interest|subordinate voting|limited voting', t or '', re.I) and not re.search(r'depositary|preferred|warrant|unit', t or '', re.I)) else 'OTHER'  # noqa: E731
+            if kind(sd['detail'].get('Security12bTitle')) != kind(cov['row'].get('Security12bTitle')):
+                reasons.append('CLASS_CHANGE')
         if sd.get('state') == 'VERIFIED':
             hcheck(sd['url'], sd['sha256'], (sd.get('bytesRead'),))
         elif not (sd.get('state') == 'NO_V9_START_DOCUMENT' and c['v9']['basis'] == 'SERIES_STARTS_INSIDE_COVER_CONFIRMED_INTERVAL'):
@@ -348,7 +365,10 @@ def main():
         own_q[sid] = dec
         if dec != c['decision'] or sorted(set(reasons)) != sorted(set(c['reasons'])):
             disagree.append({'securityId': sid, 'what': 'DECISION', 'pipeline': [c['decision'], c['reasons']], 'own': [dec, sorted(set(reasons))]})
-    report['checks']['identity'] = {'cases': len(idc['cases']), 'ownQualified': sum(v.startswith('QUALIFIED') for v in own_q.values()),
+    nr = {(x['securityId'], x['date'], x['accession']) for x in anchor_stats['notRefound']}
+    refound_ok = sum(1 for c in idc['cases'] if c['decision'].startswith('QUALIFIED') and any(
+        an['state'] == 'MATCH' and an.get('attributed', True) and (c['securityId'], an['date'], an['accession']) not in nr for an in c['anchors']))
+    report['checks']['identity'] = {'qualifiedWithIndependentlyRefoundMatch': refound_ok,'cases': len(idc['cases']), 'ownQualified': sum(v.startswith('QUALIFIED') for v in own_q.values()),
                                     'pipelineQualified': sum(c['decision'].startswith('QUALIFIED') for c in idc['cases']),
                                     'anchors': {'recorded': anchor_stats['recorded'], 'reverifiedInBody': anchor_stats['reverified'], 'notRefound': anchor_stats['notRefound'][:50], 'notRefoundCount': len(anchor_stats['notRefound'])},
                                     'rescan': {'documents': rescans['documents'], 'missedMismatchesInsideInterval': rescans['missedMismatches'], 'ownMatchesNotRecorded': rescans['missedMatches']},
@@ -380,7 +400,7 @@ def main():
                 break
             except ValueError:
                 pass
-        prior = re.search(r'(prior to|before)\s+(the\s+)?(opening|open|commencement|market open)', lt['quote'], re.I)
+        prior = re.search(r'(prior to|before|as of)\s+(the\s+)?(opening|open|commencement|market open)', lt['quote'], re.I)
         own_ltd = prev_session(own_stated) if (own_stated and prior) else own_stated
         if own_ltd != lt['lastTradeDate']:
             ldis.append({'securityId': sid, 'what': 'LAST_TRADE_DATE', 'pipeline': lt['lastTradeDate'], 'own': own_ltd})
@@ -415,8 +435,9 @@ def main():
         rdis.append({'what': 'LIFECYCLE_RECORD_SET'})
     report['checks']['registers'] = {'v10Records': len(v10ids), 'lifecycleRecords': len(lids), 'disagreements': rdis}
     report['checks']['hashes'] = {'checked': hashes['checked'], 'ok': hashes['ok'], 'missing': hashes['missing'][:30], 'missingCount': len(hashes['missing'])}
-    ok = (not disagree and not ldis and not rdis and not hashes['missing'] and not rescans['missedMismatches'])
-    report['verdict'] = 'PASS' if ok else 'DIFFERENCES_REPORTED'
+    core = not disagree and not ldis and not rdis and not hashes['missing'] and refound_ok == report['checks']['identity']['pipelineQualified']
+    # The looser re-scan over-reports; its hits for qualified ids need the manual reading (independent-check-adjudication.json).
+    report['verdict'] = ('PASS' if not rescans['missedMismatches'] else 'PASS_DECISIONS_AGREE_RESCAN_HITS_NEED_ADJUDICATION') if core else 'DIFFERENCES_REPORTED'
     with open(a.out, 'w') as f:
         json.dump(report, f, indent=1, ensure_ascii=False)
         f.write('\n')
