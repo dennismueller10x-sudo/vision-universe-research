@@ -42,7 +42,7 @@ const t=document.getElementById('title');
 for(const line of C.title){const d=document.createElement('div');d.textContent=line;t.appendChild(d)}
 const tag=document.getElementById('tag');tag.textContent=C.tag||'';
 document.fonts.load('100px Bangers').then(()=>{
- for(const d of t.children){let f=215;d.style.fontSize=f+'px';while(d.scrollWidth>960&&f>120){f-=6;d.style.fontSize=f+'px'}}
+ for(const d of t.children){let f=C.title.length<=2?290:215;d.style.fontSize=f+'px';while(d.scrollWidth>960&&f>120){f-=6;d.style.fontSize=f+'px'}}
  let below=250+t.offsetHeight+10;if(C.tag){tag.style.top=below+'px';below+=100}
  document.getElementById('fig').style.top=Math.max(below-40,760)+'px';document.getElementById('glow').style.top=(Math.max(below-40,760)+500)+'px';
  const img=document.getElementById('fig');(img.complete?Promise.resolve():new Promise(r=>img.onload=r)).then(()=>{window.__ready=true});
