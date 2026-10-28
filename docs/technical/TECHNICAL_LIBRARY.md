@@ -1,8 +1,8 @@
 # Technical-Analysebibliothek – Inventur und Ausbaustand
 
-Stand 28.10.2026, `main` nach #1032. Versionen: `indicators` 1.5.0, `candlesticks` 1.1.0 (Erkennung seit #1032 doppelt so schnell, Ausgabe byte-gleich), `formations` 1.2.3, `ti-chart-patterns` 1.1.1, `screen-row` und `technical-query` 1.8.0 (L7, #1017), `technical-mtf` 1.1.0.
+Stand 28.10.2026, `main` nach #1037. Versionen: `indicators` 1.5.0, `candlesticks` 1.1.0 (Erkennung seit #1032 doppelt so schnell, Ausgabe byte-gleich), `formations` 1.3.0, `ti-chart-patterns` 1.2.0, `screen-row` 1.9.0 (L9, #1035), `technical-query` 1.9.0, `technical-mtf` 1.1.0.
 
-Zur Freigabe offen (Fachmodell, je mit Vorher/Nachher): #1035 (L9, 11 weitere Tagesfelder, `screen-row` 1.9.0) und #1037 (Dreiecksklassifikation, `ti-chart-patterns` 1.2.0, `formations` 1.3.0).
+Zur Freigabe offen (Fachmodell, mit Vorher/Nachher): #1047 (Dreieckskanten nach Typ, `ti-chart-patterns` 1.3.0, `formations` 1.4.0, FORMATION_VALIDATION.md §7).
 
 Die Inventur unten (Abschnitte 1–3) ist der Stand vor dem Ausbau (nach #991). Der aktuelle Gesamtstand steht in Abschnitt 0, die Einzelheiten der neuen Einträge in INDICATORS_CATALOG.md, CANDLESTICKS.md und FORMATION_VALIDATION.md.
 
@@ -194,8 +194,9 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L6 | Screener-Felder für geeignete Katalogindikatoren und Candlesticks: ROC 63/126/252, Inside Bar, NR7, Candlestick-Ereignisse „Tage seit …“, je mit Prüfraum | **Fachmodell**, eigener PR mit Vorher/Nachher | erledigt (#1004, Owner-Freigabe 27.10.2026): [SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md) |
 | L7 | Woche/Monat: Verfügbarkeitsgrenzen je neuem Feld; aus der Tageshistorie im Materialisierungslauf | **Fachmodell** | erledigt (#1017, Owner-Freigabe 27.10.2026): [SCREENER_FIELDS_L7.md](SCREENER_FIELDS_L7.md). Abdeckungsprüfung offen: die Nachtläufe vom 28.10. scheiterten vor der Materialisierung (Discover-Prüfung), die 18 Spalten sind bis dahin `null`. |
 | L8 | Zweite fremde Referenz für die 26 Indikatoren ohne TA-Lib-Gegenstück | Test | erledigt (#1021) |
-| L9 | Weitere Tagesfelder im Screener: Vortex, Choppiness, 20-Tage-Hoch/-Tief (Donchian), Elder Impulse, Z-Score, Hull steigend, Ulcer, historische Volatilität, Connors RSI, Abstand zum Chandelier-Stopp | **Fachmodell** | PR #1035 wartet auf Freigabe |
-| L10 | Dreiecksklassifikation: gelten aufsteigend und absteigend zugleich, ist das Muster symmetrisch (Spiegeltest) | **Fachmodell** | PR #1037 wartet auf Freigabe; Befund FORMATION_VALIDATION.md §6 |
+| L9 | Weitere Tagesfelder im Screener: Vortex, Choppiness, 20-Tage-Hoch/-Tief (Donchian), Elder Impulse, Z-Score, Hull steigend, Ulcer, historische Volatilität, Connors RSI, Abstand zum Chandelier-Stopp | **Fachmodell** | erledigt (#1035, Owner-Freigabe 28.10.2026): [SCREENER_FIELDS_L9.md](SCREENER_FIELDS_L9.md); bestehende 123 Spalten byte-gleich |
+| L10 | Dreiecksklassifikation: gelten aufsteigend und absteigend zugleich, ist das Muster symmetrisch (Spiegeltest) | **Fachmodell** | erledigt (#1037, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §6, 19 Titel |
+| L11 | Dreieckskanten nach Typ: aufsteigend oben waagrecht/unten durch die Tiefs, absteigend umgekehrt; Kantenprüfung im Validator | **Fachmodell** | PR #1047 wartet auf Freigabe; FORMATION_VALIDATION.md §7 |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**
 - **Tag:** Der Browser und `screen-row` sehen 270 Tagesbars. Indikatoren mit einer Aufwärmphase über 269 Bars sind auf Tagesbasis nur im Materialisierungslauf exakt rechenbar, der die volle Historie hat (Muster EMA 200).
