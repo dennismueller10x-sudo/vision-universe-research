@@ -149,6 +149,8 @@ if (twArt && twArt.cols) {
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
   const MTF = require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js"));
   rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries(MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"])), [...mtfVersions]));
+  const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));
+  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"))));
 }
 
 }

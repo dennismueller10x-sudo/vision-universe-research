@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.9.0";
+  var QUERY_VERSION = "technical-query-1.10.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -51,7 +51,12 @@
     threeBlackCrows: "Three Black Crows", threeInside: "Three Inside Up/Down", threeOutside: "Three Outside Up/Down",
     threeMethods: "Rising/Falling Three Methods"
   };
-  var STRUCTURES = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur", RANGE: "Seitwärts", NEUTRAL: "Neutral" };
+  /* Werte wie market-structure.js#regimeOf (seit 1.10.0 vollstaendig): MIXED und UNDETERMINED fehlten, NEUTRAL kommt dort
+     nie vor. NEUTRAL bleibt als Altwert gueltig (gespeicherte Suchen behalten ihr Ergebnis: nie ein Treffer), wird aber
+     nicht mehr angeboten. docs/technical/DATA_CONTRACT.md. */
+  var STRUCTURES = { BULLISH: "Aufwärtsstruktur", BEARISH: "Abwärtsstruktur", RANGE: "Seitwärts",
+    MIXED: "Gemischt (Hochs und Tiefs widersprechen sich)", UNDETERMINED: "Unbestimmt (zu wenige Swing-Punkte)" };
+  var STRUCTURES_LEGACY = { NEUTRAL: "Neutral (bis 1.9.0, nie belegt)" };
 
   var ALL = ["1D", "1W", "1M"], D = ["1D"];
   /* group, id, label, kind (num|pct|bool|enum), tfs, hint; Labels mit Zeitrahmenvarianten als Objekt. */
@@ -66,7 +71,7 @@
     { id: "distSma200", group: "Trend", kind: "pct", tfs: ALL, label: { "1D": "Abstand zur SMA 200", "1W": "Abstand zur 40-Wochen-Linie", "1M": "Abstand zur 10-Monats-Linie" } },
     { id: "adx", group: "Trend", kind: "num", tfs: ALL, label: { "1D": "ADX 14 (Trendstärke)", "1W": "ADX 14 (Woche)", "1M": "ADX 14 (Monat)" } },
     { id: "supertrendUp", group: "Trend", kind: "bool", tfs: D, label: "Supertrend (10, 3) aufwärts" },
-    { id: "structure", group: "Trend", kind: "enum", tfs: D, label: "Marktstruktur (Swings)", values: STRUCTURES },
+    { id: "structure", group: "Trend", kind: "enum", tfs: D, label: "Marktstruktur (Swings)", values: STRUCTURES, legacyValues: STRUCTURES_LEGACY },
     { id: "psarUp", group: "Trend", kind: "bool", tfs: D, label: "Parabolic SAR unter dem Kurs (aufwärts)" },
     { id: "aboveCloud", group: "Trend", kind: "bool", tfs: D, label: "Kurs über der Ichimoku-Wolke" },
     { id: "aroonOsc", group: "Trend", kind: "num", tfs: D, label: "Aroon-Oszillator 25 (−100 bis 100)" },
@@ -186,7 +191,8 @@
         if (f.kind === "bool") { if (typeof x.value !== "boolean") return err("INVALID_VALUE", p + ".value"); o.value = x.value; }
         else if (f.kind === "enum") {
           var vals = Array.isArray(x.value) ? x.value : [];
-          if (!vals.length || vals.some(function (v) { return !Object.prototype.hasOwnProperty.call(f.values, v); })) return err("INVALID_VALUE", p + ".value");
+          var known = function (v) { return Object.prototype.hasOwnProperty.call(f.values, v) || !!f.legacyValues && Object.prototype.hasOwnProperty.call(f.legacyValues, v); };
+          if (!vals.length || vals.some(function (v) { return !known(v); })) return err("INVALID_VALUE", p + ".value");
           o.value = vals.slice();
         } else {
           if (!isNum(x.value)) return err("INVALID_VALUE", p + ".value");
@@ -331,7 +337,7 @@
     var own = x.tf && x.tf !== (tf || "1D"), l = labelOf(f, x.tf || tf || "1D");
     if (own && l === labelOf(f, tf || "1D")) l += " (" + TIMEFRAMES[x.tf] + ")";
     if (f.kind === "bool") return x.value ? l : "nicht: " + l;
-    if (f.kind === "enum") return l + (x.op === "nin" ? ": keine von " : ": ") + x.value.map(function (v) { return f.values[v] || v; }).join(x.op === "nin" ? ", " : " oder ");
+    if (f.kind === "enum") return l + (x.op === "nin" ? ": keine von " : ": ") + x.value.map(function (v) { return f.values[v] || f.legacyValues && f.legacyValues[v] || v; }).join(x.op === "nin" ? ", " : " oder ");
     if (x.op === "between") return l + " zwischen " + fmtValue(f, x.value) + " und " + fmtValue(f, x.value2);
     return l + " " + OPS_DE[x.op] + " " + fmtValue(f, x.value);
   }
@@ -392,7 +398,7 @@
   ];
 
   var api = {
-    QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, PRESETS: PRESETS,
+    QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, STRUCTURES_LEGACY: STRUCTURES_LEGACY, PRESETS: PRESETS,
     MAX_GROUPS: MAX_GROUPS, MAX_FILTERS: MAX_FILTERS,
     field: field, labelOf: labelOf, columnKey: columnKey, opsFor: opsFor,
     validate: validate, createDataset: createDataset, evaluate: evaluate, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
