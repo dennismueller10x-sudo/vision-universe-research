@@ -6,9 +6,9 @@
       "cik": "0000315852",
       "name": "RANGE RESOURCES CORP",
       "sic": "1311",
-      "rawFacts": 30509,
-      "mappedFacts": 6770,
-      "unmappedFacts": 23708,
+      "rawFacts": 30899,
+      "mappedFacts": 6826,
+      "unmappedFacts": 24143,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 73,
+      "quarterlyPeriods": 74,
       "firstPeriodEnd": "2006-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -117,48 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 577,
-        "MEDIUM": 92
+        "HIGH": 583,
+        "MEDIUM": 93
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 669,
-        "resolvedValues": 669
+        "datableValues": 676,
+        "resolvedValues": 676
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 24480,
+        "rules_version": "1.1.0",
+        "total": 24824,
         "by_severity": {
-          "INFO": 23708,
+          "INFO": 24143,
           "ERROR": 3,
-          "WARNING": 769
+          "WARNING": 678
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 615,
+          "CONCEPT_DISAGREEMENT": 474,
           "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 138,
-          "UNKNOWN_CONCEPT": 23708
+          "RESTATEMENT_CONFLICT": 119,
+          "UNKNOWN_CONCEPT": 24143,
+          "UNPLACEABLE_PERIOD": 69
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-310446",
-        "filing_date": "2026-07-21",
+        "accession": "0001193125-26-434351",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 138
+        "periodic_filings": 139,
+        "acceptance_datetime": "2026-10-27T20:45:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5574bfe3da9c9dbe3d3854e77c91e1f865258a68ec9e4dab11c95e51782dfd68",
+      "sourceDigest": "ed118f46395e80cef5824f412372e2133cd389fc279f5c60a73050fe767fed5c",
       "issuerId": "iss_cik_0000315852"
     },
     {

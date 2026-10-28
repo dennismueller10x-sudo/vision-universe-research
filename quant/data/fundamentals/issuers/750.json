@@ -524,9 +524,9 @@
       "cik": "0001287750",
       "name": "ARES CAPITAL CORP",
       "sic": null,
-      "rawFacts": 5759,
-      "mappedFacts": 1236,
-      "unmappedFacts": 4643,
+      "rawFacts": 6111,
+      "mappedFacts": 1311,
+      "unmappedFacts": 4956,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -536,9 +536,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 30,
+      "quarterlyPeriods": 31,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -550,7 +550,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -570,21 +570,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -605,14 +605,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -635,44 +635,45 @@
         }
       },
       "quality": {
-        "HIGH": 164
+        "HIGH": 170
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 164,
-        "resolvedValues": 164
+        "datableValues": 170,
+        "resolvedValues": 170
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4710,
+        "rules_version": "1.1.0",
+        "total": 5027,
         "by_severity": {
-          "INFO": 4643,
-          "WARNING": 67
+          "INFO": 4956,
+          "WARNING": 71
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 54,
-          "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 4643
+          "CONCEPT_DISAGREEMENT": 57,
+          "RESTATEMENT_CONFLICT": 14,
+          "UNKNOWN_CONCEPT": 4956
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-050307",
-        "filing_date": "2026-07-29",
+        "accession": "0001628280-26-067383",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 93
+        "periodic_filings": 94,
+        "acceptance_datetime": "2026-10-27T10:20:25.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e5a4308edd923e3f827b857412c90a9e710450523e2002fc9b4e18f119532298",
+      "sourceDigest": "30f0dae14a2add476ceef3f359c7ae323a66d73da29bf7aa1e5e8f51420456f0",
       "issuerId": "iss_cik_0001287750"
     },
     {
