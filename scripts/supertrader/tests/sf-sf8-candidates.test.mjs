@@ -142,7 +142,7 @@ test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow und Turtle-N nur beschreibend, ni
     // weder Sortierschlüssel noch Chartmarke: die Kennzahl ist kein Preis, an dem gehandelt würde
     for (const k of ['closeVsGapLow', 'N', 'nPct']) assert.ok(!(k in (v.sortKeys || {})), `${where}: ${k} als Sortierschlüssel`);
     if (v.pivot) assert.doesNotMatch(v.pivot.kind, ORDERISH, where);
-    for (const r of v.why ?? []) assert.doesNotMatch(String(r), /closeVsGapLow|nPct|\bN\b/, where);
+    assert.doesNotMatch(JSON.stringify([v.why, v.planBlockers, v.interpretations]), /closeVsGapLow|nPct|"N"|\d[.,]\d/, where);
   }
   for (const v of c12) {
     assert.equal(typeof v.features.closeVsGapLow, 'number', `${v.ticker}: beschreibend vorhanden`);
@@ -167,7 +167,7 @@ test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow und Turtle-N nur beschreibend, ni
     for (const stage of ['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP']) {
       const m = chartMarks(det, stage, 10);
       assert.ok(!Object.keys(m.levels).some((k) => ORDERISH.test(k)), `${strategyId} ${stage}: ${Object.keys(m.levels)}`);
-      if (m.pivot) assert.doesNotMatch(m.pivot.kind, ORDERISH, `${strategyId} ${stage}`);
+      if (m.pivot) { assert.doesNotMatch(m.pivot.kind, ORDERISH, `${strategyId} ${stage}`); assert.ok(Object.values(m.levels).includes(m.pivot.level), `${strategyId} ${stage}: Chartmarke ist eine Strukturmarke`); }
       const f = publicFeatures(det, stage);
       assert.ok(!('closeVsTrigger' in f), `${strategyId} ${stage}: Abstand zur Order entfällt`);
       assert.equal(f.closeVsGapLow, 0.05); assert.equal(f.N, 0.4);
@@ -234,6 +234,57 @@ test('SF8-DESCRIPTIVE-ALLOWLIST: unterhalb von MODELED nur die beschreibenden Ke
   if (DQ.SF8_DESCRIPTIVE_FEATURES) assert.deepEqual(Object.fromEntries(Object.entries(DQ.SF8_DESCRIPTIVE_FEATURES).map(([c, ks]) => [c, [...ks]])), Object.fromEntries(Object.keys(DQ.SF8_DESCRIPTIVE_FEATURES).map((c) => [c, DESCRIPTIVE_FEATURES[c]])));
 });
 
+// Form der ganzen Ansicht unterhalb von MODELED (zweite unabhängige Nachprüfung, 28.10.): nicht nur features, sondern auch
+// oberste Felder, trend, sortKeys, verschachtelte Werte, Marken und Texte. Dieselben Tabellen prüft DQ-SF8-4 im Core.
+const VIEW_KEYS = ['strategyId', 'candidateId', 'ticker', 'securityId', 'companyName', 'exchange', 'shard', 'stage', 'reach', 'ceiling', 'asOf', 'close', 'recordId', 'pattern', 'met', 'pending', 'interpretations', 'notMet', 'pivot', 'levels', 'features', 'trend', 'plan', 'planBlockers', 'why', 'dataQuality', 'blockReasons', 'rank', 'sortKeys'];
+const TREND_KEYS = ['close', 'change1d', 'ma50', 'ma200', 'vsMa50', 'vsMa200', 'ma50Rising20d', 'ret63', 'ret126', 'high252', 'low252', 'belowHigh252', 'windowSessions', 'volumeVs50d', 'dollarVolume20d', 'adr20'];
+const SORT_KEYS = ['stage', 'pivot', 'volume', 'momentum', 'setupState', 'streak', 'trend', 'dataQuality', 'ticker'];
+const FEATURE_OBJECTS = { momentum: ['p1m', 'p3m', 'p6m', 'best', 'r1m', 'r3m', 'r6m'], vcpFootprint: ['contractions', 'depths', 'contractingLeftToRight', 'lastContractionVolumeVs50d', 'baseSessions'] };
+const prim = (x) => x === null || ['string', 'number', 'boolean'].includes(typeof x);
+const primOrList = (x) => prim(x) || (Array.isArray(x) && x.every(prim));
+function shapeFindings(v) {
+  const out = [];
+  for (const k of Object.keys(v)) if (!VIEW_KEYS.includes(k)) out.push(`Feld ${k}`);
+  for (const [o, keys] of [['trend', TREND_KEYS], ['sortKeys', SORT_KEYS]]) for (const [k, x] of Object.entries(v[o] ?? {})) if (!keys.includes(k) || !prim(x)) out.push(`${o}.${k}`);
+  for (const [k, x] of Object.entries(v.features ?? {})) {
+    if (!(DESCRIPTIVE_FEATURES[v.candidateId] ?? []).includes(k)) out.push(`features.${k}`);
+    else if (!primOrList(x) && !(FEATURE_OBJECTS[k] && Object.entries(x).every(([j, y]) => FEATURE_OBJECTS[k].includes(j) && primOrList(y)))) out.push(`features.${k} (Form)`);
+  }
+  // unterhalb von MODELED trägt die Ansicht heute weder Marken noch Chartmarke (siehe SF8-STRUCTURE-MARKS-PINNED)
+  if (Object.keys(v.levels ?? {}).length) out.push('levels');
+  if (v.pivot !== null) out.push('pivot');
+  if (v.plan !== null) out.push('plan');
+  const { companyName, features, trend, sortKeys, ...texts } = v;
+  if (/\d[.,]\d|[$€]/.test(JSON.stringify(texts).replace(/"close":[\d.]+/, ''))) out.push('Preis im Text');
+  for (const x of Object.values(features ?? {})) if (typeof x === 'string' && /\d[.,]\d|[$€]/.test(x)) out.push('Preis in einem Statustext');
+  return out;
+}
+
+test('SF8-VIEW-SHAPE-BELOW-MODEL: die ganze Ansicht unterhalb von MODELED folgt der Allowlist; umbenannte Orderpreise werden rot', () => {
+  const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
+  assert.ok(below.length > 40);
+  for (const v of below) assert.deepEqual(shapeFindings(v), [], `${v.candidateId} ${v.ticker}`);
+  // Gegenproben der Nachprüfung (A1–A8): jede Mutation einer echten Ansicht fällt auf
+  const avbc = below.find((v) => v.candidateId === 'C03'), bolt = below.find((v) => v.candidateId === 'C08'), c13 = below.find((v) => v.candidateId === 'C13');
+  const probes = [
+    [avbc, (v) => { v.buyPoint = 22.9065; }], [avbc, (v) => { v.trend.buyPoint = 22.9065; }], [avbc, (v) => { v.sortKeys.entry = 22.9; }],
+    [bolt, (v) => { v.features.momentum = { ...(v.features.momentum ?? {}), buyPoint: 4.68 }; }], [bolt, (v) => { v.features.priorMove = { stop: 4.1 }; }],
+    [avbc, (v) => { v.levels = { top: 22.9, box: { top: 22.9, bottom: 20.75 } }; }], [avbc, (v) => { v.pivot = { level: 22.9065, kind: 'BOX_TOP', distance: 0.01 }; }],
+    [avbc, (v) => { v.planBlockers = ['BUY_STOP_22.9065_STOP_20.75']; }], [avbc, (v) => { v.why = [{ code: 'SETUP', detail: 'Einstieg ab $23' }]; }],
+    [c13, (v) => { v.features.trailing = 'TRAIL_41.20'; }],
+  ];
+  for (const [base, mut] of probes) { const v = structuredClone(base); mut(v); assert.notDeepEqual(shapeFindings(v), [], mut.toString()); }
+});
+
+test('SF8-STRUCTURE-MARKS-PINNED: unterhalb von MODELED heute keine Marken und keine Chartmarke (bekannter Schlüsselfehler, Owner-Entscheidung)', () => {
+  // chartMarks liest STRUCTURE_LEVELS/STRUCTURE_MARK über det.strategyId (SF_…), die Tabellen sind nach Cxx geschlüsselt: unterhalb
+  // von MODELED entstehen deshalb nie Strukturmarken. Die Korrektur zeigt Box, Widerstand und Gap-Tief (C12: zugleich die
+  // Risikoreferenz MOKA12-007) als Chartlinie – eine fachliche Änderung der Ansichten mit Vorher/Nachher in einem eigenen PR.
+  const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
+  assert.equal(below.filter((v) => Object.keys(v.levels).length || v.pivot).length, 0);
+  assert.ok(!Object.keys(STRUCTURE_LEVELS).some((k) => k.startsWith('SF_')), 'Strukturtabelle weiter nach Cxx geschlüsselt');
+});
+
 test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vorschau nur aus v.plan', () => {
   const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
   const draw = ui.slice(ui.indexOf('function drawChart('), ui.indexOf('/* ================================================================ API */'));
@@ -245,6 +296,13 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine aus Kursbalken oder Kennzahlen errechnete Marke (Mutation M3b): Linien nur als gleitende Durchschnitte, Box nur aus levels.box
   assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
+  // Kästen nur aus levels.box; die Karte außerhalb der Planansicht beschriftet nichts als Einstieg, Stop, Limit oder Order
+  for (const l of draw.split('\n').filter((x) => /boxes\.push\(/.test(x))) assert.match(l, /^\s*if \(lv\.box && fin\(lv\.box\.top\)\) boxes\.push\(\{ from: lv\.box\.from, to: null, top: lv\.box\.top, bottom: lv\.box\.bottom,[^}]*label: 'Darvas-Box' \}\);\s*$/, l);
+  const card = ui.slice(ui.indexOf('function card('), ui.indexOf('function planBlock('));
+  assert.ok(card.length > 500, 'card gefunden');
+  const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
+  assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
+  assert.match(card, /pair\('Chartmarke', usd\(p\.level\)/);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;
   assert.equal(planUses, 2, 'Definition und genau ein Aufruf');
