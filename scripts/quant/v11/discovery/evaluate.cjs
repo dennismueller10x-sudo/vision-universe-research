@@ -13,9 +13,12 @@ function benchmarks(ctx, spec, from, to, sch, costs) {
   const key = JSON.stringify([sch.decisions, sch.endExec, costs]);
   if (!benchCache.has(key)) {
     const frameEw = L.simulate(ctx, R.frameEwStrategy(ctx), { ...sch, costs, record: false });
-    let cap = null;
-    if (ctx.fund && ctx.cal[sch.decisions[0]] >= '2010-01-29') cap = L.simulate(ctx, R.capWeightStrategy(ctx), { ...sch, costs, record: false });
-    benchCache.set(key, { frameEw, cap });
+    let cap = null, capRaw = null;
+    if (ctx.fund && ctx.cal[sch.decisions[0]] >= '2010-01-29') {
+      cap = L.simulate(ctx, R.capWeightStrategy(ctx, { plausible: true }), { ...sch, costs, record: false });
+      capRaw = L.simulate(ctx, R.capWeightStrategy(ctx), { ...sch, costs, record: false });
+    }
+    benchCache.set(key, { frameEw, cap, capRaw });
   }
   return benchCache.get(key);
 }
@@ -49,7 +52,8 @@ function evaluateSpec(ctx, spec, from, to, { stress = true, engine = false, infe
     spy: L.pathMetrics(spyPath.map(x => x.value), spyPath.map(x => x.date)),
     ownUniverseEw: { ...L.pathMetrics(own.equity.map(e => e.value), own.equity.map(e => e.date)), avgNames: L.mean(own.equity.map(e => e.n)) },
     frameEw: { ...L.pathMetrics(bm.frameEw.equity.map(e => e.value), bm.frameEw.equity.map(e => e.date)), avgNames: L.mean(bm.frameEw.equity.map(e => e.n)) },
-    capWeighted: bm.cap ? { ...L.pathMetrics(bm.cap.equity.map(e => e.value), bm.cap.equity.map(e => e.date)), avgNames: L.mean(bm.cap.equity.map(e => e.n)) } : { state: 'UNAVAILABLE_BEFORE_PIT_MARKET_CAP_2010' }
+    capWeighted: bm.cap ? { definition: 'PIT panel market cap with plausibility filter 1.0.1 (cap <= 5e12 USD, implied share count change within 0.2..5x vs 12 rank dates earlier)', ...L.pathMetrics(bm.cap.equity.map(e => e.value), bm.cap.equity.map(e => e.date)), avgNames: L.mean(bm.cap.equity.map(e => e.n)) } : { state: 'UNAVAILABLE_BEFORE_PIT_MARKET_CAP_2010' },
+    capWeightedRawPanelInvalid: bm.capRaw ? { note: 'unfiltered V10 panel market cap; dominated by XBRL scale errors (e.g. ON 3.5e18 USD 2013) - not a valid benchmark', cagr: L.pathMetrics(bm.capRaw.equity.map(e => e.value), bm.capRaw.equity.map(e => e.date)).cagr } : null
   };
   if (inference) {
     out.excess = {

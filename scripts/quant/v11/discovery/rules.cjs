@@ -141,10 +141,22 @@ function popSpec(spec) { return { ...spec, id: (spec.id || 'x') + ':POP_EW', sel
 function frameEwStrategy(ctx) {
   return { decide(j) { return new Map(L.featuresAt(ctx, j).filter(r => r.canEnter).map((r, _, a) => [r.id, 1 / a.length])); } };
 }
-function capWeightStrategy(ctx) {
+// PIT market-cap plausibility (post-hoc benchmark correction after VALIDATION showed XBRL scale errors in the V10
+// panel, e.g. ON 3.5e18 USD in 2013): drop caps > 5e12 USD and caps whose implied share count changed by more than
+// 5x against the panel value 12 rank dates earlier (past information only).
+function plausibleCap(ctx, fd, id, j) {
+  const m = fd.rows.get(id)?.mcap; if (!L.finite(m) || m <= 0 || m > 5e12) return null;
+  const k = ctx.fund.js.indexOf(ctx.fund.js.filter(x => x <= j).at(-1));
+  const prevJ = ctx.fund.js[k - 12]; if (prevJ === undefined) return m;
+  const pm = ctx.fund.byJ.get(prevJ).rows.get(id)?.mcap, l = ctx.byId.get(id);
+  if (!L.finite(pm) || pm <= 0) return m;
+  const shareRatio = (m / L.closeAt(l, fd === null ? j : ctx.fund.js[k])) / (pm / L.closeAt(l, prevJ));
+  return shareRatio > 5 || shareRatio < 0.2 ? null : m;
+}
+function capWeightStrategy(ctx, { plausible = false } = {}) {
   return { decide(j) {
     const fd = ctx.fund.latestAtOrBefore(j); if (!fd) return null;
-    const rows = L.featuresAt(ctx, j).filter(r => r.canEnter).map(r => [r.id, fd.rows.get(r.id)?.mcap]).filter(([, m]) => L.finite(m) && m > 0);
+    const rows = L.featuresAt(ctx, j).filter(r => r.canEnter).map(r => [r.id, plausible ? plausibleCap(ctx, fd, r.id, j) : fd.rows.get(r.id)?.mcap]).filter(([, m]) => L.finite(m) && m > 0);
     const t = rows.reduce((s, [, m]) => s + m, 0);
     return new Map(rows.map(([id, m]) => [id, m / t]));
   } };
@@ -156,4 +168,4 @@ function run(ctx, spec, from, to, costs, opts = {}) {
   return { sch, sim };
 }
 
-module.exports = { nextExec, featureValue, monthEnds, schedule, eligibleRows, scored, makeStrategy, popSpec, frameEwStrategy, capWeightStrategy, run, spyBelowSma };
+module.exports = { plausibleCap, nextExec, featureValue, monthEnds, schedule, eligibleRows, scored, makeStrategy, popSpec, frameEwStrategy, capWeightStrategy, run, spyBelowSma };
