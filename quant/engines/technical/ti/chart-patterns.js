@@ -45,7 +45,7 @@
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var ENGINE_VERSION = "ti-chart-patterns-1.1.1";
+  var ENGINE_VERSION = "ti-chart-patterns-1.2.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   /* Zahlen ab Betrag 1 auf 4 Nachkommastellen, darunter 4 signifikante Stellen (wie published-close.js): Bei Kursen unter
@@ -168,10 +168,15 @@
         var flatH = Math.abs(hA.pivotPrice - hB.pivotPrice) <= tol, flatL = Math.abs(lA.pivotPrice - lB.pivotPrice) <= tol;
         var fallingH = hB.pivotPrice < hA.pivotPrice - tol * 0.5, risingL = lB.pivotPrice > lA.pivotPrice + tol * 0.5;
         var width = Math.max(hA.pivotPrice, hB.pivotPrice) - Math.min(lA.pivotPrice, lB.pivotPrice);
-        var type = flatH && risingL ? "ASCENDING_TRIANGLE" : flatL && fallingH ? "DESCENDING_TRIANGLE" : fallingH && risingL ? "SYMMETRICAL_TRIANGLE" : flatH && flatL && width >= 3 * atr ? "RECTANGLE" : null;
+        /* Seit 1.2.0: "Flach" (Abstand <= tol) und "steigend/fallend" (> 0,5 tol) ueberlappen. Gelten aufsteigendes
+           (Hochs flach, Tiefs steigen) und absteigendes Dreieck (Tiefs flach, Hochs fallen) zugleich, fallen die Hochs und
+           steigen die Tiefs: das Muster konvergiert und ist symmetrisch. Vorher entschied die Reihenfolge ("aufsteigend"),
+           und das Spiegelbild war wieder "aufsteigend" statt "absteigend". Beide Kanten sind dann Linien durch die Pivots. */
+        var both = flatH && risingL && flatL && fallingH;
+        var type = both ? "SYMMETRICAL_TRIANGLE" : flatH && risingL ? "ASCENDING_TRIANGLE" : flatL && fallingH ? "DESCENDING_TRIANGLE" : fallingH && risingL ? "SYMMETRICAL_TRIANGLE" : flatH && flatL && width >= 3 * atr ? "RECTANGLE" : null;
         if (type && width >= 2.5 * atr) {
-          var upper = flatH ? function () { return Math.max(hA.pivotPrice, hB.pivotPrice); } : lineThrough(hA, hB);
-          var lower = flatL ? function () { return Math.min(lA.pivotPrice, lB.pivotPrice); } : lineThrough(lA, lB);
+          var upper = flatH && !both ? function () { return Math.max(hA.pivotPrice, hB.pivotPrice); } : lineThrough(hA, hB);
+          var lower = flatL && !both ? function () { return Math.min(lA.pivotPrice, lB.pivotPrice); } : lineThrough(lA, lB);
           var lastP = win[win.length - 1];
           var upIdx = firstCross(rctx, lastP.pivotIndex, upper, 1), dnIdx = firstCross(rctx, lastP.pivotIndex, lower, -1);
           var dir3 = upIdx >= 0 && (dnIdx < 0 || upIdx < dnIdx) ? 1 : dnIdx >= 0 ? -1 : (type === "ASCENDING_TRIANGLE" ? 1 : type === "DESCENDING_TRIANGLE" ? -1 : 0);
