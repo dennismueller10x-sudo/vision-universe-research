@@ -1,10 +1,10 @@
 'use strict';
 // Versioned original-source identity bindings for offline weekly research. Data only; read by
-// quant/engines/weekly-real-adapter.cjs exclusively when createLoader(root, { identityEvidence: true }) is requested.
+// quant/engines/research-weekly-loader.cjs exclusively when createResearchLoader(root, { identityEvidence: true }) is requested.
 // Regenerate with scripts/quant/v9-followups/identity/build-identity-registry.cjs; never hand-edit a record.
 module.exports = {
   "schemaVersion": "research-identity-evidence-1.0.0",
-  "scope": "Source-resolved listing bindings for OFFLINE weekly research only (weekly-real-adapter createLoader option identityEvidence, default off). Each binding replaces a misbound security-master row and restricts the series to the SEC-sourced interval; no history outside it is asserted. No security-master correction, no product or published-value change.",
+  "scope": "Source-resolved listing bindings for OFFLINE weekly research only (research-weekly-loader createResearchLoader option identityEvidence, default off; the productive weekly-real-adapter never reads this file). Each binding replaces a misbound security-master row and restricts the series to the SEC-sourced interval; no history outside it is asserted. No security-master correction, no product or published-value change.",
   "ownerDecision": "2026-10-28: only the five V9 dossier bindings; the 132 ambiguous-id bindings of the V9 proposal are not included.",
   "derivedFrom": {
     "proposal": "docs/quant-recovery/v9/identity/identity-evidence-proposal.json@claude/vision-universe-quant-v9-dsvle1",

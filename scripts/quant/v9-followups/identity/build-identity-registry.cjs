@@ -50,13 +50,13 @@ const records = SELECTED.map(id => {
 });
 const registry = {
   schemaVersion: 'research-identity-evidence-1.0.0',
-  scope: 'Source-resolved listing bindings for OFFLINE weekly research only (weekly-real-adapter createLoader option identityEvidence, default off). Each binding replaces a misbound security-master row and restricts the series to the SEC-sourced interval; no history outside it is asserted. No security-master correction, no product or published-value change.',
+  scope: 'Source-resolved listing bindings for OFFLINE weekly research only (research-weekly-loader createResearchLoader option identityEvidence, default off; the productive weekly-real-adapter never reads this file). Each binding replaces a misbound security-master row and restricts the series to the SEC-sourced interval; no history outside it is asserted. No security-master correction, no product or published-value change.',
   ownerDecision: '2026-10-28: only the five V9 dossier bindings; the 132 ambiguous-id bindings of the V9 proposal are not included.',
   derivedFrom: { proposal: 'docs/quant-recovery/v9/identity/identity-evidence-proposal.json@claude/vision-universe-quant-v9-dsvle1', proposalSha256: crypto.createHash('sha256').update(bytes).digest('hex'), builder: 'scripts/quant/v9-followups/identity/build-identity-registry.cjs' },
   sourceHashConvention: 'sha256 of the fetched SEC body; when complete=false, of its first bytesRead bytes',
   historyGuardConvention: 'weekly-real-adapter hash(): sha256(JSON.stringify(points with checkedFrom <= date <= checkedTo))',
   records
 };
-const text = "'use strict';\n// Versioned original-source identity bindings for offline weekly research. Data only; read by\n// quant/engines/weekly-real-adapter.cjs exclusively when createLoader(root, { identityEvidence: true }) is requested.\n// Regenerate with scripts/quant/v9-followups/identity/build-identity-registry.cjs; never hand-edit a record.\nmodule.exports = " + JSON.stringify(registry, null, 2) + ";\n";
+const text = "'use strict';\n// Versioned original-source identity bindings for offline weekly research. Data only; read by\n// quant/engines/research-weekly-loader.cjs exclusively when createResearchLoader(root, { identityEvidence: true }) is requested.\n// Regenerate with scripts/quant/v9-followups/identity/build-identity-registry.cjs; never hand-edit a record.\nmodule.exports = " + JSON.stringify(registry, null, 2) + ";\n";
 fs.writeFileSync(out, text);
 console.log(JSON.stringify({ records: records.map(r => [r.securityId, r.evidenceLevel, r.validFrom, r.sources.length, r.priceEvidence.length]) }));
