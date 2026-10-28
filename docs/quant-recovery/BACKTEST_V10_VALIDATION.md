@@ -17,7 +17,7 @@ Eine zweite Programmiersprache ist kein Holdout. Bekannte Historie bleibt bekann
 
 | Strang | Prüfungen | Ergebnis | Grenze |
 |---|---|---|---|
-| Signal/Pattern/Replay/Strategie | 14.573 (Primär), 14.422 (Lifecycle, erster Lauf) | PASS, max. rel. 9,3e-8 | Loader-Qualifikation als Eingabe übernommen; Bootstrap mit gleichem Zufallsgenerator |
+| Signal/Pattern/Replay/Strategie | 14.573 (Primär), 14.678 (Lifecycle nach Prüfungskorrekturen) | PASS, max. rel. 9,3e-8 | Loader-Qualifikation als Eingabe übernommen; Bootstrap mit gleichem Zufallsgenerator |
 | Engine-Parität Studien | 1.420.392 Signalereignisse vs. Kontrollkonstruktion, Worker vs. Direktaufruf, `runPatternStudy` 25 × 2, D1 ⊂ D2 17.978 | 0 Abweichungen | – |
 | Faktor | 14.400 Kursfaktoren, 182.343 Perzentile/Scores/Ränge, 496 IC/Spread/n, Ledger 1,6e-14 | PASS | nur 8 Stichtage in Teil D; IC-Mittel/p/Holm von der Prüfung nachgerechnet; 11/302 Marktkap.-Abweichungen der einfacheren Konzeptwahl gezählt, nicht entschieden |
 | Setup | 11 Prüfungen inkl. 2.000 Einzelausgänge (5e-11), N_eff = V9 | PASS | – |
