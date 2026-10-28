@@ -479,3 +479,46 @@ Datenstand: `main` nach #1037 und #1044, Daten mit dem Erzeuger neu gebaut (`bui
 | WW | aufst. 2026-09-29 | – |
 | XRN-P-A | aufst. 2026-10-15; aufst. 2026-10-14 | – |
 | YETI | aufst. 2026-10-07 | – |
+
+## 8. Bestätigung gegen die gezeichnete Ausbruchslinie (Validator, keine Modelländerung)
+
+Die Prüfung aus §7 (Bestätigungen gegen die gezeichnete Kante) lief einmalig für Dreiecke. Sie ist jetzt eine feste Regel des Validators für jede bestätigte Linienformation: Dreiecke, Rechteck, Keile, SKS und inverse SKS, Doppeltop und -boden, Wimpel.
+
+**Regeln** (`scripts/technical/validate-formations.mjs`):
+
+| Regel | Verstoß |
+|---|---|
+| `BESTAETIGT_OHNE_AUSBRUCH` | Zwischen dem letzten Formationspunkt und `confirmedAt` liegt kein Schluss jenseits der gezeichneten Ausbruchslinie. |
+| `BESTAETIGUNG_VERSPAETET` | Ein früherer Schluss lag deutlich jenseits der Linie und hätte schon eine frühere Bestätigung ergeben (frühestens am Erkennungstag, „bei Erkennung ausgebrochen“). |
+
+**Welche Linie gilt:**
+- Dreiecke und Rechteck: die Kante der Ausbruchsrichtung.
+- Steigender Keil: die untere Linie. Fallender Keil: die obere Linie. Bei beiden ist der Ausbruch erst mit 0,1 ATR (ATR des Erkennungsbars) Abstand gültig, wie in `formations.js`.
+- SKS: die Nackenlinie.
+- Doppeltop und -boden: das Niveau `levels.breakout`.
+- Wimpel: Hier wird nur geprüft, ob ein Schluss jenseits der Linie liegt. Die Regel verlangt zusätzlich einen Schluss jenseits des jüngsten Konsolidierungsextrems, und das steht nicht in der Ausgabe. Den frühesten Zeitpunkt kann der Validator deshalb nicht nachrechnen.
+- Rundung: Linienpunkte und Niveaus sind auf 4 Stellen gerundet. Abweichungen bis 1e-4 gelten als Gleichstand. Beispiele sind AIM (0,1901 gegen 0,1901) und CCZ (Schluss 62,437789 gegen die Kante 62,4378).
+
+**Linien im Bar-Raum.** Engine (`lineThrough` je Bar-Index) und Chart (`technical/ui/chart.js`, x = Bar-Index) ziehen Linien gerade über die Handelstage. Der Validator interpolierte bisher über Kalendertage. Über ein Wochenende verschiebt das eine schräge Linie merklich: Bei 10 Bars mit einem Wochenende liegt sie am achten Bar bei 102,6 statt 103. Für Steigung, Verengung und Parallelität ist das unerheblich (vorher und nachher 11.387 / 11.387 gültig). Beim Vergleich eines Schlusses mit der Linie entscheidet der Unterschied aber. Mit Tagesbars im Kontext rechnet der Validator deshalb im Bar-Raum. Ohne Bars, etwa in konstruierten Tests, rechnet er weiter über Kalendertage.
+
+**Ergebnis** (Stand 26.10.2026, 5.657 Titel, `technical-formations-1.4.0`): 11.387 / 11.387 gültig, darunter 1.856 bestätigte Linienformationen.
+
+| Typ | bestätigt | Schluss jenseits der Linie bis `confirmedAt` | Bestätigung am frühesten möglichen Tag |
+|---|---|---|---|
+| symmetrisches Dreieck | 410 | 410 | 410 |
+| aufsteigendes Dreieck | 90 | 90 | 90 |
+| absteigendes Dreieck | 283 | 283 | 283 |
+| Rechteck | 132 | 132 | 132 |
+| fallender Keil | 102 | 102 | 102 (mit 0,1 ATR) |
+| steigender Keil | 26 | 26 | 26 (mit 0,1 ATR) |
+| SKS | 161 | 161 | 161 |
+| inverse SKS | 60 | 60 | 60 |
+| Doppeltop | 337 | 337 | 337 |
+| Doppelboden | 148 | 148 | 148 |
+| Wimpel (bärisch / bullisch) | 98 / 9 | 98 / 9 | nicht prüfbar (s. o.) |
+
+**Gegenprobe:** Stichprobe aus 120 Shards, 533 bestätigte Linienformationen.
+- Wird `confirmedAt` um 5 Bars nach hinten verschoben, meldet der Validator `BESTAETIGUNG_VERSPAETET` bei 385 von 386 Linienformationen außer den Wimpeln. Die Ausnahme ist ein absteigendes Dreieck, bei dem in den 5 Bars kein Schluss deutlich unter der Kante lag.
+- Wird bei Dreiecken und Rechtecken die Richtung umgedreht, wird die Gegenkante zur Ausbruchslinie. Dann meldet er `BESTAETIGT_OHNE_AUSBRUCH` bei 270 von 273. Die übrigen 3 symmetrischen Dreiecke haben beide Kanten per Schluss gekreuzt.
+
+**Befund für einen eigenen PR:** Die Regeltexte der Keile nennen den Abstand von 0,1 ATR nicht. Sie lauten „Schlusskurs über der oberen Keillinie nach dem letzten Formationspunkt“. Ohne diesen Abstand wären 8 fallende und 2 steigende Keile früher bestätigt: neun davon 1 bis 2 Handelstage früher, INTG 18 Handelstage früher. Beispiel FIZZ: Schluss 30,84 am 08.10. über der Linie 30,82, bestätigt am 12.10. Die Regel bleibt, wie sie ist. Nur der Text wird ergänzt. Das ändert die Regeltexte in den Formationsdaten und kommt deshalb als eigener PR mit Neubau durch den Erzeuger.
