@@ -96,6 +96,24 @@ def doc_text(cik, f, prefix=3 * 1024 * 1024):
     return L.text_of(body), meta
 
 
+TERM = r'(?P<term>Closing Date|Effective Date|Merger Effective Date|Merger Closing Date|Closing|Effective Time)'
+LT_DEFINED = re.compile(r'(?:suspend|halt|ceas)[^.]{0,200}?(?:prior to|before) (?:the )?(?:opening|open|commencement) of (?:trading|the market|business)(?: on)? the ' + TERM, re.I)
+
+
+def defined_date(text, term):
+    """Calendar date a document assigns to a defined term: '<date> (the "Closing Date")' or '("Closing Date") on <date>' or 'Effective Time") on <date>'."""
+    q = r'["“”]'
+    for rx in (re.compile(DATE + r'[^.;()]{0,60}?\(\s*(?:the\s+)?' + q + re.escape(term) + q, re.I),
+               re.compile(re.escape(term) + q + r'\s*\)?\s*,?\s*(?:on|which occurred on)\s+' + DATE, re.I)):
+        m = rx.search(text)
+        if m:
+            d = L.parse_date(m.group('date'))
+            if d:
+                s = max(0, m.start() - 20)
+                return d, text[s:m.end() + 10][:300]
+    return None, None
+
+
 def last_trade(text):
     for name, rx, mode in LT_RULES:
         m = rx.search(text)
@@ -106,6 +124,13 @@ def last_trade(text):
             ltd = L.prev_trading_day(d) if mode == 'PREV' else d
             s = max(0, m.start() - 40)
             return {'rule': name, 'statedDate': d, 'lastTradeDate': ltd, 'quote': text[s:m.end() + 10][-300:]}
+    m = LT_DEFINED.search(text)
+    if m:
+        d, dq = defined_date(text, m.group('term'))
+        if d:
+            s = max(0, m.start() - 40)
+            return {'rule': 'PRIOR_TO_OPEN_ON_DEFINED_DATE', 'statedDate': d, 'lastTradeDate': L.prev_trading_day(d),
+                    'quote': text[s:m.end() + 10][-300:], 'definitionQuote': dq}
     return None
 
 
@@ -182,6 +207,8 @@ def research(sid, ticker, weekly, daily, wrun, drun, cikmap, master_rows_):
         if x and not lt:
             lt = {**x, 'accession': f['accessionNumber']}
             src['lastTradeQuote'] = x['quote']
+            if x.get('definitionQuote'):
+                src['definitionQuote'] = x['definitionQuote']
         if (c[0] or c[1]) and not cons:
             cons = {'cash': c[0], 'stock': c[1], 'tickersInDoc': c[2], 'election': c[3], 'accession': f['accessionNumber'], 'effectiveFiling': f['filingDate']}
             src['considerationQuote'] = (c[0] or c[1])['quote']

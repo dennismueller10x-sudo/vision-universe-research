@@ -368,9 +368,13 @@ def main():
             continue
         lt = c['lastTrade']
         txt = to_text(b)
-        stated = DATE_RX.findall(lt['quote'])
+        stated = DATE_RX.findall(lt.get('definitionQuote') or lt['quote'])
+        if lt.get('definitionQuote') and lt['definitionQuote'] not in txt:
+            ldis.append({'securityId': sid, 'what': 'DEFINITION_QUOTE_NOT_IN_BODY'})
+        if ' '.join(lt['quote'].split()[2:-2]) not in txt:
+            ldis.append({'securityId': sid, 'what': 'LAST_TRADE_QUOTE_NOT_IN_BODY'})
         own_stated = None
-        for m, d, y in stated[::-1]:
+        for m, d, y in (stated[:1] if lt.get('definitionQuote') else stated[::-1]):
             try:
                 own_stated = dt.date(int(y), MON[m.lower()], int(d)).isoformat()
                 break

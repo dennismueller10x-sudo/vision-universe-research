@@ -65,6 +65,7 @@ function writeLifecycle(out) {
     const lt = c.sources.find(s => s.lastTradeQuote);
     sources.push({ role: 'LAST_TRADE_STATEMENT', accession: lt.accession, url: lt.url, sha256: lt.sha256, sha256Normalized: lt.sha256Normalized, quote: clip(lt.lastTradeQuote),
       rule: c.lastTrade.rule, statedDate: c.lastTrade.statedDate });
+    if (lt.definitionQuote) sources.push({ role: 'LAST_TRADE_DATE_DEFINITION', accession: lt.accession, url: lt.url, sha256: lt.sha256, sha256Normalized: lt.sha256Normalized, quote: clip(lt.definitionQuote) });
     const cs = c.sources.find(s => s.considerationQuote);
     if (cs && c.terminal && ['CASH_MERGER', 'STOCK_MERGER', 'CASH_AND_STOCK', 'UNKNOWN'].includes(c.terminal.kind))
       sources.push({ role: c.terminal.kind === 'UNKNOWN' ? 'TERMINAL_CONSIDERATION_UNQUANTIFIED' : 'TERMINAL_CONSIDERATION', accession: cs.accession, url: cs.url, sha256: cs.sha256, sha256Normalized: cs.sha256Normalized, quote: clip(cs.considerationQuote) });
