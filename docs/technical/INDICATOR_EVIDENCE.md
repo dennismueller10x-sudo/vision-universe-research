@@ -1,6 +1,6 @@
 # Historische Evidenz klassischer Indikator-Ereignisse
 
-Stand 27.10.2026, `technical-indicators-1.5.0`, Datenstand 26.10.2026.
+Stand 28.10.2026 (Marktphasen ergänzt), Engine `technical-indicators-1.5.0`/1.6.0 (Ereignisse unverändert), Datenstand 26.10.2026.
 - Skript: `scripts/technical/indicator-evidence.mjs`. Es schreibt nur mit `--out` und ist kein Produktartefakt.
 - Test der Bausteine: `quant/tests/technical-indicator-evidence.test.mjs`.
 
@@ -98,3 +98,48 @@ Diese Auswertung beschreibt, was nach 18 verbreiteten Indikator-Ereignissen im M
 - Für Golden/Death Cross gibt es wenige Ereignisse an vielen Tagen; das Intervall ist entsprechend breit.
 
 **Für Screener und Chart Studio:** Wie bei Kerzen und Formationen sind diese Ereignisse **Beschreibung** („Welche Titel haben heute einen MACD-Kreuz?“), kein Signal mit Erwartungswert. Labels und Doku versprechen keine Wirkung.
+
+## Marktphasen und Zeithälften (ab 1.1.0)
+
+Diese Auswertung prüft, ob eine Aussage nur in einem Teil des Fensters gilt. `indicator-evidence.mjs` meldet je Zeile zusätzlich die Überrendite +20 in vier Teilmengen (Modul `scripts/technical/evidence-phases.mjs`, Test `technical-evidence-phases.test.mjs`).
+
+**Teilmengen:**
+- **UP / DOWN:** SPY-Schluss am Ereignisdatum über bzw. unter seinem SMA 50, gerechnet nur aus Schlüssen bis zu diesem Datum.
+  - Im Tagesfenster gab es 210 UP- und 61 DOWN-Tage mit 30 Wechseln.
+  - Der SMA 200 taugt hier nicht: SPY lag nur an 13 von 271 Tagen darunter.
+- **H1 / H2:** Ereignisse vor bzw. ab dem Median aller Ereignisdaten (hier 2026-06-15). Jede Hälfte enthält etwa gleich viele Ereignisse.
+
+**Signifikanz und Stabilität:**
+- Signifikanz (✱) nach Bonferroni über Zeilen × 4 Teilmengen (z = 3,39), mit Mittel und Intervall über Datums-Cluster wie oben.
+- **Stabil** heißt: In allen vier Teilmengen (je ≥ 30 Ereignisse) hat das Mittel dasselbe Vorzeichen.
+
+**Ergebnis:** Von den 18 gemeldeten Ereignis-Zeilen sind 10 widersprüchlich (Vorzeichen wechselt zwischen den Teilmengen). 8 sind stabil, davon 1 positiv und 7 negativ.
+
+Das wiederkehrende Bild der stabilen Zeilen: Alle sechs stabilen bullischen Ereignisse haben in jeder Teilmenge eine negative richtungsbereinigte Überrendite. Das einzige stabile positive Ereignis ist bärisch (Bollinger über dem oberen Band). Nach einem Signal blieb der Titel also meist hinter dem Querschnitt zurück, unabhängig von der Richtung des Signals.
+
+**Ausnahme Death Cross** (bärisch, stabil negativ): Nach dem Death Cross lief der Titel in allen vier Teilmengen besser als der Querschnitt. Der Fall passt nicht zum allgemeinen Effekt und ist mit 4.117 Ereignissen der kleinste stabile.
+
+Das spricht eher für einen allgemeinen Effekt in diesem Jahr als für einen Wert des einzelnen Signals. Signale treten häufiger bei beweglichen, volatilen Titeln auf, und diese liefen schwächer. Die Teilmengen bestätigen damit die Einordnung oben: Kein Signal taugt hier als Kaufsignal. Die bärischen Lesarten wirken nur, weil ohnehin alles mit Signal schwächer lief.
+
+Grenzen: Das ist weiterhin ein Fenster von rund einem Jahr. UP und DOWN sind kurze Phasen innerhalb eines Aufwärtsjahrs, kein Bärenmarkt. Survivorship ist wie oben nicht bereinigt. Längere Historie mit echten Marktphasen deckt die Wochen-Evidenz ab ([WEEKLY_EVIDENCE.md](WEEKLY_EVIDENCE.md)).
+
+| Ereignis | Richtung | +20 alle | UP | DOWN | H1 | H2 | stabil |
+|---|---|---|---|---|---|---|---|
+| psarUp | bullisch | −2,19 % | −2,17 % (24.811) | −2,25 % (9.229) | −2,99 % (18.142) | −0,89 % (15.898) | ja (−) |
+| macdCrossUp | bullisch | −2,17 % ✱ | −1,77 % (23.544) | −3,28 % ✱ (8.808) | −2,69 % ✱ (16.869) | −1,32 % ✱ (15.483) | ja (−) |
+| donchianBreakUp | bullisch | −1,51 % | −1,13 % (22.822) | −2,67 % (5.085) | −1,45 % (15.222) | −1,60 % ✱ (12.685) | ja (−) |
+| bollingerAboveUpper | bärisch | +2,04 % | +2,01 % ✱ (19.837) | +2,14 % (5.004) | +1,83 % (13.339) | +2,37 % ✱ (11.502) | ja (+) |
+| rsiExitOversold | bullisch | −2,23 % | −2,04 % (11.551) | −2,95 % ✱ (5.877) | −2,92 % (12.980) | −0,37 % (4.448) | ja (−) |
+| supertrendUp | bullisch | −2,64 % ✱ | −1,88 % (8.408) | −4,86 % ✱ (1.976) | −3,11 % (5.989) | −2,00 % ✱ (4.395) | ja (−) |
+| deathCross | bärisch | −2,56 % | −0,29 % (3.011) | −10,84 % (1.106) | −2,89 % (3.016) | −1,75 % (1.101) | ja (−) |
+| goldenCross | bullisch | −0,69 % | −0,08 % (2.975) | −3,03 % (626) | −0,16 % (2.403) | −2,09 % ✱ (1.198) | ja (−) |
+| stochCrossUpOversold | bullisch | −0,72 % | −1,76 % (29.772) | +2,31 % (14.385) | −2,05 % (21.971) | +1,59 % (22.186) | nein |
+| psarDown | bärisch | +0,64 % | −0,09 % (25.570) | +2,73 % (9.161) | +1,11 % (17.869) | −0,13 % (16.862) | nein |
+| donchianBreakDown | bärisch | +2,16 % | +2,16 % (21.704) | +2,18 % (11.787) | +3,61 % (16.111) | −0,21 % (17.380) | nein |
+| macdCrossDown | bärisch | +0,51 % | +0,26 % (24.653) | +1,28 % (8.184) | +1,04 % (16.584) | −0,39 % (16.253) | nein |
+| stochCrossDownOverbought | bärisch | +0,12 % | −0,36 % (26.574) | +1,57 % (6.231) | +0,32 % (17.343) | −0,19 % (15.462) | nein |
+| crossBelowSma200 | bärisch | −0,73 % | −0,97 % (18.007) | +0,24 % (5.938) | −0,51 % (17.011) | −1,33 % (6.934) | nein |
+| bollingerBelowLower | bullisch | −0,65 % | −0,49 % (15.000) | −1,12 % (8.852) | −1,56 % (12.343) | +0,71 % (11.509) | nein |
+| crossAboveSma200 | bullisch | +0,24 % | +1,05 % (18.520) | −3,14 % ✱ (4.397) | +0,61 % (16.498) | −0,83 % (6.419) | nein |
+| rsiExitOverbought | bärisch | +1,11 % | +0,38 % (16.374) | +4,12 % ✱ (3.670) | +1,89 % ✱ (14.789) | −1,17 % (5.255) | nein |
+| supertrendDown | bärisch | −0,90 % | −1,95 % (7.875) | +1,88 % (3.463) | +0,27 % (5.976) | −2,42 % (5.362) | nein |

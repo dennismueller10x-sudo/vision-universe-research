@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Paper;src:url(../../fonts/old-standard-bold.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#e9e7e2}
+#col{position:absolute;inset:-60px;filter:grayscale(1) contrast(.95);opacity:.78}
+.clip{position:absolute;background:#f4f2ec;border:1px solid #c9c6bd;box-shadow:0 6px 14px rgba(0,0,0,.18);padding:22px 24px;overflow:hidden;font-family:Paper,serif;color:#222}
+.clip h3{font-size:34px;line-height:1.02;margin-bottom:12px}
+.clip .ln{height:11px;background:#9a978f;margin:9px 0;border-radius:2px}
+.clip svg{display:block;width:100%;margin-top:8px}
+.clip .big{font-family:Paper,serif;font-size:70px;line-height:1}
+#glow{position:absolute;left:540px;top:1330px;width:1250px;height:1250px;margin:-625px 0 0 -625px;border-radius:50%;
+ background:radial-gradient(circle,rgba(255,255,255,.95) 0 32%,rgba(255,255,255,.55) 48%,rgba(255,255,255,0) 66%)}
+#fig{position:absolute;left:50%;transform:translateX(-50%);height:1260px}
+#title{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:Bangers;line-height:.92;transform:rotate(-3deg)}
+#title div{white-space:nowrap;width:fit-content;margin:0 auto;color:var(--fill);-webkit-text-stroke:16px #1e1e1e;paint-order:stroke fill;text-shadow:10px 12px 0 #1e1e1e;letter-spacing:3px}
+#tag{position:absolute;left:50%;transform:translateX(-50%) rotate(-3deg);font-family:Bangers;font-size:92px;color:var(--fill);-webkit-text-stroke:12px #1e1e1e;paint-order:stroke fill;text-shadow:6px 8px 0 #1e1e1e;letter-spacing:2px}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="col"></div><div id="glow"></div><img id="fig"><div id="title"></div><div id="tag"></div>
+<script>
+const C=window.COVER;
+const FILL={gelb:'#f7d23e',blau:'#a9c6ef',rot:'#ef4b3c',gruen:'#6fd18f'}[C.color||'gelb'];
+document.documentElement.style.setProperty('--fill',FILL);
+// seeded random so a cover renders identically every time
+let seed=C.seed||7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const col=document.getElementById('col');
+const spark=(up)=>{let y=60,p=[];for(let i=0;i<=20;i++){y+=(rnd()-(up?0.62:0.38))*18;y=Math.max(8,Math.min(112,y));p.push(`${i*15},${y}`)}
+ return `<svg viewBox="0 0 300 120"><polyline points="${p.join(' ')}" fill="none" stroke="#333" stroke-width="5"/><line x1="0" y1="118" x2="300" y2="118" stroke="#777" stroke-width="2"/></svg>`};
+const bars=()=>`<svg viewBox="0 0 300 120">${[...Array(7)].map((_,i)=>{const h=20+rnd()*95;return `<rect x="${i*42+4}" y="${120-h}" width="30" height="${h}" fill="#444"/>`}).join('')}</svg>`;
+const clips=C.clippings||[];let k=0;
+for(let y=0;y<2040;y+=250){for(let x=0;x<1200;x+=275){
+ const c=clips[k%clips.length];k++;const e=document.createElement('div');e.className='clip';
+ const w=250+rnd()*70,h=210+rnd()*90;e.style.cssText=`left:${x-20+rnd()*40}px;top:${y-20+rnd()*40}px;width:${w}px;height:${h}px;transform:rotate(${(rnd()-.5)*8}deg)`;
+ const kind=rnd();let body=[...Array(3+Math.floor(rnd()*3))].map(()=>`<div class="ln" style="width:${60+rnd()*40}%"></div>`).join('');
+ if(c.big)body=`<div class="big">${c.big}</div>`+body;else if(kind<.35)body+=spark(c.up!==false);else if(kind<.6)body+=bars();
+ e.innerHTML=`<h3>${c.h}</h3>${body}`;col.appendChild(e)}}
+document.getElementById('fig').src='../../figuren/entwurf-1/'+(C.figure.includes('/')?C.figure:'v2/'+C.figure)+'.png';
+const t=document.getElementById('title');
+for(const line of C.title){const d=document.createElement('div');d.textContent=line;t.appendChild(d)}
+const tag=document.getElementById('tag');tag.textContent=C.tag||'';
+document.fonts.load('100px Bangers').then(()=>{
+ for(const d of t.children){let f=C.title.length<=2?290:215;d.style.fontSize=f+'px';while(d.scrollWidth>960&&f>120){f-=6;d.style.fontSize=f+'px'}}
+ let below=250+t.offsetHeight+10;if(C.tag){tag.style.top=below+'px';below+=100}
+ document.getElementById('fig').style.top=Math.max(below-40,760)+'px';document.getElementById('glow').style.top=(Math.max(below-40,760)+500)+'px';
+ const img=document.getElementById('fig');(img.complete?Promise.resolve():new Promise(r=>img.onload=r)).then(()=>{window.__ready=true});
+});
+</script></body></html>

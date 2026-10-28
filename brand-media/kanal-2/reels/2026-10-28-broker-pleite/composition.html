@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--ink:#1d2433;--cream:#fbf7ef;--bull:#1f9d55;--bear:#8a5a2b;--red:#e2453a;--gold:#f2c230}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);font-family:Nunito,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:540px 960px}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.bg{position:absolute;inset:-200px;background:var(--c)}
+.dots{position:absolute;inset:-200px;background-image:radial-gradient(rgba(0,0,0,.10) 22%,transparent 24%);background-size:34px 34px}
+.rays{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;
+ background:repeating-conic-gradient(rgba(255,255,255,.22) 0 9deg,transparent 9deg 18deg)}
+/* duo */
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.fig{position:absolute;bottom:-60px;height:1220px}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-40px;width:600px}#baer{right:-50px;width:660px}
+/* icons */
+.ico{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;opacity:0;z-index:8;filter:drop-shadow(0 12px 0 rgba(0,0,0,.22))}
+.ico img{width:100%;height:100%;object-fit:contain}
+/* chart scenes */
+.card{position:absolute;left:60px;right:60px;background:#fff;border:8px solid var(--ink);border-radius:36px;box-shadow:0 16px 0 var(--ink)}
+.h1{position:absolute;top:170px;left:0;right:0;text-align:center;font-family:Bangers;font-size:118px;letter-spacing:3px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;text-shadow:8px 10px 0 var(--ink);transform:rotate(-2deg)}
+.lab{font-family:Archivo;font-size:44px}
+.big{font-family:Bangers;letter-spacing:2px;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill;text-shadow:7px 9px 0 var(--ink)}
+.stamp{position:absolute;font-family:Bangers;letter-spacing:3px;color:var(--red);border:14px solid var(--red);border-radius:26px;padding:0 34px;background:rgba(255,255,255,.94);white-space:nowrap;opacity:0;z-index:9}
+/* captions */
+#cap{position:absolute;left:30px;right:30px;text-align:center;font-family:Archivo;font-size:84px;line-height:1.08;z-index:20;text-transform:uppercase;
+ -webkit-text-stroke:18px var(--ink);paint-order:stroke fill;color:#fff}
+#cap .w{display:inline-block;margin:0 10px}
+#cap .w.on{color:var(--hl)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none}
+#end{position:absolute;inset:0;background:var(--cream);opacity:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
+#end .logo{width:420px;height:420px;border-radius:50%;box-shadow:0 12px 0 rgba(0,0,0,.12)}
+#end .nm{font-family:Archivo;font-size:132px;line-height:.95}#end .nm i{font-style:normal;color:var(--bull)}#end .nm u{text-decoration:none;color:var(--bear)}
+#end .h{font-family:Archivo;font-size:44px;opacity:.8}
+#end .btn{font-family:Archivo;font-size:56px;background:var(--ink);color:#fff;padding:18px 60px;border-radius:24px}
+#end .fine{font-size:34px;font-weight:800;opacity:.7}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="world">
+ <div class="scene" id="duo"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div id="cam"><div class="fig" id="bulle"></div><div class="fig" id="baer"></div></div></div>
+ <div class="scene" id="d1"><div class="bg"></div><div class="dots"></div><div class="h1">DEIN DEPOT GEHÖRT DIR</div>
+  <div class="card" id="bk" style="top:520px;height:520px;right:auto;width:450px;left:50px"><div style="padding:30px;text-align:center"><div class="lab">BROKER</div><img src="../../icons/boerse.png" style="width:260px;margin-top:30px"></div></div>
+  <div class="card" id="dp" style="top:520px;height:520px;left:auto;width:450px;right:50px"><div style="padding:30px;text-align:center"><div class="lab">DEIN DEPOT</div><img src="../../icons/tresor.png" style="width:260px;margin-top:30px"><div class="lab" style="font-size:34px;color:#1f9d55;margin-top:10px">SONDERVERMÖGEN</div></div></div>
+  <div class="stamp" id="pl" style="left:275px;top:780px;font-size:110px;transform:translate(-50%,-50%) rotate(-10deg)">PLEITE</div>
+  <div class="stamp" id="ok" style="left:805px;top:1130px;font-size:90px;color:#1f9d55;border-color:#1f9d55;transform:translate(-50%,-50%) rotate(6deg)">BLEIBT DEINS</div>
+  <div id="mv" style="position:absolute;left:540px;top:1250px;z-index:9;transform:translate(-50%,-50%);font-family:Archivo;font-size:46px;background:#fff;border:6px solid #1d2433;border-radius:22px;padding:14px 30px;opacity:0;white-space:nowrap">→ zu anderem Depot übertragen</div></div>
+ <div class="scene" id="d2"><div class="bg"></div><div class="dots"></div><div class="h1">EINLAGENSICHERUNG</div>
+  <div class="card" style="top:560px;height:560px"><div style="padding:40px"><div class="lab">Cash auf dem Verrechnungskonto</div>
+   <div style="position:relative;height:120px;margin-top:60px;border:7px solid #1d2433;border-radius:60px;overflow:hidden;background:#eee"><div id="eb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#1f9d55"></div></div>
+   <div class="big" id="ev" style="font-size:150px;color:#7fd0a8;text-align:center;margin-top:40px">0 €</div>
+   <div class="lab" style="text-align:center;font-size:38px;opacity:.75">pro Person und Bank</div></div></div></div>
+ <div class="scene" id="d3"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">ANLEGERENTSCHÄDIGUNG</div>
+  <div class="card" id="c90" style="top:520px;height:420px;right:auto;width:470px;left:40px"><div style="padding:34px;text-align:center"><div class="lab">ERSTATTET</div><div class="big" style="font-size:180px;color:#7fd0a8;white-space:nowrap">90 %</div></div></div>
+  <div class="card" id="c20" style="top:520px;height:420px;left:auto;width:470px;right:40px"><div style="padding:34px;text-align:center"><div class="lab">HÖCHSTENS</div><div class="big" style="font-size:118px;color:#f5a08f;margin-top:40px;white-space:nowrap">20.000 €</div></div></div></div>
+ <div class="scene" id="d4"><div class="bg"></div><div class="dots"></div><div class="h1">MERK DIR DAS</div>
+  <div class="card" id="cA" style="top:470px;height:440px;right:auto;width:470px;left:40px"><div style="padding:30px;text-align:center"><div class="lab">AKTIEN &amp; ETFs</div><img src="../../icons/tresor.png" style="width:170px;margin:16px 0"><div class="big" style="font-size:78px;color:#7fd0a8">SONDER-<br>VERMÖGEN</div></div></div>
+  <div class="card" id="cB" style="top:470px;height:440px;left:auto;width:470px;right:40px"><div style="padding:30px;text-align:center"><div class="lab">CASH</div><img src="../../icons/geldbuendel.png" style="width:170px;margin:16px 0"><div class="big" style="font-size:78px;color:#86c1f2">BIS<br>100.000 €</div></div></div></div>
+</div>
+<div id="cap"></div><div id="flash"></div>
+<div id="end"><img class="logo" src="../../profil/icon-a-gold.png"><div class="nm"><i>AKTIEN</i><u>ZOO</u></div><div class="h">@aktienzoo</div><div class="btn">FOLGEN</div><div class="fine">Keine Anlageberatung</div></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp;
+const FIG={bulle:'../../figuren/entwurf-1/outfits/outfit-hemd/',baer:'../../figuren/entwurf-1/outfits/outfit-hemd/'};
+const ICON='../../icons/';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3),easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const OPEN={bulle:0.62,baer:0.5},HALF={bulle:0.16,baer:0.16};
+const loads=[];const img=(src,parent,cls)=>{const im=new Image();im.src=src;if(cls)im.className=cls;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
+// ---------- figures
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
+const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
+const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
+// ---------- scene colours (each line gets its own colour)
+const PAL=['#e2453a','#7fd0a8','#86c1f2','#f5a08f','#7fd0a8','#f2c230','#c9a7f0','#86c1f2','#e2453a','#7fd0a8','#f2c230','#f2c230'];
+// ---------- spoken numbers as digits
+const NUM=[['hunderttausend Euro','100.000 €'],['neunzig Prozent','90 %'],['zwanzigtausend Euro.','20.000 €.'],['zwanzigtausend?!','20.000?!']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
+ const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:bare(disp)+(disp.match(/[.,!?:]+$/)?disp.match(/[.,!?:]+$/)[0]:tail),e:last.e});break}}
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+// ---------- icons triggered by words (max 3 per line, fixed slots)
+const KEY={pleitegeht:'chart-runter',geld:'geldbuendel',aktien:'chart-hoch',broker:'boerse',depot:'tresor',insolvenzmasse:'steuerbescheid',verrechnungskonto:'sparschwein',
+ einlage:'sparschwein',einlagensicherung:'tresor','100.000':'geldsack',sicher:'pokal',fehler:'lupe',wertpapiere:'steuerbescheid',anlegerentschädigung:'steuerbescheid','90':'taschenrechner',
+ '20.000':'muenzstapel','20.000?!':'muenzstapel',ausnahmefall:'gluehbirne',passiert:'boerse',weiterschlafen:'pokal',etfs:'chart-hoch'};
+const SLOTS={duo:[[250,560],[830,520],[540,330]],d1:[[190,1470],[890,1470],[540,1480]],d2:[[230,1400],[850,1400],[540,1500]],d3:[[230,1200],[850,1200],[540,1360]],d4:[[250,1150],[830,1150],[540,1350]]};
+const POPS=[];{const per={};for(const w of W){const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
+ const seg=S[w.line];const sc=seg.scene==='dia'?'d'+seg.step:'duo';const el=document.createElement('div');el.className='ico';img(ICON+ic+'.png',el);
+ const [x,y]=SLOTS[sc][n];el.style.left=x+'px';el.style.top=y+'px';document.getElementById(sc).appendChild(el);POPS.push({el,t0:w.s,t1:seg.e+0.05,rot:(n%2?8:-8)})}}
+const cap=document.getElementById('cap'),world=document.getElementById('world'),cam=document.getElementById('cam'),flash=document.getElementById('flash'),end=document.getElementById('end');
+function fit(){let f=84;cap.style.fontSize=f+'px';while(cap.scrollWidth>1020&&f>48){f-=4;cap.style.fontSize=f+'px'}}
+const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
+const SCENES=['duo','d1','d2','d3','d4'];
+function render(t){
+ const seg=segAt(t);const id=seg.scene==='dia'?'d'+seg.step:'duo';
+ for(const s of SCENES)document.getElementById(s).style.display=s===id?'block':'none';
+ document.getElementById(id).style.setProperty('--c',PAL[seg.line%PAL.length]);
+ for(const r of document.querySelectorAll('.rays'))r.style.transform=`rotate(${t*6}deg)`;
+ // cuts: punch-in at every line start, whip slide when the scene type changes, flash + shake on shock
+ const k=t-seg.s;const prev=S[seg.line-1];const whip=prev&&prev.scene!==seg.scene;
+ let tx=0,sc=1+0.10*(1-easeOut(k/0.22)),rot=0;
+ if(whip&&k<0.22){tx=(1-easeOut(k/0.22))*(seg.line%2?-1:1)*700;world.style.filter=`blur(${(1-k/0.22)*14}px)`}else world.style.filter='none';
+ const shock=seg.face==='schock';
+ if(shock&&k<0.5){tx+=Math.sin(k*90)*18*(1-k/0.5);rot=Math.sin(k*70)*1.4*(1-k/0.5)}
+ flash.style.opacity=shock?clamp(1-k/0.18)*0.9:0;
+ world.style.transform=`translateX(${tx}px) scale(${sc}) rotate(${rot}deg)`;
+ // captions
+ const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
+ if(g&&t<END){cap.style.setProperty('--hl',g[0].who==='bulle'?'#7dffb0':'#ffd36b');
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[,:]$/,'').replace(/\.$/,'')}</span>`).join('');
+  cap.style.transform=`scale(${0.88+0.12*back((t-g[0].s)/0.18)}) rotate(${gi%2?1.5:-1.5}deg)`}else cap.innerHTML='';
+ cap.style.top=id==='duo'?'230px':'1640px';fit();
+ // icons
+ for(const p of POPS){const on=t>=p.t0&&t<p.t1;const q=(t-p.t0)/0.3;p.el.style.opacity=on?1:0;
+  p.el.style.transform=`scale(${on?back(q):0}) rotate(${p.rot+Math.sin(t*3+p.rot)*3}deg) translateY(${Math.sin(t*2.4+p.rot)*8}px)`}
+ if(id==='duo'){
+  const close=(seg.e-seg.s)>2.4&&seg.line%2===0;const z=close?1.45:1;const fx=seg.who==='bulle'?300:770;
+  cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+180}px) scale(${z})`:'none';
+  for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
+   if(speaking){const a=amp(t);const face=seg.face;
+    if(face&&k<0.6)f=face;else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>OPEN[who]?'mund-offen':a>HALF[who]?'mund-halb':'basis')}
+   else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
+   else if(blinkAt(who,t))f='blinzeln';
+   show(who,f)}
+ }
+ if(id==='d1'){const k1=t-seg.s;
+  document.getElementById('bk').style.transform=`translateX(${(1-easeOut(k1/0.3))*-600}px)`;document.getElementById('dp').style.transform=`translateX(${(1-easeOut((k1-0.5)/0.3))*600}px)`;
+  const pk=(k1-3.3)/0.25,pl=document.getElementById('pl');pl.style.opacity=pk>0?1:0;pl.style.transform=`translate(-50%,-50%) rotate(-10deg) scale(${1+1.4*(1-back(pk))})`;
+  document.getElementById('bk').style.filter=pk>0?'grayscale(1) brightness(.85)':'none';
+  const ok=(k1-5.2)/0.25,oe=document.getElementById('ok');oe.style.opacity=ok>0?1:0;oe.style.transform=`translate(-50%,-50%) rotate(6deg) scale(${1+1.2*(1-back(ok))})`;
+  const mv=document.getElementById('mv');mv.style.opacity=clamp((k1-7.4)/0.25);mv.style.transform=`translate(-50%,-50%) scale(${0.8+0.2*back((k1-7.4)/0.3)})`}
+ if(id==='d2'){const k2=t-seg.s;const p=easeIO((k2-4.3)/1.6);document.getElementById('eb').style.width=(100*p)+'%';
+  const v=Math.round(100*p)*1000;document.getElementById('ev').textContent=v.toLocaleString('de-DE')+' €'}
+ if(id==='d3'){const k3=t-seg.s;document.getElementById('c90').style.transform=`scale(${back((k3-3.6)/0.35)})`;document.getElementById('c20').style.transform=`scale(${back((k3-5.0)/0.35)})`}
+ if(id==='d4'){const k4=t-seg.s;document.getElementById('cA').style.transform=`translateX(${(1-easeOut((k4-1.0)/0.3))*-600}px)`;document.getElementById('cB').style.transform=`translateX(${(1-easeOut((k4-4.3)/0.3))*600}px)`}
+ end.style.opacity=clamp((t-END-0.1)/0.3);
+}
+// sound events for audio.py mix (same moments as the visuals above)
+window.EVENTS=[...POPS.map(p=>({t:p.t0,type:'pop'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene!==s.scene).map(s=>({t:s.s-0.05,type:'whoosh'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene===s.scene).map(s=>({t:s.s,type:'punch'})),
+ ...S.filter(s=>s.face==='schock').map(s=>({t:s.s,type:'hit'})),
+ {t:S.find(x=>x.step===1).s+3.3,type:'stamp'},{t:S.find(x=>x.step===1).s+5.2,type:'stamp'},{t:S.find(x=>x.step===2).s+4.1,type:'riser'},
+ {t:S.find(x=>x.step===3).s+3.6,type:'stamp'},{t:S.find(x=>x.step===3).s+5.0,type:'stamp'}].sort((a,b)=>a.t-b.t);
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
+</script></body></html>

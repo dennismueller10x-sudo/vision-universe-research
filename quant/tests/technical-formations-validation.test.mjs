@@ -89,3 +89,36 @@ test("Spiegelung: Abstaende bleiben gleich, Hoch und Tief tauschen", () => {
   assert.equal(m.close[1] - m.close[0], -(b.close[1] - b.close[0]), "Bewegung umgekehrt");
   assert.deepEqual(mirrorBars(m).close, b.close, "zweimal gespiegelt = Original");
 });
+
+test("Bestaetigung gegen die gezeichnete Ausbruchslinie (im Bar-Raum, Rundung 1e-4)", () => {
+  /* Zehn Tagesbars mit Wochenende zwischen Fr 2026-10-09 und Mo 2026-10-12: Kalendertage und Bar-Index weichen ab. */
+  const days = ["2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16"];
+  const bars = (close) => ({ timestamps: days, open: close, high: close.map((x) => x + 0.5), low: close.map((x) => x - 0.5), close });
+  /* Fallende Oberkante von 110 (Bar 0) auf 101 (Bar 9): 1 je Bar. Ausbruch nach oben erst an Bar 7 (Linie 103). */
+  const up = L("upper", days[0], 110, days[9], 101), lo = L("lower", days[0], 90, days[9], 99);
+  const sym = (extra) => f("SYMMETRICAL_TRIANGLE", "BULLISH", { state: "CONFIRMED", detectedAt: days[4], detectedIndex: 4,
+    points: [P(days[0], 110, "HIGH"), P(days[0], 90, "LOW"), P(days[2], 108, "HIGH"), P(days[3], 93, "LOW"), P(days[3], 107, "HIGH")], lines: [up, lo], ...extra });
+  const ctx = (close) => ({ ...CTX, asOf: days[9], bars: bars(close), atrSeries: days.map(() => 2) });
+  const close = [100, 100, 100, 100, 100, 100, 100, 103.5, 104, 104];
+  const only = (r) => r.filter((x) => x === "BESTAETIGT_OHNE_AUSBRUCH" || x === "BESTAETIGUNG_VERSPAETET");
+  assert.deepEqual(only(check(sym({ confirmedAt: days[7] }), ctx(close))), [], "erster Schluss ueber der Linie");
+  assert.deepEqual(only(check(sym({ confirmedAt: days[6] }), ctx(close))), ["BESTAETIGT_OHNE_AUSBRUCH"], "kein Schluss ueber der Linie bis dahin");
+  assert.deepEqual(only(check(sym({ confirmedAt: days[8] }), ctx(close))), ["BESTAETIGUNG_VERSPAETET"], "Bar 7 haette schon bestaetigt");
+  /* Ausbruch vor der Erkennung: bestaetigt am Erkennungstag ("bei Erkennung ausgebrochen"), nicht verspaetet. */
+  const early = [100, 100, 100, 100, 108, 100, 100, 100, 100, 100];
+  assert.deepEqual(only(check(sym({ confirmedAt: days[4] }), ctx(early))), []);
+  /* Gleichstand auf 4 Stellen gerundet (CCZ: Schluss 62,437789, Linie 62,4378) zaehlt nicht als frueherer Ausbruch. */
+  const flatTop = L("upper", days[0], 104, days[9], 104);
+  const eq = [100, 100, 100, 100, 100, 104.00004, 100, 104.5, 104, 104];
+  assert.deepEqual(only(check(sym({ lines: [flatTop, lo], confirmedAt: days[7] }), ctx(eq))), []);
+  /* Kalendertage statt Bar-Index wuerden die Linie an Bar 7 (Mi 2026-10-14) auf 110 − 9 × 9/11 ≈ 102,6 legen: ein
+     Schluss von 102,8 laege darueber. Im Bar-Raum liegt die Linie bei 103, der Schluss darunter. */
+  const between = [100, 100, 100, 100, 100, 100, 100, 102.8, 104, 104];
+  assert.deepEqual(only(check(sym({ confirmedAt: days[8] }), ctx(between))), []);
+  /* Keil: Ausbruch verlangt 0,1 ATR Abstand (formations.js). ATR 2 → 0,2 ueber der Oberkante. */
+  const fw = (cAt, cl) => check(f("FALLING_WEDGE", "BULLISH", { state: "CONFIRMED", detectedAt: days[4], detectedIndex: 4, confirmedAt: cAt,
+    points: [P(days[0], 110, "HIGH"), P(days[1], 95, "LOW"), P(days[3], 107, "HIGH"), P(days[3], 94, "LOW")],
+    lines: [L("upper", days[0], 110, days[9], 101), L("lower", days[0], 95, days[9], 92)] }), ctx(cl));
+  assert.deepEqual(only(fw(days[8], [100, 100, 100, 100, 100, 100, 100, 103.1, 102.5, 102])), [], "103,1 < 103 + 0,2: noch kein Ausbruch");
+  assert.deepEqual(only(fw(days[8], [100, 100, 100, 100, 100, 100, 100, 103.3, 102.5, 102])), ["BESTAETIGUNG_VERSPAETET"]);
+});

@@ -23,6 +23,19 @@ const page = await context.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
 let inflight = 0;
+/* Diagnose fuer CI: Konto-/Daten-Anfragen und Konsolenfehler, ausgegeben nur bei einem Befund */
+const trace = [];
+page.on('request', r => { if (/\/v1\/|\/quant\/data\/universe\/instruments\/|\/konto\/(config|account-api)\.js/.test(r.url())) trace.push(`${new Date().toISOString().slice(11, 23)} -> ${r.method()} ${new URL(r.url()).pathname}`); });
+page.on('response', r => { if (/\/v1\/|\/quant\/data\/universe\/instruments\//.test(r.url())) trace.push(`${new Date().toISOString().slice(11, 23)} <- ${r.status()} ${new URL(r.url()).pathname}`); });
+page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') trace.push(`console ${m.type()}: ${m.text().slice(0, 200)}`); });
+async function diag(label) {
+  const st = await page.evaluate(() => ({
+    marker: localStorage.getItem('vu-account-session-v1'), ids: sessionStorage.getItem('vu-watchlist-ids-v1'),
+    config: globalThis.VU_ACCOUNT_CONFIG || null, account: typeof globalThis.VUAccount, button: typeof globalThis.VUWatchButton,
+    enabled: globalThis.VUWatchButton ? globalThis.VUWatchButton.enabled() : null, identity: !!(globalThis.VUCore && globalThis.VUCore.Identity),
+    pressed: document.querySelector('.v2-watch-button')?.getAttribute('aria-pressed') })).catch(e => ({error: String(e)}));
+  console.log(`--- Diagnose ${label}: ${JSON.stringify(st)}\n${trace.slice(-30).join('\n')}`);
+}
 page.on('request', () => { inflight++; });
 for (const e of ['requestfinished', 'requestfailed']) page.on(e, () => { inflight = Math.max(0, inflight - 1); });
 /* wartet, bis 500 ms lang keine Anfrage mehr laeuft (auch nach einem reinen Hash-Wechsel) */
@@ -40,6 +53,16 @@ async function shown() {
   await settle();                    /* WebKit meldet Abrufe, die eine spaetere Navigation abbricht, als Seitenfehler */
   return page.locator('.v2-watch-button');
 }
+
+/* wartet auf die Schreibanfrage des Knopfs ins Konto (POST, Antwort da) */
+const saved = path => page.waitForResponse(r => new URL(r.url()).pathname === path && r.request().method() === 'POST', {timeout: 20000}).catch(() => null);
+/* wartet, bis der Knopf den Kontostand zeigt (Neuzeichnen nach "vu-watchlist-ready"); faellt sonst ohne Fehler durch */
+const pressed = (btn, value) => btn.evaluate((el, v) => new Promise(done => {
+  if (el.getAttribute('aria-pressed') === v) return done();
+  const o = new MutationObserver(() => { if (document.querySelector('.v2-watch-button')?.getAttribute('aria-pressed') === v) { o.disconnect(); done(); } });
+  o.observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['aria-pressed']});
+  setTimeout(() => { o.disconnect(); done(); }, 20000);
+}), value);
 
 // Abgemeldet
 let btn = await stock('NVDA');
@@ -64,19 +87,22 @@ btn = await stock('AAPL');
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: nur lokaler Eintrag AAPL bleibt sichtbar');
 check(JSON.stringify(await central()) === '[]', 'angemeldet: AAPL wurde nicht von selbst ins Konto uebernommen');
 btn = await stock('NVDA');
-await btn.click();
-await page.waitForTimeout(800);
+/* Der Knopf schreibt ins Konto, sobald Kontostand und Instrument-ID geladen sind (assets/watchlist-button.js#follow);
+   auf einem kalten Server dauert das laenger als eine feste Wartezeit - deshalb auf die Anfrage selbst warten. */
+await Promise.all([saved('/v1/watchlist/items'), btn.click()]);
 check(JSON.stringify(await local()) === '["NVDA","AAPL"]', 'angemeldet: Klick speichert lokal');
-check(JSON.stringify(await central()) === '["NVDA"]', 'angemeldet: Klick speichert im Konto');
+const stored = await central();
+if (JSON.stringify(stored) !== '["NVDA"]') await diag('Klick speichert im Konto');
+check(JSON.stringify(stored) === '["NVDA"]', 'angemeldet: Klick speichert im Konto');
 // Ein Titel nur im Konto (anderes Geraet): ueber die API anlegen, lokal fehlt er.
 await page.evaluate(() => sessionStorage.removeItem('vu-watchlist-ids-v1'));
 await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json', 'X-VU-Client': 'web'}, body: JSON.stringify({instrumentId: (await (await fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).instrumentId, ticker: 'MSFT'})}); });
 // Ein anderes Geraet zeigt sich nach dem Neuladen (oder nach 5 Minuten Zwischenspeicher) - nicht mitten in derselben Seite.
 await stock('MSFT'); await page.reload();
 btn = await shown();
+await pressed(btn, 'true');
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: Titel nur im Konto wird als beobachtet gezeigt');
-await btn.click();
-await page.waitForTimeout(800);
+await Promise.all([saved('/v1/watchlist/items/remove'), btn.click()]);
 check(!(await central()).includes('MSFT'), 'angemeldet: Ausschalten entfernt ihn im Konto');
 check(JSON.stringify(await local()) === '["NVDA","AAPL"]', 'angemeldet: lokale Liste dabei unveraendert');
 
