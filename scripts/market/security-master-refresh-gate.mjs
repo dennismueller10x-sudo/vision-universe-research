@@ -129,13 +129,17 @@ const days = (from, to) => (Date.parse(`${to}T00:00:00Z`) - Date.parse(String(fr
 export function evaluateRefresh(inputs, { today, allowVersionChange = false, thresholds = DEFAULT_THRESHOLDS } = {}) {
   const t = { ...DEFAULT_THRESHOLDS, ...thresholds }, fail = [], { prevMaster, nextMaster, prevSummary, nextSummary, nextReconciliation } = inputs;
   if (!prevMaster || !nextMaster || !prevSummary || !nextSummary || !nextReconciliation) return { version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: ["G10 Eingaben fehlen"], report: null };
+  // Grenzen nur als endliche, nicht negative Zahlen (sonst gingen Vergleiche wie n > "x" still durch)
+  const badT = Object.keys(DEFAULT_THRESHOLDS).filter((k) => !(typeof t[k] === "number" && Number.isFinite(t[k]) && t[k] >= 0));
+  if (badT.length) return { version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: [`G10 ungültige Grenzen: ${badT.join(", ")}`], report: null };
+  if (!Array.isArray(prevMaster.rows) || !Array.isArray(nextMaster.rows) || !(prevMaster.rowsDelivered >= 0)) return { version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: ["G10 Stamm ohne Zeilen oder ohne rowsDelivered"], report: null };
   if (nextSummary.status !== "OK" || nextReconciliation.providerFetch?.status !== "FETCHED") fail.push(`G1 Anbieterliste nicht erhoben (status ${nextSummary.status}, providerFetch ${nextReconciliation.providerFetch?.status})`);
   const h = nextSummary.headline || {}, inv = nextReconciliation.invariants || {};
   if (h.BASELINE_ACCOUNTED_FOR !== h.BASELINE_COUNT || !(h.BASELINE_COUNT > 0)) fail.push(`G2 Bestand nicht vollständig abgeglichen (${h.BASELINE_ACCOUNTED_FOR}/${h.BASELINE_COUNT})`);
   if (inv.destructiveViolations !== 0) fail.push(`G2 destructiveViolations ${inv.destructiveViolations}`);
   const pr = prevSummary.headline?.RAW_US_PROVIDER_CANDIDATES, nr = h.RAW_US_PROVIDER_CANDIDATES;
   if (!(pr > 0) || !(nr > 0) || Math.abs(nr / pr - 1) * 100 > t.maxProviderRowChangePct) fail.push(`G3 Anbieterzeilen ${pr} → ${nr} (Grenze ±${t.maxProviderRowChangePct} %)`);
-  if (!(nextMaster.rowsDelivered >= (prevMaster.rowsDelivered ?? 0) - t.maxRowsDrop)) fail.push(`G4 ausgelieferte Zeilen ${prevMaster.rowsDelivered} → ${nextMaster.rowsDelivered} (höchstens −${t.maxRowsDrop})`);
+  if (!(nextMaster.rowsDelivered >= prevMaster.rowsDelivered - t.maxRowsDrop)) fail.push(`G4 ausgelieferte Zeilen ${prevMaster.rowsDelivered} → ${nextMaster.rowsDelivered} (höchstens −${t.maxRowsDrop})`);
   const cmp = compareMasters(prevMaster, nextMaster), idf = identityFindings(nextMaster);
   if (cmp.lostIds.length) fail.push(`G5 ${cmp.lostIds.length} Bestands-securityIds fehlen (z. B. ${cmp.lostIds.slice(0, 5).join(", ")})`);
   if (idf.nonCanonicalIds.length) fail.push(`G5 ${idf.nonCanonicalIds.length} securityIds nicht nach core/identity.js (z. B. ${idf.nonCanonicalIds.slice(0, 5).join(", ")})`);
@@ -176,20 +180,25 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
   };
 }
 
+const blocked = (msg) => ({ version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: [msg], report: null });
+
 function main() {
   const argv = process.argv.slice(2), arg = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : null; };
   const prev = arg("--prev"), next = arg("--next");
   const load = (dir, f) => { const p = dir && join(dir, f); try { return p && existsSync(p) ? readJson(p) : null; } catch { return null; } };
   const loadFile = (p) => { try { return p && existsSync(p) ? readJson(p) : null; } catch { return null; } };
-  let thresholds = DEFAULT_THRESHOLDS;
-  if (arg("--thresholds")) { const t = loadFile(arg("--thresholds")); if (!t) { console.error("G10 --thresholds nicht lesbar"); process.exit(4); } thresholds = t; }
-  const res = evaluateRefresh({
+  let thresholds = DEFAULT_THRESHOLDS, res;
+  // jeder Ausgang schreibt eine Entscheidung (BLOCKED bei jedem Fehler), auch bei unlesbaren Grenzen oder einer Ausnahme
+  try {
+  if (arg("--thresholds")) { const t = loadFile(arg("--thresholds")); if (!t || typeof t !== "object") throw new Error("G10 --thresholds nicht lesbar"); thresholds = t; }
+  res = evaluateRefresh({
     prevMaster: load(prev, "us-security-master.json"), nextMaster: load(next, "us-security-master.json"),
     prevSummary: load(prev, "summary.json"), nextSummary: load(next, "summary.json"), nextReconciliation: load(next, "reconciliation.json"),
     prevNames: arg("--prev-names") ? loadFile(arg("--prev-names")) ?? undefined : undefined,
     nextNames: arg("--next-names") ? loadFile(arg("--next-names")) ?? undefined : undefined,
   }, { today: arg("--today"), allowVersionChange: argv.includes("--allow-version-change"), thresholds });
   if (arg("--prev-names") && !res.report?.names && res.pass) { res.pass = false; res.decision = "BLOCKED"; res.failures.push("G10 Firmennamen angegeben, aber nicht lesbar"); }
+  } catch (e) { res = blocked(String(e && e.message || e).startsWith("G10") ? String(e.message) : `G10 Ausnahme im Gate: ${e && e.message}`); }
   if (arg("--out")) writeFileSync(arg("--out"), JSON.stringify(res, null, 2) + "\n");
   console.log(`[security-master-gate] ${res.pass ? "PASS" : "BLOCKED"} · Entscheidung ${res.decision}`);
   for (const f of res.failures) console.log(`::error::${f}`);

@@ -97,6 +97,19 @@ test("SMW-5 · Gate fail closed: Anbieterliste, Abgleich, Mengen, Identitaet, Ve
   blocked((x) => { x.nextNames.rows.forEach((r) => { r.companyName = null; }); }, { thresholds: { maxNamesCoverageDrop: 2 } }, /^G9 Namensabdeckung/);
   blocked((x) => { x.nextNames = undefined; x.prevNames = names([]); }, {}, /^G10/);
   const none = evaluateRefresh({}, { today: "2026-10-28" }); assert.equal(none.decision, "BLOCKED");
+  // Review: ungueltige Grenzen und fehlende Zeilen blockieren statt still durchzulassen
+  for (const bad of [{ maxDeactivations: "x" }, { maxAgeDays: null }, { maxRowsDrop: -1 }, { maxNameChanges: Infinity }]) blocked(() => {}, { thresholds: bad }, /^G10 ungültige Grenzen/);
+  blocked((x) => { delete x.prevMaster.rowsDelivered; }, {}, /^G10 Stamm/);
+  blocked((x) => { x.nextMaster.rows = null; }, {}, /^G10 Stamm/);
+  // CLI: jeder Ausgang schreibt eine Entscheidung, auch bei unlesbaren Grenzen und einer Ausnahme
+  const d = mkdtempSync(join(tmpdir(), "smw-gate-"));
+  try {
+    const gate = (args) => { const out = join(d, "out-" + Math.random().toString(36).slice(2)); writeFileSync(out, ""); const r = spawnSync(process.execPath, [join(ROOT, "scripts/market/security-master-refresh-gate.mjs"), ...args], { encoding: "utf8", env: { ...process.env, GITHUB_OUTPUT: out } }); return { status: r.status, output: readFileSync(out, "utf8") }; };
+    writeFileSync(join(d, "t.json"), "nicht json");
+    for (const args of [["--prev", d, "--next", d], ["--prev", d, "--next", d, "--thresholds", join(d, "t.json")]]) {
+      const r = gate(args); assert.equal(r.status, 4); assert.equal(r.output, "decision=BLOCKED\n");
+    }
+  } finally { rmSync(d, { recursive: true, force: true }); }
   // bekannte Doppelung bleibt ausgewiesen, blockiert aber nicht; Versionswechsel mit ausdruecklicher Freigabe zulaessig
   const dup = base(); dup.prevMaster.rows.push(row("AAA")); dup.nextMaster.rows.push(row("AAA"));
   assert.equal(run(dup).pass, true);

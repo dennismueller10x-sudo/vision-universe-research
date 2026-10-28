@@ -41,7 +41,9 @@ Bisher gab es für den Master keinen Workflow; der letzte Lauf war 34611793308 a
 | G7 | Wechsel je stabiler `securityId`: `canonical_id` / Instrumenttyp / aktiv → inaktiv / Eignung / Ticker | 25 / 25 / 50 / 50 / 25 |
 | G8 | Klassifikator-Version wechselt ohne ausdrückliche Freigabe (`allow_version_change`) | – |
 | G9 | Namensschicht: Produktuniversum anders, `securityId` fehlt, Abdeckung fällt, zu viele Namenswechsel | −20 Namen / 200 Wechsel |
-| G10 | Eingaben fehlen oder sind unlesbar | – |
+| G10 | Eingaben fehlen, sind unlesbar, Grenzen sind keine endlichen Zahlen ≥ 0, oder das Gate wirft eine Ausnahme (jeder Ausgang schreibt `decision=BLOCKED`) | – |
+
+Ein Tickerwechsel löst neben G7 immer auch G5 aus: Die Engine gleicht den Bestand über den Ticker ab, und `core/identity.js` bindet die `securityId` an den Ticker. Ein echter Tickerwechsel ist deshalb in jedem Fall eine Owner-Prüfung (eigener Identitätsfall), nie eine stille Übernahme.
 
 Die Grenzen sind ein Vorschlag und eine **Owner-Entscheidung**. Gemessen ist bisher nur, was ein veralteter Lauf auslösen würde: Eine Anbieterliste mit altem `endDate` setzt 7.794 Titel auf inaktiv, und G7 blockiert das.
 
