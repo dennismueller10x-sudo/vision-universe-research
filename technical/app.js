@@ -593,7 +593,20 @@
     });
   }
 
+  var benchP = null;
+  /** SPY-Vergleichsreihe fuer das Unterfenster „Rel. Stärke“; erst beim Einschalten geladen. Fehlt sie, bleibt das Fenster leer. */
+  function loadBenchmark() {
+    if (!benchP) benchP = fetchJSON(M.BENCHMARK_PATH).then(function (s) {
+      var pts = (s && s.points || []).filter(function (p) { return isNum(p[1]); });
+      return { dates: pts.map(function (p) { return p[0]; }), close: pts.map(function (p) { return p[1]; }) };
+    }).catch(function () { benchP = null; return null; });
+    return benchP;
+  }
   function renderStudio(body, X) {
+    if (studio.layers.rs && X.bench === undefined) {
+      X.bench = null;
+      loadBenchmark().then(function (bm) { X.bench = bm; if (bm) { X.ind.rs63 = M.relativeStrength(X.S.dates, X.S.close, bm, 63); X.ind.rs126 = M.relativeStrength(X.S.dates, X.S.close, bm, 126); } renderStudio(body, X); });
+    }
     var S = X.S, n = S.close.length, last = n - 1, chg = S.close[last] / S.close[last - 1] - 1;
     var host = el("div", { class: "tc-chart-host" });
     var legend = el("div", { class: "tc-legend" });
@@ -758,6 +771,8 @@
     if (L.vortex) pane = ex.vortex ? { title: "Vortex 14", guides: [1], series: [{ label: "VI+", values: ex.vortex.plus, color: "var(--tc-up)" }, { label: "VI−", values: ex.vortex.minus, color: "var(--tc-down)" }] } : null;
     if (L.chop) pane = ex.choppiness ? { title: "Choppiness 14", min: 0, max: 100, guides: [38.2, 61.8], series: [{ label: "Choppiness", values: ex.choppiness, color: "var(--tc-c1)" }] } : null;
     if (L.hv) pane = ex.historicalVolatility ? { title: "Historische Volatilität 20 (% p. a.)", min: 0, series: [{ label: "HV 20", values: ex.historicalVolatility, color: "var(--tc-c1)" }] } : null;
+    /* Prozentpunkte wie die Screener-Spalten rs3m/rs6m; ohne Vergleichsreihe kein Fenster. */
+    if (L.rs) pane = ex.rs63 && !(X.st && X.st.frozenSince) ? { title: "Relative Stärke ggü. S&P 500 (SPY), Prozentpunkte", guides: [0], series: [{ label: "3 Monate", values: ex.rs63.map(function (v) { return v * 100; }), color: "var(--tc-c1)" }, { label: "6 Monate", values: ex.rs126.map(function (v) { return v * 100; }), color: "var(--tc-c2)" }] } : null;
     if (L.ulcer) pane = ex.ulcerIndex ? { title: "Ulcer Index 14 (%)", min: 0, series: [{ label: "Ulcer", values: ex.ulcerIndex, color: "var(--tc-c1)" }] } : null;
     return { title: X.T + " Tageschart", mode: "candles", window: win, data: S, overlays: overlays, lines: lines, zones: zones, levels: levels, markers: markers, volume: !!L.volumen, pane: pane, legend: legend };
   }
