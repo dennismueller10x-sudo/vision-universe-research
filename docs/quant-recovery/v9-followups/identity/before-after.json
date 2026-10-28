@@ -6,8 +6,10 @@
   "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a"
  },
  "current": {
-  "adapterSha256": "d707f3bfd9723658d8166e4a8672ab458b0c1f09a1bda22fd20a0e84ca4dc5ef",
-  "registrySha256": "53e85ec60277efa56fa0a08634c3431f1a0cf2be82fcd357a09e51e8c09614ea",
+  "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+  "adapterIdenticalToBaseline": true,
+  "researchLoaderSha256": "93db6ea903d1778d23abe823f7515fbacc1721c70051a971dd6b331012a74afb",
+  "registrySha256": "bb4d674b851b62c4e92ec39789db5d2d4f62dd01bd15613a85dd4288af9951d9",
   "registrySchemaVersion": "research-identity-evidence-1.0.0",
   "boundSecurityIds": [
    "ref_BGC",
@@ -22,7 +24,7 @@
   "seriesIds": 6190,
   "seriesDirectorySha256": "c84000929281b4bbf2f423ea0c1bac17e2495a2d778bab219b5c08200a16d64e"
  },
- "codeSha256": "005824f5c4e63945d1722fe214f693d1a27194d986c3bb6957bb5089aa112283",
+ "codeSha256": "b9965dd8461f1d3accb4a1777b40b6bdb7c3f71602da2bc6328d8751bf403105",
  "runtime": {
   "nodeVersion": "22.22.0",
   "v8Version": "12.4.254.21-node.33",
@@ -32,7 +34,7 @@
   "nodeExecutableHash": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
  },
  "defaultPathParity": {
-  "method": "sha256(JSON.stringify(loader output)) or sha256(\"ERR:\"+message) per id; baseline adapter vs current createLoader(root)",
+  "method": "sha256(JSON.stringify(loader output)) or sha256(\"ERR:\"+message) per id; baseline adapter createLoader(root) vs research-weekly-loader createResearchLoader(root), default off",
   "ids": 6190,
   "identical": 6190,
   "mismatches": [],
@@ -312,5 +314,5 @@
    }
   }
  },
- "note": "Opt-in modes are research-only and not used by any productive caller. Bound ids pass the unchanged validate() on their sourced interval."
+ "note": "Opt-in modes exist only in quant/engines/research-weekly-loader.cjs, which no productive caller imports; weekly-real-adapter.cjs is unchanged. Bound ids pass the unchanged validate() on their sourced interval."
 }

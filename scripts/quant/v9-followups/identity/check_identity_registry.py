@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """V9 follow-up (identity) - INDEPENDENT check of the opt-in research identity registry (stdlib only).
 
-Shares no code with quant/engines/weekly-real-adapter.cjs. From the raw inputs (weekly series, security master,
+Shares no code with quant/engines/weekly-real-adapter.cjs or quant/engines/research-weekly-loader.cjs. From the raw inputs (weekly series, security master,
 registry file, classification registry) it re-derives, for each registry record:
   - the default-path reason (single master row -> adapter checks),
   - the opt-in reason ({identityEvidence: true}: SEC_SAME_DAY_PRICE_AND_COVER only) and

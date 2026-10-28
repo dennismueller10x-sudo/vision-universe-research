@@ -3,8 +3,9 @@
  *
  *  1. Default-path parity: every weekly series id is loaded with the BASELINE adapter source (--baseline-adapter,
  *     e.g. `git show origin/main:quant/engines/weekly-real-adapter.cjs`, compiled in place of the engine so its
- *     relative requires resolve identically) and with the current adapter's createLoader(root). The full
- *     JSON output (or the error message) is hashed per id; all hashes must be identical.
+ *     relative requires resolve identically) and with the research wrapper's createResearchLoader(root) (default
+ *     off). The full JSON output (or the error message) is hashed per id; all hashes must be identical. The
+ *     productive adapter file itself must equal the baseline byte for byte.
  *  2. Qualification counts: default vs { identityEvidence: true } vs
  *     { identityEvidence: true, identityEvidenceAllowCoverPageOnly: true }, with per-id reasons for every bound id.
  * Read-only; writes only --out.
@@ -30,6 +31,7 @@ function compileBaseline(file) {
 }
 const Baseline = compileBaseline(baselinePath);
 const Current = require(enginePath);
+const Research = require(path.join(root, 'quant/engines/research-weekly-loader.cjs'));
 const Registry = require(path.join(root, 'quant/engines/research-identity-evidence.cjs'));
 const dir = path.join(root, 'quant/data/market/discover-series-long');
 const ids = fs.readdirSync(dir).filter(f => /^ref_[A-Za-z0-9_.-]+\.json$/.test(f)).map(f => f.slice(0, -5)).sort();
@@ -37,9 +39,9 @@ const reason = e => String(e && e.message || e).split(':')[0];
 const run = (loader, id) => { try { const r = loader(id); return { ok: true, r, digest: sha(JSON.stringify(r)) }; } catch (e) { return { ok: false, reason: reason(e), digest: sha('ERR:' + e.message) }; } };
 const modes = {
   baselineDefault: Baseline.createLoader(root),
-  default: Current.createLoader(root),
-  optIn: Current.createLoader(root, { identityEvidence: true }),
-  optInCoverPageOnly: Current.createLoader(root, { identityEvidence: true, identityEvidenceAllowCoverPageOnly: true })
+  default: Research.createResearchLoader(root),
+  optIn: Research.createResearchLoader(root, { identityEvidence: true }),
+  optInCoverPageOnly: Research.createResearchLoader(root, { identityEvidence: true, identityEvidenceAllowCoverPageOnly: true })
 };
 const counts = Object.fromEntries(Object.keys(modes).map(k => [k, {}]));
 const aggregate = Object.fromEntries(Object.keys(modes).map(k => [k, crypto.createHash('sha256')]));
@@ -67,20 +69,21 @@ const qualified = k => counts[k].QUALIFIED || 0;
 const report = {
   schemaVersion: 'v9-followup-identity-before-after-1.0.0', productionApproved: false,
   baseline: { ref: baselineRef, adapterSha256: sha(fs.readFileSync(baselinePath)) },
-  current: { adapterSha256: sha(fs.readFileSync(enginePath)), registrySha256: sha(fs.readFileSync(path.join(root, 'quant/engines/research-identity-evidence.cjs'))),
+  current: { adapterSha256: sha(fs.readFileSync(enginePath)), adapterIdenticalToBaseline: sha(fs.readFileSync(enginePath)) === sha(fs.readFileSync(baselinePath)),
+    researchLoaderSha256: sha(fs.readFileSync(path.join(root, 'quant/engines/research-weekly-loader.cjs'))), registrySha256: sha(fs.readFileSync(path.join(root, 'quant/engines/research-identity-evidence.cjs'))),
     registrySchemaVersion: Registry.schemaVersion, boundSecurityIds: [...bound].sort() },
   inputs: { masterHash: modes.default.masterHash, seriesIds: ids.length,
     seriesDirectorySha256: sha(ids.map(id => id + '\t' + sha(fs.readFileSync(path.join(dir, id + '.json')))).join('\n')) },
   codeSha256: sha(fs.readFileSync(__filename)), runtime: Current.calculationRuntime(),
   defaultPathParity: {
-    method: 'sha256(JSON.stringify(loader output)) or sha256("ERR:"+message) per id; baseline adapter vs current createLoader(root)',
+    method: 'sha256(JSON.stringify(loader output)) or sha256("ERR:"+message) per id; baseline adapter createLoader(root) vs research-weekly-loader createResearchLoader(root), default off',
     ids: ids.length, identical: ids.length - parityMismatches.length, mismatches: parityMismatches,
     aggregateBaseline: aggregate.baselineDefault.digest('hex'), aggregateCurrent: aggregate.default.digest('hex')
   },
   counts,
   qualified: { baselineDefault: qualified('baselineDefault'), default: qualified('default'), optIn: qualified('optIn'), optInCoverPageOnly: qualified('optInCoverPageOnly') },
   changedVsDefault, perBoundId: perBound,
-  note: 'Opt-in modes are research-only and not used by any productive caller. Bound ids pass the unchanged validate() on their sourced interval.'
+  note: 'Opt-in modes exist only in quant/engines/research-weekly-loader.cjs, which no productive caller imports; weekly-real-adapter.cjs is unchanged. Bound ids pass the unchanged validate() on their sourced interval.'
 };
 fs.writeFileSync(out, JSON.stringify(report, null, 1) + '\n');
 console.log(JSON.stringify({ parity: report.defaultPathParity.identical + '/' + ids.length, qualified: report.qualified, changedVsDefault }, null, 1));
