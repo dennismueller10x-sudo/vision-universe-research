@@ -509,9 +509,10 @@
      Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD und #TREND_HIDDEN_BY_METHOD): die Power-Play-Korrekturtiefe ist
      der geplante Verlust am Pivot; das 52-Wochen-Hoch (und der Abstand dazu) faellt bei SEPA, Power Play und
      Holy Grail mit der Einstiegsmarke zusammen. Das allgemeine 52-Wochen-Hoch anderer Methoden bleibt.
-     Erzeuger-Gegenstueck von SF8_SUBFIELDS_HIDDEN: records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
-  /* SEPA (#1056, Review 28.10.2026): pctBelowHigh52w ist der Abstand zum ausgeblendeten 52-Wochen-Hoch, die Basistiefen
-     (largestCorrection, vcpFootprint.depths) ergeben mit dem Basistief das Basishoch und damit Hoch und Pivot */
+     SEPA (#1056, Review 28.10.2026): pctBelowHigh52w ist der Abstand zum ausgeblendeten 52-Wochen-Hoch, die Basistiefen
+     (largestCorrection, vcpFootprint.depths; Erzeuger records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD) ergeben mit dem
+     Basistief das Basishoch und damit Hoch und Pivot. Die Allowlist SF8_DESCRIPTIVE_FEATURES bleibt die Liste dessen, was
+     der Detektor erzeugt; die Sperre greift davor. */
   var SF8_FEATURES_HIDDEN = { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] };
   var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
