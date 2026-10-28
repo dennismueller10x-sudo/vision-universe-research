@@ -48,6 +48,7 @@ Reel 1 war verständlich, aber optisch zu ruhig. Die Vorlage wechselt etwa jede 
 - Hintergrund voll: Collage aus Zeitungsausschnitten, Charts, Geldscheinen, Logos oder Motiven des Themas (eigene oder generierte Bilder, entsättigt), dazu ein farbiger Strahlenkranz hinter der Figur.
 - Eine Figur groß in der Mitte mit starkem Ausdruck (schockiert, zeigt, jubelt). Alles Wichtige im 3:4-Ausschnitt des Rasters.
 - Wiedererkennbar als Serie: gleicher Aufbau, gleiche Schrift, wechselnde Farbe pro Thema.
+- Umsetzung: `vorlagen/cover/` (Beispiel `reels/2026-10-28-etf-sparplan-v2/cover-comic.jpg`).
 
 **Im Video**
 - Bilddichte: spätestens alle 1–2 Sekunden ein neues Element (Icon, Foto-Ausschnitt, Logo, Geldsack, Münzen, Pfeil, Stempel, Zahl). Keine Szene länger als etwa 3 Sekunden unverändert.
