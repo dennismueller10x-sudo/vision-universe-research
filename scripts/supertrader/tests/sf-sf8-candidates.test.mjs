@@ -388,7 +388,16 @@ test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste 
   assert.deepEqual([...ui.matchAll(/readings[^;\n]{0,80}/g)].map((m) => m[0]).filter((x) => /\.reading\b/.test(x)), [], 'die Vorschau zeigt nur die ruleId einer Lesart');
 });
 
-test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, Widerstand, Gap-Tief), nie eine Einstiegs-, Stop- oder Ordermarke', () => {
+test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, Widerstand, Gap-Tief), nie eine Einstiegs-, Stop- oder Ordermarke', async () => {
+  // Gegenstück im Core (DQ-SF8-4, PR #1062): sobald der Core den verschärften Vertrag trägt, gleichen sich beide Tabellen genau
+  const { default: DQ } = await import('../../../core/data-quality.js');
+  if (DQ.SF8_TREND_HIDDEN) {
+    const plain = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, [...v]]));
+    assert.deepEqual(plain(DQ.SF8_STRUCTURE_LEVELS), EXPECTED_STRUCTURE);
+    assert.deepEqual(DQ.SF8_PIVOT_KINDS, Object.fromEntries(Object.entries(EXPECTED_MARK).map(([c, m]) => [c, m[1]])));
+    assert.deepEqual(plain(DQ.SF8_FEATURES_HIDDEN), plain(ORDER_DERIVED_BY_METHOD));
+    assert.deepEqual(plain(DQ.SF8_TREND_HIDDEN), plain(TREND_HIDDEN_BY_METHOD));
+  }
   // Korrektur 28.10.2026: chartMarks las die nach Cxx geschlüsselten Tabellen mit der strategyId und fand nie eine Marke.
   assert.deepEqual(Object.fromEntries(Object.entries(STRUCTURE_LEVELS).map(([c, ks]) => [c, [...ks]])), EXPECTED_STRUCTURE, 'Produkttabelle = festgeschriebene Strukturtabelle');
   const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
