@@ -31,7 +31,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ◐ | Läufe vom 26.10. grün. Der Lauf vom 27./28.10. scheiterte an Discover (CUBE, behoben in #1044). Prüfung des Laufs vom 28./29.10. ist geplant (29.10., 06:30 UTC). | P0 |
 | A2 Stichtag der Produktwelt ≤ 1 Sitzung hinter der letzten abgeschlossenen Sitzung | ◐ | `system-health`: OK, BEHIND_1_SESSIONS (Stichtag 26.10.). | P0 |
-| A3 Titel mit veraltetem oder eingefrorenem Kurs liefern keine Signale „von heute“ | ✘ (Fix in #1077, Freigabe offen) | **Befund 28.10.:** 82 Titel mit `fresh = false`, letzter Kurs zwischen 18.08. und 23.10. Ihre Ereignisfelder zählen ab dem eigenen letzten Bar. Beispiele: ATKR meldet `newHigh52w` vom 16.10., AVB eine SMA-200-Kreuzung vom 17.08. Daneben 48 × NR7, 26 × Volumenspitze, 34 × `chg1d`. Ein Ereignisfilter liefert diese Titel als aktuelle Treffer. **Dazu 233 eingefrorene Reihen** (≥ 5 gleiche Schlüsse, `core/listing-staleness.js`), die als aktuell galten. Sie erzeugten Scheinsignale: 64 von 188 52W-Hochs und 273 von 1.255 NR7-Treffern. → **AP1** (#1077, SCREENER_FRESHNESS.md) | **P0** |
+| A3 Titel mit veraltetem oder eingefrorenem Kurs liefern keine Signale „von heute“ | ✔ | AP1 (#1077, `technical-screen-row-1.10.0`, SCREENER_FRESHNESS.md). Titel hinter dem Stichtag (77) haben keine Ereignis- und Stichtagsfelder. Eingefrorene Reihen (233, `frozenSince`, Datenqualitätshinweis, kein bestätigtes Delisting) haben keine Analysefelder. Neubau auf `main` (`a433f3e`): DQ-TW-6 PASS 0/310, 5.347 aktuelle Titel ohne Abweichung. Chart Studio wendet dieselbe Regel an (#1088). | – |
 | A4 Ursache der beendeten Reihen bei aktivem Stamm | ✘ | `diagnose.mjs AVB`: `MASTER_ACTIVE_SERIES_ENDED` (Reihe bis 17.08., Stamm ACTIVE). Zuständig ist die Marktdaten-Domäne (Erzeuger `market-data-refresh.yml`), nicht Technical. Technical muss solche Titel korrekt kennzeichnen (A3). Die Klärung der Reihen braucht einen Anbieterabruf, also eine Owner-Entscheidung. | P0 (eskaliert) |
 | A5 Kein Eingriff in `*/data` von Hand. Neubau nur durch den Erzeuger | ✔ | `core-ci.yml` (Erzeuger-Eigentum), `producer-ownership.test.mjs` | – |
 
@@ -79,7 +79,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | F1 Abfrage-Engine mit Schema, Validierung, Gruppen und/oder, Presets | ✔ | `technical-query.js` (`jsonSchema`, `validate`), Tests | – |
 | F2 Gespeicherte Strategien mit Migration | ✔ | `technical-saved-migration.test.mjs` | – |
 | F3 `/screener/` nutzt dieselben Spalten (eine Quelle) | ✔ | #936, 16 Spalten | – |
-| F4 Ereignisfelder beziehen sich auf den Stichtag des Universums | ✘ (#1077) | siehe A3 → **AP1** | **P0** |
+| F4 Ereignisfelder beziehen sich auf den Stichtag des Universums | ✔ | siehe A3. Für Titel hinter dem Stichtag gelten Ereignisfilter als „unbekannt“ (`null`) und sind kein Treffer. | – |
 | F6 Jeder Spaltenwert ist im Abfragekatalog wählbar | ✔ (nach Merge AP2) | **Befund 28.10.:** Marktstruktur MIXED (629 Titel) und UNDETERMINED (61) waren nicht wählbar, „Neutral“ fand nie einen Titel. Behoben in `technical-query-1.10.0`; der Vertrag prüft das künftig für jede Enum-Spalte. | P0 |
 | F5 Suche in Worten (KI) | ◐ | technisch vorbereitet. Der Modellaufruf ist ein Deploy mit Kosten und braucht eine Owner-Freigabe. | P2 (Freigabe) |
 
@@ -116,7 +116,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
 | J1 Screener → Treffer → Chart Studio zeigt dieselben Werte und Formationen wie die Trefferzeile | ◐ | Browser-QA klickt den Weg. Ein Wertevergleich Zeile ↔ Chart fehlt. → AP3 | P1 |
-| J2 Stichtag und Aktualität für Nutzer sichtbar | ◐ | „Kurs vom …“-Hinweis je Zeile. Ereignisse veralteter Titel sind noch irreführend (A3). | P0 |
+| J2 Stichtag und Aktualität für Nutzer sichtbar | ✔ | Trefferliste: „Kurs vom …“ bzw. „Kurs unverändert seit …“. Chart Studio: Hinweis mit Stichtag; bei eingefrorener Reihe keine Befunde und Niveaus (#1088). E2E-Test: Chart Studio und Screener erkennen dieselben eingefrorenen Titel (233/233). | – |
 | J3 Leere, fehlerhafte und fehlende Daten mit verständlichem Zustand | ✔ | Browser-QA (Zustandsboxen) | – |
 
 ---
@@ -139,7 +139,7 @@ Jedes Paket läuft in Zyklen: analysieren → umsetzen → testen → beheben �
 
 | Thema | Wer entscheidet | Stand |
 |---|---|---|
-| 82 Titel mit beendeter Reihe bei aktivem Stamm (A4). Technical kennzeichnet sie (AP1). Die Ursache liegt in der Marktdaten-Domäne. | Owner (ein Anbieterabruf wäre nötig) | gemeldet 28.10. |
+| 82 Titel mit beendeter Reihe bei aktivem Stamm (A4). Technical kennzeichnet sie seit AP1 (#1077). Die Ursache liegt in der Marktdaten-Domäne. | Owner (ein Anbieterabruf wäre nötig) | gemeldet 28.10. |
 | KI-Suche (F5): Modellaufruf ist kostenpflichtig | Owner | offen |
 | Neue Fachmodell-PRs | Owner | siehe TECHNICAL_WORLD_PROGRESS.md §6 |
 
@@ -150,9 +150,8 @@ Wer die Arbeit fortsetzt, beginnt hier:
 2. Nächstes offenes Arbeitspaket in §2 nehmen. Den Status in §1 erst mit Nachweis auf ✔ setzen.
 3. Jede abgeschlossene Prüfung mit Datum, Commit und Ergebnis im Verlauf von TECHNICAL_WORLD_PROGRESS.md festhalten.
 
-**Aktueller Stand (28.10.2026, abends):**
-- #1073, #1074, #1075 und #1076 sind gemergt.
-- AP1 (#1077) wartet auf die Owner-Freigabe; danach baut der Erzeuger die Daten neu.
-- AP2 (Datenvertrag) ist als PR offen.
-- AP3 wartet auf den Nachtlauf (Prüfung 29.10., 06:30 UTC).
-- Nächstes Paket ohne Freigabe: AP3 (E2E-Wertevergleich Zeile ↔ Chart, Budget-Test für die Abfrage).
+**Aktueller Stand (28.10.2026, 17 Uhr UTC):**
+- AP1 ist abgeschlossen: #1077 (Owner-Freigabe mit Bedingungen, alle erfüllt) und #1088 (Chart Studio) sind gemergt. `technical/data` wurde mit dem Erzeuger neu gebaut (`a433f3e`, kein Anbieterabruf). DQ-TW-1..7 PASS.
+- AP2, AP3 (E2E, Budget), AP5 und AP5b sind gemergt.
+- Offen: Prüfung des Nachtlaufs mit L7-Abdeckung am 29.10. um 06:30 UTC (AP3). AP4 beginnt erst, wenn diese Prüfung bestanden ist.
+- Nächstes Paket ohne Freigabe: G4, relative Stärke im Chart (SPY-Reihe im Browser). Die Ursache der eingefrorenen Reihen liegt bei der Marktdaten-Domäne (Owner).
