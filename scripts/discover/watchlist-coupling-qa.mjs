@@ -23,6 +23,19 @@ const page = await context.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
 let inflight = 0;
+/* Diagnose fuer CI: Konto-/Daten-Anfragen und Konsolenfehler, ausgegeben nur bei einem Befund */
+const trace = [];
+page.on('request', r => { if (/\/v1\/|\/quant\/data\/universe\/instruments\/|\/konto\/(config|account-api)\.js/.test(r.url())) trace.push(`${new Date().toISOString().slice(11, 23)} -> ${r.method()} ${new URL(r.url()).pathname}`); });
+page.on('response', r => { if (/\/v1\/|\/quant\/data\/universe\/instruments\//.test(r.url())) trace.push(`${new Date().toISOString().slice(11, 23)} <- ${r.status()} ${new URL(r.url()).pathname}`); });
+page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') trace.push(`console ${m.type()}: ${m.text().slice(0, 200)}`); });
+async function diag(label) {
+  const st = await page.evaluate(() => ({
+    marker: localStorage.getItem('vu-account-session-v1'), ids: sessionStorage.getItem('vu-watchlist-ids-v1'),
+    config: globalThis.VU_ACCOUNT_CONFIG || null, account: typeof globalThis.VUAccount, button: typeof globalThis.VUWatchButton,
+    enabled: globalThis.VUWatchButton ? globalThis.VUWatchButton.enabled() : null, identity: !!(globalThis.VUCore && globalThis.VUCore.Identity),
+    pressed: document.querySelector('.v2-watch-button')?.getAttribute('aria-pressed') })).catch(e => ({error: String(e)}));
+  console.log(`--- Diagnose ${label}: ${JSON.stringify(st)}\n${trace.slice(-30).join('\n')}`);
+}
 page.on('request', () => { inflight++; });
 for (const e of ['requestfinished', 'requestfailed']) page.on(e, () => { inflight = Math.max(0, inflight - 1); });
 /* wartet, bis 500 ms lang keine Anfrage mehr laeuft (auch nach einem reinen Hash-Wechsel) */
@@ -78,7 +91,9 @@ btn = await stock('NVDA');
    auf einem kalten Server dauert das laenger als eine feste Wartezeit - deshalb auf die Anfrage selbst warten. */
 await Promise.all([saved('/v1/watchlist/items'), btn.click()]);
 check(JSON.stringify(await local()) === '["NVDA","AAPL"]', 'angemeldet: Klick speichert lokal');
-check(JSON.stringify(await central()) === '["NVDA"]', 'angemeldet: Klick speichert im Konto');
+const stored = await central();
+if (JSON.stringify(stored) !== '["NVDA"]') await diag('Klick speichert im Konto');
+check(JSON.stringify(stored) === '["NVDA"]', 'angemeldet: Klick speichert im Konto');
 // Ein Titel nur im Konto (anderes Geraet): ueber die API anlegen, lokal fehlt er.
 await page.evaluate(() => sessionStorage.removeItem('vu-watchlist-ids-v1'));
 await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json', 'X-VU-Client': 'web'}, body: JSON.stringify({instrumentId: (await (await fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).instrumentId, ticker: 'MSFT'})}); });
