@@ -474,6 +474,15 @@
       stale + " veraltete Titel (davon " + frozen + " mit eingefrorenem Kurs), " + keys.length + " bzw. " + fkeys.length + " gepruefte Spalten.");
   }
 
+  /** DQ-TW-7: Technical-Artefakte erfuellen den Datenvertrag (quant/engines/technical/screener-contract.js,
+      docs/technical/DATA_CONTRACT.md). `verdict` = ScreenerContract.check(screener, meta, index). */
+  function technicalContract(verdict) {
+    var v = verdict || { errors: [{ code: "NO_ARTIFACT", column: "*" }], counts: { NO_ARTIFACT: 1 }, checked: 0 };
+    var fail = (v.errors || []).map(function (e) { return e.code + " " + e.column + (e.ticker ? " " + e.ticker : "") + (e.value !== null && e.value !== undefined ? " = " + JSON.stringify(e.value).slice(0, 40) : ""); });
+    return result("DQ-TW-7", "Technical-Artefakte erfuellen den Datenvertrag", "WARN", v.checked || 0, fail,
+      (v.contract || "") + (Object.keys(v.counts || {}).length ? " Verstoesse: " + JSON.stringify(v.counts) : ""));
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -518,14 +527,28 @@
   var SF8_ORDER_FEATURES = ["closeVsTrigger", "proposedStopRiskPct", "riskGuide15pct", "plannedLossAtPivot", "sellGuide"];
   /* Unterhalb von MODELED nur Chartstruktur (Vertrag der Ansicht, records.mjs#STRUCTURE_LEVELS):
      unabhaengig festgeschrieben - eine neue Marke ist eine fachliche Aenderung in einem eigenen PR.
-     Strukturmarken duerfen mit der Risikoreferenz der Quelle zusammenfallen (Boxunterkante, Tief
-     des Gap-Tags); sie sind Chartfakten, keine Order, und erscheinen ohne Plan und ohne Risiko. */
+     Strukturmarken duerfen mit der Risikoreferenz der Quelle zusammenfallen (Tief des Gap-Tags, Owner-
+     Entscheidung 28.10.2026); sie sind Chartfakten, keine Order, und erscheinen ohne Plan und ohne Risiko.
+     Nicht zulaessig ist eine Marke, die in ihrer Quelle selbst der Orderpreis ist (Stand Erzeuger #1056):
+     C06/C07-Pivot (Einstiegsorder genau am Pivot), C13 swingLow (Stop) und impulseHigh (Teil der Order),
+     C11 signalDayLow (keine Strukturmarke der Quelle). */
   var SF8_STRUCTURE_LEVELS = {
     C01: ["channelDays", "exitChannelDays"], C02: ["channelDays", "exitChannelDays"], C03: ["top", "bottom", "box"],
     C04: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"], C05: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"],
-    C06: ["pivot", "ma50", "ma150", "ma200"], C07: ["pivot"], C08: ["breakoutLevel"], C09: ["gapDayLow", "priorClose"],
-    C10: ["ma10", "ma20"], C11: ["ma10", "ma50", "signalDayLow"], C12: ["gapDayLow", "priorClose"], C13: ["ema20", "impulseHigh", "swingLow"]
+    C06: ["ma50", "ma150", "ma200"], C07: [], C08: ["breakoutLevel"], C09: ["gapDayLow", "priorClose"],
+    C10: ["ma10", "ma20"], C11: ["ma10", "ma50"], C12: ["gapDayLow", "priorClose"], C13: ["ema20"]
   };
+  /* Unterhalb von MODELED ausgeblendet, weil rechnerisch eine Order-Groesse (Owner-Entscheidungen 28.10.2026,
+     Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD und #TREND_HIDDEN_BY_METHOD): die Power-Play-Korrekturtiefe ist
+     der geplante Verlust am Pivot; das 52-Wochen-Hoch (und der Abstand dazu) faellt bei SEPA, Power Play und
+     Holy Grail mit der Einstiegsmarke zusammen. Das allgemeine 52-Wochen-Hoch anderer Methoden bleibt.
+     SEPA (#1056, Review 28.10.2026): pctBelowHigh52w ist der Abstand zum ausgeblendeten 52-Wochen-Hoch, die Basistiefen
+     (largestCorrection, vcpFootprint.depths; Erzeuger records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD) ergeben mit dem
+     Basistief das Basishoch und damit Hoch und Pivot. Die Allowlist SF8_DESCRIPTIVE_FEATURES bleibt die Liste dessen, was
+     der Detektor erzeugt; die Sperre greift davor. */
+  var SF8_FEATURES_HIDDEN = { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] };
+  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths"] } };
+  var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
      28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
      Orderparameter). ALLOWLIST je Methode statt Namens-Sperrliste: ein umbenannter Orderpreis (orderPrice,
@@ -558,7 +581,7 @@
   var SF8_PIVOT_KEYS = ["level", "kind", "distance"];
   var SF8_ROW_KEYS = ["c", "t", "n", "s", "r", "pd", "v", "m", "q", "sh", "x"];
   /* Schluessel in levels, aus dem die Chartmarke stammt (records.mjs#STRUCTURE_MARK) */
-  var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C06: "pivot", C07: "pivot", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
+  var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
   function sf8Primitive(x) { return x === null || ["string", "number", "boolean"].indexOf(typeof x) >= 0; }
   /* Texte sind Codes, Daten und Statusangaben; ein Dezimalpreis in einem Text ("BUY_STOP_22.90") faellt auf */
   function sf8PriceInText(x) {
@@ -603,7 +626,7 @@
     if (sf8PriceInText(texts) || sf8PriceInText(v.features) ) out.push(where + ": Preis in einem Text");
     return out;
   }
-  var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE", C06: "VCP_PROXY_PIVOT", C07: "RUN_UP_HIGH",
+  var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE",
     C08: "CONSOLIDATION_10_LEVEL", C09: "GAP_DAY_LOW", C12: "GAP_DAY_LOW" };
   function hasNumber(x) {
     if (typeof x === "number") return true;
@@ -712,9 +735,13 @@
         if (SF8_ORDER_KEY.test(k)) fail.push(where + ": Marke levels." + k);
         else if (allowed.indexOf(k) < 0) fail.push(where + ": levels." + k + " ist keine Strukturmarke dieser Methode");
       });
-      var described = SF8_DESCRIPTIVE_FEATURES[v.candidateId] || [];
+      var described = SF8_DESCRIPTIVE_FEATURES[v.candidateId] || [], hiddenF = SF8_FEATURES_HIDDEN[v.candidateId] || [], hiddenT = SF8_TREND_HIDDEN[v.candidateId] || [], hiddenS = SF8_SUBFIELDS_HIDDEN[v.candidateId] || {};
+      Object.keys(v.trend || {}).forEach(function (k) { if (hiddenT.indexOf(k) >= 0) fail.push(where + ": trend." + k + " faellt bei dieser Methode mit der Einstiegsmarke zusammen"); });
       Object.keys(v.features || {}).forEach(function (k) {
+        var sub = v.features[k];
+        if (hiddenS[k] && sub && typeof sub === "object") hiddenS[k].forEach(function (j) { if (j in sub) fail.push(where + ": features." + k + "." + j + " ergibt bei dieser Methode eine Order-Groesse"); });
         if (SF8_ORDER_FEATURES.indexOf(k) >= 0) fail.push(where + ": Kennzahl features." + k);
+        else if (hiddenF.indexOf(k) >= 0) fail.push(where + ": features." + k + " ist bei dieser Methode eine Order-Groesse");
         else if (described.indexOf(k) < 0) fail.push(where + ": features." + k + " ist keine beschreibende Kennzahl dieser Methode");
         /* Statustexte wie "NOT_IN_SOURCE" oder "DATA_BLOCKED" sind erlaubt, Zahlen nicht */
         else if (SF8_ORDER_KEY.test(k) && hasNumber(v.features[k])) fail.push(where + ": Zahl unter features." + k);
@@ -890,9 +917,9 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
-    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize

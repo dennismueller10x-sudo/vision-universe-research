@@ -32,6 +32,7 @@ const Staleness = require(join(root, "core/listing-staleness.js"));
 const Canonical = require(join(root, "quant/engines/technical/canonical-bars.js"));
 const Row = require(join(root, "quant/engines/technical/screen-row.js"));
 const Query = require(join(root, "quant/engines/technical/technical-query.js"));
+const Contract = require(join(root, "quant/engines/technical/screener-contract.js"));
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
 const Model = require(join(root, "technical/engine/model.js"));
@@ -168,10 +169,17 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const started = Date.now();
   const { artifact, meta } = build({ limit, tickers });
   meta.runtimeSec = Math.round((Date.now() - started) / 1000);
+  /* Datenvertrag (docs/technical/DATA_CONTRACT.md): bei einem Verstoss wird nichts geschrieben, der letzte gueltige Stand bleibt. */
+  const index = Model.homeIndex(artifact), verdict = Contract.check(artifact, meta, index);
+  if (!verdict.ok) {
+    console.error("Datenvertrag verletzt (" + Contract.CONTRACT_VERSION + "): " + JSON.stringify(verdict.counts));
+    verdict.errors.slice(0, 20).forEach((e) => console.error("  " + JSON.stringify(e)));
+    process.exit(2);
+  }
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "screener-v1.json"), JSON.stringify(artifact));
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
-  writeFileSync(join(out, "index-v1.json"), JSON.stringify(Model.homeIndex(artifact)));
+  writeFileSync(join(out, "index-v1.json"), JSON.stringify(index));
   console.log(`Technical-Screener: ${meta.counts.rows} Titel, Stand ${meta.asOf}, ${meta.runtimeSec}s -> ${out}`);
   /* Historische Evidenz der Formationen (beschreibend, kausal); bei --limit/--tickers uebersprungen, damit Teilaeufe schnell bleiben. */
   if (!limit && !tickers && process.argv.indexOf("--no-evidence") < 0) {

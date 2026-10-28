@@ -69,6 +69,18 @@ const OFFLINE = flag("--offline");
    Deshalb ein Schalter, der standardmaessig aus ist. */
 const INCLUDE_NEW_TICKERS = flag("--include-new-tickers");
 const TODAY = arg("--today", new Date().toISOString().slice(0, 10));
+/* Woechentliche Aktualisierung (security-master-weekly.yml): ohne Anbieterliste
+   entstuende ein reiner Bestandsstand (BASELINE_ONLY) mit Exit 0 - fuer eine
+   Uebernahme ist das ein stiller Fehler. Mit --require-provider bricht der
+   Lauf vor dem ersten Schreiben ab (Exit 3). --stamp setzt den Zeitstempel
+   fest (z. B. Lauftag 00:00 UTC): derselbe Lauf mit derselben Anbieterliste
+   ergibt dieselben Dateien. Ohne beide Schalter bleibt alles wie bisher. */
+const REQUIRE_PROVIDER = flag("--require-provider");
+const STAMP = arg("--stamp");
+if (STAMP !== null && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/.test(STAMP)) {
+  console.error("--stamp erwartet einen ISO-Zeitpunkt in UTC (z. B. 2026-10-28T00:00:00Z), nicht " + STAMP);
+  process.exit(2);
+}
 
 const BASELINE_FILE = arg("--baseline",
   join(root, "quant", "data", "market", "scale", "universe-FULL_UNIVERSE.json"));
@@ -400,8 +412,12 @@ async function main() {
     providerError = err.message;
     console.log(`  Anbieter: NICHT ERHOBEN - ${err.message}`);
   }
+  if (REQUIRE_PROVIDER && (providerError || providerRows.length === 0)) {
+    console.error("ABBRUCH (--require-provider): keine Anbieterliste - " + (providerError || "0 Zeilen") + ". Nichts geschrieben.");
+    process.exit(3);
+  }
 
-  const stamp = new Date().toISOString();
+  const stamp = STAMP || new Date().toISOString();
   const result = Master.buildSecurityMaster({
     providerRows, baseline, today: TODAY,
     providerAvailable: providerRows.length > 0, stamp

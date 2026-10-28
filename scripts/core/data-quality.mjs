@@ -157,6 +157,8 @@ if (twArt && twArt.cols) {
   const staleFields = Row.STALE_EVENT_FIELDS.concat(Row.STALE_DAY_FIELDS, ...Row.STALE_TF_FIELDS.map((k) => [k, k + "@1W", k + "@1M"]));
   const analytic = TQ.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
   rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
+  const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));
+  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"))));
 }
 
 }

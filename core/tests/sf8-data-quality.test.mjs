@@ -28,8 +28,8 @@ function view(c, t, stage, over = {}) {
   return Object.assign({
     strategyId: "SF_" + c, candidateId: c, ticker: t, securityId: Identity.securityIdForTicker(t), shard: Identity.shardKey(t),
     stage, ceiling: DQ.SF8_CEILING[c], asOf: ASOF, close: 100.5,
-    levels: modeled ? { [lv]: 98, stopReference: 98 } : { [lv]: 98 },
-    features: modeled ? { closeVsTrigger: 0.01 } : Object.fromEntries(DQ.SF8_DESCRIPTIVE_FEATURES[c].slice(0, 2).map((k) => [k, 0.02])),
+    levels: modeled ? { ...(lv ? { [lv]: 98 } : {}), stopReference: 98 } : lv ? { [lv]: 98 } : {},
+    features: modeled ? { closeVsTrigger: 0.01 } : Object.fromEntries(DQ.SF8_DESCRIPTIVE_FEATURES[c].filter((k) => !(DQ.SF8_FEATURES_HIDDEN[c] || []).includes(k)).slice(0, 2).map((k) => [k, 0.02])),
     pivot: modeled || !kind ? null : { level: 98, kind, distance: 0.02 },
     plan: modeled ? { entryType: "NEXT_OPEN", trigger: 100.5, stop: 98, hypothetical: true } : null,
     dataQuality: { status: "PASS", notPass: [], quarantinedSessions: [] }
@@ -181,9 +181,9 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
   assert.ok(rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stage: "MODELED_TRADE_PLAN", errors: ["PLAN_STOP_NOT_BELOW_ENTRY:98.2>=97.1"] }), "Preis im Ablehnungsgrund");
   assert.ok(rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stop: 98 }), "Feld im Ablehnungsgrund");
   assert.ok(!rj({ strategyId: "SF_C12", ticker: "AAPL", reason: "CONTRACT_VALIDATION_FAILED", stage: "MODELED_TRADE_PLAN", errors: ["PLAN_STOP_NOT_BELOW_ENTRY", "UNKNOWN_FIELD:security.x"] }), "echte Codes bleiben gruen");
-  /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur, Box als Objekt */
+  /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur (seit #1056 ohne Tiefen), Box als Objekt */
   assert.ok(!failing(bundle((v) => {
-    v.C06[0].features = { vcpFootprint: { contractions: 3, depths: [0.23, 0.07], contractingLeftToRight: false, lastContractionVolumeVs50d: 0.95, baseSessions: 58 } };
+    v.C06[0].features = { vcpFootprint: { contractions: 3, contractingLeftToRight: false, lastContractionVolumeVs50d: 0.95, baseSessions: 58 } };
     v.C08[0].interpretations = [{ ruleId: "KK-SF-BO-MOMENTUM", id: "MI-SF8-KK-MOMENTUM-P98", ownerDecision: "O-6 (2026-10-26)" }];
     v.C03[0].levels = { top: 98, box: { from: "2026-10-01", to: "2026-10-23", top: 98, bottom: 90 } };
   })).includes("DQ-SF8-4"));
@@ -192,6 +192,37 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
   assert.ok(failing(bundle((v) => { v.C11[0].features = { stop: 41.2 }; })).includes("DQ-SF8-4"));
   /* auch als Marke: eine Risikoreferenz ist keine Strukturmarke */
   assert.ok(failing(bundle((v) => { v.C12[0].stage = "CHART_CANDIDATE"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98, stopReference: 98 }; })).includes("DQ-SF8-4"));
+});
+
+test("DQ-SF8-4 · Vertrag = Erzeuger (#1056): keine Marke, die in ihrer Quelle der Orderpreis ist; Korrekturtiefe und 52-Wochen-Hoch dort ausgeblendet", () => {
+  const red = (mut) => failing(bundle(mut)).includes("DQ-SF8-4");
+  /* Marken, die in der Quelle Einstieg, Stop oder Teil der Order sind */
+  assert.ok(red((v) => { v.C06[0].levels = { ma50: 9, pivot: 10 }; }), "C06 Pivot als Marke");
+  assert.ok(red((v) => { v.C06[0].pivot = { level: 10, kind: "VCP_PROXY_PIVOT", distance: 0.01 }; v.C06[0].levels = { ma50: 9, pivot: 10 }; }), "C06 Chartmarke Pivot");
+  assert.ok(red((v) => { v.C07[0].levels = { pivot: 10 }; v.C07[0].pivot = { level: 10, kind: "RUN_UP_HIGH", distance: 0.01 }; }), "C07 Pivot");
+  assert.ok(red((v) => { v.C13[0].levels = { ema20: 9, swingLow: 8 }; }), "C13 swingLow = Stop");
+  assert.ok(red((v) => { v.C13[0].levels = { ema20: 9, impulseHigh: 11 }; }), "C13 impulseHigh");
+  assert.ok(red((v) => { v.C11[0].levels = { ma10: 9, signalDayLow: 8 }; }), "C11 signalDayLow");
+  /* rechnerische Order-Groessen unter beschreibendem Namen */
+  assert.ok(red((v) => { v.C07[0].features = { correction: 0.08 }; }), "C07 Korrekturtiefe = geplanter Verlust am Pivot");
+  /* SEPA (Review 28.10.): Abstand zum Hoch und Basistiefe ergaeben das ausgeblendete Hoch wieder */
+  assert.ok(red((v) => { v.C06[0].features = { pctBelowHigh52w: 0.0513 }; }), "C06 pctBelowHigh52w");
+  assert.ok(red((v) => { v.C06[0].features = { largestCorrection: 0.13 }; }), "C06 largestCorrection");
+  assert.ok(red((v) => { v.C06[0].features = { vcpFootprint: { contractions: 2, depths: [0.13, 0.08] } }; }), "C06 vcpFootprint.depths");
+  assert.ok(!red((v) => { v.C06[0].features = { pctAboveLow52w: 1.25, vcpFootprint: { contractions: 2, contractingLeftToRight: true, baseSessions: 40 }, baseLengthSessions: 40, rangesContracting: true }; }), "C06 Beschreibung ohne Tiefen");
+  assert.ok(!red((v) => { v.C03[0].features = { boxDepth: 0.12 }; }), "andere Methoden: Tiefen bleiben");
+  for (const c of ["C06", "C07", "C13"]) for (const k of ["high252", "belowHigh252"]) assert.ok(red((v) => { v[c][0].trend = { close: 10, [k]: k === "high252" ? 10.2 : 0.02 }; }), `${c} trend.${k}`);
+  /* erlaubt bleibt: allgemeines 52-Wochen-Hoch anderer Methoden, Strukturmarken der Tabelle */
+  assert.ok(!red((v) => { v.C03[0].trend = { close: 10, high252: 10.2, belowHigh252: 0.02 }; v.C11[0].trend = { close: 10, high252: 12, belowHigh252: 0.17 }; }), "C03/C11 52-Wochen-Hoch");
+  assert.ok(!red((v) => { v.C06[0].levels = { ma50: 9, ma150: 8, ma200: 7 }; v.C13[0].levels = { ema20: 9 }; v.C07[0].levels = {}; v.C07[0].features = { consolidationSessions: 19, startVolumeVs50d: 0.2 }; }), "Tabelle des Erzeugers");
+  /* die Tabellen sind festgeschrieben (Aenderung = fachliche Aenderung mit Gegenstueck im Erzeuger) */
+  assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C06, ["ma50", "ma150", "ma200"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C07, []);
+  assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C11, ["ma10", "ma50"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C13, ["ema20"]);
+  assert.deepEqual(Object.keys(DQ.SF8_PIVOT_KINDS).sort(), ["C03", "C04", "C05", "C08", "C09", "C12"]);
+  assert.deepEqual(DQ.SF8_FEATURES_HIDDEN, { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] });
+  assert.deepEqual(DQ.SF8_SUBFIELDS_HIDDEN, { C06: { vcpFootprint: ["depths"] } });
+  assert.deepEqual(DQ.SF8_PIVOT_LEVEL, { C03: "top", C04: "resistance", C05: "resistance", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" });
+  assert.deepEqual(DQ.SF8_TREND_HIDDEN, { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] });
 });
 
 test("DQ-SF8-5 · Quarantaene und DQ-Grenzen: Quarantaene ueber Chart, veroeffentlichtes FAIL, CAP ueberschritten", () => {

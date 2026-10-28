@@ -165,9 +165,9 @@
       "cik": "0000931015",
       "name": "Polaris Inc.",
       "sic": "3790",
-      "rawFacts": 26026,
-      "mappedFacts": 7597,
-      "unmappedFacts": 18612,
+      "rawFacts": 26901,
+      "mappedFacts": 7841,
+      "unmappedFacts": 19367,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -177,28 +177,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 70,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -218,21 +218,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -276,48 +276,50 @@
         }
       },
       "quality": {
-        "HIGH": 616,
-        "MEDIUM": 32
+        "HIGH": 629,
+        "MEDIUM": 33
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 648,
-        "resolvedValues": 648
+        "datableValues": 662,
+        "resolvedValues": 662
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 19262,
+        "rules_version": "1.1.0",
+        "total": 20045,
         "by_severity": {
-          "INFO": 18612,
+          "INFO": 19367,
           "ERROR": 3,
-          "WARNING": 647
+          "WARNING": 675
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 579,
+          "CONCEPT_DISAGREEMENT": 605,
           "FUTURE_DATA_LEAK": 3,
+          "FUTURE_PERIOD_END": 2,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 66,
-          "UNKNOWN_CONCEPT": 18612
+          "UNKNOWN_CONCEPT": 19367
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-050104",
-        "filing_date": "2026-07-28",
+        "accession": "0001628280-26-067531",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 133
+        "periodic_filings": 134,
+        "acceptance_datetime": "2026-10-27T18:50:16.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "362e36b75dce886517a33629b49df8919816cfb7d223f6304bec60cc871c0a2d",
+      "sourceDigest": "b60326c68d07aa092c5651ca0e7af51e6c4cf975d4ff3e5c81ada4b6e1826a69",
       "issuerId": "iss_cik_0000931015"
     },
     {

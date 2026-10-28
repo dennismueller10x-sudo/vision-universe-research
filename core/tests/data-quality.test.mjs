@@ -160,3 +160,11 @@ test("DQ-TW-6 · Einfrieren unabhaengig aus den Bars: Screener muss dasselbe Dat
   const r = DQ.technicalStaleEvents(cols, [], ["rsi14"], { Z: "2025-09-25", Y: null });
   assert.deepEqual(r.samples, ["Z: eingefroren laut Tagesbars 2025-09-25, laut Screener nein", "Z: Kurs unveraendert seit 2025-09-25, aber als aktuell gefuehrt"]);
 });
+
+test("DQ-TW-7 · Datenvertrag: Verstoesse werden einzeln gemeldet, fehlendes Artefakt ist ein Befund", () => {
+  const ok = DQ.technicalContract({ contract: "c-1.0.0", checked: 3, errors: [], counts: {} });
+  assert.equal(ok.status, "PASS");
+  const bad = DQ.technicalContract({ contract: "c-1.0.0", checked: 3, errors: [{ code: "RANGE", column: "rsi14", ticker: "A", value: 101 }], counts: { RANGE: 1 } });
+  assert.deepEqual(bad.samples, ["RANGE rsi14 A = 101"]);
+  assert.equal(DQ.technicalContract(null).failed, 1);
+});

@@ -1,0 +1,154 @@
+name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
+
+# Kontrollierte Aktualisierung von US-Wertpapierstamm und Firmennamen mit den BESTEHENDEN Erzeugern
+# (scripts/market/build-us-security-master.mjs, scripts/market/build-company-names.mjs) und kostenfreien Quellen:
+#   * Tiingo-Tickerverzeichnis supported_tickers.zip (offene Datei, kein Kursabruf, kein Schluessel)
+#   * SEC company_tickers_exchange.json (ohne Schluessel, mit User-Agent)
+# Keine Tiingo-Metadatenabfragen, keine Secrets, keine neuen Anbieter. Docs: docs/data/SECURITY_MASTER_WEEKLY.md.
+#
+# ZEITPLAN AUS (Owner-Entscheidung 28.10.2026: wöchentlich vorbereitet, nicht aktiviert). Aktivierung nur per
+# eigenem, freigegebenem PR, der die folgende Zeile unter `on:` einsetzt (Mittwoch nach dem Dienstagslauf des
+# Universums und der Wochenreihen-Reparatur):
+#   schedule: - cron: '41 9 * * 3'
+#
+# Nicht Teil dieses Laufs: die Produkteignung (eligibility.json, Universumsentscheidung), neue Listings (Tiingo-2.0-
+# Veroeffentlichungspfad) und ein Discover-Neubau (macht der Nachtlauf).
+#
+# Ablauf (fail closed): Engine-Tests → Stamm mit --require-provider (Exit 3 ohne Anbieterliste) → Namen (SEC) →
+# Uebernahme-Gate (Plausibilitaetsgrenzen, Identitaet, Versionssprung; Exit 4) → Artefakt-Tests → CI-Artefakt →
+# Commit NUR mit commit=true UND Gate-Entscheidung COMMIT. Commit-Protokoll ADR-005.
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Ergebnis committen (sonst nur CI-Artefakt zur Pruefung)'
+        type: boolean
+        default: false
+      allow_version_change:
+        description: 'Klassifikator-Version darf wechseln (nur nach Vorher/Nachher-Pruefung durch den Owner)'
+        type: boolean
+        default: false
+      approved_changes:
+        description: 'Einmalige G7-Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  # dieselbe Gruppe wie Marktdaten-Refresh und Company-Namen: kein paralleler Lauf auf denselben Quellen
+  group: market-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine- und Erzeugertests vor dem Abruf (rot = kein Abruf)
+        run: node --test quant/tests/us-security-master.test.mjs quant/tests/company-names.test.mjs quant/tests/security-master-weekly.test.mjs
+
+      - name: Committeten Stand sichern (Vergleichsbasis)
+        env:
+          PREV: ${{ runner.temp }}/sm-prev
+        run: |
+          set -euo pipefail
+          mkdir -p "$PREV"
+          for f in us-security-master.json summary.json reconciliation.json company-names.json; do
+            git show "HEAD:quant/data/market/security-master/$f" > "$PREV/$f"
+          done
+
+      - name: Wertpapierstamm (bestehender Erzeuger, Abbruch ohne Anbieterliste)
+        env:
+          NEXT: ${{ runner.temp }}/sm-next
+        run: |
+          set -euo pipefail
+          heute="$(date -u +%F)"
+          node scripts/market/build-us-security-master.mjs --require-provider --today "$heute" --stamp "${heute}T00:00:00Z" \
+            --out "$NEXT" --work-dir "$RUNNER_TEMP/sm-work"
+
+      - name: Firmennamen (bestehender Erzeuger, nur SEC und Repository-Quellen)
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          set -euo pipefail
+          node scripts/market/universe-source.mjs
+          node scripts/market/build-company-names.mjs --sec
+
+      - name: Uebernahme-Gate (fail closed)
+        id: gate
+        env:
+          PREV: ${{ runner.temp }}/sm-prev
+          NEXT: ${{ runner.temp }}/sm-next
+          REPORT: ${{ runner.temp }}/sm-gate.json
+          IN_ALLOW_VERSION: ${{ inputs.allow_version_change }}
+          IN_APPROVED: ${{ inputs.approved_changes }}
+        run: |
+          set -euo pipefail
+          heute="$(date -u +%F)"
+          extra=()
+          if [ "$IN_ALLOW_VERSION" = "true" ]; then extra=(--allow-version-change); fi
+          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes.json); fi
+          node scripts/market/security-master-refresh-gate.mjs --prev "$PREV" --next "$NEXT" \
+            --prev-names "$PREV/company-names.json" --next-names quant/data/market/security-master/company-names.json \
+            --today "$heute" --out "$REPORT" "${extra[@]}"
+
+      - name: Neuen Stand einsetzen und Artefakt-Tests
+        env:
+          NEXT: ${{ runner.temp }}/sm-next
+        run: |
+          set -euo pipefail
+          for f in us-security-master.json summary.json reconciliation.json backfill-estimate.json; do
+            cp "$NEXT/$f" "quant/data/market/security-master/$f"
+          done
+          node --test quant/tests/us-security-master-artefacts.test.mjs quant/tests/company-name-coverage.test.mjs quant/tests/universe-source.test.mjs discover/tests/names.test.mjs
+          node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Ergebnis als CI-Artefakt (Pruefung vor jeder Uebernahme)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-master-weekly-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/sm-gate.json
+            ${{ runner.temp }}/sm-next
+            quant/data/market/security-master/company-names.json
+            quant/data/market/security-master/company-names-summary.json
+          retention-days: 30
+
+      - name: Commit (nur mit commit=true und Gate-Entscheidung COMMIT)
+        if: inputs.commit == true && steps.gate.outputs.decision == 'COMMIT'
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          # genau die sechs Dateien der beiden Erzeuger; eligibility.json gehoert einem anderen Erzeuger
+          git add $PUSH_OWNED_PATHS
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          stand=$(node -e 'const s=require("./quant/data/market/security-master/summary.json");console.log(s.today+" "+s.version)')
+          git commit -q -m "Security Master + Firmennamen: Stand ${stand} (woechentliche Aktualisierung)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Zusammenfassung
+        if: always()
+        env:
+          REPORT: ${{ runner.temp }}/sm-gate.json
+        run: |
+          {
+            echo '### Security Master + Firmennamen'
+            if [ -f "$REPORT" ]; then
+              node -e 'const r=require(process.env.REPORT);console.log("Gate: "+(r.pass?"PASS":"BLOCKED")+" · Entscheidung "+r.decision);for(const f of r.failures)console.log("- "+f);if(r.report)console.log("\nAenderungen: "+JSON.stringify(r.report.counts)+" · fachlich "+r.report.materialChanges+" · Alter "+r.report.ageDays+" Tage");if(r.report&&r.report.approval)console.log("Sonderfreigabe "+r.report.approval.fromVersion+" → "+r.report.approval.toVersion+": angewandt "+JSON.stringify(r.report.approval.applied)+" · ungenutzt "+JSON.stringify(r.report.approval.unused))'
+            else
+              echo 'Kein Gate-Bericht (Abbruch vor dem Gate).'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
