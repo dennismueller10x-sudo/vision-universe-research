@@ -179,6 +179,78 @@ test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow und Turtle-N nur beschreibend, ni
   for (const [id, label] of Object.entries(RULE_LABELS)) if (/closeVsGapLow|nPct/.test(id)) assert.doesNotMatch(label, /Stop|Einstieg|Order|Kauf/i, id);
 });
 
+// Beschreibende Kennzahlen je Methode, die unterhalb von MODELED erscheinen dürfen (Owner-Entscheidung 28.10.2026).
+// Allowlist statt Namens-Sperrliste: ein umbenannter Orderpreis (orderPrice, buyPoint, channelHigh) fällt auf. Dieselbe
+// Tabelle prüft core/data-quality.js (DQ-SF8-4, SF8_DESCRIPTIVE_FEATURES); eine neue Kennzahl ist eine fachliche Änderung.
+const DESCRIPTIVE_FEATURES = {
+  C01: ['path', 'filterOutcomeBefore', 'N', 'nPct', 'breakoutAtOpen'],
+  C03: ['boxDepth', 'boxTopDate', 'boxBottomDate', 'boxCompleteDate', 'closeVsTop', 'allTimeHighDailyWindow', 'allTimeHighWeeklyCloses', 'listingCoveredByDailyHighs', 'allTimeHighStatus'],
+  C04: ['breakoutWeek', 'breakoutDay', 'ma30w', 'closeVsMa30w', 'ma30wSlope4w', 'baseWeeks', 'rsNormalised', 'rsImproving', 'volumeConfirmedAny', 'overheadDistance', 'spyAboveMa30w', 'groupStage', 'marketBreadth'],
+  C06: ['pctAboveLow52w', 'pctBelowHigh52w', 'ma200OneMonthAgo', 'vcpProxyState', 'vcpFootprint', 'baseLengthSessions', 'largestCorrection', 'rangesContracting', 'rs', 'translationUnverified'],
+  C07: ['correction', 'consolidationSessions', 'startVolumeVs50d', 'reviewReasons', 'translationUnverified'],
+  C08: ['momentum', 'momentumInterpretation', 'setupProxy', 'priorMove', 'higherLows', 'ma10Rising', 'ma20Rising', 'adr20'],
+  C09: ['gap', 'priorRun63', 'priorRange63', 'adr20', 'dailyVolumeVs50d', 'catalyst', 'intradayVolume', 'entryOpeningRange', 'model'],
+  C10: ['direction', 'upStreak', 'streakReturnSum', 'accelerating', 'adr20', 'distanceToMA10', 'distanceToMA20', 'streakReturns', 'borrow', 'entry', 'model'],
+  C11: ['volume', 'maxDownVolume', 'volumeVsMaxDown', 'downDays', 'pctFrom10DMA', 'pctFrom50DMA', 'pctFrom200DMA', 'contextProxyMa50', 'stop'],
+  C12: ['gapInAtr', 'gap', 'gapPct', 'atr40', 'volumeRatio50', 'volumeStatus', 'contextProxyMa50', 'closeVsGapLow'],
+  C13: ['adx', 'adxAbove30Since', 'closeVsEma20', 'impulseHighDate', 'entrySource', 'trailing'],
+};
+DESCRIPTIVE_FEATURES.C02 = DESCRIPTIVE_FEATURES.C01; DESCRIPTIVE_FEATURES.C05 = DESCRIPTIVE_FEATURES.C04;
+// oberste Schlüssel jedes `features: { … }` im Detektor-Quelltext (verschachtelte Objekte wie momentum zählen als ein Schlüssel)
+function featureBlocks(src) {
+  const out = [];
+  for (let at = src.indexOf('features: {'); at >= 0; at = src.indexOf('features: {', at + 1)) {
+    let i = src.indexOf('{', at) + 1, depth = 1, key = '', keys = [], expectKey = true;
+    for (; depth > 0; i++) {
+      const ch = src[i];
+      if (ch === '{' || ch === '(' || ch === '[') depth++;
+      else if (ch === '}' || ch === ')' || ch === ']') depth--;
+      else if (depth === 1 && ch === ',') expectKey = true;
+      else if (depth === 1 && expectKey && ch === ':') { keys.push(key.trim()); key = ''; expectKey = false; continue; }
+      if (depth === 1 && expectKey && /[\w\s]/.test(ch)) key += ch;
+      else if (depth === 1 && expectKey && ch === ',') key = '';
+    }
+    out.push(keys);
+  }
+  return out;
+}
+
+test('SF8-DESCRIPTIVE-ALLOWLIST: unterhalb von MODELED nur die beschreibenden Kennzahlen der Detektoren (keine umbenannten Orderpreise)', async () => {
+  const src = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/product/detectors.mjs'), 'utf8');
+  const blocks = featureBlocks(src).map((ks) => ks.filter((k) => !ORDER_DERIVED_FEATURES.includes(k)));
+  // Quelltextreihenfolge der Detektoren: Turtle, Darvas, Weinstein, SEPA, Power Play, KK, EP, PS, Pocket Pivot, BGU, Holy Grail
+  const order = ['C01', 'C03', 'C04', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11', 'C12', 'C13'];
+  assert.deepEqual(blocks, order.map((c) => DESCRIPTIVE_FEATURES[c]), 'eine neue Detektor-Kennzahl braucht eine fachliche Freigabe und einen Eintrag in beiden Tabellen');
+  // jede Kennzahl ohne Order-Wortteil ist eine Zahl, ein Datum, ein Wahrheitswert oder ein Statustext; mit Order-Wortteil nur ein Statustext
+  for (const v of views().filter((x) => x.stage !== 'MODELED_TRADE_PLAN')) {
+    const allowed = DESCRIPTIVE_FEATURES[v.candidateId];
+    for (const [k, x] of Object.entries(v.features)) {
+      assert.ok(allowed.includes(k), `${v.candidateId} ${v.ticker}: features.${k} ist keine beschreibende Kennzahl`);
+      if (k.split(/(?=[A-Z])/).some((w) => ['stop', 'entry', 'trailing', 'limit', 'trigger'].includes(w.toLowerCase()))) assert.equal(typeof x, 'string', `${v.candidateId} ${v.ticker}: ${k} nur als Statustext`);
+    }
+  }
+  // dieselbe Tabelle im Core-DQ, sobald er sie trägt (eigener PR)
+  const { default: DQ } = await import('../../../core/data-quality.js');
+  if (DQ.SF8_DESCRIPTIVE_FEATURES) assert.deepEqual(Object.fromEntries(Object.entries(DQ.SF8_DESCRIPTIVE_FEATURES).map(([c, ks]) => [c, [...ks]])), Object.fromEntries(Object.keys(DQ.SF8_DESCRIPTIVE_FEATURES).map((c) => [c, DESCRIPTIVE_FEATURES[c]])));
+});
+
+test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vorschau nur aus v.plan', () => {
+  const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
+  const draw = ui.slice(ui.indexOf('function drawChart('), ui.indexOf('/* ================================================================ API */'));
+  assert.ok(draw.length > 200, 'drawChart gefunden');
+  // jede Marke des Charts ist genau eine dieser Zeilen; Einstieg und Stop nur im Zweig `if (v.plan)`, aus v.plan
+  const pushes = draw.split('\n').filter((l) => /levels\.push\(/.test(l));
+  assert.equal(pushes.length, 2, pushes.join('\n'));
+  assert.match(pushes[0], /^\s*if \(v\.pivot && fin\(v\.pivot\.level\)\) levels\.push\(\{ id: 'pivot', label: 'Chartmarke', value: v\.pivot\.level,/);
+  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  // keine aus Kursbalken oder Kennzahlen errechnete Marke (Mutation M3b): Linien nur als gleitende Durchschnitte, Box nur aus levels.box
+  assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
+  // die Planansicht ist nur über v.plan erreichbar
+  const planUses = [...ui.matchAll(/planBlock\(/g)].length;
+  assert.equal(planUses, 2, 'Definition und genau ein Aufruf');
+  assert.match(ui, /v\.plan \? planBlock\(v, L\) : null|v\.plan && planBlock\(v, L\)/);
+});
+
 test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop- oder Limitmarke in der Ansicht (Review SF8-R2)', () => {
   let below = 0;
   for (const v of views()) {
