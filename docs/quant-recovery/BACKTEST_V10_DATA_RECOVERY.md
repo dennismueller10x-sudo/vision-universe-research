@@ -48,7 +48,7 @@ Beleg: [v10/population/](v10/population/README.md). Protokoll 1.0.0 vor jeder Qu
 
 Die 62 Bindungen liegen hinter der eigenen Option `identityEvidenceProtocolV10` (Register-Schema `research-identity-evidence-1.1.0`, `SELECT_EXISTING_ROW`), weil die Owner-Entscheidung vom 28.10. `identityEvidence` an die fünf Dossierfälle bindet. **Freigabe offen.** TRAK bleibt COVER_PAGE_ONLY; BGC, COHR, DCOM, SGI unverändert (Regressionstest). Unabhängige Python-Prüfung: 132/132 Entscheidungen, 761/761 Quellhashes, jeder der 62 mit unabhängig wiedergefundenem Preisanker; 35 Treffer des bewusst lockereren Rescans manuell beurteilt, keiner ein echter Widerspruch.
 
-**B2 – eingefrorene Kursenden (475 Reihen):** Fusion 81, Form 25 86, Form 15 1, weiter gelistet/Anbieter-Stillstand 78, Vorzug/Recht/Unit/Warrant 44, ungeklärt 185 (109 ohne CIK). 30 Reihen mit SEC-belegtem letztem Handelstag (9 Barfusion, 7 Aktienfusion, 12 Gegenleistung nicht quantifizierbar, 2 ohne Gegenleistung; Zahlungstag nie belegt → `null`). Neue Loader-Option `listingLifecycleEvidence`: schneidet belegte Reihen am letzten Handelstag, schließt 95 unbelegte eingefrorene Enden fail-closed aus (`FROZEN_TAIL_UNRESOLVED`). Wiederholte Schlusskurse werden nie als Handel gezählt.
+**B2 – eingefrorene Kursenden (475 Reihen):** Fusion 81, Form 25 86, Form 15 1, weiter gelistet/Anbieter-Stillstand 78, Vorzug/Recht/Unit/Warrant 44, ungeklärt 185 (109 ohne CIK). 30 Reihen mit SEC-belegtem letztem Handelstag (8 Barfusion, 1 bar + Aktie, 7 Aktienfusion, 12 Gegenleistung nicht quantifizierbar, 2 „ohne Gegenleistung“ – abgeleitet aus fehlenden Fusionsbelegen, nicht aus einer Quelle, EQC war eine Liquidation; Zahlungstag nie belegt → `null`). EBTC (und das nicht registrierte BLFS) waren zunächst fälschlich als reine Barfusion erfasst (Parser verfehlte „and (ii) 0.60 shares“; Prüfungsbefund 2), korrigiert; die Gegenprüfung kontrolliert jetzt die Abfindungsart. Neue Loader-Option `listingLifecycleEvidence`: schneidet belegte Reihen am letzten Handelstag (der Wochenbalken dieses Tages bleibt mit seinem echten Schluss erhalten) und schneidet unbelegte eingefrorene Enden nach dem letzten beobachteten Schluss, Terminalwert UNKNOWN, Outcomes danach zensiert. Ursprünglich schloss die Option unbelegte Fälle ganz aus; die unabhängige Prüfung hat das als Selektion auf das spätere Ergebnis beanstandet (Befund 4), korrigiert. Wiederholte Schlusskurse werden nie als Handel gezählt.
 - **Erzeuger-Befund:** 168 Reihen sind im Security Master `ACTIVE` trotz SEC-Delisting-/Fusionsbeleg; der Master führt außerdem Vorzugs-/Anleihesymbole als `EQUITY_COMMON` (73 wären sonst im Frame). Patch-Vorschlag [producer-patch-proposal.diff](v10/population/producer-patch-proposal.diff), **nicht angewendet** (eigener Produkt-PR mit Vorher/Nachher nötig).
 
 **B3 – Grundpopulation:** Frame 4.366 Listings, davon 28 später belegt delistet. Abdeckung gegenüber SEC-10-K-Meldern (EDGAR-Vollindizes, distinct CIKs, nur Größenordnung): 2000 14 %, 2010 22 %, 2020 48 %, 2026 69 %. Survivors je Jahr 99,3–99,8 %. **Der Bestand ist das heutige Anbieteruniversum, keine historische Marktpopulation.** Eine historische primäre US-Common-Population inklusive Delistings ist mit den vorhandenen Quellen nicht qualifizierbar.
@@ -100,10 +100,10 @@ Dividendenprotokoll 1.0.0–1.0.4 (zwei Parserkorrekturen, zwei Verschärfungen 
 |---|---|
 | Default (= Adapter) | 4.449 |
 | `identityEvidence` + `corporateActionEvidence` | 4.481 |
-| + `listingLifecycleEvidence` | 4.404 (95 unbelegte eingefrorene Enden ausgeschlossen; Fehlwochen 218 → 199) |
-| + `identityEvidenceProtocolV10` (Freigabe offen) | 4.461 |
+| + `listingLifecycleEvidence` | **4.526** (150 geschnittene Reihen: 28 belegt delistet, 122 unbelegt zensiert; Fehlwochen 218 → 129, weil Lücken in eingefrorenen Enden wegfallen) |
+| + `identityEvidenceProtocolV10` (Freigabe offen) | 4.583 |
 
-Die Abnahme durch die Lifecycle-Option ist eine Qualitätsverbesserung: Sie entfernt Reihen, deren Ende aus fortgeschriebenen Schlusskursen besteht und in V9-Studien als Nullrenditen zählte.
+Die Lifecycle-Option entfernt fortgeschriebene Schlusskurse, die in V7–V9-Studien als Nullrenditen zählten, und bringt zugleich 150 beendete Listings als zensierte Fälle in die Studienpopulation – die erste echte, wenn auch kleine, Delisting-Komponente.
 
 ## Ressourcen
 
