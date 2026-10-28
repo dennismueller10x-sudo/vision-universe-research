@@ -268,6 +268,8 @@ def main():
                 bounds = [s_lo] + [c for c in cuts if s_lo < c <= s_hi] + [s_hi]
                 for i in range(len(bounds) - 1):
                     w_lo, w_hi = bounds[i], bounds[i + 1] if i + 2 == len(bounds) else (dt.date.fromisoformat(bounds[i + 1]) - dt.timedelta(days=1)).isoformat()
+                    if w_lo >= w_hi:
+                        continue
                     tr_windows.append({"from": w_lo, "to": w_hi, "quarters": len([q for q in expected if q0 <= q <= q1 and qend(q) >= w_lo and qstart(q) <= w_hi]),
                                        "cutBy": ([c for c in cuts if c == bounds[i + 1]] if i + 2 < len(bounds) else []) + (why if i + 2 == len(bounds) else [])})
         covered = sum(s["status"] == "COVERED" for s in status)

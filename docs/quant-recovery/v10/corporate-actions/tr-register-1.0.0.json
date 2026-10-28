@@ -1,7 +1,7 @@
 {
  "schemaVersion": "v10-tr-register-1.0.0",
- "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
- "protocolSha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47",
+ "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+ "protocolSha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad",
  "evidenceKind": "SOURCE_EVIDENCE",
  "certificationStatus": "NOT_CERTIFIED",
  "productionApproved": false,
@@ -19,10 +19,355 @@
   "SEC acceptance from index-headers = availability upper bound, not publication time",
   "amountSeriesUnits = amount / product of later provider factors (split-consistent with the series)"
  ],
- "codeSha256": "5c6c617c8f73b25b5d10759c80e67d9a42285db49b773ec706726304b211e738",
- "harvesterSha256": "f41363cfb65aaecf3cdcff99df9fd1d8a13511d8fa09aa6e8e5125adbc70acd9",
+ "codeSha256": "52b919dbf6bd16fa81968d62de62e27fb33a0cddf27af913127c1efb37bca3aa",
+ "harvesterSha256": "d1494beaff2835ae756ea66fbe505fd44fe1bfbc245b014690e62beac80a7e28",
  "titles": [
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 23,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 0,
+    "noEventInPeriod": 6,
+    "rows": [
+     {
+      "period": [
+       "2014-11-01",
+       "2015-01-31"
+      ],
+      "xbrl": "0.1",
+      "accn": "0001628280-15-001631",
+      "events": [
+       "2015-01-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-02-01",
+       "2015-04-30"
+      ],
+      "xbrl": "0.1",
+      "accn": "0001090872-15-000032",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2015-05-01",
+       "2015-07-31"
+      ],
+      "xbrl": "0.1",
+      "accn": "0001090872-15-000039",
+      "events": [
+       "2015-06-30"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-11-01",
+       "2016-01-31"
+      ],
+      "xbrl": "0.115",
+      "accn": "0001090872-16-000056",
+      "events": [
+       "2016-01-05"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-02-01",
+       "2018-04-30"
+      ],
+      "xbrl": "0.149",
+      "accn": "0001090872-19-000010",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2018-05-01",
+       "2018-07-31"
+      ],
+      "xbrl": "0.149",
+      "accn": "0001090872-19-000015",
+      "events": [
+       "2018-07-03"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-02-01",
+       "2019-04-30"
+      ],
+      "xbrl": "0.164",
+      "accn": "0001090872-19-000010",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2019-05-01",
+       "2019-07-31"
+      ],
+      "xbrl": "0.164",
+      "accn": "0001090872-19-000015",
+      "events": [
+       "2019-07-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-11-01",
+       "2020-01-31"
+      ],
+      "xbrl": "0.18",
+      "accn": "0001090872-21-000004",
+      "events": [
+       "2019-12-31"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-02-01",
+       "2020-04-30"
+      ],
+      "xbrl": "0.18",
+      "accn": "0001090872-20-000010",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-05-01",
+       "2020-07-31"
+      ],
+      "xbrl": "0.18",
+      "accn": "0001090872-20-000014",
+      "events": [
+       "2020-06-30"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-11-01",
+       "2021-01-31"
+      ],
+      "xbrl": "0.194",
+      "accn": "0001090872-21-000004",
+      "events": [
+       "2021-01-05"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-02-01",
+       "2021-04-30"
+      ],
+      "xbrl": "0.194",
+      "accn": "0001090872-21-000009",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-05-01",
+       "2021-07-31"
+      ],
+      "xbrl": "0.194",
+      "accn": "0001090872-21-000015",
+      "events": [
+       "2021-07-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-11-01",
+       "2022-01-31"
+      ],
+      "xbrl": "0.21",
+      "accn": "0001090872-22-000007",
+      "events": [
+       "2022-01-04"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-02-01",
+       "2022-04-30"
+      ],
+      "xbrl": "0.21",
+      "accn": "0001090872-22-000012",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-05-01",
+       "2022-07-31"
+      ],
+      "xbrl": "0.21",
+      "accn": "0001090872-22-000017",
+      "events": [
+       "2022-07-05"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-11-01",
+       "2023-01-31"
+      ],
+      "xbrl": "0.225",
+      "accn": "0001090872-23-000005",
+      "events": [
+       "2023-01-03"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-02-01",
+       "2023-04-30"
+      ],
+      "xbrl": "0.225",
+      "accn": "0001090872-23-000010",
+      "events": [
+       "2023-04-04"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-05-01",
+       "2023-07-31"
+      ],
+      "xbrl": "0.225",
+      "accn": "0001090872-23-000015",
+      "events": [
+       "2023-07-03"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-11-01",
+       "2024-01-31"
+      ],
+      "xbrl": "0.236",
+      "accn": "0001090872-24-000011",
+      "events": [
+       "2024-01-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-02-01",
+       "2024-04-30"
+      ],
+      "xbrl": "0.236",
+      "accn": "0001090872-24-000021",
+      "events": [
+       "2024-04-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-05-01",
+       "2024-07-31"
+      ],
+      "xbrl": "0.236",
+      "accn": "0001090872-24-000033",
+      "events": [
+       "2024-07-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-11-01",
+       "2025-01-31"
+      ],
+      "xbrl": "0.248",
+      "accn": "0001090872-25-000008",
+      "events": [
+       "2024-12-31"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-02-01",
+       "2025-04-30"
+      ],
+      "xbrl": "0.248",
+      "accn": "0001090872-25-000021",
+      "events": [
+       "2025-04-01"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-05-01",
+       "2025-07-31"
+      ],
+      "xbrl": "0.248",
+      "accn": "0001090872-25-000036",
+      "events": [
+       "2025-07-01"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-11-01",
+       "2026-01-31"
+      ],
+      "xbrl": "0.255",
+      "accn": "0001090872-26-000023",
+      "events": [
+       "2026-01-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-02-01",
+       "2026-04-30"
+      ],
+      "xbrl": "0.255",
+      "accn": "0001090872-26-000055",
+      "events": [
+       "2026-03-31"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-05-01",
+       "2026-07-31"
+      ],
+      "xbrl": "0.255",
+      "accn": "0001090872-26-000064",
+      "events": [
+       "2026-06-30"
+      ],
+      "state": "MATCH"
+     }
+    ]
+   },
    "ticker": "A",
    "cik": 1090872,
    "securityId": "ref_A",
@@ -238,13 +583,16 @@
      }
     ]
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [],
    "totalReturnWindows": [
     {
      "from": "2015-01-01",
-     "to": "2015-06-30",
-     "quarters": 2,
-     "cutBy": []
+     "to": "2015-01-06",
+     "quarters": 1,
+     "cutBy": [
+      "CADENCE_GAP:2015-01-06..2015-06-30"
+     ]
     },
     {
      "from": "2016-01-01",
@@ -278,15 +626,19 @@
     },
     {
      "from": "2018-07-01",
-     "to": "2018-12-31",
-     "quarters": 2,
-     "cutBy": []
+     "to": "2018-07-03",
+     "quarters": 1,
+     "cutBy": [
+      "CADENCE_GAP:2018-07-03..2018-12-31"
+     ]
     },
     {
      "from": "2019-07-01",
-     "to": "2019-12-31",
-     "quarters": 2,
-     "cutBy": []
+     "to": "2019-07-02",
+     "quarters": 1,
+     "cutBy": [
+      "CADENCE_GAP:2019-07-02..2019-12-31"
+     ]
     },
     {
      "from": "2020-04-01",
@@ -326,9 +678,11 @@
     },
     {
      "from": "2024-01-01",
-     "to": "2024-12-31",
-     "quarters": 4,
-     "cutBy": []
+     "to": "2024-07-02",
+     "quarters": 3,
+     "cutBy": [
+      "CADENCE_GAP:2024-07-02..2024-12-31"
+     ]
     },
     {
      "from": "2025-04-01",
@@ -2642,6 +2996,27 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 1,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 0,
+    "noEventInPeriod": 0,
+    "rows": [
+     {
+      "period": [
+       "2015-10-01",
+       "2015-12-31"
+      ],
+      "xbrl": "1.3",
+      "accn": "0000051143-16-000013",
+      "events": [
+       "2015-11-10"
+      ],
+      "state": "MATCH"
+     }
+    ]
+   },
    "ticker": "IBM",
    "cik": 51143,
    "securityId": "ref_IBM",
@@ -2655,6 +3030,7 @@
     "gapsAfterPass1": [],
     "log": []
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [
     {
      "date": "2021-11-04",
@@ -5512,6 +5888,339 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 6,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 1,
+    "noEventInPeriod": 24,
+    "rows": [
+     {
+      "period": [
+       "2015-01-01",
+       "2015-03-31"
+      ],
+      "xbrl": "0.4",
+      "accn": "0000019617-15-000318",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2016-01-01",
+       "2016-03-31"
+      ],
+      "xbrl": "0.44",
+      "accn": "0000019617-16-000960",
+      "events": [
+       "2016-04-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-04-01",
+       "2016-06-30"
+      ],
+      "xbrl": "0.48",
+      "accn": "0000019617-16-001056",
+      "events": [
+       "2016-07-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-07-01",
+       "2016-09-30"
+      ],
+      "xbrl": "0.48",
+      "accn": "0000019617-16-001150",
+      "events": [
+       "2016-10-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-01-01",
+       "2017-03-31"
+      ],
+      "xbrl": "0.5",
+      "accn": "0000019617-17-000364",
+      "events": [
+       "2017-04-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-01-01",
+       "2018-03-31"
+      ],
+      "xbrl": "0.56",
+      "accn": "0000019617-18-000092",
+      "events": [
+       "2018-04-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-04-01",
+       "2018-06-30"
+      ],
+      "xbrl": "1.12",
+      "accn": "0000019617-19-000127",
+      "events": [
+       "2018-07-06"
+      ],
+      "state": "MISMATCH"
+     },
+     {
+      "period": [
+       "2018-07-01",
+       "2018-09-30"
+      ],
+      "xbrl": "0.8",
+      "accn": "0000019617-19-000232",
+      "events": [
+       "2018-10-05"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-01-01",
+       "2019-03-31"
+      ],
+      "xbrl": "0.8",
+      "accn": "0000019617-19-000067",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2019-04-01",
+       "2019-06-30"
+      ],
+      "xbrl": "1.6",
+      "accn": "0000019617-19-000127",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2019-07-01",
+       "2019-09-30"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-19-000232",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-01-01",
+       "2020-03-31"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-20-000299",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-04-01",
+       "2020-06-30"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-20-000372",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-07-01",
+       "2020-09-30"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-20-000438",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-01-01",
+       "2021-03-31"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-21-000292",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-04-01",
+       "2021-06-30"
+      ],
+      "xbrl": "0.9",
+      "accn": "0000019617-21-000373",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-07-01",
+       "2021-09-30"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-21-000458",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-01-01",
+       "2022-03-31"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-22-000319",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-04-01",
+       "2022-06-30"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-22-000422",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-07-01",
+       "2022-09-30"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-22-000492",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2023-01-01",
+       "2023-03-31"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-23-000310",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2023-04-01",
+       "2023-06-30"
+      ],
+      "xbrl": "1",
+      "accn": "0000019617-23-000432",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2023-07-01",
+       "2023-09-30"
+      ],
+      "xbrl": "1.05",
+      "accn": "0000019617-23-000524",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-01-01",
+       "2024-03-31"
+      ],
+      "xbrl": "1.15",
+      "accn": "0000019617-24-000326",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-04-01",
+       "2024-06-30"
+      ],
+      "xbrl": "1.15",
+      "accn": "0000019617-24-000453",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-07-01",
+       "2024-09-30"
+      ],
+      "xbrl": "1.25",
+      "accn": "0000019617-24-000611",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-01-01",
+       "2025-03-31"
+      ],
+      "xbrl": "1.4",
+      "accn": "0000019617-25-000421",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-04-01",
+       "2025-06-30"
+      ],
+      "xbrl": "1.4",
+      "accn": "0000019617-25-000615",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-07-01",
+       "2025-09-30"
+      ],
+      "xbrl": "1.5",
+      "accn": "0001628280-25-048859",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-01-01",
+       "2026-03-31"
+      ],
+      "xbrl": "1.5",
+      "accn": "0001628280-26-029344",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-04-01",
+       "2026-06-30"
+      ],
+      "xbrl": "1.5",
+      "accn": "0001628280-26-054343",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     }
+    ]
+   },
    "ticker": "JPM",
    "cik": 19617,
    "securityId": "ref_JPM",
@@ -5847,6 +6556,7 @@
      }
     ]
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [],
    "totalReturnWindows": [
     {
@@ -7003,6 +7713,107 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 1,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 0,
+    "noEventInPeriod": 8,
+    "rows": [
+     {
+      "period": [
+       "2024-01-01",
+       "2024-03-31"
+      ],
+      "xbrl": "0.5",
+      "accn": "0001326801-25-000054",
+      "events": [
+       "2024-02-22"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-04-01",
+       "2024-06-30"
+      ],
+      "xbrl": "0.5",
+      "accn": "0001326801-24-000069",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-07-01",
+       "2024-09-30"
+      ],
+      "xbrl": "0.5",
+      "accn": "0001326801-24-000081",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-01-01",
+       "2025-03-31"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001326801-25-000054",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-04-01",
+       "2025-06-30"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001628280-25-036791",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-07-01",
+       "2025-09-30"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001628280-25-047240",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-01-01",
+       "2026-03-31"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001628280-26-028526",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-04-01",
+       "2026-06-30"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001628280-26-050705",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-07-01",
+       "2026-09-30"
+      ],
+      "xbrl": "0.525",
+      "accn": "0001628280-26-066773",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     }
+    ]
+   },
    "ticker": "META",
    "cik": 1326801,
    "securityId": "ref_META",
@@ -7118,6 +7929,7 @@
      }
     ]
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [],
    "totalReturnWindows": [
     {
@@ -7285,6 +8097,579 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 47,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 0,
+    "noEventInPeriod": 0,
+    "rows": [
+     {
+      "period": [
+       "2015-01-01",
+       "2015-03-31"
+      ],
+      "xbrl": "0.31",
+      "accn": "0001193125-15-144151",
+      "events": [
+       "2015-05-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-04-01",
+       "2015-06-30"
+      ],
+      "xbrl": "0.31",
+      "accn": "0001193125-15-272806",
+      "events": [
+       "2015-08-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-07-01",
+       "2015-09-30"
+      ],
+      "xbrl": "0.36",
+      "accn": "0001193125-15-350718",
+      "events": [
+       "2015-11-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-10-01",
+       "2015-12-31"
+      ],
+      "xbrl": "0.36",
+      "accn": "0001193125-16-441821",
+      "events": [
+       "2016-02-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-01-01",
+       "2016-03-31"
+      ],
+      "xbrl": "0.36",
+      "accn": "0001193125-16-550254",
+      "events": [
+       "2016-05-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-04-01",
+       "2016-06-30"
+      ],
+      "xbrl": "0.36",
+      "accn": "0001193125-16-662209",
+      "events": [
+       "2016-08-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-07-01",
+       "2016-09-30"
+      ],
+      "xbrl": "0.39",
+      "accn": "0001193125-16-742796",
+      "events": [
+       "2016-11-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-07-02",
+       "2016-09-30"
+      ],
+      "xbrl": "0.39",
+      "accn": "0001564590-18-019062",
+      "events": [
+       "2016-11-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-10-01",
+       "2016-12-31"
+      ],
+      "xbrl": "0.39",
+      "accn": "0001564590-17-000654",
+      "events": [
+       "2017-02-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-01-01",
+       "2017-03-31"
+      ],
+      "xbrl": "0.39",
+      "accn": "0001564590-17-007547",
+      "events": [
+       "2017-05-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-04-01",
+       "2017-06-30"
+      ],
+      "xbrl": "0.39",
+      "accn": "0001564590-17-014900",
+      "events": [
+       "2017-08-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-07-01",
+       "2017-09-30"
+      ],
+      "xbrl": "0.42",
+      "accn": "0001564590-17-020171",
+      "events": [
+       "2017-11-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-10-01",
+       "2017-12-31"
+      ],
+      "xbrl": "0.42",
+      "accn": "0001564590-18-001129",
+      "events": [
+       "2018-02-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-01-01",
+       "2018-03-31"
+      ],
+      "xbrl": "0.42",
+      "accn": "0001564590-18-009307",
+      "events": [
+       "2018-05-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-04-01",
+       "2018-06-30"
+      ],
+      "xbrl": "0.42",
+      "accn": "0001564590-18-019062",
+      "events": [
+       "2018-08-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-07-01",
+       "2018-09-30"
+      ],
+      "xbrl": "0.46",
+      "accn": "0001564590-18-024893",
+      "events": [
+       "2018-11-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-10-01",
+       "2018-12-31"
+      ],
+      "xbrl": "0.46",
+      "accn": "0001564590-19-001392",
+      "events": [
+       "2019-02-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-01-01",
+       "2019-03-31"
+      ],
+      "xbrl": "0.46",
+      "accn": "0001564590-19-012709",
+      "events": [
+       "2019-05-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-04-01",
+       "2019-06-30"
+      ],
+      "xbrl": "0.46",
+      "accn": "0001564590-19-027952",
+      "events": [
+       "2019-08-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-07-01",
+       "2019-09-30"
+      ],
+      "xbrl": "0.51",
+      "accn": "0001564590-19-037549",
+      "events": [
+       "2019-11-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-10-01",
+       "2019-12-31"
+      ],
+      "xbrl": "0.51",
+      "accn": "0001564590-20-002450",
+      "events": [
+       "2020-02-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-01-01",
+       "2020-03-31"
+      ],
+      "xbrl": "0.51",
+      "accn": "0001564590-20-019706",
+      "events": [
+       "2020-05-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-04-01",
+       "2020-06-30"
+      ],
+      "xbrl": "0.51",
+      "accn": "0001564590-20-034944",
+      "events": [
+       "2020-08-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-07-01",
+       "2020-09-30"
+      ],
+      "xbrl": "0.56",
+      "accn": "0001564590-20-047996",
+      "events": [
+       "2020-11-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-10-01",
+       "2020-12-31"
+      ],
+      "xbrl": "0.56",
+      "accn": "0001564590-21-002316",
+      "events": [
+       "2021-02-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-01-01",
+       "2021-03-31"
+      ],
+      "xbrl": "0.56",
+      "accn": "0001564590-21-020891",
+      "events": [
+       "2021-05-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-04-01",
+       "2021-06-30"
+      ],
+      "xbrl": "0.56",
+      "accn": "0001564590-21-039151",
+      "events": [
+       "2021-08-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-07-01",
+       "2021-09-30"
+      ],
+      "xbrl": "0.62",
+      "accn": "0001564590-21-051992",
+      "events": [
+       "2021-11-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-10-01",
+       "2021-12-31"
+      ],
+      "xbrl": "0.62",
+      "accn": "0001564590-22-002324",
+      "events": [
+       "2022-02-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-01-01",
+       "2022-03-31"
+      ],
+      "xbrl": "0.62",
+      "accn": "0001564590-22-015675",
+      "events": [
+       "2022-05-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-04-01",
+       "2022-06-30"
+      ],
+      "xbrl": "0.62",
+      "accn": "0001564590-22-026876",
+      "events": [
+       "2022-08-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-07-01",
+       "2022-09-30"
+      ],
+      "xbrl": "0.68",
+      "accn": "0001564590-22-035087",
+      "events": [
+       "2022-11-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-10-01",
+       "2022-12-31"
+      ],
+      "xbrl": "0.68",
+      "accn": "0001564590-23-000733",
+      "events": [
+       "2023-02-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-01-01",
+       "2023-03-31"
+      ],
+      "xbrl": "0.68",
+      "accn": "0000950170-23-014423",
+      "events": [
+       "2023-05-18"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-04-01",
+       "2023-06-30"
+      ],
+      "xbrl": "0.68",
+      "accn": "0000950170-23-035122",
+      "events": [
+       "2023-08-17"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-07-01",
+       "2023-09-30"
+      ],
+      "xbrl": "0.75",
+      "accn": "0000950170-23-054855",
+      "events": [
+       "2023-11-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-10-01",
+       "2023-12-31"
+      ],
+      "xbrl": "0.75",
+      "accn": "0000950170-24-008814",
+      "events": [
+       "2024-02-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-01-01",
+       "2024-03-31"
+      ],
+      "xbrl": "0.75",
+      "accn": "0000950170-24-048288",
+      "events": [
+       "2024-05-16"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-04-01",
+       "2024-06-30"
+      ],
+      "xbrl": "0.75",
+      "accn": "0000950170-24-087843",
+      "events": [
+       "2024-08-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-07-01",
+       "2024-09-30"
+      ],
+      "xbrl": "0.83",
+      "accn": "0000950170-24-118967",
+      "events": [
+       "2024-11-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-10-01",
+       "2024-12-31"
+      ],
+      "xbrl": "0.83",
+      "accn": "0000950170-25-010491",
+      "events": [
+       "2025-02-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-01-01",
+       "2025-03-31"
+      ],
+      "xbrl": "0.83",
+      "accn": "0000950170-25-061046",
+      "events": [
+       "2025-05-15"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-04-01",
+       "2025-06-30"
+      ],
+      "xbrl": "0.83",
+      "accn": "0000950170-25-100235",
+      "events": [
+       "2025-08-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-07-01",
+       "2025-09-30"
+      ],
+      "xbrl": "0.91",
+      "accn": "0001193125-25-256321",
+      "events": [
+       "2025-11-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-10-01",
+       "2025-12-31"
+      ],
+      "xbrl": "0.91",
+      "accn": "0001193125-26-027207",
+      "events": [
+       "2026-02-19"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-01-01",
+       "2026-03-31"
+      ],
+      "xbrl": "0.91",
+      "accn": "0001193125-26-191507",
+      "events": [
+       "2026-05-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-04-01",
+       "2026-06-30"
+      ],
+      "xbrl": "0.91",
+      "accn": "0001193125-26-323660",
+      "events": [
+       "2026-08-20"
+      ],
+      "state": "MATCH"
+     }
+    ]
+   },
    "ticker": "MSFT",
    "cik": 789019,
    "securityId": "ref_MSFT",
@@ -7298,6 +8683,7 @@
     "gapsAfterPass1": [],
     "log": []
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [],
    "totalReturnWindows": [
     {
@@ -12278,13 +13664,436 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 31,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 1,
+    "noEventInPeriod": 3,
+    "rows": [
+     {
+      "period": [
+       "2015-01-26",
+       "2015-04-26"
+      ],
+      "xbrl": "0.085",
+      "accn": "0001045810-15-000097",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2015-04-27",
+       "2015-07-26"
+      ],
+      "xbrl": "0.0975",
+      "accn": "0001045810-15-000143",
+      "events": [
+       "2015-05-21"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-07-27",
+       "2015-10-25"
+      ],
+      "xbrl": "0.0975",
+      "accn": "0001045810-15-000173",
+      "events": [
+       "2015-08-20"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-02-01",
+       "2016-05-01"
+      ],
+      "xbrl": "0.115",
+      "accn": "0001045810-16-000275",
+      "events": [
+       "2016-03-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-05-02",
+       "2016-07-31"
+      ],
+      "xbrl": "0.115",
+      "accn": "0001045810-16-000300",
+      "events": [
+       "2016-05-26"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-08-01",
+       "2016-10-30"
+      ],
+      "xbrl": "0.115",
+      "accn": "0001045810-16-000353",
+      "events": [
+       "2016-08-25"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-01-30",
+       "2017-04-30"
+      ],
+      "xbrl": "0.14",
+      "accn": "0001045810-17-000075",
+      "events": [
+       "2017-02-24"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-05-01",
+       "2017-07-30"
+      ],
+      "xbrl": "0.14",
+      "accn": "0001045810-17-000123",
+      "events": [
+       "2017-05-23"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-07-31",
+       "2017-10-29"
+      ],
+      "xbrl": "0.14",
+      "accn": "0001045810-17-000172",
+      "events": [
+       "2017-08-24"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-01-29",
+       "2018-04-29"
+      ],
+      "xbrl": "0.15",
+      "accn": "0001045810-18-000080",
+      "events": [
+       "2018-02-23"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-04-30",
+       "2018-07-29"
+      ],
+      "xbrl": "0.15",
+      "accn": "0001045810-18-000114",
+      "events": [
+       "2018-05-24"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-07-30",
+       "2018-10-28"
+      ],
+      "xbrl": "0.15",
+      "accn": "0001045810-18-000150",
+      "events": [
+       "2018-08-30"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-01-28",
+       "2019-04-28"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-19-000079",
+      "events": [
+       "2019-03-01"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-04-29",
+       "2019-07-28"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-19-000144",
+      "events": [
+       "2019-05-31"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-07-29",
+       "2019-10-27"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-19-000170",
+      "events": [
+       "2019-08-29"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-01-27",
+       "2020-04-26"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-20-000065",
+      "events": [
+       "2020-02-28"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-04-27",
+       "2020-07-26"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-20-000147",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-07-27",
+       "2020-10-25"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-20-000189",
+      "events": [
+       "2020-09-02"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-02-01",
+       "2021-05-02"
+      ],
+      "xbrl": "0.16",
+      "accn": "0001045810-21-000064",
+      "events": [
+       "2021-03-10"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-05-03",
+       "2021-08-01"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-21-000131",
+      "events": [
+       "2021-06-10"
+      ],
+      "state": "MISMATCH"
+     },
+     {
+      "period": [
+       "2021-08-02",
+       "2021-10-31"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-21-000163",
+      "events": [
+       "2021-09-01"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-01-31",
+       "2022-05-01"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-22-000079",
+      "events": [
+       "2022-03-03"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-05-02",
+       "2022-07-31"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-22-000147",
+      "events": [
+       "2022-06-09"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-08-01",
+       "2022-10-30"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-22-000166",
+      "events": [
+       "2022-09-08"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-01-30",
+       "2023-04-30"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-23-000093",
+      "events": [
+       "2023-03-08"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-05-01",
+       "2023-07-30"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-23-000175",
+      "events": [
+       "2023-06-08"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-07-31",
+       "2023-10-29"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-23-000227",
+      "events": [
+       "2023-09-07"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-01-29",
+       "2024-04-28"
+      ],
+      "xbrl": "0.04",
+      "accn": "0001045810-24-000124",
+      "events": [
+       "2024-03-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-04-29",
+       "2024-07-28"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-24-000264",
+      "events": [
+       "2024-06-11"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-07-29",
+       "2024-10-27"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-24-000316",
+      "events": [
+       "2024-09-12"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-01-27",
+       "2025-04-27"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-25-000116",
+      "events": [
+       "2025-03-12"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-04-28",
+       "2025-07-27"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-25-000209",
+      "events": [
+       "2025-06-11"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-07-28",
+       "2025-10-26"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-25-000230",
+      "events": [
+       "2025-09-11"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-01-26",
+       "2026-04-26"
+      ],
+      "xbrl": "0.01",
+      "accn": "0001045810-26-000052",
+      "events": [
+       "2026-03-11"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2026-04-27",
+       "2026-07-26"
+      ],
+      "xbrl": "0.25",
+      "accn": "0001045810-26-000075",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     }
+    ]
+   },
    "ticker": "NVDA",
    "cik": 1045810,
    "securityId": "ref_NVDA",
    "documentsScanned": 105,
    "documentErrors": [],
    "expectedQuarters": 47,
-   "coveredQuarters": 46,
+   "coveredQuarters": 42,
    "complete": false,
    "v9Covered": 46,
    "gapSearch": {
@@ -12303,6 +14112,88 @@
      }
     ]
    },
+   "ambiguousAmountStatements": [
+    {
+     "recordDate": "2015-11-20",
+     "accession": "0001045810-15-000165",
+     "quote": "We announced an 18 percent increase in our quarterly cash dividend to $0.115 per share from $0.0975 per share, to be paid with our next quarterly cash dividend on December 14, 2015, to all shareholders of record on November 20, 2015."
+    },
+    {
+     "recordDate": "2016-11-28",
+     "accession": "0001045810-16-000343",
+     "quote": "The company announced a 22 percent increase in its quarterly cash dividend to $0.14 per share from $0.115 per share, to be paid with its next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
+    },
+    {
+     "recordDate": "2016-11-28",
+     "accession": "0001045810-16-000343",
+     "quote": "We announced a 22 percent increase in our quarterly cash dividend to $0.14 per share from $0.115 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
+    },
+    {
+     "recordDate": "2016-11-28",
+     "accession": "0001045810-16-000353",
+     "quote": "We also declared an increase in our quarterly cash dividend to $0.14 per share from $0.1150 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
+    },
+    {
+     "recordDate": "2016-11-28",
+     "accession": "0001045810-16-000353",
+     "quote": "We also declared an increase in our quarterly cash dividend to $0.1400 per share from $0.1150 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
+    },
+    {
+     "recordDate": "2017-11-24",
+     "accession": "0001045810-17-000164",
+     "quote": "The company announced a 7 percent increase in its quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with its next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
+    },
+    {
+     "recordDate": "2017-11-24",
+     "accession": "0001045810-17-000164",
+     "quote": "We announced a 7 percent increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
+    },
+    {
+     "recordDate": "2017-11-24",
+     "accession": "0001045810-17-000172",
+     "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
+    },
+    {
+     "recordDate": "2017-11-24",
+     "accession": "0001045810-17-000172",
+     "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
+    },
+    {
+     "recordDate": "2017-11-24",
+     "accession": "0001045810-17-000172",
+     "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017"
+    },
+    {
+     "recordDate": "2018-11-30",
+     "accession": "0001045810-18-000150",
+     "quote": "In November 2018, we declared an increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
+    },
+    {
+     "recordDate": "2018-11-30",
+     "accession": "0001045810-18-000150",
+     "quote": "We announced a 7% increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018"
+    },
+    {
+     "recordDate": "2018-11-30",
+     "accession": "0001045810-18-000150",
+     "quote": "We announced a 7% increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018"
+    },
+    {
+     "recordDate": "2018-11-30",
+     "accession": "0001045810-18-000148",
+     "quote": "NVIDIA announced a 7 percent increase in its quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with its next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
+    },
+    {
+     "recordDate": "2018-11-30",
+     "accession": "0001045810-18-000148",
+     "quote": "We announced a 7 percent increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
+    },
+    {
+     "recordDate": "2026-06-04",
+     "accession": "0001045810-26-000051",
+     "quote": "NVIDIA is increasing its quarterly cash dividend from $0.01 per share to $0.25 per share of common stock, which will be paid on June 26, 2026, to all shareholders of record on June 4, 2026."
+    }
+   ],
    "providerFactors": [
     {
      "date": "2021-07-20",
@@ -12356,14 +14247,38 @@
    "totalReturnWindows": [
     {
      "from": "2015-01-01",
+     "to": "2016-09-30",
+     "quarters": 7,
+     "cutBy": []
+    },
+    {
+     "from": "2017-01-01",
+     "to": "2017-09-30",
+     "quarters": 3,
+     "cutBy": []
+    },
+    {
+     "from": "2018-01-01",
+     "to": "2018-09-30",
+     "quarters": 3,
+     "cutBy": []
+    },
+    {
+     "from": "2019-01-01",
      "to": "2020-03-31",
-     "quarters": 21,
+     "quarters": 5,
      "cutBy": []
     },
     {
      "from": "2020-07-01",
+     "to": "2026-03-31",
+     "quarters": 23,
+     "cutBy": []
+    },
+    {
+     "from": "2026-07-01",
      "to": "2026-09-30",
-     "quarters": 25,
+     "quarters": 1,
      "cutBy": []
     }
    ],
@@ -12405,8 +14320,7 @@
     },
     {
      "quarter": "2016Q4",
-     "status": "COVERED",
-     "recordDate": "2016-11-28"
+     "status": "GAP_NO_SEC_ATTESTATION"
     },
     {
      "quarter": "2017Q1",
@@ -12425,8 +14339,7 @@
     },
     {
      "quarter": "2017Q4",
-     "status": "COVERED",
-     "recordDate": "2017-11-24"
+     "status": "GAP_NO_SEC_ATTESTATION"
     },
     {
      "quarter": "2018Q1",
@@ -12445,8 +14358,7 @@
     },
     {
      "quarter": "2018Q4",
-     "status": "COVERED",
-     "recordDate": "2018-11-30"
+     "status": "GAP_NO_SEC_ATTESTATION"
     },
     {
      "quarter": "2019Q1",
@@ -12594,8 +14506,7 @@
     },
     {
      "quarter": "2026Q2",
-     "status": "COVERED",
-     "recordDate": "2026-06-04"
+     "status": "GAP_NO_SEC_ATTESTATION"
     },
     {
      "quarter": "2026Q3",
@@ -12812,7 +14723,7 @@
       }
      },
      "restatedAttestations": [],
-     "attestationCount": 4,
+     "attestationCount": 3,
      "distinctFilings": 2,
      "sources": [
       {
@@ -12824,16 +14735,6 @@
        "pattern": "SENTENCE",
        "discovery": "a",
        "quote": "NVIDIA will pay this next quarterly cash dividend on December 14, 2015, to all shareholders of record on November 20, 2015."
-      },
-      {
-       "accession": "0001045810-15-000165",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581015000165/q316cfocommentary.htm",
-       "sha256": "40e1f7d77d7ac0f36963736006c20eafedba0eb12f0e258e2854261b122acb9f",
-       "form": "8-K",
-       "fileDate": "2015-11-05",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced an 18 percent increase in our quarterly cash dividend to $0.115 per share from $0.0975 per share, to be paid with our next quarterly cash dividend on December 14, 2015, to all shareholders of record on November 20, 2015."
       },
       {
        "accession": "0001045810-15-000173",
@@ -13037,79 +14938,6 @@
      ]
     },
     {
-     "id": "NVDA:DIV:2016-11-28",
-     "recordDate": "2016-11-28",
-     "payDate": "2016-12-19",
-     "amount": "0.14",
-     "currency": "USD",
-     "kind": "REGULAR",
-     "exDateDerived": "2016-11-24",
-     "exDateState": "DERIVED_SETTLEMENT_RULE_NOT_SOURCED",
-     "exDateRule": "T+3 (record - 2 business days)",
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
-     "seriesUnitFactor": 40.0,
-     "amountSeriesUnits": 0.0035,
-     "entitlementSession": "2016-11-25",
-     "paySession": "2016-12-23",
-     "weeklyMappingInvariantToExDateRule": false,
-     "informationAvailableAt": "2016-11-10T21:21:36.000Z",
-     "availabilitySource": {
-      "accession": "0001045810-16-000343",
-      "header": {
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581016000343/0001045810-16-000343-index-headers.html",
-       "sha256": "61b010a5deff9ec63c42d5f35b4a7cebf06191c7b595b46656284f515632c73a",
-       "rawEastern": "20161110162136",
-       "acceptanceUtc": "2016-11-10T21:21:36.000Z"
-      }
-     },
-     "restatedAttestations": [],
-     "attestationCount": 4,
-     "distinctFilings": 2,
-     "sources": [
-      {
-       "accession": "0001045810-16-000343",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581016000343/q3fy17pr.htm",
-       "sha256": "90e8ae4f523065cca48d847eddebb3384dded0c0b7bbfb212a4c94651ec58b1a",
-       "form": "8-K",
-       "fileDate": "2016-11-10",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "The company announced a 22 percent increase in its quarterly cash dividend to $0.14 per share from $0.115 per share, to be paid with its next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
-      },
-      {
-       "accession": "0001045810-16-000343",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581016000343/q3fy17cfocommentary.htm",
-       "sha256": "e5678e009cc7196971b2fa07eafd39e6272485dcd00e9587b16e1d611269dda8",
-       "form": "8-K",
-       "fileDate": "2016-11-10",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced a 22 percent increase in our quarterly cash dividend to $0.14 per share from $0.115 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
-      },
-      {
-       "accession": "0001045810-16-000353",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581016000353/nvda2017q310q.htm",
-       "sha256": "bc68b90cc36b4a131a8ba770343307e7713c6e56b8df6a9409cdf7949584094e",
-       "form": "10-Q",
-       "fileDate": "2016-11-22",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We also declared an increase in our quarterly cash dividend to $0.14 per share from $0.1150 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
-      },
-      {
-       "accession": "0001045810-16-000353",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581016000353/nvda2017q310q.htm",
-       "sha256": "bc68b90cc36b4a131a8ba770343307e7713c6e56b8df6a9409cdf7949584094e",
-       "form": "10-Q",
-       "fileDate": "2016-11-22",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We also declared an increase in our quarterly cash dividend to $0.1400 per share from $0.1150 per share, to be paid with our next quarterly cash dividend on December 19, 2016, to all shareholders of record on November 28, 2016."
-      }
-     ]
-    },
-    {
      "id": "NVDA:DIV:2017-02-24",
      "recordDate": "2017-02-24",
      "payDate": "2017-03-17",
@@ -13239,89 +15067,6 @@
      ]
     },
     {
-     "id": "NVDA:DIV:2017-11-24",
-     "recordDate": "2017-11-24",
-     "payDate": "2017-12-15",
-     "amount": "0.15",
-     "currency": "USD",
-     "kind": "REGULAR",
-     "exDateDerived": "2017-11-23",
-     "exDateState": "DERIVED_SETTLEMENT_RULE_NOT_SOURCED",
-     "exDateRule": "T+2 (record - 1 business day)",
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
-     "seriesUnitFactor": 40.0,
-     "amountSeriesUnits": 0.00375,
-     "entitlementSession": "2017-11-24",
-     "paySession": "2017-12-15",
-     "weeklyMappingInvariantToExDateRule": true,
-     "informationAvailableAt": "2017-11-09T21:23:57.000Z",
-     "availabilitySource": {
-      "accession": "0001045810-17-000164",
-      "header": {
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000164/0001045810-17-000164-index-headers.html",
-       "sha256": "cd6eae8d663a5d60bf665b31d5f6866ba365f774cdbe24868eda53da57291cd2",
-       "rawEastern": "20171109162357",
-       "acceptanceUtc": "2017-11-09T21:23:57.000Z"
-      }
-     },
-     "restatedAttestations": [],
-     "attestationCount": 5,
-     "distinctFilings": 2,
-     "sources": [
-      {
-       "accession": "0001045810-17-000164",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000164/q3fy18pr.htm",
-       "sha256": "b95f78067f8a79510c56a562e8405e1d5a468c0ea4d42c49bb62e1e827448039",
-       "form": "8-K",
-       "fileDate": "2017-11-09",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "The company announced a 7 percent increase in its quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with its next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
-      },
-      {
-       "accession": "0001045810-17-000164",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000164/q3fy18cfocommentary.htm",
-       "sha256": "50b833f21b3ace1efe68f1a7962b03f688b44c4cf430cfa3020328a301d3b9e2",
-       "form": "8-K",
-       "fileDate": "2017-11-09",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced a 7 percent increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
-      },
-      {
-       "accession": "0001045810-17-000172",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000172/nvda2018q310q.htm",
-       "sha256": "0c8aeda220369609253534d41393bd732cb315abf20aee854d82f8a3bce4625a",
-       "form": "10-Q",
-       "fileDate": "2017-11-21",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
-      },
-      {
-       "accession": "0001045810-17-000172",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000172/nvda2018q310q.htm",
-       "sha256": "0c8aeda220369609253534d41393bd732cb315abf20aee854d82f8a3bce4625a",
-       "form": "10-Q",
-       "fileDate": "2017-11-21",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017."
-      },
-      {
-       "accession": "0001045810-17-000172",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581017000172/nvda2018q310q.htm",
-       "sha256": "0c8aeda220369609253534d41393bd732cb315abf20aee854d82f8a3bce4625a",
-       "form": "10-Q",
-       "fileDate": "2017-11-21",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "In November 2017, we declared an increase in our quarterly cash dividend to $0.15 per share from $0.14 per share, to be paid with our next quarterly cash dividend on December 15, 2017, to all shareholders of record on November 24, 2017"
-      }
-     ]
-    },
-    {
      "id": "NVDA:DIV:2018-02-23",
      "recordDate": "2018-02-23",
      "payDate": "2018-03-16",
@@ -13447,89 +15192,6 @@
        "pattern": "SENTENCE",
        "discovery": "a",
        "quote": "NVIDIA will pay its next quarterly cash dividend of $0.15 per share on September 21, 2018, to all shareholders of record on August 30, 2018."
-      }
-     ]
-    },
-    {
-     "id": "NVDA:DIV:2018-11-30",
-     "recordDate": "2018-11-30",
-     "payDate": "2018-12-21",
-     "amount": "0.16",
-     "currency": "USD",
-     "kind": "REGULAR",
-     "exDateDerived": "2018-11-29",
-     "exDateState": "DERIVED_SETTLEMENT_RULE_NOT_SOURCED",
-     "exDateRule": "T+2 (record - 1 business day)",
-     "declarationDate": null,
-     "declarationDateState": "NOT_STATED",
-     "seriesUnitFactor": 40.0,
-     "amountSeriesUnits": 0.004,
-     "entitlementSession": "2018-11-30",
-     "paySession": "2018-12-21",
-     "weeklyMappingInvariantToExDateRule": true,
-     "informationAvailableAt": "2018-11-15T21:21:48.000Z",
-     "availabilitySource": {
-      "accession": "0001045810-18-000148",
-      "header": {
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000148/0001045810-18-000148-index-headers.html",
-       "sha256": "c504d8256e4ed86e4beb78943de38da80eedb1fbcd1ea282f636dcb2ac327541",
-       "rawEastern": "20181115162148",
-       "acceptanceUtc": "2018-11-15T21:21:48.000Z"
-      }
-     },
-     "restatedAttestations": [],
-     "attestationCount": 5,
-     "distinctFilings": 2,
-     "sources": [
-      {
-       "accession": "0001045810-18-000148",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000148/q3fy19pr.htm",
-       "sha256": "3c02b98b8d63ed64d6231a9388c7304ec75f7e250b8de6bfbc040650d6e3e4b2",
-       "form": "8-K",
-       "fileDate": "2018-11-15",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "NVIDIA announced a 7 percent increase in its quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with its next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
-      },
-      {
-       "accession": "0001045810-18-000148",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000148/q3fy19cfocommentary.htm",
-       "sha256": "08fd51a8046b393ddb0423f99e82443514db9d221d467320494b852f43d21a9d",
-       "form": "8-K",
-       "fileDate": "2018-11-15",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced a 7 percent increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
-      },
-      {
-       "accession": "0001045810-18-000150",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000150/nvda2019q310q.htm",
-       "sha256": "55a02bda37b4ca9653190e1c2047e1e31018049b012b9a622cc62a4a28d01c52",
-       "form": "10-Q",
-       "fileDate": "2018-11-15",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "In November 2018, we declared an increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018."
-      },
-      {
-       "accession": "0001045810-18-000150",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000150/nvda2019q310q.htm",
-       "sha256": "55a02bda37b4ca9653190e1c2047e1e31018049b012b9a622cc62a4a28d01c52",
-       "form": "10-Q",
-       "fileDate": "2018-11-15",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced a 7% increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018"
-      },
-      {
-       "accession": "0001045810-18-000150",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581018000150/nvda2019q310q.htm",
-       "sha256": "55a02bda37b4ca9653190e1c2047e1e31018049b012b9a622cc62a4a28d01c52",
-       "form": "10-Q",
-       "fileDate": "2018-11-15",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "We announced a 7% increase in our quarterly cash dividend to $0.16 per share from $0.15 per share, to be paid with our next quarterly cash dividend on December 21, 2018, to all shareholders of record on November 30, 2018"
       }
      ]
     },
@@ -14748,49 +16410,6 @@
      ]
     },
     {
-     "id": "NVDA:DIV:2026-06-04",
-     "recordDate": "2026-06-04",
-     "payDate": "2026-06-26",
-     "amount": "0.01",
-     "currency": "USD",
-     "kind": "REGULAR",
-     "exDateDerived": "2026-06-04",
-     "exDateState": "DERIVED_SETTLEMENT_RULE_NOT_SOURCED",
-     "exDateRule": "T+1 (record date)",
-     "declarationDate": "2026-05-18",
-     "declarationDateState": "STATED",
-     "seriesUnitFactor": 1.0,
-     "amountSeriesUnits": 0.01,
-     "entitlementSession": "2026-06-05",
-     "paySession": "2026-06-26",
-     "weeklyMappingInvariantToExDateRule": true,
-     "informationAvailableAt": "2026-05-20T20:21:19.000Z",
-     "availabilitySource": {
-      "accession": "0001045810-26-000051",
-      "header": {
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/0001045810-26-000051-index-headers.html",
-       "sha256": "aa001d54c3a0fcf7b32267df03c0e30dffc0f5ef39ce609dc3e351e75c4ed889",
-       "rawEastern": "20260520162119",
-       "acceptanceUtc": "2026-05-20T20:21:19.000Z"
-      }
-     },
-     "restatedAttestations": [],
-     "attestationCount": 1,
-     "distinctFilings": 1,
-     "sources": [
-      {
-       "accession": "0001045810-26-000051",
-       "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/q1fy27pr.htm",
-       "sha256": "486df868432ec3579e60b587f301caed6085650d838c6d7efe9ed9cc74d43067",
-       "form": "8-K",
-       "fileDate": "2026-05-20",
-       "pattern": "SENTENCE",
-       "discovery": "a",
-       "quote": "NVIDIA is increasing its quarterly cash dividend from $0.01 per share to $0.25 per share of common stock, which will be paid on June 26, 2026, to all shareholders of record on June 4, 2026."
-      }
-     ]
-    },
-    {
      "id": "NVDA:DIV:2026-09-10",
      "recordDate": "2026-09-10",
      "payDate": "2026-10-01",
@@ -14913,17 +16532,6 @@
      "sequence": 0
     },
     {
-     "id": "NVDA:DIV:2016-11-28",
-     "type": "CASH_DIVIDEND",
-     "effectiveDate": "2016-11-25",
-     "payDate": "2016-12-19",
-     "amount": 0.0035,
-     "currency": "USD",
-     "informationAvailableAt": "2016-11-10T21:21:36.000Z",
-     "sourceHash": "90e8ae4f523065cca48d847eddebb3384dded0c0b7bbfb212a4c94651ec58b1a",
-     "sequence": 0
-    },
-    {
      "id": "NVDA:DIV:2017-02-24",
      "type": "CASH_DIVIDEND",
      "effectiveDate": "2017-02-24",
@@ -14957,17 +16565,6 @@
      "sequence": 0
     },
     {
-     "id": "NVDA:DIV:2017-11-24",
-     "type": "CASH_DIVIDEND",
-     "effectiveDate": "2017-11-24",
-     "payDate": "2017-12-15",
-     "amount": 0.00375,
-     "currency": "USD",
-     "informationAvailableAt": "2017-11-09T21:23:57.000Z",
-     "sourceHash": "b95f78067f8a79510c56a562e8405e1d5a468c0ea4d42c49bb62e1e827448039",
-     "sequence": 0
-    },
-    {
      "id": "NVDA:DIV:2018-02-23",
      "type": "CASH_DIVIDEND",
      "effectiveDate": "2018-02-23",
@@ -14998,17 +16595,6 @@
      "currency": "USD",
      "informationAvailableAt": "2018-08-16T20:20:21.000Z",
      "sourceHash": "f7bdcac765f909bc83e3c94f44e374fa710da8fb386bd4e53200df870850aeec",
-     "sequence": 0
-    },
-    {
-     "id": "NVDA:DIV:2018-11-30",
-     "type": "CASH_DIVIDEND",
-     "effectiveDate": "2018-11-30",
-     "payDate": "2018-12-21",
-     "amount": 0.004,
-     "currency": "USD",
-     "informationAvailableAt": "2018-11-15T21:21:48.000Z",
-     "sourceHash": "3c02b98b8d63ed64d6231a9388c7304ec75f7e250b8de6bfbc040650d6e3e4b2",
      "sequence": 0
     },
     {
@@ -15320,17 +16906,6 @@
      "sequence": 0
     },
     {
-     "id": "NVDA:DIV:2026-06-04",
-     "type": "CASH_DIVIDEND",
-     "effectiveDate": "2026-06-05",
-     "payDate": "2026-06-26",
-     "amount": 0.01,
-     "currency": "USD",
-     "informationAvailableAt": "2026-05-20T20:21:19.000Z",
-     "sourceHash": "486df868432ec3579e60b587f301caed6085650d838c6d7efe9ed9cc74d43067",
-     "sequence": 0
-    },
-    {
      "id": "NVDA:DIV:2026-09-10",
      "type": "CASH_DIVIDEND",
      "effectiveDate": "2026-09-11",
@@ -15344,6 +16919,414 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 11,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 1,
+    "noEventInPeriod": 22,
+    "rows": [
+     {
+      "period": [
+       "2015-02-01",
+       "2015-04-30"
+      ],
+      "xbrl": "1.96",
+      "accn": "0000104169-15-000022",
+      "events": [
+       "2015-03-13",
+       "2015-05-08",
+       "2015-08-07",
+       "2015-12-04"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2015-05-01",
+       "2015-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-15-000039",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2015-08-01",
+       "2015-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-15-000054",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2016-02-01",
+       "2016-04-30"
+      ],
+      "xbrl": "2",
+      "accn": "0000104169-16-000088",
+      "events": [
+       "2016-03-11",
+       "2016-05-13",
+       "2016-08-12",
+       "2016-12-09"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2016-05-01",
+       "2016-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-16-000119",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2016-08-01",
+       "2016-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-16-000140",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2017-02-01",
+       "2017-04-30"
+      ],
+      "xbrl": "2.04",
+      "accn": "0000104169-17-000029",
+      "events": [
+       "2017-03-10",
+       "2017-05-12",
+       "2017-08-11",
+       "2017-12-08"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2017-05-01",
+       "2017-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-17-000057",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2017-08-01",
+       "2017-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-17-000081",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2018-02-01",
+       "2018-04-30"
+      ],
+      "xbrl": "2.08",
+      "accn": "0000104169-18-000054",
+      "events": [
+       "2018-03-09",
+       "2018-05-11",
+       "2018-08-10",
+       "2018-12-07"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2018-05-01",
+       "2018-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-18-000086",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2018-08-01",
+       "2018-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-18-000110",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2019-02-01",
+       "2019-04-30"
+      ],
+      "xbrl": "2.12",
+      "accn": "0000104169-19-000024",
+      "events": [
+       "2019-03-15",
+       "2019-05-10",
+       "2019-08-09",
+       "2019-12-06"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2019-05-01",
+       "2019-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-19-000064",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2019-08-01",
+       "2019-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-19-000088",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-02-01",
+       "2020-04-30"
+      ],
+      "xbrl": "2.16",
+      "accn": "0000104169-20-000020",
+      "events": [
+       "2020-03-20",
+       "2020-05-08",
+       "2020-08-14",
+       "2020-12-11"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2020-05-01",
+       "2020-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-20-000042",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2020-08-01",
+       "2020-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-20-000076",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-02-01",
+       "2021-04-30"
+      ],
+      "xbrl": "2.2",
+      "accn": "0000104169-21-000042",
+      "events": [
+       "2021-03-19",
+       "2021-05-07",
+       "2021-08-13",
+       "2021-12-10"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2021-05-01",
+       "2021-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-21-000058",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2021-08-01",
+       "2021-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-21-000072",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-02-01",
+       "2022-04-30"
+      ],
+      "xbrl": "2.24",
+      "accn": "0000104169-22-000029",
+      "events": [
+       "2022-03-18",
+       "2022-05-06",
+       "2022-08-12",
+       "2022-12-09"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2022-05-01",
+       "2022-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-22-000072",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2022-08-01",
+       "2022-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-22-000083",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2023-02-01",
+       "2023-04-30"
+      ],
+      "xbrl": "2.28",
+      "accn": "0000104169-23-000052",
+      "events": [
+       "2023-03-17",
+       "2023-05-05",
+       "2023-08-11",
+       "2023-12-08"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2023-05-01",
+       "2023-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-23-000097",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2023-08-01",
+       "2023-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-23-000132",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-02-01",
+       "2024-04-30"
+      ],
+      "xbrl": "0.83",
+      "accn": "0000104169-24-000105",
+      "events": [
+       "2024-03-15",
+       "2024-05-10",
+       "2024-08-16",
+       "2024-12-13"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2024-05-01",
+       "2024-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-24-000141",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2024-08-01",
+       "2024-10-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-24-000178",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2025-02-01",
+       "2025-04-30"
+      ],
+      "xbrl": "0.94",
+      "accn": "0000104169-25-000090",
+      "events": [
+       "2025-03-21",
+       "2025-05-09",
+       "2025-08-15",
+       "2025-12-12"
+      ],
+      "state": "MATCH"
+     },
+     {
+      "period": [
+       "2025-05-01",
+       "2025-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-25-000137",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     },
+     {
+      "period": [
+       "2026-02-01",
+       "2026-04-30"
+      ],
+      "xbrl": "0.99",
+      "accn": "0000104169-26-000102",
+      "events": [
+       "2026-03-20",
+       "2026-05-08",
+       "2026-08-21"
+      ],
+      "state": "MISMATCH"
+     },
+     {
+      "period": [
+       "2026-05-01",
+       "2026-07-31"
+      ],
+      "xbrl": "0",
+      "accn": "0000104169-26-000154",
+      "events": [],
+      "state": "NO_EVENT_IN_PERIOD"
+     }
+    ]
+   },
    "ticker": "WMT",
    "cik": 104169,
    "securityId": "ref_WMT",
@@ -15357,6 +17340,7 @@
     "gapsAfterPass1": [],
     "log": []
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [
     {
      "date": "2024-02-26",
@@ -20460,6 +22444,14 @@
    ]
   },
   {
+   "companyFactsCrossCheck": {
+    "concept": "us-gaap:CommonStockDividendsPerShareDeclared, 3-month durations; event assigned by declarationDate, else recordDate; MISMATCH may be a restated (post-split) fact",
+    "match": 0,
+    "matchAnyEventInPeriod": 0,
+    "mismatch": 0,
+    "noEventInPeriod": 0,
+    "rows": []
+   },
    "ticker": "XOM",
    "cik": 34088,
    "securityId": "ref_XOM",
@@ -20805,6 +22797,7 @@
      }
     ]
    },
+   "ambiguousAmountStatements": [],
    "providerFactors": [],
    "totalReturnWindows": [
     {
