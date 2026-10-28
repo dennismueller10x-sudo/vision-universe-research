@@ -29,31 +29,16 @@ concurrency:
   group: account-cancellations-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
-  # Sensibel: erst nach ausdruecklicher Freigabe des Owners (Umgebung account-production,
-  # Required reviewers). account-dev selbst hat keine Required reviewers mehr (docs/accounts/FREIGABEN.md).
-  freigabe:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    environment: account-production
-    steps:
-      - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
-        run: |
-          set -euo pipefail
-          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
-          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
-          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
-
   run:
-    needs: freigabe
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: account-dev
     steps:
       - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
         run: |
           set -euo pipefail
+          [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
           json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
           ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
           [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }

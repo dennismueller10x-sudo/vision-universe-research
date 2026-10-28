@@ -8,10 +8,11 @@
 //      nur NACH der letzten eingespielten Version liegen (keine nachtraeglich eingeschobenen Migrationen).
 //   2. Statische Pruefung jeder neuen Datei: kein DROP TABLE/SCHEMA/DATABASE/COLUMN/TYPE, kein TRUNCATE,
 //      kein DROP ... CASCADE, kein Abschalten von RLS, kein DELETE/UPDATE auf Kundentabellen (auth.*, billing.*,
-//      public-Tabellen mit Spalte user_id - aus der Datenbank ermittelt).
-//   3. Alle neuen Dateien in EINER Transaktion, Historie (supabase_migrations.schema_migrations) im selben
-//      Schritt. Vorher und nachher werden die Zeilen jeder Kundentabelle gezaehlt; sinkt eine Zahl, wird
-//      alles zurueckgerollt (faengt auch versteckte Loeschungen, z. B. in dynamischem SQL).
+//      public-Tabellen mit Spalte user_id - aus der Datenbank ermittelt), keine Rollen, keine Preise.
+//   3. Alle neuen Dateien in EINER Transaktion (REPEATABLE READ), Historie im selben Schritt. Integritaetsprobe
+//      (transactionSql): jede vorher vorhandene Zeile jeder Kundentabelle muss unveraendert bleiben (Zeilen-ID +
+//      Inhalts-Hash), RLS, Rechte und Policies duerfen nicht schwaecher werden, Testerrollen, Live-Preise und
+//      Registrierungsschalter bleiben gleich. Sonst wird alles zurueckgerollt - auch bei verstecktem SQL.
 // --allow-destructive hebt 2. und die Zaehlprobe auf. Der Workflow setzt es NUR nach ausdruecklicher
 // Freigabe des Owners (Umgebung account-production, Pruefung der Freigabe-Historie im Job).
 // --plan zeigt nur, was eingespielt wuerde. Ausgabe: Versionen und Zaehlungen, keine Werte.
@@ -28,7 +29,7 @@ const FILE = /^(\d{14})_([a-z0-9_]+)\.sql$/;
 export const PROTECTED_TABLES_SQL = `select format('%I.%I', n.nspname, c.relname)
   from pg_class c join pg_namespace n on n.oid = c.relnamespace
  where c.relkind = 'r' and (
-   (n.nspname = 'auth' and c.relname = 'users') or n.nspname = 'billing'
+   (n.nspname = 'auth' and c.relname in ('users', 'identities')) or n.nspname = 'billing'
    or (n.nspname = 'public' and exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'user_id' and not a.attisdropped)))
  order by 1`;
 
@@ -53,6 +54,8 @@ export function destructiveFindings(sql, protectedTables = []) {
     [/\bdrop [^;]*\bcascade\b/, 'DROP ... CASCADE'],
     [/\bdisable row level security\b|\bno force row level security\b/, 'RLS abgeschaltet'],
     [/\balter table [^;]*\balter column [^;]*\btype\b/, 'Spaltentyp geaendert'],
+    [/\binsert into (public\.)?user_roles\b/, 'Rollen vergeben (user_roles)'],
+    [/\b(insert into|update|delete from) (public\.)?plan_prices\b|\b(update|delete from) (public\.)?(registration_gate|registration_allowlist)\b/, 'Preise oder Registrierung geaendert'],
   ];
   for (const [re, why] of rules) if (re.test(s)) found.push(why);
   for (const qualified of protectedTables) {
@@ -82,26 +85,67 @@ function dollarQuote(text) {
   return `$${tag}$${text}$${tag}$`;
 }
 
+// Kundentabellen mit OID fuer die Integritaetsprobe.
+const GUARD_TABLES = PROTECTED_TABLES_SQL.replace("select format('%I.%I', n.nspname, c.relname)", "select c.oid, format('%I.%I', n.nspname, c.relname) as q");
+
+// Konfiguration, die echte Zahlungen oder den Zugang beeinflusst: darf eine automatische Migration nicht aendern.
+// Je Tabelle ein Hash; verglichen wird nur, was vorher schon existierte (eine neue Tabelle darf Startwerte bekommen).
+const SENSITIVE_CONFIG = {
+  'public.user_roles': `select coalesce(string_agg(user_id || ':' || role, ',' order by user_id, role), '') from public.user_roles where role::text <> 'user'`,
+  'public.plan_prices': `select coalesce(string_agg(p::text, ',' order by p.id), '') from public.plan_prices p where livemode`,
+  'public.registration_gate': `select coalesce(string_agg(g::text, ','), '') from public.registration_gate g`,
+};
+const configSnapshot = Object.entries(SENSITIVE_CONFIG).map(([t, q]) =>
+  `do $c$ begin if to_regclass('${t}') is not null then insert into vu_config select '${t}', md5((${q})); end if; end $c$;`).join('\n');
+const configCheck = Object.entries(SENSITIVE_CONFIG).map(([t, q]) =>
+  `if exists (select 1 from vu_config where k = '${t}') and (to_regclass('${t}') is null or (select h from vu_config where k = '${t}') is distinct from md5((${q}))) then
+          problems := problems || '${t}: Testerrollen, Live-Preise oder Registrierungsschalter geaendert'::text; end if;`).join('\n        ');
+
+// Integritaetsprobe (eine Transaktion, REPEATABLE READ = ein fester Datenstand, gleichzeitige Anmeldungen stoeren nicht):
+//   * jede vorher vorhandene Zeile jeder Kundentabelle muss nachher unveraendert existieren (Zeilen-ID + Inhalts-Hash
+//     ueber die vorher vorhandenen Spalten; neue Zeilen und neue Spalten sind erlaubt)
+//   * Tabellen und Spalten bleiben, RLS bleibt an, anon/authenticated bekommen keine neuen Rechte,
+//     Zugriffsregeln (Policies) der Kundentabellen bleiben unveraendert
+//   * Testerrollen, Live-Preise und Registrierungsschalter bleiben unveraendert
 export function transactionSql(pending, dir, {allowDestructive = false} = {}) {
-  const parts = ['\\set ON_ERROR_STOP 1', 'begin;',
-    `create temp table vu_guard (tbl text primary key, before bigint, after bigint) on commit drop;`,
-    `do $g$ declare t text; n bigint; begin for t in ${PROTECTED_TABLES_SQL} loop
-       execute 'select count(*) from ' || t into n; insert into vu_guard (tbl, before) values (t, n); end loop; end $g$;`];
+  const privs = role => `(select coalesce(string_agg(p, ','), '') from unnest(array['SELECT','INSERT','UPDATE','DELETE','TRUNCATE']) p where has_table_privilege('${role}', t.oid, p))`;
+  const policies = `(select coalesce(md5(string_agg(concat_ws('|', policyname, permissive, roles::text, cmd, qual, with_check), ';' order by policyname)), '') from pg_policies where format('%I.%I', schemaname, tablename) = t.q)`;
+  const parts = ['\\set ON_ERROR_STOP 1', 'begin isolation level repeatable read;',
+    `create temp table vu_tables (tbl text primary key, cols text, rls boolean, anon_p text, auth_p text, pol text) on commit drop;`,
+    `create temp table vu_rows (tbl text, rid tid, h text) on commit drop;`,
+    `create temp table vu_config (k text primary key, h text) on commit drop;`,
+    configSnapshot,
+    `do $g$ declare t record; c text; begin
+      for t in ${GUARD_TABLES} loop
+        select string_agg(format('%I', attname), ',' order by attnum) into c from pg_attribute where attrelid = t.oid and attnum > 0 and not attisdropped;
+        insert into vu_tables select t.q, c, (select relrowsecurity from pg_class where oid = t.oid), ${privs('anon')}, ${privs('authenticated')}, ${policies};
+        execute format('insert into vu_rows select %L, ctid, md5(row(%s)::text) from %s', t.q, c, t.q);
+      end loop; end $g$;`];
   for (const p of pending) {
     const sql = readFileSync(join(dir, p.file), 'utf8');
     parts.push(`-- ${p.file}`, sql, `insert into supabase_migrations.schema_migrations (version, name, statements)
       values ('${p.version}', '${p.name}', array[${dollarQuote(sql)}]);`);
   }
-  parts.push(`do $g$ declare r record; n bigint; lost text := ''; begin
-      for r in select tbl from vu_guard loop
-        if to_regclass(r.tbl) is null then lost := lost || r.tbl || ' (entfernt) ';
-        else execute 'select count(*) from ' || r.tbl into n; update vu_guard set after = n where tbl = r.tbl; end if;
+  parts.push(`do $g$ declare r record; t record; n bigint; problems text[] := '{}'; now_t record; begin
+      for r in select * from vu_tables loop
+        select c.oid, r.tbl as q into t from pg_class c where c.oid = to_regclass(r.tbl);
+        if t.oid is null then problems := problems || (r.tbl || ': Tabelle entfernt'); continue; end if;
+        begin
+          execute format('select count(*) from vu_rows b where b.tbl = %L and not exists (select 1 from %s a where a.ctid = b.rid and md5(row(%s)::text) = b.h)', r.tbl, r.tbl, r.cols) into n;
+          if n > 0 then problems := problems || (r.tbl || ': ' || n || ' bestehende Zeilen geaendert oder geloescht'); end if;
+        exception when others then problems := problems || (r.tbl || ': Spalten entfernt oder umgebaut (' || sqlerrm || ')');
+        end;
+        select (select relrowsecurity from pg_class where oid = t.oid) as rls, ${privs('anon')} as anon_p, ${privs('authenticated')} as auth_p, ${policies} as pol into now_t;
+        if r.rls and not now_t.rls then problems := problems || (r.tbl || ': RLS abgeschaltet'); end if;
+        if exists (select 1 from unnest(string_to_array(now_t.anon_p, ',')) x where x <> all (string_to_array(r.anon_p, ','))) then problems := problems || (r.tbl || ': neue Rechte fuer anon'); end if;
+        if exists (select 1 from unnest(string_to_array(now_t.auth_p, ',')) x where x <> all (string_to_array(r.auth_p, ','))) then problems := problems || (r.tbl || ': neue Rechte fuer authenticated'); end if;
+        if now_t.pol is distinct from r.pol then problems := problems || (r.tbl || ': Zugriffsregeln (Policies) geaendert'); end if;
       end loop;
-      select lost || coalesce(string_agg(tbl || ' ' || before || '->' || after, ', '), '') into lost from vu_guard where after < before;
-      if lost <> '' then
-        ${allowDestructive ? "raise notice 'Freigegebene Datenverluste: %', lost;" : "raise exception 'VU_GUARD_DATENVERLUST: %', lost;"}
+        ${configCheck}
+      if cardinality(problems) > 0 then
+        ${allowDestructive ? "raise notice 'Freigegebene Aenderungen: %', array_to_string(problems, '; ');" : "raise exception 'VU_GUARD_DATENVERLUST: %', array_to_string(problems, '; ');"}
       end if;
-      raise notice 'Kundentabellen geprueft: % (keine Zeile verloren oder freigegeben)', (select count(*) from vu_guard);
+      raise notice 'Integritaet geprueft: % Kundentabellen, % bestehende Zeilen', (select count(*) from vu_tables), (select count(*) from vu_rows);
     end $g$;`, 'commit;');
   return parts.join('\n');
 }
@@ -138,7 +182,7 @@ export function run({dbUrl, dir = join(ROOT, 'supabase/migrations'), plan = fals
   } catch (e) {
     const msg = String(e.stderr || e.message);
     const guard = /VU_GUARD_DATENVERLUST: ([^\n]*)/.exec(msg);
-    throw new Error(guard ? `Zurueckgerollt - Kundendaten wuerden verloren gehen: ${guard[1]}` : `Zurueckgerollt: ${msg.split('\n').filter(l => /ERROR|FEHLER/.test(l)).slice(0, 3).join(' | ') || msg.slice(-300)}`);
+    throw new Error(guard ? `Zurueckgerollt - Kundendaten oder Schutzregeln wuerden veraendert: ${guard[1]}` : `Zurueckgerollt: ${msg.split('\n').filter(l => /ERROR|FEHLER/.test(l)).slice(0, 3).join(' | ') || msg.slice(-300)}`);
   } finally { rmSync(work, {recursive: true, force: true}); }
   log(`Eingespielt in einer Transaktion: ${pending.map(p => p.version).join(', ')}`);
   return {applied: pending.map(p => p.version), destructive};

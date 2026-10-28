@@ -6,12 +6,12 @@ name: Konten und Abos — Tests
 on:
   pull_request:
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
-      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml',
+      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/**',
       'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs', 'quant/index.html']
   push:
     branches: [main]
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/watchlist/**', 'core/watchlist-view.js',
-      'assets/watchlist-button.js', '.github/workflows/account-ci.yml']
+      'assets/watchlist-button.js', '.github/workflows/**']
   workflow_dispatch:
 permissions:
   contents: read

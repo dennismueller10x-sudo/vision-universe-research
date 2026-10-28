@@ -6,10 +6,11 @@ name: Konten — Datenbank-Sicherung (verschluesselt)
 # Empfaengerschluessel wird nichts gesichert (fail closed) - nie unverschluesselt.
 # Wiederherstellung: docs/accounts/PRODUCTION.md, Abschnitt "Sicherung".
 #
-# Braucht (einmalig, docs/accounts/PRODUCTION.md):
-#   Repository-Secret   VU_ACCOUNT_BACKUP_DB_URL        Session-Pooler-URI
+# Braucht (einmalig, docs/accounts/FREIGABEN.md):
+#   Umgebung account-auto: Secret VU_ACCOUNT_SUPABASE_DB_URL (dieselbe URI wie fuer die Migrationen)
 #   Repository-Variable VU_ACCOUNT_BACKUP_AGE_RECIPIENT age1… (oeffentlich)
-# Keine Umgebung mit Pflicht-Review: ein naechtlicher Lauf kann nicht warten.
+# Umgebung ohne Pflicht-Review (ein naechtlicher Lauf kann nicht warten), aber nur von main; die Datenbank-URL
+# liegt NICHT als Repository-Secret vor (sonst koennte jeder Workflow auf jedem Branch sie lesen).
 on:
   schedule:
     - cron: '17 2 * * *'
@@ -24,15 +25,16 @@ jobs:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: account-auto
     steps:
       - name: Sichern und verschluesseln
         env:
-          DB_URL: ${{ secrets.VU_ACCOUNT_BACKUP_DB_URL }}
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
           RECIPIENT: ${{ vars.VU_ACCOUNT_BACKUP_AGE_RECIPIENT }}
         run: |
           set -euo pipefail
           [[ "$RECIPIENT" =~ ^age1[0-9a-z]{58}$ ]] || { echo "::error::VU_ACCOUNT_BACKUP_AGE_RECIPIENT fehlt (age1…) - keine Sicherung ohne Verschluesselung"; exit 1; }
-          [[ "$DB_URL" == postgresql://*qiytbnpoqvldsatpfkeh* ]] || { echo "::error::VU_ACCOUNT_BACKUP_DB_URL fehlt oder gehoert nicht zum Produktionsprojekt"; exit 1; }
+          [[ "$DB_URL" == postgresql://*qiytbnpoqvldsatpfkeh* ]] || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL (account-auto) fehlt oder gehoert nicht zum Produktionsprojekt"; exit 1; }
           sudo apt-get install -y -qq age > /dev/null
           umask 077
           out="$RUNNER_TEMP/backup"; mkdir -p "$out"

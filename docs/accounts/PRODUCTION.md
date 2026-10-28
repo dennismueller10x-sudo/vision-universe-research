@@ -27,8 +27,8 @@ Job liest nur seine Umgebung und schreibt direkt in die Worker-Secrets.
 | Umgebung `account-production` | `VU_ACCOUNT_STRIPE_SECRET_KEY` (`rk_live_`) | Deploy (Job `stripe`), Stripe-Einrichtung |
 | Repository | `CLOUDFLARE_API_TOKEN`, Variable `CLOUDFLARE_ACCOUNT_ID`, `BREVO_API_KEY` | alle Worker-Deploys |
 
-`account-dev`: keine Required reviewers, Deployment branches nur `main`. `account-production`: Required reviewers = Owner,
-nur `main`; sensible Läufe haben dort ihren Freigabe-Job und prüfen die Freigabe zusätzlich selbst (fail closed).
+Neu `account-auto` (ohne Required reviewers, nur `main`, nur DB-URL und öffentlicher Supabase-Schlüssel) für die
+Automatik; `account-dev` und `account-production` behalten Required reviewers = Owner, nur `main`. Details: [FREIGABEN.md](FREIGABEN.md).
 
 ## Abläufe
 
@@ -69,7 +69,8 @@ nur Preise passend zum Schlüsselmodus, der Checkout gleicht den Preis vorher mi
 ## Sicherung und Wiederherstellung
 
 Einmalig: lokal `age-keygen -o vu-backup.key` (privater Schlüssel nur offline/Passwortmanager), den öffentlichen Teil `age1…` als
-Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`, die Session-Pooler-URI als Repository-Secret `VU_ACCOUNT_BACKUP_DB_URL`.
+Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`. Die Datenbank-URL kommt aus der Umgebung `account-auto`
+(`VU_ACCOUNT_SUPABASE_DB_URL`), **nicht** als Repository-Secret – ein früher angelegtes `VU_ACCOUNT_BACKUP_DB_URL` löschen.
 Ohne Empfängerschlüssel sichert der Workflow nichts (nie unverschlüsselt).
 
 Wiederherstellen: Artefakt laden, `age -d -i vu-backup.key vu-accounts-….dump.age > dump`, dann

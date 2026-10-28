@@ -8,7 +8,7 @@ name: Konten — Stripe Live einrichten (Produktion)
 #     Worker-Secret nach Cloudflare und erscheint nirgends
 #   * plan_prices: Zeile pro_month_live (Job preise-eintragen, Umgebung account-dev)
 # SENSIBEL (Stripe-Produkte und -Preise): eine Freigabe des Owners (Umgebung account-production); der Job
-# preise-eintragen (account-dev, ohne eigene Freigabe) laeuft nur danach und prueft dieselbe Freigabe.
+# preise-eintragen (account-auto, ohne eigene Freigabe) laeuft nur danach und prueft dieselbe Freigabe.
 # Keine Zahlung, kein Checkout. Die Owner-Freigabe fuer den OEFFENTLICHEN Checkout (Produkt-Metadaten
 # vu_public_checkout) schreibt dieser Workflow nie; sie wird nur von Hand im Stripe-Dashboard gesetzt.
 # docs/accounts/FREIGABEN.md
@@ -84,7 +84,7 @@ jobs:
     if: needs.stripe.outputs.has_prices == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: account-dev
+    environment: account-auto
     steps:
       - name: Freigabe pruefen (fail closed)
         env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}

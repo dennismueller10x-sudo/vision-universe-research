@@ -7,7 +7,10 @@ name: Konten — Produktion automatisch (Migrationen, Worker)
 #   3. worker       Code und oeffentliche Konfiguration von vu-account (wrangler deploy). Setzt KEINE Secrets.
 #   4. gesundheit   /v1/health, /v1/plans
 # Laeuft nach jedem Merge nach main, der Migrationen oder den Worker aendert, sonst von Hand.
-# Umgebung account-dev OHNE Required reviewers, Deployment branches nur main.
+# Umgebung account-auto OHNE Required reviewers, Deployment branches nur main; sie enthaelt NUR die
+# Datenbank-URL und den oeffentlichen Supabase-Schluessel (alles Weitere bleibt in account-dev/-production).
+# Zahlungsrelevante Aenderungen (Abrechnungscode, Konfiguration, diese Automatik selbst) seit dem letzten
+# erfolgreichen Lauf: Worker erst nach Owner-Freigabe (Job zahlungsfreigabe, account-production).
 # Was hier NICHT geht (Freigabe des Owners noetig): Secrets, Stripe-Produkte und -Preise, destruktive
 # Datenbankoperationen, Testerrolle. Oeffentlicher Checkout: zusaetzlich Freigabe am Stripe-Produkt.
 on:
@@ -21,6 +24,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: account-production-auto-${{ github.ref_name }}
   cancel-in-progress: false
@@ -32,6 +36,8 @@ jobs:
   pruefen:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      payment_changed: ${{ steps.zahlung.outputs.changed }}
     steps:
       - name: Nur von main
         env:
@@ -40,6 +46,37 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Zahlungsrelevante Aenderungen seit dem letzten erfolgreichen Lauf?
+        id: zahlung
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Immer zahlungsrelevant: Konfiguration, Abrechnungskern, diese Automatik selbst.
+          fixed=(workers/vu-account/wrangler.toml workers/vu-account/src/billing.mjs workers/vu-account/src/config.mjs
+                 workers/vu-account/src/stripe.mjs workers/vu-account/src/providers
+                 .github/workflows/account-production-auto.yml scripts/account/migrate-production.mjs)
+          prev=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$REPO/actions/workflows/account-production-auto.yml/runs?branch=main&status=success&per_page=1" \
+            | jq -r '.workflow_runs[0].head_sha // empty')
+          changed=false
+          if [ -z "$prev" ] || ! git cat-file -e "$prev^{commit}" 2>/dev/null; then
+            changed=true; echo "Kein frueherer erfolgreicher Lauf - Freigabe noetig."
+          else
+            if ! git diff --quiet "$prev" HEAD -- "${fixed[@]}"; then changed=true; fi
+            # Jede andere geaenderte Worker-Datei, die (vorher oder nachher) Stripe, Checkout oder Abrechnung beruehrt.
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
+              if { git show "HEAD:$f" 2>/dev/null; git show "$prev:$f" 2>/dev/null; } | grep -qiE 'stripe|checkout|billing|subscription|VU_CHECKOUT'; then
+                changed=true; echo "zahlungsrelevant: $f"
+              fi
+            done < <(git diff --name-only "$prev" HEAD -- workers/vu-account/src)
+            [ "$changed" = true ] && { echo "Geaendert seit $prev:"; git diff --name-only "$prev" HEAD -- "${fixed[@]}" workers/vu-account/src; } \
+              || echo "Keine zahlungsrelevante Aenderung seit $prev."
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -63,7 +100,7 @@ jobs:
     needs: pruefen
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: account-dev
+    environment: account-auto
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,7 +108,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Nicht destruktive Migrationen einspielen (eine Transaktion, Zaehlprobe)
+      - name: Nicht destruktive Migrationen einspielen (eine Transaktion, Integritaetsprobe)
         env:
           DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
         run: |
@@ -84,12 +121,37 @@ jobs:
           fi
           exit "$status"
 
+  zahlungsfreigabe:
+    needs: pruefen
+    if: needs.pruefen.outputs.payment_changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: account-production
+    steps:
+      - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        run: |
+          set -euo pipefail
+          [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+
   worker:
-    needs: migrationen
+    needs: [pruefen, migrationen, zahlungsfreigabe]
+    if: always() && needs.migrationen.result == 'success' && (needs.zahlungsfreigabe.result == 'success' || (needs.zahlungsfreigabe.result == 'skipped' && needs.pruefen.outputs.payment_changed == 'false'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: account-dev
+    environment: account-auto
     steps:
+      - name: Zahlungsrelevant -> Owner-Freigabe dieses Laufs erneut pruefen (fail closed)
+        if: needs.pruefen.outputs.payment_changed != 'false'
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -118,6 +180,7 @@ jobs:
 
   gesundheit:
     needs: worker
+    if: always() && needs.worker.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

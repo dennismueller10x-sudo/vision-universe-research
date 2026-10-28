@@ -52,7 +52,7 @@ test('Historie: nur neue Dateien nach der letzten eingespielten Version', () => 
 
 const skip = process.env.PG_TEST_URL ? false : 'PG_TEST_URL fehlt';
 
-test('gegen PostgreSQL: einspielen, idempotent, Zaehlprobe rollt versteckte Loeschung zurueck', {skip}, () => {
+test('gegen PostgreSQL: einspielen, idempotent, Integritaetsprobe rollt versteckte Aenderungen zurueck', {skip}, () => {
   const admin = process.env.PG_TEST_URL;
   const name = 'vu_migrate_test_' + randomBytes(4).toString('hex');
   const psql = (db, args) => execFileSync('psql', ['-X', '-q', '-t', '-A', '-v', 'ON_ERROR_STOP=1', '-d', db, ...args], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']});
@@ -82,14 +82,42 @@ test('gegen PostgreSQL: einspielen, idempotent, Zaehlprobe rollt versteckte Loes
     // Versteckt (dynamisches SQL) -> Zaehlprobe, alles zurueckgerollt, Historie unveraendert
     writeFileSync(join(dir, '20990101000000_versteckt.sql'),
       `create table public.neu (id int);\ndo $x$ begin execute 'del' || 'ete from auth.' || 'users'; end $x$;`);
-    assert.throws(() => run({dbUrl: db, dir, log: () => {}}), /Kundendaten wuerden verloren gehen: auth\.users/);
+    assert.throws(() => run({dbUrl: db, dir, log: () => {}}), /Kundendaten oder Schutzregeln wuerden veraendert: .*auth\.users/);
     assert.equal(users(), before, 'Konto ist noch da');
     assert.equal(psql(db, ['-c', `select to_regclass('public.neu') is null`]).trim(), 't', 'auch der Rest der Migration zurueckgerollt');
     assert.equal(psql(db, ['-c', `select count(*) from supabase_migrations.schema_migrations where version = '20990101000000'`]).trim(), '0');
 
+    // Integritaet statt nur Zaehlung: jede dieser versteckten Aenderungen laesst die Zeilenzahl gleich
+    // und wird trotzdem samt Rest der Migration zurueckgerollt.
+    const hidden = {
+      'Profil ueberschrieben': `do $x$ begin execute 'upd' || 'ate public.profiles set display_name = ''x'''; end $x$;`,
+      'RLS abgeschaltet': `do $x$ begin execute 'alter table public.watchlists dis' || 'able row level security'; end $x$;`,
+      'Tester fuer alle': `do $x$ begin execute 'ins' || 'ert into public.user_roles (user_id, role) select id, ''billing_tester'' from auth.users'; end $x$;`,
+      'offene Policy': `create policy alle_lesen on public.profiles for select to anon using (true);`,
+      'Rechte fuer anon': `do $x$ begin execute 'gr' || 'ant select on public.profiles to an' || 'on'; end $x$;`,
+      'Spalte umgebaut': `do $x$ begin execute 'alter table public.profiles dr' || 'op column display_name'; end $x$;`,
+    };
+    const profile = () => psql(db, ['-c', 'select md5(string_agg(p::text, \',\' order by user_id)) from public.profiles p']).trim();
+    const snapshot = profile();
+    for (const [label, sql] of Object.entries(hidden)) {
+      writeFileSync(join(dir, '20990101000000_versteckt.sql'), `create table public.neu (id int);\n${sql}`);
+      assert.throws(() => run({dbUrl: db, dir, log: () => {}}), /Kundendaten oder Schutzregeln/, label);
+      assert.equal(profile(), snapshot, `${label}: Profil unveraendert`);
+      assert.equal(psql(db, ['-c', `select count(*) from public.user_roles where role = 'billing_tester'`]).trim(), '0', label);
+      assert.equal(psql(db, ['-c', `select to_regclass('public.neu') is null`]).trim(), 't', `${label}: zurueckgerollt`);
+    }
+
+    // Erlaubt: neue Spalte mit Standardwert, neue Zeilen, neue Tabellen
+    writeFileSync(join(dir, '20990101000000_versteckt.sql'),
+      `alter table public.profiles add column if not exists vu_test text default 'neu';\ncreate table public.neu (id int);`);
+    assert.deepEqual(run({dbUrl: db, dir, log: () => {}}).applied, ['20990101000000'], 'additive Migration laeuft automatisch');
+    assert.equal(users(), before);
+    writeFileSync(join(dir, '20990102000000_versteckt.sql'),
+      `do $x$ begin execute 'del' || 'ete from auth.' || 'users'; end $x$;`);
+
     // Mit Freigabe (allow-destructive) laeuft dieselbe Migration
     const ok = run({dbUrl: db, dir, allowDestructive: true, log: () => {}});
-    assert.deepEqual(ok.applied, ['20990101000000']);
+    assert.deepEqual(ok.applied, ['20990102000000']);
     assert.equal(users(), '0');
   } finally {
     rmSync(dir, {recursive: true, force: true});

@@ -1,5 +1,8 @@
 # Konten und Abos – echte Entwicklungsumgebung
 
+> **Historisch (Stand vor dem 28.10.2026).** Es gibt nur noch eine Infrastruktur. Die Workflows „Konten — Entwicklungsumgebung einrichten“ und „Konten — vu-account ausrollen (Entwicklung)“ sind stillgelegt; Abläufe und Freigaben stehen in [FREIGABEN.md](FREIGABEN.md).
+
+
 Meilenstein: Supabase Free, Stripe-**Testmodus** und Brevo werden echt angeschlossen, isoliert von Produktion. Kein Merge, kein
 Produktionsdeployment, keine Live-Zahlung, nichts Kostenpflichtiges. `konto/config.js` bleibt auf `main` leer (Konten aus, kein Footer-Link).
 

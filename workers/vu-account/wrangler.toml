@@ -14,7 +14,7 @@
 #   STRIPE_SECRET_KEY        sk_test_… bzw. rk_test_… (Restricted Key empfohlen)
 #   STRIPE_WEBHOOK_SECRET    whsec_…
 #   BREVO_API_KEY            Brevo-API-Schluessel fuer Transaktions-E-Mails (Kuendigungsbestaetigung)
-#   STRIPE_PORTAL_CONFIGURATION  bpc_… (kein Geheimnis; setzt "Konten — Entwicklungsumgebung einrichten")
+#   STRIPE_PORTAL_CONFIGURATION  bpc_… (kein Geheimnis; setzt "Konten — Stripe Live einrichten (Produktion)")
 #   STRIPE_WEBHOOK_SECRET wird ebenfalls von diesem Einrichtungs-Workflow gesetzt.
 # =============================================================================
 
@@ -77,7 +77,8 @@ STRIPE_LIVE_MODE_APPROVED = "false"
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
 #
 #   npx wrangler deploy --env production   (nur ueber den Workflow
-#   "Konten — vu-account ausrollen (Produktion)", mit Freigabe)
+#   "Konten — Produktion automatisch" nach Merge nach main; Secrets nur ueber
+#   "Konten — Produktions-Secrets setzen (Freigabe)", docs/accounts/FREIGABEN.md)
 #
 # Worker "vu-account" unter https://konto.visionuniverse.de (Custom Domain;
 # Cloudflare legt DNS-Eintrag und Zertifikat an). NICHT account.visionuniverse.de:

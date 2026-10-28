@@ -1,5 +1,8 @@
 # Konten und Abos – Einrichtung (Entwicklungsumgebung)
 
+> **Historisch (Stand vor dem 28.10.2026).** Es gibt nur noch eine Infrastruktur. Die Workflows „Konten — Entwicklungsumgebung einrichten“ und „Konten — vu-account ausrollen (Entwicklung)“ sind stillgelegt; Abläufe und Freigaben stehen in [FREIGABEN.md](FREIGABEN.md).
+
+
 Was der Owner selbst tun muss, in dieser Reihenfolge. Keine Zugangsdaten ins Repository, in Issues oder in Chats; Werte nur in die
 genannten Felder (Supabase, Stripe, Cloudflare, GitHub-Secrets). **Alles hier ist Testmodus und kostenlos.** Für Produktion: [LIVE_RELEASE.md](LIVE_RELEASE.md).
 

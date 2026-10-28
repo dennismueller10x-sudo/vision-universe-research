@@ -24,5 +24,5 @@ PG_TEST_URL=postgresql://postgres:postgres@localhost:5432/postgres \
 PG_TEST_URL=… node scripts/account/dev-server.mjs                        # http://localhost:8790/__dev/
 ```
 
-Ausrollen nur über den Workflow „Konten — vu-account ausrollen (Entwicklung)“ (manuell, Live-Schlüssel werden abgelehnt). Echte
+Ausrollen automatisch nach jedem Merge nach `main` („Konten — Produktion automatisch“); Secrets, Stripe und destruktive Datenbankschritte nur mit Owner-Freigabe ([docs/accounts/FREIGABEN.md](../../docs/accounts/FREIGABEN.md)).
 Entwicklungszugänge: [docs/accounts/DEV_ENVIRONMENT.md](../../docs/accounts/DEV_ENVIRONMENT.md). Cron alle 10 min: Postausgang, Fristen, Alarm.

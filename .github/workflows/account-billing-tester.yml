@@ -1,7 +1,7 @@
 name: Konten — Testerrolle fuer den Live-Checkout vergeben (Freigabe)
 # Vergibt die Rolle billing_tester an genau EIN bestaetigtes Konto. Nur Konten mit dieser Rolle duerfen den
 # Pro-Checkout nutzen, solange VU_CHECKOUT_ACCESS = "testers" gilt. SENSIBEL (echte Zahlung moeglich):
-# nur nach Freigabe des Owners (account-production). Eingabe ist der SHA-256 der kleingeschriebenen
+# nur nach Freigabe des Owners (Umgebung account-dev, Required reviewers). Eingabe ist der SHA-256 der kleingeschriebenen
 # E-Mail-Adresse, damit die Adresse nirgends im oeffentlichen Repository oder Protokoll steht:
 #   printf '%s' 'adresse@example.de' | tr 'A-Z' 'a-z' | sha256sum
 # Entzug: aktion = entziehen. docs/accounts/FREIGABEN.md
@@ -24,28 +24,13 @@ concurrency:
   group: account-billing-tester-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
-  freigabe:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    environment: account-production
-    steps:
-      - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
-        run: |
-          set -euo pipefail
-          [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
-          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
-          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
-          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
-
   rolle:
-    needs: freigabe
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: account-dev
     steps:
       - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
         run: |
           set -euo pipefail
           [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
