@@ -4,9 +4,10 @@
 //   node scripts/account/dev-server.mjs --port=8790 &      (braucht PG_TEST_URL)
 //   node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/konto-qa [--engine=webkit]
 //
-// Spielt den ganzen Weg im echten Browser durch: Registrierung, Bestaetigung
-// per Postfach, Tarifwahl, simulierter Checkout, Abo-Anzeige, Tarifwechsel im
-// Kundenportal, Einstellungen (Dunkelmodus), Kuendigungsbutton, Abmelden.
+// Spielt den ganzen Weg im echten Browser durch: Tarifwahl Pro vor der Registrierung,
+// Registrierung, Bestaetigung per Postfach, Pro-Bestaetigung, abgebrochener und
+// erfolgreicher simulierter Checkout, Abo-Anzeige, Kundenportal, Einstellungen
+// (Dunkelmodus), Kuendigungsbutton, Abmelden.
 // Prueft je Seite: kein waagrechter Ueberlauf, Eingaben >= 16px (kein
 // iOS-Zoom), Bedienflaechen >= 44px, keine Konsolenfehler. Screenshots in --out.
 import {mkdir} from 'node:fs/promises';
@@ -55,9 +56,20 @@ await page.goto(`${base}/konto/`);
 await page.waitForURL(/\/konto\/anmelden\/\?next=%2Fkonto%2F/);
 check(true, 'Konto ohne Sitzung -> Anmeldung');
 
+// Tarife ohne Anmeldung: Free und Pro, gleicher Umfang; Pro merkt sich die Wahl bis nach der Bestaetigung.
+await page.goto(`${base}/konto/tarife/`);
+await page.waitForLoadState('networkidle');
+check((await page.textContent('#ka-plans')).includes('Kostenlos registrieren'), 'Free: kostenlos registrieren');
+check((await page.textContent('.ka-plan[data-plan=pro] .ka-price')).includes('/ Monat'), 'Pro: Monatspreis');
+check((await page.textContent('#main')).includes('dieselben Funktionen'), 'gleicher Umfang offen genannt');
+await audit(page, 'Tarife ohne Anmeldung');
+await shot(page, '00-tarife');
+await page.click('#ka-choose-pro');
+await page.waitForURL(/\/konto\/registrieren\/\?plan=pro/);
+
 // Registrierung
-await page.goto(`${base}/konto/registrieren/`);
 await audit(page, 'Registrierung');
+check(await page.isVisible('#ka-plan-hint'), 'Hinweis: Pro gewaehlt');
 await page.fill('#email', email);
 await page.fill('#display-name', 'QA Person');
 await page.fill('#password', 'kurz');
@@ -69,50 +81,64 @@ await page.click('#ka-register button[type=submit]');
 await page.waitForSelector('#ka-register-done:not([hidden])');
 check((await page.textContent('#ka-register-done')).includes(email), 'Bestaetigungshinweis mit Adresse');
 
-// Postfach -> Bestaetigungslink
+// Postfach -> Bestaetigungslink -> angemeldet -> weiter zur Pro-Bestaetigung (nicht direkt zur Zahlung)
 await page.goto(`${base}/__dev/mail`);
 await page.click('a.btn');
-await page.waitForURL(/\/konto\/\?status=verified/);
-await page.waitForSelector('#ka-account:not([hidden])');
+await page.waitForURL(/\/konto\/tarife\/\?plan=pro&status=verified/);
+await page.waitForSelector('#ka-confirm:not([hidden])');
 check((await page.textContent('#ka-status')).includes('bestätigt'), 'E-Mail bestaetigt, angemeldet');
-check((await page.textContent('#ka-hello')).includes('QA Person'), 'Begruessung mit Anzeigename');
-await audit(page, 'Konto');
-await shot(page, '02-konto');
+check(await page.isDisabled('#ka-checkout'), 'Zahlung erst nach Bestaetigung der Bedingungen');
+const confirmText = await page.textContent('#ka-confirm');
+check(confirmText.includes('pro Monat') && confirmText.includes('Kündigung') && confirmText.includes('Widerruf'), 'Preis, Kuendigung, Widerruf vor dem Checkout');
+await audit(page, 'Pro bestaetigen');
+await shot(page, '02-pro-bestaetigen');
 
-// Tarife -> Checkout
+// Abbruch im Checkout: nichts berechnet, Konto bleibt Free.
+await page.check('#ka-confirm-terms');
+await page.click('#ka-checkout');
+await page.waitForURL(/\/__dev\/checkout\//);
+await page.click('text=Abbrechen');
+await page.waitForURL(/\/konto\/tarife\/\?checkout=canceled/);
+await page.waitForFunction(() => document.getElementById('ka-status').textContent.includes('abgebrochen'));
+await page.waitForSelector('.ka-plan[data-plan=free][data-current=true]');
+check(await page.isHidden('#ka-confirm'), 'nach Abbruch keine erneute Aufforderung');
+check(true, 'Abbruch: Konto bleibt Free');
+await page.goto(`${base}/konto/`);
+await page.waitForSelector('#ka-account:not([hidden])');
+check((await page.textContent('#ka-hello')).includes('QA Person'), 'Konto nach Abbruch erreichbar (kein Umleitungskreis)');
+await shot(page, '03-konto-free');
+
+// Upgrade als bestehendes Konto: Tarife -> Pro auswaehlen -> bestaetigen -> bezahlen
 await page.goto(`${base}/konto/tarife/`);
-await page.waitForSelector('.ka-plan');
-check(!(await page.isHidden('#ka-mode')), 'Testmodus-Hinweis sichtbar');
-await page.click('[data-interval=year]');
-check((await page.textContent('#ka-plans')).includes('/ Jahr'), 'Jahrespreise');
-await page.click('[data-interval=month]');
-await audit(page, 'Tarife');
-await shot(page, '03-tarife');
-await page.click('text=Plus wählen');
+await page.waitForSelector('.ka-plan[data-plan=free][data-current=true]');
+await page.click('#ka-choose-pro');
+await page.waitForSelector('#ka-confirm:not([hidden])');
+await page.check('#ka-confirm-terms');
+await page.click('#ka-checkout');
 await page.waitForURL(/\/__dev\/checkout\//);
 await page.click('text=Zahlungspflichtig abonnieren');
 await page.waitForURL(/\/konto\/abo\/\?checkout=success/);
 await page.waitForSelector('#ka-sub .ka-kv');
-check((await page.textContent('#ka-sub')).includes('Plus') && (await page.textContent('#ka-sub')).includes('Aktiv'), 'Abo aktiv nach Checkout');
+await page.waitForFunction(() => document.getElementById('ka-status').textContent.includes('aktiv'));
+check((await page.textContent('#ka-sub')).includes('Pro') && (await page.textContent('#ka-sub')).includes('Aktiv'), 'Pro aktiv nach Checkout');
 check((await page.textContent('#ka-invoices')).includes('bezahlt'), 'Rechnung bezahlt');
 await audit(page, 'Abonnement');
 await shot(page, '04-abo');
 
-// Kundenportal: Tarifwechsel
-await page.click('text=Zahlung, Tarif und Rechnungsadresse verwalten');
+// Kundenportal hin und zurueck
+await page.click('text=Zahlung, Rechnungen und Kündigung verwalten');
 await page.waitForURL(/\/__dev\/portal\//);
-await page.click('text=Wechsel zu price_test_pro_year');
 await page.click('text=Zurück zu Vision Universe');
 await page.waitForSelector('#ka-sub .ka-kv');
-check((await page.textContent('#ka-sub')).includes('Pro') && (await page.textContent('#ka-sub')).includes('jährlich'), 'Tarifwechsel auf Pro jaehrlich');
+check(true, 'Kundenportal erreichbar');
 
-// Zweiter Checkout wird abgewiesen
+// Zweites Abo nicht moeglich: Pro ist "Dein Tarif", kein Kaufknopf
 await page.goto(`${base}/konto/tarife/`);
-await page.waitForSelector('.ka-plan');
-check((await page.textContent('#ka-plans')).includes('Dein Tarif'), 'aktueller Tarif markiert');
-await page.click('text=Plus wählen');
-await page.waitForFunction(() => document.getElementById('ka-status').textContent.includes('bereits ein aktives'));
-check(true, 'Doppelabo verhindert');
+await page.waitForSelector('.ka-plan[data-plan=pro][data-current=true]');
+check((await page.textContent('.ka-plan[data-plan=pro]')).includes('Dein Tarif') && !(await page.$('#ka-choose-pro')), 'Doppelabo verhindert');
+await page.goto(`${base}/konto/`);
+await page.waitForSelector('#ka-account:not([hidden])');
+check((await page.textContent('#ka-account-facts')).includes('Pro'), 'Konto zeigt Pro');
 
 // Einstellungen: Dunkelmodus
 await page.goto(`${base}/konto/einstellungen/`);
@@ -138,6 +164,7 @@ check((await page.textContent('#ka-cancel-done')).includes('gekündigt'), 'Kuend
 await page.goto(`${base}/konto/abo/`);
 await page.waitForSelector('#ka-sub .ka-kv');
 check((await page.textContent('#ka-sub')).includes('Endet am'), 'Abo zeigt Laufzeitende');
+check((await page.textContent('#ka-sub')).includes('automatisch Free'), 'nach Laufzeitende automatisch Free');
 
 // Kuendigung ohne Anmeldung (eigener Kontext, ohne Sitzung), ausserordentlich mit Grund
 {

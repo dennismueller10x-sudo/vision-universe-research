@@ -86,6 +86,7 @@ STRIPE_LIVE_MODE_APPROVED = "false"
 #
 # Schalter, die nur per eigenem, freigegebenem PR umgestellt werden:
 #   STRIPE_LIVE_MODE_APPROVED  Live-Abrechnung (zusaetzlich: Live-Preise in plan_prices)
+#   VU_CHECKOUT_ACCESS         wer den Checkout starten darf: testers (Rolle billing_tester) | off | public
 #   VU_REGISTRATION_ENABLED    oeffentliche Registrierung (zusaetzlich: registration_gate.open)
 #   VU_CANCELLATION_AUTO_PROCESS bleibt "false" (Owner-Vorgabe; der Workflow erzwingt es)
 # =============================================================================
@@ -128,4 +129,8 @@ VU_MAIL_SENDER = "konto@visionuniverse.de"
 VU_MAIL_SENDER_NAME = "Vision Universe"
 VU_CANCELLATION_AUTO_PROCESS = "false"
 VU_OPS_ALERT_EMAIL = ""
-STRIPE_LIVE_MODE_APPROVED = "false"
+# Tarife Free und Pro (Owner-Entscheidung 28.10.2026): Stripe Live angebunden, Webhooks werden verarbeitet.
+# Den Checkout starten duerfen nur Konten mit Rolle billing_tester (interner Test); der Deploy-Workflow
+# lehnt "public" ab. Oeffentlicher Pro-Checkout nur per eigenem Freigabe-PR.
+STRIPE_LIVE_MODE_APPROVED = "true"
+VU_CHECKOUT_ACCESS = "testers"

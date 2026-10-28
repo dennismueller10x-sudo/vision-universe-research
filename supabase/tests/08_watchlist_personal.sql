@@ -1,5 +1,7 @@
 -- Persoenliche Watchlist: Hinzufuegen/Entfernen, Isolation zwischen Nutzern, Loeschung.
 begin;
+-- Variante A (eingeschraenktes Free) nur in dieser Transaktion: prueft Grenze und Herabstufung.
+update public.plan_features set limit_value = 20 where plan_id = 'free' and feature_key = 'watchlist.items';
 select tests.create_user('hanna@example.test') as hanna \gset
 select tests.create_user('ivo@example.test') as ivo \gset
 

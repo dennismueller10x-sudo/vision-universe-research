@@ -1,12 +1,11 @@
 // Stripe-LIVE-Einrichtung ohne Netz: nachgebildetes Stripe (livemode=true).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {setupStripeLive, assertLiveKey, parseLivePrices, livePriceSql} from '../stripe-live-setup.mjs';
+import {setupStripeLive, assertLiveKey, livePriceSql, LIVE_CATALOG} from '../stripe-live-setup.mjs';
 import {WEBHOOK_EVENTS} from '../stripe-test-setup.mjs';
 
 const LIVE_KEY = ['rk', 'live', 'abc123'].join('_');
 const API = 'https://konto.visionuniverse.de';
-const PRICES = {plus_month: 990, plus_year: 9900, pro_month: 1990, pro_year: 19900};
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
 
 function fakeStripe() {
@@ -22,8 +21,13 @@ function fakeStripe() {
       return pr ? json(200, pr) : json(404, {error: {code: 'resource_missing'}});
     }
     if (method === 'POST' && p === '/v1/products') {
-      const pr = {id: form.get('id'), name: form.get('name'), livemode: true};
+      const pr = {id: form.get('id'), name: form.get('name'), description: form.get('description'), active: true, livemode: true};
       state.products.set(pr.id, pr);
+      return json(200, pr);
+    }
+    if (method === 'POST' && p.startsWith('/v1/products/')) {
+      const pr = state.products.get(p.split('/').pop());
+      Object.assign(pr, {name: form.get('name'), description: form.get('description'), active: form.get('active') === 'true'});
       return json(200, pr);
     }
     if (method === 'GET' && p === '/v1/prices') {
@@ -31,7 +35,8 @@ function fakeStripe() {
     }
     if (method === 'POST' && p === '/v1/prices') {
       const pr = {id: `price_live${++n}`, product: form.get('product'), unit_amount: Number(form.get('unit_amount')), currency: form.get('currency'),
-        tax_behavior: form.get('tax_behavior'), recurring: {interval: form.get('recurring[interval]')}, lookup_key: form.get('lookup_key'),
+        tax_behavior: form.get('tax_behavior'), recurring: {interval: form.get('recurring[interval]'), interval_count: Number(form.get('recurring[interval_count]'))},
+        lookup_key: form.get('lookup_key'),
         active: true, livemode: true};
       state.prices.filter(x => x.lookup_key === pr.lookup_key).forEach(x => { x.active = false; });
       state.prices.push(pr);
@@ -42,6 +47,7 @@ function fakeStripe() {
       const id = p.split('/')[4];
       let c = state.portals.find(x => x.id === id);
       if (!c) { c = {id: `bpc_live${++n}`, metadata: {vu_managed: 'true'}, livemode: true}; state.portals.push(c); }
+      c.form = Object.fromEntries(form.entries());
       return json(200, c);
     }
     if (method === 'GET' && p === '/v1/webhook_endpoints') return json(200, {data: state.hooks});
@@ -65,51 +71,54 @@ test('nur freigegebene Live-Restricted-Keys', () => {
   assertLiveKey(LIVE_KEY, 'true');
 });
 
-test('Preise nur als vollstaendige Owner-Vorgabe', () => {
-  assert.equal(parseLivePrices(''), null);
-  assert.equal(parseLivePrices(undefined), null);
-  assert.deepEqual(parseLivePrices(JSON.stringify(PRICES)), PRICES);
-  assert.throws(() => parseLivePrices('{"plus_month":990}'), /genau/);
-  assert.throws(() => parseLivePrices(JSON.stringify({...PRICES, pro_year: 199.5})), /ungueltig/);
-  assert.throws(() => parseLivePrices(JSON.stringify({...PRICES, pro_year: 0})), /ungueltig/);
-  assert.throws(() => parseLivePrices('kein json'), /JSON/);
+test('Katalog: nur Pro, 1,00 EUR im Monat', () => {
+  assert.deepEqual(LIVE_CATALOG.map(c => [c.product, c.name, c.plan, c.prices]), [['vu_pro', 'Vision Universe Pro', 'pro', [['month', 100]]]]);
 });
 
-test('ohne Preise: nur Produkte und Webhook, kein Portal, keine Preise', async () => {
+test('legt Produkt Pro, Monatspreis 1,00 EUR inkl. USt, Portal und Webhook an - idempotent', async () => {
   const s = fakeStripe();
-  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
-  assert.deepEqual([...s.state.products.keys()], ['vu_plus', 'vu_pro']);
-  assert.equal(s.state.prices.length, 0);
-  assert.equal(s.state.portals.length, 0);
-  assert.equal(r.prices.length, 0);
-  assert.equal(r.portalId, null);
+  const first = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.deepEqual([...s.state.products.keys()], ['vu_pro'], 'kein Plus-Produkt');
+  assert.equal(s.state.products.get('vu_pro').name, 'Vision Universe Pro');
+  assert.equal(s.state.prices.length, 1);
+  assert.deepEqual([s.state.prices[0].unit_amount, s.state.prices[0].currency, s.state.prices[0].tax_behavior, s.state.prices[0].recurring,
+    s.state.prices[0].lookup_key], [100, 'eur', 'inclusive', {interval: 'month', interval_count: 1}, 'vu_pro_month']);
+  assert.deepEqual(first.prices.map(p => [p.plan, p.interval, p.amount]), [['pro', 'month', 100]]);
+  assert.ok(first.portalId.startsWith('bpc_'));
+  const portal = s.state.portals[0].form;
+  assert.equal(portal['features[subscription_cancel][mode]'], 'at_period_end', 'Kuendigung zum Laufzeitende');
+  assert.equal(portal['features[subscription_update][enabled]'], 'false', 'kein Tarifwechsel');
+  assert.equal(portal['features[payment_method_update][enabled]'], 'true');
   assert.equal(s.state.hooks.length, 1);
   assert.equal(s.state.hooks[0].url, `${API}/v1/billing/webhook/stripe`);
   assert.deepEqual(s.state.hooks[0].events, [...WEBHOOK_EVENTS]);
-  assert.equal(r.webhookSecret.startsWith('whsec_'), true);
-});
+  assert.equal(first.webhookSecret.startsWith('whsec_'), true);
 
-test('mit Preisen: vier Preise inkl. USt, Portal, idempotent', async () => {
-  const s = fakeStripe();
-  const first = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, prices: PRICES, fetchImpl: s.fetchImpl, log: () => {}});
-  assert.equal(first.prices.length, 4);
-  assert.ok(s.state.prices.every(p => p.tax_behavior === 'inclusive' && p.currency === 'eur'));
-  assert.equal(s.state.prices.find(p => p.lookup_key === 'vu_pro_year').unit_amount, 19900);
-  assert.ok(first.portalId);
-  const calls = s.state.calls.length;
-  const second = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, prices: PRICES, fetchImpl: s.fetchImpl, log: () => {}});
-  assert.equal(s.state.prices.length, 4, 'keine doppelten Preise');
+  const second = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(s.state.prices.length, 1, 'kein zweiter Preis');
+  assert.equal(s.state.portals.length, 1, 'kein zweites Portal');
   assert.equal(s.state.hooks.length, 1, 'kein zweiter Webhook');
   assert.equal(second.webhookSecret, null, 'Geheimnis nur beim Anlegen');
-  assert.ok(s.state.calls.length > calls);
-  const sql = livePriceSql(first.prices);
-  assert.match(sql, /\('plus_month_live', 'plus', 'stripe', 'price_live\d+', 'month', 'EUR', 990, true, true\)/);
-  assert.doesNotMatch(sql, /livemode = false/);
+  assert.equal(second.prices[0].priceId, first.prices[0].priceId);
+  assert.equal(livePriceSql(first.prices).trim().split('\n').filter(l => l.startsWith('  (')).join(),
+    `  ('pro_month_live', 'pro', 'stripe', '${first.prices[0].priceId}', 'month', 'EUR', 100, true, true)`);
+});
+
+test('vorhandenes Produkt wird umbenannt, abweichender Preis ergaenzt statt geaendert', async () => {
+  const s = fakeStripe();
+  s.state.products.set('vu_pro', {id: 'vu_pro', name: 'Alt', description: null, active: true, livemode: true});
+  s.state.prices.push({id: 'price_alt', product: 'vu_pro', unit_amount: 1990, currency: 'eur', tax_behavior: 'inclusive',
+    recurring: {interval: 'month', interval_count: 1}, lookup_key: 'vu_pro_month', active: true, livemode: true});
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(s.state.products.get('vu_pro').name, 'Vision Universe Pro');
+  assert.equal(s.state.prices.find(p => p.id === 'price_alt').unit_amount, 1990, 'alter Preis unveraendert');
+  assert.notEqual(r.prices[0].priceId, 'price_alt');
+  assert.equal(r.prices[0].amount, 100);
 });
 
 test('Probelauf legt nichts an', async () => {
   const s = fakeStripe();
-  await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, prices: PRICES, fetchImpl: s.fetchImpl, dryRun: true, log: () => {}});
+  await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, dryRun: true, log: () => {}});
   assert.equal(s.state.calls.filter(c => c.startsWith('POST')).length, 0);
 });
 

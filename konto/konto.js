@@ -86,6 +86,20 @@
     });
   }
 
+  // Tarifwahl "Pro" ueberdauert Registrierung und E-Mail-Bestaetigung (gleiches Geraet, 7 Tage).
+  // Kein Geheimnis: entscheidet nur, ob nach der Anmeldung die Pro-Bestaetigung erscheint.
+  var CHOICE = 'vu-plan-choice-v1';
+  function rememberChoice(plan) { try { localStorage.setItem(CHOICE, JSON.stringify({plan: plan, at: Date.now()})); } catch (e) { /* leer */ } }
+  function forgetChoice() { try { localStorage.removeItem(CHOICE); } catch (e) { /* leer */ } }
+  function pendingChoice() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CHOICE) || 'null');
+      if (c && c.plan === 'pro' && Date.now() - c.at < 7 * 864e5) return 'pro';
+      if (c) localStorage.removeItem(CHOICE);
+    } catch (e) { /* leer */ }
+    return null;
+  }
+
   function planBadge(ent) {
     var plan = (ent && ent.plan_id) || 'free';
     var names = {free: 'Free', plus: 'Plus', pro: 'Pro'};
@@ -114,6 +128,8 @@
 
   views.register = function () {
     if (!A.available()) return unavailable();
+    if (param('plan') === 'pro') rememberChoice('pro');
+    if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
     passwordHints($('password'), $('pw-rules'));
     $('ka-register').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -192,6 +208,8 @@
     if (!A.available()) return unavailable();
     requireSession().then(function (user) {
       if (!user) return;
+      // Pro gewaehlt (vor der Registrierung): weiter zur Bestaetigung, nicht direkt zur Zahlung.
+      if (pendingChoice() === 'pro') return go('/konto/tarife/?plan=pro' + (param('status') === 'verified' ? '&status=verified' : ''));
       return A.get('/v1/me').then(function (r) {
         if (!r.ok) return fail(r);
         var d = r.data, name = d.profile && d.profile.displayName;
@@ -200,7 +218,8 @@
         dl.textContent = '';
         [['E-Mail', d.user.email], ['Tarif', null], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
           dl.appendChild(el('dt', {text: row[0]}));
-          dl.appendChild(el('dd', {}, [row[1] === null ? planBadge(d.entitlements) : row[1] || '–']));
+          dl.appendChild(el('dd', {}, row[1] === null ? [planBadge(d.entitlements), (d.entitlements || {}).plan_id === 'pro' ? null
+            : el('a', {className: 'ka-link', href: '/konto/tarife/', text: ' Tarife ansehen'})] : [row[1] || '–']));
         });
         $('ka-account').hidden = false;
         $('ka-loading').hidden = true;
@@ -209,6 +228,7 @@
     $('ka-logout').addEventListener('click', function () {
       busy(this, true);
       forgetWatchlist();
+      forgetChoice();
       A.post('/v1/auth/logout').then(function () { go('/konto/anmelden/'); });
     });
   };
@@ -251,13 +271,16 @@
       row('Status', 'Kein laufendes Abonnement');
     }
     box.appendChild(dl);
+    if (current && current.cancelAtPeriodEnd) {
+      box.appendChild(el('p', {className: 'ka-hint', text: 'Gekündigt: Bis zum Ende der bezahlten Zeit bleibt alles wie bisher, danach gilt automatisch Free. Es wird nichts mehr abgebucht.'}));
+    }
     if (current && (current.status === 'past_due' || current.status === 'in_grace_period')) {
       box.appendChild(el('p', {className: 'ka-notice', 'data-kind': 'error',
         text: 'Die letzte Zahlung ist fehlgeschlagen. Bitte aktualisiere deine Zahlungsmethode, damit dein Zugang erhalten bleibt.'}));
     }
     var actions = el('div', {className: 'ka-actions'});
     if (current && current.provider === 'stripe') {
-      var portal = el('button', {className: 'ka-btn', type: 'button', text: 'Zahlung, Tarif und Rechnungsadresse verwalten'});
+      var portal = el('button', {className: 'ka-btn', type: 'button', text: 'Zahlung, Rechnungen und Kündigung verwalten'});
       portal.addEventListener('click', function () {
         busy(portal, true);
         A.post('/v1/billing/portal').then(function (r) {
@@ -293,71 +316,74 @@
   }
 
   views.plans = function () {
+    showStatusParam();
     if (!A.available()) return unavailable();
-    if (param('checkout') === 'canceled') notice('Der Bezahlvorgang wurde abgebrochen. Es wurde nichts berechnet.', 'info');
-    var interval = 'month', catalog = null, me = null;
-    Array.prototype.forEach.call(document.querySelectorAll('[data-interval]'), function (b) {
-      b.addEventListener('click', function () {
-        interval = b.getAttribute('data-interval');
-        Array.prototype.forEach.call(document.querySelectorAll('[data-interval]'), function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-        render();
-      });
-    });
-    Promise.all([A.get('/v1/plans'), A.get('/v1/session')]).then(function (rs) {
-      if (!rs[0].ok) return fail(rs[0]);
-      catalog = rs[0].data;
-      if (rs[1].ok && rs[1].data.authenticated) {
-        return A.get('/v1/me').then(function (r) { me = r.ok ? r.data : null; render(); });
-      }
-      render();
-    });
-    function render() {
-      if (!catalog) return;
-      var grid = $('ka-plans');
-      grid.textContent = '';
-      var descriptions = {};
-      catalog.features.forEach(function (f) { descriptions[f.key] = f.description; });
-      var currentPlan = me && me.entitlements ? me.entitlements.plan_id : null;
-      catalog.plans.forEach(function (p) {
-        var price = p.prices.filter(function (x) { return x.interval === interval; })[0];
-        var card = el('article', {className: 'ka-card ka-plan', 'data-current': String(currentPlan === p.id)});
-        card.appendChild(el('h2', {text: p.name}));
-        if (p.description) card.appendChild(el('p', {className: 'ka-muted', text: p.description}));
-        card.appendChild(el('p', {className: 'ka-price'}, [p.id === 'free' ? 'Kostenlos'
-          : price ? A.money(price.unitAmount, price.currency) : '–', p.id !== 'free' && price ? el('small', {text: interval === 'year' ? ' / Jahr' : ' / Monat'}) : null]));
-        if (price && interval === 'year') card.appendChild(el('p', {className: 'ka-hint', text: 'entspricht ' + A.money(Math.round(price.unitAmount / 12), price.currency) + ' im Monat'}));
-        if (price) card.appendChild(el('p', {className: 'ka-hint', text: 'Preis inkl. MwSt. · monatlich bzw. jährlich kündbar zum Laufzeitende'}));
-        var list = el('ul', {className: 'ka-features'});
-        Object.keys(p.features).forEach(function (k) {
-          var limit = p.features[k];
-          list.appendChild(el('li', {text: (descriptions[k] || k) + (typeof limit === 'number' ? ': bis ' + limit : '')}));
-        });
-        card.appendChild(list);
-        var actions = el('div', {className: 'ka-actions'});
-        if (currentPlan === p.id) actions.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
-        else if (p.id !== 'free' && price) {
-          var btn = el('button', {className: 'ka-btn ka-btn--block', type: 'button', text: p.name + ' wählen'});
-          btn.addEventListener('click', function () { choose(price.key, btn); });
-          actions.appendChild(btn);
-        }
-        card.appendChild(actions);
-        grid.appendChild(card);
-      });
-      $('ka-mode').hidden = catalog.mode !== 'test';
+    var canceled = param('checkout') === 'canceled';
+    if (canceled) {
+      forgetChoice();
+      notice('Der Bezahlvorgang wurde abgebrochen. Es wurde nichts berechnet, dein Konto bleibt Free.', 'info');
     }
-    function choose(key, btn) {
-      if (!me) return go('/konto/anmelden/?next=/konto/tarife/');
-      busy(btn, true);
-      A.post('/v1/billing/checkout', {price: key}).then(function (r) {
-        busy(btn, false);
+    var wantsPro = !canceled && (param('plan') === 'pro' || pendingChoice() === 'pro');
+    var proPrice = null, billing = null, signedIn = false;
+    var confirmBox = $('ka-confirm'), terms = $('ka-confirm-terms'), pay = $('ka-checkout');
+
+    $('ka-choose-free').addEventListener('click', forgetChoice);
+    $('ka-choose-pro').addEventListener('click', function () {
+      if (!signedIn) { rememberChoice('pro'); return go('/konto/registrieren/?plan=pro'); }
+      openConfirm();
+    });
+    terms.addEventListener('change', function () { pay.disabled = !(terms.checked && canBuy()); });
+    pay.addEventListener('click', function () {
+      if (!terms.checked) return notice(A.message('CHECKOUT_CONFIRMATION_REQUIRED'), 'error');
+      busy(pay, true);
+      A.post('/v1/billing/checkout', {price: proPrice.key, confirm: true}).then(function (r) {
         var url = r.ok && A.safePaymentUrl(r.data.url);
         if (url) return window.location.assign(url);
-        if (r.state === 'ALREADY_SUBSCRIBED') {
-          notice(A.message('ALREADY_SUBSCRIBED'), 'info');
-          return;
-        }
+        busy(pay, false);
+        if (r.state === 'ALREADY_SUBSCRIBED') { confirmBox.hidden = true; return notice(A.message('ALREADY_SUBSCRIBED'), 'info'); }
         fail(r);
       });
+    });
+
+    Promise.all([A.get('/v1/plans'), A.get('/v1/session')]).then(function (rs) {
+      var pro = rs[0].ok ? (rs[0].data.plans || []).filter(function (p) { return p.id === 'pro'; })[0] : null;
+      proPrice = pro ? pro.prices.filter(function (x) { return x.interval === 'month'; })[0] || null : null;
+      if (proPrice) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-pro-price]'), function (n) { n.textContent = A.money(proPrice.unitAmount, proPrice.currency); });
+      }
+      signedIn = Boolean(rs[1].ok && rs[1].data && rs[1].data.authenticated);
+      if (!signedIn) return;
+      return A.get('/v1/me/billing').then(function (r) { billing = r.ok ? r.data : null; render(); });
+    });
+
+    function canBuy() { return Boolean(proPrice && billing && billing.checkoutAllowed); }
+    function render() {
+      var plan = billing && billing.entitlements ? billing.entitlements.plan_id : 'free';
+      Array.prototype.forEach.call(document.querySelectorAll('[data-plan]'), function (card) {
+        card.setAttribute('data-current', String(card.getAttribute('data-plan') === plan));
+      });
+      var freeAction = $('ka-action-free');
+      freeAction.textContent = '';
+      freeAction.appendChild(el('span', {className: 'ka-badge', 'data-tone': plan === 'free' ? null : 'muted',
+        text: plan === 'free' ? 'Dein Tarif' : 'Gilt nach Ende von Pro automatisch'}));
+      if (plan !== 'free') {
+        forgetChoice();
+        var proAction = $('ka-action-pro');
+        proAction.textContent = '';
+        proAction.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
+        proAction.appendChild(el('a', {className: 'ka-btn ka-btn--block', href: '/konto/abo/', text: 'Abonnement verwalten'}));
+        return;
+      }
+      if (wantsPro) { forgetChoice(); openConfirm(); }
+    }
+    function openConfirm() {
+      confirmBox.hidden = false;
+      terms.disabled = !canBuy();
+      pay.disabled = !(terms.checked && canBuy());
+      if (!canBuy()) notice(proPrice ? A.message('CHECKOUT_NOT_OPEN') : A.message('PRICE_NOT_AVAILABLE'), 'info');
+      var title = $('ka-confirm-title');
+      if (title.scrollIntoView) title.scrollIntoView({block: 'start'});
+      title.focus({preventScroll: true});
     }
   };
 

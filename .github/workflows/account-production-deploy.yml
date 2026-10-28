@@ -12,9 +12,10 @@ name: Konten — vu-account ausrollen (Produktion)
 # Worker-Secret nach Cloudflare. Beide Jobs warten auf die Freigabe des Owners
 # und pruefen sie zusaetzlich selbst (fail closed).
 #
-# Was dieser Workflow NICHT tut: Live-Abrechnung oder oeffentliche Registrierung
-# einschalten. Beides steht in wrangler.toml und aendert sich nur per eigenem,
-# freigegebenem PR. VU_CANCELLATION_AUTO_PROCESS wird hart auf "false" gesetzt.
+# Was dieser Workflow NICHT tut: Live-Abrechnung, oeffentlichen Checkout oder
+# oeffentliche Registrierung einschalten. Das steht in wrangler.toml und aendert
+# sich nur per eigenem, freigegebenem PR. Der Live-Checkout ist hier auf Tester
+# (Rolle billing_tester) oder aus festgelegt; "public" lehnt die Pruefung ab. VU_CANCELLATION_AUTO_PROCESS wird hart auf "false" gesetzt.
 # Kein Wert wird ausgegeben (oeffentliches Repository).
 on:
   workflow_dispatch:
@@ -56,7 +57,8 @@ jobs:
           grep -qE "^VU_ACCOUNT_API_ORIGIN = \"$API_ORIGIN\"$" <<<"$prod" || { echo "::error::Produktion: VU_ACCOUNT_API_ORIGIN ist nicht $API_ORIGIN"; exit 1; }
           grep -qE '^VU_REGISTRATION_ALLOWLIST = ""$' <<<"$prod" || { echo "::error::Produktion: keine Registrierungs-Positivliste (oeffentliche Registrierung)"; exit 1; }
           grep -q 'account.visionuniverse.de' <<<"$(awk '/^\[env\.production\]/{p=1} p' wrangler.toml | grep -v '^#')" && { echo "::error::account.visionuniverse.de gehoert Shopify"; exit 1; } || true
-          for k in STRIPE_LIVE_MODE_APPROVED VU_REGISTRATION_ENABLED; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
+          grep -qE '^VU_CHECKOUT_ACCESS = "(testers|off)"$' <<<"$prod" || { echo "::error::Produktion: VU_CHECKOUT_ACCESS muss \"testers\" oder \"off\" sein (oeffentlicher Checkout nur per eigenem Freigabe-PR an dieser Pruefung)"; exit 1; }
+          for k in STRIPE_LIVE_MODE_APPROVED VU_CHECKOUT_ACCESS VU_REGISTRATION_ENABLED; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
           npx --yes "$WRANGLER" deploy --dry-run --env production --outdir "$RUNNER_TEMP/bundle" > /dev/null
 
   supabase:
@@ -148,7 +150,7 @@ jobs:
           put() { printf '%s' "$2" | npx --yes "$WRANGLER" secret put "$1" --env production > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           put STRIPE_SECRET_KEY "$KEY"
           if [ -n "$WHSEC" ]; then [[ "$WHSEC" == whsec_* ]] || { echo "::error::VU_ACCOUNT_STRIPE_WEBHOOK_SECRET muss whsec_ sein"; exit 1; }; put STRIPE_WEBHOOK_SECRET "$WHSEC"; fi
-          echo "Abrechnung bleibt aus, solange STRIPE_LIVE_MODE_APPROVED in wrangler.toml \"false\" ist (Antwort 503)."
+          echo "Checkout nur fuer Konten mit Rolle billing_tester (VU_CHECKOUT_ACCESS in wrangler.toml)."
 
   gesundheit:
     needs: [supabase, stripe]

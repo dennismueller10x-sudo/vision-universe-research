@@ -1,5 +1,8 @@
 -- Watchlists: RLS und Tarifgrenzen in der Datenbank.
 begin;
+-- Variante A (eingeschraenktes Free) nur in dieser Transaktion: prueft Grenzen und Hochstufung.
+update public.plan_features set limit_value = 1 where plan_id = 'free' and feature_key = 'watchlist.lists';
+update public.plan_features set limit_value = 20 where plan_id = 'free' and feature_key = 'watchlist.items';
 select tests.create_user('fritz@example.test') as fritz \gset
 select tests.create_user('gina@example.test') as gina \gset
 

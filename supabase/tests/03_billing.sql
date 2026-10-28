@@ -57,9 +57,10 @@ select tests.eq((public.billing_apply_subscription(jsonb_build_object(
   'status','active','current_period_start', now() - interval '1 day','current_period_end', now() + interval '29 days',
   'state_at', now() - interval '10 minutes','claimed_user_id', :'dora')) ->> 'plan_id'), 'plus', 'abo angelegt');
 select tests.eq(public.effective_entitlements(:'dora') ->> 'plan_id', 'plus', 'dora hat plus');
-select tests.eq((public.effective_entitlements(:'dora') -> 'features' ->> 'watchlist.items')::int, 100, 'plus-grenze');
-select tests.eq(public.effective_entitlements(:'dora') -> 'features' -> 'quant.screener.full', 'true'::jsonb, 'plus-funktion');
-select tests.eq(public.effective_entitlements(:'dora') -> 'features' ? 'export.csv', false, 'pro-funktion fehlt');
+-- Alt-Tarif plus (verborgen) erlaubt genau so viel wie Free/Pro, nie weniger; gesperrte Funktionen bleiben gesperrt.
+select tests.eq((public.effective_entitlements(:'dora') -> 'features' ->> 'watchlist.items')::int, 500, 'plus-grenze = free');
+select tests.eq(public.effective_entitlements(:'dora') -> 'features' ? 'quant.screener.full', false, 'quant-gesamtscore gesperrt');
+select tests.eq(public.effective_entitlements(:'dora') -> 'features' ? 'export.csv', false, 'export gesperrt');
 
 -- Aelterer Zustand ueberschreibt nie den neueren (Webhooks in falscher Reihenfolge).
 select tests.eq((public.billing_apply_subscription(jsonb_build_object(

@@ -48,6 +48,9 @@ export function loadConfig(env = {}) {
       requireTerms: flag(env.STRIPE_CHECKOUT_REQUIRE_TERMS),
       portalConfiguration: /^bpc_[A-Za-z0-9]+$/.test(String(env.STRIPE_PORTAL_CONFIGURATION || '')) ? env.STRIPE_PORTAL_CONFIGURATION : '',
       checkoutHosts: new Set(['checkout.stripe.com', ...list(env.STRIPE_CHECKOUT_HOSTS)]),
+      // Wer den Checkout starten darf: public | testers (Rolle billing_tester) | off.
+      // Ohne Angabe im Live-Modus nur Tester (kein versehentlich oeffentlicher Live-Checkout).
+      checkoutAccess: checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode),
     },
     registration: {
       enabled: flag(env.VU_REGISTRATION_ENABLED),
@@ -82,6 +85,12 @@ export function supabaseReady(cfg) {
 }
 
 // Warum Abrechnung gerade nicht moeglich ist - oder null.
+export function checkoutAccess(value, mode) {
+  const v = String(value || '').trim().toLowerCase();
+  if (['public', 'testers', 'off'].includes(v)) return v;
+  return mode === 'live' ? 'testers' : 'public';
+}
+
 export function billingBlocker(cfg) {
   if (!supabaseReady(cfg)) return 'ACCOUNTS_NOT_CONFIGURED';
   if (cfg.stripe.mode === 'missing') return 'BILLING_NOT_CONFIGURED';
