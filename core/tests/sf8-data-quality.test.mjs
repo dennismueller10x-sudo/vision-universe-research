@@ -29,7 +29,7 @@ function view(c, t, stage, over = {}) {
     strategyId: "SF_" + c, candidateId: c, ticker: t, securityId: Identity.securityIdForTicker(t), shard: Identity.shardKey(t),
     stage, ceiling: DQ.SF8_CEILING[c], asOf: ASOF, close: 100.5,
     levels: modeled ? { [lv]: 98, stopReference: 98 } : { [lv]: 98 },
-    features: modeled ? { closeVsTrigger: 0.01 } : { gap: 0.1, stop: "NOT_IN_SOURCE", closeVsTop: 0.02 },
+    features: modeled ? { closeVsTrigger: 0.01 } : Object.fromEntries(DQ.SF8_DESCRIPTIVE_FEATURES[c].slice(0, 2).map((k) => [k, 0.02])),
     pivot: modeled || !kind ? null : { level: 98, kind, distance: 0.02 },
     plan: modeled ? { entryType: "NEXT_OPEN", trigger: 100.5, stop: 98, hypothetical: true } : null,
     dataQuality: { status: "PASS", notPass: [], quarantinedSessions: [] }
@@ -147,6 +147,14 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
     const b = bundle((v) => { const x = v[c][0]; if (x.stage === "MODELED_TRADE_PLAN") { x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; } x.features[k] = 0.64; });
     assert.ok(failing(b).includes("DQ-SF8-4"), c + " features." + k);
   }
+  /* unabhaengige Nachpruefung: ein umbenannter Orderpreis unter neutralem Namen faellt auf (Allowlist statt Sperrliste) */
+  for (const [c, k] of [["C12", "orderPrice"], ["C12", "gapLowRiskReference"], ["C01", "channelHigh"], ["C01", "buyPoint"], ["C03", "boxTopPrice"], ["C13", "pullbackLevel"]]) {
+    const b = bundle((v) => { const x = v[c][0]; if (x.stage === "MODELED_TRADE_PLAN") { x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; } x.features[k] = 12.34; });
+    assert.ok(failing(b).includes("DQ-SF8-4"), c + " features." + k);
+  }
+  /* Statustexte unter Order-Namen bleiben zulaessig, Zahlen nicht (C11 stop, C10 entry, C13 trailing) */
+  assert.ok(!failing(bundle((v) => { v.C11[0].features = { stop: "NOT_IN_SOURCE (MOKA-SF-PP-STOP manuell)" }; v.C10[0].features = { entry: "DATA_BLOCKED (Intraday)" }; })).includes("DQ-SF8-4"));
+  assert.ok(failing(bundle((v) => { v.C11[0].features = { stop: 41.2 }; })).includes("DQ-SF8-4"));
   /* auch als Marke: eine Risikoreferenz ist keine Strukturmarke */
   assert.ok(failing(bundle((v) => { v.C12[0].stage = "CHART_CANDIDATE"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98, stopReference: 98 }; })).includes("DQ-SF8-4"));
 });

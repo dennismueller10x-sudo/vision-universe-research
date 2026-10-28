@@ -354,6 +354,28 @@
     C06: ["pivot", "ma50", "ma150", "ma200"], C07: ["pivot"], C08: ["breakoutLevel"], C09: ["gapDayLow", "priorClose"],
     C10: ["ma10", "ma20"], C11: ["ma10", "ma50", "signalDayLow"], C12: ["gapDayLow", "priorClose"], C13: ["ema20", "impulseHigh", "swingLow"]
   };
+  /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
+     28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
+     Orderparameter). ALLOWLIST je Methode statt Namens-Sperrliste: ein umbenannter Orderpreis (orderPrice,
+     buyPoint, channelHigh) faellt so auf (unabhaengige Nachpruefung, Mutationen M4/M6/M7). Abgeleitet aus den
+     features-Objekten von scripts/supertrader/source-faithful/product/detectors.mjs ohne die order-abgeleiteten
+     Kennzahlen; eine neue Kennzahl ist eine fachliche Aenderung in einem eigenen PR. Namen mit Order-Wortteilen
+     (stop, entry, trailing ...) duerfen nur Statustexte tragen. */
+  var SF8_DESCRIPTIVE_FEATURES = {
+    C01: ["path", "filterOutcomeBefore", "N", "nPct", "breakoutAtOpen"],
+    C02: ["path", "filterOutcomeBefore", "N", "nPct", "breakoutAtOpen"],
+    C03: ["boxDepth", "boxTopDate", "boxBottomDate", "boxCompleteDate", "closeVsTop", "allTimeHighDailyWindow", "allTimeHighWeeklyCloses", "listingCoveredByDailyHighs", "allTimeHighStatus"],
+    C04: ["breakoutWeek", "breakoutDay", "ma30w", "closeVsMa30w", "ma30wSlope4w", "baseWeeks", "rsNormalised", "rsImproving", "volumeConfirmedAny", "overheadDistance", "spyAboveMa30w", "groupStage", "marketBreadth"],
+    C05: ["breakoutWeek", "breakoutDay", "ma30w", "closeVsMa30w", "ma30wSlope4w", "baseWeeks", "rsNormalised", "rsImproving", "volumeConfirmedAny", "overheadDistance", "spyAboveMa30w", "groupStage", "marketBreadth"],
+    C06: ["pctAboveLow52w", "pctBelowHigh52w", "ma200OneMonthAgo", "vcpProxyState", "vcpFootprint", "baseLengthSessions", "largestCorrection", "rangesContracting", "rs", "translationUnverified"],
+    C07: ["correction", "consolidationSessions", "startVolumeVs50d", "reviewReasons", "translationUnverified"],
+    C08: ["momentum", "momentumInterpretation", "setupProxy", "priorMove", "higherLows", "ma10Rising", "ma20Rising", "adr20"],
+    C09: ["gap", "priorRun63", "priorRange63", "adr20", "dailyVolumeVs50d", "catalyst", "intradayVolume", "entryOpeningRange", "model"],
+    C10: ["direction", "upStreak", "streakReturnSum", "accelerating", "adr20", "distanceToMA10", "distanceToMA20", "streakReturns", "borrow", "entry", "model"],
+    C11: ["volume", "maxDownVolume", "volumeVsMaxDown", "downDays", "pctFrom10DMA", "pctFrom50DMA", "pctFrom200DMA", "contextProxyMa50", "stop"],
+    C12: ["gapInAtr", "gap", "gapPct", "atr40", "volumeRatio50", "volumeStatus", "contextProxyMa50", "closeVsGapLow"],
+    C13: ["adx", "adxAbove30Since", "closeVsEma20", "impulseHighDate", "entrySource", "trailing"]
+  };
   var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE", C06: "VCP_PROXY_PIVOT", C07: "RUN_UP_HIGH",
     C08: "CONSOLIDATION_10_LEVEL", C09: "GAP_DAY_LOW", C12: "GAP_DAY_LOW" };
   function hasNumber(x) {
@@ -463,8 +485,10 @@
         if (SF8_ORDER_KEY.test(k)) fail.push(where + ": Marke levels." + k);
         else if (allowed.indexOf(k) < 0) fail.push(where + ": levels." + k + " ist keine Strukturmarke dieser Methode");
       });
+      var described = SF8_DESCRIPTIVE_FEATURES[v.candidateId] || [];
       Object.keys(v.features || {}).forEach(function (k) {
         if (SF8_ORDER_FEATURES.indexOf(k) >= 0) fail.push(where + ": Kennzahl features." + k);
+        else if (described.indexOf(k) < 0) fail.push(where + ": features." + k + " ist keine beschreibende Kennzahl dieser Methode");
         /* Statustexte wie "NOT_IN_SOURCE" oder "DATA_BLOCKED" sind erlaubt, Zahlen nicht */
         else if (SF8_ORDER_KEY.test(k) && hasNumber(v.features[k])) fail.push(where + ": Zahl unter features." + k);
       });
@@ -618,7 +642,7 @@
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
-    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize
