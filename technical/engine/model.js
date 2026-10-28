@@ -297,6 +297,33 @@
   }
 
   /** Befundkarten fuer das Chart Studio: Formationen + nachvollziehbare Indikatorzustaende. */
+  /* Chart Studio: Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
+  var CHART_LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
+    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"],
+    ["hma", "Hull MA 20"], ["chandelier", "Chandelier-Stop"], ["kerzen", "Kerzenmuster"], ["volumen", "Volumen"]];
+  var CHART_PANES = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
+    ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"], ["roc", "ROC"], ["crsi", "Connors RSI"], ["zscore", "Z-Score"], ["elder", "Elder Impulse"], ["vortex", "Vortex"],
+    ["chop", "Choppiness"], ["hv", "Hist. Volatilität"], ["ulcer", "Ulcer"]];
+  /**
+   * Wo Chart Studio jedes Indikatorfeld des Screeners zeigt (AP5b, Completion-Matrix G4): ["layer"|"pane", id] =
+   * Schicht oder Unterfenster, "price" = im Kurs selbst (Kerzen, Tageshoch), "weekly" = Wochenchart, "signals" = Befundkarte.
+   * null = noch ohne Darstellung, mit Grund in TECHNICAL_COMPLETION_PLAN.md (G4). Ein neues Feld braucht hier einen Eintrag.
+   */
+  var FIELD_CHART = {
+    aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
+    adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
+    roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
+    connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
+    hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
+    choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
+    rs3m: null, rs6m: null, rsPositive: null,
+    relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
+    cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
+  };
+
   /**
    * Kerzenmuster als Chartmarken (AP5): je Bar ab `from` die erkannten Muster der Screener-Liste, eingeteilt wie
    * screen-row.js#candleBlock: neutral (Doji, Spinning Top …) nach Musterart, sonst Vorzeichen des Werts (+1 bullisch,
@@ -430,7 +457,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, candleMarks: candleMarks, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

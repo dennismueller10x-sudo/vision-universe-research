@@ -42,7 +42,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | B1 Jeder Indikator mit naiver Referenzformel, Aufwärmphase, Kausalität und Determinismus getestet | ✔ | 92/92: `technical-indicators*.test.mjs` | – |
 | B2 Jeder Indikator gegen eine fremde Implementierung auf echten Kursen geprüft (TA-Lib 0.8.2 oder pandas-ta) | ✔ | 92/92: INDICATORS_EXTERNAL_REFERENCE.md, Fixtures unter `quant/tests/fixtures` | – |
 | B3 Eine Rechnung für Screener und Chart: Screener-Wert = `Indicators.compute` auf demselben Bündel | ◐ | Für SMA, RSI, ADX und MACD gleiche Quelle (`feature-store.js`). Ein universumsweiter Gleichheitstest über alle Screener-Indikatorspalten fehlt. → **AP2** | P0 |
-| B4 Fachlich wichtige Katalogindikatoren sind im Produkt nutzbar (Screener-Feld und/oder Chart) | ◐ | 24 von 92 integriert. Auswahl nach Relevanz statt Anzahl (Liste in AP5). | P1 |
+| B4 Fachlich wichtige Katalogindikatoren sind im Produkt nutzbar (Screener-Feld und/oder Chart) | ◐ | Jedes Indikatorfeld des Screeners ist in Chart Studio darstellbar (AP5b, `model.js#FIELD_CHART`, Test). Ausnahme ist die relative Stärke (G4). Weitere Katalogindikatoren nur nach Relevanz (P2). | P1 |
 
 ### C. Candlestick-Erkennung
 
@@ -89,7 +89,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | G1 Kurs, 13 Schichten, 11 Unterfenster, Formationen mit Linien, Zeitraum, Hell/Dunkel, 390/1280 px | ✔ | Browser-QA in `technical-ci.yml` | – |
 | G2 Gezeichnete Linien = Rechnung (Bar-Raum) | ✔ | `chart.js` x = Bar-Index. Validator §8 | – |
 | G3 Kerzenmuster als Marker | ✔ (nach Merge AP5) | siehe C3 | P1 |
-| G4 Relevante Katalogindikatoren wählbar | ◐ | 24 von 92 → AP5 | P1 |
+| G4 Relevante Katalogindikatoren wählbar | ◐ (nach Merge AP5b) | 30 Indikatoren im Chart. 49 von 52 Indikatorfeldern des Screeners haben eine Darstellung, Werte gleich der Trefferzeile (E2E, 26 Spalten). Offen: relative Stärke ggü. SPY (`rs3m`, `rs6m`, `rsPositive`); dafür bräuchte der Browser die SPY-Reihe. | P1 |
 
 ### H. Historische Evidenz und methodische Grenzen
 
