@@ -115,6 +115,21 @@ test("DQ-SEC-1/2/3 · fy-Label weit neben dem Periodenende, Zukunftsperiode, gez
   assert.equal(DQ.summarize([counted]).overall, "PASS", "eine INFO-Messung aendert das Gesamturteil nicht");
 });
 
+test("DQ-TW-5 · Wochen-/Monatsfelder: leer ist ein Fehler erst, wenn die Materialisierung sie liefert", () => {
+  const cols = { s: ["A", "B"], "rsi14@1W": [50, null], "roc21@1W": [null, null], "roc21@1M": [null, null], "adx@1M": [null, null], rsi14: [1, 2] };
+  const need = { roc21: "technical-mtf-1.1.0" };
+  const old = DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.0.0"]);
+  assert.deepEqual(old.samples, ["adx@1M: in allen 2 Zeilen leer, obwohl die Materialisierung es liefert"]);
+  assert.equal(old.checked, 2);
+  assert.match(old.note, /Wartet auf Materialisierung \(2\): roc21@1M, roc21@1W/);
+  assert.match(old.note, /rsi14@1W 50 %/);
+  const neu = DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.0.0", "technical-mtf-1.1.0"]);
+  assert.equal(neu.checked, 4);
+  assert.equal(neu.failed, 3, "mit 1.1.0 zaehlen die leeren ROC-Spalten");
+  assert.equal(DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.10.0"]).failed, 3, "Versionen numerisch, nicht als Text");
+  assert.equal(DQ.technicalTimeframeFields(cols, need, []).checked, 0, "ohne Buendel wartet alles");
+});
+
 test("Zusammenfassung · ERROR macht FAIL, nur WARN macht WARN", () => {
   const pass = { status: "PASS", severity: "ERROR" }, warn = { status: "FAIL", severity: "WARN" }, err = { status: "FAIL", severity: "ERROR" };
   assert.equal(DQ.summarize([pass, warn]).overall, "WARN");

@@ -74,7 +74,7 @@ Datenbedarf je Strategie (`STRATEGY_DATA_NEEDS`, mindestens 30 bis 252 Sitzungen
 | KK-SF-BO-MOMENTUM "Top 1–2 %" | laut Vertrag Rangfolge (`gate: false`), Schwelle nicht freigegeben | O-6: Perzentil ≥ 98 als eigene, gekennzeichnete Research-Lesart. Die Karte zeigt sie als Interpretation, nicht als Quellregel. Darunter wird der Titel weiter erkannt (Chart-Kandidat mit Begründung), aber nicht ausgeschlossen. Referenzen bleiben unverändert. |
 | Turtle-Einstieg intraday am Stichtag | kein Folgesitzungsplan ohne neue Einstiegsregel | O-1: keine neue Einstiegsregel; Turtle bleibt beim bestätigten Research-Setup |
 
-## 3. Datenqualitätsvertrag (`sf8-data-quality-1.0.0`)
+## 3. Datenqualitätsvertrag (`sf8-data-quality-1.1.0`)
 
 Fail closed für die Aussage, nicht für die Plattform:
 - `FAIL`: nicht bewertet, Grund gespeichert;
@@ -88,10 +88,13 @@ Fail closed für die Aussage, nicht für die Plattform:
 | OHLCV | nicht endlich, High < Low, Tief ≤ 0, Eröffnung oder Schluss außerhalb der Spanne, Datum nicht streng aufsteigend | – |
 | Handelstage (XNYS) | mehr als 5 fehlende Sitzungen, Balken an Nicht-Sitzung | 1–5 fehlende Sitzungen (CHART) |
 | Adjustierung (ADR-002) | Abgleich ≠ PASS, nicht adjustiert | Abgleich unbekannt (CHART) |
+| Preisabgleich V4 (ADR-002, ab `sf8-data-quality-1.1.0`) | Schluss am Stichtag ≠ veröffentlichter Schluss (`published-close.js`, nach `roundClose`, ohne Toleranz), Referenzreihe fehlt, vertragswidrig, veraltet oder neuer, Identität (securityId, Ticker, US-Listing, USD) abweichend | Verlauf ungeklärt: Abweichung, die keine Rundung vor einem Split ist, oder Sitzung nur in einer Reihe (CHART). Rundung vor einem Split ist INFO |
 | V4-D1-Quarantäne | – | DQ-K5/DQ-K3 im 400-Tage-Rückblick (CHART) |
 | Rückblicksabdeckung | – | Wochenreihe fehlt oder springt (CHART) |
 | Liquidität (#705-Universum) | – | unter 5 USD oder 1 Mio. USD Tagesumsatz: kein Plan (CONFIRMED) |
 | Historie je Strategie | zu kurz für die Engine: keine Erkennung | – |
+
+Der Preisabgleich steht in [SUPERTRADER_8_PRICE_PARITY_V4.md](SUPERTRADER_8_PRICE_PARITY_V4.md), mit Vorher/Nachher-Vergleich.
 
 ADR-Listings werden nur gekennzeichnet (INFO). Es wird ausschließlich die US-Reihe verwendet und nie mit einem Heimatlisting kombiniert.
 
