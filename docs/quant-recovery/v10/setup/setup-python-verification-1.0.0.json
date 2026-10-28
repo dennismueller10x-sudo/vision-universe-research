@@ -1,0 +1,241 @@
+{
+ "schemaVersion": "quant-v10-setup-python-verification-1.0.0",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "note": "Zweite Implementierung (Python stdlib) - kein Holdout, keine unabhaengige Datenquelle.",
+ "sources": {
+  "docs/quant-recovery/v10/setup/setup-original-inventory-1.0.0.json": "a3424cbcefdb576c3ea30de2e57d33e99a5815cd9ef28fa0a8c0d1d48348ccd1",
+  "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb",
+  "docs/quant-recovery/v10/setup/setup-reconstruction-result-1.0.0.json": "809f9444f1f6d0b0597f7e97f044b13ed4306b7b4429345e69abb58612b2a3a2",
+  "docs/quant-recovery/v10/setup/setup-independence-decision-1.0.0.json": "2186bde1fb0c4a1b368b8998506281d6a32c33d9ebafbc11ea546b3af43919a3",
+  "quant/data/product/setup-outcomes-v1.json": "dfd8f98181aeaf69d6536e2a54581d547fa5de75625507fcd47fca18863ef546"
+ },
+ "calendar": {
+  "sessions": 7249,
+  "spySessions": 7249,
+  "equal": true
+ },
+ "original": {
+  "rho": {
+   "rhoRaw": 0.0614957432220812,
+   "rhoSpyExcess": 0.07928103640104137,
+   "titles": 1333
+  },
+  "nEff": {
+   "ALL": {
+    "n": 4137,
+    "nEffRaw": 17.131608625333232,
+    "nEffSpyExcess": 13.34037326474037
+   },
+   "ENTRY": {
+    "n": 1938,
+    "nEffRaw": 17.08185232992908,
+    "nEffSpyExcess": 13.30946816393867
+   },
+   "SETUP_NEW": {
+    "n": 1791,
+    "nEffRaw": 17.06218205541902,
+    "nEffSpyExcess": 13.295863196504833
+   },
+   "SETUP_CONFIRMED": {
+    "n": 147,
+    "nEffRaw": 14.938029203923122,
+    "nEffSpyExcess": 12.00662842592009
+   }
+  }
+ },
+ "reconstruction": {
+  "sample": {
+   "compared": 2000,
+   "equal": 2000,
+   "maxAbsDiffGross": 5.000000413701855e-11,
+   "maxAbsDiffBenchmark": 4.995713565048021e-11,
+   "mismatches": []
+  },
+  "cells": {
+   "SETUP_NEW|M3_TIME": {
+    "python": {
+     "n": 4861,
+     "meanExcess": 0.003973278431162853,
+     "states": {
+      "OBSERVED": 4861
+     }
+    },
+    "js": {
+     "n": 4861,
+     "meanExcess": 0.00397327843116287
+    },
+    "equal": true
+   },
+   "SETUP_NEW|M6_TIME": {
+    "python": {
+     "n": 4861,
+     "meanExcess": 0.01080298729245455,
+     "states": {
+      "OBSERVED": 4861
+     }
+    },
+    "js": {
+     "n": 4861,
+     "meanExcess": 0.010802987292454568
+    },
+    "equal": true
+   },
+   "SETUP_NEW|M6_INVALIDATION": {
+    "python": {
+     "n": 4861,
+     "meanExcess": 0.0074108885124649845,
+     "states": {
+      "OBSERVED": 4861
+     }
+    },
+    "js": {
+     "n": 4861,
+     "meanExcess": 0.00741088851246499
+    },
+    "equal": true
+   },
+   "SETUP_NEW|M6_TARGET": {
+    "python": {
+     "n": 4861,
+     "meanExcess": 0.00116273195112671,
+     "states": {
+      "OBSERVED": 4861
+     }
+    },
+    "js": {
+     "n": 4861,
+     "meanExcess": 0.0011627319511267116
+    },
+    "equal": true
+   },
+   "SETUP_CONFIRMED|M3_TIME": {
+    "python": {
+     "n": 488,
+     "meanExcess": -0.009459109916357695,
+     "states": {
+      "OBSERVED": 488
+     }
+    },
+    "js": {
+     "n": 488,
+     "meanExcess": -0.009459109916357698
+    },
+    "equal": true
+   },
+   "SETUP_CONFIRMED|M6_TIME": {
+    "python": {
+     "n": 488,
+     "meanExcess": -0.002993549011283831,
+     "states": {
+      "OBSERVED": 488
+     }
+    },
+    "js": {
+     "n": 488,
+     "meanExcess": -0.0029935490112838205
+    },
+    "equal": true
+   },
+   "SETUP_CONFIRMED|M6_INVALIDATION": {
+    "python": {
+     "n": 488,
+     "meanExcess": -0.0015187388714250768,
+     "states": {
+      "OBSERVED": 488
+     }
+    },
+    "js": {
+     "n": 488,
+     "meanExcess": -0.0015187388714250753
+    },
+    "equal": true
+   },
+   "SETUP_CONFIRMED|M6_TARGET": {
+    "python": {
+     "n": 488,
+     "meanExcess": -0.01601424421079837,
+     "states": {
+      "OBSERVED": 488
+     }
+    },
+    "js": {
+     "n": 488,
+     "meanExcess": -0.016014244210798372
+    },
+    "equal": true
+   }
+  },
+  "rho": {
+   "rhoRaw": 0.2884845818162574,
+   "rhoSpyExcess": 0.04729001228385176,
+   "titles": 50
+  },
+  "nEff": {
+   "SETUP_NEW": {
+    "python": {
+     "n": 4861,
+     "nEffRaw": 122.84717694556514,
+     "nEffSpyExcess": 532.355171003716
+    },
+    "js": {
+     "nEffRaw": 122.84717694556515,
+     "nEffSpyExcess": 532.3551710037159
+    }
+   },
+   "SETUP_CONFIRMED": {
+    "python": {
+     "n": 488,
+     "nEffRaw": 88.34806122159344,
+     "nEffSpyExcess": 215.69059565819842
+    },
+    "js": {
+     "nEffRaw": 88.34806122159348,
+     "nEffSpyExcess": 215.69059565819785
+    }
+   }
+  }
+ },
+ "projection": {
+  "SETUP_NEW": {
+   "python": {
+    "repeatedTitles": "2029-01-30",
+    "newTitles": "2029-01-18",
+    "nEffRepeated": 50.23338691676573,
+    "nEffNew": 50.03780073871089
+   },
+   "js": {
+    "repeatedTitles": "2029-01-30",
+    "newTitles": "2029-01-18"
+   },
+   "equal": true
+  },
+  "SETUP_CONFIRMED": {
+   "python": {
+    "repeatedTitles": "2029-04-20",
+    "newTitles": "2029-01-29",
+    "nEffRepeated": 50.0675735003434,
+    "nEffNew": 50.02022450048415
+   },
+   "js": {
+    "repeatedTitles": "2029-04-20",
+    "newTitles": "2029-01-29"
+   },
+   "equal": true
+  }
+ },
+ "checks": {
+  "calendarEqualsSpy1998_2026": true,
+  "originalEventsCount": true,
+  "maturityDatesEqual": true,
+  "originalRhoEqual": true,
+  "originalNEffEqual": true,
+  "originalNEffEqualsV9": true,
+  "reconstructionSampleEqual": true,
+  "reconstructionCellsEqual": true,
+  "reconstructionRhoEqual": true,
+  "reconstructionNEffEqual": true,
+  "projectionDatesEqual": true
+ },
+ "state": "PASS",
+ "productionApproved": false
+}
