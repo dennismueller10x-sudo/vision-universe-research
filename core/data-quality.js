@@ -213,6 +213,63 @@
     return result("DQ-PX-5", "Aktienseite = letzter Schlusskurs der Reihe", "ERROR", pairs.length, fail);
   }
 
+  /** DQ-PX-6 (Tag) / DQ-PX-7 (Woche): eingefrorenes Kursende bei einem Titel, den der
+   *  Wertpapierstamm ACTIVE fuehrt (core/listing-staleness.js). Nur Bericht: es wird
+   *  nichts ausgeschlossen. masterIdx = Staleness.masterIndex(us-security-master.json). */
+  function staleTails(seriesList, masterIdx, Staleness, grain, minRun) {
+    var weekly = grain === "weekly", n = minRun || (weekly ? Staleness.DEFAULTS.weeklyMinRun : Staleness.DEFAULTS.dailyMinRun);
+    var hist = {}, found = [], checked = 0, noMaster = 0, inactive = 0;
+    (seriesList || []).forEach(function (s) {
+      var st = masterIdx.byId[s.securityId];
+      var t = Staleness.tailRun(s.points);
+      if (!t) return;
+      var key = t.run >= 30 ? "30+" : String(t.run);
+      hist[key] = (hist[key] || 0) + 1;
+      if (!st) { noMaster++; return; }
+      if (!st.active) { inactive++; return; }
+      checked++;
+      var f = Staleness.staleTail(s, st, n);
+      if (f) found.push(f);
+    });
+    found.sort(function (a, b) { return b.run - a.run || (a.securityId < b.securityId ? -1 : 1); });
+    var unit = weekly ? "Wochenschluesse" : "Tagesschluesse";
+    var r = result(weekly ? "DQ-PX-7" : "DQ-PX-6",
+      "Kein eingefrorenes Kursende bei aktiven Titeln (" + (weekly ? "Wochenreihe" : "Tagesreihe") + ", >= " + n + " gleiche Schluesse)", "WARN", checked,
+      found.map(function (f) { return f.securityId + ": " + (f.run === f.points ? "alle " : "") + f.run + " gleiche " + unit + " seit " + f.since + " (" + f.close + "), Stamm " + f.master + (f.masterEnd ? " bis " + f.masterEnd : ""); }),
+      "Endlaeufe gleicher Schluesse ueber alle Reihen: " + JSON.stringify(hist) + ". Nicht geprueft: " + noMaster + " ohne Stammzeile, " + inactive +
+      " im Stamm nur INACTIVE (siehe DQ-ID-4). Typische Ursache: Delisting/Uebernahme, der Anbieter schreibt den letzten Kurs fort. Nur Bericht - kein Ausschluss.");
+    r.histogram = hist;
+    r.minRun = n;
+    r.findings = found;
+    return r;
+  }
+
+  /** DQ-ID-4: Wertpapierstamm und Tagesreihe widersprechen sich nicht
+   *  (Stamm INACTIVE, Reihe laeuft weiter = Ticker-Wiederverwendung oder Fortschreibung;
+   *  Stamm ACTIVE, Reihe zu Ende). */
+  function masterSeriesConsistency(seriesList, masterIdx, Staleness, expectedSession, lagFn, maxLag, minRun) {
+    var found = [], byClass = {}, checked = 0;
+    (seriesList || []).forEach(function (s) {
+      var st = masterIdx.byId[s.securityId];
+      if (!st) return;
+      checked++;
+      var c = Staleness.masterConflict(s, st, { expectedSession: expectedSession, lagFn: lagFn, maxLag: maxLag, minRun: minRun });
+      if (!c) return;
+      byClass[c.class] = (byClass[c.class] || 0) + 1;
+      found.push(c);
+    });
+    var order = ["MASTER_INACTIVE_SERIES_CURRENT", "MASTER_INACTIVE_SERIES_FROZEN", "MASTER_INACTIVE_SERIES_AFTER_END", "MASTER_ACTIVE_SERIES_ENDED"];
+    found.sort(function (a, b) { return order.indexOf(a.class) - order.indexOf(b.class) || (a.securityId < b.securityId ? -1 : 1); });
+    var r = result("DQ-ID-4", "Wertpapierstamm und Tagesreihe widersprechen sich nicht (aktiv/inaktiv, Ende)", "WARN", checked,
+      found.map(function (c) { return c.securityId + ": " + c.class + " - Reihe bis " + c.to + (c.lag !== null ? " (" + c.lag + " Sitzungen zurueck)" : "") +
+        ", Stamm " + c.master + " Ende " + c.masterEnd + (c.masterRows > 1 ? " (" + c.masterRows + " Zeilen)" : ""); }),
+      "Klassen: " + JSON.stringify(byClass) + ". Stamm: " + (masterIdx.version || "?") + " vom " + (masterIdx.today || "?") +
+      " (ACTIVE-Zeilen tragen als Ende den Stammstand; Titel, die danach delistet wurden, stehen dort noch ACTIVE). Nur Bericht - kein Ausschluss.");
+    r.byClass = byClass;
+    r.findings = found;
+    return r;
+  }
+
   /* ------------------------------------------------------------ Produkte */
 
   /** DQ-PR-1: jede ausgelieferte Aktienseite hat ihren Indexeintrag und umgekehrt. */
@@ -806,6 +863,7 @@
     seriesIntegrity: seriesIntegrity, seriesFreshness: seriesFreshness, implausibleJumps: implausibleJumps,
     dailyWeeklyAgreement: dailyWeeklyAgreement, compareDailyWeekly: compareDailyWeekly, closeUnit: closeUnit,
     payloadMatchesSeries: payloadMatchesSeries,
+    staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
