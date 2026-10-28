@@ -338,7 +338,7 @@
      zurueckrechnen lassen - nur im modellierten Ablauf erlaubt. */
   /* Order-, Stop- oder Limitname: nach Wortteilen des camelCase-Namens, nicht nach Teilzeichenketten
      ("closeVsTop" ist der Abstand zur Boxoberkante, kein Stop; "initialStop", "stopReference" sind es). */
-  var SF8_ORDER_WORDS = ["trigger", "stop", "limit", "entry"];
+  var SF8_ORDER_WORDS = ["trigger", "stop", "limit", "entry", "trailing"];
   var SF8_ORDER_KEY = { test: function (k) {
     var words = String(k).replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9]+/);
     return words.some(function (w) { return SF8_ORDER_WORDS.indexOf(w) >= 0; }) || /maxplannedloss|plannedloss/i.test(String(k));
@@ -376,6 +376,56 @@
     C12: ["gapInAtr", "gap", "gapPct", "atr40", "volumeRatio50", "volumeStatus", "contextProxyMa50", "closeVsGapLow"],
     C13: ["adx", "adxAbove30Since", "closeVsEma20", "impulseHighDate", "entrySource", "trailing"]
   };
+  /* Form der Ansicht unterhalb von MODELED (unabhaengige Nachpruefung 28.10.: auch oberste Schluessel, trend,
+     sortKeys, verschachtelte Werte, Marken und Texte, sonst passiert ein umbenannter Orderpreis neben features). */
+  var SF8_VIEW_KEYS = ["strategyId", "candidateId", "ticker", "securityId", "companyName", "exchange", "shard", "stage", "reach", "ceiling", "asOf", "close", "recordId", "pattern", "met", "pending", "interpretations", "notMet", "pivot", "levels", "features", "trend", "plan", "planBlockers", "why", "dataQuality", "blockReasons", "rank", "sortKeys"];
+  var SF8_TREND_KEYS = ["close", "change1d", "ma50", "ma200", "vsMa50", "vsMa200", "ma50Rising20d", "ret63", "ret126", "high252", "low252", "belowHigh252", "windowSessions", "volumeVs50d", "dollarVolume20d", "adr20"];
+  var SF8_SORT_KEYS = ["stage", "pivot", "volume", "momentum", "setupState", "streak", "trend", "dataQuality", "ticker"];
+  var SF8_FEATURE_OBJECTS = { momentum: ["p1m", "p3m", "p6m", "best", "r1m", "r3m", "r6m"], vcpFootprint: ["contractions", "depths", "contractingLeftToRight", "lastContractionVolumeVs50d", "baseSessions"] };
+  var SF8_LEVEL_OBJECTS = { box: ["from", "to", "top", "bottom"] };
+  var SF8_PIVOT_KEYS = ["level", "kind", "distance"];
+  /* Schluessel in levels, aus dem die Chartmarke stammt (records.mjs#STRUCTURE_MARK) */
+  var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C06: "pivot", C07: "pivot", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
+  function sf8Primitive(x) { return x === null || ["string", "number", "boolean"].indexOf(typeof x) >= 0; }
+  /* Texte sind Codes, Daten und Statusangaben; ein Dezimalpreis in einem Text ("BUY_STOP_22.90") faellt auf */
+  function sf8PriceInText(x) {
+    if (typeof x === "string") return /\d[.,]\d/.test(x) || /[$€]/.test(x);
+    if (Array.isArray(x)) return x.some(sf8PriceInText);
+    if (x && typeof x === "object") return Object.keys(x).some(function (k) { return sf8PriceInText(x[k]); });
+    return false;
+  }
+  function sf8ShapeFindings(v, where) {
+    var out = [];
+    Object.keys(v).forEach(function (k) { if (SF8_VIEW_KEYS.indexOf(k) < 0) out.push(where + ": Feld " + k + " gehoert nicht zur Ansicht"); });
+    [["trend", SF8_TREND_KEYS], ["sortKeys", SF8_SORT_KEYS]].forEach(function (d) {
+      var o = v[d[0]] || {};
+      Object.keys(o).forEach(function (k) {
+        if (d[1].indexOf(k) < 0) out.push(where + ": " + d[0] + "." + k + " ist nicht vorgesehen");
+        else if (!sf8Primitive(o[k])) out.push(where + ": " + d[0] + "." + k + " ist kein einfacher Wert");
+      });
+    });
+    Object.keys(v.features || {}).forEach(function (k) {
+      var x = v.features[k], sub = SF8_FEATURE_OBJECTS[k];
+      if (sf8Primitive(x)) return;
+      if (Array.isArray(x)) { if (!x.every(sf8Primitive)) out.push(where + ": features." + k + " enthaelt Objekte"); return; }
+      if (!sub) { out.push(where + ": features." + k + " ist ein Objekt"); return; }
+      Object.keys(x).forEach(function (j) { if (sub.indexOf(j) < 0 || !(sf8Primitive(x[j]) || (Array.isArray(x[j]) && x[j].every(sf8Primitive)))) out.push(where + ": features." + k + "." + j + " ist nicht vorgesehen"); });
+    });
+    Object.keys(v.levels || {}).forEach(function (k) {
+      var x = v.levels[k], sub = SF8_LEVEL_OBJECTS[k];
+      if (sf8Primitive(x)) return;
+      if (!sub || Array.isArray(x)) { out.push(where + ": levels." + k + " ist kein einfacher Wert"); return; }
+      Object.keys(x).forEach(function (j) { if (sub.indexOf(j) < 0 || !sf8Primitive(x[j])) out.push(where + ": levels." + k + "." + j + " ist nicht vorgesehen"); });
+    });
+    if (v.pivot !== null && v.pivot !== undefined) {
+      Object.keys(v.pivot).forEach(function (k) { if (SF8_PIVOT_KEYS.indexOf(k) < 0) out.push(where + ": pivot." + k + " ist nicht vorgesehen"); });
+      var src = SF8_PIVOT_LEVEL[v.candidateId];
+      if (src && (!v.levels || v.levels[src] !== v.pivot.level)) out.push(where + ": Chartmarke " + v.pivot.level + " ist nicht die Strukturmarke levels." + src);
+    }
+    var texts = {}; Object.keys(v).forEach(function (k) { if (k !== "companyName" && k !== "features" && k !== "levels" && k !== "trend" && k !== "sortKeys" && k !== "pivot") texts[k] = v[k]; });
+    if (sf8PriceInText(texts) || sf8PriceInText(v.features) ) out.push(where + ": Preis in einem Text");
+    return out;
+  }
   var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE", C06: "VCP_PROXY_PIVOT", C07: "RUN_UP_HIGH",
     C08: "CONSOLIDATION_10_LEVEL", C09: "GAP_DAY_LOW", C12: "GAP_DAY_LOW" };
   function hasNumber(x) {
@@ -492,6 +542,7 @@
         /* Statustexte wie "NOT_IN_SOURCE" oder "DATA_BLOCKED" sind erlaubt, Zahlen nicht */
         else if (SF8_ORDER_KEY.test(k) && hasNumber(v.features[k])) fail.push(where + ": Zahl unter features." + k);
       });
+      fail.push.apply(fail, sf8ShapeFindings(v, where));
       if (v.pivot !== null && v.pivot !== undefined) {
         if (!SF8_PIVOT_KINDS[v.candidateId]) fail.push(where + ": Chartmarke, obwohl die einzige Marke der Quelle die Order ist");
         else if (v.pivot.kind !== SF8_PIVOT_KINDS[v.candidateId]) fail.push(where + ": Chartmarke " + v.pivot.kind + " (erwartet " + SF8_PIVOT_KINDS[v.candidateId] + ")");
@@ -642,7 +693,7 @@
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
-    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize

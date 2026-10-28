@@ -152,6 +152,27 @@ test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N be
     const b = bundle((v) => { const x = v[c][0]; if (x.stage === "MODELED_TRADE_PLAN") { x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; } x.features[k] = 12.34; });
     assert.ok(failing(b).includes("DQ-SF8-4"), c + " features." + k);
   }
+  /* zweite unabhaengige Nachpruefung: auch ausserhalb von features und verschachtelt (Mutationen A1-A8) */
+  const probes = {
+    "Feld oben": (v) => { v.C03[0].buyPoint = 22.9; },
+    "trend": (v) => { v.C03[0].trend = { close: 22.66, buyPoint: 22.9 }; },
+    "sortKeys": (v) => { v.C03[0].sortKeys = { stage: 0, entryPrice: 22.9 }; },
+    "verschachtelt features": (v) => { v.C08[0].features = { momentum: { p1m: 0.9, buyPoint: 4.68 } }; },
+    "Objekt features": (v) => { v.C08[0].features = { priorMove: { stop: 4.1 } }; },
+    "verschachtelt levels": (v) => { v.C03[0].levels = { top: 98, box: { from: "2026-10-01", top: 98, bottom: 90, protective: 89 } }; },
+    "Chartmarke nicht aus der Struktur": (v) => { v.C03[0].pivot = { level: 99.2, kind: "BOX_TOP", distance: 0.01 }; },
+    "Feld in pivot": (v) => { v.C03[0].pivot = { level: 98, kind: "BOX_TOP", distance: 0.02, stop: 90 }; },
+    "Preis im Text": (v) => { v.C03[0].planBlockers = ["BUY_STOP_22.9065_STOP_20.75"]; },
+    "Preis in why": (v) => { v.C03[0].why = [{ code: "SETUP", detail: "Einstieg ab $22" }]; },
+    "trailing als Zahl": (v) => { v.C13[0].features = { trailing: 41.2 }; }
+  };
+  for (const [name, mut] of Object.entries(probes)) assert.ok(failing(bundle(mut)).includes("DQ-SF8-4"), name);
+  /* die echten Formen bleiben gruen: Statuscodes mit Datum, verschachtelte VCP-Spur, Box als Objekt */
+  assert.ok(!failing(bundle((v) => {
+    v.C06[0].features = { vcpFootprint: { contractions: 3, depths: [0.23, 0.07], contractingLeftToRight: false, lastContractionVolumeVs50d: 0.95, baseSessions: 58 } };
+    v.C08[0].interpretations = [{ ruleId: "KK-SF-BO-MOMENTUM", id: "MI-SF8-KK-MOMENTUM-P98", ownerDecision: "O-6 (2026-10-26)" }];
+    v.C03[0].levels = { top: 98, box: { from: "2026-10-01", to: "2026-10-23", top: 98, bottom: 90 } };
+  })).includes("DQ-SF8-4"));
   /* Statustexte unter Order-Namen bleiben zulaessig, Zahlen nicht (C11 stop, C10 entry, C13 trailing) */
   assert.ok(!failing(bundle((v) => { v.C11[0].features = { stop: "NOT_IN_SOURCE (MOKA-SF-PP-STOP manuell)" }; v.C10[0].features = { entry: "DATA_BLOCKED (Intraday)" }; })).includes("DQ-SF8-4"));
   assert.ok(failing(bundle((v) => { v.C11[0].features = { stop: 41.2 }; })).includes("DQ-SF8-4"));
