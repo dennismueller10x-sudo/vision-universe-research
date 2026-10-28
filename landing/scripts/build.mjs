@@ -27,7 +27,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html']) {
+  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html','instagram/energie/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
@@ -81,7 +81,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   }
   await writeFile(resolve(output,'partner/index.html'),partner);
   // Instagram pages reuse the partner layout and media; each list is a subpage.
-  for(const page of ['instagram/index.html','instagram/robotaxi/index.html']){
+  for(const page of ['instagram/index.html','instagram/robotaxi/index.html','instagram/energie/index.html']){
     let html=await readFile(resolve(output,page),'utf8');
     html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
     for(const asset of ['partner/partner.css','partner/partner.js','instagram/instagram.css']){
