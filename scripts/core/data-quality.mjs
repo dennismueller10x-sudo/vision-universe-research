@@ -128,6 +128,16 @@ if (twArt && twArt.cols) {
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
 }
 
+/* SEC-Fundamentaldaten (quant/data/sec/consumer, Erzeuger update-sec-fundamentals.yml) */
+const SEC = "quant/data/sec/consumer";
+const secBundles = dir(SEC, /^CIK\d+\.json$/).map((f) => {
+  const b = maybe(SEC + "/" + f);
+  return b && { cik: b.cik, tickers: b.tickers, annual: b.annual, quarterly: b.quarterly, ttm: b.ttm, quality: b.quality };
+}).filter(Boolean);
+rules.push(DQ.secFiscalYearLabels(secBundles));
+rules.push(DQ.secFuturePeriods(secBundles));
+rules.push(DQ.secRefusals(secBundles));
+
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });
 
 if (a.json) console.log(JSON.stringify(report, null, 2));

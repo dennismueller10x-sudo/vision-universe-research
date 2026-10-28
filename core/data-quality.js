@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "core-data-quality-1.0.0";
+  var VERSION = "core-data-quality-1.1.0";   // 1.1.0: DQ-SEC-1/2/3 (V9 SEC/PIT)
   var SAMPLE = 25;
 
   function result(id, title, severity, checked, failures, note) {
@@ -302,6 +302,76 @@
       "Fehlend " + missing.length + ", mit Grund gezaehlt " + skipped + " (" + JSON.stringify(skippedCounts || {}) + ").");
   }
 
+  /* ------------------------------------------------- SEC-Fundamentaldaten */
+  /* bundles = [{ cik, tickers, annual, quarterly, ttm, quality }] aus
+     quant/data/sec/consumer/CIK*.json (Erzeuger update-sec-fundamentals.yml).
+     Zeilen: [fy, fp, end, v, filed, accn, derived] (consumer.ROW_COLUMNS). */
+
+  function secRows(b) {
+    var out = [];
+    ["annual", "quarterly"].forEach(function (k) {
+      Object.keys(b[k] || {}).forEach(function (m) {
+        (b[k][m] || []).forEach(function (r) { if (Array.isArray(r)) out.push({ part: k, metric: m, fy: r[0], fp: r[1], end: r[2], filed: r[4] }); });
+      });
+    });
+    Object.keys(b.ttm || {}).forEach(function (m) {
+      var t = b.ttm[m];
+      if (t && typeof t === "object") out.push({ part: "ttm", metric: m, fy: null, fp: t.fp, end: t.end, filed: t.filed });
+    });
+    return out;
+  }
+  function secName(b) { return ((b.tickers && b.tickers[0]) || "?") + " CIK" + b.cik; }
+
+  /** DQ-SEC-1: ein veroeffentlichtes Geschaeftsjahreslabel liegt hoechstens ein Jahr neben
+   *  dem Kalenderjahr seines Periodenendes (V9: PRTH 43465/43830, WTBA 2107, STX 2027). */
+  function secFiscalYearLabels(bundles) {
+    var checked = 0, fail = [];
+    (bundles || []).forEach(function (b) {
+      var seen = {};
+      secRows(b).forEach(function (r) {
+        if (typeof r.fy !== "number" || typeof r.end !== "string") return;
+        checked++;
+        if (Math.abs(r.fy - Number(r.end.slice(0, 4))) > 1) {
+          var key = r.fy + "|" + r.end;
+          if (!seen[key]) { seen[key] = 1; fail.push(secName(b) + ": FY-Label " + r.fy + " fuer Periodenende " + r.end + " (" + r.metric + ")"); }
+        }
+      });
+    });
+    return result("DQ-SEC-1", "SEC-Geschaeftsjahreslabel liegen hoechstens ein Jahr neben dem Periodenende", "WARN", checked, fail,
+      "Ursache meist ein unplausibles fy im Jahresbericht; die Normalisierung lehnt es ab (IMPLAUSIBLE_FILING_FY, DQ-SEC-3).");
+  }
+
+  /** DQ-SEC-2: keine veroeffentlichte SEC-Zeile endet nach ihrem Einreichungsdatum
+   *  (Faelligkeitsplan, erklaerte Dividende, Deckblattdatum nach Annahme; V9: ASLE 2034, AXR 2033, PMT 2028-2030). */
+  function secFuturePeriods(bundles) {
+    var checked = 0, fail = [];
+    (bundles || []).forEach(function (b) {
+      secRows(b).forEach(function (r) {
+        if (typeof r.end !== "string" || typeof r.filed !== "string") return;
+        checked++;
+        if (r.end.slice(0, 10) > r.filed.slice(0, 10)) fail.push(secName(b) + ": " + r.metric + " " + r.part + " Ende " + r.end + " nach Einreichung " + r.filed);
+      });
+    });
+    return result("DQ-SEC-2", "SEC-Werte enden nicht nach ihrer Einreichung (keine Zukunftsperiode)", "WARN", checked, fail,
+      "Die Normalisierung quarantaeniert solche Fakten (FUTURE_PERIOD_END, DQ-SEC-3).");
+  }
+
+  /** DQ-SEC-3 (INFO, Messung): was die Normalisierung abgelehnt hat - fy-Anker
+   *  (IMPLAUSIBLE_FILING_FY) und Zukunftsperioden (FUTURE_PERIOD_END), je Emittent.
+   *  INFO, weil die Ablehnung die richtige Behandlung ist; die Zahl macht Wiederkehr sichtbar. */
+  function secRefusals(bundles) {
+    var fail = [], anchors = 0, quarantined = 0, iA = 0, iQ = 0;
+    (bundles || []).forEach(function (b) {
+      var q = b.quality || {}, a = (q.implausibleFilingFy || []).length, f = (q.futurePeriodEnd || {}).quarantined || 0;
+      if (a) { iA++; anchors += a; }
+      if (f) { iQ++; quarantined += f; }
+      if (a || f) fail.push(secName(b) + ": IMPLAUSIBLE_FILING_FY " + a + ", FUTURE_PERIOD_END " + f);
+    });
+    return result("DQ-SEC-3", "SEC-Normalisierung: abgelehnte fy-Anker und quarantaenierte Zukunftsperioden (gezaehlt)", "INFO",
+      (bundles || []).length, fail,
+      "IMPLAUSIBLE_FILING_FY " + anchors + " bei " + iA + " Emittenten; FUTURE_PERIOD_END " + quarantined + " bei " + iQ + " Emittenten.");
+  }
+
   /** Fasst Regelergebnisse zusammen. */
   function summarize(rules) {
     var s = { ERROR: 0, WARN: 0, INFO: 0 }, overall = "PASS";
@@ -324,6 +394,7 @@
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
+    secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     summarize: summarize
   };
 });

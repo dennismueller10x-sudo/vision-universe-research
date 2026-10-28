@@ -22,6 +22,9 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-TW-2 | WARN | kein Tagesfeld des Technical-Katalogs ist in allen Zeilen leer | `aboveEma200`/`distEma200` vor dem ersten Lauf nach #927 |
 | DQ-TW-3 | ERROR | Technical-Schluss = Schluss der Discover-Tagesreihe am selben Tag (eine Preiswahrheit) | 26.10.2026: 5.647/5.647 gleich |
 | DQ-TW-4 | WARN | jeder materialisierte Titel steht im Technical-Screener oder ist in `meta.skipped` gezählt | sechs Vorzugsaktien (C-P-N, F-P-B/C/D, T-P-A/C) fielen still durch ein Dateimuster |
+| DQ-SEC-1 | WARN | jedes veröffentlichte Geschäftsjahreslabel der SEC-Bundles (`quant/data/sec/consumer`) liegt höchstens ein Jahr neben dem Kalenderjahr seines Periodenendes | V9: WTBA FY 2107 für 2017, STX FY 2027 für das Jahr bis 2025-06-27, PRTH 43465/43830 |
+| DQ-SEC-2 | WARN | keine veröffentlichte SEC-Zeile endet nach ihrem Einreichungsdatum (Fälligkeitsplan, erklärte Dividende, Deckblattdatum nach Annahme) | V9: ASLE Aktienzahl zum 2034-03-05 aus einem Filing von 2024, AXR 2033, PFIS 2028, AAL 2027 |
+| DQ-SEC-3 | INFO | zählt je Emittent, was die Normalisierung abgelehnt hat: fy-Anker `IMPLAUSIBLE_FILING_FY` und Zukunftsperioden `FUTURE_PERIOD_END` (Bundle-Feld `quality`). INFO, weil die Ablehnung die richtige Behandlung ist; die Zahl macht Wiederkehr sichtbar | V9: 5 Emittenten mit unplausiblem fy, 900 Zukunftsbeobachtungen |
 
 ## Erster Lauf (03.10.2026, Repository-Stand)
 
