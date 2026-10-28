@@ -27,7 +27,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 |---|---|---|
 | Kandidaten, Stufen | 3.001 (2.023 / 953 / 25) | 3.001 (2.023 / 953 / 25), dieselben Datensätze |
 | MODELED-Ansichten | – | **0 geändert** |
-| Kennzahlen | – | nur C07 unterhalb von MODELED: `correction` ausgeblendet (19 Ansichten) |
+| Kennzahlen | – | nur unterhalb von MODELED: C07 `correction` (19 Ansichten); C06 `pctBelowHigh52w`, `largestCorrection`, `vcpFootprint.depths` (668 Ansichten) |
 | Trendübersicht | – | nur C06/C07/C13 unterhalb von MODELED: `high252` und `belowHigh252` ausgeblendet (668 / 19 / 171 Ansichten) |
 | Vertragsdatensätze (`records/`) | – | Inhalt gleich bis auf `provenance.codeSha256` (Code-Fingerabdruck); nur die Reihenfolge in C03–C05 folgt den neuen Rängen |
 | Ansichten mit Strukturmarken unterhalb von MODELED | 0 | 2.957 |
@@ -52,6 +52,13 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 - Benannte Ausnahmen, nur für genau diese Pfade:
   - das Gap-Tief von C09/C12 (Owner-Entscheidung);
   - keine weitere: `trend.high252` und `belowHigh252` sind bei C06/C07/C13 unterhalb von MODELED ausgeblendet (Owner-Entscheidung 28.10.2026). Der Test baut für ACVA, SLAB, BIO-B (C06), MGLD (C07) und BIO-B (C13) das echte 52-Wochen-Hoch aus den Kursen nach. Jedes gleicht einer Order-Größe und wird rot.
+- `SF8-HIGH252-NOT-DERIVABLE` (unabhängiges Review 28.10.2026, Befund B1/N1): Das ausgeblendete Hoch darf sich auch nicht aus einem Abstand zurückrechnen lassen.
+  - Befund: `features.pctBelowHigh52w` (C06) ist derselbe Wert wie `belowHigh252`; `close / (1 − x)` ergab das Hoch in 668 von 668 SEPA-Ansichten (größter Fehler 0,06 $).
+  - Befund: die Basistiefe (`largestCorrection`, `vcpFootprint.depths` = 1 − Tief / Basishoch) ergab es in 22 Ansichten über `trend.low252`, wenn das Basistief am 52-Wochen-Tief lag.
+  - Korrektur: alle drei bei C06 unterhalb von MODELED ausgeblendet (`ORDER_DERIVED_BY_METHOD`, `ORDER_DERIVED_SUBFIELDS_BY_METHOD`). Eine Rundung auf ganze Prozent wurde geprüft und verworfen: eine flache Basis landete auf dem groben Raster zufällig wieder auf 0,01 % am Hoch.
+  - Es bleiben `pctAboveLow52w`, `vcpProxyState`, Zahl und Verlauf der Kontraktionen, Basislänge, `rangesContracting`.
+  - Der Test sucht über alle Zahlen der Ansicht (Abstand mit Schluss, `low252`, Durchschnitten, Strukturmarken; relative Toleranz 2·10⁻⁴). Gegenproben: der Detektorwert `pctBelowHigh52w` in jeder SEPA-Ansicht und eine Basistiefe am 52-Wochen-Tief werden rot.
+  - Im vollen Lauf bleiben nur einzelne Zufallstreffer aus allgemeinen Kursdaten (z. B. Schluss = Hoch, wenn die Aktie am Hoch schließt; Vortagesschluss über `change1d`). Diese Werte zeigt der normale Aktienchart ohnehin; keine strategiebezogene Kennzahl trifft mehr.
 - Die 55 Ansichten unterhalb von MODELED der Golden Cases sind per SHA-256 eingefroren.
 - `SF8-STRUCTURE-MARKS`: Marken je Methode in den Golden Cases. Prüft Darvas, BGU und C07 einzeln sowie das fail-closed-Verhalten.
 - Golden Case C07 unterhalb von MODELED:

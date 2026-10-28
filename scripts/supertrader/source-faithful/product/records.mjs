@@ -183,7 +183,13 @@ export function chartMarks(det, stage, close) {
 export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposedStopRiskPct', 'riskGuide15pct', 'plannedLossAtPivot', 'sellGuide']);
 // Je Methode: Kennzahlen, die rechnerisch eine Order-Größe sind. Power Play: die Korrekturtiefe ist genau der geplante Verlust
 // am Pivot (Stop am Tief der Korrektur, research/minervini-lifecycle.mjs: plannedLossAtPivot = 1 - stop / pivot).
-export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C07: Object.freeze(['correction']) });
+// SEPA: pctBelowHigh52w ist genau trend.belowHigh252 (close / (1 − x) ergäbe das ausgeblendete 52-Wochen-Hoch, Owner 28.10.2026);
+// die Basistiefen (largestCorrection, vcpFootprint.depths = 1 − Tief / Basishoch) ergeben mit dem Basistief (oft Schluss oder
+// 52-Wochen-Tief) das Basishoch, also Hoch und Pivot (Review 28.10.: 22 von 668 SEPA-Ansichten über low252). Eine Rundung
+// schützt nicht verlässlich (eine flache Basis landet auf einem groben Raster zufällig wieder nahe am Hoch). Es bleiben Zahl und
+// Verlauf der Kontraktionen und die Basislänge.
+export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C06: Object.freeze(['pctBelowHigh52w', 'largestCorrection']), C07: Object.freeze(['correction']) });
+export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.freeze({ vcpFootprint: Object.freeze(['depths']) }) });
 // Owner-Entscheidung 28.10.2026: Bei SEPA, Power Play und Holy Grail fällt das 52-Wochen-Hoch oft genau mit der Einstiegsmarke
 // zusammen (Pivot bzw. Touch-Hoch am Hoch). Unterhalb von MODELED trägt die strategiebezogene Ansicht es deshalb nicht, auch
 // nicht den Abstand dazu (close / (1 − belowHigh252) ergäbe es wieder). Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt.
@@ -197,7 +203,9 @@ export function publicFeatures(det, stage) {
   const f = det.features ?? {};
   if (stage === STAGE.MODELED_TRADE_PLAN) return f;
   const cid = candidateIdOf(det.strategyId), extra = (cid && ORDER_DERIVED_BY_METHOD[cid]) || [];
-  return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k) && !extra.includes(k)));
+  const sub = (cid && ORDER_DERIVED_SUBFIELDS_BY_METHOD[cid]) || {};
+  return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k) && !extra.includes(k))
+    .map(([k, x]) => [k, sub[k] && x && typeof x === 'object' ? Object.fromEntries(Object.entries(x).filter(([j]) => !sub[k].includes(j))) : x]));
 }
 
 /**

@@ -12,7 +12,7 @@ import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } fro
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex, commonFeatures } from '../source-faithful/product/detectors.mjs';
 import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
-import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, TREND_HIDDEN_BY_METHOD, planView, chartMarks, publicFeatures, publicTrend } from '../source-faithful/product/records.mjs';
+import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, ORDER_DERIVED_SUBFIELDS_BY_METHOD, TREND_HIDDEN_BY_METHOD, planView, chartMarks, publicFeatures, publicTrend } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG, RULE_LABELS } from '../source-faithful/product/catalog.mjs';
 import { validateCandidateRecord, loadSf6Readiness, stageCeilings, ruleClasses, STAGE_ORDER } from '../source-faithful/product/candidate-contract.mjs';
@@ -363,7 +363,43 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
   assert.equal(sorted.length, 55);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '2dd18a20f20b45da363d28cdaa5fcb153d5a268fa6f58f6edc8a92262ae03d2e');
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '71c51b6d3b0fd997dd32e3eefb7001cd5d86d221be86c67238f0c7f123a88b21');
+});
+
+// Review B1/N1 (28.10.2026): das ausgeblendete 52-Wochen-Hoch darf sich auch nicht aus einem veröffentlichten Abstand
+// zurückrechnen lassen (close / (1 − x), low252 / (1 − x) usw.; r4-Rundung reicht dafür, also relative Toleranz 2e-4)
+function highDerivations(v, hi) {
+  const nums = numbersOf(v).filter(([p, x]) => !/Date|date|Sessions|sessions|olume|contractions/.test(p) && Number.isFinite(x));
+  const anchors = nums.filter(([p, x]) => x > 0 && /^\.trend\.(close|low252|ma\d+)$|^\.levels\./.test(p));
+  const out = [];
+  for (const [p, x] of nums) {
+    if (Math.abs(x - hi) / hi < 2e-4) out.push(`${p} = Hoch`);
+    if (!(x > 0 && x < 1)) continue;
+    for (const [ap, a] of anchors) for (const [f, c] of [['/(1-x)', a / (1 - x)], ['*(1+x)', a * (1 + x)]]) if (Math.abs(c - hi) / hi < 2e-4) out.push(`${ap}${f} mit x = ${p}`);
+  }
+  return out;
+}
+test('SF8-HIGH252-NOT-DERIVABLE: SEPA, Power Play, Holy Grail unterhalb von MODELED: das 52-Wochen-Hoch ist weder Zahl noch Abstand', () => {
+  const secs = securities(), below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN' && ['C06', 'C07', 'C13'].includes(v.candidateId));
+  assert.ok(below.filter((v) => v.candidateId === 'C06').length >= 3);
+  const hiOf = (v) => commonFeatures(secs.find((x) => x.ticker === v.ticker).bars).high252;
+  assert.deepEqual(below.flatMap((v) => highDerivations(v, hiOf(v)).map((d) => `${v.candidateId} ${v.ticker} ${d}`)), []);
+  for (const v of below.filter((x) => x.candidateId === 'C06')) {
+    for (const k of ['pctBelowHigh52w', 'largestCorrection']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
+    assert.ok(!v.features.vcpFootprint || !('depths' in v.features.vcpFootprint), `${v.ticker} vcpFootprint.depths`);
+    assert.ok(['pctAboveLow52w', 'vcpProxyState', 'baseLengthSessions', 'rangesContracting'].every((k) => k in v.features), `${v.ticker} Beschreibung bleibt`);
+  }
+  // Gegenproben: der Detektorwert pctBelowHigh52w fiele in jeder SEPA-Ansicht auf
+  const det = (v) => { const s = secs.find((x) => x.ticker === v.ticker); return DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null }); };
+  const c06 = below.filter((v) => v.candidateId === 'C06');
+  for (const v of c06) { const w = structuredClone(v); w.features.pctBelowHigh52w = det(v).features.pctBelowHigh52w; assert.notDeepEqual(highDerivations(w, hiOf(v)), [], `${v.ticker} pctBelowHigh52w`); }
+  // Basistief am 52-Wochen-Tief (im vollen Lauf 22 von 668 SEPA-Ansichten): die Tiefe ergäbe mit low252 das Hoch
+  for (const v of c06) {
+    const hi = hiOf(v), depth = 1 - v.trend.low252 / hi;
+    for (const set of [(w) => { w.features.largestCorrection = depth; }, (w) => { w.features.vcpFootprint = { ...(w.features.vcpFootprint ?? {}), depths: [depth] }; }]) {
+      const w = structuredClone(v); set(w); assert.notDeepEqual(highDerivations(w, hi), [], `${v.ticker} ${set}`);
+    }
+  }
 });
 
 test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste Konfigurationstexte ohne Preis; die Vorschau zeigt nur die Regel', () => {
@@ -391,8 +427,13 @@ test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste 
 test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, Widerstand, Gap-Tief), nie eine Einstiegs-, Stop- oder Ordermarke', async () => {
   // Gegenstück im Core (DQ-SF8-4, PR #1062): sobald der Core den verschärften Vertrag trägt, gleichen sich beide Tabellen genau
   const { default: DQ } = await import('../../../core/data-quality.js');
-  if (DQ.SF8_TREND_HIDDEN) {
-    const plain = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, [...v]]));
+  // alle oder keine: ein umbenannter Export schaltet den Abgleich nicht still ab (Review N2)
+  const coreKeys = ['SF8_TREND_HIDDEN', 'SF8_FEATURES_HIDDEN', 'SF8_SUBFIELDS_HIDDEN', 'SF8_PIVOT_LEVEL'], present = coreKeys.filter((k) => k in DQ);
+  assert.ok(present.length === 0 || present.length === coreKeys.length, `Core-Vertrag unvollständig: ${present.join(', ')}`);
+  if (present.length) {
+    const plain = (o) => JSON.parse(JSON.stringify(o));
+    assert.deepEqual(plain(DQ.SF8_SUBFIELDS_HIDDEN), plain(ORDER_DERIVED_SUBFIELDS_BY_METHOD));
+    assert.deepEqual({ ...DQ.SF8_PIVOT_LEVEL }, Object.fromEntries(Object.entries(EXPECTED_MARK).map(([c, m]) => [c, m[0]])));
     assert.deepEqual(plain(DQ.SF8_STRUCTURE_LEVELS), EXPECTED_STRUCTURE);
     assert.deepEqual(DQ.SF8_PIVOT_KINDS, Object.fromEntries(Object.entries(EXPECTED_MARK).map(([c, m]) => [c, m[1]])));
     assert.deepEqual(plain(DQ.SF8_FEATURES_HIDDEN), plain(ORDER_DERIVED_BY_METHOD));
@@ -431,7 +472,8 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
     // die Korrekturtiefe ist rechnerisch der geplante Verlust am Pivot (1 - Stop / Pivot): wie plannedLossAtPivot ausgeblendet
     for (const k of ['plannedLossAtPivot', 'correction']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
   }
-  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C07: ['correction'] });
+  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C06: ['pctBelowHigh52w', 'largestCorrection'], C07: ['correction'] });
+  assert.deepEqual(ORDER_DERIVED_SUBFIELDS_BY_METHOD, { C06: { vcpFootprint: ['depths'] } });
   // Owner-Entscheidung 28.10.2026: SEPA, Power Play, Holy Grail ohne 52-Wochen-Hoch (und ohne den Abstand dazu) unterhalb von MODELED
   assert.deepEqual(TREND_HIDDEN_BY_METHOD, { C06: ['high252', 'belowHigh252'], C07: ['high252', 'belowHigh252'], C13: ['high252', 'belowHigh252'] });
   for (const v of below) {
