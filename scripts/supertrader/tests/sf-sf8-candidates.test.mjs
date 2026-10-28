@@ -10,7 +10,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
-import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION } from '../source-faithful/product/detectors.mjs';
+import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex } from '../source-faithful/product/detectors.mjs';
+import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
 import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, planView, chartMarks, publicFeatures } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG, RULE_LABELS } from '../source-faithful/product/catalog.mjs';
@@ -254,6 +255,9 @@ function shapeFindings(v) {
   if (Object.keys(v.levels ?? {}).length) out.push('levels');
   if (v.pivot !== null) out.push('pivot');
   if (v.plan !== null) out.push('plan');
+  // Zahlen nur in den Zahlenfeldern; in Codes, Gründen und Datenqualität steht keine Zahl (auch kein gerundeter Preis)
+  const hasNum = (x) => typeof x === 'number' || (x && typeof x === 'object' && Object.values(x).some(hasNum));
+  for (const [k, x] of Object.entries(v)) if (!['close', 'rank', 'features', 'trend', 'sortKeys', 'levels', 'pivot'].includes(k) && hasNum(x)) out.push(`Zahl in ${k}`);
   const { companyName, features, trend, sortKeys, ...texts } = v;
   if (/\d[.,]\d|[$€]/.test(JSON.stringify(texts).replace(/"close":[\d.]+/, ''))) out.push('Preis im Text');
   for (const x of Object.values(features ?? {})) if (typeof x === 'string' && /\d[.,]\d|[$€]/.test(x)) out.push('Preis in einem Statustext');
@@ -271,9 +275,49 @@ test('SF8-VIEW-SHAPE-BELOW-MODEL: die ganze Ansicht unterhalb von MODELED folgt 
     [bolt, (v) => { v.features.momentum = { ...(v.features.momentum ?? {}), buyPoint: 4.68 }; }], [bolt, (v) => { v.features.priorMove = { stop: 4.1 }; }],
     [avbc, (v) => { v.levels = { top: 22.9, box: { top: 22.9, bottom: 20.75 } }; }], [avbc, (v) => { v.pivot = { level: 22.9065, kind: 'BOX_TOP', distance: 0.01 }; }],
     [avbc, (v) => { v.planBlockers = ['BUY_STOP_22.9065_STOP_20.75']; }], [avbc, (v) => { v.why = [{ code: 'SETUP', detail: 'Einstieg ab $23' }]; }],
-    [c13, (v) => { v.features.trailing = 'TRAIL_41.20'; }],
+    [c13, (v) => { v.features.trailing = 'TRAIL_41.20'; }], [avbc, (v) => { v.why = [...v.why, { code: 'SETUP', ref: 23 }]; }], [avbc, (v) => { v.dataQuality = { ...v.dataQuality, level: 22.9 }; }],
   ];
   for (const [base, mut] of probes) { const v = structuredClone(base); mut(v); assert.notDeepEqual(shapeFindings(v), [], mut.toString()); }
+});
+
+// Bedeutung der Werte, nicht nur ihre Namen (dritte Nachprüfung): die Detektoren laufen hier ein zweites Mal auf denselben
+// eingefrorenen Reihen, und keine veröffentlichte Zahl unterhalb von MODELED darf einer ihrer Order-Größen gleichen (Trigger,
+// Stop-/Risikoreferenz, Limit, Plan, order-abgeleitete Kennzahlen) – unter welchem Namen auch immer. Ausgenommen ist nur der
+// veröffentlichte Schluss (ADR-002), der bei einem Ausbruch zum Schluss mit der Marke zusammenfallen kann.
+function detectorOrderValues() {
+  const secs = securities(), asOf = F.asOf, nextSession = CAL.nextSession(asOf), out = new Map();
+  const dq = new Map(secs.map((s) => [s.id, assessSecurity(s, { asOf, calendar: CAL, weekly: WEEKLY.get(s.id) ?? null, continuity: { bySecurityId: new Map() }, priceReference: refAt(asOf)(s.id) ?? null })]));
+  const ev = secs.filter((s) => dq.get(s.id).status !== 'FAIL');
+  const momentum = momentumIndex(ev.filter((s) => dq.get(s.id).checks.some((c) => c.id === 'LIQUIDITY_RESEARCH_UNIVERSE' && c.status === 'PASS')), asOf);
+  for (const v of views()) {
+    const s = secs.find((x) => x.ticker === v.ticker);
+    const det = DETECTORS[v.strategyId](s, { dq: dq.get(s.id), weekly: WEEKLY.get(s.id) ?? null, momentum, nextSession, benchWeekly: null, asOf, listingStart: s.meta?.listingStart ?? null });
+    const lv = det.levels ?? {};
+    out.set(v.recordId, [lv.trigger, lv.stopReference, lv.limit, det.plan?.trigger, det.plan?.stop, det.plan?.limit, ...ORDER_DERIVED_FEATURES.map((k) => det.features?.[k])].filter((x) => Number.isFinite(x) && x !== 0));
+  }
+  return out;
+}
+const numbersOf = (x, p = '') => (x && typeof x === 'object' ? Object.entries(x).flatMap(([k, y]) => numbersOf(y, `${p}.${k}`)) : typeof x === 'number' ? [[p, x]] : []);
+function orderValueLeaks(vs, ov) {
+  const out = [];
+  for (const v of vs) for (const [p, x] of numbersOf(v)) if (p !== '.close' && p !== '.trend.close') for (const o of ov.get(v.recordId) ?? []) if (Math.abs(x - o) < 1e-9) out.push(`${v.candidateId} ${v.ticker} ${p} = ${o}`);
+  return out;
+}
+
+test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von MODELED gleicht einer Order-Größe der Detektoren', () => {
+  const ov = detectorOrderValues(), below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
+  assert.ok([...below].filter((v) => (ov.get(v.recordId) ?? []).length).length >= 30, 'die Gegenprobe hat Order-Größen');
+  assert.deepEqual(orderValueLeaks(below, ov), []);
+  // Gegenproben: echter Preis unter erlaubtem Namen (N1, N5) oder als ganze Zahl in einer Kennzahl
+  const acva = below.find((v) => v.candidateId === 'C06' && v.ticker === 'ACVA'), avbc = below.find((v) => v.candidateId === 'C03');
+  for (const [base, mut] of [[acva, (v, o) => { v.features.ma200OneMonthAgo = o[0]; }], [avbc, (v, o) => { v.trend.high252 = o[0]; }], [avbc, (v, o) => { v.sortKeys.trend = o[o.length - 1]; }]]) {
+    const v = structuredClone(base); mut(v, ov.get(v.recordId)); assert.notDeepEqual(orderValueLeaks([v], ov), [], mut.toString());
+  }
+  // jede Zahl unterhalb von MODELED ist eingefroren: eine neue oder geänderte Zahl (auch ein Preis in einer Liste, N2) ist eine
+  // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
+  const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
+  assert.equal(sorted.length, 50);
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '91be182a5ab9abece651959818717eda79615416927dc164f99276b1dd9a88fa');
 });
 
 test('SF8-STRUCTURE-MARKS-PINNED: unterhalb von MODELED heute keine Marken und keine Chartmarke (bekannter Schlüsselfehler, Owner-Entscheidung)', () => {
@@ -294,6 +338,12 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.equal(pushes.length, 2, pushes.join('\n'));
   assert.match(pushes[0], /^\s*if \(v\.pivot && fin\(v\.pivot\.level\)\) levels\.push\(\{ id: 'pivot', label: 'Chartmarke', value: v\.pivot\.level,/);
   assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
+  const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
+  assert.deepEqual([...drawNoPlan.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => !/^var\(--[a-z0-9-]+\)$/.test(x) && /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), []);
+  for (const m of drawNoPlan.matchAll(/label: ([^,}]+)/g)) assert.match(m[1].trim(), /^'[^']*'( \+ |$)|^m\[0\] \+ /, `Beschriftung ${m[1]}`);
+  assert.doesNotMatch(draw, /markers: \[[^\]]/, 'keine Marker');
+  for (const l of draw.split('\n').filter((x) => /overlays\.push\(/.test(x))) assert.match(l, /values: STChart\.sma\(bars\.close, (m\[0\]|150)\)/, l);
   // keine aus Kursbalken oder Kennzahlen errechnete Marke (Mutation M3b): Linien nur als gleitende Durchschnitte, Box nur aus levels.box
   assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
   // Kästen nur aus levels.box; die Karte außerhalb der Planansicht beschriftet nichts als Einstieg, Stop, Limit oder Order
@@ -303,6 +353,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
   assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
   assert.match(card, /pair\('Chartmarke', usd\(p\.level\)/);
+  for (const m of card.matchAll(/(?<!function )pair\(([^,]+),/g)) assert.match(m[1].trim(), /^'[^']*'$/, `Kartenzeile ${m[1]}`);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;
   assert.equal(planUses, 2, 'Definition und genau ein Aufruf');
