@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: independent stdlib re-computation of the single-title TR ledgers (tr-protocol-1.0.0 "parity").
+"""V10 TR register: independent stdlib re-computation of the single-title TR ledgers (tr-protocol-1.0.1 "parity").
 
 Reads only the weekly series files and the TR register (recordDate, exDateDerived, payDate, contemporaneous amount) and
 recomputes from scratch: series-unit amount from the series' own provider factors, entitlement week, pay week, units, cash and
