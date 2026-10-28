@@ -93,6 +93,43 @@ test("DQ-TW-1..4 · Technical: veralteter Datensatz, leere Felder, zweite Preisw
   assert.equal(DQ.technicalCoverage(["A", "B", "C"], ["A"], { tooFewBars: 1 }).failed, 2, "mehr Luecken als Gruende");
 });
 
+test("DQ-SEC-1/2/3 · fy-Label weit neben dem Periodenende, Zukunftsperiode, gezaehlte Ablehnungen", () => {
+  /* Muster aus V9 (secpit): WTBA FY 2107 fuer 2017, ASLE Deckblattdatum 2034 in einem Filing von 2024. */
+  const wtba = { cik: "0000000001", tickers: ["WTBA"], annual: { revenue: [[2016, "FY", "2016-12-31", 1, "2017-03-01", "a", 0], [2107, "FY", "2017-12-31", 2, "2018-03-01", "b", 0]] }, quarterly: {}, ttm: {} };
+  const asle = { cik: "0000000002", tickers: ["ASLE"], annual: {}, quarterly: { shares_outstanding: [[2033, "Q4", "2034-03-05", 5, "2024-03-27", "c", 0]] },
+    ttm: { shares_outstanding: { fp: "Q4", end: "2034-03-05", v: 5, filed: "2024-03-27" }, net_debt: { fp: "LATEST", end: "2024-12-31", v: 1, derived: true } } };
+  const ok = { cik: "0000000003", tickers: ["OK"], annual: { revenue: [[2024, "FY", "2025-01-31", 1, "2025-03-20", "d", 0], [2024, "FY", "2024-02-01", 1, "2024-03-20", "e", 0]] }, quarterly: {}, ttm: {},
+    quality: { implausibleFilingFy: [{ periodEnd: "2017-12-31", filingClaimedFy: 2107, usedFy: 2017 }], futurePeriodEnd: { quarantined: 4, byMetric: { long_term_debt: 4 } } } };
+  const labels = DQ.secFiscalYearLabels([wtba, asle, ok]);
+  assert.equal(labels.severity, "WARN");
+  assert.equal(labels.failed, 1, "nur WTBA; ein Jahr Abstand (Januar-Jahresende) ist Konvention");
+  assert.match(labels.samples[0], /WTBA CIK0000000001: FY-Label 2107 fuer Periodenende 2017-12-31/);
+  const future = DQ.secFuturePeriods([wtba, asle, ok]);
+  assert.equal(future.severity, "WARN");
+  assert.equal(future.failed, 2, "Quartalszeile und TTM von ASLE; abgeleitete Zeile ohne filed wird nicht gewertet");
+  assert.ok(future.samples.every((s) => /^ASLE CIK0000000002: shares_outstanding (quarterly|ttm) Ende 2034-03-05 nach Einreichung 2024-03-27$/.test(s)));
+  const counted = DQ.secRefusals([wtba, asle, ok]);
+  assert.equal(counted.severity, "INFO");
+  assert.equal(counted.failed, 1);
+  assert.equal(counted.note, "IMPLAUSIBLE_FILING_FY 1 bei 1 Emittenten; FUTURE_PERIOD_END 4 bei 1 Emittenten.");
+  assert.equal(DQ.summarize([counted]).overall, "PASS", "eine INFO-Messung aendert das Gesamturteil nicht");
+});
+
+test("DQ-TW-5 · Wochen-/Monatsfelder: leer ist ein Fehler erst, wenn die Materialisierung sie liefert", () => {
+  const cols = { s: ["A", "B"], "rsi14@1W": [50, null], "roc21@1W": [null, null], "roc21@1M": [null, null], "adx@1M": [null, null], rsi14: [1, 2] };
+  const need = { roc21: "technical-mtf-1.1.0" };
+  const old = DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.0.0"]);
+  assert.deepEqual(old.samples, ["adx@1M: in allen 2 Zeilen leer, obwohl die Materialisierung es liefert"]);
+  assert.equal(old.checked, 2);
+  assert.match(old.note, /Wartet auf Materialisierung \(2\): roc21@1M, roc21@1W/);
+  assert.match(old.note, /rsi14@1W 50 %/);
+  const neu = DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.0.0", "technical-mtf-1.1.0"]);
+  assert.equal(neu.checked, 4);
+  assert.equal(neu.failed, 3, "mit 1.1.0 zaehlen die leeren ROC-Spalten");
+  assert.equal(DQ.technicalTimeframeFields(cols, need, ["technical-mtf-1.10.0"]).failed, 3, "Versionen numerisch, nicht als Text");
+  assert.equal(DQ.technicalTimeframeFields(cols, need, []).checked, 0, "ohne Buendel wartet alles");
+});
+
 test("Zusammenfassung · ERROR macht FAIL, nur WARN macht WARN", () => {
   const pass = { status: "PASS", severity: "ERROR" }, warn = { status: "FAIL", severity: "WARN" }, err = { status: "FAIL", severity: "ERROR" };
   assert.equal(DQ.summarize([pass, warn]).overall, "WARN");

@@ -1,0 +1,889 @@
+{
+ "schemaVersion": "v9-ca-dryrun-1.0.0",
+ "note": "Dry run with an external wrapper around the UNCHANGED createLoader; no engine or data file edited. Not a qualification decision.",
+ "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+ "evidenceEngine": "corporate-action-evidence-1.0.0",
+ "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+ "proposalEntries": 164,
+ "acceptedEntries": 153,
+ "entriesByEffect": {
+  "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE_MANUAL_PRE2001": 1,
+  "RESOLVED_PRICE_RETURN_ONLY_DISTRIBUTION_DOCUMENTED": 4,
+  "RESOLVED_SOURCE_EVIDENCE_GENUINE_MOVE": 148,
+  "NOT_ACCEPTED_IDENTITY_UNVERIFIED": 10,
+  "DATA_DEFECT_REQUIRES_CORRECTED_SERIES": 1
+ },
+ "before": {
+  "QUALIFIED": 4449,
+  "INSUFFICIENT_HISTORY": 439,
+  "MISSING_WEEKS": 218,
+  "CORPORATE_ACTION_UNRESOLVED": 600,
+  "INELIGIBLE_EQUITY_LISTING": 295,
+  "AMBIGUOUS_LISTING_IDENTITY": 180,
+  "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+  "LISTING_IDENTITY_MISMATCH": 3,
+  "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+ },
+ "after": {
+  "QUALIFIED": 4530,
+  "INSUFFICIENT_HISTORY": 439,
+  "MISSING_WEEKS": 218,
+  "INELIGIBLE_EQUITY_LISTING": 295,
+  "CORPORATE_ACTION_UNRESOLVED": 519,
+  "AMBIGUOUS_LISTING_IDENTITY": 180,
+  "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+  "LISTING_IDENTITY_MISMATCH": 3,
+  "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+ },
+ "delta": {
+  "QUALIFIED": 81,
+  "CORPORATE_ACTION_UNRESOLVED": -81
+ },
+ "newlyQualified": [
+  {
+   "id": "ref_AAPL",
+   "events": [
+    {
+     "week": "2000-09-29",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ABT",
+   "events": [
+    {
+     "week": "2013-01-04",
+     "resolution": "SPIN_OFF_DISTRIBUTION"
+    }
+   ],
+   "priceReturnOnly": true
+  },
+  {
+   "id": "ref_ACET",
+   "events": [
+    {
+     "week": "2023-06-30",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ACRS",
+   "events": [
+    {
+     "week": "2023-11-17",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ALEC",
+   "events": [
+    {
+     "week": "2025-10-24",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ALNY",
+   "events": [
+    {
+     "week": "2016-10-07",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ANAB",
+   "events": [
+    {
+     "week": "2017-10-13",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_APRE",
+   "events": [
+    {
+     "week": "2020-12-31",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ASMB",
+   "events": [
+    {
+     "week": "2020-11-06",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ATEC",
+   "events": [
+    {
+     "week": "2015-08-07",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ATNM",
+   "events": [
+    {
+     "week": "2013-03-22",
+     "resolution": "GENUINE_MOVE"
+    },
+    {
+     "week": "2024-08-09",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ATRA",
+   "events": [
+    {
+     "week": "2026-01-16",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_AVTX",
+   "events": [
+    {
+     "week": "2016-12-02",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_BKSY",
+   "events": [
+    {
+     "week": "2022-05-27",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_BMEA",
+   "events": [
+    {
+     "week": "2023-03-31",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_BRLS",
+   "events": [
+    {
+     "week": "2024-05-24",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_BYSI",
+   "events": [
+    {
+     "week": "2024-03-08",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CELU",
+   "events": [
+    {
+     "week": "2026-08-28",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CLDX",
+   "events": [
+    {
+     "week": "2018-04-20",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CLSK",
+   "events": [
+    {
+     "week": "2017-11-03",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CPIX",
+   "events": [
+    {
+     "week": "2021-12-03",
+     "resolution": "GENUINE_MOVE"
+    },
+    {
+     "week": "2025-02-07",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CPRI",
+   "events": [
+    {
+     "week": "2024-10-25",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CPS",
+   "events": [
+    {
+     "week": "2022-08-05",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_CRBP",
+   "events": [
+    {
+     "week": "2020-09-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_DMRA",
+   "events": [
+    {
+     "week": "2023-08-18",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_DWTX",
+   "events": [
+    {
+     "week": "2024-01-26",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_EDSA",
+   "events": [
+    {
+     "week": "2020-06-19",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ELTX",
+   "events": [
+    {
+     "week": "2021-10-29",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ERII",
+   "events": [
+    {
+     "week": "2015-10-23",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_EYPT",
+   "events": [
+    {
+     "week": "2011-11-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_FMC",
+   "events": [
+    {
+     "week": "2025-10-31",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_GALT",
+   "events": [
+    {
+     "week": "2024-12-20",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_GLSI",
+   "events": [
+    {
+     "week": "2020-12-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_GOSS",
+   "events": [
+    {
+     "week": "2026-02-27",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_GRAL",
+   "events": [
+    {
+     "week": "2026-02-20",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_GRCE",
+   "events": [
+    {
+     "week": "2026-04-24",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_HOUR",
+   "events": [
+    {
+     "week": "2024-12-27",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_IZEA",
+   "events": [
+    {
+     "week": "2012-05-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_JCI",
+   "events": [
+    {
+     "week": "2012-10-05",
+     "resolution": "SPIN_OFF_DISTRIBUTION"
+    }
+   ],
+   "priceReturnOnly": true
+  },
+  {
+   "id": "ref_KOSS",
+   "events": [
+    {
+     "week": "2024-07-05",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_KYNB",
+   "events": [
+    {
+     "week": "2024-02-02",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_LAW",
+   "events": [
+    {
+     "week": "2022-08-12",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_LXRX",
+   "events": [
+    {
+     "week": "2020-12-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MAMO",
+   "events": [
+    {
+     "week": "2026-02-06",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MDGL",
+   "events": [
+    {
+     "week": "2015-10-23",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MGNX",
+   "events": [
+    {
+     "week": "2019-02-08",
+     "resolution": "GENUINE_MOVE"
+    },
+    {
+     "week": "2020-05-08",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MGRX",
+   "events": [
+    {
+     "week": "2026-03-27",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MIRA",
+   "events": [
+    {
+     "week": "2024-07-26",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MLSS",
+   "events": [
+    {
+     "week": "2011-11-25",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MTNB",
+   "events": [
+    {
+     "week": "2023-08-11",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_MVST",
+   "events": [
+    {
+     "week": "2024-11-15",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_NBIX",
+   "events": [
+    {
+     "week": "2014-01-10",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_NTLA",
+   "events": [
+    {
+     "week": "2025-10-31",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_NVNO",
+   "events": [
+    {
+     "week": "2025-08-22",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ODYS",
+   "events": [
+    {
+     "week": "2022-08-12",
+     "resolution": "GENUINE_MOVE"
+    },
+    {
+     "week": "2023-08-18",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_OLMA",
+   "events": [
+    {
+     "week": "2021-12-03",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_OM",
+   "events": [
+    {
+     "week": "2023-10-13",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_ORMP",
+   "events": [
+    {
+     "week": "2023-01-13",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_OTLK",
+   "events": [
+    {
+     "week": "2023-09-01",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_PACB",
+   "events": [
+    {
+     "week": "2024-04-19",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_PASG",
+   "events": [
+    {
+     "week": "2026-04-24",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_PBYI",
+   "events": [
+    {
+     "week": "2018-11-02",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_PMTS",
+   "events": [
+    {
+     "week": "2016-05-13",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_PROP",
+   "events": [
+    {
+     "week": "2020-05-15",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_QURE",
+   "events": [
+    {
+     "week": "2025-09-26",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_REPL",
+   "events": [
+    {
+     "week": "2025-10-24",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_RXT",
+   "events": [
+    {
+     "week": "2026-02-20",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SGLY",
+   "events": [
+    {
+     "week": "2022-04-14",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SIEB",
+   "events": [
+    {
+     "week": "2017-12-15",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SLNG",
+   "events": [
+    {
+     "week": "2018-06-08",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SLSN",
+   "events": [
+    {
+     "week": "2020-05-01",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SPXC",
+   "events": [
+    {
+     "week": "2015-10-02",
+     "resolution": "SPIN_OFF_DISTRIBUTION"
+    }
+   ],
+   "priceReturnOnly": true
+  },
+  {
+   "id": "ref_SRPT",
+   "events": [
+    {
+     "week": "2016-09-23",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_SVRA",
+   "events": [
+    {
+     "week": "2019-06-14",
+     "resolution": "GENUINE_MOVE"
+    },
+    {
+     "week": "2019-10-04",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_TNDM",
+   "events": [
+    {
+     "week": "2016-11-04",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_TNXP",
+   "events": [
+    {
+     "week": "2018-07-27",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_TVRD",
+   "events": [
+    {
+     "week": "2021-04-30",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_VAI",
+   "events": [
+    {
+     "week": "2025-06-13",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_VATE",
+   "events": [
+    {
+     "week": "2013-08-30",
+     "resolution": "SPIN_OFF_DISTRIBUTION"
+    }
+   ],
+   "priceReturnOnly": true
+  },
+  {
+   "id": "ref_VRRM",
+   "events": [
+    {
+     "week": "2026-05-29",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  },
+  {
+   "id": "ref_WKHS",
+   "events": [
+    {
+     "week": "2021-02-26",
+     "resolution": "GENUINE_MOVE"
+    }
+   ],
+   "priceReturnOnly": false
+  }
+ ],
+ "newlyQualifiedPriceReturnOnly": 4,
+ "stillHeldBreakdown": {
+  "MULTIPLE_EVENTS_NOT_ACCEPTED": 140,
+  "ONE_EVENT_NOT_ACCEPTED": 379
+ },
+ "productionApproved": false,
+ "hypotheticalCorrectedSeries": [
+  {
+   "securityId": "ref_PZZA",
+   "week": "2014-01-03",
+   "factor": 0.5,
+   "correctedSeriesStatusInMemory": "QUALIFIED",
+   "note": "hypothetical only; publisher rounding of corrected closes not reproduced; requires producer-side regeneration"
+  }
+ ]
+}

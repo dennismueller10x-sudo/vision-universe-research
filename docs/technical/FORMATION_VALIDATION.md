@@ -237,3 +237,245 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 **Wirkung im Produkt:** Der Screener speichert keine Formationspreise, nur Typ, Zustand, Daten und Kennzeichen. Seine Spalten ändern sich nicht. Genauer werden nur die Zahlen im Chart Studio.
 
 **Test:** Dieselbe konstruierte Reihe läuft einmal um 100 $ und einmal auf ein Millionstel skaliert. Erwartet werden gleiche Formationen und Zustände, jeder Punktpreis positiv und proportional. Der Test schlägt auf 1.2.2 fehl.
+
+## 6. Ursachen der Spiegel-Asymmetrie und Dreiecksklassifikation `ti-chart-patterns-1.2.0` / `technical-formations-1.3.0` (Fachmodell, Owner-Freigabe nötig)
+
+Abschnitt 2 nannte zwei Hypothesen für die Restasymmetrie: Prozentregeln und Gleichstände der Pivots. Geprüft wurden beide mit Experimenten in einer Kopie der Engine. Am Modell änderte das nichts.
+
+| Variante | Spiegelquote |
+|---|---|
+| Stand `main` | 81–100 % je Typ (Abschnitt 2) |
+| Pivot-Schwelle nur aus der ATR (ohne `minPct` von 2–15 % des Schlusses) | Kanäle, Flaggen, Wimpel, Keile, Trendlinien **100 %**; Dreiecke, Doppeltop/-boden, SKS, Rechteck 87–99 % |
+| zusätzlich Toleranz der älteren Formationen nur aus der ATR (ohne 2,5 % des Schlusses) | 18 von 20 Typen **100 %**; aufsteigendes Dreieck 95,0 %, Lücke nach oben 99,7 % (ein Fall) |
+| zusätzlich Gleichstandsregel des ersten Pivots umgekehrt (`upMove > downMove`) | unverändert |
+| zusätzlich Klassifikation wie unten | alle Typen **100 %** außer einem Fall bei der Lücke nach oben (Verdachtsregel über das Kursverhältnis) |
+
+**Befund:**
+1. **Gleichstände sind nicht die Ursache.**
+   - Die Pivot-Erkennung behandelt gleiche Hochs und Tiefs symmetrisch: Das erste Extrem bleibt, auf beiden Seiten.
+   - Die einzige asymmetrische Gleichstandsregel betrifft den allerersten Pivot einer Reihe und ändert keine Formation.
+2. **Fast die ganze Restasymmetrie kommt aus prozentualen Mindestschwellen.** Das sind die Pivot-Schwelle `max(Schluss · minPct, k · ATR)` und die Toleranz `max(0,75 ATR, 2,5 % des Schlusses)` der älteren Formationen. Die Spiegelung verschiebt das Kursniveau, deshalb dürfen solche Regeln anders ausfallen. Das ist eine **bewusste Modellwahl, kein Fehler:** Die Prozentschwelle verhindert bei ruhigen Titeln mit kleiner ATR übermäßig viele Pivots. Ohne sie steigt z. B. die Zahl der Rechtecke von 261 auf über 1.100. Eine Änderung wäre ein eigener Fachmodell-PR und ist hier nicht vorgeschlagen.
+3. **Ein echter Geometriefehler in der Dreiecksklassifikation.**
+   - „Flach“ heißt Abstand ≤ tol, „steigend/fallend“ heißt mehr als 0,5 tol. Beides kann zugleich gelten.
+   - Gelten aufsteigendes Dreieck (Hochs flach, Tiefs steigen) und absteigendes Dreieck (Tiefs flach, Hochs fallen) zugleich, entschied die Reihenfolge der Prüfung: „aufsteigend“.
+   - Das Spiegelbild eines solchen Musters wurde wieder „aufsteigend“ statt „absteigend“. Geometrisch konvergiert das Muster, denn die Hochs fallen und die Tiefs steigen.
+
+**Korrektur (1.2.0 / 1.3.0):**
+- Gelten beide Bedingungen zugleich, ist das Muster ein **symmetrisches Dreieck**. Beide Kanten sind dann Linien durch die Pivots statt Waagerechte.
+- Alle anderen Fälle bleiben unverändert. Auch ein absteigendes Dreieck mit leicht steigenden Tiefs innerhalb der Toleranz bleibt absteigend: Seine Unterkante ist flach.
+- Ein zunächst erwogener breiterer Vorrang der Konvergenz hätte auch solche Dreiecke umgedeutet. Er wurde verworfen, weil die gezeichnete flache Kante dann nicht zur Einordnung gepasst hätte.
+
+**Vorher/Nachher:**
+
+| | vorher (1.2.3 / 1.1.1) | nachher (1.3.0 / 1.2.0) |
+|---|---|---|
+| Formationen gesamt (5.657 Titel) | 11.426 | 11.426 |
+| aufsteigende Dreiecke | 372 | 355 (17 werden symmetrisch) |
+| absteigende Dreiecke | 544 | 544 |
+| symmetrische Dreiecke | 428 | 445 |
+| Spiegelquote aufsteigend → absteigend | 84,4 % | 88,2 % |
+| Validator | 11.426 / 11.426 | 11.426 / 11.426 |
+| Screener: Titel mit geänderter Formationsliste | – | 19 von 5.657 |
+
+**Screener im Einzelnen** (Erzeuger mit `main`-Code gegen diesen Stand):
+- Nur die fünf Formationsspalten ändern sich (`formations`, `formationActive`, `formationConfirmed`, `formationOpen`, `formationNewDays`). Alle übrigen Spalten sind byte-gleich.
+- 7 Titel: aufsteigend wird symmetrisch, im selben Zustand oder bestätigt.
+- 7 Titel: Ein symmetrisches Dreieck kommt neu in die Liste. Als aufsteigendes Dreieck hatte ein Ausbruch nach unten es ungültig gemacht. Als symmetrisches Dreieck ist dieser Ausbruch gültig.
+- 3 Titel: Das aufsteigende Dreieck fällt weg. Mit geneigten Kanten ist es bereits gebrochen und ungültig.
+- 2 Titel: geänderte Kennzeichen oder Daten.
+- `meta.json`:
+  - aufsteigend erkannt 193 → 181, aufsteigend bestätigt 58 → 57;
+  - symmetrisch erkannt 28 → 35, symmetrisch bestätigt 302 → 310.
+
+**Test:** `quant/tests/technical-formations-triangles.test.mjs` nutzt echte Bars von INGM und TRMK (Fixture `technical-formations-triangles.json`), die genau diesen Fall zeigen. Geprüft wird:
+- Das Muster ist symmetrisch, nicht aufsteigend.
+- Die obere Kante fällt, die untere steigt.
+- Jedes Dreieck hat sein Gegenstück im Spiegelbild am selben Erkennungstag.
+
+Mit der alten Klassifikation schlagen vier der fünf Prüfungen fehl.
+
+### Absicherung vor dem Merge (Owner-Freigabe 28.10.2026)
+
+Datenstand: `main` nach #1035 (L9), Daten mit dem Erzeuger neu gebaut (`build-screener.mjs`). Wieder ändern sich genau dieselben 19 Titel, nur in den fünf Formationsspalten; alle übrigen 129 Spalten sind byte-gleich.
+
+**Klassifikation und gezeichnete Kanten.** Jede Dreieckskante im Universum wurde gegen ihren Typ geprüft (symmetrisch: oben fallend, unten steigend; aufsteigend: oben waagrecht, unten steigend; absteigend: unten waagrecht, oben fallend):
+
+| Typ | vorher (1.2.3) passend | nachher (1.3.0) passend |
+|---|---|---|
+| symmetrisch | 428 / 428 | 445 / 445 |
+| aufsteigend | 145 / 372 | 145 / 355 |
+| absteigend | 220 / 544 | 220 / 544 |
+
+Die Korrektur macht 17 vorher unpassende Fälle passend und keinen passenden unpassend. Bei aufsteigenden und absteigenden Dreiecken bleibt ein **älterer, eigener Befund**, den diese Korrektur weder verursacht noch behebt:
+- Die Kanten werden nach „flach“ statt nach dem Typ gewählt. Gilt die Unterkante auch als flach, wird ein aufsteigendes Dreieck mit waagrechter Unterkante gezeichnet (Beispiel ABEV 26.10.: Tiefs 2,75 → 2,83, gezeichnet 2,75 → 2,75).
+- Die waagrechte Kante beginnt in `formations.js` am Preis des ersten Pivots statt auf ihrem Niveau (ABEV: 3,3296 → 3,35 statt 3,35 → 3,35).
+
+Beides ändert Ausbruchs- und Invalidierungsniveaus und ist damit ein eigenes Fachmodell. Es kommt als getrennter PR mit Vorher/Nachher und einer Linienprüfung im Validator.
+
+**Keine Rückdatierung.** `validate-formations.mjs --mirror` über 5.657 Titel und 11.426 Formationen meldet 0 × „nicht sichtbar am Erkennungstag“, 0 × „bestätigt vor Erkennung“, 0 × „invalidiert vor Erkennung“ und 0 Geometrieverstöße. `formations.js` bricht zudem bei jeder Erkennung nach dem Stand-Bar ab (`LOOKAHEAD`). Wo ein symmetrisches Dreieck „bei Erkennung ausgebrochen“ ist (LGCL, MC, QNME, XLO), lag der Ausbruch am Erkennungstag selbst, nicht davor; das ist die dokumentierte Kennzeichnung aus #938.
+
+**Die 19 Titel** (Dreiecke vorher → nachher, Screener-Liste):
+
+| Titel | vorher | nachher |
+|---|---|---|
+| CHNR | aufst. 2026-10-09 | symm. 2026-10-09 (offen) |
+| CTWO | aufst. 2026-09-30 | – |
+| ELLO | aufst. 2026-10-23 | symm. 2026-10-23 (offen) |
+| FBDC | – | symm. 2026-09-09 (bestätigt 2026-09-24) |
+| GSUN | aufst. 2026-09-17 | symm. 2026-09-17 (bestätigt 2026-10-02) |
+| INGM | aufst. 2026-10-05 | symm. 2026-10-05 (offen) |
+| KRNT | aufst. 2026-08-18 | symm. 2026-08-18 (offen) |
+| LGCL | – | symm. 2026-08-04 (bestätigt 2026-08-04, bei Erkennung ausgebrochen) |
+| LOCO | aufst. 2026-10-09 | symm. 2026-10-09 (offen) |
+| MC | – | symm. 2026-09-14 (bestätigt 2026-09-14, bei Erkennung ausgebrochen) |
+| NEOV | aufst. 2026-10-14 | symm. 2026-10-14 (bestätigt 2026-10-19) |
+| QNME | – | symm. 2026-10-16 (bestätigt 2026-10-16, bei Erkennung ausgebrochen) |
+| SFHG | aufst. 2026-09-17 | symm. 2026-09-17 (offen) |
+| TRMK | aufst. 2026-10-23 | symm. 2026-10-23 (offen) |
+| UTSI | aufst. 2026-10-05 | – |
+| WBS-P-F | aufst. 2026-08-05 | – |
+| WLKP | – | symm. 2026-09-02 (bestätigt 2026-10-12) |
+| WSBK | aufst. 2026-07-30 (bestätigt 2026-10-26) | – |
+| XLO | – | symm. 2026-10-16 (bestätigt 2026-10-16, bei Erkennung ausgebrochen) |
+
+Erklärung der Fälle ohne direktes Gegenstück:
+- **CTWO, UTSI, WBS-P-F:** Als symmetrisches Dreieck mit geneigten Kanten ist das Muster nach dem Ausbruch wieder gescheitert (invalidiert). Es fällt nach den bestehenden Listenregeln heraus.
+- **WSBK:** Als symmetrisches Dreieck brach es am Erkennungstag (30.07.) nach unten aus und war am 31.07. ein Fehlausbruch. Als aufsteigendes Dreieck zählte nur der Ausbruch nach oben am 26.10.
+- **FBDC, XLO, LGCL, MC, QNME, WLKP:** Als aufsteigendes Dreieck machte der Ausbruch nach unten es ungültig, oder es fiel nach den Listenregeln heraus. Als symmetrisches Dreieck ist derselbe Ausbruch eine bärische Bestätigung.
+
+**Cloudflare Pages auf `8703280`.** Der Check meldete „Build failed“ mit Start = Ende (06:58:46 UTC). Ein Build hat also nicht stattgefunden. Er zählt nicht als erfolgreicher Build. Die Logs liegen nur im Cloudflare-Dashboard; von hier ist kein Zugriff und kein Neustart möglich. Die Ursache liegt bei Cloudflare:
+- Der PR ändert keine Seiten- oder Build-Konfiguration.
+- Derselbe Check baute vorher und nachher auf anderen Zweigen erfolgreich (#1035 um 07:40, #1044 um 08:01).
+- Vercel meldete am selben Morgen sein Tageslimit.
+
+Den tatsächlichen Bau belegen der Pflichtjob `package` (Pages-Paket, grün) und der Cloudflare-Lauf auf dem neuen Kopf dieses PRs.
+
+## 7. Dreieckskanten nach Typ `ti-chart-patterns-1.3.0` / `technical-formations-1.4.0` (Fachmodell, Owner-Freigabe nötig)
+
+**Befund (28.10.2026, Prüfung vor dem Merge von §6):** Bei aufsteigenden und absteigenden Dreiecken passten die gezeichneten Kanten nicht immer zum Typ: aufsteigend 210 von 355, absteigend 324 von 544 (Stand 1.3.0). Zwei Ursachen:
+1. `chart-patterns.js` wählte die Kanten nach „flach“, nicht nach dem Typ. Galt auch die Gegenkante als flach (die Bereiche „flach“ und „steigend/fallend“ überlappen, §6), wurde sie waagrecht gezeichnet. Ein aufsteigendes Dreieck bekam so eine waagrechte Unterkante, obwohl die Tiefs steigen (ABEV 26.10.: Tiefs 2,75 → 2,83, Kante 2,75 → 2,75). Diese Kante bestimmt auch die Invalidierung.
+2. `formations.js` ließ jede Kante am Preis des ersten Pivots beginnen. Eine waagrechte Kante begann damit schief (ABEV: 3,3296 → 3,35 statt 3,35 → 3,35).
+
+**Korrektur:**
+- Waagrecht ist nur die Oberkante des aufsteigenden und die Unterkante des absteigenden Dreiecks (beim Rechteck beide). Die Gegenkante ist die Linie durch die Pivots.
+- Jede Kante beginnt auf ihrem eigenen Wert am ersten Pivot (`upperFrom`/`lowerFrom`).
+- Die Klassifikation selbst ist unverändert.
+
+**Neue Validatorregel** `LINIEN_PASSEN_NICHT_ZUM_TYP` (`validate-formations.mjs`):
+- symmetrisch: oben fallend, unten steigend;
+- aufsteigend: oben waagrecht, unten steigend;
+- absteigend: unten waagrecht, oben fallend.
+
+**Vorher/Nachher (5.657 Titel, Stand 26.10.2026, Daten mit dem Erzeuger gebaut):**
+
+| | 1.3.0 | 1.4.0 |
+|---|---|---|
+| Regelkonform (alle Regeln inkl. Kanten) | 10.892 / 11.426 | 11.387 / 11.387 |
+| Kanten passend: aufsteigend / absteigend / symmetrisch | 145/355 · 220/544 · 445/445 | 325/325 · 535/535 · 445/445 |
+| nicht sichtbar am Erkennungstag, bestätigt oder invalidiert vor Erkennung | 0 | 0 |
+| Spiegeltest aufsteigend / absteigend | – | 294/325 · 478/535 |
+
+- **Screener:** 44 Titel ändern sich, nur in den fünf Formationsspalten.
+  - Es fallen 31 aufsteigende (3 davon bestätigt) und 15 absteigende Dreiecke weg; neu kommt keines hinzu.
+  - Grund: Mit der steigenden Unterkante bzw. fallenden Oberkante schließt der Kurs früher jenseits der Gegenkante. Nach den bestehenden Regeln ist das Muster dann invalidiert (bei Bruch vor der Erkennung nie gültig) und fällt aus der Liste.
+  - Titel: ABEV (aufst. 2026-10-26), ALCYF (aufst. 2026-10-16), AUBN (aufst. 2026-09-29), BBDC (aufst. 2026-09-03), BML-P-J (abst. 2026-08-31), BML-P-L (aufst. 2026-10-15), BRIA (abst. 2026-10-05), BRK-A (aufst. 2026-09-21 bestätigt), BRK-B (aufst. 2026-09-21 bestätigt), BSAC (aufst. 2026-09-16), CLGN (aufst. 2026-10-02), CMS-P-B (aufst. 2026-10-16), CVBF (abst. 2026-10-20), EFC-P-C (abst. 2026-06-30), FEDU (aufst. 2026-10-19), FSHP (aufst. 2026-08-27), FUSB (abst. 2026-10-13, abst. 2026-10-05), GLAD (aufst. 2026-09-14), GRFS (aufst. 2026-10-16), HOLA (aufst. 2026-10-20), JBDI (aufst. 2026-09-03 bestätigt), KEY-P-L (aufst. 2026-07-27), KMB (abst. 2026-10-15), KNSA (aufst. 2026-10-26), MDLZ (abst. 2026-10-12), MGA (aufst. 2026-09-15), NBN (abst. 2026-09-15), OXLCO (aufst. 2026-10-02), PCG-P-C (aufst. 2026-10-01), PEB-P-H (aufst. 2026-07-20), RF-P-C (aufst. 2026-09-28), RGS (aufst. 2026-09-30), SB-P-D (aufst. 2026-09-10), SGU (abst. 2026-09-09), SPME (abst. 2026-09-29), SPOK (abst. 2026-09-18), SST (aufst. 2026-09-10), VBNK (abst. 2026-09-04), WBS-P-G (abst. 2026-08-05), WHLRD (abst. 2026-10-26), WRBY (aufst. 2026-08-06), WW (aufst. 2026-09-29), XRN-P-A (aufst. 2026-10-15, aufst. 2026-10-14), YETI (aufst. 2026-10-07).
+- **Historische Evidenz** (`formation-evidence.json`, gleiche Stichprobe):
+
+| Typ | n | bestätigt bis +20 | invalidiert bis +20 | Überrendite +20 (Mittel) | signifikant |
+|---|---|---|---|---|---|
+| aufsteigend | 2.292 → 2.240 | 40,2 % → 40,4 % | 62,1 % → 66,3 % | −0,23 % → −0,15 % | nein → nein |
+| absteigend | 2.850 → 2.817 | 36,8 % → 36,5 % | 59,8 % → 62,2 % | +0,19 % → +0,18 % | nein → nein |
+| symmetrisch, Rechteck | unverändert | | | | |
+
+**Tests:**
+- `technical-formations-validation.test.mjs`: konstruierte Kanten. Waagrechte statt steigender Unterkante und schief beginnende waagrechte Kante werden erkannt.
+- `technical-formations-triangles.test.mjs`: Versionen.
+- Die Daten hat nach der Freigabe der Erzeuger gebaut (siehe unten).
+
+### Absicherung vor dem Merge (Owner-Freigabe 28.10.2026)
+
+Datenstand: `main` nach #1037 und #1044, Daten mit dem Erzeuger neu gebaut (`build-screener.mjs`, Stichtag 26.10.2026, kein Anbieterabruf).
+
+**Kanten je Typ.** Validator (`LINIEN_PASSEN_NICHT_ZUM_TYP`) und eine unabhängige Prüfung aller 1.305 gelisteten Dreiecke kommen zum selben Ergebnis:
+
+| Typ | Kanten wie vorgeschrieben |
+|---|---|
+| aufsteigend (oben waagrecht, unten steigend) | 325 / 325 |
+| absteigend (oben fallend, unten waagrecht) | 535 / 535 |
+| symmetrisch (oben fallend, unten steigend) | 445 / 445 |
+
+**Dieselbe Geometrie für Linien und Regeln.**
+- `resolve()` und `firstCross()` in `chart-patterns.js` prüfen Ausbruch und Invalidierung gegen dieselben Funktionen `upper(k)` und `lower(k)`, aus denen auch die gezeichneten Kanten entstehen (`upperFrom = upper(erstes Hoch)`, `upperNow = upper(Stand)`).
+- Empirisch geprüft wurde jede Bestätigung und jede Invalidierung aller gelisteten Dreiecke gegen die gezeichnete Kante. Die Kante ist dabei linear zwischen ihren beiden Punkten interpoliert.
+  - **Invalidierungen:** 158 von 158 liegen am ersten Schluss jenseits der Gegenkante.
+  - **Bestätigungen:** 781 von 783 liegen am ersten Schluss jenseits der Ausbruchskante. Lag dieser Schluss vor der Bestätigung des letzten Pivots, gilt nach #938 der Erkennungstag als Bestätigung („bei Erkennung ausgebrochen“).
+  - Die zwei übrigen Fälle (AIM 0,1901 gegen 0,1901, BPYPM 15,4999 gegen 15,5000) liegen innerhalb der Rundung der Linienpunkte auf 4 Stellen.
+
+**Keine Rückdatierung, kein Look-ahead.**
+- Der Validator meldet 11.387 von 11.387 Formationen regelkonform:
+  - 0 × nicht sichtbar am Erkennungstag,
+  - 0 × bestätigt vor Erkennung,
+  - 0 × invalidiert vor Erkennung.
+- `formations.js` bricht bei jeder Erkennung nach dem Stand-Bar ab (`LOOKAHEAD`).
+- Die neue Kante ist aus den Pivots bis zum Erkennungstag bestimmt. Keine Formation erhält dadurch ein früheres Datum.
+- Alle 46 Änderungen sind Wegfälle, neu kommt nichts hinzu.
+
+**Die drei bisher bestätigten Formationen** (vorher 1.3.0 → nachher 1.4.0, Kurse splitbereinigt):
+
+| Titel | 1.3.0 | gezeichnete Unterkante 1.3.0 | 1.4.0 | Grund |
+|---|---|---|---|---|
+| BRK-A | aufsteigendes Dreieck, erkannt 21.09., bestätigt 14.10. (Schluss 789.585,01 über der Oberkante) | waagrecht 729.578,40, obwohl die Tiefs auf 743.500 stiegen | am Erkennungstag 21.09. invalidiert (Schluss 752.180,01 unter der steigenden Unterkante, dort 756.758,67), danach nicht mehr gelistet | Unterkante folgt jetzt den steigenden Tiefs |
+| BRK-B | wie BRK-A, bestätigt 14.10. (Schluss 526,35) | waagrecht 486,06, Tiefs 486,06 → 495,68 | am 21.09. invalidiert (Schluss 502,01 unter der Unterkante, dort 504,84) | wie BRK-A |
+| JBDI | aufsteigendes Dreieck, erkannt 03.09., bestätigt 13.10. (Schluss 3,43) | waagrecht 0,9002, Tiefs 0,9002 → 0,96 | am 29.09. invalidiert (Schluss 1,07 unter der Unterkante, dort 1,0718), vor dem Ausbruch vom 13.10. | Unterkante folgt den steigenden Tiefs |
+
+- Alle drei Ausbrüche fanden statt. Nach den bestehenden Regeln („Schluss unter der steigenden Unterkante invalidiert“) war das Muster aber vorher gebrochen. Mit der korrekten Kante zählen sie deshalb nicht mehr als Bestätigung eines aufsteigenden Dreiecks.
+- Der Datensatz des Stichtags 26.10.2026 vor der Korrektur ist im Git-Verlauf erhalten (`technical/data/screener-v1.json` auf `main` vor diesem PR). Diese Tabelle dokumentiert den Wegfall ausdrücklich.
+
+**Alle 44 Titel und 46 entfallenden Formationen** (Screener-Liste Stand 26.10.2026, vorher → nachher):
+
+| Titel | entfällt | neu |
+|---|---|---|
+| ABEV | aufst. 2026-10-26 | – |
+| ALCYF | aufst. 2026-10-16 | – |
+| AUBN | aufst. 2026-09-29 | – |
+| BBDC | aufst. 2026-09-03 | – |
+| BML-P-J | abst. 2026-08-31 | – |
+| BML-P-L | aufst. 2026-10-15 | – |
+| BRIA | abst. 2026-10-05 | – |
+| BRK-A | aufst. 2026-09-21 (bestätigt 2026-10-14) | – |
+| BRK-B | aufst. 2026-09-21 (bestätigt 2026-10-14) | – |
+| BSAC | aufst. 2026-09-16 | – |
+| CLGN | aufst. 2026-10-02 | – |
+| CMS-P-B | aufst. 2026-10-16 | – |
+| CVBF | abst. 2026-10-20 | – |
+| EFC-P-C | abst. 2026-06-30 | – |
+| FEDU | aufst. 2026-10-19 | – |
+| FSHP | aufst. 2026-08-27 | – |
+| FUSB | abst. 2026-10-13; abst. 2026-10-05 | – |
+| GLAD | aufst. 2026-09-14 | – |
+| GRFS | aufst. 2026-10-16 | – |
+| HOLA | aufst. 2026-10-20 | – |
+| JBDI | aufst. 2026-09-03 (bestätigt 2026-10-13) | – |
+| KEY-P-L | aufst. 2026-07-27 | – |
+| KMB | abst. 2026-10-15 | – |
+| KNSA | aufst. 2026-10-26 | – |
+| MDLZ | abst. 2026-10-12 | – |
+| MGA | aufst. 2026-09-15 | – |
+| NBN | abst. 2026-09-15 | – |
+| OXLCO | aufst. 2026-10-02 | – |
+| PCG-P-C | aufst. 2026-10-01 | – |
+| PEB-P-H | aufst. 2026-07-20 | – |
+| RF-P-C | aufst. 2026-09-28 | – |
+| RGS | aufst. 2026-09-30 | – |
+| SB-P-D | aufst. 2026-09-10 | – |
+| SGU | abst. 2026-09-09 | – |
+| SPME | abst. 2026-09-29 | – |
+| SPOK | abst. 2026-09-18 | – |
+| SST | aufst. 2026-09-10 | – |
+| VBNK | abst. 2026-09-04 | – |
+| WBS-P-G | abst. 2026-08-05 | – |
+| WHLRD | abst. 2026-10-26 | – |
+| WRBY | aufst. 2026-08-06 | – |
+| WW | aufst. 2026-09-29 | – |
+| XRN-P-A | aufst. 2026-10-15; aufst. 2026-10-14 | – |
+| YETI | aufst. 2026-10-07 | – |

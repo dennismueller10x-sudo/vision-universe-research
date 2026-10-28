@@ -33,7 +33,7 @@ import { DETECTORS_VERSION } from './detectors.mjs';
 
 export const RECORDS_VERSION = 'sf8-records-1.0.0';
 const SF = 'scripts/supertrader/source-faithful/';
-const PRODUCT_FILES = ['product/eod-adapter.mjs', 'product/data-quality.mjs', 'product/detectors.mjs', 'product/records.mjs', 'product/ranking.mjs', 'product/catalog.mjs', 'product/candidate-contract.mjs', 'integrity/discontinuity.mjs', 'common/series.mjs'];
+const PRODUCT_FILES = ['product/eod-adapter.mjs', 'product/data-quality.mjs', 'product/detectors.mjs', 'product/records.mjs', 'product/ranking.mjs', 'product/catalog.mjs', 'product/candidate-contract.mjs', 'product/price-parity.mjs', 'integrity/discontinuity.mjs', 'common/series.mjs'];
 /** Engine-Kennung, -Version und Code-Dateien je Strategie (provenance.codeSha256 = SHA-256 über Dateien + Produktcode). */
 export const ENGINES = Object.freeze({
   SF_TURTLE_S1: { engineId: 'methods/turtle.mjs#entryTrigger', engineVersion: TURTLE_VERSION, files: ['methods/turtle.mjs'] },

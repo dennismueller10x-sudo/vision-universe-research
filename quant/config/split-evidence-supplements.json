@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "split-evidence-supplements-1.0.0",
+  "version": 1,
+  "note": "Einzeln belegte Splits, die der splitFactor des Anbieters (Tiingo) nicht fuehrt. Gelesen NUR von den Kursreihen-Herausgebern ueber scripts/market/lib/split-evidence-supplements.mjs: der belegte Split wird in die splitFactor-Spalte einer Kopie der Rohbalken eingetragen, die Bereinigung selbst rechnet unveraendert quant/engines/return-series.js#splitFactors (ADR-002, eine Ableitung). Ein Eintrag wirkt nur, wenn (1) die Reihe am belegten Ex-Tag einen Balken hat, (2) der Anbieter innerhalb von 5 Sitzungen um den Ex-Tag KEINEN Split fuehrt (sonst doppelte Bereinigung) und (3) der Rohschluss am Ex-Tag den unbereinigten Sprung in Split-Groesse wirklich zeigt. Kein Muster, keine Wildcard: jeder Eintrag mit SEC-Originalbeleg (Accession, URL, sha256, woertliches Zitat).",
+  "exDateRule": {
+    "rule": "FINRA/UPC Rule 11140(b)(2): Bei Aktiendividenden und/oder Splits von 25 Prozent oder mehr ist der Ex-Tag der erste Geschaeftstag NACH dem Zahltag (payable/distribution date).",
+    "quote": "In respect to cash dividends or distributions, stock dividends and/or splits, and the distribution of warrants, which are 25 percent or greater of the value of the subject security, the ex-dividend date shall be the first business day following the payable date.",
+    "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/11140",
+    "retrievedAt": "2026-10-28"
+  },
+  "entries": [
+    {
+      "id": "PZZA-2013-12-30-2FOR1",
+      "securityId": "ref_PZZA",
+      "ticker": "PZZA",
+      "cik": "0000901491",
+      "issuer": "PAPA JOHNS INTERNATIONAL INC",
+      "kind": "STOCK_DIVIDEND_SPLIT",
+      "ratio": 2,
+      "declaredAt": "2013-10-29",
+      "recordDate": "2013-12-12",
+      "payableDate": "2013-12-27",
+      "exDate": "2013-12-30",
+      "exDateBasis": "Zahltag Fr 2013-12-27 (Aktiendividende 100 % >= 25 %) -> erster Geschaeftstag danach: Mo 2013-12-30 (exDateRule). Der Rohschluss des Anbieters faellt am selben Tag auf 0,511 des Vortags.",
+      "providerGap": "Tiingo fuehrt fuer PZZA splitFactor 1,5 (1996-03-26), 1,5 (1996-11-25) und 2 (2006-01-17), aber keinen Faktor im Dezember 2013; die Wochenreihe springt 89,95 -> 46,08 (Woche zum 2014-01-03).",
+      "evidence": [
+        {
+          "accession": "0001157523-13-005314",
+          "form": "8-K",
+          "exhibit": "99.1",
+          "filed": "2013-11-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/901491/000115752313005314/a50743495ex99_1.htm",
+          "sha256": "1cf6775451e513e2b789715fc34408e94d6e708cb254f20e600e3f9885b590f1",
+          "bytes": 285226,
+          "quote": "The stock dividend entitles each shareholder of record at the close of business on December 12, 2013 to receive one additional share for every outstanding share of common stock held on such record date. The stock dividend will be distributed on December 27, 2013."
+        },
+        {
+          "accession": "0001104659-14-013226",
+          "form": "10-K",
+          "filed": "2014-02-25",
+          "url": "https://www.sec.gov/Archives/edgar/data/901491/000110465914013226/a14-3257_110k.htm",
+          "sha256": "8cef5918a4867e406936eaf47f3f4f14ec59b5fdf99d8dfad914f31904cd56ec",
+          "bytes": 2975053,
+          "quote": "On October 29, 2013, our Board of Directors approved a two-for-one stock split of our outstanding shares. The stock split was effected in the form of a stock dividend and entitled each shareholder of record at the close of business on December 12, 2013 to receive one additional share for every outstanding share of stock held on the record date. The stock dividend was distributed on December 27, 2013 with approximately 21.0 million shares of stock distributed."
+        }
+      ],
+      "corroboration": "XBRL StockholdersEquityNoteStockSplitConversionRatio1 = 2 (Periodenende 2013-12-29) in 10-K 0001104659-14-013226 und drei folgenden 10-Q; dei:EntityCommonStockSharesOutstanding 21.544.498 (2013-10-28) -> 41.888.411 (2014-02-18), Faktor 1,944 (Rueckkaeufe). V9-Beleg: docs/quant-recovery/v9/corporate-actions/ca-manual-review.json (ref_PZZA|2014-01-03).",
+      "verifiedAt": "2026-10-28",
+      "verifiedBy": "V9-Folgearbeit pzza-split: SEC-Originale neu geladen (scripts/quant/sec/http_client.py, 2 Anfragen/s), Zitate und sha256 aus den geladenen Bytes"
+    }
+  ]
+}

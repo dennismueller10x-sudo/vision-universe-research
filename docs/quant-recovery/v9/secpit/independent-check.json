@@ -1,0 +1,61 @@
+{
+ "schemaVersion": "v9-secpit-independent-check-1.0.0",
+ "codeSha256": "2e131a41e0bc4f1b1478895b286038431c79b26db240bb4860d8846e452894a7",
+ "A_fiscalYear": {
+  "entries": 20785,
+  "accessions": 42,
+  "issuers": 27,
+  "excelSerialRangeEntries": 3723,
+  "parity": {
+   "entries": true,
+   "accessions": true,
+   "issuers": true
+  }
+ },
+ "B_availability": {
+  "rows": 904,
+  "foundInCompanyfacts": 904,
+  "predicateHolds": 904,
+  "classAgreement": 904,
+  "coverDateRowsMatchedByValueOnly": 8,
+  "apiChecked": 9,
+  "apiEqual": 9,
+  "byClassIndependent": {
+   "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD": 285,
+   "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS": 182,
+   "DIVIDEND_DECLARED_FOR_LATER_PERIOD": 175,
+   "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD": 92,
+   "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD": 48,
+   "DURATION_STRADDLING_REPORT_PERIOD_END": 45,
+   "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD": 42,
+   "COVER_DATE_YEAR_SHIFT": 12,
+   "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": 10,
+   "SINGLE_FUTURE_INSTANT_OTHER": 6,
+   "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": 5,
+   "SINGLE_FUTURE_DURATION_OTHER": 2
+  },
+  "byClassParity": true,
+  "finalParity": true
+ },
+ "C_parity": {
+  "factsRecomputed": 1105,
+  "matches": 1105,
+  "instanceShaMatches": 60,
+  "parity": {
+   "facts": true,
+   "matches": true
+  }
+ },
+ "E_availabilitySample": {
+  "rows": 79,
+  "verdicts": {
+   "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE": 6,
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 73
+  },
+  "parity": true
+ },
+ "D_restatements": {
+  "restatementPairs": 793,
+  "parity": true
+ }
+}

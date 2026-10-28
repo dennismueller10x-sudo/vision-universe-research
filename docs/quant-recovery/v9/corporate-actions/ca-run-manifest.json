@@ -1,0 +1,51 @@
+{
+ "schemaVersion": "v9-ca-run-manifest-1.0.0",
+ "baseCommit": "eace7dc9686d49d3fa9dc1a3001503e84ccb4fd4",
+ "code": {
+  "scripts/quant/v9/corporate-actions/build_manual_review.py": "761cd71f7de7a6b6229f7cf82d1769d78be78012a2c1fb388e1f0edecf60b2e7",
+  "scripts/quant/v9/corporate-actions/classify.cjs": "f4b246447f064913b9b6f90f0d6515c958c9802c5ebaa02fd7378df6a73beb0b",
+  "scripts/quant/v9/corporate-actions/evidence_quotes.py": "d1d5f8d8f68c629bc35affb07fbcc64c6dd0428b751ae39ebf27c18ea476f637",
+  "scripts/quant/v9/corporate-actions/fetch_sec_evidence.py": "507c724dfba7da8fd133ad423e07cf0d597c474306cbcdf2d5db23074c32e08c",
+  "scripts/quant/v9/corporate-actions/independent_check.py": "ad7b6eb9d3272193536c834538876039cf3288df3056e16bda84db5a984a7131",
+  "scripts/quant/v9/corporate-actions/missing_weeks.py": "00d69cfbe21261518f3bcaf1673104a9f63c48202762118667117294e1206fb5",
+  "scripts/quant/v9/corporate-actions/mw_delisted_lookup.py": "5862865acd82de14e4fb618a943e9e763208a741e8e98e0453c764b99a8b76ea",
+  "scripts/quant/v9/corporate-actions/mw_sec_sample.py": "a847d4bdd657d0faa90e7e82e9cad59cf3f118226ab538a39372d2cf43034784",
+  "scripts/quant/v9/corporate-actions/proposal_dryrun.cjs": "94b3e66ee1312dd2dbd7515a10192d0a3984db98af97b689fe7697dc4142bc66",
+  "scripts/quant/v9/corporate-actions/stale_tails.py": "e3aad7bdfeea84b339ab68f31d7a464216bff74052cc55e443886f51140b8f06",
+  "scripts/quant/v9/corporate-actions/triage.cjs": "4aa6c41ff38714aaea9002ae995f4214fb3dfa14de4d42fc714292afb3e94df6"
+ },
+ "outputs": {
+  "docs/quant-recovery/v9/corporate-actions/ca-dryrun.json": "50d677c743c13cb255b1c1fb6d17664aae99924b8159a343059791a4a483f78b",
+  "docs/quant-recovery/v9/corporate-actions/ca-event-resolutions.json.gz": "1548f7e7417b7bdc887882a86e23eb78b35383f94ef78a94ce99dc17902b4322",
+  "docs/quant-recovery/v9/corporate-actions/ca-evidence-proposal.json": "bebe1150289077e798bb9e442afe9f74568ffef549c8106659903da03a5fe596",
+  "docs/quant-recovery/v9/corporate-actions/ca-evidence-quotes.json": "ae7a21fe687b660f604eec638b2872d1f8783a776b8f65a55d6a60f1d1333d2c",
+  "docs/quant-recovery/v9/corporate-actions/ca-independent-check.json": "f4a0350f91c0767512ad6fcc47603a0fd956b883202bfeb3c53ac0b865207c3b",
+  "docs/quant-recovery/v9/corporate-actions/ca-manual-review.json": "b9d304a1dc37e8e290cec6a8b62b884a0b780306bbdd510be084fe65758cc6b9",
+  "docs/quant-recovery/v9/corporate-actions/ca-missing-weeks.json": "e30e7b5f03a12dcad020f5720c320839e62b320377e6793613ffc911ca33fcef",
+  "docs/quant-recovery/v9/corporate-actions/ca-stale-tail-finding.json": "f0830f59a07aabce5ecb91f03126a080e941030a14da0e903d221fb0f64be133",
+  "docs/quant-recovery/v9/corporate-actions/ca-triage-summary.json": "3c229ce1af317925511dec1e3e2b12dc20ada10dafc494dc1454dcbcdd05ecf5"
+ },
+ "engines": {
+  "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+  "quant/engines/corporate-action-evidence.js": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+  "quant/data/market/security-master/us-security-master.json": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "scripts/quant/sec/http_client.py": "b5c614f19fe40d9f9ca9a4a8df3abc978f866a8d3027c1a64738987a5b926bbe"
+ },
+ "runtime": {
+  "node": "v22.22.0",
+  "python": "3.13.17"
+ },
+ "secAccess": {
+  "client": "scripts/quant/sec/http_client.py default User-Agent",
+  "rateLimit": "RateLimiter(rate_per_second=2, burst=2) per process; processes run sequentially",
+  "requests": {
+   "evidenceFetch": 2581,
+   "quotes": 117,
+   "missingWeeksSample": 15,
+   "delistedLookup": "~20"
+  },
+  "rawBodies": "private DiskCache only (scratchpad v9-private/corporate-actions/http-cache)"
+ },
+ "methodNote": "Classifier thresholds (bracket 200d, continuity ln1.25, split tol ln1.2, round trip, float band) were fixed before the full run. The split-filing noise filter (exhibit-10/2 exclusion, 3.03/5.03 accession requirement, +-30d window) was refined after inspecting partial output for ~80 listings; manual-review verdicts were set after reading the quoted documents. Hence this is explored/retrospective classification, not a pre-registered test.",
+ "productionApproved": false
+}

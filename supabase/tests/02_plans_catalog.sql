@@ -3,9 +3,9 @@ begin;
 select tests.create_user('carol@example.test') as carol \gset
 
 select tests.anon();
-select tests.eq((select count(*) from public.plans)::int, 3, 'anon sieht tarife');
+select tests.eq((select string_agg(id, ',' order by rank) from public.plans), 'free,pro', 'anon sieht free und pro (plus verborgen)');
 select tests.eq((select count(*) from public.plan_prices where plan_id = 'plus')::int, 2, 'anon sieht preise');
-select tests.eq((select count(*) from public.plan_features where plan_id = 'pro' and feature_key = 'export.csv')::int, 1, 'features lesbar');
+select tests.eq((select count(*) from public.plan_features where plan_id = 'pro' and feature_key = 'watchlist.items')::int, 1, 'features lesbar');
 select tests.throws($$insert into public.plans (id, name, rank) values ('gratis', 'Gratis', 99)$$, 'permission denied');
 select tests.throws($$update public.plan_prices set unit_amount = 0$$, 'permission denied');
 reset role;

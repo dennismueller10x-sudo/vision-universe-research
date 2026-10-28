@@ -2,11 +2,16 @@
 
 // Versioned raw-price ledger. Legacy selection/scheduling is reused; legacy
 // carried-price and last-price delisting liquidations are deliberately excluded.
+// 1.2.0 adds source-evidenced corporate-action types without changing any
+// result of inputs that do not use them: SPINOFF, ADS successor listings,
+// informationAvailableAt (entitlement separated from information time) and
+// cash with a NOT_STATED pay date (claim never credited, reported separately).
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const Profile = require('./profile-backtest.js');
 const Legacy = require('./backtest.js');
-const VERSION = 'research-portfolio-1.1.0';
+const VERSION = 'research-portfolio-1.2.0';
+const INFORMATION_TIME_TYPES = ['CASH_DIVIDEND', 'TERMINAL_CASH', 'TERMINAL_EXCHANGE', 'SPINOFF'];
 const HASH = /^[a-f0-9]{64}$/;
 const cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail : '')); e.code = code; throw e; }
@@ -130,7 +135,9 @@ function runPortfolio(input) {
   if (input.listings.length > 30000 || input.listings.length * sessions.length > 2000000) fail('PORTFOLIO_OPERATION_BUDGET');
   for (const l of input.listings) {
     id(l.listingId); id(l.issuerId); date(l.firstTradeDate); if (l.lastTradeDate !== null) date(l.lastTradeDate);
-    if (listings.has(l.listingId) || !['XNYS', 'XNAS', 'XASE'].includes(l.mic) || l.instrumentClass !== 'COMMON_STOCK' || l.primary !== true || l.currency !== input.currency || (l.lastTradeDate && l.lastTradeDate < l.firstTradeDate)) fail('LISTING_IDENTITY_INELIGIBLE', l.listingId);
+    // An ADS is never a primary listing; it is admitted only as terminal-exchange consideration (checked below).
+    const classOk = l.instrumentClass === 'COMMON_STOCK' ? l.primary === true : l.instrumentClass === 'ADS' && l.primary === false;
+    if (listings.has(l.listingId) || !['XNYS', 'XNAS', 'XASE'].includes(l.mic) || !classOk || l.currency !== input.currency || (l.lastTradeDate && l.lastTradeDate < l.firstTradeDate)) fail('LISTING_IDENTITY_INELIGIBLE', l.listingId);
     const bars = new Map();
     requireArray(l.bars, 'BARS_REQUIRED');
     barCount += l.bars.length;
@@ -142,24 +149,55 @@ function runPortfolio(input) {
     });
     listings.set(l.listingId, { ...l, barMap: bars });
     requireArray(l.events, 'EVENTS_REQUIRED').forEach(e => {
-      id(e.id); date(e.effectiveDate); instant(e.availableAt); hashRef(e.sourceHash);
+      id(e.id); date(e.effectiveDate);
+      // Either legacy availableAt (event must be known by its entitlement session close) or
+      // informationAvailableAt (applied at entitlement regardless; decisions before it fail).
+      if (e.informationAvailableAt !== undefined) {
+        if (!INFORMATION_TIME_TYPES.includes(e.type) || e.availableAt !== undefined) fail('AMBIGUOUS_EVENT_AVAILABILITY', e.id);
+        instant(e.informationAvailableAt);
+      } else if (e.type === 'SPINOFF') fail('INFORMATION_TIME_REQUIRED', e.id);
+      else instant(e.availableAt);
+      hashRef(e.sourceHash);
       if (!Number.isInteger(e.sequence) || e.sequence < 0 || eventIds.has(e.id)) fail('INVALID_EVENT_SEQUENCE');
       eventIds.add(e.id);
-      if (!['SPLIT', 'CASH_DIVIDEND', 'TERMINAL_CASH', 'TERMINAL_EXCHANGE'].includes(e.type)) fail('UNSUPPORTED_CORPORATE_ACTION');
+      if (!['SPLIT', 'CASH_DIVIDEND', 'TERMINAL_CASH', 'TERMINAL_EXCHANGE', 'SPINOFF'].includes(e.type)) fail('UNSUPPORTED_CORPORATE_ACTION');
       if (e.type === 'SPLIT') finite(e.ratio, 'INVALID_SPLIT', Number.MIN_VALUE);
-      else {
-        date(e.payDate); finite(e.amount, 'UNKNOWN_EVENT_VALUE', 0);
-        if (e.payDate < e.effectiveDate || e.currency !== input.currency) fail('INVALID_EVENT_CASH');
+      else if (e.type === 'SPINOFF') {
+        // Cost-basis neutral unit distribution: no cash leg, no pay date.
+        id(e.distributedListingId); finite(e.shareRatio, 'INVALID_SPINOFF_RATIO', Number.MIN_VALUE);
+        if (e.amount !== undefined || e.payDate !== undefined || e.payDateState !== undefined) fail('SPINOFF_CASH_NOT_SUPPORTED', e.id);
+      } else {
+        // payDate null is accepted only with the explicit sourced state NOT_STATED.
+        const notStated = e.payDate === null && e.payDateState === 'NOT_STATED';
+        if (!notStated) { if (e.payDateState !== undefined) fail('INVALID_PAY_DATE_STATE', e.id); date(e.payDate); }
+        finite(e.amount, 'UNKNOWN_EVENT_VALUE', 0);
+        if ((!notStated && e.payDate < e.effectiveDate) || e.currency !== input.currency) fail('INVALID_EVENT_CASH');
       }
       if (e.type === 'TERMINAL_EXCHANGE') { id(e.successorListingId); finite(e.shareRatio, 'INVALID_EXCHANGE_RATIO', Number.MIN_VALUE); }
       allEvents.push({ ...e, listingId: l.listingId });
     });
   }
   if (!listings.size || allEvents.length > 100000) fail('PORTFOLIO_INPUT_BUDGET');
+  const spinoffKeys = new Set();
+  for (const l of listings.values()) {
+    // ADS: successor-only consideration of a terminal exchange; own distributions are not modelled.
+    if (l.instrumentClass === 'ADS' && (l.events.length || !allEvents.some(e => e.type === 'TERMINAL_EXCHANGE' && e.successorListingId === l.listingId))) fail('ADS_SUCCESSOR_ONLY', l.listingId);
+  }
   allEvents.sort((a, b) => cmp(a.effectiveDate, b.effectiveDate) || a.sequence - b.sequence || cmp(a.id, b.id));
   allEvents.forEach((e, i) => {
     if (i && e.effectiveDate === allEvents[i - 1].effectiveDate && e.sequence === allEvents[i - 1].sequence) fail('AMBIGUOUS_EVENT_ORDER');
     if (e.type === 'TERMINAL_EXCHANGE' && (!listings.has(e.successorListingId) || e.successorListingId === e.listingId)) fail('UNKNOWN_SUCCESSOR');
+    if (e.type === 'SPINOFF') {
+      const d = listings.get(e.distributedListingId);
+      if (!d || d.listingId === e.listingId) fail('UNKNOWN_DISTRIBUTED_LISTING', e.id);
+      if (d.instrumentClass !== 'COMMON_STOCK') fail('ADS_SUCCESSOR_ONLY', d.listingId);
+      // The distributed listing must trade, with an exact bar, from the ex-date session on.
+      if (d.firstTradeDate > e.effectiveDate || (d.lastTradeDate && d.lastTradeDate < e.effectiveDate)) fail('DISTRIBUTED_LISTING_NOT_TRADING', e.id);
+      if (e.effectiveDate >= dates[0] && e.effectiveDate <= dates.at(-1) && !d.barMap.has(e.effectiveDate)) fail('DISTRIBUTED_LISTING_PRICE_REQUIRED', e.id);
+      const key = e.listingId + '>' + e.distributedListingId + '@' + e.effectiveDate;
+      if (spinoffKeys.has(key)) fail('DUPLICATE_SPINOFF', e.id);
+      spinoffKeys.add(key);
+    }
     // Entitlement-changing events must land on an explicit valuation session.
     if (e.effectiveDate >= dates[0] && e.effectiveDate <= dates.at(-1) && !byDate.has(e.effectiveDate)) fail('EVENT_SESSION_REQUIRED');
   });
@@ -180,7 +218,7 @@ function runPortfolio(input) {
     }
     if (!t.weights || typeof t.weights !== 'object' || Array.isArray(t.weights)) fail('WEIGHTS_REQUIRED');
     let sum = 0;
-    Object.entries(t.weights).forEach(([k, w]) => { finite(w, 'INVALID_WEIGHT', 0); if (!listings.has(k) || !m.members.includes(k)) fail('TARGET_OUTSIDE_PIT_UNIVERSE', k); sum += w; });
+    Object.entries(t.weights).forEach(([k, w]) => { finite(w, 'INVALID_WEIGHT', 0); if (!listings.has(k) || !m.members.includes(k)) fail('TARGET_OUTSIDE_PIT_UNIVERSE', k); if (w > 0 && listings.get(k).instrumentClass === 'ADS') fail('ADS_SUCCESSOR_ONLY', k); sum += w; });
     if (sum > 1 + 1e-12) fail('LEVERAGE_NOT_SUPPORTED');
     targetMap.set(t.executionDate, t);
   });
@@ -195,6 +233,10 @@ function runPortfolio(input) {
   let cash = initialCapital, totalFees = 0, totalSlippage = 0, turnover = 0;
   let holdings = new Map(), receivables = [], previousTarget = null;
   const equity = [], trades = [], eventLedger = [], rebalances = [], terminated = new Set();
+  // New-feature state; inputs without the new fields never populate it and keep their result shape.
+  const notStatedClaims = [], informationPending = [];
+  const usesNotStated = allEvents.some(e => e.payDate === null), usesInformationTime = allEvents.some(e => e.informationAvailableAt !== undefined);
+  const usesSpinoff = allEvents.some(e => e.type === 'SPINOFF'), usesAds = [...listings.values()].some(l => l.instrumentClass === 'ADS');
   let retainedPositionCells = 0;
   function price(k, session) {
     const l = listings.get(k), b = l.barMap.get(session.date);
@@ -204,11 +246,22 @@ function runPortfolio(input) {
   }
   for (const session of sessions) {
     for (const e of eventsByDate.get(session.date) || []) {
-      if (instant(e.availableAt) > instant(session.closeAt)) fail('EVENT_NOT_AVAILABLE', e.id);
+      const informationTime = e.informationAvailableAt !== undefined;
+      if (!informationTime && instant(e.availableAt) > instant(session.closeAt)) fail('EVENT_NOT_AVAILABLE', e.id);
       const units = holdings.get(e.listingId) || 0;
+      if (informationTime && units) informationPending.push({ eventId: e.id, at: instant(e.informationAvailableAt) });
       if (e.type === 'SPLIT') { if (units) holdings.set(e.listingId, units * e.ratio); }
-      else {
-        if (units && e.amount) receivables.push({ eventId: e.id, amount: units * e.amount, payDate: e.payDate });
+      else if (e.type === 'SPINOFF') {
+        if (units) {
+          const d = listings.get(e.distributedListingId);
+          if (terminated.has(d.listingId)) fail('DISTRIBUTED_LISTING_NOT_TRADING', e.id);
+          holdings.set(d.listingId, (holdings.get(d.listingId) || 0) + units * e.shareRatio);
+        }
+      } else {
+        if (units && e.amount) {
+          if (e.payDate === null) notStatedClaims.push({ eventId: e.id, listingId: e.listingId, entitlementDate: session.date, amount: units * e.amount, payDateState: 'NOT_STATED' });
+          else receivables.push({ eventId: e.id, amount: units * e.amount, payDate: e.payDate });
+        }
         if (e.type.startsWith('TERMINAL_')) {
           if (terminated.has(e.listingId)) fail('DUPLICATE_TERMINAL_EVENT');
           terminated.add(e.listingId); holdings.delete(e.listingId);
@@ -219,7 +272,10 @@ function runPortfolio(input) {
           }
         }
       }
-      eventLedger.push({ date: session.date, eventId: e.id, listingId: e.listingId, type: e.type, entitlementUnits: units, sourceHash: e.sourceHash });
+      const entry = { date: session.date, eventId: e.id, listingId: e.listingId, type: e.type, entitlementUnits: units, sourceHash: e.sourceHash };
+      if (informationTime) entry.informationAvailableAt = e.informationAvailableAt;
+      if (e.payDate === null) entry.payDateState = 'NOT_STATED';
+      eventLedger.push(entry);
     }
     const due = receivables.filter(r => r.payDate <= session.date);
     cash += due.reduce((s, r) => s + r.amount, 0);
@@ -229,6 +285,9 @@ function runPortfolio(input) {
     const before = cash + claims + [...marked.values()].reduce((a, b) => a + b, 0);
     const t = targetMap.get(session.date);
     if (t) {
+      // A decision taken before an applied event became known cannot rely on the state it changed.
+      const decisionAt = instant(byDate.get(t.decisionDate).closeAt), unknown = informationPending.find(x => x.at > decisionAt);
+      if (unknown) fail('DECISION_BEFORE_EVENT_INFORMATION', unknown.eventId + '@' + t.decisionDate);
       const weights = t.weights, keys = [...new Set([...holdings.keys(), ...Object.keys(weights)])].sort();
       keys.forEach(k => price(k, session));
       const drift = Math.max(0, ...keys.map(k => Math.abs((before ? (marked.get(k) || 0) / before : 0) - (weights[k] || 0))));
@@ -272,14 +331,22 @@ function runPortfolio(input) {
     if (retainedPositionCells > 100000) fail('POSITION_HISTORY_MEMORY_BUDGET');
     const value = cash + claims + positions.reduce((s, h) => s + h.units * h.price, 0);
     if (!Number.isFinite(value) || value < 0) fail('INVALID_EQUITY');
-    equity.push({ date: session.date, value, cash, receivables: claims, positions, benchmark: initialCapital * benchMap.get(session.date) / benchMap.get(dates[0]) });
+    const row = { date: session.date, value, cash, receivables: claims, positions, benchmark: initialCapital * benchMap.get(session.date) / benchMap.get(dates[0]) };
+    // NOT_STATED claims are entitlements without a sourced credit date: outside equity and cash.
+    if (usesNotStated) row.notStatedClaims = notStatedClaims.reduce((s, c) => s + c.amount, 0);
+    equity.push(row);
   }
   const values = [initialCapital, ...equity.map(e => e.value)], years = (Date.parse(dates.at(-1)) - Date.parse(dates[0])) / (365.25 * 86400000), endCapital = equity.at(-1).value;
   const result = { schemaVersion: VERSION, returnBasis, conditionalPriceSimulation: priceSimulation, currency: input.currency, mode: p.mode, certification: 'NOT_CERTIFIED', productionApproved: false,
     inputHash: sha(input), sourceHashes: sourceIdentity(), runtime: runtimeIdentity(), initialCapital, endCapital,
     equity, trades, eventLedger, rebalances, openReceivables: receivables,
     metrics: { cumulativeReturn: endCapital / initialCapital - 1, cagr: years > 0 ? Math.pow(endCapital / initialCapital, 1 / years) - 1 : null, maxDrawdown: Legacy.maxDrawdownOf(values), fees: totalFees, slippage: totalSlippage, oneWayTurnoverSum: turnover },
-    limitations: [...(priceSimulation ? ['CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP','SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES','MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES'] : []), 'FRACTIONAL_LONG_ONLY', 'OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL', 'NO_CASH_INTEREST_OR_TAX', input.liquidity ? 'DAILY_DOLLAR_VOLUME_CAP_IS_NOT_CLOSE_AUCTION_CAPACITY' : 'NO_VOLUME_CAPACITY_MODEL', 'CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE', 'SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT'] };
+    limitations: [...(priceSimulation ? ['CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP','SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES','MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES'] : []), 'FRACTIONAL_LONG_ONLY', 'OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL', 'NO_CASH_INTEREST_OR_TAX', input.liquidity ? 'DAILY_DOLLAR_VOLUME_CAP_IS_NOT_CLOSE_AUCTION_CAPACITY' : 'NO_VOLUME_CAPACITY_MODEL', 'CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE', 'SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT',
+      ...(usesInformationTime ? ['EVENTS_APPLIED_AT_ENTITLEMENT_DECISIONS_BEFORE_INFORMATION_TIME_REJECTED'] : []),
+      ...(usesSpinoff ? ['SPINOFF_UNITS_COST_BASIS_NEUTRAL_FRACTIONS_KEPT_NO_CASH_IN_LIEU'] : []),
+      ...(usesAds ? ['ADS_SUCCESSOR_ONLY_NO_ADS_DISTRIBUTIONS_DEPOSITARY_FEES_OR_FX_MODELLED'] : []),
+      ...(usesNotStated ? ['NOT_STATED_PAY_DATE_CLAIMS_EXCLUDED_FROM_EQUITY_NEVER_CREDITED_OR_INVESTABLE'] : [])] };
+  if (usesNotStated) result.notStatedClaims = notStatedClaims;
   result.generation = sha({ version: VERSION, inputHash: result.inputHash, sourceHashes: result.sourceHashes, runtime: result.runtime });
   result.resultHash = sha(result);
   return result;

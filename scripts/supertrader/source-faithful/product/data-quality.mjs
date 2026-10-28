@@ -20,8 +20,9 @@ import { fin } from '../common/series.mjs';
 import { flagDiscontinuities, sessionRatio, DQ_VERSION, EXPOSURE_LOOKBACK_DAYS } from '../integrity/discontinuity.mjs';
 import { eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
 import { STAGE, STAGE_ORDER } from './candidate-contract.mjs';
+import { priceParity, PRICE_PARITY, HISTORY_PARITY } from './price-parity.mjs';
 
-export const DQ_CONTRACT_VERSION = 'sf8-data-quality-1.0.0';
+export const DQ_CONTRACT_VERSION = 'sf8-data-quality-1.1.0';
 export const DQ_STATUS = Object.freeze({ PASS: 'PASS', INFO: 'INFO', CAP: 'CAP', FAIL: 'FAIL' });
 /** Wochenrelation des Rückblicks vor dem Tagesfenster: gleiche Schwelle wie DQ-K3 (bleibende Sprünge, keine Korrektur). */
 export const WEEKLY_LOOKBACK_K = 3;
@@ -85,8 +86,12 @@ export function weeklyLookbackCheck(weekly, firstDailyDate, asOf, cal) {
 /**
  * Titelbezogene Prüfung am Marktstichtag (strategieunabhängig). Liefert status, checks, quarantinedSessions und die
  * höchste zulässige Stufe aus Datensicht (null = keine normale Bewertung).
+ *
+ * `priceReference` (Pflicht, 1.1.0): die veröffentlichte Tagesreihe des Titels (price-parity.mjs#loadPriceReference) oder
+ * null. Fehlt der Schlüssel ganz, ist das ein Aufruffehler, kein stiller Pass.
  */
-export function assessSecurity(security, { asOf, calendar, weekly = null, continuity = null }) {
+export function assessSecurity(security, { asOf, calendar, weekly = null, continuity = null, priceReference }) {
+  if (priceReference === undefined) throw new Error('SF8_DQ_PRICE_REFERENCE_REQUIRED');
   const bars = security.bars, checks = [], m = security.meta || {};
   const last = bars.at(-1)?.date ?? null;
   let cap = STAGE.MODELED_TRADE_PLAN, fail = false;
@@ -142,6 +147,18 @@ export function assessSecurity(security, { asOf, calendar, weekly = null, contin
   else if (m.caReconciliation && m.caReconciliation !== 'PASS') { checks.push(check('ADJUSTMENT', DQ_STATUS.FAIL, { caReconciliation: m.caReconciliation })); fail = true; }
   else if (!m.adjustmentStatus || !m.caReconciliation) { checks.push(check('ADJUSTMENT', DQ_STATUS.CAP, 'RECONCILIATION_UNKNOWN', STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
   else checks.push(check('ADJUSTMENT', DQ_STATUS.PASS, { splitEvents: m.splitEvents ?? null }));
+
+  // Preisabgleich (V4, ADR-002): Schluss am Stichtag = veröffentlichter Schluss derselben Identität und Sitzung. Ungeklärt =
+  // keine Bewertung (FAIL); ein ungeklärter Verlauf begrenzt auf CHART_CANDIDATE, eine Rundung nach Split ist nur INFO.
+  const px = priceParity(security, priceReference, asOf);
+  if (px.status !== PRICE_PARITY.PASS) { checks.push(check('PRICE_PARITY', DQ_STATUS.FAIL, px)); fail = true; }
+  else {
+    checks.push(check('PRICE_PARITY', DQ_STATUS.PASS, { date: px.date, close: px.close }));
+    const h = px.history;
+    if (h.status === HISTORY_PARITY.UNEXPLAINED) { checks.push(check('PRICE_HISTORY_PARITY', DQ_STATUS.CAP, h, STAGE.CHART_CANDIDATE)); capTo(STAGE.CHART_CANDIDATE); }
+    else if (h.status === HISTORY_PARITY.ADJUSTMENT_ROUNDING) checks.push(check('PRICE_HISTORY_PARITY', DQ_STATUS.INFO, { ...h, note: 'Rundung split-adjustierter Werte vor einem Split (legitim)' }));
+    else checks.push(check('PRICE_HISTORY_PARITY', DQ_STATUS.PASS, { compared: h.compared }));
+  }
 
   // V4-D1-Quarantäne im Rückblick (Tagesbalken) + Wochenprüfung des Rests
   const q = quarantinedSessions(bars, asOf, calendar);

@@ -1,0 +1,161 @@
+{
+ "schemaVersion": "v9-secpit-proposals-1.0.0",
+ "status": "PROPOSED_NOT_IMPLEMENTED",
+ "productionApproved": false,
+ "proposals": [
+  {
+   "id": "P1_FISCAL_YEAR_ANCHOR_PLAUSIBILITY",
+   "defect": "scripts/quant/sec/fiscal.py FiscalCalendar.from_raw_facts takes anchors[max(annual ends of a 10-K/20-F/40-F with fp=FY)] = int(filing_fy) and _label_years only refuses labels that repeat or precede the previous label; an implausibly LARGE filer fy (Excel serial 43465/43830, transposition 2107, +2 error 2027) or an anchor whose accession carries no own-year annual duration (max end two years before DocumentPeriodEndDate) becomes the fiscal-year label; the following correct anchor is then rejected.",
+   "sourceEvidence": "fy-anomaly-dossier.json (accessions[], plausibleRangeAnchorsVerified[]): dei:DocumentFiscalYearFocus in the filer's original instance equals the companyfacts fy for every anomalous periodic accession that has the element (12/12); PLD/TRU anchors come from accessions whose companyfacts annual durations end two years before DocumentPeriodEndDate.",
+   "change": "fiscal.py from_raw_facts, anchor loop: `end = max(bucket['ends']); if bucket['fy'] - end.year not in (-1, 0, 1): calendar.rejected_anchors.append((end.isoformat(), bucket['fy'], None)); continue; anchors[end] = bucket['fy']` (record reason IMPLAUSIBLE_FILING_FY; the learned offset then labels the year). Bump NORMALIZATION_LOGIC_VERSION.",
+   "affectedIssuers": {
+    "0001045609": {
+     "before": [
+      [
+       "2008-12-31",
+       2010
+      ]
+     ],
+     "after": []
+    },
+    "0001137789": {
+     "before": [
+      [
+       "2025-06-27",
+       2027
+      ]
+     ],
+     "after": []
+    },
+    "0001166928": {
+     "before": [
+      [
+       "2017-12-31",
+       2107
+      ]
+     ],
+     "after": []
+    },
+    "0001552033": {
+     "before": [
+      [
+       "2012-12-31",
+       2014
+      ]
+     ],
+     "after": []
+    },
+    "0001653558": {
+     "before": [
+      [
+       "2018-12-31",
+       43465
+      ],
+      [
+       "2019-12-31",
+       43830
+      ]
+     ],
+     "after": []
+    }
+   },
+   "effect": {
+    "labelsFarFromEndYear": [
+     6,
+     0
+    ],
+    "implausibleLabelObservations(<1990 or >2027)": [
+     1438,
+     59
+    ],
+    "consumerFactorInputsChanged": {
+     "ciksChanged": 3,
+     "rawsChanged": 3,
+     "sharesChanged": 3,
+     "referenceEndChanged": 2,
+     "pitChanged": 2,
+     "latestQuarterChanged": 3
+    }
+   }
+  },
+  {
+   "id": "P2_FUTURE_PERIOD_QUARANTINE",
+   "defect": "scripts/quant/sec/normalize.py adds every observation regardless of whether its period_end lies after its availability; restatements.FactTimeline.visible gates only on availability, and consumer/PeriodResolver order periods by label, so a future-dated context (schedule, declaration, mis-dated comparative, cover-date typo) becomes the 'latest' period (AAL/AXR/ASLE/PFIS/THM/REPX shares, LEGH tax, PMT debt maturities 2022-2030).",
+   "sourceEvidence": "availability-before-period-end.json (904 rows, classes) and availability-sample-verification.json (79 rows, 77 original instances: 73 contexts literally in the filer instance, 6 filer cover dates after acceptance that normalize re-dated).",
+   "change": "normalize.py normalize_company, before factbook.add_observation: `if period_end and str(provenance.available_from or fact.filed)[:10] < period_end: issues.append(_issue('FUTURE_PERIOD_END', fact, 'period ends after the filing became available', metric=metric_name)); continue`. Quarantine (exclude) rather than availability=max(acceptance, period_end): the latter would, once the date passes, admit maturity-schedule amounts, next-period dividend declarations and mis-dated comparatives as that period's reported value.",
+   "effect": {
+    "availabilityBeforePeriodEnd": [
+     900,
+     0
+    ],
+    "observationsRemoved": 900,
+    "consumerFactorInputsChanged": {
+     "ciksChanged": 10,
+     "rawsChanged": 2,
+     "sharesChanged": 6,
+     "referenceEndChanged": 0,
+     "pitChanged": 6,
+     "latestQuarterChanged": 8
+    }
+   }
+  },
+  {
+   "id": "P3_NO_BULK_SUBMISSIONS_ACCEPTANCE",
+   "defect": "Not a current code defect: the bulk https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip carries acceptanceDateTime shifted +4h/+5h for 35/56 sampled filings; data.sec.gov API = SGML header for 56/56. The repo uses the bulk zip only for SIC (scripts/vorsorge/fetch-sec-sic.mjs).",
+   "sourceEvidence": "acceptance-timezone-check.json",
+   "change": "Guard (comment + test) that no PIT availability is taken from bulk submissions.zip; any future bulk path must reconcile against the API or SGML header."
+  },
+  {
+   "id": "P4_DQ_RULES",
+   "change": "scripts/core/data-quality.mjs / sec quality: add rules FISCAL_YEAR_LABEL_FAR_FROM_PERIOD_END (|label - period_end.year| > 1) and FUTURE_PERIOD_END (period_end > availability) so recurrences are visible.",
+   "effect": "Detection only."
+  }
+ ],
+ "combinedEffectP12": {
+  "factbookLevel": {
+   "timelines": 549287,
+   "observations": 1315669,
+   "implausibleLabelTimelines": 11,
+   "implausibleLabelObservations": 28,
+   "labelsFarFromEndYear": 0,
+   "availabilityBeforePeriodEndStrictBulk": 0,
+   "fiscalYearMin": 1968,
+   "fiscalYearMax": 2027
+  },
+  "consumerFactorInputsChanged": {
+   "ciksChanged": 13,
+   "rawsChanged": 5,
+   "sharesChanged": 9,
+   "referenceEndChanged": 2,
+   "pitChanged": 8,
+   "latestQuarterChanged": 11
+  }
+ },
+ "publishedEffectsObserved": [
+  {
+   "ticker": "STX",
+   "finding": "FY ending 2025-06-27 labelled 2027 (filer dei 2027); consumer latestQuarter = FY2025; published marketCap 137,008,764,839 = 644.21 x 212,677,178 shares (2025-06-27); P1 shares 226,644,518 (2026-07-03) -> 146,006,664,941 (+6.57%); published netDebtToAssets 0.416667 (score 14.01) vs 0.1904 after P1; roicTtm/operatingMarginTtm/fcfMarginTtm published UNAVAILABLE INPUT_NOT_MATERIALIZED, available after P1."
+  },
+  {
+   "ticker": "PRTH",
+   "finding": "labels 43465/43830; published marketCap null NO_PIT_SHARE_COUNT; P1 shares 82,440,372 (2026-06-30) and 7 TTM raws become available; revenueGrowthTtmYoy -0.0106 -> 0.0891."
+  },
+  {
+   "ticker": "WTBA",
+   "finding": "label 2107; published marketCap null NO_PIT_SHARE_COUNT; P1 shares 17,043,743 and 6 raws become available."
+  },
+  {
+   "ticker": "ASLE",
+   "finding": "cover date 2034-03-05 (filed 2024-03-27) used as latest share count 52,990,947; P2 -> 47,726,763 (2026-06-30); published marketCap 249,587,360 overstated by ~11% (224,793,054 with corrected shares)."
+  },
+  {
+   "ticker": "AXR",
+   "finding": "cover date 2033-09-12 (filed 2023) used as shares 5,271,309; P2 -> 5,324,849 (+1.0%)."
+  },
+  {
+   "ticker": "AAL",
+   "finding": "cover date 2027-07-17 (filed 2026-07-23): shares 661,969,951 vs 661,936,666 (-0.005%)."
+  }
+ ],
+ "notChanged": "No existing repo file was edited; all effects computed with runtime patches in private scratch."
+}
