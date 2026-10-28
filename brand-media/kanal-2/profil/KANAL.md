@@ -1,16 +1,14 @@
 # Kanal 2: Profil für Instagram und TikTok
 
-Stand 2026-10-28. Ob ein Name frei ist, entscheidet nur der Versuch beim Anlegen. Nicht geprüft.
+Stand 2026-10-28.
 
 ## Name
 
-| Rang | Anzeigename | Benutzername (Instagram und TikTok gleich) | Ausweichname |
-|---|---|---|---|
-| 1, Empfehlung | Bulle & Bär · Börse erklärt | `@bulleundbaer` | `@bulle.und.baer`, `@bulleundbaer.de` |
-| 2 | Bulle vs. Bär | `@bullevsbaer` | `@bulle.vs.baer` |
-| 3 | Börsenzoo | `@boersenzoo` | `@boersen.zoo` |
+Entscheidung des Owners am 28.10.2026: **Aktienzoo**, Benutzername `@aktienzoo` (laut Owner verfügbar). Ohne Umlaut, damit der Name leicht zu tippen und zu finden ist.
 
-Der Anzeigename ist bei Instagram durchsuchbar. „Börse erklärt“ darin hilft, gefunden zu werden.
+- Anzeigename: `Aktienzoo · Geld einfach erklärt` (bei Instagram durchsuchbar, ebenfalls ohne Umlaut)
+- Figuren im Kanal: Bulle (Optimist) und Bär (Skeptiker)
+- Die Endkarte der Reels zeigt Profilbild, „AKTIENZOO“ und `@aktienzoo`.
 
 ## Bio
 

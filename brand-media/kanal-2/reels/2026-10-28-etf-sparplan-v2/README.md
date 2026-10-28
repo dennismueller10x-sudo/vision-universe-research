@@ -1,4 +1,4 @@
-# Test-Reel 2: „Dein Sparplan nach 30 Jahren“
+# Aktienzoo Reel 1 (Test-Reel 2): „Dein Sparplan nach 30 Jahren“
 
 Überarbeitung von Test-Reel 1 nach dem Feedback des Owners (28.10.2026). Nicht veröffentlicht.
 
