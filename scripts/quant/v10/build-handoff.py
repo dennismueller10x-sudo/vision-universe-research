@@ -18,6 +18,7 @@ MERGED = [
     (1043, 'd71fbbe642', 'SEC pipeline P1-P4, DQ-SEC-1/2 (WARN), DQ-SEC-3 (INFO)', 'producer code; data changes on next sec-consumer-fundamentals run'),
     (1046, '3a93aeb8fd', 'SEC-checked CA register, 24 events / 23 series (offline research only)', 'research loader, default off'),
     (1034, 'a378b29cc6', 'DQ-PX-6/7, DQ-ID-4 (stale tails, master/series contradictions; WARN)', 'data-quality rules only'),
+    (1054, '5b5639f44d', 'Repair after #1028/#1043: bulk-archive guard test skips offline research folders v9/, v9_followups/; production modules and behavioural assertions unchanged', 'test only'),
 ]
 
 PENDING_DATA_EFFECTS = [

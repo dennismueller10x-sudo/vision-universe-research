@@ -1,6 +1,6 @@
 # Quant V10 – Übergabe 1.0.0
 
-Stand: 28.10.2026. Diese Übergabe sichert den integrierten V9-Abschluss und die sieben freigegebenen Folge-PRs. Sie startet keine neue Implementierung.
+Stand: 28.10.2026. Diese Übergabe sichert den integrierten V9-Abschluss, die sieben freigegebenen Folge-PRs und die freigegebene Testreparatur #1054. Sie startet keine neue Implementierung.
 
 **Fachlicher Status: V9_METHODS_ACCEPTED_WITH_LIMITED_SCOPE**
 
@@ -26,6 +26,7 @@ Maschinenlesbare Fassung: [v10/handoff-1.0.0.json](v10/handoff-1.0.0.json), erze
 | #1043 | SEC-Pipeline P1–P4 und DQ-SEC-1/2/3 | `d71fbbe642` |
 | #1046 | SEC-geprüftes CA-Register, 24 Ereignisse / 23 Reihen | `3a93aeb8fd` |
 | #1034 | DQ-PX-6/7, DQ-ID-4 | `a378b29cc6` |
+| #1054 | Reparatur nach #1028/#1043: Bulk-Archiv-Wächter überspringt die Offline-Research-Ordner `v9/` und `v9_followups/`; Produktionsmodule und Verhaltens-Assertions unverändert | `5b5639f44d` |
 
 **Keine Datei unter `*/data` wurde durch diese PRs geändert.** Die Datenwirkungen entstehen erst durch die bestehenden Erzeuger:
 
