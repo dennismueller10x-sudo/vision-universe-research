@@ -19,7 +19,8 @@ export const SORT_KEYS = Object.freeze({
   streak: { label: 'Länge der Aufwärtsserie', dir: 'desc', key: (v) => v.features?.upStreak ?? null },
   trend: { label: '63-Tage-Rendite', dir: 'desc', key: (v) => v.trend?.ret63 ?? null },
   dataQuality: { label: 'Datenqualität', dir: 'asc', key: (v) => (v.dataQuality?.status === 'PASS' ? 0 : 1) },
-  ticker: { label: 'Ticker', dir: 'asc', key: (v) => v.ticker },
+  // Owner-Entscheidung 28.10.2026: ohne öffentliche Chartmarke ordnen Weinstein C04/C05 nach Stufe, Datenqualität und Name
+  ticker: { label: 'Name (Ticker, alphabetisch)', dir: 'asc', key: (v) => v.ticker },
 });
 
 function cmpBy(name) {

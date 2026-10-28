@@ -535,6 +535,27 @@ test('SF8-WEINSTEIN-TURTLE-ADVERSARIAL: kein Feld ergibt mit Wochen- oder Tagesk
   }
 });
 
+// Owner-Freigabe 28.10.2026 (Weinstein): ohne öffentliche Chartmarke ordnen C04/C05 nach Stufe, Datenqualität und Name; die
+// Sortierung „Abstand zur Chartmarke“ bietet die Vorschau nur an, wenn eine Ansicht der Strategie eine Marke hat. Keine Gewichtung.
+test('SF8-WEINSTEIN-SORT: C04/C05 nach Name sortiert, ohne Sortierung nach einer fehlenden Chartmarke (Owner 28.10.)', () => {
+  for (const c of ['C04', 'C05']) {
+    const cat = STRATEGY_CATALOG.find((x) => x.candidateId === c);
+    assert.deepEqual(cat.defaultSort, ['stage', 'dataQuality', 'ticker'], c);
+    const vs = views().filter((v) => v.candidateId === c);
+    assert.ok(vs.length > 0 && vs.every((v) => v.pivot === null && v.sortKeys.pivot === null), `${c} ohne Chartmarke`);
+    // Reihenfolge = Stufe absteigend, Datenqualität, Ticker – dieselbe wie zuvor mit dem (überall leeren) Chartmarken-Schlüssel
+    const { views: ranked } = rankStrategy(cat.strategyId, vs.map((v) => structuredClone(v)));
+    const expect = [...vs].sort((a, b) => STAGE_ORDER.indexOf(b.stage) - STAGE_ORDER.indexOf(a.stage) || (a.dataQuality?.status === 'PASS' ? 0 : 1) - (b.dataQuality?.status === 'PASS' ? 0 : 1) || (a.ticker < b.ticker ? -1 : 1));
+    assert.deepEqual(ranked.map((v) => v.ticker), expect.map((v) => v.ticker), c);
+  }
+  assert.equal(RANK_SORT_KEYS.ticker.label, 'Name (Ticker, alphabetisch)');
+  const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
+  assert.match(ui, /k !== 'pivot' \|\| views\.some\(function \(v\) \{ return v\.sortKeys && v\.sortKeys\.pivot !== null/, 'Sortierung nach Chartmarke nur mit Marke');
+  assert.match(ui, /k !== 'ticker' \|\| !ownKey/, 'die Methodenreihenfolge nennt den Namen, wenn er der eigentliche Schlüssel ist');
+  // Darvas behält die Sortierung nach seiner Box-Obergrenze
+  assert.deepEqual(STRATEGY_CATALOG.find((x) => x.candidateId === 'C03').defaultSort, ['stage', 'dataQuality', 'pivot', 'ticker']);
+});
+
 // Owner-Entscheidung 28.10.2026 (SEPA): eine einzelne Kontraktion reicht nicht, um ein bestätigtes VCP oder einen modellierten Plan
 // zu behaupten; keine neue Mindestzahl als Originalregel. Geprüft wird, dass die bestehende Einstufung das schon trägt.
 test('SF8-SEPA-ONE-CONTRACTION: eine Kontraktion hebt nichts an – Stufe, Lebenszyklus und Beschriftung (Owner 28.10.)', () => {
