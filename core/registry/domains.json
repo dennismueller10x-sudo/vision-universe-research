@@ -28,6 +28,23 @@
       "knownGaps": ["Kein geplanter Erzeuger: Neuemissionen und Delistings kommen nur mit einem manuellen Lauf ins Universum.", "Identitaet ist tickerbasiert (ADR-001)."]
     },
     {
+      "id": "usSecurityMaster",
+      "label": "US-Wertpapierstamm",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/quant/data/market/security-master/us-security-master.json",
+      "timestamp": ["generatedAt"],
+      "records": "rowsDelivered",
+      "role": "Klassifikation, Aktivstatus und Listing-Identitaet (canonical_id) je Bestandstitel aus dem Tiingo-Tickerverzeichnis; Quelle fuer Instrumenttyp und Aktivstatus im Supertrader-8-Tageslauf und fuer die Quant-Backtest-Identitaet.",
+      "producer": "scripts/market/build-us-security-master.mjs",
+      "workflow": "security-master-weekly.yml",
+      "schedule": "Woechentlich vorbereitet, Zeitplan aus (Owner-Entscheidung 28.10.2026); manuell per workflow_dispatch, Uebernahme nur mit commit=true und bestandenem Gate (scripts/market/security-master-refresh-gate.mjs).",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 1440 },
+      "consumers": ["build-us-eligibility (Produkteignung, eigener Lauf)", "Quant-Backtests (canonical_id, masterHash)", "Supertrader-8-Tageslauf (Instrumenttyp, Aktivstatus, Hoechstalter 60 Tage)"],
+      "knownGaps": ["Neue Listings werden gezaehlt, aber nicht ausgeliefert (Lizenz; Weg: Tiingo-2.0-Veroeffentlichung).", "Tickerwechsel werden je stabiler securityId ausgewiesen, nicht automatisch verknuepft (ADR-001)."]
+    },
+    {
       "id": "companyMaster",
       "label": "Company Master",
       "layer": "CORE",
@@ -191,7 +208,7 @@
       "expectedRecords": "coverage.productUniverse",
       "role": "Anzeigenamen mit Quelle und Datum (Tiingo-Stammdaten, SEC, kuratiert).",
       "producer": "scripts/market/build-company-names.mjs",
-      "workflow": "company-names.yml",
+      "workflow": "company-names.yml + security-master-weekly.yml",
       "schedule": "manuell",
       "freshness": { "kind": "hours", "warnAfter": 720, "staleAfter": 2160 },
       "consumers": ["Discover", "Supertrader", "Screener"]
