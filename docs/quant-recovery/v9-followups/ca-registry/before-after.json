@@ -1,0 +1,555 @@
+{
+ "schemaVersion": "v9-followup-ca-before-after-1.0.0",
+ "productionApproved": false,
+ "baseline": {
+  "ref": "07dfe5dd55",
+  "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a"
+ },
+ "current": {
+  "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+  "adapterIdenticalToBaseline": true,
+  "corporateActionEvidenceJsSha256": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+  "researchLoaderSha256": "69dc6c51ca8b62fc536ab1279a375a579fc7974a5c94b74128703d1b754f2140",
+  "registrySha256": "a9c32b093ccc2c167beb13f12a95d0b7edcb23ad94ced26a2ce8cf6035cad9a1",
+  "registrySchemaVersion": "research-ca-evidence-1.0.0",
+  "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
+  "registryRecords": 24,
+  "registrySeries": 23
+ },
+ "inputs": {
+  "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "seriesIds": 6190,
+  "seriesDirectorySha256": "c84000929281b4bbf2f423ea0c1bac17e2495a2d778bab219b5c08200a16d64e"
+ },
+ "codeSha256": "cb848b5cc8ead16d9b1010fbdbfd9228495b46176015a686979b1f6a99659c7c",
+ "runtime": {
+  "nodeVersion": "22.22.0",
+  "v8Version": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibcVersion": "2.39",
+  "nodeExecutableHash": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "defaultPathParity": {
+  "ids": 6190,
+  "identical": 6190,
+  "mismatches": []
+ },
+ "counts": {
+  "baselineDefault": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "default": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "identity": {
+   "QUALIFIED": 4453,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "caOnly": {
+   "QUALIFIED": 4472,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 577,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "identityCa": {
+   "QUALIFIED": 4476,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 577,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  }
+ },
+ "qualified": {
+  "baselineDefault": 4449,
+  "default": 4449,
+  "identity": 4453,
+  "caOnly": 4472,
+  "identityCa": 4476
+ },
+ "changed": {
+  "caOnlyVsDefault": [
+   "ref_ACRS",
+   "ref_ALEC",
+   "ref_ALNY",
+   "ref_BKSY",
+   "ref_BMEA",
+   "ref_CPIX",
+   "ref_ERII",
+   "ref_FMC",
+   "ref_GRAL",
+   "ref_GRCE",
+   "ref_HYFM",
+   "ref_MDRR",
+   "ref_MIRA",
+   "ref_MVST",
+   "ref_NTLA",
+   "ref_OM",
+   "ref_PACB",
+   "ref_PBYI",
+   "ref_REPL",
+   "ref_SRPT",
+   "ref_SSRM",
+   "ref_VRRM",
+   "ref_VSTS"
+  ],
+  "identityCaVsIdentity": [
+   "ref_ACRS",
+   "ref_ALEC",
+   "ref_ALNY",
+   "ref_BKSY",
+   "ref_BMEA",
+   "ref_CPIX",
+   "ref_ERII",
+   "ref_FMC",
+   "ref_GRAL",
+   "ref_GRCE",
+   "ref_HYFM",
+   "ref_MDRR",
+   "ref_MIRA",
+   "ref_MVST",
+   "ref_NTLA",
+   "ref_OM",
+   "ref_PACB",
+   "ref_PBYI",
+   "ref_REPL",
+   "ref_SRPT",
+   "ref_SSRM",
+   "ref_VRRM",
+   "ref_VSTS"
+  ]
+ },
+ "newlyQualified": [
+  {
+   "securityId": "ref_ACRS",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 577,
+   "events": [
+    {
+     "week": "2023-11-17",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.200483,
+     "cik": "0001557746",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_ALEC",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 403,
+   "events": [
+    {
+     "week": "2025-10-24",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.493421,
+     "cik": "0001653087",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_ALNY",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1169,
+   "events": [
+    {
+     "week": "2016-10-07",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.505606,
+     "cik": "0001178670",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_BKSY",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 358,
+   "events": [
+    {
+     "week": "2022-05-27",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.015385,
+     "cik": "0001753539",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_BMEA",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 289,
+   "events": [
+    {
+     "week": "2023-03-31",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.009721,
+     "cik": "0001840439",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_CPIX",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 898,
+   "events": [
+    {
+     "week": "2021-12-03",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.058296,
+     "cik": "0001087294",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    },
+    {
+     "week": "2025-02-07",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 1.977876,
+     "cik": "0001087294",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 2
+  },
+  {
+   "securityId": "ref_ERII",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 956,
+   "events": [
+    {
+     "week": "2015-10-23",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 3.004065,
+     "cik": "0001421517",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_FMC",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1921,
+   "events": [
+    {
+     "week": "2025-10-31",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.498194,
+     "cik": "0000037785",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_GRAL",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 122,
+   "events": [
+    {
+     "week": "2026-02-20",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.514974,
+     "cik": "0001699031",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_GRCE",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 107,
+   "events": [
+    {
+     "week": "2026-04-24",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.5,
+     "cik": "0001444192",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_HYFM",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 307,
+   "events": [
+    {
+     "week": "2026-08-07",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.962963,
+     "cik": "0001695295",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_MDRR",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 413,
+   "events": [
+    {
+     "week": "2020-10-16",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.041843,
+     "cik": "0001654595",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_MIRA",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 169,
+   "events": [
+    {
+     "week": "2024-07-26",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 3.934379,
+     "cik": "0001904286",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_MVST",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 396,
+   "events": [
+    {
+     "week": "2024-11-15",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 4.029164,
+     "cik": "0001760689",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_NTLA",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 547,
+   "events": [
+    {
+     "week": "2025-10-31",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.492969,
+     "cik": "0001652130",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_OM",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 319,
+   "events": [
+    {
+     "week": "2023-10-13",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.338661,
+     "cik": "0001484612",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_PACB",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 835,
+   "events": [
+    {
+     "week": "2024-04-19",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.488959,
+     "cik": "0001299130",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_PBYI",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 757,
+   "events": [
+    {
+     "week": "2018-11-02",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.496905,
+     "cik": "0001401667",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_REPL",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 432,
+   "events": [
+    {
+     "week": "2025-10-24",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 1.955556,
+     "cik": "0001737953",
+     "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_SRPT",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1534,
+   "events": [
+    {
+     "week": "2016-09-23",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 2.054352,
+     "cik": "0000873303",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_SSRM",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1578,
+   "events": [
+    {
+     "week": "2024-02-16",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.514136,
+     "cik": "0000921638",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_VRRM",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 501,
+   "events": [
+    {
+     "week": "2026-05-29",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.334322,
+     "cik": "0001682745",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  },
+  {
+   "securityId": "ref_VSTS",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "after": "QUALIFIED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 161,
+   "events": [
+    {
+     "week": "2024-05-03",
+     "class": "GENUINE_MOVE",
+     "weeklyRatio": 0.497884,
+     "cik": "0001967649",
+     "providerReason": "SINGLE_DAY_DOMINATES_WEEK"
+    }
+   ],
+   "resolvedItems": 1
+  }
+ ],
+ "note": "Opt-in modes exist only in quant/engines/research-weekly-loader.cjs, which no productive caller imports; weekly-real-adapter.cjs and corporate-action-evidence.js are unchanged."
+}

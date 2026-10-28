@@ -323,8 +323,9 @@ def verify_series(sec, s, tickers_map):
         return facts
     ciks = sorted(set(tickers_map.get(norm_ticker(s["ticker"]), [])))
     facts["candidateCiks"] = ciks
-    if not ciks:
-        facts["events"] = [{**ev, "verdict": "IDENTITY_UNVERIFIED", "detail": "IDENTITY_NO_CANDIDATE_CIK"} for ev in s["events"]]
+    if not ciks:  # decision order: PROVIDER_SPLIT_RECORDED precedes identity (bug fix 1, see README)
+        facts["events"] = [{**ev, "verdict": "PROVIDER_SPLIT_RECORDED", "detail": None} if ev["reason"] == "PROVIDER_SPLIT_IN_WEEK"
+                           else {**ev, "verdict": "IDENTITY_UNVERIFIED", "detail": "IDENTITY_NO_CANDIDATE_CIK"} for ev in s["events"]]
         return facts
     need_from = add(min(e["week"] for e in s["events"]), -WINDOW - 140)
     subs = {c: submissions(sec, c, need_from) for c in ciks}
