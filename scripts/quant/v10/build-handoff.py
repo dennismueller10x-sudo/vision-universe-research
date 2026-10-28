@@ -40,7 +40,7 @@ DATA_GAPS = [
     ('WEEKLY_GAPS', '218 series with 641 gaps stay unfilled; interpolation forbidden.'),
     ('SEC_PIT', 'CAPS fiscal-calendar gap (DQ-SEC-1 stays 2 after rebuild); 520 future-dated cases classified only by sample; acceptance is an upper bound, not publication time.'),
     ('DIVIDENDS_TOTAL_RETURN', 'Sourced pay dates complete only for MSFT and WMT (JPM 15/47, XOM 14/47, META 1/11); ex-dates not from sources; receipt of terminal cash amounts unstated (NOT_STATED, never investable).'),
-    ('PROVIDER_AND_MASTER_ERRORS', 'Trailing repeated closes after the last trading day (CRNX, LBRDK, DBRG, WBS); SAN in the master as EQUITY_COMMON instead of ADS; bulk submissions.zip acceptance times offset +4/5 h (not used).'),
+    ('PROVIDER_AND_MASTER_ERRORS', 'Trailing repeated closes after the last trading day (CRNX, LBRDK, DBRG, WBS); SAN in the master as EQUITY_COMMON instead of ADS; bulk submissions archive acceptance times offset +4/5 h (not used).'),
     ('CONFIRMATION', 'Prospective 8-K cohort registered, evaluable from 2027-04-29; no other untouched holdout exists.'),
 ]
 
