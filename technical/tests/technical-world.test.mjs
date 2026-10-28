@@ -277,3 +277,16 @@ test("Kerzenmarken enden auf Wunsch vor einem Index (eingefrorene Bars ohne Mark
   assert.deepEqual(cut.map((m) => m.time), ["a", "b"]);
   assert.equal(cut[1].label, "Muster", "Beschriftung an der letzten gezeigten Marke");
 });
+
+test("Relative Staerke: nur bei gleichem Datum in beiden Reihen, Rendite minus SPY-Rendite", () => {
+  const dates = ["d0", "d1", "d2", "d3"], close = [100, 110, 121, 133.1];
+  const bm = { dates: ["d0", "d1", "d2", "d3"], close: [100, 100, 105, 110] };
+  const rs = M.relativeStrength(dates, close, bm, 2);
+  assert.ok(Number.isNaN(rs[0]) && Number.isNaN(rs[1]));
+  assert.ok(Math.abs(rs[2] - (0.21 - 0.05)) < 1e-12);
+  assert.ok(Math.abs(rs[3] - ((133.1 / 110 - 1) - 0.1)) < 1e-12);
+  /* Luecke in der Vergleichsreihe: kein Wert statt einer Annahme */
+  const gap = M.relativeStrength(dates, close, { dates: ["d0", "d2", "d3"], close: [100, 105, 110] }, 2);
+  assert.ok(gap.every((v) => Number.isNaN(v)));
+  assert.ok(M.relativeStrength(dates, close, null, 2).every((v) => Number.isNaN(v)));
+});

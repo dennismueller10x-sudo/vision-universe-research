@@ -303,7 +303,7 @@
     ["hma", "Hull MA 20"], ["chandelier", "Chandelier-Stop"], ["kerzen", "Kerzenmuster"], ["volumen", "Volumen"]];
   var CHART_PANES = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
     ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"], ["roc", "ROC"], ["crsi", "Connors RSI"], ["zscore", "Z-Score"], ["elder", "Elder Impulse"], ["vortex", "Vortex"],
-    ["chop", "Choppiness"], ["hv", "Hist. Volatilität"], ["ulcer", "Ulcer"]];
+    ["chop", "Choppiness"], ["hv", "Hist. Volatilität"], ["ulcer", "Ulcer"], ["rs", "Rel. Stärke"]];
   /**
    * Wo Chart Studio jedes Indikatorfeld des Screeners zeigt (AP5b, Completion-Matrix G4): ["layer"|"pane", id] =
    * Schicht oder Unterfenster, "price" = im Kurs selbst (Kerzen, Tageshoch), "weekly" = Wochenchart, "signals" = Befundkarte.
@@ -319,7 +319,7 @@
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
     hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
     choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
-    rs3m: null, rs6m: null, rsPositive: null,
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
     relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
     cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
   };
@@ -372,6 +372,27 @@
       if (tail && tail.run >= Staleness.DEFAULTS.dailyMinRun) { out.frozenSince = tail.since; out.frozenIndex = n - tail.run; out.frozenRun = tail.run; }
     }
     out.behind = !!(out.universeAsOf && last && last < out.universeAsOf);
+    return out;
+  }
+
+  var BENCHMARK_PATH = "/quant/data/market/discover-series/ref_SPY.json";
+  /**
+   * Relative Staerke gegen SPY je Bar (G4), dieselbe Rechnung wie screen-row.js (rs3m = w 63, rs6m = w 126):
+   * Rendite des Titels ueber w Sitzungen minus Rendite von SPY ueber dieselben Sitzungen. Nur wenn beide Reihen den
+   * Bar und den Bar w Sitzungen davor am selben Datum haben, sonst NaN (keine Annahme ueber fehlende Tage).
+   * @param bm { dates, close } (discover-series/ref_SPY.json, points)  @returns Anteile (0,05 = 5 Prozentpunkte)
+   */
+  function relativeStrength(dates, close, bm, w) {
+    var out = new Array(close.length).fill(NaN);
+    if (!bm || !bm.dates || !bm.dates.length) return out;
+    var at = {};
+    bm.dates.forEach(function (d, j) { at[d] = j; });
+    for (var i = w; i < close.length; i++) {
+      var j = at[dates[i]];
+      if (j === undefined || j < w || bm.dates[j - w] !== dates[i - w]) continue;
+      if (!isNum(close[i]) || !isNum(close[i - w]) || !close[i - w] || !isNum(bm.close[j]) || !isNum(bm.close[j - w]) || !bm.close[j - w]) continue;
+      out[i] = (close[i] / close[i - w] - 1) - (bm.close[j] / bm.close[j - w] - 1);
+    }
     return out;
   }
 
@@ -474,7 +495,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, seriesState: seriesState, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

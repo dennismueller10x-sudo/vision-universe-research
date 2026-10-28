@@ -150,8 +150,7 @@ test("Jedes Indikatorfeld des Screeners hat eine Darstellung in Chart Studio (mo
     else if (m[0] === "pane") assert.ok(panes.has(m[1]), f.id + " -> Unterfenster " + m[1]);
     else assert.ok(["price", "weekly", "signals"].includes(m[0]), f.id);
   }
-  /* bewusst offen (TECHNICAL_COMPLETION_PLAN.md G4): relative Staerke braucht die SPY-Reihe im Browser */
-  assert.deepEqual(open.sort(), ["rs3m", "rs6m", "rsPositive"]);
+  assert.deepEqual(open, [], "seit G4 hat jedes Feld eine Darstellung");
 });
 
 test("Eingefroren: Chart Studio (model.js#seriesState) = Spalte frozenSince der Trefferzeile, ganzes Universum", { skip: c.frozenSince ? false : "Datensatz vor screen-row 1.10.0 (ohne frozenSince)" }, () => {
@@ -169,4 +168,22 @@ test("Eingefroren: Chart Studio (model.js#seriesState) = Spalte frozenSince der 
     }
   }
   assert.deepEqual(off, [], compared + " Titel, " + frozen + " eingefroren");
+});
+
+test("Relative Staerke: Unterfenster in Chart Studio (model.js#relativeStrength) = rs3m/rs6m/rsPositive der Trefferzeile", { skip: enough ? false : "zu wenige vergleichbare Titel" }, () => {
+  const Model = require(join(root, "technical/engine/model.js"));
+  const spy = JSON.parse(readFileSync(join(root, Model.BENCHMARK_PATH.slice(1)), "utf8"));
+  const pts = spy.points.filter((p) => Number.isFinite(p[1])), bm = { dates: pts.map((p) => p[0]), close: pts.map((p) => p[1]) };
+  const off = [];
+  let both = 0;
+  for (const { tk, i, b } of titles) {
+    const t = b.close.length - 1;
+    for (const [w, col] of [[63, "rs3m"], [126, "rs6m"]]) {
+      const v = Model.relativeStrength(b.timestamps, b.close, bm, w)[t], chart = Number.isFinite(v) ? v : null, scr = c[col][i];
+      if ((chart === null) !== (scr === null) || (chart !== null && Math.abs(chart - scr) > 0.00006)) off.push(tk + " " + col + " chart=" + chart + " screener=" + scr);
+      if (chart !== null && w === 126) { both++; if ((chart > 0) !== c.rsPositive[i]) off.push(tk + " rsPositive"); }
+    }
+  }
+  assert.deepEqual(off, []);
+  assert.ok(both > titles.length / 2, "Werte vorhanden (" + both + ")");
 });
