@@ -65,7 +65,6 @@ const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const SC = require(join(root, "quant", "engines", "survivorship-control.js"));
 const CorporateActions = require(join(root, "quant", "engines", "corporate-action-evidence.js"));
-const ReturnSeries = require(join(root, "quant", "engines", "return-series.js"));
 const GATE_CONFIG = JSON.parse(readFileSync(join(root, "quant", "config", "feature-gates.json"), "utf8"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -134,11 +133,7 @@ async function einer(s) {
   /* Nur das juengste Listing: nach mehr als einem Jahr ohne Kerze traegt
      das Kuerzel eine andere Firma (survivorship-control.js). */
   const aktuell = SC.currentListingSegment(reihe.bars).bars;
-  /* Mit securityId: SEC-belegte Splits, die der Anbieter nicht fuehrt (quant/config/split-evidence-supplements.json),
-     wirken in return-series.js#splitFactors - dieselbe Ableitung wie die Tagesreihe. */
-  const closes = splitAdjustedCloses(aktuell, s.securityId).filter((b) => Number.isFinite(b.close) && b.close > 0);
-  const ergaenzt = ReturnSeries.appliedSupplements(aktuell, { securityId: s.securityId });
-  for (const e of ergaenzt) if (e.status !== "APPLIED") console.warn(`::warning::${s.ticker}: Split-Ergaenzung ${e.id} nicht angewandt (${e.reason})`);
+  const closes = splitAdjustedCloses(aktuell).filter((b) => Number.isFinite(b.close) && b.close > 0);
   const weekly = Sampling.weeklyPoints(closes.map((b) => [b.date, b.close]));
   if (weekly.length < MIN_WEEKS) { bilanz.tooShort++; return; }
   const points = weekly.map((p) => [p[0], PublishedClose.roundClose(p[1])]);
@@ -154,7 +149,7 @@ async function einer(s) {
     /* Beleg der Kapitalmassnahmen (Splittage des Anbieters, Wochen mit Kurssprung in Split-Groesse samt groesstem
        Tagessprung): damit unterscheidet die Datenqualitaet eine echte Kursbewegung von einer verpassten Bereinigung
        (quant/engines/corporate-action-evidence.js). */
-    corporateActions: CorporateActions.evidence(closes, points, aktuell, ergaenzt),
+    corporateActions: CorporateActions.evidence(closes, points, aktuell),
     barCount: weekly.length, sourceBarCount: aktuell.length,
     sourceFirst: aktuell[0].date, sourceLast: aktuell[aktuell.length - 1].date,
     publishBasis: permission.basis, publishCheckedAt: permission.checkedAt || null,

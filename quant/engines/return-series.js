@@ -48,70 +48,13 @@
    * Die splitbereinigte Reihe. Rueckwaerts: der letzte Kurs bleibt der
    * gehandelte, frueheren wird der kumulierte Splitfaktor herausgerechnet.
    */
-  /* ------------------------------------- Belegte Ergaenzungen (Anbieterluecke)
-
-     Fuehrt der Anbieter einen Split nicht, den die SEC-Originale belegen
-     (quant/config/split-evidence-supplements.json), nimmt splitFactors ihn
-     hier auf - und NUR hier, damit es bei einer Ableitung bleibt (ADR-002).
-     Wirksam nur mit options.securityId; ohne sie ist splitFactors bitgleich
-     zur Fassung davor.
-
-     Ein Eintrag wirkt nur, wenn alle drei Bedingungen halten; sonst wird er
-     mit Grund uebersprungen (nie geraten, nie verschoben):
-       NO_BAR_ON_EX_DATE     kein Balken genau am belegten Ex-Tag (oder kein
-                             Vortag) - die Reihe deckt das Ereignis nicht
-       PROVIDER_SPLIT_NEARBY der Anbieter fuehrt innerhalb von 5 Sitzungen um
-                             den Ex-Tag einen Split - dann waere es eine
-                             doppelte Bereinigung
-       NO_RAW_JUMP           der Rohschluss am Ex-Tag zeigt den Sprung um
-                             1/ratio nicht (Toleranz 15 % im Log) - der
-                             Anbieter hat den Rohschluss dann womoeglich selbst
-                             schon bereinigt */
-  var SUPPLEMENT_WINDOW_SESSIONS = 5;
-  var SUPPLEMENT_RAW_JUMP_TOLERANCE = Math.log(1.15);
-  var Supplements = isNode
-    ? require("./split-evidence-supplements.js")
-    : (global.VUSplitEvidenceSupplements || null);
-
-  function supplementPlan(bars, options) {
-    var plan = { byIndex: {}, items: [] };
-    var securityId = options && options.securityId;
-    if (!securityId || !Array.isArray(bars) || !bars.length) return plan;
-    var entries = options.supplements ? (options.supplements[securityId] || [])
-      : (Supplements ? Supplements.forSecurity(securityId) : []);
-    entries.forEach(function (e) {
-      var item = { id: e.id, exDate: e.exDate, ratio: e.ratio, accession: e.evidence && e.evidence[0] ? e.evidence[0].accession : null,
-                   status: "SKIPPED", reason: null, index: null };
-      plan.items.push(item);
-      var at = -1;
-      for (var i = 0; i < bars.length; i++) { if (String(bars[i].date).slice(0, 10) === e.exDate) { at = i; break; } }
-      if (at < 1) { item.reason = "NO_BAR_ON_EX_DATE"; return; }
-      var lo = Math.max(0, at - SUPPLEMENT_WINDOW_SESSIONS), hi = Math.min(bars.length - 1, at + SUPPLEMENT_WINDOW_SESSIONS);
-      for (var j = lo; j <= hi; j++) {
-        var sf = bars[j].splitFactor;
-        if (finite(sf) && sf > 0 && sf !== 1) { item.reason = "PROVIDER_SPLIT_NEARBY"; return; }
-      }
-      var a = bars[at - 1].close, b = bars[at].close;
-      if (!(finite(a) && a > 0 && finite(b) && b > 0) ||
-          Math.abs(Math.log((b / a) * e.ratio)) > SUPPLEMENT_RAW_JUMP_TOLERANCE) { item.reason = "NO_RAW_JUMP"; return; }
-      item.status = "APPLIED"; item.index = at; item.rawJump = Math.round((b / a) * 1e6) / 1e6;
-      plan.byIndex[at] = (plan.byIndex[at] || 1) * e.ratio;
-    });
-    return plan;
-  }
-
   /**
    * Der kumulierte Splitfaktor je Bar: das Produkt aller Splits NACH
    * diesem Tag. Eine eigene Funktion, weil close, high und low denselben
    * Faktor tragen muessen - drei Reihen mit drei Faktoren waeren drei
    * verschiedene Kurswelten in einem Bundle.
-   *
-   * @param {object[]} bars
-   * @param {object}   [options] {securityId} - belegte Ergaenzungen dieser ID
-   *                   (split-evidence-supplements); ohne: nur der Anbieter
    */
-  function splitFactors(bars, options) {
-    var extra = supplementPlan(bars, options).byIndex;
+  function splitFactors(bars) {
     var out = new Array(bars.length);
     var factor = 1;
     for (var i = bars.length - 1; i >= 0; i--) {
@@ -122,8 +65,6 @@
          andersherum verschoebe sich die ganze Reihe um einen Tag, was an
          einem 1:7 sofort sichtbar waere und an einem 1:1.05 nie. */
       if (finite(sf) && sf > 0 && sf !== 1) factor *= sf;
-      /* Belegte Ergaenzung: dieselbe Regel, derselbe Tag. */
-      if (extra[i]) factor *= extra[i];
     }
     return out;
   }
@@ -132,21 +73,16 @@
    * Eine beliebige Kursspalte auf dieselbe splitbereinigte Geometrie
    * gebracht. `field` ist close, high oder low.
    */
-  function splitAdjustedColumn(bars, field, options) {
-    var factors = splitFactors(bars, options);
+  function splitAdjustedColumn(bars, field) {
+    var factors = splitFactors(bars);
     return bars.map(function (bar, i) {
       var value = bar ? bar[field] : null;
       return finite(value) && value > 0 ? value / factors[i] : null;
     });
   }
 
-  function splitAdjusted(bars, options) {
-    return splitAdjustedColumn(bars, "close", options);
-  }
-
-  /** Welche belegten Ergaenzungen in dieser Reihe gewirkt haben (Herkunft fuer den Herausgeber). */
-  function appliedSupplements(bars, options) {
-    return supplementPlan(bars, options).items;
+  function splitAdjusted(bars) {
+    return splitAdjustedColumn(bars, "close");
   }
 
   function totalReturn(bars) {
@@ -404,8 +340,6 @@
     ENGINE_VERSION: ENGINE_VERSION,
     splitAdjusted: splitAdjusted,
     splitFactors: splitFactors,
-    appliedSupplements: appliedSupplements,
-    SUPPLEMENT_WINDOW_SESSIONS: SUPPLEMENT_WINDOW_SESSIONS,
     splitAdjustedColumn: splitAdjustedColumn,
     splitAdjustedInputs: splitAdjustedInputs,
     MIN_BARS_FOR_BENCHMARK: MIN_BARS_FOR_BENCHMARK,

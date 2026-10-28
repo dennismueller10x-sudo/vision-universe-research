@@ -66,20 +66,11 @@
    * @param {[string, number][]} weekly              [Wochendatum, Schluss] wie veroeffentlicht
    * @param {{date:string, splitFactor:number}[]} bars  Rohbalken (nur splitFactor wird gelesen)
    */
-  /* `supplements` (optional): return-series.js#appliedSupplements derselben Reihe. Ein dort angewandter, SEC-belegter
-     Split (quant/config/split-evidence-supplements.json) steht dann mit in `splits` - die Wochenreihe ist um ihn bereinigt,
-     und wer aus `splits` Faktoren nach einem Stichtag bildet (fundamental/engine/catalog.js#historicalPe), muss ihn sehen.
-     Welche Eintraege daher stammen, sagt `supplemented` (Datum, Faktor, Eintrag, Accession). Ohne Ergaenzung bleibt das
-     Dokument bytegleich zur Fassung davor (kein Feld `supplemented`). */
-  function evidence(daily, weekly, bars, supplements) {
+  function evidence(daily, weekly, bars) {
     var splits = [];
     /* Fehlt die splitFactor-Spalte (auch nur teilweise), ist das KEIN Beleg fuer "kein Split" → kein Beleg */
     if (!bars || !bars.length || !bars.every(function (b) { return b && isNum(b.splitFactor) && b.splitFactor > 0; })) return null;
     bars.forEach(function (b) { if (b.splitFactor !== 1) splits.push([String(b.date).slice(0, 10), r6(b.splitFactor)]); });
-    var supplemented = (supplements || []).filter(function (s) { return s && s.status === "APPLIED"; })
-      .map(function (s) { return { date: s.exDate, factor: r6(s.ratio), id: s.id, accession: s.accession, source: "SEC_FILING_SUPPLEMENT" }; });
-    supplemented.forEach(function (s) { splits.push([s.date, s.factor]); });
-    splits.sort(function (a, b) { return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0; });
     var moves = [], di = 0;
     for (var w = 1; w < weekly.length; w++) {
       var r = weekly[w][1] / weekly[w - 1][1];
@@ -96,9 +87,7 @@
       var split = splits.filter(function (s) { return s[0] > from && s[0] <= to; });
       moves.push({ week: to, weeklyRatio: r6(r), maxDailyRatio: best ? r6(best.ratio) : null, maxDailyDate: best ? best.date : null, splitInWeek: split.length > 0 });
     }
-    var out = { version: VERSION, source: "PROVIDER_SPLIT_FACTOR", splits: splits, moves: moves };
-    if (supplemented.length) out.supplemented = supplemented;
-    return out;
+    return { version: VERSION, source: "PROVIDER_SPLIT_FACTOR", splits: splits, moves: moves };
   }
 
   /**

@@ -78,7 +78,5 @@ test("CA5 · dieselbe Regel wie die Engine (Verhaeltnisse 2/3/4/5/10, Toleranz 3
 
 test("CA6 · der Herausgeber der Wochenreihen schreibt den Beleg mit (publish-long-series.mjs)", () => {
   const src = readFileSync(new URL("../../scripts/market/publish-long-series.mjs", import.meta.url), "utf8");
-  /* Seit der Split-Ergaenzung (quant/config/split-evidence-supplements.json) mit den angewandten Ergaenzungen derselben Reihe. */
-  assert.ok(/corporateActions: CorporateActions\.evidence\(closes, points, aktuell, ergaenzt\)/.test(src));
-  assert.ok(/const ergaenzt = ReturnSeries\.appliedSupplements\(aktuell, \{ securityId: s\.securityId \}\)/.test(src));
+  assert.ok(/corporateActions: CorporateActions\.evidence\(closes, points, aktuell\)/.test(src));
 });

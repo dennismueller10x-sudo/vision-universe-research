@@ -53,12 +53,9 @@ function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 /* Split-bereinigte Schlusskurse aus Rohbars - aus splitFactor, nicht aus
    der adjClose-Spalte des Anbieters. Der Faktor kommt aus der EINEN
    Definition (quant/engines/return-series.js#splitFactors, ADR-002); ein
-   Splitfaktor <= 0 ist ein Datenfehler und wirkt nicht. Mit `securityId`
-   wirken zusaetzlich die SEC-belegten Ergaenzungen dieser ID
-   (quant/config/split-evidence-supplements.json) - in splitFactors selbst,
-   nicht hier. */
-export function splitAdjustedCloses(bars, securityId) {
-  const factors = ReturnSeries.splitFactors(bars, securityId ? { securityId } : undefined);
+   Splitfaktor <= 0 ist ein Datenfehler und wirkt nicht. */
+export function splitAdjustedCloses(bars) {
+  const factors = ReturnSeries.splitFactors(bars);
   return bars.map((b, i) => ({ date: String(b.date).slice(0, 10),
                                close: isNum(b.close) ? b.close / factors[i] : null }));
 }
@@ -76,7 +73,7 @@ export function compactSeries(payload, security, permission, opts) {
      2026 in einem Chart (03.10.2026). */
   const bars = SC.currentListingSegment((payload && payload.bars) || []).bars;
   /* Nur positive Kurse: ein Schluss von 0 ist ein Datenloch, kein Kurs. */
-  const dated = splitAdjustedCloses(bars, security && security.securityId).filter((b) => isNum(b.close) && b.close > 0);
+  const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close) && b.close > 0);
   if (dated.length < 30) return null;
   const fenster = dated.slice(-maxPoints);
   return {
