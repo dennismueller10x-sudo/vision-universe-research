@@ -42,7 +42,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.5.0";
+  var INDICATORS_VERSION = "technical-indicators-1.6.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -911,6 +911,155 @@
     return out;
   }
 
+  /* ------------------------------------------- Katalogerweiterung 1.6.0 (L12) */
+
+  /** Absolute Price Oscillator: EMA_fast(C) − EMA_slow(C) (wie MACD ohne Signal, absolute Preiseinheiten). */
+  function apo(close, fast, slow) { var c = col(close); return zip2(F.ema(c, fast), F.ema(c, slow), function (a, b) { return a - b; }); }
+
+  /** Midprice: (hoechstes Hoch + tiefstes Tief der letzten n Bars) / 2. */
+  function midprice(high, low, period) {
+    return zip2(F.rollingMax(col(high), period), F.rollingMin(col(low), period), function (a, b) { return (a + b) / 2; });
+  }
+
+  /** Time Series Forecast: Regressionsgerade der letzten n Schluesse, um einen Bar fortgeschrieben (Wert + Steigung). */
+  function tsf(close, period) {
+    var r = linreg(close, period, 0);
+    return zip2(r.value, r.slope, function (v, b) { return v + b; });
+  }
+
+  /** ADXR (Wilder): (ADX_i + ADX_{i−(n−1)}) / 2. */
+  function adxr(high, low, close, period) {
+    var a = F.adx(col(high), col(low), col(close), period).adx, n = a.length, out = arr(n);
+    for (var i = period - 1; i < n; i++) if (isNum(a[i]) && isNum(a[i - period + 1])) out[i] = (a[i] + a[i - period + 1]) / 2;
+    return out;
+  }
+
+  /** Schnelle Stochastik: %K = 100·(C − LL_n)/(HH_n − LL_n) ungeglaettet, %D = SMA_d(%K). */
+  function stochFast(high, low, close, kPeriod, dPeriod) {
+    var raw = stochastic(high, low, close, kPeriod, 1, dPeriod).raw;
+    return { k: raw, d: F.sma(raw, dPeriod) };
+  }
+
+  /**
+   * Fisher Transform (Ehlers 2002): x = (HL2 − LL_n)/max(HH_n − LL_n, 0,001) − 0,5 aus dem Medianpreis HL2;
+   * v = 0,66·x + 0,67·v₋₁, begrenzt auf ±0,999 (ab |v| > 0,99); F = 0,5·ln((1+v)/(1−v)) + 0,5·F₋₁.
+   * Startwert F = 0 an Bar n−1 (wie pandas-ta). Signal = F des Vorbars.
+   */
+  function fisher(high, low, period) {
+    var h = col(high), l = col(low), n = h.length, med = arr(n), fish = arr(n), sig = arr(n);
+    for (var i = 0; i < n; i++) if (isNum(h[i]) && isNum(l[i])) med[i] = (h[i] + l[i]) / 2;
+    var hh = F.rollingMax(med, period), ll = F.rollingMin(med, period), v = 0;
+    if (n >= period) fish[period - 1] = 0;
+    for (var k = period; k < n; k++) {
+      if (!isNum(med[k]) || !isNum(hh[k]) || !isNum(ll[k]) || !isNum(fish[k - 1])) continue;
+      var x = (med[k] - ll[k]) / Math.max(hh[k] - ll[k], 0.001) - 0.5;
+      v = 0.66 * x + 0.67 * v;
+      if (v < -0.99) v = -0.999;
+      if (v > 0.99) v = 0.999;
+      fish[k] = 0.5 * (Math.log((1 + v) / (1 - v)) + fish[k - 1]);
+    }
+    for (var j = 1; j < n; j++) sig[j] = fish[j - 1];
+    return { fisher: fish, signal: sig };
+  }
+
+  /**
+   * Schaff Trend Cycle (Schaff 1999): MACD = EMA_fast − EMA_slow; %K1 = Stochastik des MACD ueber `cycle` Bars
+   * (Spanne 0: Vorwert), PF = PF₋₁ + f·(%K1 − PF₋₁) mit Start PF = %K1; %K2 = Stochastik von PF ueber `cycle` Bars,
+   * STC = STC₋₁ + f·(%K2 − STC₋₁) mit Start STC = %K2. Werte 0..100.
+   */
+  function stc(close, fast, slow, cycle, factor) {
+    var c = col(close), m = zip2(F.ema(c, fast), F.ema(c, slow), function (a, b) { return a - b; });
+    function stochSmooth(x) {
+      var n = x.length, k = arr(n), out = arr(n), first = -1;
+      for (var i = 0; i < n; i++) if (isNum(x[i])) { first = i; break; }
+      if (first < 0) return out;
+      for (var t = first + cycle - 1; t < n; t++) {
+        var lo = Infinity, hi = -Infinity, ok = true;
+        for (var q = t - cycle + 1; q <= t; q++) { if (!isNum(x[q])) { ok = false; break; } lo = Math.min(lo, x[q]); hi = Math.max(hi, x[q]); }
+        if (!ok) continue;
+        k[t] = hi > lo ? 100 * (x[t] - lo) / (hi - lo) : (isNum(k[t - 1]) ? k[t - 1] : 0);
+        out[t] = isNum(out[t - 1]) ? out[t - 1] + factor * (k[t] - out[t - 1]) : k[t];
+      }
+      return out;
+    }
+    return stochSmooth(stochSmooth(m));
+  }
+
+  /** Symmetrisch gewichteter Durchschnitt ueber 4 Bars: (x₋₃ + 2x₋₂ + 2x₋₁ + x)/6. */
+  function swma4(x) {
+    var n = x.length, out = arr(n);
+    for (var i = 3; i < n; i++) if (isNum(x[i]) && isNum(x[i - 1]) && isNum(x[i - 2]) && isNum(x[i - 3])) out[i] = (x[i - 3] + 2 * x[i - 2] + 2 * x[i - 1] + x[i]) / 6;
+    return out;
+  }
+
+  /** Relative Vigor Index (Ehlers): RVGI = Σ_n SWMA(C − O) / Σ_n SWMA(H − L), Signal = SWMA(RVGI). */
+  function rvgi(open, high, low, close, period) {
+    var o = col(open), h = col(high), l = col(low), c = col(close);
+    var num = rollingSum(swma4(zip2(c, o, function (a, b) { return a - b; })), period);
+    var den = rollingSum(swma4(zip2(h, l, function (a, b) { return a - b; })), period);
+    var r = zip2(num, den, function (a, b) { return b !== 0 ? a / b : NaN; });
+    return { rvgi: r, signal: swma4(r) };
+  }
+
+  /** Price Volume Trend: PVT_i = PVT_{i−1} + V_i·(C_i − C_{i−1})/C_{i−1}, Start PVT_1 = V_1·(C_1 − C_0)/C_0. */
+  function pvt(close, volume) {
+    var c = col(close), v = col(volume), n = c.length, out = arr(n), acc = 0, started = false;
+    for (var i = 1; i < n; i++) {
+      if (!isNum(c[i]) || !isNum(c[i - 1]) || !isNum(v[i]) || c[i - 1] === 0) { if (started) out[i] = acc; continue; }
+      acc += v[i] * (c[i] - c[i - 1]) / c[i - 1]; started = true; out[i] = acc;
+    }
+    return out;
+  }
+
+  /** Vertical Horizontal Filter (White): (hoechster − tiefster Schluss der letzten n Bars) / Σ_n |C − C₋₁|. */
+  function vhf(close, period) {
+    var c = col(close), n = c.length, d = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(c[i]) && isNum(c[i - 1])) d[i] = Math.abs(c[i] - c[i - 1]);
+    return zip2(zip2(F.rollingMax(c, period), F.rollingMin(c, period), function (a, b) { return a - b; }), rollingSum(d, period),
+      function (r, s) { return s > 0 ? r / s : NaN; });
+  }
+
+  /** Efficiency Ratio (Kaufman): |C − C₋ₙ| / Σ_n |C − C₋₁| (1 = gerader Trend, nahe 0 = Rauschen). */
+  function efficiencyRatio(close, period) {
+    var c = col(close), n = c.length, d = arr(n), out = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(c[i]) && isNum(c[i - 1])) d[i] = Math.abs(c[i] - c[i - 1]);
+    var s = rollingSum(d, period);
+    for (var k = period; k < n; k++) if (isNum(c[k]) && isNum(c[k - period]) && isNum(s[k]) && s[k] > 0) out[k] = Math.abs(c[k] - c[k - period]) / s[k];
+    return out;
+  }
+
+  /** QStick (Chande): SMA_n(C − O). */
+  function qstick(open, close, period) { return F.sma(zip2(col(close), col(open), function (a, b) { return a - b; }), period); }
+
+  /** Williams Alligator: SMMA (Wilder) des Medianpreises (H+L)/2, Kiefer 13/8, Zaehne 8/5, Lippen 5/3 (Laenge/Versatz).
+   *  Der Versatz zeigt in die Zukunft; am Bar i steht deshalb der SMMA-Wert von Bar i − Versatz (kausal). */
+  function alligator(high, low, jaw, jawShift, teeth, teethShift, lips, lipsShift) {
+    var h = col(high), l = col(low), med = zip2(h, l, function (a, b) { return (a + b) / 2; });
+    function shifted(period, by) { var s = F.wilder(med, period), out = arr(s.length); for (var i = by; i < s.length; i++) out[i] = s[i - by]; return out; }
+    return { jaw: shifted(jaw, jawShift), teeth: shifted(teeth, teethShift), lips: shifted(lips, lipsShift) };
+  }
+
+  /** Williams Fractals: Hoch-Fraktal an Bar c, wenn H_c strikt ueber den zwei Hochs davor und danach liegt (Tief entsprechend).
+   *  Erkennbar erst zwei Bars spaeter; ausgewiesen am Bestaetigungsbar c + 2 (kein Vorgriff): up/down = 1/0,
+   *  upPrice/downPrice = Preis von Bar c, sonst NaN. */
+  function fractals(high, low) {
+    var h = col(high), l = col(low), n = h.length, up = arr(n), dn = arr(n), upPrice = arr(n), downPrice = arr(n);
+    for (var i = 4; i < n; i++) {
+      var c = i - 2, okH = true, okL = true, defined = true;
+      for (var j = c - 2; j <= c + 2; j++) {
+        if (!isNum(h[j]) || !isNum(l[j])) { defined = false; break; }
+        if (j === c) continue;
+        if (!(h[c] > h[j])) okH = false;
+        if (!(l[c] < l[j])) okL = false;
+      }
+      if (!defined) continue;
+      up[i] = okH ? 1 : 0; dn[i] = okL ? 1 : 0;
+      if (okH) upPrice[i] = h[c];
+      if (okL) downPrice[i] = l[c];
+    }
+    return { up: up, down: dn, upPrice: upPrice, downPrice: downPrice };
+  }
+
   /* ------------------------------------------------------- Hilfsfunktionen */
 
   /** Hoechster Schluss bzw. Hoch der letzten n Bars inkl. i (52 Wochen = 252 Tagesbars bzw. 52 Wochenbars). */
@@ -1090,10 +1239,39 @@
     { id: "pivotsCamarilla", family: "TREND", name: "Pivot-Punkte (Camarilla)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
       definition: "R/S1..4 = C ± (H − L)·1,1/{12; 6; 4; 2} der Vorbar", warmup: function () { return 1; } },
     { id: "pivotsWoodie", family: "TREND", name: "Pivot-Punkte (Woodie)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
-      definition: "P = (H + L + 2C)/4 der Vorbar, R1 = 2P − L, S1 = 2P − H, R2/S2 = P ± (H − L)", warmup: function () { return 1; } }
+      definition: "P = (H + L + 2C)/4 der Vorbar, R1 = 2P − L, S1 = 2P − H, R2/S2 = P ± (H − L)", warmup: function () { return 1; } },
+    /* 1.6.0 (L12) */
+    { id: "apo", family: "MOMENTUM", name: "Absolute Price Oscillator (APO)", params: { fast: 12, slow: 26 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "EMA_fast(C) − EMA_slow(C)", warmup: function (p) { return p.slow - 1; } },
+    { id: "midprice", family: "TREND", name: "Midprice", params: { period: 14 }, inputs: ["high", "low"], overlay: true, catalogOnly: true,
+      definition: "(hoechstes Hoch + tiefstes Tief der letzten n Bars) / 2", warmup: function (p) { return p.period - 1; } },
+    { id: "tsf", family: "TREND", name: "Time Series Forecast (TSF)", params: { period: 14 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "Regressionsgerade der letzten n Schluesse, einen Bar fortgeschrieben", warmup: function (p) { return p.period - 1; } },
+    { id: "adxr", family: "TREND", name: "Average Directional Movement Rating (ADXR)", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "(ADX_i + ADX_{i−(n−1)}) / 2", warmup: function (p) { return 3 * p.period - 2; } },
+    { id: "stochFast", family: "MOMENTUM", name: "Schnelle Stochastik", params: { kPeriod: 14, dPeriod: 3 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "%K = 100·(C − LL_n)/(HH_n − LL_n) ungeglaettet, %D = SMA_d(%K)", warmup: function (p) { return p.kPeriod - 1; } },
+    { id: "fisher", family: "MOMENTUM", name: "Fisher Transform", params: { period: 9 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "x = (HL2 − LL_n)/(HH_n − LL_n) − 0,5; v = 0,66·x + 0,67·v₋₁ (±0,999); F = 0,5·ln((1+v)/(1−v)) + 0,5·F₋₁; Signal = F₋₁", warmup: function (p) { return p.period - 1; } },
+    { id: "stc", family: "MOMENTUM", name: "Schaff Trend Cycle (STC)", params: { fast: 23, slow: 50, cycle: 10, factor: 0.5 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "zweifach geglaettete Stochastik des MACD (EMA_fast − EMA_slow) ueber `cycle` Bars, Glaettung f", warmup: function (p) { return p.slow + 2 * p.cycle - 3; } },
+    { id: "rvgi", family: "MOMENTUM", name: "Relative Vigor Index (RVGI)", params: { period: 10 }, inputs: ["open", "high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "Σ_n SWMA₄(C − O) / Σ_n SWMA₄(H − L), Signal = SWMA₄(RVGI)", warmup: function (p) { return p.period + 2; } },
+    { id: "pvt", family: "VOLUME", name: "Price Volume Trend (PVT)", params: {}, inputs: ["close", "volume"], overlay: false, catalogOnly: true,
+      definition: "kumuliert V·(C − C₋₁)/C₋₁", warmup: function () { return 1; } },
+    { id: "vhf", family: "TREND", name: "Vertical Horizontal Filter (VHF)", params: { period: 28 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "(max − min der Schluesse ueber n) / Σ_n |C − C₋₁|", warmup: function (p) { return p.period; } },
+    { id: "efficiencyRatio", family: "TREND", name: "Efficiency Ratio (Kaufman)", params: { period: 10 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "|C − C₋ₙ| / Σ_n |C − C₋₁|", warmup: function (p) { return p.period; } },
+    { id: "qstick", family: "MOMENTUM", name: "QStick (Chande)", params: { period: 10 }, inputs: ["open", "close"], overlay: false, catalogOnly: true,
+      definition: "SMA_n(C − O)", warmup: function (p) { return p.period - 1; } },
+    { id: "alligator", family: "TREND", name: "Williams Alligator", params: { jaw: 13, jawShift: 8, teeth: 8, teethShift: 5, lips: 5, lipsShift: 3 }, inputs: ["high", "low"], overlay: true, catalogOnly: true,
+      definition: "SMMA des Medianpreises: Kiefer 13 (8 Bars versetzt), Zaehne 8 (5), Lippen 5 (3); am Bar i der Wert von i − Versatz", warmup: function (p) { return p.jaw + p.jawShift - 1; } },
+    { id: "fractals", family: "TREND", name: "Williams Fractals", params: {}, inputs: ["high", "low"], overlay: true, catalogOnly: true,
+      definition: "Hoch/Tief strikt ueber/unter den zwei Bars davor und danach; ausgewiesen am Bestaetigungsbar (zwei Bars spaeter) als 1/0 und Preis", warmup: function () { return 4; } }
   ];
 
-  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max", "vfactor", "offset", "sigma", "pct"];
+  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max", "vfactor", "offset", "sigma", "pct", "factor"];
   function catalogEntry(id) { for (var i = 0; i < CATALOG.length; i++) if (CATALOG[i].id === id) return CATALOG[i]; return null; }
 
   /**
@@ -1184,6 +1362,20 @@
       case "pivotsFib": v = pivotVariant(s.high, s.low, s.close, "fibonacci"); break;
       case "pivotsCamarilla": v = pivotVariant(s.high, s.low, s.close, "camarilla"); break;
       case "pivotsWoodie": v = pivotVariant(s.high, s.low, s.close, "woodie"); break;
+      case "apo": v = apo(s.close, p.fast, p.slow); break;
+      case "midprice": v = midprice(s.high, s.low, p.period); break;
+      case "tsf": v = tsf(s.close, p.period); break;
+      case "adxr": v = adxr(s.high, s.low, s.close, p.period); break;
+      case "stochFast": v = stochFast(s.high, s.low, s.close, p.kPeriod, p.dPeriod); break;
+      case "fisher": v = fisher(s.high, s.low, p.period); break;
+      case "stc": v = stc(s.close, p.fast, p.slow, p.cycle, p.factor); break;
+      case "rvgi": v = rvgi(s.open, s.high, s.low, s.close, p.period); break;
+      case "pvt": v = pvt(s.close, s.volume); break;
+      case "vhf": v = vhf(s.close, p.period); break;
+      case "efficiencyRatio": v = efficiencyRatio(s.close, p.period); break;
+      case "qstick": v = qstick(s.open, s.close, p.period); break;
+      case "alligator": v = alligator(s.high, s.low, p.jaw, p.jawShift, p.teeth, p.teethShift, p.lips, p.lipsShift); break;
+      case "fractals": v = fractals(s.high, s.low); break;
     }
     return { id: id, version: INDICATORS_VERSION, params: p, warmup: entry.warmup(p), values: v };
   }
@@ -1207,7 +1399,10 @@
     vortex: vortex, massIndex: massIndex, choppiness: choppiness, ulcerIndex: ulcerIndex, forceIndex: forceIndex, elderRay: elderRay,
     easeOfMovement: easeOfMovement, awesomeOscillator: awesomeOscillator, coppock: coppock, kst: kst, tsi: tsi, dpo: dpo,
     historicalVolatility: historicalVolatility, zScore: zScore, nvi: nvi, pvi: pvi, pvo: pvo, connorsRsi: connorsRsi,
-    elderImpulse: elderImpulse, chaikinVolatility: chaikinVolatility, envelope: envelope, pivotVariant: pivotVariant
+    elderImpulse: elderImpulse, chaikinVolatility: chaikinVolatility, envelope: envelope, pivotVariant: pivotVariant,
+    /* 1.6.0 (L12) */
+    apo: apo, midprice: midprice, tsf: tsf, adxr: adxr, stochFast: stochFast, fisher: fisher, stc: stc, rvgi: rvgi, pvt: pvt,
+    vhf: vhf, efficiencyRatio: efficiencyRatio, qstick: qstick, alligator: alligator, fractals: fractals
   };
 
   if (isNode) module.exports = api;
