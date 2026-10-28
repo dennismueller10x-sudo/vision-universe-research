@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.1).
+"""V10 TR register: consolidate the private dividend extractions into the research total-return register (tr-protocol-1.0.2).
 
 Admission, completeness windows, split consistency and the derived (never sourced) ex-date follow the protocol. Network use:
 split statements (re-fetched), index-headers of each admitted event's earliest source (acceptance time), companyfacts cross-check;
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "scripts" / "quant" / "sec"))
 import http_client  # noqa: E402
 
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json"
 TP = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 PERIOD = (TP["period"]["recordDateFrom"], TP["period"]["recordDateTo"])
@@ -268,7 +268,7 @@ def main():
                                 for ev in events if ev["entitlementSession"] and ev["informationAvailableAt"]],
         })
     reg = {
-        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json", "protocolSha256": PROTOCOL_SHA,
+        "schemaVersion": "v10-tr-register-1.0.0", "protocol": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json", "protocolSha256": PROTOCOL_SHA,
         "evidenceKind": "SOURCE_EVIDENCE", "certificationStatus": "NOT_CERTIFIED", "productionApproved": False,
         "returnBasisLabels": {"PRICE_RETURN": "split-adjusted closes only (default everywhere)", "TOTAL_RETURN": "only for holding periods fully inside a totalReturnWindow of the title, dividends credited at payDate",
                               "CA_UNRESOLVED": "series not QUALIFIED by createResearchLoader {identityEvidence, corporateActionEvidence}: no return basis", "TERMINAL_UNKNOWN": "terminal proceeds without sourced pay date: never credited (research-portfolio NOT_STATED)"},

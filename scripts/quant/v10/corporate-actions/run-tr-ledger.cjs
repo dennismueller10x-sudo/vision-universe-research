@@ -2,7 +2,7 @@
 'use strict';
 /* V10 TR register: run the EXISTING research ledger (research-portfolio.cjs runPortfolio, unchanged) on the register's
  * CASH_DIVIDEND events, one single-title buy-and-hold ledger per title over its longest TOTAL_RETURN window
- * (tr-protocol-1.0.1 "parity"): buy at the first execution session (weight 1, no costs), hold, dividend cash credited at the
+ * (tr-protocol-1.0.2 "parity"): buy at the first execution session (weight 1, no costs), hold, dividend cash credited at the
  * first weekly session on/after payDate (not reinvested). Also the same window price-only (no events) and the CA status of the
  * series via createResearchLoader. Full inputs/results go to --private (outside the repo); a compact summary to --out.
  *   node run-tr-ledger.cjs --register <tr-register.json> --private <dir> --out <summary.json>

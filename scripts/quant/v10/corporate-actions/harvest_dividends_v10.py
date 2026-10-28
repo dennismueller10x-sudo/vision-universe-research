@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V10 TR register: harvest cash-dividend statements from SEC originals (tr-protocol-1.0.1).
+"""V10 TR register: harvest cash-dividend statements from SEC originals (tr-protocol-1.0.2).
 
 Discovery (protocol sources.discovery):
   (a) every attestation document of the V9 dividend evidence (candidate list only; re-fetched here),
@@ -22,7 +22,7 @@ import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
-PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json"
+PROTOCOL = ROOT / "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json"
 TP = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
 sys.path.insert(0, str(ROOT / "scripts" / "quant" / "sec"))
@@ -111,12 +111,16 @@ def extract(H, S, cl, cik, acc, fn, meta, by_acc):
     dl = H.dates_in(head)
     sub = by_acc.get(acc, {})
     run = lambda x: H.sentence_events(x, dl[0][1] if dl else None) + H.table_events(x) + H.installment_events(x) + H.partial_events(x)
-    ev, seen = [], set()
-    for e in run(t) + run(re.sub(r"\s+", " ", t)):  # tr-protocol 1.0.1: also on whitespace-collapsed text
+    # tr-protocol 1.0.2: the whitespace-collapsed run is only a per-document fallback for record dates the original run did not yield
+    ev = [dict(e, run="ORIGINAL") for e in run(t)]
+    have = {e.get("recordDate") for e in ev}
+    seen = set()
+    for e in run(re.sub(r"\s+", " ", t)):
         key = (e["pattern"], e.get("recordDate"), e.get("payDate"), e.get("amount"), e.get("declarationDate"), e.get("intentOnly"), e.get("kind"))
-        if key not in seen:
-            seen.add(key)
-            ev.append(e)
+        if e.get("recordDate") in have or key in seen:
+            continue
+        seen.add(key)
+        ev.append(dict(e, run="COLLAPSED_WHITESPACE"))
     return {"accession": acc, "file": fn, "url": url, **meta, "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
             "items": sub.get("items"), "datelineDate": dl[0][1] if dl else None, "events": ev, "ixFacts": H.ix_facts(raw)}
 
