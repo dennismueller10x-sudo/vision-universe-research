@@ -323,10 +323,10 @@
       "cik": "0001739410",
       "name": "Rallybio Corp",
       "sic": "2834",
-      "rawFacts": 4733,
-      "mappedFacts": 1628,
-      "unmappedFacts": 3166,
-      "calendarYears": 7,
+      "rawFacts": 4983,
+      "mappedFacts": 1730,
+      "unmappedFacts": 3370,
+      "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -334,11 +334,11 @@
         "RLYB"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 24,
-      "firstPeriodEnd": "2020-09-30",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "annualPeriods": 7,
+      "quarterlyPeriods": 28,
+      "firstPeriodEnd": "2019-12-31",
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -349,7 +349,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -376,21 +376,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -403,15 +403,15 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2020-12-31",
+          "annualPeriods": 7,
+          "quarterlyPeriods": 28,
+          "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -434,44 +434,45 @@
         }
       },
       "quality": {
-        "HIGH": 176
+        "HIGH": 188
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 176,
-        "resolvedValues": 176
+        "datableValues": 188,
+        "resolvedValues": 188
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3211,
+        "rules_version": "1.1.0",
+        "total": 3418,
         "by_severity": {
-          "INFO": 3166,
-          "WARNING": 45
+          "INFO": 3370,
+          "WARNING": 48
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 17,
-          "RESTATEMENT_CONFLICT": 28,
-          "UNKNOWN_CONCEPT": 3166
+          "CONCEPT_DISAGREEMENT": 15,
+          "RESTATEMENT_CONFLICT": 33,
+          "UNKNOWN_CONCEPT": 3370
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-053880",
-        "filing_date": "2026-08-06",
+        "accession": "0001628280-26-067422",
+        "filing_date": "2026-10-27",
         "form": "10-Q",
-        "periodic_filings": 21
+        "periodic_filings": 22,
+        "acceptance_datetime": "2026-10-27T12:08:12.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1cd4500fb542dfb7be5495d3e732742a7f805a657ad76e93f4b6448e7b49d350",
+      "sourceDigest": "feb26b20de66691307d454bc5900e855e57acd7f167e8e0bad816d7d86ae33dd",
       "issuerId": "iss_cik_0001739410"
     },
     {
