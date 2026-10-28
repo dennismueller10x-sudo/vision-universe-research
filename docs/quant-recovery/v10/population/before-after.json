@@ -1,0 +1,1167 @@
+{
+ "schemaVersion": "v10-population-before-after-1.0.0",
+ "total": 6190,
+ "defaultParity": {
+  "compared": 6190,
+  "identicalOutputs": 6190,
+  "differing": [],
+  "rule": "sha256(JSON.stringify(result or error)) of the unchanged adapter loader vs createResearchLoader(root) with no option"
+ },
+ "configs": {
+  "default": {
+   "options": null,
+   "qualified": 4449,
+   "deltaVsDefault": 0,
+   "counts": {
+    "QUALIFIED": 4449,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 600,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "identity": {
+   "options": {
+    "identityEvidence": true
+   },
+   "qualified": 4453,
+   "deltaVsDefault": 4,
+   "counts": {
+    "QUALIFIED": 4453,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 600,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_BGC",
+    "ref_COHR",
+    "ref_DCOM",
+    "ref_SGI"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "identityV10": {
+   "options": {
+    "identityEvidence": true,
+    "identityEvidenceProtocolV10": true
+   },
+   "qualified": 4510,
+   "deltaVsDefault": 61,
+   "counts": {
+    "QUALIFIED": 4510,
+    "INSUFFICIENT_HISTORY": 441,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 603,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 118,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_ACI",
+    "ref_AERT",
+    "ref_ALTI",
+    "ref_ARRY",
+    "ref_BBAI",
+    "ref_BEAM",
+    "ref_BGC",
+    "ref_BHVN",
+    "ref_BNL",
+    "ref_BOLT",
+    "ref_BTDR",
+    "ref_BUR",
+    "ref_CHRD",
+    "ref_CNH",
+    "ref_CNR",
+    "ref_COCO",
+    "ref_COGT",
+    "ref_COHR",
+    "ref_CRC",
+    "ref_CSR",
+    "ref_CWBC",
+    "ref_CZR",
+    "ref_DCOM",
+    "ref_DERM",
+    "ref_DOW",
+    "ref_EE",
+    "ref_ESI",
+    "ref_EVER",
+    "ref_FBRT",
+    "ref_FRSH",
+    "ref_FSBC",
+    "ref_HCC",
+    "ref_HR",
+    "ref_IMCC",
+    "ref_INM",
+    "ref_IOT",
+    "ref_LAB",
+    "ref_MIR",
+    "ref_MOVE",
+    "ref_MRNA",
+    "ref_MXCT",
+    "ref_NMIH",
+    "ref_OPEN",
+    "ref_PAY",
+    "ref_PD",
+    "ref_PPTA",
+    "ref_RELY",
+    "ref_RENT",
+    "ref_RPRX",
+    "ref_S",
+    "ref_SAFE",
+    "ref_SDRL",
+    "ref_SEVN",
+    "ref_SGI",
+    "ref_SIRI",
+    "ref_SNOW",
+    "ref_TW",
+    "ref_UK",
+    "ref_UWMC",
+    "ref_VS",
+    "ref_WEST"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "ca": {
+   "options": {
+    "corporateActionEvidence": true
+   },
+   "qualified": 4472,
+   "deltaVsDefault": 23,
+   "counts": {
+    "QUALIFIED": 4472,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 577,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [
+    "ref_ACRS",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_CPIX",
+    "ref_ERII",
+    "ref_FMC",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HYFM",
+    "ref_MDRR",
+    "ref_MIRA",
+    "ref_MVST",
+    "ref_NTLA",
+    "ref_OM",
+    "ref_PACB",
+    "ref_PBYI",
+    "ref_REPL",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_VRRM",
+    "ref_VSTS"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "lifecycle": {
+   "options": {
+    "listingLifecycleEvidence": true
+   },
+   "qualified": 4372,
+   "deltaVsDefault": -77,
+   "counts": {
+    "QUALIFIED": 4372,
+    "INSUFFICIENT_HISTORY": 439,
+    "FROZEN_TAIL_UNRESOLVED": 95,
+    "MISSING_WEEKS": 199,
+    "CORPORATE_ACTION_UNRESOLVED": 601,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [
+    "ref_ALE",
+    "ref_BGFV",
+    "ref_EBTC",
+    "ref_ENFN",
+    "ref_ETWO",
+    "ref_GHLD",
+    "ref_GIFI",
+    "ref_HBI",
+    "ref_HSII",
+    "ref_ICCH",
+    "ref_MURA",
+    "ref_ODP",
+    "ref_SASR",
+    "ref_SBT",
+    "ref_SLRN",
+    "ref_STRM",
+    "ref_TRML",
+    "ref_VBTX"
+   ],
+   "lostVsDefault": [
+    {
+     "securityId": "ref_AACB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ADEX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_AFBI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ALF",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ANSC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_APAD",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ARAV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ARD",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ASLN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BMAC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BOWN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BRNS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BWNB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CALT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CASI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCCX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCIX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCLDO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CEO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CHL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CHU",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CMPOV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CREV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EFTY",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ELSE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EMPG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ESHA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EVE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_FSNB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_FTAIN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_GECCO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_GOCOQ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_HCHL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_HNNAZ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_IPEX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ISPO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_JFB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_KNL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LANDM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LAWR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LGV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LPSN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MAGH",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MAMK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MBT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MGIC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MIXT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MOFG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MOR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_NHPAP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_OAKU",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ORGN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ORIS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_OZON",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PLT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PLTS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PPHP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PTNM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PVG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_REE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_REVG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RILYK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RILYN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ROSS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RWAYZ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RZB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SDM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SELX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SLP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SNBR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SNCR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SVA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SVAC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBHC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBMC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBPH",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TECTP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_THR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TIRX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TTM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_UCFI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VCIC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VECT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VEDL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VIASP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VSTA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_WKEY",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XOMAO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XOMAP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XPVVV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XTKG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ZEUS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ZZK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    }
+   ],
+   "qualifiedWithLifecycleCut": 28
+  },
+  "identityCa": {
+   "options": {
+    "identityEvidence": true,
+    "corporateActionEvidence": true
+   },
+   "qualified": 4476,
+   "deltaVsDefault": 27,
+   "counts": {
+    "QUALIFIED": 4476,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 577,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_ACRS",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_BGC",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_COHR",
+    "ref_CPIX",
+    "ref_DCOM",
+    "ref_ERII",
+    "ref_FMC",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HYFM",
+    "ref_MDRR",
+    "ref_MIRA",
+    "ref_MVST",
+    "ref_NTLA",
+    "ref_OM",
+    "ref_PACB",
+    "ref_PBYI",
+    "ref_REPL",
+    "ref_SGI",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_VRRM",
+    "ref_VSTS"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "all": {
+   "options": {
+    "identityEvidence": true,
+    "identityEvidenceProtocolV10": true,
+    "corporateActionEvidence": true,
+    "listingLifecycleEvidence": true
+   },
+   "qualified": 4456,
+   "deltaVsDefault": 7,
+   "counts": {
+    "QUALIFIED": 4456,
+    "INSUFFICIENT_HISTORY": 441,
+    "FROZEN_TAIL_UNRESOLVED": 95,
+    "MISSING_WEEKS": 199,
+    "CORPORATE_ACTION_UNRESOLVED": 581,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 118,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_ACI",
+    "ref_ACRS",
+    "ref_AERT",
+    "ref_ALE",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_ALTI",
+    "ref_ARRY",
+    "ref_BBAI",
+    "ref_BEAM",
+    "ref_BGC",
+    "ref_BGFV",
+    "ref_BHVN",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_BNL",
+    "ref_BOLT",
+    "ref_BTDR",
+    "ref_BUR",
+    "ref_CHRD",
+    "ref_CNH",
+    "ref_CNR",
+    "ref_COCO",
+    "ref_COGT",
+    "ref_COHR",
+    "ref_CPIX",
+    "ref_CRC",
+    "ref_CSR",
+    "ref_CWBC",
+    "ref_CZR",
+    "ref_DCOM",
+    "ref_DERM",
+    "ref_DOW",
+    "ref_EBTC",
+    "ref_EE",
+    "ref_ENFN",
+    "ref_ERII",
+    "ref_ESI",
+    "ref_ETWO",
+    "ref_EVER",
+    "ref_FBRT",
+    "ref_FMC",
+    "ref_FRSH",
+    "ref_FSBC",
+    "ref_GHLD",
+    "ref_GIFI",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HBI",
+    "ref_HCC",
+    "ref_HR",
+    "ref_HSII",
+    "ref_HYFM",
+    "ref_ICCH",
+    "ref_IMCC",
+    "ref_INM",
+    "ref_IOT",
+    "ref_LAB",
+    "ref_MDRR",
+    "ref_MIR",
+    "ref_MIRA",
+    "ref_MOVE",
+    "ref_MRNA",
+    "ref_MURA",
+    "ref_MVST",
+    "ref_MXCT",
+    "ref_NMIH",
+    "ref_NTLA",
+    "ref_ODP",
+    "ref_OM",
+    "ref_OPEN",
+    "ref_PACB",
+    "ref_PAY",
+    "ref_PBYI",
+    "ref_PD",
+    "ref_PPTA",
+    "ref_RELY",
+    "ref_RENT",
+    "ref_REPL",
+    "ref_RPRX",
+    "ref_S",
+    "ref_SAFE",
+    "ref_SASR",
+    "ref_SBT",
+    "ref_SDRL",
+    "ref_SEVN",
+    "ref_SGI",
+    "ref_SIRI",
+    "ref_SLRN",
+    "ref_SNOW",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_STRM",
+    "ref_TRML",
+    "ref_TW",
+    "ref_UK",
+    "ref_UWMC",
+    "ref_VBTX",
+    "ref_VRRM",
+    "ref_VS",
+    "ref_VSTS",
+    "ref_WEST"
+   ],
+   "lostVsDefault": [
+    {
+     "securityId": "ref_AACB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ADEX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_AFBI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ALF",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ANSC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_APAD",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ARAV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ARD",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ASLN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BMAC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BOWN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BRNS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_BWNB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CALT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CASI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCCX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCIX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CCLDO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CEO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CHL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CHU",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CMPOV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_CREV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EFTY",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ELSE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EMPG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ESHA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_EVE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_FSNB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_FTAIN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_GECCO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_GOCOQ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_HCHL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_HNNAZ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_IPEX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ISPO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_JFB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_KNL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LANDM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LAWR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LGV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_LPSN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MAGH",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MAMK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MBT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MGIC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MIXT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MOFG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_MOR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_NHPAP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_OAKU",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ORGN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ORIS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_OZON",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PLT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PLTS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PPHP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PTNM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_PVG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_REE",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_REVG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RILYK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RILYN",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ROSS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RWAYZ",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_RZB",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SDM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SELX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SLP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SNBR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SNCR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SVA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_SVAC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBHC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBMC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TBPH",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TECTP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_THR",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TIRX",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_TTM",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_UCFI",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VCIC",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VECT",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VEDL",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VIASP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_VSTA",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_WKEY",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XOMAO",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XOMAP",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XPVVV",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_XTKG",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ZEUS",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    },
+    {
+     "securityId": "ref_ZZK",
+     "reason": "FROZEN_TAIL_UNRESOLVED"
+    }
+   ],
+   "qualifiedWithLifecycleCut": 28
+  }
+ }
+}

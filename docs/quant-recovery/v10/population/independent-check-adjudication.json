@@ -1,0 +1,368 @@
+{
+ "schemaVersion": "v10-population-independent-check-adjudication-1.0.0",
+ "checkFile": "docs/quant-recovery/v10/population/independent-check.json",
+ "scope": "every same-day MISMATCH the looser independent re-scan reports for a QUALIFIED id that the pipeline did not record; read by hand in the cached body. Hits for EXCLUDED ids cannot change an exclusion and are not adjudicated.",
+ "counts": {
+  "adjudicated": 35,
+  "unread": 0,
+  "genuineMismatchesFound": 0,
+  "byCategory": {
+   "DATE_MISATTRIBUTED": 29,
+   "NOT_A_MARKET_CLOSE": 4,
+   "OTHER_ISSUER": 2
+  }
+ },
+ "items": [
+  {
+   "securityId": "ref_AERT",
+   "date": "2025-10-01",
+   "price": 0.5674,
+   "url": "https://www.sec.gov/Archives/edgar/data/1853044/000182912625009514/aeriestech_424b5.htm",
+   "ratio": 1.0861,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statements are \"On November 26 / September 26, 2025, the last reported sale price ... was $x\"; the checker took the next sentence \"As of October 1, 2025\""
+  },
+  {
+   "securityId": "ref_AERT",
+   "date": "2025-10-01",
+   "price": 0.681,
+   "url": "https://www.sec.gov/Archives/edgar/data/1853044/000182912625007820/aeriestech_s3.htm",
+   "ratio": 0.9049,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statements are \"On November 26 / September 26, 2025, the last reported sale price ... was $x\"; the checker took the next sentence \"As of October 1, 2025\""
+  },
+  {
+   "securityId": "ref_BEAT",
+   "date": "2024-03-15",
+   "price": 2.16,
+   "url": "https://www.sec.gov/Archives/edgar/data/1779372/000121390024039551/ea0203932-01.htm",
+   "ratio": 1.1157,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statement dates are May 1, 2024 / March 7, 2023 / February 1, 2023; the checker took the following \"As of <date>\" sentence"
+  },
+  {
+   "securityId": "ref_BEAT",
+   "date": "2023-01-21",
+   "price": 3.39,
+   "url": "https://www.sec.gov/Archives/edgar/data/1779372/000121390023018694/ea174891-424b2_heartbeam.htm",
+   "ratio": 1.2419,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statement dates are May 1, 2024 / March 7, 2023 / February 1, 2023; the checker took the following \"As of <date>\" sentence"
+  },
+  {
+   "securityId": "ref_BEAT",
+   "date": "2023-01-21",
+   "price": 3.83,
+   "url": "https://www.sec.gov/Archives/edgar/data/1779372/000121390023006864/ea172486-s3_heartbeam.htm",
+   "ratio": 1.0992,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statement dates are May 1, 2024 / March 7, 2023 / February 1, 2023; the checker took the following \"As of <date>\" sentence"
+  },
+  {
+   "securityId": "ref_COGT",
+   "date": "2024-02-16",
+   "price": 7.5,
+   "url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025026115/cogt-20241231.htm",
+   "ratio": 1.2027,
+   "category": "NOT_A_MARKET_CLOSE",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "private placement purchase price $7.50 per share, not a closing price"
+  },
+  {
+   "securityId": "ref_CRC",
+   "date": "2025-05-02",
+   "price": 2.59,
+   "url": "https://www.sec.gov/Archives/edgar/data/1609253/000119312525264677/d29454d424b3.htm",
+   "ratio": 13.9846,
+   "category": "OTHER_ISSUER",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "closing price of Berry common stock (merger partner), not of the bound listing"
+  },
+  {
+   "securityId": "ref_CRC",
+   "date": "2025-05-02",
+   "price": 2.59,
+   "url": "https://www.sec.gov/Archives/edgar/data/1609253/000119312525239164/d29454ds4.htm",
+   "ratio": 13.9846,
+   "category": "OTHER_ISSUER",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "closing price of Berry common stock (merger partner), not of the bound listing"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2025-01-24",
+   "price": 23.39,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
+   "ratio": 1.4788,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2024-01-26",
+   "price": 23.39,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
+   "ratio": 1.9021,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2023-01-27",
+   "price": 23.39,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm",
+   "ratio": 2.2407,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2024-01-26",
+   "price": 33.42,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
+   "ratio": 1.3312,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2023-01-27",
+   "price": 33.42,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
+   "ratio": 1.5682,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2022-01-28",
+   "price": 33.42,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312525093716/d791580ddef14a.htm",
+   "ratio": 2.1834,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2021-01-29",
+   "price": 46.88,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
+   "ratio": 1.5015,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2023-01-27",
+   "price": 46.88,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
+   "ratio": 1.118,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2022-01-28",
+   "price": 46.88,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312524122698/d719036ddef14a.htm",
+   "ratio": 1.5565,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2021-01-29",
+   "price": 41.6,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312523124567/d419445ddef14a.htm",
+   "ratio": 1.6921,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2022-01-28",
+   "price": 41.6,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312523124567/d419445ddef14a.htm",
+   "ratio": 1.7541,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2023-01-01",
+   "price": 93.53,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312522116438/d209936ddef14a.htm",
+   "ratio": 0.4448,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2021-01-29",
+   "price": 93.53,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312522116438/d209936ddef14a.htm",
+   "ratio": 0.7526,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_CZR",
+   "date": "2023-01-01",
+   "price": 74.27,
+   "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312521137163/d114012ddef14a.htm",
+   "ratio": 0.5601,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "PSU footnotes: the price is the closing price as of December 31 of the prior year; the checker took the PSU grant date"
+  },
+  {
+   "securityId": "ref_DERM",
+   "date": "2021-12-31",
+   "price": 10.0,
+   "url": "https://www.sec.gov/Archives/edgar/data/1867066/000141057822000558/derm-20211231x10k.htm",
+   "ratio": 0.538,
+   "category": "NOT_A_MARKET_CLOSE",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "IPO price $10.00 per share"
+  },
+  {
+   "securityId": "ref_EE",
+   "date": "2026-02-17",
+   "price": 0.001,
+   "url": "https://www.sec.gov/Archives/edgar/data/1888447/000119312526078407/ee-20251231.htm",
+   "ratio": 41780.0,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "$0.001 is the par value; the cover statement gives no per-share price"
+  },
+  {
+   "securityId": "ref_EE",
+   "date": "2025-02-21",
+   "price": 0.001,
+   "url": "https://www.sec.gov/Archives/edgar/data/1888447/000095017025029147/ee-20241231.htm",
+   "ratio": 28350.0,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "$0.001 is the par value; the cover statement gives no per-share price"
+  },
+  {
+   "securityId": "ref_EE",
+   "date": "2024-02-23",
+   "price": 0.001,
+   "url": "https://www.sec.gov/Archives/edgar/data/1888447/000095017024023104/ee-20231231.htm",
+   "ratio": 13770.0,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "$0.001 is the par value; the cover statement gives no per-share price"
+  },
+  {
+   "securityId": "ref_HCC",
+   "date": "2018-06-30",
+   "price": 25.83,
+   "url": "https://www.sec.gov/Archives/edgar/data/1691303/000117494719000343/tv515115-def14a.htm",
+   "ratio": 1.0674,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statement is the close on July 2, 2018 \"(as June 30, 2018 was not a trading day)\""
+  },
+  {
+   "securityId": "ref_INM",
+   "date": "2024-12-13",
+   "price": 5.15,
+   "url": "https://www.sec.gov/Archives/edgar/data/1728328/000121390025104914/ea0262858-def14a_inmed.htm",
+   "ratio": 1.0214,
+   "category": "NOT_A_MARKET_CLOSE",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "$5.15 is a five-day average / average selling price; the same-day close stated there is $5.26"
+  },
+  {
+   "securityId": "ref_INM",
+   "date": "2024-12-13",
+   "price": 5.15,
+   "url": "https://www.sec.gov/Archives/edgar/data/1728328/000121390025044948/ea0239463-02.htm",
+   "ratio": 1.0214,
+   "category": "NOT_A_MARKET_CLOSE",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "$5.15 is a five-day average / average selling price; the same-day close stated there is $5.26"
+  },
+  {
+   "securityId": "ref_MOVE",
+   "date": "2026-09-02",
+   "price": 7.75,
+   "url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026103564/ea0306412-s3_corvex.htm",
+   "ratio": 1.8684,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "private placement price and last-sale statements dated Feb 10, 2026 / Jan 6, 2026 / Dec 17, 2025; the checker took \"On October 1, 2025, we received a written notice\""
+  },
+  {
+   "securityId": "ref_MOVE",
+   "date": "2025-10-01",
+   "price": 13.52,
+   "url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026018158/ea0277417-424b7_movano.htm",
+   "ratio": 0.0447,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "private placement price and last-sale statements dated Feb 10, 2026 / Jan 6, 2026 / Dec 17, 2025; the checker took \"On October 1, 2025, we received a written notice\""
+  },
+  {
+   "securityId": "ref_MOVE",
+   "date": "2025-10-01",
+   "price": 7.78,
+   "url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026004004/ea0272427-s1_movano.htm",
+   "ratio": 0.0777,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "private placement price and last-sale statements dated Feb 10, 2026 / Jan 6, 2026 / Dec 17, 2025; the checker took \"On October 1, 2025, we received a written notice\""
+  },
+  {
+   "securityId": "ref_MOVE",
+   "date": "2025-10-01",
+   "price": 7.14,
+   "url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390025124017/ea0269747-s1_movano.htm",
+   "ratio": 0.0846,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "private placement price and last-sale statements dated Feb 10, 2026 / Jan 6, 2026 / Dec 17, 2025; the checker took \"On October 1, 2025, we received a written notice\""
+  },
+  {
+   "securityId": "ref_VS",
+   "date": "2023-12-31",
+   "price": 1.8,
+   "url": "https://www.sec.gov/Archives/edgar/data/1701963/000121390024037154/ea0203162-03.htm",
+   "ratio": 1.6833,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statements dated April 11, 2024 / February 9, 2024; the checker took \"As at December 31, 2023\" of the next sentence"
+  },
+  {
+   "securityId": "ref_VS",
+   "date": "2023-12-31",
+   "price": 2.08,
+   "url": "https://www.sec.gov/Archives/edgar/data/1701963/000121390024014986/fs42024_versussystems.htm",
+   "ratio": 1.4567,
+   "category": "DATE_MISATTRIBUTED",
+   "verdict": "NOT_A_SAME_DAY_CLOSE_OF_THE_BOUND_LISTING",
+   "reading": "statements dated April 11, 2024 / February 9, 2024; the checker took \"As at December 31, 2023\" of the next sentence"
+  }
+ ],
+ "unread": []
+}
