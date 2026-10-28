@@ -142,11 +142,11 @@
   /* ----------------------------------------------- kompakte Kandidatenzeile */
   function row(r, S, opts) {
     opts = opts || {};
-    var dist = fin(r.pd) ? h('span', { class: 'sf-num', title: 'Abstand des Schlusskurses zur Chartmarke', text: pct(r.pd, 1, true) }) : null;
+    var dist = fin(r.pd) ? h('span', { class: 'sf-num', title: 'Abstand des Schlusskurses zur Chartmarke', text: pct(r.pd, 1, true) + ' zur Marke' }) : null;
     return h('a', { class: 'sf-row', href: stockUrl(r.t), 'data-stage': r.s }, [
       h('div', { class: 'sf-row-main' }, [h('strong', { class: 'sf-sym', text: r.t }), h('span', { class: 'sf-nm', text: r.n || '' })]),
       h('div', { class: 'sf-row-meta' }, [opts.hideStrategy ? null : h('span', { class: 'sf-meth', text: stratName(S, r.c) }), stageBadge(r.s)]),
-      h('div', { class: 'sf-row-num' }, [dist, fin(r.v) ? h('span', { class: 'sf-num sf-dim', title: 'Volumen ggü. 50-Tage-Schnitt', text: times(r.v) }) : null, icon(IC.arrow)]),
+      h('div', { class: 'sf-row-num' }, [dist, fin(r.v) ? h('span', { class: 'sf-num sf-dim', title: 'Volumen ggü. 50-Tage-Schnitt', text: times(r.v) + ' Vol.' }) : null, icon(IC.arrow)]),
     ]);
   }
 
@@ -307,7 +307,8 @@
       ].filter(Boolean)) : null,
       dq.length ? h('p', { class: 'sf-dq' }, [icon(IC.alert), 'Datenhinweis: ' + dq.join(' · ')]) : null,
     ];
-    var lim = s && STRONG_LIMITS[s.candidateId] ? limitsLine(s) : null;
+    // in der Kandidatenliste stehen die Grenzen der Methode schon im Kopf der Seite; die Karte wiederholt sie nicht (V5)
+    var lim = !opts.compact && s && STRONG_LIMITS[s.candidateId] ? limitsLine(s) : null;
     return h('article', { class: 'sf-card', 'data-stage': v.stage }, opts.compact ? [head, nums, lim, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))] : [head, lim].concat(body, [limitsLine(s)].filter(function () { return !lim; })));
   }
   function pair(k, v, sub) { return h('div', null, [h('dt', { text: k }), h('dd', null, [h('strong', { text: v }), sub ? h('small', { text: sub }) : null])]); }
