@@ -510,7 +510,8 @@
      C11 signalDayLow (keine Strukturmarke der Quelle). */
   var SF8_STRUCTURE_LEVELS = {
     C01: ["channelDays", "exitChannelDays"], C02: ["channelDays", "exitChannelDays"], C03: ["top", "bottom", "box"],
-    C04: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"], C05: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"],
+    /* Owner-Entscheidung 28.10.2026 (Weinstein): der genaue Wochenwiderstand ergibt mit den Wochenkursen die Stopreferenz */
+    C04: ["ma30w", "breakoutWeek", "breakoutDay"], C05: ["ma30w", "breakoutWeek", "breakoutDay"],
     C06: ["ma50", "ma150", "ma200"], C07: [], C08: ["breakoutLevel"], C09: ["gapDayLow", "priorClose"],
     C10: ["ma10", "ma20"], C11: ["ma10", "ma50"], C12: ["gapDayLow", "priorClose"], C13: ["ema20"]
   };
@@ -525,7 +526,8 @@
   /* Owner-Entscheidung 28.10.2026 (Rueckrechenbarkeit): auch Felder, die zusammen mit den oeffentlichen Tageskursen Einstieg oder
      Stop ergeben (Fenster: SEPA-Basislaenge, Power-Play-Konsolidierung, Weinstein-Basiswochen; Anker: Holy-Grail impulseHighDate,
      adxAbove30Since; Volumen-Fingerabdruecke: SEPA-Volumen der letzten Kontraktion, Power-Play-Startvolumen). Gegenstueck im Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD / #ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
-  var SF8_FEATURES_HIDDEN = { C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] };
+  /* Owner-Entscheidung 28.10.2026 (Turtle): N und nPct ergeben mit dem Trigger die Stopreferenz (Trigger - 2N) */
+  var SF8_FEATURES_HIDDEN = { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] };
   var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths", "baseSessions", "lastContractionVolumeVs50d"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
@@ -560,7 +562,7 @@
   var SF8_PIVOT_KEYS = ["level", "kind", "distance"];
   var SF8_ROW_KEYS = ["c", "t", "n", "s", "r", "pd", "v", "m", "q", "sh", "x"];
   /* Schluessel in levels, aus dem die Chartmarke stammt (records.mjs#STRUCTURE_MARK) */
-  var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
+  var SF8_PIVOT_LEVEL = { C03: "top", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
   function sf8Primitive(x) { return x === null || ["string", "number", "boolean"].indexOf(typeof x) >= 0; }
   /* Texte sind Codes, Daten und Statusangaben; ein Dezimalpreis in einem Text ("BUY_STOP_22.90") faellt auf */
   function sf8PriceInText(x) {
@@ -605,7 +607,7 @@
     if (sf8PriceInText(texts) || sf8PriceInText(v.features) ) out.push(where + ": Preis in einem Text");
     return out;
   }
-  var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE",
+  var SF8_PIVOT_KINDS = { C03: "BOX_TOP",
     C08: "CONSOLIDATION_10_LEVEL", C09: "GAP_DAY_LOW", C12: "GAP_DAY_LOW" };
   function hasNumber(x) {
     if (typeof x === "number") return true;
