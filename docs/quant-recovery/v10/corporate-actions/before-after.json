@@ -1,0 +1,287 @@
+{
+ "schemaVersion": "v10-ca-before-after-1.0.0",
+ "productionApproved": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "baseline": {
+  "ref": "a1a0dd972a",
+  "registrySha256": "a9c32b093ccc2c167beb13f12a95d0b7edcb23ad94ced26a2ce8cf6035cad9a1",
+  "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
+  "records": 24,
+  "series": 23
+ },
+ "current": {
+  "registrySha256": "99345f83017622b7a10b49957bd574a00a5acc09496c6c438c5ea3b3831b1530",
+  "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+  "records": 30,
+  "series": 28,
+  "adapterSha256": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+  "corporateActionEvidenceJsSha256": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+  "researchLoaderSha256": "69dc6c51ca8b62fc536ab1279a375a579fc7974a5c94b74128703d1b754f2140"
+ },
+ "inputs": {
+  "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "seriesIds": 6190,
+  "seriesDirectorySha256": "c84000929281b4bbf2f423ea0c1bac17e2495a2d778bab219b5c08200a16d64e"
+ },
+ "codeSha256": "0dd4719d724a4b950eee9fc695e2b93436a17464ca7fce38f204c2d1c69a7352",
+ "runtime": {
+  "node": "v22.22.0"
+ },
+ "defaultPathParity": {
+  "ids": 6190,
+  "identical": 6190,
+  "mismatches": []
+ },
+ "counts": {
+  "adapter": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "default": {
+   "QUALIFIED": 4449,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "identity": {
+   "QUALIFIED": 4453,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 600,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "identityCaBefore": {
+   "QUALIFIED": 4476,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 577,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "caOnlyBefore": {
+   "QUALIFIED": 4472,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 577,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  },
+  "identityCaAfter": {
+   "QUALIFIED": 4481,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 572,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "caOnlyAfter": {
+   "QUALIFIED": 4477,
+   "INSUFFICIENT_HISTORY": 439,
+   "MISSING_WEEKS": 218,
+   "CORPORATE_ACTION_UNRESOLVED": 572,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+   "LISTING_IDENTITY_MISMATCH": 3,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+  }
+ },
+ "qualified": {
+  "adapter": 4449,
+  "default": 4449,
+  "identity": 4453,
+  "identityCaBefore": 4476,
+  "caOnlyBefore": 4472,
+  "identityCaAfter": 4481,
+  "caOnlyAfter": 4477
+ },
+ "identityCaDelta": 5,
+ "changedIdentityCa": [
+  "ref_ACAD",
+  "ref_ACRS",
+  "ref_ALEC",
+  "ref_ALNY",
+  "ref_ARLO",
+  "ref_BKSY",
+  "ref_BMEA",
+  "ref_CPIX",
+  "ref_ERII",
+  "ref_FMC",
+  "ref_GRAL",
+  "ref_GRCE",
+  "ref_HYFM",
+  "ref_MDRR",
+  "ref_MGNX",
+  "ref_MIRA",
+  "ref_MOH",
+  "ref_MVST",
+  "ref_NSIT",
+  "ref_NTLA",
+  "ref_OM",
+  "ref_PACB",
+  "ref_PBYI",
+  "ref_RDN",
+  "ref_REPL",
+  "ref_SRPT",
+  "ref_SSRM",
+  "ref_VRRM",
+  "ref_VSTS"
+ ],
+ "newlyQualified": [
+  {
+   "securityId": "ref_ACAD",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1170,
+   "from": "2004-05-28",
+   "to": "2026-10-23",
+   "barsFrom2000": 1170,
+   "events": [
+    {
+     "week": "2009-09-04",
+     "class": "GENUINE_MOVE",
+     "era": "TEXT",
+     "weeklyRatio": 0.339465,
+     "cik": "0001070494",
+     "sources": 9
+    }
+   ]
+  },
+  {
+   "securityId": "ref_ARLO",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 430,
+   "from": "2018-08-03",
+   "to": "2026-10-23",
+   "barsFrom2000": 430,
+   "events": [
+    {
+     "week": "2019-02-08",
+     "class": "GENUINE_MOVE",
+     "era": "XBRL",
+     "weeklyRatio": 0.492598,
+     "cik": "0001736946",
+     "sources": 9
+    }
+   ]
+  },
+  {
+   "securityId": "ref_MGNX",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 681,
+   "from": "2013-10-11",
+   "to": "2026-10-23",
+   "barsFrom2000": 681,
+   "events": [
+    {
+     "week": "2019-02-08",
+     "class": "GENUINE_MOVE",
+     "era": "XBRL",
+     "weeklyRatio": 1.963255,
+     "cik": "0001125345",
+     "sources": 11
+    },
+    {
+     "week": "2020-05-08",
+     "class": "GENUINE_MOVE",
+     "era": "XBRL",
+     "weeklyRatio": 3.04491,
+     "cik": "0001125345",
+     "sources": 10
+    }
+   ]
+  },
+  {
+   "securityId": "ref_MOH",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1217,
+   "from": "2003-07-03",
+   "to": "2026-10-23",
+   "barsFrom2000": 1217,
+   "events": [
+    {
+     "week": "2005-07-22",
+     "class": "GENUINE_MOVE",
+     "era": "TEXT",
+     "weeklyRatio": 0.513497,
+     "cik": "0001179929",
+     "sources": 8
+    }
+   ]
+  },
+  {
+   "securityId": "ref_NSIT",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1657,
+   "from": "1995-01-27",
+   "to": "2026-10-23",
+   "barsFrom2000": 1399,
+   "events": [
+    {
+     "week": "2009-02-13",
+     "class": "GENUINE_MOVE",
+     "era": "TEXT",
+     "weeklyRatio": 0.50339,
+     "cik": "0000932696",
+     "sources": 10
+    }
+   ]
+  },
+  {
+   "securityId": "ref_RDN",
+   "before": "CORPORATE_ACTION_UNRESOLVED",
+   "returnBasis": "PRICE_RETURN",
+   "bars": 1774,
+   "from": "1992-10-30",
+   "to": "2026-10-23",
+   "barsFrom2000": 1399,
+   "events": [
+    {
+     "week": "2009-08-07",
+     "class": "GENUINE_MOVE",
+     "era": "TEXT",
+     "weeklyRatio": 2.051051,
+     "cik": "0000890926",
+     "sources": 8
+    }
+   ]
+  }
+ ],
+ "lostQualification": [
+  {
+   "securityId": "ref_VSTS",
+   "after": "CORPORATE_ACTION_UNRESOLVED",
+   "inBaselineRegistry": true
+  }
+ ],
+ "note": "QUALIFIED = createResearchLoader returns without error. Opt-in modes exist only in research-weekly-loader.cjs; adapter and corporate-action-evidence.js unchanged."
+}

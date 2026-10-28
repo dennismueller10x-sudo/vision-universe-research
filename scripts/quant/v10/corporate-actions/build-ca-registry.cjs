@@ -41,8 +41,13 @@ for (const s of series) {
     const sources = [coverSource('COVER_BEFORE', idr.before), coverSource('COVER_AFTER', idr.after)].concat(e.splitStatements.map(st => st.kind === 'XBRL_SPLIT_RATIO'
       ? { role: 'SPLIT_STATEMENT_XBRL', accession: st.accn, url: 'https://data.sec.gov/api/xbrl/companyconcept/CIK' + String(idr.cik).padStart(10, '0') + '/us-gaap/' + st.concept + '.json', sha256: null, quote: st.concept + ' ' + st.val + ' end ' + st.end + ' form ' + st.form, statedRatio: st.val }
       : { role: st.kind === '8K_SPLIT_LANGUAGE' ? 'SPLIT_STATEMENT_8K' : 'SPLIT_STATEMENT_PERIODIC_TEXT', accession: st.accession || accOf(st.url), url: st.url, sha256: st.sha256, quote: q300(st.match) }));
+    // Annotation only (no verdict change): a stated XBRL split ratio equal to the snapped size confirms the factor; otherwise the E4 statement may be
+    // boilerplate (e.g. warrant anti-dilution language) and the share jump may be an issuance - the proposal must not be applied without manual confirmation.
+    const stated = e.splitStatements.filter(x => x.kind === 'XBRL_SPLIT_RATIO').map(x => Number(x.val));
+    const confirmed = stated.some(v => Math.abs(v - ss.k) <= 0.02 * ss.k || Math.abs(v - 1 / ss.k) <= 0.02 / ss.k);
     providerErrors.push({ securityId: s.securityId, ticker: s.ticker, cik: String(idr.cik).padStart(10, '0'), issuer: idr.issuer, canonicalId: s.canonicalId,
       week: e.week, prevWeek: e.prevWeek, prevClose: e.prevClose, close: e.close, weeklyRatio: e.weeklyRatio, jumpDay: e.jumpDay,
+      confidence: confirmed ? 'CONFIRMED_BY_STATED_XBRL_RATIO' : 'UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK',
       proposal: { action: 'ADD_PROVIDER_SPLIT_FACTOR', splitFactor: factor, effectiveDate: e.jumpDay, direction: ss.kind === 'DOWN' ? 'FORWARD_SPLIT' : 'REVERSE_SPLIT',
         statedRatios: e.splitStatements.filter(x => x.kind === 'XBRL_SPLIT_RATIO').map(x => x.val), note: 'factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change' },
       shareContinuity: { before: { accession: idr.before.accession, coverDate: idr.before.coverDate, shares: idr.before.shares }, after: { accession: idr.after.accession, coverDate: idr.after.coverDate, shares: idr.after.shares }, ratio: e.shareRatio },
@@ -105,7 +110,7 @@ fs.writeFileSync(verdictsOut, JSON.stringify({
 fs.writeFileSync(peOut, JSON.stringify({
   schemaVersion: 'v10-ca-provider-errors-1.0.0', protocol: PROTOCOL_REL, protocolSha256, productionApproved: false, dataChange: 'NONE',
   scope: 'Producer repair proposals for split-sized weekly moves proven (protocol 1.1.1 E4) to be provider-unadjusted splits. No series, master, adapter or published value is changed here; a producer fix needs its own PR with before/after comparison.',
-  knownSeparately: [{ securityId: 'ref_PZZA', note: '2:1 split 2013 (handoff: weekly closes before 2013-12-30 halved by the next long-series run), repaired by the series producer change of #1042 (workstream A); not part of this proposal list.' }],
+  knownSeparately: [{ securityId: 'ref_PZZA', note: '2:1 split 2013 (handoff: weekly closes before 2013-12-30 halved by the next long-series run), already repaired by the series producer change of #1042 (workstream A). E4 rediscovered it independently (proposal list entry ref_PZZA 2014-01-03, CONFIRMED_BY_STATED_XBRL_RATIO); no second repair is needed - the entry is a positive control of E4.' }],
   proposals: providerErrors
 }, null, 1) + '\n');
 console.log(JSON.stringify({ records: records.length, series: new Set(records.map(r => r.securityId)).size, byClass: count(records, r => r.class), providerErrors: providerErrors.length }));

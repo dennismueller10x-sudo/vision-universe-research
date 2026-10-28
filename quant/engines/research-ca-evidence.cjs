@@ -1,16 +1,155 @@
 'use strict';
 // Versioned SEC-sourced corporate-action evidence for offline weekly research. Data only; read by
 // quant/engines/research-weekly-loader.cjs exclusively when createResearchLoader(root, { corporateActionEvidence: true }) is requested.
-// Regenerate with scripts/quant/v9-followups/ca-registry/build-ca-registry.cjs; never hand-edit a record.
+// Regenerate with scripts/quant/v10/corporate-actions/build-ca-registry.cjs; never hand-edit a record.
 module.exports = {
   "schemaVersion": "research-ca-evidence-1.0.0",
   "scope": "Source-verified corporate-action resolutions for OFFLINE weekly research only (research-weekly-loader createResearchLoader option corporateActionEvidence, default off; the productive weekly-real-adapter never reads this file). Each record resolves exactly one UNRESOLVED split-sized weekly move, bound to the event's own points (week, prevWeek, closes, ratio within 1e-5). No series, master or published value is changed.",
   "ownerDecision": "2026-10-28: corrections only after independent source verification; no blanket activation of the 81 V9 dry-run cases.",
-  "protocol": "docs/quant-recovery/v9-followups/ca-registry/protocol.json",
-  "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-  "builder": "scripts/quant/v9-followups/ca-registry/build-ca-registry.cjs",
+  "protocol": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+  "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+  "builder": "scripts/quant/v10/corporate-actions/build-ca-registry.cjs",
   "sourceHashConvention": "sha256 of the fetched SEC body (complete)",
   "records": [
+    {
+      "securityId": "ref_ACAD",
+      "ticker": "ACAD",
+      "cik": "0001070494",
+      "issuer": "ACADIA PHARMACEUTICALS INC",
+      "canonicalId": "tiingo:NASDAQ:ACAD:2004-05-27",
+      "week": "2009-09-04",
+      "prevWeek": "2009-08-28",
+      "prevClose": 5.98,
+      "close": 2.03,
+      "weeklyRatio": 0.33946488294314375,
+      "jumpDay": "2009-09-01",
+      "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "TEXT",
+      "identity": {
+        "before": {
+          "accession": "0001193125-09-049516",
+          "form": "10-K",
+          "filingDate": "2009-03-10",
+          "tradingSymbol": "ACAD",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001193125-10-051371",
+          "form": "10-K",
+          "filingDate": "2010-03-09",
+          "tradingSymbol": "ACAD",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NASDAQ",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001193125-09-049516"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001193125-09-049516",
+          "coverDate": "2009-03-02",
+          "shares": 37179124,
+          "via": "E2_TEXT_COVER"
+        },
+        "after": {
+          "accession": "0001193125-10-051371",
+          "coverDate": "2010-03-01",
+          "shares": 38332119,
+          "via": "E2_TEXT_COVER"
+        },
+        "ratio": 1.0310118925878942
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 2,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-K",
+          "filingDate": "2009-03-10",
+          "accession": "0001193125-09-049516",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509049516/d10k.htm",
+          "sha256": "037941e248abf7c1b0cef635a48bcb20e04879b76c25d85937faaf6104976193",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 37179124 as of 2009-03-02 | on the closing price of the registrant’s common stock on the NASDAQ Global Market on June 30, 2008 of $3.69 per share. As of March 2, 2009, 37,179,124 shares of registrant’s common stock, $0.0001 par value, were outstanding. DOCUMENTS INCORPORATED BY REFERENCE Port"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-K",
+          "filingDate": "2010-03-09",
+          "accession": "0001193125-10-051371",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312510051371/d10k.htm",
+          "sha256": "ea4a09d07159ec9db43ac791684721d1890957e209c416a5467f83a015209969",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 38332119 as of 2010-03-01 | on the closing price of the registrant’s common stock on the NASDAQ Global Market on June 30, 2009 of $2.19 per share. As of March 1, 2010, 38,332,119 shares of registrant’s common stock, $0.0001 par value, were outstanding. DOCUMENTS INCORPORATED BY REFERENCE Port"
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001193125-09-049516",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509049516/d10k.htm",
+          "sha256": "037941e248abf7c1b0cef635a48bcb20e04879b76c25d85937faaf6104976193",
+          "quote": "d Issuer Purchases of Equity Securities. (a) Our common stock is traded on the NASDAQ Global Market under the symbol “ACAD”. The following table sets forth the high and low sale prices for our common stock as reported on the NASDAQ G"
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001193125-10-051371",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312510051371/d10k.htm",
+          "sha256": "ea4a09d07159ec9db43ac791684721d1890957e209c416a5467f83a015209969",
+          "quote": "d Issuer Purchases of Equity Securities. (a) Our common stock is traded on the NASDAQ Global Market under the symbol “ACAD”. The following table sets forth the high and low sale prices for our common stock as reported on the NASDAQ G"
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001193125-10-051371",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312510051371/d10k.htm",
+          "sha256": "ea4a09d07159ec9db43ac791684721d1890957e209c416a5467f83a015209969",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001193125-09-049516",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509049516/d10k.htm",
+          "sha256": "037941e248abf7c1b0cef635a48bcb20e04879b76c25d85937faaf6104976193",
+          "quote": "NASDAQ"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001193125-09-156923",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509156923/0001193125-09-156923.txt",
+          "sha256": "531a7962edf871bc0bf12565f32db4d89ade6ce9e2cdd4a44042c0862d8e81d9",
+          "quote": "items 3.01,5.02"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001193125-09-185421",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509185421/0001193125-09-185421.txt",
+          "sha256": "ad6a502f16aa410d64a7745a879a0ad03aa58c7b289cb73a135934c814f49e39",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "8.01"
+          ],
+          "filingDate": "2009-09-01",
+          "reportDate": "2009-09-01",
+          "accession": "0001193125-09-185421",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312509185421/0001193125-09-185421.txt",
+          "sha256": "ad6a502f16aa410d64a7745a879a0ad03aa58c7b289cb73a135934c814f49e39",
+          "quote": "Item 8.01. Other Events. On September 1, 2009, ACADIA Pharmaceuticals Inc. issued a press release announcing top-line results from its first Phase III trial with pimavanserin (aka ACP-103) for the treatment of Parkinson’s disease psychosis. The study did not meet its primary endpoint of antipsychoti"
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:03+00:00"
+    },
     {
       "securityId": "ref_ACRS",
       "ticker": "ACRS",
@@ -26,6 +165,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001558370-23-017660",
@@ -34,7 +174,8 @@ module.exports = {
           "tradingSymbol": "ACRS",
           "tagged": [
             "ACRS"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001558370-24-001753",
@@ -43,7 +184,8 @@ module.exports = {
           "tradingSymbol": "ACRS",
           "tagged": [
             "ACRS"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -57,12 +199,14 @@ module.exports = {
         "before": {
           "accession": "0001558370-23-017660",
           "coverDate": "2023-10-31",
-          "shares": 70836194
+          "shares": 70836194,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001558370-24-001753",
           "coverDate": "2024-01-31",
-          "shares": 70925042
+          "shares": 70925042,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.001254274050918
       },
@@ -80,6 +224,7 @@ module.exports = {
           "accession": "0001558370-23-017660",
           "url": "https://www.sec.gov/Archives/edgar/data/1557746/000155837023017660/acrs-20230930x10q_htm.xml",
           "sha256": "f1d1838b109f0f909b01ac324a1f413a2f1729278c9df6e9d852dfb46f542c57",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ACRS\"]; dei:EntityCommonStockSharesOutstanding 70836194 as of 2023-10-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -89,6 +234,7 @@ module.exports = {
           "accession": "0001558370-24-001753",
           "url": "https://www.sec.gov/Archives/edgar/data/1557746/000155837024001753/acrs-20231231x10k_htm.xml",
           "sha256": "10a2f9e7026554f7f4fbca8b0774a9d5961d6593823e4609c551701c159f9fee",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ACRS\"]; dei:EntityCommonStockSharesOutstanding 70925042 as of 2024-01-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -131,11 +277,11 @@ module.exports = {
           "accession": "0001558370-23-018691",
           "url": "https://www.sec.gov/Archives/edgar/data/1557746/000155837023018691/0001558370-23-018691.txt",
           "sha256": "afb8cbdbe0ea022eac983e056a4601c086bf03a20af8e3ad82c655b068e0ffd5",
-          "quote": "Item 7.01 Regulation FD Disclosure. ​ On November 13, 2023, Aclaris Therapeutics, Inc. (the “ Company ”) will hold a conference call to discuss top-line results for its Phase 2b clinical trial of zunsemetinib (ATI-450), an investigational oral MK2 inhibitor, in subjects with moderate to severe rheumatoid arthritis (the “ Top-line Results ”), and related matters. A copy of the presentation that wil"
+          "quote": "Item 7.01 Regulation FD Disclosure. ​ On November 13, 2023, Aclaris Therapeutics, Inc. (the “ Company ”) will hold a conference call to discuss top-line results for its Phase 2b clinical trial of zunsemetinib (ATI-450), an investigational oral MK2 inhibitor, in subjects with moderate to severe rheum"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:15:51+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:07+00:00"
     },
     {
       "securityId": "ref_ALEC",
@@ -152,6 +298,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000950170-25-105050",
@@ -160,7 +307,8 @@ module.exports = {
           "tradingSymbol": "ALEC",
           "tagged": [
             "ALEC"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001193125-25-269592",
@@ -169,7 +317,8 @@ module.exports = {
           "tradingSymbol": "ALEC",
           "tagged": [
             "ALEC"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -183,12 +332,14 @@ module.exports = {
         "before": {
           "accession": "0000950170-25-105050",
           "coverDate": "2025-08-01",
-          "shares": 101212329
+          "shares": 101212329,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001193125-25-269592",
           "coverDate": "2025-10-31",
-          "shares": 109151472
+          "shares": 109151472,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0784404733933155
       },
@@ -206,6 +357,7 @@ module.exports = {
           "accession": "0000950170-25-105050",
           "url": "https://www.sec.gov/Archives/edgar/data/1653087/000095017025105050/alec-20250630_htm.xml",
           "sha256": "aaa7c8c49f88b48d1845ff63db0e50ed0972f25e339ee210e41dbb8d32f1f791",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ALEC\"]; dei:EntityCommonStockSharesOutstanding 101212329 as of 2025-08-01; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -215,6 +367,7 @@ module.exports = {
           "accession": "0001193125-25-269592",
           "url": "https://www.sec.gov/Archives/edgar/data/1653087/000119312525269592/alec-20250930_htm.xml",
           "sha256": "da24954e6215974898c1e54a7da07863924097ce56407d7b238c5abec762b518",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ALEC\"]; dei:EntityCommonStockSharesOutstanding 109151472 as of 2025-10-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -245,11 +398,11 @@ module.exports = {
           "accession": "0001193125-25-245102",
           "url": "https://www.sec.gov/Archives/edgar/data/1653087/000119312525245102/0001193125-25-245102.txt",
           "sha256": "f7693d1554c326857c1d853a205dd0d8c6cbabd13ddb6189a0314bb792d740f5",
-          "quote": "Item 2.02 Results of Operations and Financial Condition. On October 21, 2025, the Company issued a press release announcing data results from the Company’s Phase 3 INFRONT-3 clinical trial that included its preliminary estimate of cash, cash equivalents, and short-term investments as of September 30, 2025. A copy of the press release is attached as Exhibit 99.1 and incorporated herein by reference"
+          "quote": "Item 2.02 Results of Operations and Financial Condition. On October 21, 2025, the Company issued a press release announcing data results from the Company’s Phase 3 INFRONT-3 clinical trial that included its preliminary estimate of cash, cash equivalents, and short-term investments as of September 30"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:16:30+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:11+00:00"
     },
     {
       "securityId": "ref_ALNY",
@@ -266,6 +419,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001193125-16-671945",
@@ -274,7 +428,8 @@ module.exports = {
           "tradingSymbol": "ALNY",
           "tagged": [
             "ALNY"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001193125-16-758802",
@@ -283,7 +438,8 @@ module.exports = {
           "tradingSymbol": "ALNY",
           "tagged": [
             "ALNY"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -295,12 +451,14 @@ module.exports = {
         "before": {
           "accession": "0001193125-16-671945",
           "coverDate": "2016-07-29",
-          "shares": 85724637
+          "shares": 85724637,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001193125-16-758802",
           "coverDate": "2016-10-31",
-          "shares": 85813869
+          "shares": 85813869,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0010409142939853
       },
@@ -318,6 +476,7 @@ module.exports = {
           "accession": "0001193125-16-671945",
           "url": "https://www.sec.gov/Archives/edgar/data/1178670/000119312516671945/alny-20160630.xml",
           "sha256": "2629f4771f08d566b224ff7fabf01e8abb5287d4e41db644516c867b52388a42",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ALNY\"]; dei:EntityCommonStockSharesOutstanding 85724637 as of 2016-07-29"
         },
         {
@@ -327,6 +486,7 @@ module.exports = {
           "accession": "0001193125-16-758802",
           "url": "https://www.sec.gov/Archives/edgar/data/1178670/000119312516758802/alny-20160930.xml",
           "sha256": "edfcb6f602ce5dc9bc4ca8c7aa9368c5fc9d14dc541d25e4f56eb8a3c77a2561",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ALNY\"]; dei:EntityCommonStockSharesOutstanding 85813869 as of 2016-10-31"
         },
         {
@@ -368,11 +528,151 @@ module.exports = {
           "accession": "0001193125-16-731590",
           "url": "https://www.sec.gov/Archives/edgar/data/1178670/000119312516731590/0001193125-16-731590.txt",
           "sha256": "6b1f10f6829529457cc863cac80534380ff981893a6ad348fa918fd67414ae70",
-          "quote": "Item 8.01. Other Events. On October 5, 2016, Alnylam Pharmaceuticals, Inc. (the “Company”) announced that upon the recommendation of the ENDEAVOUR Phase 3 study Data Monitoring Committee (the “DMC”) to suspend dosing, the Company has decided to discontinue development of revusiran, an investigational RNA interference therapeutic that was being developed for the treatment of hereditary ATTR amyloid"
+          "quote": "Item 8.01. Other Events. On October 5, 2016, Alnylam Pharmaceuticals, Inc. (the “Company”) announced that upon the recommendation of the ENDEAVOUR Phase 3 study Data Monitoring Committee (the “DMC”) to suspend dosing, the Company has decided to discontinue development of revusiran, an investigationa"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:16:49+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:12+00:00"
+    },
+    {
+      "securityId": "ref_ARLO",
+      "ticker": "ARLO",
+      "cik": "0001736946",
+      "issuer": "Arlo Technologies, Inc.",
+      "canonicalId": "tiingo:NYSE:ARLO:2018-08-03",
+      "week": "2019-02-08",
+      "prevWeek": "2019-02-01",
+      "prevClose": 7.43,
+      "close": 3.66,
+      "weeklyRatio": 0.4925975773889637,
+      "jumpDay": "2019-02-06",
+      "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
+      "identity": {
+        "before": {
+          "accession": "0001736946-19-000010",
+          "form": "10-K",
+          "filingDate": "2019-02-22",
+          "tradingSymbol": "ARLO",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001736946-19-000024",
+          "form": "10-Q",
+          "filingDate": "2019-05-06",
+          "tradingSymbol": "ARLO",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NYSE",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001736946-19-000010"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001736946-19-000010",
+          "coverDate": "2019-02-01",
+          "shares": 74255189,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "after": {
+          "accession": "0001736946-19-000024",
+          "coverDate": "2019-04-19",
+          "shares": 74548465,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "ratio": 1.0039495691001474
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 2,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-K",
+          "filingDate": "2019-02-22",
+          "accession": "0001736946-19-000010",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000010/arlo-20181231.xml",
+          "sha256": "88b79b21300c075d167ce20514e5188f7f3107734c2d2c6653d177004b943c04",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 74255189 as of 2019-02-01"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-Q",
+          "filingDate": "2019-05-06",
+          "accession": "0001736946-19-000024",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000024/arlo-20190331.xml",
+          "sha256": "8058efd80c576e53532aae08826dd0d0b965c66b264795819216c1b76822468d",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 74548465 as of 2019-04-19"
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001736946-19-000010",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000010/arlo20181231-10xk.htm",
+          "sha256": "e818519381c6603a54ac67c55df1c97d2dc034fb594b9ec2fad6813db87ffc33",
+          "quote": " of $16.00 per share. On August 3, 2018, Arlo’s shares began trading on the New York Stock Exchange under the ticker symbol “ARLO.” On August 7, 2018, we completed the IPO of 11,747,250 shares of common stock (including 1,532,250 shares of"
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001736946-19-000024",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000024/arlo20190331-10q.htm",
+          "sha256": "477295775682c22b950feafe23b1a1acbe5a6af15f04843ad74bed3d94afae4a",
+          "quote": " of $16.00 per share. On August 3, 2018, Arlo’s shares began trading on the New York Stock Exchange under the ticker symbol “ARLO.” On August 7, 2018, the Company completed its IPO of 11,747,250 shares of common stock (including 1,532,250 "
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001736946-19-000024",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000024/arlo20190331-10q.htm",
+          "sha256": "477295775682c22b950feafe23b1a1acbe5a6af15f04843ad74bed3d94afae4a",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001736946-19-000010",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000010/arlo20181231-10xk.htm",
+          "sha256": "e818519381c6603a54ac67c55df1c97d2dc034fb594b9ec2fad6813db87ffc33",
+          "quote": "NYSE"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001193125-18-341095",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000119312518341095/0001193125-18-341095.txt",
+          "sha256": "ee7db0406ac6422092418ba08b042a9b927652c47b1a9c2646f6a7d50d3ee6cf",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001193125-19-002536",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000119312519002536/0001193125-19-002536.txt",
+          "sha256": "5ecfbaf03ef697413160c5eb17cd0243efd7ccd3cf6370476c21f783485dbaff",
+          "quote": "items 3.03,8.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "2.02",
+            "9.01"
+          ],
+          "filingDate": "2019-02-05",
+          "reportDate": "2019-02-05",
+          "accession": "0001736946-19-000005",
+          "url": "https://www.sec.gov/Archives/edgar/data/1736946/000173694619000005/0001736946-19-000005.txt",
+          "sha256": "4c93d67d7381875474fc6436739446b94bc24eb751c553722c5bf277555a46fe",
+          "quote": "Item 2.02 Results of Operations and Financial Condition. On February 5, 2019 , Arlo Technologies, Inc. issued a press release announcing its financial results for the fourth quarter and full year ended December 31, 2018 , the text of which is furnished herewith as Exhibit 99.1. The information furni"
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:14+00:00"
     },
     {
       "securityId": "ref_BKSY",
@@ -389,6 +689,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001753539-22-000031",
@@ -398,7 +699,8 @@ module.exports = {
           "tagged": [
             "BKSY",
             "BKSY.W"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001753539-22-000070",
@@ -408,7 +710,8 @@ module.exports = {
           "tagged": [
             "BKSY",
             "BKSY.W"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NYSE",
         "exchangeEvidence": {
@@ -422,12 +725,14 @@ module.exports = {
         "before": {
           "accession": "0001753539-22-000031",
           "coverDate": "2022-05-10",
-          "shares": 120575011
+          "shares": 120575011,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001753539-22-000070",
           "coverDate": "2022-08-09",
-          "shares": 120948826
+          "shares": 120948826,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0031002692589428
       },
@@ -445,6 +750,7 @@ module.exports = {
           "accession": "0001753539-22-000031",
           "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353922000031/bksy-20220331_htm.xml",
           "sha256": "de5b40c236a213a7e7d6447ea645883e80160f833001d6454d96d3e3d735ca0a",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"BKSY\",\"BKSY.W\"]; dei:EntityCommonStockSharesOutstanding 120575011 as of 2022-05-10; dei:SecurityExchangeName [\"NYSE\"]"
         },
         {
@@ -454,6 +760,7 @@ module.exports = {
           "accession": "0001753539-22-000070",
           "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353922000070/bksy-20220630_htm.xml",
           "sha256": "7ae1c28f5beb340f89b385accbd8b8a68081ad3afa576cb7a8aa03605c3d3680",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"BKSY\",\"BKSY.W\"]; dei:EntityCommonStockSharesOutstanding 120948826 as of 2022-08-09; dei:SecurityExchangeName [\"NYSE\"]"
         },
         {
@@ -503,11 +810,11 @@ module.exports = {
           "accession": "0001753539-22-000039",
           "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353922000039/0001753539-22-000039.txt",
           "sha256": "45d68747e0e54605b60cf398cd13f861a909ddd41129b7357b6815c84bc11a6c",
-          "quote": "Item 1.01. Entry into a Material Definitive Agreement On May 22, 2022, BlackSky Technology Inc. (the “Company”) entered into a multi-year, firm fixed-price contract with the National Reconnaissance Office, an agency of the United States Intelligence Community (the \"NRO Contract\"). The NRO Contract is effective May 23, 2022 with a five year base subscription with a starting value of $85.5M for the "
+          "quote": "Item 1.01. Entry into a Material Definitive Agreement On May 22, 2022, BlackSky Technology Inc. (the “Company”) entered into a multi-year, firm fixed-price contract with the National Reconnaissance Office, an agency of the United States Intelligence Community (the \"NRO Contract\"). The NRO Contract i"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:18:29+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:27+00:00"
     },
     {
       "securityId": "ref_BMEA",
@@ -524,6 +831,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000950170-23-010312",
@@ -532,7 +840,8 @@ module.exports = {
           "tradingSymbol": "BMEA",
           "tagged": [
             "BMEA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0000950170-23-016700",
@@ -541,7 +850,8 @@ module.exports = {
           "tradingSymbol": "BMEA",
           "tagged": [
             "BMEA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -555,12 +865,14 @@ module.exports = {
         "before": {
           "accession": "0000950170-23-010312",
           "coverDate": "2023-03-21",
-          "shares": 29608622
+          "shares": 29608622,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0000950170-23-016700",
           "coverDate": "2023-04-26",
-          "shares": 35401134
+          "shares": 35401134,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.195635987382324
       },
@@ -578,6 +890,7 @@ module.exports = {
           "accession": "0000950170-23-010312",
           "url": "https://www.sec.gov/Archives/edgar/data/1840439/000095017023010312/bmea-20221231_htm.xml",
           "sha256": "859075abe765fb2111b666bd738b1aee69750fe27e7532dc10a604c8a749da14",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"BMEA\"]; dei:EntityCommonStockSharesOutstanding 29608622 as of 2023-03-21; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -587,6 +900,7 @@ module.exports = {
           "accession": "0000950170-23-016700",
           "url": "https://www.sec.gov/Archives/edgar/data/1840439/000095017023016700/bmea-20230331_htm.xml",
           "sha256": "0e8e6f22589d9109c2540ae09e6e64fdbafb13d57236eee2b52d9b24a423a55c",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"BMEA\"]; dei:EntityCommonStockSharesOutstanding 35401134 as of 2023-04-26; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -635,11 +949,11 @@ module.exports = {
           "accession": "0000950170-23-010286",
           "url": "https://www.sec.gov/Archives/edgar/data/1840439/000095017023010286/0000950170-23-010286.txt",
           "sha256": "0043e410a1110574a642383d295cc7a87c8bc0d5f2e0ce7b1329fd84fceda661",
-          "quote": "Item 2.02 Results of Operations and Financial Condition. On March 28, 2023, Biomea Fusion, Inc. issued a press release announcing its financial results for the quarter ended and year ended December 31, 2022. The full text of the press release is being furnished as Exhibit 99.1 to this Current Report on Form 8-K. The information in this Item 2.02 of this Form 8-K and the Exhibit 99.1 attached heret"
+          "quote": "Item 2.02 Results of Operations and Financial Condition. On March 28, 2023, Biomea Fusion, Inc. issued a press release announcing its financial results for the quarter ended and year ended December 31, 2022. The full text of the press release is being furnished as Exhibit 99.1 to this Current Report"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:18:42+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:34+00:00"
     },
     {
       "securityId": "ref_CPIX",
@@ -656,6 +970,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001628280-21-023213",
@@ -664,7 +979,8 @@ module.exports = {
           "tradingSymbol": "CPIX",
           "tagged": [
             "CPIX"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001628280-22-005942",
@@ -673,7 +989,8 @@ module.exports = {
           "tradingSymbol": "CPIX",
           "tagged": [
             "CPIX"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -687,12 +1004,14 @@ module.exports = {
         "before": {
           "accession": "0001628280-21-023213",
           "coverDate": "2021-11-08",
-          "shares": 14809628
+          "shares": 14809628,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001628280-22-005942",
           "coverDate": "2022-03-07",
-          "shares": 14840330
+          "shares": 14840330,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0020731108168281
       },
@@ -710,6 +1029,7 @@ module.exports = {
           "accession": "0001628280-21-023213",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828021023213/cpix-20210930_htm.xml",
           "sha256": "814e6f6b53b5d37b6a586847fcdb35c8925bbb0d6c0cab7de76a903d6dfe647c",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"CPIX\"]; dei:EntityCommonStockSharesOutstanding 14809628 as of 2021-11-08; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -719,6 +1039,7 @@ module.exports = {
           "accession": "0001628280-22-005942",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828022005942/cpix-20211231_htm.xml",
           "sha256": "e7da55b5d90044488df20baecd543b1d6975b6ff5ae8278a73d6832c5ff96ef4",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"CPIX\"]; dei:EntityCommonStockSharesOutstanding 14840330 as of 2022-03-07; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -766,11 +1087,11 @@ module.exports = {
           "accession": "0001628280-21-024264",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828021024264/0001628280-21-024264.txt",
           "sha256": "c1b7464b2a23a7c5dfd011847fa98f6e0b6112258b74af110bdb981daf2c824b",
-          "quote": "Item 8.01 Other Events On November 29, 2021, Cumberland announced the U.S. Food and Drug Administration (FDA) has approved expanded labeling for Caldolor®, an intravenously delivered formulation of ibuprofen to now include use in pre-operative administration. The non-narcotic pain reliever may now be administered just prior to surgery to enable patients to wake up from their procedure in significa"
+          "quote": "Item 8.01 Other Events On November 29, 2021, Cumberland announced the U.S. Food and Drug Administration (FDA) has approved expanded labeling for Caldolor®, an intravenously delivered formulation of ibuprofen to now include use in pre-operative administration. The non-narcotic pain reliever may now b"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:20:17+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:55+00:00"
     },
     {
       "securityId": "ref_CPIX",
@@ -787,6 +1108,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001628280-24-046730",
@@ -795,7 +1117,8 @@ module.exports = {
           "tradingSymbol": "CPIX",
           "tagged": [
             "CPIX"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001628280-25-011366",
@@ -804,7 +1127,8 @@ module.exports = {
           "tradingSymbol": "CPIX",
           "tagged": [
             "CPIX"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -818,12 +1142,14 @@ module.exports = {
         "before": {
           "accession": "0001628280-24-046730",
           "coverDate": "2024-11-04",
-          "shares": 14042304
+          "shares": 14042304,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001628280-25-011366",
           "coverDate": "2025-03-04",
-          "shares": 13968394
+          "shares": 13968394,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 0.9947366187201189
       },
@@ -841,6 +1167,7 @@ module.exports = {
           "accession": "0001628280-24-046730",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828024046730/cpix-20240930_htm.xml",
           "sha256": "40d080d9fd8de58b5c5c7852e1a42ee4dfbb4c8ebaa8132cf401c4f3204f757d",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"CPIX\"]; dei:EntityCommonStockSharesOutstanding 14042304 as of 2024-11-04; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -850,6 +1177,7 @@ module.exports = {
           "accession": "0001628280-25-011366",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828025011366/cpix-20241231_htm.xml",
           "sha256": "af0c01a9b4855254faa1b9da9cfed2f16360a841c53b55f3a60c5d362f88d74e",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"CPIX\"]; dei:EntityCommonStockSharesOutstanding 13968394 as of 2025-03-04; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -925,11 +1253,11 @@ module.exports = {
           "accession": "0001628280-25-003753",
           "url": "https://www.sec.gov/Archives/edgar/data/1087294/000162828025003753/0001628280-25-003753.txt",
           "sha256": "39b459f9a13d827c02cd1e11b74fad175c9314ff3c087eead5f35c25ba9ea843",
-          "quote": "Item 8.01 Other Events On February 5, 2025, Cumberland Pharmaceuticals Inc. (“Cumberland” or the “Company”) announced positive top-line results from its Phase 2 FIGHT DMD trial. The study evaluated ifetroban, a novel oral therapy for Duchenne muscular dystrophy (DMD) heart disease – the leading cause of death in DMD patients. It marks a breakthrough for these patients, as it’s the first successful"
+          "quote": "Item 8.01 Other Events On February 5, 2025, Cumberland Pharmaceuticals Inc. (“Cumberland” or the “Company”) announced positive top-line results from its Phase 2 FIGHT DMD trial. The study evaluated ifetroban, a novel oral therapy for Duchenne muscular dystrophy (DMD) heart disease – the leading caus"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:20:17+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:03:55+00:00"
     },
     {
       "securityId": "ref_ERII",
@@ -946,6 +1274,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001437749-15-015102",
@@ -954,7 +1283,8 @@ module.exports = {
           "tradingSymbol": "ERII",
           "tagged": [
             "ERII"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001437749-15-019876",
@@ -963,7 +1293,8 @@ module.exports = {
           "tradingSymbol": "ERII",
           "tagged": [
             "ERII"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -975,12 +1306,14 @@ module.exports = {
         "before": {
           "accession": "0001437749-15-015102",
           "coverDate": "2015-08-03",
-          "shares": 52231186
+          "shares": 52231186,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001437749-15-019876",
           "coverDate": "2015-11-02",
-          "shares": 54838283
+          "shares": 54838283,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0499145663665381
       },
@@ -998,6 +1331,7 @@ module.exports = {
           "accession": "0001437749-15-015102",
           "url": "https://www.sec.gov/Archives/edgar/data/1421517/000143774915015102/erii-20150630.xml",
           "sha256": "644532488460085ec363ce2e6f156d98c758c45aee218c6af69e2a3a8bece4c9",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ERII\"]; dei:EntityCommonStockSharesOutstanding 52231186 as of 2015-08-03"
         },
         {
@@ -1007,6 +1341,7 @@ module.exports = {
           "accession": "0001437749-15-019876",
           "url": "https://www.sec.gov/Archives/edgar/data/1421517/000143774915019876/erii-20150930.xml",
           "sha256": "b471b0fa67002dcc783ecd98d214924c866a671066ca73ca8889dd6e3b8f9ea1",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"ERII\"]; dei:EntityCommonStockSharesOutstanding 54838283 as of 2015-11-02"
         },
         {
@@ -1063,11 +1398,11 @@ module.exports = {
           "accession": "0001437749-15-018552",
           "url": "https://www.sec.gov/Archives/edgar/data/1421517/000143774915018552/0001437749-15-018552.txt",
           "sha256": "fe8513a6b018840ff0702ee8ba591fcadb42b12b2bf792947ef2bc6f4085b981",
-          "quote": "Item 7.01 Regulation FD Disclosure . On October 19, 2015, the Company issued a press release announcing the entry into the License Agreement. A copy of this press release is attached hereto as Exhibit 99.1. Item 9.01 Financial Statements and Exhibits. (c) Exhibits 99.1 Press Release Dated October 19, 2015. SIGNATURE Pursuant to the requirements of the Securities Exchange Act of 1934, the Registran"
+          "quote": "Item 7.01 Regulation FD Disclosure . On October 19, 2015, the Company issued a press release announcing the entry into the License Agreement. A copy of this press release is attached hereto as Exhibit 99.1. Item 9.01 Financial Statements and Exhibits. (c) Exhibits 99.1 Press Release Dated October 19"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:21:56+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:04:24+00:00"
     },
     {
       "securityId": "ref_FMC",
@@ -1084,6 +1419,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000037785-25-000127",
@@ -1092,7 +1428,8 @@ module.exports = {
           "tradingSymbol": "FMC",
           "tagged": [
             "FMC"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0000037785-26-000041",
@@ -1101,7 +1438,8 @@ module.exports = {
           "tradingSymbol": "FMC",
           "tagged": [
             "FMC"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NYSE",
         "exchangeEvidence": {
@@ -1115,12 +1453,14 @@ module.exports = {
         "before": {
           "accession": "0000037785-25-000127",
           "coverDate": "2025-09-30",
-          "shares": 124920067
+          "shares": 124920067,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0000037785-26-000041",
           "coverDate": "2025-12-31",
-          "shares": 124934056
+          "shares": 124934056,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.000111983609487
       },
@@ -1138,6 +1478,7 @@ module.exports = {
           "accession": "0000037785-25-000127",
           "url": "https://www.sec.gov/Archives/edgar/data/37785/000003778525000127/fmc-20250930_htm.xml",
           "sha256": "0b6eb90f00a30ae0068b5c37ba045e470c47912c1248d5409a7d81d054ed6092",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"FMC\"]; dei:EntityCommonStockSharesOutstanding 124920067 as of 2025-09-30; dei:SecurityExchangeName [\"NYSE\"]"
         },
         {
@@ -1147,6 +1488,7 @@ module.exports = {
           "accession": "0000037785-26-000041",
           "url": "https://www.sec.gov/Archives/edgar/data/37785/000003778526000041/fmc-20251231_htm.xml",
           "sha256": "ca68457d832d4b1a5eec172006f8fee1b3f23359edd6ed8113c96cc7ef089e63",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"FMC\"]; dei:EntityCommonStockSharesOutstanding 124934056 as of 2025-12-31; dei:SecurityExchangeName [\"NYSE\"]"
         },
         {
@@ -1174,11 +1516,11 @@ module.exports = {
           "accession": "0000037785-25-000123",
           "url": "https://www.sec.gov/Archives/edgar/data/37785/000003778525000123/0000037785-25-000123.txt",
           "sha256": "2265b8d882b60dddd14d4358cd6e04a422335530a8582d6bdc4cc2a1879769dc",
-          "quote": "ITEM 2.02. RESULTS OF OPERATIONS AND FINANCIAL CONDITION On October 29, 2025, FMC Corporation issued a press release announcing the financial results for the three months ended September 30, 2025. A copy of the press release is attached as Exhibit 99.1 to this Current Report on Form 8-K. ITEM 9.01. FINANCIAL STATEMENTS AND EXHIBITS (d) Exhibits 99.1 Press Release SIGNATURES Pursuant to the require"
+          "quote": "ITEM 2.02. RESULTS OF OPERATIONS AND FINANCIAL CONDITION On October 29, 2025, FMC Corporation issued a press release announcing the financial results for the three months ended September 30, 2025. A copy of the press release is attached as Exhibit 99.1 to this Current Report on Form 8-K. ITEM 9.01. "
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:22:39+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:05:30+00:00"
     },
     {
       "securityId": "ref_GRAL",
@@ -1195,6 +1537,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001699031-25-000193",
@@ -1203,7 +1546,8 @@ module.exports = {
           "tradingSymbol": "GRAL",
           "tagged": [
             "GRAL"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001628280-26-017319",
@@ -1212,7 +1556,8 @@ module.exports = {
           "tradingSymbol": "GRAL",
           "tagged": [
             "GRAL"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1226,12 +1571,14 @@ module.exports = {
         "before": {
           "accession": "0001699031-25-000193",
           "coverDate": "2025-11-10",
-          "shares": 38982223
+          "shares": 38982223,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001628280-26-017319",
           "coverDate": "2026-03-06",
-          "shares": 41020255
+          "shares": 41020255,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.052281061549517
       },
@@ -1249,6 +1596,7 @@ module.exports = {
           "accession": "0001699031-25-000193",
           "url": "https://www.sec.gov/Archives/edgar/data/1699031/000169903125000193/gral-20250930_htm.xml",
           "sha256": "58d187b2848adf8bfc3e582301f120ed28a2ba585ec98e30cb2e66e2ef32ddb3",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"GRAL\"]; dei:EntityCommonStockSharesOutstanding 38982223 as of 2025-11-10; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1258,6 +1606,7 @@ module.exports = {
           "accession": "0001628280-26-017319",
           "url": "https://www.sec.gov/Archives/edgar/data/1699031/000162828026017319/gral-20251231_htm.xml",
           "sha256": "e6c06e7695623c860515abeed030cefde0e681d36e15b616dd11fd1536e5aebf",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"GRAL\"]; dei:EntityCommonStockSharesOutstanding 41020255 as of 2026-03-06; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1286,11 +1635,11 @@ module.exports = {
           "accession": "0001699031-26-000009",
           "url": "https://www.sec.gov/Archives/edgar/data/1699031/000169903126000009/0001699031-26-000009.txt",
           "sha256": "aecc27cf5e6c58f52b35756b48ce855cf6af7bd4de2ea2b008f9afa755d498bd",
-          "quote": "Item 2.02 Results of operations and financial condition. On February 19, 2026 , GRAIL, Inc. (the “Company” or “GRAIL”) issued a press release announcing its financial results for the fourth quarter and year ended December 31, 2025. A copy of the press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K and is incorporated herein by reference. The information in Item 2.02 of thi"
+          "quote": "Item 2.02 Results of operations and financial condition. On February 19, 2026 , GRAIL, Inc. (the “Company” or “GRAIL”) issued a press release announcing its financial results for the fourth quarter and year ended December 31, 2025. A copy of the press release is furnished as Exhibit 99.1 to this Cur"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:23:48+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:10:22+00:00"
     },
     {
       "securityId": "ref_GRCE",
@@ -1307,6 +1656,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001140361-26-004924",
@@ -1315,7 +1665,8 @@ module.exports = {
           "tradingSymbol": "GRCE",
           "tagged": [
             "GRCE"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001140361-26-025662",
@@ -1324,7 +1675,8 @@ module.exports = {
           "tradingSymbol": "GRCE",
           "tagged": [
             "GRCE"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1338,12 +1690,14 @@ module.exports = {
         "before": {
           "accession": "0001140361-26-004924",
           "coverDate": "2026-02-12",
-          "shares": 15474026
+          "shares": 15474026,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001140361-26-025662",
           "coverDate": "2026-06-15",
-          "shares": 16274026
+          "shares": 16274026,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.051699538310198
       },
@@ -1361,6 +1715,7 @@ module.exports = {
           "accession": "0001140361-26-004924",
           "url": "https://www.sec.gov/Archives/edgar/data/1444192/000114036126004924/ef20060621_10q_htm.xml",
           "sha256": "566b306d49d7a595f0ba497e78d6b67a01d8ae6262f83f7d13aba3ca183c0277",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"GRCE\"]; dei:EntityCommonStockSharesOutstanding 15474026 as of 2026-02-12; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1370,6 +1725,7 @@ module.exports = {
           "accession": "0001140361-26-025662",
           "url": "https://www.sec.gov/Archives/edgar/data/1444192/000114036126025662/ef20070498_10k_htm.xml",
           "sha256": "e89d903ceebdf5592b97c9c815f6591554594eaaed314138be849424c882b809",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"GRCE\"]; dei:EntityCommonStockSharesOutstanding 16274026 as of 2026-06-15; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1404,11 +1760,11 @@ module.exports = {
           "accession": "0001140361-26-016324",
           "url": "https://www.sec.gov/Archives/edgar/data/1444192/000114036126016324/0001140361-26-016324.txt",
           "sha256": "acecbe8a0d43c0cea1c46374be306d57f372f955e36d52c73adc166b49530395",
-          "quote": "Item 8.01. Other Events On April 23, 2026, Grace Therapeutics, Inc. (the “Company”) issued a press release announcing that the U.S. Food and Drug Administration has issued a Complete Response Letter for the Company’s New Drug Application for GTx-104 in the treatment of patients with aneurysmal subarachnoid hemorrhage. A copy of the press release is attached hereto as Exhibit 99.1 to this Current R"
+          "quote": "Item 8.01. Other Events On April 23, 2026, Grace Therapeutics, Inc. (the “Company”) issued a press release announcing that the U.S. Food and Drug Administration has issued a Complete Response Letter for the Company’s New Drug Application for GTx-104 in the treatment of patients with aneurysmal subar"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:23:55+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:10:35+00:00"
     },
     {
       "securityId": "ref_HYFM",
@@ -1425,6 +1781,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001437749-26-017373",
@@ -1433,7 +1790,8 @@ module.exports = {
           "tradingSymbol": "HYFM",
           "tagged": [
             "HYFM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001437749-26-028012",
@@ -1442,7 +1800,8 @@ module.exports = {
           "tradingSymbol": "HYFM",
           "tagged": [
             "HYFM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1456,12 +1815,14 @@ module.exports = {
         "before": {
           "accession": "0001437749-26-017373",
           "coverDate": "2026-05-11",
-          "shares": 4764612
+          "shares": 4764612,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001437749-26-028012",
           "coverDate": "2026-08-12",
-          "shares": 4819323
+          "shares": 4819323,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.011482781808886
       },
@@ -1479,6 +1840,7 @@ module.exports = {
           "accession": "0001437749-26-017373",
           "url": "https://www.sec.gov/Archives/edgar/data/1695295/000143774926017373/hyfm20260331_10q_htm.xml",
           "sha256": "27fef88fcf2a39289c41ef0cd6c9009f154b8b3b6517f47540a4d4a033efb879",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"HYFM\"]; dei:EntityCommonStockSharesOutstanding 4764612 as of 2026-05-11; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1488,6 +1850,7 @@ module.exports = {
           "accession": "0001437749-26-028012",
           "url": "https://www.sec.gov/Archives/edgar/data/1695295/000143774926028012/hyfm20260630_10q_htm.xml",
           "sha256": "60652e0be0641c040ed351ce28e1556d7b915b9ec85a737f8765375eed434678",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"HYFM\"]; dei:EntityCommonStockSharesOutstanding 4819323 as of 2026-08-12; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1531,11 +1894,11 @@ module.exports = {
           "accession": "0001437749-26-026270",
           "url": "https://www.sec.gov/Archives/edgar/data/1695295/000143774926026270/0001437749-26-026270.txt",
           "sha256": "25f68dd59ef88a6f9b16fb598b6210fbaf7fbd8da43da6723dac23de44180bb1",
-          "quote": "Item 1.01 Entry into Material Definitive Agreement. On July 31, 2026 (the “Closing Date”), Hydrofarm Holdings Group, Inc., a Delaware corporation (the “Company”), through its wholly owned subsidiaries Aurora International, LLC, a Delaware limited liability company (the “Seller”) and Aurora Peat Products ULC, an Alberta unlimited liability corporation (“APP”), entered into a Share Purchase Agreemen"
+          "quote": "Item 1.01 Entry into Material Definitive Agreement. On July 31, 2026 (the “Closing Date”), Hydrofarm Holdings Group, Inc., a Delaware corporation (the “Company”), through its wholly owned subsidiaries Aurora International, LLC, a Delaware limited liability company (the “Seller”) and Aurora Peat Prod"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:24:19+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:12:01+00:00"
     },
     {
       "securityId": "ref_MDRR",
@@ -1552,6 +1915,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001104659-20-094696",
@@ -1560,7 +1924,8 @@ module.exports = {
           "tradingSymbol": "MDRR",
           "tagged": [
             "mdrr"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001104659-20-125124",
@@ -1569,7 +1934,8 @@ module.exports = {
           "tradingSymbol": "MDRR",
           "tagged": [
             "mdrr"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1583,12 +1949,14 @@ module.exports = {
         "before": {
           "accession": "0001104659-20-094696",
           "coverDate": "2020-08-12",
-          "shares": 4747968
+          "shares": 4747968,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001104659-20-125124",
           "coverDate": "2020-11-13",
-          "shares": 4797968
+          "shares": 4797968,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0105308207637456
       },
@@ -1606,6 +1974,7 @@ module.exports = {
           "accession": "0001104659-20-094696",
           "url": "https://www.sec.gov/Archives/edgar/data/1654595/000110465920094696/mdrr-20200630.xml",
           "sha256": "344fef414f7948acbf611d9ad589792a43d56ee5db0a50653bd0c0444535f5d8",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"mdrr\"]; dei:EntityCommonStockSharesOutstanding 4747968 as of 2020-08-12"
         },
         {
@@ -1615,6 +1984,7 @@ module.exports = {
           "accession": "0001104659-20-125124",
           "url": "https://www.sec.gov/Archives/edgar/data/1654595/000110465920125124/mdrr-20200930.xml",
           "sha256": "d9180025124ecb4ff434ab01d4132bde72f69cb811e3aa9c4267edc28f5c76e6",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"mdrr\"]; dei:EntityCommonStockSharesOutstanding 4797968 as of 2020-11-13; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1670,11 +2040,317 @@ module.exports = {
           "accession": "0001104659-20-115543",
           "url": "https://www.sec.gov/Archives/edgar/data/1654595/000110465920115543/0001104659-20-115543.txt",
           "sha256": "d82bc318c83ab89a39cc35e678ff8ba7eb4a3f1e18878a2c857a3b5704d851bd",
-          "quote": "ITEM 7.01 REGULATION FD DISCLOSURE. On October 14, 2020, Medalist Diversified REIT, Inc. (the “Company”) issued a press release, a copy of which is attached to this Current Report on Form 8-K as Exhibit 99.1 and is incorporated herein by reference, anno uncing that the Company’s board of directors declared a quarterly cash dividend equal to $0.5000 per share on the Company’s 8.0% Series A Cumulati"
+          "quote": "ITEM 7.01 REGULATION FD DISCLOSURE. On October 14, 2020, Medalist Diversified REIT, Inc. (the “Company”) issued a press release, a copy of which is attached to this Current Report on Form 8-K as Exhibit 99.1 and is incorporated herein by reference, anno uncing that the Company’s board of directors d"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:26:52+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:21:19+00:00"
+    },
+    {
+      "securityId": "ref_MGNX",
+      "ticker": "MGNX",
+      "cik": "0001125345",
+      "issuer": "MACROGENICS INC",
+      "canonicalId": "tiingo:NASDAQ:MGNX:2013-10-10",
+      "week": "2019-02-08",
+      "prevWeek": "2019-02-01",
+      "prevClose": 11.43,
+      "close": 22.44,
+      "weeklyRatio": 1.9632545931758532,
+      "jumpDay": "2019-02-06",
+      "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
+      "identity": {
+        "before": {
+          "accession": "0001125345-18-000022",
+          "form": "10-Q",
+          "filingDate": "2018-11-07",
+          "tradingSymbol": "MGNX",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001125345-19-000046",
+          "form": "10-K",
+          "filingDate": "2019-02-26",
+          "tradingSymbol": "MGNX",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NASDAQ",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001125345-19-000046"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001125345-18-000097",
+          "coverDate": "2018-11-02",
+          "shares": 42259080,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "after": {
+          "accession": "0001125345-19-000046",
+          "coverDate": "2019-02-22",
+          "shares": 48780321,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "ratio": 1.1543157352218743
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 4,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-Q",
+          "filingDate": "2018-11-07",
+          "accession": "0001125345-18-000097",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534518000097/mgnx-20180930_htm.xml",
+          "sha256": "016589ba9c662a24a69f9e7aa5b48a542b753e51f8a32ae723a6d93c6be792ba",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 42259080 as of 2018-11-02"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-K",
+          "filingDate": "2019-02-26",
+          "accession": "0001125345-19-000046",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000046/mgnx-20181231_htm.xml",
+          "sha256": "5d88632f652b13d8beccfe83ad862b19650310d8a6cf6e0c138b856c9aee5896",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 48780321 as of 2019-02-22"
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001125345-18-000022",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534518000022/mgnx-123117x10k.htm",
+          "sha256": "d74b0dc19661ce9e4fe3c6c5b08a07a7f24aec0797f248f6ecefcdea30bfcc90",
+          "quote": "Y SECURITIES Market Information Our common stock has been listed on the Nasdaq Global Select Market under the symbol \"MGNX\" since October 10, 2013. On February 23, 2018 , the closing price for our common stock as reported on the Nasd"
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001125345-19-000046",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000046/mgnx-20181231.htm",
+          "sha256": "7ab458f9a0e2bd728b9c90314509b7b0b3e4d61feb7e9f1df64023dcba2470d0",
+          "quote": " EQUITY SECURITIES Market Information Our common stock is listed on the Nasdaq Global Select Market under the symbol \"MGNX\". As of February 22, 2019, we had 48,780,321 shares of common stock outstanding held by approximately 75 holde"
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001125345-19-000046",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000046/mgnx-20181231.htm",
+          "sha256": "7ab458f9a0e2bd728b9c90314509b7b0b3e4d61feb7e9f1df64023dcba2470d0",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001125345-19-000046",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000046/mgnx-20181231.htm",
+          "sha256": "7ab458f9a0e2bd728b9c90314509b7b0b3e4d61feb7e9f1df64023dcba2470d0",
+          "quote": "NASDAQ"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-18-000107",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534518000107/0001125345-18-000107.txt",
+          "sha256": "a3ff2f5f7ed4c2651250af91c655d6447153d28d7a394d04660a64d2c6b4320a",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-19-000006",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000006/0001125345-19-000006.txt",
+          "sha256": "c1a71d632787084f5facc23813f2ed650d102c024468cecb2c2ab4ef05271d1c",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-19-000012",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000012/0001125345-19-000012.txt",
+          "sha256": "53e6e4b760979b610ed3329513804bb6c799195fb2429bfb53d6be9084fac264",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001140361-19-003314",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000114036119003314/0001140361-19-003314.txt",
+          "sha256": "eb48da4c403f46976c99e641d0ea56bc980893bf29eb88981adc78351f86c346",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "8.01"
+          ],
+          "filingDate": "2019-02-06",
+          "reportDate": "2019-02-06",
+          "accession": "0001125345-19-000012",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534519000012/0001125345-19-000012.txt",
+          "sha256": "53e6e4b760979b610ed3329513804bb6c799195fb2429bfb53d6be9084fac264",
+          "quote": "Item 8.01. Other Events On February 6, 2019, the Company issued a press release announcing top-line results from its Phase 3 SOPHIA trial. SOPHIA is a randomized, controlled, multi-center study that compares margetuximab plus chemotherapy to trastuzumab plus chemotherapy in subjects with metastatic "
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:21:54+00:00"
+    },
+    {
+      "securityId": "ref_MGNX",
+      "ticker": "MGNX",
+      "cik": "0001125345",
+      "issuer": "MACROGENICS INC",
+      "canonicalId": "tiingo:NASDAQ:MGNX:2013-10-10",
+      "week": "2020-05-08",
+      "prevWeek": "2020-05-01",
+      "prevClose": 6.68,
+      "close": 20.34,
+      "weeklyRatio": 3.0449101796407185,
+      "jumpDay": "2020-05-06",
+      "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
+      "identity": {
+        "before": {
+          "accession": "0001125345-20-000072",
+          "form": "10-Q",
+          "filingDate": "2020-05-05",
+          "tradingSymbol": "MGNX",
+          "tagged": [
+            "MGNX"
+          ],
+          "via": "dei:TradingSymbol"
+        },
+        "after": {
+          "accession": "0001125345-20-000126",
+          "form": "10-Q",
+          "filingDate": "2020-07-31",
+          "tradingSymbol": "MGNX",
+          "tagged": [
+            "MGNX"
+          ],
+          "via": "dei:TradingSymbol"
+        },
+        "exchange": "NASDAQ",
+        "exchangeEvidence": {
+          "via": "dei:SecurityExchangeName",
+          "values": [
+            "NASDAQ"
+          ]
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001125345-20-000072",
+          "coverDate": "2020-05-01",
+          "shares": 49138017,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "after": {
+          "accession": "0001125345-20-000126",
+          "coverDate": "2020-07-24",
+          "shares": 54117181,
+          "via": "dei:EntityCommonStockSharesOutstanding"
+        },
+        "ratio": 1.1013301778132398
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 6,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-Q",
+          "filingDate": "2020-05-05",
+          "accession": "0001125345-20-000072",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000072/mgnx-20200331_htm.xml",
+          "sha256": "5e8d86899a8659759974a2273f2971192ef79dcf8a7aff800b8231384c5dd157",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol [\"MGNX\"]; dei:EntityCommonStockSharesOutstanding 49138017 as of 2020-05-01; dei:SecurityExchangeName [\"NASDAQ\"]"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-Q",
+          "filingDate": "2020-07-31",
+          "accession": "0001125345-20-000126",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000126/mgnx-20200630_htm.xml",
+          "sha256": "a53b02fcd9e6b4250e9c9cbc860cb62ab224410a048b841098e27fd150917767",
+          "via": "dei:EntityCommonStockSharesOutstanding",
+          "quote": "dei:TradingSymbol [\"MGNX\"]; dei:EntityCommonStockSharesOutstanding 54117181 as of 2020-07-24; dei:SecurityExchangeName [\"NASDAQ\"]"
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001125345-20-000126",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000126/mgnx-20200630.htm",
+          "sha256": "a25bba6daf06dfe5e326164d4ea7b261f6b32ea8e0f2030c5cb5937079629ea0",
+          "quote": ""
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001140361-20-004828",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000114036120004828/0001140361-20-004828.txt",
+          "sha256": "bc34b5f57a1549ed0e73f1ac0b3a8be2cffc3fd104224c2161eff3ec9c02c4fd",
+          "quote": "items 5.02,7.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-20-000064",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000064/0001125345-20-000064.txt",
+          "sha256": "15fca5337f298672c471ec81a6d7e2a0cc73e1f4d069e7538c61c0be7e95f14f",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-20-000077",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000077/0001125345-20-000077.txt",
+          "sha256": "5711a627370d47ff12821573611d79f28c4b9c93462fb78662011563fef7508c",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-20-000103",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000103/0001125345-20-000103.txt",
+          "sha256": "ad1d4b772cfb955e8e4521694fe1e2cdb19d62cd467d8b90197e3e998b779afb",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001125345-20-000106",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000106/0001125345-20-000106.txt",
+          "sha256": "7c4379e6554bb6500b1d62bd60b5d0b4a35c221d66d48a7549048cdcaaacb4a8",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001140361-20-014355",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000114036120014355/0001140361-20-014355.txt",
+          "sha256": "36cc1516fdefe6ae252463ef3a979c3183bc9783b5004cedfc7923b78f823d19",
+          "quote": "items 8.01,9.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "2.02",
+            "9.01"
+          ],
+          "filingDate": "2020-05-05",
+          "reportDate": "2020-05-05",
+          "accession": "0001125345-20-000073",
+          "url": "https://www.sec.gov/Archives/edgar/data/1125345/000112534520000073/0001125345-20-000073.txt",
+          "sha256": "edd82bcb3f5bc36ed970b6f6480c51004a30239f9b47a8f14d944c21c0c8c08b",
+          "quote": "Item 2.02 Results of Operations and Financial Condition On May 5, 2020, MacroGenics, Inc. (the \"Company\") announced financial and operating results as of and for the quarter ended March 31, 2020. The full text of the press release issued in connection with the announcement is attached as Exhibit 99."
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:21:54+00:00"
     },
     {
       "securityId": "ref_MIRA",
@@ -1691,6 +2367,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001493152-24-012141",
@@ -1699,7 +2376,8 @@ module.exports = {
           "tradingSymbol": "MIRA",
           "tagged": [
             "MIRA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001493152-24-031612",
@@ -1708,7 +2386,8 @@ module.exports = {
           "tradingSymbol": "MIRA",
           "tagged": [
             "MIRA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1722,12 +2401,14 @@ module.exports = {
         "before": {
           "accession": "0001493152-24-012141",
           "coverDate": "2024-03-28",
-          "shares": 14780885
+          "shares": 14780885,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001493152-24-031612",
           "coverDate": "2024-08-13",
-          "shares": 14780885
+          "shares": 14780885,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1
       },
@@ -1745,6 +2426,7 @@ module.exports = {
           "accession": "0001493152-24-012141",
           "url": "https://www.sec.gov/Archives/edgar/data/1904286/000149315224012141/form10-k_htm.xml",
           "sha256": "e474b203b6068155a427ab43f5288d4410c1fff37c583c27b942ad85977fc9a8",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"MIRA\"]; dei:EntityCommonStockSharesOutstanding 14780885 as of 2024-03-28; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1754,6 +2436,7 @@ module.exports = {
           "accession": "0001493152-24-031612",
           "url": "https://www.sec.gov/Archives/edgar/data/1904286/000149315224031612/form10-q_htm.xml",
           "sha256": "c31da851d9b5c2903d9ef8c21f727af8d3ba19db87b6fcd8ff474ec564be9604",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"MIRA\"]; dei:EntityCommonStockSharesOutstanding 14780885 as of 2024-08-13; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1815,11 +2498,144 @@ module.exports = {
           "accession": "0001493152-24-028548",
           "url": "https://www.sec.gov/Archives/edgar/data/1904286/000149315224028548/0001493152-24-028548.txt",
           "sha256": "b5fc1adee43d750efdf6f52e8237452aed28ca5123844e6cc2dd9f31b3783ec6",
-          "quote": "Item 8.01 Other Events MIRA Pharmaceuticals Unveils Additional Preclinical Success MIRA Pharmaceuticals, Inc. (the “Company”) recently received the results of new preclinical testing data for its novel oral ketamine analog, Ketamir-2. Ketamir-2 is under investigation for its potential in treating neurological and neuropsychiatric disorders, including depression, treatment-resistant depression (TRD"
+          "quote": "Item 8.01 Other Events MIRA Pharmaceuticals Unveils Additional Preclinical Success MIRA Pharmaceuticals, Inc. (the “Company”) recently received the results of new preclinical testing data for its novel oral ketamine analog, Ketamir-2. Ketamir-2 is under investigation for its potential in treating ne"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:27:14+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:22:20+00:00"
+    },
+    {
+      "securityId": "ref_MOH",
+      "ticker": "MOH",
+      "cik": "0001179929",
+      "issuer": "MOLINA HEALTHCARE, INC.",
+      "canonicalId": "tiingo:NYSE:MOH:2003-07-02",
+      "week": "2005-07-22",
+      "prevWeek": "2005-07-15",
+      "prevClose": 32.23,
+      "close": 16.55,
+      "weeklyRatio": 0.5134967421656842,
+      "jumpDay": "2005-07-21",
+      "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "TEXT",
+      "identity": {
+        "before": {
+          "accession": "0001193125-05-044725",
+          "form": "10-Q",
+          "filingDate": "2005-04-29",
+          "tradingSymbol": "MOH",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001193125-06-053951",
+          "form": "10-Q",
+          "filingDate": "2005-08-09",
+          "tradingSymbol": "MOH",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NYSE",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001193125-05-044725"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001193125-05-088979",
+          "coverDate": "2005-04-28",
+          "shares": 27668108,
+          "via": "E2_TEXT_COVER"
+        },
+        "after": {
+          "accession": "0001193125-05-162774",
+          "coverDate": "2005-07-29",
+          "shares": 27747343,
+          "via": "E2_TEXT_COVER"
+        },
+        "ratio": 1.0028637664707685
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 1,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-Q",
+          "filingDate": "2005-04-29",
+          "accession": "0001193125-05-088979",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312505088979/d10q.htm",
+          "sha256": "056c063ee5d6252fc7712470ae9d35b8611d5a1d6f19905dcb9aebfc7d95323c",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 27668108 as of 2005-04-28 | t of 1934). Yes x No ¨ The number of shares of the issuer’s Common Stock, par value $0.001 per share, outstanding as of April 28, 2005, was 27,668,108. Table of Contents MOLIN"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-Q",
+          "filingDate": "2005-08-09",
+          "accession": "0001193125-05-162774",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312505162774/d10q.htm",
+          "sha256": "0032560e81854aaa9f6ebcdb7a07469c854df16d9bf6f104f155e24b4c45df02",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 27747343 as of 2005-07-29 | ct of 1934). Yes x No ¨ The number of shares of the issuer’s Common Stock, par value $0.001 per share, outstanding as of July 29, 2005, was 27,747,343. Table of Contents MOLINA HEALTHCARE"
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001193125-05-044725",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312505044725/d10k.htm",
+          "sha256": "ff0ba4cf51a13055436c33810a35804b39ad443949ebf2c919c17b741e12609f",
+          "quote": "uity Securities Our common stock became listed on July 2, 2003 on The New York Stock Exchange, Inc. under the symbol “MOH”. Prior to that time, there was no established public trading market for any class of our common equity. The h"
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001193125-06-053951",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312506053951/d10k.htm",
+          "sha256": "ceef7e800ee13f80affb48fe4f9b53391fed4cc3b01f27fabe9662069b973677",
+          "quote": "uity Securities Our common stock became listed on July 2, 2003 on The New York Stock Exchange, Inc. under the symbol “MOH”. Prior to that time, there was no established public trading market for any class of our common equity. The h"
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001193125-05-162774",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312505162774/d10q.htm",
+          "sha256": "0032560e81854aaa9f6ebcdb7a07469c854df16d9bf6f104f155e24b4c45df02",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001193125-05-044725",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000119312505044725/d10k.htm",
+          "sha256": "ff0ba4cf51a13055436c33810a35804b39ad443949ebf2c919c17b741e12609f",
+          "quote": "NYSE"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001181431-05-027084",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000118143105027084/0001181431-05-027084.txt",
+          "sha256": "ff9f892b9832ce35f65ed21b7561a8a8f404f88b9549d48aae4045f3cce4ae64",
+          "quote": "items 7.01,8.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "2.02",
+            "9.01"
+          ],
+          "filingDate": "2005-07-20",
+          "reportDate": "2005-07-20",
+          "accession": "0001181431-05-041255",
+          "url": "https://www.sec.gov/Archives/edgar/data/1179929/000118143105041255/0001181431-05-041255.txt",
+          "sha256": "876900a53ef544f0c4badc536d9bea1fd110b4790a5b459893a1eb40fd9bc36b",
+          "quote": "Item 2.02. Results of Operations and Financial Condition On July 20, 2005, Molina Healthcare, Inc. issued a press release announcing its preliminary financial results for the second quarter ended June 30, 2005, and also announcing revised guidance for fiscal year 2005. The full text of the press rel"
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:23:09+00:00"
     },
     {
       "securityId": "ref_MVST",
@@ -1836,6 +2652,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001760689-24-000046",
@@ -1845,7 +2662,8 @@ module.exports = {
           "tagged": [
             "MVST",
             "MVSTW"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001760689-25-000010",
@@ -1855,7 +2673,8 @@ module.exports = {
           "tagged": [
             "MVST",
             "MVSTW"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1869,12 +2688,14 @@ module.exports = {
         "before": {
           "accession": "0001760689-24-000046",
           "coverDate": "2024-11-08",
-          "shares": 323815298
+          "shares": 323815298,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001760689-25-000010",
           "coverDate": "2025-03-24",
-          "shares": 325209085
+          "shares": 325209085,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0043042654519676
       },
@@ -1892,6 +2713,7 @@ module.exports = {
           "accession": "0001760689-24-000046",
           "url": "https://www.sec.gov/Archives/edgar/data/1760689/000176068924000046/mvst-20240930_htm.xml",
           "sha256": "54b7f67c32943c8d9ac06ba685fa346aedef41525fc139c6f32ad5f84fe2d304",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"MVST\",\"MVSTW\"]; dei:EntityCommonStockSharesOutstanding 323815298 as of 2024-11-08; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1901,6 +2723,7 @@ module.exports = {
           "accession": "0001760689-25-000010",
           "url": "https://www.sec.gov/Archives/edgar/data/1760689/000176068925000010/mvst-20241231_htm.xml",
           "sha256": "f8df0827b57a54626cc0c8ed0449795117511114b4037fdbae82c0be6cfa8223",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"MVST\",\"MVSTW\"]; dei:EntityCommonStockSharesOutstanding 325209085 as of 2025-03-24; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -1928,11 +2751,158 @@ module.exports = {
           "accession": "0001760689-24-000049",
           "url": "https://www.sec.gov/Archives/edgar/data/1760689/000176068924000049/0001760689-24-000049.txt",
           "sha256": "19747c24b822aad614be999e24a3bcf50db3ced58644859f2cc7c43eb0e75e39",
-          "quote": "Item 2.02 Results of Operations and Financial Condition. On November 12, 2024, Microvast Holdings, Inc. (the “Company”) issued a press release announcing its unaudited condensed consolidated financial results for the period ended September 30, 2024. In addition, the Company posted an accompanying slideshow presentation to its website summarizing its results for the same period. The full text of th"
+          "quote": "Item 2.02 Results of Operations and Financial Condition. On November 12, 2024, Microvast Holdings, Inc. (the “Company”) issued a press release announcing its unaudited condensed consolidated financial results for the period ended September 30, 2024. In addition, the Company posted an accompanying sl"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:27:29+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:24:49+00:00"
+    },
+    {
+      "securityId": "ref_NSIT",
+      "ticker": "NSIT",
+      "cik": "0000932696",
+      "issuer": "INSIGHT ENTERPRISES INC",
+      "canonicalId": "tiingo:NASDAQ:NSIT:1995-01-25",
+      "week": "2009-02-13",
+      "prevWeek": "2009-02-06",
+      "prevClose": 5.9,
+      "close": 2.97,
+      "weeklyRatio": 0.5033898305084746,
+      "jumpDay": "2009-02-10",
+      "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "TEXT",
+      "identity": {
+        "before": {
+          "accession": "0001362310-08-001149",
+          "form": "10-Q",
+          "filingDate": "2008-11-07",
+          "tradingSymbol": "NSIT",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001362310-09-007124",
+          "form": "10-K",
+          "filingDate": "2009-05-12",
+          "tradingSymbol": "NSIT",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NASDAQ",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001362310-09-007124"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001362310-08-006849",
+          "coverDate": "2008-11-03",
+          "shares": 45584578,
+          "via": "E2_TEXT_COVER"
+        },
+        "after": {
+          "accession": "0001362310-09-007124",
+          "coverDate": "2009-04-30",
+          "shares": 45846171,
+          "via": "E2_TEXT_COVER"
+        },
+        "ratio": 1.0057386294110258
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 3,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-Q",
+          "filingDate": "2008-11-07",
+          "accession": "0001362310-08-006849",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231008006849/c76760e10vq.htm",
+          "sha256": "6b3ab5bf2a2d864ff929a231316acbaf372f0b8b42acda88d8fd7d81aabba442",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 45584578 as of 2008-11-03 | ned in Rule 12b-2 of the Exchange Act). Yes o No þ The number of shares outstanding of the issuer’s common stock as of November 3, 2008 was 45,584,578. INSIGHT ENTERPRISES, INC. QUARTERLY REPORT ON FORM 10-Q Three Months Ended September 30, 2008 TABLE OF CONTENTS P"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-K",
+          "filingDate": "2009-05-12",
+          "accession": "0001362310-09-007124",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231009007124/c85057e10vk.htm",
+          "sha256": "1ca348d607577b56277f2df0a3992cd3938c7f72d3fb58b83670e70e9afd9fd4",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 45846171 as of 2009-04-30 |  completed second fiscal quarter, was $527,456,717. The number of shares outstanding of the registrant’s common stock on April 30, 2009 was 45,846,171. INSIGHT ENTERPRISES, INC. ANNUAL REPORT ON FORM 10-K Year Ended December 31, 2008 TABLE OF CONTENTS Page PART I I"
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001362310-08-001149",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231008001149/c72541e10vk.htm",
+          "sha256": "afd131ab59049c724545871142807f0650a3ac7d2f4b79cb9535506bdf7014c8",
+          "quote": "holder Matters and Issuer Purchases of Equity Securities Market Information Our common stock trades under the symbol “NSIT” on the Nasdaq Global Select Market. The following table shows, for the calendar quarters indicated, the high "
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001362310-09-007124",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231009007124/c85057e10vk.htm",
+          "sha256": "1ca348d607577b56277f2df0a3992cd3938c7f72d3fb58b83670e70e9afd9fd4",
+          "quote": "holder Matters and Issuer Purchases of Equity Securities Market Information Our common stock trades under the symbol “NSIT” on The Nasdaq Global Select Market. The following table shows, for the calendar quarters indicated, the high "
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001362310-09-007124",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231009007124/c85057e10vk.htm",
+          "sha256": "1ca348d607577b56277f2df0a3992cd3938c7f72d3fb58b83670e70e9afd9fd4",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001362310-09-007124",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000136231009007124/c85057e10vk.htm",
+          "sha256": "1ca348d607577b56277f2df0a3992cd3938c7f72d3fb58b83670e70e9afd9fd4",
+          "quote": "NASDAQ"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001299933-08-005364",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000129993308005364/0001299933-08-005364.txt",
+          "sha256": "42b08f053417ef276e5c8b54d2ec48df0e09abc92f4fcd0d9387a8472b623145",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001299933-09-001033",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000129993309001033/0001299933-09-001033.txt",
+          "sha256": "a30c0bd4b00a8e180b676db506704f06ff42300c95ec99d3e6c12270610462a0",
+          "quote": "items 3.01"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001299933-09-001315",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000129993309001315/0001299933-09-001315.txt",
+          "sha256": "03f10d2a3b9eb74e2e2358156f22e84498605cf01bf8aea6ecb3d7ab0115b53d",
+          "quote": "items 8.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "4.02",
+            "9.01"
+          ],
+          "filingDate": "2009-02-10",
+          "reportDate": "2009-02-06",
+          "accession": "0001299933-09-000672",
+          "url": "https://www.sec.gov/Archives/edgar/data/932696/000129993309000672/0001299933-09-000672.txt",
+          "sha256": "92ea9ebcf1be0f060aceebeafd2dca4cfdc433be4c48292cd3efd4c4fe6521df",
+          "quote": "Item 4.02 Non-Reliance on Previously Issued Financial Statements or a Related Audit Report or Completed Interim Review. (a) On February 9, 2009, the Company issued a press release announcing that its management had discovered errors in the Company's historical accounting treatment since 1996 of cert"
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:27:59+00:00"
     },
     {
       "securityId": "ref_NTLA",
@@ -1949,6 +2919,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000950170-25-104987",
@@ -1957,7 +2928,8 @@ module.exports = {
           "tradingSymbol": "NTLA",
           "tagged": [
             "NTLA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001193125-25-269680",
@@ -1966,7 +2938,8 @@ module.exports = {
           "tradingSymbol": "NTLA",
           "tagged": [
             "NTLA"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -1980,12 +2953,14 @@ module.exports = {
         "before": {
           "accession": "0000950170-25-104987",
           "coverDate": "2025-07-31",
-          "shares": 107346886
+          "shares": 107346886,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001193125-25-269680",
           "coverDate": "2025-10-31",
-          "shares": 115829926
+          "shares": 115829926,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0790245559615022
       },
@@ -2003,6 +2978,7 @@ module.exports = {
           "accession": "0000950170-25-104987",
           "url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025104987/ntla-20250630_htm.xml",
           "sha256": "0ce2f4835ac81df2114ed15bb38d8657f210543bea7b961616f2c8c2ab795a3e",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"NTLA\"]; dei:EntityCommonStockSharesOutstanding 107346886 as of 2025-07-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2012,6 +2988,7 @@ module.exports = {
           "accession": "0001193125-25-269680",
           "url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525269680/ntla-20250930_htm.xml",
           "sha256": "034a71139a814c28e318f78bf13aee206f437a1ef76c536d160c828e746b9c59",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"NTLA\"]; dei:EntityCommonStockSharesOutstanding 115829926 as of 2025-10-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2061,11 +3038,11 @@ module.exports = {
           "accession": "0001193125-25-250757",
           "url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525250757/0001193125-25-250757.txt",
           "sha256": "a14ad70b0999591055f6dcb7bb6cbf5a86d412cdf6e0407aea48fb5a684d2e68",
-          "quote": "Item 7.01 Regulation FD Disclosure. On October 27, 2025, Intellia Therapeutics, Inc. (the “Company or “Intellia”) issued a press release titled “Intellia Therapeutics Provides Update on MAGNITUDE Clinical Trials of Nexiguran Ziclumeran (nex-z).” A copy of the press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K and is incorporated into this Item 7.01 by reference. The info"
+          "quote": "Item 7.01 Regulation FD Disclosure. On October 27, 2025, Intellia Therapeutics, Inc. (the “Company or “Intellia”) issued a press release titled “Intellia Therapeutics Provides Update on MAGNITUDE Clinical Trials of Nexiguran Ziclumeran (nex-z).” A copy of the press release is furnished as Exhibit 99"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:28:29+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:28:28+00:00"
     },
     {
       "securityId": "ref_OM",
@@ -2082,6 +3059,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000950170-23-037387",
@@ -2090,7 +3068,8 @@ module.exports = {
           "tradingSymbol": "OM",
           "tagged": [
             "OM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0000950170-23-060476",
@@ -2099,7 +3078,8 @@ module.exports = {
           "tradingSymbol": "OM",
           "tagged": [
             "OM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2113,12 +3093,14 @@ module.exports = {
         "before": {
           "accession": "0000950170-23-037387",
           "coverDate": "2023-07-26",
-          "shares": 49790212
+          "shares": 49790212,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0000950170-23-060476",
           "coverDate": "2023-11-02",
-          "shares": 50204570
+          "shares": 50204570,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0083220774396382
       },
@@ -2136,6 +3118,7 @@ module.exports = {
           "accession": "0000950170-23-037387",
           "url": "https://www.sec.gov/Archives/edgar/data/1484612/000095017023037387/om-20230630_htm.xml",
           "sha256": "ecdfc141af27e0a8d6cc93c8225ed1e5e82d6bd1b2d45ac808e5ad1f5631dac5",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"OM\"]; dei:EntityCommonStockSharesOutstanding 49790212 as of 2023-07-26; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2145,6 +3128,7 @@ module.exports = {
           "accession": "0000950170-23-060476",
           "url": "https://www.sec.gov/Archives/edgar/data/1484612/000095017023060476/om-20230930_htm.xml",
           "sha256": "6574565a48d50bd7ba6f304ec44e0f5aa8065817790f0cccb05f7554c564880a",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"OM\"]; dei:EntityCommonStockSharesOutstanding 50204570 as of 2023-11-02; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2165,11 +3149,11 @@ module.exports = {
           "accession": "0000950170-23-053108",
           "url": "https://www.sec.gov/Archives/edgar/data/1484612/000095017023053108/0000950170-23-053108.txt",
           "sha256": "729a428bf1f117cef844b7fb8d6ec68ddb479ef6c9ff856efa974514ff2dbb4f",
-          "quote": "Item 2.02 Result of Operations and Financial Condition. On October 12, 2023, Outset Medical, Inc. (the “ Company ”) issued a press release announcing expected revenue and gross margin for the third quarter ended September 30, 2023, as well as updated financial guidance for 2023 revenue. A copy of the Company’s press release is furnished herewith as Exhibit 99.1. Certain financial information conta"
+          "quote": "Item 2.02 Result of Operations and Financial Condition. On October 12, 2023, Outset Medical, Inc. (the “ Company ”) issued a press release announcing expected revenue and gross margin for the third quarter ended September 30, 2023, as well as updated financial guidance for 2023 revenue. A copy of th"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:29:36+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:31:44+00:00"
     },
     {
       "securityId": "ref_PACB",
@@ -2186,6 +3170,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001299130-24-000054",
@@ -2194,7 +3179,8 @@ module.exports = {
           "tradingSymbol": "PACB",
           "tagged": [
             "PACB"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001299130-24-000111",
@@ -2203,7 +3189,8 @@ module.exports = {
           "tradingSymbol": "PACB",
           "tagged": [
             "PACB"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2217,12 +3204,14 @@ module.exports = {
         "before": {
           "accession": "0001299130-24-000054",
           "coverDate": "2024-01-31",
-          "shares": 267951880
+          "shares": 267951880,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001299130-24-000111",
           "coverDate": "2024-04-30",
-          "shares": 272355892
+          "shares": 272355892,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.016435831687391
       },
@@ -2240,6 +3229,7 @@ module.exports = {
           "accession": "0001299130-24-000054",
           "url": "https://www.sec.gov/Archives/edgar/data/1299130/000129913024000054/pacb-20231231_htm.xml",
           "sha256": "5ee27a31190a0ddb6a7ad800789f8c733de5ff6b4ccdb27c930d571c040010a0",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"PACB\"]; dei:EntityCommonStockSharesOutstanding 267951880 as of 2024-01-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2249,6 +3239,7 @@ module.exports = {
           "accession": "0001299130-24-000111",
           "url": "https://www.sec.gov/Archives/edgar/data/1299130/000129913024000111/pacb-20240331_htm.xml",
           "sha256": "9635296f8ddcddd31670f4bc1841c38e0524b0d60e14ae3f05a5fd7ecabab253",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"PACB\"]; dei:EntityCommonStockSharesOutstanding 272355892 as of 2024-04-30; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2278,11 +3269,11 @@ module.exports = {
           "accession": "0001104659-24-047511",
           "url": "https://www.sec.gov/Archives/edgar/data/1299130/000110465924047511/0001104659-24-047511.txt",
           "sha256": "f1f425fe5e3e5e4e92c216e6c183563a53ca105f1d05af93d0d88aebec183d14",
-          "quote": "ITEM 2.02. RESULTS OF OPERATIONS AND FINANCIAL CONDITION. On April 16, 2024, Pacific Biosciences of California, Inc. (the “Company”) issued a press release providing a business update and announcing certain unaudited preliminary financial results as of and for the quarter ended March 31, 2024 (the “Press Release”). A copy of the Press Release is furnished hereto as Exhibit 99.1 and is incorporated"
+          "quote": "ITEM 2.02. RESULTS OF OPERATIONS AND FINANCIAL CONDITION. On April 16, 2024, Pacific Biosciences of California, Inc. (the “Company”) issued a press release providing a business update and announcing certain unaudited preliminary financial results as of and for the quarter ended March 31, 2024 (the “"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:30:10+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:33:16+00:00"
     },
     {
       "securityId": "ref_PBYI",
@@ -2299,6 +3290,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001564590-18-026644",
@@ -2307,7 +3299,8 @@ module.exports = {
           "tradingSymbol": "PBYI",
           "tagged": [
             "PBYI"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001564590-19-005830",
@@ -2316,7 +3309,8 @@ module.exports = {
           "tradingSymbol": "PBYI",
           "tagged": [
             "PBYI"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2328,12 +3322,14 @@ module.exports = {
         "before": {
           "accession": "0001564590-18-026644",
           "coverDate": "2018-10-26",
-          "shares": 38134994
+          "shares": 38134994,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001564590-19-005830",
           "coverDate": "2019-02-15",
-          "shares": 38497981
+          "shares": 38497981,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0095184753405233
       },
@@ -2351,6 +3347,7 @@ module.exports = {
           "accession": "0001564590-18-026644",
           "url": "https://www.sec.gov/Archives/edgar/data/1401667/000156459018026644/pbyi-20180930.xml",
           "sha256": "964f6814348f485c5b2eb1112ee4c952397abc3957ceae7e1d9cb3a02a91a448",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"PBYI\"]; dei:EntityCommonStockSharesOutstanding 38134994 as of 2018-10-26"
         },
         {
@@ -2360,6 +3357,7 @@ module.exports = {
           "accession": "0001564590-19-005830",
           "url": "https://www.sec.gov/Archives/edgar/data/1401667/000156459019005830/pbyi-20181231.xml",
           "sha256": "db33c34e4c822433c64d976c67ebf02a844229108333921d60f96f76a1f3d550",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"PBYI\"]; dei:EntityCommonStockSharesOutstanding 38497981 as of 2019-02-15"
         },
         {
@@ -2401,11 +3399,144 @@ module.exports = {
           "accession": "0001193125-18-315715",
           "url": "https://www.sec.gov/Archives/edgar/data/1401667/000119312518315715/0001193125-18-315715.txt",
           "sha256": "90433d3865981523666fde9bb752774d55966f41f47581549095699b5775644c",
-          "quote": "Item 2.02 Results of Operations and Financial Condition. On November 1, 2018, Puma Biotechnology, Inc. issued a press release announcing its financial results for the quarter ended September 30, 2018. A copy of the press release is furnished herewith as Exhibit 99.1 and is incorporated by reference herein. The information in this Item 2.02, including the accompanying exhibit, is being furnished an"
+          "quote": "Item 2.02 Results of Operations and Financial Condition. On November 1, 2018, Puma Biotechnology, Inc. issued a press release announcing its financial results for the quarter ended September 30, 2018. A copy of the press release is furnished herewith as Exhibit 99.1 and is incorporated by reference "
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:30:19+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:33:59+00:00"
+    },
+    {
+      "securityId": "ref_RDN",
+      "ticker": "RDN",
+      "cik": "0000890926",
+      "issuer": "RADIAN GROUP INC",
+      "canonicalId": "tiingo:NYSE:RDN:1992-10-30",
+      "week": "2009-08-07",
+      "prevWeek": "2009-07-31",
+      "prevClose": 3.33,
+      "close": 6.83,
+      "weeklyRatio": 2.051051051051051,
+      "jumpDay": "2009-08-05",
+      "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+      "class": "GENUINE_MOVE",
+      "returnBasis": "PRICE_RETURN",
+      "era": "TEXT",
+      "identity": {
+        "before": {
+          "accession": "0001193125-09-048930",
+          "form": "10-Q",
+          "filingDate": "2009-05-11",
+          "tradingSymbol": "RDN",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "after": {
+          "accession": "0001193125-10-046168",
+          "form": "10-Q",
+          "filingDate": "2009-11-09",
+          "tradingSymbol": "RDN",
+          "tagged": [],
+          "via": "E1_TEXT"
+        },
+        "exchange": "NYSE",
+        "exchangeEvidence": {
+          "via": "10-K cover text",
+          "accession": "0001193125-09-048930"
+        }
+      },
+      "shareContinuity": {
+        "before": {
+          "accession": "0001193125-09-107357",
+          "coverDate": "2009-05-04",
+          "shares": 81901186,
+          "via": "E2_TEXT_COVER"
+        },
+        "after": {
+          "accession": "0001193125-09-229548",
+          "coverDate": "2009-11-02",
+          "shares": 82775605,
+          "via": "E2_TEXT_COVER"
+        },
+        "ratio": 1.0106765120593004
+      },
+      "splitChecks": {
+        "xbrlSplitFactsInWindow": 0,
+        "splitWindow8K": 1,
+        "periodicTextStrongMatch": false,
+        "spikeReversal": false
+      },
+      "sources": [
+        {
+          "role": "COVER_BEFORE",
+          "form": "10-Q",
+          "filingDate": "2009-05-11",
+          "accession": "0001193125-09-107357",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509107357/d10q.htm",
+          "sha256": "703ce723821ba37da934292f1437b0fd098058119b655ab3447b0ac16c8f70df",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 81901186 as of 2009-05-04 | latest practicable date: 81,901,186 shares of common stock, $0.001 par value per share, outstanding on May 4, 2009. Table of Contents Radian Group Inc. INDEX Page Number Forwa"
+        },
+        {
+          "role": "COVER_AFTER",
+          "form": "10-Q",
+          "filingDate": "2009-11-09",
+          "accession": "0001193125-09-229548",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509229548/d10q.htm",
+          "sha256": "3ccff73bee9a81fd340ed0f33e9701c25ff7c57d142fcf4bfa12014fb6bb21a6",
+          "via": "E2_TEXT_COVER",
+          "quote": "shares 82775605 as of 2009-11-02 | latest practicable date: 82,775,605 shares of common stock, $0.001 par value per share, outstanding on November 2, 2009. Table of Contents Radian Group Inc. INDEX Page Number "
+        },
+        {
+          "role": "IDENTITY_TEXT_BEFORE",
+          "accession": "0001193125-09-048930",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509048930/d10k.htm",
+          "sha256": "9fb1a2b8c2f1c56b49c79c39571bfd12c3a9440d6682703c3e0b7d2e9f1f5a06",
+          "quote": " Purchases of Equity Securities. Our common stock is listed on the New York Stock Exchange (“NYSE”) under the symbol “RDN.” At March 4, 2009, there were 81,420,871 shares outstanding and approximately 89 holders of record. The foll"
+        },
+        {
+          "role": "IDENTITY_TEXT_AFTER",
+          "accession": "0001193125-10-046168",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312510046168/d10k.htm",
+          "sha256": "3c66339618a1d55536b113537b35e74d013d24db84b342fedf22090978d7eca0",
+          "quote": " Purchases of Equity Securities. Our common stock is listed on the New York Stock Exchange (“NYSE”) under the symbol “RDN.” At February 25, 2010, there were 82,936,146 shares outstanding and approximately 87 holders of record. The "
+        },
+        {
+          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
+          "accession": "0001193125-09-229548",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509229548/d10q.htm",
+          "sha256": "3ccff73bee9a81fd340ed0f33e9701c25ff7c57d142fcf4bfa12014fb6bb21a6",
+          "quote": ""
+        },
+        {
+          "role": "EXCHANGE_10K_COVER",
+          "accession": "0001193125-09-048930",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509048930/d10k.htm",
+          "sha256": "9fb1a2b8c2f1c56b49c79c39571bfd12c3a9440d6682703c3e0b7d2e9f1f5a06",
+          "quote": "NYSE"
+        },
+        {
+          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
+          "accession": "0001193125-09-114962",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509114962/0001193125-09-114962.txt",
+          "sha256": "8b7c3f979e32068525cb0f4caee1d2d92804b2d43588ffb47fb59921aa143275",
+          "quote": "items 5.02,8.01"
+        },
+        {
+          "role": "AFFIRMATIVE_8K",
+          "items": [
+            "2.02",
+            "9.01"
+          ],
+          "filingDate": "2009-08-05",
+          "reportDate": "2009-08-05",
+          "accession": "0001193125-09-164703",
+          "url": "https://www.sec.gov/Archives/edgar/data/890926/000119312509164703/0001193125-09-164703.txt",
+          "sha256": "4367db180ecbf18f8e87e181b8f669947279aabc4c2ca063a0af03dad484005a",
+          "quote": "Item 2.02. Results of Operations and Financial Condition. On August 5, 2009, Radian Group Inc. issued a news release announcing its financial results for the quarter ended June 30, 2009. A copy of this news release is furnished as Exhibit 99.1 to this report. The information included in, or furnishe"
+        }
+      ],
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:38:35+00:00"
     },
     {
       "securityId": "ref_REPL",
@@ -2422,6 +3553,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001737953-25-000013",
@@ -2430,7 +3562,8 @@ module.exports = {
           "tradingSymbol": "REPL",
           "tagged": [
             "REPL"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001628280-25-049884",
@@ -2439,7 +3572,8 @@ module.exports = {
           "tradingSymbol": "REPL",
           "tagged": [
             "REPL"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2453,12 +3587,14 @@ module.exports = {
         "before": {
           "accession": "0001737953-25-000013",
           "coverDate": "2025-08-04",
-          "shares": 78055846
+          "shares": 78055846,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001628280-25-049884",
           "coverDate": "2025-11-03",
-          "shares": 78443334
+          "shares": 78443334,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.0049642406028114
       },
@@ -2476,6 +3612,7 @@ module.exports = {
           "accession": "0001737953-25-000013",
           "url": "https://www.sec.gov/Archives/edgar/data/1737953/000173795325000013/repl-20250630_htm.xml",
           "sha256": "c12f270b53c91641b04c391517eb438544bcbb5d22c9df83c2f2388b7603863c",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"REPL\"]; dei:EntityCommonStockSharesOutstanding 78055846 as of 2025-08-04; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2485,6 +3622,7 @@ module.exports = {
           "accession": "0001628280-25-049884",
           "url": "https://www.sec.gov/Archives/edgar/data/1737953/000162828025049884/repl-20250930_htm.xml",
           "sha256": "0f3f046ec4902b5b06f6588a3921247c552a224adfb661d4aed7a77625bce5b5",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"REPL\"]; dei:EntityCommonStockSharesOutstanding 78443334 as of 2025-11-03; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2533,11 +3671,11 @@ module.exports = {
           "accession": "0001104659-25-100605",
           "url": "https://www.sec.gov/Archives/edgar/data/1737953/000110465925100605/0001104659-25-100605.txt",
           "sha256": "11f48dd85813cedc77d5df6c319b4c6a42afd7186c4e67b76d11263774f0320a",
-          "quote": "Item 8.01 Other Events . On October 20, 2025, Replimune Group, Inc. (the “Company”) issued a news release announcing that the U.S. Food and Drug Administration (the “FDA”) accepted the Company’s resubmission of the Biologics License Application for RP1 in combination with nivolumab for patients with advanced melanoma. The PDUFA date set by the FDA is April 10, 2026 based on a Class II resubmission"
+          "quote": "Item 8.01 Other Events . On October 20, 2025, Replimune Group, Inc. (the “Company”) issued a news release announcing that the U.S. Food and Drug Administration (the “FDA”) accepted the Company’s resubmission of the Biologics License Application for RP1 in combination with nivolumab for patients with"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:31:50+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:38:56+00:00"
     },
     {
       "securityId": "ref_SRPT",
@@ -2554,6 +3692,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001564590-16-023663",
@@ -2562,7 +3701,8 @@ module.exports = {
           "tradingSymbol": "SRPT",
           "tagged": [
             "SRPT"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001564590-16-027821",
@@ -2571,7 +3711,8 @@ module.exports = {
           "tradingSymbol": "SRPT",
           "tagged": [
             "SRPT"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2583,12 +3724,14 @@ module.exports = {
         "before": {
           "accession": "0001564590-16-023663",
           "coverDate": "2016-08-03",
-          "shares": 47899532
+          "shares": 47899532,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001564590-16-027821",
           "coverDate": "2016-11-03",
-          "shares": 54590380
+          "shares": 54590380,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.1396850390939102
       },
@@ -2606,6 +3749,7 @@ module.exports = {
           "accession": "0001564590-16-023663",
           "url": "https://www.sec.gov/Archives/edgar/data/873303/000156459016023663/srpt-20160630.xml",
           "sha256": "2e10d89266f151c3788e82dfab28ff52276a38fb56ac4a4d056906bd6b97c153",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"SRPT\"]; dei:EntityCommonStockSharesOutstanding 47899532 as of 2016-08-03"
         },
         {
@@ -2615,6 +3759,7 @@ module.exports = {
           "accession": "0001564590-16-027821",
           "url": "https://www.sec.gov/Archives/edgar/data/873303/000156459016027821/srpt-20160930.xml",
           "sha256": "ad952d1a37e351d17606e6dc1d93f6960aecd400c9be49566558cd4db6ffb649",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"SRPT\"]; dei:EntityCommonStockSharesOutstanding 54590380 as of 2016-11-03"
         },
         {
@@ -2670,11 +3815,11 @@ module.exports = {
           "accession": "0001193125-16-713139",
           "url": "https://www.sec.gov/Archives/edgar/data/873303/000119312516713139/0001193125-16-713139.txt",
           "sha256": "89a846edcfd146e1bef2a4443bdcb3ac57e0ae036d51195b1288c016c35926c5",
-          "quote": "Item 8.01 Other Events. On September 19, 2016, Sarepta Therapeutics, Inc. (the “Company”) announced that the United States Food and Drug Administration has provided accelerated approval of Exondys 51 TM (eteplirsen) Injection for the treatment of Duchenne Muscular Dystrophy amenable to skipping of exon 51. A copy of the press release is attached hereto as Exhibit 99.1 and is incorporated herein by"
+          "quote": "Item 8.01 Other Events. On September 19, 2016, Sarepta Therapeutics, Inc. (the “Company”) announced that the United States Food and Drug Administration has provided accelerated approval of Exondys 51 TM (eteplirsen) Injection for the treatment of Duchenne Muscular Dystrophy amenable to skipping of e"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:34:03+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:46:37+00:00"
     },
     {
       "securityId": "ref_SSRM",
@@ -2691,6 +3836,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0000921638-24-000047",
@@ -2699,7 +3845,8 @@ module.exports = {
           "tradingSymbol": "SSRM",
           "tagged": [
             "SSRM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0000921638-24-000115",
@@ -2708,7 +3855,8 @@ module.exports = {
           "tradingSymbol": "SSRM",
           "tagged": [
             "SSRM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2722,12 +3870,14 @@ module.exports = {
         "before": {
           "accession": "0000921638-24-000047",
           "coverDate": "2024-01-31",
-          "shares": 202463697
+          "shares": 202463697,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0000921638-24-000115",
           "coverDate": "2024-03-31",
-          "shares": 202089818
+          "shares": 202089818,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 0.9981533528946673
       },
@@ -2745,6 +3895,7 @@ module.exports = {
           "accession": "0000921638-24-000047",
           "url": "https://www.sec.gov/Archives/edgar/data/921638/000092163824000047/ssrm-20231231_htm.xml",
           "sha256": "a577aeab11c0f77ea5d8f8a0ad204f1d607ff6a5313598a33c8874839b3a6f31",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"SSRM\"]; dei:EntityCommonStockSharesOutstanding 202463697 as of 2024-01-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2754,6 +3905,7 @@ module.exports = {
           "accession": "0000921638-24-000115",
           "url": "https://www.sec.gov/Archives/edgar/data/921638/000092163824000115/ssrm-20240331_htm.xml",
           "sha256": "db3a0fe976d0c661fb1b6e91259474ddbc24b44c76cc2aca3ee3c196cc904fd2",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"SSRM\"]; dei:EntityCommonStockSharesOutstanding 202089818 as of 2024-03-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2816,11 +3968,11 @@ module.exports = {
           "accession": "0000921638-24-000035",
           "url": "https://www.sec.gov/Archives/edgar/data/921638/000092163824000035/0000921638-24-000035.txt",
           "sha256": "f244eb38602c75818e74d66fe74f7b09dade1de6eb1b97d8522eedbcb7b446da",
-          "quote": "ITEM 8.01. Other Events On February 13, 2024, SSR Mining Inc., a British Columbia corporation (the “Company”), issued a news release announcing the suspension of operations at Çöpler. A copy of the news release is furnished as Exhibit 99.1 to this report. ITEM 9.01. FINANCIAL STATEMENTS AND EXHIBITS (d) Exhibits Exhibit Number Description of Exhibit 99.1 News Release, dated February 13, 2024, anno"
+          "quote": "ITEM 8.01. Other Events On February 13, 2024, SSR Mining Inc., a British Columbia corporation (the “Company”), issued a news release announcing the suspension of operations at Çöpler. A copy of the news release is furnished as Exhibit 99.1 to this report. ITEM 9.01. FINANCIAL STATEMENTS AND EXHIBITS"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:34:59+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:47:38+00:00"
     },
     {
       "securityId": "ref_VRRM",
@@ -2837,6 +3989,7 @@ module.exports = {
       "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
       "class": "GENUINE_MOVE",
       "returnBasis": "PRICE_RETURN",
+      "era": "XBRL",
       "identity": {
         "before": {
           "accession": "0001193125-26-067293",
@@ -2845,7 +3998,8 @@ module.exports = {
           "tradingSymbol": "VRRM",
           "tagged": [
             "VRRM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "after": {
           "accession": "0001193125-26-335490",
@@ -2854,7 +4008,8 @@ module.exports = {
           "tradingSymbol": "VRRM",
           "tagged": [
             "VRRM"
-          ]
+          ],
+          "via": "dei:TradingSymbol"
         },
         "exchange": "NASDAQ",
         "exchangeEvidence": {
@@ -2868,12 +4023,14 @@ module.exports = {
         "before": {
           "accession": "0001193125-26-067293",
           "coverDate": "2026-02-28",
-          "shares": 151361959
+          "shares": 151361959,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "after": {
           "accession": "0001193125-26-335490",
           "coverDate": "2026-08-31",
-          "shares": 151982804
+          "shares": 151982804,
+          "via": "dei:EntityCommonStockSharesOutstanding"
         },
         "ratio": 1.00410172413268
       },
@@ -2891,6 +4048,7 @@ module.exports = {
           "accession": "0001193125-26-067293",
           "url": "https://www.sec.gov/Archives/edgar/data/1682745/000119312526067293/vrrm-20251231_htm.xml",
           "sha256": "15b4bc7eb800496f9ddca819baf30d744628f9bf6fb444276575c1ace23f0249",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"VRRM\"]; dei:EntityCommonStockSharesOutstanding 151361959 as of 2026-02-28; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2900,6 +4058,7 @@ module.exports = {
           "accession": "0001193125-26-335490",
           "url": "https://www.sec.gov/Archives/edgar/data/1682745/000119312526335490/vrrm-20260630_htm.xml",
           "sha256": "1996ded2ad4c4e1bbed09661e964a8b2ff9a30c86faebe8ad8936a59c963d921",
+          "via": "dei:EntityCommonStockSharesOutstanding",
           "quote": "dei:TradingSymbol [\"VRRM\"]; dei:EntityCommonStockSharesOutstanding 151982804 as of 2026-08-31; dei:SecurityExchangeName [\"NASDAQ\"]"
         },
         {
@@ -2963,129 +4122,11 @@ module.exports = {
           "accession": "0001193125-26-239351",
           "url": "https://www.sec.gov/Archives/edgar/data/1682745/000119312526239351/0001193125-26-239351.txt",
           "sha256": "ab2f1c7211b22871e8544ca42c96fba5fe6a37bf48b36992fa7f0852e8869b5a",
-          "quote": "Item 7.01 Regulation FD Disclosure. On May 26, 2026, Verra Mobility Corporation (the “ Company ”) issued a press release that announced the Company received a termination notice from Avis Budget Group, Inc. (“ Avis Budget ”) regarding Avis Budget’s contract with the Company. The Company also provided revised full-year 2026 guidance. A copy of the press release is furnished as Exhibit 99.1 to this "
+          "quote": "Item 7.01 Regulation FD Disclosure. On May 26, 2026, Verra Mobility Corporation (the “ Company ”) issued a press release that announced the Company received a termination notice from Avis Budget Group, Inc. (“ Avis Budget ”) regarding Avis Budget’s contract with the Company. The Company also provide"
         }
       ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:36:13+00:00"
-    },
-    {
-      "securityId": "ref_VSTS",
-      "ticker": "VSTS",
-      "cik": "0001967649",
-      "issuer": "Vestis Corp",
-      "canonicalId": "tiingo:NYSE:VSTS:2023-09-27",
-      "week": "2024-05-03",
-      "prevWeek": "2024-04-26",
-      "prevClose": 18.9,
-      "close": 9.41,
-      "weeklyRatio": 0.49788359788359793,
-      "jumpDay": "2024-05-02",
-      "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
-      "class": "GENUINE_MOVE",
-      "returnBasis": "PRICE_RETURN",
-      "identity": {
-        "before": {
-          "accession": "0001967649-24-000025",
-          "form": "10-Q",
-          "filingDate": "2024-05-08",
-          "tradingSymbol": "VSTS",
-          "tagged": [
-            "VSTS"
-          ]
-        },
-        "after": {
-          "accession": "0001967649-24-000043",
-          "form": "10-Q",
-          "filingDate": "2024-08-07",
-          "tradingSymbol": "VSTS",
-          "tagged": [
-            "VSTS"
-          ]
-        },
-        "exchange": "NYSE",
-        "exchangeEvidence": {
-          "via": "dei:SecurityExchangeName",
-          "values": [
-            "NYSE"
-          ]
-        }
-      },
-      "shareContinuity": {
-        "before": {
-          "accession": "0001967649-24-000025",
-          "coverDate": "2024-04-26",
-          "shares": 131450628
-        },
-        "after": {
-          "accession": "0001967649-24-000043",
-          "coverDate": "2024-07-26",
-          "shares": 131481967
-        },
-        "ratio": 1.0002384089028469
-      },
-      "splitChecks": {
-        "xbrlSplitFactsInWindow": 0,
-        "splitWindow8K": 2,
-        "periodicTextStrongMatch": false,
-        "spikeReversal": false
-      },
-      "sources": [
-        {
-          "role": "COVER_BEFORE",
-          "form": "10-Q",
-          "filingDate": "2024-05-08",
-          "accession": "0001967649-24-000025",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000025/vsts-20240329_htm.xml",
-          "sha256": "a8c6ba161009fe9c649cd221266392199998b6cbb062159d70a16044621f057b",
-          "quote": "dei:TradingSymbol [\"VSTS\"]; dei:EntityCommonStockSharesOutstanding 131450628 as of 2024-04-26; dei:SecurityExchangeName [\"NYSE\"]"
-        },
-        {
-          "role": "COVER_AFTER",
-          "form": "10-Q",
-          "filingDate": "2024-08-07",
-          "accession": "0001967649-24-000043",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000043/vsts-20240628_htm.xml",
-          "sha256": "b0cadaa425e7ad29d6cd85c5c8c8fade60f2c47fdaf2e8cfba4f16205ff6d5a9",
-          "quote": "dei:TradingSymbol [\"VSTS\"]; dei:EntityCommonStockSharesOutstanding 131481967 as of 2024-07-26; dei:SecurityExchangeName [\"NYSE\"]"
-        },
-        {
-          "role": "PERIODIC_TEXT_NO_STRONG_SPLIT_LANGUAGE",
-          "accession": "0001967649-24-000043",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000043/vsts-20240628.htm",
-          "sha256": "cec6d944e4108f010e753c2a1f07a8a4e02f404eafa271a87bb1fef54e6fc4ee",
-          "quote": ""
-        },
-        {
-          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
-          "accession": "0001967649-24-000014",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000014/0001967649-24-000014.txt",
-          "sha256": "c68f383114f2264f472ca932e77d5fea00d765d7a4354ca86d814a4a64c0763b",
-          "quote": "items 8.01,9.01"
-        },
-        {
-          "role": "SPLIT_WINDOW_8K_NO_SPLIT_LANGUAGE",
-          "accession": "0001967649-24-000029",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000029/0001967649-24-000029.txt",
-          "sha256": "9ab1f8938eed2c083e1a5ae4d54a3d04de9d548c6329c8cda3aa6b04e76e4db4",
-          "quote": "items 8.01,9.01"
-        },
-        {
-          "role": "AFFIRMATIVE_8K",
-          "items": [
-            "2.02",
-            "9.01"
-          ],
-          "filingDate": "2024-05-02",
-          "reportDate": "2024-05-02",
-          "accession": "0001967649-24-000020",
-          "url": "https://www.sec.gov/Archives/edgar/data/1967649/000196764924000020/0001967649-24-000020.txt",
-          "sha256": "590b6df3da3308a7cc2ade41232a606dd3023906a6ee8954d4d64d256012d378",
-          "quote": "Item 2.02. Results of Operations On May 2, 2024 , Vestis Corporation (the “Company”) issued a press release announcing the results of the Company’s operations for the quarter ended March 29, 2024. The full text of the press release is furnished as Exhibit 99.1 to this Current Report on Form 8-K and is incorporated herein by reference in this Item 2.02. The information set forth under this Item 2.0"
-        }
-      ],
-      "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
-      "verifiedAt": "2026-10-28T07:36:21+00:00"
+      "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+      "verifiedAt": "2026-10-28T14:51:59+00:00"
     }
   ]
 };
