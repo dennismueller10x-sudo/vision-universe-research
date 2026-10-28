@@ -216,7 +216,8 @@ test("DQ-SF8-4 · Vertrag = Erzeuger (#1056): keine Marke, die in ihrer Quelle d
   for (const [c, f, name] of [["C06", { baseLengthSessions: 40 }, "C06 baseLengthSessions"], ["C06", { vcpFootprint: { contractions: 2, baseSessions: 40 } }, "C06 vcpFootprint.baseSessions"],
     ["C07", { consolidationSessions: 19 }, "C07 consolidationSessions"], ["C13", { impulseHighDate: "2026-10-01" }, "C13 impulseHighDate"], ["C13", { adxAbove30Since: "2026-09-20" }, "C13 adxAbove30Since"],
     ["C07", { startVolumeVs50d: 2.4 }, "C07 startVolumeVs50d"], ["C06", { vcpFootprint: { contractions: 2, lastContractionVolumeVs50d: 0.9181395143618434 } }, "C06 vcpFootprint.lastContractionVolumeVs50d"],
-    ["C04", { baseWeeks: 6 }, "C04 baseWeeks"], ["C05", { baseWeeks: 6 }, "C05 baseWeeks"]]) assert.ok(red((v) => { v[c][0].features = f; }), name);
+    ["C04", { baseWeeks: 6 }, "C04 baseWeeks"], ["C05", { baseWeeks: 6 }, "C05 baseWeeks"],
+    ["C04", { overheadDistance: 0.0157 }, "C04 overheadDistance"], ["C05", { overheadDistance: 0.0157 }, "C05 overheadDistance"]]) assert.ok(red((v) => { v[c][0].features = f; }), name);
   assert.ok(!red((v) => { v.C13[0].features = { adx: 0.31, closeVsEma20: 0.01 }; v.C04[0].features = { breakoutWeek: "2026-W43", breakoutDay: "2026-10-23", ma30w: 100 }; v.C03[0].features = { boxTopDate: "2026-10-01" }; }), "Ausbruchstag, Box-Daten, ADX bleiben");
   assert.ok(!red((v) => { v.C03[0].features = { boxDepth: 0.12 }; }), "andere Methoden: Tiefen bleiben");
   for (const c of ["C06", "C07", "C13"]) for (const k of ["high252", "belowHigh252"]) assert.ok(red((v) => { v[c][0].trend = { close: 10, [k]: k === "high252" ? 10.2 : 0.02 }; }), `${c} trend.${k}`);
@@ -227,7 +228,7 @@ test("DQ-SF8-4 · Vertrag = Erzeuger (#1056): keine Marke, die in ihrer Quelle d
   assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C06, ["ma50", "ma150", "ma200"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C07, []);
   assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C11, ["ma10", "ma50"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C13, ["ema20"]);
   assert.deepEqual(Object.keys(DQ.SF8_PIVOT_KINDS).sort(), ["C03", "C08", "C09", "C12"]);
-  assert.deepEqual(DQ.SF8_FEATURES_HIDDEN, { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] });
+  assert.deepEqual(DQ.SF8_FEATURES_HIDDEN, { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks", "overheadDistance"], C05: ["baseWeeks", "overheadDistance"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] });
   assert.deepEqual(DQ.SF8_SUBFIELDS_HIDDEN, { C06: { vcpFootprint: ["depths", "baseSessions", "lastContractionVolumeVs50d"] } });
   assert.deepEqual(DQ.SF8_PIVOT_LEVEL, { C03: "top", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" });
   /* Owner-Entscheidung 28.10.2026 (Weinstein): weder genauer Widerstand noch Chartmarke unterhalb von MODELED */

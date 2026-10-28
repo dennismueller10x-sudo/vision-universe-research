@@ -527,7 +527,7 @@
      Stop ergeben (Fenster: SEPA-Basislaenge, Power-Play-Konsolidierung, Weinstein-Basiswochen; Anker: Holy-Grail impulseHighDate,
      adxAbove30Since; Volumen-Fingerabdruecke: SEPA-Volumen der letzten Kontraktion, Power-Play-Startvolumen). Gegenstueck im Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD / #ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
   /* Owner-Entscheidung 28.10.2026 (Turtle): N und nPct ergeben mit dem Trigger die Stopreferenz (Trigger - 2N) */
-  var SF8_FEATURES_HIDDEN = { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] };
+  var SF8_FEATURES_HIDDEN = { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks", "overheadDistance"], C05: ["baseWeeks", "overheadDistance"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] };
   var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths", "baseSessions", "lastContractionVolumeVs50d"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
