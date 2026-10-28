@@ -24,6 +24,10 @@
      SKS        Kopf ist das Extrem, Schultern innerhalb 1,5 Toleranzen.
      Trendlinie Unterstuetzung steigt, Widerstand faellt.
      Luecken    Tagestief ueber Vortageshoch (bzw. umgekehrt) am Erkennungstag.
+     Ausbruch   bestaetigte Linienformationen (Dreiecke, Rechteck, Keile, SKS, Doppeltop/-boden, Wimpel):
+                Schluss jenseits der gezeichneten Ausbruchslinie zwischen letztem Punkt und confirmedAt, und kein
+                frueherer deutlicher Schluss jenseits (FORMATION_VALIDATION.md §8). Linien im Bar-Raum wie Engine
+                und Chart.
    Toleranz = max(0,75 ATR, 2,5 % des Kurses) wie ti/chart-patterns.js,
    mit 5 % Rundungsreserve (Linien und Punkte sind auf 4 Stellen gerundet).
 
@@ -55,13 +59,41 @@ const BEAR = new Set(["RESISTANCE_TRENDLINE", "DESCENDING_CHANNEL", "RISING_WEDG
 
 const day = (s) => Date.parse(String(s).slice(0, 10) + "T00:00:00Z") / 864e5;
 const fin = Number.isFinite;
-const slope = (l) => (l.to.price - l.from.price) / Math.max(1, day(l.to.time) - day(l.from.time));
-const at = (l, t) => l.from.price + slope(l) * (day(t) - day(l.from.time));
+/* Linien sind im Bar-Raum gerade (Engine: lineThrough je Bar-Index; Chart: x = Bar-Index). Mit Tagesbars im Kontext
+   wird deshalb ueber den Bar-Index interpoliert, ohne Bars ersatzweise ueber Kalendertage. */
+let POS = null;
+const pos = (t) => { const k = POS && POS.get(String(t).slice(0, 10)); return k === undefined || k === null ? day(t) : k; };
+const slope = (l) => (l.to.price - l.from.price) / Math.max(1, pos(l.to.time) - pos(l.from.time));
+const at = (l, t) => l.from.price + slope(l) * (pos(t) - pos(l.from.time));
 const line = (f, role) => (f.lines || []).find((l) => l.role === role);
+const posMaps = new WeakMap();
+function positions(bars) {
+  if (!bars || !bars.timestamps) return null;
+  if (!posMaps.has(bars)) posMaps.set(bars, new Map(bars.timestamps.map((x, i) => [String(x).slice(0, 10), i])));
+  return posMaps.get(bars);
+}
+/* Rundung der Linienpunkte und Kursniveaus auf 4 Stellen (FORMATION_VALIDATION.md §7: AIM, BPYPM, CCZ). */
+const EPS = 1e-4;
+
+/** Ausbruchslinie der Bestaetigungsregel je Typ, so wie die Regeltexte sie nennen. null = Regel ohne Linie. */
+function breakoutRule(f) {
+  const t = f.type, up = f.direction === "BULLISH";
+  if (/TRIANGLE$/.test(t) || t === "RECTANGLE") return { line: line(f, up ? "upper" : "lower"), up };
+  if (t === "RISING_WEDGE") return { line: line(f, "lower"), up: false, atrMargin: 0.1 };
+  if (t === "FALLING_WEDGE") return { line: line(f, "upper"), up: true, atrMargin: 0.1 };
+  if (t === "HEAD_AND_SHOULDERS" || t === "INVERSE_HEAD_AND_SHOULDERS") return { line: line(f, "neckline"), up: t === "INVERSE_HEAD_AND_SHOULDERS" };
+  if (t === "DOUBLE_TOP" || t === "DOUBLE_BOTTOM") return { level: f.levels && f.levels.breakout, up: t === "DOUBLE_BOTTOM" };
+  /* Wimpel: zusaetzlich jenseits des juengsten Konsolidierungsextrems, das nicht in der Ausgabe steht. Nur die Linie
+     ist pruefbar, nicht der frueheste Zeitpunkt. */
+  if (t === "BULL_PENNANT") return { line: line(f, "upper"), up: true, onlyExists: true };
+  if (t === "BEAR_PENNANT") return { line: line(f, "lower"), up: false, onlyExists: true };
+  return null;
+}
 
 /** @returns {string[]} verletzte Regeln (leer = gueltig) */
 export function check(f, ctx) {
   const v = [], asOf = ctx.asOf, atr = (f.dataQuality && f.dataQuality.atr) || ctx.atr;
+  POS = positions(ctx.bars);
   const pts = f.points || [], lines = f.lines || [];
   /* gemeinsam */
   if (!(f.detectedAt <= asOf)) v.push("ERKENNUNG_NACH_STICHTAG");
@@ -159,6 +191,23 @@ export function check(f, ctx) {
     const b = ctx.bars, i = b.timestamps.findIndex((x) => String(x).slice(0, 10) === f.detectedAt);
     if (i < 1) v.push("LUECKE_TAG_FEHLT");
     else if (t === "GAP_UP" ? !(b.low[i] > b.high[i - 1]) : !(b.high[i] < b.low[i - 1])) v.push("KEINE_LUECKE");
+  }
+  /* Bestaetigung gegen die gezeichnete Ausbruchslinie: Zwischen dem letzten Formationspunkt und confirmedAt liegt ein
+     Schluss jenseits der Linie (sonst BESTAETIGT_OHNE_AUSBRUCH). Und kein frueherer Schluss lag deutlich jenseits, der
+     schon eine fruehere Bestaetigung ergeben haette (frueheste = max(Ausbruch, Erkennung); sonst BESTAETIGUNG_VERSPAETET). */
+  const br = f.confirmedAt && ctx.bars ? breakoutRule(f) : null;
+  if (br && (br.line || fin(br.level))) {
+    const b = ctx.bars, ci = POS.get(f.confirmedAt), last = pts.length ? pts[pts.length - 1].time : f.detectedAt, li = POS.get(String(last).slice(0, 10));
+    if (ci === undefined || li === undefined) v.push("BESTAETIGUNG_TAG_FEHLT");
+    else {
+      const m = br.atrMargin && ctx.atrSeries && fin(ctx.atrSeries[di]) ? br.atrMargin * ctx.atrSeries[di] : 0, d = br.up ? 1 : -1;
+      const lv = (i) => (br.line ? at(br.line, b.timestamps[i]) : br.level) + d * m;
+      const beyond = (i, eps) => d * (b.close[i] - lv(i)) > eps;
+      let seen = false;
+      for (let i = li + 1; i <= ci && !seen; i++) seen = beyond(i, -EPS);
+      if (!seen) v.push("BESTAETIGT_OHNE_AUSBRUCH");
+      if (!br.onlyExists) for (let i = li + 1; i < ci; i++) if (beyond(i, EPS) && Math.max(i, di) < ci) { v.push("BESTAETIGUNG_VERSPAETET"); break; }
+    }
   }
   return [...new Set(v)];
 }
