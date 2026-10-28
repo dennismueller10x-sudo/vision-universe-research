@@ -196,8 +196,7 @@ function feedOrder(rowsById, quellen, max) {
 function write(rel, data) {
   const file = join(OUT, rel);
   mkdirSync(dirname(file), { recursive: true });
-  const json = JSON.stringify(data, (k, v) =>
-    (typeof v === "number" && !Number.isInteger(v) ? Math.round(v * 1e6) / 1e6 : v));
+  const json = JSON.stringify(data, (k, v) => Contract.shippedNumber(v));
   writeFileSync(file, json);
   bytesWritten += Buffer.byteLength(json);
   filesWritten++;
@@ -690,6 +689,8 @@ function attachFundamentals(stock, model) {
   stock.signals.compounder = !!(sig.compounder && sig.compounder.value === true);
   stock.signals.turnaround = !!(sig.turnaround && sig.turnaround.value === true);
   stock.signals.netCash = !!(sig.netCash && sig.netCash.value === true);
+  /* SEC-Kennzahlen kommen ungerundet; Texte und Schwellen rechnen auf dem ausgelieferten Wert (Contract.shippedNumber). */
+  for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) m[key] = Contract.shippedNumber(m[key]);
   for (const key of Contract.METRICS) if (key.indexOf("f_") === 0) stock.metricStatus[key] = isNum(m[key]) ? "CALCULATED" : "SOURCE_MISSING";
   stock.hook = fundamentalHook(model, sig);
 }

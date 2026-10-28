@@ -1,0 +1,70 @@
+{
+ "schemaVersion": "v9-sensitivity-v8-reproduction-1.0.0",
+ "gitHead": "3ebd26e907f480c8aa947fba8a70e6f7531b61f7",
+ "runtime": {
+  "node": "v22.22.0",
+  "v8": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.39",
+  "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "v8Runtime": {
+  "node": "v22.23.4",
+  "v8": "12.4.254.21-node.57",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.41",
+  "binarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+ },
+ "v8GitHead": "8fea838ea9aec792ae7dcb3f546710a03a499d2f",
+ "inputsChanged": [],
+ "sourceAndCodeBindings": 16,
+ "allBindingsUnchanged": true,
+ "hashComparison": {
+  "planHash": {
+   "v8": "df659e14e656b0fa4c007aeaaa2975e6cac81771b18ad66fb27549d8d2a1d18b",
+   "replay": "df659e14e656b0fa4c007aeaaa2975e6cac81771b18ad66fb27549d8d2a1d18b",
+   "equal": true
+  },
+  "registrationHash": {
+   "v8": "5d3b5357d6c201742c8a867bd9fec3237a01703591a1502b09ad2efdcf244a7d",
+   "replay": "5d3b5357d6c201742c8a867bd9fec3237a01703591a1502b09ad2efdcf244a7d",
+   "equal": true
+  },
+  "inputHash": {
+   "v8": "a49bae52befd6c01c875e11043463cd38cb59fb2e03dab6fb06dbe56446c44b5",
+   "replay": "a49bae52befd6c01c875e11043463cd38cb59fb2e03dab6fb06dbe56446c44b5",
+   "equal": true
+  },
+  "resultHash": {
+   "v8": "91751b6ae5fd0691b68e7daf3aa838cb897edc13be7ddbbecc90d0572c1b342d",
+   "replay": "91751b6ae5fd0691b68e7daf3aa838cb897edc13be7ddbbecc90d0572c1b342d",
+   "equal": true
+  },
+  "nominalRejections": {
+   "v8": 36,
+   "replay": 36,
+   "equal": true
+  },
+  "holmRejections": {
+   "v8": 6,
+   "replay": 6,
+   "equal": true
+  }
+ },
+ "rowsIdentical": true,
+ "robustnessIdentical": true,
+ "coverageIdentical": true,
+ "v8PythonVerifierOnReplay": {
+  "state": "PASS",
+  "comparisons": 144662,
+  "inputSha256": "87ae12ae5a5eb874e1084b09d7e204fa6354dd1e8607ad5e1316a0624ca3847d",
+  "resultSha256": "f0ea8f542f8b615c7bb318774d8def58bf5a933921cdb822601b7bb8d86670e9",
+  "inputSha256EqualsV8": true,
+  "resultSha256EqualsV8": true
+ },
+ "note": "V8 numbers remain the historical record; replay used the V8 registered plan (registeredAt 2026-10-26T15:22:09.210Z) in a private directory. Runtime differs (node/glibc) from V8; numerical results are byte-identical.",
+ "productionApproved": false,
+ "state": "EXACT_REPLAY"
+}

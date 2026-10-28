@@ -1,0 +1,97 @@
+{
+ "schemaVersion": "v9-identity-independent-check-1.0.0",
+ "codeSha256": "d2d30d1fec0d49422ff66fa7cad49ec96cbfea45e4418abb3c494a2e905317a1",
+ "dossiers": {
+  "agree": 7,
+  "total": 7,
+  "rows": [
+   {
+    "securityId": "ref_COHR",
+    "stored": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "recomputed": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "storedValidFrom": "2001-09-28",
+    "recomputedValidFrom": "2001-09-28",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_BGC",
+    "stored": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "recomputed": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "storedValidFrom": "2018-12-07",
+    "recomputedValidFrom": "2018-12-07",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_DCOM",
+    "stored": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "recomputed": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "storedValidFrom": "2011-03-11",
+    "recomputedValidFrom": "2011-03-11",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_TRAK",
+    "stored": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "recomputed": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "storedValidFrom": "2024-10-11",
+    "recomputedValidFrom": "2024-10-11",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_EFOR",
+    "stored": "UNRESOLVED",
+    "recomputed": "UNRESOLVED",
+    "storedValidFrom": "2001-03-30",
+    "recomputedValidFrom": "2001-03-30",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_SGI",
+    "stored": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "recomputed": "RESOLVED_SINGLE_SECURITY_MASTER_MISBOUND",
+    "storedValidFrom": "2004-04-02",
+    "recomputedValidFrom": "2004-04-02",
+    "agree": true,
+    "issues": []
+   },
+   {
+    "securityId": "ref_SUNE",
+    "stored": "SOURCE_PRICE_MISMATCH",
+    "recomputed": "SOURCE_PRICE_MISMATCH",
+    "storedValidFrom": "2022-04-01",
+    "recomputedValidFrom": "2022-04-01",
+    "agree": true,
+    "issues": []
+   }
+  ]
+ },
+ "ambiguous": {
+  "agree": 180,
+  "total": 180,
+  "disagreements": []
+ },
+ "sources": {
+  "hashChecks": {
+   "OK": 823
+  },
+  "problems": []
+ },
+ "dryRun": {
+  "pythonNewlyQualified": 116,
+  "jsNewlyQualified": 116,
+  "agree": true,
+  "perIdDisagreements": {},
+  "pythonAfterByReason": {
+   "CORPORATE_ACTION_UNRESOLVED": 7,
+   "INSUFFICIENT_HISTORY": 13,
+   "MISSING_WEEKS": 1,
+   "QUALIFIED": 116
+  }
+ },
+ "overall": "PASS"
+}

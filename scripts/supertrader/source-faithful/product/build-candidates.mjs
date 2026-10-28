@@ -4,7 +4,10 @@
  *   Aktienuniversum -> Datenqualität -> strategiebezogene Merkmale -> Erkennung -> Evidenz -> zulässige Stufe -> Datensatz
  *
  *   node scripts/supertrader/source-faithful/product/build-candidates.mjs --out <dir> [--as-of YYYY-MM-DD] [--tickers A,B]
- *        [--previous <dir>] [--stats <file>]
+ *        [--previous <dir>] [--stats <file>] [--require-current YYYY-MM-DD]
+ *
+ * --require-current <heute>: Eingangsprüfung (input-gate.mjs) vor dem Schreiben. Fehlende oder veraltete Eingaben
+ * brechen mit Exit 3 ab, ohne Ausgabe (O-2: kein alter Stand wird als aktuell ausgeliefert).
  *
  * --out ist Pflicht: der Producer schreibt nie in ein committetes Artefakt (CLAUDE.md "Tests"). Eine Laufintegration
  * (Workflow, domains.json, supertrader/data) ist ausdrücklich NICHT Teil dieses Moduls; Test
@@ -28,6 +31,8 @@ import { rankStrategy, RANKING_VERSION, SORT_KEYS } from './ranking.mjs';
 import { STRATEGY_CATALOG, CATALOG_VERSION, RULE_LABELS, STAGE_LABELS } from './catalog.mjs';
 import { loadSf6Readiness, stageCeilings, candidateContractSha256, ruleClasses, CANDIDATE_SCHEMA, STAGE_ORDER } from './candidate-contract.mjs';
 import { createRequire } from 'node:module';
+import { checkInputs, GATE_STATUS } from './input-gate.mjs';
+import { loadPriceReference, truncateReference } from './price-parity.mjs';
 const Identity = createRequire(import.meta.url)('../../../../core/identity.js');
 import { benchmarkWeekly } from '../methods/weinstein.mjs';
 
@@ -47,14 +52,16 @@ function loadBenchmark(root, asOf) {
  * Reiner Kern der Pipeline (ohne Schreiben): liefert { index, strategies } für eine geladene Eingabe.
  * Eingabe: securities (Research-Form mit meta), asOf, calendar, continuity, weeklyOf(id), bench, readiness.
  */
-export function runPipeline({ securities: input, rejectedInputs = [], asOf, calendar, continuity, weeklyOf = () => null, bench = null, readiness = loadSf6Readiness(), sourceFiles = [], universeInfo = null }) {
+export function runPipeline({ securities: input, rejectedInputs = [], asOf, calendar, continuity, weeklyOf = () => null, priceReferenceOf, bench = null, readiness = loadSf6Readiness(), sourceFiles = [], universeInfo = null }) {
   // kanonische Reihenfolge (Ticker), damit Hashes und Zählungen nicht von der Ladereihenfolge abhängen
+  // V4: ohne Quelle der veröffentlichten Preiswahrheit läuft keine Bewertung (fail closed, kein stiller Pass)
+  if (typeof priceReferenceOf !== 'function') throw new Error('SF8_PRICE_REFERENCE_SOURCE_REQUIRED');
   const securities = [...input].sort((a, b) => (a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0));
   const nextSession = calendar.nextSession(asOf);
   const ceilings = new Map(stageCeilings(readiness).map((c) => [c.strategyId, c.maxStage]));
   const dqById = new Map(), dqCounts = { PASS: 0, CAP: 0, FAIL: 0 }, failReasons = {};
   for (const s of securities) {
-    const dq = assessSecurity(s, { asOf, calendar, weekly: weeklyOf(s.id), continuity });
+    const dq = assessSecurity(s, { asOf, calendar, weekly: weeklyOf(s.id), continuity, priceReference: priceReferenceOf(s.id) ?? null });
     dqById.set(s.id, dq); dqCounts[dq.status]++;
     if (dq.status === 'FAIL') for (const c of dq.checks.filter((x) => x.status === 'FAIL')) failReasons[c.id] = (failReasons[c.id] || 0) + 1;
   }
@@ -164,7 +171,13 @@ async function main() {
   const asOf = arg('--as-of') || marketAsOf(securities);
   if (arg('--as-of')) securities = truncateTo(securities, asOf);
   const calendar = createCalendar(), continuity = loadContinuity();
-  const res = runPipeline({ securities, rejectedInputs: loaded.rejected, asOf, calendar, continuity, weeklyOf: (id) => loadWeeklyCloses(id), bench: loadBenchmark(ROOT, asOf), sourceFiles: loaded.sourceFiles, universeInfo: { id: universe.universeId, symbols: universe.symbols.size, excludedNonStock: universe.excluded.length, withDailySeries: loaded.securities.length } });
+  let gate = null;
+  if (arg('--require-current')) {
+    gate = checkInputs({ today: arg('--require-current'), asOf, calendar });
+    console.log(`[sf8-candidates] Eingangsprüfung ${gate.status}: Stand ${gate.asOf}, erwartet ${gate.expectedSession}${gate.missing.length ? ', fehlt ' + gate.missing.join(',') : ''}${gate.staleSources?.length ? ', veraltet ' + gate.staleSources.map((x) => `${x.source} (${x.generatedAt ?? 'ohne Datum'}, max. ${x.maxDays} Tage)`).join(', ') : ''}`);
+    if (gate.status !== GATE_STATUS.CURRENT) process.exit(3);
+  }
+  const res = runPipeline({ securities, rejectedInputs: loaded.rejected, asOf, calendar, continuity, weeklyOf: (id) => loadWeeklyCloses(id), priceReferenceOf: arg('--as-of') ? (id) => truncateReference(loadPriceReference(id), asOf) : (id) => loadPriceReference(id), bench: loadBenchmark(ROOT, asOf), sourceFiles: loaded.sourceFiles, universeInfo: { id: universe.universeId, symbols: universe.symbols.size, excludedNonStock: universe.excluded.length, withDailySeries: loaded.securities.length } });
   lap.pipeline = Date.now() - t0 - lap.load;
   const prev = arg('--previous') && fs.existsSync(path.join(arg('--previous'), 'index.json')) ? JSON.parse(fs.readFileSync(path.join(arg('--previous'), 'index.json'), 'utf8')) : null;
   res.index.changes = diffAgainst(prev, res.index);
@@ -172,7 +185,7 @@ async function main() {
   lap.total = Date.now() - t0;
   const dirBytes = (d) => fs.readdirSync(path.join(resolvedOut, d)).reduce((a, f) => a + fs.statSync(path.join(resolvedOut, d, f)).size, 0);
   const bytes = { summary: fs.statSync(path.join(resolvedOut, 'summary.json')).size, index: fs.statSync(path.join(resolvedOut, 'index.json')).size, strategy: dirBytes('strategy'), ticker: dirBytes('ticker'), records: dirBytes('records') };
-  const stats = { asOf, ms: lap, securities: securities.length, candidates: res.index.counts, bytes, networkRequests: 0, node: process.version };
+  const stats = { asOf, gate, ms: lap, securities: securities.length, candidates: res.index.counts, bytes, networkRequests: 0, node: process.version };
   if (arg('--stats')) fs.writeFileSync(arg('--stats'), JSON.stringify(stats, null, 1) + '\n');
   console.log(`[sf8-candidates] asOf ${asOf}: ${res.index.counts.candidates} Kandidaten ${JSON.stringify(res.index.counts.byStage)}, ${securities.length} Titel, ${lap.total} ms, ${JSON.stringify(bytes)} Bytes`);
 }

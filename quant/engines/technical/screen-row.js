@@ -34,7 +34,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.8.0";
+  var ROW_VERSION = "technical-screen-row-1.9.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -221,6 +221,28 @@
     var ib = I.compute(b, "insideBar").values, nr = I.compute(b, "nr7").values;
     row.insideBar = isNum(ib[t]) ? ib[t] === 1 : null;
     row.nr7 = isNum(nr[t]) ? nr[t] === 1 : null;
+
+    /* ---- Tag: weitere Katalogindikatoren (seit 1.9.0, L9, docs/technical/SCREENER_FIELDS_L9.md) ----
+       Je Feld der Katalogwert am Stichtag; Prozentangaben des Katalogs als Anteil wie atrPct. */
+    var vx = I.compute(b, "vortex").values;
+    row.vortexBull = isNum(vx.plus[t]) && isNum(vx.minus[t]) ? vx.plus[t] > vx.minus[t] : null;
+    row.choppiness14 = r(lastAt(I.compute(b, "choppiness").values, t), 2);
+    /* Donchian-Ausbruch: Schluss ueber dem hoechsten Hoch bzw. unter dem tiefsten Tief der 20 Vortage. */
+    var dc = I.compute(b, "donchian").values;
+    row.newHigh20d = t >= 1 && isNum(dc.upper[t - 1]) ? c > dc.upper[t - 1] : null;
+    row.newLow20d = t >= 1 && isNum(dc.lower[t - 1]) ? c < dc.lower[t - 1] : null;
+    var ei = lastAt(I.compute(b, "elderImpulse").values, t);
+    row.elderImpulse = isNum(ei) ? ei : null;
+    row.zScore20 = r(lastAt(I.compute(b, "zScore").values, t), 3);
+    var hm = I.compute(b, "hma").values;
+    row.hmaRising = t >= 1 && isNum(hm[t]) && isNum(hm[t - 1]) ? hm[t] > hm[t - 1] : null;
+    var ui = lastAt(I.compute(b, "ulcerIndex").values, t);
+    row.ulcer14 = r(isNum(ui) ? ui / 100 : null);
+    var hv = lastAt(I.compute(b, "historicalVolatility").values, t);
+    row.histVol20 = r(isNum(hv) ? hv / 100 : null);
+    row.connorsRsi = r(lastAt(I.compute(b, "connorsRsi").values, t), 2);
+    var ch = I.compute(b, "chandelier").values;
+    row.distChandelierLong = r(isNum(ch.long[t]) && ch.long[t] > 0 ? c / ch.long[t] - 1 : null);
 
     /* ---- Tag: Volumen ---- */
     var hasVol = b.volume && b.volume.some(function (v) { return isNum(v) && v > 0; });

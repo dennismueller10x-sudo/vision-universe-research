@@ -1,0 +1,3843 @@
+{
+ "schemaVersion": "v9-secpit-avail-sample-verification-1.0.0",
+ "registrationSha256": "f7f42c2917cb47ff0764765c71b1be5459c3483d8de9a20f1472179b627e0832",
+ "codeSha256": "a04e53ddc555a6eaab12b9dd2acaedbe0250fe30d453eb4a5ab0797a122cea18",
+ "sample": 79,
+ "accessions": 77,
+ "verdicts": {
+  "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 73,
+  "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE": 6
+ },
+ "verdictsByClass": {
+  "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": {
+   "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE": 3,
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 1
+  },
+  "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 1,
+   "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE": 3
+  },
+  "COVER_DATE_YEAR_SHIFT": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 4
+  },
+  "DIVIDEND_DECLARED_FOR_LATER_PERIOD": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 12
+  },
+  "DURATION_STRADDLING_REPORT_PERIOD_END": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 4
+  },
+  "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 12
+  },
+  "SINGLE_FUTURE_DURATION_OTHER": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 2
+  },
+  "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 6
+  },
+  "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 4
+  },
+  "SINGLE_FUTURE_INSTANT_OTHER": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 4
+  },
+  "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 19
+  },
+  "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD": {
+   "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE": 4
+  }
+ },
+ "counterpartMinus1yByClass": {
+  "COVER_DATE_AFTER_ACCEPTANCE_GT_31D": {
+   "ABSENT": 4
+  },
+  "COVER_DATE_AFTER_ACCEPTANCE_LE_31D": {
+   "ABSENT": 4
+  },
+  "COVER_DATE_YEAR_SHIFT": {
+   "ABSENT": 4
+  },
+  "DIVIDEND_DECLARED_FOR_LATER_PERIOD": {
+   "ABSENT": 6,
+   "DIFFERENT_VALUE": 6
+  },
+  "DURATION_STRADDLING_REPORT_PERIOD_END": {
+   "DIFFERENT_VALUE": 2,
+   "ABSENT": 2
+  },
+  "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS": {
+   "DIFFERENT_VALUE": 12
+  },
+  "SINGLE_FUTURE_DURATION_OTHER": {
+   "ABSENT": 2
+  },
+  "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD": {
+   "DIFFERENT_VALUE": 2,
+   "ABSENT": 4
+  },
+  "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD": {
+   "DIFFERENT_VALUE": 3,
+   "SAME_VALUE": 1
+  },
+  "SINGLE_FUTURE_INSTANT_OTHER": {
+   "ABSENT": 4
+  },
+  "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD": {
+   "ABSENT": 14,
+   "SAME_VALUE": 3,
+   "DIFFERENT_VALUE": 2
+  },
+  "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD": {
+   "SAME_VALUE": 2,
+   "DIFFERENT_VALUE": 1,
+   "ABSENT": 1
+  }
+ },
+ "requestStats": {
+  "requests": 0,
+  "cache_hits": 154,
+  "retries": 0,
+  "deduplicated": 0
+ },
+ "rows": [
+  {
+   "cik": "0001904286",
+   "accession": "0001493152-24-018908",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_GT_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2024-09-30",
+   "value": 14780885.0,
+   "trueAvailable": "2024-05-14T00:31:03.000Z",
+   "reportDate": "2024-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1904286/000149315224018908/form10-q_htm.xml",
+   "instanceSha256": "e620af5db3ff0bede6334a1e596f8200caa18cb52b016236404172f26ef651d7",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2024-11-13"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2024-11-13"
+   ]
+  },
+  {
+   "cik": "0000064463",
+   "accession": "0001753926-22-000384",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_GT_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2022-06-30",
+   "value": 13949706.0,
+   "trueAvailable": "2022-03-31T21:23:38.000Z",
+   "reportDate": "2021-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/64463/000175392622000384/g082656_10k_htm.xml",
+   "instanceSha256": "a1fb58fa741904a7312079c016a1befef69622f74ff9050bf45a09c8d3235b47",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2022-08-28"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2021-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2021"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-08-28"
+   ]
+  },
+  {
+   "cik": "0001021561",
+   "accession": "0001021561-11-000128",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_GT_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2011-12-31",
+   "value": 62285000.0,
+   "trueAvailable": "2011-11-07T22:16:56.000Z",
+   "reportDate": "2011-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1021561/000102156111000128/nus-20110930.xml",
+   "instanceSha256": "f16dd9cfad0cce2240c7093f54ec1f4079dc1132f5a2f57e3fb73f4a1d7b09ca",
+   "contextsWithSameDates": [
+    {
+     "context": "c00071",
+     "raw": "62285000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2011-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2011"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31"
+   ]
+  },
+  {
+   "cik": "0000796343",
+   "accession": "0000796343-10-000003",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_GT_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2010-06-04",
+   "value": 524119635.0,
+   "trueAvailable": "2010-01-22T22:14:18.000Z",
+   "reportDate": "2009-11-27",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634310000003/adbe-20091127.xml",
+   "instanceSha256": "77dea33e5b7ba308f1d970247cae4275872ceffbc094a6a6fb33ea9fda5716ef",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2010-06-15"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2009-11-27"
+    ],
+    "DocumentFiscalYearFocus": [],
+    "DocumentFiscalPeriodFocus": [],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-06-15"
+   ]
+  },
+  {
+   "cik": "0001589061",
+   "accession": "0001437749-17-014365",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_LE_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2017-08-11",
+   "value": 1482680.0,
+   "trueAvailable": "2017-08-10T14:25:14.000Z",
+   "reportDate": "2017-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1589061/000143774917014365/gyro-20170630.xml",
+   "instanceSha256": "7fc8d300fdc9ba2ee52d624a6254d718b4d8045025d8c85c196988b4381f96fd",
+   "contextsWithSameDates": [
+    {
+     "context": "i_2017-08-11",
+     "raw": "1482680",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2017-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2017"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2017-08-11"
+   ]
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001019687-16-005621",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_LE_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2016-03-31",
+   "value": 107502938.0,
+   "trueAvailable": "2016-03-29T23:33:06.000Z",
+   "reportDate": "2015-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1398805/000101968716005621/evsi-20151231.xml",
+   "instanceSha256": "38bd8e982fbe52c73393fc4dbc177bf52659f2c2c9f9e0a0b59f9ea153a3287a",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2016-05-23"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2015-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2015"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-05-23"
+   ]
+  },
+  {
+   "cik": "0001326706",
+   "accession": "0001615774-18-002203",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_LE_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2018-03-31",
+   "value": 3935865.0,
+   "trueAvailable": "2018-03-30T01:27:45.000Z",
+   "reportDate": "2017-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1326706/000161577418002203/naov-20171231.xml",
+   "instanceSha256": "977cf0c27c9e38ee0a081a905c57234d872fa9a15862de8cb5566a25422c8048",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2018-04-01"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2017-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2017"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2018-04-01"
+   ]
+  },
+  {
+   "cik": "0000766792",
+   "accession": "0001437749-17-005623",
+   "class": "COVER_DATE_AFTER_ACCEPTANCE_LE_31D",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2017-03-31",
+   "value": 6363690.0,
+   "trueAvailable": "2017-03-30T20:08:36.000Z",
+   "reportDate": "2016-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/766792/000143774917005623/cvv-20161231.xml",
+   "instanceSha256": "b9dfcc8c10fc6713f6a817127531fefcfd1f6209e75a8985d7a833fdaa87f15f",
+   "contextsWithSameDates": [],
+   "verdict": "FILER_COVER_DATE_AFTER_ACCEPTANCE_REDATED_BY_PIPELINE",
+   "rawCoverDates": [
+    "2017-04-05"
+   ],
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2016-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2016"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2017-04-05"
+   ]
+  },
+  {
+   "cik": "0001296445",
+   "accession": "0000950123-11-019926",
+   "class": "COVER_DATE_YEAR_SHIFT",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2011-12-31",
+   "value": 45430886.0,
+   "trueAvailable": "2011-02-28T22:26:29.000Z",
+   "reportDate": "2010-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1296445/000095012311019926/ora-20101231.xml",
+   "instanceSha256": "49b6e5eac0acc3a8bc7877ab6e9bc5c134246d7b5f1b3bb19191c23ea2f4f0aa",
+   "contextsWithSameDates": [
+    {
+     "context": "BalanceAsOf_31Dec2011",
+     "raw": "45430886",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2010-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2010"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31"
+   ]
+  },
+  {
+   "cik": "0001001614",
+   "accession": "0001140361-24-017654",
+   "class": "COVER_DATE_YEAR_SHIFT",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2029-04-03",
+   "value": 20400032.0,
+   "trueAvailable": "2024-04-04T01:05:17.000Z",
+   "reportDate": "2023-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1001614/000114036124017654/ef20025204_10ka_htm.xml",
+   "instanceSha256": "237f59d391f9f0e8931c35967dc88d0a46b840442184fb2ae8fb7154756de71a",
+   "contextsWithSameDates": [
+    {
+     "context": "c20290403",
+     "raw": "20400032",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2023"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K/A"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2029-04-03"
+   ]
+  },
+  {
+   "cik": "0001134115",
+   "accession": "0001410578-23-002231",
+   "class": "COVER_DATE_YEAR_SHIFT",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2033-10-31",
+   "value": 195885531.0,
+   "trueAvailable": "2023-11-08T13:00:41.000Z",
+   "reportDate": "2023-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1134115/000141057823002231/thm-20230930x10q_htm.xml",
+   "instanceSha256": "705c03bd4b810ea580039fe9f078bfc64f3e9225b6ae24ffa0e66db74d766514",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_10_31_2033_zam5qo9UdEWYRlyTMWjaag",
+     "raw": "195885531",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2023"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2033-10-31"
+   ]
+  },
+  {
+   "cik": "0001056943",
+   "accession": "0001104659-26-092684",
+   "class": "COVER_DATE_YEAR_SHIFT",
+   "metric": "shares_outstanding",
+   "concept": "dei:EntityCommonStockSharesOutstanding",
+   "period_start": null,
+   "period_end": "2028-08-01",
+   "value": 10010367.0,
+   "trueAvailable": "2026-08-08T00:06:17.000Z",
+   "reportDate": "2026-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1056943/000110465926092684/pfis-20260630x10q_htm.xml",
+   "instanceSha256": "7f0f3f8c44f98ffb59c5df0a8236ff9141e7099463f6f309f6ce65b86137f277",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_8_1_2028_GA2akKD5Jk-PX97DZhONRw",
+     "raw": "10010367",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2026-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2026"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2028-08-01"
+   ]
+  },
+  {
+   "cik": "0000876427",
+   "accession": "0001193125-13-310283",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2013-09-29",
+   "period_end": "2013-12-28",
+   "value": 0.11,
+   "trueAvailable": "2013-07-30T20:32:51.000Z",
+   "reportDate": "2013-06-29",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/876427/000119312513310283/mnro-20130629.xml",
+   "instanceSha256": "ce8ab2b768b4f61291e0048334811f8ab97929ded0a94e7dc3fc9d1a300e6fc8",
+   "contextsWithSameDates": [
+    {
+     "context": "FROM_Sep29_2013_TO_Dec28_2013",
+     "raw": "0.11",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-06-29"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2014"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2013-06-29",
+    "2013-09-28",
+    "2013-12-28",
+    "2014-03-29"
+   ]
+  },
+  {
+   "cik": "0000822663",
+   "accession": "0001144204-13-014616",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2013-01-01",
+   "period_end": "2013-12-31",
+   "value": 0.48,
+   "trueAvailable": "2013-03-13T01:00:43.000Z",
+   "reportDate": "2012-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/822663/000114420413014616/ipar-20121231.xml",
+   "instanceSha256": "9602c1ba4917f54b498ecf5bf52610ead46b8a21b44be9e64112d3fc2ca98e3d",
+   "contextsWithSameDates": [
+    {
+     "context": "from-2013-01-01-to-2013-12-31.9859.0.0.0.0.0.0.0",
+     "raw": "0.48",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-12-31",
+    "2011-12-31",
+    "2012-12-31",
+    "2013-03-31",
+    "2013-12-31"
+   ]
+  },
+  {
+   "cik": "0001518621",
+   "accession": "0001275477-16-000140",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2016-01-01",
+   "period_end": "2016-12-31",
+   "value": 0.56,
+   "trueAvailable": "2016-04-29T01:12:40.000Z",
+   "reportDate": "2016-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1518621/000127547716000140/orc-20160331.xml",
+   "instanceSha256": "2181b6620481412c7d6c9c5e84ece70840f0096e9aad152565cab5a34bda1109",
+   "contextsWithSameDates": [
+    {
+     "context": "FROM_Jan01_2016_TO_Dec31_2016_Entity_0001518621",
+     "raw": "0.56",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2016-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2016"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2013-12-31",
+    "2014-12-31",
+    "2015-03-31",
+    "2015-12-31",
+    "2016-03-31",
+    "2016-12-31"
+   ]
+  },
+  {
+   "cik": "0001318484",
+   "accession": "0001558370-17-006830",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2017-07-30",
+   "period_end": "2017-10-28",
+   "value": 0.08,
+   "trueAvailable": "2017-08-28T18:01:40.000Z",
+   "reportDate": "2017-07-29",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1318484/000155837017006830/ctrn-20170729.xml",
+   "instanceSha256": "471da54c1b00ade3c061e3069676a0d5642d4c3e946d483ea50a6d5ac185ad7a",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_7_30_2017_To_10_28_2017",
+     "raw": "0.08",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2017-07-29"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2017"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-07-30",
+    "2016-10-29",
+    "2017-02-07",
+    "2017-05-16",
+    "2017-07-29",
+    "2017-08-15",
+    "2017-10-28"
+   ]
+  },
+  {
+   "cik": "0000811596",
+   "accession": "0000811596-11-000015",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2011-10-01",
+   "period_end": "2011-12-31",
+   "value": 0.24,
+   "trueAvailable": "2011-10-27T23:23:47.000Z",
+   "reportDate": "2011-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/811596/000081159611000015/kalu-20110930.xml",
+   "instanceSha256": "eaceb8f4121358f60f500ce2276c9cafc477a811d26adce98a32fddcfa57af88",
+   "contextsWithSameDates": [
+    {
+     "context": "D2011Q4SubEvents",
+     "raw": "0.24",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2011-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2011"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31"
+   ]
+  },
+  {
+   "cik": "0001331875",
+   "accession": "0001331875-11-000055",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2011-10-01",
+   "period_end": "2011-12-31",
+   "value": 0.12,
+   "trueAvailable": "2011-10-28T00:18:28.000Z",
+   "reportDate": "2011-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1331875/000133187511000055/fnf-20110930.xml",
+   "instanceSha256": "e8967e99bac7a4983ff9682f05f831275d73717f5d3dc7ce59ab79a2016fd927",
+   "contextsWithSameDates": [
+    {
+     "context": "D2011Q4",
+     "raw": "0.12",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2011-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2011"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31"
+   ]
+  },
+  {
+   "cik": "0000916365",
+   "accession": "0000916365-13-000006",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2012-12-30",
+   "period_end": "2013-03-30",
+   "value": 0.2,
+   "trueAvailable": "2013-02-21T02:14:02.000Z",
+   "reportDate": "2012-12-29",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/916365/000091636513000006/tsco-20121229.xml",
+   "instanceSha256": "4615c8908141cdaeeefc3d6feb51ed8dc1b176a9d8a33e30ac669bb55c4fbd04",
+   "contextsWithSameDates": [
+    {
+     "context": "D2013Q1",
+     "raw": "0.20",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-29"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-12-25",
+    "2011-03-26",
+    "2011-06-25",
+    "2011-09-24",
+    "2011-12-31",
+    "2012-03-31",
+    "2012-06-30",
+    "2012-09-29",
+    "2012-12-29",
+    "2013-03-30"
+   ]
+  },
+  {
+   "cik": "0000876427",
+   "accession": "0001193125-11-294705",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2011-09-25",
+   "period_end": "2011-12-24",
+   "value": 0.09,
+   "trueAvailable": "2011-11-03T18:11:56.000Z",
+   "reportDate": "2011-09-24",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/876427/000119312511294705/mnro-20110924.xml",
+   "instanceSha256": "5fda24f7468871eb6bfb1374257d4ec6c7382a32f97df775dde1b02fc14256e7",
+   "contextsWithSameDates": [
+    {
+     "context": "FROM_Sep25_2011_TO_Dec24_2011",
+     "raw": "0.09",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2011-09-24"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-06-25",
+    "2011-09-24",
+    "2011-12-24",
+    "2012-03-31"
+   ]
+  },
+  {
+   "cik": "0001679273",
+   "accession": "0001558370-20-008501",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2020-06-01",
+   "period_end": "2020-08-30",
+   "value": 0.23,
+   "trueAvailable": "2020-07-28T23:23:45.000Z",
+   "reportDate": "2020-05-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1679273/000155837020008501/lw-20200531x10k_htm.xml",
+   "instanceSha256": "ecd698aa56887cc3b418db2bd7aadfd4c08c56a66474088d84a1079e3f9b36a7",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_6_1_2020_To_8_30_2020_C4TE7yimckm0EU0aNNZ7Mw",
+     "raw": "0.23",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2020-05-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2020"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2018-05-27",
+    "2018-08-26",
+    "2018-11-25",
+    "2019-02-24",
+    "2019-05-26",
+    "2019-08-25",
+    "2019-11-24",
+    "2020-02-23",
+    "2020-05-31",
+    "2020-08-30"
+   ]
+  },
+  {
+   "cik": "0000089089",
+   "accession": "0000089089-14-000002",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2014-01-01",
+   "period_end": "2014-03-31",
+   "value": 0.08,
+   "trueAvailable": "2014-02-14T20:37:47.000Z",
+   "reportDate": "2013-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/89089/000008908914000002/sci-20131231.xml",
+   "instanceSha256": "5f861bc0ed3d5e71bec957a916b907a5267cc2d9364e52b3d6afb4db17591d6f",
+   "contextsWithSameDates": [
+    {
+     "context": "FD2014Q1QTD",
+     "raw": "0.08",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31",
+    "2012-12-31",
+    "2013-12-31",
+    "2014-03-31"
+   ]
+  },
+  {
+   "cik": "0001521332",
+   "accession": "0001521332-14-000011",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2014-01-01",
+   "period_end": "2014-03-31",
+   "value": 0.25,
+   "trueAvailable": "2014-02-10T13:23:55.000Z",
+   "reportDate": "2013-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1521332/000152133214000011/dlph-20131231.xml",
+   "instanceSha256": "4adaa6262b3d75ed25f7ebacac128347a1c3c3a1b31988866f6c12ddb6da3c00",
+   "contextsWithSameDates": [
+    {
+     "context": "FD2014Q1QTD",
+     "raw": "0.25",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31",
+    "2012-12-31",
+    "2013-03-31",
+    "2013-06-30",
+    "2013-09-30",
+    "2013-12-31",
+    "2014-03-31",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0001286613",
+   "accession": "0001140361-13-012003",
+   "class": "DIVIDEND_DECLARED_FOR_LATER_PERIOD",
+   "metric": "dividends_declared_per_share",
+   "concept": "us-gaap:CommonStockDividendsPerShareDeclared",
+   "period_start": "2013-01-01",
+   "period_end": "2013-03-31",
+   "value": 0.07,
+   "trueAvailable": "2013-03-12T20:06:28.000Z",
+   "reportDate": "2012-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1286613/000114036113012003/linc-20121231.xml",
+   "instanceSha256": "0ac75314610e56a316ea0075d9d8e7aaa1319e6d145641f88ba3e61cd798a171",
+   "contextsWithSameDates": [
+    {
+     "context": "c20130101to20130331",
+     "raw": "0.07",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-12-31",
+    "2011-12-31",
+    "2012-12-31",
+    "2013-03-31"
+   ]
+  },
+  {
+   "cik": "0001580149",
+   "accession": "0001520138-22-000201",
+   "class": "DURATION_STRADDLING_REPORT_PERIOD_END",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss",
+   "period_start": "2022-01-01",
+   "period_end": "2022-09-30",
+   "value": -17995711.0,
+   "trueAvailable": "2022-05-11T21:22:49.000Z",
+   "reportDate": "2022-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1580149/000152013822000201/bivi-20220331_10q_htm.xml",
+   "instanceSha256": "5181eec8ac3532d7a6584b849847528f6b93c1896af563d9bf76474d8afd77bd",
+   "contextsWithSameDates": [
+    {
+     "context": "From2022-01-012022-09-30",
+     "raw": "-17995711",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-03-31",
+    "2021-09-30",
+    "2022-03-31",
+    "2022-09-30"
+   ]
+  },
+  {
+   "cik": "0001532619",
+   "accession": "0001493152-24-018671",
+   "class": "DURATION_STRADDLING_REPORT_PERIOD_END",
+   "metric": "eps_basic",
+   "concept": "us-gaap:EarningsPerShareBasic",
+   "period_start": "2024-01-01",
+   "period_end": "2024-12-31",
+   "value": -0.66,
+   "trueAvailable": "2024-05-10T20:41:05.000Z",
+   "reportDate": "2024-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1532619/000149315224018671/form10-q_htm.xml",
+   "instanceSha256": "2af1b747b9a76373f23cc2887e126e38aacbdb395b0efc191eeab04845066cc3",
+   "contextsWithSameDates": [
+    {
+     "context": "From2024-01-012024-12-31",
+     "raw": "-0.66",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2023-03-31",
+    "2023-12-31",
+    "2024-03-31",
+    "2024-12-31"
+   ]
+  },
+  {
+   "cik": "0001526119",
+   "accession": "0001558370-24-007607",
+   "class": "DURATION_STRADDLING_REPORT_PERIOD_END",
+   "metric": "interest_expense",
+   "concept": "us-gaap:InterestExpense",
+   "period_start": "2024-01-01",
+   "period_end": "2024-12-31",
+   "value": 1130000.0,
+   "trueAvailable": "2024-05-10T00:08:56.000Z",
+   "reportDate": "2024-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1526119/000155837024007607/vstm-20240331x10q_htm.xml",
+   "instanceSha256": "0f3cb202c39541bfce7fff7e26ba75e68ea7a553b7285a9676c3115527a6ff10",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_1_1_2024_To_12_31_2024_hU_gWSjN70OLQRiSMRPBvQ",
+     "raw": "1130000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2023-03-31",
+    "2024-03-31",
+    "2024-12-31"
+   ]
+  },
+  {
+   "cik": "0001375205",
+   "accession": "0001558370-16-008865",
+   "class": "DURATION_STRADDLING_REPORT_PERIOD_END",
+   "metric": "debt_repaid",
+   "concept": "us-gaap:RepaymentsOfDebt",
+   "period_start": "2016-01-01",
+   "period_end": "2016-12-31",
+   "value": 3500000.0,
+   "trueAvailable": "2016-10-28T20:56:10.000Z",
+   "reportDate": "2016-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1375205/000155837016008865/urg-20160930.xml",
+   "instanceSha256": "0ba11cce2cc152c413f4cf778ecaa5ddaee05c0bbdc0a51ec9bf2bf9e9bbce20",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_1_1_2016_To_12_31_2016",
+     "raw": "3500000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2016-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2016"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-12-31"
+   ]
+  },
+  {
+   "cik": "0000706698",
+   "accession": "0001096906-13-000305",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2015-12-31",
+   "value": 1000.0,
+   "trueAvailable": "2013-03-07T21:01:02.000Z",
+   "reportDate": "2012-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/706698/000109690613000305/utmd-20121231.xml",
+   "instanceSha256": "110a8b629399b9a8efadb7468532c039fc75d2084c73253fa7bdfa9b7ebed0e1",
+   "contextsWithSameDates": [
+    {
+     "context": "E15",
+     "raw": "1000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2013-12-31",
+    "2014-12-31",
+    "2015-12-31"
+   ]
+  },
+  {
+   "cik": "0000914122",
+   "accession": "0000914122-14-000010",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "debt_repaid",
+   "concept": "us-gaap:RepaymentsOfDebt",
+   "period_start": "2017-02-01",
+   "period_end": "2018-01-31",
+   "value": 622000.0,
+   "trueAvailable": "2014-04-15T13:49:58.000Z",
+   "reportDate": "2014-01-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/914122/000091412214000010/mfri-20140131.xml",
+   "instanceSha256": "8b7de6d55652055410b124b2044cbd22e707df7b495e587e7dec39bc87da8217",
+   "contextsWithSameDates": [
+    {
+     "context": "D2017Q4Fiscal2017",
+     "raw": "622000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2014-01-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q4"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-01-31",
+    "2016-01-31",
+    "2017-01-31",
+    "2018-01-31",
+    "2019-01-31"
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "accession": "0001564590-22-018584",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2023-03-31",
+   "value": 1011213000.0,
+   "trueAvailable": "2022-05-07T00:16:50.000Z",
+   "reportDate": "2022-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1464423/000156459022018584/pmt-10q_20220331_htm.xml",
+   "instanceSha256": "a47d81bc511cc8eec0ea108b7960d4a755759f393a18aa90f11c98d95a286302",
+   "contextsWithSameDates": [
+    {
+     "context": "C_0001464423_20230331",
+     "raw": "1011213000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-03-31",
+    "2023-03-31",
+    "2024-03-31",
+    "2025-03-31",
+    "2026-03-31",
+    "2027-03-31",
+    "2028-03-31"
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "accession": "0001564590-21-025494",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2026-03-31",
+   "value": 695000000.0,
+   "trueAvailable": "2021-05-07T22:57:15.000Z",
+   "reportDate": "2021-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1464423/000156459021025494/pmt-10q_20210331_htm.xml",
+   "instanceSha256": "aa9bf01d65dd050c2f5c7eeff97f5993580fede744003d1d53364afcaa1a742e",
+   "contextsWithSameDates": [
+    {
+     "context": "C_0001464423_20260331",
+     "raw": "695000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2021-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2021"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-03-03",
+    "2022-03-31",
+    "2023-03-31",
+    "2024-03-31",
+    "2025-03-31",
+    "2026-03-31",
+    "2027-03-31"
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "accession": "0000950170-24-118949",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2030-09-30",
+   "value": 1562779000.0,
+   "trueAvailable": "2024-10-31T00:01:48.000Z",
+   "reportDate": "2024-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1464423/000095017024118949/pmt-20240930_htm.xml",
+   "instanceSha256": "d92abdf41e37b4c22afb9ca30464208b8c90bf8c6aae3c18d0f5a54842ca2b3f",
+   "contextsWithSameDates": [
+    {
+     "context": "C_09627f7d-2678-415f-a4d3-28d1ab607e14",
+     "raw": "1562779000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2024-09-30",
+    "2025-09-30",
+    "2026-09-30",
+    "2027-09-30",
+    "2028-09-30",
+    "2029-09-30",
+    "2030-09-30"
+   ]
+  },
+  {
+   "cik": "0000929008",
+   "accession": "0000929008-15-000016",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "stock_based_compensation",
+   "concept": "us-gaap:ShareBasedCompensation",
+   "period_start": "2017-01-01",
+   "period_end": "2017-12-31",
+   "value": 6100000.0,
+   "trueAvailable": "2015-05-05T01:20:44.000Z",
+   "reportDate": "2015-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/929008/000092900815000016/wcc-20150331.xml",
+   "instanceSha256": "f03ca82ae8a8d7cd1fa7ed38bc63ecf25e9761c1ad1b208a3ff6c04f70e50741",
+   "contextsWithSameDates": [
+    {
+     "context": "D2017Q1SD",
+     "raw": "6100000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2015-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2015"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2014-03-31",
+    "2015-03-31",
+    "2015-12-31",
+    "2016-12-31",
+    "2017-12-31",
+    "2018-12-31"
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "accession": "0001564590-21-042145",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2025-06-30",
+   "value": 210000000.0,
+   "trueAvailable": "2021-08-07T00:13:22.000Z",
+   "reportDate": "2021-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1464423/000156459021042145/pmt-10q_20210630_htm.xml",
+   "instanceSha256": "791751376bb42799b91a3d947528dc60590861b579edb9d1855a79af644590a7",
+   "contextsWithSameDates": [
+    {
+     "context": "C_0001464423_20250630",
+     "raw": "210000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2021-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2021"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-06-30",
+    "2022-06-30",
+    "2023-06-30",
+    "2024-06-30",
+    "2025-06-30",
+    "2026-06-30",
+    "2027-06-30"
+   ]
+  },
+  {
+   "cik": "0000914122",
+   "accession": "0000914122-13-000022",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "debt_repaid",
+   "concept": "us-gaap:RepaymentsOfDebt",
+   "period_start": "2016-02-01",
+   "period_end": "2017-01-31",
+   "value": 1706000.0,
+   "trueAvailable": "2013-05-02T19:28:03.000Z",
+   "reportDate": "2013-01-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/914122/000091412213000022/mfri-20130131.xml",
+   "instanceSha256": "a5c048ca2520999e16dfcb5f1935257a5e2610e0907eaee1a34f8a8bb15f9b86",
+   "contextsWithSameDates": [
+    {
+     "context": "D2016Q4Fiscal2016",
+     "raw": "1706000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-01-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q4"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2014-01-31",
+    "2015-01-31",
+    "2016-01-31",
+    "2017-01-31",
+    "2018-01-31"
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "accession": "0001564590-22-007180",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2025-12-31",
+   "value": 0.0,
+   "trueAvailable": "2022-02-26T02:26:26.000Z",
+   "reportDate": "2021-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1464423/000156459022007180/pmt-10k_20211231_htm.xml",
+   "instanceSha256": "523973e9bb1885bf7dc74ef56f8fb1cc1d0d8357553a8f763e7ca4af29310ff1",
+   "contextsWithSameDates": [
+    {
+     "context": "C_0001464423_20251231",
+     "raw": "0",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2021-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2021"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-12-31",
+    "2022-12-31",
+    "2023-12-31",
+    "2024-12-31",
+    "2025-12-31",
+    "2026-12-31",
+    "2027-12-31"
+   ]
+  },
+  {
+   "cik": "0000102109",
+   "accession": "0001144204-17-036858",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss",
+   "period_start": "2017-10-01",
+   "period_end": "2017-12-31",
+   "value": -549806.0,
+   "trueAvailable": "2017-07-14T21:08:19.000Z",
+   "reportDate": "2017-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/102109/000114420417036858/uuu-20170331.xml",
+   "instanceSha256": "0bdfa0f35df90ad8ce0645487ba98a5befa045b087a4126b8b66222107a61281",
+   "contextsWithSameDates": [
+    {
+     "context": "P10_01_2017To12_31_2017",
+     "raw": "-549806",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2017-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2017"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-03-31",
+    "2016-06-30",
+    "2016-09-30",
+    "2016-12-31",
+    "2017-03-31",
+    "2017-06-30",
+    "2017-09-30",
+    "2017-12-31"
+   ]
+  },
+  {
+   "cik": "0000784977",
+   "accession": "0000784977-13-000012",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "stock_based_compensation",
+   "concept": "us-gaap:ShareBasedCompensation",
+   "period_start": "2014-01-01",
+   "period_end": "2014-12-31",
+   "value": 1000000.0,
+   "trueAvailable": "2013-02-22T05:46:54.000Z",
+   "reportDate": "2012-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/784977/000078497713000012/por-20121231.xml",
+   "instanceSha256": "e35d562b1c1cfeb7ec32ccfa5606ee49902915ae3772149795082a0a4def0914",
+   "contextsWithSameDates": [
+    {
+     "context": "D2014Q4YTD",
+     "raw": "1000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-12-31",
+    "2011-12-31",
+    "2012-12-31",
+    "2013-12-31",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0000923601",
+   "accession": "0001493152-18-009336",
+   "class": "FORWARD_SCHEDULE_MULTIPLE_FUTURE_PERIODS",
+   "metric": "eps_basic",
+   "concept": "us-gaap:EarningsPerShareBasic",
+   "period_start": "2018-07-01",
+   "period_end": "2018-09-30",
+   "value": 0.02,
+   "trueAvailable": "2018-06-28T15:01:38.000Z",
+   "reportDate": "2018-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/923601/000149315218009336/smdm-20180331.xml",
+   "instanceSha256": "3bd4bb87181a557c78182e90b61d9fb9357dfeacaa10bafb2fc8e06ae9d8562d",
+   "contextsWithSameDates": [
+    {
+     "context": "From2018-07-01to2018-09-30",
+     "raw": "0.02",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2018-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2018"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2017-03-31",
+    "2017-06-30",
+    "2017-09-30",
+    "2017-12-31",
+    "2018-03-31",
+    "2018-06-30",
+    "2018-09-30",
+    "2018-12-31"
+   ]
+  },
+  {
+   "cik": "0001847846",
+   "accession": "0001493152-23-026086",
+   "class": "SINGLE_FUTURE_DURATION_OTHER",
+   "metric": "revenue",
+   "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+   "period_start": "2024-01-01",
+   "period_end": "2024-12-31",
+   "value": 40100000.0,
+   "trueAvailable": "2023-08-01T00:30:38.000Z",
+   "reportDate": "2023-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1847846/000149315223026086/form10-q_htm.xml",
+   "instanceSha256": "91651a1b31640ec2a600b5fb88f4a5df82c5c416c7980001e96ffebd11a6000c",
+   "contextsWithSameDates": [
+    {
+     "context": "From2024-01-012024-12-31",
+     "raw": "40100000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2023"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-03-31",
+    "2023-03-31",
+    "2024-12-31"
+   ]
+  },
+  {
+   "cik": "0001356093",
+   "accession": "0001213900-22-072337",
+   "class": "SINGLE_FUTURE_DURATION_OTHER",
+   "metric": "capital_expenditures",
+   "concept": "us-gaap:PaymentsToAcquireProductiveAssets",
+   "period_start": "2023-01-01",
+   "period_end": "2023-12-31",
+   "value": 16664000.0,
+   "trueAvailable": "2022-11-14T21:49:23.000Z",
+   "reportDate": "2022-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1356093/000121390022072337/f10q0922_creativereal_htm.xml",
+   "instanceSha256": "99449c21092902aceb9de628aec50b1197a9dc95d23f05e0bbde1ba85096a4f6",
+   "contextsWithSameDates": [
+    {
+     "context": "c66",
+     "raw": "16664000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2023-12-31"
+   ]
+  },
+  {
+   "cik": "0000935419",
+   "accession": "0001144204-14-073951",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "eps_basic",
+   "concept": "us-gaap:EarningsPerShareBasic",
+   "period_start": "2014-10-01",
+   "period_end": "2014-12-31",
+   "value": 0.25,
+   "trueAvailable": "2014-12-16T02:03:29.000Z",
+   "reportDate": "2014-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/935419/000114420414073951/rick-20140930.xml",
+   "instanceSha256": "727707b8ab9613641bce434b0d66ca48affe29b079a3211e36e736da8dfa4ac4",
+   "contextsWithSameDates": [
+    {
+     "context": "P10_01_2014To12_31_2014",
+     "raw": "0.25",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2014-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2014"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2012-03-31",
+    "2012-06-30",
+    "2012-09-30",
+    "2012-12-31",
+    "2013-03-31",
+    "2013-06-30",
+    "2013-09-30",
+    "2013-12-31",
+    "2014-03-31",
+    "2014-06-30",
+    "2014-09-30",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0001318484",
+   "accession": "0001558370-22-014292",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "revenue",
+   "concept": "us-gaap:Revenues",
+   "period_start": "2022-07-31",
+   "period_end": "2022-10-29",
+   "value": 185012000.0,
+   "trueAvailable": "2022-09-09T01:20:42.000Z",
+   "reportDate": "2022-07-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1318484/000155837022014292/ctrn-20220730x10q_htm.xml",
+   "instanceSha256": "0b49f35132f4ea1f0ef75738927f276c444e424b0c6cff21bdd6c3b1d05748f8",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_7_31_2022_To_10_29_2022_Wk1WNDmKJkSrFkrZ6MNY1A",
+     "raw": "185012000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-07-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-07-31",
+    "2022-07-30",
+    "2022-10-29"
+   ]
+  },
+  {
+   "cik": "0001096752",
+   "accession": "0001096752-12-000123",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "eps_basic",
+   "concept": "us-gaap:EarningsPerShareBasic",
+   "period_start": "2012-10-01",
+   "period_end": "2012-12-31",
+   "value": 2.17,
+   "trueAvailable": "2012-11-20T21:53:07.000Z",
+   "reportDate": "2012-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1096752/000109675212000123/enr-20120930.xml",
+   "instanceSha256": "f169c9158cfc29bf75b7ffad7fece845299e97c4a9c85244fdc2cd928b1328ae",
+   "contextsWithSameDates": [
+    {
+     "context": "D2013Q1",
+     "raw": "2.17",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-09-30",
+    "2010-12-31",
+    "2011-03-31",
+    "2011-06-30",
+    "2011-09-30",
+    "2012-03-31",
+    "2012-06-30",
+    "2012-09-30",
+    "2012-12-31"
+   ]
+  },
+  {
+   "cik": "0001318484",
+   "accession": "0001558370-20-011035",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "income_tax_expense",
+   "concept": "us-gaap:IncomeTaxExpenseBenefit",
+   "period_start": "2020-08-02",
+   "period_end": "2020-10-31",
+   "value": 6218000.0,
+   "trueAvailable": "2020-09-08T18:55:06.000Z",
+   "reportDate": "2020-08-01",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1318484/000155837020011035/ctrn-20200801x10q_htm.xml",
+   "instanceSha256": "9093a595c4aaf99a3d811168a555b4a34f4c47fd89a2550d9cb4995f14dd490e",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_8_2_2020_To_10_31_2020_sZKpfJ9qV0C42GmY7EbcQQ",
+     "raw": "6218000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2020-08-01"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2020"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2019-08-03",
+    "2020-08-01",
+    "2020-10-31"
+   ]
+  },
+  {
+   "cik": "0001318484",
+   "accession": "0001558370-17-006830",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "diluted_weighted_average_shares",
+   "concept": "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
+   "period_start": "2017-07-30",
+   "period_end": "2017-10-28",
+   "value": 14381738.0,
+   "trueAvailable": "2017-08-28T18:01:40.000Z",
+   "reportDate": "2017-07-29",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1318484/000155837017006830/ctrn-20170729.xml",
+   "instanceSha256": "471da54c1b00ade3c061e3069676a0d5642d4c3e946d483ea50a6d5ac185ad7a",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_7_30_2017_To_10_28_2017",
+     "raw": "14381738",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2017-07-29"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2017"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-07-30",
+    "2016-10-29",
+    "2017-07-29",
+    "2017-10-28"
+   ]
+  },
+  {
+   "cik": "0001013237",
+   "accession": "0001437749-12-006806",
+   "class": "SINGLE_FUTURE_DURATION_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "stock_based_compensation",
+   "concept": "us-gaap:ShareBasedCompensation",
+   "period_start": "2012-06-01",
+   "period_end": "2012-08-31",
+   "value": 400000.0,
+   "trueAvailable": "2012-07-11T00:36:11.000Z",
+   "reportDate": "2012-05-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1013237/000143774912006806/fds-20120531.xml",
+   "instanceSha256": "a950eeb6640ff472b191e612a3c9b848e0e4d441d96621e7e68c879ee2ac7034",
+   "contextsWithSameDates": [
+    {
+     "context": "c126_From1Jun2012To31Aug2012",
+     "raw": "400000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-05-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-05-31",
+    "2012-05-31",
+    "2012-08-31"
+   ]
+  },
+  {
+   "cik": "0000886163",
+   "accession": "0000886163-14-000119",
+   "class": "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "income_tax_expense",
+   "concept": "us-gaap:IncomeTaxExpenseBenefit",
+   "period_start": "2014-01-01",
+   "period_end": "2014-12-31",
+   "value": 374000.0,
+   "trueAvailable": "2014-12-02T03:09:56.000Z",
+   "reportDate": "2013-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/886163/000088616314000119/lgnd-20131231.xml",
+   "instanceSha256": "89ec478352e7849524c77fae4014d7486ba8689baa3d3e6a68f714a1219383c0",
+   "contextsWithSameDates": [
+    {
+     "context": "FD2014Q4YTD",
+     "raw": "374000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2012-12-31",
+    "2013-03-31",
+    "2013-06-30",
+    "2013-09-30",
+    "2013-12-31",
+    "2014-03-31",
+    "2014-06-30",
+    "2014-09-30",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0001029199",
+   "accession": "0001029199-12-000006",
+   "class": "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "cost_of_revenue",
+   "concept": "us-gaap:CostOfGoodsAndServicesSold",
+   "period_start": "2012-01-01",
+   "period_end": "2012-12-31",
+   "value": 740729000.0,
+   "trueAvailable": "2012-02-29T20:44:30.000Z",
+   "reportDate": "2011-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1029199/000102919912000006/eeft-20111231.xml",
+   "instanceSha256": "affd42236870b3cf757bd2535e0be39c6c3899c33b20d02d7d9be02d1d6286c4",
+   "contextsWithSameDates": [
+    {
+     "context": "D2012Q4YTD",
+     "raw": "740729000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2011-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2011"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2009-12-31",
+    "2010-12-31",
+    "2011-12-31",
+    "2012-12-31"
+   ]
+  },
+  {
+   "cik": "0001592560",
+   "accession": "0001410578-23-000835",
+   "class": "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "depreciation_and_amortization",
+   "concept": "us-gaap:Depreciation",
+   "period_start": "2023-01-01",
+   "period_end": "2023-12-31",
+   "value": 91682000.0,
+   "trueAvailable": "2023-04-28T20:03:57.000Z",
+   "reportDate": "2022-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1592560/000141057823000835/tedu-20221231x20f_htm.xml",
+   "instanceSha256": "5d451ff7446a9b9717e9712f2614b0e7993c38b267e26315274bd7ba0f1db22b",
+   "contextsWithSameDates": [
+    {
+     "context": "Duration_1_1_2023_To_12_31_2023_mMEgroihr02eGjE1jkYZBA",
+     "raw": "91682000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "20-F"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-12-31",
+    "2022-12-31",
+    "2023-12-31"
+   ]
+  },
+  {
+   "cik": "0000788965",
+   "accession": "0000788965-14-000008",
+   "class": "SINGLE_FUTURE_DURATION_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "stock_based_compensation",
+   "concept": "us-gaap:AllocatedShareBasedCompensationExpense",
+   "period_start": "2014-01-01",
+   "period_end": "2014-12-31",
+   "value": 2700000.0,
+   "trueAvailable": "2014-03-07T17:14:41.000Z",
+   "reportDate": "2013-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/788965/000078896514000008/hnrg-20131231.xml",
+   "instanceSha256": "1b07d66219ddff1e501b7945ad9a3eab41d643d8a2e30b6661d1bae78ca19625",
+   "contextsWithSameDates": [
+    {
+     "context": "c40_From1Jan2014To31Dec2014",
+     "raw": "2700000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "SAME_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2012-12-31",
+    "2013-12-31",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0000924168",
+   "accession": "0001437749-12-008491",
+   "class": "SINGLE_FUTURE_INSTANT_OTHER",
+   "metric": "intangible_assets",
+   "concept": "us-gaap:FiniteLivedIntangibleAssetsNet",
+   "period_start": null,
+   "period_end": "2019-12-31",
+   "value": 817000.0,
+   "trueAvailable": "2012-08-14T20:42:00.000Z",
+   "reportDate": "2012-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/924168/000143774912008491/efoi-20120630.xml",
+   "instanceSha256": "5d40907c4047b98cbcf10d51293b54115c4aa5ac23ea995e3d0023138ad2dbf0",
+   "contextsWithSameDates": [
+    {
+     "context": "c45_AsOf31Dec2019",
+     "raw": "817000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31",
+    "2012-06-30",
+    "2019-12-31"
+   ]
+  },
+  {
+   "cik": "0000715446",
+   "accession": "0001513162-14-000029",
+   "class": "SINGLE_FUTURE_INSTANT_OTHER",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2015-12-31",
+   "value": 370181.0,
+   "trueAvailable": "2014-01-17T21:16:01.000Z",
+   "reportDate": "2013-10-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/715446/000151316214000029/copy-20131031.xml",
+   "instanceSha256": "385d7c501ee207ab18357e837d2ecbe6b0b99d0138325f6be3dcd3ab2f34e1b1",
+   "contextsWithSameDates": [
+    {
+     "context": "c173_AsOf31Dec2015",
+     "raw": "370181",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-10-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-12-31"
+   ]
+  },
+  {
+   "cik": "0000715446",
+   "accession": "0001513162-15-000036",
+   "class": "SINGLE_FUTURE_INSTANT_OTHER",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2015-12-31",
+   "value": 370181.0,
+   "trueAvailable": "2015-01-29T20:23:43.000Z",
+   "reportDate": "2014-10-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/715446/000151316215000036/itus-20141031.xml",
+   "instanceSha256": "5fd1552e492cf51ee02b91dac15db89ecc6574bc4a44d01ce0a26030521cafa8",
+   "contextsWithSameDates": [
+    {
+     "context": "c174_AsOf31Dec2015",
+     "raw": "370181",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2014-10-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2014"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-12-31"
+   ]
+  },
+  {
+   "cik": "0000715446",
+   "accession": "0001513162-13-000694",
+   "class": "SINGLE_FUTURE_INSTANT_OTHER",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2015-12-31",
+   "value": 370181.0,
+   "trueAvailable": "2013-09-20T20:09:03.000Z",
+   "reportDate": "2013-07-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/715446/000151316213000694/copy-20130731.xml",
+   "instanceSha256": "6bedba9ffa214ae657cb7316f4db88547f7f25677d9229049a33639b8fc9245d",
+   "contextsWithSameDates": [
+    {
+     "context": "c96_AsOf31Dec2015",
+     "raw": "370181",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-07-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-12-31"
+   ]
+  },
+  {
+   "cik": "0000874501",
+   "accession": "0000874501-25-000086",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "short_term_investments",
+   "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+   "period_start": null,
+   "period_end": "2025-12-31",
+   "value": 284621000.0,
+   "trueAvailable": "2025-05-13T01:09:39.000Z",
+   "reportDate": "2025-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/874501/000087450125000086/ambc-20250331_htm.xml",
+   "instanceSha256": "18370486490499fb2132a6003d5f939adb0e09cef29f3e2a25fa51dd1b140e35",
+   "contextsWithSameDates": [
+    {
+     "context": "c-18",
+     "raw": "284621000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2025-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2025"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2025-03-31",
+    "2025-12-31"
+   ]
+  },
+  {
+   "cik": "0000944075",
+   "accession": "0000944075-24-000026",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "stockholders_equity",
+   "concept": "us-gaap:StockholdersEquity",
+   "period_start": null,
+   "period_end": "2024-12-31",
+   "value": 19420004.0,
+   "trueAvailable": "2024-05-14T15:31:18.000Z",
+   "reportDate": "2024-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/944075/000094407524000026/q1_2024_htm.xml",
+   "instanceSha256": "3a89c7c4b5801422115665b4814aa70c53a55ee0664a28658e7a1016a196f3e6",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2024-12-31",
+     "raw": "19420004",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-12-31",
+    "2023-03-31",
+    "2023-12-31",
+    "2024-03-31",
+    "2024-12-31"
+   ]
+  },
+  {
+   "cik": "0001321732",
+   "accession": "0001321732-21-000060",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "total_liabilities",
+   "concept": "us-gaap:Liabilities",
+   "period_start": null,
+   "period_end": "2021-09-30",
+   "value": 236842000.0,
+   "trueAvailable": "2021-08-10T00:31:15.000Z",
+   "reportDate": "2021-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1321732/000132173221000060/pen-20210630_htm.xml",
+   "instanceSha256": "76cf5e5398f6a0fb6b48a5ddf41df08e0a2c1e41966aa98002d3432025d84382",
+   "contextsWithSameDates": [
+    {
+     "context": "i966977e866934e9a857b906b002e7a36_I20210930",
+     "raw": "236842000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2021-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2021"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2020-12-31",
+    "2021-09-30"
+   ]
+  },
+  {
+   "cik": "0001162896",
+   "accession": "0001493152-23-040854",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2023-12-31",
+   "value": 2000000.0,
+   "trueAvailable": "2023-11-14T21:31:20.000Z",
+   "reportDate": "2023-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1162896/000149315223040854/form10-q_htm.xml",
+   "instanceSha256": "1f251a5b84cabc8f825a9c714717aba39f92768fdd2480a448a9d2d75cf6af0c",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2023-12-31",
+     "raw": "2000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2023"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2023-12-31"
+   ]
+  },
+  {
+   "cik": "0000007623",
+   "accession": "0001437749-18-018095",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "current_liabilities",
+   "concept": "us-gaap:LiabilitiesCurrent",
+   "period_start": null,
+   "period_end": "2018-11-30",
+   "value": 5049756.0,
+   "trueAvailable": "2018-10-09T22:39:30.000Z",
+   "reportDate": "2018-08-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/7623/000143774918018095/artw-20180831.xml",
+   "instanceSha256": "1365fa0551a66ce775ff1230f15313de69509686d761a56df62305b812182205",
+   "contextsWithSameDates": [
+    {
+     "context": "i_2018-11-30",
+     "raw": "5049756",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2018-08-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2018"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2018-08-31",
+    "2018-11-30"
+   ]
+  },
+  {
+   "cik": "0000882835",
+   "accession": "0000882835-09-000045",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "short_term_debt",
+   "concept": "us-gaap:LongTermDebtCurrent",
+   "period_start": null,
+   "period_end": "2009-12-31",
+   "value": 233526000.0,
+   "trueAvailable": "2009-11-02T20:54:54.000Z",
+   "reportDate": "2009-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283509000045/rop-20090930.xml",
+   "instanceSha256": "1a1611fe2608703e5371b4f5bc131cd613aa6d600de0c95f7f28bc28e6fec989",
+   "contextsWithSameDates": [
+    {
+     "context": "c00015",
+     "raw": "233526000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2009-09-30"
+    ],
+    "DocumentFiscalYearFocus": [],
+    "DocumentFiscalPeriodFocus": [],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2009-09-30",
+    "2009-12-31"
+   ]
+  },
+  {
+   "cik": "0000007431",
+   "accession": "0001193125-12-438650",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+   "period_start": null,
+   "period_end": "2012-12-31",
+   "value": 480600000.0,
+   "trueAvailable": "2012-10-29T16:01:10.000Z",
+   "reportDate": "2012-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/7431/000119312512438650/awi-20120930.xml",
+   "instanceSha256": "bdf643fded205b25bb4df6867a9950070c65350167bb4d878c2d79fac938d5a9",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_12_31_2012",
+     "raw": "480600000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2010-12-31",
+    "2011-09-30",
+    "2011-12-31",
+    "2012-09-30",
+    "2012-12-31"
+   ]
+  },
+  {
+   "cik": "0001504678",
+   "accession": "0001654954-24-007029",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+   "period_start": null,
+   "period_end": "2024-09-29",
+   "value": 6958000.0,
+   "trueAvailable": "2024-05-30T00:56:09.000Z",
+   "reportDate": "2024-02-29",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1504678/000165495424007029/loop_10k_htm.xml",
+   "instanceSha256": "d12ac0ba91b30f781312c06184eba12a699843c8d1fcf7bfd66bcbcb783f228c",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2024-09-29",
+     "raw": "6958000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-02-29"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2023-02-28",
+    "2024-02-29",
+    "2024-09-29"
+   ]
+  },
+  {
+   "cik": "0001933567",
+   "accession": "0001493152-26-036978",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "deposits",
+   "concept": "us-gaap:Deposits",
+   "period_start": null,
+   "period_end": "2026-12-31",
+   "value": 28660.0,
+   "trueAvailable": "2026-08-11T15:00:50.000Z",
+   "reportDate": "2026-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1933567/000149315226036978/form10-q_htm.xml",
+   "instanceSha256": "ea9956392d5c91328b65dc2a3afaa4d745a0e1ca793c5d870440c51f383aa339",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2026-12-31",
+     "raw": "28660",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2026-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2026"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2025-12-31",
+    "2026-06-30",
+    "2026-12-31"
+   ]
+  },
+  {
+   "cik": "0000944075",
+   "accession": "0000944075-22-000037",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "current_liabilities",
+   "concept": "us-gaap:LiabilitiesCurrent",
+   "period_start": null,
+   "period_end": "2022-12-31",
+   "value": 5389357.0,
+   "trueAvailable": "2022-05-16T15:51:58.000Z",
+   "reportDate": "2022-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/944075/000094407522000037/q1_2022_htm.xml",
+   "instanceSha256": "6733322696eb0bdc86e49ed81e2269434b948973218166f8df463d2c7ab8da7e",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2022-12-31",
+     "raw": "5389357",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-03-31",
+    "2022-12-31"
+   ]
+  },
+  {
+   "cik": "0001517175",
+   "accession": "0001387131-15-003171",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "intangible_assets",
+   "concept": "us-gaap:FiniteLivedIntangibleAssetsNet",
+   "period_start": null,
+   "period_end": "2015-12-25",
+   "value": 141992000.0,
+   "trueAvailable": "2015-11-05T01:54:23.000Z",
+   "reportDate": "2015-09-25",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1517175/000138713115003171/chef-20150925.xml",
+   "instanceSha256": "221c305976b5a8fbfb7bf9518e7babce3b154882a729e613cb84f609858d1688",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2015-12-25",
+     "raw": "141992000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2015-09-25"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2015"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-12-25"
+   ]
+  },
+  {
+   "cik": "0001415404",
+   "accession": "0001558370-24-007171",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2024-11-30",
+   "value": 1983000000.0,
+   "trueAvailable": "2024-05-08T14:02:02.000Z",
+   "reportDate": "2024-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1415404/000155837024007171/tmb-20240331x10q_htm.xml",
+   "instanceSha256": "c4c3d6875f16f4205b677ba6a3ca708a7af5ee8b846b147ec7d552b6142551e5",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_11_30_2024_QWUYRFNVnkWuKzireifzWw",
+     "raw": "1983000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2024-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2024"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2024-11-30"
+   ]
+  },
+  {
+   "cik": "0000894158",
+   "accession": "0001104659-19-059538",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:Cash",
+   "period_start": null,
+   "period_end": "2019-11-30",
+   "value": 17600000.0,
+   "trueAvailable": "2019-11-04T21:36:37.000Z",
+   "reportDate": "2019-09-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/894158/000110465919059538/syn-20190930.xml",
+   "instanceSha256": "94acef09936dc8cd1d9edec7280abdda5b739a7b2206314154f6c291e63b8619",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_11_30_2019",
+     "raw": "17600000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2019-09-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2019"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2019-11-30"
+   ]
+  },
+  {
+   "cik": "0001860543",
+   "accession": "0001558370-22-008999",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "inventory",
+   "concept": "us-gaap:InventoryNet",
+   "period_start": null,
+   "period_end": "2022-12-31",
+   "value": 69401000.0,
+   "trueAvailable": "2022-05-16T21:01:20.000Z",
+   "reportDate": "2022-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1860543/000155837022008999/cdre-20220331x10q_htm.xml",
+   "instanceSha256": "5738be9e081ee577c8cc21baaaae5d3e76d334273b6077d40b8cc0ae2253d5a5",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_12_31_2022_4_G_yOSqI0Cvx0Rf28gQzg",
+     "raw": "69401000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2022-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2021-12-31",
+    "2022-03-31",
+    "2022-12-31"
+   ]
+  },
+  {
+   "cik": "0001411342",
+   "accession": "0001411342-23-000100",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "total_liabilities",
+   "concept": "us-gaap:Liabilities",
+   "period_start": null,
+   "period_end": "2023-12-31",
+   "value": 12736762000.0,
+   "trueAvailable": "2023-05-11T00:12:30.000Z",
+   "reportDate": "2023-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1411342/000141134223000100/efc-20230331_htm.xml",
+   "instanceSha256": "82b542901b3729d2440763526e365f0094f42fce57a0d17494e0debcb1bb9d0c",
+   "contextsWithSameDates": [
+    {
+     "context": "i245bbe48456442f7a8003e749544f569_I20231231",
+     "raw": "12736762000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2023"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2022-12-31",
+    "2023-03-31",
+    "2023-12-31"
+   ]
+  },
+  {
+   "cik": "0001517175",
+   "accession": "0001387131-15-002311",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "intangible_assets",
+   "concept": "us-gaap:FiniteLivedIntangibleAssetsNet",
+   "period_start": null,
+   "period_end": "2015-12-25",
+   "value": 141992000.0,
+   "trueAvailable": "2015-08-05T23:49:18.000Z",
+   "reportDate": "2015-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1517175/000138713115002311/chef-20150626.xml",
+   "instanceSha256": "2a58c1b8b50c7e587d286a706108cf8bab142990cd16f4fd3b927b882f895710",
+   "contextsWithSameDates": [
+    {
+     "context": "AsOf2015-12-25",
+     "raw": "141992000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2015-06-26"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2015"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q2"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2015-12-25"
+   ]
+  },
+  {
+   "cik": "0001378590",
+   "accession": "0001437749-18-015603",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "current_liabilities",
+   "concept": "us-gaap:LiabilitiesCurrent",
+   "period_start": null,
+   "period_end": "2018-09-30",
+   "value": 3627000.0,
+   "trueAvailable": "2018-08-15T00:18:47.000Z",
+   "reportDate": "2018-06-30",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1378590/000143774918015603/blin-20180630.xml",
+   "instanceSha256": "2e1d437f16aa1f939da9c03dde0b4c49ac5c5342aa0a1bf736d4cba3e4c692f6",
+   "contextsWithSameDates": [
+    {
+     "context": "i_2018-09-30",
+     "raw": "3627000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2018-06-30"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2018"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q3"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2018-06-30",
+    "2018-09-30"
+   ]
+  },
+  {
+   "cik": "0000894158",
+   "accession": "0001144204-19-024539",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+   "period_start": null,
+   "period_end": "2019-05-31",
+   "value": 23000000.0,
+   "trueAvailable": "2019-05-08T21:03:27.000Z",
+   "reportDate": "2019-03-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/894158/000114420419024539/syn-20190331.xml",
+   "instanceSha256": "722102cd735a9cb9eda542a1c4ecd33eb77597d24ceff4ae4691ea2f26e5cbff",
+   "contextsWithSameDates": [
+    {
+     "context": "PAsOn05_31_2019",
+     "raw": "23000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2019-03-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2019"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "Q1"
+    ],
+    "DocumentType": [
+     "10-Q"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2017-12-31",
+    "2018-03-31",
+    "2018-12-31",
+    "2019-03-31",
+    "2019-05-31"
+   ]
+  },
+  {
+   "cik": "0000894158",
+   "accession": "0001144204-19-010592",
+   "class": "SINGLE_FUTURE_INSTANT_WITHIN_12M_AFTER_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+   "period_start": null,
+   "period_end": "2019-02-28",
+   "value": 26000000.0,
+   "trueAvailable": "2019-02-27T22:01:52.000Z",
+   "reportDate": "2018-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/894158/000114420419010592/syn-20181231.xml",
+   "instanceSha256": "b91eae390728b90266496e28dea3bca68fb1d545037058466d7b40ae9b344ceb",
+   "contextsWithSameDates": [
+    {
+     "context": "PAsOn02_28_2019",
+     "raw": "26000000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2018-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2018"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2016-12-31",
+    "2017-12-31",
+    "2018-12-31",
+    "2019-02-28"
+   ]
+  },
+  {
+   "cik": "0000036029",
+   "accession": "0001193125-19-043555",
+   "class": "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "available_for_sale_debt_securities",
+   "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecurities",
+   "period_start": null,
+   "period_end": "2019-12-31",
+   "value": 3158777000.0,
+   "trueAvailable": "2019-02-19T18:23:32.000Z",
+   "reportDate": "2018-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/36029/000119312519043555/ffin-20181231.xml",
+   "instanceSha256": "80ae106148811835be3ee4713ffa2a60cafb0ad047dd06edf916a565f708d419",
+   "contextsWithSameDates": [
+    {
+     "context": "eol_PE6801----1810-K0010_STD_0_20191231_0",
+     "raw": "3158777000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2018-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2018"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2017-12-31",
+    "2018-12-31",
+    "2019-12-31"
+   ]
+  },
+  {
+   "cik": "0000886163",
+   "accession": "0000886163-14-000119",
+   "class": "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "current_liabilities",
+   "concept": "us-gaap:LiabilitiesCurrent",
+   "period_start": null,
+   "period_end": "2014-12-31",
+   "value": 28939000.0,
+   "trueAvailable": "2014-12-02T03:09:56.000Z",
+   "reportDate": "2013-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/886163/000088616314000119/lgnd-20131231.xml",
+   "instanceSha256": "89ec478352e7849524c77fae4014d7486ba8689baa3d3e6a68f714a1219383c0",
+   "contextsWithSameDates": [
+    {
+     "context": "FI2014Q4",
+     "raw": "28939000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2013-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2013"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "DIFFERENT_VALUE",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2013-12-31",
+    "2014-12-31"
+   ]
+  },
+  {
+   "cik": "0000874238",
+   "accession": "0001171843-13-001025",
+   "class": "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "long_term_debt",
+   "concept": "us-gaap:LongTermDebt",
+   "period_start": null,
+   "period_end": "2016-12-31",
+   "value": 24274000.0,
+   "trueAvailable": "2013-03-18T14:05:19.000Z",
+   "reportDate": "2012-12-31",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/874238/000117184313001025/strl-20121231.xml",
+   "instanceSha256": "a1fe1f06de181b39e2b037f4a918a07b5ebc3a142ded692587c29d840fe7222e",
+   "contextsWithSameDates": [
+    {
+     "context": "c164_AsOf31Dec2016",
+     "raw": "24274000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2012-12-31"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2012"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "ABSENT",
+    "minus2y": "ABSENT",
+    "minus3y": "ABSENT"
+   },
+   "sameConceptPeriodEnds": [
+    "2011-12-31",
+    "2012-12-31",
+    "2016-12-31"
+   ]
+  },
+  {
+   "cik": "0001318484",
+   "accession": "0001558370-23-005840",
+   "class": "SINGLE_FUTURE_INSTANT_YEAR_SHIFT_OF_REPORT_PERIOD",
+   "metric": "cash_and_equivalents",
+   "concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+   "period_start": null,
+   "period_end": "2024-01-27",
+   "value": 103495000.0,
+   "trueAvailable": "2023-04-13T22:20:42.000Z",
+   "reportDate": "2023-01-28",
+   "instanceState": "OK",
+   "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1318484/000155837023005840/ctrn-20230128x10k_htm.xml",
+   "instanceSha256": "a54581ade7eddfd076ba3076bb15b65b05815ef2c920f26a8cc34633e61b49e8",
+   "contextsWithSameDates": [
+    {
+     "context": "As_Of_1_27_2024_kb_MAgaeXkScGO8phCjqXA",
+     "raw": "103495000",
+     "valueEqual": true
+    }
+   ],
+   "verdict": "CONFIRMED_IN_FILER_ORIGINAL_INSTANCE",
+   "dei": {
+    "DocumentPeriodEndDate": [
+     "2023-01-28"
+    ],
+    "DocumentFiscalYearFocus": [
+     "2022"
+    ],
+    "DocumentFiscalPeriodFocus": [
+     "FY"
+    ],
+    "DocumentType": [
+     "10-K"
+    ]
+   },
+   "counterpart": {
+    "minus1y": "SAME_VALUE",
+    "minus2y": "DIFFERENT_VALUE",
+    "minus3y": "DIFFERENT_VALUE"
+   },
+   "sameConceptPeriodEnds": [
+    "2020-02-01",
+    "2021-01-30",
+    "2022-01-29",
+    "2023-01-28",
+    "2024-01-27"
+   ]
+  }
+ ],
+ "productionApproved": false
+}

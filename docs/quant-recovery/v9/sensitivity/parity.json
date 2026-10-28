@@ -1,0 +1,123 @@
+{
+ "schemaVersion": "v9-sensitivity-parity-1.0.0",
+ "state": "PASS",
+ "checks": 1420112,
+ "exactChecks": 7568,
+ "maxRelativeDifferenceNonExact": 1.9704615038695925e-11,
+ "failures": [],
+ "failureCount": 0,
+ "decision": "ACCEPTED_WITH_DEFINED_SCOPE",
+ "populations": {
+  "TRIO": {
+   "events": {
+    "4:1": 67,
+    "4:2": 67,
+    "13:1": 67,
+    "13:2": 67,
+    "26:1": 67,
+    "26:2": 67
+   },
+   "primary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 30,
+     "C6_SPLIT": 30
+    },
+    "holmRejections": 6,
+    "nominalRejections": 36
+   },
+   "secondary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 36,
+     "C6_SPLIT": 36
+    },
+    "holmRejections": 0,
+    "nominalRejections": 0
+   }
+  },
+  "P1": {
+   "events": {
+    "4:1": 9898,
+    "4:2": 9898,
+    "13:1": 9898,
+    "13:2": 9898,
+    "26:1": 9898,
+    "26:2": 9898
+   },
+   "primary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 36,
+     "C6_SPLIT": 36
+    },
+    "holmRejections": 25,
+    "nominalRejections": 31
+   },
+   "secondary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 30,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 0,
+     "C6_SPLIT": 0
+    },
+    "holmRejections": 0,
+    "nominalRejections": 9
+   }
+  },
+  "P2": {
+   "events": {
+    "4:1": 31913,
+    "4:2": 31913,
+    "13:1": 31913,
+    "13:2": 31913,
+    "26:1": 31913,
+    "26:2": 31913
+   },
+   "primary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 36,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 36,
+     "C6_SPLIT": 36
+    },
+    "holmRejections": 27,
+    "nominalRejections": 32
+   },
+   "secondary": {
+    "criteriaCounts": {
+     "C1_PW": 36,
+     "C2_PLATEAU": 12,
+     "C3_METHODS": 36,
+     "C4_LRV": 36,
+     "C5_STATIONARITY": 0,
+     "C6_SPLIT": 0
+    },
+    "holmRejections": 0,
+    "nominalRejections": 0
+   }
+  }
+ },
+ "scope": "Independent re-derivation from registered QUALIFIED list + source files: modal calendar, exclusions, sample, NEW_52W_HIGH events/outcomes, SPY excess, aggregated series, ACF/LB, LRV, Andrews, PW, KPSS, CUSUM, ADF, split Wald, CBB/MBB/SB bootstraps (xorshift parity), Holm, neighbourhood, criteria, decision. Not re-derived: createLoader qualification (input).",
+ "tolerances": "Exact for hashes/ids/dates/counts/sums/estimates/criteria; bootstrap replicates rel 1e-12; SE/CI rel 1e-9; ACF/LRV/KPSS/CUSUM rel 1e-8 (numpy dot vs sequential loop); ADF rel 1e-6 (lstsq vs normal equations); chi2 tails rel 1e-6..1e-7",
+ "seconds": 68.86010294399966,
+ "numpy": "2.5.3",
+ "python": "3.13.17",
+ "referenceSha256": "06419106171c17f4c5e8300ed3b8cc5470fd9ae426e010fde676f49a17b5f70f",
+ "runSummarySha256": "fd5db2738287c53ae28e6f9146b249644c9c2034acd597ff2877391793d37fbd",
+ "runFullSha256": "b85f83427049d4afed03a6f777e464b05395b04baa3c8b4b53d5e26e338c99f4",
+ "independentTradingEvidence": false
+}
