@@ -513,8 +513,11 @@
      (largestCorrection, vcpFootprint.depths; Erzeuger records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD) ergeben mit dem
      Basistief das Basishoch und damit Hoch und Pivot. Die Allowlist SF8_DESCRIPTIVE_FEATURES bleibt die Liste dessen, was
      der Detektor erzeugt; die Sperre greift davor. */
-  var SF8_FEATURES_HIDDEN = { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] };
-  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths"] } };
+  /* Owner-Entscheidung 28.10.2026 (Rueckrechenbarkeit): auch Felder, die zusammen mit den oeffentlichen Tageskursen Einstieg oder
+     Stop ergeben (Fenster: SEPA-Basislaenge, Power-Play-Konsolidierung, Weinstein-Basiswochen; Anker: Holy-Grail impulseHighDate,
+     adxAbove30Since). Gegenstueck im Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD / #ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
+  var SF8_FEATURES_HIDDEN = { C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions"], C13: ["impulseHighDate", "adxAbove30Since"] };
+  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths", "baseSessions"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
      28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
