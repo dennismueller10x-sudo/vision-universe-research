@@ -84,14 +84,45 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 3. Regeltexte wie „Einstiegsmarke knapp über dem Box-Hoch“ (DAR-SF-ENTRY) beschreiben die Regel der Quelle ohne Preis. Sie sind unverändert.
 4. Box-Obergrenze und Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.
 
-## Offen für den Owner: Rückrechnung zusammen mit den öffentlichen Tageskursen (unabhängiges Review 28.10.2026)
+## Rückrechnung zusammen mit den öffentlichen Tageskursen (Owner-Entscheidung 28.10.2026, umgesetzt)
 
-Die Prüfung oben gilt für die Zahlen **in der Ansicht**. Zusammen mit den öffentlichen Tageskursen (OHLC) lassen sich aus Zeitfenstern der Ansicht Marken nachbauen. Alle vier Felder standen schon vor diesem PR in den Ansichten; dieser PR ändert sie nicht.
+**Regel des Owners:** Ein Feld ist rückrechenbar, wenn sich daraus zusammen mit den öffentlich verfügbaren Kursdaten ein geschützter Einstiegs-, Stop- oder Orderparameter zuverlässig rekonstruieren lässt. Solche Felder fehlen unterhalb von `MODELED_TRADE_PLAN` im ausgelieferten Kandidatendatensatz (`strategy/`, `ticker/`), nicht nur in der Anzeige. Die Research-Engines, Detektoren, Golden Cases und Referenzdaten bleiben unverändert.
 
-| Methode | Feld | nachgebaut aus den Tageskursen | Treffer |
-|---|---|---|---|
-| C06 | `baseLengthSessions` (= `vcpFootprint.baseSessions`) | Pivot = höchstes Hoch im Fenster; Stopreferenz = tiefstes Tief | 171 bzw. 173 von 238 |
-| C07 | `consolidationSessions` | Pivot und Stop = Hoch/Tief im Fenster | 19 von 19 |
-| C13 | `impulseHighDate` | `impulseHigh` = Hoch an dem Tag; `swingLow` = tiefstes Tief seitdem | 170 von 171 |
+**Was das garantiert und was nicht:** Kein veröffentlichtes Feld liefert mehr einen direkten Anker (Fenster, Datum, Volumen-Fingerabdruck) auf einen geschützten Wert. Manche Werte folgen aber schon aus der öffentlichen Regel und der bloßen Tatsache, dass ein Kandidat existiert. Das kann kein Ausblenden eines Feldes verhindern (unten „ohne Feld“).
 
-Ob „rückrechenbar“ auch die Kombination mit dem öffentlichen Chart umfasst, ist eine Owner-Entscheidung. Falls ja: eigener PR nach demselben Muster (Felder unterhalb von MODELED ausblenden oder nur als Status, Core-Gegenstück in DQ-SF8-4).
+**Messung** (voller Lauf 26.10., alle 13 Methoden unterhalb von MODELED). „Roh“ heißt: Die Kandidatenwerte des Feldes enthalten den geschützten Wert. „Feldspezifisch“ heißt: Ein Fenster ohne das Feld (2–6 Sitzungen, 252, Stichtag, Vortag) liefert ihn nicht schon. Beide Raten stammen aus dem unabhängigen Review.
+
+| Methode | Feld | rekonstruiert | roh | feldspezifisch | Entscheidung |
+|---|---|---|---|---|---|
+| C06 SEPA | `baseLengthSessions` = `vcpFootprint.baseSessions` | Pivot / Stopreferenz (Hoch / Tief der Basis) | 178 bzw. 173 von 238 | 77 von 238 | **ausgeblendet** |
+| C06 SEPA | `vcpFootprint.lastContractionVolumeVs50d` (ungerundet) | eindeutiges Fenster der letzten Kontraktion: Hoch am Anfang = Pivot, Tief am Ende = Stop | 238 von 238 | – | **ausgeblendet** (Review B1) |
+| C07 Power Play | `consolidationSessions` | Pivot und Stop | 15 von 15 | 7 von 15 | **ausgeblendet** |
+| C07 Power Play | `startVolumeVs50d` | eindeutiger Starttag des Laufs: höchstes Hoch seitdem = Pivot, tiefstes Tief danach = Stop | 19 von 19 | 5 von 19 | **ausgeblendet** (Review B2) |
+| C13 Holy Grail | `impulseHighDate` | Impulshoch, Stop (Swing-Tief) | 171 von 171 | 90 von 171 | **ausgeblendet** |
+| C13 Holy Grail | `adxAbove30Since` | Impulshoch (höchstes Hoch ab dem Tag) | 171 von 171 | 81 von 171 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 Weinstein | `baseWeeks` | Stopreferenz (tiefstes Tief der Basis) | 207/329 bzw. 347/379 | 141/329 bzw. 282/379 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 | `breakoutDay` | Trigger (= veröffentlichter Widerstand + 1 Tick) | 9/422 bzw. 3/379 | – | bleibt (sporadisch, Struktur zulässig) |
+| C03 Darvas | Box-Daten | Stopreferenz | bis 8 von 229 (± Tick) | – | bleibt (sporadisch; Obergrenze ± Bruchteil ist ohnehin zulässig) |
+| C06 | `vcpFootprint.contractions` | bei genau 1 Kontraktion: Stop = tiefstes Tief seit dem 52-Wochen-Hoch | 129 von 129 | 24 | bleibt (nahe an allgemeiner Chartinformation; Owner-Punkt) |
+| C11, alle | `downDays`, `trend.windowSessions`, `trend.volumeVs50d`, Index- und Übersichtszeilen, `sortKeys` | – | – | 0 | bleibt |
+
+**Offen für den Owner (nicht Teil dieses PR):**
+1. **Weinstein-Stop über den veröffentlichten Widerstand.** Die Woche, deren Hoch dem Widerstand gleicht, plus das tiefste Wochentief bis zur Ausbruchswoche ergibt die Stopreferenz: C05 379 von 379 (311 feldspezifisch), C04 159 von 422 (149). Das Ausblenden von `baseWeeks` schützt den C05-Stop also nicht vollständig. Der Widerstand ist vom Owner zugelassene Chartstruktur. Entscheidung: Widerstand unterhalb von MODELED ausblenden oder hinnehmen.
+2. **Turtle C01 / C02.** `levels.channelDays` ist der Regelparameter (20/55 bzw. 10/20 Tage). Mit der öffentlichen Regel ergibt sich der Trigger (Kanalhoch + Tick) in 269 von 269 bzw. 224 von 224 Fällen, und Trigger − 2·`N` ergibt die Stopreferenz in 268 von 269 bzw. 224 von 224. `N` war bisher eine ausdrückliche Owner-Ausnahme und ist nach der neuen Regel neu zu bestätigen.
+3. **Ohne Feld** (durch Ausblenden nicht lösbar):
+   - C13 Trigger = Hoch am Stichtag + Tick (171 von 171); Impulshoch und Swing-Tief lassen sich aus der öffentlichen ADX-Regel nachrechnen.
+   - C03 Obergrenze ± Bruchteil, C09 / C12 Gap-Tief und C11 Signaltagstief (Tief am Stichtag): bereits zugelassene Owner-Entscheidungen.
+
+**Vorher/Nachher:**
+- Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze (`records/`) inhaltsgleich bis auf `provenance.codeSha256`, dieselbe Reihenfolge, 0 Rangänderungen, MODELED 0 Änderungen.
+- Geändert: nur `features` in den Ansichten von C04, C05, C06, C07 und C13.
+
+**Tests:**
+- `SF8-NO-BAR-RECONSTRUCTION` (neu) durchsucht `features`, `trend`, `levels`, `pivot` und `sortKeys` samt Listen.
+  - Fenster und Daten werden wie oben gedeutet.
+  - Volumenquoten werden als Fingerabdruck gesucht: ein Tag (Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor) oder, bei Kennzahlen unter `features` auch gerundet, ein Fenster (Durchschnittsvolumen gegen den 50-Tage-Schnitt). Nur ein eindeutiger Treffer zählt. Rundung schützt nicht: Auf 4 Stellen gerundet bleibt das Kontraktionsfenster eindeutig (Gegenprobe im Test).
+  - Verglichen wird auf ± 1 Tick, gegen die Order-Größen, die nicht schon unter einem vom Owner zugelassenen Strukturschlüssel veröffentlicht sind (Box, Widerstand, Konsolidierungshoch, Gap-Tief, Chartmarke; nicht bloß neben einem Durchschnitt).
+  - Die Turtle-Kanallängen gelten als Regelparameter (Owner-Punkt 2).
+- Gegenproben: Jedes ausgeblendete Feld wird, wieder eingesetzt, rot. Die Rücknahme jeder Ausblendung im Erzeuger wird rot.
+- Golden-Hash der 55 Ansichten neu eingefroren.
+- Abgleich mit dem Core: Die Sperrlisten des Core sind eine Teilmenge der Erzeugerlisten (der Core ist nie strenger als der Erzeuger). Jede Seite schreibt ihre Listen explizit fest. Merge-Reihenfolge: Erzeuger zuerst, dann Core.

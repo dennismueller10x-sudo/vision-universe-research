@@ -10,6 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
+import { rawTickAdjusted } from '../source-faithful/common/series.mjs';
 import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION, momentumIndex, commonFeatures } from '../source-faithful/product/detectors.mjs';
 import { assessSecurity } from '../source-faithful/product/data-quality.mjs';
 import { detectionReach, STRUCTURE_LEVELS, ORDER_DERIVED_FEATURES, ORDER_DERIVED_BY_METHOD, ORDER_DERIVED_SUBFIELDS_BY_METHOD, TREND_HIDDEN_BY_METHOD, planView, chartMarks, publicFeatures, publicTrend } from '../source-faithful/product/records.mjs';
@@ -363,7 +364,7 @@ test('SF8-NO-ORDER-VALUE-BELOW-MODEL: keine veröffentlichte Zahl unterhalb von 
   // fachliche Änderung der Ansichten und braucht einen eigenen PR mit Vorher/Nachher-Vergleich
   const sorted = [...below].sort((a, b) => (a.recordId < b.recordId ? -1 : 1));
   assert.equal(sorted.length, 55);
-  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '71c51b6d3b0fd997dd32e3eefb7001cd5d86d221be86c67238f0c7f123a88b21');
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(sorted)).digest('hex'), '0e00fff9f905437bd72dbf6f39bb31d9e58646b16b478780e295266d32300be3');
 });
 
 // Review B1/N1 (28.10.2026): das ausgeblendete 52-Wochen-Hoch darf sich auch nicht aus einem veröffentlichten Abstand
@@ -387,7 +388,7 @@ test('SF8-HIGH252-NOT-DERIVABLE: SEPA, Power Play, Holy Grail unterhalb von MODE
   for (const v of below.filter((x) => x.candidateId === 'C06')) {
     for (const k of ['pctBelowHigh52w', 'largestCorrection']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
     assert.ok(!v.features.vcpFootprint || !('depths' in v.features.vcpFootprint), `${v.ticker} vcpFootprint.depths`);
-    assert.ok(['pctAboveLow52w', 'vcpProxyState', 'baseLengthSessions', 'rangesContracting'].every((k) => k in v.features), `${v.ticker} Beschreibung bleibt`);
+    assert.ok(['pctAboveLow52w', 'vcpProxyState', 'rangesContracting'].every((k) => k in v.features), `${v.ticker} Beschreibung bleibt`);
   }
   // Gegenproben: der Detektorwert pctBelowHigh52w fiele in jeder SEPA-Ansicht auf
   const det = (v) => { const s = secs.find((x) => x.ticker === v.ticker); return DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null }); };
@@ -399,6 +400,73 @@ test('SF8-HIGH252-NOT-DERIVABLE: SEPA, Power Play, Holy Grail unterhalb von MODE
     for (const set of [(w) => { w.features.largestCorrection = depth; }, (w) => { w.features.vcpFootprint = { ...(w.features.vcpFootprint ?? {}), depths: [depth] }; }]) {
       const w = structuredClone(v); set(w); assert.notDeepEqual(highDerivations(w, hi), [], `${v.ticker} ${set}`);
     }
+  }
+});
+
+// Owner-Entscheidung 28.10.2026 (Rückrechenbarkeit): auch zusammen mit den öffentlichen Tageskursen darf kein veröffentlichtes Feld
+// einen Einstieg, Stop oder Orderparameter ergeben. Durchsucht werden features, trend, levels, pivot und sortKeys samt Listen:
+// - Ganzzahl mit Fensternamen (…Sessions, …Days, …Weeks × 5, …Length, …Window, …Bars): Fenster ± 1, endend am Stichtag oder Vortag;
+// - Datum: Hoch/Tief an dem Tag, höchstes Hoch/tiefstes Tief seitdem;
+// - Volumenquote (Name mit Volume/Vs50d/Ratio): ein Tag, dessen Volumen genau diese Quote zum Schnitt der 50 Sitzungen davor hat,
+//   oder (unter features, dort auch gerundet) ein Fenster, dessen Durchschnittsvolumen genau diese Quote zum 50-Tage-Schnitt vor dem Stichtag hat; nur ein eindeutiger
+//   Treffer zählt (Fingerabdruck), daraus Hoch/Tief am Anfang und Ende, höchstes Hoch seitdem, tiefstes Tief danach.
+// Verglichen wird auf ± 1 Tick (Kaufstopps liegen einen Tick über einer Marke). Ein Treffer zählt nur, wenn ein Fenster ohne das
+// Feld (2–6 Sitzungen, 252) denselben Wert nicht schon liefert, und nur für Order-Größen, die nicht schon als zulässige Struktur
+// (± 1 Tick) unter einem vom Owner zugelassenen Strukturschlüssel veröffentlicht sind (STRUCTURE_ORDER_ANCHORS: Box, Widerstand,
+// Konsolidierungshoch, Gap-Tief, Chartmarke; eigene Owner-Entscheidungen, eigene Tests), nicht schon neben einem Durchschnitt. Zur Vergleichs-
+// basis gehören auch Stichtag und Vortag (öffentlich bekannt) und die Kanallängen der Turtle-Regel (Regelparameter der Quelle,
+// 20/55 bzw. 10/20 Tage, im Katalog veröffentlicht: der Trigger folgt aus der Regel, nicht aus dem Feld; Owner-Punkt).
+const STRUCTURE_ORDER_ANCHORS = { C03: ['levels.top', 'levels.bottom', 'levels.box.top', 'levels.box.bottom', 'pivot.level'], C04: ['levels.resistance', 'pivot.level'], C05: ['levels.resistance', 'pivot.level'], C08: ['levels.breakoutLevel', 'pivot.level'], C09: ['levels.gapDayLow', 'pivot.level'], C12: ['levels.gapDayLow', 'pivot.level'] };
+const BAR_BASELINE = [2, 3, 4, 5, 6, 252], RULE_PARAMETERS = new Set(['levels.channelDays', 'levels.exitChannelDays']), WINDOW_NAME = /(sessions|days|weeks|length|window|bars)$/i, VOLUME_NAME = /(volume|vs50d|ratio)/i;
+function barReconstructions(v, bars, orderValues) {
+  const i = bars.length - 1, tick = rawTickAdjusted(bars[i]);
+  const near = (a, b) => Number.isFinite(a) && Math.abs(a - b) <= tick + 1e-9 * Math.max(1, Math.abs(b));
+  const hi = (a, z) => Math.max(...bars.slice(a, z + 1).map((b) => b.high)), lo = (a, z) => Math.min(...bars.slice(a, z + 1).map((b) => b.low));
+  const windows = (n) => [i, i - 1].flatMap((end) => [-1, 0, 1].flatMap((d) => { const a = Math.max(0, end - (n + d) + 1); return a <= end ? [hi(a, end), lo(a, end)] : []; }));
+  const fromDay = (k) => { const out = [bars[k].high, bars[k].low]; for (const end of [i, i - 1]) if (k <= end) { out.push(hi(k, end), lo(k, end)); let p = k; for (let j = k; j <= end; j++) if (bars[j].high > bars[p].high) p = j; if (p < end) out.push(lo(p + 1, end)); } return out; };
+  const avg = (a, z) => { let t = 0; for (let j = a; j <= z; j++) t += bars[j].volume; return t / (z - a + 1); };
+  const ratioMatch = (x) => { const d = Math.round(x * 1e4) / 1e4 === x ? 5e-5 : 1e-9 * Math.max(1, x); return (r) => Math.abs(r - x) <= d; };
+  const fingerprints = (x, windowsToo) => {
+    const hit = ratioMatch(x), days = [], wins = [];
+    // beide Lesarten der Tagesquote: Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor (Power-Play-Start)
+    for (let k = 50; k <= i; k++) { const base = avg(k - 50, k - 1); if (base > 0 && (hit(bars[k].volume / base) || (k < i && hit(bars[k + 1].volume / base)))) days.push(k); }
+    // Fenstersuche für Kennzahlen unter features (auch gerundet: ein eindeutiger Treffer trifft dort Pivot und Stop); trend und
+    // sortKeys tragen nur die allgemeine Tagesquote des Stichtags
+    const v50 = i >= 50 && windowsToo ? avg(i - 50, i - 1) : 0;
+    if (v50 > 0) for (let a = Math.max(0, i - 251); a <= i; a++) { let t = 0; for (let z = a; z <= i; z++) { t += bars[z].volume; if (z > a && hit(t / (z - a + 1) / v50)) wins.push([a, z]); } }
+    return [...(days.length === 1 ? fromDay(days[0]).concat(days[0] > 0 ? fromDay(days[0] - 1) : []) : []), ...(wins.length === 1 ? [bars[wins[0][0]].high, bars[wins[0][1]].low, hi(...wins[0]), lo(...wins[0])] : [])];
+  };
+  const leaves = (o, p) => (Array.isArray(o) ? o.flatMap((x, j) => leaves(x, `${p}[${j}]`)) : o && typeof o === 'object' ? Object.entries(o).flatMap(([k, x]) => leaves(x, `${p}.${k}`)) : [[p, o]]);
+  const published = [...leaves(v.features ?? {}, 'features'), ...leaves(v.trend ?? {}, 'trend'), ...leaves(v.levels ?? {}, 'levels'), ...leaves(v.pivot ?? {}, 'pivot'), ...leaves(v.sortKeys ?? {}, 'sortKeys')];
+  const anchors = STRUCTURE_ORDER_ANCHORS[v.candidateId] ?? [];
+  const structure = published.filter(([p]) => anchors.includes(p)).map(([, x]) => x).filter(Number.isFinite);
+  const guarded = orderValues.filter((o) => !structure.some((x) => near(x, o)));
+  const baseline = [...BAR_BASELINE.flatMap(windows), ...fromDay(i), ...fromDay(i - 1)], out = [];
+  for (const [p, x] of published) {
+    if (RULE_PARAMETERS.has(p)) continue;
+    const key = p.replace(/\[\d+\]$/, '').split('.').pop();
+    let cands = [];
+    if (Number.isInteger(x) && x >= 2 && WINDOW_NAME.test(key)) cands = /weeks/i.test(key) ? windows(x * 5) : x <= 400 ? windows(x) : [];
+    else if (typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x)) { const k = bars.findIndex((b) => b.date === x); if (k >= 0) cands = fromDay(k); }
+    else if (Number.isFinite(x) && !Number.isInteger(x) && x > 0 && x < 100 && VOLUME_NAME.test(key)) cands = fingerprints(x, p.startsWith('features.'));
+    for (const o of guarded) if (cands.some((c) => near(c, o)) && !baseline.some((c) => near(c, o))) out.push(`${p} → ${o}`);
+  }
+  return [...new Set(out)];
+}
+test('SF8-NO-BAR-RECONSTRUCTION: kein veröffentlichtes Feld ergibt mit den Tageskursen Einstieg, Stop oder Order (Owner 28.10.)', () => {
+  const ov = detectorOrderValues(), secs = securities(), barsOf = (v) => secs.find((x) => x.ticker === v.ticker).bars.filter((b) => b.date <= F.asOf);
+  const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN' && (ov.get(v.recordId) ?? []).length);
+  assert.ok(['C04', 'C05', 'C06', 'C07', 'C13'].every((c) => below.some((v) => v.candidateId === c)), 'Golden Cases decken Weinstein, SEPA, Power Play und Holy Grail ab');
+  assert.deepEqual(below.flatMap((v) => barReconstructions(v, barsOf(v), ov.get(v.recordId)).map((d) => `${v.candidateId} ${v.ticker} ${d}`)), []);
+  // Gegenproben: das ungekürzte Detektorfeld fiele auf (je Methode in mindestens einer Ansicht)
+  const det = (v) => { const s = secs.find((x) => x.ticker === v.ticker); return DETECTORS[v.strategyId](s, { dq: { status: 'PASS', checks: [] }, weekly: WEEKLY.get(s.id) ?? null, momentum: null, nextSession: CAL.nextSession(F.asOf), benchWeekly: null, asOf: F.asOf, listingStart: s.meta?.listingStart ?? null }); };
+  for (const [c, put] of [['C04', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C05', (w, f) => { w.features.baseWeeks = f.baseWeeks; }], ['C06', (w, f) => { w.features.baseLengthSessions = f.baseLengthSessions; }], ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, baseSessions: f.vcpFootprint?.baseSessions }; }],
+    ['C07', (w, f) => { w.features.consolidationSessions = f.consolidationSessions; }], ['C07', (w, f) => { w.features.startVolumeVs50d = f.startVolumeVs50d; }],
+    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: f.vcpFootprint?.lastContractionVolumeVs50d }; }],
+    // Review 28.10.: auch auf 4 Stellen gerundet bleibt das Fenster eindeutig (Rundung schützt nicht)
+    ['C06', (w, f) => { w.features.vcpFootprint = { ...w.features.vcpFootprint, lastContractionVolumeVs50d: Math.round(f.vcpFootprint?.lastContractionVolumeVs50d * 1e4) / 1e4 }; }], ['C13', (w, f) => { w.features.impulseHighDate = f.impulseHighDate; }], ['C13', (w, f) => { w.features.adxAbove30Since = f.adxAbove30Since; }]]) {
+    const leaks = below.filter((v) => v.candidateId === c).filter((v) => { const w = structuredClone(v); put(w, det(v).features ?? {}); return barReconstructions(w, barsOf(v), ov.get(v.recordId)).length; });
+    assert.ok(leaks.length >= 1, `${c} ${put}`);
   }
 });
 
@@ -425,18 +493,23 @@ test('SF8-READINGS-PINNED: die Lesarten je Strategie (index/summary) sind feste 
 });
 
 test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, Widerstand, Gap-Tief), nie eine Einstiegs-, Stop- oder Ordermarke', async () => {
-  // Gegenstück im Core (DQ-SF8-4, PR #1062): sobald der Core den verschärften Vertrag trägt, gleichen sich beide Tabellen genau
+  // Gegenstück im Core (DQ-SF8-4): Strukturtabellen gleich; Sperrlisten des Core nie strenger als der Erzeuger (sonst wäre die
+  // Ausgabe rot), jede Seite schreibt ihre Listen zusätzlich fest. So bleibt jeder Zwischenstand (Erzeuger zuerst, Core danach) grün.
   const { default: DQ } = await import('../../../core/data-quality.js');
   // alle oder keine: ein umbenannter Export schaltet den Abgleich nicht still ab (Review N2)
   const coreKeys = ['SF8_TREND_HIDDEN', 'SF8_FEATURES_HIDDEN', 'SF8_SUBFIELDS_HIDDEN', 'SF8_PIVOT_LEVEL'], present = coreKeys.filter((k) => k in DQ);
   assert.ok(present.length === 0 || present.length === coreKeys.length, `Core-Vertrag unvollständig: ${present.join(', ')}`);
   if (present.length) {
     const plain = (o) => JSON.parse(JSON.stringify(o));
-    assert.deepEqual(plain(DQ.SF8_SUBFIELDS_HIDDEN), plain(ORDER_DERIVED_SUBFIELDS_BY_METHOD));
+    const within = (core, prod, name) => { for (const [c, ks] of Object.entries(core)) for (const k of Array.isArray(ks) ? ks : Object.keys(ks)) {
+      if (Array.isArray(ks)) assert.ok((prod[c] ?? []).includes(k), `${name}: Core sperrt ${c} ${k}, der Erzeuger nicht`);
+      else for (const j of ks[k]) assert.ok((prod[c]?.[k] ?? []).includes(j), `${name}: Core sperrt ${c} ${k}.${j}, der Erzeuger nicht`);
+    } };
+    within(plain(DQ.SF8_SUBFIELDS_HIDDEN), plain(ORDER_DERIVED_SUBFIELDS_BY_METHOD), 'SF8_SUBFIELDS_HIDDEN');
     assert.deepEqual({ ...DQ.SF8_PIVOT_LEVEL }, Object.fromEntries(Object.entries(EXPECTED_MARK).map(([c, m]) => [c, m[0]])));
     assert.deepEqual(plain(DQ.SF8_STRUCTURE_LEVELS), EXPECTED_STRUCTURE);
     assert.deepEqual(DQ.SF8_PIVOT_KINDS, Object.fromEntries(Object.entries(EXPECTED_MARK).map(([c, m]) => [c, m[1]])));
-    assert.deepEqual(plain(DQ.SF8_FEATURES_HIDDEN), plain(ORDER_DERIVED_BY_METHOD));
+    within(plain(DQ.SF8_FEATURES_HIDDEN), plain(ORDER_DERIVED_BY_METHOD), 'SF8_FEATURES_HIDDEN');
     assert.deepEqual(plain(DQ.SF8_TREND_HIDDEN), plain(TREND_HIDDEN_BY_METHOD));
   }
   // Korrektur 28.10.2026: chartMarks las die nach Cxx geschlüsselten Tabellen mit der strategyId und fand nie eine Marke.
@@ -472,8 +545,8 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
     // die Korrekturtiefe ist rechnerisch der geplante Verlust am Pivot (1 - Stop / Pivot): wie plannedLossAtPivot ausgeblendet
     for (const k of ['plannedLossAtPivot', 'correction']) assert.ok(!(k in v.features), `${v.ticker} ${k}`);
   }
-  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C06: ['pctBelowHigh52w', 'largestCorrection'], C07: ['correction'] });
-  assert.deepEqual(ORDER_DERIVED_SUBFIELDS_BY_METHOD, { C06: { vcpFootprint: ['depths'] } });
+  assert.deepEqual(ORDER_DERIVED_BY_METHOD, { C04: ['baseWeeks'], C05: ['baseWeeks'], C06: ['pctBelowHigh52w', 'largestCorrection', 'baseLengthSessions'], C07: ['correction', 'consolidationSessions', 'startVolumeVs50d'], C13: ['impulseHighDate', 'adxAbove30Since'] });
+  assert.deepEqual(ORDER_DERIVED_SUBFIELDS_BY_METHOD, { C06: { vcpFootprint: ['depths', 'baseSessions', 'lastContractionVolumeVs50d'] } });
   // Owner-Entscheidung 28.10.2026: SEPA, Power Play, Holy Grail ohne 52-Wochen-Hoch (und ohne den Abstand dazu) unterhalb von MODELED
   assert.deepEqual(TREND_HIDDEN_BY_METHOD, { C06: ['high252', 'belowHigh252'], C07: ['high252', 'belowHigh252'], C13: ['high252', 'belowHigh252'] });
   for (const v of below) {

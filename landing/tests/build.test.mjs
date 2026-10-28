@@ -53,7 +53,7 @@ test('Partnerpräsentation bleibt eigenständig, ohne fremde Quellen und außerh
 });
 test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',async()=>{
   const output=resolve(root,'tests/output/instagram');await build({output});
-  for(const page of ['instagram/index.html','instagram/robotaxi/index.html']){
+  for(const page of ['instagram/index.html','instagram/robotaxi/index.html','instagram/energie/index.html']){
     const html=await readFile(resolve(output,page),'utf8');
     assert.match(html,/<meta name="robots" content="noindex, nofollow">/);assert.match(html,/Content-Security-Policy/);
     assert.doesNotMatch(html,/research\.visionuniverse\.de|data-app|App öffnen<\/a>/);
@@ -61,6 +61,6 @@ test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',as
     assert.match(html,/App bald verfügbar/);assert.match(html,/partner\.css\?v=[0-9a-f]{16}/);assert.match(html,/instagram\.css\?v=[0-9a-f]{16}/);
     for(const m of html.matchAll(/(?:src|poster|href)="(\.{1,2}\/[^"?#]+\.(?:css|js|png|jpg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))await readFile(resolve(output,dirname(page),m[1]));
   }
-  const index=await readFile(resolve(output,'instagram/index.html'),'utf8');assert.match(index,/href="\.\/robotaxi\/"/);
+  const index=await readFile(resolve(output,'instagram/index.html'),'utf8');assert.match(index,/href="\.\/robotaxi\/"/);assert.match(index,/href="\.\/energie\/"/);
   const list=await readFile(resolve(output,'instagram/robotaxi/index.html'),'utf8');assert.equal((list.match(/<li>/g)||[]).length,10);assert.match(list,/keine Kauf- oder Verkaufsempfehlung/);
 });
