@@ -302,6 +302,27 @@
       "Fehlend " + missing.length + ", mit Grund gezaehlt " + skipped + " (" + JSON.stringify(skippedCounts || {}) + ").");
   }
 
+  /** DQ-TW-5: Wochen-/Monatsspalten (`feld@1W`, `feld@1M`) sind belegt, sobald die Materialisierung sie liefert.
+   *  need[feld] = kleinste `technical-mtf`-Version, die das Feld liefert; bundleVersions = Versionen der Buendel.
+   *  Ein Feld, das noch kein Buendel liefern kann, ist kein Fehler, sondern steht als "wartet" in der Notiz. */
+  function technicalTimeframeFields(cols, need, bundleVersions) {
+    var fail = [], waiting = [], fill = [], n = cols && cols.s ? cols.s.length : 0, checked = 0;
+    var ver = function (v) { var m = /(\d+)\.(\d+)\.(\d+)$/.exec(v || ""); return m ? +m[1] * 1e6 + +m[2] * 1e3 + +m[3] : -1; };
+    var top = -1;
+    (bundleVersions || []).forEach(function (v) { top = Math.max(top, ver(v)); });
+    Object.keys(cols || {}).filter(function (k) { return /@1[WM]$/.test(k); }).sort().forEach(function (k) {
+      var id = k.slice(0, k.indexOf("@")), min = ver(need && need[id] || "technical-mtf-1.0.0");
+      if (top < min) { waiting.push(k); return; }
+      checked++;
+      var c = cols[k], have = 0;
+      for (var i = 0; i < c.length; i++) if (c[i] !== null && c[i] !== undefined) have++;
+      if (!have) fail.push(k + ": in allen " + n + " Zeilen leer, obwohl die Materialisierung es liefert");
+      else fill.push(k + " " + Math.round((have / n) * 1000) / 10 + " %");
+    });
+    return result("DQ-TW-5", "Technical-Wochen-/Monatsfelder sind belegt, soweit die Materialisierung sie liefert", "WARN", checked, fail,
+      (waiting.length ? "Wartet auf Materialisierung (" + waiting.length + "): " + waiting.join(", ") + ". " : "") + "Belegung: " + fill.join(", ") + ".");
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -717,7 +738,7 @@
     payloadMatchesSeries: payloadMatchesSeries,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
