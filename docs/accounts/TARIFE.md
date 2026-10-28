@@ -47,6 +47,7 @@ Jede Variante ist ein eigener PR mit Vorher/Nachher; Daten werden nie gelöscht 
 
 ## Öffentlich öffnen (später, eigene Freigabe)
 
-`VU_CHECKOUT_ACCESS = "public"` in `[env.production.vars]` und die Prüfung im Deploy-Workflow anpassen – erst nach dem
-gemeinsamen Ende-zu-Ende-Test mit echter Zahlung und rechtlicher Prüfung (Impressum, AGB/Nutzungsbedingungen,
+Zwei unabhängige Schlüssel ([FREIGABEN.md](FREIGABEN.md)): `VU_CHECKOUT_ACCESS = "public"` per PR **und**
+`vu_public_checkout = true` am Stripe-Produkt, von Hand im Stripe-Dashboard. Erst nach dem gemeinsamen
+Ende-zu-Ende-Test mit echter Zahlung und rechtlicher Prüfung (Impressum, AGB/Nutzungsbedingungen,
 Widerrufsbelehrung, Umsatzsteuer/Kleinunternehmerstatus, Rechnungsangaben in Stripe).

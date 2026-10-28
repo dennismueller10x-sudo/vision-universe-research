@@ -1,0 +1,135 @@
+name: Konten — Produktion automatisch (Migrationen, Worker)
+# Regulaere, nicht sensible Produktionsschritte OHNE manuelle Freigabe (docs/accounts/FREIGABEN.md):
+#   1. pruefen      Tests, Produktionskonfiguration, Worker-Bundle (ohne Zugangsdaten)
+#   2. migrationen  neue, NICHT destruktive Migrationen in einer Transaktion
+#                   (scripts/account/migrate-production.mjs: Historie, statische Pruefung, Zaehlprobe der
+#                   Kundentabellen; destruktiv -> Abbruch, nur ueber "Konten — Datenbank mit Freigabe")
+#   3. worker       Code und oeffentliche Konfiguration von vu-account (wrangler deploy). Setzt KEINE Secrets.
+#   4. gesundheit   /v1/health, /v1/plans
+# Laeuft nach jedem Merge nach main, der Migrationen oder den Worker aendert, sonst von Hand.
+# Umgebung account-dev OHNE Required reviewers, Deployment branches nur main.
+# Was hier NICHT geht (Freigabe des Owners noetig): Secrets, Stripe-Produkte und -Preise, destruktive
+# Datenbankoperationen, Testerrolle. Oeffentlicher Checkout: zusaetzlich Freigabe am Stripe-Produkt.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/migrate-production.mjs'
+      - '.github/workflows/account-production-auto.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-production-auto-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  WRANGLER: wrangler@4.147.0
+  PROJECT_REF: qiytbnpoqvldsatpfkeh
+  API_ORIGIN: https://konto.visionuniverse.de
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Nur von main
+        env:
+          REF: ${{ github.ref }}
+        run: '[ "$REF" = refs/heads/main ] || { echo "::error::Produktion nur von main ($REF)"; exit 1; }'
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests ohne Datenbank
+        run: node --test workers/vu-account/tests/unit.test.mjs workers/vu-account/tests/flows.test.mjs scripts/account/tests/migrate-production.test.mjs
+      - name: Produktionskonfiguration pruefen
+        working-directory: workers/vu-account
+        run: |
+          set -euo pipefail
+          prod=$(awk '/^\[env\.production\.vars\]/{p=1;next} /^\[/{p=0} p' wrangler.toml)
+          grep -qE '^VU_CANCELLATION_AUTO_PROCESS = "false"$' <<<"$prod" || { echo "::error::Produktion: VU_CANCELLATION_AUTO_PROCESS muss \"false\" sein"; exit 1; }
+          grep -qE "^SUPABASE_URL = \"https://$PROJECT_REF\.supabase\.co\"$" <<<"$prod" || { echo "::error::Produktion: SUPABASE_URL zeigt nicht auf $PROJECT_REF"; exit 1; }
+          grep -qE "^VU_ACCOUNT_API_ORIGIN = \"$API_ORIGIN\"$" <<<"$prod" || { echo "::error::Produktion: VU_ACCOUNT_API_ORIGIN ist nicht $API_ORIGIN"; exit 1; }
+          grep -qE '^VU_REGISTRATION_ALLOWLIST = ""$' <<<"$prod" || { echo "::error::Produktion: keine Registrierungs-Positivliste (oeffentliche Registrierung)"; exit 1; }
+          grep -qE '^VU_CHECKOUT_ACCESS = "(testers|off)"$' <<<"$prod" || { echo "::error::Produktion: VU_CHECKOUT_ACCESS muss \"testers\" oder \"off\" sein - oeffentlicher Checkout nur nach Owner-Freigabe (docs/accounts/FREIGABEN.md)"; exit 1; }
+          grep -q 'account.visionuniverse.de' <<<"$(awk '/^\[env\.production\]/{p=1} p' wrangler.toml | grep -v '^#')" && { echo "::error::account.visionuniverse.de gehoert Shopify"; exit 1; } || true
+          for k in STRIPE_LIVE_MODE_APPROVED VU_CHECKOUT_ACCESS VU_REGISTRATION_ENABLED; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
+          npx --yes "$WRANGLER" deploy --dry-run --env production --outdir "$RUNNER_TEMP/bundle" > /dev/null
+
+  migrationen:
+    needs: pruefen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: account-dev
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Nicht destruktive Migrationen einspielen (eine Transaktion, Zaehlprobe)
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          [[ "$DB_URL" == postgresql://* && "$DB_URL" == *"$PROJECT_REF"* ]] \
+            || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL fehlt oder gehoert nicht zu $PROJECT_REF"; exit 1; }
+          status=0; node scripts/account/migrate-production.mjs || status=$?
+          if [ "$status" = 3 ]; then
+            echo "::error::Destruktive Migration erkannt - nichts eingespielt. Einspielen nur ueber 'Konten — Datenbank mit Freigabe' (Owner-Freigabe)."
+          fi
+          exit "$status"
+
+  worker:
+    needs: migrationen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: account-dev
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ausrollen (Code, oeffentliche Werte; Secrets bleiben unveraendert)
+        working-directory: workers/vu-account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PUB: ${{ secrets.VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY }}
+          SB_URL: ${{ vars.VU_ACCOUNT_SUPABASE_URL }}
+          OPS_ALERT_EMAIL: ${{ vars.VU_ACCOUNT_OPS_ALERT_EMAIL }}
+        run: |
+          set -euo pipefail
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+          [[ "$PUB" == sb_publishable_* ]] || { echo "::error::VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY fehlt oder ist kein sb_publishable_"; exit 1; }
+          [ -z "$SB_URL" ] || [ "$SB_URL" = "https://$PROJECT_REF.supabase.co" ] || { echo "::error::VU_ACCOUNT_SUPABASE_URL zeigt auf ein anderes Projekt"; exit 1; }
+          extra=(--var "SUPABASE_PUBLISHABLE_KEY:$PUB" --var "VU_CANCELLATION_AUTO_PROCESS:false")
+          if [ -n "$OPS_ALERT_EMAIL" ]; then
+            [[ "$OPS_ALERT_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "::error::VU_ACCOUNT_OPS_ALERT_EMAIL ist keine Adresse"; exit 1; }
+            extra+=(--var "VU_OPS_ALERT_EMAIL:$OPS_ALERT_EMAIL")
+          fi
+          npx --yes "$WRANGLER" deploy --env production "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g; s/sb_publishable_[A-Za-z0-9_-]+/<oeffentlich>/g'
+
+  gesundheit:
+    needs: worker
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: /v1/health und /v1/plans
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do code=$(curl -s -o h.json -w '%{http_code}' "$API_ORIGIN/v1/health" || true); [ "$code" = 200 ] && break; sleep 10; done
+          [ "$code" = 200 ] || { echo "::error::$API_ORIGIN/v1/health antwortet $code"; exit 1; }
+          jq '{state, accounts, mail, autoProcess, billing: (.billing // null), cancellations}' h.json
+          [ "$(jq -r .accounts h.json)" = true ] || { echo "::error::Supabase nicht angeschlossen"; exit 1; }
+          [ "$(jq -r .autoProcess h.json)" = false ] || { echo "::error::autoProcess ist nicht false"; exit 1; }
+          curl -fsS "$API_ORIGIN/v1/plans" -o p.json
+          jq -c '{tarife: [.plans[].id], checkout, mode}' p.json
+          [ "$(jq -r '[.plans[].id] | join(",")' p.json)" = "free,pro" ] || { echo "::error::Tarife sind nicht free,pro"; exit 1; }
+          [ "$(jq -r .checkout p.json)" != public ] || { echo "::error::Checkout meldet public"; exit 1; }

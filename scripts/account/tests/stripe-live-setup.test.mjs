@@ -135,3 +135,12 @@ test('bricht ab, wenn Stripe Testmodus meldet', async () => {
 test('Preis-SQL nimmt nur echte Preis-IDs', () => {
   assert.throws(() => livePriceSql([{plan: 'plus', interval: 'month', amount: 990, priceId: "price_x'; drop table x;--"}]), /ungueltig/);
 });
+
+test('Einrichtung setzt nie die Owner-Freigabe fuer den oeffentlichen Checkout', async () => {
+  const s = fakeStripe();
+  const sent = [];
+  const spy = async (url, opts = {}) => { sent.push(String(opts.body || '') + String(url)); return s.fetchImpl(url, opts); };
+  await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: spy, log: () => {}});
+  await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: spy, log: () => {}});
+  assert.ok(!sent.some(b => b.includes('vu_public_checkout')), 'kein Workflow schreibt vu_public_checkout');
+});

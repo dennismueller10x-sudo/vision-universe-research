@@ -7,8 +7,11 @@ name: Konten — Stripe Live einrichten (Produktion)
 #   * Webhook https://konto.visionuniverse.de/v1/billing/webhook/stripe; das Geheimnis geht direkt als
 #     Worker-Secret nach Cloudflare und erscheint nirgends
 #   * plan_prices: Zeile pro_month_live (Job preise-eintragen, Umgebung account-dev)
-# Startet als Probelauf. Keine Zahlung, kein Checkout: wer den Checkout nutzen darf, regelt der Worker
-# (VU_CHECKOUT_ACCESS = "testers": nur Konten mit Rolle billing_tester).
+# SENSIBEL (Stripe-Produkte und -Preise): eine Freigabe des Owners (Umgebung account-production); der Job
+# preise-eintragen (account-dev, ohne eigene Freigabe) laeuft nur danach und prueft dieselbe Freigabe.
+# Keine Zahlung, kein Checkout. Die Owner-Freigabe fuer den OEFFENTLICHEN Checkout (Produkt-Metadaten
+# vu_public_checkout) schreibt dieser Workflow nie; sie wird nur von Hand im Stripe-Dashboard gesetzt.
+# docs/accounts/FREIGABEN.md
 on:
   workflow_dispatch:
     inputs:
@@ -31,9 +34,10 @@ jobs:
       has_prices: ${{ steps.setup.outputs.has_prices }}
     steps:
       - name: Freigabe pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
         run: |
           set -euo pipefail
+          [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
           json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
           ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
           [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
@@ -83,7 +87,7 @@ jobs:
     environment: account-dev
     steps:
       - name: Freigabe pruefen (fail closed)
-        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
         run: |
           set -euo pipefail
           json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")

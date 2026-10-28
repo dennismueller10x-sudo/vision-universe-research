@@ -737,6 +737,28 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
       const other = await signedIn(gated, 'max@example.test');
       assert.equal((await other.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 403, 'Rolle gilt nur fuer das eine Konto');
     } finally { await gated.close(); }
+    // Oeffentlich braucht zwei Schluessel: Konfiguration UND Produkt-Metadaten im Stripe-Dashboard (Owner, von Hand).
+    const pub = await createEnvironment({envOverrides: {VU_CHECKOUT_ACCESS: 'public'}});
+    try {
+      pub.stripe.sim.setProductMetadata({vu_plan: 'pro'});
+      const b = await signedIn(pub, 'olaf@example.test');
+      const closed = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+      assert.deepEqual([closed.status, closed.data.state], [403, 'CHECKOUT_NOT_OPEN'], 'Konfiguration allein oeffnet nichts');
+      assert.equal(pub.stripe.sim.sessions.size, 0);
+      assert.ok(pub.logs.some(l => l.message === 'PUBLIC_CHECKOUT_NOT_RELEASED'));
+      pub.stripe.sim.setProductMetadata({vu_plan: 'pro', vu_public_checkout: 'false'});
+      assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 403, 'nur exakt "true"');
+      pub.stripe.sim.setProductMetadata({vu_plan: 'pro', vu_public_checkout: 'true'});
+      assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 200, 'beide Schluessel -> offen');
+    } finally { await pub.close(); }
+    const testersOnly = await createEnvironment({envOverrides: {VU_CHECKOUT_ACCESS: 'testers'}});
+    try {
+      testersOnly.stripe.sim.setProductMetadata({vu_plan: 'pro'});
+      const b = await signedIn(testersOnly, 'paula@example.test');
+      await testersOnly.pg.json(`with x as (insert into public.user_roles (user_id, role)
+        select id, 'billing_tester' from auth.users where email = 'paula@example.test' returning 1) select to_json(count(*)) from x`);
+      assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 200, 'Tester brauchen keine oeffentliche Freigabe');
+    } finally { await testersOnly.close(); }
     const off = await createEnvironment({envOverrides: {VU_CHECKOUT_ACCESS: 'off'}});
     try {
       const b = await signedIn(off, 'nina@example.test');

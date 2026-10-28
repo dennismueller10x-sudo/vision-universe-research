@@ -27,12 +27,15 @@ Job liest nur seine Umgebung und schreibt direkt in die Worker-Secrets.
 | Umgebung `account-production` | `VU_ACCOUNT_STRIPE_SECRET_KEY` (`rk_live_`) | Deploy (Job `stripe`), Stripe-Einrichtung |
 | Repository | `CLOUDFLARE_API_TOKEN`, Variable `CLOUDFLARE_ACCOUNT_ID`, `BREVO_API_KEY` | alle Worker-Deploys |
 
-Beide Umgebungen: *Required reviewers* = Owner, *Deployment branches* = `main` (zusätzlich `ops/supabase-dev-migrations`
-für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail closed).
+`account-dev`: keine Required reviewers, Deployment branches nur `main`. `account-production`: Required reviewers = Owner,
+nur `main`; sensible Läufe haben dort ihren Freigabe-Job und prüfen die Freigabe zusätzlich selbst (fail closed).
 
 ## Abläufe
 
-1. **Ausrollen** – Actions → „Konten — vu-account ausrollen (Produktion)“ → Run workflow (zwei Freigaben). Danach meldet
+Was automatisch läuft und was eine Freigabe braucht: [FREIGABEN.md](FREIGABEN.md).
+
+1. **Ausrollen** – automatisch nach jedem Merge nach `main` („Konten — Produktion automatisch“: Migrationen, Worker,
+   Gesundheit); Secrets nur über „Konten — Produktions-Secrets setzen (Freigabe)“. Danach meldet
    `https://konto.visionuniverse.de/v1/health` `accounts: true`, `autoProcess: false`.
 2. **Auth einstellen** – „Konten — Supabase Auth einstellen (Produktion)“ (erst Probelauf;
    `supabase-auth-config.mjs --production`, nur die feste Ref, ohne Projektabfrage). Setzt Site-URL, Redirect
@@ -41,7 +44,7 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
    `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` in `account-dev` – SMTP über Brevo.
 3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“ (erst Probelauf, dann zwei Freigaben): legt Produkt
    `vu_pro` „Vision Universe Pro“, den Monatspreis 1,00 EUR (Katalog im Code, `LIVE_CATALOG`), Kundenportal und Webhook an;
-   Webhook-Geheimnis und Portal-ID gehen direkt in den Worker, `pro_month_live` in `plan_prices`.
+   Webhook-Geheimnis und Portal-ID gehen direkt in den Worker, `pro_month_live` in `plan_prices` (eine Freigabe).
 4. **Öffentliche Registrierung** (Owner-Entscheidung 27.10.2026: jede gültige Adresse, **keine Positivliste**):
    - `VU_REGISTRATION_ENABLED = "true"` in `[env.production.vars]`; `VU_REGISTRATION_ALLOWLIST` bleibt leer (der Deploy prüft das).
    - Datenbank: `update public.registration_gate set open = true` – erst danach lässt der Hook „Before User Created“

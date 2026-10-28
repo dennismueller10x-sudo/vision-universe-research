@@ -52,14 +52,26 @@ async function ensureCustomer(ctx, user) {
   return customer.id;
 }
 
-// Darf dieses Konto den Checkout starten? Bei "testers" nur mit Rolle billing_tester
-// (user_roles ist fuer Nutzer nur lesbar; vergeben wird die Rolle ausschliesslich per Service).
+// Wer den Checkout starten darf (VU_CHECKOUT_ACCESS):
+//   off      niemand
+//   testers  nur Konten mit Rolle billing_tester (user_roles ist fuer Nutzer nur lesbar;
+//            vergeben wird die Rolle ausschliesslich per Service nach Owner-Freigabe)
+//   public   jedes Konto - aber nur, wenn ZUSAETZLICH am Stripe-Produkt die Metadaten
+//            vu_public_checkout = "true" stehen. Diesen zweiten Schluessel setzt der Owner von Hand
+//            im Stripe-Dashboard; kein Workflow und kein Skript schreibt ihn. Eine Konfigurations-
+//            aenderung allein oeffnet also keine echten Zahlungen (docs/accounts/FREIGABEN.md).
+export const PUBLIC_CHECKOUT_FLAG = 'vu_public_checkout';
+
+async function isTester(ctx, user) {
+  const rows = await ctx.sb.user.select(user.accessToken, 'user_roles', {user_id: `eq.${user.id}`, role: 'eq.billing_tester'});
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+// Fuer die Anzeige (/v1/me/billing). Verbindlich prueft checkout().
 export async function checkoutAllowed(ctx, user) {
   const access = ctx.cfg.stripe.checkoutAccess;
   if (access === 'public') return true;
-  if (access !== 'testers') return false;
-  const rows = await ctx.sb.user.select(user.accessToken, 'user_roles', {user_id: `eq.${user.id}`, role: 'eq.billing_tester'});
-  return Array.isArray(rows) && rows.length > 0;
+  return access === 'testers' && isTester(ctx, user);
 }
 
 // Vor dem Checkout bestaetigt das Konto: wiederkehrender Preis, Kuendigung zum Laufzeitende,
@@ -70,7 +82,9 @@ export async function checkout(ctx) {
   assertBilling(ctx);
   const user = await requireUser(ctx);
   await ctx.limit('sensitive', user.id);
-  if (!await checkoutAllowed(ctx, user)) throw new HttpError(403, 'CHECKOUT_NOT_OPEN');
+  const access = ctx.cfg.stripe.checkoutAccess;
+  const tester = access === 'off' ? false : await isTester(ctx, user);
+  if (access === 'off' || (access === 'testers' && !tester)) throw new HttpError(403, 'CHECKOUT_NOT_OPEN');
   const body = await readJson(ctx.request);
   if (body.confirm !== true) throw new HttpError(400, 'CHECKOUT_CONFIRMATION_REQUIRED');
   const key = v.priceKey(body.price);
@@ -88,6 +102,10 @@ export async function checkout(ctx) {
       || String(stripePrice.currency).toUpperCase() !== price.currency || stripePrice.recurring?.interval !== price.billing_interval) {
     ctx.log('error', 'PRICE_MISMATCH', {price: key});
     throw new HttpError(409, 'PRICE_NOT_AVAILABLE');
+  }
+  if (!tester && stripePrice.product?.metadata?.[PUBLIC_CHECKOUT_FLAG] !== 'true') {
+    ctx.log('error', 'PUBLIC_CHECKOUT_NOT_RELEASED', {price: key});
+    throw new HttpError(403, 'CHECKOUT_NOT_OPEN');
   }
   const customer = await ensureCustomer(ctx, user);
   const site = ctx.cfg.siteOrigin;

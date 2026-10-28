@@ -37,6 +37,8 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
   const customers = new Map(), sessions = new Map(), subscriptions = new Map(), invoices = new Map();
   const idempotency = new Map();
   const priceOverrides = new Map(); // Simulation: Preis im Stripe-Dashboard geaendert
+  // Simulation: Produkt-Metadaten im Stripe-Dashboard (oeffentlicher Checkout freigegeben).
+  let productMetadata = {vu_public_checkout: 'true'};
   const events = [];
   const t = () => Math.floor(now() / 1000);
 
@@ -156,7 +158,9 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
     }
     if ((m = p.match(/^\/v1\/prices\/(price_\w+)$/)) && req.method === 'GET') {
       const price = priceOverrides.get(m[1]) || priceObject(m[1]);
-      return price ? reply(200, {...price, active: price.active ?? true}) : notFound('price');
+      const expandProduct = Object.values(params.expand || {}).includes('product');
+      return price ? reply(200, {...price, active: price.active ?? true,
+        product: expandProduct ? {id: 'vu_sim_product', object: 'product', metadata: {...productMetadata}} : 'vu_sim_product'}) : notFound('price');
     }
     if ((m = p.match(/^\/v1\/invoices\/(in_\w+)$/)) && req.method === 'GET') {
       return invoices.has(m[1]) ? reply(200, invoices.get(m[1])) : notFound('invoice');
@@ -222,6 +226,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
     },
     pendingEvents: () => events.filter(e => !e.delivered),
     overridePrice(id, patch) { priceOverrides.set(id, {...priceObject(id), ...patch}); },
+    setProductMetadata(meta) { productMetadata = {...meta}; },
     // Stellt alle offenen Ereignisse signiert zu. post(rawBody, signatureHeader) -> Response
     async deliver(post, {only} = {}) {
       const results = [];
