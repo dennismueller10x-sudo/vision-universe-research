@@ -45,7 +45,25 @@ QUARTERS = 8
 _STATE = {}
 
 
+def _memoize_to_instant():
+    """Performance only: to_instant is a pure date/str -> aware datetime conversion (immutable result),
+    called millions of times by the resolver. The memo returns the identical value; no logic changes."""
+    import functools
+    from quant.sec import derived, periods, restatements
+    original = restatements.to_instant
+    cached = functools.lru_cache(maxsize=1 << 20)(original)
+
+    def to_instant(value, end_of_day=False):
+        try:
+            return cached(value, end_of_day)
+        except TypeError:   # unhashable input - never expected, fall back
+            return original(value, end_of_day)
+    for module in (restatements, periods, derived):
+        module.to_instant = to_instant
+
+
 def _init(zip_path):
+    _memoize_to_instant()
     _STATE["zip"] = zipfile.ZipFile(zip_path)
     _STATE["registry"] = MetricRegistry.load()
     _STATE["hints"] = consumer.load_fiscal_year_end_hints(ROOT / "quant/data/fundamentals/issuers")
