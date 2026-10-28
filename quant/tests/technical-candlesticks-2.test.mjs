@@ -96,7 +96,9 @@ test("Fixture: TA-Lib 0.8.2, 31 Muster, Signale auf den 38 Titeln der ersten Fix
   }
   assert.equal(FX.params.CDLMATHOLD.penetration, 0.5);
   assert.match(K.CANDLESTICKS_VERSION, /^technical-candlesticks-1\.([1-9]\d*)\.\d+$/);
-  assert.equal(K.PATTERNS.length, 58);
+  /* Ab 1.2.0 (L13) haengen weitere Muster an; die 58 Muster von 1.1.0 stehen unveraendert vorn. */
+  assert.ok(K.PATTERNS.length >= 58);
+  assert.equal(K.PATTERNS.findIndex((p) => p.id === "xSideGapThreeMethods"), 57);
 });
 
 test("TA-Lib-Abgleich im Produktmodus: Bar fuer Bar gleich, Ausnahmen nur die aufgezaehlten Gleichstaende", () => {

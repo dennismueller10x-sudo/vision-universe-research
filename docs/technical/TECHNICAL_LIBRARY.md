@@ -13,9 +13,9 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
 | Indikatoren (`indicators.js` 1.5.0) | 78 | 78 | 78 | 26 | 20 ●, Rest ○ |
-| Candlestick-Muster (`candlesticks.js` 1.1.0) | 58 | 58 | 57 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
+| Candlestick-Muster (`candlesticks.js` 1.2.0) | 62 | 62 | 61 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
 | Chartformationen (`formations.js` 1.2.3 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
-| **gesamt** | **160** | **160** | **159** | **77** | **44 ●** |
+| **gesamt** | **164** | **164** | **163** | **77** | **44 ●** |
 
 **Herkunft „Markt“:**
 - **Indikatoren, 50 Wert für Wert gegen TA-Lib 0.8.2 auf echten AAPL-Kursen:**
@@ -197,6 +197,7 @@ Die Schritte sind nach Nutzen und Risiko geordnet. Jeder ist ein eigener PR.
 | L9 | Weitere Tagesfelder im Screener: Vortex, Choppiness, 20-Tage-Hoch/-Tief (Donchian), Elder Impulse, Z-Score, Hull steigend, Ulcer, historische Volatilität, Connors RSI, Abstand zum Chandelier-Stopp | **Fachmodell** | erledigt (#1035, Owner-Freigabe 28.10.2026): [SCREENER_FIELDS_L9.md](SCREENER_FIELDS_L9.md); bestehende 123 Spalten byte-gleich |
 | L10 | Dreiecksklassifikation: gelten aufsteigend und absteigend zugleich, ist das Muster symmetrisch (Spiegeltest) | **Fachmodell** | erledigt (#1037, Owner-Freigabe 28.10.2026): FORMATION_VALIDATION.md §6, 19 Titel |
 | L11 | Dreieckskanten nach Typ: aufsteigend oben waagrecht/unten durch die Tiefs, absteigend umgekehrt; Kantenprüfung im Validator | **Fachmodell** | PR #1047 wartet auf Freigabe; FORMATION_VALIDATION.md §7 |
+| L13 | Candlestick-Bibliothek vervollständigt: Long Line, Short Line, Kicking by Length, Modifizierter Hikkake (alle 61 TA-Lib-CDL-Funktionen abgedeckt) | Katalog, kein Fachmodell | erledigt (candlesticks 1.2.0): CANDLESTICKS.md |
 
 **Verfügbarkeitsgrenzen nach Zeitrahmen:**
 - **Tag:** Der Browser und `screen-row` sehen 270 Tagesbars. Indikatoren mit einer Aufwärmphase über 269 Bars sind auf Tagesbasis nur im Materialisierungslauf exakt rechenbar, der die volle Historie hat (Muster EMA 200).

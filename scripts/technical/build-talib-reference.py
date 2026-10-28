@@ -32,6 +32,12 @@ die in echten Kursen fast nie vorkommen (constructed_series()):
     /tmp/talib-venv/bin/python scripts/technical/build-talib-reference.py --set candles2 \
         --out quant/tests/fixtures/technical-talib-candles-2.json
 
+`--set candles3` rechnet die vier restlichen CDL-Funktionen ab candlesticks 1.2.0 (L13) auf denselben eingefrorenen
+Bars und auf konstruierten Kerzenfolgen (CONSTRUCTED_3):
+
+    /tmp/talib-venv/bin/python scripts/technical/build-talib-reference.py --set candles3 \
+        --out quant/tests/fixtures/technical-talib-candles-3.json
+
 Die Fixture haelt Bibliotheks- und C-Kern-Version fest. Werte sind auf 10
 signifikante Stellen gerundet, NaN wird null.
 """
@@ -57,13 +63,15 @@ def ser(a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--set", default="core", choices=["core", "ext", "ext2", "candles", "candles2"])
+    ap.add_argument("--set", default="core", choices=["core", "ext", "ext2", "candles", "candles2", "candles3"])
     ap.add_argument("--tickers", default="")
     args = ap.parse_args()
     if args.set == "candles":
         return write_candles(args)
     if args.set == "candles2":
         return write_candles2(args)
+    if args.set == "candles3":
+        return write_candles2(args, CANDLE_FUNCTIONS_3, CONSTRUCTED_3, "candles3")
 
     ref = json.load(open(SRC, encoding="utf-8"))
     o, h, l, c, v = (np.asarray(ref[k], dtype=float) for k in ("open", "high", "low", "close", "volume"))
@@ -224,12 +232,12 @@ CONSTRUCTED = {
 MIRRORED = {"breakaway"}  # beidseitige Muster: zusaetzlich gespiegelt (p -> 2*Niveau - p), ergibt die Gegenrichtung
 
 
-def constructed_series():
+def constructed_series(patterns=None):
     """Deterministische Kerzenfolgen: je Muster drei Varianten (Grundreihe 12 Bars um 100, 15 Bars um 100,
     12 Bars um 150 mit um 50 verschobenem Muster), bei beidseitigen Mustern zusaetzlich gespiegelt.
     Das Muster steht an den letzten Bars; erwartet wird das Signal an der letzten Bar (bei Namen auf -neg: keines)."""
     out = {}
-    for pid, pat in CONSTRUCTED.items():
+    for pid, pat in (patterns or CONSTRUCTED).items():
         variants = [("a", 12, 0.0), ("b", 15, 0.0), ("c", 12, 50.0)]
         for tag, n, shift in variants:
             bars = quiet_base(n, 100.0 + shift) + [tuple(round(v + shift, 4) for v in b) for b in pat]
@@ -248,40 +256,52 @@ def cdl_signals(fmap, o, h, l, c):
     return signals
 
 
-def write_candles2(args):
+CANDLE_FUNCTIONS_3 = {
+    "longLine": "CDLLONGLINE", "shortLine": "CDLSHORTLINE", "kickingByLength": "CDLKICKINGBYLENGTH", "hikkakeMod": "CDLHIKKAKEMOD",
+}
+# Kicking by Length: zwei gegenfarbige Marubozu mit Kerzenluecke; die Richtung bestimmt der laengere Koerper.
+# -long: zweiter Koerper laenger (Richtung der zweiten), -short: erster laenger (Richtung der ersten, entgegen der Luecke).
+CONSTRUCTED_3 = {
+    "kickingByLength-long": [(103, 103.02, 99.98, 100), (103.5, 108.52, 103.48, 108.5)],
+    "kickingByLength-short": [(106, 106.02, 99.98, 100), (106.5, 108.52, 106.48, 108.5)],
+}
+
+
+def write_candles2(args, functions=None, constructed_pat=None, set_name="candles2"):
     """Zweite Candlestick-Fixture: TA-Lib-Signale der 31 Muster ab 1.1.0 auf den Bars der ersten Fixture
     (nur Verweis, keine Bars doppelt) und auf konstruierten Kerzenfolgen (Bars + Signale)."""
     from talib import abstract
+    functions = functions or CANDLE_FUNCTIONS_2
     src_rel = "quant/tests/fixtures/technical-talib-candles.json"
     src = json.load(open(os.path.join(ROOT, src_rel), encoding="utf-8"))
     titles = {}
     for t, ti in src["titles"].items():
         o, h, l, c = (np.asarray(ti[k], dtype=float) for k in ("open", "high", "low", "close"))
-        titles[t] = {"bars": len(c), "signals": cdl_signals(CANDLE_FUNCTIONS_2, o, h, l, c)}
+        titles[t] = {"bars": len(c), "signals": cdl_signals(functions, o, h, l, c)}
     constructed = {}
-    for name, bars in constructed_series().items():
+    for name, bars in constructed_series(constructed_pat).items():
         o, h, l, c = (np.asarray([b[k] for b in bars], dtype=float) for k in range(4))
         constructed[name] = {"open": o.tolist(), "high": h.tolist(), "low": l.tolist(), "close": c.tolist(),
-                             "signals": cdl_signals(CANDLE_FUNCTIONS_2, o, h, l, c)}
+                             "signals": cdl_signals(functions, o, h, l, c)}
     out = {
         "note": "TA-Lib-Candlestick-Signale der Muster ab candlesticks 1.1.0 auf den eingefrorenen echten Tagesbars von "
                 + src_rel + " (Bars dort, hier nur Signale) und auf konstruierten Kerzenfolgen fuer seltene Muster. "
-                "Erzeugt mit scripts/technical/build-talib-reference.py --set candles2. Nur fuer Tests.",
+                "Erzeugt mit scripts/technical/build-talib-reference.py --set " + set_name + ". Nur fuer Tests.",
         "library": "TA-Lib (Python)",
         "libraryVersion": talib.__version__,
         "coreVersion": talib.__ta_version__.decode() if isinstance(talib.__ta_version__, bytes) else str(talib.__ta_version__),
-        "set": "candles2",
+        "set": set_name,
         "source": src_rel,
-        "params": {"CDLMATHOLD": {"penetration": 0.5}},
-        "lookback": {pid: abstract.Function(fn).lookback for pid, fn in CANDLE_FUNCTIONS_2.items()},
-        "functions": CANDLE_FUNCTIONS_2,
+        "params": {"CDLMATHOLD": {"penetration": 0.5}} if set_name == "candles2" else {},
+        "lookback": {pid: abstract.Function(fn).lookback for pid, fn in functions.items()},
+        "functions": functions,
         "titles": titles,
         "constructed": constructed,
     }
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump(out, fh, separators=(",", ":"))
         fh.write("\n")
-    print(f"{args.out}: {len(titles)} Titel, {len(constructed)} konstruierte Reihen, {len(CANDLE_FUNCTIONS_2)} Muster, TA-Lib {out['libraryVersion']}")
+    print(f"{args.out}: {len(titles)} Titel, {len(constructed)} konstruierte Reihen, {len(functions)} Muster, TA-Lib {out['libraryVersion']}")
 
 
 def ext2_series(o, h, l, c, v):
