@@ -62,6 +62,7 @@ function eligibleRows(ctx, spec, j) {
   if (spec.family === 'FUND' || spec.universeFamily === 'FUND') {
     const fd = ctx.fund.byJ.get(j); if (!fd) return [];
     out = rows.map(r => ({ ...r, fund: fd.rows.get(r.id) || null })).filter(r => r.fund);
+    if (spec.plausibleMcap) out = out.map(r => ({ ...r, fund: { ...r.fund, mcap: plausibleCap(ctx, fd, r.id, j) } })); // sensitivity only
     if (spec.minMarketCap) out = out.filter(r => L.finite(r.fund.mcap) && r.fund.mcap >= spec.minMarketCap);
   }
   const need = [...(spec.ranks || []).map(x => x[0]), ...(spec.filters || []).map(x => x[0]), ...(spec.requireFeatures || [])];
