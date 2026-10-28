@@ -1,0 +1,372 @@
+{
+ "schemaVersion": "quant-v10-handoff-1.0.0",
+ "asOf": "2026-10-28",
+ "v9Status": "V9_METHODS_ACCEPTED_WITH_LIMITED_SCOPE",
+ "counts": {
+  "implemented": "13/13",
+  "acceptedWithDefinedScope": "7/13",
+  "extensionMethods": "7/7",
+  "certifiedBacktestKinds": "0/6"
+ },
+ "ownerScope": "7/7 is a methodological acceptance within the documented limited scope only; portfolio rebalancing covers the evidenced bookkeeping mechanics only (owner 2026-10-28).",
+ "sources": {
+  "docs/quant-recovery/v9/certification-readiness-1.0.0.json": "a93e6ccbd65638136b32064d1473e1ccddb7f62054137e76d3498767468d2a3d",
+  "docs/quant-recovery/v9/setup-independence-1.0.0.json": "e42340e3fd582620983652a5981811baf569f439a12025de93176cd8f94b8108"
+ },
+ "mergedPullRequests": [
+  {
+   "pr": 1028,
+   "mergeCommit": "4036674271",
+   "content": "V9 research, reports and evidence",
+   "reach": "docs/scripts only"
+  },
+  {
+   "pr": 1042,
+   "mergeCommit": "daa5a94867",
+   "content": "PZZA split supplement in the series producers",
+   "reach": "scripts/market producer; data changes on next long-series run"
+  },
+  {
+   "pr": 1036,
+   "mergeCommit": "62ac2e6470",
+   "content": "Research ledger 1.2.0 (spin-off, ADS, information vs. claim time)",
+   "reach": "research engine, no productive importer"
+  },
+  {
+   "pr": 1041,
+   "mergeCommit": "d743d342e1",
+   "content": "Research identity registry, 5 bindings (TRAK excluded from productive admission)",
+   "reach": "research loader, default off"
+  },
+  {
+   "pr": 1043,
+   "mergeCommit": "d71fbbe642",
+   "content": "SEC pipeline P1-P4, DQ-SEC-1/2 (WARN), DQ-SEC-3 (INFO)",
+   "reach": "producer code; data changes on next sec-consumer-fundamentals run"
+  },
+  {
+   "pr": 1046,
+   "mergeCommit": "3a93aeb8fd",
+   "content": "SEC-checked CA register, 24 events / 23 series (offline research only)",
+   "reach": "research loader, default off"
+  },
+  {
+   "pr": 1034,
+   "mergeCommit": "a378b29cc6",
+   "content": "DQ-PX-6/7, DQ-ID-4 (stale tails, master/series contradictions; WARN)",
+   "reach": "data-quality rules only"
+  },
+  {
+   "pr": 1054,
+   "mergeCommit": "5b5639f44d",
+   "content": "Repair after #1028/#1043: bulk-archive guard test skips offline research folders v9/, v9_followups/; production modules and behavioural assertions unchanged",
+   "reach": "test only"
+  }
+ ],
+ "dataFilesChangedByMerges": 0,
+ "pendingDataEffects": [
+  {
+   "pr": 1043,
+   "producer": ".github/workflows/sec-consumer-fundamentals.yml",
+   "next": "Monday 07:30 UTC",
+   "effect": "all 5,063 bundles rewritten with normalization_logic 1.14.0, 416 with changed content; then product-intelligence-materialization and sec-fundamentals refresh",
+   "atHandoff": "committed bundles still carry normalization_logic 1.13.0"
+  },
+  {
+   "pr": 1042,
+   "producer": ".github/workflows/long-series.yml",
+   "next": "2026-11-07 full run or a run with only=PZZA",
+   "effect": "ref_PZZA weekly closes before 2013-12-30 halved (unadjusted 2:1 split)",
+   "atHandoff": "unchanged"
+  }
+ ],
+ "researchLoader": {
+  "module": "quant/engines/research-weekly-loader.cjs",
+  "defaultOff": true,
+  "productiveImporter": null,
+  "qualified": {
+   "default": 4449,
+   "identity": 4453,
+   "identityAndCorporateActions": 4476
+  },
+  "TRAK": "only with identityEvidenceAllowCoverPageOnly; excluded from productive admission (owner 2026-10-28), no automatic fallback"
+ },
+ "certifications": [
+  {
+   "kind": "SAME_STOCK_REPLAY",
+   "status": "LIMITED",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "class": "STRUCTURAL_BY_DESIGN",
+     "value": "Eine Aktie mit langer Historie hat überlebt",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "ruleTest",
+     "class": "STRUCTURAL_BY_DESIGN",
+     "value": "beschreibt, prüft keine Regel",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ]
+  },
+  {
+   "kind": "PATTERN_EVIDENCE",
+   "status": "LIMITED",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "class": "EVIDENCE_MISSING",
+     "value": "teilweise nicht quantifiziert",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "returnBasis",
+     "class": "EVIDENCE_MISSING",
+     "value": "Diese Musterstudie verwendet Kursrendite",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "certifiedAsBacktest",
+     "class": "STRUCTURAL_BY_DESIGN",
+     "value": "Häufigkeitsauswertung",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ]
+  },
+  {
+   "kind": "SIGNAL_BACKTEST",
+   "status": "LIMITED",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "survivorship",
+     "class": "EVIDENCE_MISSING",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "ruleCertified",
+     "class": "EVIDENCE_MISSING",
+     "value": "0 von 5",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    }
+   ]
+  },
+  {
+   "kind": "SETUP_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "historyDates",
+     "class": "TIME_ACCUMULATION",
+     "value": 21,
+     "required": 120,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "historySpan",
+     "class": "TIME_ACCUMULATION",
+     "value": "46 Tage",
+     "required": "180 Tage",
+     "earliestClearanceEstimate": "2027-03-10",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "completedOutcomes",
+     "class": "TIME_ACCUMULATION",
+     "value": 0,
+     "required": 100,
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "titles",
+     "class": "TIME_ACCUMULATION",
+     "value": 0,
+     "required": 20,
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "independence",
+     "class": "NORMATIVE",
+     "value": 2,
+     "required": 20,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "returnBasis",
+     "class": "EVIDENCE_MISSING",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "required": null,
+     "earliestClearanceEstimate": null,
+     "historicalStudyCanReplace": true
+    },
+    {
+     "gate": "entryVariant",
+     "class": "TIME_ACCUMULATION",
+     "value": "noch nicht messbar",
+     "required": "Δ Median ≤ 1 Pp",
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "oos",
+     "class": "TIME_ACCUMULATION",
+     "value": "erst mit abgeschlossenen Ergebnissen messbar",
+     "required": null,
+     "earliestClearanceEstimate": "2027-03-26 (earliest first M6 maturity, not gate clearance)",
+     "historicalStudyCanReplace": false
+    }
+   ]
+  },
+  {
+   "kind": "STRATEGY_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "membershipHistory",
+     "class": "TIME_ACCUMULATION",
+     "value": "2 (6 Stände seit 2026-09-15)",
+     "required": 24,
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "factorHistory",
+     "class": "TIME_ACCUMULATION",
+     "value": "2 (21 Stände seit 2026-09-23)",
+     "required": 24,
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    }
+   ]
+  },
+  {
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "status": "COLLECTING_HISTORY",
+   "certified": false,
+   "blockers": [
+    {
+     "gate": "factorHistory",
+     "class": "TIME_ACCUMULATION",
+     "value": 2,
+     "required": 24,
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "completedForward",
+     "class": "TIME_ACCUMULATION",
+     "value": 0,
+     "required": 12,
+     "earliestClearanceEstimate": "2028-01-01",
+     "historicalStudyCanReplace": false
+    },
+    {
+     "gate": "membershipHistory",
+     "class": "TIME_ACCUMULATION",
+     "value": 2,
+     "required": 24,
+     "earliestClearanceEstimate": "2028-08-01",
+     "historicalStudyCanReplace": false
+    }
+   ]
+  }
+ ],
+ "setupIndependenceDecision": {
+  "status": "OPEN_NOT_APPROVED",
+  "activeGateChanged": false,
+  "ownerDecision": "2026-10-28: ISO-week change not approved; existing gate unchanged.",
+  "counts": {
+   "events": 4137,
+   "uniqueDates": 20,
+   "from": "2026-09-24",
+   "to": "2026-10-26",
+   "legacyMonthCount": 2,
+   "isoWeekCount": 6,
+   "activeRequirement": 20,
+   "legacyEvaluator": "scripts/quant/build-backtest-certification.mjs: new Set(outcomes.events.map(e => e[2].slice(0,7))).size"
+  },
+  "findings": [
+   "Observed: 4137 events on 20 dates / 6 ISO weeks / 2 months; all M6 windows overlap (1 non-overlapping M6 block).",
+   "Mean pairwise daily-return correlation 0.061 raw, 0.079 SPY-excess.",
+   "N_eff for the mean M6 outcome of all events: raw 17.1, SPY-excess 13.3 (n=4137).",
+   "20 consecutive weeks x 200 titles (n=4000) give raw N_eff 22.0: twenty calendar weeks are not twenty independent observations of an M6 outcome; overlapping horizons and the common market factor dominate.",
+   "Neither a month count nor an ISO-week count measures independence. A dependence-aware criterion (minimum N_eff from a declared cluster/block model, plus a minimum number of non-overlapping horizon blocks) is required to make the gate meaningful."
+  ],
+  "proposalForLaterDecision": [
+   "Keep the active gate (calendar months, independentWeeks=20) unchanged until owner approval.",
+   "If changed: rename the field to what is counted (eventCalendarWeeks) and add a separate independence gate: minimum effective sample size of the M6 endpoint under a pre-registered calendar-block/cluster model (e.g. N_eff >= 30 on SPY-excess returns) AND at least k non-overlapping M6 horizon blocks (e.g. k >= 4, i.e. >= ~2 years of history).",
+   "Report raw and market-excess N_eff on every certification build; never infer independence from event counts."
+  ]
+ },
+ "dataGaps": [
+  {
+   "id": "HISTORICAL_POPULATION",
+   "description": "No historical primary US common population incl. delistings and no original membership history; all studies run on current survivors."
+  },
+  {
+   "id": "IDENTITY",
+   "description": "180 ambiguous ids stay blocked; 132 source-backed bindings only as V9 proposal (not approved); EFOR and SUNE held; TRAK has no price evidence; 19 ids unresolved."
+  },
+  {
+   "id": "CORPORATE_ACTIONS",
+   "description": "577 CA holds stay in the default path; unchecked: 440 events before 2011, 240 with open identity, 215 without bracketing filings; spin-offs (e.g. ABT/AbbVie) not modelled as total return; no further CA cases without independent source check."
+  },
+  {
+   "id": "STALE_TAILS",
+   "description": "341 weekly and 475 daily series with frozen closes, 103 master/series contradictions (DQ-PX-6/7, DQ-ID-4, WARN only); open: master producer fix (INACTIVE on stale tail plus Form 25/15), adapter block reason, Discover flag."
+  },
+  {
+   "id": "WEEKLY_GAPS",
+   "description": "218 series with 641 gaps stay unfilled; interpolation forbidden."
+  },
+  {
+   "id": "SEC_PIT",
+   "description": "CAPS fiscal-calendar gap (DQ-SEC-1 stays 2 after rebuild); 520 future-dated cases classified only by sample; acceptance is an upper bound, not publication time."
+  },
+  {
+   "id": "DIVIDENDS_TOTAL_RETURN",
+   "description": "Sourced pay dates complete only for MSFT and WMT (JPM 15/47, XOM 14/47, META 1/11); ex-dates not from sources; receipt of terminal cash amounts unstated (NOT_STATED, never investable)."
+  },
+  {
+   "id": "PROVIDER_AND_MASTER_ERRORS",
+   "description": "Trailing repeated closes after the last trading day (CRNX, LBRDK, DBRG, WBS); SAN in the master as EQUITY_COMMON instead of ADS; bulk submissions archive acceptance times offset +4/5 h (not used)."
+  },
+  {
+   "id": "CONFIRMATION",
+   "description": "Prospective 8-K cohort registered, evaluable from 2027-04-29; no other untouched holdout exists."
+  }
+ ],
+ "v10Rules": [
+  "Gates unchanged; no certification by lowering existing quality rules.",
+  "Domain models only in their own PRs with before/after comparison.",
+  "Generated artifacts never edited by hand; rebuilt by their producer.",
+  "SEC only via the existing fair-access client, <= 2 requests/s per stream.",
+  "No new paid data providers.",
+  "Product read paths (weekly-real-adapter.cjs, corporate-action-evidence.js, backtest freshness codes) only with separate approval; research extensions via research-weekly-loader.cjs."
+ ],
+ "productionApproved": false
+}
