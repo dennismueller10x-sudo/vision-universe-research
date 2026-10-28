@@ -189,9 +189,10 @@ test('SF2-MISSING-DATA-ALL-SCREENS: missing bars never throw, never produce NaN 
 test('SF2-LEGACY-ISOLATION: no product, page, workflow or legacy module imports the completion or signal modules; no live path exists', () => {
   const offenders = [];
   // every reference to the source-faithful tree outside it (review SF2-R4-13); allowed: its own tests and the research
-  // workflow that runs the runner
-  // and core/registry/domains.json only while its sole reference is the one pinned SF8 entry (V2, registry-guard.mjs)
-  const allowed = (rel) => /^scripts\/supertrader\/source-faithful\//.test(rel) || /^scripts\/supertrader\/tests\/sf-[a-z0-9-]+\.test\.mjs$/.test(rel) || rel === '.github/workflows/supertrader-validation.yml'
+  // workflow that runs the runner, the prepared, disabled SF8 daily run (owner decision O-2; its switch-off is pinned
+  // by SF8-DAILY-DISABLED in sf-product-contract.test.mjs), and core/registry/domains.json only while its sole reference
+  // is the one pinned SF8 entry (V2, registry-guard.mjs)
+  const allowed = (rel) => /^scripts\/supertrader\/source-faithful\//.test(rel) || /^scripts\/supertrader\/tests\/sf-[a-z0-9-]+\.test\.mjs$/.test(rel) || rel === '.github/workflows/supertrader-validation.yml' || rel === '.github/workflows/supertrader-sf8-candidates.yml'
     || (rel === 'core/registry/domains.json' && sf8RegistryViolations(fs.readFileSync(path.join(ROOT, rel), 'utf8')).length === 0);
   const scan = (dir) => { for (const f of fs.readdirSync(dir, { withFileTypes: true })) { const p = path.join(dir, f.name), rel = path.relative(ROOT, p); if (f.isDirectory()) { if (!['node_modules', '.git'].includes(f.name)) scan(p); } else if (/\.(m?js|html|ya?ml|json)$/.test(f.name) && !allowed(rel) && fs.statSync(p).size < 5e6 && /source-faithful\/|research-signal\.mjs|completion\/(gaps|status|facts|build-completion)/.test(fs.readFileSync(p, 'utf8'))) offenders.push(rel); } };
   for (const d of ['supertrader', 'scripts/supertrader', '.github', 'core']) if (fs.existsSync(path.join(ROOT, d))) scan(path.join(ROOT, d));
