@@ -139,6 +139,18 @@ test("DQ-SF8-4 · keine Order-/Stopmarke, kein Plan, keine rueckrechenbare Kennz
   assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen; Statustexte und closeVsTop sind keine Order");
 });
 
+test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N beschreibend erlaubt, als Order-, Stop- oder Einstiegsparameter nicht", () => {
+  const ok = bundle((v) => { v.C12[0].stage = "CONFIRMED_RESEARCH_SETUP"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98 }; v.C12[0].pivot = { level: 98, kind: "GAP_DAY_LOW", distance: 0.02 };
+    v.C12[0].features = { closeVsGapLow: 0.0255, gapInAtr: 1.2 }; v.C01[0].features = { N: 0.64, nPct: 0.027, path: "FAILSAFE_55" }; });
+  assert.ok(!failing(ok).includes("DQ-SF8-4"), "beschreibend zulaessig");
+  for (const [c, k] of [["C12", "stopDistance"], ["C12", "stopReference"], ["C12", "gapLowStop"], ["C01", "entryN"], ["C01", "stopN"], ["C01", "limitPrice"], ["C01", "triggerLevel"]]) {
+    const b = bundle((v) => { const x = v[c][0]; if (x.stage === "MODELED_TRADE_PLAN") { x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; } x.features[k] = 0.64; });
+    assert.ok(failing(b).includes("DQ-SF8-4"), c + " features." + k);
+  }
+  /* auch als Marke: eine Risikoreferenz ist keine Strukturmarke */
+  assert.ok(failing(bundle((v) => { v.C12[0].stage = "CHART_CANDIDATE"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98, stopReference: 98 }; })).includes("DQ-SF8-4"));
+});
+
 test("DQ-SF8-5 · Quarantaene und DQ-Grenzen: Quarantaene ueber Chart, veroeffentlichtes FAIL, CAP ueberschritten", () => {
   assert.ok(failing(bundle((v) => { v.C11[0].dataQuality.quarantinedSessions = [{ date: "2026-05-01", flag: "DQ-K5" }]; })).includes("DQ-SF8-5"));
   assert.ok(!failing(bundle((v) => { v.C04[0].dataQuality.quarantinedSessions = [{ date: "2026-05-01", flag: "DQ-K5" }]; })).includes("DQ-SF8-5"), "Chart-Kandidat mit Quarantaene ist zulaessig");
