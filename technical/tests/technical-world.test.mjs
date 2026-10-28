@@ -246,3 +246,34 @@ test("Gespeicherte Suchstrategien: umbenennen, exportieren, importieren (validie
   assert.equal(M.importScreens(st2, "{kaputt").error, "KEIN_JSON");
   assert.equal(M.importScreens(st2, JSON.stringify({ screens: [] })).error, "FORMAT");
 });
+
+test("Chart Studio: eingefrorene Reihe wie im Screener erkannt (core/listing-staleness.js, Schwelle dailyMinRun)", () => {
+  const Staleness = require(join(root, "core/listing-staleness.js"));
+  const dates = Array.from({ length: 12 }, (_, i) => "2026-10-" + String(10 + i).padStart(2, "0"));
+  const moving = dates.map((_, i) => 10 + i);
+  const n = Staleness.DEFAULTS.dailyMinRun;
+  const frozen = moving.map((v, i) => (i >= dates.length - n ? moving[dates.length - n] : v));
+  assert.deepEqual(M.seriesState(dates, moving, "2026-10-21", Staleness), { asOf: "2026-10-21", universeAsOf: "2026-10-21", frozenSince: null, frozenIndex: -1, frozenRun: 0, behind: false });
+  const f = M.seriesState(dates, frozen, "2026-10-21", Staleness);
+  assert.equal(f.frozenSince, dates[dates.length - n]);
+  assert.equal(f.frozenIndex, dates.length - n);
+  assert.equal(f.frozenRun, n);
+  /* eine Sitzung weniger: noch nicht eingefroren (3 und 4 gleiche Schluesse kommen bei illiquiden Titeln vor) */
+  const short = moving.map((v, i) => (i >= dates.length - n + 1 ? moving[dates.length - n + 1] : v));
+  assert.equal(M.seriesState(dates, short, "2026-10-21", Staleness).frozenSince, null);
+  /* Kurs hinter dem Stichtag */
+  const b = M.seriesState(dates, moving, "2026-10-23", Staleness);
+  assert.equal(b.behind, true);
+  assert.equal(M.seriesState(dates, moving, null, Staleness).behind, false);
+  /* ohne geladene Erkennung: keine Behauptung */
+  assert.equal(M.seriesState(dates, frozen, "2026-10-21", null).frozenSince, null);
+});
+
+test("Kerzenmarken enden auf Wunsch vor einem Index (eingefrorene Bars ohne Marken)", () => {
+  const S = { dates: ["a", "b", "c", "d"], open: [1, 1, 1, 1], high: [2, 2, 2, 2], low: [0, 0, 0, 0], close: [1, 1, 1, 1] };
+  const pats = { X: [100, 100, 100, 100] }, meta = [{ id: "X", direction: "bullish" }], names = { X: "Muster" };
+  assert.deepEqual(M.candleMarks(S, pats, meta, names, 0).map((m) => m.time), ["a", "b", "c", "d"]);
+  const cut = M.candleMarks(S, pats, meta, names, 0, 2);
+  assert.deepEqual(cut.map((m) => m.time), ["a", "b"]);
+  assert.equal(cut[1].label, "Muster", "Beschriftung an der letzten gezeigten Marke");
+});
