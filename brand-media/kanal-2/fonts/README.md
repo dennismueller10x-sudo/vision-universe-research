@@ -1,0 +1,1 @@
+Archivo Black (Omnibus-Type) und Nunito (Vernon Adams u. a.), beide SIL Open Font License 1.1, geladen von Google Fonts (lateinischer Teilsatz). Freie Nutzung, auch kommerziell, Weitergabe nur zusammen mit der Lizenz: https://openfontlicense.org
