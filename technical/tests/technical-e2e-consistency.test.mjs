@@ -153,3 +153,20 @@ test("Jedes Indikatorfeld des Screeners hat eine Darstellung in Chart Studio (mo
   /* bewusst offen (TECHNICAL_COMPLETION_PLAN.md G4): relative Staerke braucht die SPY-Reihe im Browser */
   assert.deepEqual(open.sort(), ["rs3m", "rs6m", "rsPositive"]);
 });
+
+test("Eingefroren: Chart Studio (model.js#seriesState) = Spalte frozenSince der Trefferzeile, ganzes Universum", { skip: c.frozenSince ? false : "Datensatz vor screen-row 1.10.0 (ohne frozenSince)" }, () => {
+  const Model = require(join(root, "technical/engine/model.js"));
+  const off = [];
+  let compared = 0, frozen = 0;
+  for (const file of readdirSync(SH).filter((x) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(x)).sort()) {
+    const inst = JSON.parse(gunzipSync(readFileSync(join(SH, file)))).instruments || {};
+    for (const tk of Object.keys(inst)) {
+      const i = row.get(tk), b = inst[tk].bars;
+      if (i === undefined || !b || String(b.timestamps[b.timestamps.length - 1]).slice(0, 10) !== c.asOf[i]) continue;
+      const st = Model.seriesState(b.timestamps, b.close, screener.asOf, Staleness);
+      compared++; if (st.frozenSince) frozen++;
+      if (st.frozenSince !== (c.frozenSince[i] || null)) off.push(tk + " chart=" + st.frozenSince + " screener=" + c.frozenSince[i]);
+    }
+  }
+  assert.deepEqual(off, [], compared + " Titel, " + frozen + " eingefroren");
+});

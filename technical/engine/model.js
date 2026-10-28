@@ -332,11 +332,12 @@
    * @param patterns Candlesticks.detect(...).patterns   @param meta Candlesticks.PATTERNS   @param names Query.CANDLE_TYPES
    * @returns [{ time, price, tone, size, label?, kind, ids }]
    */
-  function candleMarks(S, patterns, meta, names, from) {
+  function candleMarks(S, patterns, meta, names, from, to) {
     var byId = {}, out = [], lastOf = {};
     (meta || []).forEach(function (p) { byId[p.id] = p; });
     var ids = Object.keys(patterns || {}).filter(function (id) { return byId[id] && names && names[id]; });
-    for (var i = Math.max(0, from || 0); i < S.close.length; i++) {
+    var end = isNum(to) ? Math.min(to, S.close.length) : S.close.length;
+    for (var i = Math.max(0, from || 0); i < end; i++) {
       var hit = { bull: [], bear: [], neutral: [] };
       ids.forEach(function (id) {
         var v = patterns[id][i];
@@ -355,6 +356,22 @@
       m.label = first + (m.ids.length > 1 ? " +" + (m.ids.length - 1) : "");
       m.badge = "muted";
     });
+    return out;
+  }
+
+  /**
+   * Zeitbezug der Tagesreihe im Chart Studio, dieselbe Regel wie der Screener (screen-row 1.10.0, DQ-TW-6):
+   * eingefroren = Reihe endet mit >= ListingStaleness.DEFAULTS.dailyMinRun exakt gleichen Schluessen (core/listing-staleness.js#tailRun),
+   * frozenSince = letzter echter Handelstag, frozenIndex = sein Index. behind = letzter Bar liegt vor dem Stichtag des Screeners.
+   * Eingefroren ist ein Datenqualitaetshinweis, kein bestaetigtes Delisting.
+   */
+  function seriesState(dates, close, universeAsOf, Staleness) {
+    var n = dates ? dates.length : 0, last = n ? dates[n - 1] : null, out = { asOf: last, universeAsOf: universeAsOf || null, frozenSince: null, frozenIndex: -1, frozenRun: 0, behind: false };
+    if (Staleness && n) {
+      var tail = Staleness.tailRun(dates.map(function (d, i) { return [d, close[i]]; }));
+      if (tail && tail.run >= Staleness.DEFAULTS.dailyMinRun) { out.frozenSince = tail.since; out.frozenIndex = n - tail.run; out.frozenRun = tail.run; }
+    }
+    out.behind = !!(out.universeAsOf && last && last < out.universeAsOf);
     return out;
   }
 
@@ -457,7 +474,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, seriesState: seriesState, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;
