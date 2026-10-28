@@ -450,6 +450,15 @@
       (waiting.length ? "Wartet auf Materialisierung (" + waiting.length + "): " + waiting.join(", ") + ". " : "") + "Belegung: " + fill.join(", ") + ".");
   }
 
+  /** DQ-TW-7: Technical-Artefakte erfuellen den Datenvertrag (quant/engines/technical/screener-contract.js,
+      docs/technical/DATA_CONTRACT.md). `verdict` = ScreenerContract.check(screener, meta, index). */
+  function technicalContract(verdict) {
+    var v = verdict || { errors: [{ code: "NO_ARTIFACT", column: "*" }], counts: { NO_ARTIFACT: 1 }, checked: 0 };
+    var fail = (v.errors || []).map(function (e) { return e.code + " " + e.column + (e.ticker ? " " + e.ticker : "") + (e.value !== null && e.value !== undefined ? " = " + JSON.stringify(e.value).slice(0, 40) : ""); });
+    return result("DQ-TW-7", "Technical-Artefakte erfuellen den Datenvertrag", "WARN", v.checked || 0, fail,
+      (v.contract || "") + (Object.keys(v.counts || {}).length ? " Verstoesse: " + JSON.stringify(v.counts) : ""));
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -884,7 +893,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalContract: technicalContract,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
