@@ -347,8 +347,8 @@
   }
 
   /**
-   * Eingefrorene Reihe (seit 1.10.0): Der Anbieter schreibt nach einem Delisting oder einer Uebernahme den letzten Kurs
-   * weiter (core/listing-staleness.js, STALE_TAIL: >= 5 exakt gleiche Schluesse). Die Bars nach `since` sind keine
+   * Eingefrorene Reihe (seit 1.10.0): Die Tagesreihe endet mit >= 5 exakt gleichen Schluessen (core/listing-staleness.js,
+   * STALE_TAIL). Das ist ein Datenqualitaetshinweis, kein bestaetigtes Delisting; auch illiquide Titel koennen so enden. Die Bars nach `since` sind keine
    * Kurse; jede Kennzahl am Stichtag waere aus ihnen gerechnet. Deshalb sind alle Analysefelder `keys` (je Zeitrahmen)
    * leer; Schlusskurs, Stand und Datenqualitaet bleiben, `frozenSince` nennt den letzten echten Handelstag.
    */
