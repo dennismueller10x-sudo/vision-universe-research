@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "v9-events-registration-1.0.0",
+  "id": "V9-EVENTS-8K-ITEM202-PROSPECTIVE",
+  "version": "1.0.0",
+  "frozenAt": "2026-10-27T18:25:00.000Z",
+  "status": "REGISTERED_NOT_EVALUABLE",
+  "analysisMode": "CONFIRMATORY_CANDIDATE",
+  "purpose": "Untouched future cohort for the same event rule as V9-EVENTS-8K-ITEM202-RETRO 1.0.0 (docs/quant-recovery/v9/events/registration-retrospective-1.0.0.json). No event in this cohort had been accepted by SEC when this file was frozen; no outcome can exist yet.",
+  "rule": "Identical to the retrospective registration: event category, availability clock (SEC acceptance, interpretation fixed by the header-parity sample), entry (first explicit XNYS session close strictly after acceptance), horizons 1/5/20 bars, costs 10+5 bps per side, SPY benchmark, controls (k=2, seed V9-EVENTS-CONTROL-1, +-10 session Item 2.02 exclusion), endpoints A_h and B_h, two-way cluster inference, Holm over 6, calendar-block bootstrap (blockLength 20, 9999 reps, seed 20261027), ENTRY_SESSION_GAP rule.",
+  "cohort": {
+    "events": "Original Form 8-K with Item 2.02 and acceptanceUtc strictly after 2026-10-27T18:25:00.000Z and <= 2027-03-31T23:59:59.999Z.",
+    "population": "The listings retained by the retrospective run (results-retrospective-1.0.0.json, retainedListings and retainedDailySeriesHashesDigest; listing ids in event-ledger-1.0.0.json.gz exclusions complement), frozen at this registration; listings delisted, renamed (SEC formerNames 'to' within the cohort window) or whose ticker/CIK mapping changes before evaluation are reported as CENSORED_IDENTITY, never dropped silently or replaced. Membership evidence for the engine: validFrom 2026-10-27, availableAt = frozenAt.",
+    "gapNotEvaluated": "Original Item 2.02 8-Ks accepted after the retrospective asOf (2026-10-26T23:59:59.999Z) and at/before this freeze are neither retrospective nor prospective; they are counted only.",
+    "acceptanceSource": "Fresh SEC submissions JSON retrieved after the cohort window closes; header parity re-sampled on >=100 prospective filings before outcomes."
+  },
+  "maturity": {
+    "lastEntrySession": "2027-04-01",
+    "fullMaturity20Bars": "2027-04-29 (XNYS session close, quant/config/market-calendar.json)",
+    "earliestEvaluation": "After daily prices through 2027-04-29 are committed to quant/data/market/discover-series (expected 2027-04-30 or later). Earlier partial evaluation is prohibited; IMMATURE rows would be reported, not dropped."
+  },
+  "confirmatoryCriterion": "Primary confirmatory test: A1 (mean |AR_event| - mean |AR_control|, 1 bar) > 0 with Holm-adjusted two-way-cluster p < 0.05 within the 6-test family AND block-bootstrap 95% CI excluding 0. B_h are reported; no profitable-strategy claim is registered.",
+  "limitationsKnownInAdvance": [
+    "Current-listing survivorship at freeze (population frozen, but its selection is conditional on survival to 2026-10-26).",
+    "SEC acceptance is an availability upper bound; company press release may be earlier.",
+    "Split-adjusted price-only series; no dividends.",
+    "Cohort spans essentially one to two earnings seasons; time clusters remain few."
+  ],
+  "certification": "NOT_CERTIFIED",
+  "productionApproved": false
+}

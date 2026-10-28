@@ -1,0 +1,3084 @@
+{
+ "schemaVersion": "v9-followup-sec-pipeline-evidence-1.0.0",
+ "productionApproved": false,
+ "topic": "V9 SEC/PIT P1-P4 (fiscal-year anchor bound, future-period quarantine, no bulk acceptance, DQ rules)",
+ "inputs": {
+  "companyfactsZipSha256": "330324c4064779199c8ceaa2818d0b6fdf37ec4b1d786573601e8fadd82e7582",
+  "companyfactsZipSource": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip (retrieved 2026-10-27, V9 private bulk)",
+  "asOf": "2026-10-26",
+  "build": "scripts/quant/cli.py consumer --archive <zip> --as-of 2026-10-26 --out <private>, run once with origin/main SEC code (old) and once with this branch (new); no FSDS supplement, no issuer facts (the producer adds both; they do not interact with P1/P2)"
+ },
+ "scripts": {
+  "beforeAfter": {
+   "path": "scripts/quant/v9_followups/sec_pipeline/before-after.mjs",
+   "sha256": "d703cd8b8b91b742662d8dd00708f3b0521aa9c75b426d17b3ddeca1f40012ab"
+  },
+  "independentCheck": {
+   "path": "scripts/quant/v9_followups/sec_pipeline/independent_check.py",
+   "sha256": "173d635993853fb524d25d6a8ecbff56a5399535af71d5b838ce9023685350fd"
+  },
+  "composer": {
+   "path": "scripts/quant/v9_followups/sec_pipeline/compose_evidence.py",
+   "sha256": "0a1c41bb0f2d26f177a5403471ac2a1383a3e6fd1e4c142315761f948dfc328a"
+  }
+ },
+ "totals": {
+  "bundlesOld": 5063,
+  "bundlesNew": 5063,
+  "contentChanged": 416,
+  "dataChanged": 249,
+  "qualityBlockOnly": 167,
+  "onlyOld": 0,
+  "onlyNew": 0,
+  "labelChanged": 9,
+  "rowsRemoved": 308,
+  "rowsAdded": 473,
+  "rowsChanged": 26,
+  "sharesChanged": 9,
+  "marketCapChanged": 7,
+  "rawsChanged": 9,
+  "latestAnnualChanged": 6,
+  "latestQuarterChanged": 9,
+  "qualityImplausibleFilingFy": 19,
+  "qualityFuturePeriodEnd": 398,
+  "historyIssuersOld": 2444,
+  "historyIssuersNew": 2444,
+  "historyChanged": 14
+ },
+ "bundleChangeSummary": {
+  "bundles": 5063,
+  "everyBundle": "versions.normalization_logic 1.13.0 -> 1.14.0, versions.quality_rules 1.0.0 -> 1.1.0 (generatedAtUtc changes on every run anyway)",
+  "contentChanged": 416,
+  "publishedRowsChanged": 29,
+  "noValueChange": 220,
+  "noValueChangeMeans": "only coverage.mapped (number of mapped facts) or, for NIXX and RVPH, the concept label of an unchanged ttm share count (dei cover value quarantined, us-gaap balance-sheet value of the same date used)",
+  "qualityBlockOnly": 167,
+  "historyIssuersChanged": 14
+ },
+ "issuersWithPublishedRowChanges": [
+  {
+   "cik": "0000006201",
+   "tickers": [
+    "AAL"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2027
+    ],
+    "after": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2027,
+     "fp": "Q2",
+     "end": "2027-07-17",
+     "filed": "2026-07-23"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 19,
+    "changed": 1,
+    "sample": [
+     "- quarterly|shares_outstanding|2027|Q2|2027-07-17 = 661969951",
+     "+ annual|revenue|2014|FY|2014-12-31 = 42650000000",
+     "+ annual|operating_income|2014|FY|2014-12-31 = 4249000000",
+     "+ annual|net_income|2014|FY|2014-12-31 = 2882000000",
+     "~ ttm|shares_outstanding: 661969951 -> 661936666 (2027-07-17 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 661969951,
+     "end": "2027-07-17"
+    },
+    "after": {
+     "v": 661936666,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "before": 8076033402,
+    "after": 8075627325
+   },
+   "publishedNow": {
+    "marketCap": 8076033402.2,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 12.2,
+   "rawsChanged": {
+    "fcfYield": [
+     0.0352896,
+     0.0352914
+    ],
+    "earningsYield": [
+     -0.0403664,
+     -0.0403684
+    ],
+    "bookToMarket": [
+     -0.461489,
+     -0.461512
+    ],
+    "salesYield": [
+     1.64353,
+     1.64354
+    ],
+    "ebitdaYield": [
+     0.0906324,
+     0.0906334
+    ],
+    "pretaxEarningsYield": [
+     -0.0456907,
+     -0.045693
+    ],
+    "cashFlowYield": [
+     0.541603,
+     0.54163
+    ]
+   },
+   "v9Claim": "shares 661,969,951 (cover date 2027-07-17) -> 661,936,666"
+  },
+  {
+   "cik": "0000006207",
+   "tickers": [
+    "AXR"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2027,
+     2034
+    ],
+    "after": [
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2027
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2034,
+     "fp": "Q1",
+     "end": "2033-09-12",
+     "filed": "2023-09-13"
+    },
+    "after": {
+     "fy": 2027,
+     "fp": "Q1",
+     "end": "2026-07-31",
+     "filed": "2026-09-11"
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 14,
+    "changed": 1,
+    "sample": [
+     "- quarterly|shares_outstanding|2034|Q1|2033-09-12 = 5271309",
+     "+ annual|revenue|2015|FY|2015-04-30 = 49790000",
+     "+ annual|net_income|2015|FY|2015-04-30 = 11320000",
+     "+ annual|operating_cash_flow|2015|FY|2015-04-30 = 9962000",
+     "~ ttm|shares_outstanding: 5271309 -> 5324849 (2033-09-12 -> 2026-07-31)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 5271309,
+     "end": "2033-09-12"
+    },
+    "after": {
+     "v": 5324849,
+     "end": "2026-07-31"
+    }
+   },
+   "marketCap": {
+    "before": 108536252,
+    "after": 109638641
+   },
+   "publishedNow": {
+    "marketCap": 108536252.31,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 20.59,
+   "rawsChanged": {
+    "fcfYield": [
+     -0.00338136,
+     -0.00334736
+    ],
+    "earningsYield": [
+     0.0541017,
+     0.0535578
+    ],
+    "bookToMarket": [
+     1.29674,
+     1.2837
+    ],
+    "pretaxEarningsYield": [
+     0.0719483,
+     0.0712249
+    ],
+    "cashFlowYield": [
+     -0.002589,
+     -0.00256297
+    ]
+   },
+   "v9Claim": "shares 5,271,309 (cover date 2033-09-12) -> 5,324,849"
+  },
+  {
+   "cik": "0000091576",
+   "tickers": [
+    "KEY"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 2,
+     "byMetric": {
+      "dividends_declared_per_share": 1,
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|shares_outstanding|2015|FY|2015-12-31 = 835606185"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 1067128554,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 22633796630
+   },
+   "publishedNow": {
+    "marketCap": 22633796630.34,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 21.21,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0000095029",
+   "tickers": [
+    "RGR"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 2,
+     "byMetric": {
+      "shares_outstanding": 2
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|shares_outstanding|2017|FY|2017-12-31 = 17427090"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 15978256,
+     "end": "2026-06-27"
+    }
+   },
+   "marketCap": {
+    "unchanged": 726371518
+   },
+   "publishedNow": {
+    "marketCap": 726371517.76,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 45.46,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0000706698",
+   "tickers": [
+    "UTMD"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 5,
+     "byMetric": {
+      "long_term_debt": 5
+     }
+    }
+   },
+   "rows": {
+    "removed": 2,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|long_term_debt|2014|FY|2014-12-31 = 5065",
+     "- annual|long_term_debt|2015|FY|2015-12-31 = 1013"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 3183818,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 234074299
+   },
+   "publishedNow": {
+    "marketCap": 234074299.35999998,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 73.52,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0000785956",
+   "tickers": [
+    "JJSF"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2026|Q2|2026-03-28: 18753416 -> 18753000 (2026-03-28 -> 2026-03-28)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 18681608,
+     "end": "2026-06-27"
+    }
+   },
+   "marketCap": {
+    "unchanged": 1550947096
+   },
+   "publishedNow": {
+    "marketCap": 1550947096.1599998,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 83.02,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0000836157",
+   "tickers": [
+    "LNN"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 1,
+    "changed": 0,
+    "sample": [
+     "- quarterly|shares_outstanding|2026|Q2|2026-02-28 = 10395655",
+     "+ quarterly|shares_outstanding|2024|Q4|2024-08-31 = 10846482"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 10169930,
+     "end": "2026-08-31"
+    }
+   },
+   "marketCap": {
+    "unchanged": 1077402384
+   },
+   "publishedNow": {
+    "marketCap": 1077402384.2,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 105.94,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001041368",
+   "tickers": [
+    "RVSB"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q3|2024-12-31: 20976200 -> 21134758 (2024-12-31 -> 2024-12-31)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 19953186,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 121115839
+   },
+   "publishedNow": {
+    "marketCap": 121115839.02000001,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 6.07,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001056943",
+   "tickers": [
+    "PFIS"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 3,
+     "byMetric": {
+      "goodwill": 1,
+      "shares_outstanding": 2
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2028
+    ],
+    "after": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2028,
+     "fp": "Q2",
+     "end": "2028-08-01",
+     "filed": "2026-08-07"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 19,
+    "changed": 1,
+    "sample": [
+     "- quarterly|shares_outstanding|2028|Q2|2028-08-01 = 10010367",
+     "+ annual|net_income|2014|FY|2014-12-31 = 17649000",
+     "+ annual|eps_diluted|2014|FY|2014-12-31 = 2.34",
+     "+ annual|operating_cash_flow|2014|FY|2014-12-31 = 24199000",
+     "~ ttm|shares_outstanding: 10010367 -> 10010367 (2028-08-01 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 10010367,
+     "end": "2028-08-01"
+    },
+    "after": {
+     "v": 10010367,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 714439893
+   },
+   "publishedNow": {
+    "marketCap": 714439892.7900001,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 71.37,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001137789",
+   "tickers": [
+    "STX"
+   ],
+   "quality": {
+    "implausibleFilingFy": [
+     {
+      "periodEnd": "2025-06-27",
+      "filingClaimedFy": 2027,
+      "usedFy": 2025
+     }
+    ]
+   },
+   "annualYears": {
+    "before": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2026,
+     2027
+    ],
+    "after": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2027,
+     "fp": "Q4",
+     "end": "2025-06-27",
+     "filed": "2026-08-04"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q4",
+     "end": "2026-07-03",
+     "filed": "2026-08-04"
+    }
+   },
+   "rows": {
+    "removed": 83,
+    "added": 94,
+    "changed": 4,
+    "sample": [
+     "- annual|revenue|2027|FY|2025-06-27 = 9097000000",
+     "- annual|operating_income|2027|FY|2025-06-27 = 1890000000",
+     "- annual|net_income|2027|FY|2025-06-27 = 1469000000",
+     "+ annual|revenue|2025|FY|2025-06-27 = 9097000000",
+     "+ annual|operating_income|2025|FY|2025-06-27 = 1890000000",
+     "+ annual|net_income|2025|FY|2025-06-27 = 1469000000",
+     "~ ttm|cash_and_equivalents: 891000000 -> 1704000000 (2025-06-27 -> 2026-07-03)",
+     "~ ttm|total_debt: 5046000000 -> 3603000000 (2025-06-27 -> 2026-07-03)",
+     "~ ttm|shares_outstanding: 212677178 -> 226644518 (2025-06-27 -> 2026-07-03)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 212677178,
+     "end": "2025-06-27"
+    },
+    "after": {
+     "v": 226644518,
+     "end": "2026-07-03"
+    }
+   },
+   "marketCap": {
+    "before": 137008764839,
+    "after": 146006664941
+   },
+   "publishedNow": {
+    "marketCap": 137008764839.38,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 644.21,
+   "rawsChanged": {
+    "netDebtToAssets": [
+     0.416667,
+     0.190433
+    ],
+    "bookToMarket": [
+     0.0158165,
+     0.0148418
+    ],
+    "dividendYield": [
+     0.00462744,
+     0.00434227
+    ],
+    "accrualRatio": [
+     null,
+     -0.0544596
+    ],
+    "fcfYield": [
+     null,
+     0.0212662
+    ],
+    "earningsYield": [
+     null,
+     0.0218072
+    ],
+    "salesYield": [
+     null,
+     0.0824512
+    ],
+    "ebitdaYield": [
+     null,
+     0.0295459
+    ],
+    "fcfMarginTtm": [
+     null,
+     0.254613
+    ],
+    "operatingMarginTtm": [
+     null,
+     0.335711
+    ],
+    "roaTtm": [
+     null,
+     0.353876
+    ],
+    "roeTtm": [
+     null,
+     1.46931
+    ],
+    "pretaxRoaTtm": [
+     null,
+     0.410114
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.408336
+    ],
+    "netMarginTtm": [
+     null,
+     0.261091
+    ],
+    "ocfMarginTtm": [
+     null,
+     0.301271
+    ],
+    "dividendCoverageByOcf": [
+     null,
+     5.79495
+    ],
+    "pretaxEarningsYield": [
+     null,
+     0.0252728
+    ],
+    "cashFlowYield": [
+     null,
+     0.0251632
+    ],
+    "roicTtm": [
+     null,
+     0.868815
+    ],
+    "effectiveTaxRateTtm": [
+     null,
+     0.137127
+    ]
+   },
+   "v9Claim": "marketCap 137,008,764,839 -> 146,006,664,941; netDebtToAssets 0.416667 -> 0.1904"
+  },
+  {
+   "cik": "0001162896",
+   "tickers": [
+    "PROP"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "long_term_debt": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|long_term_debt|2023|FY|2023-12-31 = 2000000"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 112798010,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 38137007
+   },
+   "publishedNow": {
+    "marketCap": 38137007.181,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 0.3381,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001166928",
+   "tickers": [
+    "WTBA"
+   ],
+   "quality": {
+    "implausibleFilingFy": [
+     {
+      "periodEnd": "2017-12-31",
+      "filingClaimedFy": 2107,
+      "usedFy": 2017
+     }
+    ]
+   },
+   "annualYears": {
+    "before": [
+     2014,
+     2015,
+     2016,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2107
+    ],
+    "after": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2107,
+     "fp": "Q4",
+     "end": "2017-12-31",
+     "filed": "2019-02-28"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-07-23"
+    }
+   },
+   "rows": {
+    "removed": 54,
+    "added": 59,
+    "changed": 1,
+    "sample": [
+     "- annual|net_income|2107|FY|2017-12-31 = 23070000",
+     "- annual|eps_diluted|2107|FY|2017-12-31 = 1.41",
+     "- annual|operating_cash_flow|2107|FY|2017-12-31 = 29357000",
+     "+ annual|net_income|2017|FY|2017-12-31 = 23070000",
+     "+ annual|eps_diluted|2017|FY|2017-12-31 = 1.41",
+     "+ annual|operating_cash_flow|2017|FY|2017-12-31 = 29357000",
+     "~ ttm|shares_outstanding: 16215672 -> 17043743 (2017-12-31 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": null,
+    "after": {
+     "v": 17043743,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "before": null,
+    "after": 519834162
+   },
+   "publishedNow": {
+    "marketCap": null,
+    "marketCapReason": "NO_PIT_SHARE_COUNT"
+   },
+   "cutoff": "2026-10-26",
+   "close": 30.5,
+   "rawsChanged": {
+    "accrualRatio": [
+     null,
+     -0.00295934
+    ],
+    "fcfYield": [
+     null,
+     0.0934798
+    ],
+    "earningsYield": [
+     null,
+     0.0738389
+    ],
+    "bookToMarket": [
+     null,
+     0.511673
+    ],
+    "roaTtm": [
+     null,
+     0.00941103
+    ],
+    "roeTtm": [
+     null,
+     0.144309
+    ],
+    "pretaxRoaTtm": [
+     null,
+     0.0119803
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.0123704
+    ],
+    "dividendCoverageByOcf": [
+     null,
+     2.98297
+    ],
+    "pretaxEarningsYield": [
+     null,
+     0.0939973
+    ],
+    "cashFlowYield": [
+     null,
+     0.0970579
+    ],
+    "dividendYield": [
+     null,
+     0.0325373
+    ]
+   },
+   "v9Claim": "marketCap null (NO_PIT_SHARE_COUNT) -> computable, shares 17,043,743"
+  },
+  {
+   "cik": "0001356093",
+   "tickers": [
+    "CREX"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 3,
+     "byMetric": {
+      "capital_expenditures": 1,
+      "dividends_paid": 1,
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|dividends_paid|2023|FY|2023-12-31 = 4667000"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 13526506,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 29217253
+   },
+   "publishedNow": {
+    "marketCap": 29217252.96,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 2.16,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001356115",
+   "tickers": [
+    "NXDT"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q3|2025-09-30: 49020409.06 -> 49020409 (2025-09-30 -> 2025-09-30)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 53106027,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 267123316
+   },
+   "publishedNow": {
+    "marketCap": 267123315.81,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 5.03,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001436208",
+   "tickers": [
+    "LEGH"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "income_tax_expense": 1
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2033
+    ],
+    "after": [
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2033,
+     "fp": "Q1",
+     "end": "2033-03-31",
+     "filed": "2024-05-09"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-05"
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 2,
+    "changed": 0,
+    "sample": [
+     "- quarterly|income_tax_expense|2033|Q1|2033-03-31 = 3373000",
+     "+ quarterly|income_tax_expense|2024|Q3|2024-09-30 = 3522000",
+     "+ ttm|income_tax_expense = 9285000"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 23781601,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 672068044
+   },
+   "publishedNow": {
+    "marketCap": 672068044.26,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 28.26,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001464423",
+   "tickers": [
+    "PMT"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 90,
+     "byMetric": {
+      "long_term_debt": 90
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2027,
+     2028,
+     2029,
+     2030
+    ],
+    "after": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": null,
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-04"
+    }
+   },
+   "rows": {
+    "removed": 6,
+    "added": 111,
+    "changed": 0,
+    "sample": [
+     "- annual|long_term_debt|2024|FY|2024-12-31 = 1008202000",
+     "- annual|long_term_debt|2025|FY|2025-12-31 = 1094460000",
+     "- annual|long_term_debt|2026|FY|2026-12-31 = 695000000",
+     "+ annual|revenue|2014|FY|2014-12-31 = 356741000",
+     "+ annual|revenue|2015|FY|2015-12-31 = 248765000",
+     "+ annual|revenue|2016|FY|2016-12-31 = 272088000"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 87202362,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 615648676
+   },
+   "publishedNow": {
+    "marketCap": 615648675.7199999,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 7.06,
+   "rawsChanged": {
+    "revenueCagr3y": [
+     null,
+     0.215659
+    ],
+    "revenueGrowthAcceleration": [
+     null,
+     0.288177
+    ]
+   }
+  },
+  {
+   "cik": "0001540171",
+   "tickers": [
+    "AVLN"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 2,
+    "sample": [
+     "~ quarterly|shares_outstanding|2026|Q2|2026-06-30: 44333095 -> 44333094 (2026-06-30 -> 2026-06-30)",
+     "~ ttm|shares_outstanding: 44333095 -> 44333094 (2026-06-30 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 44333095,
+     "end": "2026-06-30"
+    },
+    "after": {
+     "v": 44333094,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": null
+   },
+   "publishedNow": {
+    "marketCap": 1203200198.3,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001589061",
+   "tickers": [
+    "GYRO"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 5,
+     "byMetric": {
+      "shares_outstanding": 5
+     }
+    }
+   },
+   "rows": {
+    "removed": 2,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|shares_outstanding|2018|FY|2018-12-31 = 1482680",
+     "- annual|shares_outstanding|2022|FY|2022-12-31 = 1482680"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 2199308,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 9676955
+   },
+   "publishedNow": {
+    "marketCap": 9676955.200000001,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 4.4,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001653558",
+   "tickers": [
+    "PRTH"
+   ],
+   "quality": {
+    "implausibleFilingFy": [
+     {
+      "periodEnd": "2018-12-31",
+      "filingClaimedFy": 43465,
+      "usedFy": 2018
+     },
+     {
+      "periodEnd": "2019-12-31",
+      "filingClaimedFy": 43830,
+      "usedFy": 2019
+     }
+    ]
+   },
+   "annualYears": {
+    "before": [
+     2015,
+     2016,
+     2017,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     43465,
+     43830
+    ],
+    "after": [
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 43830,
+     "fp": "Q4",
+     "end": "2019-12-31",
+     "filed": "2021-03-31"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-06"
+    }
+   },
+   "rows": {
+    "removed": 144,
+    "added": 150,
+    "changed": 2,
+    "sample": [
+     "- annual|cash_and_equivalents|43465|FY|2018-12-31 = 33831000",
+     "- annual|cash_and_equivalents|43830|FY|2019-12-31 = 50465000",
+     "- annual|total_assets|43465|FY|2018-12-31 = 379296000",
+     "+ annual|cash_and_equivalents|2018|FY|2018-12-31 = 33831000",
+     "+ annual|cash_and_equivalents|2019|FY|2019-12-31 = 50465000",
+     "+ annual|total_assets|2018|FY|2018-12-31 = 379296000",
+     "~ ttm|cash_and_equivalents: 50465000 -> 120261000 (2019-12-31 -> 2026-06-30)",
+     "~ ttm|shares_outstanding: 67060943 -> 82440372 (2019-12-31 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": null,
+    "after": {
+     "v": 82440372,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "before": null,
+    "after": 644683709
+   },
+   "publishedNow": {
+    "marketCap": null,
+    "marketCapReason": "NO_PIT_SHARE_COUNT"
+   },
+   "cutoff": "2026-10-26",
+   "close": 7.82,
+   "rawsChanged": {
+    "revenueGrowthTtmYoy": [
+     -0.0105582,
+     0.0890777
+    ],
+    "accrualRatio": [
+     null,
+     -0.034131
+    ],
+    "fcfYield": [
+     null,
+     0.160885
+    ],
+    "earningsYield": [
+     null,
+     0.0871078
+    ],
+    "bookToMarket": [
+     null,
+     -0.155759
+    ],
+    "fcfMarginTtm": [
+     null,
+     0.10368
+    ],
+    "operatingMarginTtm": [
+     null,
+     0.137652
+    ],
+    "roaTtm": [
+     null,
+     0.026579
+    ],
+    "cashReturnOnAssets": [
+     null,
+     0.06071
+    ],
+    "netMarginTtm": [
+     null,
+     0.0561356
+    ],
+    "ocfMarginTtm": [
+     null,
+     0.128221
+    ],
+    "cashFlowYield": [
+     null,
+     0.198966
+    ]
+   },
+   "v9Claim": "marketCap null (NO_PIT_SHARE_COUNT) -> computable, shares 82,440,372; revenueGrowthTtmYoy -0.0106 -> 0.0891"
+  },
+  {
+   "cik": "0001682745",
+   "tickers": [
+    "VRRM"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 5,
+     "byMetric": {
+      "shares_outstanding": 5
+     }
+    }
+   },
+   "rows": {
+    "removed": 2,
+    "added": 2,
+    "changed": 3,
+    "sample": [
+     "- quarterly|shares_outstanding|2026|Q1|2026-03-31 = 151906653",
+     "- quarterly|shares_outstanding|2026|Q2|2026-06-30 = 151982804",
+     "+ quarterly|shares_outstanding|2024|Q1|2024-03-31 = 166524776",
+     "+ quarterly|shares_outstanding|2024|Q2|2024-06-30 = 164658000",
+     "~ annual|shares_outstanding|2025|FY|2025-12-31: 151361959 -> 153557000 (2025-12-31 -> 2025-12-31)",
+     "~ quarterly|shares_outstanding|2025|Q4|2025-12-31: 151361959 -> 153557000 (2025-12-31 -> 2025-12-31)",
+     "~ ttm|shares_outstanding: 151982804 -> 153557000 (2026-06-30 -> 2025-12-31)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 151982804,
+     "end": "2026-06-30"
+    },
+    "after": {
+     "v": 153557000,
+     "end": "2025-12-31"
+    }
+   },
+   "marketCap": {
+    "before": 469626864,
+    "after": 474491130
+   },
+   "publishedNow": {
+    "marketCap": 469626864.35999995,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 3.09,
+   "rawsChanged": {
+    "fcfYield": [
+     0.206357,
+     0.204242
+    ],
+    "earningsYield": [
+     0.0942983,
+     0.0933316
+    ],
+    "bookToMarket": [
+     0.623814,
+     0.617419
+    ],
+    "pretaxEarningsYield": [
+     0.204011,
+     0.201919
+    ],
+    "cashFlowYield": [
+     0.457672,
+     0.45298
+    ]
+   }
+  },
+  {
+   "cik": "0001746129",
+   "tickers": [
+    "BSVN"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q2|2025-06-30: 9450979 -> 9449319 (2025-06-30 -> 2025-06-30)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 9525856,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 559167747
+   },
+   "publishedNow": {
+    "marketCap": 559167747.2,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 58.7,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001754170",
+   "tickers": [
+    "ASLE"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "annualYears": {
+    "before": [
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026,
+     2033
+    ],
+    "after": [
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ]
+   },
+   "latestQuarter": {
+    "before": {
+     "fy": 2033,
+     "fp": "Q4",
+     "end": "2034-03-05",
+     "filed": "2024-03-27"
+    },
+    "after": {
+     "fy": 2026,
+     "fp": "Q2",
+     "end": "2026-06-30",
+     "filed": "2026-08-07"
+    }
+   },
+   "rows": {
+    "removed": 2,
+    "added": 1,
+    "changed": 1,
+    "sample": [
+     "- annual|shares_outstanding|2033|FY|2034-03-05 = 52990947",
+     "- quarterly|shares_outstanding|2033|Q4|2034-03-05 = 52990947",
+     "+ quarterly|shares_outstanding|2024|Q2|2024-06-30 = 53210842",
+     "~ ttm|shares_outstanding: 52990947 -> 47726763 (2034-03-05 -> 2026-06-30)"
+    ]
+   },
+   "shares": {
+    "before": {
+     "v": 52990947,
+     "end": "2034-03-05"
+    },
+    "after": {
+     "v": 47726763,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "before": 249587360,
+    "after": 224793054
+   },
+   "publishedNow": {
+    "marketCap": 249587360.37,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 4.71,
+   "rawsChanged": {
+    "fcfYield": [
+     -0.141433,
+     -0.157033
+    ],
+    "earningsYield": [
+     -0.0149968,
+     -0.0166509
+    ],
+    "bookToMarket": [
+     1.70053,
+     1.8881
+    ],
+    "pretaxEarningsYield": [
+     -0.0218641,
+     -0.0242757
+    ],
+    "cashFlowYield": [
+     -0.124245,
+     -0.137949
+    ]
+   },
+   "v9Claim": "shares 52,990,947 (cover date 2034-03-05) -> 47,726,763; marketCap 249,587,360 -> 224,793,054"
+  },
+  {
+   "cik": "0001806524",
+   "tickers": [
+    "LGHL"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ ttm|shares_outstanding: 17399176 -> 17399176 (2021-06-16 -> 2020-06-16)"
+    ]
+   },
+   "shares": {
+    "unchanged": null
+   },
+   "marketCap": {
+    "unchanged": null
+   },
+   "publishedNow": {
+    "marketCap": null,
+    "marketCapReason": "NO_PIT_SHARE_COUNT"
+   },
+   "cutoff": "2026-10-26",
+   "close": 2.49,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001846416",
+   "tickers": [
+    "HVII"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 2,
+     "byMetric": {
+      "net_income": 1,
+      "stockholders_equity": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 2,
+    "added": 0,
+    "changed": 0,
+    "sample": [
+     "- annual|stockholders_equity|2026|FY|2026-12-31 = -10084981",
+     "- annual|net_income|2026|FY|2026-12-31 = 575611"
+    ]
+   },
+   "shares": {
+    "unchanged": null
+   },
+   "marketCap": {
+    "unchanged": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 4.46,
+   "rawsChanged": {
+    "equityToAssets": [
+     -0.0508611,
+     -0.0456446
+    ]
+   }
+  },
+  {
+   "cik": "0001849296",
+   "tickers": [
+    "OKYO"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "cash_and_equivalents": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "- quarterly|cash_and_equivalents|2026|Q1|2025-07-31 = 4600000",
+     "~ ttm|cash_and_equivalents: 4600000 -> 1560902 (2025-07-31 -> 2025-03-31)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 52479527,
+     "end": "2026-07-15"
+    }
+   },
+   "marketCap": {
+    "unchanged": 75570519
+   },
+   "publishedNow": {
+    "marketCap": 75570518.88,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 1.44,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001958777",
+   "tickers": [
+    "FBLG"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 1,
+    "added": 1,
+    "changed": 0,
+    "sample": [
+     "- quarterly|shares_outstanding|2026|Q1|2026-03-31 = 5208915",
+     "+ quarterly|shares_outstanding|2024|Q2|2024-06-30 = 35159125"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 6658193,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 6258036
+   },
+   "publishedNow": {
+    "marketCap": 6258035.600699999,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 0.9399,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0001979332",
+   "tickers": [
+    "CPBI"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 3,
+     "byMetric": {
+      "shares_outstanding": 3
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q3|2024-12-31: 4242105 -> 4170995 (2024-12-31 -> 2024-12-31)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 4172236,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 85614283
+   },
+   "publishedNow": {
+    "marketCap": 85614282.72,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 20.52,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0002011208",
+   "tickers": [
+    "SPAI"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 1,
+     "byMetric": {
+      "shares_outstanding": 1
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 1,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q2|2025-06-30: 16168352 -> 15374685 (2025-06-30 -> 2025-06-30)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 20362862,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 65568416
+   },
+   "publishedNow": {
+    "marketCap": 65568415.64,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 3.22,
+   "rawsChanged": {}
+  },
+  {
+   "cik": "0002028201",
+   "tickers": [
+    "COLA"
+   ],
+   "quality": {
+    "futurePeriodEnd": {
+     "quarantined": 2,
+     "byMetric": {
+      "shares_outstanding": 2
+     }
+    }
+   },
+   "rows": {
+    "removed": 0,
+    "added": 0,
+    "changed": 2,
+    "sample": [
+     "~ quarterly|shares_outstanding|2025|Q3|2025-09-30: 7944290 -> 1944290 (2025-09-30 -> 2025-09-30)",
+     "~ quarterly|shares_outstanding|2026|Q1|2026-03-31: 4494439 -> 1944290 (2026-03-31 -> 2026-03-31)"
+    ]
+   },
+   "shares": {
+    "unchanged": {
+     "v": 4494439,
+     "end": "2026-06-30"
+    }
+   },
+   "marketCap": {
+    "unchanged": 12854096
+   },
+   "publishedNow": {
+    "marketCap": 12854095.54,
+    "marketCapReason": null
+   },
+   "cutoff": "2026-10-26",
+   "close": 2.86,
+   "rawsChanged": {}
+  }
+ ],
+ "noValueChangeCiks": [
+  "0000007431",
+  "0000007623",
+  "0000009092",
+  "0000012239",
+  "0000016058",
+  "0000019745",
+  "0000021665",
+  "0000025895",
+  "0000027904",
+  "0000031791",
+  "0000034067",
+  "0000036029",
+  "0000039092",
+  "0000039368",
+  "0000040533",
+  "0000042682",
+  "0000046129",
+  "0000057515",
+  "0000059478",
+  "0000061986",
+  "0000063276",
+  "0000063754",
+  "0000064463",
+  "0000069422",
+  "0000069633",
+  "0000070858",
+  "0000073756",
+  "0000074208",
+  "0000076267",
+  "0000078239",
+  "0000089089",
+  "0000091767",
+  "0000093556",
+  "0000094845",
+  "0000097210",
+  "0000101594",
+  "0000104169",
+  "0000106535",
+  "0000108516",
+  "0000310764",
+  "0000318300",
+  "0000319201",
+  "0000700565",
+  "0000705432",
+  "0000714562",
+  "0000715446",
+  "0000719955",
+  "0000720005",
+  "0000724910",
+  "0000745732",
+  "0000763901",
+  "0000766792",
+  "0000767405",
+  "0000783325",
+  "0000783412",
+  "0000784977",
+  "0000788784",
+  "0000788965",
+  "0000796343",
+  "0000804328",
+  "0000807882",
+  "0000811596",
+  "0000815556",
+  "0000821189",
+  "0000822663",
+  "0000825324",
+  "0000827054",
+  "0000833640",
+  "0000845877",
+  "0000857005",
+  "0000861884",
+  "0000864240",
+  "0000874238",
+  "0000874501",
+  "0000874761",
+  "0000874766",
+  "0000876427",
+  "0000882184",
+  "0000882835",
+  "0000886163",
+  "0000887596",
+  "0000894405",
+  "0000895126",
+  "0000909494",
+  "0000909724",
+  "0000910606",
+  "0000912593",
+  "0000914122",
+  "0000914208",
+  "0000916365",
+  "0000916907",
+  "0000921582",
+  "0000923601",
+  "0000924168",
+  "0000925528",
+  "0000925741",
+  "0000928658",
+  "0000929008",
+  "0000931015",
+  "0000931148",
+  "0000932787",
+  "0000933972",
+  "0000935419",
+  "0000936468",
+  "0000944075",
+  "0001001838",
+  "0001013237",
+  "0001020710",
+  "0001021561",
+  "0001024795",
+  "0001029199",
+  "0001037038",
+  "0001037868",
+  "0001039684",
+  "0001041514",
+  "0001045450",
+  "0001045609",
+  "0001045810",
+  "0001045986",
+  "0001048268",
+  "0001049502",
+  "0001063761",
+  "0001066923",
+  "0001070524",
+  "0001072627",
+  "0001074902",
+  "0001080657",
+  "0001083743",
+  "0001086600",
+  "0001090872",
+  "0001096752",
+  "0001111335",
+  "0001127371",
+  "0001133421",
+  "0001136893",
+  "0001159152",
+  "0001164727",
+  "0001164863",
+  "0001273813",
+  "0001277902",
+  "0001286043",
+  "0001286613",
+  "0001289419",
+  "0001296445",
+  "0001318484",
+  "0001321732",
+  "0001326706",
+  "0001331875",
+  "0001335105",
+  "0001350593",
+  "0001356576",
+  "0001362190",
+  "0001362468",
+  "0001365135",
+  "0001374328",
+  "0001376986",
+  "0001377630",
+  "0001378590",
+  "0001385818",
+  "0001389170",
+  "0001398805",
+  "0001401521",
+  "0001402057",
+  "0001408534",
+  "0001411342",
+  "0001411579",
+  "0001415404",
+  "0001417926",
+  "0001425287",
+  "0001434524",
+  "0001450704",
+  "0001460702",
+  "0001462223",
+  "0001464790",
+  "0001466258",
+  "0001484769",
+  "0001495932",
+  "0001497770",
+  "0001504678",
+  "0001507605",
+  "0001516551",
+  "0001517175",
+  "0001518621",
+  "0001521332",
+  "0001526119",
+  "0001527702",
+  "0001530950",
+  "0001534525",
+  "0001552033",
+  "0001553643",
+  "0001556727",
+  "0001567683",
+  "0001575793",
+  "0001580149",
+  "0001590418",
+  "0001591670",
+  "0001592560",
+  "0001612630",
+  "0001646188",
+  "0001648087",
+  "0001679273",
+  "0001683541",
+  "0001706946",
+  "0001711754",
+  "0001713863",
+  "0001735041",
+  "0001737523",
+  "0001742927",
+  "0001752828",
+  "0001826011",
+  "0001831868",
+  "0001838163",
+  "0001847846",
+  "0001851003",
+  "0001860543",
+  "0001863990",
+  "0001867066",
+  "0001896212",
+  "0001904286",
+  "0001907223"
+ ],
+ "qualityBlockOnlyCiks": [
+  "0000004977",
+  "0000011544",
+  "0000031107",
+  "0000045919",
+  "0000065770",
+  "0000072903",
+  "0000073124",
+  "0000100726",
+  "0000101538",
+  "0000102729",
+  "0000108985",
+  "0000109177",
+  "0000109657",
+  "0000110471",
+  "0000216228",
+  "0000275053",
+  "0000314227",
+  "0000318154",
+  "0000704532",
+  "0000709337",
+  "0000714256",
+  "0000722572",
+  "0000724004",
+  "0000740260",
+  "0000742278",
+  "0000765880",
+  "0000776867",
+  "0000787253",
+  "0000793524",
+  "0000794170",
+  "0000798081",
+  "0000799233",
+  "0000805928",
+  "0000807863",
+  "0000826154",
+  "0000827052",
+  "0000832489",
+  "0000849145",
+  "0000851205",
+  "0000851520",
+  "0000855658",
+  "0000868857",
+  "0000872912",
+  "0000874015",
+  "0000875582",
+  "0000877860",
+  "0000879635",
+  "0000880631",
+  "0000880807",
+  "0000882291",
+  "0000885462",
+  "0000886982",
+  "0000887151",
+  "0000890926",
+  "0000903129",
+  "0000906107",
+  "0000913144",
+  "0000913341",
+  "0000915840",
+  "0000920522",
+  "0000922224",
+  "0000932781",
+  "0000936528",
+  "0000948320",
+  "0001000230",
+  "0001007019",
+  "0001009829",
+  "0001013488",
+  "0001015383",
+  "0001023459",
+  "0001043509",
+  "0001056358",
+  "0001057060",
+  "0001058307",
+  "0001061894",
+  "0001062822",
+  "0001070750",
+  "0001075415",
+  "0001084048",
+  "0001085243",
+  "0001097864",
+  "0001109354",
+  "0001114483",
+  "0001126328",
+  "0001140536",
+  "0001157601",
+  "0001158324",
+  "0001177609",
+  "0001177702",
+  "0001180262",
+  "0001187953",
+  "0001211583",
+  "0001218683",
+  "0001228627",
+  "0001232582",
+  "0001253986",
+  "0001265131",
+  "0001275101",
+  "0001281761",
+  "0001285550",
+  "0001317945",
+  "0001318605",
+  "0001320760",
+  "0001327688",
+  "0001329606",
+  "0001347858",
+  "0001348362",
+  "0001350102",
+  "0001355839",
+  "0001357971",
+  "0001361538",
+  "0001362004",
+  "0001385157",
+  "0001385280",
+  "0001393726",
+  "0001402328",
+  "0001410428",
+  "0001412486",
+  "0001417663",
+  "0001419951",
+  "0001425205",
+  "0001425355",
+  "0001433607",
+  "0001435064",
+  "0001463972",
+  "0001464343",
+  "0001479681",
+  "0001499849",
+  "0001504008",
+  "0001506983",
+  "0001521951",
+  "0001526520",
+  "0001533924",
+  "0001534248",
+  "0001535955",
+  "0001546296",
+  "0001571776",
+  "0001577445",
+  "0001584831",
+  "0001597846",
+  "0001607962",
+  "0001645469",
+  "0001649749",
+  "0001654595",
+  "0001658247",
+  "0001690080",
+  "0001697851",
+  "0001701756",
+  "0001702780",
+  "0001756180",
+  "0001767837",
+  "0001807887",
+  "0001821175",
+  "0001823584",
+  "0001836242",
+  "0001850119",
+  "0001851484",
+  "0001853825",
+  "0001855509",
+  "0001856525",
+  "0001870144",
+  "0001873835",
+  "0001892492",
+  "0001895618",
+  "0002000178",
+  "0002011514",
+  "0002012726"
+ ],
+ "historyChanged": [
+  {
+   "cik": "0000006201",
+   "yearsBefore": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014
+   ],
+   "yearsAfter": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0000006207",
+   "yearsBefore": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015
+   ],
+   "yearsAfter": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014
+   ]
+  },
+  {
+   "cik": "0000706698",
+   "yearsBefore": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0000720005",
+   "yearsBefore": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0000767405",
+   "yearsBefore": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0000794170",
+   "yearsBefore": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001045450",
+   "yearsBefore": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001045609",
+   "yearsBefore": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001056943",
+   "yearsBefore": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014
+   ],
+   "yearsAfter": [
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001164727",
+   "yearsBefore": [
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001464423",
+   "yearsBefore": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017
+   ],
+   "yearsAfter": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001527702",
+   "yearsBefore": [
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001530950",
+   "yearsBefore": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ],
+   "yearsAfter": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+   ]
+  },
+  {
+   "cik": "0001552033",
+   "yearsBefore": [
+    2013
+   ],
+   "yearsAfter": [
+    2012,
+    2013
+   ]
+  }
+ ],
+ "dataQuality": {
+  "committed": {
+   "DQ-SEC-1": {
+    "failed": 18,
+    "checked": 1190909,
+    "samples": [
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-03-31 (shares_outstanding)",
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-06-30 (shares_outstanding)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2025-06-27 (revenue)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-09-27 (revenue)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-12-27 (revenue)"
+    ]
+   },
+   "DQ-SEC-2": {
+    "failed": 25,
+    "checked": 1231701,
+    "samples": [
+     "AAL CIK0000006201: shares_outstanding quarterly Ende 2027-07-17 nach Einreichung 2026-07-23",
+     "AAL CIK0000006201: shares_outstanding ttm Ende 2027-07-17 nach Einreichung 2026-07-23",
+     "AXR CIK0000006207: shares_outstanding quarterly Ende 2033-09-12 nach Einreichung 2023-09-13",
+     "AXR CIK0000006207: shares_outstanding ttm Ende 2033-09-12 nach Einreichung 2023-09-13",
+     "UTMD CIK0000706698: long_term_debt annual Ende 2014-12-31 nach Einreichung 2014-03-12"
+    ]
+   },
+   "DQ-SEC-3": {
+    "failed": 0,
+    "checked": 5063,
+    "note": "IMPLAUSIBLE_FILING_FY 0 bei 0 Emittenten; FUTURE_PERIOD_END 0 bei 0 Emittenten."
+   }
+  },
+  "old": {
+   "DQ-SEC-1": {
+    "failed": 18,
+    "checked": 1190223,
+    "samples": [
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-03-31 (shares_outstanding)",
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-06-30 (shares_outstanding)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2025-06-27 (revenue)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-09-27 (revenue)",
+     "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-12-27 (revenue)"
+    ]
+   },
+   "DQ-SEC-2": {
+    "failed": 25,
+    "checked": 1230953,
+    "samples": [
+     "AAL CIK0000006201: shares_outstanding quarterly Ende 2027-07-17 nach Einreichung 2026-07-23",
+     "AAL CIK0000006201: shares_outstanding ttm Ende 2027-07-17 nach Einreichung 2026-07-23",
+     "AXR CIK0000006207: shares_outstanding quarterly Ende 2033-09-12 nach Einreichung 2023-09-13",
+     "AXR CIK0000006207: shares_outstanding ttm Ende 2033-09-12 nach Einreichung 2023-09-13",
+     "UTMD CIK0000706698: long_term_debt annual Ende 2014-12-31 nach Einreichung 2014-03-12"
+    ]
+   },
+   "DQ-SEC-3": {
+    "failed": 0,
+    "checked": 5063,
+    "note": "IMPLAUSIBLE_FILING_FY 0 bei 0 Emittenten; FUTURE_PERIOD_END 0 bei 0 Emittenten."
+   }
+  },
+  "new": {
+   "DQ-SEC-1": {
+    "failed": 2,
+    "checked": 1190358,
+    "samples": [
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-03-31 (shares_outstanding)",
+     "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-06-30 (shares_outstanding)"
+    ]
+   },
+   "DQ-SEC-2": {
+    "failed": 0,
+    "checked": 1231113,
+    "samples": []
+   },
+   "DQ-SEC-3": {
+    "failed": 416,
+    "checked": 5063,
+    "note": "IMPLAUSIBLE_FILING_FY 23 bei 19 Emittenten; FUTURE_PERIOD_END 1084 bei 398 Emittenten."
+   }
+  }
+ },
+ "independentCheck": {
+  "importsPipeline": false,
+  "scope": "duration-anchor path of the fiscal calendar (P1) and per-(fact, metric) quarantine (P2) on the consumer path (availability = filing date); issuer-specific extension concepts not modelled",
+  "tally": {
+   "ciks": 5063,
+   "p1Anchors": 23,
+   "p1Issuers": 19,
+   "p2Pairs": 1084,
+   "p2Issuers": 398,
+   "p1Parity": 5063,
+   "p2Parity": 5063
+  },
+  "mismatches": [],
+  "p1LabelEffect": [
+   {
+    "cik": "0000011544",
+    "tickers": [
+     "WRB"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2022-12-31",
+      "claimedFy": 2020,
+      "publishedLabelsBefore": [
+       2022
+      ],
+      "publishedLabelsAfter": [
+       2022
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0000102729",
+    "tickers": [
+     "VMI"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2021-12-25",
+      "claimedFy": 2019,
+      "publishedLabelsBefore": [
+       2021
+      ],
+      "publishedLabelsAfter": [
+       2021
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0000110471",
+    "tickers": [
+     "WWW"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2026-01-03",
+      "claimedFy": 2024,
+      "publishedLabelsBefore": [
+       2026
+      ],
+      "publishedLabelsAfter": [
+       2026
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0000704532",
+    "tickers": [
+     "ONTO"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2026-01-03",
+      "claimedFy": 2024,
+      "publishedLabelsBefore": [
+       2026
+      ],
+      "publishedLabelsAfter": [
+       2026
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0000855658",
+    "tickers": [
+     "LSCC"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2016-01-02",
+      "claimedFy": 2014,
+      "publishedLabelsBefore": [
+       2016
+      ],
+      "publishedLabelsAfter": [
+       2016
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0000922224",
+    "tickers": [
+     "PPL"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2023-12-31",
+      "claimedFy": 2021,
+      "publishedLabelsBefore": [
+       2023
+      ],
+      "publishedLabelsAfter": [
+       2023
+      ]
+     },
+     {
+      "periodEnd": "2024-12-31",
+      "claimedFy": 2021,
+      "publishedLabelsBefore": [
+       2024
+      ],
+      "publishedLabelsAfter": [
+       2024
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001013488",
+    "tickers": [
+     "BJRI"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2025-12-30",
+      "claimedFy": 2023,
+      "publishedLabelsBefore": [
+       2024
+      ],
+      "publishedLabelsAfter": [
+       2024
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001045609",
+    "tickers": [
+     "PLD"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2008-12-31",
+      "claimedFy": 2010,
+      "publishedLabelsBefore": [],
+      "publishedLabelsAfter": []
+     }
+    ]
+   },
+   {
+    "cik": "0001061894",
+    "tickers": [
+     "GIL"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2022-01-02",
+      "claimedFy": 2020,
+      "publishedLabelsBefore": [
+       2022
+      ],
+      "publishedLabelsAfter": [
+       2022
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001062822",
+    "tickers": [
+     "LXRX"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2021-12-31",
+      "claimedFy": 2019,
+      "publishedLabelsBefore": [
+       2021
+      ],
+      "publishedLabelsAfter": [
+       2021
+      ]
+     },
+     {
+      "periodEnd": "2022-12-31",
+      "claimedFy": 2019,
+      "publishedLabelsBefore": [
+       2022
+      ],
+      "publishedLabelsAfter": [
+       2022
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001137789",
+    "tickers": [
+     "STX"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2025-06-27",
+      "claimedFy": 2027,
+      "publishedLabelsBefore": [
+       2027
+      ],
+      "publishedLabelsAfter": [
+       2025
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001140536",
+    "tickers": [
+     "WTW"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2023-12-31",
+      "claimedFy": 2021,
+      "publishedLabelsBefore": [
+       2023
+      ],
+      "publishedLabelsAfter": [
+       2023
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001166928",
+    "tickers": [
+     "WTBA"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2017-12-31",
+      "claimedFy": 2107,
+      "publishedLabelsBefore": [
+       2107
+      ],
+      "publishedLabelsAfter": [
+       2017
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001177609",
+    "tickers": [
+     "FIVE"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2018-02-03",
+      "claimedFy": 2016,
+      "publishedLabelsBefore": [
+       2017
+      ],
+      "publishedLabelsAfter": [
+       2017
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001521951",
+    "tickers": [
+     "FBIZ"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2023-12-31",
+      "claimedFy": 2021,
+      "publishedLabelsBefore": [
+       2023
+      ],
+      "publishedLabelsAfter": [
+       2023
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001552033",
+    "tickers": [
+     "TRU"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2012-12-31",
+      "claimedFy": 2014,
+      "publishedLabelsBefore": [],
+      "publishedLabelsAfter": []
+     }
+    ]
+   },
+   {
+    "cik": "0001653558",
+    "tickers": [
+     "PRTH"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2018-12-31",
+      "claimedFy": 43465,
+      "publishedLabelsBefore": [
+       43465
+      ],
+      "publishedLabelsAfter": [
+       2018
+      ]
+     },
+     {
+      "periodEnd": "2019-12-31",
+      "claimedFy": 43830,
+      "publishedLabelsBefore": [
+       43830
+      ],
+      "publishedLabelsAfter": [
+       2019
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001702780",
+    "tickers": [
+     "OPTU"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2022-12-31",
+      "claimedFy": 2020,
+      "publishedLabelsBefore": [
+       2022
+      ],
+      "publishedLabelsAfter": [
+       2022
+      ]
+     }
+    ]
+   },
+   {
+    "cik": "0001856525",
+    "tickers": [
+     "CNM"
+    ],
+    "anchors": [
+     {
+      "periodEnd": "2025-02-02",
+      "claimedFy": 2023,
+      "publishedLabelsBefore": [
+       2024
+      ],
+      "publishedLabelsAfter": [
+       2024
+      ]
+     },
+     {
+      "periodEnd": "2026-02-01",
+      "claimedFy": 2023,
+      "publishedLabelsBefore": [
+       2025
+      ],
+      "publishedLabelsAfter": [
+       2025
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "productionEffectAfterMerge": {
+  "committedInThisPr": "no file under quant/data, discover/data or any other producer tree",
+  "secConsumerFundamentals": ".github/workflows/sec-consumer-fundamentals.yml (cron Mon 07:30 UTC or dispatch) rewrites quant/data/sec/consumer/CIK*.json (all: versions; content as above), consumer/index.json, consumer-history/*.json.gz (shards of the changed issuers), consumer_coverage.json (new block secQuality), then discover/data (build-discover-data.mjs) and the capability matrix/projection",
+  "productIntelligence": ".github/workflows/product-intelligence-materialization.yml (build-factor-evidence.mjs) then carries the new shares/marketCap/raw factor inputs into quant/data/product/factor-evidence-v1 for the issuers listed above",
+  "factbookPipeline": "update-sec-fundamentals.yml (cron Mon 06:00 UTC) and sec-fundamentals-daily.yml re-normalize every stored factbook they touch, because the version stamp moved (pipeline._is_current); their canonical/inspector outputs change accordingly"
+ }
+}

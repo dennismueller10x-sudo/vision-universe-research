@@ -65,12 +65,23 @@ const daily = dir(SERIES, /^ref_.*\.json$/).map((f) => maybe(SERIES + "/" + f)).
 rules.push(DQ.seriesIntegrity(daily));
 rules.push(DQ.seriesFreshness(daily, expected, lag, 2));
 rules.push(DQ.implausibleJumps(daily, 0.6));
+const weekly = dir(LONG, /^ref_.*\.json$/).map((f) => maybe(LONG + "/" + f)).filter(Boolean);
+const weeklyById = new Map(weekly.map((w) => [w.securityId, w]));
 const pairs = [];
 for (const s of daily) {
-  const w = maybe(LONG + "/" + s.securityId + ".json");
+  const w = weeklyById.get(s.securityId);
   if (w) pairs.push({ securityId: s.securityId, daily: s, weekly: w });
 }
 rules.push(DQ.dailyWeeklyAgreement(pairs));
+/* Eingefrorene Kursenden, Stamm <-> Reihe (core/listing-staleness.js). Nur Bericht, kein Ausschluss. */
+const Staleness = require(join(REPO_ROOT, "core", "listing-staleness.js"));
+const usMaster = maybe("quant/data/market/security-master/us-security-master.json");
+if (usMaster) {
+  const mIdx = Staleness.masterIndex(usMaster);
+  rules.push(DQ.staleTails(daily, mIdx, Staleness, "daily"));
+  rules.push(DQ.staleTails(weekly, mIdx, Staleness, "weekly"));
+  rules.push(DQ.masterSeriesConsistency(daily, mIdx, Staleness, expected, lag, 2));
+}
 const byId = new Map(daily.map((s) => [s.securityId, s]));
 const stockIndex = maybe("discover/data/stock-index/US_REAL.json");
 const indexSymbols = stockIndex ? stockIndex.symbols : [];
@@ -176,6 +187,18 @@ if (twArt && twArt.cols) {
     expectedSession: expected, lagFn: lag, maxLag: 2, Identity, PublishedClose,
     referenceOf: (id) => maybe("quant/data/market/discover-series/" + id + ".json")
   }));
+}
+
+/* SEC-Fundamentaldaten (quant/data/sec/consumer, Erzeuger update-sec-fundamentals.yml) */
+if (only !== "sf8") {
+const SEC = "quant/data/sec/consumer";
+const secBundles = dir(SEC, /^CIK\d+\.json$/).map((f) => {
+  const b = maybe(SEC + "/" + f);
+  return b && { cik: b.cik, tickers: b.tickers, annual: b.annual, quarterly: b.quarterly, ttm: b.ttm, quality: b.quality };
+}).filter(Boolean);
+rules.push(DQ.secFiscalYearLabels(secBundles));
+rules.push(DQ.secFuturePeriods(secBundles));
+rules.push(DQ.secRefusals(secBundles));
 }
 
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });

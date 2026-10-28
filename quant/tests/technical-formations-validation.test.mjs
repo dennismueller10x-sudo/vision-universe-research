@@ -25,10 +25,19 @@ test("gemeinsam: Kausalitaet, Zustand, Reihenfolge, Richtung", () => {
 
 test("Dreiecke und Rechteck: erstes gegen letztes Hoch/Tief, Toleranz max(0,75 ATR, 2,5 %)", () => {
   const pts = (h1, l1, h2, l2, h3) => [P("2026-05-01", h1, "HIGH"), P("2026-06-01", l1, "LOW"), P("2026-07-01", h2, "HIGH"), P("2026-08-01", l2, "LOW"), P("2026-08-20", h3, "HIGH")];
-  assert.deepEqual(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 90, 104, 96, 110.5) }), CTX), [], "Hochs gleich (mittleres Hoch zaehlt nicht), Tiefs steigen");
+  /* Kanten wie gezeichnet (ti-chart-patterns 1.3.0): aufsteigend = oben waagrecht, unten durch die Tiefs. */
+  const asc = [L("upper", "2026-05-01", 110.5, "2026-08-20", 110.5), L("lower", "2026-06-01", 90, "2026-08-20", 99)];
+  const sym = [L("upper", "2026-05-01", 110, "2026-08-20", 102), L("lower", "2026-06-01", 90, "2026-08-20", 99)];
+  assert.deepEqual(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 90, 104, 96, 110.5), lines: asc }), CTX), [], "Hochs gleich (mittleres Hoch zaehlt nicht), Tiefs steigen");
+  /* Befund 28.10.2026: Unterkante waagrecht gezeichnet, obwohl die Tiefs steigen (ABEV), bzw. waagrechte Kante ab dem Preis des ersten Pivots. */
+  const ascFlach = [L("upper", "2026-05-01", 110.5, "2026-08-20", 110.5), L("lower", "2026-06-01", 90, "2026-08-20", 90)];
+  assert.deepEqual(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 90, 104, 96, 110.5), lines: ascFlach }), CTX), ["LINIEN_PASSEN_NICHT_ZUM_TYP"]);
+  const ascSchief = [L("upper", "2026-05-01", 110, "2026-08-20", 110.5), L("lower", "2026-06-01", 90, "2026-08-20", 99)];
+  assert.deepEqual(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 90, 104, 96, 110.5), lines: ascSchief }), CTX), ["LINIEN_PASSEN_NICHT_ZUM_TYP"]);
+  assert.ok(check(f("SYMMETRICAL_TRIANGLE", "BULLISH", { directionOpen: true, points: pts(110, 90, 104, 96, 105) }), CTX).includes("LINIEN_FEHLEN"));
   assert.ok(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 90, 104, 96, 120) }), CTX).includes("GEOMETRIE"), "Hochs 10 auseinander");
   assert.ok(check(f("ASCENDING_TRIANGLE", "BULLISH", { points: pts(110, 96, 104, 90, 110) }), CTX).includes("GEOMETRIE"), "Tiefs fallen");
-  assert.deepEqual(check(f("SYMMETRICAL_TRIANGLE", "BULLISH", { directionOpen: true, points: pts(110, 90, 104, 96, 105) }), CTX), []);
+  assert.deepEqual(check(f("SYMMETRICAL_TRIANGLE", "BULLISH", { directionOpen: true, points: pts(110, 90, 104, 96, 105), lines: sym }), CTX), []);
   assert.deepEqual(check(f("RECTANGLE", "BULLISH", { directionOpen: true, points: pts(110, 90, 104, 90.5, 110.2) }), CTX), []);
   assert.ok(check(f("RECTANGLE", "BULLISH", { directionOpen: true, points: pts(110, 108, 104, 108.5, 110.2) }), CTX).includes("GEOMETRIE"), "zu schmal (< 3 ATR)");
 });

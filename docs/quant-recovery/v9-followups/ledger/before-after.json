@@ -1,0 +1,895 @@
+{
+ "schemaVersion": "v9-followup-ledger-before-after-1.0.0",
+ "engine": {
+  "before": {
+   "version": "research-portfolio-1.1.0",
+   "sha256": "1b9204e5609ffa9eb8cdb827e2b35d732e8d76ce5fb72afb0f58a20edeeeb8b0"
+  },
+  "after": {
+   "version": "research-portfolio-1.2.0",
+   "sha256": "d7f401388b20f4e8a9b53a13cb1a3160079d48347b8673aa3bc4cf5797cce5bc"
+  }
+ },
+ "runtime": {
+  "node": "v22.22.0",
+  "v8": "12.4.254.21-node.33",
+  "platform": "linux",
+  "arch": "x64",
+  "glibc": "2.39",
+  "binarySha256": "1f3d442a8d6faa2a9e11fd39f7c1344a590f61d2394dec1f4034a7930592f933"
+ },
+ "builderSha256": "d069629e830d0611e5351ea5d119c37ae87749df17540186fbd72cbb709c3ab9",
+ "unchanged": {
+  "summary": {
+   "comparisons": 34,
+   "equal": 34
+  },
+  "v9": {
+   "L1": {
+    "registrationHashReproduced": true,
+    "runs": {
+     "TR_PAYDATE": {
+      "endCapital": 731173.2568196487,
+      "recordedResultHash": "09b2a2c7ec7e2673d2215b93c230894fa336496ef4c904b73685f5f3ff8dc2d3",
+      "oldEngineResultHash": "09b2a2c7ec7e2673d2215b93c230894fa336496ef4c904b73685f5f3ff8dc2d3",
+      "newEngineRawResultHash": "d945e4342d4bed5957e50ea481e6b6ab1d3eaa0d45e92a2042e4e86f1664f7d7",
+      "newEngineRestampedResultHash": "09b2a2c7ec7e2673d2215b93c230894fa336496ef4c904b73685f5f3ff8dc2d3",
+      "equal": true
+     },
+     "PRICE_ADJUSTED": {
+      "endCapital": 615579.3600551757,
+      "recordedResultHash": "b085aa50a439c02b026af2e9d2a2441ea06268fe8c6797db8acadc00f9ea2230",
+      "oldEngineResultHash": "b085aa50a439c02b026af2e9d2a2441ea06268fe8c6797db8acadc00f9ea2230",
+      "newEngineRawResultHash": "d2da6ba801ef702f19df8a9939f8730b09254cc948d36b8578821d17ed542b74",
+      "newEngineRestampedResultHash": "b085aa50a439c02b026af2e9d2a2441ea06268fe8c6797db8acadc00f9ea2230",
+      "equal": true
+     },
+     "RAW_SPLITS_ONLY": {
+      "endCapital": 615579.3600551761,
+      "recordedResultHash": "9e6a46eaccd00b76550c0db050c396b967cfd275c0cfc663e37d7e1c011d9121",
+      "oldEngineResultHash": "9e6a46eaccd00b76550c0db050c396b967cfd275c0cfc663e37d7e1c011d9121",
+      "newEngineRawResultHash": "8323710959f518965d1137f2699e60acf9c55d0f2e39de67c79cc4e9132f0ca4",
+      "newEngineRestampedResultHash": "9e6a46eaccd00b76550c0db050c396b967cfd275c0cfc663e37d7e1c011d9121",
+      "equal": true
+     },
+     "TR_EXDATE_CASH": {
+      "endCapital": 731173.2568196482,
+      "recordedResultHash": "fc4eddaa175dd3dbc8b54c93e76a746c35a51d03fa6425e43a47d9d611a88bc3",
+      "oldEngineResultHash": "fc4eddaa175dd3dbc8b54c93e76a746c35a51d03fa6425e43a47d9d611a88bc3",
+      "newEngineRawResultHash": "7e6e58245f4e58e88d4eda58a1bb7ed382ebfa11babd113e2a24cdad1582ac62",
+      "newEngineRestampedResultHash": "fc4eddaa175dd3dbc8b54c93e76a746c35a51d03fa6425e43a47d9d611a88bc3",
+      "equal": true
+     },
+     "TR_FULLY_INVESTED": {
+      "recordedError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "oldEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "newEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "equal": true
+     },
+     "TR_EXDATE_CASH_FULLY_INVESTED": {
+      "endCapital": 895384.1485093208,
+      "recordedResultHash": "cf2fde36959bbefa8bec4424ec33c7e42c2ae020c9519e4fc208ab09d9ed9483",
+      "oldEngineResultHash": "cf2fde36959bbefa8bec4424ec33c7e42c2ae020c9519e4fc208ab09d9ed9483",
+      "newEngineRawResultHash": "7cf2327dc2b8137e2307628fc26d123c4e0c74f14b555355e4488e470176ae5a",
+      "newEngineRestampedResultHash": "cf2fde36959bbefa8bec4424ec33c7e42c2ae020c9519e4fc208ab09d9ed9483",
+      "equal": true
+     }
+    }
+   },
+   "L2": {
+    "registrationHashReproduced": true,
+    "runs": {
+     "TR_PAYDATE": {
+      "endCapital": 522464.79098126665,
+      "recordedResultHash": "4bf9501b7cea24bf4ba15a1cf6de71f79cfd59c9e13d4676bfc9e95dd094fe4f",
+      "oldEngineResultHash": "4bf9501b7cea24bf4ba15a1cf6de71f79cfd59c9e13d4676bfc9e95dd094fe4f",
+      "newEngineRawResultHash": "41860512d77f97aa5381580cbc5e5ee78cfea2bd6248bcd21451e5c4e447374e",
+      "newEngineRestampedResultHash": "4bf9501b7cea24bf4ba15a1cf6de71f79cfd59c9e13d4676bfc9e95dd094fe4f",
+      "equal": true
+     },
+     "PRICE_ADJUSTED": {
+      "endCapital": 501201.3680749809,
+      "recordedResultHash": "1e604f4f571f4aa042e7c53acf984622b992453552461bf648c185693041e2c7",
+      "oldEngineResultHash": "1e604f4f571f4aa042e7c53acf984622b992453552461bf648c185693041e2c7",
+      "newEngineRawResultHash": "53d945434436e7578fd64e93a091fbed84c5ff9db261f09f52db303437e9ead6",
+      "newEngineRestampedResultHash": "1e604f4f571f4aa042e7c53acf984622b992453552461bf648c185693041e2c7",
+      "equal": true
+     },
+     "RAW_SPLITS_ONLY": {
+      "endCapital": 501201.3680749809,
+      "recordedResultHash": "f19fdbc57be036b40b11a6a6ed02e6bc19dd976ad5fe9ac5a995ae9c9f27ebf6",
+      "oldEngineResultHash": "f19fdbc57be036b40b11a6a6ed02e6bc19dd976ad5fe9ac5a995ae9c9f27ebf6",
+      "newEngineRawResultHash": "922f1d019caa2d589724646c820fd2cf4a40dc945eee682b5acb07fe6f3abeb5",
+      "newEngineRestampedResultHash": "f19fdbc57be036b40b11a6a6ed02e6bc19dd976ad5fe9ac5a995ae9c9f27ebf6",
+      "equal": true
+     },
+     "TR_EXDATE_CASH": {
+      "endCapital": 522464.79098126665,
+      "recordedResultHash": "a7d162d29c25dbbd0a87848bc23dd2c92efcccb9d6698b2b3325a377aa8d2eaf",
+      "oldEngineResultHash": "a7d162d29c25dbbd0a87848bc23dd2c92efcccb9d6698b2b3325a377aa8d2eaf",
+      "newEngineRawResultHash": "2005f1b077bfdaaa0c2ad366e49c93e1825cfdf05af86ff34ed46d682cf32e7c",
+      "newEngineRestampedResultHash": "a7d162d29c25dbbd0a87848bc23dd2c92efcccb9d6698b2b3325a377aa8d2eaf",
+      "equal": true
+     },
+     "TR_FULLY_INVESTED": {
+      "recordedError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "oldEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "newEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "equal": true
+     },
+     "TR_EXDATE_CASH_FULLY_INVESTED": {
+      "endCapital": 616295.5862695453,
+      "recordedResultHash": "0a36b7e562a9a57879f12abe2f1201306f3882f4026d0abc005ad4a7d25d3486",
+      "oldEngineResultHash": "0a36b7e562a9a57879f12abe2f1201306f3882f4026d0abc005ad4a7d25d3486",
+      "newEngineRawResultHash": "6f945fa141b7a8150a2db20684021ff7f03b93db4bc29ddd8468efaf44bbdbf9",
+      "newEngineRestampedResultHash": "0a36b7e562a9a57879f12abe2f1201306f3882f4026d0abc005ad4a7d25d3486",
+      "equal": true
+     }
+    }
+   },
+   "L3": {
+    "registrationHashReproduced": true,
+    "runs": {
+     "TR_PAYDATE": {
+      "endCapital": 291924.35448726796,
+      "recordedResultHash": "1f2291ed69731e14e9ba71317ac9537f5d917dc1c7ff2617de1205fbeb17385b",
+      "oldEngineResultHash": "1f2291ed69731e14e9ba71317ac9537f5d917dc1c7ff2617de1205fbeb17385b",
+      "newEngineRawResultHash": "a42b173d020d428dfeed0bf2abd6717b5a00b162a19068ce3d1e777386aa7ba6",
+      "newEngineRestampedResultHash": "1f2291ed69731e14e9ba71317ac9537f5d917dc1c7ff2617de1205fbeb17385b",
+      "equal": true
+     },
+     "PRICE_ADJUSTED": {
+      "endCapital": 278001.00960263284,
+      "recordedResultHash": "0ed1c7e26870d71e4b17a6dfe691665fa33f52fc3fb15ea6af5b8e4819ee8ef5",
+      "oldEngineResultHash": "0ed1c7e26870d71e4b17a6dfe691665fa33f52fc3fb15ea6af5b8e4819ee8ef5",
+      "newEngineRawResultHash": "78c0a9c154082f4c2fa4e69eb2aa3eb765e3d6d800642f65b9e85816d93353d5",
+      "newEngineRestampedResultHash": "0ed1c7e26870d71e4b17a6dfe691665fa33f52fc3fb15ea6af5b8e4819ee8ef5",
+      "equal": true
+     },
+     "RAW_SPLITS_ONLY": {
+      "endCapital": 278001.0096026328,
+      "recordedResultHash": "5eb83d6a267f8e867172a5fbd1593a25be85adb38914b229b018deb697038c7c",
+      "oldEngineResultHash": "5eb83d6a267f8e867172a5fbd1593a25be85adb38914b229b018deb697038c7c",
+      "newEngineRawResultHash": "68264dd206b4682f0d2199b380b69a04d70afdb511df88457d5b46ef6e1ce640",
+      "newEngineRestampedResultHash": "5eb83d6a267f8e867172a5fbd1593a25be85adb38914b229b018deb697038c7c",
+      "equal": true
+     },
+     "TR_EXDATE_CASH": {
+      "endCapital": 291924.35448726796,
+      "recordedResultHash": "60728a4cebd22395558253194eea9694077f21088e59ab2ef164ad4f67b71792",
+      "oldEngineResultHash": "60728a4cebd22395558253194eea9694077f21088e59ab2ef164ad4f67b71792",
+      "newEngineRawResultHash": "7254cf17c34ace266b3001637ebbbecbaace11e023a0ed298aa51d7856af7ccf",
+      "newEngineRestampedResultHash": "60728a4cebd22395558253194eea9694077f21088e59ab2ef164ad4f67b71792",
+      "equal": true
+     },
+     "TR_FULLY_INVESTED": {
+      "recordedError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "oldEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "newEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "equal": true
+     },
+     "TR_EXDATE_CASH_FULLY_INVESTED": {
+      "endCapital": 326479.8957530351,
+      "recordedResultHash": "991060b19183eb1665378815251b85ea33defab1ce32b6097b61efc39cdb830e",
+      "oldEngineResultHash": "991060b19183eb1665378815251b85ea33defab1ce32b6097b61efc39cdb830e",
+      "newEngineRawResultHash": "92c23610f0014eb5d11d10e35d8d2cea27221c16615c59fe976a00246db17551",
+      "newEngineRestampedResultHash": "991060b19183eb1665378815251b85ea33defab1ce32b6097b61efc39cdb830e",
+      "equal": true
+     }
+    }
+   },
+   "TERMINAL_DAILY": {
+    "registrationHashReproduced": true,
+    "runs": {
+     "HOLD_CONSERVATIVE": {
+      "endCapital": 113816.4874882097,
+      "recordedResultHash": "487165cd13403729b3fd1ad2556d2089e2ce0e648b81be223dc72c957c0d312b",
+      "oldEngineResultHash": "487165cd13403729b3fd1ad2556d2089e2ce0e648b81be223dc72c957c0d312b",
+      "newEngineRawResultHash": "02b7a3470f2139349e149af1da6a868faac714cf96a85c5f7b1e48268d04ac67",
+      "newEngineRestampedResultHash": "487165cd13403729b3fd1ad2556d2089e2ce0e648b81be223dc72c957c0d312b",
+      "equal": true
+     },
+     "HOLD_OPTIMISTIC_UNSOURCED": {
+      "endCapital": 113816.4874882097,
+      "recordedResultHash": "db1a6f820ff58e107a5b3dd0b73a0f23d87318fcac59e5c7985dfbdfbecce4fa",
+      "oldEngineResultHash": "db1a6f820ff58e107a5b3dd0b73a0f23d87318fcac59e5c7985dfbdfbecce4fa",
+      "newEngineRawResultHash": "e1600d2ac547a8af7a1a76ea6de0186a70cf913daa686a1bab3eb9b0304eaa17",
+      "newEngineRestampedResultHash": "db1a6f820ff58e107a5b3dd0b73a0f23d87318fcac59e5c7985dfbdfbecce4fa",
+      "equal": true
+     },
+     "REBAL_CONSERVATIVE": {
+      "recordedError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "oldEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "newEngineError": "UNSETTLED_CASH_NOT_INVESTABLE",
+      "equal": true
+     },
+     "REBAL_OPTIMISTIC_UNSOURCED": {
+      "endCapital": 111920.59178426,
+      "recordedResultHash": "c2d688ad77e59dba73b3e7cd9cac44717c0fb229b49f6f82bb59a5fdcd0fe383",
+      "oldEngineResultHash": "c2d688ad77e59dba73b3e7cd9cac44717c0fb229b49f6f82bb59a5fdcd0fe383",
+      "newEngineRawResultHash": "86bb690f1b065634a72a98b2a2470aa67d37a5656ea922fda6a07f8860b4cc02",
+      "newEngineRestampedResultHash": "c2d688ad77e59dba73b3e7cd9cac44717c0fb229b49f6f82bb59a5fdcd0fe383",
+      "equal": true
+     },
+     "PRICE_SIMULATION_ATTEMPT": {
+      "recordedError": "INVALID_CONDITIONAL_PRICE_SIMULATION",
+      "oldEngineError": "INVALID_CONDITIONAL_PRICE_SIMULATION",
+      "newEngineError": "INVALID_CONDITIONAL_PRICE_SIMULATION",
+      "equal": true
+     }
+    }
+   }
+  },
+  "v8ReferencePortfolio": {
+   "method": "scripts/quant/verify-research-portfolio.py --node v8_node_shim.cjs (recorded runtime + 1.1.0 identity re-stamped)",
+   "status": {
+    "old": "PASS",
+    "new": "PASS"
+   },
+   "cases": [
+    {
+     "case": "funded_buy",
+     "recordedResultHash": "8e76ecbc091acdfac19210a68df56ff38f844198204c0efd750c876733e2beab",
+     "oldEngine": "8e76ecbc091acdfac19210a68df56ff38f844198204c0efd750c876733e2beab",
+     "newEngine": "8e76ecbc091acdfac19210a68df56ff38f844198204c0efd750c876733e2beab",
+     "equal": true
+    },
+    {
+     "case": "simultaneous_rebalance",
+     "recordedResultHash": "bbad770a9651e81cd0fbfb4f6b7193cc45d8678cb5b0bf5ebdd990842e30a158",
+     "oldEngine": "bbad770a9651e81cd0fbfb4f6b7193cc45d8678cb5b0bf5ebdd990842e30a158",
+     "newEngine": "bbad770a9651e81cd0fbfb4f6b7193cc45d8678cb5b0bf5ebdd990842e30a158",
+     "equal": true
+    },
+    {
+     "case": "split_dividend_terminal",
+     "recordedResultHash": "7653373a974fa47203e9943762f7b9775205a7e75e2fdfea3398f8e2f0375a71",
+     "oldEngine": "7653373a974fa47203e9943762f7b9775205a7e75e2fdfea3398f8e2f0375a71",
+     "newEngine": "7653373a974fa47203e9943762f7b9775205a7e75e2fdfea3398f8e2f0375a71",
+     "equal": true
+    },
+    {
+     "case": "sourced_zero_terminal",
+     "recordedResultHash": "9b48d8880cb16a05a0a819d7265682df89ff03a7036ca9acc82737ff9a1b0526",
+     "oldEngine": "9b48d8880cb16a05a0a819d7265682df89ff03a7036ca9acc82737ff9a1b0526",
+     "newEngine": "9b48d8880cb16a05a0a819d7265682df89ff03a7036ca9acc82737ff9a1b0526",
+     "equal": true
+    }
+   ]
+  },
+  "v7Portfolio": {
+   "V7-PORTFOLIO-1": {
+    "recordedEndCapital": 15064985.342654098,
+    "oldEngineEndCapital": 15064985.342654098,
+    "newEngineEndCapital": 15064985.342654098,
+    "metricsEqualRecorded": true,
+    "rebalances": 1448,
+    "recordedInputHash": "9b362aa95bd4cd670d7e1fdb72438ab8c5dcbcc8cd96b8535483a1f5943d2eb6",
+    "rerunInputHash": "919ad86ba679db5fe0181e78e75c680e2aacd75d3725d230015b8f2cda4e216a",
+    "payloadWithoutIdentityIdenticalOldVsNew": true,
+    "equal": true
+   },
+   "V7-PORTFOLIO-4": {
+    "recordedEndCapital": 14582508.411879638,
+    "oldEngineEndCapital": 14582508.411879638,
+    "newEngineEndCapital": 14582508.411879638,
+    "metricsEqualRecorded": true,
+    "rebalances": 362,
+    "recordedInputHash": "9cf361a5477ca0802423ce5f625951dff9edca95b712999ad20dc15f5bcaff1b",
+    "rerunInputHash": "d0853e07eda612f9d4067631e77496725cb6936c8a7ba51b0fcba601a8f1e2ee",
+    "payloadWithoutIdentityIdenticalOldVsNew": true,
+    "equal": true
+   },
+   "V7-PORTFOLIO-13": {
+    "recordedEndCapital": 14457625.60082808,
+    "oldEngineEndCapital": 14457625.60082808,
+    "newEngineEndCapital": 14457625.60082808,
+    "metricsEqualRecorded": true,
+    "rebalances": 112,
+    "recordedInputHash": "689110b57ce0047df81f4ebcf7962b6c6cf90628b3cf5bc864f7a556dc3e35cb",
+    "rerunInputHash": "4793635f2f085a13f8cba966348e558f5072f44a131afdfd30f3f37e1793afe9",
+    "payloadWithoutIdentityIdenticalOldVsNew": true,
+    "equal": true
+   }
+  },
+  "v7Note": "V7 private inputs are rebuilt by scripts/quant/run-v7-real-studies.cjs from current repository data; their inputHash differs from the recorded one (input metadata), but endCapital, metrics and rebalance count equal the recorded V7 values exactly and old/new engine payloads are identical.",
+  "identityNote": "resultHash includes the engine source hash and VERSION; it changes by design. verify-v7-scope.cjs EXACT_REPEAT on recorded private outputs is engine-identity bound and would report the identity change, not a calculation change."
+ },
+ "newTypes": {
+  "evidenceSha256": "c16d2a5f2a56048835f371e435c2aa434267773bd4f9565b8dcebe17c41c38f7",
+  "v9DividendEvidenceSha256": "2091425a67b033ae853f1e777499b0bdff417110183d0fae335c78cf96e0d630",
+  "engineVersion": {
+   "new": "research-portfolio-1.2.0",
+   "old": "research-portfolio-1.1.0"
+  },
+  "engineSha256": {
+   "new": "d7f401388b20f4e8a9b53a13cb1a3160079d48347b8673aa3bc4cf5797cce5bc",
+   "old": "1b9204e5609ffa9eb8cdb827e2b35d732e8d76ce5fb72afb0f58a20edeeeb8b0"
+  },
+  "runnerSha256": "905bc4fe105463e7a0307cd3ec3b12b5ecdea7230e5dc8f1f12cc274efb570bc",
+  "studies": {
+   "SPIN": {
+    "period": [
+     "2021-07-02",
+     "2022-01-28"
+    ],
+    "sessions": 31,
+    "audit": {
+     "exSession": "2021-11-05",
+     "providerFactor": [
+      "2021-11-04",
+      1.046
+     ],
+     "kdFirstBar": {
+      "date": "2021-11-05",
+      "close": 24.25,
+      "availableAt": "2021-11-05T20:00:00.000Z"
+     },
+     "ibmRawAtPreEx": {
+      "date": "2021-10-29",
+      "close": 125.1016,
+      "availableAt": "2021-10-29T20:00:00.000Z"
+     }
+    },
+    "runs": {
+     "SPIN_BEFORE_NO_SPINOFF_RAW@old": {
+      "engine": "old",
+      "note": "what 1.1.0 can run: raw IBM, sourced dividends, spin-off omitted (KD value lost at ex-date)",
+      "primary": false,
+      "endCapital": 97797.77137280838,
+      "cumulativeReturn": -0.02202228627191627,
+      "trades": 8,
+      "events": []
+     },
+     "SPIN_BEFORE_NO_SPINOFF_RAW@new": {
+      "engine": "new",
+      "note": "what 1.1.0 can run: raw IBM, sourced dividends, spin-off omitted (KD value lost at ex-date)",
+      "primary": false,
+      "endCapital": 97797.77137280838,
+      "cumulativeReturn": -0.02202228627191627,
+      "trades": 8,
+      "events": []
+     },
+     "SPIN_PRICE_ADJUSTED@old": {
+      "engine": "old",
+      "note": "provider-adjusted IBM price return (spin-off value reinvested into IBM by the provider factor; no dividends)",
+      "primary": false,
+      "endCapital": 99498.09744845062,
+      "cumulativeReturn": -0.005019025515493825,
+      "trades": 8,
+      "events": []
+     },
+     "SPIN_PRICE_ADJUSTED@new": {
+      "engine": "new",
+      "note": "provider-adjusted IBM price return (spin-off value reinvested into IBM by the provider factor; no dividends)",
+      "primary": false,
+      "endCapital": 99498.09744845062,
+      "cumulativeReturn": -0.005019025515493825,
+      "trades": 8,
+      "events": []
+     },
+     "SPIN_TERMS": {
+      "engine": "new",
+      "note": "SPINOFF 1 KD per 5 IBM at the first weekly session on/after the ex-date; informationAvailableAt = Form 10/A terms; KD sold at the next rebalance (target IBM 0.9)",
+      "primary": true,
+      "endCapital": 100221.15697325389,
+      "cumulativeReturn": 0.0022115697325388872,
+      "trades": 9,
+      "events": [
+       {
+        "date": "2021-11-05",
+        "eventId": "IBM:SPINOFF:KD:2021-10-25",
+        "type": "SPINOFF",
+        "entitlementUnits": 650.3289616575179
+       }
+      ]
+     },
+     "SPIN_COMPLETION": {
+      "engine": "new",
+      "note": "as SPIN_TERMS, information time = completion 8-K",
+      "primary": false,
+      "endCapital": 100221.15697325389,
+      "cumulativeReturn": 0.0022115697325388872,
+      "trades": 9,
+      "events": [
+       {
+        "date": "2021-11-05",
+        "eventId": "IBM:SPINOFF:KD:2021-10-25",
+        "type": "SPINOFF",
+        "entitlementUnits": 650.3289616575179
+       }
+      ]
+     },
+     "SPIN_GUARD_DECISION_BEFORE_COMPLETION": {
+      "engine": "new",
+      "note": "decision at the weekly close before the ex-session (executed at the ex-session) cannot use a spin-off first known from the completion 8-K",
+      "primary": false,
+      "error": "DECISION_BEFORE_EVENT_INFORMATION",
+      "expected": "DECISION_BEFORE_EVENT_INFORMATION"
+     },
+     "SPIN_SAME_SCHEDULE_TERMS": {
+      "engine": "new",
+      "note": "same schedule with information time = Form 10/A terms: accepted",
+      "primary": false,
+      "endCapital": 82590.01802156374,
+      "cumulativeReturn": -0.17409981978436262,
+      "trades": 3,
+      "events": [
+       {
+        "date": "2021-11-05",
+        "eventId": "IBM:SPINOFF:KD:2021-10-25",
+        "type": "SPINOFF",
+        "entitlementUnits": 635.0780844201807
+       }
+      ]
+     },
+     "SPIN_DOUBLE_APPLICATION": {
+      "engine": "new",
+      "note": "the same distribution entered twice (terms and completion source) is rejected",
+      "primary": false,
+      "error": "DUPLICATE_SPINOFF",
+      "expected": "DUPLICATE_SPINOFF"
+     },
+     "SPIN_TERMS_OLD_ENGINE": {
+      "engine": "old",
+      "note": "1.1.0 on the SPIN_TERMS input",
+      "primary": false,
+      "error": "INVALID_TIMESTAMP",
+      "expected": null
+     }
+    }
+   },
+   "SPIN_2022": {
+    "period": [
+     "2021-07-02",
+     "2022-12-30"
+    ],
+    "sessions": 79,
+    "audit": {
+     "exSession": "2021-11-05",
+     "providerFactor": [
+      "2021-11-04",
+      1.046
+     ],
+     "kdFirstBar": {
+      "date": "2021-11-05",
+      "close": 24.25,
+      "availableAt": "2021-11-05T20:00:00.000Z"
+     },
+     "ibmRawAtPreEx": {
+      "date": "2021-10-29",
+      "close": 125.1016,
+      "availableAt": "2021-10-29T20:00:00.000Z"
+     }
+    },
+    "runs": {
+     "SPIN_2022_TERMS": {
+      "engine": "new",
+      "note": "SPIN_TERMS extended to 2022-12: the 2022-02 dividend is first in SEC on 2022-02-22, after a scheduled decision",
+      "primary": false,
+      "error": "DECISION_BEFORE_EVENT_INFORMATION",
+      "expected": null
+     },
+     "SPIN_2022_TERMS_OLD_ENGINE": {
+      "engine": "old",
+      "note": "1.1.0 with legacy availableAt dividends over the 2022 extension",
+      "primary": false,
+      "error": "EVENT_NOT_AVAILABLE",
+      "expected": null
+     }
+    }
+   },
+   "WBS": {
+    "period": [
+     "2026-07-01",
+     "2026-10-26"
+    ],
+    "sessions": 82,
+    "audit": {
+     "lastTradeDate": "2026-08-19",
+     "excludedCarryForwardBars": [
+      [
+       "2026-08-20",
+       77.57
+      ]
+     ],
+     "adsIdentityCrossCheck": {
+      "stated": {
+       "statedClose": "12.88",
+       "statedDate": "2026-04-17",
+       "series": "quant/data/market/discover-series/ref_SAN.json"
+      },
+      "seriesClose": [
+       "2026-04-17",
+       12.88
+      ]
+     }
+    },
+    "runs": {
+     "WBS_NOT_STATED": {
+      "engine": "new",
+      "note": "exchange into 2.0548 SAN ADS; $48.75 cash claim NOT_STATED (outside equity); SAN sold at the session after the exchange",
+      "primary": true,
+      "endCapital": 45055.320301690736,
+      "cumulativeReturn": -0.5494467969830926,
+      "trades": 2,
+      "notStatedClaims": [
+       {
+        "eventId": "WBS:TERMINAL_EXCHANGE:2026-08-20",
+        "amount": 57111.37722156424,
+        "entitlementDate": "2026-08-20"
+       }
+      ],
+      "events": [
+       {
+        "date": "2026-08-20",
+        "eventId": "WBS:TERMINAL_EXCHANGE:2026-08-20",
+        "type": "TERMINAL_EXCHANGE",
+        "entitlementUnits": 1171.5154301859332
+       }
+      ]
+     },
+     "WBS_NOT_STATED_OLD_ENGINE": {
+      "engine": "old",
+      "note": "1.1.0 on the WBS_NOT_STATED input",
+      "primary": false,
+      "error": "INVALID_TIMESTAMP",
+      "expected": null
+     },
+     "WBS_CONSERVATIVE_LAST_SESSION": {
+      "engine": "new",
+      "note": "V9 convention: unsourced cash credit at the last session (claim inside equity, never investable in-window)",
+      "primary": false,
+      "endCapital": 102166.69752325497,
+      "cumulativeReturn": 0.02166697523254979,
+      "trades": 2,
+      "events": [
+       {
+        "date": "2026-08-20",
+        "eventId": "WBS:TERMINAL_EXCHANGE:2026-08-20",
+        "type": "TERMINAL_EXCHANGE",
+        "entitlementUnits": 1171.5154301859332
+       }
+      ]
+     },
+     "WBS_V9_STYLE_MISLABELLED_OLD_ENGINE@old": {
+      "engine": "old",
+      "note": "what 1.1.0 would need: SAN mislabelled as primary common stock; economically equal to WBS_CONSERVATIVE_LAST_SESSION",
+      "primary": false,
+      "endCapital": 102166.69752325497,
+      "cumulativeReturn": 0.02166697523254979,
+      "trades": 2,
+      "events": [
+       {
+        "date": "2026-08-20",
+        "eventId": "WBS:TERMINAL_EXCHANGE:2026-08-20",
+        "type": "TERMINAL_EXCHANGE",
+        "entitlementUnits": 1171.5154301859332
+       }
+      ]
+     },
+     "WBS_V9_STYLE_MISLABELLED_OLD_ENGINE@new": {
+      "engine": "new",
+      "note": "what 1.1.0 would need: SAN mislabelled as primary common stock; economically equal to WBS_CONSERVATIVE_LAST_SESSION",
+      "primary": false,
+      "endCapital": 102166.69752325497,
+      "cumulativeReturn": 0.02166697523254979,
+      "trades": 2,
+      "events": [
+       {
+        "date": "2026-08-20",
+        "eventId": "WBS:TERMINAL_EXCHANGE:2026-08-20",
+        "type": "TERMINAL_EXCHANGE",
+        "entitlementUnits": 1171.5154301859332
+       }
+      ]
+     },
+     "WBS_GUARD_DECISION_BEFORE_INFORMATION": {
+      "engine": "new",
+      "note": "decision at the last WBS close, executed at the first SAN session: the completion 8-K was accepted only before the next open",
+      "primary": false,
+      "error": "DECISION_BEFORE_EVENT_INFORMATION",
+      "expected": "DECISION_BEFORE_EVENT_INFORMATION"
+     },
+     "WBS_GUARD_ADS_TARGETED": {
+      "engine": "new",
+      "note": "an ADS may only arrive as terminal consideration, never be bought",
+      "primary": false,
+      "error": "ADS_SUCCESSOR_ONLY",
+      "expected": "ADS_SUCCESSOR_ONLY"
+     },
+     "WBS_GUARD_ADS_WITHOUT_EXCHANGE": {
+      "engine": "new",
+      "note": "an ADS listing that is no terminal-exchange successor is rejected",
+      "primary": false,
+      "error": "ADS_SUCCESSOR_ONLY",
+      "expected": "ADS_SUCCESSOR_ONLY"
+     }
+    }
+   }
+  },
+  "parity": {
+   "status": "PASS",
+   "tolerance": "1E-9",
+   "scriptSha256": "7b2b5352d739a0b441385fac85e8194851ce84f0df01231b21cc204714741249",
+   "runs": {
+    "SPIN/SPIN_BEFORE_NO_SPINOFF_RAW@old": {
+     "match": true,
+     "python": "97797.771372808384784545721393680669099427967865405",
+     "maxEquityRelDiff": "2.8333285071480257508017905617191085286435260482405E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_BEFORE_NO_SPINOFF_RAW@new": {
+     "match": true,
+     "python": "97797.771372808384784545721393680669099427967865405",
+     "maxEquityRelDiff": "2.8333285071480257508017905617191085286435260482405E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_PRICE_ADJUSTED@old": {
+     "match": true,
+     "python": "99498.097448450589767760991062046511918961064981793",
+     "maxEquityRelDiff": "3.2400639188008275187255553748636617453408156732239E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "SPIN/SPIN_PRICE_ADJUSTED@new": {
+     "match": true,
+     "python": "99498.097448450589767760991062046511918961064981793",
+     "maxEquityRelDiff": "3.2400639188008275187255553748636617453408156732239E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "SPIN/SPIN_TERMS": {
+     "match": true,
+     "python": "100221.15697325389038950212788977055967893015251919",
+     "maxEquityRelDiff": "2.1423365736181980854158069004583237355441852793721E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_COMPLETION": {
+     "match": true,
+     "python": "100221.15697325389038950212788977055967893015251919",
+     "maxEquityRelDiff": "2.1423365736181980854158069004583237355441852793721E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_GUARD_DECISION_BEFORE_COMPLETION": {
+     "match": true,
+     "python": "DECISION_BEFORE_EVENT_INFORMATION",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_SAME_SCHEDULE_TERMS": {
+     "match": true,
+     "python": "82590.018021563732303403449304214640039335021906523",
+     "maxEquityRelDiff": "2.9483457200645070232110018832297305216002700057588E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_DOUBLE_APPLICATION": {
+     "match": true,
+     "python": "DUPLICATE_SPINOFF",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN/SPIN_TERMS_OLD_ENGINE": {
+     "match": true,
+     "python": "REJECTED_BY_1.1.0_SCHEMA",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN_2022/SPIN_2022_TERMS": {
+     "match": true,
+     "python": "DECISION_BEFORE_EVENT_INFORMATION",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "SPIN_2022/SPIN_2022_TERMS_OLD_ENGINE": {
+     "match": true,
+     "python": "EVENT_NOT_AVAILABLE",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "2.1566048828122472728652954397727110981906516354182E-16"
+     }
+    },
+    "WBS/WBS_NOT_STATED": {
+     "match": true,
+     "python": "45055.320301690736275579583828775886651039865732878",
+     "maxEquityRelDiff": "2.3199787798408488063660477453580899733833714442513E-16",
+     "maxNotStatedRelDiff": "7.8465021082621082621082621082621048855147578347576E-17",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_NOT_STATED_OLD_ENGINE": {
+     "match": true,
+     "python": "REJECTED_BY_1.1.0_SCHEMA",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_CONSERVATIVE_LAST_SESSION": {
+     "match": true,
+     "python": "102166.69752325497179433416608121267779634094597945",
+     "maxEquityRelDiff": "2.3199787798408488063660477453580899733833714442513E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_V9_STYLE_MISLABELLED_OLD_ENGINE@old": {
+     "match": true,
+     "python": "102166.69752325497179433416608121267779634094597945",
+     "maxEquityRelDiff": "2.3199787798408488063660477453580899733833714442513E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_V9_STYLE_MISLABELLED_OLD_ENGINE@new": {
+     "match": true,
+     "python": "102166.69752325497179433416608121267779634094597945",
+     "maxEquityRelDiff": "2.3199787798408488063660477453580899733833714442513E-16",
+     "maxNotStatedRelDiff": "0",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_GUARD_DECISION_BEFORE_INFORMATION": {
+     "match": true,
+     "python": "DECISION_BEFORE_EVENT_INFORMATION",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_GUARD_ADS_TARGETED": {
+     "match": true,
+     "python": "ADS_SUCCESSOR_ONLY",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    },
+    "WBS/WBS_GUARD_ADS_WITHOUT_EXCHANGE": {
+     "match": true,
+     "python": "ADS_SUCCESSOR_ONLY",
+     "inputParity": {
+      "sessions": true,
+      "bars": true,
+      "instrumentClasses": true,
+      "events": true,
+      "targets": true,
+      "maxRelPriceInputDiff": "0"
+     }
+    }
+   }
+  }
+ },
+ "consumers": {
+  "research": [
+   "scripts/quant/run-research.cjs",
+   "scripts/quant/run-v7-real-studies.cjs",
+   "scripts/quant/verify-v7-scope.cjs",
+   "scripts/quant/verify-research-portfolio.py",
+   "quant/tests/research-portfolio.test.mjs",
+   "quant/tests/research-v7-scope.test.mjs",
+   "quant/tests/research-adversarial.test.mjs"
+  ],
+  "productReadPaths": "none (no workflow, core, discover, frontend or product data producer requires research-portfolio.cjs)"
+ },
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false
+}

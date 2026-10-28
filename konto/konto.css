@@ -16,6 +16,9 @@ body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
 .ka-card p{line-height:1.55}
 .ka-muted{color:var(--vu-muted);font-size:14px}
 .ka-grid{display:grid;gap:var(--vu-space-3)}
+.ka-grid>.ka-card+.ka-card{margin-top:0}
+#ka-confirm{margin-top:var(--vu-space-3)}
+#ka-confirm-title:focus{outline:none}
 @media(min-width:761px){.ka-grid--2{grid-template-columns:1fr 1fr}.ka-grid--3{grid-template-columns:repeat(3,1fr)}}
 
 /* Formulare: 16px gegen den iOS-Zoom, 48px Bedienhoehe */

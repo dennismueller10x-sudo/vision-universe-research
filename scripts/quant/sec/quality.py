@@ -17,12 +17,16 @@ Checks implemented (Phase 4 § 16):
   RESTATEMENT_CONFLICT      a restatement that moves a value by more than a threshold
   EXTREME_VALUE             a value outside a sanity band for its metric
   NEGATIVE_WHERE_IMPOSSIBLE a strictly non-negative metric reported negative
+  IMPLAUSIBLE_FILING_FY     an annual filing's own `fy` is more than one year away
+                            from the year its period ends in; refused as a label
+  FUTURE_PERIOD_END         (from normalization) a mapped fact whose period ends
+                            after the filing became available; quarantined
 """
 import logging
 from collections import defaultdict
 from datetime import date
 
-from .fiscal import parse_date
+from .fiscal import REJECTED_IMPLAUSIBLE_FILING_FY, parse_date
 from .restatements import to_instant
 from .version import QUALITY_RULES_VERSION
 
@@ -202,9 +206,24 @@ def summarize(findings):
     }
 
 
+def check_calendar(calendar):
+    """Annual filings whose own `fy` was refused as implausible (fiscal.py)."""
+    findings = []
+    for end, claimed, used, reason in getattr(calendar, "rejected_anchors", None) or []:
+        if reason != REJECTED_IMPLAUSIBLE_FILING_FY:
+            continue
+        findings.append(_finding(
+            REJECTED_IMPLAUSIBLE_FILING_FY, SEVERITY_WARNING,
+            f"fiscal year ending {end} is tagged fy={claimed} by its own annual report; "
+            f"labelled {used} from the learned offset",
+            end=end, fiscal_year=used, filing_claimed_fy=claimed))
+    return findings
+
+
 def run_all(raw_facts, factbook, registry, normalization_issues=()):
     findings = check_raw_facts(raw_facts, registry)
     findings.extend(check_factbook(factbook, registry))
+    findings.extend(check_calendar(getattr(factbook, "calendar", None)))
     for issue in normalization_issues:
         findings.append(_finding(
             issue["code"],

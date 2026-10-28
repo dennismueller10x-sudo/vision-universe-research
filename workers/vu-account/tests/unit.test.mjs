@@ -102,6 +102,13 @@ test('Konfiguration: Testmodus-Sperre fuer Live-Schluessel', () => {
   assert.equal(billingBlocker(loadConfig({...base, STRIPE_SECRET_KEY: 'pk_live_1'})), 'BILLING_KEY_INVALID');
   assert.equal(billingBlocker(loadConfig({...base, STRIPE_SECRET_KEY: 'sk_test_1', STRIPE_WEBHOOK_SECRET: ''})), 'BILLING_WEBHOOK_NOT_CONFIGURED');
   assert.equal(billingBlocker(loadConfig({STRIPE_SECRET_KEY: 'sk_test_1'})), 'ACCOUNTS_NOT_CONFIGURED');
+  // Checkout-Zugang: im Live-Modus ohne Angabe nur Tester; unbekannte Werte fallen auf den sicheren Standard.
+  const access = (extra) => loadConfig({...base, ...extra}).stripe.checkoutAccess;
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', STRIPE_LIVE_MODE_APPROVED: 'true'}), 'testers');
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'oeffentlich'}), 'testers');
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'OFF'}), 'off');
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'public'}), 'public');
+  assert.equal(access({STRIPE_SECRET_KEY: 'sk_test_1'}), 'public');
   const cfg = loadConfig({...base, VU_REGISTRATION_ALLOWLIST: 'A@x.de, b@y.de'});
   assert.equal(cfg.registration.enabled, false, 'Registrierung standardmaessig geschlossen');
   assert.ok(cfg.registration.allowlist.has('a@x.de'));

@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "core-data-quality-1.0.0";
+  var VERSION = "core-data-quality-1.1.0";   // 1.1.0: DQ-SEC-1/2/3 (V9 SEC/PIT)
   var SAMPLE = 25;
 
   function result(id, title, severity, checked, failures, note) {
@@ -213,6 +213,63 @@
     return result("DQ-PX-5", "Aktienseite = letzter Schlusskurs der Reihe", "ERROR", pairs.length, fail);
   }
 
+  /** DQ-PX-6 (Tag) / DQ-PX-7 (Woche): eingefrorenes Kursende bei einem Titel, den der
+   *  Wertpapierstamm ACTIVE fuehrt (core/listing-staleness.js). Nur Bericht: es wird
+   *  nichts ausgeschlossen. masterIdx = Staleness.masterIndex(us-security-master.json). */
+  function staleTails(seriesList, masterIdx, Staleness, grain, minRun) {
+    var weekly = grain === "weekly", n = minRun || (weekly ? Staleness.DEFAULTS.weeklyMinRun : Staleness.DEFAULTS.dailyMinRun);
+    var hist = {}, found = [], checked = 0, noMaster = 0, inactive = 0;
+    (seriesList || []).forEach(function (s) {
+      var st = masterIdx.byId[s.securityId];
+      var t = Staleness.tailRun(s.points);
+      if (!t) return;
+      var key = t.run >= 30 ? "30+" : String(t.run);
+      hist[key] = (hist[key] || 0) + 1;
+      if (!st) { noMaster++; return; }
+      if (!st.active) { inactive++; return; }
+      checked++;
+      var f = Staleness.staleTail(s, st, n);
+      if (f) found.push(f);
+    });
+    found.sort(function (a, b) { return b.run - a.run || (a.securityId < b.securityId ? -1 : 1); });
+    var unit = weekly ? "Wochenschluesse" : "Tagesschluesse";
+    var r = result(weekly ? "DQ-PX-7" : "DQ-PX-6",
+      "Kein eingefrorenes Kursende bei aktiven Titeln (" + (weekly ? "Wochenreihe" : "Tagesreihe") + ", >= " + n + " gleiche Schluesse)", "WARN", checked,
+      found.map(function (f) { return f.securityId + ": " + (f.run === f.points ? "alle " : "") + f.run + " gleiche " + unit + " seit " + f.since + " (" + f.close + "), Stamm " + f.master + (f.masterEnd ? " bis " + f.masterEnd : ""); }),
+      "Endlaeufe gleicher Schluesse ueber alle Reihen: " + JSON.stringify(hist) + ". Nicht geprueft: " + noMaster + " ohne Stammzeile, " + inactive +
+      " im Stamm nur INACTIVE (siehe DQ-ID-4). Typische Ursache: Delisting/Uebernahme, der Anbieter schreibt den letzten Kurs fort. Nur Bericht - kein Ausschluss.");
+    r.histogram = hist;
+    r.minRun = n;
+    r.findings = found;
+    return r;
+  }
+
+  /** DQ-ID-4: Wertpapierstamm und Tagesreihe widersprechen sich nicht
+   *  (Stamm INACTIVE, Reihe laeuft weiter = Ticker-Wiederverwendung oder Fortschreibung;
+   *  Stamm ACTIVE, Reihe zu Ende). */
+  function masterSeriesConsistency(seriesList, masterIdx, Staleness, expectedSession, lagFn, maxLag, minRun) {
+    var found = [], byClass = {}, checked = 0;
+    (seriesList || []).forEach(function (s) {
+      var st = masterIdx.byId[s.securityId];
+      if (!st) return;
+      checked++;
+      var c = Staleness.masterConflict(s, st, { expectedSession: expectedSession, lagFn: lagFn, maxLag: maxLag, minRun: minRun });
+      if (!c) return;
+      byClass[c.class] = (byClass[c.class] || 0) + 1;
+      found.push(c);
+    });
+    var order = ["MASTER_INACTIVE_SERIES_CURRENT", "MASTER_INACTIVE_SERIES_FROZEN", "MASTER_INACTIVE_SERIES_AFTER_END", "MASTER_ACTIVE_SERIES_ENDED"];
+    found.sort(function (a, b) { return order.indexOf(a.class) - order.indexOf(b.class) || (a.securityId < b.securityId ? -1 : 1); });
+    var r = result("DQ-ID-4", "Wertpapierstamm und Tagesreihe widersprechen sich nicht (aktiv/inaktiv, Ende)", "WARN", checked,
+      found.map(function (c) { return c.securityId + ": " + c.class + " - Reihe bis " + c.to + (c.lag !== null ? " (" + c.lag + " Sitzungen zurueck)" : "") +
+        ", Stamm " + c.master + " Ende " + c.masterEnd + (c.masterRows > 1 ? " (" + c.masterRows + " Zeilen)" : ""); }),
+      "Klassen: " + JSON.stringify(byClass) + ". Stamm: " + (masterIdx.version || "?") + " vom " + (masterIdx.today || "?") +
+      " (ACTIVE-Zeilen tragen als Ende den Stammstand; Titel, die danach delistet wurden, stehen dort noch ACTIVE). Nur Bericht - kein Ausschluss.");
+    r.byClass = byClass;
+    r.findings = found;
+    return r;
+  }
+
   /* ------------------------------------------------------------ Produkte */
 
   /** DQ-PR-1: jede ausgelieferte Aktienseite hat ihren Indexeintrag und umgekehrt. */
@@ -300,6 +357,76 @@
     var fail = missing.length > skipped ? missing.map(function (t) { return t + ": materialisiert, fehlt im Screener ohne gezaehlten Grund"; }) : [];
     return result("DQ-TW-4", "Technical-Screener deckt die Materialisierung ab (oder zaehlt den Grund)", "WARN", (materializedTickers || []).length, fail,
       "Fehlend " + missing.length + ", mit Grund gezaehlt " + skipped + " (" + JSON.stringify(skippedCounts || {}) + ").");
+  }
+
+  /* ------------------------------------------------- SEC-Fundamentaldaten */
+  /* bundles = [{ cik, tickers, annual, quarterly, ttm, quality }] aus
+     quant/data/sec/consumer/CIK*.json (Erzeuger update-sec-fundamentals.yml).
+     Zeilen: [fy, fp, end, v, filed, accn, derived] (consumer.ROW_COLUMNS). */
+
+  function secRows(b) {
+    var out = [];
+    ["annual", "quarterly"].forEach(function (k) {
+      Object.keys(b[k] || {}).forEach(function (m) {
+        (b[k][m] || []).forEach(function (r) { if (Array.isArray(r)) out.push({ part: k, metric: m, fy: r[0], fp: r[1], end: r[2], filed: r[4] }); });
+      });
+    });
+    Object.keys(b.ttm || {}).forEach(function (m) {
+      var t = b.ttm[m];
+      if (t && typeof t === "object") out.push({ part: "ttm", metric: m, fy: null, fp: t.fp, end: t.end, filed: t.filed });
+    });
+    return out;
+  }
+  function secName(b) { return ((b.tickers && b.tickers[0]) || "?") + " CIK" + b.cik; }
+
+  /** DQ-SEC-1: ein veroeffentlichtes Geschaeftsjahreslabel liegt hoechstens ein Jahr neben
+   *  dem Kalenderjahr seines Periodenendes (V9: PRTH 43465/43830, WTBA 2107, STX 2027). */
+  function secFiscalYearLabels(bundles) {
+    var checked = 0, fail = [];
+    (bundles || []).forEach(function (b) {
+      var seen = {};
+      secRows(b).forEach(function (r) {
+        if (typeof r.fy !== "number" || typeof r.end !== "string") return;
+        checked++;
+        if (Math.abs(r.fy - Number(r.end.slice(0, 4))) > 1) {
+          var key = r.fy + "|" + r.end;
+          if (!seen[key]) { seen[key] = 1; fail.push(secName(b) + ": FY-Label " + r.fy + " fuer Periodenende " + r.end + " (" + r.metric + ")"); }
+        }
+      });
+    });
+    return result("DQ-SEC-1", "SEC-Geschaeftsjahreslabel liegen hoechstens ein Jahr neben dem Periodenende", "WARN", checked, fail,
+      "Ursache meist ein unplausibles fy im Jahresbericht; die Normalisierung lehnt es ab (IMPLAUSIBLE_FILING_FY, DQ-SEC-3).");
+  }
+
+  /** DQ-SEC-2: keine veroeffentlichte SEC-Zeile endet nach ihrem Einreichungsdatum
+   *  (Faelligkeitsplan, erklaerte Dividende, Deckblattdatum nach Annahme; V9: ASLE 2034, AXR 2033, PMT 2028-2030). */
+  function secFuturePeriods(bundles) {
+    var checked = 0, fail = [];
+    (bundles || []).forEach(function (b) {
+      secRows(b).forEach(function (r) {
+        if (typeof r.end !== "string" || typeof r.filed !== "string") return;
+        checked++;
+        if (r.end.slice(0, 10) > r.filed.slice(0, 10)) fail.push(secName(b) + ": " + r.metric + " " + r.part + " Ende " + r.end + " nach Einreichung " + r.filed);
+      });
+    });
+    return result("DQ-SEC-2", "SEC-Werte enden nicht nach ihrer Einreichung (keine Zukunftsperiode)", "WARN", checked, fail,
+      "Die Normalisierung quarantaeniert solche Fakten (FUTURE_PERIOD_END, DQ-SEC-3).");
+  }
+
+  /** DQ-SEC-3 (INFO, Messung): was die Normalisierung abgelehnt hat - fy-Anker
+   *  (IMPLAUSIBLE_FILING_FY) und Zukunftsperioden (FUTURE_PERIOD_END), je Emittent.
+   *  INFO, weil die Ablehnung die richtige Behandlung ist; die Zahl macht Wiederkehr sichtbar. */
+  function secRefusals(bundles) {
+    var fail = [], anchors = 0, quarantined = 0, iA = 0, iQ = 0;
+    (bundles || []).forEach(function (b) {
+      var q = b.quality || {}, a = (q.implausibleFilingFy || []).length, f = (q.futurePeriodEnd || {}).quarantined || 0;
+      if (a) { iA++; anchors += a; }
+      if (f) { iQ++; quarantined += f; }
+      if (a || f) fail.push(secName(b) + ": IMPLAUSIBLE_FILING_FY " + a + ", FUTURE_PERIOD_END " + f);
+    });
+    return result("DQ-SEC-3", "SEC-Normalisierung: abgelehnte fy-Anker und quarantaenierte Zukunftsperioden (gezaehlt)", "INFO",
+      (bundles || []).length, fail,
+      "IMPLAUSIBLE_FILING_FY " + anchors + " bei " + iA + " Emittenten; FUTURE_PERIOD_END " + quarantined + " bei " + iQ + " Emittenten.");
   }
 
   /** DQ-TW-5: Wochen-/Monatsspalten (`feld@1W`, `feld@1M`) sind belegt, sobald die Materialisierung sie liefert.
@@ -736,9 +863,11 @@
     seriesIntegrity: seriesIntegrity, seriesFreshness: seriesFreshness, implausibleJumps: implausibleJumps,
     dailyWeeklyAgreement: dailyWeeklyAgreement, compareDailyWeekly: compareDailyWeekly, closeUnit: closeUnit,
     payloadMatchesSeries: payloadMatchesSeries,
+    staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
+    secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,

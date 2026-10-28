@@ -1,4 +1,4 @@
-# Kanal 2 (Arbeitstitel „Bulle & Bär“)
+# Kanal 2: Aktienzoo (@aktienzoo)
 
 Zweiter Instagram/TikTok-Kanal für Börsen- und Finanzwissen mit zwei Comic-Figuren. Ziel ist Reichweite. Später, nach Entscheidung des Owners, kann der Kanal auf Vision Universe hinweisen. Stand 2026-10-28.
 
@@ -36,5 +36,23 @@ Unser Unterschied: kein Experte, der einem Ahnungslosen etwas erklärt, sondern 
 
 1. Figurenentwurf: `image-jobs/bulle-baer-entwurf-1.json` über den Workflow „Brand Media · Higgsfield Bilder“ (siehe `brand-media/higgsfield/README.md`). Erledigt am 28.10.2026, 6 Bilder, 0,45 USD.
 2. Owner wählt Stil und Figuren. Gewählte Bilder kommen nach `figuren/`. Vorläufig: `figuren/entwurf-1/` (Grok Image 2.0, Stil A), bis der Owner entscheidet.
-3. Posen je Figur (8–10, Mund zu/offen, Augen zu) mit den gewählten Bildern als Vorlage, freigestellt.
-4. Reel: Skript mit Posenmarken, Stimmen, Komposition, Render. Ablage unter `reels/<datum>-<thema>/` (nur Quellen, kein MP4 im Repo). Erstes Test-Reel: `reels/2026-10-28-etf-sparplan/`.
+3. Posen je Figur (Mund zu/halb/offen, Augen zu, Gesichtsausdrücke) mit den gewählten Bildern als Vorlage. Erster Satz: `image-jobs/bulle-baer-mund-posen-1.json` (11 von 12 Bildern, 0,48 USD geschätzt), aufbereitet in `figuren/entwurf-1/v2/`.
+4. Reel: Skript mit Posenmarken, Stimmen, Komposition, Render. Ablage unter `reels/<datum>-<thema>/` (nur Quellen, kein MP4 im Repo). Erstes Test-Reel: `reels/2026-10-28-etf-sparplan/`, überarbeitet in `reels/2026-10-28-etf-sparplan-v2/` (Mund per Bildwechsel statt Wackeln, Vollbild-Diagramm, klarere Rechnung). Am 28.10.2026 vom Owner auf Instagram und TikTok veröffentlicht.
+
+## Pflicht ab Reel 2 (Owner-Feedback zu Reel 1)
+
+Reel 1 war verständlich, aber optisch zu ruhig. Die Vorlage wechselt etwa jede Sekunde das Bild. Ab jetzt gilt:
+
+**Vorschaubild (Cover)**
+- Comic-Plakat statt ruhiger Grafik: 2–4 Wörter, riesig (mindestens 170 px Schrifthöhe auf 1080 × 1920), dicke schwarze Kontur, harter Schlagschatten, Füllung in kräftigem Gelb oder Blau, leicht gedreht.
+- Hintergrund voll: Collage aus Zeitungsausschnitten, Charts, Geldscheinen, Logos oder Motiven des Themas (eigene oder generierte Bilder, entsättigt), dazu ein farbiger Strahlenkranz hinter der Figur.
+- Eine Figur groß in der Mitte mit starkem Ausdruck (schockiert, zeigt, jubelt). Alles Wichtige im 3:4-Ausschnitt des Rasters.
+- Wiedererkennbar als Serie: gleicher Aufbau, gleiche Schrift, wechselnde Farbe pro Thema.
+- Umsetzung: `vorlagen/cover/` (Beispiel `reels/2026-10-28-etf-sparplan-v2/cover-comic.jpg`).
+
+**Im Video**
+- Bilddichte: spätestens alle 1–2 Sekunden ein neues Element (Icon, Foto-Ausschnitt, Logo, Geldsack, Münzen, Pfeil, Stempel, Zahl). Keine Szene länger als etwa 3 Sekunden unverändert.
+- Farbe: farbige Flächen und Akzente je Szene statt durchgehend Creme; Begriffe mit eigenem Icon oder Bild statt nur Text.
+- Schnitte: Punch-in-Zooms auf das Schlüsselwort, Wischblenden und Reißschwenks zwischen Szenen, kurzer Weißblitz oder Wackler bei Schock-Momenten, Split-Screen bei Bulle gegen Bär, Zähler und Balken mit Schwung. Jeder Schnitt bekommt einen passenden Soundeffekt.
+- Figuren: weiter per Mundbild sprechen, zusätzlich Reaktionsbilder als Zwischenschnitt (Bulle schockiert, Bär rollt die Augen).
+- Bildmaterial: nur eigenes, generiertes oder eindeutig freies Material. Für wiederkehrende Motive (Geldsack, Münzstapel, Tresor, Börsengebäude, Chart, Steuerbescheid, Rakete, Kaffeetasse …) eine eigene Icon-Bibliothek im Stil der Figuren anlegen (Bildauftrag mit Recraft, etwa 0,04 USD je Icon).

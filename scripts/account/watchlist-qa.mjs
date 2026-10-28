@@ -91,7 +91,7 @@ await page.waitForFunction(() => /bereits/.test(document.getElementById('ka-stat
 check(await rows(page) === 4, 'doppeltes Hinzufuegen: kein zweiter Eintrag');
 
 const kpi = await page.textContent('#wl-kpis');
-check(/4\s*\/\s*20/.test(kpi.replace(/\s+/g, ' ')), 'Kennzahl beobachtet 4 / 20 (Free)');
+check(/4\s*\/\s*500/.test(kpi.replace(/\s+/g, ' ')), 'Kennzahl beobachtet 4 / 500 (Free im Early Access)');
 const text = await page.textContent('#wl-list');
 check(!/Gesamtscore\s*\d/.test(text), 'kein Gesamtscore-Wert');
 const estc = page.locator('.wl-row', {hasText: 'ESTC'});

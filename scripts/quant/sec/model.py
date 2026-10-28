@@ -18,6 +18,17 @@ from typing import Optional, List, Dict, Any
 SOURCE_SEC = "SEC_EDGAR_XBRL"
 SOURCE_DERIVED = "VISION_UNIVERSE_DERIVED"
 
+# --- where a filing's acceptance timestamp came from -------------------------
+# PIT availability may be taken only from data.sec.gov/submissions, which agrees
+# with the filing's SGML header (V9: 56/56 sampled filings). The bulk archive
+# Archives/edgar/daily-index/bulkdata/submissions.zip carries acceptanceDateTime
+# shifted by +4/+5 hours for 35 of 56 (docs/quant-recovery/v9/secpit/
+# acceptance-timezone-check.json). Any loader of that archive must tag its
+# payload with ACCEPTANCE_SOURCE_BULK_SUBMISSIONS; normalize.build_availability_map
+# then ignores the timestamp and uses the official filing date.
+ACCEPTANCE_SOURCE_API = "data_sec_gov_submissions"
+ACCEPTANCE_SOURCE_BULK_SUBMISSIONS = "bulk_submissions_zip"
+
 # --- transformations applied to get from raw to normalized ------------------
 TRANSFORM_NONE = "AS_REPORTED"
 TRANSFORM_YTD_DIFF = "YTD_DIFF"          # standalone quarter = YTD(n) - YTD(n-1)

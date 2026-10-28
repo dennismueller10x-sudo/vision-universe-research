@@ -1,0 +1,73 @@
+{
+ "schemaVersion": "v9-followup-ca-independent-check-1.0.0",
+ "implementation": "python3 stdlib, no repository imports",
+ "protocolSha256": "db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2",
+ "series": 600,
+ "events": 1087,
+ "frameParity": {
+  "series": 600,
+  "mismatches": []
+ },
+ "decisionParity": {
+  "events": 1087,
+  "identical": 1087,
+  "mismatches": [],
+  "verdicts": {
+   "GENUINE_MOVE": 29,
+   "IDENTITY_UNVERIFIED": 240,
+   "INSUFFICIENT_FILINGS": 215,
+   "NEGATIVE_EVIDENCE_ONLY": 14,
+   "OUT_OF_FRAME_PRE_XBRL": 440,
+   "PROVIDER_SPLIT_RECORDED": 37,
+   "SPIKE_REVERSAL": 1,
+   "SPLIT_OR_SHARE_CHANGE_EVIDENCE": 111
+  }
+ },
+ "registry": {
+  "records": 24,
+  "series": 23,
+  "expectedRecords": 24,
+  "problems": [],
+  "sourceSha256": {
+   "ok": 178,
+   "mismatch": 0,
+   "notInCache": 0
+  }
+ },
+ "beforeAfter": {
+  "consistent": true,
+  "qualified": {
+   "baselineDefault": 4449,
+   "default": 4449,
+   "identity": 4453,
+   "caOnly": 4472,
+   "identityCa": 4476
+  },
+  "newlyQualified": [
+   "ref_ACRS",
+   "ref_ALEC",
+   "ref_ALNY",
+   "ref_BKSY",
+   "ref_BMEA",
+   "ref_CPIX",
+   "ref_ERII",
+   "ref_FMC",
+   "ref_GRAL",
+   "ref_GRCE",
+   "ref_HYFM",
+   "ref_MDRR",
+   "ref_MIRA",
+   "ref_MVST",
+   "ref_NTLA",
+   "ref_OM",
+   "ref_PACB",
+   "ref_PBYI",
+   "ref_REPL",
+   "ref_SRPT",
+   "ref_SSRM",
+   "ref_VRRM",
+   "ref_VSTS"
+  ]
+ },
+ "pass": true
+}

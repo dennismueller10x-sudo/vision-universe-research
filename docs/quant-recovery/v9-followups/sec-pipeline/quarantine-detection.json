@@ -1,0 +1,422 @@
+{
+ "schemaVersion": "v9-followup-sec-quarantine-detection-1.0.0",
+ "ownerCondition": "2026-10-28: cover-date share counts up to 31 days after filing stay quarantined and never enter published historical metrics; DQ-SEC-3 may stay INFO only if affected values are excluded and erroneous published metrics remain detected.",
+ "inputs": {
+  "old": "origin/main code rebuild",
+  "new": "PR #1043 code rebuild",
+  "source": "same SEC companyfacts.zip retrieved 2026-10-27"
+ },
+ "old": {
+  "bundles": 5063,
+  "historyIssuers": 2444,
+  "futureRows": {
+   "bundle": 25,
+   "history": 1
+  },
+  "sharesWithin31Days": {
+   "bundle": [],
+   "history": []
+  },
+  "sharesWithin31DaysCount_bundle": 0,
+  "sharesWithin31DaysCount_history": 0
+ },
+ "new": {
+  "bundles": 5063,
+  "historyIssuers": 2444,
+  "futureRows": {
+   "bundle": 0,
+   "history": 0
+  },
+  "sharesWithin31Days": {
+   "bundle": [],
+   "history": []
+  },
+  "sharesWithin31DaysCount_bundle": 0,
+  "sharesWithin31DaysCount_history": 0
+ },
+ "removedShareCounts": {
+  "count": 40,
+  "reappeared": [],
+  "named": {
+   "VRRM": [
+    [
+     "VRRM",
+     "0001193125-26-209227",
+     151906653.0,
+     "2026-03-31"
+    ],
+    [
+     "VRRM",
+     "0001193125-26-335490",
+     151982804.0,
+     "2026-06-30"
+    ],
+    [
+     "VRRM",
+     "0001193125-26-067293",
+     151361959.0,
+     "2025-12-31"
+    ]
+   ],
+   "COLA": [
+    [
+     "COLA",
+     "0001213900-25-106936",
+     7944290.0,
+     "2025-09-30"
+    ],
+    [
+     "COLA",
+     "0001213900-26-056577",
+     4494439.0,
+     "2026-03-31"
+    ]
+   ],
+   "JJSF": [
+    [
+     "JJSF",
+     "0001437749-26-015618",
+     18753416.0,
+     "2026-03-28"
+    ]
+   ]
+  },
+  "sample": [
+   [
+    "AAL",
+    "0000006201-26-000052",
+    661969951.0,
+    "2027-07-17"
+   ],
+   [
+    "ASLE",
+    "0001558370-24-004010",
+    52990947.0,
+    "2034-03-05"
+   ],
+   [
+    "AVLN",
+    "0001193125-26-345820",
+    44333095.0,
+    "2026-06-30"
+   ],
+   [
+    "AXR",
+    "0001410578-23-002089",
+    5271309.0,
+    "2033-09-12"
+   ],
+   [
+    "BSVN",
+    "0001140361-25-029593",
+    9450979.0,
+    "2025-06-30"
+   ],
+   [
+    "COLA",
+    "0001213900-25-106936",
+    7944290.0,
+    "2025-09-30"
+   ],
+   [
+    "COLA",
+    "0001213900-26-056577",
+    4494439.0,
+    "2026-03-31"
+   ],
+   [
+    "CPBI",
+    "0000950170-25-017946",
+    4242105.0,
+    "2024-12-31"
+   ],
+   [
+    "EPR",
+    "0001045450-13-000019",
+    46819177.0,
+    "2012-12-31"
+   ],
+   [
+    "FBLG",
+    "0001193125-26-197858",
+    5208915.0,
+    "2026-03-31"
+   ],
+   [
+    "GYRO",
+    "0001437749-19-005881",
+    1482680.0,
+    "2018-12-31"
+   ],
+   [
+    "GYRO",
+    "0001437749-23-008587",
+    1482680.0,
+    "2022-12-31"
+   ],
+   [
+    "IQST",
+    "0001078782-12-002479",
+    10000000.0,
+    "2012-06-30"
+   ],
+   [
+    "JJSF",
+    "0001437749-26-015618",
+    18753416.0,
+    "2026-03-28"
+   ],
+   [
+    "KEY",
+    "0001193125-16-475914",
+    835606185.0,
+    "2015-12-31"
+   ],
+   [
+    "LGHL",
+    "0001213900-21-019135",
+    17399176.0,
+    "2021-06-16"
+   ],
+   [
+    "LNN",
+    "0001193125-26-140093",
+    10395655.0,
+    "2026-02-28"
+   ],
+   [
+    "NEM",
+    "0000950123-11-017350",
+    486564649.0,
+    "2010-12-31"
+   ],
+   [
+    "NXDT",
+    "0001628280-25-052132",
+    49020409.06,
+    "2025-09-30"
+   ],
+   [
+    "POST",
+    "0001530950-13-000190",
+    32688799.0,
+    "2013-09-30"
+   ],
+   [
+    "PRTH",
+    "0001615774-18-003739",
+    7058743.0,
+    "2018-03-31"
+   ],
+   [
+    "PRTH",
+    "0001615774-18-006581",
+    6681512.0,
+    "2018-06-30"
+   ],
+   [
+    "PRTH",
+    "0001628280-18-014379",
+    67038304.0,
+    "2018-09-30"
+   ],
+   [
+    "PRTH",
+    "0001628280-19-006766",
+    67013737.0,
+    "2019-03-31"
+   ],
+   [
+    "PRTH",
+    "0001628280-19-010770",
+    67007172.0,
+    "2019-06-30"
+   ],
+   [
+    "PRTH",
+    "0001653558-19-000019",
+    67007172.0,
+    "2019-09-30"
+   ],
+   [
+    "RGR",
+    "0001174947-18-000243",
+    17427090.0,
+    "2017-12-31"
+   ],
+   [
+    "RJF",
+    "0000720005-11-000101",
+    126013143.0,
+    "2011-09-30"
+   ],
+   [
+    "RJF",
+    "0000720005-12-000113",
+    138434615.0,
+    "2012-09-30"
+   ],
+   [
+    "RJF",
+    "0000720005-13-000089",
+    140059971.0,
+    "2013-09-30"
+   ],
+   [
+    "RVSB",
+    "0000939057-25-000048",
+    20976200.0,
+    "2024-12-31"
+   ],
+   [
+    "SBFG",
+    "0001213900-13-001036",
+    4875179.0,
+    "2012-12-31"
+   ],
+   [
+    "SPAI",
+    "0001641172-25-024078",
+    16168352.0,
+    "2025-06-30"
+   ],
+   [
+    "TOL",
+    "0000794170-13-000059",
+    177283000.0,
+    "2013-10-31"
+   ],
+   [
+    "VRRM",
+    "0001193125-26-067293",
+    151361959.0,
+    "2025-12-31"
+   ],
+   [
+    "VRRM",
+    "0001193125-26-209227",
+    151906653.0,
+    "2026-03-31"
+   ],
+   [
+    "VRRM",
+    "0001193125-26-335490",
+    151982804.0,
+    "2026-06-30"
+   ],
+   [
+    "WTBA",
+    "0001166928-17-000036",
+    16187161.0,
+    "2017-03-31"
+   ],
+   [
+    "WTBA",
+    "0001166928-17-000079",
+    16211161.0,
+    "2017-06-30"
+   ],
+   [
+    "WTBA",
+    "0001166928-17-000093",
+    16215672.0,
+    "2017-09-30"
+   ]
+  ]
+ },
+ "regressionGuard": "In the old outputs cover-date share counts were re-dated to a quarter end, so a row-level rule (DQ-SEC-2) could not see them; the guard against a regression is the pipeline test test_a_cover_date_after_acceptance_is_quarantined_not_redated plus the DQ-SEC-3 count of FUTURE_PERIOD_END quarantines in every bundle.",
+ "dqOld": [
+  {
+   "id": "DQ-SEC-1",
+   "severity": "WARN",
+   "status": "FAIL",
+   "checked": 1190223,
+   "failed": 18,
+   "note": "Ursache meist ein unplausibles fy im Jahresbericht; die Normalisierung lehnt es ab (IMPLAUSIBLE_FILING_FY, DQ-SEC-3).",
+   "samples": [
+    "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-03-31 (shares_outstanding)",
+    "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-06-30 (shares_outstanding)",
+    "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2025-06-27 (revenue)",
+    "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-09-27 (revenue)",
+    "STX CIK0001137789: FY-Label 2027 fuer Periodenende 2024-12-27 (revenue)"
+   ]
+  },
+  {
+   "id": "DQ-SEC-2",
+   "severity": "WARN",
+   "status": "FAIL",
+   "checked": 1230953,
+   "failed": 25,
+   "note": "Die Normalisierung quarantaeniert solche Fakten (FUTURE_PERIOD_END, DQ-SEC-3).",
+   "samples": [
+    "AAL CIK0000006201: shares_outstanding quarterly Ende 2027-07-17 nach Einreichung 2026-07-23",
+    "AAL CIK0000006201: shares_outstanding ttm Ende 2027-07-17 nach Einreichung 2026-07-23",
+    "AXR CIK0000006207: shares_outstanding quarterly Ende 2033-09-12 nach Einreichung 2023-09-13",
+    "AXR CIK0000006207: shares_outstanding ttm Ende 2033-09-12 nach Einreichung 2023-09-13",
+    "UTMD CIK0000706698: long_term_debt annual Ende 2014-12-31 nach Einreichung 2014-03-12"
+   ]
+  },
+  {
+   "id": "DQ-SEC-3",
+   "severity": "INFO",
+   "status": "PASS",
+   "checked": 5063,
+   "failed": 0,
+   "note": "IMPLAUSIBLE_FILING_FY 0 bei 0 Emittenten; FUTURE_PERIOD_END 0 bei 0 Emittenten.",
+   "samples": []
+  }
+ ],
+ "dqNew": [
+  {
+   "id": "DQ-SEC-1",
+   "severity": "WARN",
+   "status": "FAIL",
+   "checked": 1190358,
+   "failed": 2,
+   "note": "Ursache meist ein unplausibles fy im Jahresbericht; die Normalisierung lehnt es ab (IMPLAUSIBLE_FILING_FY, DQ-SEC-3).",
+   "samples": [
+    "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-03-31 (shares_outstanding)",
+    "CAPS CIK0000887151: FY-Label 2023 fuer Periodenende 2019-06-30 (shares_outstanding)"
+   ]
+  },
+  {
+   "id": "DQ-SEC-2",
+   "severity": "WARN",
+   "status": "PASS",
+   "checked": 1231113,
+   "failed": 0,
+   "note": "Die Normalisierung quarantaeniert solche Fakten (FUTURE_PERIOD_END, DQ-SEC-3).",
+   "samples": []
+  },
+  {
+   "id": "DQ-SEC-3",
+   "severity": "INFO",
+   "status": "FAIL",
+   "checked": 5063,
+   "failed": 416,
+   "note": "IMPLAUSIBLE_FILING_FY 23 bei 19 Emittenten; FUTURE_PERIOD_END 1084 bei 398 Emittenten.",
+   "samples": [
+    "AFL CIK0000004977: IMPLAUSIBLE_FILING_FY 0, FUTURE_PERIOD_END 2",
+    "AAL CIK0000006201: IMPLAUSIBLE_FILING_FY 0, FUTURE_PERIOD_END 1",
+    "AXR CIK0000006207: IMPLAUSIBLE_FILING_FY 0, FUTURE_PERIOD_END 1",
+    "AWI CIK0000007431: IMPLAUSIBLE_FILING_FY 0, FUTURE_PERIOD_END 1",
+    "ARTW CIK0000007623: IMPLAUSIBLE_FILING_FY 0, FUTURE_PERIOD_END 13"
+   ]
+  }
+ ],
+ "checks": {
+  "newBundlesHaveNoFutureRows": true,
+  "newHistoryHasNoFutureRows": true,
+  "newHasNoShareCountsWithin31DaysAfterFiling": true,
+  "removedShareCountsDoNotReappear": true,
+  "namedCoverDateCasesRemoved": true,
+  "dqSec2DetectsDefectsInOldPublishedData": true,
+  "dqSec2CleanOnNewData": true,
+  "dqSec1DetectsDefectsInOldPublishedData": true,
+  "dqSec1and2AreWarn": true,
+  "dqSec3IsInfoMeasurement": true
+ },
+ "allPass": true,
+ "interpretation": "Detection of published defects is carried by DQ-SEC-1/2 (WARN), which fire on the old published-style outputs and are clean on the corrected outputs; DQ-SEC-3 only counts what the normalization refused and therefore stays an INFO measurement.",
+ "productionApproved": false
+}

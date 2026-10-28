@@ -21,9 +21,9 @@ function series(tk, t) {
 }
 const triangles = (s) => F.analyze(s).formations.filter((f) => /TRIANGLE/.test(f.type));
 
-test("Version: Regelwerk 1.2.0", () => {
-  assert.match(CP.ENGINE_VERSION || "", /1\.2\.0$/);
-  assert.match(F.ENGINE_VERSION, /1\.3\.0$/);
+test("Version: Regelwerk 1.3.0 (Kanten nach Typ)", () => {
+  assert.match(CP.ENGINE_VERSION || "", /1\.3\.0$/);
+  assert.match(F.ENGINE_VERSION, /1\.4\.0$/);
 });
 
 for (const [tk, t] of Object.entries(fx.titles)) {
