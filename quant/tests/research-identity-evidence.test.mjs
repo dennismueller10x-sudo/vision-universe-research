@@ -145,7 +145,7 @@ test('the productive adapter is byte-identical to main and no productive caller 
  assert.doesNotMatch(adapter.toString(),/research-identity-evidence|research-weekly-loader/);
  const productive=[...readdirSync(join(root,'server')).filter(f=>/\.(c?js|mjs)$/.test(f)).map(f=>join('server',f)),
   ...readdirSync(join(root,'scripts/quant')).filter(f=>/\.(c?js|mjs)$/.test(f)).map(f=>join('scripts/quant',f)),
-  ...readdirSync(join(root,'quant/engines')).filter(f=>/\.(c?js|mjs)$/.test(f)&&f!=='research-weekly-loader.cjs'&&f!=='research-identity-evidence.cjs').map(f=>join('quant/engines',f)),
+  ...readdirSync(join(root,'quant/engines')).filter(f=>/\.(c?js|mjs)$/.test(f)&&!['research-weekly-loader.cjs','research-identity-evidence.cjs','research-ca-evidence.cjs'].includes(f)).map(f=>join('quant/engines',f)),
   ...readdirSync(join(root,'quant/api')).filter(f=>/\.(c?js|mjs)$/.test(f)).map(f=>join('quant/api',f))];
  assert.ok(productive.length>50);
  for(const f of productive)assert.doesNotMatch(readFileSync(join(root,f),'utf8'),/research-weekly-loader|research-identity-evidence/,f);
