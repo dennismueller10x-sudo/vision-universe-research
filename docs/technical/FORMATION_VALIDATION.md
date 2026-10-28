@@ -390,4 +390,92 @@ Den tatsächlichen Bau belegen der Pflichtjob `package` (Pages-Paket, grün) und
 **Tests:**
 - `technical-formations-validation.test.mjs`: konstruierte Kanten. Waagrechte statt steigender Unterkante und schief beginnende waagrechte Kante werden erkannt.
 - `technical-formations-triangles.test.mjs`: Versionen.
-- Daten bringt der PR nicht mit. Nach der Freigabe baut der Erzeuger `technical/data` neu.
+- Die Daten hat nach der Freigabe der Erzeuger gebaut (siehe unten).
+
+### Absicherung vor dem Merge (Owner-Freigabe 28.10.2026)
+
+Datenstand: `main` nach #1037 und #1044, Daten mit dem Erzeuger neu gebaut (`build-screener.mjs`, Stichtag 26.10.2026, kein Anbieterabruf).
+
+**Kanten je Typ.** Validator (`LINIEN_PASSEN_NICHT_ZUM_TYP`) und eine unabhängige Prüfung aller 1.305 gelisteten Dreiecke kommen zum selben Ergebnis:
+
+| Typ | Kanten wie vorgeschrieben |
+|---|---|
+| aufsteigend (oben waagrecht, unten steigend) | 325 / 325 |
+| absteigend (oben fallend, unten waagrecht) | 535 / 535 |
+| symmetrisch (oben fallend, unten steigend) | 445 / 445 |
+
+**Dieselbe Geometrie für Linien und Regeln.**
+- `resolve()` und `firstCross()` in `chart-patterns.js` prüfen Ausbruch und Invalidierung gegen dieselben Funktionen `upper(k)` und `lower(k)`, aus denen auch die gezeichneten Kanten entstehen (`upperFrom = upper(erstes Hoch)`, `upperNow = upper(Stand)`).
+- Empirisch geprüft wurde jede Bestätigung und jede Invalidierung aller gelisteten Dreiecke gegen die gezeichnete Kante. Die Kante ist dabei linear zwischen ihren beiden Punkten interpoliert.
+  - **Invalidierungen:** 158 von 158 liegen am ersten Schluss jenseits der Gegenkante.
+  - **Bestätigungen:** 781 von 783 liegen am ersten Schluss jenseits der Ausbruchskante. Lag dieser Schluss vor der Bestätigung des letzten Pivots, gilt nach #938 der Erkennungstag als Bestätigung („bei Erkennung ausgebrochen“).
+  - Die zwei übrigen Fälle (AIM 0,1901 gegen 0,1901, BPYPM 15,4999 gegen 15,5000) liegen innerhalb der Rundung der Linienpunkte auf 4 Stellen.
+
+**Keine Rückdatierung, kein Look-ahead.**
+- Der Validator meldet 11.387 von 11.387 Formationen regelkonform:
+  - 0 × nicht sichtbar am Erkennungstag,
+  - 0 × bestätigt vor Erkennung,
+  - 0 × invalidiert vor Erkennung.
+- `formations.js` bricht bei jeder Erkennung nach dem Stand-Bar ab (`LOOKAHEAD`).
+- Die neue Kante ist aus den Pivots bis zum Erkennungstag bestimmt. Keine Formation erhält dadurch ein früheres Datum.
+- Alle 46 Änderungen sind Wegfälle, neu kommt nichts hinzu.
+
+**Die drei bisher bestätigten Formationen** (vorher 1.3.0 → nachher 1.4.0, Kurse splitbereinigt):
+
+| Titel | 1.3.0 | gezeichnete Unterkante 1.3.0 | 1.4.0 | Grund |
+|---|---|---|---|---|
+| BRK-A | aufsteigendes Dreieck, erkannt 21.09., bestätigt 14.10. (Schluss 789.585,01 über der Oberkante) | waagrecht 729.578,40, obwohl die Tiefs auf 743.500 stiegen | am Erkennungstag 21.09. invalidiert (Schluss 752.180,01 unter der steigenden Unterkante, dort 756.758,67), danach nicht mehr gelistet | Unterkante folgt jetzt den steigenden Tiefs |
+| BRK-B | wie BRK-A, bestätigt 14.10. (Schluss 526,35) | waagrecht 486,06, Tiefs 486,06 → 495,68 | am 21.09. invalidiert (Schluss 502,01 unter der Unterkante, dort 504,84) | wie BRK-A |
+| JBDI | aufsteigendes Dreieck, erkannt 03.09., bestätigt 13.10. (Schluss 3,43) | waagrecht 0,9002, Tiefs 0,9002 → 0,96 | am 29.09. invalidiert (Schluss 1,07 unter der Unterkante, dort 1,0718), vor dem Ausbruch vom 13.10. | Unterkante folgt den steigenden Tiefs |
+
+- Alle drei Ausbrüche fanden statt. Nach den bestehenden Regeln („Schluss unter der steigenden Unterkante invalidiert“) war das Muster aber vorher gebrochen. Mit der korrekten Kante zählen sie deshalb nicht mehr als Bestätigung eines aufsteigenden Dreiecks.
+- Der Datensatz des Stichtags 26.10.2026 vor der Korrektur ist im Git-Verlauf erhalten (`technical/data/screener-v1.json` auf `main` vor diesem PR). Diese Tabelle dokumentiert den Wegfall ausdrücklich.
+
+**Alle 44 Titel und 46 entfallenden Formationen** (Screener-Liste Stand 26.10.2026, vorher → nachher):
+
+| Titel | entfällt | neu |
+|---|---|---|
+| ABEV | aufst. 2026-10-26 | – |
+| ALCYF | aufst. 2026-10-16 | – |
+| AUBN | aufst. 2026-09-29 | – |
+| BBDC | aufst. 2026-09-03 | – |
+| BML-P-J | abst. 2026-08-31 | – |
+| BML-P-L | aufst. 2026-10-15 | – |
+| BRIA | abst. 2026-10-05 | – |
+| BRK-A | aufst. 2026-09-21 (bestätigt 2026-10-14) | – |
+| BRK-B | aufst. 2026-09-21 (bestätigt 2026-10-14) | – |
+| BSAC | aufst. 2026-09-16 | – |
+| CLGN | aufst. 2026-10-02 | – |
+| CMS-P-B | aufst. 2026-10-16 | – |
+| CVBF | abst. 2026-10-20 | – |
+| EFC-P-C | abst. 2026-06-30 | – |
+| FEDU | aufst. 2026-10-19 | – |
+| FSHP | aufst. 2026-08-27 | – |
+| FUSB | abst. 2026-10-13; abst. 2026-10-05 | – |
+| GLAD | aufst. 2026-09-14 | – |
+| GRFS | aufst. 2026-10-16 | – |
+| HOLA | aufst. 2026-10-20 | – |
+| JBDI | aufst. 2026-09-03 (bestätigt 2026-10-13) | – |
+| KEY-P-L | aufst. 2026-07-27 | – |
+| KMB | abst. 2026-10-15 | – |
+| KNSA | aufst. 2026-10-26 | – |
+| MDLZ | abst. 2026-10-12 | – |
+| MGA | aufst. 2026-09-15 | – |
+| NBN | abst. 2026-09-15 | – |
+| OXLCO | aufst. 2026-10-02 | – |
+| PCG-P-C | aufst. 2026-10-01 | – |
+| PEB-P-H | aufst. 2026-07-20 | – |
+| RF-P-C | aufst. 2026-09-28 | – |
+| RGS | aufst. 2026-09-30 | – |
+| SB-P-D | aufst. 2026-09-10 | – |
+| SGU | abst. 2026-09-09 | – |
+| SPME | abst. 2026-09-29 | – |
+| SPOK | abst. 2026-09-18 | – |
+| SST | aufst. 2026-09-10 | – |
+| VBNK | abst. 2026-09-04 | – |
+| WBS-P-G | abst. 2026-08-05 | – |
+| WHLRD | abst. 2026-10-26 | – |
+| WRBY | aufst. 2026-08-06 | – |
+| WW | aufst. 2026-09-29 | – |
+| XRN-P-A | aufst. 2026-10-15; aufst. 2026-10-14 | – |
+| YETI | aufst. 2026-10-07 | – |
