@@ -44,7 +44,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.2.3";
+  var ENGINE_VERSION = "technical-formations-1.3.0";
 
   /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
      (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */

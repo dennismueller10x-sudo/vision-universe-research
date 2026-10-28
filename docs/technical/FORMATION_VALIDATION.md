@@ -237,3 +237,59 @@ Rest: 1 Wimpel mit Mast knapp unter 5 ATR des Stichtags (ruhender Titel mit ATR 
 **Wirkung im Produkt:** Der Screener speichert keine Formationspreise, nur Typ, Zustand, Daten und Kennzeichen. Seine Spalten ändern sich nicht. Genauer werden nur die Zahlen im Chart Studio.
 
 **Test:** Dieselbe konstruierte Reihe läuft einmal um 100 $ und einmal auf ein Millionstel skaliert. Erwartet werden gleiche Formationen und Zustände, jeder Punktpreis positiv und proportional. Der Test schlägt auf 1.2.2 fehl.
+
+## 6. Ursachen der Spiegel-Asymmetrie und Dreiecksklassifikation `ti-chart-patterns-1.2.0` / `technical-formations-1.3.0` (Fachmodell, Owner-Freigabe nötig)
+
+Abschnitt 2 nannte zwei Hypothesen für die Restasymmetrie: Prozentregeln und Gleichstände der Pivots. Geprüft wurden beide mit Experimenten in einer Kopie der Engine. Am Modell änderte das nichts.
+
+| Variante | Spiegelquote |
+|---|---|
+| Stand `main` | 81–100 % je Typ (Abschnitt 2) |
+| Pivot-Schwelle nur aus der ATR (ohne `minPct` von 2–15 % des Schlusses) | Kanäle, Flaggen, Wimpel, Keile, Trendlinien **100 %**; Dreiecke, Doppeltop/-boden, SKS, Rechteck 87–99 % |
+| zusätzlich Toleranz der älteren Formationen nur aus der ATR (ohne 2,5 % des Schlusses) | 18 von 20 Typen **100 %**; aufsteigendes Dreieck 95,0 %, Lücke nach oben 99,7 % (ein Fall) |
+| zusätzlich Gleichstandsregel des ersten Pivots umgekehrt (`upMove > downMove`) | unverändert |
+| zusätzlich Klassifikation wie unten | alle Typen **100 %** außer einem Fall bei der Lücke nach oben (Verdachtsregel über das Kursverhältnis) |
+
+**Befund:**
+1. **Gleichstände sind nicht die Ursache.**
+   - Die Pivot-Erkennung behandelt gleiche Hochs und Tiefs symmetrisch: Das erste Extrem bleibt, auf beiden Seiten.
+   - Die einzige asymmetrische Gleichstandsregel betrifft den allerersten Pivot einer Reihe und ändert keine Formation.
+2. **Fast die ganze Restasymmetrie kommt aus prozentualen Mindestschwellen.** Das sind die Pivot-Schwelle `max(Schluss · minPct, k · ATR)` und die Toleranz `max(0,75 ATR, 2,5 % des Schlusses)` der älteren Formationen. Die Spiegelung verschiebt das Kursniveau, deshalb dürfen solche Regeln anders ausfallen. Das ist eine **bewusste Modellwahl, kein Fehler:** Die Prozentschwelle verhindert bei ruhigen Titeln mit kleiner ATR übermäßig viele Pivots. Ohne sie steigt z. B. die Zahl der Rechtecke von 261 auf über 1.100. Eine Änderung wäre ein eigener Fachmodell-PR und ist hier nicht vorgeschlagen.
+3. **Ein echter Geometriefehler in der Dreiecksklassifikation.**
+   - „Flach“ heißt Abstand ≤ tol, „steigend/fallend“ heißt mehr als 0,5 tol. Beides kann zugleich gelten.
+   - Gelten aufsteigendes Dreieck (Hochs flach, Tiefs steigen) und absteigendes Dreieck (Tiefs flach, Hochs fallen) zugleich, entschied die Reihenfolge der Prüfung: „aufsteigend“.
+   - Das Spiegelbild eines solchen Musters wurde wieder „aufsteigend“ statt „absteigend“. Geometrisch konvergiert das Muster, denn die Hochs fallen und die Tiefs steigen.
+
+**Korrektur (1.2.0 / 1.3.0):**
+- Gelten beide Bedingungen zugleich, ist das Muster ein **symmetrisches Dreieck**. Beide Kanten sind dann Linien durch die Pivots statt Waagerechte.
+- Alle anderen Fälle bleiben unverändert. Auch ein absteigendes Dreieck mit leicht steigenden Tiefs innerhalb der Toleranz bleibt absteigend: Seine Unterkante ist flach.
+- Ein zunächst erwogener breiterer Vorrang der Konvergenz hätte auch solche Dreiecke umgedeutet. Er wurde verworfen, weil die gezeichnete flache Kante dann nicht zur Einordnung gepasst hätte.
+
+**Vorher/Nachher:**
+
+| | vorher (1.2.3 / 1.1.1) | nachher (1.3.0 / 1.2.0) |
+|---|---|---|
+| Formationen gesamt (5.657 Titel) | 11.426 | 11.426 |
+| aufsteigende Dreiecke | 372 | 355 (17 werden symmetrisch) |
+| absteigende Dreiecke | 544 | 544 |
+| symmetrische Dreiecke | 428 | 445 |
+| Spiegelquote aufsteigend → absteigend | 84,4 % | 88,2 % |
+| Validator | 11.426 / 11.426 | 11.426 / 11.426 |
+| Screener: Titel mit geänderter Formationsliste | – | 19 von 5.657 |
+
+**Screener im Einzelnen** (Erzeuger mit `main`-Code gegen diesen Stand):
+- Nur die fünf Formationsspalten ändern sich (`formations`, `formationActive`, `formationConfirmed`, `formationOpen`, `formationNewDays`). Alle übrigen Spalten sind byte-gleich.
+- 7 Titel: aufsteigend wird symmetrisch, im selben Zustand oder bestätigt.
+- 7 Titel: Ein symmetrisches Dreieck kommt neu in die Liste. Als aufsteigendes Dreieck hatte ein Ausbruch nach unten es ungültig gemacht. Als symmetrisches Dreieck ist dieser Ausbruch gültig.
+- 3 Titel: Das aufsteigende Dreieck fällt weg. Mit geneigten Kanten ist es bereits gebrochen und ungültig.
+- 2 Titel: geänderte Kennzeichen oder Daten.
+- `meta.json`:
+  - aufsteigend erkannt 193 → 181, aufsteigend bestätigt 58 → 57;
+  - symmetrisch erkannt 28 → 35, symmetrisch bestätigt 302 → 310.
+
+**Test:** `quant/tests/technical-formations-triangles.test.mjs` nutzt echte Bars von INGM und TRMK (Fixture `technical-formations-triangles.json`), die genau diesen Fall zeigen. Geprüft wird:
+- Das Muster ist symmetrisch, nicht aufsteigend.
+- Die obere Kante fällt, die untere steigt.
+- Jedes Dreieck hat sein Gegenstück im Spiegelbild am selben Erkennungstag.
+
+Mit der alten Klassifikation schlagen vier der fünf Prüfungen fehl.
