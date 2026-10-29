@@ -21,7 +21,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
 
-  var CONTRACT_VERSION = "technical-screener-contract-1.0.0";
+  var CONTRACT_VERSION = "technical-screener-contract-1.1.0";
   var SCHEMAS = { screener: /^vu-technical-screener-1\./, meta: /^vu-technical-meta-1\./, index: /^vu-technical-index-1\./ };
   var DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -67,12 +67,15 @@
         } else {
           spec.type = f.window ? "int" : f.kind === "pct" ? "pct" : "num";
           if (RANGES[f.id]) spec.range = RANGES[f.id];
-          if (f.window) { spec.range = [0, Infinity]; spec.window = f.window; }
+          if (f.window) { spec.range = [0, Infinity]; spec.window = tf === "1D" ? f.window : f.window + "@" + tf; }
           if (INTEGER[f.id]) spec.integer = true;
         }
         out[key] = spec;
       });
-      if (f.window && !out[f.window]) out[f.window] = { type: "int", nullable: true, range: [1, Infinity], label: "Prüfraum in Handelstagen" };
+      if (f.window) f.tfs.forEach(function (tf) {
+        var wk = tf === "1D" ? f.window : f.window + "@" + tf;
+        if (!out[wk]) out[wk] = { type: "int", nullable: true, range: [1, Infinity], label: "Prüfraum in " + { "1D": "Handelstagen", "1W": "Wochen", "1M": "Monaten" }[tf] };
+      });
     });
     Object.keys(EXTRA).forEach(function (k) { out[k] = EXTRA[k]; });
     return out;
