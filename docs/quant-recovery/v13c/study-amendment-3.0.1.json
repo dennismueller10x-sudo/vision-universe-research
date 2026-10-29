@@ -1,0 +1,19 @@
+{
+ "schemaVersion": "v13c-study-amendment-3.0.1",
+ "amends": { "file": "docs/quant-recovery/v13c/study-registration-3.0.0.json", "sha256": "bbe15b1920bcee83222b72547b336b608e60f474a84d8ea2c178c6f08ad14c1b" },
+ "registeredBefore": "Committed before any outcome (return, event, p-value, index level) of this study was computed and before the affected runs are repeated.",
+ "trigger": "The first F1' and F1w' runs stopped fail-closed in reproduction check R2 (frame construction, before any outcome): with register 1.0.0 the frames did not reproduce the registered V13 manifests (F1: eb9a0141... instead of f7d13db0...; F1w: fa350c2e... instead of 06650566...). Cause, established outcome-free: the quant/data tree of main (0e28622a35, tree 7321385d...) differs from the tree the V13 and V13b studies ran on (commits 885f5574cc and 04e55fad9c, identical quant/data tree 963779a13c247e658ac051fb90b3e4714f1d1663) because the daily data runs committed after V13. Effect on F0: 4,327 instead of 4,329 listings (ref_NUWE now NON_MODAL_WEEK_LABEL, ref_SCAG now CORPORATE_ACTION_UNRESOLVED), SPY.json and multi-asset/instruments.json changed; the other 4,327 listing files are unchanged.",
+ "seenBeforeThisAmendment": "Only outcome-free frame counts printed by the failed R2 checks (on main data): F1' would add 395 delisted chains = the 390 V13 chains + 5 of the 13 new chains; F1w' would add 1,588 = 1,576 + 12 new; in both cases the set of old chains added equals the register-1.0.0 frame (oldChainsAddedIdentical true). No outcome of any kind was computed.",
+ "deviations": {
+  "D1_data_snapshot": {
+   "type": "EXECUTION_ENVIRONMENT (no rule, parameter, population definition or output changed)",
+   "reason": "The registered decomposition reads the delta to the cited V13/V13b results as the effect of the new chains only ('everything else identical by construction; verified by R2'). On main data that premise fails (two F0 listings and the SPY file differ), so a delta would mix data drift with the effect under study.",
+   "rule": "All runs of this study that build the V10 frame (run-frame.cjs for F1p/F1wp/F1dp and run-s3.cjs, whose P5a frame context and SPY series come from quant/data) are executed with quant/data restored to tree 963779a13c247e658ac051fb90b3e4714f1d1663 (git restore --source=885f5574cc --worktree -- quant/data) in the study worktree only for the duration of the runs; code, registers and documents stay at the study branch HEAD. The restored data are never committed; afterwards quant/data is restored to HEAD and the worktree is checked clean (git status). Each run records the quant/data tree id it saw.",
+   "checks": "Unchanged registered checks R1-R3 must pass on the snapshot (F0 manifest 37a1d45a0f2cf8f7f10d1f74787e85666f02aed30ec410340ba95f1766314aa3, the three registered counterpart manifests, V13 S3 reproduction). A failure stops the study again.",
+   "notStudied": "The data drift of main after V13 itself is outside this study; it is reported, not analysed."
+  }
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}
