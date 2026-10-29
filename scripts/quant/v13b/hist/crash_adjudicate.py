@@ -61,7 +61,7 @@ def main():
                 if not found:
                     errors.append('%s: quote not found in %s: %s' % (x['ticker'], e['accession'], q[:80]))
                 evs.append({'form': d['form'], 'filingDate': d['filingDate'], 'accession': d['accession'], 'url': d['url'], 'docSha256': d['sha256'],
-                            'bytes': d['total'], 'parsedBytes': d['bytes'], 'truncated': d['truncated'], 'quote': q, 'quoteSha256': C.sha(q), 'quoteFound': found})
+                            'bytes': d['total'], 'parsedBytes': d['bytes'], 'truncated': d['truncated'], 'docSha256Scope': 'first 2,000,000 bytes' if d['truncated'] else 'whole document', 'quote': q, 'quoteSha256': C.sha(q), 'quoteFound': found})
             row['evidence'] = evs
             checks = {}
             if jd['class'] == 'A_REAL_PRICE_EVENT':

@@ -22,6 +22,25 @@ CONS_FORMS = {'DEFM14A', 'DEFM14C', 'DEFS14A', 'DEFR14A', 'DEFA14A', 'PREM14A', 
               'SC 14D9/A', 'SC 13E3', 'SC 13E3/A', '425', '8-K', '8-K/A'}
 DEREG_FORMS = {'15-12B', '15-12G', '15-15D', '25', '25-NSE'}
 MAX_DOCS = 6
+G1_FORMS = {'DEFM14A', 'DEFM14C', 'DEFS14A', 'DEFR14A', 'PREM14A', 'SC TO-T', 'SC TO-T/A', 'SC 14D1', 'SC 14D1/A', 'SC 14D9', 'SC 14D9/A', 'SC 13E3', 'SC 13E3/A'}
+G2_FORMS = {'8-K', '8-K/A', '425', 'DEFA14A'}
+RULES = '1.0.0'
+ACQ_FORMS = ('425', 'SC TO-T', 'SC TO-T/A')
+DIST = re.compile(r'spin-?off|spin off|special (?:cash )?dividend|special distribution|liquidating distribution|distribution of all (?:of )?(?:the )?outstanding (?:shares|common stock)', re.I)
+MONTHS = {m: i + 1 for i, m in enumerate(['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'])}
+DATE_RX = re.compile(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})', re.I)
+
+
+def dist_dates(txt):
+    """ISO dates written within 300 characters of a spin-off / special distribution statement (rules 1.0.1 A3)."""
+    out = set()
+    for m in DIST.finditer(txt):
+        for d in DATE_RX.finditer(txt[max(0, m.start() - 300): m.end() + 300]):
+            try:
+                out.add(dt.date(int(d.group(3)), MONTHS[d.group(1).lower()], int(d.group(2))).isoformat())
+            except ValueError:
+                pass
+    return sorted(out)
 
 ANCHOR = re.compile(r'converted into|exchanged for|in exchange for|right to receive|offer to purchase|increase[sd]? (?:the )?(?:offer|purchase) price|amended[^.]{0,80}?to increase', re.I)
 CASH = re.compile(r'\$\s?(\d{1,4}(?:,\d{3})*(?:\.\d{1,4})?)(?!\d)(?!\s*(?:million|billion|thousand))(?=[^.$]{0,60}?(?:net to the seller in cash|in cash|per share in cash|per share, (?:net )?in cash|, without interest|net to the holder in cash))', re.I)
@@ -154,7 +173,12 @@ def main():
     ap.add_argument('--extra-cache', action='append', default=[])
     ap.add_argument('--offline', action='store_true')
     ap.add_argument('--limit', type=int)
+    ap.add_argument('--rules', default='1.0.0', choices=['1.0.0', '1.0.1'])
     a = ap.parse_args()
+    global RULES, ACQ_FORMS
+    RULES = a.rules
+    if RULES != '1.0.0':
+        ACQ_FORMS = ('425', 'SC TO-T', 'SC TO-T/A', 'SC 14D1', 'SC 14D1/A')
     f = C.Fetcher(a.root, a.private, a.extra_cache, offline=a.offline)
     pop, periods = load_scope(a.root, a.spxpop)
     by_t0 = {p['t0']: p for p in periods}
@@ -194,24 +218,50 @@ def main():
         dereg = sorted([x for x in sub['rows'] if x['form'] in DEREG_FORMS and t0 < D(x['filingDate']) <= t1 + dt.timedelta(days=120)], key=lambda x: x['filingDate'])
         row['deregistration'] = [{'form': x['form'], 'filingDate': x['filingDate'], 'accession': x['accession']} for x in dereg]
         docs, chosen = [], None
-        for x in cons[:MAX_DOCS]:
+        dereg_first = D(dereg[0]['filingDate']) if dereg else None
+
+        def read(x):
             url = C.filing_url(cik, x['accession'])
             try:
                 raw, total, trunc = f.get_head(url)
             except Exception as e:
-                docs.append({'accession': x['accession'], 'form': x['form'], 'filingDate': x['filingDate'], 'error': str(e)[:120]})
-                continue
+                d = {'accession': x['accession'], 'form': x['form'], 'filingDate': x['filingDate'], 'error': str(e)[:120]}
+                docs.append(d)
+                return d
             txt = C.norm_ws(C.text_of(raw))
             an = analyse(txt)
             subj, by = C.header_ciks(raw)
             filers = sorted(set(int(c) for c in re.findall(r'CENTRAL INDEX KEY:\s*(\d+)', raw[:20000].decode('latin-1', 'replace'))))
             d = {'accession': x['accession'], 'form': x['form'], 'filingDate': x['filingDate'], 'url': url, 'sha256': C.sha(raw), 'bytes': total,
                  'truncated': trunc, 'kind': an['kind'], 'cash': an.get('cash'), 'ratio': an.get('ratio'), 'sentences': an.get('sentences'),
-                 'filedBy': by, 'headerCiks': filers, 'completionText': bool(COMPLETION.search(txt))}
+                 'filedBy': by, 'headerCiks': filers, 'completionText': bool(COMPLETION.search(txt)), 'distDates': dist_dates(txt)}
             docs.append(d)
-            if an['kind'] is not None and chosen is None:
-                chosen = d
-                break
+            return d
+        if RULES == '1.0.0':
+            for x in cons[:MAX_DOCS]:
+                d = read(x)
+                if d.get('kind') is not None:
+                    chosen = d
+                    break
+        else:  # 1.0.1 A1: deciding documents first, nothing after completion
+            cutoff = dereg_first if dereg_first else t1 + dt.timedelta(days=30)
+            g1 = [x for x in cons if x['form'] in G1_FORMS and D(x['filingDate']) <= cutoff][:4]
+            g2 = [x for x in cons if x['form'] in G2_FORMS and dereg_first and abs((D(x['filingDate']) - dereg_first).days) <= 10][:3]
+            c2 = None
+            for x in g2:
+                d = read(x)
+                if d.get('kind') is not None:
+                    c2 = d
+                    break
+            c1 = None
+            for x in g1:
+                d = read(x)
+                if d.get('kind') is not None:
+                    c1 = d
+                    break
+            chosen = c2 or c1
+            if c1 and c2 and c1['kind'] != 'AMBIGUOUS' and c2['kind'] != 'AMBIGUOUS' and (c1['kind'], c1['cash'], c1['ratio']) != (c2['kind'], c2['cash'], c2['ratio']):
+                chosen = dict(c2, kind='AMBIGUOUS', cash=sorted(set(c1['cash'] or []) | set(c2['cash'] or [])), ratio=sorted(set(c1['ratio'] or []) | set(c2['ratio'] or [])))
         row['documentsRead'] = len(docs)
         priv.append({'t0': p['t0'], 'keyHash16': r['keyHash16'], 'name': r['name'], 'cik': cik, 'docs': docs})
         if chosen is None:
@@ -219,6 +269,7 @@ def main():
             out.append(row)
             continue
         row['evidence'] = {k: chosen[k] for k in ('form', 'filingDate', 'accession', 'url', 'sha256', 'bytes', 'truncated')}
+        row['evidence']['sha256Scope'] = 'first 2,000,000 bytes' if chosen['truncated'] else 'whole document'
         sent = chosen['sentences'][0] if chosen['sentences'] else ''
         if chosen['kind'] == 'AMBIGUOUS':
             row['reason'] = 'AMBIGUOUS_CONSIDERATION'
@@ -241,8 +292,18 @@ def main():
         row['evidence']['quoteSha256'] = C.sha(row['evidence']['quote'])
         # S5 completion
         cd = D(chosen['filingDate'])
-        in_win = [x for x in dereg if D(x['filingDate']) <= t1 + dt.timedelta(days=10) and D(x['filingDate']) >= cd]
-        txt_done = [d for d in docs if d.get('completionText') and t0 < D(d['filingDate']) <= t1 + dt.timedelta(days=10)]
+        if RULES == '1.0.0':
+            in_win = [x for x in dereg if D(x['filingDate']) <= t1 + dt.timedelta(days=10) and D(x['filingDate']) >= cd]
+            txt_done = [d for d in docs if d.get('completionText') and t0 < D(d['filingDate']) <= t1 + dt.timedelta(days=10)]
+        else:  # 1.0.1 A2: completion evidence in (t0, t1+10d]; decision document at most 30 days after it
+            in_win = [x for x in dereg if D(x['filingDate']) <= t1 + dt.timedelta(days=10)]
+            txt_done = [d for d in docs if d.get('completionText') and t0 < D(d['filingDate']) <= t1 + dt.timedelta(days=10)]
+            ev_ = sorted([D(x['filingDate']) for x in in_win + txt_done])
+            if ev_ and cd > ev_[0] + dt.timedelta(days=30):
+                in_win, txt_done = [], []
+                row['reason'] = 'DOCUMENT_LONG_AFTER_COMPLETION'
+                out.append(row)
+                continue
         if in_win or txt_done:
             row['completion'] = {'kind': 'DEREGISTRATION' if in_win else 'TEXT', 'filingDate': (in_win or txt_done)[0]['filingDate'], 'accession': (in_win or txt_done)[0]['accession']}
         elif [x for x in dereg if D(x['filingDate']) <= t1 + dt.timedelta(days=10)]:
@@ -262,12 +323,12 @@ def main():
         if ratio:
             acq = set()
             for d in docs:
-                if d.get('form') in ('425', 'SC TO-T', 'SC TO-T/A') and d.get('filedBy'):
+                if d.get('form') in ACQ_FORMS and d.get('filedBy'):
                     acq |= set(d['filedBy'])
             if not acq:
                 # S6: 'FILED BY' CIK of a 425 or SC TO-T in the issuer's window - read the newest such filing when none was fetched
                 for x in cons:
-                    if x['form'] in ('425', 'SC TO-T', 'SC TO-T/A'):
+                    if x['form'] in ACQ_FORMS:
                         try:
                             raw = f.get(C.filing_url(cik, x['accession']))
                         except Exception:
@@ -302,6 +363,19 @@ def main():
                 out.append(row)
                 continue
             row['acquirerPriceT1'] = round(pacq, 6)
+        if RULES != '1.0.0':  # 1.0.1 A3: spin-off / special distribution dated in [t0 - 5d, completion]
+            comp = D(row['completion']['filingDate'])
+            extra = [x for x in sub['rows'] if x['form'] in ('10-K', '10-K405', '10-Q') and t0 < D(x['filingDate']) <= comp + dt.timedelta(days=30)]
+            for form in ('10-K', '10-Q'):
+                xs = sorted([x for x in extra if x['form'].startswith(form)], key=lambda x: x['filingDate'], reverse=True)[:1]
+                for x in xs:
+                    read(x)
+            hitd = sorted({dd for d in docs for dd in (d.get('distDates') or []) if t0 - dt.timedelta(days=5) <= D(dd) <= comp})
+            row['distributionScan'] = {'documents': len(docs), 'datesInWindow': hitd}
+            if hitd:
+                row['reason'] = 'DISTRIBUTION_IN_PERIOD'
+                out.append(row)
+                continue
         v = (cash + ratio * pacq) / r['p0']
         if not (1 / 3 <= v <= 3) or split_sized(v):
             row['reason'] = 'CA_SUSPECT'
@@ -324,18 +398,18 @@ def main():
                     'boundedExitWScope': round(sum(x['weight'] for x in rs), 6), 'boundedWAfter': round(s['boundedW'] - wacc, 6),
                     'diagnosticErrorPpBefore': s['errorPp'], 'diagnosticErrorPpAfter': round(s['errorPp'] + 100 * add, 4), 'tolerancePp': s['tolerancePp']})
     cnt = collections.Counter(x['status'] if x['status'] != 'BOUNDED' else 'BOUNDED:' + x['reason'] for x in out)
-    reg = {'schemaVersion': 'v13b-spx-exit-terminal-register-1.0.0',
-           'rules': 'spx-terminal-rules-1.0.0.json', 'rulesSha256': C.sha(open(os.path.join(a.root, DOCDIR, 'spx-terminal-rules-1.0.0.json'), 'rb').read()),
+    reg = {'schemaVersion': 'v13b-spx-exit-terminal-register-' + RULES,
+           'rules': 'spx-terminal-rules-%s.json' % RULES, 'rulesSha256': C.sha(open(os.path.join(a.root, DOCDIR, 'spx-terminal-rules-%s.json' % RULES), 'rb').read()),
            'codeSha256': C.sha(open(os.path.abspath(__file__), 'rb').read()) , 'commonSha256': C.sha(open(os.path.join(HERE, 'common.py'), 'rb').read()),
            'inputs': {'population-1.1.1.json.gz': C.sha(open(os.path.join(a.root, 'docs/quant-recovery/v12/spxpop/population-1.1.1.json.gz'), 'rb').read()),
                       'detail-1.1.1.json (private)': C.sha(open(os.path.join(a.spxpop, 'detail-1.1.1.json'), 'rb').read())},
            'evidenceKind': 'SOURCE_EVIDENCE', 'certificationStatus': 'NOT_CERTIFIED', 'productionApproved': False,
            'scopeRows': len(out), 'candidates': n_cand, 'counts': dict(sorted(cnt.items())), 'coverageByPeriod': cov, 'rows': out}
-    with open(os.path.join(a.root, DOCDIR, 'spx-terminal-register-1.0.0.json'), 'w') as fh:
+    with open(os.path.join(a.root, DOCDIR, 'spx-terminal-register-%s.json' % RULES), 'w') as fh:
         json.dump(reg, fh, indent=1, ensure_ascii=False)
         fh.write('\n')
     os.makedirs(os.path.join(a.private, 'spx'), exist_ok=True)
-    json.dump(priv, open(os.path.join(a.private, 'spx', 'documents-1.0.0.json'), 'w'), indent=1)
+    json.dump(priv, open(os.path.join(a.private, 'spx', 'documents-%s.json' % RULES), 'w'), indent=1)
     print(json.dumps({'counts': reg['counts'], 'candidates': n_cand, 'requests': f.client.stats['requests']}, indent=1))
 
 
