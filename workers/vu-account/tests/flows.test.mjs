@@ -960,6 +960,12 @@ test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => 
   const cron = () => env.app.scheduled();
   const status = async email => env.pg.json(`select to_json(status) from billing.marketing_consents where email = '${email}' order by requested_at desc limit 1`);
 
+  await t.test('Status zeigt, ob die DOI-Vorlage nutzbar ist (Pruefung ohne eigenen Workflow)', async () => {
+    const h = await env.app.handle(new Request(env.api + '/v1/health'));
+    const data = await h.json();
+    assert.deepEqual([data.newsletter, data.newsletterTemplate, data.contactSync], [true, 'ok', true]);
+  });
+
   await t.test('Registrierung ohne Haken: kein Newsletter, kein DOI', async () => {
     const b = await signedIn(env, 'ohne.haken@example.test');
     await cron();
