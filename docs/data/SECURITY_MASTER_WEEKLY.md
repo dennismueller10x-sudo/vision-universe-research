@@ -191,7 +191,7 @@ Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/s
 
 | Klasse | was | Schutz |
 |---|---|---|
-| eingefrorene, committete Quant-Evidenz | `docs/quant-recovery/` V5.1, V6 (mit Sicherungen), V7, V8, V9, V9-Folgearbeit, Methodik v1 und `BACKTEST_V51…V9_*.md`, 240 Dateien | `docs/data/security-master/v130-quant-freeze.json`: SHA-256 je Datei, erzeugt mit `repo-manifest` auf `main` `9119b17a`. Test SMF-1 schlägt fehl, wenn eine Datei sich ändert oder fehlt; neue Dateien (neue Generation) sind erlaubt. V10 ist eine offene Übergabe und bewusst nicht enthalten |
+| eingefrorene, committete Quant-Evidenz | `docs/quant-recovery/` V5.1, V6 (mit Sicherungen), V7, V8, V9, V9-Folgearbeit, Methodik v1 und `BACKTEST_V51.md` (Hauptbericht V5.1) sowie `BACKTEST_V6…V9_*.md`, 241 Dateien (nach Review #1100) | `docs/data/security-master/v130-quant-freeze.json`: SHA-256 je Datei, erzeugt mit `repo-manifest` auf `main` `9119b17a`. Test SMF-1 schlägt fehl, wenn eine Datei sich ändert oder fehlt; neue Dateien (neue Generation) sind erlaubt. V10 ist eine offene Übergabe und bewusst nicht enthalten |
 | private Backtest-Generationen (außerhalb des Repositorys) | `<privat>/<generation>/` mit Snapshot (`masterHash`), Listings, Index, `release.json`; Zeiger `<privat>/release.json` | `freeze` vor der Übernahme, `verify` vor und nach dem Neuaufbau (SMF-3) |
 | veröffentlichte Quant-Daten mit Stammbezug | Survivorship-Kontrolle, Emerging Leaders, Inventare (Tabelle oben) | Erzeugereigen, Stand in der Git-Historie; jeder Neubau ist ein eigener Erzeuger-PR mit Vorher/Nachher (Schritte 4–5) |
 | `masterHash`-Verbraucher | Adapter, Materialisierung, Freshness, Leser | unverändert; die alte Generation meldet nach dem Wechsel `BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED` |
@@ -268,7 +268,7 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
 [ ] Nachweis-PR #1101 gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #1100 gemergt (SMF-1…5)
 [ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
        138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
-[ ] P2 verify-repo INTACT (240 Dateien, filesSha256 02d412de…): ____
+[ ] P2 verify-repo INTACT (241 Dateien, filesSha256 5e4c4424…): ____
 [ ] P2 privater freeze: Wurzel ____, Generation ____, filesSha256 ____, Archiv ____
 [ ] P3 Sonderfreigabe v130-approved-changes.json (prevMasterSha256 26c82617…) freigegeben: ja / nein
 [ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true: Lauf ______
