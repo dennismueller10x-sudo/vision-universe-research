@@ -23,6 +23,10 @@ on:
         description: 'Ergebnis nach supertrader/data/sf-candidates committen (sonst nur CI-Artefakt)'
         type: boolean
         default: false
+      expected_sha256:
+        description: 'Fingerabdruck des geprueften oeffentlichen Stands (aus einem Lauf ohne Commit); Pflicht fuer commit=true'
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -99,6 +103,21 @@ jobs:
             if (sf8.some((x) => x.status !== "PASS" || x.checked === 0)) { console.log("::error::DQ-SF8 nicht bestanden"); process.exit(1); }
           '
 
+      # Erste Veroeffentlichung (docs/SUPERTRADER_8_FIRST_RELEASE.md): ein Lauf ohne Commit nennt den Fingerabdruck,
+      # der Owner gibt genau diesen Stand frei, der Commit-Lauf committet nur bei Gleichheit. Liste der Dateien und ihrer
+      # SHA-256 in fester Reihenfolge (LC_ALL=C), daraus ein SHA-256.
+      - name: Fingerabdruck des oeffentlichen Stands
+        id: fp
+        env:
+          PUB: ${{ runner.temp }}/sf8-public
+        run: |
+          set -euo pipefail
+          fp=$(cd "$PUB" && LC_ALL=C find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)
+          stand=$(node -e 'console.log(require(process.env.PUB + "/summary.json").asOf)')
+          echo "sf8-public-sha256 ${fp} (Stand ${stand})"
+          echo "fp=${fp}" >> "$GITHUB_OUTPUT"
+          { echo "### SF8 oeffentlicher Stand ${stand}"; echo; echo "Fingerabdruck \`${fp}\`"; } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Vollstaendiges Ergebnis als CI-Artefakt (inklusive Vertragsdatensaetze)
         uses: actions/upload-artifact@v4
         with:
@@ -114,9 +133,16 @@ jobs:
         env:
           PUB: ${{ runner.temp }}/sf8-public
           PUSH_OWNED_PATHS: supertrader/data/sf-candidates/
+          EXPECTED_SHA256: ${{ inputs.expected_sha256 }}
+          ACTUAL_SHA256: ${{ steps.fp.outputs.fp }}
         run: |
           set -euo pipefail
           ziel=supertrader/data/sf-candidates
+          # Nur der freigegebene Stand: ohne oder mit abweichendem Fingerabdruck kein Commit
+          if [ -z "$EXPECTED_SHA256" ] || [ "$EXPECTED_SHA256" != "$ACTUAL_SHA256" ]; then
+            echo "::error::Fingerabdruck ${ACTUAL_SHA256} ist nicht der freigegebene Stand (expected_sha256='${EXPECTED_SHA256}') - kein Commit."
+            exit 1
+          fi
           # V2 und V6: ohne registrierten Erzeuger waeren die Dateien fremde Artefakte; solange der Eintrag
           # supertrader-sf8-candidates in core/registry/domains.json activation.state PREPARED_DISABLED traegt, ist
           # ein Commit eine Veroeffentlichung ohne Freigabe. Freigegeben ist er erst mit ACTIVATING (eigener,

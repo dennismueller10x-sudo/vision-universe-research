@@ -34,6 +34,15 @@
      candleBullish/candleBearish/candleNeutral
                                 Kerzenmuster am abgeschlossenen Bar, dieselbe feste
                                 Liste wie screen-row.js (SCREEN_CANDLES)
+   Seit 1.2.0 (AP4, docs/technical/SCREENER_FIELDS_AP4.md): technisch definierte Ereignisse, beschreibend; keine
+   Kauf- oder Verkaufssignale (historische Einordnung in WEEKLY_EVIDENCE.md):
+     crossAboveSma200Days/crossBelowSma200Days  Bars seit der Schluss die lange Linie (40 Wochen bzw.
+         10 Monate) kreuzte, Pruefraum sma200CrossWindow
+     rsiExitOversoldDays/rsiExitOverboughtDays  Bars seit RSI 14 von unten ueber 30 bzw. von oben unter 70,
+         Pruefraum rsiEventWindow
+     newLow52w                  Schluss-Tief ueber 52 Wochen bzw. 12 Monate (Gegenstueck zu newHigh52w)
+     Ereignisse wie screen-row.js#eventBlock: Bars des Zeitrahmens seit dem juengsten Ereignis (0 = am letzten
+     abgeschlossenen Bar), Pruefraum = zusammenhaengende entscheidbare Bars, jede Pruefung nur mit Bars <= i.
    Fehlt Historie, ist der Wert null, nie 0 und nie geschaetzt.
    ========================================================================= */
 (function (global) {
@@ -44,7 +53,7 @@
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
   var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
 
-  var MTF_VERSION = "technical-mtf-1.1.0";
+  var MTF_VERSION = "technical-mtf-1.2.0";
   /* roc: Feldname des Tages (Handelstage) -> Bars dieses Zeitrahmens fuer dieselbe Kalenderspanne. */
   var SPEC = {
     "1W": { shortMa: 10, longMa: 40, highBars: 52, closedRule: "STICHTAG_FREITAG", roc: { roc21: 4, roc63: 13, roc126: 26, roc252: 52 } },
@@ -57,6 +66,9 @@
     "threeOutside", "threeMethods"];
   /* Felder seit 1.1.0; ein Buendel 1.0.0 hat sie nicht (screen-row.js setzt sie dann auf null). */
   var FIELDS_1_1 = ["roc21", "roc63", "roc126", "roc252", "insideBar", "nr7", "candleBullish", "candleBearish", "candleNeutral"];
+  /* Felder seit 1.2.0 (AP4); Ereignisse mit ihren Pruefraeumen. */
+  var FIELDS_1_2 = ["crossAboveSma200Days", "crossBelowSma200Days", "sma200CrossWindow", "rsiExitOversoldDays", "rsiExitOverboughtDays",
+    "rsiEventWindow", "newLow52w"];
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -128,6 +140,27 @@
     return out;
   }
 
+  /** Seit 1.2.0: Ereignisse (Bars seit, Pruefraum) und 52-Wochen-Tief; nutzt nur Bars <= t. */
+  function blockAP4(bars, spec) {
+    var cl = bars.close, n = cl.length, t = n - 1, out = {};
+    function scan(decidable, test) {
+      var w = 0, bars = null;
+      for (var i = t; i >= 0 && decidable(i); i--) { w++; if (bars === null && test(i)) bars = t - i; }
+      return { bars: bars, window: w > 0 ? w : null };
+    }
+    function both(a, z) { return function (i) { return i >= 1 && isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]); }; }
+    function crossUp(a, z) { return function (i) { return a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    var sl = I.sma(cl, spec.longMa), rsi = I.rsi(cl, 14), l30 = cl.map(function () { return 30; }), l70 = cl.map(function () { return 70; });
+    var up = scan(both(cl, sl), crossUp(cl, sl)), dn = scan(both(cl, sl), crossDown(cl, sl));
+    out.crossAboveSma200Days = up.bars; out.crossBelowSma200Days = dn.bars; out.sma200CrossWindow = up.window;
+    var ro = scan(both(rsi, l30), crossUp(rsi, l30)), rb = scan(both(rsi, l70), crossDown(rsi, l70));
+    out.rsiExitOversoldDays = ro.bars; out.rsiExitOverboughtDays = rb.bars; out.rsiEventWindow = ro.window;
+    var lo = n >= spec.highBars ? Math.min.apply(null, cl.slice(n - spec.highBars)) : null;
+    out.newLow52w = isNum(lo) ? cl[t] <= lo : null;
+    return out;
+  }
+
   /**
    * @param {object} series CanonicalBarSeries (1D, SPLIT_ADJUSTED)
    * @returns {{version, input, "1W": object|null, "1M": object|null}}
@@ -143,12 +176,12 @@
       if (n < 2) { out[tf] = null; return; }
       var bars = { open: agg.open.slice(0, n), high: agg.high.slice(0, n), low: agg.low.slice(0, n), close: agg.close.slice(0, n), volume: agg.volume.slice(0, n) };
       out[tf] = { asOf: String(agg.timestamps[n - 1]).slice(0, 10), bars: n, closedRule: spec.closedRule, droppedOpenBar: drop === 1,
-        close: bars.close[n - 1], values: Object.assign(blockOf(bars, spec), blockL7(bars, spec)) };
+        close: bars.close[n - 1], values: Object.assign(blockOf(bars, spec), blockL7(bars, spec), blockAP4(bars, spec)) };
     });
     return out;
   }
 
-  var api = { MTF_VERSION: MTF_VERSION, SPEC: SPEC, CANDLES: CANDLES, FIELDS_1_1: FIELDS_1_1, compute: compute, closedAt: closedAt, blockOf: blockOf, blockL7: blockL7 };
+  var api = { MTF_VERSION: MTF_VERSION, SPEC: SPEC, CANDLES: CANDLES, FIELDS_1_1: FIELDS_1_1, FIELDS_1_2: FIELDS_1_2, compute: compute, closedAt: closedAt, blockOf: blockOf, blockL7: blockL7, blockAP4: blockAP4 };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.MultiTimeframe = api; }
 })(typeof window !== "undefined" ? window : globalThis);

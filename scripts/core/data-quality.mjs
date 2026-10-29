@@ -152,9 +152,9 @@ if (twArt && twArt.cols) {
   }
   rules.push(DQ.technicalCoverage(matTickers, c.s, twMeta && twMeta.skipped));
   const MTF = require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js"));
-  rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries(MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"])), [...mtfVersions]));
+  rules.push(DQ.technicalTimeframeFields(c, Object.fromEntries([...MTF.FIELDS_1_1.map((k) => [k, "technical-mtf-1.1.0"]), ...MTF.FIELDS_1_2.map((k) => [k, "technical-mtf-1.2.0"])]), [...mtfVersions]));
   const Row = require(join(REPO_ROOT, "quant", "engines", "technical", "screen-row.js"));
-  const staleFields = Row.STALE_EVENT_FIELDS.concat(Row.STALE_DAY_FIELDS, ...Row.STALE_TF_FIELDS.map((k) => [k, k + "@1W", k + "@1M"]));
+  const staleFields = Row.STALE_DAY_FIELDS.concat(...Row.STALE_EVENT_FIELDS.concat(Row.STALE_TF_FIELDS).map((k) => [k, k + "@1W", k + "@1M"]));
   const analytic = TQ.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
   rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
   const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));

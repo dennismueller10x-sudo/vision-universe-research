@@ -394,6 +394,7 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-table th,.tc-table td{padding:8px 6px;border-bottom:1px solid var(--vu-line);text-align:left;white-space:nowrap}
 .tc-table td.num{text-align:right;font-variant-numeric:tabular-nums}
 .tc-table thead th{color:var(--vu-muted);font-weight:600}
+.tc-table.is-wrap tbody th{white-space:normal;min-width:9em}
 /* Filter-Baukasten */
 .tc-builder-body{display:grid;gap:10px}
 .tc-brow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

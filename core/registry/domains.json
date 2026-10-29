@@ -314,7 +314,7 @@
     },
     {
       "id": "supertrader-sf8-candidates",
-      "label": "Supertrader Research-Kandidaten (Vorschau)",
+      "label": "Supertrader Research-Kandidaten (Beta)",
       "layer": "PRODUCT",
       "group": "Products",
       "critical": false,
@@ -328,11 +328,10 @@
       "schedule": "Kein Zeitplan; manuell und nur mit Repository-Variable SF8_CANDIDATES_ENABLED=true (Owner-Entscheidung O-2).",
       "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 2 },
       "activation": {
-        "state": "PREPARED_DISABLED",
-        "decision": "O-2 (26.10.2026): Tageslauf vorbereitet und abgeschaltet. Aktivierung erst nach V1-V6 und ausdruecklicher Owner-Freigabe, in einem eigenen PR, der diesen Zustand aendert.",
-        "pendingWorkflow": "PR #973"
+        "state": "ACTIVATING",
+        "decision": "Erste Veroeffentlichung (Owner-Freigabe AUSSTEHEND, docs/SUPERTRADER_8_FIRST_RELEASE.md): ein freigegebener, datierter Stand per workflow_dispatch mit Fingerabdruck. Kein Zeitplan; O-2 (26.10.2026) gilt fuer den Tageslauf weiter. Dauerbetrieb (Feld entfernen) nur nach V1-V6 und eigener Freigabe."
       },
-      "consumers": ["/supertrader/ (Vorschau, ?sfPreview=1)"]
+      "consumers": ["/supertrader/ (Beta)"]
     },
     {
       "id": "marketPulse",

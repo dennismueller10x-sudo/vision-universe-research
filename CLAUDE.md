@@ -1,6 +1,6 @@
 # Vision Universe Research – Arbeitsregeln
 
-Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md).
+Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md). Nutzerführung (Willkommensseite, `/mein-dashboard/`, Konto, Free/Pro-Ablauf): [docs/accounts/NUTZERFUEHRUNG.md](docs/accounts/NUTZERFUEHRUNG.md).
 
 Statische Seite (GitHub Pages, `research.visionuniverse.de`), Node 22 ohne Abhängigkeiten, UMD-Engines (`globalThis` + `module.exports`), Python für SEC.
 Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
@@ -34,7 +34,7 @@ node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "
 node --test "technical/tests/*.test.mjs"
 python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'
 node scripts/quality/check-test-isolation.mjs  # ein Test darf keine Produktionsdaten schreiben
-node --test workers/vu-account/tests/unit.test.mjs "konto/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"   # Konten/Abos; mit PG_TEST_URL zusätzlich:
+node --test workers/vu-account/tests/unit.test.mjs "konto/tests/*.test.mjs" "mein-dashboard/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"   # Konten/Abos; mit PG_TEST_URL zusätzlich:
 node scripts/account/sql-tests.mjs && node --test workers/vu-account/tests/flows.test.mjs
 ```
 

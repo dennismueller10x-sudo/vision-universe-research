@@ -24,8 +24,12 @@ const origin = `http://localhost:${port}`;
 const TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.ico': 'image/x-icon'};
 
+// --checkout-access=testers spielt die Produktion nach (VU_CHECKOUT_ACCESS = "testers"): Checkout nur mit Rolle
+// billing_tester, vergeben ueber /__dev/tester (nur hier, nur die lokale Wegwerf-Datenbank).
+const checkoutAccess = (process.argv.find(a => a.startsWith('--checkout-access=')) || '').slice(18);
 const env = await createEnvironment({site: origin, api: origin, checkoutBase: `${origin}/__dev/checkout`, portalBase: `${origin}/__dev/portal`,
-  envOverrides: {VU_COOKIE_SECURE: 'false', VU_ALLOWED_ORIGINS: origin, STRIPE_CHECKOUT_HOSTS: 'localhost'}});
+  envOverrides: {VU_COOKIE_SECURE: 'false', VU_ALLOWED_ORIGINS: origin, STRIPE_CHECKOUT_HOSTS: 'localhost',
+    ...(['public', 'testers', 'off'].includes(checkoutAccess) ? {VU_CHECKOUT_ACCESS: checkoutAccess} : {})}});
 const {sim} = env.stripe;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
@@ -89,6 +93,30 @@ async function devRoute(req, res, url) {
     const r = await env.supabase.handle(new Request(link));
     return redirect(res, r.headers.get('Location'));
   }
+  if (parts[1] === 'tester' && req.method === 'POST') {
+    // Rolle billing_tester wie der Betrieb (Service-Zugang, nie aus dem Browser des Kontos). Nur Simulation.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'billing_tester' from auth.users
+      where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({granted: n}));
+  }
+  if (parts[1] === 'checkout' && parts[2] && parts[3] === 'sepa' && req.method === 'POST') {
+    const session = sim.sessions.get(parts[2]);
+    if (!session || session.status !== 'open') return redirect(res, session ? session.cancel_url : '/__dev/');
+    sim.completeDelayedCheckout(session.id);
+    await env.deliverWebhooks();
+    return redirect(res, session.success_url.replace('{CHECKOUT_SESSION_ID}', session.id));
+  }
+  if (parts[1] === 'sepa' && parts[2] && req.method === 'POST') {
+    // "latest": die zuletzt angelegte, noch offene SEPA-Zahlung.
+    const id = parts[2] === 'latest' ? [...sim.subscriptions.values()].filter(x => x.status === 'incomplete').map(x => x.id).pop() : parts[2];
+    if (!id || !sim.subscriptions.has(id)) { res.writeHead(404); return res.end('{"settled":false}'); }
+    sim.settleDelayed(id, {paid: parts[3] === 'paid'});
+    await env.deliverWebhooks();
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end('{"settled":true}');
+  }
   if (parts[1] === 'events') {
     const rows = [...sim.events].reverse().map(e => `<li><code>${esc(e.type)}</code> ${esc(e.id)} ${e.delivered ? '✓' : '…'}</li>`).join('');
     return html(res, page('Stripe-Ereignisse (signiert zugestellt)', `<ul class="box">${rows || '<li>keine</li>'}</ul>`));
@@ -107,6 +135,7 @@ async function devRoute(req, res, url) {
     return html(res, page('Simulierter Stripe Checkout', `<div class="box"><p>Abonnement: <code>${esc(price)}</code> · ${esc((SIM_PRICES[price]?.amount / 100).toFixed(2))} € / ${esc(SIM_PRICES[price]?.interval === 'year' ? 'Jahr' : 'Monat')}</p>
 <form method="post" action="/__dev/checkout/${esc(session.id)}/pay"><button>Zahlungspflichtig abonnieren (Zahlung erfolgreich)</button></form>
 <form method="post" action="/__dev/checkout/${esc(session.id)}/fail"><button class="alt">Karte wird abgelehnt</button></form>
+<form method="post" action="/__dev/checkout/${esc(session.id)}/sepa"><button class="alt">SEPA-Lastschrift (Bestätigung folgt)</button></form>
 <form method="post" action="/__dev/checkout/${esc(session.id)}/cancel"><button class="alt">Abbrechen</button></form></div>`));
   }
   if (parts[1] === 'portal' && parts[2]) {

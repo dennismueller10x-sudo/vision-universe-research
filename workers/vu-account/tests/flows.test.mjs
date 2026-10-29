@@ -759,3 +759,97 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     } finally { await off.close(); }
   });
 });
+
+test('Tarifwahl Pro im Konto: geraeteuebergreifend, nur ein Hinweis, nie ein Recht', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+
+  await t.test('Pro vor der Registrierung: Wahl steht im Konto, auch auf einem anderen Geraet nach neuer Anmeldung', async () => {
+    const phone = env.browser();
+    await register(env, phone, 'paula.pro@example.test', {plan: 'pro'});
+    // Anderes Geraet, ohne Link-Parameter und ohne lokalen Speicher: nur die Anmeldung.
+    const laptop = env.browser();
+    assert.equal((await laptop.post('/v1/auth/login', {email: 'paula.pro@example.test', password: PASSWORD})).status, 200);
+    const me = await laptop.get('/v1/me');
+    assert.equal(me.data.planIntent && me.data.planIntent.plan, 'pro', JSON.stringify(me.data.planIntent));
+    assert.equal(me.data.entitlements.plan_id, 'free', 'die Wahl schaltet nichts frei');
+    // Ein manipulierter Hinweis (user_metadata ist fuer das Konto selbst schreibbar) bleibt ein Hinweis.
+    assert.equal((await laptop.post('/v1/me/plan-intent', {plan: 'pro'})).status, 200);
+    assert.equal((await laptop.get('/v1/me/billing')).data.entitlements.plan_id, 'free');
+    assert.equal((await laptop.get('/v1/entitlements/check?feature=watchlist.items')).data.plan, 'free');
+    // Verwerfen ("Mit Free weiter"): danach keine Pro-Fuehrung mehr, auch nicht nach erneuter Anmeldung.
+    const cleared = await laptop.post('/v1/me/plan-intent', {plan: null});
+    assert.deepEqual([cleared.status, cleared.data.planIntent], [200, null]);
+    await laptop.post('/v1/auth/logout');
+    await laptop.post('/v1/auth/login', {email: 'paula.pro@example.test', password: PASSWORD});
+    assert.equal((await laptop.get('/v1/me')).data.planIntent, null);
+    // "Pro fortsetzen" ist eine ausdrueckliche Aktion.
+    assert.equal((await laptop.post('/v1/me/plan-intent', {plan: 'pro'})).data.planIntent.plan, 'pro');
+    assert.equal((await laptop.get('/v1/me')).data.planIntent.plan, 'pro');
+  });
+
+  await t.test('Free-Registrierung: kein Hinweis; ungueltige Werte, fremde Konten, CSRF', async () => {
+    const free = await signedIn(env, 'fritz.free@example.test');
+    assert.equal((await free.get('/v1/me')).data.planIntent, null);
+    assert.equal((await free.post('/v1/me/plan-intent', {plan: 'enterprise'})).data.state, 'PLAN_INVALID');
+    assert.equal((await free.post('/v1/me/plan-intent', {plan: 'pro'}, {origin: 'https://evil.example'})).status, 403);
+    assert.equal((await free.post('/v1/me/plan-intent', {plan: 'pro'}, {headers: {'X-VU-Client': ''}})).status, 403);
+    assert.equal((await env.browser().post('/v1/me/plan-intent', {plan: 'pro'})).status, 401, 'ohne Anmeldung nichts');
+    // Die Wahl von Paula ist bei Fritz nicht zu sehen.
+    assert.equal((await free.get('/v1/me')).data.planIntent, null);
+  });
+
+  await t.test('Hinweis verfaellt: nach 30 Tagen und sobald Pro gilt', async () => {
+    const b = env.browser();
+    await register(env, b, 'vera.verfall@example.test', {plan: 'pro'});
+    await b.post('/v1/auth/login', {email: 'vera.verfall@example.test', password: PASSWORD});
+    assert.equal((await b.get('/v1/me')).data.planIntent.plan, 'pro');
+    const age = days => env.pg.json(`with x as (update auth.users set raw_user_meta_data = raw_user_meta_data || jsonb_build_object('plan_intent_at', now() - make_interval(days => ${days}))
+      where email = 'vera.verfall@example.test' returning 1) select to_json(count(*)) from x`);
+    await age(29);
+    assert.equal((await b.get('/v1/me')).data.planIntent.plan, 'pro', '29 Tage: gilt noch');
+    await age(31);
+    assert.equal((await b.get('/v1/me')).data.planIntent, null, 'aelter als 30 Tage');
+    assert.equal((await b.post('/v1/me/plan-intent', {plan: 'pro'})).status, 200);
+    await subscribe(env, b, 'pro_month');
+    const me = await b.get('/v1/me');
+    assert.deepEqual([me.data.entitlements.plan_id, me.data.planIntent], ['pro', null], 'mit Pro kein offener Hinweis');
+  });
+});
+
+test('SEPA: verzoegerte Erstzahlung bestaetigt bzw. gescheitert', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+  async function startDelayed(email) {
+    const b = await signedIn(env, email);
+    const res = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+    assert.equal(res.status, 200, JSON.stringify(res.data));
+    const sub = env.stripe.sim.completeDelayedCheckout(res.data.url.split('/').pop());
+    assert.ok((await env.deliverWebhooks()).every(d => d.status === 200));
+    return {b, sub};
+  }
+
+  await t.test('in Bearbeitung: kein Pro, kein zweiter Checkout; danach bestaetigt: Pro', async () => {
+    const {b, sub} = await startDelayed('sepa.ok@example.test');
+    const pending = await b.get('/v1/me/billing');
+    assert.equal(pending.data.entitlements.plan_id, 'free', 'Zahlung noch nicht bestaetigt');
+    assert.equal(pending.data.subscriptions[0].status, 'incomplete');
+    const again = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+    assert.equal(again.data.state, 'ALREADY_SUBSCRIBED', 'kein Doppelabo waehrend der Bearbeitung');
+    env.stripe.sim.settleDelayed(sub.id, {paid: true});
+    assert.ok((await env.deliverWebhooks()).every(d => d.status === 200));
+    assert.equal((await b.get('/v1/me/billing')).data.entitlements.plan_id, 'pro');
+  });
+
+  await t.test('gescheitert: Zustand frisch von Stripe, Konto bleibt Free, neuer Versuch moeglich', async () => {
+    const {b, sub} = await startDelayed('sepa.fail@example.test');
+    env.stripe.sim.settleDelayed(sub.id, {paid: false});
+    const deliveries = await env.deliverWebhooks();
+    assert.ok(deliveries.every(d => d.status === 200), JSON.stringify(deliveries));
+    const billing = await b.get('/v1/me/billing');
+    assert.equal(billing.data.entitlements.plan_id, 'free');
+    assert.equal(billing.data.subscriptions[0].status, 'expired', 'nur ueber das Checkout-Ereignis erfahren');
+    assert.ok(env.logs.some(l => l.message === 'ASYNC_PAYMENT_FAILED'));
+    assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 200, 'neuer Versuch');
+  });
+});

@@ -36,10 +36,15 @@
   // Lesezeichen-Status der Aktienseiten (assets/watchlist-button.js) gehoert zur Sitzung.
   function forgetWatchlist() { try { sessionStorage.removeItem('vu-watchlist-ids-v1'); } catch (e) { /* leer */ } }
   function param(name) { return new URLSearchParams(window.location.search).get(name); }
-  // Nur eigene Pfade als Ziel nach dem Login (kein offener Redirect).
-  function safeNext(value) {
-    return typeof value === 'string' && /^\/[A-Za-z0-9/_.-]*$/.test(value) && value.indexOf('//') === -1 ? value : '/konto/';
+  // Nach Anmeldung/Bestaetigung: offene Pro-Bestellung vor der Willkommensseite, Deep Links bleiben
+  // (A.nextAfterSignIn, nur eigene Pfade). /v1/me liefert die im Konto gemerkte Tarifwahl (planIntent).
+  function continueSignedIn(opts) {
+    return A.get('/v1/me').then(function (r) {
+      go(A.nextAfterSignIn({next: opts.next, me: r.ok ? r.data : null, localChoice: pendingChoice(), verified: opts.verified}));
+    });
   }
+  // Tarifwahl im Konto merken bzw. verwerfen (geraeteuebergreifend). Faellt die Anfrage aus, bleibt nur die lokale Wahl.
+  function savePlanIntent(plan) { return A.post('/v1/me/plan-intent', {plan: plan}).catch(function () { return null; }); }
   function showStatusParam() {
     var s = A.statusMessage(param('status'));
     if (s) notice(s.text, s.kind);
@@ -120,8 +125,8 @@
       if (!A.emailValid(email)) { $('email').setAttribute('aria-invalid', 'true'); return notice(A.message('EMAIL_INVALID'), 'error'); }
       busy(btn, true);
       A.post('/v1/auth/login', {email: email, password: pw}).then(function (r) {
+        if (r.ok) return continueSignedIn({next: param('next')});
         busy(btn, false);
-        if (r.ok) return go(safeNext(param('next')));
         $('password').value = '';
         fail(r);
       });
@@ -211,14 +216,15 @@
     if (!A.available()) return unavailable();
     requireSession().then(function (user) {
       if (!user) return;
-      // Pro gewaehlt (vor der Registrierung): weiter zur Bestaetigung, nicht direkt zur Zahlung.
-      // Die Wahl steht im lokalen Speicher und, ueber den Bestaetigungslink, als ?plan=pro in der Adresse.
+      // Pro gewaehlt (vor der Registrierung): Die Wahl steht lokal, im Konto und, ueber den Bestaetigungslink, als ?plan=pro.
       if (param('plan') === 'pro') rememberChoice('pro');
-      if (pendingChoice() === 'pro') return go('/konto/tarife/?plan=pro' + (param('status') === 'verified' ? '&status=verified' : ''));
       return A.get('/v1/me').then(function (r) {
         if (!r.ok) return fail(r);
-        var d = r.data, name = d.profile && d.profile.displayName;
-        $('ka-hello').textContent = name ? 'Hallo, ' + name : 'Dein Konto';
+        var d = r.data;
+        // Direkt nach der E-Mail-Bestaetigung: Pro-Bestaetigung bzw. Willkommensseite statt Kontoverwaltung.
+        if (param('status') === 'verified') return go(A.nextAfterSignIn({me: d, localChoice: pendingChoice(), verified: true}));
+        var name = d.profile && d.profile.displayName;
+        $('ka-hello').textContent = name ? 'Hallo, ' + name : 'Mein Konto';
         var dl = $('ka-account-facts');
         dl.textContent = '';
         [['E-Mail', d.user.email], ['Tarif', null], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
@@ -226,6 +232,16 @@
           dl.appendChild(el('dd', {}, row[1] === null ? [planBadge(d.entitlements), (d.entitlements || {}).plan_id === 'pro' ? null
             : el('a', {className: 'ka-link', href: '/konto/tarife/', text: ' Tarife ansehen'})] : [row[1] || '–']));
         });
+        // Offene Pro-Wahl: eindeutig fortsetzen oder verwerfen, keine automatische Umleitung bei jedem Besuch.
+        var pending = A.proPending(d, pendingChoice());
+        $('ka-pro-pending').hidden = !pending;
+        if (pending) {
+          $('ka-pro-dismiss').addEventListener('click', function () {
+            busy(this, true);
+            forgetChoice();
+            savePlanIntent(null).then(function () { $('ka-pro-pending').hidden = true; notice('Du nutzt Vision Universe mit Free.', 'ok'); });
+          });
+        }
         $('ka-account').hidden = false;
         $('ka-loading').hidden = true;
       });
@@ -248,11 +264,20 @@
         A.get('/v1/me/billing').then(function (r) {
           if (!r.ok) return fail(r);
           var d = r.data;
-          // Nach dem Checkout kann die Bestaetigung (Webhook) ein paar Sekunden brauchen.
-          if (param('checkout') === 'success' && d.entitlements.plan_id === 'free' && tries++ < 8) return setTimeout(load, 1500);
-          if (param('checkout') === 'success') notice(d.entitlements.plan_id === 'free'
-            ? 'Die Zahlung ist noch nicht bestätigt. Das kann einige Minuten dauern – du bekommst eine E-Mail von Stripe.' : 'Dein Abonnement ist aktiv.', 'ok');
+          // Nach dem Checkout kann die Bestaetigung (Webhook) ein paar Sekunden brauchen. Pro gilt erst,
+          // wenn die Datenbank es aus einem verifizierten Stripe-Ereignis kennt - der Ruecksprung allein zaehlt nicht.
+          if (param('checkout') === 'success' && d.entitlements.plan_id === 'free' && tries++ < 10) return setTimeout(load, 1500);
           renderSubscription(d);
+          if (param('checkout') !== 'success') return;
+          if (d.entitlements.plan_id !== 'free') {
+            forgetChoice();
+            notice('Dein Abonnement ist aktiv. Willkommen bei Vision Universe Pro – es geht weiter zur Startseite …', 'ok');
+            return setTimeout(function () { go(A.HOME + '?konto=pro'); }, 1600);
+          }
+          var waiting = (d.subscriptions || []).some(function (s) { return s.status === 'incomplete'; });
+          notice(waiting ? 'Deine Zahlung wird noch bestätigt. Bei SEPA-Lastschrift kann das einige Werktage dauern. Bis dahin nutzt du Vision Universe mit Free; Pro gilt automatisch, sobald Stripe die Zahlung bestätigt.'
+            : 'Die Zahlung ist noch nicht bestätigt. Das kann einige Minuten dauern – du bekommst eine E-Mail von Stripe. Bis dahin gilt Free.', 'info');
+          $('ka-sub').appendChild(el('div', {className: 'ka-actions'}, [el('a', {className: 'ka-btn ka-btn--secondary', href: A.HOME, text: 'Zur Willkommensseite'})]));
         });
       })();
     });
@@ -320,24 +345,37 @@
     }
   }
 
+  // Tarife und Pro-Bestellbestaetigung. Ablauf der Bestaetigung (A.checkoutState):
+  //   loading     Buchbarkeit wird geprueft (nichts bedienbar, Hinweis sichtbar)
+  //   ready       Pflicht-Checkbox bedienbar; "Weiter zur Zahlung" erst nach dem Haken
+  //   not-open    Konto ohne Tester-Freigabe: eigene Erklaerung statt Checkbox, "Mit Free weiter"
+  //   unavailable/no-price  Abrechnung bzw. Preis nicht verfuegbar: Erklaerung statt Checkbox
+  // Die Checkbox wird nie wegen der Berechtigung gesperrt (frueherer Fehler: gesperrte Checkbox ohne
+  // sichtbaren Grund, die Meldung stand ausserhalb des Bildschirms ueber der Bestaetigung).
   views.plans = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
     var canceled = param('checkout') === 'canceled';
     if (canceled) {
       forgetChoice();
-      notice('Der Bezahlvorgang wurde abgebrochen. Es wurde nichts berechnet, dein Konto bleibt Free.', 'info');
+      notice('Der Bezahlvorgang wurde abgebrochen. Es wurde nichts berechnet, dein Konto bleibt Free. Möchtest du Pro doch abschließen, wähle unten „Pro auswählen“.', 'info');
     }
-    var wantsPro = !canceled && (param('plan') === 'pro' || pendingChoice() === 'pro');
-    var proPrice = null, billing = null, signedIn = false;
+    var proPrice = null, me = null, signedIn = false, loaded = false, open = false;
     var confirmBox = $('ka-confirm'), terms = $('ka-confirm-terms'), pay = $('ka-checkout');
 
     $('ka-choose-free').addEventListener('click', forgetChoice);
     $('ka-choose-pro').addEventListener('click', function () {
-      if (!signedIn) { rememberChoice('pro'); return go('/konto/registrieren/?plan=pro'); }
+      if (loaded && !signedIn) { rememberChoice('pro'); return go('/konto/registrieren/?plan=pro'); }
+      // Ausdrueckliche Wahl (auch "Pro fortsetzen" nach einem Abbruch): im Konto merken, dann bestaetigen.
+      if (signedIn) savePlanIntent('pro');
       openConfirm();
     });
-    terms.addEventListener('change', function () { pay.disabled = !(terms.checked && canBuy()); });
+    function syncPay() {
+      pay.disabled = !terms.checked;
+      $('ka-checkout-why').hidden = terms.checked;
+    }
+    terms.addEventListener('change', syncPay);
+    terms.addEventListener('input', syncPay);
     pay.addEventListener('click', function () {
       if (!terms.checked) return notice(A.message('CHECKOUT_CONFIRMATION_REQUIRED'), 'error');
       busy(pay, true);
@@ -345,9 +383,16 @@
         var url = r.ok && A.safePaymentUrl(r.data.url);
         if (url) return window.location.assign(url);
         busy(pay, false);
+        syncPay();
         if (r.state === 'ALREADY_SUBSCRIBED') { confirmBox.hidden = true; return notice(A.message('ALREADY_SUBSCRIBED'), 'info'); }
+        if (r.state === 'CHECKOUT_NOT_OPEN') { me = Object.assign({}, me, {checkoutAllowed: false}); return renderConfirm(); }
         fail(r);
       });
+    });
+    $('ka-continue-free').addEventListener('click', function () {
+      busy(this, true);
+      forgetChoice();
+      (signedIn ? savePlanIntent(null) : Promise.resolve()).then(function () { go(A.HOME); });
     });
 
     Promise.all([A.get('/v1/plans'), A.get('/v1/session')]).then(function (rs) {
@@ -357,13 +402,17 @@
         Array.prototype.forEach.call(document.querySelectorAll('[data-pro-price]'), function (n) { n.textContent = A.money(proPrice.unitAmount, proPrice.currency); });
       }
       signedIn = Boolean(rs[1].ok && rs[1].data && rs[1].data.authenticated);
-      if (!signedIn) return;
-      return A.get('/v1/me/billing').then(function (r) { billing = r.ok ? r.data : null; render(); });
+      if (!signedIn) { loaded = true; return renderConfirm(); }
+      // Abbruch bei Stripe: die Wahl auch im Konto verwerfen; "Pro fortsetzen" ist danach ein eigener Klick.
+      return Promise.all([A.get('/v1/me'), canceled ? savePlanIntent(null) : null]).then(function (r2) {
+        var r = r2[0];
+        if (!r.ok) fail(r);
+        me = r.ok ? r.data : null; loaded = true; render();
+      });
     });
 
-    function canBuy() { return Boolean(proPrice && billing && billing.checkoutAllowed); }
     function render() {
-      var plan = billing && billing.entitlements ? billing.entitlements.plan_id : 'free';
+      var plan = me && me.entitlements ? me.entitlements.plan_id : 'free';
       Array.prototype.forEach.call(document.querySelectorAll('[data-plan]'), function (card) {
         card.setAttribute('data-current', String(card.getAttribute('data-plan') === plan));
       });
@@ -377,15 +426,38 @@
         proAction.textContent = '';
         proAction.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
         proAction.appendChild(el('a', {className: 'ka-btn ka-btn--block', href: '/konto/abo/', text: 'Abonnement verwalten'}));
+        confirmBox.hidden = true;
         return;
       }
-      if (wantsPro) { forgetChoice(); openConfirm(); }
+      // Pro vor der Registrierung gewaehlt (Adresse, dieses Geraet oder im Konto): direkt zur Bestaetigung,
+      // keine zweite Tarifwahl. Nach einem Abbruch nur auf ausdruecklichen Klick.
+      var wantsPro = !canceled && (param('plan') === 'pro' || A.proPending(me, pendingChoice()));
+      if (wantsPro || open) openConfirm(); else renderConfirm();
+    }
+    function renderConfirm() {
+      var state = A.checkoutState({loaded: loaded, signedIn: signedIn, me: me, price: proPrice});
+      confirmBox.setAttribute('data-state', state);
+      $('ka-confirm-loading').hidden = state !== 'loading';
+      $('ka-confirm-ready').hidden = state !== 'ready';
+      $('ka-confirm-blocked').hidden = ['not-open', 'unavailable', 'no-price'].indexOf(state) === -1;
+      if (state === 'ready') { terms.disabled = false; syncPay(); }
+      if (state === 'not-open') {
+        $('ka-blocked-title').textContent = 'Pro ist für dein Konto noch nicht buchbar';
+        $('ka-blocked-text').textContent = 'Pro befindet sich in einer internen Testphase und kann nur von freigeschalteten Testkonten abgeschlossen werden. Dein kostenloses Konto ist aktiv – mit allen freigegebenen Funktionen. Es wurde nichts bestellt und nichts berechnet.';
+      } else if (state === 'unavailable' || state === 'no-price') {
+        $('ka-blocked-title').textContent = 'Pro ist gerade nicht buchbar';
+        $('ka-blocked-text').textContent = (state === 'unavailable' ? A.message('BILLING_NOT_CONFIGURED') : A.message('PRICE_NOT_AVAILABLE'))
+          + ' Dein kostenloses Konto mit Free ist aktiv. Es wurde nichts berechnet.';
+      }
+      if (state === 'signed-out' && open) { rememberChoice('pro'); go('/konto/registrieren/?plan=pro'); }
+      if (state === 'subscribed') confirmBox.hidden = true;
+      return state;
     }
     function openConfirm() {
+      open = true;
       confirmBox.hidden = false;
-      terms.disabled = !canBuy();
-      pay.disabled = !(terms.checked && canBuy());
-      if (!canBuy()) notice(proPrice ? A.message('CHECKOUT_NOT_OPEN') : A.message('PRICE_NOT_AVAILABLE'), 'info');
+      var state = renderConfirm();
+      if (state === 'signed-out' || state === 'subscribed') return;
       var title = $('ka-confirm-title');
       if (title.scrollIntoView) title.scrollIntoView({block: 'start'});
       title.focus({preventScroll: true});

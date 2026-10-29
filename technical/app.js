@@ -593,7 +593,20 @@
     });
   }
 
+  var benchP = null;
+  /** SPY-Vergleichsreihe fuer das Unterfenster „Rel. Stärke“; erst beim Einschalten geladen. Fehlt sie, bleibt das Fenster leer. */
+  function loadBenchmark() {
+    if (!benchP) benchP = fetchJSON(M.BENCHMARK_PATH).then(function (s) {
+      var pts = (s && s.points || []).filter(function (p) { return isNum(p[1]); });
+      return { dates: pts.map(function (p) { return p[0]; }), close: pts.map(function (p) { return p[1]; }) };
+    }).catch(function () { benchP = null; return null; });
+    return benchP;
+  }
   function renderStudio(body, X) {
+    if (studio.layers.rs && X.bench === undefined) {
+      X.bench = null;
+      loadBenchmark().then(function (bm) { X.bench = bm; if (bm) { X.ind.rs63 = M.relativeStrength(X.S.dates, X.S.close, bm, 63); X.ind.rs126 = M.relativeStrength(X.S.dates, X.S.close, bm, 126); } renderStudio(body, X); });
+    }
     var S = X.S, n = S.close.length, last = n - 1, chg = S.close[last] / S.close[last - 1] - 1;
     var host = el("div", { class: "tc-chart-host" });
     var legend = el("div", { class: "tc-legend" });
@@ -758,6 +771,8 @@
     if (L.vortex) pane = ex.vortex ? { title: "Vortex 14", guides: [1], series: [{ label: "VI+", values: ex.vortex.plus, color: "var(--tc-up)" }, { label: "VI−", values: ex.vortex.minus, color: "var(--tc-down)" }] } : null;
     if (L.chop) pane = ex.choppiness ? { title: "Choppiness 14", min: 0, max: 100, guides: [38.2, 61.8], series: [{ label: "Choppiness", values: ex.choppiness, color: "var(--tc-c1)" }] } : null;
     if (L.hv) pane = ex.historicalVolatility ? { title: "Historische Volatilität 20 (% p. a.)", min: 0, series: [{ label: "HV 20", values: ex.historicalVolatility, color: "var(--tc-c1)" }] } : null;
+    /* Prozentpunkte wie die Screener-Spalten rs3m/rs6m; ohne Vergleichsreihe kein Fenster. */
+    if (L.rs) pane = ex.rs63 && !(X.st && X.st.frozenSince) ? { title: "Relative Stärke ggü. S&P 500 (SPY), Prozentpunkte", guides: [0], series: [{ label: "3 Monate", values: ex.rs63.map(function (v) { return v * 100; }), color: "var(--tc-c1)" }, { label: "6 Monate", values: ex.rs126.map(function (v) { return v * 100; }), color: "var(--tc-c2)" }] } : null;
     if (L.ulcer) pane = ex.ulcerIndex ? { title: "Ulcer Index 14 (%)", min: 0, series: [{ label: "Ulcer", values: ex.ulcerIndex, color: "var(--tc-c1)" }] } : null;
     return { title: X.T + " Tageschart", mode: "candles", window: win, data: S, overlays: overlays, lines: lines, zones: zones, levels: levels, markers: markers, volume: !!L.volumen, pane: pane, legend: legend };
   }
@@ -867,12 +882,13 @@
       var data = el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Daten, Zeitrahmen und Grenzen" }), glyph("chevron", "tc-chev tc-rot")]),
         el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
           "Tageskurse: Tiingo EOD, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
-          "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant).",
+          "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und -Tief und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant). Das 52-Wochen-Hoch bzw. -Tief des Tages vergleicht Tageshoch bzw. Tagestief mit dem höchsten Hoch bzw. tiefsten Tief der letzten 252 Handelstage.",
           "EMA 20/50/200 werden auf der Vollhistorie gerechnet und an einem Tag nur gezeigt, wenn ihr möglicher Fehler gegenüber jeder anderen Startkonvention höchstens 0,1 % des Kurses beträgt (Schranke: Restgewicht des Startwerts × Spanne des Startfensters ÷ Schlusskurs) und der Startwert höchstens noch mit 5 % wirkt. Frühestens ab 500 Tagesbars (EMA 200), 125 (EMA 50) und 50 (EMA 20). Bei stark gefallenen Titeln kann die EMA 200 trotz langer Historie fehlen; der 200-Tage-Trend steht dann über die SMA 200.",
-          "Woche und Monat: Wochenschlüsse aus der langen Reihe (nur Schlusskurse, nur abgeschlossene Wochen); Monatswerte aus dem letzten Wochenschluss je Monat.",
+          "Woche und Monat: Kennzahlen am letzten abgeschlossenen Wochen- bzw. Monatsbar, gebildet in der Materialisierung aus der vollen Tageshistorie (Eröffnung, Hoch, Tief, Schluss, Volumen; Monatsschluss = Schluss des letzten Handelstags im Monat). Veröffentlicht werden nur die Kennzahlen, keine Wochen- oder Monatsbars. 52-Wochen- bzw. 12-Monats-Hoch und -Tief vergleichen dort Schlusskurse. Ereignisse je Woche/Monat zählen Bars seit dem Ereignis. Titel ohne Materialisierung nutzen Wochenschlüsse aus der langen Reihe.",
+          "Zeitbezug: Ein Titel, dessen letzter Kurs vor dem Stichtag liegt, trägt keine Ereignisse und keine Stichtagszustände (Anzeige „Kurs vom …“). Endet eine Reihe mit mindestens fünf gleichen Schlusskursen, gilt sie als eingefroren und trägt keine Kennzahlen (Anzeige „Kurs unverändert seit …“). Das ist ein Datenqualitätshinweis, kein bestätigtes Delisting.",
           "Relative Stärke: Kursänderung über 63 bzw. 126 Handelstage minus der des S&P-500-ETF SPY am selben Stichtag.",
           "Es gibt keinen Setup-Score: Sortiert wird nach einem gewählten, offengelegten Feld oder nach der Zahl erfüllter Bedingungen.",
-          "Formationen sind beschreibend. Eine statistische Prüfung ihrer Trefferquoten in VU-Daten steht aus; sie sind keine Prognose."
+          "Formationen und Ereignisse sind beschreibend: technisch definierte Zustände und Ereignisse. Die historische Auswertung der Formationen (oben) ist eine statistische Beobachtung über rund ein Marktjahr, kein nachgewiesener handelbarer Vorteil und keine Prognose."
         ].map(function (t) { return el("li", { text: t }); }))])]);
       var search = el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Suche in Worten" }), glyph("chevron", "tc-chev tc-rot")]),
         el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
@@ -899,7 +915,31 @@
                   el("td", { text: !t.published ? "zu wenige Fälle" : t.significant ? "belastbar" : "nicht belastbar" })]);
               }))]))])]));
       });
-      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
+      /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern; fehlt die Datei, bleibt der Abschnitt weg. */
+      var sigSec = el("div", {});
+      fetchJSON(M.SIGNAL_EVIDENCE_PATH).then(function (S) {
+        if (!S || !/^vu-technical-signal-evidence-1\./.test(S.schemaVersion || "")) return;
+        var dir = { BULLISH: "bullisch", BEARISH: "bärisch", NEUTRAL: "ohne Richtung" };
+        function table(rows) {
+          return el("div", { class: "tc-table-wrap" }, el("table", { class: "tc-table is-wrap" }, [
+            el("thead", {}, el("tr", {}, ["Ereignis (übliche Lesart)", "Einordnung", "ggü. Querschnitt nach 20 Tagen", "n"].map(function (h) { return el("th", { scope: "col", text: h }); }))),
+            el("tbody", {}, rows.slice().sort(function (a, b) { return b.n - a.n; }).map(function (r) {
+              var excess = isNum(r.mean) ? (r.direction === "BEARISH" ? -r.mean : r.mean) : null;
+              return el("tr", { title: M.signalEvidenceText(r) }, [el("th", { scope: "row", text: r.name + " (" + (dir[r.direction] || r.direction) + ")" }),
+                el("td", { text: M.READING_SHORT[r.reading] || "–" }),
+                el("td", { class: "num", text: isNum(excess) ? (excess > 0 ? "+" : "") + (excess * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " % ± " + (r.ci95 * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–" }),
+                el("td", { class: "num", text: r.n.toLocaleString("de-DE") })]);
+            }))]));
+        }
+        put(sigSec, el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Historische Beobachtung: Indikator-Ereignisse und Kerzenmuster" }), glyph("chevron", "tc-chev tc-rot")]),
+          el("div", { class: "tc-filter-body" }, [
+            el("p", { text: "Drei Dinge sind zu unterscheiden. Ein Ereignis (z. B. „MACD kreuzt die Signallinie aufwärts“) ist technisch eindeutig definiert und nachrechenbar. Was danach im Mittel geschah, ist eine historische Beobachtung. Ein handelbarer Vorteil nach Kosten, Ausführung und Prüfung außerhalb der Stichprobe ist für keine Zeile nachgewiesen. Die Tabelle zeigt keine Kauf- oder Verkaufssignale." }),
+            el("p", { text: "Gemessen: Kursverlauf vom Schluss des Ereignistags bis 20 Handelstage später im Vergleich zum Mittel aller Titel am selben Tag. Grundlage: " + S.titles.toLocaleString("de-DE") + " Titel, je Titel die 270 veröffentlichten Tagesbars bis " + M.dateDe(S.window.to) + " – rund ein Marktjahr, kein voller Zyklus. Positiv heißt: der Titel lief besser als der Querschnitt, unabhängig von der Lesart. Ab " + S.method.minN + " Fällen wird eine Zeile ausgewiesen." }),
+            el("p", { class: "tc-note", text: "Einordnung: „kein gesicherter Unterschied“ – nach Korrektur für viele gleichzeitige Tests kein statistisch gesicherter Unterschied nachgewiesen; das heißt nicht, dass Gleichheit bewiesen ist; „uneinheitlich“ – belastbar im Mittel, aber mit wechselndem Vorzeichen zwischen Marktphasen (S&P 500 über/unter seiner 50-Tage-Linie) oder Zeithälften; „wie“ bzw. „gegen übliche Lesart“ – belastbar und in allen Teilmengen gleich gerichtet; „ohne Richtung“ – Muster wie Doji haben keine Lesart. Kosten und Survivorship Bias sind nicht berücksichtigt." }),
+            el("h3", { text: "Indikator-Ereignisse" }), el("p", { class: "tc-note", text: M.signalEvidenceSummary(S.indicators) }), table(S.indicators),
+            el("h3", { text: "Kerzenmuster" }), el("p", { class: "tc-note", text: M.signalEvidenceSummary(S.candles) }), table(S.candles)])]));
+      }).catch(function () { /* ohne Datei kein Abschnitt */ });
+      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [sigSec, el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
     }).catch(function () { put(slot, stateBox("Methodik nicht geladen", "Die Engine-Dateien konnten nicht geladen werden.")); });
   }
 

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--ink:#1d2433;--cream:#fbf7ef;--bull:#1f9d55;--bear:#8a5a2b;--red:#e2453a;--gold:#f2c230}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);font-family:Nunito,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:540px 960px}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.bg{position:absolute;inset:-200px;background:var(--c)}
+.dots{position:absolute;inset:-200px;background-image:radial-gradient(rgba(0,0,0,.10) 22%,transparent 24%);background-size:34px 34px}
+.rays{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;
+ background:repeating-conic-gradient(rgba(255,255,255,.22) 0 9deg,transparent 9deg 18deg)}
+/* duo */
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.fig{position:absolute;bottom:-60px;height:1220px}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-40px;width:600px}#baer{right:-50px;width:660px}
+/* icons */
+.ico{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;opacity:0;z-index:8;filter:drop-shadow(0 12px 0 rgba(0,0,0,.22))}
+.ico img{width:100%;height:100%;object-fit:contain}
+/* chart scenes */
+.card{position:absolute;left:60px;right:60px;background:#fff;border:8px solid var(--ink);border-radius:36px;box-shadow:0 16px 0 var(--ink)}
+.h1{position:absolute;top:170px;left:0;right:0;text-align:center;font-family:Bangers;font-size:118px;letter-spacing:3px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;text-shadow:8px 10px 0 var(--ink);transform:rotate(-2deg)}
+.lab{font-family:Archivo;font-size:44px}
+.big{font-family:Bangers;letter-spacing:2px;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill;text-shadow:7px 9px 0 var(--ink)}
+.stamp{position:absolute;font-family:Bangers;letter-spacing:3px;color:var(--red);border:14px solid var(--red);border-radius:26px;padding:0 34px;background:rgba(255,255,255,.94);white-space:nowrap;opacity:0;z-index:9}
+/* captions */
+#cap{position:absolute;left:30px;right:30px;text-align:center;font-family:Archivo;font-size:84px;line-height:1.08;z-index:20;text-transform:uppercase;
+ -webkit-text-stroke:18px var(--ink);paint-order:stroke fill;color:#fff}
+#cap .w{display:inline-block;margin:0 10px}
+#cap .w.on{color:var(--hl)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none}
+#end{position:absolute;inset:0;background:var(--cream);opacity:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
+#end .logo{width:420px;height:420px;border-radius:50%;box-shadow:0 12px 0 rgba(0,0,0,.12)}
+#end .nm{font-family:Archivo;font-size:132px;line-height:.95}#end .nm i{font-style:normal;color:var(--bull)}#end .nm u{text-decoration:none;color:var(--bear)}
+#end .h{font-family:Archivo;font-size:44px;opacity:.8}
+#end .btn{font-family:Archivo;font-size:56px;background:var(--ink);color:#fff;padding:18px 60px;border-radius:24px}
+#end .fine{font-size:34px;font-weight:800;opacity:.7}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="world">
+ <div class="scene" id="duo"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div id="cam"><div class="fig" id="bulle"></div><div class="fig" id="baer"></div></div></div>
+ <div class="scene" id="d1"><div class="bg"></div><div class="dots"></div><div class="h1">DIE PIZZA-QUITTUNG</div>
+  <div class="card" style="top:450px;height:880px;left:70px;right:70px;transform:rotate(-2deg)"><div style="padding:40px 50px;font-family:Archivo">
+   <img src="../../icons/pizza.png" style="width:300px;display:block;margin:0 auto 20px">
+   <div class="rc" style="font-size:58px;display:flex;justify-content:space-between;border-bottom:4px dashed #999;padding:12px 0"><span>DATUM</span><span>22.05.2010</span></div>
+   <div class="rc" style="font-size:58px;display:flex;justify-content:space-between;border-bottom:4px dashed #999;padding:12px 0"><span>2 × PIZZA</span><span>✓</span></div>
+   <div class="rc" style="font-size:58px;display:flex;justify-content:space-between;border-bottom:4px dashed #999;padding:12px 0"><span>BEZAHLT</span><span style="color:#e2453a">10.000 BTC</span></div>
+   <div class="rc" style="font-size:64px;display:flex;justify-content:space-between;padding:12px 0"><span>WERT DAMALS</span><span style="color:#1f9d55">≈ 41 $</span></div></div></div></div>
+ <div class="scene" id="d2"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">WERT IM OKTOBER 2025</div>
+  <div class="card" style="top:520px;height:620px"><div style="padding:40px;text-align:center"><img src="../../icons/bitcoin.png" style="width:220px">
+   <div class="lab" id="px" style="opacity:0;font-size:46px;margin-top:10px">Rekordhoch: ≈ 126.000 $ pro BTC</div>
+   <div class="big" id="cnt" style="font-size:150px;color:#f2c230;margin-top:20px;white-space:nowrap">41 $</div></div></div>
+  <div class="stamp" id="x30" style="left:540px;top:1260px;font-size:100px;transform:translate(-50%,-50%) rotate(-6deg)">30-MILLIONEN-FACH</div></div>
+ <div class="scene" id="d3"><div class="bg"></div><div class="dots"></div><div class="h1">BITCOIN 2021 → 2022</div>
+  <div class="card" style="top:470px;height:820px"><svg id="crash" viewBox="0 0 960 820" width="944" height="804"></svg></div>
+  <div class="stamp" id="m77" style="left:420px;top:1060px;font-size:190px;transform:translate(-50%,-50%) rotate(-8deg)">−77 %</div></div>
+</div>
+<div id="cap"></div><div id="flash"></div>
+<div id="end"><img class="logo" src="../../profil/icon-a-gold.png"><div class="nm"><i>AKTIEN</i><u>ZOO</u></div><div class="h">@aktienzoo</div><div class="btn">FOLGEN</div><div class="fine">Keine Anlageberatung</div></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp;
+const FIG={bulle:'../../figuren/entwurf-1/v2/',baer:'../../figuren/entwurf-1/v2/'};
+const ICON='../../icons/';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3),easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const OPEN={bulle:0.62,baer:0.5},HALF={bulle:0.16,baer:0.16};
+const loads=[];const img=(src,parent,cls)=>{const im=new Image();im.src=src;if(cls)im.className=cls;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
+// ---------- figures
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
+const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
+const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
+// ---------- scene colours (each line gets its own colour)
+const PAL=['#f2c230','#7fd0a8','#f5a08f','#86c1f2','#f2c230','#7fd0a8','#c9a7f0','#e2453a','#e2453a','#7fd0a8','#f2c230'];
+// ---------- spoken numbers as digits
+const NUM=[['zweiundzwanzigsten Mai zweitausendzehn','22. Mai 2010'],['zehntausend Bitcoin','10.000 Bitcoin'],['einundvierzig Dollar','41 $'],['Einundvierzig Dollar?','41 $?'],
+ ['zweitausendfünfundzwanzig','2025'],['hundertsechsundzwanzigtausend Dollar','126.000 $'],['zweitausendeinundzwanzig','2021'],['neunundsechzigtausend Dollar.','69.000 $.'],
+ ['sechzehntausend.','16.000.'],['siebenundsiebzig Prozent.','77 %.'],['siebenundsiebzig?!','77?!']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
+ const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:bare(disp)+(disp.match(/[.,!?:]+$/)?disp.match(/[.,!?:]+$/)[0]:tail),e:last.e});break}}
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+// ---------- icons triggered by words (max 3 per line, fixed slots)
+const KEY={pizzen:'pizza',bitcoin:'bitcoin',milliarde:'geldsack',pizza:'pizza',welt:'pokal','2010':'kalender','10.000':'bitcoin','41':'geldbuendel',
+ '2025':'kalender',rekordhoch:'rakete','126.000':'chart-hoch',wahnsinn:'rakete',sofort:'rakete',rückblick:'lupe',gewinner:'pokal',treffer:'pokal','2021':'kalender','69.000':'chart-hoch',
+ '16.000':'chart-runter',minus:'chart-runter','77':'chart-runter',chancen:'chart-hoch',schwankungen:'achterbahn',niemand:'gluehbirne',euro:'sparschwein',bestell:'pizza'};
+const SLOTS={duo:[[250,560],[830,520],[540,330]],d1:[[150,1400],[930,1400],[540,1450]],d2:[[200,1380],[880,1380],[540,1470]],d3:[[200,1420],[880,1420],[540,1480]]};
+const POPS=[];{const per={};for(const w of W){const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
+ const seg=S[w.line];const sc=seg.scene==='dia'?'d'+seg.step:'duo';const el=document.createElement('div');el.className='ico';img(ICON+ic+'.png',el);
+ const [x,y]=SLOTS[sc][n];el.style.left=x+'px';el.style.top=y+'px';document.getElementById(sc).appendChild(el);POPS.push({el,t0:w.s,t1:seg.e+0.05,rot:(n%2?8:-8)})}}
+// ---------- d3 crash chart (Nov 2021 ≈ 69.000 $ → Nov 2022 < 16.000 $)
+const cr=document.getElementById('crash');const CX=m=>110+m*62,CY=v=>700-v*8.2;
+const path=[[0,64],[1,58],[2,47],[3,44],[4,43],[5,41],[6,40],[7,29],[8,20],[9,22],[10,23],[11,20],[12,15.5]];
+cr.innerHTML=`<line x1="110" y1="700" x2="900" y2="700" stroke="#1d2433" stroke-width="8"/><line x1="110" y1="80" x2="110" y2="700" stroke="#1d2433" stroke-width="8"/>
+${[0,20,40,60].map(v=>`<text x="90" y="${CY(v)+12}" font-family="Archivo" font-size="30" text-anchor="end">${v}k</text>`).join('')}
+<text x="${CX(0)}" y="760" font-family="Archivo" font-size="34" text-anchor="middle">Nov 21</text><text x="${CX(12)}" y="760" font-family="Archivo" font-size="34" text-anchor="middle">Nov 22</text>
+<text x="130" y="60" font-family="Archivo" font-size="30" fill="#555">US-Dollar pro Bitcoin, gerundet</text>
+<polyline id="crl" points="${path.map(([m,v])=>CX(m)+','+CY(v)).join(' ')}" fill="none" stroke="#e2453a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="c69" opacity="0"><circle cx="${CX(0)}" cy="${CY(69)}" r="18" fill="#1f9d55"/><text x="${CX(0)+30}" y="${CY(69)+12}" font-family="Bangers" font-size="72" fill="#1f9d55">69.000 $</text></g>
+<g id="c16" opacity="0"><circle cx="${CX(12)}" cy="${CY(15.5)}" r="18" fill="#e2453a"/><text x="${CX(12)}" y="${CY(15.5)-120}" font-family="Bangers" font-size="72" text-anchor="end" fill="#e2453a">&lt; 16.000 $</text></g>`;
+const crl=document.getElementById('crl');const CRL=crl.getTotalLength();crl.style.strokeDasharray=CRL;
+const cap=document.getElementById('cap'),world=document.getElementById('world'),cam=document.getElementById('cam'),flash=document.getElementById('flash'),end=document.getElementById('end');
+function fit(){let f=84;cap.style.fontSize=f+'px';while(cap.scrollWidth>1020&&f>48){f-=4;cap.style.fontSize=f+'px'}}
+const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
+const SCENES=['duo','d1','d2','d3'];
+function render(t){
+ const seg=segAt(t);const id=seg.scene==='dia'?'d'+seg.step:'duo';
+ for(const s of SCENES)document.getElementById(s).style.display=s===id?'block':'none';
+ document.getElementById(id).style.setProperty('--c',PAL[seg.line%PAL.length]);
+ for(const r of document.querySelectorAll('.rays'))r.style.transform=`rotate(${t*6}deg)`;
+ // cuts: punch-in at every line start, whip slide when the scene type changes, flash + shake on shock
+ const k=t-seg.s;const prev=S[seg.line-1];const whip=prev&&prev.scene!==seg.scene;
+ let tx=0,sc=1+0.10*(1-easeOut(k/0.22)),rot=0;
+ if(whip&&k<0.22){tx=(1-easeOut(k/0.22))*(seg.line%2?-1:1)*700;world.style.filter=`blur(${(1-k/0.22)*14}px)`}else world.style.filter='none';
+ const shock=seg.face==='schock';
+ if(shock&&k<0.5){tx+=Math.sin(k*90)*18*(1-k/0.5);rot=Math.sin(k*70)*1.4*(1-k/0.5)}
+ flash.style.opacity=shock?clamp(1-k/0.18)*0.9:0;
+ world.style.transform=`translateX(${tx}px) scale(${sc}) rotate(${rot}deg)`;
+ // captions
+ const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
+ if(g&&t<END){cap.style.setProperty('--hl',g[0].who==='bulle'?'#7dffb0':'#ffd36b');
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[,:]$/,'').replace(/\.$/,'')}</span>`).join('');
+  cap.style.transform=`scale(${0.88+0.12*back((t-g[0].s)/0.18)}) rotate(${gi%2?1.5:-1.5}deg)`}else cap.innerHTML='';
+ cap.style.top=id==='duo'?'230px':'1640px';fit();
+ // icons
+ for(const p of POPS){const on=t>=p.t0&&t<p.t1;const q=(t-p.t0)/0.3;p.el.style.opacity=on?1:0;
+  p.el.style.transform=`scale(${on?back(q):0}) rotate(${p.rot+Math.sin(t*3+p.rot)*3}deg) translateY(${Math.sin(t*2.4+p.rot)*8}px)`}
+ if(id==='duo'){
+  const close=(seg.e-seg.s)>2.4&&seg.line%2===0;const z=close?1.45:1;const fx=seg.who==='bulle'?300:770;
+  cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+180}px) scale(${z})`:'none';
+  for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
+   if(speaking){const a=amp(t);const face=seg.face;
+    if(face&&k<0.6)f=face;else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>OPEN[who]?'mund-offen':a>HALF[who]?'mund-halb':'basis')}
+   else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
+   else if(blinkAt(who,t))f='blinzeln';
+   show(who,f)}
+ }
+ if(id==='d1'){const k1=t-seg.s;const rows=[...document.querySelectorAll('#d1 .rc')];const at=[0.8,2.4,4.2,6.6];
+  rows.forEach((r,i)=>{const q=(k1-at[i])/0.25;r.style.opacity=clamp(q*2);r.style.transform=`translateX(${(1-easeOut(q))*-80}px)`})}
+ if(id==='d2'){const k2=t-seg.s;document.getElementById('px').style.opacity=clamp((k2-3.8)/0.3);
+  const p=easeIO((k2-7.6)/2.4);const v=41+(1.26e9-41)*Math.pow(p,3);
+  document.getElementById('cnt').textContent=v>=1e9?(v/1e9).toFixed(2).replace('.',',')+' MRD. $':v>=1e6?Math.round(v/1e6).toLocaleString('de-DE')+' MIO. $':Math.round(v).toLocaleString('de-DE')+' $';
+  const sk=(k2-10.4)/0.25,x=document.getElementById('x30');x.style.opacity=sk>0?1:0;x.style.transform=`translate(-50%,-50%) rotate(-6deg) scale(${1+1.3*(1-back(sk))})`}
+ if(id==='d3'){const k3=t-seg.s;document.getElementById('c69').setAttribute('opacity',clamp((k3-1.6)/0.3));const p=easeIO((k3-3.4)/2.4);crl.style.strokeDashoffset=CRL*(1-p);
+  document.getElementById('c16').setAttribute('opacity',clamp((k3-6.0)/0.3));const sk=(k3-8.2)/0.25,m=document.getElementById('m77');m.style.opacity=sk>0?1:0;m.style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${1+1.5*(1-back(sk))})`}
+ end.style.opacity=clamp((t-END-0.1)/0.3);
+}
+// sound events for audio.py mix (same moments as the visuals above)
+window.EVENTS=[...POPS.map(p=>({t:p.t0,type:'pop'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene!==s.scene).map(s=>({t:s.s-0.05,type:'whoosh'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene===s.scene).map(s=>({t:s.s,type:'punch'})),
+ ...S.filter(s=>s.face==='schock').map(s=>({t:s.s,type:'hit'})),
+ {t:S.find(x=>x.step===2).s+7.6,type:'riser'},{t:S.find(x=>x.step===2).s+10.4,type:'stamp'},{t:S.find(x=>x.step===3).s+8.2,type:'stamp'}].sort((a,b)=>a.t-b.t);
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
+</script></body></html>

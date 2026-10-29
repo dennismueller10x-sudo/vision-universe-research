@@ -12,7 +12,7 @@ import {
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
-import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE } from '../source-faithful/product/registry-guard.mjs';
+import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES } from '../source-faithful/product/registry-guard.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -272,8 +272,12 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
   for (const k of Object.keys(SF8_DOMAIN_PINNED).filter((k) => k !== 'id')) {
     assert.ok(sf8RegistryViolations(txt([{ ...entry, [k]: k === 'critical' ? true : 'anders' }])).includes(`SF8_DOMAIN_FIELD:${k}`), k);
   }
-  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state: 'ACTIVE' } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
-  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED'));
+  // Erste Veröffentlichung (docs/SUPERTRADER_8_FIRST_RELEASE.md): ACTIVATING ist zulässig, jeder andere Zustand und der
+  // Dauerbetrieb ohne Feld nicht
+  assert.deepEqual(SF8_ACTIVATION_STATES, ['PREPARED_DISABLED', 'ACTIVATING']);
+  assert.deepEqual(sf8RegistryViolations(txt([other, { ...entry, activation: { state: 'ACTIVATING', decision: 'Owner-Freigabe' } }])), [], 'freigegeben für die erste Veröffentlichung');
+  for (const state of ['ACTIVE', 'activating', 'ENABLED', '', null]) assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), String(state));
+  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), 'Dauerbetrieb ohne Feld braucht eine eigene Freigabe');
   assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: ['scripts/supertrader/source-faithful/product/x.mjs'] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
@@ -304,6 +308,13 @@ test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, 
   assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
   assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*\(!d\.activation \|\| d\.activation\.state==="ACTIVATING"\)[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
   assert.doesNotMatch(code, /PREPARED_DISABLED"\s*\)?\s*\?\s*0/, 'vorbereitet ist nie freigegeben');
+  // Erste Veröffentlichung (docs/SUPERTRADER_8_FIRST_RELEASE.md): Commit nur für den freigegebenen Stand, Eingabe über env
+  assert.match(code, /expected_sha256:\n\s+description: [^\n]+\n\s+type: string\n\s+default: ''/);
+  assert.match(code, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
+  assert.match(code, /if \[ -z "\$EXPECTED_SHA256" \] \|\| \[ "\$EXPECTED_SHA256" != "\$ACTUAL_SHA256" \]; then\n[^\n]*\n\s*exit 1/, 'ohne oder mit abweichendem Fingerabdruck kein Commit');
+  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true$/.test(l)), [], 'Eingaben nur über env (ADR-005)');
+  const fpAt = code.indexOf('id: fp');
+  assert.ok(fpAt > code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated') && fpAt < code.indexOf('if: inputs.commit == true'), 'Fingerabdruck nach DQ, vor dem Commit');
   // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
   const dq = code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated');
   assert.ok(dq > 0, 'DQ-SF8 auf dem Laufergebnis');
