@@ -1,0 +1,797 @@
+{
+ "schemaVersion": "v13-delisted-coverage-1.0.0",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "codeSha256": "d01d401703729d20f2599743c131ca211221b923a230640ba2a8c078454acaa8",
+ "inputs": {
+  "register": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+  "v12CoverageMatrix": "4af59afb31e6e9a0fde21384da5e0bb8a36898c305c13f47d362b618f1b15bef",
+  "v12SpxPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac",
+  "delistingRegisterPrivateSha256": "53504a6671fa8e168df8ff99133bf45e4157409f2955b7a1b914ade255154fd0"
+ },
+ "definitions": {
+  "providerReference": "V12 LISTREF chains active in year (survivorship-biased before 2013); withSeries = held weekly series with a bar in year; after adds QUALIFIED delisted chains with a weekly bar in year",
+  "secReference": "V12 delisting register events (25-NSE/15-12B) of operating issuers no longer listed; covered = a price series reaching the event (before: linked reference chain held; after: or QUALIFIED delisted chain matched to this event under R3)",
+  "spxReference": "PIT S&P 500 (SPY holdings) exit rows without a following price (BOUNDED_EXIT*), covered = QUALIFIED delisted chain with the same CIK whose last trade lies in [t0, t1+120d]"
+ },
+ "providerReference": {
+  "1995": {
+   "ref": 1674,
+   "withSeriesBefore": 1101,
+   "withSeriesAfter": 1328,
+   "addedQualified": 227,
+   "addedPriceOnly": 18,
+   "coverageBefore": 0.6577,
+   "coverageAfter": 0.7933,
+   "coverageAfterInclPriceOnly": 0.8041,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "1996": {
+   "ref": 1853,
+   "withSeriesBefore": 1206,
+   "withSeriesAfter": 1464,
+   "addedQualified": 258,
+   "addedPriceOnly": 18,
+   "coverageBefore": 0.6508,
+   "coverageAfter": 0.7901,
+   "coverageAfterInclPriceOnly": 0.7998,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "1997": {
+   "ref": 2003,
+   "withSeriesBefore": 1294,
+   "withSeriesAfter": 1575,
+   "addedQualified": 281,
+   "addedPriceOnly": 17,
+   "coverageBefore": 0.646,
+   "coverageAfter": 0.7863,
+   "coverageAfterInclPriceOnly": 0.7948,
+   "endedRef": 1,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "1998": {
+   "ref": 2123,
+   "withSeriesBefore": 1366,
+   "withSeriesAfter": 1668,
+   "addedQualified": 302,
+   "addedPriceOnly": 17,
+   "coverageBefore": 0.6434,
+   "coverageAfter": 0.7857,
+   "coverageAfterInclPriceOnly": 0.7937,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "1999": {
+   "ref": 2324,
+   "withSeriesBefore": 1472,
+   "withSeriesAfter": 1818,
+   "addedQualified": 346,
+   "addedPriceOnly": 17,
+   "coverageBefore": 0.6334,
+   "coverageAfter": 0.7823,
+   "coverageAfterInclPriceOnly": 0.7896,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2000": {
+   "ref": 2477,
+   "withSeriesBefore": 1546,
+   "withSeriesAfter": 1928,
+   "addedQualified": 382,
+   "addedPriceOnly": 17,
+   "coverageBefore": 0.6241,
+   "coverageAfter": 0.7784,
+   "coverageAfterInclPriceOnly": 0.7852,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2001": {
+   "ref": 2688,
+   "withSeriesBefore": 1624,
+   "withSeriesAfter": 2046,
+   "addedQualified": 422,
+   "addedPriceOnly": 22,
+   "coverageBefore": 0.6042,
+   "coverageAfter": 0.7612,
+   "coverageAfterInclPriceOnly": 0.7693,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2002": {
+   "ref": 2785,
+   "withSeriesBefore": 1680,
+   "withSeriesAfter": 2120,
+   "addedQualified": 440,
+   "addedPriceOnly": 22,
+   "coverageBefore": 0.6032,
+   "coverageAfter": 0.7612,
+   "coverageAfterInclPriceOnly": 0.7691,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2003": {
+   "ref": 2907,
+   "withSeriesBefore": 1738,
+   "withSeriesAfter": 2196,
+   "addedQualified": 458,
+   "addedPriceOnly": 24,
+   "coverageBefore": 0.5979,
+   "coverageAfter": 0.7554,
+   "coverageAfterInclPriceOnly": 0.7637,
+   "endedRef": 1,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2004": {
+   "ref": 3067,
+   "withSeriesBefore": 1812,
+   "withSeriesAfter": 2299,
+   "addedQualified": 487,
+   "addedPriceOnly": 29,
+   "coverageBefore": 0.5908,
+   "coverageAfter": 0.7496,
+   "coverageAfterInclPriceOnly": 0.759,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2005": {
+   "ref": 3267,
+   "withSeriesBefore": 1890,
+   "withSeriesAfter": 2420,
+   "addedQualified": 530,
+   "addedPriceOnly": 32,
+   "coverageBefore": 0.5785,
+   "coverageAfter": 0.7407,
+   "coverageAfterInclPriceOnly": 0.7505,
+   "endedRef": 0,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2006": {
+   "ref": 3574,
+   "withSeriesBefore": 1978,
+   "withSeriesAfter": 2602,
+   "addedQualified": 624,
+   "addedPriceOnly": 38,
+   "coverageBefore": 0.5534,
+   "coverageAfter": 0.728,
+   "coverageAfterInclPriceOnly": 0.7387,
+   "endedRef": 1,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2007": {
+   "ref": 3836,
+   "withSeriesBefore": 2079,
+   "withSeriesAfter": 2760,
+   "addedQualified": 681,
+   "addedPriceOnly": 38,
+   "coverageBefore": 0.542,
+   "coverageAfter": 0.7195,
+   "coverageAfterInclPriceOnly": 0.7294,
+   "endedRef": 2,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 0
+  },
+  "2008": {
+   "ref": 3955,
+   "withSeriesBefore": 2131,
+   "withSeriesAfter": 2829,
+   "addedQualified": 698,
+   "addedPriceOnly": 40,
+   "coverageBefore": 0.5388,
+   "coverageAfter": 0.7153,
+   "coverageAfterInclPriceOnly": 0.7254,
+   "endedRef": 4,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 1
+  },
+  "2009": {
+   "ref": 4057,
+   "withSeriesBefore": 2172,
+   "withSeriesAfter": 2893,
+   "addedQualified": 721,
+   "addedPriceOnly": 39,
+   "coverageBefore": 0.5354,
+   "coverageAfter": 0.7131,
+   "coverageAfterInclPriceOnly": 0.7227,
+   "endedRef": 37,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 12
+  },
+  "2010": {
+   "ref": 4242,
+   "withSeriesBefore": 2249,
+   "withSeriesAfter": 3016,
+   "addedQualified": 767,
+   "addedPriceOnly": 42,
+   "coverageBefore": 0.5302,
+   "coverageAfter": 0.711,
+   "coverageAfterInclPriceOnly": 0.7209,
+   "endedRef": 45,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 13
+  },
+  "2011": {
+   "ref": 4406,
+   "withSeriesBefore": 2324,
+   "withSeriesAfter": 3121,
+   "addedQualified": 797,
+   "addedPriceOnly": 44,
+   "coverageBefore": 0.5275,
+   "coverageAfter": 0.7084,
+   "coverageAfterInclPriceOnly": 0.7183,
+   "endedRef": 73,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 15
+  },
+  "2012": {
+   "ref": 4579,
+   "withSeriesBefore": 2415,
+   "withSeriesAfter": 3239,
+   "addedQualified": 824,
+   "addedPriceOnly": 55,
+   "coverageBefore": 0.5274,
+   "coverageAfter": 0.7074,
+   "coverageAfterInclPriceOnly": 0.7194,
+   "endedRef": 51,
+   "endedWithSeriesBefore": 1,
+   "endedQualifiedAdded": 18
+  },
+  "2013": {
+   "ref": 4841,
+   "withSeriesBefore": 2533,
+   "withSeriesAfter": 3419,
+   "addedQualified": 886,
+   "addedPriceOnly": 58,
+   "coverageBefore": 0.5232,
+   "coverageAfter": 0.7063,
+   "coverageAfterInclPriceOnly": 0.7182,
+   "endedRef": 131,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 42
+  },
+  "2014": {
+   "ref": 5095,
+   "withSeriesBefore": 2705,
+   "withSeriesAfter": 3638,
+   "addedQualified": 933,
+   "addedPriceOnly": 63,
+   "coverageBefore": 0.5309,
+   "coverageAfter": 0.714,
+   "coverageAfterInclPriceOnly": 0.7264,
+   "endedRef": 142,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 52
+  },
+  "2015": {
+   "ref": 5263,
+   "withSeriesBefore": 2847,
+   "withSeriesAfter": 3788,
+   "addedQualified": 941,
+   "addedPriceOnly": 63,
+   "coverageBefore": 0.5409,
+   "coverageAfter": 0.7197,
+   "coverageAfterInclPriceOnly": 0.7317,
+   "endedRef": 268,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 127
+  },
+  "2016": {
+   "ref": 5449,
+   "withSeriesBefore": 2996,
+   "withSeriesAfter": 3855,
+   "addedQualified": 859,
+   "addedPriceOnly": 67,
+   "coverageBefore": 0.5498,
+   "coverageAfter": 0.7075,
+   "coverageAfterInclPriceOnly": 0.7198,
+   "endedRef": 312,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 92
+  },
+  "2017": {
+   "ref": 5498,
+   "withSeriesBefore": 3177,
+   "withSeriesAfter": 4002,
+   "addedQualified": 825,
+   "addedPriceOnly": 71,
+   "coverageBefore": 0.5778,
+   "coverageAfter": 0.7279,
+   "coverageAfterInclPriceOnly": 0.7408,
+   "endedRef": 405,
+   "endedWithSeriesBefore": 1,
+   "endedQualifiedAdded": 133
+  },
+  "2018": {
+   "ref": 5439,
+   "withSeriesBefore": 3373,
+   "withSeriesAfter": 4114,
+   "addedQualified": 741,
+   "addedPriceOnly": 71,
+   "coverageBefore": 0.6202,
+   "coverageAfter": 0.7564,
+   "coverageAfterInclPriceOnly": 0.7694,
+   "endedRef": 421,
+   "endedWithSeriesBefore": 1,
+   "endedQualifiedAdded": 124
+  },
+  "2019": {
+   "ref": 5299,
+   "withSeriesBefore": 3541,
+   "withSeriesAfter": 4189,
+   "addedQualified": 648,
+   "addedPriceOnly": 70,
+   "coverageBefore": 0.6682,
+   "coverageAfter": 0.7905,
+   "coverageAfterInclPriceOnly": 0.8037,
+   "endedRef": 276,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 110
+  },
+  "2020": {
+   "ref": 5481,
+   "withSeriesBefore": 3814,
+   "withSeriesAfter": 4416,
+   "addedQualified": 602,
+   "addedPriceOnly": 73,
+   "coverageBefore": 0.6959,
+   "coverageAfter": 0.8057,
+   "coverageAfterInclPriceOnly": 0.819,
+   "endedRef": 248,
+   "endedWithSeriesBefore": 1,
+   "endedQualifiedAdded": 95
+  },
+  "2021": {
+   "ref": 6286,
+   "withSeriesBefore": 4283,
+   "withSeriesAfter": 5059,
+   "addedQualified": 776,
+   "addedPriceOnly": 94,
+   "coverageBefore": 0.6814,
+   "coverageAfter": 0.8048,
+   "coverageAfterInclPriceOnly": 0.8198,
+   "endedRef": 343,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 116
+  },
+  "2022": {
+   "ref": 6244,
+   "withSeriesBefore": 4442,
+   "withSeriesAfter": 5151,
+   "addedQualified": 709,
+   "addedPriceOnly": 76,
+   "coverageBefore": 0.7114,
+   "coverageAfter": 0.825,
+   "coverageAfterInclPriceOnly": 0.8371,
+   "endedRef": 413,
+   "endedWithSeriesBefore": 0,
+   "endedQualifiedAdded": 183
+  },
+  "2023": {
+   "ref": 6077,
+   "withSeriesBefore": 4603,
+   "withSeriesAfter": 5135,
+   "addedQualified": 532,
+   "addedPriceOnly": 53,
+   "coverageBefore": 0.7574,
+   "coverageAfter": 0.845,
+   "coverageAfterInclPriceOnly": 0.8537,
+   "endedRef": 489,
+   "endedWithSeriesBefore": 3,
+   "endedQualifiedAdded": 241
+  },
+  "2024": {
+   "ref": 5953,
+   "withSeriesBefore": 4856,
+   "withSeriesAfter": 5153,
+   "addedQualified": 297,
+   "addedPriceOnly": 24,
+   "coverageBefore": 0.8157,
+   "coverageAfter": 0.8656,
+   "coverageAfterInclPriceOnly": 0.8696,
+   "endedRef": 280,
+   "endedWithSeriesBefore": 5,
+   "endedQualifiedAdded": 113
+  },
+  "2025": {
+   "ref": 6234,
+   "withSeriesBefore": 5316,
+   "withSeriesAfter": 5504,
+   "addedQualified": 188,
+   "addedPriceOnly": 17,
+   "coverageBefore": 0.8527,
+   "coverageAfter": 0.8829,
+   "coverageAfterInclPriceOnly": 0.8856,
+   "endedRef": 264,
+   "endedWithSeriesBefore": 18,
+   "endedQualifiedAdded": 111
+  },
+  "2026": {
+   "ref": 6538,
+   "withSeriesBefore": 5522,
+   "withSeriesAfter": 5599,
+   "addedQualified": 77,
+   "addedPriceOnly": 7,
+   "coverageBefore": 0.8446,
+   "coverageAfter": 0.8564,
+   "coverageAfterInclPriceOnly": 0.8574,
+   "endedRef": 267,
+   "endedWithSeriesBefore": 45,
+   "endedQualifiedAdded": 77
+  }
+ },
+ "secReference": {
+  "1995": {
+   "events": 16,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "1996": {
+   "events": 26,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "1997": {
+   "events": 91,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "1998": {
+   "events": 164,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "1999": {
+   "events": 182,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2000": {
+   "events": 188,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2001": {
+   "events": 179,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2002": {
+   "events": 245,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2003": {
+   "events": 273,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2004": {
+   "events": 262,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2005": {
+   "events": 234,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2006": {
+   "events": 525,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2007": {
+   "events": 832,
+   "coveredBefore": 0,
+   "coveredAfter": 0,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0
+  },
+  "2008": {
+   "events": 631,
+   "coveredBefore": 0,
+   "coveredAfter": 1,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0016
+  },
+  "2009": {
+   "events": 620,
+   "coveredBefore": 0,
+   "coveredAfter": 12,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0194
+  },
+  "2010": {
+   "events": 512,
+   "coveredBefore": 0,
+   "coveredAfter": 13,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0254
+  },
+  "2011": {
+   "events": 471,
+   "coveredBefore": 0,
+   "coveredAfter": 15,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0318
+  },
+  "2012": {
+   "events": 456,
+   "coveredBefore": 0,
+   "coveredAfter": 17,
+   "shareBefore": 0.0,
+   "shareAfter": 0.0373
+  },
+  "2013": {
+   "events": 446,
+   "coveredBefore": 1,
+   "coveredAfter": 43,
+   "shareBefore": 0.0022,
+   "shareAfter": 0.0964
+  },
+  "2014": {
+   "events": 382,
+   "coveredBefore": 6,
+   "coveredAfter": 60,
+   "shareBefore": 0.0157,
+   "shareAfter": 0.1571
+  },
+  "2015": {
+   "events": 413,
+   "coveredBefore": 3,
+   "coveredAfter": 125,
+   "shareBefore": 0.0073,
+   "shareAfter": 0.3027
+  },
+  "2016": {
+   "events": 483,
+   "coveredBefore": 1,
+   "coveredAfter": 97,
+   "shareBefore": 0.0021,
+   "shareAfter": 0.2008
+  },
+  "2017": {
+   "events": 441,
+   "coveredBefore": 4,
+   "coveredAfter": 131,
+   "shareBefore": 0.0091,
+   "shareAfter": 0.2971
+  },
+  "2018": {
+   "events": 388,
+   "coveredBefore": 1,
+   "coveredAfter": 125,
+   "shareBefore": 0.0026,
+   "shareAfter": 0.3222
+  },
+  "2019": {
+   "events": 406,
+   "coveredBefore": 0,
+   "coveredAfter": 111,
+   "shareBefore": 0.0,
+   "shareAfter": 0.2734
+  },
+  "2020": {
+   "events": 382,
+   "coveredBefore": 5,
+   "coveredAfter": 100,
+   "shareBefore": 0.0131,
+   "shareAfter": 0.2618
+  },
+  "2021": {
+   "events": 419,
+   "coveredBefore": 3,
+   "coveredAfter": 118,
+   "shareBefore": 0.0072,
+   "shareAfter": 0.2816
+  },
+  "2022": {
+   "events": 557,
+   "coveredBefore": 3,
+   "coveredAfter": 188,
+   "shareBefore": 0.0054,
+   "shareAfter": 0.3375
+  },
+  "2023": {
+   "events": 679,
+   "coveredBefore": 7,
+   "coveredAfter": 246,
+   "shareBefore": 0.0103,
+   "shareAfter": 0.3623
+  },
+  "2024": {
+   "events": 504,
+   "coveredBefore": 22,
+   "coveredAfter": 134,
+   "shareBefore": 0.0437,
+   "shareAfter": 0.2659
+  },
+  "2025": {
+   "events": 487,
+   "coveredBefore": 18,
+   "coveredAfter": 127,
+   "shareBefore": 0.037,
+   "shareAfter": 0.2608
+  },
+  "2026": {
+   "events": 267,
+   "coveredBefore": 20,
+   "coveredAfter": 95,
+   "shareBefore": 0.0749,
+   "shareAfter": 0.3558
+  }
+ },
+ "spxReference": {
+  "boundedExitRows": 748,
+  "withCik": 478,
+  "coveredByQualifiedDelisted": 39,
+  "byPeriodEra": {
+   "1995": {
+    "bounded": 24,
+    "covered": 0
+   },
+   "1996": {
+    "bounded": 30,
+    "covered": 0
+   },
+   "1997": {
+    "bounded": 38,
+    "covered": 0
+   },
+   "1998": {
+    "bounded": 51,
+    "covered": 0
+   },
+   "1999": {
+    "bounded": 64,
+    "covered": 0
+   },
+   "2000": {
+    "bounded": 55,
+    "covered": 0
+   },
+   "2001": {
+    "bounded": 57,
+    "covered": 0
+   },
+   "2002": {
+    "bounded": 19,
+    "covered": 0
+   },
+   "2003": {
+    "bounded": 12,
+    "covered": 0
+   },
+   "2004": {
+    "bounded": 20,
+    "covered": 0
+   },
+   "2005": {
+    "bounded": 27,
+    "covered": 0
+   },
+   "2006": {
+    "bounded": 32,
+    "covered": 0
+   },
+   "2007": {
+    "bounded": 31,
+    "covered": 0
+   },
+   "2008": {
+    "bounded": 26,
+    "covered": 1
+   },
+   "2009": {
+    "bounded": 16,
+    "covered": 0
+   },
+   "2010": {
+    "bounded": 14,
+    "covered": 0
+   },
+   "2011": {
+    "bounded": 18,
+    "covered": 0
+   },
+   "2012": {
+    "bounded": 18,
+    "covered": 1
+   },
+   "2013": {
+    "bounded": 15,
+    "covered": 1
+   },
+   "2014": {
+    "bounded": 16,
+    "covered": 2
+   },
+   "2015": {
+    "bounded": 31,
+    "covered": 5
+   },
+   "2016": {
+    "bounded": 28,
+    "covered": 2
+   },
+   "2017": {
+    "bounded": 19,
+    "covered": 6
+   },
+   "2018": {
+    "bounded": 18,
+    "covered": 3
+   },
+   "2019": {
+    "bounded": 29,
+    "covered": 1
+   },
+   "2020": {
+    "bounded": 8,
+    "covered": 3
+   },
+   "2021": {
+    "bounded": 7,
+    "covered": 4
+   },
+   "2022": {
+    "bounded": 9,
+    "covered": 1
+   },
+   "2023": {
+    "bounded": 3,
+    "covered": 1
+   },
+   "2024": {
+    "bounded": 4,
+    "covered": 1
+   },
+   "2025": {
+    "bounded": 8,
+    "covered": 6
+   },
+   "2026": {
+    "bounded": 1,
+    "covered": 1
+   }
+  }
+ }
+}
