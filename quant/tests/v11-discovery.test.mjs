@@ -75,7 +75,11 @@ test('oracle uses future returns only inside its labelled family', () => {
 test('freeze chronology: registration < candidates frozen < validation < final frozen < test (R2/R3)', () => {
   // Hash-bound record (works in shallow CI checkouts): frozen and result files are byte-unchanged and the recorded
   // first-commit times are strictly ordered.
-  const chrono = JSON.parse(fs.readFileSync(path.join(ROOT, DOCS, 'chronology-1.0.0.json'), 'utf8'));
+  const chrono = JSON.parse(fs.readFileSync(path.join(ROOT, DOCS, 'chronology-1.0.1.json'), 'utf8'));
+  // 1.0.1 only re-points commit SHAs after the V13 history cleanup; files, hashes and times equal 1.0.0.
+  const prev = JSON.parse(fs.readFileSync(path.join(ROOT, DOCS, 'chronology-1.0.0.json'), 'utf8'));
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, DOCS, 'chronology-1.0.0.json'))).digest('hex'), chrono.supersedes.sha256);
+  assert.deepEqual(chrono.records.map(r => [r.file, r.sha256, r.firstCommitTime, r.preRewriteCommit]), prev.records.map(r => [r.file, r.sha256, r.firstCommitTime, r.firstCommit]));
   const files = ['registration-1.0.0.json', 'candidates-frozen-1.0.0.json', 'validation-results-1.0.0.json', 'final-hypotheses-frozen-1.0.0.json', 'test-results-1.0.0.json'];
   assert.deepEqual(chrono.records.map(r => r.file), files);
   for (const r of chrono.records) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, DOCS, r.file))).digest('hex'), r.sha256, r.file);
