@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Mein Dashboard · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+<link rel="stylesheet" href="/mein-dashboard/dashboard.css">
+</head>
+<body class="ka-body md-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka md" id="main">
+<header class="md-head">
+<p class="ka-eyebrow">Mein Dashboard</p>
+<h1 class="md-title" id="md-hello">Dein Bereich</h1>
+<p class="md-sub" id="md-sub" hidden><span class="ka-badge" id="md-plan"></span><a class="ka-link" href="/konto/">Konto und Abo</a></p>
+</header>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
+<div class="md-grid" id="md-app" hidden>
+
+<section class="md-card md-watch" id="md-watchlist" aria-labelledby="md-watch-title">
+<div class="md-sec-head"><h2 id="md-watch-title">Watchlist</h2><span class="md-count" id="md-watch-count"></span><a class="ka-link md-more" id="md-watch-all" href="/konto/watchlist/">Alle Kennzahlen</a></div>
+<div class="wl-add md-add">
+<label class="ka-legend md-visually-hidden" for="md-add">Aktie hinzufügen</label>
+<input class="ka-input" id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
+<div class="wl-results" id="md-results" role="listbox" aria-label="Treffer" hidden></div>
+</div>
+<ul class="md-rows" id="md-rows"></ul>
+<div class="md-empty" id="md-watch-empty" hidden>
+<p class="md-empty-title">Noch keine Aktien gespeichert</p>
+<p class="ka-muted">Suche oben nach einem Unternehmen oder tippe auf einer Aktienseite auf das Lesezeichen. Deine Auswahl gehört zu deinem Konto und ist auf jedem Gerät da.</p>
+<div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="/discover/#/einzeln/US_REAL">Aktien entdecken</a></div>
+</div>
+<p class="md-fine" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten der Produktwelten, in der Währung des Listings. Keine Anlageberatung.</p>
+</section>
+
+<section class="md-card md-local" id="md-local" hidden aria-labelledby="md-local-title">
+<div class="md-sec-head"><h2 id="md-local-title">Auf diesem Gerät gemerkt</h2></div>
+<p class="ka-muted" id="md-local-text"></p>
+<ul class="md-sources" id="md-local-sources"></ul>
+<div class="ka-actions" id="md-local-actions" hidden><button class="ka-btn" type="button" id="md-local-import">In meine Watchlist übernehmen</button></div>
+</section>
+
+<section class="md-card md-shortcuts" aria-labelledby="md-short-title">
+<div class="md-sec-head"><h2 id="md-short-title">Schnellzugriff</h2></div>
+<ul class="md-tiles" id="md-tiles"></ul>
+</section>
+
+</div>
+<nav class="md-foot" aria-label="Weitere Bereiche"><a class="ka-link" href="/willkommen/">Startseite</a><a class="ka-link" href="/konto/">Mein Konto</a><a class="ka-link" href="/konto/einstellungen/">Einstellungen</a><button class="md-logout" type="button" id="md-logout" hidden>Abmelden</button></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/core/watchlist-view.js"></script>
+<script src="/mein-dashboard/dashboard.js"></script>
+</body>
+</html>

@@ -136,9 +136,22 @@ export async function createFakeSupabase({baseUrl, pg, now = () => Date.now()}) 
       }
       return authError(400, 'unsupported_grant_type', 'unsupported');
     }
+    if (path === '/user' && req.method === 'GET') {
+      const claims = await claimsOf(bearer);
+      if (!claims) return authError(401, 'bad_jwt', 'invalid JWT');
+      const u = await userById(claims.sub);
+      return u ? reply(200, {id: u.id, email: u.email, user_metadata: u.raw_user_meta_data || {}}) : authError(404, 'user_not_found', 'User not found');
+    }
     if (path === '/user' && req.method === 'PUT') {
       const claims = await claimsOf(bearer);
       if (!claims) return authError(401, 'bad_jwt', 'invalid JWT');
+      // Wie GoTrue: "data" wird flach in user_metadata gemischt (null bleibt als Wert stehen).
+      if (body.data && typeof body.data === 'object' && body.password === undefined) {
+        await pg.json(`update auth.users set raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || :'meta'::jsonb where id = :'id' returning to_json(id)`,
+          {id: claims.sub, meta: JSON.stringify(body.data)});
+        const u = await userById(claims.sub);
+        return reply(200, {id: u.id, email: u.email, user_metadata: u.raw_user_meta_data || {}});
+      }
       if (passwords.get(claims.sub) === hash(body.password)) return authError(422, 'same_password', 'same password');
       passwords.set(claims.sub, hash(body.password));
       return reply(200, {id: claims.sub, email: claims.email});
