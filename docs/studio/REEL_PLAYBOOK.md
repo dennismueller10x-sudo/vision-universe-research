@@ -63,6 +63,7 @@ Alle Formate beginnen mit der Hook-Formel. Länge ist eine Folge des Inhalts.
 | **F4 Markt-Moment** | 20 bis 50 s | Ticker, Zahl, Kontrast, Beweis, Einordnung | Helmut | aktien_world, Nischen-Erzähl-Reels |
 | **F5 Satire-Szene (POV)** | 8 bis 12 s | „POV: …" oder „[Rolle], wenn …", Pointe in 8 bis 10 s | Stimme oder Text | visionfreiheit (Prinzip) |
 | **F6 Erzähl-Reel mit Schema-Animation** | 40 bis 70 s | Szenario- oder Schutz-Hook, Karte oder Schema, Beweis in der Mitte, Auflösung | Helmut | dachschadenmitwissen, techniktogo_ |
+| **F7 Aktie plus App-Analyse** (Serie) | 45 bis 60 s | Besitz-Hook plus Tagesbewegung, KI-Clip im Hook, Zahlen aus 8-K, zweite Hook mit Mainstream-unbekannter Zahl, drei Signale aus der Vision-Universe-Technik mit Haken, Gegenstimme mit fehlendem Haken, App-Hinweis, Boden oder Falle | Helmut | Teladoc 29.10.2026, Owner: „So können wir die App richtig verkaufen" |
 
 ## 3. Themenplanung: Raster 6 × 5
 

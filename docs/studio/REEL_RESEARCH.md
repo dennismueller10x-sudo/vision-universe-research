@@ -124,3 +124,9 @@ Lehren (Beobachtung, keine Messung):
 3. Betrag-Hooks bleiben stark (2.500 €, Mütterrente).
 4. Zwei Längen gewinnen: 6 bis 13 s Karten und 85 bis 155 s Sprecher. Die Mitte (20 bis 50 s) ist selten unter den Ausreißern.
 5. Robotik ist als Thema anschlussfähig (wirliebenaktien 2,2×, eigenes Unitree-Reel).
+
+## 9. Owner-Beobachtungen 28./29.10.2026 (eigener Kanal, noch ohne Zahlen)
+
+1. „Der gefährlichste Abend" (Fed + Big Tech, offene Schleife im Hook) holt die meisten Aufrufe des Kanals. Zahlen folgen vom Owner.
+2. Kommentar „Warum nennst du die Aktie nicht beim Namen?" unter dem Alphabet-Reel: Bei Firmen mit zwei Namen beide im Hook nennen („Google-Mutter Alphabet") und das Kürzel einblenden.
+3. Format F7 „Aktie plus App-Analyse" (Teladoc) vom Owner als Serienformat gewählt. Messung steht aus: Aufrufe, Wiedergabezeit und Kommentare gegen die Fed- und Alphabet-Reels vergleichen.
