@@ -160,7 +160,7 @@ function main() {
     CW_ALL: Object.fromEntries(L.SCENARIOS_P5A.map(sc => [sc, { base: r.series[sc].CW_ALL, A: st.A[0][i].series[sc].CW_ALL, B: st.B[0][i].series[sc].CW_ALL }])),
     survivorshipTermPp: Object.fromEntries(L.SCENARIOS_P5A.map(sc => [sc, { base: W.r6((r.series[sc].EW_WITH_H - r.series[sc].EW_ALL) * 100), B: W.r6((st.B[0][i].series[sc].EW_WITH_H - st.B[0][i].series[sc].EW_ALL) * 100) }])),
     SPY: r.series.ZERO.SPY }));
-  const out = { studyId: 'V13C-S3PRIME-SPX', registrationSha256: regSha, amendmentSha256: amSha, data, evidenceKind: 'HISTORICAL_DEVELOPMENT_STUDY', evidenceLabel: 'NON_CONFIRMATORY_EXTENSION_STUDY', confirmatory: false, certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
+  const out = { studyId: 'V13C-S3PRIME-SPX', registrationSha256: regSha, amendmentSha256: amSha, amendments: C.amendments(), data, evidenceKind: 'HISTORICAL_DEVELOPMENT_STUDY', evidenceLabel: 'NON_CONFIRMATORY_EXTENSION_STUDY', confirmatory: false, certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
     basedOn: { v12: 'V12-REQUAL-P5A 1.1.0 (p5a-population.cjs unchanged)', v12RegistrationSha256: reg12.sha256, v13: 'docs/quant-recovery/v13/studies/s3-spx-exits-1.0.0.json (cited, unchanged)', r3 },
     inputs: { spxTerminalRegister: { file: SPX_REGISTER, sha256: W.shaFile(SPX_REGISTER) }, spxTerminalReview: { file: SPX_REVIEW, sha256: W.shaFile(SPX_REVIEW) }, delistedRegister100: dl100.registerHash, delistedRegister110: dl110.registerHash,
       delistedLoaded: { register100: dl100.counts.loaded, register110: dl110.counts.loaded }, populationDataSha256: pop.dataSha256 },

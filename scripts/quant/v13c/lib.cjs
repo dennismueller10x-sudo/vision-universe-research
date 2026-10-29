@@ -41,6 +41,18 @@ function amendmentSha(root = W.ROOT) {
   return s;
 }
 
+/** All committed amendments of registration 3.0.0, hash-checked against their .sha256 files. */
+function amendments(root = W.ROOT) {
+  const out = {};
+  for (const v of ['3.0.1', '3.0.2']) {
+    const f = 'docs/quant-recovery/v13c/study-amendment-' + v + '.json'; if (!fs.existsSync(path.join(root, f))) continue;
+    const s = W.shaFile(path.join(root, f)), committed = fs.readFileSync(path.join(root, f.replace(/\.json$/, '.sha256')), 'utf8').trim().split(/\s+/)[0];
+    if (s !== committed) throw Error('V13C_AMENDMENT_HASH_MISMATCH:' + v);
+    out[v] = s;
+  }
+  return out;
+}
+
 function registrationSha(root = W.ROOT) {
   const s = W.shaFile(path.join(root, REG_FILE)), committed = fs.readFileSync(path.join(root, REG_FILE.replace(/\.json$/, '.sha256')), 'utf8').trim().split(/\s+/)[0];
   if (s !== committed) throw Error('V13C_REGISTRATION_HASH_MISMATCH');
@@ -80,5 +92,5 @@ function delistedInfoOf(frame, dl, fr) {
 const r4 = x => typeof x === 'number' && Number.isFinite(x) ? Math.round(x * 1e4) / 1e4 : x;
 function roundDeep(x, f = W.r6) { if (Array.isArray(x)) return x.map(v => roundDeep(v, f)); if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, roundDeep(v, f)])); return f(x); }
 
-module.exports = { W, K, D, L13b, DATA_SNAPSHOT, dataState, amendmentSha, REG_FILE, OUT_DIR, SCRATCH, PRIVATE, SERIES_100, SERIES_110, MANIFEST_100, FRAMES, LABEL, FIRST_DATA_KEY,
+module.exports = { W, K, D, L13b, DATA_SNAPSHOT, dataState, amendmentSha, amendments, REG_FILE, OUT_DIR, SCRATCH, PRIVATE, SERIES_100, SERIES_110, MANIFEST_100, FRAMES, LABEL, FIRST_DATA_KEY,
   registrationSha, newQualifiedChains, loadDelisted110, mergeStudyFrame, delistedInfoOf, r4, roundDeep };
