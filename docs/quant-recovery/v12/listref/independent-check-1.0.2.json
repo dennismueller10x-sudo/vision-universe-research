@@ -1,0 +1,315 @@
+{
+ "schemaVersion": "v12-listref-independent-check-1.0.2",
+ "implementation": "python3 -I stdlib, separate code",
+ "checks": {
+  "tiingoRows": "MATCH",
+  "usExchangeStockUsdRows": "MATCH",
+  "referenceRows": "MATCH",
+  "chains": "MATCH",
+  "adjacentRestartPairs": "MATCH",
+  "reuseGapPairs": "MATCH",
+  "edgarIndexFilesHashMatch": "MATCH",
+  "chainIdsEqual": "MATCH",
+  "linkGradeCounts": "MATCH",
+  "linkAndEffectiveEndPerChain": "MATCH",
+  "coverageMatrixAllExchangeSize": "MATCH",
+  "exchangeAgentGroups": "MATCH",
+  "completenessPerYear": "MATCH",
+  "completenessPerYearExchangeSize": "MATCH",
+  "p4ReadinessAll": "MATCH",
+  "reasonCountsLinkedItemsQueried": "MATCH"
+ },
+ "mismatches": {},
+ "ftsBodiesMissing": 0,
+ "independentYearTable": {
+  "1995": {
+   "ref": 1674,
+   "withSeries": 1101,
+   "frame": 992,
+   "ended": 0,
+   "edgarConsidered": 16,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "1996": {
+   "ref": 1853,
+   "withSeries": 1206,
+   "frame": 1086,
+   "ended": 0,
+   "edgarConsidered": 26,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "1997": {
+   "ref": 2003,
+   "withSeries": 1294,
+   "frame": 1156,
+   "ended": 1,
+   "edgarConsidered": 91,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "1998": {
+   "ref": 2123,
+   "withSeries": 1366,
+   "frame": 1220,
+   "ended": 0,
+   "edgarConsidered": 164,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "1999": {
+   "ref": 2324,
+   "withSeries": 1472,
+   "frame": 1310,
+   "ended": 0,
+   "edgarConsidered": 182,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2000": {
+   "ref": 2477,
+   "withSeries": 1546,
+   "frame": 1372,
+   "ended": 0,
+   "edgarConsidered": 188,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2001": {
+   "ref": 2688,
+   "withSeries": 1624,
+   "frame": 1419,
+   "ended": 0,
+   "edgarConsidered": 179,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2002": {
+   "ref": 2785,
+   "withSeries": 1680,
+   "frame": 1461,
+   "ended": 0,
+   "edgarConsidered": 245,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2003": {
+   "ref": 2907,
+   "withSeries": 1738,
+   "frame": 1503,
+   "ended": 1,
+   "edgarConsidered": 273,
+   "edgarLinked": 1,
+   "edgarNameCandidate": 7
+  },
+  "2004": {
+   "ref": 3067,
+   "withSeries": 1812,
+   "frame": 1564,
+   "ended": 0,
+   "edgarConsidered": 262,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2005": {
+   "ref": 3267,
+   "withSeries": 1890,
+   "frame": 1625,
+   "ended": 0,
+   "edgarConsidered": 234,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 0
+  },
+  "2006": {
+   "ref": 3574,
+   "withSeries": 1978,
+   "frame": 1697,
+   "ended": 1,
+   "edgarConsidered": 525,
+   "edgarLinked": 1,
+   "edgarNameCandidate": 3
+  },
+  "2007": {
+   "ref": 3836,
+   "withSeries": 2079,
+   "frame": 1772,
+   "ended": 2,
+   "edgarConsidered": 832,
+   "edgarLinked": 0,
+   "edgarNameCandidate": 9
+  },
+  "2008": {
+   "ref": 3955,
+   "withSeries": 2131,
+   "frame": 1806,
+   "ended": 4,
+   "edgarConsidered": 631,
+   "edgarLinked": 1,
+   "edgarNameCandidate": 4
+  },
+  "2009": {
+   "ref": 4057,
+   "withSeries": 2172,
+   "frame": 1833,
+   "ended": 37,
+   "edgarConsidered": 620,
+   "edgarLinked": 13,
+   "edgarNameCandidate": 36
+  },
+  "2010": {
+   "ref": 4242,
+   "withSeries": 2249,
+   "frame": 1898,
+   "ended": 45,
+   "edgarConsidered": 512,
+   "edgarLinked": 16,
+   "edgarNameCandidate": 33
+  },
+  "2011": {
+   "ref": 4406,
+   "withSeries": 2324,
+   "frame": 1948,
+   "ended": 73,
+   "edgarConsidered": 471,
+   "edgarLinked": 17,
+   "edgarNameCandidate": 71
+  },
+  "2012": {
+   "ref": 4579,
+   "withSeries": 2415,
+   "frame": 2015,
+   "ended": 51,
+   "edgarConsidered": 456,
+   "edgarLinked": 17,
+   "edgarNameCandidate": 45
+  },
+  "2013": {
+   "ref": 4841,
+   "withSeries": 2533,
+   "frame": 2108,
+   "ended": 131,
+   "edgarConsidered": 446,
+   "edgarLinked": 53,
+   "edgarNameCandidate": 96
+  },
+  "2014": {
+   "ref": 5095,
+   "withSeries": 2705,
+   "frame": 2239,
+   "ended": 142,
+   "edgarConsidered": 382,
+   "edgarLinked": 82,
+   "edgarNameCandidate": 76
+  },
+  "2015": {
+   "ref": 5263,
+   "withSeries": 2847,
+   "frame": 2351,
+   "ended": 268,
+   "edgarConsidered": 413,
+   "edgarLinked": 163,
+   "edgarNameCandidate": 82
+  },
+  "2016": {
+   "ref": 5449,
+   "withSeries": 2996,
+   "frame": 2453,
+   "ended": 312,
+   "edgarConsidered": 483,
+   "edgarLinked": 195,
+   "edgarNameCandidate": 101
+  },
+  "2017": {
+   "ref": 5498,
+   "withSeries": 3177,
+   "frame": 2580,
+   "ended": 405,
+   "edgarConsidered": 441,
+   "edgarLinked": 183,
+   "edgarNameCandidate": 122
+  },
+  "2018": {
+   "ref": 5439,
+   "withSeries": 3373,
+   "frame": 2727,
+   "ended": 421,
+   "edgarConsidered": 388,
+   "edgarLinked": 168,
+   "edgarNameCandidate": 95
+  },
+  "2019": {
+   "ref": 5299,
+   "withSeries": 3541,
+   "frame": 2854,
+   "ended": 276,
+   "edgarConsidered": 406,
+   "edgarLinked": 145,
+   "edgarNameCandidate": 93
+  },
+  "2020": {
+   "ref": 5481,
+   "withSeries": 3814,
+   "frame": 3069,
+   "ended": 248,
+   "edgarConsidered": 382,
+   "edgarLinked": 148,
+   "edgarNameCandidate": 89
+  },
+  "2021": {
+   "ref": 6286,
+   "withSeries": 4283,
+   "frame": 3451,
+   "ended": 343,
+   "edgarConsidered": 419,
+   "edgarLinked": 158,
+   "edgarNameCandidate": 118
+  },
+  "2022": {
+   "ref": 6244,
+   "withSeries": 4442,
+   "frame": 3570,
+   "ended": 413,
+   "edgarConsidered": 557,
+   "edgarLinked": 227,
+   "edgarNameCandidate": 156
+  },
+  "2023": {
+   "ref": 6077,
+   "withSeries": 4603,
+   "frame": 3695,
+   "ended": 489,
+   "edgarConsidered": 679,
+   "edgarLinked": 310,
+   "edgarNameCandidate": 179
+  },
+  "2024": {
+   "ref": 5953,
+   "withSeries": 4856,
+   "frame": 3902,
+   "ended": 280,
+   "edgarConsidered": 504,
+   "edgarLinked": 173,
+   "edgarNameCandidate": 131
+  },
+  "2025": {
+   "ref": 6234,
+   "withSeries": 5316,
+   "frame": 4196,
+   "ended": 264,
+   "edgarConsidered": 487,
+   "edgarLinked": 168,
+   "edgarNameCandidate": 107
+  },
+  "2026": {
+   "ref": 6538,
+   "withSeries": 5522,
+   "frame": 4159,
+   "ended": 267,
+   "edgarConsidered": 267,
+   "edgarLinked": 116,
+   "edgarNameCandidate": 57
+  }
+ },
+ "allMatch": true
+}
