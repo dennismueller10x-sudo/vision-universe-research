@@ -2,6 +2,13 @@
 
 Stand 28.10.2026. Owner-Entscheidung vom selben Tag: regelmäßige, kontrollierte Aktualisierung des Security Masters und der Firmennamen. Zielrhythmus wöchentlich, nach der Aktualisierung von Stammdaten und Universum. Dieses Dokument gehört zum Draft-PR mit `.github/workflows/security-master-weekly.yml`. Ein Zeitplan ist **nicht** aktiv, und es wird **keine** Repository-Variable gesetzt.
 
+Ergänzt am 29.10.2026 (Workstream D2):
+- Reproduktion und Zählabgleich 138 / 127 / 133 (P1);
+- Freeze der historischen Quant-Ergebnisse und Pfad für eine neue Generation (P2);
+- vollständige Freigabevorlage.
+
+Ausgeführt ist weiterhin nichts.
+
 ## Warum
 
 | Verbraucher | liest | Grenze | Stand 28.10. |
@@ -100,7 +107,40 @@ Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.
 | `canonical_id`-, Aktivstatus-, Tickerwechsel, verlorene oder neue IDs | – | **0** |
 | backtestfähige IDs (genau eine Zeile, aktiv, geeignet, Stammaktie) | 6.397 | 6.270: **127 entfallen, 0 neu** |
 
-**Korrektur:** Die frühere Angabe „133 Eignungswechsel“ war eine grobe Zeilenzählung (127 eindeutige plus 14 mehrdeutige true → false, abzüglich 4 mehrdeutiger false → true) und ist falsch. Das Gate zählt je `securityId`; dort sind es 138.
+**Korrektur:** Die frühere Angabe „133 Eignungswechsel“ ist falsch. Das Gate zählt je `securityId`; dort sind es 138. Der Zählabgleich unten zeigt, dass 133 aus keiner Zählung der committeten Eingaben folgt.
+
+#### Nachweis vom 29.10.2026: reproduziert und abgeglichen (Workstream D2)
+
+Reproduziert ohne Abruf und ohne kostenpflichtige Anfrage, nur aus committeten Eingaben auf `main` `9119b17a`:
+- Stamm `quant/data/market/security-master/us-security-master.json`, SHA-256 `26c82617…6498332`, Version 1.1.0, `generatedAt` 11.09.2026;
+- Bestand `quant/data/market/scale/universe-FULL_UNIVERSE.json`;
+- Engine `quant/engines/us-security-master.js` 1.3.0 (Regeln 1.3.3).
+
+```bash
+node scripts/market/security-master-v130-evidence.mjs --out <tmp>
+# [v130-evidence] us-security-master-1.1.0 -> us-security-master-1.3.0: Typ 138, Eignung 138, canonical 0, backtestfähig 6397 -> 6270 (−127/+0, 110 mit Langreihe)
+cmp <tmp>/v130-switch-evidence.json docs/data/security-master/v130-switch-evidence.json     # bytegleich
+cmp <tmp>/v130-switch-lists.md docs/data/security-master/v130-switch-lists.md               # bytegleich
+cmp <tmp>/v130-approved-changes.json docs/data/security-master/v130-approved-changes.json   # bytegleich
+```
+
+Neu schreibt das Skript zusätzlich `v130-count-reconciliation.json` (Funktion `countReconciliation`, Erzeugerausgabe, committet). Test SMW-11 baut die Datei aus Stamm und Engine nach und vergleicht sie genau. Was jede Zahl zählt:
+
+| Zahl | zählt | Zusammensetzung |
+|---|---|---|
+| **138** Typwechsel | je `securityId` (Gate, `compareMasters`) | 127 EQUITY_COMMON → PREFERRED, 11 EQUITY_COMMON → TEST_SECURITY; 127 IDs mit einer Zeile, 11 mit zwei |
+| **138** Eignungswechsel | je `securityId` (Gate) | alle true → false; genau dieselben IDs wie die Typwechsel |
+| 149 Typwechsel | je Zeile | 127 + 11 aktive Zeilen, dazu 11 inaktive Zweitzeilen (PREFERRED, Eignung schon vorher false) |
+| 138 Eignungswechsel | je Zeile | 138 true → false, **0** false → true; geeignete Zeilen 6.583 → 6.445 |
+| **127** (a) → PREFERRED | je `securityId` | 116 einzeilige + 11 zweizeilige IDs (`ref_ADAMM`, `ref_ADAMN`, `ref_AGNCP`, `ref_GOODN`, `ref_GOODO`, `ref_HBANP`, `ref_LANDP`, `ref_MBINN`, `ref_OXLCN`, `ref_OXLCO`, `ref_OXLCP`) |
+| **127** (b) entfallend backtestfähig | je `securityId`, Regel des Wochen-Adapters | 116 PREFERRED + 11 TEST_SECURITY |
+| **133** (früher) | – | nicht reproduzierbar: weder je ID (138) noch je Zeile (138, netto 138). Die eigene Herleitung „127 + 14 − 4“ ergibt 137. Mehrzeilige IDs haben 11, nicht 14, Eignungszeilen true → false, und 0, nicht 4, false → true |
+
+Die beiden 127 sind **verschiedene Mengen** mit gleicher Größe. Sie überschneiden sich in 116 IDs:
+- Die 11 Zwei-Zeilen-IDs werden PREFERRED, waren aber schon vorher nicht backtestfähig.
+- Die 11 TEST_SECURITY-IDs werden nicht PREFERRED, entfallen aber.
+
+Die Sonderfreigabe deckt beide über die 138 Paare ab.
 
 **Nachweis der 127 entfallenden backtestfähigen IDs:**
 - 116 PREFERRED und 11 TEST_SECURITY; die übrigen 11 der 138 haben zwei Zeilen (eine aktiv, eine inaktiv) und waren schon vorher nicht backtestfähig.
@@ -145,32 +185,98 @@ Gemessen mit `scripts/market/security-master-v130-evidence.mjs`: die Engine 1.3.
 
 Reihenfolge, jeder Schritt erst nach Freigabe des vorigen:
 
+Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/security-master-v130-freeze.test.mjs` (eigener Quant-PR). Es ruft keinen Anbieter ab, schreibt nie nach `quant/data`, `discover/data`, `supertrader/data` oder `social/data` und hängt keinen Leser um.
+
+**Was vom Stamm abhängt:**
+
+| Klasse | was | Schutz |
+|---|---|---|
+| eingefrorene, committete Quant-Evidenz | `docs/quant-recovery/` V5.1, V6 (mit Sicherungen), V7, V8, V9, V9-Folgearbeit, Methodik v1 und `BACKTEST_V51…V9_*.md`, 240 Dateien | `docs/data/security-master/v130-quant-freeze.json`: SHA-256 je Datei, erzeugt mit `repo-manifest` auf `main` `9119b17a`. Test SMF-1 schlägt fehl, wenn eine Datei sich ändert oder fehlt; neue Dateien (neue Generation) sind erlaubt. V10 ist eine offene Übergabe und bewusst nicht enthalten |
+| private Backtest-Generationen (außerhalb des Repositorys) | `<privat>/<generation>/` mit Snapshot (`masterHash`), Listings, Index, `release.json`; Zeiger `<privat>/release.json` | `freeze` vor der Übernahme, `verify` vor und nach dem Neuaufbau (SMF-3) |
+| veröffentlichte Quant-Daten mit Stammbezug | Survivorship-Kontrolle, Emerging Leaders, Inventare (Tabelle oben) | Erzeugereigen, Stand in der Git-Historie; jeder Neubau ist ein eigener Erzeuger-PR mit Vorher/Nachher (Schritte 4–5) |
+| `masterHash`-Verbraucher | Adapter, Materialisierung, Freshness, Leser | unverändert; die alte Generation meldet nach dem Wechsel `BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED` |
+
 1. **Sicherung (vor jeder Übernahme):**
-   - Alle privaten Backtest-Generationen, das Batch-Manifest und `release.json` als schreibgeschütztes Archiv ablegen.
-   - Dazu eine Liste `sha256  pfad` für jede Datei, deren eigener SHA-256 im Freigabeprotokoll steht.
-   - Prüfung: `sha256sum -c` gegen das Original vor und nach dem Neuaufbau. Die alten Generationen bleiben am Ort; der Neuaufbau schreibt nur in eine **neue** Generation.
+   ```bash
+   node scripts/quant/backtest-generation-freeze.cjs verify-repo --manifest docs/data/security-master/v130-quant-freeze.json
+   node scripts/quant/backtest-generation-freeze.cjs freeze --generations <privat-1.1.0> --out <archiv>/v130-private-freeze.json
+   ```
+   - `freeze` erfasst jede Datei der privaten Wurzel mit SHA-256 (ohne Sperrdateien), prüft jeden Snapshot (`hash(input) = generation`) und hält Generation und `masterHash` des Zeigers fest.
+   - Der `filesSha256` des Manifests kommt ins Freigabeprotokoll. Zusätzlich die Wurzel schreibgeschützt archivieren.
 2. **Übernahme des Stamms 1.3.0:** Workflow-Lauf mit `allow_version_change=true`, `approved_changes=true`, zuerst `commit=false`; Gate-Bericht und Listen vergleichen; dann derselbe Lauf mit `commit=true`.
-3. **Neue Backtest-Generation:**
-   - `scripts/quant/materialize-real-backtest-read.cjs` bzw. `refresh-real-backtest.cjs` in ein neues Generationsverzeichnis.
-   - Vorher/Nachher je Strategie: Anzahl IDs (6.397 → 6.270), Kennzahlen der unveränderten 6.270 IDs müssen gleich sein.
-   - Erst dann `release.json` umhängen. Zurück geht es durch Zurückhängen auf die gesicherte Generation.
+3. **Neue Backtest-Generation**, nur vom Erzeuger und nur in eine **neue** private Wurzel:
+   ```bash
+   node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-1.1.0> --manifest <archiv>/v130-private-freeze.json --output <privat-1.3.0>
+   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-1.1.0> --output <privat-1.3.0> --approved docs/data/security-master/v130-approved-changes.json --out <archiv>/v130-compare.json
+   ```
+   - `build-post-switch` verweigert, wenn
+     - der Stamm noch nicht 1.3.0 ist (`MASTER_NOT_SWITCHED`) oder sein `masterHash` gleich geblieben ist,
+     - die neue Wurzel die alte ist oder in ihr liegt bzw. sie enthält (`POST_SWITCH_OUTPUT_MUST_BE_SEPARATE_ROOT`),
+     - eine eingefrorene Generation in der Ausgabe liegt,
+     - die eingefrorene Wurzel vorher oder nachher nicht bytegleich ist (`FROZEN_GENERATION_CHANGED…`).
+   - Sonst ruft es den bestehenden Erzeuger `materialize-real-backtest-read.cjs` im Umfang der eingefrorenen Generation auf. Die neue Generations-ID folgt aus dem neuen `masterHash`.
+   - Es schreibt `lineage.json` (Vorgänger, Nachfolger, `publiclyActivated: false`, `readerSwitch: OWNER_STEP_NOT_PERFORMED`).
+   - `compare` vergleicht Titel für Titel die Kennzahlen je Periode (Metriken, Endkapital, offene Positionen, Buy-and-Hold). Es meldet `ONLY_APPROVED_CHANGES` nur, wenn sich ausschließlich IDs der Sonderfreigabe ändern. Erwartet: 127 `NEWLY_BLOCKED` (`INELIGIBLE_EQUITY_LISTING`), alle übrigen `SAME_FINANCIALS` bzw. `SAME_BLOCKED`.
+   - Am Fixture mit echten Reihen (NVDA, MSFT, XOM, ACGLO) geprüft (SMF-5): ACGLO wird `NEWLY_BLOCKED`, die drei anderen haben gleiche Kennzahlen, der alte Zeiger bleibt bytegleich.
+   - Erst danach und nur mit Owner-Freigabe wird der Leser auf `<privat-1.3.0>` gestellt. Zurück geht es, indem der Leser wieder auf `<privat-1.1.0>` zeigt; diese Wurzel ist unverändert, `verify` belegt das.
 4. **Survivorship-Kontrolle:** eigener PR, `build-survivorship-control.mjs` neu, 191 → 180, Test angepasst, mit Liste der 11 IDs.
 5. **Emerging Leaders:** eigener PR über `emerging-leaders-study.yml`, mit Vorher/Nachher der Aktienmenge und der Ergebnisse.
 6. `docs/quant-recovery/**` und archivierte Generationen werden nie neu geschrieben.
 
 ## Freigabevorlage
 
+Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichung (Commit des Stamms auf `main`), und er ändert produktive Quant-Bezüge (`masterHash` aller Generationen). Deshalb endet die Vorbereitung hier. Ausgeführt wird erst nach Owner-Freigabe.
+
+**Was umgestellt wird:** nur `quant/data/market/security-master/us-security-master.json` und seine Begleitdateien (`summary.json`, `reconciliation.json`, `backfill-estimate.json`; `PUSH_OWNED_PATHS`). Klassifizierer 1.1.0 → 1.3.0, gleiche Anbieterliste, gleicher Bestand. `eligibility.json` und `discover/data` bleiben unverändert (P4).
+
+**Voraussetzungen:**
+- Nachweis-PR und Freeze-PR gemergt;
+- `verify-repo` INTACT;
+- privater `freeze` erstellt, `filesSha256` notiert;
+- Stamm auf `main` noch `26c82617…` (sonst gilt die Sonderfreigabe nicht, G8/P3);
+- Scheduler aus, keine Repository-Variable.
+
+**Erwartete Diffs je Klasse** (je stabiler `securityId`; Zählabgleich oben):
+
+| Klasse | erwartet | Gate |
+|---|---|---|
+| Instrumenttyp | 138: 127 → PREFERRED, 11 → TEST_SECURITY | G7 über Sonderfreigabe, `report.approval.applied` 138 |
+| Eignung `eligible_us_equity` | 138, alle true → false (dieselben IDs) | G7 über Sonderfreigabe |
+| `canonical_id`, Ticker, aktiv → inaktiv, Reaktivierung, verlorene oder neue IDs | 0 aus dem Wechsel; Anbieterdrift seit 11.09. nur innerhalb der normalen Grenzen | G3–G7 unverändert 25 / 25 / 50 / 50 / 25 |
+| Zeilen | 149 Typzeilen, 138 Eignungszeilen; geeignete Zeilen 6.583 → 6.445 | – |
+| backtestfähige IDs | 6.397 → 6.270 (−127, +0) | `compare`: 127 `NEWLY_BLOCKED`, sonst gleiche Kennzahlen |
+| Survivorship-Kontrolle | 191 → 180 inaktive Stammaktien-Zeilen | eigener Erzeuger-PR |
+| Emerging Leaders | Eingangsmenge −138, inaktive −11 | eigener Erzeuger-PR |
+
+**Betroffene Verbraucher:**
+- private Wochen-Backtests: alte Generation zurückgehalten, neue Generation in neuer Wurzel;
+- Supertrader-8-Eingangsprüfung: 138 IDs gelten als Nicht-Stammaktie, keine davon in einem Discover-Universum;
+- Survivorship-Kontrolle und Emerging Leaders: je eigener PR;
+- Inventare `capabilities-v1`, `sic-peer-taxonomy-v1`, `naming-contract-v1`, `total-return-quality-v1`: werden nicht neu gebaut;
+- Discover: keine Wirkung;
+- `docs/quant-recovery/**`: eingefroren.
+
+**Rückweg:**
+- Stamm: Revert des Übernahme-Commits. Die alten Bytes `26c82617…` stehen in Git, die Prüfsumme im Freeze-Manifest.
+- Backtests: Leser bleibt bzw. geht zurück auf `<privat-1.1.0>`, `verify` INTACT.
+- Erzeuger-PRs (Survivorship, Emerging Leaders): Revert.
+- Kein Schritt löscht oder überschreibt eine Generation.
+
 ```
 Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Aktualisierung
-[ ] PR #1033 gemergt am ____ (Workflow, Gate, Sonderfreigabe, Nachweis) – aktiviert nichts
-[ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md
-       138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs: ja / nein
-[ ] P2 Sicherung erstellt: Archiv ____, SHA-256-Liste ____ (sha256 der Liste: ____)
+[ ] PR #1033 gemergt am 28.10.2026 (Workflow, Gate, Sonderfreigabe, Nachweis) – aktiviert nichts
+[ ] Nachweis-PR #____ gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #____ gemergt (SMF-1…5)
+[ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
+       138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
+[ ] P2 verify-repo INTACT (240 Dateien, filesSha256 02d412de…): ____
+[ ] P2 privater freeze: Wurzel ____, Generation ____, filesSha256 ____, Archiv ____
 [ ] P3 Sonderfreigabe v130-approved-changes.json (prevMasterSha256 26c82617…) freigegeben: ja / nein
 [ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true: Lauf ______
        Gate PASS, report.approval.applied 138/138, sonst keine Wechsel über den Grenzen: ____
-[ ] Lauf 2  dieselben Eingaben, commit=true: Lauf ______
-[ ] P2 neue Backtest-Generation ______, Vergleich 6.397 → 6.270 geprüft, release.json umgehängt: ____
+[ ] Lauf 2  dieselben Eingaben, commit=true: Lauf ______ (Datenveröffentlichung, nicht umkehrbar außer per Revert)
+[ ] P2 build-post-switch: neue Wurzel ____, Generation ____, lineage.json frozenRootVerified INTACT/INTACT
+[ ] P2 compare ONLY_APPROVED_CHANGES, NEWLY_BLOCKED 127, unexpected 0: ____
+[ ] Leser auf neue Wurzel umgestellt (eigene Freigabe): ja / nein / später
 [ ] Survivorship-PR #____ (191 → 180)    [ ] Emerging-Leaders-PR #____
 [ ] P4 eligibility.json unverändert    [ ] P5 nur SEC/kuratierte Namen
 [ ] P6 Zeitplan-PR #____ (erst danach; Scheduler bis dahin aus)
