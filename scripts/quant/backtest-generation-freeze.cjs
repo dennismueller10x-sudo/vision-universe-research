@@ -20,12 +20,14 @@ const FREEZE_SCHEMA='quant-backtest-generation-freeze-1.0.0',REPO_SCHEMA='quant-
 const TARGET_MASTER_VERSION='us-security-master-1.3.0';
 const TRANSIENT=new Set(['.materialize.lock','.materialize.acquire']);
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-const inside=(parent,child)=>{const r=path.relative(parent,child);return r===''||(!r.startsWith('..')&&!path.isAbsolute(r));};
+const inside=(parent,child)=>{const r=path.relative(parent,child);return r===''||(r!=='..'&&!r.startsWith('..'+path.sep)&&!path.isAbsolute(r));};
+// Echter Pfad auch für noch nicht angelegte Ziele: Symlinks im vorhandenen Teil werden aufgelöst (Review #1100).
+const real=p=>{let q=path.resolve(p),rest=[];while(!fs.existsSync(q)){rest.unshift(path.basename(q));const up=path.dirname(q);if(up===q)break;q=up;}return path.join(fs.realpathSync(q),...rest);};
 
 /* Eingefrorene, committete Quant-Evidenz: abgeschlossene Generationen V5.1–V9 samt Folgearbeit und Methodik-Entwurf.
    V10 ist eine offene Übergabe und bleibt bewusst außen vor. */
 const FROZEN_DIRS=['docs/quant-recovery/methodology-v1','docs/quant-recovery/v51','docs/quant-recovery/v6','docs/quant-recovery/v6-securement','docs/quant-recovery/v6-securement-final','docs/quant-recovery/v7','docs/quant-recovery/v7-securement','docs/quant-recovery/v8','docs/quant-recovery/v9','docs/quant-recovery/v9-followups'];
-const FROZEN_DOC=/^docs\/quant-recovery\/BACKTEST_V(51|6|7|8|9)_[A-Z_]+\.md$/;
+const FROZEN_DOC=/^docs\/quant-recovery\/BACKTEST_V(51|6|7|8|9)(_[A-Z_]+)?\.md$/;
 /* Committete Ausgaben, die vom Stamm abhängen und beim Wechsel NICHT still neu entstehen: jede bekommt einen eigenen
    Erzeuger-PR mit Vorher/Nachher. Ihre Bytes stehen in der Git-Historie; sie werden hier nicht festgenagelt, weil ihre
    Erzeuger sie mit den Datenläufen fortschreiben. */
@@ -89,8 +91,10 @@ function verify({generations,manifest}){
 /** Neue Generation nach dem Wechsel: nur in eine NEUE private Wurzel; die eingefrorene bleibt bytegleich (vorher und nachher geprüft). */
 function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,expectMasterVersion=TARGET_MASTER_VERSION,materializeFn=null}={}){
  if(!frozen||!output||!manifest)throw Error('FROZEN_MANIFEST_AND_OUTPUT_REQUIRED');
- const old=path.resolve(frozen),next=path.resolve(output);
+ const old=real(frozen),next=real(output);
  if(inside(old,next)||inside(next,old))throw Error('POST_SWITCH_OUTPUT_MUST_BE_SEPARATE_ROOT');
+ // keine Symlinks in der neuen Wurzel, die in die eingefrorene zeigen (der Erzeuger schreibt darunter)
+ if(fs.existsSync(next)){const walk=d=>fs.readdirSync(d,{withFileTypes:true}).forEach(e=>{const p=path.join(d,e.name);if(e.isSymbolicLink()){if(inside(old,real(p)))throw Error('POST_SWITCH_OUTPUT_MUST_BE_SEPARATE_ROOT');}else if(e.isDirectory())walk(p);});walk(next);}
  const before=verify({generations:old,manifest});if(before.state!=='INTACT')throw Error('FROZEN_GENERATION_CHANGED');
  const masterBytes=fs.readFileSync(path.join(root,MASTER),'utf8'),master=JSON.parse(masterBytes);
  if(master.version!==expectMasterVersion)throw Error('MASTER_NOT_SWITCHED');

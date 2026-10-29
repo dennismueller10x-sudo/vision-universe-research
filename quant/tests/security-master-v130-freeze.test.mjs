@@ -14,6 +14,7 @@ const sha=b=>createHash('sha256').update(b).digest('hex');
 
 test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V9 ist bytegleich und vollständig (neue Dateien erlaubt)',()=>{
  const m=JSON.parse(fs.readFileSync(join(root,MANIFEST),'utf8'));
+ assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/BACKTEST_V51.md'),'V5.1-Hauptbericht eingefroren');
  assert.equal(m.schema,'quant-v130-repository-freeze-1.0.0');assert.ok(m.frozen.count>=240);assert.equal(Object.keys(m.frozen.files).length,m.frozen.count);
  assert.equal(sha(JSON.stringify(m.frozen.files)),m.frozen.filesSha256,'Manifest selbst unverändert');
  assert.deepEqual(F.verifyRepo(m,{root}),{state:'INTACT',changed:[],missing:[]});
@@ -55,6 +56,11 @@ test('SMF-4 · vor dem Wechsel verweigert: gleicher Stamm, gleiche oder verschac
  assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot}),/MASTER_NOT_SWITCHED/);
  assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:oldRoot}),/SEPARATE_ROOT/);
  assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:join(oldRoot,'next')}),/SEPARATE_ROOT/);
+ // Review #1100: Symlink auf die eingefrorene Wurzel, Symlink darin, Name mit führenden Punkten
+ fs.symlinkSync(oldRoot,oldRoot+'-link');assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:oldRoot+'-link'}),/SEPARATE_ROOT/);
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:join(oldRoot+'-link','neu')}),/SEPARATE_ROOT/);
+ fs.mkdirSync(oldRoot+'-mix');fs.symlinkSync(join(oldRoot,old.generation),join(oldRoot+'-mix',old.generation));assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:oldRoot+'-mix'}),/SEPARATE_ROOT/);
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:join(oldRoot,'..next')}),/SEPARATE_ROOT/);
  assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:join(oldRoot,old.generation),manifest,output:oldRoot+'-x'}),/FROZEN_GENERATION_CHANGED/);
  assert.equal(fs.existsSync(newRoot),false);
 });
