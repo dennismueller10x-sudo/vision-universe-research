@@ -296,3 +296,20 @@ test('Rechtstexte: sichere Darstellung, keine Shopify-Links, Firmendaten nur aus
   if (status === 'freigegeben') assert.ok(!/\[\[(OFFEN|PRÜFEN)/.test(all) && !/entwurf/.test(version), 'Freigabe ohne offene Stellen');
   else assert.equal(status, 'entwurf');
 });
+
+test('Brevo: DOI-Vorlage wird ueber den Einzelabruf geprueft (doiTemplate fehlt in der Liste)', async () => {
+  const {createBrevo, doiProblems, NEWSLETTER} = await import('../src/brevo.mjs');
+  const good = {id: 8, name: NEWSLETTER.templateName, isActive: true, doiTemplate: true, tag: 'optin',
+    htmlContent: `${NEWSLETTER.text} <a href="{{ params.DOIurl }}">ok</a>`};
+  assert.deepEqual(doiProblems(good), []);
+  assert.deepEqual(doiProblems({...good, doiTemplate: false, htmlContent: good.htmlContent + '{{ doubleoptin }}'}), ['KEINE_DOI_VORLAGE', 'ALTER_DOI_PLATZHALTER']);
+  const calls = [];
+  const fetchImpl = async url => {
+    const p = new URL(url).pathname; calls.push(p);
+    if (p === '/v3/smtp/templates') return new Response(JSON.stringify({templates: [{id: 8, name: good.name, isActive: true}]}));
+    if (p === '/v3/smtp/templates/8') return new Response(JSON.stringify(good));
+    return new Response('{}', {status: 404});
+  };
+  assert.equal(await createBrevo({apiKey: 'k', fetchImpl}).doiTemplateId(), 8);
+  assert.ok(calls.includes('/v3/smtp/templates/8'));
+});

@@ -39,5 +39,31 @@ Nur ein Modus gleichzeitig; der Deploy-Workflow lässt nur diese drei Formen zu.
 - Unternehmensangaben: „RAM Consulting UG (haftungsbeschränkt)“, Land DE, Website visionuniverse.de; Kontoauszug
   „VISION UNIVERSE“ (kein Privatname); Support-E-Mail und -URL **leer**, kein Logo/Icon.
 
+## Vorbereitet (nicht ausgeführt)
+
+- **Fester Steuersatz:** Workflow „Konten — Stripe Live einrichten (Produktion)“ mit `dry_run = false`, `tax_rate = true` legt
+  einmalig den Steuersatz „USt. 19 % DE, im Preis enthalten“ an (bzw. findet ihn) und gibt die `txr_…`-ID aus. Erst wenn diese ID
+  als `STRIPE_TAX_MODE` in `[env.production.vars]` steht, bekommt jedes neue Abo den Satz; die Rechnung zeigt dann
+  1,00 € brutto, darin 0,16 € USt (19 %). Bestehende Abos bleiben unverändert.
+- **Öffentlicher Checkout** wird vom Deploy-Workflow abgelehnt, solange `STRIPE_TAX_MODE = "none"` ist
+  (`scripts/account/check-public-checkout.mjs`), weil eine regelbesteuerte UG die USt ausweisen muss.
+
+## Empfehlung (Entscheidung Steuerberatung)
+
+Für den Start an Verbraucher in Deutschland und der EU **unterhalb der Schwelle von 10.000 € EU-Auslandsumsatz** (§ 3a Abs. 5
+S. 3 UStG): fester Satz 19 % DE (`txr_`). Bei Überschreiten der Schwelle oder bei Verkäufen an Unternehmer im Ausland
+(Reverse Charge) auf Stripe Tax (`automatic`) mit OSS-Registrierung wechseln. Kunden außerhalb der EU bis zur Entscheidung
+nicht gesondert behandeln (Punkt 4 oben).
+
+## Im Stripe-Dashboard einzutragen (Owner, keine API-Änderung durch uns)
+
+| Einstellung | Wo | Wert |
+|---|---|---|
+| Steuernummer / USt-IdNr. auf Rechnungen | Einstellungen → Steuern → Steuer-IDs (bzw. Rechnungen → Vorlage) | Steuernummer 65204/71409; USt-IdNr. sobald vorhanden |
+| Support-E-Mail und -Website | Einstellungen → Unternehmensdetails → Öffentliche Angaben | info@visionuniverse.de, https://research.visionuniverse.de |
+| Logo, Icon, Farbe | Einstellungen → Branding | Vision-Universe-Logo |
+| Rechnungs-/Belegversand | Einstellungen → Kunden-E-Mails | „Erfolgreiche Zahlungen“ und „Rechnungen“ einschalten |
+| Rechnungsfußzeile | Einstellungen → Rechnungen | Firma, Anschrift, Registergericht, HRB 803400 |
+
 Der Lesecheck „Konten — Stripe prüfen“ meldet Steuereinstellungen, Registrierungen, Steuersätze und Steuer-IDs des Kontos,
 ohne etwas zu ändern.

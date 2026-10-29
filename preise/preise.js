@@ -37,6 +37,10 @@
       $('pr-choose-pro').hidden = true;
     }
     if (!free) $('pr-choose-free').hidden = true;
+    // Hinweis "interner Testpreis" nur, solange der Worker den Checkout nicht oeffentlich freigibt.
+    var internal = data.checkout !== 'public';
+    $('pr-test-tag').hidden = !internal;
+    $('pr-test-note').hidden = !internal;
 
     // Funktionsumfang genau wie im Backend: nur Funktionen, die ein angezeigter Tarif enthaelt.
     var names = {};

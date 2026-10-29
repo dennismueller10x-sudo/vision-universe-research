@@ -8,6 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createEnvironment} from '../../../scripts/account/sim/environment.mjs';
+import {LEGAL_STATUS} from '../src/legal/texts.mjs';
 import {subscriptionGrantsAccess} from '../src/entitlements.mjs';
 import {LOCAL_KEYS} from '../../../scripts/account/sim/fake-supabase.mjs';
 
@@ -875,11 +876,14 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
       assert.match(res.headers.get('Content-Type'), /text\/html/);
       assert.match(res.headers.get('Content-Security-Policy'), /default-src 'none'.*form-action 'self'/);
       assert.ok(!/<script/i.test(html), `${p}: kein Skript`);
-      assert.match(html, /Entwurf<\/strong> – Fassung vu-recht-/, `${p}: Entwurf gekennzeichnet`);
+      if (LEGAL_STATUS !== 'freigegeben') assert.match(html, /Entwurf<\/strong> – Fassung vu-recht-/, `${p}: Entwurf gekennzeichnet`);
       assert.ok(!/policies\/(terms-of-service|refund-policy)/.test(html), `${p}: keine Shopify-Texte`);
       assert.match(html, /href="\/kuendigen">Verträge hier kündigen<\/a>/);
       assert.match(html, /href="\/widerrufen">Vertrag widerrufen<\/a>/);
     }
+    const head = await page(env, '/rechtliches/agb', {method: 'HEAD'});
+    assert.equal(head.status, 200, 'HEAD wie GET');
+    assert.equal(await head.text(), '', 'HEAD ohne Inhalt');
     const impressum = await (await page(env, '/rechtliches/impressum')).text();
     assert.match(impressum, /HRB 803400/);
     assert.match(impressum, /\[OFFEN: USt-IdNr\./, 'fehlende Angabe sichtbar markiert, nicht erfunden');
