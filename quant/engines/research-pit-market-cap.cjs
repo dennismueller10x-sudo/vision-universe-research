@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.3.json, amending 1.0.0-1.0.2).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.4.json, amending 1.0.0-1.0.3).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.3',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.4',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -122,22 +122,25 @@ function classifyFact(o, ctx) {
   const supportRefs = [...perConcept.values()].map(x => x.adj).concat(P1 ? [P1.adj] : [], P2 ? [P2.adj] : []);
   const support = x => supportRefs.filter(r => within(x, r, RULE.TIER_B_PRIOR_TOLERANCE)).length;
   const supportV = support(v);
+  const extRefs = (P1 ? [P1.adj] : []).concat(P2 ? [P2.adj] : []);
+  const supportExt = x => extRefs.filter(r => within(x, r, RULE.TIER_B_PRIOR_TOLERANCE)).length;
   const tiers = { A: [], B: [], C: [] };
   for (const k of RULE.SCALE_EXPONENTS) {
     const vp = v / Math.pow(10, k);
-    if (!(support(vp) > supportV)) continue;
+    const supported = support(vp) > supportV, extSupported = supportExt(vp) > supportExt(v);
     const priorOk = P1 !== null && within(vp, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE);
     const hitsA = sameVals.filter(x => within(vp, x.adj, RULE.SAME_FILING_TOLERANCE));
-    if (hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => family(x.c))).size >= 2)) {
+    if (supported && hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => family(x.c))).size >= 2)) {
       const a = hitsA[0];
       tiers.A.push({ k, vp, e: [kind(a), a.c, a.accn, a.end, a.val, vp / a.adj], e2: P1 ? pe(vp) : (hitsA.find(x => family(x.c) !== family(a.c)) && [kind(hitsA.find(x => family(x.c) !== family(a.c))), hitsA.find(x => family(x.c) !== family(a.c)).c, hitsA.find(x => family(x.c) !== family(a.c)).accn, hitsA.find(x => family(x.c) !== family(a.c)).end, hitsA.find(x => family(x.c) !== family(a.c)).val, vp / hitsA.find(x => family(x.c) !== family(a.c)).adj]) });
     }
-    if (Math.abs(k) >= 3 && priorOk) {
+    // 1.0.4: tier B shows a filing-wide scale error, so same-filing values share it; support is counted on P1/P2 only
+    if (Math.abs(k) >= 3 && priorOk && extSupported) {
       const b = comp.find(x => within(x.q, Math.pow(10, k), RULE.SAME_FILING_TOLERANCE));
       const contra = comp.some(x => x.c === o.code && within(x.q, 1, RULE.SAME_FILING_TOLERANCE));
       if (b && !contra) tiers.B.push({ k, vp, e: ['COMPARATIVE_SCALE', b.c, b.earlierAccn, b.end, b.val, b.q], e2: pe(vp) });
     }
-    if (P1 && within(vp, P1.adj, RULE.TWO_REFERENCE_TOLERANCE)) {
+    if (supported && P1 && within(vp, P1.adj, RULE.TWO_REFERENCE_TOLERANCE)) {
       const c = sameVals.find(x => within(vp, x.adj, RULE.TWO_REFERENCE_TOLERANCE));
       if (c) tiers.C.push({ k, vp, e: [kind(c), c.c, c.accn, c.end, c.val, vp / c.adj], e2: pe(vp) });
     }
