@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.7.json, amending 1.0.0-1.0.6).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.8.json, amending 1.0.0-1.0.7).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.7',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.8',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, MIN_MCAP_USD: 1e6, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -153,6 +153,8 @@ function classifyFact(o, ctx) {
     if (ks.length > 1) { ev.push(['AMBIGUOUS_SCALE', tier, null, null, ks, null]); return result('EXCLUDED', 'AMBIGUOUS_SCALE', null); }
     const h = tiers[tier][0]; ev.push(h.e); if (h.e2) ev.push(h.e2);
     if (overBound(h.vp)) return result('EXCLUDED', 'MCAP_ABSOLUTE_BOUND', null, { scaleExponent: h.k, tier });
+    // 1.0.8: a factor 10 or 100 coincides with 1:10 reverse splits and tenfold capital actions -> never corrected, excluded
+    if (Math.abs(h.k) < 3) return result('EXCLUDED', 'DECIMAL_SCALE_SUSPECTED', null, { scaleExponent: h.k, tier });
     return result('CORRECTED', cls ? cls + '+SCALE_ERROR' : 'SCALE_ERROR', h.vp, { scaleExponent: h.k, tier });
   }
   // S5 H0: value confirmed
