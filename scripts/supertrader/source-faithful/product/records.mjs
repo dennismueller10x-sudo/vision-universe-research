@@ -142,7 +142,7 @@ function stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }) {
  *
  * Unterhalb von MODELED_TRADE_PLAN gehen keine Order-, Stop- oder Limitmarken der Quelle in die Ansicht, auch nicht
  * umbenannt. Denn der Vertrag erlaubt sie erst mit einem modellierten Ablauf (STAGE_MIXING). Übrig bleibt nur fachlich
- * belegte Chartstruktur: Boxgrenzen (Darvas), Widerstand (Weinstein), Konsolidierungshoch (KK), Gap-Tief (EP, BGU) und
+ * belegte Chartstruktur: Boxgrenzen (Darvas), Konsolidierungshoch (KK), Gap-Tief (EP, BGU) und
  * gleitende Durchschnitte. Ausgeschlossen ist jede Marke, die in ihrer Quelle selbst der Orderpreis ist:
  *  - C06/C07 Pivot: Einstiegsorder genau am Pivot (research/minervini-lifecycle.mjs, entryEligibility: order.level = pivot);
  *  - C13 swingLow (= Stop, MA-RAS-SWING-LOW) und impulseHigh (Teil der Order); C11 signalDayLow (keine Strukturmarke der
@@ -154,13 +154,16 @@ function stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }) {
  */
 export const STRUCTURE_LEVELS = Object.freeze({
   C01: ['channelDays', 'exitChannelDays'], C02: ['channelDays', 'exitChannelDays'],
-  C03: ['top', 'bottom', 'box'], C04: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'], C05: ['resistance', 'ma30w', 'breakoutWeek', 'breakoutDay'],
+  // Owner-Entscheidung 28.10.2026 (Weinstein): der genaue Wochenwiderstand ergibt mit den Wochenkursen die Stopreferenz (Woche des
+  // Widerstands bis vor die Ausbruchswoche: C05 379 von 379, C04 159 von 422) und ist deshalb unterhalb von MODELED kein
+  // numerisches Research-Feld; es bleiben 30-Wochen-Linie, Ausbruchswoche und -tag.
+  C03: ['top', 'bottom', 'box'], C04: ['ma30w', 'breakoutWeek', 'breakoutDay'], C05: ['ma30w', 'breakoutWeek', 'breakoutDay'],
   C06: ['ma50', 'ma150', 'ma200'], C07: [], C08: ['breakoutLevel'], C09: ['gapDayLow', 'priorClose'],
   C10: ['ma10', 'ma20'], C11: ['ma10', 'ma50'], C12: ['gapDayLow', 'priorClose'], C13: ['ema20'],
 });
 // Chartmarke je Strategie unterhalb von MODELED: [Schlüssel in levels, Art] oder null (die einzige Marke wäre die Order)
 const STRUCTURE_MARK = Object.freeze({
-  C01: null, C02: null, C03: ['top', 'BOX_TOP'], C04: ['resistance', 'WEEKLY_RESISTANCE'], C05: ['resistance', 'WEEKLY_RESISTANCE'],
+  C01: null, C02: null, C03: ['top', 'BOX_TOP'], C04: null, C05: null,
   C06: null, C07: null, C08: ['breakoutLevel', 'CONSOLIDATION_10_LEVEL'], C09: ['gapDayLow', 'GAP_DAY_LOW'],
   C10: null, C11: null, C12: ['gapDayLow', 'GAP_DAY_LOW'], C13: null,
 });
@@ -186,10 +189,21 @@ export const ORDER_DERIVED_FEATURES = Object.freeze(['closeVsTrigger', 'proposed
 // SEPA: pctBelowHigh52w ist genau trend.belowHigh252 (close / (1 − x) ergäbe das ausgeblendete 52-Wochen-Hoch, Owner 28.10.2026);
 // die Basistiefen (largestCorrection, vcpFootprint.depths = 1 − Tief / Basishoch) ergeben mit dem Basistief (oft Schluss oder
 // 52-Wochen-Tief) das Basishoch, also Hoch und Pivot (Review 28.10.: 22 von 668 SEPA-Ansichten über low252). Eine Rundung
-// schützt nicht verlässlich (eine flache Basis landet auf einem groben Raster zufällig wieder nahe am Hoch). Es bleiben Zahl und
-// Verlauf der Kontraktionen und die Basislänge.
-export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C06: Object.freeze(['pctBelowHigh52w', 'largestCorrection']), C07: Object.freeze(['correction']) });
-export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.freeze({ vcpFootprint: Object.freeze(['depths']) }) });
+// schützt nicht verlässlich (eine flache Basis landet auf einem groben Raster zufällig wieder nahe am Hoch).
+// Owner-Entscheidung 28.10.2026 (Rückrechenbarkeit): ein Feld ist auch dann eine Order-Größe, wenn es zusammen mit den öffentlichen
+// Tageskursen einen Einstieg, Stop oder Orderparameter zuverlässig ergibt. Gemessen im vollen Lauf 26.10. (unterhalb von MODELED,
+// nur Treffer, die kein Fenster ohne das Feld liefert; docs/SUPERTRADER_8_CHART_STRUCTURE.md):
+// SEPA-Basislänge (baseLengthSessions = vcpFootprint.baseSessions): Pivot bzw. Stopreferenz = Hoch/Tief im Fenster (77 von 238);
+// Power-Play-Konsolidierungsdauer: Pivot und Stop (7 von 15); Holy Grail impulseHighDate: Impulshoch = Hoch an dem Tag, Stop =
+// tiefstes Tief seitdem (90 von 171), adxAbove30Since: Impulshoch = höchstes Hoch ab dem Tag (81 von 171); Weinstein baseWeeks:
+// Stopreferenz = tiefstes Tief der Basis (C04 141 von 329, C05 282 von 379). Volumen-Fingerabdrücke (Review 28.10.): das
+// ungerundete Volumen der letzten SEPA-Kontraktion gegen den 50-Tage-Schnitt findet genau ein Fenster (Hoch am Anfang = Pivot,
+// Tief am Ende = Stop, 238 von 238), das Power-Play-Startvolumen genau den Starttag des Laufs (19 von 19). Es bleiben Zahl und Verlauf der Kontraktionen,
+// Ausbruchstag und Box-Daten (Einzeltreffer unter 2 %) und die allgemeinen Chartangaben (trend.windowSessions = 252).
+// Owner-Entscheidung 28.10.2026 (Turtle): N (20-Tage-Volatilität der Quelle) und nPct ergeben mit dem Trigger die Stopreferenz
+// (Trigger − 2·N: C01 268 von 269, C02 224 von 224); die bisherige Ausnahme gilt unterhalb von MODELED nicht mehr.
+export const ORDER_DERIVED_BY_METHOD = Object.freeze({ C01: Object.freeze(['N', 'nPct']), C02: Object.freeze(['N', 'nPct']), C04: Object.freeze(['baseWeeks', 'overheadDistance']), C05: Object.freeze(['baseWeeks', 'overheadDistance']), C06: Object.freeze(['pctBelowHigh52w', 'largestCorrection', 'baseLengthSessions']), C07: Object.freeze(['correction', 'consolidationSessions', 'startVolumeVs50d']), C13: Object.freeze(['impulseHighDate', 'adxAbove30Since']) });
+export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.freeze({ vcpFootprint: Object.freeze(['depths', 'baseSessions', 'lastContractionVolumeVs50d']) }) });
 // Owner-Entscheidung 28.10.2026: Bei SEPA, Power Play und Holy Grail fällt das 52-Wochen-Hoch oft genau mit der Einstiegsmarke
 // zusammen (Pivot bzw. Touch-Hoch am Hoch). Unterhalb von MODELED trägt die strategiebezogene Ansicht es deshalb nicht, auch
 // nicht den Abstand dazu (close / (1 − belowHigh252) ergäbe es wieder). Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt.

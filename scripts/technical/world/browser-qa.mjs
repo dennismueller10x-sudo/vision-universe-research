@@ -167,6 +167,23 @@ async function main() {
       const before = await page.locator(".tc-chart .tc-overlay").count();
       await page.getByRole("button", { name: "Ichimoku", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 3, before);
+      /* Kerzenmuster (AP5): Marken erscheinen, hoechstens je Richtung eine Beschriftung, Schicht wieder abschaltbar. */
+      const marks = () => page.locator(".tc-chart circle.tc-marker").count();
+      const m0 = await marks();
+      await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length > n, m0, { timeout: 15000 });
+      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster bullisch" }).count() === 1, "Legende Kerzenmuster fehlt");
+      await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length === n, m0);
+      /* AP5b: jedes Screener-Indikatorfeld hat eine Darstellung; neue Unterfenster und Schichten zeichnen. */
+      for (const [btn, title] of [["Vortex", /Vortex/], ["ROC", /ROC 21/], ["Elder Impulse", /Elder/], ["Connors RSI", /Connors/], ["Ulcer", /Ulcer/]]) {
+        await page.getByRole("button", { name: btn, exact: true }).click();
+        await page.waitForFunction((src) => new RegExp(src).test((document.querySelector(".tc-chart .tc-pane-title") || {}).textContent || ""), title.source);
+      }
+      const ov = await page.locator(".tc-chart .tc-overlay").count();
+      await page.getByRole("button", { name: "Hull MA 20", exact: true }).click();
+      await page.getByRole("button", { name: "Chandelier-Stop", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 2, ov);
       await clean("Chart Studio");
     });
 

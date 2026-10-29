@@ -80,6 +80,45 @@ Die neuen Spalten sind heute `null`, weil alle 5.657 Bündel noch mit `technical
 2. Die nächste reguläre Materialisierung (`product-intelligence-materialization.yml`) schreibt Bündel mit `technical-mtf-1.1.0`. Ein zusätzlicher Anbieterabruf ist dafür nicht nötig.
 3. Danach füllt der Erzeuger `technical-world.yml` die Spalten.
 
+### 2d. Prüfung nach der ersten Materialisierung (29.10.2026)
+
+Nachtlauf vom 28.10. ohne zusätzlichen Anbieterabruf:
+- market-data-refresh, Lauf 40803128385, grün einschließlich der Discover-Prüfung (Korrektur #1044).
+- Materialisierung (`94d7b46`): alle 5.659 Bündel tragen `technical-mtf-1.1.0`, 5.574 davon mit letztem Bar am 28.10.
+- Den Screener (`92b010e`, Stichtag 28.10., 5.659 Titel) baute `technical-world.yml` per `workflow_dispatch`. Der Zeitplan 05:10 UTC startet bei GitHub mit Stunden Verzögerung (27. und 28.10.: 10:25 bzw. 11:15 UTC).
+- Der lokale Neubau mit dem Erzeuger ist byte-gleich zu den committeten Daten.
+
+**Füllgrad der 18 Spalten**
+
+| Feld | Woche | Monat |
+|---|---|---|
+| `roc21`, `roc63`, `roc126`, `roc252` | 5.427 (95,9 %) | 5.427 (95,9 %) |
+| `insideBar`, `nr7` | 5.347 (94,5 %) | 5.347 (94,5 %) |
+| Kerzen (bullisch/bärisch/neutral) | 5.344 (94,4 %) | 5.321 (94,0 %) |
+
+Leer sind fast nur die Titel, die nach AP1 (`technical-screen-row-1.10.0`) keine Stichtagswerte tragen:
+- 232 Titel mit eingefrorener Reihe; bei ihnen sind alle Analysefelder leer, ROC eingeschlossen.
+- 80 Titel hinter dem Stichtag; bei ihnen sind Inside Bar, NR7 und Kerzen leer.
+
+Bei aktuellen Titeln fehlt ROC nie. Kerzen fehlen bei 3 Titeln (Woche) bzw. 26 Titeln (Monat), weil das Muster dort nicht entscheidbar ist.
+
+**Vergleich mit der Näherung aus 2a** (Näherung in Klammern):
+
+| Feld | Woche | Monat |
+|---|---|---|
+| `roc21` Median (10.–90. Perzentil) | −2,8 % (−30,1 … +12,2) [−2,2 %] | −5,8 % (−21,3 … +7,5) [−5,4 %] |
+| `roc252` Median (10.–90. Perzentil) | −7,3 % (−76,6 … +52,5) [−6,1 %] | −6,5 % (−70,4 … +60,8) [−5,4 %] |
+| `insideBar` ja | 783 [798] | 803 [820] |
+| `nr7` ja | 763 [1.003] | 1.385 [1.609] |
+| Kerzen bullisch / bärisch / neutral | 1.199 / 707 / 1.264 [1.236 / 720 / 1.311] | 717 / 1.578 / 1.159 [nicht entscheidbar] |
+
+- Die Abweichungen erklärt der neue Stichtag 28.10. statt 26.10. Bei NR7 kommt hinzu, dass die Vollhistorie die Spanne des Vergleichsfensters anders setzt als die 270-Bar-Näherung. Die Monatskerzen sind mit der vollen Historie entscheidbar, wie in 2a erwartet.
+- Prüfungen auf `main`:
+  - DQ-TW-5 PASS mit allen 46 Wochen- und Monatsspalten, 0 Verstöße;
+  - DQ-TW-1 bis DQ-TW-7 PASS;
+  - Technical-Tests 34/34;
+  - Formationen auf Stand `technical-formations-1.4.0` (#1047).
+
 ## 3. Tests
 
 `quant/tests/technical-mtf-l7.test.mjs` rechnet an echten AAPL-Tagesbars (315). Die Wochen- und Monatsbars bildet der Test naiv und unabhängig von `timeframe.js`.

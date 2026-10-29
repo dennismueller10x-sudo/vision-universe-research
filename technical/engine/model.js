@@ -297,6 +297,105 @@
   }
 
   /** Befundkarten fuer das Chart Studio: Formationen + nachvollziehbare Indikatorzustaende. */
+  /* Chart Studio: Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
+  var CHART_LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
+    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"],
+    ["hma", "Hull MA 20"], ["chandelier", "Chandelier-Stop"], ["kerzen", "Kerzenmuster"], ["volumen", "Volumen"]];
+  var CHART_PANES = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
+    ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"], ["roc", "ROC"], ["crsi", "Connors RSI"], ["zscore", "Z-Score"], ["elder", "Elder Impulse"], ["vortex", "Vortex"],
+    ["chop", "Choppiness"], ["hv", "Hist. Volatilität"], ["ulcer", "Ulcer"], ["rs", "Rel. Stärke"]];
+  /**
+   * Wo Chart Studio jedes Indikatorfeld des Screeners zeigt (AP5b, Completion-Matrix G4): ["layer"|"pane", id] =
+   * Schicht oder Unterfenster, "price" = im Kurs selbst (Kerzen, Tageshoch), "weekly" = Wochenchart, "signals" = Befundkarte.
+   * null = noch ohne Darstellung, mit Grund in TECHNICAL_COMPLETION_PLAN.md (G4). Ein neues Feld braucht hier einen Eintrag.
+   */
+  var FIELD_CHART = {
+    aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
+    adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
+    roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
+    connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
+    hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
+    choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
+    relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
+    cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
+  };
+
+  /**
+   * Kerzenmuster als Chartmarken (AP5): je Bar ab `from` die erkannten Muster der Screener-Liste, eingeteilt wie
+   * screen-row.js#candleBlock: neutral (Doji, Spinning Top …) nach Musterart, sonst Vorzeichen des Werts (+1 bullisch,
+   * −1 baerisch; "both"-Muster je Fall). Bullisch unter dem Tief, baerisch ueber dem Hoch, neutral am Schluss (klein).
+   * Beschriftet wird nur die juengste Marke je Richtung, damit der Chart lesbar bleibt.
+   * @param patterns Candlesticks.detect(...).patterns   @param meta Candlesticks.PATTERNS   @param names Query.CANDLE_TYPES
+   * @returns [{ time, price, tone, size, label?, kind, ids }]
+   */
+  function candleMarks(S, patterns, meta, names, from, to) {
+    var byId = {}, out = [], lastOf = {};
+    (meta || []).forEach(function (p) { byId[p.id] = p; });
+    var ids = Object.keys(patterns || {}).filter(function (id) { return byId[id] && names && names[id]; });
+    var end = isNum(to) ? Math.min(to, S.close.length) : S.close.length;
+    for (var i = Math.max(0, from || 0); i < end; i++) {
+      var hit = { bull: [], bear: [], neutral: [] };
+      ids.forEach(function (id) {
+        var v = patterns[id][i];
+        if (typeof v !== "number" || !isFinite(v) || v === 0) return;
+        hit[byId[id].direction === "neutral" ? "neutral" : v > 0 ? "bull" : "bear"].push(id);
+      });
+      ["bull", "bear", "neutral"].forEach(function (k) {
+        if (!hit[k].length) return;
+        var price = k === "bull" ? S.low[i] : k === "bear" ? S.high[i] : S.close[i];
+        out.push({ time: S.dates[i], price: price, tone: k === "bull" ? "positive" : k === "bear" ? "negative" : "muted", size: k === "neutral" ? 2 : 3.5, kind: k, ids: hit[k] });
+        if (k !== "neutral") lastOf[k] = out.length - 1;
+      });
+    }
+    Object.keys(lastOf).forEach(function (k) {
+      var m = out[lastOf[k]], first = names[m.ids[0]];
+      m.label = first + (m.ids.length > 1 ? " +" + (m.ids.length - 1) : "");
+      m.badge = "muted";
+    });
+    return out;
+  }
+
+  /**
+   * Zeitbezug der Tagesreihe im Chart Studio, dieselbe Regel wie der Screener (screen-row 1.10.0, DQ-TW-6):
+   * eingefroren = Reihe endet mit >= ListingStaleness.DEFAULTS.dailyMinRun exakt gleichen Schluessen (core/listing-staleness.js#tailRun),
+   * frozenSince = letzter echter Handelstag, frozenIndex = sein Index. behind = letzter Bar liegt vor dem Stichtag des Screeners.
+   * Eingefroren ist ein Datenqualitaetshinweis, kein bestaetigtes Delisting.
+   */
+  function seriesState(dates, close, universeAsOf, Staleness) {
+    var n = dates ? dates.length : 0, last = n ? dates[n - 1] : null, out = { asOf: last, universeAsOf: universeAsOf || null, frozenSince: null, frozenIndex: -1, frozenRun: 0, behind: false };
+    if (Staleness && n) {
+      var tail = Staleness.tailRun(dates.map(function (d, i) { return [d, close[i]]; }));
+      if (tail && tail.run >= Staleness.DEFAULTS.dailyMinRun) { out.frozenSince = tail.since; out.frozenIndex = n - tail.run; out.frozenRun = tail.run; }
+    }
+    out.behind = !!(out.universeAsOf && last && last < out.universeAsOf);
+    return out;
+  }
+
+  var BENCHMARK_PATH = "/quant/data/market/discover-series/ref_SPY.json";
+  /**
+   * Relative Staerke gegen SPY je Bar (G4), dieselbe Rechnung wie screen-row.js (rs3m = w 63, rs6m = w 126):
+   * Rendite des Titels ueber w Sitzungen minus Rendite von SPY ueber dieselben Sitzungen. Nur wenn beide Reihen den
+   * Bar und den Bar w Sitzungen davor am selben Datum haben, sonst NaN (keine Annahme ueber fehlende Tage).
+   * @param bm { dates, close } (discover-series/ref_SPY.json, points)  @returns Anteile (0,05 = 5 Prozentpunkte)
+   */
+  function relativeStrength(dates, close, bm, w) {
+    var out = new Array(close.length).fill(NaN);
+    if (!bm || !bm.dates || !bm.dates.length) return out;
+    var at = {};
+    bm.dates.forEach(function (d, j) { at[d] = j; });
+    for (var i = w; i < close.length; i++) {
+      var j = at[dates[i]];
+      if (j === undefined || j < w || bm.dates[j - w] !== dates[i - w]) continue;
+      if (!isNum(close[i]) || !isNum(close[i - w]) || !close[i - w] || !isNum(bm.close[j]) || !isNum(bm.close[j - w]) || !bm.close[j - w]) continue;
+      out[i] = (close[i] / close[i - w] - 1) - (bm.close[j] / bm.close[j - w] - 1);
+    }
+    return out;
+  }
+
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
@@ -396,7 +495,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

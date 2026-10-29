@@ -450,6 +450,39 @@
       (waiting.length ? "Wartet auf Materialisierung (" + waiting.length + "): " + waiting.join(", ") + ". " : "") + "Belegung: " + fill.join(", ") + ".");
   }
 
+  /** DQ-TW-6: Titel mit veraltetem Kurs (fresh = false) tragen keine Ereignisse und keine Stichtagszustaende
+      (screen-row.js#markStale, docs/technical/SCREENER_FRESHNESS.md). Sonst meldet ein Ereignisfilter einen alten Kurs
+      als aktuellen Treffer. `fields` = die Spalten, die fuer veraltete Titel leer sein muessen (aus screen-row.js).
+      Eingefrorene Reihen (`frozenSince`) sind nie aktuell und zusaetzlich ohne jedes Analysefeld (`frozenFields`).
+      `frozenByTicker` (optional): Kuerzel -> Datum seit dem der Kurs eingefroren ist, unabhaengig aus den Bars bestimmt. */
+  function technicalStaleEvents(cols, fields, frozenFields, frozenByTicker) {
+    var fail = [], n = cols && cols.s ? cols.s.length : 0, stale = 0, frozen = 0, has = function (k) { return cols && cols[k]; };
+    var keys = (fields || []).filter(has), fkeys = keys.concat((frozenFields || []).filter(has));
+    for (var i = 0; i < n; i++) {
+      var fz = cols.frozenSince ? cols.frozenSince[i] : null, seen = frozenByTicker ? frozenByTicker[cols.s[i]] || null : undefined;
+      /* Unabhaengig aus den Tagesbars ermittelt (frozenByTicker): der Erzeuger muss dasselbe Datum melden. */
+      if (seen !== undefined && seen !== fz) fail.push(cols.s[i] + ": eingefroren laut Tagesbars " + (seen || "nein") + ", laut Screener " + (fz || "nein"));
+      fz = fz || seen || null;
+      if (fz && cols.fresh[i] !== false) { fail.push(cols.s[i] + ": Kurs unveraendert seit " + fz + ", aber als aktuell gefuehrt"); continue; }
+      if (cols.fresh[i] !== false) continue;
+      stale++;
+      if (fz) frozen++;
+      var bad = (fz ? fkeys : keys).filter(function (k) { return cols[k][i] !== null && cols[k][i] !== undefined; });
+      if (bad.length) fail.push(cols.s[i] + " (Kurs vom " + cols.asOf[i] + "): " + bad.slice(0, 4).join(", ") + (bad.length > 4 ? " … (" + bad.length + ")" : ""));
+    }
+    return result("DQ-TW-6", "Technical: veraltete Titel tragen keine Ereignisse und keine Stichtagszustaende", "WARN", stale, fail,
+      stale + " veraltete Titel (davon " + frozen + " mit eingefrorenem Kurs), " + keys.length + " bzw. " + fkeys.length + " gepruefte Spalten.");
+  }
+
+  /** DQ-TW-7: Technical-Artefakte erfuellen den Datenvertrag (quant/engines/technical/screener-contract.js,
+      docs/technical/DATA_CONTRACT.md). `verdict` = ScreenerContract.check(screener, meta, index). */
+  function technicalContract(verdict) {
+    var v = verdict || { errors: [{ code: "NO_ARTIFACT", column: "*" }], counts: { NO_ARTIFACT: 1 }, checked: 0 };
+    var fail = (v.errors || []).map(function (e) { return e.code + " " + e.column + (e.ticker ? " " + e.ticker : "") + (e.value !== null && e.value !== undefined ? " = " + JSON.stringify(e.value).slice(0, 40) : ""); });
+    return result("DQ-TW-7", "Technical-Artefakte erfuellen den Datenvertrag", "WARN", v.checked || 0, fail,
+      (v.contract || "") + (Object.keys(v.counts || {}).length ? " Verstoesse: " + JSON.stringify(v.counts) : ""));
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -501,7 +534,8 @@
      C11 signalDayLow (keine Strukturmarke der Quelle). */
   var SF8_STRUCTURE_LEVELS = {
     C01: ["channelDays", "exitChannelDays"], C02: ["channelDays", "exitChannelDays"], C03: ["top", "bottom", "box"],
-    C04: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"], C05: ["resistance", "ma30w", "breakoutWeek", "breakoutDay"],
+    /* Owner-Entscheidung 28.10.2026 (Weinstein): der genaue Wochenwiderstand ergibt mit den Wochenkursen die Stopreferenz */
+    C04: ["ma30w", "breakoutWeek", "breakoutDay"], C05: ["ma30w", "breakoutWeek", "breakoutDay"],
     C06: ["ma50", "ma150", "ma200"], C07: [], C08: ["breakoutLevel"], C09: ["gapDayLow", "priorClose"],
     C10: ["ma10", "ma20"], C11: ["ma10", "ma50"], C12: ["gapDayLow", "priorClose"], C13: ["ema20"]
   };
@@ -513,8 +547,12 @@
      (largestCorrection, vcpFootprint.depths; Erzeuger records.mjs#ORDER_DERIVED_SUBFIELDS_BY_METHOD) ergeben mit dem
      Basistief das Basishoch und damit Hoch und Pivot. Die Allowlist SF8_DESCRIPTIVE_FEATURES bleibt die Liste dessen, was
      der Detektor erzeugt; die Sperre greift davor. */
-  var SF8_FEATURES_HIDDEN = { C06: ["pctBelowHigh52w", "largestCorrection"], C07: ["correction"] };
-  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths"] } };
+  /* Owner-Entscheidung 28.10.2026 (Rueckrechenbarkeit): auch Felder, die zusammen mit den oeffentlichen Tageskursen Einstieg oder
+     Stop ergeben (Fenster: SEPA-Basislaenge, Power-Play-Konsolidierung, Weinstein-Basiswochen; Anker: Holy-Grail impulseHighDate,
+     adxAbove30Since; Volumen-Fingerabdruecke: SEPA-Volumen der letzten Kontraktion, Power-Play-Startvolumen). Gegenstueck im Erzeuger records.mjs#ORDER_DERIVED_BY_METHOD / #ORDER_DERIVED_SUBFIELDS_BY_METHOD. */
+  /* Owner-Entscheidung 28.10.2026 (Turtle): N und nPct ergeben mit dem Trigger die Stopreferenz (Trigger - 2N) */
+  var SF8_FEATURES_HIDDEN = { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks", "overheadDistance"], C05: ["baseWeeks", "overheadDistance"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] };
+  var SF8_SUBFIELDS_HIDDEN = { C06: { vcpFootprint: ["depths", "baseSessions", "lastContractionVolumeVs50d"] } };
   var SF8_TREND_HIDDEN = { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] };
   /* Beschreibende Research-/Chartkennzahlen, die unterhalb von MODELED erscheinen duerfen (Owner-Entscheidung
      28.10.2026: z. B. closeVsGapLow bei C12 und N/nPct bei Turtle - beschreibend, nie als Einstiegs-, Stop- oder
@@ -548,7 +586,7 @@
   var SF8_PIVOT_KEYS = ["level", "kind", "distance"];
   var SF8_ROW_KEYS = ["c", "t", "n", "s", "r", "pd", "v", "m", "q", "sh", "x"];
   /* Schluessel in levels, aus dem die Chartmarke stammt (records.mjs#STRUCTURE_MARK) */
-  var SF8_PIVOT_LEVEL = { C03: "top", C04: "resistance", C05: "resistance", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
+  var SF8_PIVOT_LEVEL = { C03: "top", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" };
   function sf8Primitive(x) { return x === null || ["string", "number", "boolean"].indexOf(typeof x) >= 0; }
   /* Texte sind Codes, Daten und Statusangaben; ein Dezimalpreis in einem Text ("BUY_STOP_22.90") faellt auf */
   function sf8PriceInText(x) {
@@ -593,7 +631,7 @@
     if (sf8PriceInText(texts) || sf8PriceInText(v.features) ) out.push(where + ": Preis in einem Text");
     return out;
   }
-  var SF8_PIVOT_KINDS = { C03: "BOX_TOP", C04: "WEEKLY_RESISTANCE", C05: "WEEKLY_RESISTANCE",
+  var SF8_PIVOT_KINDS = { C03: "BOX_TOP",
     C08: "CONSOLIDATION_10_LEVEL", C09: "GAP_DAY_LOW", C12: "GAP_DAY_LOW" };
   function hasNumber(x) {
     if (typeof x === "number") return true;
@@ -884,7 +922,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,

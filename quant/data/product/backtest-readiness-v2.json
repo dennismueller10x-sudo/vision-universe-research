@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-27T07:01:42.721Z",
+ "generatedAt": "2026-10-29T04:02:06.855Z",
  "signalStudy": {
-  "asOf": "2026-10-23",
-  "generatedAt": "2026-10-27T06:58:42.346Z",
+  "asOf": "2026-10-30",
+  "generatedAt": "2026-10-29T04:00:04.507Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -29,15 +29,15 @@
    "role": "BENCHMARK_REFERENCE",
    "contract": "benchmark-contract-1.0.0",
    "from": "1993-01-29",
-   "to": "2026-10-23",
-   "weeks": 1660,
+   "to": "2026-10-30",
+   "weeks": 1661,
    "gaps": 0
   },
   "studyBenchmark": {
    "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
    "state": "PASS",
    "basis": "TOTAL_RETURN",
-   "asOf": "2026-10-23"
+   "asOf": "2026-10-30"
   }
  },
  "returnContract": {
@@ -49,10 +49,10 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 21,
+   "count": 22,
    "from": "2026-09-10",
-   "to": "2026-10-26",
-   "spanDays": 46,
+   "to": "2026-10-28",
+   "spanDays": 48,
    "replay": {
     "titles": 157,
     "observations": 125770,
@@ -62,18 +62,18 @@
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 21,
+   "count": 22,
    "from": "2026-09-23",
-   "to": "2026-10-26",
-   "spanDays": 33
+   "to": "2026-10-28",
+   "spanDays": 35
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 21,
-   "from": "2026-10-23",
-   "to": "2026-10-26",
-   "spanDays": 3
+   "count": 22,
+   "from": "2026-10-26",
+   "to": "2026-10-28",
+   "spanDays": 2
   },
   {
    "id": "membershipSnapshots",
@@ -111,8 +111,8 @@
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
-    "asOf": "2026-10-23",
-    "generatedAt": "2026-10-27T06:58:42.346Z"
+    "asOf": "2026-10-30",
+    "generatedAt": "2026-10-29T04:00:04.507Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 21,
+   "count": 22,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -140,7 +140,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 163,
    "robust": 96,
-   "matchSnapshots": 9
+   "matchSnapshots": 10
   },
   {
    "id": "technicalStates",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 21,
+   "publishedSnapshots": 22,
    "reconstructible": {
     "titles": 5
    }
@@ -172,7 +172,7 @@
    "label": "Vergleichsindex",
    "series": "SPY",
    "from": "1993-01-29",
-   "to": "2026-10-23",
+   "to": "2026-10-30",
    "basis": "TOTAL_RETURN",
    "totalReturn": true,
    "reason": "TOTAL_RETURN_RECONSTRUCTED"
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "3177 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "3327 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -331,7 +331,7 @@
      "id": "benchmark",
      "label": "Benchmark auf derselben Renditebasis",
      "state": "PASS",
-     "value": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE) · TOTAL_RETURN · 2026-10-23",
+     "value": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE) · TOTAL_RETURN · 2026-10-30",
      "reason": null
     },
     {
@@ -346,40 +346,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89055,
-     "titles": 5074,
+     "n": 89110,
+     "titles": 5076,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 88948,
-     "titles": 5084,
+     "n": 89033,
+     "titles": 5093,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86350,
-     "titles": 5056,
+     "n": 86431,
+     "titles": 5058,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 85976,
-     "titles": 5051,
+     "n": 86031,
+     "titles": 5057,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56353,
-     "titles": 4840,
+     "n": 56421,
+     "titles": 4843,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "21 Faktor-Snapshots seit 2026-09-23",
+     "value": "22 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -435,7 +435,7 @@
      "id": "benchmark",
      "label": "Vergleichsindex mit Gesamtrendite",
      "state": "PASS",
-     "value": "TOTAL_RETURN_RECONSTRUCTED, 1993-01-29 bis 2026-10-23",
+     "value": "TOTAL_RETURN_RECONSTRUCTED, 1993-01-29 bis 2026-10-30",
      "reason": null
     }
    ],
@@ -457,7 +457,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "21 Snapshots über 33 Tage",
+     "value": "22 Snapshots über 35 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {

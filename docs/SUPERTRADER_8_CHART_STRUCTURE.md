@@ -2,6 +2,8 @@
 
 Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb von MODELED beheben; erlaubt sind nur fachlich belegte Strukturmarken (Box, Widerstand, Gap-Tief), nie versteckte Einstiegs-, Stop- oder Orderparameter.
 
+> **Nachtrag 28.10.2026 (Owner-Entscheidung, Folge-PR):** Der Weinstein-Widerstand (C04/C05) ist unterhalb von MODELED keine Marke mehr, die Chartmarke „Widerstand (Woche)“ entfällt. Abschnitte unten, die ihn als Struktur nennen, beschreiben den Stand vor dieser Entscheidung (siehe „Owner-Entscheidungen vom 28.10.2026“).
+
 ## Fehler
 
 `records.mjs#chartMarks` las `STRUCTURE_LEVELS` und `STRUCTURE_MARK` mit der `strategyId` (`SF_DARVAS_BOX` …). Die Tabellen sind aber nach der Kandidaten-ID (`C03` …) geschlüsselt. Deshalb fand die Funktion nie einen Eintrag: Unterhalb von MODELED hatte keine Ansicht Marken oder eine Chartmarke. Die Korrektur bestimmt die Kandidaten-ID aus dem Vertrag (`registry.mjs`). Eine unbekannte Strategie bekommt weiter keine Marke (fail closed).
@@ -12,7 +14,7 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 |---|---|---|---|
 | C01/C02 Turtle | Kanallängen (Tage) | Kanal = Einstiegsorder | keine Preismarke |
 | C03 Darvas | Box (oben, unten), Chartmarke Box-Obergrenze | Buy-Stop = Obergrenze + Bruchteil | Struktur |
-| C04/C05 Weinstein | Widerstand, 30-Wochen-Linie, Ausbruchswoche | Buy-Stop = Widerstand + Tick | Struktur |
+| C04/C05 Weinstein | ~~Widerstand~~ (seit dem Folge-PR entfernt), 30-Wochen-Linie, Ausbruchswoche, Ausbruchstag | Buy-Stop = Widerstand + Tick | Struktur ohne Widerstand |
 | C06 SEPA | 50/150/200-Tage-Linie | Einstieg genau am Pivot (`minervini-lifecycle.mjs`, `order.level = pivot`) | **Pivot entfernt** |
 | C07 Power Play | keine | Einstieg genau am Pivot; Stop am Tief der Korrektur | **Pivot entfernt**, Korrekturtiefe unterhalb von MODELED ausgeblendet (= geplanter Verlust am Pivot, `1 − Stop/Pivot`) |
 | C08 KK-Breakout | Konsolidierungshoch (10 Tage) | Einstieg zum Schluss/zur Eröffnung, Stop = Tagestief | Struktur |
@@ -31,13 +33,13 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 | Trendübersicht | – | nur C06/C07/C13 unterhalb von MODELED: `high252` und `belowHigh252` ausgeblendet (668 / 19 / 171 Ansichten) |
 | Vertragsdatensätze (`records/`) | – | Inhalt gleich bis auf `provenance.codeSha256` (Code-Fingerabdruck); nur die Reihenfolge in C03–C05 folgt den neuen Rängen |
 | Ansichten mit Strukturmarken unterhalb von MODELED | 0 | 2.957 |
-| davon mit Chartmarke | 0 | 1.237 (Box 229, Widerstand 801, Konsolidierung 22, Gap-Tief 185) |
+| davon mit Chartmarke | 0 | 1.237 (Box 229, Widerstand 801, Konsolidierung 22, Gap-Tief 185); seit dem Folge-PR 436 (ohne Widerstand) |
 | Order-, Stop-, Limit-, Pivot-, swingLow-, signalDayLow-Felder unterhalb von MODELED | 0 | **0** |
 | Ränge | – | nur C03/C04/C05 (1.024 Ränge, Sortierung nach Abstand zur Chartmarke) |
 
 ## Oberfläche
 
-- Die Chartmarke heißt „Chartstruktur: Box-Obergrenze / Widerstand (Woche) / Konsolidierungshoch (10 Tage) / Gap-Tief“. Die Tabelle der Beschriftungen ist wörtlich festgeschrieben.
+- Die Chartmarke heißt „Chartstruktur: Box-Obergrenze / Konsolidierungshoch (10 Tage) / Gap-Tief“ („Widerstand (Woche)“ seit dem Folge-PR entfernt). Die Tabelle der Beschriftungen ist wörtlich festgeschrieben.
 - Gezeigt wird sie nur für diese belegten Strukturarten. Die Engine-Marke eines modellierten Ablaufs (z. B. Power-Play-Pivot = Einstieg) erscheint nicht als Chartstruktur; dort zeigen Plan und Chart Einstieg und Stop.
 - Sie wird gestrichelt in der Strukturfarbe gezeichnet, nicht in der Farbe des Triggers.
 - Einstieg und Stop bleiben dem modellierten Ablauf vorbehalten (`v.plan`).
@@ -82,16 +84,61 @@ Stand 28.10.2026. Owner-Auftrag vom selben Tag: fehlende Chartmarken unterhalb v
 1. **Entschieden 28.10.2026:** Das 52-Wochen-Hoch wird bei SEPA, Power Play und Holy Grail unterhalb von MODELED nicht als strategiebezogene Kennzahl ausgegeben, und ebenso nicht der Abstand dazu. Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt (`records.mjs#TREND_HIDDEN_BY_METHOD`).
 2. Core DQ-SF8-4 zieht in einem eigenen, eng begrenzten Core-PR nach (Strukturmarken, Chartmarkenarten, C07-Korrekturtiefe, 52-Wochen-Hoch bei C06/C07/C13). Merge erst nach diesem PR.
 3. Regeltexte wie „Einstiegsmarke knapp über dem Box-Hoch“ (DAR-SF-ENTRY) beschreiben die Regel der Quelle ohne Preis. Sie sind unverändert.
-4. Box-Obergrenze und Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.
+4. Box-Obergrenze und (bis zum Folge-PR) Widerstand liegen in ihrer Quelle einen Bruchteil bzw. Tick unter dem Buy-Stop; Gap-Tief ist zugleich die Risikoreferenz. Beides ist der Methode eigen und vom Owner als Struktur zugelassen.
 
-## Offen für den Owner: Rückrechnung zusammen mit den öffentlichen Tageskursen (unabhängiges Review 28.10.2026)
+## Rückrechnung zusammen mit den öffentlichen Tageskursen (Owner-Entscheidung 28.10.2026, umgesetzt)
 
-Die Prüfung oben gilt für die Zahlen **in der Ansicht**. Zusammen mit den öffentlichen Tageskursen (OHLC) lassen sich aus Zeitfenstern der Ansicht Marken nachbauen. Alle vier Felder standen schon vor diesem PR in den Ansichten; dieser PR ändert sie nicht.
+**Regel des Owners:** Ein Feld ist rückrechenbar, wenn sich daraus zusammen mit den öffentlich verfügbaren Kursdaten ein geschützter Einstiegs-, Stop- oder Orderparameter zuverlässig rekonstruieren lässt. Solche Felder fehlen unterhalb von `MODELED_TRADE_PLAN` im ausgelieferten Kandidatendatensatz (`strategy/`, `ticker/`), nicht nur in der Anzeige. Die Research-Engines, Detektoren, Golden Cases und Referenzdaten bleiben unverändert.
 
-| Methode | Feld | nachgebaut aus den Tageskursen | Treffer |
-|---|---|---|---|
-| C06 | `baseLengthSessions` (= `vcpFootprint.baseSessions`) | Pivot = höchstes Hoch im Fenster; Stopreferenz = tiefstes Tief | 171 bzw. 173 von 238 |
-| C07 | `consolidationSessions` | Pivot und Stop = Hoch/Tief im Fenster | 19 von 19 |
-| C13 | `impulseHighDate` | `impulseHigh` = Hoch an dem Tag; `swingLow` = tiefstes Tief seitdem | 170 von 171 |
+**Was das garantiert und was nicht:** Kein veröffentlichtes Feld liefert mehr einen direkten Anker (Fenster, Datum, Volumen-Fingerabdruck) auf einen geschützten Wert. Manche Werte folgen aber schon aus der öffentlichen Regel und der bloßen Tatsache, dass ein Kandidat existiert. Das kann kein Ausblenden eines Feldes verhindern (unten „ohne Feld“).
 
-Ob „rückrechenbar“ auch die Kombination mit dem öffentlichen Chart umfasst, ist eine Owner-Entscheidung. Falls ja: eigener PR nach demselben Muster (Felder unterhalb von MODELED ausblenden oder nur als Status, Core-Gegenstück in DQ-SF8-4).
+**Messung** (voller Lauf 26.10., alle 13 Methoden unterhalb von MODELED). „Roh“ heißt: Die Kandidatenwerte des Feldes enthalten den geschützten Wert. „Feldspezifisch“ heißt: Ein Fenster ohne das Feld (2–6 Sitzungen, 252, Stichtag, Vortag) liefert ihn nicht schon. Beide Raten stammen aus dem unabhängigen Review.
+
+| Methode | Feld | rekonstruiert | roh | feldspezifisch | Entscheidung |
+|---|---|---|---|---|---|
+| C06 SEPA | `baseLengthSessions` = `vcpFootprint.baseSessions` | Pivot / Stopreferenz (Hoch / Tief der Basis) | 178 bzw. 173 von 238 | 77 von 238 | **ausgeblendet** |
+| C06 SEPA | `vcpFootprint.lastContractionVolumeVs50d` (ungerundet) | eindeutiges Fenster der letzten Kontraktion: Hoch am Anfang = Pivot, Tief am Ende = Stop | 238 von 238 | – | **ausgeblendet** (Review B1) |
+| C07 Power Play | `consolidationSessions` | Pivot und Stop | 15 von 15 | 7 von 15 | **ausgeblendet** |
+| C07 Power Play | `startVolumeVs50d` | eindeutiger Starttag des Laufs: höchstes Hoch seitdem = Pivot, tiefstes Tief danach = Stop | 19 von 19 | 5 von 19 | **ausgeblendet** (Review B2) |
+| C13 Holy Grail | `impulseHighDate` | Impulshoch, Stop (Swing-Tief) | 171 von 171 | 90 von 171 | **ausgeblendet** |
+| C13 Holy Grail | `adxAbove30Since` | Impulshoch (höchstes Hoch ab dem Tag) | 171 von 171 | 81 von 171 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 Weinstein | `baseWeeks` | Stopreferenz (tiefstes Tief der Basis) | 207/329 bzw. 347/379 | 141/329 bzw. 282/379 | **ausgeblendet** (über die Liste des Owners hinaus) |
+| C04 / C05 | `breakoutDay` | Trigger (= veröffentlichter Widerstand + 1 Tick) | 9/422 bzw. 3/379 | – | bleibt (sporadisch, Struktur zulässig) |
+| C03 Darvas | Box-Daten | Stopreferenz | bis 8 von 229 (± Tick) | – | bleibt (sporadisch; Obergrenze ± Bruchteil ist ohnehin zulässig) |
+| C06 | `vcpFootprint.contractions` | bei genau 1 Kontraktion: Stop = tiefstes Tief seit dem 52-Wochen-Hoch | 129 von 129 | 24 | bleibt (nahe an allgemeiner Chartinformation; Owner-Punkt) |
+| C11, alle | `downDays`, `trend.windowSessions`, `trend.volumeVs50d`, Index- und Übersichtszeilen, `sortKeys` | – | – | 0 | bleibt |
+
+**Owner-Entscheidungen vom 28.10.2026 zu den offenen Punkten (umgesetzt im Folge-PR):**
+1. **Weinstein C04/C05.** Beschreibende Widerstandszonen dürfen Teil der Chartanalyse bleiben. Die genaue Widerstandsmarke ergibt aber mit den Wochenkursen den Stop und ist deshalb unterhalb von MODELED kein numerisches Research-Feld mehr (`levels.resistance` und Chartmarke `WEEKLY_RESISTANCE` entfernt). Ebenso entfernt ist die Überkopf-Distanz `overheadDistance` (unabhängiges Review, Befund B1): Sie ist das nächsthöhere Wochenhoch geteilt durch max(Eröffnung am Ausbruchstag, Trigger) − 1. Die Suche über alle früheren Wochenhochs ließ genau einen Kandidaten übrig, den echten Widerstand: C04 350 von 422, C05 336 von 379 (ein leerer Wert hieß: Der Widerstand ist das höchste Wochenhoch). Es bleiben die 30-Wochen-Linie, ihr Abstand und ihre Steigung, die Ausbruchswoche und der Ausbruchstag.
+2. **Turtle C01/C02.** Die Ausnahme für `N` gilt unterhalb von MODELED nicht mehr: `N` und `nPct` sind entfernt. Die Kanallängen (`channelDays`, `exitChannelDays`) sind Regelparameter der Quelle und bleiben.
+3. **SEPA mit genau einer Kontraktion.** Die bisherige Einstufung trägt die Entscheidung schon:
+   - Die Stufenobergrenze von C06 ist CHART_CANDIDATE, also gibt es weder ein bestätigtes Setup noch einen modellierten Plan.
+   - Der Research-Lebenszyklus blockiert eine Kontraktion mit `VCP_PROXY_NOT_MET`. „≥ 2 Kontraktionen“ ist dort die ausgewiesene Modellannahme `MA-MIN-SEPA-SETUP-PROXY`; nach der Quelle ist die Zahl typisch, keine Grenze (MIN-VCP-02/03). Eine neue Mindestzahl als Originalregel wird nicht eingeführt.
+   - Geändert ist nur die Beschriftung des Sortierschlüssels: aus „VCP-Proxy erkannt (Pivot vorhanden)“ wird „Pivot vorhanden (VCP nicht bestätigt)“. Der Schlüssel ordnet nur danach, ob ein Pivot vorhanden ist.
+
+**Was ohne Feld rekonstruierbar bleibt** (Regelwissen, durch Ausblenden nicht lösbar):
+- **Weinstein:** Widerstand und Stop folgen aus der öffentlichen Regel und den Wochenkursen. Beim Trader ist das das letzte Wochen-Swinghoch (`lastSwingHigh`): 379 von 379. Beim Investor ist es der Basisbeginn, an dem die 30-Wochen-Linie aufhört zu fallen: Widerstand und Trigger 420 von 422, Stop 422 von 422 (unabhängiges Review).
+- **Turtle:** Der Trigger ist das Kanalhoch + Tick, `N` lässt sich aus den Tageskursen nachrechnen (Stop 269 von 269 bzw. 224 von 224). `trend.adr20` ist allgemeine Chartinformation aller Strategien und nicht gleichwertig zu `N` (Trigger − 2·ADR ergibt den Stop nur zufällig: 12 von 269, 8 von 224, wie unabhängige Felder).
+- **Weitere:** C13-Trigger = Hoch am Stichtag + Tick; Darvas-Obergrenze ± Bruchteil, Gap-Tief und C11-Signaltagstief sind zugelassene Struktur.
+- **Geprüft, keine Garantie über die Tests hinaus:** Nach den Proben des Tests und des unabhängigen Reviews (Bezug Schluss, Wochenhochs, Eröffnung am Ausbruchstag) ist kein veröffentlichtes Feld mehr ein direkter Anker. Die öffentliche Regel selbst bleibt öffentlich.
+
+**Vorher/Nachher des Folge-PR** (voller Lauf 26.10. gegen die Ausgabe von `main` nach #1083):
+- Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze inhaltsgleich bis auf `provenance.codeSha256`, MODELED 0 Änderungen.
+- Geändert: C01/C02 `features` (ohne `N`, `nPct`, 493 Ansichten); C04/C05 `levels`, Chartmarke und `features` ohne `overheadDistance` (801 Ansichten). Dazu die Ränge in C04/C05 (797) und damit die Reihenfolge der C04/C05-Datensätze (Inhalt gleich), weil die Sortierung „Abstand zur Chartmarke“ dort keine Marke mehr hat, und die Beschriftung des SEPA-Sortierschlüssels.
+- Sortierung (Owner-Freigabe 28.10.2026): C04/C05 ordnen nach Stufe, Datenqualität und Name (`defaultSort` ohne den überall leeren Chartmarken-Schlüssel; Reihenfolge und Ränge dadurch unverändert). Der Namensschlüssel heißt „Name (Ticker, alphabetisch)“ und steht in der Bezeichnung der Methodenreihenfolge, wenn er dort der eigentliche Schlüssel ist. Die Vorschau bietet „Abstand zur Chartmarke“ nur an, wenn eine Ansicht der Strategie eine Chartmarke hat (bei C04/C05 und seit #1056 auch bei SEPA ausgeblendet; Darvas behält sie). Keine Gewichtung, keine neue Rankingformel (`SF8-WEINSTEIN-SORT`).
+- Probe des Reviews auf der neuen Ausgabe: Trigger − 2·`N` = Stop 0 (vorher 268/269 und 224/224); Widerstand + Tick = Trigger 0 (vorher 422/422 C04); Widerstandswoche → Stop 0. Überkopf-Distanz → eindeutiger Widerstand 0 (vorher 350/422 und 336/379). Es bleiben Regelwissen (Turtle-Kanal, Weinstein-Regel) und sporadische Ausbruchstag-Treffer (9 von 422 bzw. 3 von 379 auf den Trigger).
+- `SF8-WEINSTEIN-TURTLE-ADVERSARIAL`: direkte Anker (Zahl selbst, ± 1 Tick, als Quote zum Schluss) und – seit dem Review – die Suche über alle früheren Wochenhochs r als möglichen Widerstand (Quote des nächsthöheren Wochenhochs zu max(Eröffnung, r + Tick), auf 4 Stellen, über die strategiebezogenen Kennzahlen). Auf der Ausgabe vor der Korrektur erkennt sie die Überkopf-Distanz eindeutig in 238 von 422 (C04) bzw. 242 von 379 (C05) Ansichten; auf der neuen Ausgabe bleibt ein Zufallstreffer (`ma30wSlope4w`, eine C04-Ansicht außerhalb der Golden Cases). Gegenproben: Widerstand, Chartmarke, `N`, `nPct` und die Überkopf-Distanz des Detektors (C04 und C05), wieder eingesetzt, werden rot.
+
+**Vorher/Nachher:**
+- Unverändert: 3.001 Kandidaten, Stufen 2.023 / 953 / 25, alle Datensätze (`records/`) inhaltsgleich bis auf `provenance.codeSha256`, dieselbe Reihenfolge, 0 Rangänderungen, MODELED 0 Änderungen.
+- Geändert: nur `features` in den Ansichten von C04, C05, C06, C07 und C13.
+
+**Tests:**
+- `SF8-NO-BAR-RECONSTRUCTION` (neu) durchsucht `features`, `trend`, `levels`, `pivot` und `sortKeys` samt Listen.
+  - Fenster und Daten werden wie oben gedeutet.
+  - Volumenquoten werden als Fingerabdruck gesucht: ein Tag (Volumen des Tages bzw. des Folgetages gegen die 50 Sitzungen davor) oder, bei Kennzahlen unter `features` auch gerundet, ein Fenster (Durchschnittsvolumen gegen den 50-Tage-Schnitt). Nur ein eindeutiger Treffer zählt. Rundung schützt nicht: Auf 4 Stellen gerundet bleibt das Kontraktionsfenster eindeutig (Gegenprobe im Test).
+  - Verglichen wird auf ± 1 Tick, gegen die Order-Größen, die nicht schon unter einem vom Owner zugelassenen Strukturschlüssel veröffentlicht sind (Box, Widerstand, Konsolidierungshoch, Gap-Tief, Chartmarke; nicht bloß neben einem Durchschnitt).
+  - Die Turtle-Kanallängen gelten als Regelparameter (Owner-Punkt 2).
+- Gegenproben: Jedes ausgeblendete Feld wird, wieder eingesetzt, rot. Die Rücknahme jeder Ausblendung im Erzeuger wird rot.
+- Golden-Hash der 55 Ansichten neu eingefroren.
+- Abgleich mit dem Core: Die Sperrlisten des Core sind eine Teilmenge der Erzeugerlisten (der Core ist nie strenger als der Erzeuger). Jede Seite schreibt ihre Listen explizit fest. Merge-Reihenfolge: Erzeuger zuerst, dann Core. Für die Strukturmarken prüft der Erzeugertest seit dem Folge-PR „Core erlaubt mindestens, was der Erzeuger zeigt“ statt Gleichheit, damit der Erzeuger zuerst gemergt werden kann; die genaue Tabelle schreibt der Core-Test fest.

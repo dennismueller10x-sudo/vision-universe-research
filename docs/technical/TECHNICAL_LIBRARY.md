@@ -12,8 +12,8 @@ Ziel ist eine Bibliothek mit mindestens 100 sinnvollen Analysefunktionen: Indika
 
 | Bereich | Code | Mathe | Markt | Screener | Chart |
 |---|---|---|---|---|---|
-| Indikatoren (`indicators.js` 1.6.0) | 92 | 92 | 92 | 26 | 20 ●, Rest ○ |
-| Candlestick-Muster (`candlesticks.js` 1.2.0) | 62 | 62 | 61 | 27 (feste Liste) | 0 ●, 58 ○ (Marker je Bar) |
+| Indikatoren (`indicators.js` 1.6.0) | 92 | 92 | 92 | 26 | 30 ● (AP5b: jedes Screener-Indikatorfeld außer relativer Stärke), Rest ○ |
+| Candlestick-Muster (`candlesticks.js` 1.2.0) | 62 | 62 | 61 | 27 (feste Liste) | 27 ● (Schicht „Kerzenmuster“, AP5), 35 ○ |
 | Chartformationen (`formations.js` 1.4.0 + Alt) | 24 | 24 | 24 | 24 | 24 ● |
 | **gesamt** | **178** | **178** | **177** | **77** | **44 ●** |
 

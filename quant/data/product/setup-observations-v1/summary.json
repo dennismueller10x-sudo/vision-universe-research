@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-27T06:40:24.000Z",
- "asOf": "2026-10-26",
+ "generatedAt": "2026-10-29T03:48:19.000Z",
+ "asOf": "2026-10-28",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,13 +323,13 @@
    "predicateHash": null
   }
  ],
- "universe": 5657,
- "observed": 5657,
+ "universe": 5659,
+ "observed": 5659,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4456,
-  "WATCH": 660,
-  "SETUP_FORMING": 516,
+  "NO_SETUP": 4437,
+  "WATCH": 682,
+  "SETUP_FORMING": 515,
   "CONFIRMED": 25,
   "ACTIVE": 0,
   "RISK_RISING": 0,
@@ -337,10 +337,10 @@
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 516,
-  "setup.none.fallback": 4456,
-  "setup.watch.bullish-trend": 377,
-  "setup.watch.confirmed-structure-near-high": 283,
+  "setup.forming.complete-setup-awaiting-trigger": 515,
+  "setup.none.fallback": 4437,
+  "setup.watch.bullish-trend": 402,
+  "setup.watch.confirmed-structure-near-high": 280,
   "setup.confirmed.structure-trend-volume": 25
  },
  "pathTier": {
@@ -380,14 +380,15 @@
    "2026-10-21",
    "2026-10-22",
    "2026-10-23",
-   "2026-10-26"
+   "2026-10-26",
+   "2026-10-28"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5657
+   "instruments": 5659
   }
  },
  "shards": [
@@ -1029,8 +1030,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 82,
-  "cutoff": "2026-10-26",
+  "count": 85,
+  "cutoff": "2026-10-28",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
@@ -1065,6 +1066,7 @@
    "2026-08-19": 1,
    "2026-08-12": 1,
    "2026-10-12": 1,
+   "2026-10-26": 3,
    "2026-09-09": 1,
    "2026-10-13": 4,
    "2026-10-05": 1,
@@ -1256,8 +1258,16 @@
     "dataCutoff": "2026-10-12"
    },
    {
+    "ticker": "MSGS",
+    "dataCutoff": "2026-10-26"
+   },
+   {
     "ticker": "MTUL",
     "dataCutoff": "2026-08-18"
+   },
+   {
+    "ticker": "NATH",
+    "dataCutoff": "2026-10-26"
    },
    {
     "ticker": "NCSM",
@@ -1266,14 +1276,6 @@
    {
     "ticker": "NLY-P-I",
     "dataCutoff": "2026-10-01"
-   },
-   {
-    "ticker": "NSTS",
-    "dataCutoff": "2026-10-01"
-   },
-   {
-    "ticker": "NTZ",
-    "dataCutoff": "2026-09-09"
    }
   ]
  }

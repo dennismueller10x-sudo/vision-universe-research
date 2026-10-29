@@ -117,7 +117,7 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js", "/core/listing-staleness.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -423,7 +423,8 @@
         var right = sortField ? [el("span", { text: Q.labelOf(Q.field(sortField), query.timeframe) }), el("b", { class: "num", text: valueText(sortField, row[Q.columnKey(sortField, query.timeframe)]) })]
           : [el("span", { text: "Bedingungen" }), el("b", { class: "num", text: total ? Math.min(total, res.matched[i]) + "/" + total : "–" })];
         var flags = [];
-        if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
+        if (row.frozenSince) flags.push(el("span", { class: "tc-flag", title: "Datenqualitätshinweis: seitdem unveränderter Schlusskurs. Kein bestätigtes Delisting, auch bei illiquiden Titeln möglich. Keine Kennzahlen", text: "Kurs unverändert seit " + M.dateDe(row.frozenSince) }));
+        else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
         if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [
@@ -514,10 +515,7 @@
 
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
-  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
-    ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["volumen", "Volumen"]];
-  var PANE_LIST = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
-    ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"]];
+  var LAYERS = M.CHART_LAYERS, PANE_LIST = M.CHART_PANES;
   var PANES = {};
   PANE_LIST.forEach(function (p) { PANES[p[0]] = 1; });
   var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["5J", 260], ["Max", 0]];
@@ -571,13 +569,22 @@
       var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values,
         bb: VT.Indicators.compute(S, "bollinger").values, rsi: VT.Indicators.compute(S, "rsi").values, macd: VT.Indicators.compute(S, "macd").values, stoch: VT.Indicators.compute(S, "stochastic").values };
       /* Weitere Katalog-Indikatoren; ohne Volumen liefert compute() einen Fehler und die Schicht bleibt leer. */
-      ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf"].forEach(function (id) {
+      ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf",
+        "hma", "chandelier", "vortex", "choppiness", "elderImpulse", "zScore", "ulcerIndex", "historicalVolatility", "connorsRsi"].forEach(function (id) {
         var r2 = VT.Indicators.compute(S, id); ind[id] = r2.error ? null : r2.values;
       });
+      /* ROC wie die Screener-Felder roc21/roc63 (Prozent statt Anteil). */
+      ind.roc21 = VT.Indicators.compute(S, "roc", { period: 21 }).values; ind.roc63 = VT.Indicators.compute(S, "roc", { period: 63 }).values;
+      /* Kerzenmuster der Screener-Liste (dieselbe Erkennung wie die Spalten candleBullish/-Bearish/-Neutral). */
+      ind.candles = VT.Candlesticks ? VT.Candlesticks.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: Object.keys(Q.CANDLE_TYPES) }).patterns : null;
       var cs = bundle.chartSeries || {}, F = bundle.featuresAtCutoff || {};
+      /* Eingefrorene Reihe: dieselbe Regel wie der Screener (keine Analysefelder). Befunde, Niveaus und Erkennungen
+         stammen aus Bars ohne Kursaenderung und entfallen; Kerzenmarken enden am letzten echten Handelstag. */
+      var st = M.seriesState(b.timestamps, b.close, D && (D.meta && D.meta.asOf || D.index.asOf), global.VUCore && global.VUCore.ListingStaleness);
+      if (st.frozenSince) { analysis = { formations: [] }; levels = { supports: [], resistances: [] }; hist = []; F = {}; }
       body.removeAttribute("aria-busy");
-      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D);
-      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, focus: route.params && route.params.f || null });
+      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st);
+      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, focus: route.params && route.params.f || null });
     }).catch(function (e) {
       body.removeAttribute("aria-busy");
       put(body, stateBox("Kein technisches Chartbild für " + T, e && e.message === "NOT_AVAILABLE"
@@ -586,13 +593,26 @@
     });
   }
 
+  var benchP = null;
+  /** SPY-Vergleichsreihe fuer das Unterfenster „Rel. Stärke“; erst beim Einschalten geladen. Fehlt sie, bleibt das Fenster leer. */
+  function loadBenchmark() {
+    if (!benchP) benchP = fetchJSON(M.BENCHMARK_PATH).then(function (s) {
+      var pts = (s && s.points || []).filter(function (p) { return isNum(p[1]); });
+      return { dates: pts.map(function (p) { return p[0]; }), close: pts.map(function (p) { return p[1]; }) };
+    }).catch(function () { benchP = null; return null; });
+    return benchP;
+  }
   function renderStudio(body, X) {
+    if (studio.layers.rs && X.bench === undefined) {
+      X.bench = null;
+      loadBenchmark().then(function (bm) { X.bench = bm; if (bm) { X.ind.rs63 = M.relativeStrength(X.S.dates, X.S.close, bm, 63); X.ind.rs126 = M.relativeStrength(X.S.dates, X.S.close, bm, 126); } renderStudio(body, X); });
+    }
     var S = X.S, n = S.close.length, last = n - 1, chg = S.close[last] / S.close[last - 1] - 1;
     var host = el("div", { class: "tc-chart-host" });
     var legend = el("div", { class: "tc-legend" });
     var expand = el("button", { type: "button", class: "tc-icon-btn", "aria-label": "Chart vergrößern", "aria-pressed": String(studio.full), onclick: function () { studio.full = !studio.full; card.classList.toggle("is-full", studio.full); expand.setAttribute("aria-pressed", String(studio.full)); chart && chart.redraw(); } }, glyph("expand"));
     var card = el("section", { class: "tc-card tc-chart-card" + (studio.full ? " is-full" : ""), "aria-label": "Kurschart" }, [
-      el("div", { class: "tc-quote" }, [el("b", { text: X.T }), el("strong", { class: "num", text: M.price(S.close[last]) }), el("em", { class: chg >= 0 ? "is-up" : "is-down", text: (chg >= 0 ? "▲ " : "▼ ") + M.pct(chg) }), expand]),
+      el("div", { class: "tc-quote" }, [el("b", { text: X.T }), el("strong", { class: "num", text: M.price(S.close[last]) }), el("em", { class: chg > 0 ? "is-up" : chg < 0 ? "is-down" : "", text: (chg > 0 ? "▲ " : chg < 0 ? "▼ " : "± ") + M.pct(chg) }), expand]),
       legend, host,
       el("div", { class: "tc-ranges", role: "radiogroup", "aria-label": "Zeitraum" }, RANGES.map(function (rg) {
         return el("button", { type: "button", role: "radio", class: "tc-range" + (studio.range === rg[0] ? " is-on" : ""), "aria-checked": String(studio.range === rg[0]), text: rg[0], onclick: function () { studio.range = rg[0]; renderStudio(body, X); } });
@@ -615,7 +635,7 @@
       : ["Diese Formation ist im aktuellen Stand nicht mehr enthalten. ", el("a", { class: "tc-link", href: M.chartHref(X.T), text: "Alle Formationen zeigen" })]) : null;
     var weekly = !X.focus && (studio.range === "5J" || studio.range === "Max");
     var signals = el("section", { class: "tc-signals" }), levelsSec = el("section", { class: "tc-levels" });
-    put(body, [focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
+    put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
     if (weekly) {
@@ -641,8 +661,19 @@
       put(legend, legendItems(cfg.legend));
       chart = Chart.render(host, cfg);
     }
-    renderSignalCards(signals, X.analysis, X.F, S.close[last], true);
-    renderLevels(levelsSec, X.levels);
+    renderSignalCards(signals, X.analysis, X.F, S.close[last], true, X.st);
+    if (!X.st.frozenSince) renderLevels(levelsSec, X.levels);
+  }
+
+  /** Hinweis zum Zeitbezug der Reihe (wie die Trefferliste: „Kurs unverändert seit …“ bzw. „Kurs vom …“). */
+  function seriesNote(st) {
+    /* Steht der Kurs im ganzen geladenen Fenster, ist frozenSince dessen Anfang: unverändert spätestens seit diesem Tag. */
+    if (st && st.frozenSince) return el("p", { class: "tc-focus is-warn", role: "note" }, [el("b", { text: "Kurs unverändert seit " + (st.frozenIndex === 0 ? "spätestens " : "") + M.dateDe(st.frozenSince) + ". " }),
+      (st.frozenIndex === 0 ? "Alle " + st.frozenRun + " geladenen Tagesbars tragen denselben Schlusskurs." : "Die Reihe endet mit " + st.frozenRun + " gleichen Schlusskursen.") + " Das ist ein Datenqualitätshinweis, kein bestätigtes Delisting; auch illiquide Titel können so enden. " +
+      "Indikatoren aus diesen Bars sind ohne Aussage, deshalb zeigt Chart Studio wie der Screener keine Formationen, Befunde und Niveaus."]);
+    if (st && st.behind) return el("p", { class: "tc-focus", role: "note" }, [el("b", { text: "Kurs vom " + M.dateDe(st.asOf) + ". " }),
+      "Der Stichtag des Screeners ist der " + M.dateDe(st.universeAsOf) + ". Befunde und Niveaus beziehen sich auf den letzten verfügbaren Kurs; Ereignisse danach sind nicht bekannt."]);
+    return null;
   }
 
   function legendItems(items) { return items.map(function (it) { return el("span", { class: "tc-leg" }, [el("i", { style: "background:" + it[1] }), it[0]]); }); }
@@ -683,6 +714,12 @@
     if (L.psar) {
       for (var pi = from; pi < S.dates.length; pi++) if (isNum(ex.psar.sar[pi])) markers.push({ time: S.dates[pi], price: ex.psar.sar[pi], tone: ex.psar.direction[pi] > 0 ? "positive" : "negative", size: 1.6 });
       legend.push(["Parabolic SAR", "var(--tc-watch)"]);
+    }
+    if (L.hma && ex.hma) { overlays.push({ id: "hma", label: "Hull MA 20", values: ex.hma, color: "var(--tc-c3)" }); legend.push(["Hull MA 20", "var(--tc-c3)"]); }
+    if (L.chandelier && ex.chandelier) { overlays.push({ id: "chl", label: "Chandelier lang 22/3", values: ex.chandelier.long, color: "var(--tc-down)", dash: "5 3" }); legend.push(["Chandelier-Stop lang 22/3", "var(--tc-down)"]); }
+    if (L.kerzen && ex.candles) {
+      M.candleMarks(S, ex.candles, global.VUTechnical.Candlesticks.PATTERNS, Q.CANDLE_TYPES, from, X.st && X.st.frozenSince ? X.st.frozenIndex + 1 : null).forEach(function (m) { markers.push(m); });
+      legend.push(["Kerzenmuster bullisch", "var(--tc-up)"], ["Kerzenmuster bärisch", "var(--tc-down)"]);
     }
     if (L.bb) {
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
@@ -727,11 +764,23 @@
     if (L.mfi) pane = ex.mfi ? { title: "Money Flow Index 14", min: 0, max: 100, guides: [20, 80], series: [{ label: "MFI", values: ex.mfi, color: "var(--tc-c1)" }] } : null;
     if (L.obv) pane = ex.obv ? { title: "On-Balance-Volume", series: [{ label: "OBV", values: ex.obv, color: "var(--tc-c1)" }] } : null;
     if (L.cmf) pane = ex.cmf ? { title: "Chaikin Money Flow 20", guides: [0], series: [{ label: "CMF", values: ex.cmf, bars: true }] } : null;
+    if (L.roc) pane = { title: "ROC 21 / 63 (%)", guides: [0], series: [{ label: "ROC 21", values: ex.roc21, color: "var(--tc-c1)" }, { label: "ROC 63", values: ex.roc63, color: "var(--tc-c2)" }] };
+    if (L.crsi) pane = ex.connorsRsi ? { title: "Connors RSI 3/2/100", min: 0, max: 100, guides: [10, 90], series: [{ label: "Connors RSI", values: ex.connorsRsi, color: "var(--tc-c1)" }] } : null;
+    if (L.zscore) pane = ex.zScore ? { title: "Z-Score 20", guides: [-2, 0, 2], series: [{ label: "Z-Score", values: ex.zScore, color: "var(--tc-c1)" }] } : null;
+    if (L.elder) pane = ex.elderImpulse ? { title: "Elder Impulse 13 (+1 grün, −1 rot)", min: -1, max: 1, guides: [0], series: [{ label: "Impuls", values: ex.elderImpulse, bars: true }] } : null;
+    if (L.vortex) pane = ex.vortex ? { title: "Vortex 14", guides: [1], series: [{ label: "VI+", values: ex.vortex.plus, color: "var(--tc-up)" }, { label: "VI−", values: ex.vortex.minus, color: "var(--tc-down)" }] } : null;
+    if (L.chop) pane = ex.choppiness ? { title: "Choppiness 14", min: 0, max: 100, guides: [38.2, 61.8], series: [{ label: "Choppiness", values: ex.choppiness, color: "var(--tc-c1)" }] } : null;
+    if (L.hv) pane = ex.historicalVolatility ? { title: "Historische Volatilität 20 (% p. a.)", min: 0, series: [{ label: "HV 20", values: ex.historicalVolatility, color: "var(--tc-c1)" }] } : null;
+    /* Prozentpunkte wie die Screener-Spalten rs3m/rs6m; ohne Vergleichsreihe kein Fenster. */
+    if (L.rs) pane = ex.rs63 && !(X.st && X.st.frozenSince) ? { title: "Relative Stärke ggü. S&P 500 (SPY), Prozentpunkte", guides: [0], series: [{ label: "3 Monate", values: ex.rs63.map(function (v) { return v * 100; }), color: "var(--tc-c1)" }, { label: "6 Monate", values: ex.rs126.map(function (v) { return v * 100; }), color: "var(--tc-c2)" }] } : null;
+    if (L.ulcer) pane = ex.ulcerIndex ? { title: "Ulcer Index 14 (%)", min: 0, series: [{ label: "Ulcer", values: ex.ulcerIndex, color: "var(--tc-c1)" }] } : null;
     return { title: X.T + " Tageschart", mode: "candles", window: win, data: S, overlays: overlays, lines: lines, zones: zones, levels: levels, markers: markers, volume: !!L.volumen, pane: pane, legend: legend };
   }
 
   var ICON_OF = { formation: "triangle" };
-  function renderSignalCards(host, analysis, F, close, compact) {
+  function renderSignalCards(host, analysis, F, close, compact, st) {
+    if (st && st.frozenSince) return put(host, [el("h2", { text: compact ? "Aktive Signale" : "Alle Befunde" }),
+      stateBox("Keine Befunde", "Der Schlusskurs ist " + (st.frozenIndex === 0 ? "spätestens " : "") + "seit dem " + M.dateDe(st.frozenSince) + " unverändert. Ohne Kursänderung gibt es keinen Ausbruch, kein Momentum und keinen Trend.")]);
     var all = M.findings(analysis, F, close);
     var active = all.filter(function (f) { return !(f.formation && f.formation.state === "INVALIDATED"); });
     var shown = compact ? active.slice(0, 6) : all;
@@ -771,17 +820,17 @@
         s ? el("small", { text: "Zone " + M.price(s.zoneLow) + " – " + M.price(s.zoneHigh) + " · " + s.touches + " Kontakte" }) : el("small", { text: "Keine Unterstützung unter dem Kurs im Betrachtungsfenster" })])])
     ])]);
   }
-  function renderSignals(body, analysis, F, close, levels, hist, inst, D) {
+  function renderSignals(body, analysis, F, close, levels, hist, inst, D, st) {
     var cards = el("section", {}), lv = el("section", {});
-    renderSignalCards(cards, analysis, F, close, false);
-    renderLevels(lv, levels);
+    renderSignalCards(cards, analysis, F, close, false, st);
+    if (!st.frozenSince) renderLevels(lv, levels);
     var histList = el("section", { class: "tc-history" }, [el("h2", { text: "Erkennungen der letzten 12 Monate" }),
       el("p", { class: "tc-note", text: "Jede Zeile zeigt, was an ihrem Erkennungstag mit den damals verfügbaren Daten erkennbar war, und den heutigen Zustand." }),
       hist.length ? el("ol", { class: "tc-hist" }, hist.slice().reverse().map(function (h) {
         return el("li", {}, [el("b", { text: h.name }), el("span", { text: "erkannt " + M.dateDe(h.detectedAt) + (h.knownAt !== h.detectedAt ? " (ausgewertet " + M.dateDe(h.knownAt) + ")" : "") }),
           el("em", { class: "tc-badge tc-" + (h.stateNow === "CONFIRMED" ? "positive" : h.stateNow === "DETECTED" ? "watch" : h.stateNow === "INVALIDATED" ? "negative" : "neutral"), text: h.stateNow ? { CONFIRMED: "heute bestätigt", DETECTED: "heute beobachtet", INVALIDATED: "heute invalidiert" }[h.stateNow] : "nicht mehr aktiv" })]);
       })) : el("p", { class: "tc-note", text: "Keine Erkennungen im Zeitraum." })]);
-    put(body, [cards, lv, histList, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
+    put(body, [seriesNote(st), cards, lv, histList, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
   }
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};
