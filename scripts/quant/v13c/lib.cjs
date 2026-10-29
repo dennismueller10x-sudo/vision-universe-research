@@ -25,9 +25,13 @@ const FIRST_DATA_KEY = '747c456cff6e81ac';
 // Study amendment 3.0.1 D1: frame runs use quant/data of the V13/V13b runs (tree 963779a1..., commit 885f5574cc), restored only in the worktree.
 const DATA_SNAPSHOT = Object.freeze({ commit: '885f5574cc3249f806ea7982d6b27263d1c2b001', tree: '963779a13c247e658ac051fb90b3e4714f1d1663' });
 function dataState(root = W.ROOT) {
-  const { spawnSync } = require('node:child_process');
-  const same = ref => spawnSync('git', ['-C', root, 'diff', '--quiet', ref, '--', 'quant/data'], { stdio: 'ignore' }).status === 0;
-  return { snapshotCommit: DATA_SNAPSHOT.commit, snapshotTree: DATA_SNAPSHOT.tree, quantDataEqualsSnapshot: same(DATA_SNAPSHOT.commit), quantDataEqualsHead: same('HEAD') };
+  // tree id of the working-copy quant/data (incl. untracked files) via a temporary index; the real index is not touched
+  const { spawnSync } = require('node:child_process'), os = require('node:os');
+  const idx = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'v13c-idx-')), 'index'), env = { ...process.env, GIT_INDEX_FILE: idx };
+  const git = (...a) => { const r = spawnSync('git', ['-C', root, ...a], { env, encoding: 'utf8', maxBuffer: 1 << 28 }); if (r.status !== 0) throw Error('V13C_GIT:' + a.join(' ') + ':' + r.stderr); return r.stdout.trim(); };
+  git('read-tree', '--empty'); git('add', '-A', '--', 'quant/data'); const tree = git('write-tree', '--prefix=quant/data/');
+  fs.rmSync(path.dirname(idx), { recursive: true, force: true });
+  return { snapshotCommit: DATA_SNAPSHOT.commit, snapshotTree: DATA_SNAPSHOT.tree, quantDataTree: tree, quantDataEqualsSnapshot: tree === DATA_SNAPSHOT.tree };
 }
 function amendmentSha(root = W.ROOT) {
   const f = 'docs/quant-recovery/v13c/study-amendment-3.0.1.json';
