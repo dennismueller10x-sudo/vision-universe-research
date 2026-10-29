@@ -1,0 +1,144 @@
+# V12 MCAP – Erzeuger-Vorschlag market-cap-1.2.0 (NICHT angewandt)
+# Anwenden in einem eigenen Produkt-PR: git apply -p1 docs/quant-recovery/v12/mcap/producer-patch-market-cap-1.2.0.diff
+# Danach Erzeuger neu bauen (factor-evidence, Discover), Tests: node --test "quant/tests/*.test.mjs".
+# Erwartete Wirkung (Forschungspanel, docs/quant-recovery/v12/mcap/producer-effect-1.0.0.json) und Stufe 2 (SEC-Schicht) im README.
+diff -ruN a/quant/api/product-services.js b/quant/api/product-services.js
+--- a/quant/api/product-services.js	2026-10-29 07:45:55.295298161 +0000
++++ b/quant/api/product-services.js	2026-10-29 07:45:55.302116833 +0000
+@@ -992,7 +992,7 @@
+   * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
+   * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
+   * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
+- const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'];
++ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY','SHARE_COUNT_SCALE_SUSPECT'];
+  function withholdValuation(stock){
+   if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
+   const grund=stock.marketCapReason;
+diff -ruN a/quant/engines/factor-evidence.js b/quant/engines/factor-evidence.js
+--- a/quant/engines/factor-evidence.js	2026-10-29 07:45:55.295207409 +0000
++++ b/quant/engines/factor-evidence.js	2026-10-29 07:45:55.301407284 +0000
+@@ -62,7 +62,8 @@
+     "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
+     "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", /* one issuer share count, several listed lines */
+     "SHARE_COUNT_NOT_OUTSTANDING",      /* only issued shares (incl. treasury) reported - market-cap-1.0.0 */
+-    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
++    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
++    "SHARE_COUNT_SCALE_SUSPECT"         /* share count off by a power of ten vs. its history, or cap > 8e12 - market-cap-1.2.0 */
+   ];
+ 
+   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
+@@ -189,7 +190,10 @@
+     /* market-cap-1.1.0: Kurs in USD, Geschaeftszahlen in einer anderen Waehrung. */
+     REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Das Unternehmen berichtet seine Geschäftszahlen nicht in US-Dollar, der Kurs steht in US-Dollar. " +
+       "Bei Hinterlegungsscheinen (ADR) entspricht ein gehandelter Schein außerdem nicht einer gemeldeten Aktie. " +
+-      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen."
++      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen.",
++    /* market-cap-1.2.0: XBRL-Skalenfehler der Aktienzahl. */
++    SHARE_COUNT_SCALE_SUSPECT: "Die gemeldete Aktienzahl weicht um eine Zehnerpotenz von den vorherigen Meldungen ab. " +
++      "Ein Börsenwert daraus wäre um das Tausend- oder Millionenfache falsch; die Bewertungskennzahlen bleiben deshalb offen."
+   };
+ 
+   /* ---------------------------------------------------------------------
+@@ -221,6 +225,7 @@
+     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
+     SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten",
+     REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Bewertung bewusst zurückgehalten",
++    SHARE_COUNT_SCALE_SUSPECT: "Bewertung bewusst zurückgehalten",
+     BLOCKED_EXTERNAL: "Bewusst offen gelassen",
+     SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
+     FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"
+diff -ruN a/quant/engines/market-cap.js b/quant/engines/market-cap.js
+--- a/quant/engines/market-cap.js	2026-10-29 07:45:55.294946609 +0000
++++ b/quant/engines/market-cap.js	2026-10-29 07:45:55.297054433 +0000
+@@ -9,7 +9,7 @@
+    ========================================================================= */
+ (function (global) {
+   "use strict";
+-  var VERSION = "market-cap-1.1.0";
++  var VERSION = "market-cap-1.2.0";
+   /* Alle Kurse im Produkt sind US-Notierungen in USD. */
+   var LISTING_CURRENCY = "USD";
+   /* Nur diese Konzepte zaehlen AUSSTEHENDE Aktien. `CommonStockSharesIssued`
+@@ -20,8 +20,32 @@
+     NO_PIT_SHARE_COUNT: "Für den Stichtag ist keine ausstehende Aktienzahl gemeldet.",
+     SHARE_COUNT_NOT_OUTSTANDING: "Gemeldet ist nur die Zahl ausgegebener Aktien (einschließlich eigener im Bestand), nicht die der ausstehenden.",
+     REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Das Unternehmen berichtet seine Geschäftszahlen nicht in US-Dollar. Kurs und Geschäftszahlen sind nicht in derselben Währung, und bei Hinterlegungsscheinen (ADR) entspricht ein gehandelter Schein nicht einer gemeldeten Aktie.",
+-    NO_PUBLISHED_CLOSE: "Für diese Notierung gibt es keinen veröffentlichten Schlusskurs."
++    NO_PUBLISHED_CLOSE: "Für diese Notierung gibt es keinen veröffentlichten Schlusskurs.",
++    SHARE_COUNT_SCALE_SUSPECT: "Die gemeldete Aktienzahl weicht um eine Zehnerpotenz von den vorherigen Meldungen ab oder ergäbe einen unmöglichen Börsenwert – ein Skalenfehler in der XBRL-Meldung ist wahrscheinlicher als eine echte Kapitalmaßnahme."
+   };
++  /* market-cap-1.2.0 (Vorschlag V12 MCAP, docs/quant-recovery/v12/mcap): Skalenwaechter. XBRL-Aktienzahlen tragen
++     Skalenfehler (EEFT 10-K 2020: 5,28e16 statt 52,75 Mio; ON, ORCL, YUM, CB: x1e6). Weicht die Zahl vom Median der bis
++     zu vier vorherigen Quartalszahlen um 10^k (|k| >= 3, +-25 %) ab oder ergaebe sie mehr als 8e12 USD, wird der
++     Boersenwert zurueckgehalten - nie geschaetzt, nie umskaliert (die Korrektur ist Sache der SEC-Schicht). */
++  var ABSOLUTE_MCAP_BOUND_USD = 8e12;
++  var SCALE_GUARD_MIN_EXPONENT = 3, SCALE_GUARD_TOLERANCE = 1.25, SCALE_GUARD_HISTORY = 4;
++  function previousShareCounts(doc, cutoff, end) {
++    var cols = (doc && doc.columns) || ["fy", "fp", "end", "v", "filed", "accn", "derived"];
++    var iEnd = cols.indexOf("end"), iV = cols.indexOf("v"), iFiled = cols.indexOf("filed");
++    var rows = (doc && doc.quarterly && doc.quarterly.shares_outstanding) || [];
++    return rows.filter(function (r) { return typeof r[iFiled] === "string" && r[iFiled] <= cutoff && r[iEnd] < end && typeof r[iV] === "number" && r[iV] > 0; })
++      .sort(function (a, b) { return a[iEnd] < b[iEnd] ? -1 : 1; }).slice(-SCALE_GUARD_HISTORY).map(function (r) { return r[iV]; });
++  }
++  /* true if the share count differs from the median of the previous quarterly counts by a power of ten (|k| >= 3, +-25 %). */
++  function shareScaleSuspect(shares, doc, cutoff) {
++    if (!shares || !(shares.value > 0) || typeof shares.end !== "string") return false;
++    var prev = previousShareCounts(doc, cutoff, shares.end).sort(function (a, b) { return a - b; });
++    if (!prev.length) return false;
++    var m = prev.length % 2 ? prev[(prev.length - 1) / 2] : (prev[prev.length / 2 - 1] + prev[prev.length / 2]) / 2;
++    var l = Math.log10(shares.value / m), k = Math.round(l);
++    return Math.abs(k) >= SCALE_GUARD_MIN_EXPONENT && Math.abs(l - k) <= Math.log10(SCALE_GUARD_TOLERANCE);
++  }
++
+   /* market-cap-1.1.0: Die Berichtswaehrung steht in den Einheiten der
+      SEC-Konsumschicht (`units`, z. B. "CNY", "CNY/shares"). Gezaehlt werden
+      nur die Kennzahlen, die eine Bewertungskennzahl durch den Boersenwert
+@@ -50,7 +74,8 @@
+   }
+   function isOutstanding(concept) { return OUTSTANDING_CONCEPTS.indexOf(concept) >= 0; }
+   var api = { VERSION: VERSION, LISTING_CURRENCY: LISTING_CURRENCY, VALUATION_INPUTS: VALUATION_INPUTS, OUTSTANDING_CONCEPTS: OUTSTANDING_CONCEPTS, REASONS: REASONS,
+-    isOutstanding: isOutstanding, reportingCurrency: reportingCurrency, sameCurrencyAsListing: sameCurrencyAsListing };
++    isOutstanding: isOutstanding, reportingCurrency: reportingCurrency, sameCurrencyAsListing: sameCurrencyAsListing,
++    ABSOLUTE_MCAP_BOUND_USD: ABSOLUTE_MCAP_BOUND_USD, shareScaleSuspect: shareScaleSuspect, previousShareCounts: previousShareCounts };
+   if (typeof module !== "undefined" && module.exports) module.exports = api;
+   else global.VUMarketCap = api;
+ })(typeof globalThis !== "undefined" ? globalThis : this);
+diff -ruN a/scripts/quant/build-factor-evidence.mjs b/scripts/quant/build-factor-evidence.mjs
+--- a/scripts/quant/build-factor-evidence.mjs	2026-10-29 07:45:55.295102081 +0000
++++ b/scripts/quant/build-factor-evidence.mjs	2026-10-29 07:45:55.300244134 +0000
+@@ -37,7 +37,7 @@
+ const MarketCap = require(join(ROOT, "quant/engines/market-cap.js"));
+ /* Bewusst zurueckgehaltene Boersenwerte (market-cap-1.0.0): die Bewertung
+    nennt den Grund, statt "Eingabe nicht materialisiert" zu sagen. */
+-const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"];
++const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "SHARE_COUNT_SCALE_SUSPECT"];
+ /* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
+    kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
+    jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
+@@ -579,7 +579,10 @@
+          * ADS-Quote. Also: Berichtswaehrung ungleich USD -> zurueckhalten. */
+         const berichtswaehrung = MarketCap.reportingCurrency(doc.units);
+         const gleicheWaehrung = MarketCap.sameCurrencyAsListing(doc.units);
+-        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung ? shares.value * quote.close : null;
++        /* SKALA (market-cap-1.2.0): Zehnerpotenz-Sprung gegen die vorherigen Quartalszahlen oder > 8e12 USD -> zurueckhalten. */
++        const rohwert = shares && quote ? shares.value * quote.close : null;
++        const skalaPlausibel = !(shares && (MarketCap.shareScaleSuspect(shares, doc, cutoff) || (finite(rohwert) && rohwert > MarketCap.ABSOLUTE_MCAP_BOUND_USD)));
++        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung && skalaPlausibel ? rohwert : null;
+         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
+         if (fundamentals) {
+           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
+@@ -588,11 +591,13 @@
+             : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
+               : !shares ? "NO_PIT_SHARE_COUNT"
+               : !ausstehend ? "SHARE_COUNT_NOT_OUTSTANDING"
+-              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" : "NO_PUBLISHED_CLOSE");
++              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"
++              : !skalaPlausibel ? "SHARE_COUNT_SCALE_SUSPECT" : "NO_PUBLISHED_CLOSE");
+           fundamentals.sharesConcept = sharesConcept;
+           fundamentals.reportingCurrency = berichtswaehrung;
+           if (!ausstehend) countGap("SHARE_COUNT_NOT_OUTSTANDING");
+           if (!gleicheWaehrung) countGap("REPORTING_CURRENCY_NOT_LISTING_CURRENCY");
++          if (!skalaPlausibel) countGap("SHARE_COUNT_SCALE_SUSPECT");
+           if (!zuordenbar) {
+             fundamentals.issuerListings = zeilen.slice().sort();
+             countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");

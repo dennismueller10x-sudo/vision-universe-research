@@ -1,0 +1,121 @@
+{
+  "ruleId": "v12-mcap-pit-share-correction",
+  "ruleVersion": "1.0.2",
+  "registeredAt": "2026-10-29",
+  "status": "AMENDED_AFTER_SECOND_APPLICATION",
+  "evidenceKind": "SOURCE_EVIDENCE",
+  "certificationStatus": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "scope": "Research only. Corrects or excludes the share count that enters the PIT market capitalization of the V10 factor panel (scripts/quant/v10/factor/factors.cjs#marketCapAt: shares x close(t) x split factor at the share date). Opt-in via quant/engines/research-pit-market-cap.cjs; the V10 function, the product engines (fundamental-inputs.js, market-cap.js) and all */data artefacts stay unchanged.",
+  "priorKnowledge": [
+    "Before this rule was written, exactly these cases were inspected in the raw companyfacts facts (no factor-study outcome was computed on corrected data): EEFT 10-K FY2020 (dei 5.2752851e16, WASO 52.66 M), CB 10-Q Q1/Q2 2010 (whole filing x1e6 incl. comparative 2009-12-31), ON 10-Q 2012/2013 (dei x1e6, CSSO correct), YUM 10-Q Q3 2016 (dei x1e6, no CSSO, WASO 392 M), ORCL 10-Q Q1 FY2013 (dei x1e6, CSSO correct), Citigroup 10-Q Q3 2009 (CSSO 22,863,947) and the Citigroup 1:10 reverse split 2011-05-09 (dei cover-date value after the split carried with a period end before the split).",
+    "V11 counts known from the brief: 149 panel rows > 5e12 USD, about 2 % implied share counts > 5x the listing median, Tiingo spin-off factors GE 1.281/1.253 and IBM 1.046 in the split lists."
+  ],
+  "pointInTime": "Every reference used for a share observation O was filed no later than O itself: facts of the same accession (filed = O.filed) and facts of earlier accessions (filed < O.filed). O.filed < t by construction of the V10 panel (cutoff t-1). Split events are used only with event date <= t. A split-register classification is used at t only if its evidence was available at t (availableAt <= t-1); otherwise the event counts as unresolved at t.",
+  "inputs": {
+    "observations": "V10 factor panel market-cap inputs (scripts/quant/v12/mcap/observations.cjs): doc.ttm.shares_outstanding {v, end E, filed, accn, concept} per listing x rank date, close(t), split factors of the listing",
+    "rawFacts": "SEC companyfacts bulk archive (non-dimensional facts), concepts dei:EntityCommonStockSharesOutstanding (ECSO), us-gaap:CommonStockSharesOutstanding (CSSO), us-gaap:WeightedAverageNumberOfSharesOutstandingBasic (WASO_B), us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding (WASO_D), us-gaap:WeightedAverageNumberOfShareOutstandingBasicAndDiluted (WASO_BD), us-gaap:CommonStockSharesIssued (CSSI, comparative-scaling check only), including registered predecessor CIKs",
+    "splits": "split list of the research loader {identityEvidence, corporateActionEvidence} (provider factors)"
+  },
+  "constants": {
+    "SAME_FILING_TOLERANCE": 0.02,
+    "TWO_REFERENCE_TOLERANCE": 0.1,
+    "TRIGGER_FACTOR": 5,
+    "ABSOLUTE_MCAP_BOUND_USD": 8000000000000.0,
+    "SAME_FILING_WINDOW_DAYS": 120,
+    "WASO_MAX_DURATION_DAYS": 370,
+    "SCALE_EXPONENTS": [
+      -9,
+      -6,
+      -3,
+      -2,
+      -1,
+      1,
+      2,
+      3,
+      6,
+      9
+    ],
+    "PRIOR_VINTAGES": 2,
+    "SPLIT_CONTINUITY_TOLERANCE_OF_LOG_FACTOR": 0.25,
+    "SPLIT_CONTINUITY_MAX_GAP_DAYS": 200,
+    "SMALL_SPLIT_FACTOR_LOG_BOUND": "ln(1.10)"
+  },
+  "steps": [
+    {
+      "id": "S0_MATCH",
+      "rule": "Find the raw fact of O: same accession, same concept, |val - v| <= 1e-6 * v. Its end date is the raw date D (for ECSO the cover date). Unmatched: D = E and flag RAW_FACT_UNMATCHED. A matched fact with unit other than 'shares' -> UNIT_ERROR (EXCLUDED)."
+    },
+    {
+      "id": "S1_SPLIT_TIMING",
+      "rule": "The share basis is converted by date, not by weekly bar: market cap = v x close(t) x F(t) x prod of provider split factors with D < split date <= date(t). If this differs from the V10 factor (a provider split lies between E and D, or the V10 bar assignment put a split dated <= D into a later bar - the known same-week edge case), class SPLIT_TIMING, status CORRECTED; evidence = raw end date D of the same fact and the split date. All later comparisons use basis D."
+    },
+    {
+      "id": "S2_REFERENCES",
+      "rule": "A_out: other ECSO/CSSO facts of the same accession with |end - D| <= 120 d. A_w: WASO_B/WASO_D/WASO_BD facts of the same accession with |end - D| <= 120 d and duration <= 370 d. P1, P2: the latest ECSO/CSSO fact (latest end) of each of the two latest earlier accessions (filed < O.filed); if that earlier fact is itself an observation already classified by this rule (issuer facts are processed in filed order), its corrected value is used and an excluded one is skipped. All references are converted to basis D with the provider splits between their end and D (events classified NOT_A_SPLIT excluded). COMP: comparative check - pairs (same accession fact F with end e, earlier-filed fact of the same concept with the same end e), any share concept incl. CSSI; ratio q = F / earlier. (1.0.2) P1 is the issuer's latest earlier validated observation if one exists; P2 the latest earlier accession's fact."
+    },
+    {
+      "id": "S3_MULTI_CLASS",
+      "rule": "If the same accession carries >= 2 distinct non-dimensional ECSO values with the same end D and v is one of them: if v is within 2 % of an A_out CSSO or A_w value -> no multi-class issue; else if the sum of the distinct ECSO values is within 2 % of a CSSO or WASO value of the same accession -> v' = sum, class MULTI_CLASS_SUM, CORRECTED; else MULTI_CLASS_UNRESOLVED, EXCLUDED."
+    },
+    {
+      "id": "S4_TRIGGER",
+      "rule": "ref = median(A_out) if present, else median(A_w), else P1. Triggered if |log10(v/ref)| >= log10(5), or |log10(v/P1)| >= log10(5), or max market cap of O over its uses > 8e12 USD. Not triggered: OK (OK_NO_REFERENCE if no reference exists)."
+    },
+    {
+      "id": "S5_HYPOTHESES",
+      "rule": "For a triggered O, in this order: (H1 scale) for each k in SCALE_EXPONENTS, v' = v / 10^k; prior-consistent means P1 exists and v' is within 25 % of P1. Tier A: v' within 2 % of a same-filing value (A_out or A_w) and prior-consistent; without P1, v' within 2 % of two distinct same-filing concepts. Tier B: |k| >= 3, some COMP pair with q within 2 % of 10^k (whole filing scaled), prior-consistent, and no COMP pair of O's own concept with q within 2 % of 1. Tier C: within 10 % of one same-filing value and within 10 % of P1. The best tier with exactly one k decides -> SCALE_ERROR, CORRECTED, factor 10^-k; two or more k in the best tier -> AMBIGUOUS_SCALE, EXCLUDED. (H0 value confirmed) v within 25 % of P1, or without P1 within 2 % of a same-filing outstanding value (A_out), or within 2 % of two distinct same-filing concepts -> OK, class GENUINE_CAPITAL_ACTION if P1 deviates >= 5x (then confirmation by a same-filing value within 2 % is required), else ALTERNATIVE_CONCEPT_DEVIATES. (H2) none -> UNRESOLVED, EXCLUDED; any remaining use above the absolute bound -> MCAP_ABSOLUTE_BOUND. (1.0.2) Every scale tier also needs support(v') > support(v) (references within 25 %: one per same-filing concept, P1, P2); class PRIOR_VINTAGE_SCALE_ERROR when the confirmed v differs from P1 by a power of ten."
+    },
+    {
+      "id": "S6_ABSOLUTE_BOUND",
+      "rule": "After correction, any use with market cap > 8e12 USD -> MCAP_ABSOLUTE_BOUND, EXCLUDED (that use only)."
+    },
+    {
+      "id": "S7_SPLIT_REGISTER",
+      "rule": "Every provider split event of a listing in [2009-01-01, 2025-12-31] is classified by share continuity: S_before = last ECSO/CSSO fact with raw end < event date from an accession filed before the event date (originally reported, not a restated comparative), S_after = first with raw end >= event date (each within 200 d of the event), r = S_after / S_before. REAL_SPLIT if |ln r - ln f| <= 0.25 |ln f|; NOT_A_SPLIT if |ln r| <= 0.25 |ln f| and |ln f| >= ln 1.10; SMALL_FACTOR_ACCEPTED if |ln f| < ln 1.10 (continuity cannot discriminate; provider factor kept unless a SEC-sourced spin-off record says NOT_A_SPLIT); otherwise UNRESOLVED. availableAt = filed date of S_after (or of the SEC spin-off source). SEC-sourced spin-off records (8-K/10-K quote, accession, URL, sha256) override continuity and carry availableAt = filing date."
+    },
+    {
+      "id": "S8_ROW",
+      "rule": "Per use (listing, t): market cap = v' x close(t) x F(t) x prod of provider split factors with D < split date <= date(t) that are not removed (F(t) = cumulative provider factor after t, as in V10). For each such event: NOT_A_SPLIT with availableAt <= t-1 -> factor removed (SPINOFF_AS_SPLIT, CORRECTED); SMALL_FACTOR_ACCEPTED or REAL_SPLIT with availableAt <= t-1 -> kept; a split-shaped factor (f or 1/f equal to an integer n <= 1000 or to p/q with p, q <= 10, relative tolerance 1e-4) whose classification is not yet available at t, or which is REAL_SPLIT/UNRESOLVED -> kept as provider split (the V10 assumption, public at t); a factor that is neither small nor split-shaped and is UNRESOLVED or not yet classified at t -> SPLIT_BASIS_UNRESOLVED, EXCLUDED. Status precedence EXCLUDED > CORRECTED > OK."
+    }
+  ],
+  "verification": {
+    "sample": ">= 40 corrected/excluded observations checked against the original filing (primary document or XBRL instance via scripts/quant/sec/http_client.py, <= 2 requests/s), with accession, URL, sha256 and quote <= 300 characters",
+    "independentCheck": "Python stdlib (python3 -I), own concept selection from companyfacts, own classification; agreement reported, not tuned"
+  },
+  "changePolicy": "Any change after application is a new version with its own sha256, reason and disclosure of what was seen.",
+  "supersedes": {
+    "version": "1.0.1",
+    "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+  },
+  "amendments": [
+    {
+      "version": "1.0.1",
+      "decidedAfterSeeing": "The classification output of rule 1.0.0 on all 117,888 distinct share observations (classes, evidence, split classes) - no factor-study or winners-study result on corrected data had been computed.",
+      "findings": [
+        "F1 (logic error): in 1.0.0 a same-filing alternative was trusted as the true value. In 259 of 748 SCALE_ERROR corrections the alternative itself was mis-scaled (CSSO or WASO tagged in thousands, e.g. ABCB 10-Q 2012: ECSO 23,814,144 correct, alternative 23,814 = thousands) and the correct ECSO was divided by 1,000; the prior vintage agreed with the uncorrected value.",
+        "F2 (logic error): the split-continuity test took as S_before the restated comparative balance-sheet value of the first post-split filing (already split-adjusted), so 424 events were called NOT_A_SPLIT with ratio ~1, 367 of them split-shaped (e.g. AAON 3:2 2011, ACIW 3:1 2014).",
+        "F3 (gap): a filing-wide scale error whose alternatives are scaled the same way is only caught by the absolute bound in 1.0.0; a deviation from the prior vintage did not trigger."
+      ],
+      "changes": [
+        "S4: additionally triggered if |log10(v/P1)| >= log10(5).",
+        "S5: the scale hypothesis H1 is tested before H0 and every tier requires consistency with the prior vintage when one exists (tier A: v' within 2 % of a same-filing value and within 25 % of P1; without P1 tier A needs two distinct same-filing concepts within 2 %); H0 accepts v if it is within 25 % of P1, or (no P1) within 2 % of a same-filing outstanding value or of two distinct same-filing concepts.",
+        "S7: S_before must come from an accession filed before the event date (originally reported value, not a restated comparative); S_after is the first fact with raw end >= event date."
+      ],
+      "tolerancesUnchanged": true
+    },
+    {
+      "version": "1.0.2",
+      "decidedAfterSeeing": "The classification output of rule 1.0.1 (296 SCALE_ERROR, 679 UNRESOLVED, 253 GENUINE_CAPITAL_ACTION, 88 NOT_A_SPLIT) - still no factor-study or winners-study result on corrected data.",
+      "findings": [
+        "F4 (logic error): P1 was the latest-end ECSO/CSSO fact of the latest earlier accession. When that fact was not itself a panel observation it was never sanitized; mis-scaled comparatives/alternatives there (e.g. SKT 85,916,070,000; SYK ~380; PW 1.6e9) made correct values look like 1,000x deviations: 15 SCALE_ERROR corrections moved a value that agreed with the issuer's previous observation, many correct values ended UNRESOLVED, and GENUINE_CAPITAL_ACTION mixed real capital actions (SPAC/reverse mergers) with erroneous prior facts."
+      ],
+      "changes": [
+        "S2: P1 = the latest earlier observation of the issuer already validated by this rule (filed < O.filed, corrected value, excluded ones skipped, basis-converted from its raw date); P2 = the latest-end ECSO/CSSO fact of the latest earlier accession not equal to P1 (sanitized as before). Without a validated observation P1 falls back to the latest earlier accession as in 1.0.1.",
+        "S5: a scale correction additionally requires support(v') > support(v), where support counts the references within 25 %: one value per same-filing concept (end closest to D), P1 and P2.",
+        "S5 label: a triggered O whose v is confirmed by the same filing and whose P1 differs from v by a power of ten (within 25 %) is labelled PRIOR_VINTAGE_SCALE_ERROR instead of GENUINE_CAPITAL_ACTION (status unchanged: OK)."
+      ],
+      "tolerancesUnchanged": true
+    }
+  ]
+}
