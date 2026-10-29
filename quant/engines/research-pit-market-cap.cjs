@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.4.json, amending 1.0.0-1.0.3).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.5.json, amending 1.0.0-1.0.4).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.4',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.5',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -184,7 +184,8 @@ function classifySplitEvent(date, factor, facts) {
   if (small) return { ...base, class: 'SMALL_FACTOR_ACCEPTED', availableAt: date, ratio: before && after ? after.val / before.val : null };
   if (!before || !after) return { ...base, class: 'UNRESOLVED', reason: 'NO_CONTINUITY_PAIR', availableAt: null, ratio: null };
   const r = after.val / before.val, lr = Math.log(r), tol = RULE.SPLIT_CONTINUITY_TOLERANCE_OF_LOG_FACTOR * Math.abs(lf);
-  const cls = Math.abs(lr - lf) <= tol ? 'REAL_SPLIT' : Math.abs(lr) <= tol ? 'NOT_A_SPLIT' : 'UNRESOLVED';
+  // 1.0.5: share continuity ~1 for a split-shaped factor contradicts the split but does not show a spin-off -> CONTRADICTED_SPLIT
+  const cls = Math.abs(lr - lf) <= tol ? 'REAL_SPLIT' : Math.abs(lr) <= tol ? (base.splitShaped ? 'CONTRADICTED_SPLIT' : 'NOT_A_SPLIT') : 'UNRESOLVED';
   return { ...base, class: cls, ratio: r, availableAt: after.filed };
 }
 
@@ -229,6 +230,7 @@ function marketCapAt(args, base, register = loadRegister()) {
     const r = reg.get(sd + '|' + f) || null;
     const cls = r ? r[SC.indexOf('class')] : null, avail = r ? r[SC.indexOf('availableAt')] : null, known = avail !== null && avail <= cutoff;
     if (cls === 'NOT_A_SPLIT' && known) { removed = true; continue; }
+    if (cls === 'CONTRADICTED_SPLIT' && known) { unresolved = { date: sd, factor: f, class: cls, availableAt: avail }; continue; }
     if (Math.abs(Math.log(f)) < RULE.SMALL_SPLIT_FACTOR_LOG_BOUND || splitShaped(f) || (cls === 'REAL_SPLIT' && known)) { mult *= f; continue; }
     unresolved = { date: sd, factor: f, class: cls, availableAt: avail };
   }
