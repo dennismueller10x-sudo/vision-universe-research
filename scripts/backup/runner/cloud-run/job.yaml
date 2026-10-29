@@ -1,0 +1,46 @@
+# VORLAGE – Cloud Run Job (Ersatz-Runner, wenn GitHub nicht verfuegbar ist).
+# Nicht angelegt. Einrichtung nur nach Freigabe (eigenes Google-Cloud-Projekt mit
+# Abrechnungskonto; Kosten im kostenlosen Kontingent, siehe Bericht).
+#
+#   gcloud run jobs replace job.yaml --region europe-west3
+#   gcloud run jobs execute vu-backup --region europe-west3            # Sicherung
+#   gcloud run jobs execute vu-backup --region europe-west3 --args=drill
+# Vom iPhone: console.cloud.google.com -> Cloud Run -> Jobs -> vu-backup -> "Ausfuehren".
+#
+# Plattenplatz: Das Container-Dateisystem liegt im Arbeitsspeicher. Der Git-Mirror
+# (Ende 10/2026: ~17 GiB, Wachstum ~0,3 GiB/Tag) braucht deshalb die Ephemeral Disk
+# (Vorschau-Funktion; >10 GiB nur mit Kontingenterhoehung, max. 100 GiB je Volume).
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: vu-backup
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 1
+          timeoutSeconds: 14400
+          serviceAccountName: vu-backup-runner@<projekt>.iam.gserviceaccount.com
+          containers:
+            - image: europe-west3-docker.pkg.dev/<projekt>/vu-backup/vu-backup:<version>
+              args: ["backup"]
+              resources:
+                limits: {cpu: "4", memory: 8Gi}
+              volumeMounts:
+                - {name: work, mountPath: /work}
+              env:
+                - {name: VU_GIT_REPOS, value: "research=https://github.com/<owner>/<repo>.git"}
+                - name: RESTIC_PASSWORD
+                  valueFrom: {secretKeyRef: {name: vu-restic-password, key: latest}}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom: {secretKeyRef: {name: vu-b2-writer-key-id, key: latest}}
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom: {secretKeyRef: {name: vu-b2-writer-key, key: latest}}
+                # ... weitere Quellen analog config/backup.env.example
+          volumes:
+            - name: work
+              ephemeralDisk: {sizeLimit: 80Gi}

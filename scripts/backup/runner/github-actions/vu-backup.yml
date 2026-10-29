@@ -1,0 +1,101 @@
+# VORLAGE – gehoert in ein eigenes, PRIVATES Backup-Repository, nicht in das
+# Produktions-Repository. Dort unter .github/workflows/vu-backup.yml ablegen.
+#
+# Bedienung vom iPhone: GitHub-App -> Backup-Repo -> Actions -> "Vision Universe Backup"
+# -> "Run workflow" -> Aktion waehlen -> Run. Ergebnis: Lauf-Zusammenfassung (Tabelle).
+#
+# Sicherheit:
+# - Secrets liegen in der Umgebung "backup" dieses Repos, nicht als Repository-Secrets.
+# - permissions: nur lesen. Der Lauf schreibt nichts zurueck nach GitHub.
+# - Die Werkzeuge werden mit fester Version und SHA-256 geladen (fail closed).
+# - Schreibschluessel kann bei B2 nur verbergen, nie endgueltig loeschen (vu-key-check).
+name: Vision Universe Backup
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'init | backup | backup-tier2 | dry-run | verify-sample | verify-full | maintain-plan | maintain-apply | drill'
+        type: choice
+        options: [init, backup, backup-tier2, dry-run, verify-sample, verify-full, maintain-plan, maintain-apply, drill]
+        default: backup
+permissions:
+  contents: read
+concurrency:
+  group: vu-backup-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    environment: backup
+    env:
+      RESTIC_VERSION: '0.18.1'
+      RESTIC_SHA256: '<bei Einrichtung aus den signierten SHA256SUMS des Releases eintragen>'
+      RCLONE_VERSION: '1.71.2'
+      RCLONE_SHA256: '<bei Einrichtung aus SHA256SUMS eintragen>'
+      VU_WORK: /mnt/vu-backup-work
+    steps:
+      - uses: actions/checkout@v4
+      - name: Plattenplatz schaffen
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+          sudo mkdir -p /mnt/vu-backup-work && sudo chown "$USER" /mnt/vu-backup-work
+          df -h / /mnt
+      - name: Werkzeuge (feste Versionen, Pruefsumme)
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl -fsSLo restic.bz2 "https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_linux_amd64.bz2"
+          echo "${RESTIC_SHA256}  restic.bz2" | sha256sum -c -
+          bunzip2 restic.bz2 && chmod +x restic && sudo mv restic /usr/local/bin/
+          curl -fsSLo rclone.zip "https://downloads.rclone.org/v${RCLONE_VERSION}/rclone-v${RCLONE_VERSION}-linux-amd64.zip"
+          echo "${RCLONE_SHA256}  rclone.zip" | sha256sum -c -
+          unzip -q rclone.zip && sudo mv "rclone-v${RCLONE_VERSION}-linux-amd64/rclone" /usr/local/bin/
+          pip install --quiet boto3==1.40.0
+          restic version && rclone version | head -1
+      - name: Schluessel pruefen (fail closed)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_WRITER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_WRITER_KEY }}
+        run: python3 scripts/backup/bin/vu-key-check.py writer
+      - name: Ausfuehren
+        env:
+          ACTION: ${{ inputs.action }}
+          RESTIC_REPOSITORY: ${{ secrets.RESTIC_REPOSITORY }}
+          RESTIC_PASSWORD: ${{ secrets.RESTIC_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_WRITER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_WRITER_KEY }}
+          VU_GIT_REPOS: ${{ vars.VU_GIT_REPOS }}
+          VU_GITHUB_REPOS: ${{ vars.VU_GITHUB_REPOS }}
+          VU_GITHUB_TOKEN: ${{ secrets.VU_GITHUB_READ_TOKEN }}
+          VU_ARTIFACT_ALLOWLIST: ${{ vars.VU_ARTIFACT_ALLOWLIST }}
+          VU_R2_ENDPOINT: ${{ secrets.VU_R2_ENDPOINT }}
+          VU_R2_BUCKET: ${{ secrets.VU_R2_BUCKET }}
+          VU_R2_ACCESS_KEY_ID: ${{ secrets.VU_R2_READ_KEY_ID }}
+          VU_R2_SECRET_ACCESS_KEY: ${{ secrets.VU_R2_READ_KEY }}
+          VU_R2_PREFIXES_TIER1: ${{ vars.VU_R2_PREFIXES_TIER1 }}
+          VU_R2_PREFIXES_TIER2: ${{ vars.VU_R2_PREFIXES_TIER2 }}
+          VU_CF_API_TOKEN: ${{ secrets.VU_CF_READ_TOKEN }}
+          VU_CF_ACCOUNT_ID: ${{ secrets.VU_CF_ACCOUNT_ID }}
+          VU_CF_KV_NAMESPACES: ${{ vars.VU_CF_KV_NAMESPACES }}
+          VU_CF_ZONE_IDS: ${{ vars.VU_CF_ZONE_IDS }}
+          VU_BREVO_ENABLED: ${{ vars.VU_BREVO_ENABLED }}
+          VU_BREVO_API_KEY: ${{ secrets.VU_BREVO_BACKUP_KEY }}
+          VU_SUPABASE_PROJECT: ${{ vars.VU_SUPABASE_PROJECT }}
+          VU_SUPABASE_DB_URL: ${{ secrets.VU_SUPABASE_BACKUP_DB_URL }}
+          VU_HEALTHCHECK_URL: ${{ secrets.VU_HEALTHCHECK_URL }}
+        run: |
+          set -uo pipefail
+          B=scripts/backup/bin
+          case "$ACTION" in
+            init)           "$B/vu-backup.sh" --init ;;
+            backup)         "$B/vu-backup.sh" ;;
+            backup-tier2)   "$B/vu-backup.sh" --tier2 ;;
+            dry-run)        "$B/vu-backup.sh" --dry-run ;;
+            verify-sample)  "$B/vu-verify.sh" sample ;;
+            verify-full)    "$B/vu-verify.sh" full ;;
+            maintain-plan)  "$B/vu-maintain.sh" plan ;;
+            maintain-apply) "$B/vu-maintain.sh" apply ;;
+            drill)          "$B/vu-restore.sh" drill "$VU_WORK/drill" ;;
+          esac
