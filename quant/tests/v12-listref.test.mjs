@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -149,5 +150,43 @@ test('research-listing-reference loads the committed register and fails closed',
   assert.throws(() => LR.createListingReference(tmp), /LISTING_REFERENCE_UNAVAILABLE/);
   assert.throws(() => LR.createListingReference(ROOT, { expectedSha256: '0'.repeat(64) }), /sha256 mismatch/);
   assert.throws(() => LR.createListingReference(path.join(tmp, 'nowhere')), /missing/);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('LISTREF 1.0.3 public redaction (MAJOR 6): no provider row metadata in the repository, module fails closed', () => {
+  const X = require('../../scripts/quant/v12/listref/redact.cjs');
+  const key = 'k'.repeat(64);
+  // synthetic full documents in the 1.0.2 shape
+  const fullFetch = { schemaVersion: 'v12-listref-fetch-candidates-1.0.2', ruleVersion: '1.0.2', purpose: 'p', columns: ['ticker', 'exchange', 'startYear', 'endYear', 'cik', 'linkGrade', 'endSource'],
+    countsByEndYear: { 2003: { chains: 2, linkedCik: 1 } }, potentialCoverageByYear: {}, potentialCaveat: 'c', count: 2,
+    rows: [['AAA', 'NYSE', 1980, 2003, '215466', 'MEDIUM_FTS_DISCOVERED', 'DERIVED_FROM_SEC_DELISTING_FORM'], ['BBB', 'NASDAQ', 1997, 2003, null, 'UNLINKED', 'PROVIDER']] };
+  const pf = X.redactFetchCandidates(fullFetch, key);
+  assert.deepEqual(pf.columns, ['chainId', 'cik', 'startYearBucket', 'endYearBucket']);
+  assert.ok(pf.rows.every(r => /^[0-9a-f]{16}$/.test(r[0]) && r[3] === '2000-2004'));
+  assert.equal(pf.countsByEndYearBucket['2000-2004'].byEndSource.PROVIDER, 1);
+  assert.ok(!JSON.stringify(pf.rows).includes('AAA'));
+  const fullReg = { schemaVersion: 'v12-listref-delisting-register-1.0.2', columns: ['cik', 'eventDate', 'name', 'forms[[form,date,accession]]', 'mergerProcessIndexed', 'issuerForm25', 'exchangeForm25NSE', 'linkedChains', 'nameCandidateOnly'], count: 1,
+    events: [['215466', '2003-08-13', 'X INC', [['25', '2003-08-13', '0000000000-03-000001']], false, true, false, [{ ticker: 'AAA', exchange: 'NYSE', grade: 'MEDIUM_FTS_DISCOVERED', dayDiffEndToEvent: 3, endSource: 'PROVIDER', withSeries: false, lifecycleDelisted: false }], false]] };
+  const pr = X.redactDelistingRegister(fullReg, key);
+  assert.equal(pr.events[0][pr.columns.indexOf('linkedChainIds')][0], pf.rows.find(r => r[1] === '215466')[0]); // joinable across the files
+  assert.ok(X.assertRedacted(pr) && X.assertRedacted(pf));
+  assert.throws(() => X.assertRedacted(fullReg), /NOT_REDACTED/);
+  assert.throws(() => X.assertRedacted(fullFetch), /NOT_REDACTED/);
+  assert.throws(() => X.chainId('short', 'A', 'B', 2000), /HASH_KEY_REQUIRED/);
+  // committed public files
+  const D = path.join(ROOT, 'docs/quant-recovery/v12/listref');
+  assert.equal(fs.existsSync(path.join(D, 'fetch-candidates-1.0.2.json')), false);
+  assert.equal(fs.existsSync(path.join(D, 'delisting-register-1.0.2.json.gz')), false);
+  const fc = JSON.parse(fs.readFileSync(path.join(D, 'fetch-candidates-1.0.3.json'), 'utf8'));
+  const rg = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(D, 'delisting-register-1.0.3.json.gz'))).toString('utf8'));
+  assert.ok(X.assertRedacted(fc) && X.assertRedacted(rg));
+  assert.equal(fc.count, 4322); assert.equal(rg.count, 12161);
+  const c = LR.createFetchCandidates(ROOT);
+  assert.equal(c.count, 4322);
+  assert.ok(c.buckets().length > 3 && c.countsByEndYearBucket(c.buckets()[0]).chains > 0);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'v12-listref-c-'));
+  fs.mkdirSync(path.join(tmp, path.dirname(LR.CANDIDATES)), { recursive: true });
+  fs.writeFileSync(path.join(tmp, LR.CANDIDATES), JSON.stringify({ ...fc, columns: ['ticker', 'cik', 'startYearBucket', 'endYearBucket'] }));
+  assert.throws(() => LR.createFetchCandidates(tmp), /provider row metadata/);
   fs.rmSync(tmp, { recursive: true, force: true });
 });

@@ -37,6 +37,29 @@ function validate(doc) {
   return true;
 }
 
+// Public delisted-listing fetch candidates (counts only; LISTREF 1.0.3 redaction after the independent V12 review). Row-level
+// provider metadata (ticker, exchange, provider dates, endSource, link grade, day differences) must not be in the repository.
+const CANDIDATES = 'docs/quant-recovery/v12/listref/fetch-candidates-1.0.3.json';
+const CANDIDATES_SCHEMA = 'v12-listref-fetch-candidates-1.0.3';
+const CANDIDATE_COLUMNS = ['chainId', 'cik', 'startYearBucket', 'endYearBucket'];
+function validateCandidates(doc) {
+  if (!doc || doc.schemaVersion !== CANDIDATES_SCHEMA) fail('candidates schemaVersion');
+  if (JSON.stringify(doc.columns) !== JSON.stringify(CANDIDATE_COLUMNS)) fail('candidates columns (provider row metadata not allowed)');
+  if (!Array.isArray(doc.rows) || doc.rows.length !== doc.count) fail('candidates rows');
+  for (const r of doc.rows) {
+    if (!Array.isArray(r) || r.length !== 4 || !/^[0-9a-f]{16}$/.test(r[0]) || (r[1] !== null && !/^[0-9]+$/.test(r[1]))) fail('candidates row');
+    for (const b of [r[2], r[3]]) if (!/^[0-9]{4}-[0-9]{4}$/.test(b) || +b.slice(5) - +b.slice(0, 4) !== 4) fail('candidates year bucket');
+  }
+  return true;
+}
+function createFetchCandidates(root, options = {}) {
+  let doc;
+  try { doc = JSON.parse(fs.readFileSync(path.join(root, options.file || CANDIDATES), 'utf8')); } catch (e) { fail('candidates missing or json'); }
+  validateCandidates(doc);
+  const byBucket = doc.countsByEndYearBucket || {};
+  return Object.freeze({ count: doc.count, countsByEndYear: y => (doc.countsByEndYear || {})[String(y)] || null, countsByEndYearBucket: b => byBucket[b] || null, buckets: () => Object.keys(byBucket).sort() });
+}
+
 function createListingReference(root, options = {}) {
   const file = path.join(root, options.register || REGISTER);
   let raw;
@@ -73,4 +96,4 @@ function createListingReference(root, options = {}) {
   });
 }
 
-module.exports = { REGISTER, SCHEMA, COLUMNS, READINESS, createListingReference, validate };
+module.exports = { REGISTER, SCHEMA, COLUMNS, READINESS, createListingReference, validate, CANDIDATES, CANDIDATE_COLUMNS, createFetchCandidates, validateCandidates };
