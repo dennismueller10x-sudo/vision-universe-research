@@ -31,5 +31,13 @@ Nur ein Modus gleichzeitig; der Deploy-Workflow lässt nur diese drei Formen zu.
 5. `tax_behavior` des bestehenden Preises: ist er `unspecified`, verlangt Stripe Tax `inclusive` – ein Preis lässt sich nicht
    ändern; nur dann wäre ein neuer Preis mit gleichem Betrag nötig (eigene Freigabe).
 
+## Befund Stripe (29.10.2026, Lauf „Konten — Stripe Live prüfen“ #2)
+
+- Preis `tax_behavior: inclusive` – richtig für den Bruttopreis; kein neuer Preis nötig, auch nicht für Stripe Tax.
+- Stripe Tax: Status `pending` (nicht eingerichtet), keine Registrierungen, keine Steuersätze, **keine Steuernummer/USt-IdNr.
+  für den Rechnungsausweis hinterlegt**. Mit `STRIPE_TAX_MODE = "none"` weisen Stripe-Belege keine USt aus.
+- Unternehmensangaben: „RAM Consulting UG (haftungsbeschränkt)“, Land DE, Website visionuniverse.de; Kontoauszug
+  „VISION UNIVERSE“ (kein Privatname); Support-E-Mail und -URL **leer**, kein Logo/Icon.
+
 Der Lesecheck „Konten — Stripe prüfen“ meldet Steuereinstellungen, Registrierungen, Steuersätze und Steuer-IDs des Kontos,
 ohne etwas zu ändern.

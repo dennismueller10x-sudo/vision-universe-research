@@ -52,6 +52,17 @@ Segmente bei Brevo (ergeben sich aus Listen und Merkmal, keine eigenen Objekte n
 registriert = Liste „Nutzer“; Newsletter bestätigt = Liste 4; Free/Pro = Listen bzw. `VU_TARIF`.
 Für Werbung nur Liste 4 verwenden – nie eine Schnittmenge mit A ohne Liste 4.
 
+## Stand Produktion (29.10.2026, Lauf „Konten — Produktivstart einspielen“ #1)
+
+- Angelegt: Ordner „Vision Universe App“, Listen **11** Nutzer, **12** Free, **13** Pro, Merkmal `VU_TARIF`; eingetragen in
+  `[env.production.vars]`. Noch keine Kontakte in diesen Listen (Abgleich aus).
+- Liste 4 „VU | Newsletter“: 137 Kontakte. Von 1 bestätigten Konto ist 1 schon Brevo-Kontakt und in Liste 4 (über die
+  Landingpage angemeldet), 0 gesperrt.
+- **Blocker für B:** Brevo meldet die DOI-Vorlage „VU | Newsletter | DE | API Double Opt In | v1“ (id 8) mit
+  `doiTemplate: false`. Der Worker verlangt eine echte DOI-Vorlage und bricht sonst ab (`DOI_TEMPLATE_MISSING`, Einwilligung
+  `failed`, keine Mail). Dieselbe Prüfung macht die Landingpage (`landing/server/newsletter.mjs`). Vor `VU_NEWSLETTER = "true"`
+  in Brevo die Vorlage als Double-Opt-in-Vorlage anlegen bzw. markieren (Kategorie „Double opt-in“) und den Lauf wiederholen.
+
 ## Einrichten
 
 1. Probelauf: Workflow „Konten — Brevo einrichten“ (`scripts/account/brevo-setup.mjs`) ohne Anwenden. Meldet Ordner, Listen,
