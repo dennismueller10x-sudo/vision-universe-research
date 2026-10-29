@@ -84,7 +84,18 @@ Bewertung).
 - **Python-Gegenprüfung** (`python-check-1.1.0.json`, `python3 -I verify_spxpop.py`): eigener Parser der Rohdokumente, eigene
   Kette (nur CUSIP/Name), eigene Umsetzung der Split-Regel, eigene Fondsreferenz; Vergleich je Mitglied mit dem JS-Detail und
   je Periode; dazu eine alternative Entscheidungsmethode (kombinierter Fehler über s ∈ {1} ∪ Verhältnisse) als Sensitivität.
-  Kennzahlen: siehe Abschnitt „Python-Gegenprüfung (Ergebnis)“ unten.
+  Kennzahlen: siehe Abschnitt „Python-Gegenprüfung (Ergebnis)“.
+
+## Python-Gegenprüfung (Ergebnis, `python-check-1.1.0.json`)
+
+SPY, IWB, QQQ, IWM aus den Rohdokumenten neu geparst (Laufzeit 7 min 22 s). Mitgliederebene (gleicher Fonds, Stichtag, Name
+bzw. eindeutiges Gewicht): 173.564 Verknüpfungen verglichen, **Split-Klasse gleich 99,98 %** (173.523), Rendite gleich
+(≤ 1e-6) 173.533, ≤ 0,1 PP 173.537; 27 Abweichungen (Python verknüpft wenige Namen, die JS als Austritt führt – z. B.
+McCormick „NVS“, HCA mit Fußnotenbuchstaben; und umgekehrt einzelne SPLIT/AMBIGUOUS-Grenzfälle wegen anderer Kettenbasis),
+867 Python-Verknüpfungen ohne JS-Gegenstück. Periodenebene: Python-Fehler gegen SPY (nur eigene Kette, Austritte 0 %) ab
+2019-09 Median 0,05 / max. 0,24 PP – wie JS. Alternative Entscheidungsmethode (Sensitivität): anderer Split-Faktor bei
+0,65 % des Gewichts, mehrdeutig 2.512 statt 725 Paare – die Regelentscheidung ist für den Großteil robust, an den
+Grenzfällen nicht.
 
 ## Regeländerungen (offen gelegt)
 
