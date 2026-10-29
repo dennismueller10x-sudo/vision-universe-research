@@ -47,6 +47,18 @@ Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird n
 5. **Wiederherstellung:** Marke `[v13-archive:get]`, dann `transfer.sh get …` und `restore-archive.sh`.
    - In künftigen Actions-Workflows: direkt über den S3-Treiber (`scripts/market/storage/s3-driver.mjs`) lesen und mit dem Secret `V13_ARCHIVE_PRIVATE_KEY` entschlüsseln.
 
-## Stand
+## Stand (29.10.2026)
 
-Siehe Abschnitt „Archiv“ in [../../HANDOVER_V13.md](../../HANDOVER_V13.md).
+| Schritt | Ergebnis |
+|---|---|
+| Bau und lokale Wiederherstellung | ausgeführt: 6/6 Teile und 11.576 Dateien hash-identisch; Reihen laden hashgebunden |
+| R2-Lesezugriff und Kapazität (Run 40943780307, `[v13-archive:usage]`) | Eimer 95.170 Objekte, 4.775.085.305 B; mit Archiv 5,96 GB, unter der Schranke von 8 GB; Präfix leer |
+| Upload | **nicht ausgeführt**: Die Sitzungsumgebung erreicht `*.r2.cloudflarestorage.com` nicht (Netzwerkrichtlinie). Nötig ist die Freigabe dieses Hosts in den Netzwerkeinstellungen der Umgebung; danach `[v13-archive:put]` → `transfer.sh put` → `[v13-archive:verify]` → `[v13-archive:get]` → `restore-archive.sh` |
+| Ablage des privaten Archivschlüssels | Owner-Schritt (Secret `V13_ARCHIVE_PRIVATE_KEY` und offline) |
+
+Bis zum Upload liegt das Archiv nur in der temporären Sitzung. Bei Verlust lässt es sich größtenteils neu erzeugen:
+- Tiingo-Abruf über `claude/v13-delisted-fetch-4ho3rd`, 8.620 Anfragen;
+- SEC-Dokumente über die Abrufskripte;
+- Studien neu rechnen.
+
+Die Register binden jede Reihe per SHA-256, sodass ein Neubau prüfbar ist.
