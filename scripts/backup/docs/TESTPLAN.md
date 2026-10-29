@@ -20,11 +20,15 @@
 | T31–T32 | Legal Hold ohne Ablaufdatum |
 | T33–T35 | Schlüsselprüfung lehnt Löschrecht und fehlende Bucket-Beschränkung ab |
 | T36 | Redaktion von Secrets |
+| T37–T39 | Schlüssel-Anlage mit exakten Rechten; Löschschlüssel nur für Test-Buckets; Schreibschlüssel nur bei Object Lock |
+
+Zusätzlich: `tests/account-backup-restore-test.sh` (A01–A13) prüft die Konten-Datenbanksicherung mit dem unveränderten Workflow-Schritt, synthetischen Daten und einem Wegwerf-Schlüssel, bis zur Wiederherstellung in eine leere Datenbank.
 
 **Grenze:** Der Emulator bildet S3-Semantik nach, nicht Backblaze. Die B2-spezifischen Punkte prüft Stufe 2.
 
 ## Stufe 2: echter Test-Bucket bei Backblaze, nur synthetische Daten (nach Freigabe)
 
+Ausführung: `tests/b2-acceptance.py now` und zwei Tage später `later` (Anleitung: [B2_PHASE2_IPHONE.md](B2_PHASE2_IPHONE.md)).
 Ein **eigener Test-Bucket** im Backup-Konto, getrennt vom späteren Produktions-Bucket. Er liegt im Freikontingent von 10 GB und enthält nur Daten aus `tests/`.
 
 | ID | Prüft | Erwartung | Warum offen |

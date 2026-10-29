@@ -18,6 +18,7 @@ scripts/backup/
   bin/vu-pit-recover.py   Zustand zu einem Zeitpunkt aus Objektversionen (nach Angriff/Fehler)
   bin/vu-anchor-lock.py   Legal Hold auf die Erstsicherung (nur mit Anker-Schlüssel)
   bin/vu-key-check.py     prüft vor jedem Lauf, dass der B2-Schlüssel NICHT löschen darf
+  bin/vu-b2-make-key.py   legt B2-Schlüssel mit genau den Rechten einer Rolle an (einmalig, Wegwerf-Shell)
   bin/vu-status.py        Statusbericht (Markdown, JSON, Kurzfassung für Benachrichtigung)
   sources/                git (Mirror), api_export.py (GitHub-Metadaten, Artefakte,
                           Cloudflare KV/DNS/Worker, Brevo), r2 (rclone), supabase (pg_dump)
@@ -48,4 +49,4 @@ VU_TEST_PYTHON=/tmp/vu-venv/bin/python scripts/backup/tests/synthetic-test.sh
 
 Der Test braucht `restic`, `rclone`, `git` und `python3`. Er startet einen lokalen S3-Emulator mit Versionierung und Object Lock sowie einen API-Fake. Er stellt keine Verbindung zu echten Diensten her.
 
-Anleitungen: [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md), [docs/MOBILE.md](docs/MOBILE.md), [docs/RESTORE.md](docs/RESTORE.md), [docs/TESTPLAN.md](docs/TESTPLAN.md).
+Anleitungen: [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md), [docs/MOBILE.md](docs/MOBILE.md), [docs/RESTORE.md](docs/RESTORE.md), [docs/TESTPLAN.md](docs/TESTPLAN.md), [docs/B2_PHASE2_IPHONE.md](docs/B2_PHASE2_IPHONE.md), [docs/ACCOUNT_DB_BACKUP.md](docs/ACCOUNT_DB_BACKUP.md).

@@ -55,6 +55,9 @@ class H(BaseHTTPRequestHandler):
         u = urllib.parse.urlsplit(self.path)
         q = urllib.parse.parse_qs(u.query)
         p = u.path
+        if p == "/b2auth/master":
+            return self.send(200, {"accountId": "acc", "authorizationToken": "tok",
+                                   "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2"}}})
         if p.startswith("/b2auth/"):
             role = p.split("/")[2]
             buckets = [] if role == "unrestricted" else [{"id": "b1", "name": "vu-backup"}]
@@ -114,6 +117,20 @@ class H(BaseHTTPRequestHandler):
             return self.send(401, {"message": "Key not authorized"})
         self.send(404, {})
 
+
+def do_post(self):
+    body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+    if self.path == "/b2/b2api/v3/b2_list_buckets":
+        locked = body.get("bucketName") != "unlocked-test"
+        return self.send(200, {"buckets": [{"bucketId": "b1", "bucketName": body.get("bucketName"),
+                                            "fileLockConfiguration": {"value": {"isFileLockEnabled": locked}}}]})
+    if self.path == "/b2/b2api/v3/b2_create_key":
+        return self.send(200, {"keyName": body["keyName"], "applicationKeyId": "synthetic-key-id",
+                               "applicationKey": "synthetic-app-key", "capabilities": body["capabilities"]})
+    self.send(404, {})
+
+
+H.do_POST = do_post
 
 if __name__ == "__main__":
     ThreadingHTTPServer(("127.0.0.1", int(sys.argv[1])), H).serve_forever()

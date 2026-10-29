@@ -213,6 +213,16 @@ check "T33 Schreibschluessel ohne Loeschrecht wird akzeptiert" test "$(cat "$T/k
 check "T34 Schluessel mit deleteFiles wird abgelehnt (fail closed)" test "$(cat "$T/key-writer-with-delete")" -eq 5
 check "T35 Schluessel ohne Bucket-Beschraenkung wird abgelehnt" test "$(cat "$T/key-unrestricted")" -eq 5
 
+for role in writer anchor; do
+  B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MASTER_KEY=k \
+    "$PY" "$ROOT/bin/vu-b2-make-key.py" --bucket vu-backup-test --role "$role" --name "t-$role" > "$T/mk-$role.json" 2>&1
+done
+check "T37 Schluessel-Anlage: writer bekommt genau list/read/write, kein deleteFiles" python3 -c 'import json,sys; t=open(sys.argv[1]).read(); d=json.loads(t[:t.rindex("}")+1]); sys.exit(0 if d["capabilities"]==["listBuckets","listFiles","readFiles","writeFiles"] else 1)' "$T/mk-writer.json"
+B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MASTER_KEY=k "$PY" "$ROOT/bin/vu-b2-make-key.py" --bucket vu-backup-prod --role test-deleter --name x >/dev/null 2>&1; rc=$?
+check "T38 Loeschschluessel fuer Nicht-Test-Bucket verweigert" test "$rc" -ne 0
+B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MASTER_KEY=k "$PY" "$ROOT/bin/vu-b2-make-key.py" --bucket unlocked-test --role writer --name x >/dev/null 2>&1; rc=$?
+check "T39 Schreibschluessel nur fuer Bucket mit Object Lock" test "$rc" -ne 0
+
 # ---------------------------------------------------------------- Redaktion
 out=$(VU_SECRET_VARS="MYSECRET" MYSECRET="super-secret-value" bash -c 'echo "url https://u:pw@host token super-secret-value Authorization: Bearer abcdef ghp_abcdefghijklmnop1234" | python3 '"$ROOT"'/lib/redact.py')
 check "T36 Redaktion maskiert Werte, URL-Zugaenge, Bearer und PATs" bash -c "! echo '$out' | grep -qE 'super-secret|u:pw|abcdef$|ghp_abcdefghijklmnop1234'"
