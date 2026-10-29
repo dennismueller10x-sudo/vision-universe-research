@@ -16,7 +16,8 @@ const ROOT = path.resolve(__dirname, '../../../..');
 const identity = require(path.join(ROOT, 'core/identity.js'));
 const RS = require(path.join(ROOT, 'quant/engines/return-series.js'));
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
-const PRIV = arg('--private'), OUT = arg('--out');
+const PRIV = arg('--private'), OUT = arg('--out'), RULES_VERSION = arg('--rules') || '1.2.0';
+if (!['1.1.0', '1.2.0'].includes(RULES_VERSION)) throw Error('RULES_VERSION');
 const SERIES_DIR = path.join(ROOT, 'quant/data/market/discover-series-long');
 
 // ---------- candidates ----------
@@ -100,17 +101,12 @@ const DATE_TOL = 0.05;
 // ---------- position keys ----------
 const snaps = JSON.parse(fs.readFileSync(path.join(PRIV, 'work/snapshots.json'), 'utf8')).snapshots;
 const keys = new Map();
-const validCusip = c => typeof c === 'string' && /^[0-9A-Z]{8}[0-9]$/.test(c) && !/^0+$/.test(c);
-function keyOf(s, m) {
-  if (s.kind === 'NPORT' && validCusip(m.cusip)) return 'C:' + m.cusip;
-  const n = L.normName(m.title && L.normName(m.title).cls ? m.title : m.name);
-  return 'N:' + n.key + '|' + (n.cls || '');
-}
 for (const s of snaps) {
   if (!s.validation.valid) continue;
-  for (const m of s.members) {
-    const k = keyOf(s, m); m.key = k;
-    if (!keys.has(k)) keys.set(k, { key: k, cusip: k.startsWith('C:') ? k.slice(2) : null, names: new Set(), obs: [], funds: new Set() });
+  const pk = L.positionKeys(s);
+  for (const [i, m] of s.members.entries()) {
+    const k = pk[i];
+    if (!keys.has(k)) keys.set(k, { key: k, cusip: k.startsWith('C:') ? k.slice(2, 11) : null, names: new Set(), obs: [], funds: new Set() });
     const e = keys.get(k);
     e.names.add(m.name); if (m.title) e.names.add(m.title);
     e.obs.push({ date: s.date, price: m.value / m.shares });
@@ -153,6 +149,19 @@ for (const e of keys.values()) {
     const adjacent = withBar.length === 1 || (pos > 0 && ok(id, withBar[pos - 1])) || (pos < withBar.length - 1 && ok(id, withBar[pos + 1]));
     dateMap[d] = adjacent ? id : 'T3_ISOLATED_CONFIRMATION';
   });
+  // rules 1.2.0: CUSIP continuity. A CUSIP identifies one security. When the per-date rule maps the CUSIP key to one
+  // listing c at >= 2 dates and to no other listing, every further date where c has a bar within 0.25 is mapped to c
+  // (weekly bars cannot bracket large moves inside the holding week; the 0.25 guard keeps unreflected splits out).
+  let continuity = 0;
+  if (RULES_VERSION === '1.2.0' && e.cusip) {
+    const ids1 = Object.values(dateMap).filter(v => v.startsWith('ref_'));
+    const uniq = [...new Set(ids1)];
+    if (uniq.length === 1 && ids1.length >= 2) {
+      const c = uniq[0];
+      dates.forEach(([d], i) => { const v = dev.get(c)[i]; if (!dateMap[d].startsWith('ref_') && v !== null && v <= 0.25) { dateMap[d] = c; continuity++; } });
+    }
+  }
+  if (continuity) dateStatusCounts.CUSIP_CONTINUITY_ADDED = (dateStatusCounts.CUSIP_CONTINUITY_ADDED || 0) + continuity;
   const tier = exact.size && e.cusip ? 'T1_CUSIP_NAME_EXACT' : 'T2_NAME_UNIQUE';
   const mappedIds = [...new Set(Object.values(dateMap).filter(v => v.startsWith('ref_')))];
   for (const v of Object.values(dateMap)) { const k = v.startsWith('ref_') ? tier : v; dateStatusCounts[k] = (dateStatusCounts[k] || 0) + 1; }
@@ -163,7 +172,7 @@ for (const e of keys.values()) {
   let cik = mc.length === 1 ? mc[0] : null, cikSource = cik ? 'LISTING' : null;
   if (!cik) { const s2 = new Set(); for (const n of norms) for (const c of nameCiks.get(n.key) || []) s2.add(c); if (s2.size === 1) { cik = [...s2][0]; cikSource = 'EDGAR_NAME_UNIQUE'; } else if (s2.size > 1) cikSource = 'EDGAR_NAME_AMBIGUOUS'; }
   result[e.key] = { names: [...e.names].slice(0, 4), cusip: e.cusip, funds: [...e.funds], keyTier, tier: mappedIds.length ? tier : null, nameMatch: exact.size ? 'EXACT' : fuzzy.size ? 'FUZZY' : 'NONE',
-    pool: pool.slice(0, 8), mappedIds, cik, cikSource, dateMap };
+    pool: pool.slice(0, 8), mappedIds, cik, cikSource, continuityDates: continuity, dateMap };
 }
-fs.writeFileSync(OUT, JSON.stringify({ schemaVersion: 'v12-indexpop-mapping-1.1.0', rulesVersion: '1.1.0', candidates: cand.size, excludedNonCommon, keys: keys.size, tierCounts, dateStatusCounts, mapping: result }));
+fs.writeFileSync(OUT, JSON.stringify({ schemaVersion: 'v12-indexpop-mapping-' + RULES_VERSION, rulesVersion: RULES_VERSION, candidates: cand.size, excludedNonCommon, keys: keys.size, tierCounts, dateStatusCounts, mapping: result }));
 console.log(JSON.stringify({ candidates: cand.size, excludedNonCommon, keys: keys.size, tierCounts, dateStatusCounts }));

@@ -24,26 +24,40 @@
  "mapping": {
   "candidates": 5865,
   "excludedNonCommonListings": 314,
-  "positionKeys": 13131,
+  "positionKeys": 12770,
   "keyTiers": {
-   "T2_NAME_UNIQUE": 2787,
-   "UNMATCHED": 6645,
+   "T2_NAME_UNIQUE": 2792,
+   "UNMATCHED": 6273,
    "T1_CUSIP_NAME_EXACT": 3425,
-   "T3_UNCERTAIN": 274
+   "T3_UNCERTAIN": 280
   },
   "keyDateStatus": {
-   "T2_NAME_UNIQUE": 54781,
-   "T3_PRICE_NOT_CONFIRMED": 2458,
+   "T2_NAME_UNIQUE": 54885,
+   "T3_PRICE_NOT_CONFIRMED": 2463,
    "T3_ISOLATED_CONFIRMATION": 189,
-   "UNMATCHED": 59875,
-   "T3_NO_BAR_AT_DATE": 2467,
+   "UNMATCHED": 59460,
+   "T3_NO_BAR_AT_DATE": 2469,
    "T1_CUSIP_NAME_EXACT": 68565,
-   "T3_AMBIGUOUS": 442,
+   "T3_AMBIGUOUS": 473,
    "T3_CLASS_CONFLICT": 87
   }
  },
  "assessment": {
   "DIA": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 19,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 26,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 32,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "DJIA",
    "dates": 65,
    "first": "1998-10-31",
@@ -75,6 +89,8 @@
      "unmatchedPctN": 20,
      "t3PctN": 10,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 70,
+     "mappedAnySeriesPctW": 73.13,
      "qualifyingDates": 0
     },
     "1999": {
@@ -87,6 +103,8 @@
      "unmatchedPctN": 13.33,
      "t3PctN": 10,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 76.67,
+     "mappedAnySeriesPctW": 78.09,
      "qualifyingDates": 0
     },
     "2000": {
@@ -99,6 +117,8 @@
      "unmatchedPctN": 10,
      "t3PctN": 10,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 80,
+     "mappedAnySeriesPctW": 79.11,
      "qualifyingDates": 0
     },
     "2001": {
@@ -111,6 +131,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 23.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 70,
+     "mappedAnySeriesPctW": 76.3,
      "qualifyingDates": 0
     },
     "2002": {
@@ -123,6 +145,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 10,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 83.33,
+     "mappedAnySeriesPctW": 86.68,
      "qualifyingDates": 0
     },
     "2003": {
@@ -135,6 +159,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 10,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 86.67,
+     "mappedAnySeriesPctW": 90.47,
      "qualifyingDates": 0
     },
     "2004": {
@@ -147,6 +173,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 3.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.87,
      "qualifyingDates": 0
     },
     "2005": {
@@ -159,6 +187,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 3.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 94.68,
      "qualifyingDates": 0
     },
     "2006": {
@@ -171,6 +201,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 3.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 94.97,
      "qualifyingDates": 0
     },
     "2007": {
@@ -183,6 +215,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 3.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 94.91,
      "qualifyingDates": 0
     },
     "2008": {
@@ -195,6 +229,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 3.33,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 96.1,
      "qualifyingDates": 0
     },
     "2009": {
@@ -207,6 +243,8 @@
      "unmatchedPctN": 5,
      "t3PctN": 1.67,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 95.37,
      "qualifyingDates": 0
     },
     "2010": {
@@ -219,6 +257,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.4,
      "qualifyingDates": 0
     },
     "2011": {
@@ -231,6 +271,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.08,
      "qualifyingDates": 0
     },
     "2012": {
@@ -243,6 +285,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.24,
      "qualifyingDates": 0
     },
     "2013": {
@@ -255,6 +299,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.33,
      "qualifyingDates": 0
     },
     "2014": {
@@ -267,6 +313,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 0,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.8,
      "qualifyingDates": 0
     },
     "2015": {
@@ -279,6 +327,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 3.33,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.41,
      "qualifyingDates": 0
     },
     "2016": {
@@ -291,6 +341,8 @@
      "unmatchedPctN": 6.67,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 3.33,
+     "mappedAnySeriesPctN": 93.33,
+     "mappedAnySeriesPctW": 93.27,
      "qualifyingDates": 0
     },
     "2017": {
@@ -303,6 +355,8 @@
      "unmatchedPctN": 5,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 5,
+     "mappedAnySeriesPctN": 95,
+     "mappedAnySeriesPctW": 94.76,
      "qualifyingDates": 0
     },
     "2018": {
@@ -315,6 +369,8 @@
      "unmatchedPctN": 5,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 6.67,
+     "mappedAnySeriesPctN": 95,
+     "mappedAnySeriesPctW": 95.36,
      "qualifyingDates": 0
     },
     "2019": {
@@ -327,6 +383,8 @@
      "unmatchedPctN": 5,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 6.67,
+     "mappedAnySeriesPctN": 95,
+     "mappedAnySeriesPctW": 96.8,
      "qualifyingDates": 0
     },
     "2020": {
@@ -339,6 +397,8 @@
      "unmatchedPctN": 3.31,
      "t3PctN": 2.42,
      "mappedNotQualifiedPctN": 5.81,
+     "mappedAnySeriesPctN": 94.27,
+     "mappedAnySeriesPctW": 97.34,
      "qualifyingDates": 0
     },
     "2021": {
@@ -351,6 +411,8 @@
      "unmatchedPctN": 3.31,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 7.42,
+     "mappedAnySeriesPctN": 96.69,
+     "mappedAnySeriesPctW": 99.03,
      "qualifyingDates": 0
     },
     "2022": {
@@ -363,6 +425,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 0,
      "mappedNotQualifiedPctN": 6.67,
+     "mappedAnySeriesPctN": 96.67,
+     "mappedAnySeriesPctW": 99.17,
      "qualifyingDates": 0
     },
     "2023": {
@@ -375,6 +439,8 @@
      "unmatchedPctN": 3.33,
      "t3PctN": 0.83,
      "mappedNotQualifiedPctN": 6.67,
+     "mappedAnySeriesPctN": 95.83,
+     "mappedAnySeriesPctW": 98.28,
      "qualifyingDates": 0
     },
     "2024": {
@@ -387,6 +453,8 @@
      "unmatchedPctN": 0.83,
      "t3PctN": 0.83,
      "mappedNotQualifiedPctN": 6.67,
+     "mappedAnySeriesPctN": 98.33,
+     "mappedAnySeriesPctW": 99.82,
      "qualifyingDates": 0
     },
     "2025": {
@@ -399,6 +467,8 @@
      "unmatchedPctN": 0,
      "t3PctN": 0.83,
      "mappedNotQualifiedPctN": 3.33,
+     "mappedAnySeriesPctN": 99.17,
+     "mappedAnySeriesPctW": 99.35,
      "qualifyingDates": 0
     },
     "2026": {
@@ -411,11 +481,131 @@
      "unmatchedPctN": 0,
      "t3PctN": 1.11,
      "mappedNotQualifiedPctN": 4.44,
+     "mappedAnySeriesPctN": 98.89,
+     "mappedAnySeriesPctW": 96.92,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 3.885,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.8,
+     "dates": 21,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 20,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.56,
+     "dates": 18,
+     "reasons": {
+      "UNMATCHED": 18
+     }
+    },
+    {
+     "securityId": "ref_CAT",
+     "cik": 18230,
+     "name": "Caterpillar Inc",
+     "meanWeightPct": 0.491,
+     "dates": 2,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "cik": 1652044,
+     "name": "Alphabet Inc",
+     "meanWeightPct": 0.144,
+     "dates": 1,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 1
+     }
+    },
+    {
+     "securityId": "ref_BA",
+     "cik": 12927,
+     "name": "Boeing Co/The",
+     "meanWeightPct": 0.142,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_HON",
+     "cik": 773840,
+     "name": "Honeywell International Inc",
+     "meanWeightPct": 0.093,
+     "dates": 1,
+     "reasons": {
+      "T3_AMBIGUOUS": 1
+     }
+    },
+    {
+     "securityId": "ref_XOM",
+     "cik": 2115436,
+     "name": "Exxon Mobil Corp",
+     "meanWeightPct": 0.047,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_INTC",
+     "cik": 50863,
+     "name": "Intel Corp",
+     "meanWeightPct": 0.012,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_OGN",
+     "cik": 1821825,
+     "name": "Organon & Co",
+     "meanWeightPct": 0,
+     "dates": 1,
+     "reasons": {
+      "NOT_QUALIFIED:MISSING_WEEKS": 1
+     }
+    }
+   ]
   },
   "IWB": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 14,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 24,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "R1000",
    "dates": 55,
    "first": "2005-12-31",
@@ -447,6 +637,8 @@
      "unmatchedPctN": 46.39,
      "t3PctN": 4.48,
      "mappedNotQualifiedPctN": 2.24,
+     "mappedAnySeriesPctN": 49.13,
+     "mappedAnySeriesPctW": 68.74,
      "qualifyingDates": 0
     },
     "2006": {
@@ -459,6 +651,8 @@
      "unmatchedPctN": 44.1,
      "t3PctN": 3.83,
      "mappedNotQualifiedPctN": 2.32,
+     "mappedAnySeriesPctN": 52.07,
+     "mappedAnySeriesPctW": 70.65,
      "qualifyingDates": 0
     },
     "2007": {
@@ -471,6 +665,8 @@
      "unmatchedPctN": 42.18,
      "t3PctN": 3.51,
      "mappedNotQualifiedPctN": 2.42,
+     "mappedAnySeriesPctN": 54.31,
+     "mappedAnySeriesPctW": 73.75,
      "qualifyingDates": 0
     },
     "2008": {
@@ -483,6 +679,8 @@
      "unmatchedPctN": 39.77,
      "t3PctN": 3.81,
      "mappedNotQualifiedPctN": 2.45,
+     "mappedAnySeriesPctN": 56.42,
+     "mappedAnySeriesPctW": 77,
      "qualifyingDates": 0
     },
     "2009": {
@@ -495,6 +693,8 @@
      "unmatchedPctN": 38.45,
      "t3PctN": 2.94,
      "mappedNotQualifiedPctN": 2.48,
+     "mappedAnySeriesPctN": 58.61,
+     "mappedAnySeriesPctW": 78.51,
      "qualifyingDates": 0
     },
     "2010": {
@@ -507,6 +707,8 @@
      "unmatchedPctN": 36.93,
      "t3PctN": 2.6,
      "mappedNotQualifiedPctN": 2.55,
+     "mappedAnySeriesPctN": 60.47,
+     "mappedAnySeriesPctW": 79.34,
      "qualifyingDates": 0
     },
     "2011": {
@@ -519,6 +721,8 @@
      "unmatchedPctN": 35.08,
      "t3PctN": 2.08,
      "mappedNotQualifiedPctN": 2.54,
+     "mappedAnySeriesPctN": 62.84,
+     "mappedAnySeriesPctW": 80.15,
      "qualifyingDates": 0
     },
     "2012": {
@@ -531,18 +735,22 @@
      "unmatchedPctN": 33.32,
      "t3PctN": 2.17,
      "mappedNotQualifiedPctN": 2.73,
+     "mappedAnySeriesPctN": 64.51,
+     "mappedAnySeriesPctW": 81.99,
      "qualifyingDates": 0
     },
     "2013": {
      "dates": 2,
      "members": 1009,
-     "coveredPctN": 63.28,
-     "coveredPctW": 77.19,
-     "gapPctN": 36.72,
-     "gapPctW": 22.81,
-     "unmatchedPctN": 31.47,
+     "coveredPctN": 63.33,
+     "coveredPctW": 77.2,
+     "gapPctN": 36.67,
+     "gapPctW": 22.8,
+     "unmatchedPctN": 31.42,
      "t3PctN": 2.43,
      "mappedNotQualifiedPctN": 2.82,
+     "mappedAnySeriesPctN": 66.15,
+     "mappedAnySeriesPctW": 81.54,
      "qualifyingDates": 0
     },
     "2014": {
@@ -555,6 +763,8 @@
      "unmatchedPctN": 30.64,
      "t3PctN": 2.61,
      "mappedNotQualifiedPctN": 2.8,
+     "mappedAnySeriesPctN": 66.75,
+     "mappedAnySeriesPctW": 81.73,
      "qualifyingDates": 0
     },
     "2015": {
@@ -567,6 +777,8 @@
      "unmatchedPctN": 29.22,
      "t3PctN": 2.53,
      "mappedNotQualifiedPctN": 3.06,
+     "mappedAnySeriesPctN": 68.25,
+     "mappedAnySeriesPctW": 83.85,
      "qualifyingDates": 0
     },
     "2016": {
@@ -579,6 +791,8 @@
      "unmatchedPctN": 26.56,
      "t3PctN": 1.6,
      "mappedNotQualifiedPctN": 3.15,
+     "mappedAnySeriesPctN": 71.84,
+     "mappedAnySeriesPctW": 87.56,
      "qualifyingDates": 0
     },
     "2017": {
@@ -591,18 +805,22 @@
      "unmatchedPctN": 23.04,
      "t3PctN": 1.47,
      "mappedNotQualifiedPctN": 3.26,
+     "mappedAnySeriesPctN": 75.49,
+     "mappedAnySeriesPctW": 89.82,
      "qualifyingDates": 0
     },
     "2018": {
      "dates": 2,
      "members": 985,
-     "coveredPctN": 68.17,
-     "coveredPctW": 76,
-     "gapPctN": 31.83,
-     "gapPctW": 24,
-     "unmatchedPctN": 27.31,
-     "t3PctN": 1.47,
-     "mappedNotQualifiedPctN": 3.05,
+     "coveredPctN": 73.25,
+     "coveredPctW": 83.41,
+     "gapPctN": 26.75,
+     "gapPctW": 16.59,
+     "unmatchedPctN": 21.57,
+     "t3PctN": 1.67,
+     "mappedNotQualifiedPctN": 3.5,
+     "mappedAnySeriesPctN": 76.75,
+     "mappedAnySeriesPctW": 90.43,
      "qualifyingDates": 0
     },
     "2019": {
@@ -615,6 +833,8 @@
      "unmatchedPctN": 15.92,
      "t3PctN": 1.9,
      "mappedNotQualifiedPctN": 3.75,
+     "mappedAnySeriesPctN": 82.18,
+     "mappedAnySeriesPctW": 94.61,
      "qualifyingDates": 0
     },
     "2020": {
@@ -627,6 +847,8 @@
      "unmatchedPctN": 14.98,
      "t3PctN": 3.49,
      "mappedNotQualifiedPctN": 4.19,
+     "mappedAnySeriesPctN": 81.53,
+     "mappedAnySeriesPctW": 94.28,
      "qualifyingDates": 0
     },
     "2021": {
@@ -639,6 +861,8 @@
      "unmatchedPctN": 12.56,
      "t3PctN": 1.68,
      "mappedNotQualifiedPctN": 4.88,
+     "mappedAnySeriesPctN": 85.76,
+     "mappedAnySeriesPctW": 96.09,
      "qualifyingDates": 0
     },
     "2022": {
@@ -651,6 +875,8 @@
      "unmatchedPctN": 9.62,
      "t3PctN": 1.57,
      "mappedNotQualifiedPctN": 4.84,
+     "mappedAnySeriesPctN": 88.81,
+     "mappedAnySeriesPctW": 97.02,
      "qualifyingDates": 0
     },
     "2023": {
@@ -663,6 +889,8 @@
      "unmatchedPctN": 6.91,
      "t3PctN": 1.36,
      "mappedNotQualifiedPctN": 5.2,
+     "mappedAnySeriesPctN": 91.72,
+     "mappedAnySeriesPctW": 98.07,
      "qualifyingDates": 0
     },
     "2024": {
@@ -675,6 +903,8 @@
      "unmatchedPctN": 5.69,
      "t3PctN": 1.32,
      "mappedNotQualifiedPctN": 5.19,
+     "mappedAnySeriesPctN": 93,
+     "mappedAnySeriesPctW": 98.69,
      "qualifyingDates": 0
     },
     "2025": {
@@ -687,6 +917,8 @@
      "unmatchedPctN": 4.09,
      "t3PctN": 1.29,
      "mappedNotQualifiedPctN": 5.1,
+     "mappedAnySeriesPctN": 94.63,
+     "mappedAnySeriesPctW": 98.87,
      "qualifyingDates": 0
     },
     "2026": {
@@ -699,11 +931,282 @@
      "unmatchedPctN": 2.81,
      "t3PctN": 4.61,
      "mappedNotQualifiedPctN": 5.42,
+     "mappedAnySeriesPctN": 92.59,
+     "mappedAnySeriesPctW": 91.66,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 5.815,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "cik": 1652044,
+     "name": "Alphabet Inc",
+     "meanWeightPct": 1.88,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_ABT",
+     "cik": 1800,
+     "name": "Abbott Laboratories",
+     "meanWeightPct": 0.457,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_MS",
+     "cik": 895421,
+     "name": "Morgan Stanley",
+     "meanWeightPct": 0.262,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_USB",
+     "cik": 36104,
+     "name": "US Bancorp",
+     "meanWeightPct": 0.163,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_JCI",
+     "cik": 833444,
+     "name": "Johnson Controls International plc",
+     "meanWeightPct": 0.108,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Bank of New York Mellon Corp/The",
+     "meanWeightPct": 0.105,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard Inc",
+     "meanWeightPct": 0.103,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": "ref_MU",
+     "cik": 723125,
+     "name": "MICRON TECHNOLOGY, INC.",
+     "meanWeightPct": 0.096,
+     "dates": 3,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts Inc",
+     "meanWeightPct": 0.091,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_DD",
+     "cik": 1666700,
+     "name": "DuPont de Nemours Inc",
+     "meanWeightPct": 0.088,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.086,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_MRNA",
+     "cik": 1682852,
+     "name": "Moderna Inc",
+     "meanWeightPct": 0.085,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_SNOW",
+     "cik": 1640147,
+     "name": "Snowflake Inc",
+     "meanWeightPct": 0.084,
+     "dates": 21,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 21
+     }
+    },
+    {
+     "securityId": "ref_LNG",
+     "cik": 3570,
+     "name": "Cheniere Energy Inc",
+     "meanWeightPct": 0.074,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1038357,
+     "name": "Pioneer Natural Resources Co",
+     "meanWeightPct": 0.069,
+     "dates": 19,
+     "reasons": {
+      "UNMATCHED": 19
+     }
+    },
+    {
+     "securityId": "ref_COR",
+     "cik": 1140859,
+     "name": "AmerisourceBergen Corp",
+     "meanWeightPct": 0.066,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 27,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_TSLA",
+     "cik": 1318605,
+     "name": "TESLA, INC.",
+     "meanWeightPct": 0.063,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 4447,
+     "name": "Hess Corp",
+     "meanWeightPct": 0.061,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_META",
+     "cik": 1326801,
+     "name": "Facebook Inc",
+     "meanWeightPct": 0.061,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.06,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1393612,
+     "name": "Discover Financial Services",
+     "meanWeightPct": 0.06,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    },
+    {
+     "securityId": "ref_KDP",
+     "cik": 1418135,
+     "name": "Keurig Dr Pepper Inc",
+     "meanWeightPct": 0.06,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Discovery Inc",
+     "meanWeightPct": 0.055,
+     "dates": 39,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 33,
+      "T3_PRICE_NOT_CONFIRMED": 6
+     }
+    },
+    {
+     "securityId": "ref_IFF",
+     "cik": 51253,
+     "name": "International Flavors & Fragrances Inc",
+     "meanWeightPct": 0.053,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    }
+   ]
   },
   "IWM": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "R2000",
    "dates": 55,
    "first": "2005-12-31",
@@ -735,6 +1238,8 @@
      "unmatchedPctN": 68.92,
      "t3PctN": 2.09,
      "mappedNotQualifiedPctN": 1.94,
+     "mappedAnySeriesPctN": 28.99,
+     "mappedAnySeriesPctW": 31.9,
      "qualifyingDates": 0
     },
     "2006": {
@@ -747,6 +1252,8 @@
      "unmatchedPctN": 68.47,
      "t3PctN": 2.22,
      "mappedNotQualifiedPctN": 1.99,
+     "mappedAnySeriesPctN": 29.31,
+     "mappedAnySeriesPctW": 31.66,
      "qualifyingDates": 0
     },
     "2007": {
@@ -759,6 +1266,8 @@
      "unmatchedPctN": 65.4,
      "t3PctN": 2.63,
      "mappedNotQualifiedPctN": 2.08,
+     "mappedAnySeriesPctN": 31.97,
+     "mappedAnySeriesPctW": 36.14,
      "qualifyingDates": 0
     },
     "2008": {
@@ -771,6 +1280,8 @@
      "unmatchedPctN": 62.72,
      "t3PctN": 3.47,
      "mappedNotQualifiedPctN": 2.55,
+     "mappedAnySeriesPctN": 33.8,
+     "mappedAnySeriesPctW": 39.08,
      "qualifyingDates": 0
     },
     "2009": {
@@ -783,6 +1294,8 @@
      "unmatchedPctN": 61.33,
      "t3PctN": 2.83,
      "mappedNotQualifiedPctN": 2.63,
+     "mappedAnySeriesPctN": 35.84,
+     "mappedAnySeriesPctW": 41.17,
      "qualifyingDates": 0
     },
     "2010": {
@@ -795,6 +1308,8 @@
      "unmatchedPctN": 59.22,
      "t3PctN": 2.73,
      "mappedNotQualifiedPctN": 3.06,
+     "mappedAnySeriesPctN": 38.05,
+     "mappedAnySeriesPctW": 42.2,
      "qualifyingDates": 0
     },
     "2011": {
@@ -807,6 +1322,8 @@
      "unmatchedPctN": 57.77,
      "t3PctN": 2.53,
      "mappedNotQualifiedPctN": 3.26,
+     "mappedAnySeriesPctN": 39.71,
+     "mappedAnySeriesPctW": 44.55,
      "qualifyingDates": 0
     },
     "2012": {
@@ -819,30 +1336,36 @@
      "unmatchedPctN": 56.09,
      "t3PctN": 2.41,
      "mappedNotQualifiedPctN": 3.46,
+     "mappedAnySeriesPctN": 41.5,
+     "mappedAnySeriesPctW": 47.39,
      "qualifyingDates": 0
     },
     "2013": {
      "dates": 2,
      "members": 1997,
-     "coveredPctN": 39.14,
-     "coveredPctW": 45.88,
-     "gapPctN": 60.86,
-     "gapPctW": 54.12,
-     "unmatchedPctN": 54.75,
+     "coveredPctN": 39.17,
+     "coveredPctW": 45.92,
+     "gapPctN": 60.83,
+     "gapPctW": 54.08,
+     "unmatchedPctN": 54.72,
      "t3PctN": 2.85,
      "mappedNotQualifiedPctN": 3.26,
+     "mappedAnySeriesPctN": 42.42,
+     "mappedAnySeriesPctW": 48.74,
      "qualifyingDates": 0
     },
     "2014": {
      "dates": 2,
      "members": 1995,
-     "coveredPctN": 40.15,
-     "coveredPctW": 47.15,
-     "gapPctN": 59.85,
-     "gapPctW": 52.85,
+     "coveredPctN": 40.17,
+     "coveredPctW": 47.16,
+     "gapPctN": 59.83,
+     "gapPctW": 52.84,
      "unmatchedPctN": 52.73,
-     "t3PctN": 3.13,
+     "t3PctN": 3.11,
      "mappedNotQualifiedPctN": 3.98,
+     "mappedAnySeriesPctN": 44.16,
+     "mappedAnySeriesPctW": 50.44,
      "qualifyingDates": 0
     },
     "2015": {
@@ -855,18 +1378,22 @@
      "unmatchedPctN": 50.04,
      "t3PctN": 3,
      "mappedNotQualifiedPctN": 4.16,
+     "mappedAnySeriesPctN": 46.96,
+     "mappedAnySeriesPctW": 53.07,
      "qualifyingDates": 0
     },
     "2016": {
      "dates": 2,
      "members": 1996,
-     "coveredPctN": 46.84,
+     "coveredPctN": 46.81,
      "coveredPctW": 52.66,
-     "gapPctN": 53.16,
+     "gapPctN": 53.19,
      "gapPctW": 47.34,
      "unmatchedPctN": 45.87,
-     "t3PctN": 2.78,
+     "t3PctN": 2.8,
      "mappedNotQualifiedPctN": 4.51,
+     "mappedAnySeriesPctN": 51.32,
+     "mappedAnySeriesPctW": 56.41,
      "qualifyingDates": 0
     },
     "2017": {
@@ -879,18 +1406,22 @@
      "unmatchedPctN": 42.4,
      "t3PctN": 2.6,
      "mappedNotQualifiedPctN": 4.71,
+     "mappedAnySeriesPctN": 55,
+     "mappedAnySeriesPctW": 60.68,
      "qualifyingDates": 0
     },
     "2018": {
      "dates": 2,
      "members": 2027,
-     "coveredPctN": 50.1,
-     "coveredPctW": 56.66,
-     "gapPctN": 49.9,
-     "gapPctW": 43.34,
-     "unmatchedPctN": 42.26,
-     "t3PctN": 2.71,
-     "mappedNotQualifiedPctN": 4.93,
+     "coveredPctN": 51.83,
+     "coveredPctW": 58.88,
+     "gapPctN": 48.17,
+     "gapPctW": 41.12,
+     "unmatchedPctN": 40.18,
+     "t3PctN": 2.88,
+     "mappedNotQualifiedPctN": 5.11,
+     "mappedAnySeriesPctN": 56.93,
+     "mappedAnySeriesPctW": 63.59,
      "qualifyingDates": 0
     },
     "2019": {
@@ -903,18 +1434,22 @@
      "unmatchedPctN": 32.99,
      "t3PctN": 3.65,
      "mappedNotQualifiedPctN": 6.44,
+     "mappedAnySeriesPctN": 63.36,
+     "mappedAnySeriesPctW": 71.66,
      "qualifyingDates": 0
     },
     "2020": {
      "dates": 4,
      "members": 2014,
-     "coveredPctN": 54.27,
+     "coveredPctN": 54.26,
      "coveredPctW": 62.45,
-     "gapPctN": 45.73,
+     "gapPctN": 45.74,
      "gapPctW": 37.55,
      "unmatchedPctN": 30.38,
-     "t3PctN": 8.85,
+     "t3PctN": 8.86,
      "mappedNotQualifiedPctN": 6.5,
+     "mappedAnySeriesPctN": 60.76,
+     "mappedAnySeriesPctW": 68.22,
      "qualifyingDates": 0
     },
     "2021": {
@@ -927,6 +1462,8 @@
      "unmatchedPctN": 27.08,
      "t3PctN": 3.23,
      "mappedNotQualifiedPctN": 7.84,
+     "mappedAnySeriesPctN": 69.69,
+     "mappedAnySeriesPctW": 76.55,
      "qualifyingDates": 0
     },
     "2022": {
@@ -939,6 +1476,8 @@
      "unmatchedPctN": 22.88,
      "t3PctN": 3.08,
      "mappedNotQualifiedPctN": 8.15,
+     "mappedAnySeriesPctN": 74.04,
+     "mappedAnySeriesPctW": 79.14,
      "qualifyingDates": 0
     },
     "2023": {
@@ -951,6 +1490,8 @@
      "unmatchedPctN": 17.25,
      "t3PctN": 1.68,
      "mappedNotQualifiedPctN": 9.21,
+     "mappedAnySeriesPctN": 81.08,
+     "mappedAnySeriesPctW": 84.83,
      "qualifyingDates": 0
     },
     "2024": {
@@ -963,6 +1504,8 @@
      "unmatchedPctN": 12.22,
      "t3PctN": 2.47,
      "mappedNotQualifiedPctN": 9.74,
+     "mappedAnySeriesPctN": 85.31,
+     "mappedAnySeriesPctW": 88.69,
      "qualifyingDates": 0
     },
     "2025": {
@@ -975,6 +1518,8 @@
      "unmatchedPctN": 7.77,
      "t3PctN": 3.07,
      "mappedNotQualifiedPctN": 11.18,
+     "mappedAnySeriesPctN": 89.16,
+     "mappedAnySeriesPctW": 91.83,
      "qualifyingDates": 0
     },
     "2026": {
@@ -987,11 +1532,282 @@
      "unmatchedPctN": 4.5,
      "t3PctN": 6.07,
      "mappedNotQualifiedPctN": 11.93,
+     "mappedAnySeriesPctN": 89.43,
+     "mappedAnySeriesPctW": 91.18,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": null,
+     "cik": 892553,
+     "name": "Chart Industries Inc",
+     "meanWeightPct": 0.219,
+     "dates": 27,
+     "reasons": {
+      "UNMATCHED": 27
+     }
+    },
+    {
+     "securityId": "ref_CWST",
+     "cik": 911177,
+     "name": "Casella Waste Systems Inc",
+     "meanWeightPct": 0.175,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1562476,
+     "name": "Taylor Morrison Home Corp",
+     "meanWeightPct": 0.174,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_ARWR",
+     "cik": 879407,
+     "name": "Arrowhead Pharmaceuticals Inc",
+     "meanWeightPct": 0.173,
+     "dates": 27,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 27
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1597264,
+     "name": "Blueprint Medicines Corp",
+     "meanWeightPct": 0.171,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_SPXC",
+     "cik": 88205,
+     "name": "SPX Corp",
+     "meanWeightPct": 0.16,
+     "dates": 27,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 26,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_EFOR",
+     "cik": 890564,
+     "name": "ASGN Inc",
+     "meanWeightPct": 0.153,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:LISTING_IDENTITY_MISMATCH": 28
+     }
+    },
+    {
+     "securityId": "ref_BCO",
+     "cik": 78890,
+     "name": "Brink's Co/The",
+     "meanWeightPct": 0.146,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1723089,
+     "name": "ChampionX Corp",
+     "meanWeightPct": 0.146,
+     "dates": 21,
+     "reasons": {
+      "UNMATCHED": 21
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Scientific Games Corp/DE",
+     "meanWeightPct": 0.138,
+     "dates": 20,
+     "reasons": {
+      "UNMATCHED": 20
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 39899,
+     "name": "TEGNA Inc",
+     "meanWeightPct": 0.134,
+     "dates": 26,
+     "reasons": {
+      "UNMATCHED": 26
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1338749,
+     "name": "PotlatchDeltic Corp",
+     "meanWeightPct": 0.127,
+     "dates": 26,
+     "reasons": {
+      "UNMATCHED": 26
+     }
+    },
+    {
+     "securityId": "ref_NSP",
+     "cik": 1000753,
+     "name": "Insperity Inc",
+     "meanWeightPct": 0.127,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1178879,
+     "name": "Amicus Therapeutics Inc",
+     "meanWeightPct": 0.124,
+     "dates": 27,
+     "reasons": {
+      "UNMATCHED": 27
+     }
+    },
+    {
+     "securityId": "ref_TGTX",
+     "cik": 1001316,
+     "name": "TG Therapeutics Inc",
+     "meanWeightPct": 0.122,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1124941,
+     "name": "Beacon Roofing Supply Inc",
+     "meanWeightPct": 0.119,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    },
+    {
+     "securityId": "ref_CBT",
+     "cik": 16040,
+     "name": "Cabot Corp",
+     "meanWeightPct": 0.118,
+     "dates": 21,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 21
+     }
+    },
+    {
+     "securityId": "ref_MDGL",
+     "cik": 1157601,
+     "name": "Madrigal Pharmaceuticals Inc",
+     "meanWeightPct": 0.116,
+     "dates": 27,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 27
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Summit Materials Inc",
+     "meanWeightPct": 0.115,
+     "dates": 22,
+     "reasons": {
+      "UNMATCHED": 22
+     }
+    },
+    {
+     "securityId": "ref_UCB",
+     "cik": 857855,
+     "name": "United Community Banks Inc/GA",
+     "meanWeightPct": 0.112,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:MISSING_WEEKS": 27,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1303313,
+     "name": "LHC Group Inc",
+     "meanWeightPct": 0.111,
+     "dates": 14,
+     "reasons": {
+      "UNMATCHED": 14
+     }
+    },
+    {
+     "securityId": "ref_ROG",
+     "cik": 84748,
+     "name": "Rogers Corp",
+     "meanWeightPct": 0.11,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 27,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Intra-Cellular Therapies Inc",
+     "meanWeightPct": 0.109,
+     "dates": 20,
+     "reasons": {
+      "UNMATCHED": 20
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1299939,
+     "name": "Cadence Bank",
+     "meanWeightPct": 0.109,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 933136,
+     "name": "Mr Cooper Group Inc",
+     "meanWeightPct": 0.106,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    }
+   ]
   },
   "IWV": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 5,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 15,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "R3000",
    "dates": 55,
    "first": "2005-12-31",
@@ -1023,6 +1839,8 @@
      "unmatchedPctN": 61.52,
      "t3PctN": 2.87,
      "mappedNotQualifiedPctN": 2.04,
+     "mappedAnySeriesPctN": 35.6,
+     "mappedAnySeriesPctW": 65.52,
      "qualifyingDates": 0
     },
     "2006": {
@@ -1035,6 +1853,8 @@
      "unmatchedPctN": 60.35,
      "t3PctN": 2.76,
      "mappedNotQualifiedPctN": 2.1,
+     "mappedAnySeriesPctN": 36.89,
+     "mappedAnySeriesPctW": 67.19,
      "qualifyingDates": 0
     },
     "2007": {
@@ -1047,6 +1867,8 @@
      "unmatchedPctN": 57.44,
      "t3PctN": 2.93,
      "mappedNotQualifiedPctN": 2.2,
+     "mappedAnySeriesPctN": 39.63,
+     "mappedAnySeriesPctW": 70.63,
      "qualifyingDates": 0
     },
     "2008": {
@@ -1059,6 +1881,8 @@
      "unmatchedPctN": 54.98,
      "t3PctN": 3.59,
      "mappedNotQualifiedPctN": 2.52,
+     "mappedAnySeriesPctN": 41.43,
+     "mappedAnySeriesPctW": 74.11,
      "qualifyingDates": 0
     },
     "2009": {
@@ -1071,6 +1895,8 @@
      "unmatchedPctN": 53.9,
      "t3PctN": 2.87,
      "mappedNotQualifiedPctN": 2.58,
+     "mappedAnySeriesPctN": 43.24,
+     "mappedAnySeriesPctW": 75.63,
      "qualifyingDates": 0
     },
     "2010": {
@@ -1083,6 +1909,8 @@
      "unmatchedPctN": 51.77,
      "t3PctN": 2.69,
      "mappedNotQualifiedPctN": 2.9,
+     "mappedAnySeriesPctN": 45.54,
+     "mappedAnySeriesPctW": 76.35,
      "qualifyingDates": 0
     },
     "2011": {
@@ -1095,6 +1923,8 @@
      "unmatchedPctN": 50.22,
      "t3PctN": 2.38,
      "mappedNotQualifiedPctN": 3.02,
+     "mappedAnySeriesPctN": 47.4,
+     "mappedAnySeriesPctW": 77.27,
      "qualifyingDates": 0
     },
     "2012": {
@@ -1107,30 +1937,36 @@
      "unmatchedPctN": 48.5,
      "t3PctN": 2.33,
      "mappedNotQualifiedPctN": 3.22,
+     "mappedAnySeriesPctN": 49.17,
+     "mappedAnySeriesPctW": 79.34,
      "qualifyingDates": 0
     },
     "2013": {
      "dates": 2,
      "members": 2990,
-     "coveredPctN": 47.38,
-     "coveredPctW": 74.73,
-     "gapPctN": 52.62,
-     "gapPctW": 25.27,
-     "unmatchedPctN": 46.75,
+     "coveredPctN": 47.4,
+     "coveredPctW": 74.74,
+     "gapPctN": 52.6,
+     "gapPctW": 25.26,
+     "unmatchedPctN": 46.73,
      "t3PctN": 2.73,
      "mappedNotQualifiedPctN": 3.14,
+     "mappedAnySeriesPctN": 50.54,
+     "mappedAnySeriesPctW": 78.95,
      "qualifyingDates": 0
     },
     "2014": {
      "dates": 2,
      "members": 3028,
-     "coveredPctN": 48.28,
+     "coveredPctN": 48.3,
      "coveredPctW": 74.52,
-     "gapPctN": 51.72,
+     "gapPctN": 51.7,
      "gapPctW": 25.48,
      "unmatchedPctN": 45.18,
-     "t3PctN": 2.96,
+     "t3PctN": 2.94,
      "mappedNotQualifiedPctN": 3.58,
+     "mappedAnySeriesPctN": 51.88,
+     "mappedAnySeriesPctW": 79.28,
      "qualifyingDates": 0
     },
     "2015": {
@@ -1143,6 +1979,8 @@
      "unmatchedPctN": 42.86,
      "t3PctN": 2.84,
      "mappedNotQualifiedPctN": 3.79,
+     "mappedAnySeriesPctN": 54.3,
+     "mappedAnySeriesPctW": 81.44,
      "qualifyingDates": 0
     },
     "2016": {
@@ -1155,6 +1993,8 @@
      "unmatchedPctN": 39.41,
      "t3PctN": 2.39,
      "mappedNotQualifiedPctN": 4.06,
+     "mappedAnySeriesPctN": 58.2,
+     "mappedAnySeriesPctW": 85.19,
      "qualifyingDates": 0
     },
     "2017": {
@@ -1167,18 +2007,22 @@
      "unmatchedPctN": 36.02,
      "t3PctN": 2.18,
      "mappedNotQualifiedPctN": 4.23,
+     "mappedAnySeriesPctN": 61.8,
+     "mappedAnySeriesPctW": 87.59,
      "qualifyingDates": 0
     },
     "2018": {
      "dates": 2,
      "members": 3004,
-     "coveredPctN": 57.58,
-     "coveredPctW": 78.44,
-     "gapPctN": 42.42,
-     "gapPctW": 21.56,
-     "unmatchedPctN": 35.49,
-     "t3PctN": 2.33,
-     "mappedNotQualifiedPctN": 4.59,
+     "coveredPctN": 59,
+     "coveredPctW": 81.41,
+     "gapPctN": 41,
+     "gapPctW": 18.59,
+     "unmatchedPctN": 33.88,
+     "t3PctN": 2.43,
+     "mappedNotQualifiedPctN": 4.69,
+     "mappedAnySeriesPctN": 63.69,
+     "mappedAnySeriesPctW": 88.26,
      "qualifyingDates": 0
     },
     "2019": {
@@ -1191,18 +2035,22 @@
      "unmatchedPctN": 26.9,
      "t3PctN": 2.89,
      "mappedNotQualifiedPctN": 5.34,
+     "mappedAnySeriesPctN": 70.22,
+     "mappedAnySeriesPctW": 93.12,
      "qualifyingDates": 0
     },
     "2020": {
      "dates": 4,
      "members": 2845,
-     "coveredPctN": 63.15,
+     "coveredPctN": 63.14,
      "coveredPctW": 84.17,
-     "gapPctN": 36.85,
+     "gapPctN": 36.86,
      "gapPctW": 15.83,
      "unmatchedPctN": 24.27,
-     "t3PctN": 7.05,
+     "t3PctN": 7.06,
      "mappedNotQualifiedPctN": 5.53,
+     "mappedAnySeriesPctN": 68.67,
+     "mappedAnySeriesPctW": 92.79,
      "qualifyingDates": 0
     },
     "2021": {
@@ -1215,6 +2063,8 @@
      "unmatchedPctN": 20.69,
      "t3PctN": 2.41,
      "mappedNotQualifiedPctN": 6.43,
+     "mappedAnySeriesPctN": 76.9,
+     "mappedAnySeriesPctW": 94.81,
      "qualifyingDates": 0
     },
     "2022": {
@@ -1227,6 +2077,8 @@
      "unmatchedPctN": 16.99,
      "t3PctN": 2.44,
      "mappedNotQualifiedPctN": 6.71,
+     "mappedAnySeriesPctN": 80.57,
+     "mappedAnySeriesPctW": 95.92,
      "qualifyingDates": 0
     },
     "2023": {
@@ -1239,6 +2091,8 @@
      "unmatchedPctN": 13.22,
      "t3PctN": 1.55,
      "mappedNotQualifiedPctN": 7.34,
+     "mappedAnySeriesPctN": 85.23,
+     "mappedAnySeriesPctW": 97.22,
      "qualifyingDates": 0
     },
     "2024": {
@@ -1251,6 +2105,8 @@
      "unmatchedPctN": 10.03,
      "t3PctN": 1.92,
      "mappedNotQualifiedPctN": 7.68,
+     "mappedAnySeriesPctN": 88.05,
+     "mappedAnySeriesPctW": 98.02,
      "qualifyingDates": 0
     },
     "2025": {
@@ -1263,6 +2119,8 @@
      "unmatchedPctN": 6.53,
      "t3PctN": 2.29,
      "mappedNotQualifiedPctN": 8.03,
+     "mappedAnySeriesPctN": 91.18,
+     "mappedAnySeriesPctW": 98.31,
      "qualifyingDates": 0
     },
     "2026": {
@@ -1275,11 +2133,282 @@
      "unmatchedPctN": 3.8,
      "t3PctN": 4.69,
      "mappedNotQualifiedPctN": 8.42,
+     "mappedAnySeriesPctN": 91.5,
+     "mappedAnySeriesPctW": 91.36,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 5.496,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "cik": 1652044,
+     "name": "Alphabet Inc",
+     "meanWeightPct": 1.778,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_ABT",
+     "cik": 1800,
+     "name": "Abbott Laboratories",
+     "meanWeightPct": 0.431,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_MS",
+     "cik": 895421,
+     "name": "Morgan Stanley",
+     "meanWeightPct": 0.247,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_USB",
+     "cik": 36104,
+     "name": "US Bancorp",
+     "meanWeightPct": 0.154,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_JCI",
+     "cik": 833444,
+     "name": "Johnson Controls International plc",
+     "meanWeightPct": 0.102,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Bank of New York Mellon Corp/The",
+     "meanWeightPct": 0.099,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard Inc",
+     "meanWeightPct": 0.097,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": "ref_MU",
+     "cik": 723125,
+     "name": "Micron Technology Inc",
+     "meanWeightPct": 0.091,
+     "dates": 3,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts Inc",
+     "meanWeightPct": 0.086,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Spotify Technology SA",
+     "meanWeightPct": 0.085,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_DD",
+     "cik": 1666700,
+     "name": "DuPont de Nemours Inc",
+     "meanWeightPct": 0.083,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.081,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_MRNA",
+     "cik": 1682852,
+     "name": "Moderna Inc",
+     "meanWeightPct": 0.08,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_SNOW",
+     "cik": 1640147,
+     "name": "Snowflake Inc",
+     "meanWeightPct": 0.079,
+     "dates": 21,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 21
+     }
+    },
+    {
+     "securityId": "ref_LNG",
+     "cik": 3570,
+     "name": "Cheniere Energy Inc",
+     "meanWeightPct": 0.07,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1038357,
+     "name": "Pioneer Natural Resources Co",
+     "meanWeightPct": 0.065,
+     "dates": 19,
+     "reasons": {
+      "UNMATCHED": 19
+     }
+    },
+    {
+     "securityId": "ref_COR",
+     "cik": 1140859,
+     "name": "AmerisourceBergen Corp",
+     "meanWeightPct": 0.063,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 27,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_TSLA",
+     "cik": 1318605,
+     "name": "TESLA INC",
+     "meanWeightPct": 0.061,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_KDP",
+     "cik": 1418135,
+     "name": "Keurig Dr Pepper Inc",
+     "meanWeightPct": 0.057,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 4447,
+     "name": "Hess Corp",
+     "meanWeightPct": 0.057,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_META",
+     "cik": 1326801,
+     "name": "Facebook Inc",
+     "meanWeightPct": 0.057,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.056,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1393612,
+     "name": "Discover Financial Services",
+     "meanWeightPct": 0.056,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Discovery Inc",
+     "meanWeightPct": 0.052,
+     "dates": 39,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 33,
+      "T3_PRICE_NOT_CONFIRMED": 6
+     }
+    }
+   ]
   },
   "QQQ": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 5,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 18,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 26,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "NDX",
    "dates": 43,
    "first": "2004-09-30",
@@ -1311,6 +2440,8 @@
      "unmatchedPctN": 49,
      "t3PctN": 3,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 48,
+     "mappedAnySeriesPctW": 64.33,
      "qualifyingDates": 0
     },
     "2005": {
@@ -1323,6 +2454,8 @@
      "unmatchedPctN": 49,
      "t3PctN": 4,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 47,
+     "mappedAnySeriesPctW": 65.07,
      "qualifyingDates": 0
     },
     "2006": {
@@ -1335,6 +2468,8 @@
      "unmatchedPctN": 47,
      "t3PctN": 4,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 49,
+     "mappedAnySeriesPctW": 66.08,
      "qualifyingDates": 0
     },
     "2007": {
@@ -1347,6 +2482,8 @@
      "unmatchedPctN": 42,
      "t3PctN": 4,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 54,
+     "mappedAnySeriesPctW": 69.23,
      "qualifyingDates": 0
     },
     "2008": {
@@ -1359,6 +2496,8 @@
      "unmatchedPctN": 43,
      "t3PctN": 4,
      "mappedNotQualifiedPctN": 3,
+     "mappedAnySeriesPctN": 53,
+     "mappedAnySeriesPctW": 68.91,
      "qualifyingDates": 0
     },
     "2009": {
@@ -1371,6 +2510,8 @@
      "unmatchedPctN": 38,
      "t3PctN": 5,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 57,
+     "mappedAnySeriesPctW": 70.99,
      "qualifyingDates": 0
     },
     "2010": {
@@ -1383,6 +2524,8 @@
      "unmatchedPctN": 40,
      "t3PctN": 3,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 57,
+     "mappedAnySeriesPctW": 72.74,
      "qualifyingDates": 0
     },
     "2011": {
@@ -1395,6 +2538,8 @@
      "unmatchedPctN": 36,
      "t3PctN": 1,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 63,
+     "mappedAnySeriesPctW": 77.28,
      "qualifyingDates": 0
     },
     "2012": {
@@ -1407,6 +2552,8 @@
      "unmatchedPctN": 37,
      "t3PctN": 1,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 62,
+     "mappedAnySeriesPctW": 78.24,
      "qualifyingDates": 0
     },
     "2013": {
@@ -1419,6 +2566,8 @@
      "unmatchedPctN": 33,
      "t3PctN": 2,
      "mappedNotQualifiedPctN": 5,
+     "mappedAnySeriesPctN": 65,
+     "mappedAnySeriesPctW": 73.23,
      "qualifyingDates": 0
     },
     "2014": {
@@ -1431,6 +2580,8 @@
      "unmatchedPctN": 32.04,
      "t3PctN": 3.88,
      "mappedNotQualifiedPctN": 4.85,
+     "mappedAnySeriesPctN": 64.08,
+     "mappedAnySeriesPctW": 75.56,
      "qualifyingDates": 0
     },
     "2015": {
@@ -1443,42 +2594,50 @@
      "unmatchedPctN": 30.27,
      "t3PctN": 3.67,
      "mappedNotQualifiedPctN": 4.59,
+     "mappedAnySeriesPctN": 66.06,
+     "mappedAnySeriesPctW": 76.89,
      "qualifyingDates": 0
     },
     "2016": {
      "dates": 1,
      "members": 105,
-     "coveredPctN": 56.19,
-     "coveredPctW": 62.98,
-     "gapPctN": 43.81,
-     "gapPctW": 37.02,
-     "unmatchedPctN": 40,
+     "coveredPctN": 70.48,
+     "coveredPctW": 73.17,
+     "gapPctN": 29.52,
+     "gapPctW": 26.83,
+     "unmatchedPctN": 23.81,
      "t3PctN": 0.95,
-     "mappedNotQualifiedPctN": 2.86,
+     "mappedNotQualifiedPctN": 4.76,
+     "mappedAnySeriesPctN": 75.24,
+     "mappedAnySeriesPctW": 88.78,
      "qualifyingDates": 0
     },
     "2017": {
      "dates": 1,
      "members": 107,
-     "coveredPctN": 49.53,
-     "coveredPctW": 53.99,
-     "gapPctN": 50.47,
-     "gapPctW": 46.01,
-     "unmatchedPctN": 44.86,
+     "coveredPctN": 71.03,
+     "coveredPctW": 74.38,
+     "gapPctN": 28.97,
+     "gapPctW": 25.62,
+     "unmatchedPctN": 22.43,
      "t3PctN": 0.94,
-     "mappedNotQualifiedPctN": 4.67,
+     "mappedNotQualifiedPctN": 5.61,
+     "mappedAnySeriesPctN": 76.64,
+     "mappedAnySeriesPctW": 91.09,
      "qualifyingDates": 0
     },
     "2018": {
      "dates": 1,
      "members": 103,
-     "coveredPctN": 55.34,
-     "coveredPctW": 51.63,
-     "gapPctN": 44.66,
-     "gapPctW": 48.37,
-     "unmatchedPctN": 41.75,
+     "coveredPctN": 77.67,
+     "coveredPctW": 76.47,
+     "gapPctN": 22.33,
+     "gapPctW": 23.53,
+     "unmatchedPctN": 17.48,
      "t3PctN": 0,
-     "mappedNotQualifiedPctN": 2.91,
+     "mappedNotQualifiedPctN": 4.85,
+     "mappedAnySeriesPctN": 82.52,
+     "mappedAnySeriesPctW": 93.6,
      "qualifyingDates": 0
     },
     "2019": {
@@ -1491,6 +2650,8 @@
      "unmatchedPctN": 10.19,
      "t3PctN": 0.49,
      "mappedNotQualifiedPctN": 4.85,
+     "mappedAnySeriesPctN": 89.32,
+     "mappedAnySeriesPctW": 96.43,
      "qualifyingDates": 0
     },
     "2020": {
@@ -1503,6 +2664,8 @@
      "unmatchedPctN": 9.49,
      "t3PctN": 2.43,
      "mappedNotQualifiedPctN": 5.11,
+     "mappedAnySeriesPctN": 88.08,
+     "mappedAnySeriesPctW": 95.27,
      "qualifyingDates": 0
     },
     "2021": {
@@ -1515,6 +2678,8 @@
      "unmatchedPctN": 6.87,
      "t3PctN": 1.97,
      "mappedNotQualifiedPctN": 4.91,
+     "mappedAnySeriesPctN": 91.16,
+     "mappedAnySeriesPctW": 97.41,
      "qualifyingDates": 0
     },
     "2022": {
@@ -1527,6 +2692,8 @@
      "unmatchedPctN": 3.93,
      "t3PctN": 3.68,
      "mappedNotQualifiedPctN": 5.16,
+     "mappedAnySeriesPctN": 92.39,
+     "mappedAnySeriesPctW": 97.69,
      "qualifyingDates": 0
     },
     "2023": {
@@ -1539,6 +2706,8 @@
      "unmatchedPctN": 3.47,
      "t3PctN": 0.99,
      "mappedNotQualifiedPctN": 5.94,
+     "mappedAnySeriesPctN": 95.55,
+     "mappedAnySeriesPctW": 98.58,
      "qualifyingDates": 0
     },
     "2024": {
@@ -1551,6 +2720,8 @@
      "unmatchedPctN": 2.47,
      "t3PctN": 0.49,
      "mappedNotQualifiedPctN": 4.94,
+     "mappedAnySeriesPctN": 97.04,
+     "mappedAnySeriesPctW": 98.93,
      "qualifyingDates": 0
     },
     "2025": {
@@ -1563,6 +2734,8 @@
      "unmatchedPctN": 1.98,
      "t3PctN": 1.24,
      "mappedNotQualifiedPctN": 3.96,
+     "mappedAnySeriesPctN": 96.78,
+     "mappedAnySeriesPctW": 98.62,
      "qualifyingDates": 0
     },
     "2026": {
@@ -1575,11 +2748,281 @@
      "unmatchedPctN": 2.95,
      "t3PctN": 11.29,
      "mappedNotQualifiedPctN": 3.94,
+     "mappedAnySeriesPctN": 85.76,
+     "mappedAnySeriesPctW": 81.66,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple, Inc.",
+     "meanWeightPct": 10.47,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "cik": 1652044,
+     "name": "Alphabet, Inc.",
+     "meanWeightPct": 3.322,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "ASML Holding N.V.",
+     "meanWeightPct": 0.428,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_MU",
+     "cik": 723125,
+     "name": "Micron Technology, Inc.",
+     "meanWeightPct": 0.3,
+     "dates": 3,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard, Inc.",
+     "meanWeightPct": 0.296,
+     "dates": 16,
+     "reasons": {
+      "UNMATCHED": 16
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts, Inc.",
+     "meanWeightPct": 0.289,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_MRNA",
+     "cik": 1682852,
+     "name": "Moderna, Inc.",
+     "meanWeightPct": 0.279,
+     "dates": 17,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 17
+     }
+    },
+    {
+     "securityId": "ref_KDP",
+     "cik": 1418135,
+     "name": "Keurig Dr Pepper, Inc.",
+     "meanWeightPct": 0.274,
+     "dates": 23,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 23
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance, Inc.",
+     "meanWeightPct": 0.216,
+     "dates": 20,
+     "reasons": {
+      "UNMATCHED": 20
+     }
+    },
+    {
+     "securityId": "ref_AMD",
+     "cik": 2488,
+     "name": "Advanced Micro Devices, Inc.",
+     "meanWeightPct": 0.147,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_META",
+     "cik": 1326801,
+     "name": "Facebook, Inc.",
+     "meanWeightPct": 0.142,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_SIRI",
+     "cik": 908937,
+     "name": "Sirius XM Holdings, Inc.",
+     "meanWeightPct": 0.139,
+     "dates": 19,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 19
+     }
+    },
+    {
+     "securityId": "ref_INTC",
+     "cik": 50863,
+     "name": "Intel Corp.",
+     "meanWeightPct": 0.137,
+     "dates": 2,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Warner Bros. Discovery, Inc.",
+     "meanWeightPct": 0.121,
+     "dates": 15,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 15
+     }
+    },
+    {
+     "securityId": "ref_TSLA",
+     "cik": 1318605,
+     "name": "Tesla, Inc.",
+     "meanWeightPct": 0.118,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1060736,
+     "name": "Seagen, Inc.",
+     "meanWeightPct": 0.105,
+     "dates": 12,
+     "reasons": {
+      "T3_NO_BAR_AT_DATE": 12
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 743988,
+     "name": "Xilinx, Inc.",
+     "meanWeightPct": 0.096,
+     "dates": 10,
+     "reasons": {
+      "UNMATCHED": 10
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1353283,
+     "name": "Splunk, Inc.",
+     "meanWeightPct": 0.092,
+     "dates": 13,
+     "reasons": {
+      "T3_NO_BAR_AT_DATE": 13
+     }
+    },
+    {
+     "securityId": "ref_AMAT",
+     "cik": 6951,
+     "name": "Applied Materials, Inc.",
+     "meanWeightPct": 0.089,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_LRCX",
+     "cik": 707549,
+     "name": "Lam Research Corp.",
+     "meanWeightPct": 0.084,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 899866,
+     "name": "Alexion Pharmaceuticals, Inc.",
+     "meanWeightPct": 0.075,
+     "dates": 8,
+     "reasons": {
+      "UNMATCHED": 8
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 804753,
+     "name": "Cerner Corp.",
+     "meanWeightPct": 0.067,
+     "dates": 9,
+     "reasons": {
+      "UNMATCHED": 9
+     }
+    },
+    {
+     "securityId": "ref_WDC",
+     "cik": 106040,
+     "name": "Western Digital Corp.",
+     "meanWeightPct": 0.064,
+     "dates": 3,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": "ref_KLAC",
+     "cik": 319201,
+     "name": "KLA Corp.",
+     "meanWeightPct": 0.061,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 743316,
+     "name": "Maxim Integrated Products, Inc.",
+     "meanWeightPct": 0.052,
+     "dates": 8,
+     "reasons": {
+      "UNMATCHED": 8
+     }
+    }
+   ]
   },
   "SPY": {
+   "thresholdsIfAllMappedQualified": {
+    "n95_w99": {
+     "qualifyingDates": 8,
+     "contiguousToLastDateFrom": null
+    },
+    "n90_w97": {
+     "qualifyingDates": 24,
+     "contiguousToLastDateFrom": null
+    },
+    "n80_w95": {
+     "qualifyingDates": 26,
+     "contiguousToLastDateFrom": null
+    }
+   },
    "index": "SP500",
    "dates": 62,
    "first": "1995-12-31",
@@ -1611,6 +3054,8 @@
      "unmatchedPctN": 62.4,
      "t3PctN": 5.2,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 32.4,
+     "mappedAnySeriesPctW": 46.89,
      "qualifyingDates": 0
     },
     "1996": {
@@ -1623,6 +3068,8 @@
      "unmatchedPctN": 62.03,
      "t3PctN": 5.37,
      "mappedNotQualifiedPctN": 0.8,
+     "mappedAnySeriesPctN": 32.6,
+     "mappedAnySeriesPctW": 46.93,
      "qualifyingDates": 0
     },
     "1997": {
@@ -1635,6 +3082,8 @@
      "unmatchedPctN": 59.2,
      "t3PctN": 5.6,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 35.2,
+     "mappedAnySeriesPctW": 50.02,
      "qualifyingDates": 0
     },
     "1998": {
@@ -1647,6 +3096,8 @@
      "unmatchedPctN": 56.57,
      "t3PctN": 6.57,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 36.85,
+     "mappedAnySeriesPctW": 50.19,
      "qualifyingDates": 0
     },
     "1999": {
@@ -1659,6 +3110,8 @@
      "unmatchedPctN": 53.8,
      "t3PctN": 6,
      "mappedNotQualifiedPctN": 1,
+     "mappedAnySeriesPctN": 40.2,
+     "mappedAnySeriesPctW": 53.98,
      "qualifyingDates": 0
     },
     "2000": {
@@ -1671,6 +3124,8 @@
      "unmatchedPctN": 51.5,
      "t3PctN": 5.01,
      "mappedNotQualifiedPctN": 1.2,
+     "mappedAnySeriesPctN": 43.49,
+     "mappedAnySeriesPctW": 60.47,
      "qualifyingDates": 0
     },
     "2001": {
@@ -1683,6 +3138,8 @@
      "unmatchedPctN": 50,
      "t3PctN": 4.8,
      "mappedNotQualifiedPctN": 1.2,
+     "mappedAnySeriesPctN": 45.2,
+     "mappedAnySeriesPctW": 64.3,
      "qualifyingDates": 0
     },
     "2002": {
@@ -1695,6 +3152,8 @@
      "unmatchedPctN": 46,
      "t3PctN": 6,
      "mappedNotQualifiedPctN": 1.4,
+     "mappedAnySeriesPctN": 48,
+     "mappedAnySeriesPctW": 69.56,
      "qualifyingDates": 0
     },
     "2003": {
@@ -1707,6 +3166,8 @@
      "unmatchedPctN": 43.6,
      "t3PctN": 5.2,
      "mappedNotQualifiedPctN": 1.6,
+     "mappedAnySeriesPctN": 51.2,
+     "mappedAnySeriesPctW": 72.64,
      "qualifyingDates": 0
     },
     "2004": {
@@ -1719,6 +3180,8 @@
      "unmatchedPctN": 42.8,
      "t3PctN": 4.6,
      "mappedNotQualifiedPctN": 1.6,
+     "mappedAnySeriesPctN": 52.6,
+     "mappedAnySeriesPctW": 73.66,
      "qualifyingDates": 0
     },
     "2005": {
@@ -1731,6 +3194,8 @@
      "unmatchedPctN": 41.8,
      "t3PctN": 4.6,
      "mappedNotQualifiedPctN": 1.6,
+     "mappedAnySeriesPctN": 53.6,
+     "mappedAnySeriesPctW": 73.41,
      "qualifyingDates": 0
     },
     "2006": {
@@ -1743,6 +3208,8 @@
      "unmatchedPctN": 40,
      "t3PctN": 4.2,
      "mappedNotQualifiedPctN": 1.6,
+     "mappedAnySeriesPctN": 55.8,
+     "mappedAnySeriesPctW": 74.77,
      "qualifyingDates": 0
     },
     "2007": {
@@ -1755,6 +3222,8 @@
      "unmatchedPctN": 37.2,
      "t3PctN": 4.4,
      "mappedNotQualifiedPctN": 1.8,
+     "mappedAnySeriesPctN": 58.4,
+     "mappedAnySeriesPctW": 76.56,
      "qualifyingDates": 0
     },
     "2008": {
@@ -1767,6 +3236,8 @@
      "unmatchedPctN": 34.47,
      "t3PctN": 6.01,
      "mappedNotQualifiedPctN": 1.8,
+     "mappedAnySeriesPctN": 59.52,
+     "mappedAnySeriesPctW": 79.32,
      "qualifyingDates": 0
     },
     "2009": {
@@ -1779,6 +3250,8 @@
      "unmatchedPctN": 33,
      "t3PctN": 6.8,
      "mappedNotQualifiedPctN": 1.6,
+     "mappedAnySeriesPctN": 60.2,
+     "mappedAnySeriesPctW": 78.06,
      "qualifyingDates": 0
     },
     "2010": {
@@ -1791,6 +3264,8 @@
      "unmatchedPctN": 31.1,
      "t3PctN": 2.8,
      "mappedNotQualifiedPctN": 1.9,
+     "mappedAnySeriesPctN": 66.1,
+     "mappedAnySeriesPctW": 82.46,
      "qualifyingDates": 0
     },
     "2011": {
@@ -1803,6 +3278,8 @@
      "unmatchedPctN": 30.14,
      "t3PctN": 2.49,
      "mappedNotQualifiedPctN": 2,
+     "mappedAnySeriesPctN": 67.37,
+     "mappedAnySeriesPctW": 82.59,
      "qualifyingDates": 0
     },
     "2012": {
@@ -1815,6 +3292,8 @@
      "unmatchedPctN": 27.53,
      "t3PctN": 2.4,
      "mappedNotQualifiedPctN": 2.2,
+     "mappedAnySeriesPctN": 70.07,
+     "mappedAnySeriesPctW": 84.14,
      "qualifyingDates": 0
     },
     "2013": {
@@ -1827,6 +3306,8 @@
      "unmatchedPctN": 25.7,
      "t3PctN": 2.6,
      "mappedNotQualifiedPctN": 2.2,
+     "mappedAnySeriesPctN": 71.7,
+     "mappedAnySeriesPctW": 83.03,
      "qualifyingDates": 0
     },
     "2014": {
@@ -1839,6 +3320,8 @@
      "unmatchedPctN": 24.33,
      "t3PctN": 2.39,
      "mappedNotQualifiedPctN": 2.39,
+     "mappedAnySeriesPctN": 73.28,
+     "mappedAnySeriesPctW": 83.95,
      "qualifyingDates": 0
     },
     "2015": {
@@ -1851,6 +3334,8 @@
      "unmatchedPctN": 22.44,
      "t3PctN": 2.68,
      "mappedNotQualifiedPctN": 2.48,
+     "mappedAnySeriesPctN": 74.88,
+     "mappedAnySeriesPctW": 85.65,
      "qualifyingDates": 0
     },
     "2016": {
@@ -1863,6 +3348,8 @@
      "unmatchedPctN": 24.21,
      "t3PctN": 1.28,
      "mappedNotQualifiedPctN": 2.27,
+     "mappedAnySeriesPctN": 74.51,
+     "mappedAnySeriesPctW": 86.43,
      "qualifyingDates": 0
     },
     "2017": {
@@ -1875,6 +3362,8 @@
      "unmatchedPctN": 21.68,
      "t3PctN": 0.79,
      "mappedNotQualifiedPctN": 2.47,
+     "mappedAnySeriesPctN": 77.53,
+     "mappedAnySeriesPctW": 88.42,
      "qualifyingDates": 0
     },
     "2018": {
@@ -1887,6 +3376,8 @@
      "unmatchedPctN": 20.28,
      "t3PctN": 0.4,
      "mappedNotQualifiedPctN": 2.67,
+     "mappedAnySeriesPctN": 79.33,
+     "mappedAnySeriesPctW": 90.3,
      "qualifyingDates": 0
     },
     "2019": {
@@ -1899,6 +3390,8 @@
      "unmatchedPctN": 12.48,
      "t3PctN": 0.33,
      "mappedNotQualifiedPctN": 2.97,
+     "mappedAnySeriesPctN": 87.19,
+     "mappedAnySeriesPctW": 94.89,
      "qualifyingDates": 0
     },
     "2020": {
@@ -1911,6 +3404,8 @@
      "unmatchedPctN": 8.42,
      "t3PctN": 1.78,
      "mappedNotQualifiedPctN": 2.92,
+     "mappedAnySeriesPctN": 89.8,
+     "mappedAnySeriesPctW": 96.33,
      "qualifyingDates": 0
     },
     "2021": {
@@ -1923,6 +3418,8 @@
      "unmatchedPctN": 6.77,
      "t3PctN": 0.3,
      "mappedNotQualifiedPctN": 3.71,
+     "mappedAnySeriesPctN": 92.93,
+     "mappedAnySeriesPctW": 97.73,
      "qualifyingDates": 0
     },
     "2022": {
@@ -1935,6 +3432,8 @@
      "unmatchedPctN": 5.59,
      "t3PctN": 0.3,
      "mappedNotQualifiedPctN": 3.81,
+     "mappedAnySeriesPctN": 94.11,
+     "mappedAnySeriesPctW": 98.19,
      "qualifyingDates": 0
     },
     "2023": {
@@ -1947,6 +3446,8 @@
      "unmatchedPctN": 4.17,
      "t3PctN": 0.2,
      "mappedNotQualifiedPctN": 3.58,
+     "mappedAnySeriesPctN": 95.63,
+     "mappedAnySeriesPctW": 98.81,
      "qualifyingDates": 0
     },
     "2024": {
@@ -1959,6 +3460,8 @@
      "unmatchedPctN": 3.28,
      "t3PctN": 0.35,
      "mappedNotQualifiedPctN": 3.38,
+     "mappedAnySeriesPctN": 96.37,
+     "mappedAnySeriesPctW": 99.16,
      "qualifyingDates": 0
     },
     "2025": {
@@ -1971,6 +3474,8 @@
      "unmatchedPctN": 2.23,
      "t3PctN": 0.7,
      "mappedNotQualifiedPctN": 3.28,
+     "mappedAnySeriesPctN": 97.07,
+     "mappedAnySeriesPctW": 99.17,
      "qualifyingDates": 0
     },
     "2026": {
@@ -1983,9 +3488,266 @@
      "unmatchedPctN": 1.59,
      "t3PctN": 3.88,
      "mappedNotQualifiedPctN": 3.38,
+     "mappedAnySeriesPctN": 94.53,
+     "mappedAnySeriesPctW": 91.71,
      "qualifyingDates": 0
     }
-   }
+   },
+   "topUncoveredSince2019H2": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 6.409,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "cik": 1652044,
+     "name": "Alphabet Inc",
+     "meanWeightPct": 2.062,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_ABT",
+     "cik": 1800,
+     "name": "Abbott Laboratories",
+     "meanWeightPct": 0.512,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_MS",
+     "cik": 895421,
+     "name": "Morgan Stanley",
+     "meanWeightPct": 0.308,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_USB",
+     "cik": 36104,
+     "name": "US Bancorp",
+     "meanWeightPct": 0.18,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_JCI",
+     "cik": 833444,
+     "name": "Johnson Controls International plc",
+     "meanWeightPct": 0.119,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Bank of New York Mellon Corp/The",
+     "meanWeightPct": 0.116,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard Inc",
+     "meanWeightPct": 0.113,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": "ref_TEL",
+     "cik": 1385157,
+     "name": "TE Connectivity Ltd",
+     "meanWeightPct": 0.111,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_MU",
+     "cik": 723125,
+     "name": "Micron Technology Inc",
+     "meanWeightPct": 0.103,
+     "dates": 3,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 2,
+      "T3_ISOLATED_CONFIRMATION": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts Inc",
+     "meanWeightPct": 0.097,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_DD",
+     "cik": 1666700,
+     "name": "DuPont de Nemours Inc",
+     "meanWeightPct": 0.097,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.095,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1038357,
+     "name": "Pioneer Natural Resources Co",
+     "meanWeightPct": 0.077,
+     "dates": 19,
+     "reasons": {
+      "UNMATCHED": 19
+     }
+    },
+    {
+     "securityId": "ref_COR",
+     "cik": 1140859,
+     "name": "AmerisourceBergen Corp",
+     "meanWeightPct": 0.074,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 27,
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_MRNA",
+     "cik": 1682852,
+     "name": "Moderna Inc",
+     "meanWeightPct": 0.073,
+     "dates": 20,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 20
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.067,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_META",
+     "cik": 1326801,
+     "name": "Facebook Inc",
+     "meanWeightPct": 0.067,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1393612,
+     "name": "Discover Financial Services",
+     "meanWeightPct": 0.066,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 4447,
+     "name": "Hess Corp",
+     "meanWeightPct": 0.066,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_TSLA",
+     "cik": 1318605,
+     "name": "Tesla Inc",
+     "meanWeightPct": 0.066,
+     "dates": 1,
+     "reasons": {
+      "T3_PRICE_NOT_CONFIRMED": 1
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Discovery Inc",
+     "meanWeightPct": 0.06,
+     "dates": 39,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 33,
+      "T3_PRICE_NOT_CONFIRMED": 6
+     }
+    },
+    {
+     "securityId": "ref_IFF",
+     "cik": 51253,
+     "name": "International Flavors & Fragrances Inc",
+     "meanWeightPct": 0.059,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "McCormick & Co Inc/MD",
+     "meanWeightPct": 0.055,
+     "dates": 28,
+     "reasons": {
+      "T3_AMBIGUOUS": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1418091,
+     "name": "Twitter Inc",
+     "meanWeightPct": 0.052,
+     "dates": 13,
+     "reasons": {
+      "UNMATCHED": 13
+     }
+    }
+   ]
   }
  },
  "dates": [
@@ -3615,18 +5377,18 @@
    "date": "2013-12-31",
    "form": "N-Q",
    "members": 1015,
-   "mappedPctN": 66.305,
-   "mappedPctW": 81.537,
-   "coveredPctN": 63.448,
-   "coveredPctW": 76.961,
+   "mappedPctN": 66.404,
+   "mappedPctW": 81.561,
+   "coveredPctN": 63.547,
+   "coveredPctW": 76.985,
    "mappedNotQualifiedPctN": 2.857,
    "mappedNotQualifiedPctW": 4.577,
    "t3PctN": 2.365,
    "t3PctW": 1.043,
-   "unmatchedPctN": 31.33,
-   "unmatchedPctW": 17.419,
+   "unmatchedPctN": 31.232,
+   "unmatchedPctW": 17.395,
    "t1": 0,
-   "t2": 673,
+   "t2": 674,
    "qualifies": false
   },
   {
@@ -3795,18 +5557,18 @@
    "date": "2018-06-30",
    "form": "N-Q",
    "members": 987,
-   "mappedPctN": 70.719,
-   "mappedPctW": 78.034,
-   "coveredPctN": 67.579,
-   "coveredPctW": 74.768,
-   "mappedNotQualifiedPctN": 3.141,
-   "mappedNotQualifiedPctW": 3.266,
-   "t3PctN": 1.52,
-   "t3PctW": 0.32,
-   "unmatchedPctN": 27.761,
-   "unmatchedPctW": 21.646,
+   "mappedPctN": 76.19,
+   "mappedPctW": 89.375,
+   "coveredPctN": 72.644,
+   "coveredPctW": 82.165,
+   "mappedNotQualifiedPctN": 3.546,
+   "mappedNotQualifiedPctW": 7.21,
+   "t3PctN": 1.722,
+   "t3PctW": 0.357,
+   "unmatchedPctN": 22.087,
+   "unmatchedPctW": 10.267,
    "t1": 0,
-   "t2": 698,
+   "t2": 752,
    "qualifies": false
   },
   {
@@ -3815,18 +5577,18 @@
    "date": "2018-12-31",
    "form": "N-Q",
    "members": 983,
-   "mappedPctN": 71.719,
-   "mappedPctW": 78.974,
-   "coveredPctN": 68.769,
-   "coveredPctW": 77.228,
-   "mappedNotQualifiedPctN": 2.95,
-   "mappedNotQualifiedPctW": 1.746,
-   "t3PctN": 1.424,
-   "t3PctW": 0.296,
-   "unmatchedPctN": 26.857,
-   "unmatchedPctW": 20.73,
+   "mappedPctN": 77.314,
+   "mappedPctW": 91.483,
+   "coveredPctN": 73.856,
+   "coveredPctW": 84.65,
+   "mappedNotQualifiedPctN": 3.459,
+   "mappedNotQualifiedPctW": 6.833,
+   "t3PctN": 1.628,
+   "t3PctW": 0.323,
+   "unmatchedPctN": 21.058,
+   "unmatchedPctW": 8.194,
    "t1": 0,
-   "t2": 705,
+   "t2": 760,
    "qualifies": false
   },
   {
@@ -4715,18 +6477,18 @@
    "date": "2013-12-31",
    "form": "N-Q",
    "members": 2007,
-   "mappedPctN": 42.651,
-   "mappedPctW": 49.498,
-   "coveredPctN": 39.412,
-   "coveredPctW": 46.701,
+   "mappedPctN": 42.701,
+   "mappedPctW": 49.58,
+   "coveredPctN": 39.462,
+   "coveredPctW": 46.783,
    "mappedNotQualifiedPctN": 3.239,
    "mappedNotQualifiedPctW": 2.797,
    "t3PctN": 2.99,
    "t3PctW": 3.341,
-   "unmatchedPctN": 54.36,
-   "unmatchedPctW": 47.161,
+   "unmatchedPctN": 54.31,
+   "unmatchedPctW": 47.078,
    "t1": 0,
-   "t2": 856,
+   "t2": 857,
    "qualifies": false
   },
   {
@@ -4735,18 +6497,18 @@
    "date": "2014-06-30",
    "form": "N-Q",
    "members": 1975,
-   "mappedPctN": 43.949,
-   "mappedPctW": 49.258,
-   "coveredPctN": 40,
-   "coveredPctW": 45.993,
+   "mappedPctN": 44,
+   "mappedPctW": 49.271,
+   "coveredPctN": 40.051,
+   "coveredPctW": 46.005,
    "mappedNotQualifiedPctN": 3.949,
    "mappedNotQualifiedPctW": 3.265,
-   "t3PctN": 3.139,
-   "t3PctW": 3.45,
+   "t3PctN": 3.089,
+   "t3PctW": 3.437,
    "unmatchedPctN": 52.911,
    "unmatchedPctW": 47.292,
    "t1": 0,
-   "t2": 868,
+   "t2": 869,
    "qualifies": false
   },
   {
@@ -4835,18 +6597,18 @@
    "date": "2016-12-31",
    "form": "N-Q",
    "members": 1981,
-   "mappedPctN": 52.398,
+   "mappedPctN": 52.347,
    "mappedPctW": 57.688,
-   "coveredPctN": 47.855,
+   "coveredPctN": 47.804,
    "coveredPctW": 54.009,
    "mappedNotQualifiedPctN": 4.543,
    "mappedNotQualifiedPctW": 3.68,
-   "t3PctN": 2.574,
+   "t3PctN": 2.625,
    "t3PctW": 2.931,
    "unmatchedPctN": 45.028,
    "unmatchedPctW": 39.381,
    "t1": 0,
-   "t2": 1038,
+   "t2": 1037,
    "qualifies": false
   },
   {
@@ -4895,18 +6657,18 @@
    "date": "2018-06-30",
    "form": "N-Q",
    "members": 2023,
-   "mappedPctN": 54.82,
-   "mappedPctW": 59.126,
-   "coveredPctN": 49.876,
-   "coveredPctW": 54.457,
-   "mappedNotQualifiedPctN": 4.943,
-   "mappedNotQualifiedPctW": 4.669,
-   "t3PctN": 2.224,
-   "t3PctW": 1.979,
-   "unmatchedPctN": 42.956,
-   "unmatchedPctW": 38.895,
+   "mappedPctN": 56.698,
+   "mappedPctW": 61.464,
+   "coveredPctN": 51.557,
+   "coveredPctW": 56.612,
+   "mappedNotQualifiedPctN": 5.141,
+   "mappedNotQualifiedPctW": 4.852,
+   "t3PctN": 2.373,
+   "t3PctW": 2.124,
+   "unmatchedPctN": 40.929,
+   "unmatchedPctW": 36.411,
    "t1": 0,
-   "t2": 1109,
+   "t2": 1147,
    "qualifies": false
   },
   {
@@ -4915,18 +6677,18 @@
    "date": "2018-12-31",
    "form": "N-Q",
    "members": 2031,
-   "mappedPctN": 55.244,
-   "mappedPctW": 63.259,
-   "coveredPctN": 50.32,
-   "coveredPctW": 58.872,
-   "mappedNotQualifiedPctN": 4.924,
-   "mappedNotQualifiedPctW": 4.388,
-   "t3PctN": 3.2,
-   "t3PctW": 1.722,
-   "unmatchedPctN": 41.556,
-   "unmatchedPctW": 35.019,
+   "mappedPctN": 57.164,
+   "mappedPctW": 65.726,
+   "coveredPctN": 52.093,
+   "coveredPctW": 61.139,
+   "mappedNotQualifiedPctN": 5.071,
+   "mappedNotQualifiedPctW": 4.587,
+   "t3PctN": 3.397,
+   "t3PctW": 1.809,
+   "unmatchedPctN": 39.439,
+   "unmatchedPctW": 32.465,
    "t1": 0,
-   "t2": 1122,
+   "t2": 1161,
    "qualifies": false
   },
   {
@@ -4995,18 +6757,18 @@
    "date": "2020-06-30",
    "form": "NPORT-P",
    "members": 2010,
-   "mappedPctN": 59.154,
-   "mappedPctW": 66.947,
-   "coveredPctN": 52.886,
-   "coveredPctW": 61.416,
+   "mappedPctN": 59.104,
+   "mappedPctW": 66.922,
+   "coveredPctN": 52.836,
+   "coveredPctW": 61.391,
    "mappedNotQualifiedPctN": 6.269,
    "mappedNotQualifiedPctW": 5.53,
-   "t3PctN": 10.398,
-   "t3PctW": 8.265,
+   "t3PctN": 10.448,
+   "t3PctW": 8.29,
    "unmatchedPctN": 30.448,
    "unmatchedPctW": 24.788,
    "t1": 1143,
-   "t2": 46,
+   "t2": 45,
    "qualifies": false
   },
   {
@@ -5815,18 +7577,18 @@
    "date": "2013-12-31",
    "form": "N-Q",
    "members": 2988,
-   "mappedPctN": 51.037,
-   "mappedPctW": 79.051,
-   "coveredPctN": 47.858,
-   "coveredPctW": 74.611,
+   "mappedPctN": 51.071,
+   "mappedPctW": 79.057,
+   "coveredPctN": 47.892,
+   "coveredPctW": 74.617,
    "mappedNotQualifiedPctN": 3.179,
    "mappedNotQualifiedPctW": 4.44,
    "t3PctN": 2.811,
    "t3PctW": 1.228,
-   "unmatchedPctN": 46.151,
-   "unmatchedPctW": 19.722,
+   "unmatchedPctN": 46.118,
+   "unmatchedPctW": 19.715,
    "t1": 0,
-   "t2": 1525,
+   "t2": 1526,
    "qualifies": false
   },
   {
@@ -5835,18 +7597,18 @@
    "date": "2014-06-30",
    "form": "N-Q",
    "members": 3000,
-   "mappedPctN": 51.833,
-   "mappedPctW": 78.77,
-   "coveredPctN": 48.267,
-   "coveredPctW": 74.176,
+   "mappedPctN": 51.867,
+   "mappedPctW": 78.771,
+   "coveredPctN": 48.3,
+   "coveredPctW": 74.177,
    "mappedNotQualifiedPctN": 3.567,
    "mappedNotQualifiedPctW": 4.594,
-   "t3PctN": 2.867,
-   "t3PctW": 1.314,
+   "t3PctN": 2.833,
+   "t3PctW": 1.313,
    "unmatchedPctN": 45.3,
    "unmatchedPctW": 19.916,
    "t1": 0,
-   "t2": 1555,
+   "t2": 1556,
    "qualifies": false
   },
   {
@@ -5995,18 +7757,18 @@
    "date": "2018-06-30",
    "form": "N-Q",
    "members": 3008,
-   "mappedPctN": 61.735,
-   "mappedPctW": 83.819,
-   "coveredPctN": 57.181,
-   "coveredPctW": 76.839,
-   "mappedNotQualifiedPctN": 4.555,
-   "mappedNotQualifiedPctW": 6.98,
-   "t3PctN": 2.061,
-   "t3PctW": 0.453,
-   "unmatchedPctN": 36.203,
-   "unmatchedPctW": 15.728,
+   "mappedPctN": 63.231,
+   "mappedPctW": 86.792,
+   "coveredPctN": 58.577,
+   "coveredPctW": 79.798,
+   "mappedNotQualifiedPctN": 4.654,
+   "mappedNotQualifiedPctW": 6.993,
+   "t3PctN": 2.128,
+   "t3PctW": 0.488,
+   "unmatchedPctN": 34.641,
+   "unmatchedPctW": 12.721,
    "t1": 0,
-   "t2": 1857,
+   "t2": 1902,
    "qualifies": false
   },
   {
@@ -6015,18 +7777,18 @@
    "date": "2018-12-31",
    "form": "N-Q",
    "members": 2999,
-   "mappedPctN": 62.621,
-   "mappedPctW": 85.006,
-   "coveredPctN": 57.986,
-   "coveredPctW": 80.037,
-   "mappedNotQualifiedPctN": 4.635,
-   "mappedNotQualifiedPctW": 4.968,
-   "t3PctN": 2.601,
-   "t3PctW": 0.414,
-   "unmatchedPctN": 34.778,
-   "unmatchedPctW": 14.58,
+   "mappedPctN": 64.155,
+   "mappedPctW": 89.729,
+   "coveredPctN": 59.42,
+   "coveredPctW": 83.017,
+   "mappedNotQualifiedPctN": 4.735,
+   "mappedNotQualifiedPctW": 6.712,
+   "t3PctN": 2.734,
+   "t3PctW": 0.442,
+   "unmatchedPctN": 33.111,
+   "unmatchedPctW": 9.829,
    "t1": 0,
-   "t2": 1878,
+   "t2": 1924,
    "qualifies": false
   },
   {
@@ -6095,18 +7857,18 @@
    "date": "2020-06-30",
    "form": "NPORT-P",
    "members": 2805,
-   "mappedPctN": 67.879,
-   "mappedPctW": 93.475,
-   "coveredPctN": 62.567,
-   "coveredPctW": 85.049,
+   "mappedPctN": 67.843,
+   "mappedPctW": 93.471,
+   "coveredPctN": 62.531,
+   "coveredPctW": 85.046,
    "mappedNotQualifiedPctN": 5.312,
    "mappedNotQualifiedPctW": 8.425,
-   "t3PctN": 8.057,
-   "t3PctW": 1.238,
+   "t3PctN": 8.093,
+   "t3PctW": 1.242,
    "unmatchedPctN": 24.064,
    "unmatchedPctW": 5.287,
    "t1": 1818,
-   "t2": 86,
+   "t2": 85,
    "qualifies": false
   },
   {
@@ -6835,18 +8597,18 @@
    "date": "2016-09-30",
    "form": "N-30B-2",
    "members": 105,
-   "mappedPctN": 59.048,
-   "mappedPctW": 63.578,
-   "coveredPctN": 56.19,
-   "coveredPctW": 62.985,
-   "mappedNotQualifiedPctN": 2.857,
-   "mappedNotQualifiedPctW": 0.593,
+   "mappedPctN": 75.238,
+   "mappedPctW": 88.775,
+   "coveredPctN": 70.476,
+   "coveredPctW": 73.173,
+   "mappedNotQualifiedPctN": 4.762,
+   "mappedNotQualifiedPctW": 15.602,
    "t3PctN": 0.952,
    "t3PctW": 0.111,
-   "unmatchedPctN": 40,
-   "unmatchedPctW": 36.311,
+   "unmatchedPctN": 23.81,
+   "unmatchedPctW": 11.114,
    "t1": 0,
-   "t2": 62,
+   "t2": 79,
    "qualifies": false
   },
   {
@@ -6855,18 +8617,18 @@
    "date": "2017-09-30",
    "form": "N-30B-2",
    "members": 107,
-   "mappedPctN": 54.206,
-   "mappedPctW": 59.049,
-   "coveredPctN": 49.533,
-   "coveredPctW": 53.986,
-   "mappedNotQualifiedPctN": 4.673,
-   "mappedNotQualifiedPctW": 5.063,
+   "mappedPctN": 76.636,
+   "mappedPctW": 91.088,
+   "coveredPctN": 71.028,
+   "coveredPctW": 74.38,
+   "mappedNotQualifiedPctN": 5.607,
+   "mappedNotQualifiedPctW": 16.708,
    "t3PctN": 0.935,
    "t3PctW": 0.065,
-   "unmatchedPctN": 44.86,
-   "unmatchedPctW": 40.886,
+   "unmatchedPctN": 22.43,
+   "unmatchedPctW": 8.847,
    "t1": 0,
-   "t2": 58,
+   "t2": 82,
    "qualifies": false
   },
   {
@@ -6875,18 +8637,18 @@
    "date": "2018-09-30",
    "form": "N-30B-2",
    "members": 103,
-   "mappedPctN": 58.252,
-   "mappedPctW": 52.203,
-   "coveredPctN": 55.34,
-   "coveredPctW": 51.634,
-   "mappedNotQualifiedPctN": 2.913,
-   "mappedNotQualifiedPctW": 0.569,
+   "mappedPctN": 82.524,
+   "mappedPctW": 93.601,
+   "coveredPctN": 77.67,
+   "coveredPctW": 76.473,
+   "mappedNotQualifiedPctN": 4.854,
+   "mappedNotQualifiedPctW": 17.127,
    "t3PctN": 0,
    "t3PctW": 0,
-   "unmatchedPctN": 41.748,
-   "unmatchedPctW": 47.797,
+   "unmatchedPctN": 17.476,
+   "unmatchedPctW": 6.399,
    "t1": 0,
-   "t2": 60,
+   "t2": 85,
    "qualifies": false
   },
   {

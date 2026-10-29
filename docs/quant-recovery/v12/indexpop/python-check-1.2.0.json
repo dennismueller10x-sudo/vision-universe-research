@@ -1,0 +1,525 @@
+{
+ "schemaVersion": "v12-indexpop-python-check-1.0.0",
+ "rulesVersion": "1.2.0",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "note": "Second implementation in another language on the same raw documents; not an independent data source except part C (two different SEC documents for the same date).",
+ "A_nport": {
+  "checked": 168,
+  "countEqual": 168,
+  "sumWithin1e-6": 168,
+  "validPy": 168,
+  "mismatches": []
+ },
+ "B_reports": {
+  "checked": 167,
+  "countEqual": 165,
+  "sumWithin1e-6": 165,
+  "totalEqual": 167,
+  "validPy": 167,
+  "mismatches": [
+   {
+    "fund": "SPY",
+    "date": "2003-09-30",
+    "form": "N-30D",
+    "js": [
+     500,
+     36032012153,
+     36032012153
+    ],
+    "py": [
+     498,
+     35968566717,
+     36032012153.0
+    ]
+   },
+   {
+    "fund": "SPY",
+    "date": "2006-09-30",
+    "form": "N-30D",
+    "js": [
+     500,
+     57539678182,
+     57539678182
+    ],
+    "py": [
+     499,
+     57516929320,
+     57539678182.0
+    ]
+   }
+  ]
+ },
+ "C_crossDocument": {
+  "pairs": 36,
+  "countEqual": 31,
+  "sumWithin0_1pct": 4,
+  "sumWithin1pct": 30,
+  "rows": [
+   {
+    "fund": "SPY",
+    "date": "2019-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 505,
+    "reportMembers": 505,
+    "nportSum": 273540369758,
+    "reportSum": 274267350525,
+    "relDiff": 0.002658
+   },
+   {
+    "fund": "SPY",
+    "date": "2020-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 505,
+    "reportMembers": 505,
+    "nportSum": 236904144521,
+    "reportSum": 235256200309,
+    "relDiff": -0.006956
+   },
+   {
+    "fund": "SPY",
+    "date": "2020-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 505,
+    "reportMembers": 505,
+    "nportSum": 295349031390,
+    "reportSum": 293908088428,
+    "relDiff": -0.004879
+   },
+   {
+    "fund": "SPY",
+    "date": "2021-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 506,
+    "reportMembers": 505,
+    "nportSum": 344966488773,
+    "reportSum": 348706464517,
+    "relDiff": 0.010842
+   },
+   {
+    "fund": "SPY",
+    "date": "2021-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 506,
+    "reportMembers": 505,
+    "nportSum": 386304057819,
+    "reportSum": 384802190946,
+    "relDiff": -0.003888
+   },
+   {
+    "fund": "SPY",
+    "date": "2022-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 506,
+    "reportMembers": 506,
+    "nportSum": 416901453008,
+    "reportSum": 420466686115,
+    "relDiff": 0.008552
+   },
+   {
+    "fund": "SPY",
+    "date": "2022-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 505,
+    "reportMembers": 505,
+    "nportSum": 326095163643,
+    "reportSum": 330650343579,
+    "relDiff": 0.013969
+   },
+   {
+    "fund": "SPY",
+    "date": "2023-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 504,
+    "reportMembers": 503,
+    "nportSum": 374673357270,
+    "reportSum": 371829226515,
+    "relDiff": -0.007591
+   },
+   {
+    "fund": "SPY",
+    "date": "2023-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 503,
+    "reportMembers": 503,
+    "nportSum": 400896793088,
+    "reportSum": 403907885747,
+    "relDiff": 0.007511
+   },
+   {
+    "fund": "SPY",
+    "date": "2024-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 503,
+    "reportMembers": 503,
+    "nportSum": 535978911203,
+    "reportSum": 531844734700,
+    "relDiff": -0.007713
+   },
+   {
+    "fund": "SPY",
+    "date": "2024-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 504,
+    "reportMembers": 503,
+    "nportSum": 591427786375,
+    "reportSum": 589592946873,
+    "relDiff": -0.003102
+   },
+   {
+    "fund": "SPY",
+    "date": "2025-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 503,
+    "reportMembers": 503,
+    "nportSum": 575838589460,
+    "reportSum": 569299017968,
+    "relDiff": -0.011357
+   },
+   {
+    "fund": "SPY",
+    "date": "2025-09-30",
+    "reportForm": "N-30D",
+    "nportMembers": 503,
+    "reportMembers": 503,
+    "nportSum": 672658062346,
+    "reportSum": 680219847000,
+    "relDiff": 0.011242
+   },
+   {
+    "fund": "SPY",
+    "date": "2026-03-31",
+    "reportForm": "N-30D",
+    "nportMembers": 503,
+    "reportMembers": 503,
+    "nportSum": 651284934545,
+    "reportSum": 648228136454,
+    "relDiff": -0.004693
+   },
+   {
+    "fund": "QQQ",
+    "date": "2019-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 103,
+    "reportMembers": 103,
+    "nportSum": 75028000046,
+    "reportSum": 75028000046,
+    "relDiff": 0.0
+   },
+   {
+    "fund": "QQQ",
+    "date": "2020-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 103,
+    "reportMembers": 103,
+    "nportSum": 135683471517,
+    "reportSum": 135683471517,
+    "relDiff": 0.0
+   },
+   {
+    "fund": "QQQ",
+    "date": "2021-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 102,
+    "reportMembers": 102,
+    "nportSum": 182439642506,
+    "reportSum": 182439642506,
+    "relDiff": 0.0
+   },
+   {
+    "fund": "QQQ",
+    "date": "2022-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 102,
+    "reportMembers": 102,
+    "nportSum": 147749119851,
+    "reportSum": 147749119851,
+    "relDiff": 0.0
+   },
+   {
+    "fund": "QQQ",
+    "date": "2023-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 101,
+    "reportMembers": 101,
+    "nportSum": 197226260188,
+    "reportSum": 196527434884,
+    "relDiff": -0.003543
+   },
+   {
+    "fund": "QQQ",
+    "date": "2024-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 101,
+    "reportMembers": 101,
+    "nportSum": 294711733905,
+    "reportSum": 294370101471,
+    "relDiff": -0.001159
+   },
+   {
+    "fund": "QQQ",
+    "date": "2025-09-30",
+    "reportForm": "N-30B-2",
+    "nportMembers": 101,
+    "reportMembers": 101,
+    "nportSum": 385686111633,
+    "reportSum": 385205839095,
+    "relDiff": -0.001245
+   },
+   {
+    "fund": "QQQ",
+    "date": "2026-03-31",
+    "reportForm": "N-CSRS",
+    "nportMembers": 101,
+    "reportMembers": 101,
+    "nportSum": 372078653261,
+    "reportSum": 370694233564,
+    "relDiff": -0.003721
+   },
+   {
+    "fund": "DIA",
+    "date": "2019-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 21586814276,
+    "reportSum": 21721962513,
+    "relDiff": 0.006261
+   },
+   {
+    "fund": "DIA",
+    "date": "2020-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 31,
+    "reportMembers": 30,
+    "nportSum": 19317734892,
+    "reportSum": 19281231217,
+    "relDiff": -0.00189
+   },
+   {
+    "fund": "DIA",
+    "date": "2020-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 22234330232,
+    "reportSum": 22353560100,
+    "relDiff": 0.005362
+   },
+   {
+    "fund": "DIA",
+    "date": "2021-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 29859704268,
+    "reportSum": 29741169432,
+    "relDiff": -0.00397
+   },
+   {
+    "fund": "DIA",
+    "date": "2021-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 29962044061,
+    "reportSum": 30015757723,
+    "relDiff": 0.001793
+   },
+   {
+    "fund": "DIA",
+    "date": "2022-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 28402866728,
+    "reportSum": 28534720277,
+    "relDiff": 0.004642
+   },
+   {
+    "fund": "DIA",
+    "date": "2022-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 29202409920,
+    "reportSum": 29284208010,
+    "relDiff": 0.002801
+   },
+   {
+    "fund": "DIA",
+    "date": "2023-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 28595842945,
+    "reportSum": 28391339698,
+    "relDiff": -0.007152
+   },
+   {
+    "fund": "DIA",
+    "date": "2023-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 26777612264,
+    "reportSum": 27058443914,
+    "relDiff": 0.010488
+   },
+   {
+    "fund": "DIA",
+    "date": "2024-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 31372222504,
+    "reportSum": 31410029226,
+    "relDiff": 0.001205
+   },
+   {
+    "fund": "DIA",
+    "date": "2024-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 35231662067,
+    "reportSum": 35419551924,
+    "relDiff": 0.005333
+   },
+   {
+    "fund": "DIA",
+    "date": "2025-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 36544885645,
+    "reportSum": 36626186248,
+    "relDiff": 0.002225
+   },
+   {
+    "fund": "DIA",
+    "date": "2025-10-31",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 42097389980,
+    "reportSum": 41621967018,
+    "relDiff": -0.011293
+   },
+   {
+    "fund": "DIA",
+    "date": "2026-04-30",
+    "reportForm": "N-30D",
+    "nportMembers": 30,
+    "reportMembers": 30,
+    "nportSum": 42705808579,
+    "reportSum": 42829885219,
+    "relDiff": 0.002905
+   }
+  ]
+ },
+ "D_coverage": {
+  "snapshots": 335,
+  "coveredNEqual": 335,
+  "coveredWWithin0_01pp": 335,
+  "registerSumEqualsValidation": 335,
+  "mismatches": []
+ },
+ "E_mappingSpotCheck": {
+  "sampled": 6508,
+  "within5pct": 6441,
+  "within25pct": 6507,
+  "noBar": 0,
+  "worst": [
+   [
+    1.0,
+    "IWM",
+    "2016-12-31",
+    "ref_GSM"
+   ],
+   [
+    0.1845,
+    "IWM",
+    "2024-12-31",
+    "ref_LNZA"
+   ],
+   [
+    0.1637,
+    "IWV",
+    "2020-03-31",
+    "ref_CCO"
+   ],
+   [
+    0.1338,
+    "IWV",
+    "2020-03-31",
+    "ref_CNR"
+   ],
+   [
+    0.1224,
+    "IWV",
+    "2026-06-30",
+    "ref_AIP"
+   ],
+   [
+    0.1224,
+    "IWV",
+    "2024-12-31",
+    "ref_MSTR"
+   ],
+   [
+    0.1208,
+    "IWV",
+    "2021-06-30",
+    "ref_SWBI"
+   ],
+   [
+    0.1138,
+    "IWB",
+    "2026-06-30",
+    "ref_AMD"
+   ],
+   [
+    0.1032,
+    "IWV",
+    "2024-12-31",
+    "ref_BLNK"
+   ],
+   [
+    0.0969,
+    "IWM",
+    "2020-06-30",
+    "ref_EQBK"
+   ],
+   [
+    0.0945,
+    "IWV",
+    "2020-03-31",
+    "ref_CHDN"
+   ],
+   [
+    0.0942,
+    "IWM",
+    "2020-03-31",
+    "ref_SPXC"
+   ],
+   [
+    0.0941,
+    "IWV",
+    "2020-03-31",
+    "ref_SAFT"
+   ],
+   [
+    0.0928,
+    "IWV",
+    "2020-03-31",
+    "ref_CNS"
+   ],
+   [
+    0.0904,
+    "IWM",
+    "2020-03-31",
+    "ref_CVI"
+   ]
+  ]
+ }
+}

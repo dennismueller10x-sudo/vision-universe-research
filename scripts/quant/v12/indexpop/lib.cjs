@@ -116,7 +116,7 @@ const MONTHS = 'January|February|March|April|May|June|July|August|September|Octo
 const DATE_RE = new RegExp('(' + MONTHS + ')\\s+(\\d{1,2}),?\\s+(\\d{4})', 'i');
 function isoDate(m) { const mi = MONTHS.toUpperCase().split('|').indexOf(m[1].toUpperCase()) + 1; return m[3] + '-' + String(mi).padStart(2, '0') + '-' + String(+m[2]).padStart(2, '0'); }
 function stripFootnotes(name) {
-  return name.replace(/\s*\(\s*(?:[a-z]|\d)\s*\)/g, ' ').replace(/\*+/g, ' ').replace(/(\s+[a-z](\s*,\s*[a-z])*)+\s*$/g, '').replace(/\s+/g, ' ').trim();
+  return name.replace(/(\s*\.){2,}\s*$/, '').replace(/\s*\(\s*(?:[a-z]|\d)\s*\)/g, ' ').replace(/\*+/g, ' ').replace(/(\s+[a-z](\s*,\s*[a-z])*)+\s*$/g, '').replace(/\s+/g, ' ').trim();
 }
 /** Parse one fund's common-stock schedule. fundRe (optional) selects the fund in a multi-fund document by its page
  * heading (e.g. /iSHARES\s*RUSSELL 3000 (ETF|INDEX FUND)/i); headings of other funds switch the scope off. */
@@ -160,7 +160,8 @@ function parseReport(buf, isHtml, opts = {}) {
       continue;
     }
     if (!nums.length) {
-      if (pct.length || (textJoined && !/[a-z]/.test(textJoined) && textJoined.length > 3)) { pending = ''; continue; } // industry heading
+      // industry heading: a percentage cell, an all-caps line, or a line ending in a percentage ("Software-13.9%")
+      if (pct.length || (textJoined && !/[a-z]/.test(textJoined) && textJoined.length > 3) || /\d+(\.\d+)?\s*%\)?\s*$/.test(textJoined)) { pending = ''; continue; }
       // column headers and date lines of a continued page are not part of the next name (rules 1.1.0)
       if (text.every(c => /^(Shares|Value|Security|Common Stocks?|Description|Number of Shares|Market Value|Value \(Note \d\))$/i.test(c))) continue;
       if (DATE_RE.test(textJoined) && textJoined.replace(DATE_RE, '').replace(/[^A-Za-z]/g, '').replace(/Unaudited|Security|Shares|Value|continued|Schedule of Investments/gi, '').length === 0) continue;
@@ -170,7 +171,7 @@ function parseReport(buf, isHtml, opts = {}) {
     }
     if (nums.length >= 2 && label) {
       const sh = Number(nums[nums.length - 2].replace(/[$,()\s]/g, '')), val = Number(nums[nums.length - 1].replace(/[$,()\s]/g, ''));
-      if (sh > 0 && val >= 0 && Number.isFinite(sh) && Number.isFinite(val)) positions.push({ name: stripFootnotes(label), shares: sh, value: val });
+      if (sh > 0 && val >= 0 && Number.isFinite(sh) && Number.isFinite(val)) positions.push({ name: stripFootnotes(label.replace(/^[^%]*\d\s*%\)?\s+(?=[A-Za-z0-9])/, '')), shares: sh, value: val });
       else { notes.oddRows++; (notes.oddSamples = notes.oddSamples || []).length < 20 && notes.oddSamples.push(cells.join(' | ').slice(0, 160)); }
     } else { notes.oddRows++; (notes.oddSamples = notes.oddSamples || []).length < 20 && notes.oddSamples.push(cells.join(' | ').slice(0, 160)); }
     pending = '';
@@ -190,4 +191,19 @@ function validateReport(rep, expected) {
   return { valid: reasons.length === 0, reasons, memberCount: rep.positions.length, memberSum: sum, reportedTotal: rep.total, ratio };
 }
 
-module.exports = { logicalRows, parseReport, validateReport, stripFootnotes, sha256, cachePath, readCached, parseNport, isNportMember, validateNport, normName, tokenSim, decodeXml };
+// Position keys of one snapshot (rules 1.2.0 note): N-PORT CUSIP, else normalized name + class. A key repeated inside
+// one snapshot (two lines with the same name, e.g. an issuer and its litigation trust) gets '#2', '#3', ... in document
+// order so that every line is price-checked on its own.
+const validCusip = c => typeof c === 'string' && /^[0-9A-Z]{8}[0-9]$/.test(c) && !/^0+$/.test(c);
+function positionKeys(s) {
+  const seen = new Map();
+  return s.members.map(m => {
+    let k;
+    if (s.kind === 'NPORT' && validCusip(m.cusip)) k = 'C:' + m.cusip;
+    else { const n = normName(m.title && normName(m.title).cls ? m.title : m.name); k = 'N:' + n.key + '|' + (n.cls || ''); }
+    const c = (seen.get(k) || 0) + 1; seen.set(k, c);
+    return c > 1 ? k + '#' + c : k;
+  });
+}
+
+module.exports = { positionKeys, validCusip, logicalRows, parseReport, validateReport, stripFootnotes, sha256, cachePath, readCached, parseNport, isNportMember, validateNport, normName, tokenSim, decodeXml };
