@@ -163,8 +163,8 @@
       "name": "Prologis, Inc.",
       "sic": "6798",
       "rawFacts": 23434,
-      "mappedFacts": 6089,
-      "unmappedFacts": 17159,
+      "mappedFacts": 6097,
+      "unmappedFacts": 17279,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
@@ -176,25 +176,25 @@
           "historyYears": 16.0
         },
         "impairment_of_real_estate": {
-          "annualPeriods": 4,
+          "annualPeriods": 5,
           "quarterlyPeriods": 9,
-          "firstAvailablePeriod": "2009-12-31",
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2012-12-31",
-          "historyYears": 3.0
+          "historyYears": 4.0
         },
         "real_estate_accumulated_depreciation": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "real_estate_gross": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "real_estate_net": {
           "annualPeriods": 16,
@@ -217,11 +217,11 @@
         "PLDGP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 66,
-      "firstPeriodEnd": "2009-12-31",
+      "annualPeriods": 18,
+      "quarterlyPeriods": 67,
+      "firstPeriodEnd": "2008-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 16.0,
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
@@ -286,11 +286,11 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-12-31",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 63,
+          "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
@@ -317,44 +317,46 @@
         }
       },
       "quality": {
-        "HIGH": 485,
+        "HIGH": 487,
         "MEDIUM": 82
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 567,
-        "resolvedValues": 567
+        "datableValues": 569,
+        "resolvedValues": 569
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 17953,
+        "rules_version": "1.1.0",
+        "total": 18065,
         "by_severity": {
-          "INFO": 17159,
+          "INFO": 17279,
           "ERROR": 1,
-          "WARNING": 793
+          "WARNING": 785
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 699,
+          "CONCEPT_DISAGREEMENT": 693,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 17159
+          "IMPLAUSIBLE_FILING_FY": 1,
+          "RESTATEMENT_CONFLICT": 91,
+          "UNKNOWN_CONCEPT": 17279
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-323746",
-        "filing_date": "2026-07-29",
+        "accession": "0001193125-26-436160",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 126
+        "periodic_filings": 127,
+        "acceptance_datetime": "2026-10-28T20:14:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "d3bc62e9ffb0bde05ed9a2a13658c6357ec80218b77872211b809e276d8e67f8",

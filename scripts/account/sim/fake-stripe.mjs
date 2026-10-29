@@ -112,7 +112,9 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
       const s = {id: rid('cs_test'), object: 'checkout.session', mode: 'subscription', status: 'open', livemode: false,
         customer: params.customer, client_reference_id: params.client_reference_id, metadata: params.metadata || {},
         subscription_data: params.subscription_data || {}, line_items: params.line_items, subscription: null,
-        success_url: params.success_url, cancel_url: params.cancel_url};
+        success_url: params.success_url, cancel_url: params.cancel_url,
+        // Fuer Pruefungen festgehalten (Stripe zeigt den Text ueber der Bestellschaltflaeche).
+        custom_text: params.custom_text || null, automatic_tax: params.automatic_tax || null};
       s.url = `${checkoutBase}/${s.id}`;
       sessions.set(s.id, s);
       return done(s);
@@ -174,6 +176,53 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
       s.status = 'complete';
       s.subscription = sub.id;
       emit('checkout.session.completed', s);
+      return sub;
+    },
+    // Verzoegerte Zahlungsmethode (z. B. SEPA-Lastschrift): Checkout abgeschlossen, Erstzahlung noch in Bearbeitung.
+    // Das Abo bleibt "incomplete" (kein Zugang), bis settleDelayed() die Zahlung bestaetigt oder scheitern laesst.
+    completeDelayedCheckout(sessionId) {
+      const s = sessions.get(sessionId);
+      if (!s || s.status !== 'open') throw new Error('SESSION_NOT_OPEN');
+      const price = priceObject(s.line_items[0].price);
+      const start = t();
+      const sub = {id: rid('sub'), object: 'subscription', customer: s.customer, livemode: false, status: 'incomplete',
+        cancel_at_period_end: false, cancel_at: null, canceled_at: null, ended_at: null, trial_end: null, created: start,
+        metadata: {...(s.subscription_data?.metadata || {})},
+        items: {object: 'list', data: [{id: rid('si'), object: 'subscription_item', price, quantity: 1,
+          current_period_start: start, current_period_end: start + (price.recurring.interval === 'year' ? 365 : 30) * DAY}]}};
+      subscriptions.set(sub.id, sub);
+      emit('customer.subscription.created', sub);
+      const item = sub.items.data[0];
+      const inv = {id: rid('in'), object: 'invoice', customer: sub.customer, livemode: false, currency: 'eur',
+        number: `SIM-${String(invoices.size + 1).padStart(4, '0')}`, status: 'open', amount_due: item.price.unit_amount, amount_paid: 0,
+        hosted_invoice_url: `https://invoice.stripe.com/i/sim/${invoices.size + 1}`, invoice_pdf: `https://pay.stripe.com/invoice/sim/${invoices.size + 1}/pdf`,
+        period_start: item.current_period_start, period_end: item.current_period_end, created: t(),
+        status_transitions: {finalized_at: t(), paid_at: null}, parent: {type: 'subscription_details', subscription_details: {subscription: sub.id}}};
+      invoices.set(inv.id, inv);
+      sub.latest_invoice = inv.id;
+      emit('invoice.finalized', inv);
+      s.status = 'complete';
+      s.subscription = sub.id;
+      s.payment_status = 'unpaid';
+      emit('checkout.session.completed', s);
+      return sub;
+    },
+    // Ausgang der verzoegerten Erstzahlung. Bei Misserfolg nur das Checkout-Ereignis (wie es Stripe zuerst schickt):
+    // der Worker muss den Zustand selbst bei Stripe abrufen.
+    settleDelayed(subId, {paid}) {
+      const sub = subscriptions.get(subId);
+      const inv = invoices.get(sub.latest_invoice);
+      const session = [...sessions.values()].find(x => x.subscription === subId);
+      if (paid) {
+        sub.status = 'active';
+        inv.status = 'paid'; inv.amount_paid = inv.amount_due; inv.status_transitions.paid_at = t();
+        emit('invoice.paid', inv);
+        emit('customer.subscription.updated', sub);
+      } else {
+        sub.status = 'incomplete_expired';
+        sub.ended_at = t();
+      }
+      if (session) { session.payment_status = paid ? 'paid' : 'unpaid'; emit(paid ? 'checkout.session.async_payment_succeeded' : 'checkout.session.async_payment_failed', session); }
       return sub;
     },
     // Verlaengerung am Periodenende, erfolgreich oder fehlgeschlagen.

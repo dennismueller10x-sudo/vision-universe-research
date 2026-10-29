@@ -311,11 +311,13 @@ function runPortfolio(input) {
             const dollarVolume = finite(listings.get(k).barMap.get(session.date).dollarVolume, 'LIQUIDITY_DATA_UNAVAILABLE', 0);
             if (notional > dollarVolume * input.liquidity.maxParticipation) fail('LIQUIDITY_CAPACITY_EXCEEDED', k);
           }
-          const units = delta / rawPrice;
+          // Full exit (target weight 0): sell exactly the held units, so no scale-dependent rounding dust remains.
+          const exit = !(weights[k] > 0) && holdings.has(k);
+          const units = exit ? -holdings.get(k) : delta / rawPrice;
           cash -= delta + fee + slip;
           const newUnits = (holdings.get(k) || 0) + units;
           if (newUnits < -1e-10) fail('NEGATIVE_UNITS');
-          if (Math.abs(newUnits) <= 1e-12) holdings.delete(k); else holdings.set(k, newUnits);
+          if (exit || Math.abs(newUnits) <= 1e-12) holdings.delete(k); else holdings.set(k, newUnits);
           trades.push({ date: session.date, decisionDate: t.decisionDate, listingId: k, side: delta > 0 ? 'BUY' : 'SELL', units: Math.abs(units), price: rawPrice, notional, fee, slippage: slip });
           traded += notional; fees += fee; slippage += slip;
         }

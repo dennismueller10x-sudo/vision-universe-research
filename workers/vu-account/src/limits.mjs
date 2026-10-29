@@ -15,7 +15,8 @@ export const LIMITS = Object.freeze({
   cancellation: {limit: 5, windowSec: 3600},
   cancellationEmail: {limit: 3, windowSec: 86400}, // Bestaetigungen an dieselbe Adresse
   sensitive: {limit: 10, windowSec: 3600}, // Passwort, Loeschung, Checkout
-  watchlist: {limit: 120, windowSec: 60}, // Merken/Entfernen je Konto (Lesezeichen in den Produktwelten)
+  watchlist: {limit: 120, windowSec: 60},
+  planIntent: {limit: 30, windowSec: 3600}, // Tarifwahl merken/verwerfen je Konto // Merken/Entfernen je Konto (Lesezeichen in den Produktwelten)
 });
 
 export function createLimiter({binding, now = () => Date.now()} = {}) {

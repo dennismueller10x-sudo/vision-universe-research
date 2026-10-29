@@ -162,9 +162,9 @@
       "cik": "0001048911",
       "name": "FEDEX CORP",
       "sic": "4513",
-      "rawFacts": 22701,
-      "mappedFacts": 6497,
-      "unmappedFacts": 16581,
+      "rawFacts": 23111,
+      "mappedFacts": 6419,
+      "unmappedFacts": 17017,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -174,9 +174,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 20,
-      "quarterlyPeriods": 74,
+      "quarterlyPeriods": 76,
       "firstPeriodEnd": "2007-05-31",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
@@ -188,7 +188,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2009-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 17.0
@@ -215,7 +215,7 @@
         },
         "net_income": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2008-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 18.0
@@ -229,28 +229,28 @@
         },
         "revenue": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2008-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 18.0
         },
         "short_term_debt": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2025-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 1.0
         },
         "stockholders_equity": {
           "annualPeriods": 20,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-05-31",
           "lastAvailablePeriod": "2026-05-31",
           "historyYears": 17.0
@@ -273,46 +273,48 @@
         }
       },
       "quality": {
-        "HIGH": 693,
-        "MEDIUM": 2
+        "HIGH": 698,
+        "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 695,
-        "resolvedValues": 695
+        "datableValues": 701,
+        "resolvedValues": 701
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16735,
+        "rules_version": "1.1.0",
+        "total": 17149,
         "by_severity": {
-          "INFO": 16581,
-          "WARNING": 154
+          "INFO": 17017,
+          "WARNING": 132
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 88,
-          "RESTATEMENT_CONFLICT": 60,
+          "CONCEPT_DISAGREEMENT": 21,
+          "RESTATEMENT_CONFLICT": 49,
+          "UNEXPECTED_DURATION": 56,
           "UNIT_MISMATCH": 6,
-          "UNKNOWN_CONCEPT": 16581
+          "UNKNOWN_CONCEPT": 17017
         }
       },
       "latestFiling": {
-        "accession": "0001048911-26-000105",
-        "filing_date": "2026-07-20",
-        "form": "10-K",
-        "periodic_filings": 117
+        "accession": "0001048911-26-000131",
+        "filing_date": "2026-10-28",
+        "form": "10-Q",
+        "periodic_filings": 118,
+        "acceptance_datetime": "2026-10-28T20:26:51.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0b94136e6e6f208cb85fa908d8409b2d70ed010c893a4038cdc26cd1970bb8a7",
+      "sourceDigest": "01d65ff1a6a0d201014a752250edc9861a783aa43c05e878a19515ea7a83125b",
       "issuerId": "iss_cik_0001048911"
     },
     {

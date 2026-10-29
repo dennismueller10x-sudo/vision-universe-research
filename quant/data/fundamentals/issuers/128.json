@@ -322,10 +322,10 @@
       "cik": "0001023128",
       "name": "LITHIA MOTORS INC",
       "sic": "5500",
-      "rawFacts": 21001,
-      "mappedFacts": 6848,
-      "unmappedFacts": 14525,
-      "calendarYears": 18,
+      "rawFacts": 21387,
+      "mappedFacts": 6960,
+      "unmappedFacts": 14829,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -334,28 +334,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -375,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -433,48 +433,49 @@
         }
       },
       "quality": {
-        "HIGH": 548,
+        "HIGH": 559,
         "MEDIUM": 47
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 595,
-        "resolvedValues": 595
+        "datableValues": 606,
+        "resolvedValues": 606
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14875,
+        "rules_version": "1.1.0",
+        "total": 15147,
         "by_severity": {
-          "INFO": 14525,
+          "INFO": 14829,
           "ERROR": 2,
-          "WARNING": 348
+          "WARNING": 316
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 280,
+          "CONCEPT_DISAGREEMENT": 287,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 62,
+          "RESTATEMENT_CONFLICT": 23,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 14525
+          "UNKNOWN_CONCEPT": 14829
         }
       },
       "latestFiling": {
-        "accession": "0001023128-26-000051",
-        "filing_date": "2026-07-29",
+        "accession": "0001023128-26-000060",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 126
+        "periodic_filings": 127,
+        "acceptance_datetime": "2026-10-28T20:09:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "af00275c03961a8caf157139733fb237f3aa27d8909c1a59ce699ef6a5ae05e4",
+      "sourceDigest": "a2cc9d2753dda3317f7ff647f798a0d60767f97e35462d69c2ead2340c9e7abe",
       "issuerId": "iss_cik_0001023128"
     },
     {

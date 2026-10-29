@@ -10,7 +10,7 @@
 // Nichts davon macht die Kuendigung von einer weiteren Handlung des Kunden
 // abhaengig (kein Login, kein Bestaetigungslink).
 
-import {cancellationConfirmation, cancellationFinal, opsAlert} from './mail.mjs';
+import {cancellationConfirmation, cancellationFinal, opsAlert, withdrawalConfirmation, contractConfirmation} from './mail.mjs';
 import {normalizeStripeSubscription} from './providers/stripe-adapter.mjs';
 
 const STRIPE_SUB = /^sub_[A-Za-z0-9]{6,}$/;
@@ -36,11 +36,13 @@ export async function cancelStripeAtPeriodEnd(deps, subscriptionId) {
 // bezogenen Daten doppelt im Postausgang).
 async function renderMail(deps, mail) {
   if (mail.kind === 'ops_alert') return opsAlert(mail.payload || {});
+  if (mail.kind === 'contract_confirmation') return contractConfirmation({...(mail.payload || {}), email: mail.to_email});
   const c = await deps.store.getCancellation(mail.cancellation_id);
   if (!c) throw new CancellationError('CANCELLATION_NOT_FOUND');
   const base = {confirmationId: c.id, receivedAt: c.requested_at, email: c.email, planName: PLAN_NAMES[c.match_plan_id] || null,
     endsAt: c.ends_at, status: c.status};
   if (mail.kind === 'cancellation_final') return cancellationFinal(base);
+  if (mail.kind === 'withdrawal_receipt') return withdrawalConfirmation({...base, fullName: c.full_name, reference: c.reference});
   return cancellationConfirmation({...base, fullName: c.full_name, reference: c.reference, kind: c.kind, reason: c.reason,
     provider: c.status === 'manual_review' ? c.match_provider : null});
 }
@@ -88,6 +90,30 @@ export async function receivePublicCancellation(deps, {email, fullName, referenc
   const emailSent = await enqueueAndSend(deps, {kind: 'cancellation_receipt', cancellation_id: received.id, to_email: email,
     dedupe_key: `receipt:${received.id}`});
   return {confirmationId: received.id, receivedAt: received.requested_at, emailSent};
+}
+
+// --- Widerruf (§ 356a BGB) -------------------------------------------------
+// Eingang speichern und sofort bestaetigen (Inhalt, Datum, Uhrzeit). Beendigung und Erstattung
+// entscheidet eine berechtigte Person (Vorgang immer in "manual_review"); die Frist ist mit dem
+// Absenden gewahrt.
+export async function receivePublicWithdrawal(deps, {email, fullName, reference}) {
+  const received = await deps.store.recordCancellation({email, full_name: fullName, reference, kind: 'withdrawal', source: 'public'});
+  try { await deps.store.proposeCancellationMatch(received.id); }
+  catch (e) { deps.log('error', 'WITHDRAWAL_MATCH_FAILED', {cancellation: received.id, code: String(e.code || e.message).slice(0, 80)}); }
+  deps.log('warn', 'WITHDRAWAL_RECEIVED', {cancellation: received.id});
+  const emailSent = await enqueueAndSend(deps, {kind: 'withdrawal_receipt', cancellation_id: received.id, to_email: email,
+    dedupe_key: `withdrawal:${received.id}`});
+  return {confirmationId: received.id, receivedAt: received.requested_at, emailSent};
+}
+
+// --- Vertragsbestaetigung (§ 312f BGB): einmal je Abo, ueber den Postausgang ------------
+export async function queueContractConfirmation(deps, {email, subscriptionRef, plan, amount, currency, interval, confirmedAt, paymentPending}) {
+  if (!email || !subscriptionRef) return null;
+  const id = await deps.store.enqueueMail({kind: 'contract_confirmation', to_email: email, dedupe_key: `contract:${subscriptionRef}`,
+    payload: {subscriptionRef, plan, amount, currency, interval, confirmedAt, paymentPending: Boolean(paymentPending),
+      concludedAt: new Date(deps.now()).toISOString()}});
+  await deliverDueMails(deps, 10);
+  return id;
 }
 
 // --- Eingang mit Anmeldung (Identitaet durch Login belegt) -----------------

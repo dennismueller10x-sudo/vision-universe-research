@@ -643,9 +643,9 @@
       "cik": "0001492691",
       "name": "Knight-Swift Transportation Holdings Inc.",
       "sic": "4213",
-      "rawFacts": 25059,
-      "mappedFacts": 6074,
-      "unmappedFacts": 19193,
+      "rawFacts": 25903,
+      "mappedFacts": 6272,
+      "unmappedFacts": 19868,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -655,9 +655,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -669,7 +669,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -689,28 +689,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -724,14 +724,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -754,46 +754,47 @@
         }
       },
       "quality": {
-        "HIGH": 596,
+        "HIGH": 610,
         "MEDIUM": 49
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 645,
-        "resolvedValues": 645
+        "datableValues": 659,
+        "resolvedValues": 659
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 20014,
+        "rules_version": "1.1.0",
+        "total": 20720,
         "by_severity": {
-          "INFO": 19193,
-          "WARNING": 821
+          "INFO": 19868,
+          "WARNING": 852
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 590,
+          "CONCEPT_DISAGREEMENT": 617,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 225,
-          "UNKNOWN_CONCEPT": 19193
+          "RESTATEMENT_CONFLICT": 229,
+          "UNKNOWN_CONCEPT": 19868
         }
       },
       "latestFiling": {
-        "accession": "0001492691-26-000059",
-        "filing_date": "2026-07-29",
+        "accession": "0001492691-26-000069",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 63
+        "periodic_filings": 64,
+        "acceptance_datetime": "2026-10-28T17:03:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d69b5e9884e19d8085a788ad90846936a3672fd07455033d3c91356883a8911f",
+      "sourceDigest": "5b82a41012bab89719fcceb207e72aac2856c8ed83ad980298deca15e541c3e6",
       "issuerId": "iss_cik_0001492691"
     },
     {

@@ -6,9 +6,9 @@
       "cik": "0000028823",
       "name": "DIEBOLD NIXDORF, Inc",
       "sic": "3578",
-      "rawFacts": 34340,
-      "mappedFacts": 7437,
-      "unmappedFacts": 26001,
+      "rawFacts": 34697,
+      "mappedFacts": 7557,
+      "unmappedFacts": 26370,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 72,
+      "quarterlyPeriods": 73,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -117,46 +117,47 @@
         }
       },
       "quality": {
-        "HIGH": 432,
-        "MEDIUM": 125
+        "HIGH": 437,
+        "MEDIUM": 127
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 557,
-        "resolvedValues": 557
+        "datableValues": 564,
+        "resolvedValues": 564
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 27589,
+        "rules_version": "1.1.0",
+        "total": 27799,
         "by_severity": {
-          "INFO": 26001,
-          "WARNING": 1588
+          "INFO": 26370,
+          "WARNING": 1429
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1192,
+          "CONCEPT_DISAGREEMENT": 1033,
           "RESTATEMENT_CONFLICT": 114,
           "UNEXPECTED_DURATION": 282,
-          "UNKNOWN_CONCEPT": 26001
+          "UNKNOWN_CONCEPT": 26370
         }
       },
       "latestFiling": {
-        "accession": "0000028823-26-000033",
-        "filing_date": "2026-07-29",
+        "accession": "0000028823-26-000040",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 128
+        "periodic_filings": 129,
+        "acceptance_datetime": "2026-10-28T20:05:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e5593cc4f7aa5b3ad1ea92a7e7b3f5809598e3af776ed251286186efdc154e99",
+      "sourceDigest": "8d7be988e4932c60139cab8359bd22dfbfeaf547531b1598d5b683b04cb946cb",
       "issuerId": "iss_cik_0000028823"
     },
     {

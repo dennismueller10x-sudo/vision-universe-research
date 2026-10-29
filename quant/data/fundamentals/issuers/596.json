@@ -743,15 +743,15 @@
       "cik": "0001631596",
       "name": "KKR Real Estate Finance Trust Inc.",
       "sic": "6798",
-      "rawFacts": 11981,
-      "mappedFacts": 3787,
-      "unmappedFacts": 7749,
+      "rawFacts": 12336,
+      "mappedFacts": 3882,
+      "unmappedFacts": 8074,
       "calendarYears": 11,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -786,7 +786,7 @@
         },
         "secured_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -799,9 +799,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 12,
-      "quarterlyPeriods": 44,
+      "quarterlyPeriods": 45,
       "firstPeriodEnd": "2014-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
@@ -813,7 +813,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -840,14 +840,14 @@
         },
         "net_income": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "operating_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -868,14 +868,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -898,47 +898,48 @@
         }
       },
       "quality": {
-        "HIGH": 218,
+        "HIGH": 223,
         "MEDIUM": 53
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 271,
-        "resolvedValues": 271
+        "datableValues": 276,
+        "resolvedValues": 276
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8250,
+        "rules_version": "1.1.0",
+        "total": 8535,
         "by_severity": {
-          "INFO": 7749,
-          "WARNING": 501
+          "INFO": 8074,
+          "WARNING": 461
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 348,
+          "CONCEPT_DISAGREEMENT": 308,
           "PERIOD_MISMATCH": 135,
           "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 7749
+          "UNKNOWN_CONCEPT": 8074
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-049028",
-        "filing_date": "2026-07-21",
+        "accession": "0001628280-26-067912",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 39
+        "periodic_filings": 40,
+        "acceptance_datetime": "2026-10-28T20:30:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "9cbfb47dfcd31e010af802f4017414926fd4231019eb2ae3fcf6bfdc57ef04ef",
+      "sourceDigest": "081f12cca1b839dc573fac316605a5f69e98db6e470e88c6c28ee540778e8582",
       "issuerId": "iss_cik_0001631596"
     },
     {

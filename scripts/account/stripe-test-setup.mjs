@@ -23,7 +23,7 @@ export const CATALOG = Object.freeze([
 ]);
 // Muss zu workers/vu-account/src/billing.mjs passen (SUBSCRIPTION_EVENTS, INVOICE_EVENTS, Checkout, Streitfaelle).
 export const WEBHOOK_EVENTS = Object.freeze([
-  'checkout.session.completed', 'checkout.session.async_payment_succeeded',
+  'checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed',
   'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
   'customer.subscription.paused', 'customer.subscription.resumed', 'customer.subscription.pending_update_applied',
   'customer.subscription.pending_update_expired', 'customer.subscription.trial_will_end',
@@ -31,7 +31,8 @@ export const WEBHOOK_EVENTS = Object.freeze([
   'invoice.payment_action_required', 'invoice.voided', 'invoice.marked_uncollectible', 'invoice.updated',
   'charge.dispute.created', 'charge.refunded',
 ]);
-const LEGAL = {privacy: 'https://www.visionuniverse.de/policies/privacy-policy', terms: 'https://www.visionuniverse.de/policies/terms-of-service'};
+// Eigene Rechtstexte (oeffentlich, ohne Passwortmaske; workers/vu-account/src/legal/texts.mjs) statt der Shopify-Shop-Texte.
+const LEGAL = {privacy: 'https://konto.visionuniverse.de/rechtliches/datenschutz', terms: 'https://konto.visionuniverse.de/rechtliches/agb'};
 
 export function assertTestKey(key) {
   const k = String(key || '');
