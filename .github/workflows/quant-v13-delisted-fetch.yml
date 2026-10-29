@@ -1,0 +1,63 @@
+name: Quant V13 Abruf delisteter Kursreihen (Research)
+
+# Kontrollierter, budgetierter Abruf im bestehenden Tiingo-Abonnement
+# (scripts/quant/v13/delisted/fetch.mjs, request-1.0.0.json, max. 7.500 Anfragen je Lauf).
+# Nur ueber die Marke [v13-delisted:<batches>] (z. B. [v13-delisted:0,1]) in einer Commit-Nachricht
+# auf claude/v13-delisted-fetch-*. Committet nichts; das Ergebnis wird mit dem Research-Schluessel
+# (fetch-pubkey.pem) verschluesselt und als kurzlebiges Artefakt abgelegt. Im Log nur Zaehlungen.
+on:
+  push:
+    branches:
+      - 'claude/v13-delisted-fetch-*'
+permissions:
+  contents: read
+concurrency:
+  group: quant-v13-delisted-fetch-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  fetch:
+    if: contains(github.event.head_commit.message, '[v13-delisted:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Batches aus der Commit-Nachricht
+        id: sel
+        env:
+          HEAD_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          b=$(printf '%s' "$HEAD_MSG" | grep -oE '\[v13-delisted:[0-9,]+\]' | head -1 | sed -E 's/\[v13-delisted:([0-9,]+)\]/\1/')
+          test -n "$b"
+          echo "batches=$b" >> "$GITHUB_OUTPUT"
+          echo "name=v13-delisted-$(printf '%s' "$b" | tr ',' '-')-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+      - name: Abruf (nur Zaehlungen im Log)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          BATCHES: ${{ steps.sel.outputs.batches }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v13"
+          node scripts/quant/v13/delisted/fetch.mjs --batches "$BATCHES" --controls --out "$RUNNER_TEMP/v13/series.jsonl"
+      - name: Verschluesseln (AES-256 + RSA-OAEP), Klartext loeschen
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/v13"
+          gzip -9 series.jsonl
+          openssl rand -out k.bin 32
+          openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:k.bin -in series.jsonl.gz -out series.jsonl.gz.enc
+          openssl pkeyutl -encrypt -pubin -inkey "$GITHUB_WORKSPACE/scripts/quant/v13/delisted/fetch-pubkey.pem" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in k.bin -out k.bin.enc
+          shred -u k.bin series.jsonl.gz
+          sha256sum series.jsonl.gz.enc k.bin.enc series.summary.json | tee sha256.txt
+          mkdir out && mv series.jsonl.gz.enc k.bin.enc series.summary.json sha256.txt out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.sel.outputs.name }}
+          path: ${{ runner.temp }}/v13/out
+          retention-days: 7
+          if-no-files-found: error
