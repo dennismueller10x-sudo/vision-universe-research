@@ -1,18 +1,23 @@
 'use strict';
 // V12 REQUAL (P5 before/after, P6 complete trading strategies on the qualified PIT S&P 500 population).
 // Registration body - written and committed BEFORE any outcome of this strand is computed. Outcome-free.
-// Usage: node scripts/quant/v12/requal/plan.cjs [--write]   (writes docs/quant-recovery/v12/requal/registration-1.0.0.json + .sha256)
+// Usage: node scripts/quant/v12/requal/plan.cjs [--write]   (writes docs/quant-recovery/v12/requal/registration-1.0.1.json + .sha256; 1.0.0 committed in 12137ff581)
 
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
 const ROOT = path.resolve(__dirname, '../../../..');
 const DOCS = path.join(ROOT, 'docs/quant-recovery/v12/requal');
-const REG_FILE = path.join(DOCS, 'registration-1.0.0.json');
+const REG_FILE_100 = path.join(DOCS, 'registration-1.0.0.json');
+const REG_FILE = path.join(DOCS, 'registration-1.0.1.json');
 
 const sha = f => crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, f))).digest('hex');
 
 function plan() {
   return {
-    id: 'V12-REQUAL', version: '1.0.0', strand: 'requal', baseCommit: '55422d6724',
+    id: 'V12-REQUAL', version: '1.0.1',
+    amends: { file: 'docs/quant-recovery/v12/requal/registration-1.0.0.json', sha256: '57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd' },
+    amendments: [
+      'Implementation clarification BEFORE any outcome (first P5a run aborted on a null weekly date, no result written or seen): weekly bars are labelled with the last trading day of the ISO week, so the last bar <= t0 can lie 7 days before t0 (e.g. t0 = 2016-03-31, Good Friday week, bar 2016-03-24). The window [t0 - 6 days, t0] of 1.0.0 would empty whole periods. 1.0.1: [t0 - 7 days, t0] (and the same for t1) everywhere 1.0.0 says 6 days. Nothing else changed.'
+    ], strand: 'requal', baseCommit: '55422d6724',
     purpose: 'P5: reproducible before/after of the V10/V11 studies on the qualified PIT S&P 500 population (fund holdings, incl. exits, bounded cases) with corrected PIT market cap; ' +
       'P6: at most six complete, pre-specified trading strategies (entry/exit, market filter, cash, risk management) on the same basis, evaluated by market phase. ' +
       'Data quality before strategy optimisation: no variant search, no parameter tuning, no alpha claim and no generalisation that strategies cannot add value.',
@@ -38,8 +43,8 @@ function plan() {
       membership: 'Member set at t0 = fund holdings of SPY at t0. Index membership was public at the time (S&P announcements); the SEC filing date of the holdings report is NOT used as availability (stated limitation).',
       memberReturn: 'Holdings price return t0 -> t1 of the module (R = s * p1/p0 - 1, observed/estimated statuses), bounded cases by scenario.',
       scenarios: { ZERO: 'bounded exits at 0 % (module boundedAs ZERO); BOUNDED_AMBIGUOUS_CA at the midpoint of its two hypotheses (lower+upper)/2', LOWER: 'bounded exits at -100 % and BOUNDED_AMBIGUOUS_CA at its lower hypothesis (module boundedAs LOWER)', rule: 'every P5a/P5c/P6 result is reported under both scenarios; ZERO is the point estimate, LOWER the survivorship lower bound' },
-      withSeries: 'A member "has our series" at t0 if its securityId (INDEXPOP T1/T2) is a frame listing whose weekly series has a bar in [t0 - 6 days, t0] and listingStart <= t0.',
-      seriesReturn: 'Weekly series return from the last bar <= t0 (>= t0 - 6 days) to the last bar <= t1 (>= t1 - 6 days). If the series ends before t1 - 6 days: lifecycle terminal CASH_MERGER -> cashPerShare / close(t0) - 1, otherwise last close (V10 LAST_CLOSE); sensitivity -100 % for these cases (counted).',
+      withSeries: 'A member "has our series" at t0 if its securityId (INDEXPOP T1/T2) is a frame listing whose weekly series has a bar in [t0 - 7 days, t0] and listingStart <= t0.',
+      seriesReturn: 'Weekly series return from the last bar <= t0 (>= t0 - 7 days) to the last bar <= t1 (>= t1 - 7 days). If the series ends before t1 - 7 days: lifecycle terminal CASH_MERGER -> cashPerShare / close(t0) - 1, otherwise last close (V10 LAST_CLOSE); sensitivity -100 % for these cases (counted).',
       spyPrice: 'SPY daily close at the last trading day <= t0 and <= t1 (exact dates). For weekly-series comparisons additionally SPY at the same weekly bar dates.',
       spyTotalReturnReference: 'Per calendar quarter q: y_q = D_FY(q) / 4 / SPY_close(start of q), D_FY = N-30D distributions per unit of the fiscal year (Oct-Sep) containing q; TR_period = prod_q (1 + priceReturn_q + y_q) - 1 over the quarters of the period. FY2026 (Oct 2025 - Sep 2026) not yet reported -> FY2025 value carried forward and flagged. Diagnostic: comparison with the N-PORT fund total return 2019-09+. Approximation; used only as reference because no strategy side is total-return capable (member returns are holdings price returns).',
       returnBasis: 'PRICE_RETURN on both sides for every comparison; SPY total return only as a separately labelled reference (benchmark-definition term).',
@@ -131,7 +136,7 @@ if (require.main === module && process.argv.includes('--write')) {
   fs.mkdirSync(DOCS, { recursive: true });
   fs.writeFileSync(REG_FILE, text);
   const h = crypto.createHash('sha256').update(text).digest('hex');
-  fs.writeFileSync(REG_FILE.replace(/\.json$/, '.sha256'), h + '  registration-1.0.0.json\n');
+  fs.writeFileSync(REG_FILE.replace(/\.json$/, '.sha256'), h + '  ' + path.basename(REG_FILE) + '\n');
   console.log(h);
 }
 function readRegistration() {
