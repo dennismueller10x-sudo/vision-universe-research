@@ -29,8 +29,8 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
-| A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ◐ | Läufe vom 26.10. grün. Der Lauf vom 27./28.10. scheiterte an Discover (CUBE, behoben in #1044). Prüfung des Laufs vom 28./29.10. ist geplant (29.10., 06:30 UTC). | P0 |
-| A2 Stichtag der Produktwelt ≤ 1 Sitzung hinter der letzten abgeschlossenen Sitzung | ◐ | `system-health`: OK, BEHIND_1_SESSIONS (Stichtag 26.10.). | P0 |
+| A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ◐ | Nachtlauf 28./29.10. grün: market-data-refresh (Lauf 40803128385, mit Discover-Prüfung) und Materialisierung (`94d7b46`). Der Zeitplan von technical-world (05:10 UTC) startet bei GitHub mit Stunden Verzögerung. Am 29.10. wurde der Erzeuger deshalb per `workflow_dispatch` ohne Anbieterabruf gestartet (`92b010e`). Ohne Handeingriff gilt die Kette erst, wenn ein Zeitplan-Lauf selbst committet. | P0 |
+| A2 Stichtag der Produktwelt ≤ 1 Sitzung hinter der letzten abgeschlossenen Sitzung | ✔ | 29.10.: Stichtag 28.10. = letzte abgeschlossene Sitzung; `system-health`: Technical (Produktwelt) OK. DQ-TW-1 PASS. | – |
 | A3 Titel mit veraltetem oder eingefrorenem Kurs liefern keine Signale „von heute“ | ✔ | AP1 (#1077, `technical-screen-row-1.10.0`, SCREENER_FRESHNESS.md). Titel hinter dem Stichtag (77) haben keine Ereignis- und Stichtagsfelder. Eingefrorene Reihen (233, `frozenSince`, Datenqualitätshinweis, kein bestätigtes Delisting) haben keine Analysefelder. Neubau auf `main` (`a433f3e`): DQ-TW-6 PASS 0/310, 5.347 aktuelle Titel ohne Abweichung. Chart Studio wendet dieselbe Regel an (#1088). | – |
 | A4 Ursache der beendeten Reihen bei aktivem Stamm | ✘ | `diagnose.mjs AVB`: `MASTER_ACTIVE_SERIES_ENDED` (Reihe bis 17.08., Stamm ACTIVE). Zuständig ist die Marktdaten-Domäne (Erzeuger `market-data-refresh.yml`), nicht Technical. Technical muss solche Titel korrekt kennzeichnen (A3). Die Klärung der Reihen braucht einen Anbieterabruf, also eine Owner-Entscheidung. | P0 (eskaliert) |
 | A5 Kein Eingriff in `*/data` von Hand. Neubau nur durch den Erzeuger | ✔ | `core-ci.yml` (Erzeuger-Eigentum), `producer-ownership.test.mjs` | – |
@@ -49,7 +49,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
 | C1 62 Muster gegen TA-Lib bzw. konstruierte Fälle, Kausalität und Aufwärmphase | ✔ | `technical-candlesticks*.test.mjs`, CANDLESTICKS.md | – |
-| C2 Muster im Screener (heute, Fenster, Tag/Woche/Monat) | ◐ | 27 Muster im Tages-Screener. Woche/Monat (L7) sind bis zur Materialisierung `null`, Prüfung am 29.10. | P1 |
+| C2 Muster im Screener (heute, Fenster, Tag/Woche/Monat) | ✔ | 27 Muster im Tages-Screener. Kerzen je Woche und Monat seit der Materialisierung vom 28.10. belegt (94,4 % bzw. 94,0 %, SCREENER_FIELDS_L7.md §2d). | – |
 | C3 Muster im Chart sichtbar (Marker je Bar) | ✔ (nach Merge AP5) | Schicht „Kerzenmuster“ in Chart Studio, mit denselben 27 Mustern wie der Screener (`model.js#candleMarks`). Der E2E-Test prüft, dass die Marken am letzten Bar den Spalten der Trefferzeile entsprechen; die Browser-QA prüft Ein- und Ausschalten. Die übrigen 35 Muster stehen nur im Katalog (P2). | P1 |
 | C4 Evidenz mit Grenzen dokumentiert | ✔ | CANDLESTICK_EVIDENCE.md inkl. Marktphasen (#1071) | – |
 
@@ -68,7 +68,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
 | E1 Woche/Monat aus der Tageshistorie, nur abgeschlossene Perioden, kausal | ✔ | MULTI_TIMEFRAME.md, `technical-mtf*.test.mjs` | – |
-| E2 Alle W/M-Spalten nach der Materialisierung befüllt (Abdeckung wie in SCREENER_FIELDS_L7.md §2a vorhergesagt) | ✘ | 18 L7-Spalten zu 100 % `null` (Bündel noch `technical-mtf-1.0.0`). DQ-TW-5 meldet das. Prüfung am 29.10. | P0 |
+| E2 Alle W/M-Spalten nach der Materialisierung befüllt (Abdeckung wie in SCREENER_FIELDS_L7.md §2a vorhergesagt) | ✔ | 29.10. (`92b010e`): alle 18 L7-Spalten belegt (94–96 %). Leer sind nur Titel, die nach AP1 bewusst keine Stichtagswerte tragen. Vergleich mit der Näherung in §2d. DQ-TW-5 PASS (0/46). | – |
 | E3 Zeitrahmen-Wechsel im Screener für alle Felder mit W/M-Bedeutung | ◐ | 25 von 72 Feldern haben W/M | P1 |
 | E4 Wochenchart mit OHLC und Indikatoren | ◐ | Wochenchart nur als Schlusslinie mit SMA 10/40 | P2 |
 
@@ -155,7 +155,6 @@ Wer die Arbeit fortsetzt, beginnt hier:
 - AP2, AP3 (E2E, Budget), AP5 und AP5b sind gemergt.
 - Offen: Prüfung des Nachtlaufs mit L7-Abdeckung am 29.10. um 06:30 UTC (AP3). AP4 beginnt erst, wenn diese Prüfung bestanden ist.
 - G4 (relative Stärke im Chart) ist mit #1095 abgeschlossen. B4, D4, I5 und J1 sind mit Nachweis auf ✔ gesetzt.
-- Offene P0/P1-Kriterien hängen jetzt nur noch an zwei Dingen:
-  - am Nachtlauf (A1, A2, E2, C2), Prüfung am 29.10.;
-  - an AP4 (E3), der erst nach bestandener L7-Prüfung beginnt.
+- L7-Prüfung am 29.10. bestanden: A2, C2 und E2 sind ✔ (SCREENER_FIELDS_L7.md §2d). AP4 (E3) kann beginnen.
+- A1 bleibt ◐, bis ein Zeitplan-Lauf von technical-world selbst committet.
 - A4 liegt beim Owner. Danach folgt P2 (AP6: Evidenz im Produkt, Wochen-OHLC). Die Ursache der eingefrorenen Reihen liegt bei der Marktdaten-Domäne (Owner).
