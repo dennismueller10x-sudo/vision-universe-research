@@ -915,7 +915,31 @@
                   el("td", { text: !t.published ? "zu wenige Fälle" : t.significant ? "belastbar" : "nicht belastbar" })]);
               }))]))])]));
       });
-      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
+      /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern; fehlt die Datei, bleibt der Abschnitt weg. */
+      var sigSec = el("div", {});
+      fetchJSON(M.SIGNAL_EVIDENCE_PATH).then(function (S) {
+        if (!S || !/^vu-technical-signal-evidence-1\./.test(S.schemaVersion || "")) return;
+        var dir = { BULLISH: "bullisch", BEARISH: "bärisch", NEUTRAL: "ohne Richtung" };
+        function table(rows) {
+          return el("div", { class: "tc-table-wrap" }, el("table", { class: "tc-table is-wrap" }, [
+            el("thead", {}, el("tr", {}, ["Ereignis (übliche Lesart)", "Einordnung", "ggü. Querschnitt nach 20 Tagen", "n"].map(function (h) { return el("th", { scope: "col", text: h }); }))),
+            el("tbody", {}, rows.slice().sort(function (a, b) { return b.n - a.n; }).map(function (r) {
+              var excess = isNum(r.mean) ? (r.direction === "BEARISH" ? -r.mean : r.mean) : null;
+              return el("tr", { title: M.signalEvidenceText(r) }, [el("th", { scope: "row", text: r.name + " (" + (dir[r.direction] || r.direction) + ")" }),
+                el("td", { text: M.READING_SHORT[r.reading] || "–" }),
+                el("td", { class: "num", text: isNum(excess) ? (excess > 0 ? "+" : "") + (excess * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " % ± " + (r.ci95 * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–" }),
+                el("td", { class: "num", text: r.n.toLocaleString("de-DE") })]);
+            }))]));
+        }
+        put(sigSec, el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Historische Beobachtung: Indikator-Ereignisse und Kerzenmuster" }), glyph("chevron", "tc-chev tc-rot")]),
+          el("div", { class: "tc-filter-body" }, [
+            el("p", { text: "Drei Dinge sind zu unterscheiden. Ein Ereignis (z. B. „MACD kreuzt die Signallinie aufwärts“) ist technisch eindeutig definiert und nachrechenbar. Was danach im Mittel geschah, ist eine historische Beobachtung. Ein handelbarer Vorteil nach Kosten, Ausführung und Prüfung außerhalb der Stichprobe ist für keine Zeile nachgewiesen. Die Tabelle zeigt keine Kauf- oder Verkaufssignale." }),
+            el("p", { text: "Gemessen: Kursverlauf vom Schluss des Ereignistags bis 20 Handelstage später im Vergleich zum Mittel aller Titel am selben Tag. Grundlage: " + S.titles.toLocaleString("de-DE") + " Titel, je Titel die 270 veröffentlichten Tagesbars bis " + M.dateDe(S.window.to) + " – rund ein Marktjahr, kein voller Zyklus. Positiv heißt: der Titel lief besser als der Querschnitt, unabhängig von der Lesart. Ab " + S.method.minN + " Fällen wird eine Zeile ausgewiesen." }),
+            el("p", { class: "tc-note", text: "Einordnung: „kein gesicherter Unterschied“ – nach Korrektur für viele gleichzeitige Tests kein statistisch gesicherter Unterschied nachgewiesen; das heißt nicht, dass Gleichheit bewiesen ist; „uneinheitlich“ – belastbar im Mittel, aber mit wechselndem Vorzeichen zwischen Marktphasen (S&P 500 über/unter seiner 50-Tage-Linie) oder Zeithälften; „wie“ bzw. „gegen übliche Lesart“ – belastbar und in allen Teilmengen gleich gerichtet; „ohne Richtung“ – Muster wie Doji haben keine Lesart. Kosten und Survivorship Bias sind nicht berücksichtigt." }),
+            el("h3", { text: "Indikator-Ereignisse" }), el("p", { class: "tc-note", text: M.signalEvidenceSummary(S.indicators) }), table(S.indicators),
+            el("h3", { text: "Kerzenmuster" }), el("p", { class: "tc-note", text: M.signalEvidenceSummary(S.candles) }), table(S.candles)])]));
+      }).catch(function () { /* ohne Datei kein Abschnitt */ });
+      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [sigSec, el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
     }).catch(function () { put(slot, stateBox("Methodik nicht geladen", "Die Engine-Dateien konnten nicht geladen werden.")); });
   }
 
