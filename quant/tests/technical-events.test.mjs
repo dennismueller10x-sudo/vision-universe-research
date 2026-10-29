@@ -66,7 +66,9 @@ test("Ohne chartSeries oder mit falscher Laenge: Linien-Ereignisse null, nie ges
 test("Abfragekatalog und Suche in Worten kennen die Ereignisse", () => {
   for (const id of ["goldenCrossDays", "deathCrossDays", "crossAboveSma200Days", "crossBelowSma200Days", "rsiExitOversoldDays", "rsiExitOverboughtDays", "newHigh52wDays", "formationNewDays"]) {
     const f = Q.field(id);
-    assert.equal(f.group, "Ereignisse", id); assert.equal(f.kind, "num"); assert.deepEqual(f.tfs, ["1D"]);
+    assert.equal(f.group, "Ereignisse", id); assert.equal(f.kind, "num");
+    /* seit technical-query 1.11.0 (AP4): Linien- und RSI-Ereignisse auch je Woche und Monat */
+    assert.deepEqual(f.tfs, ["crossAboveSma200Days", "crossBelowSma200Days", "rsiExitOversoldDays", "rsiExitOverboughtDays"].includes(id) ? ["1D", "1W", "1M"] : ["1D"], id);
   }
   const art = { schemaVersion: "test", cols: { s: ["A", "B", "C"], goldenCrossDays: [2, 9, null] } };
   const hit = Q.evaluate(Q.createDataset(art), { timeframe: "1D", groups: [{ filters: [{ field: "goldenCrossDays", op: "lte", value: 5 }] }] });

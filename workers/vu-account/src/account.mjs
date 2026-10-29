@@ -11,14 +11,29 @@ import * as v from './validate.mjs';
 
 const one = rows => (Array.isArray(rows) ? rows[0] || null : null);
 
+// Tarifwahl vor der Registrierung ("Pro"), gespeichert in user_metadata. Nur ein Hinweis fuer die
+// Seitenfuehrung (Pro-Bestaetigung statt Willkommensseite) - nie ein Recht: Pro gibt es ausschliesslich
+// ueber effective_entitlements (verifizierte Stripe-Ereignisse). Gilt 30 Tage und nur, solange Free gilt.
+export const PLAN_INTENT_DAYS = 30;
+export function planIntentOf(authUser, entitlements, now) {
+  const meta = authUser && authUser.user_metadata;
+  if (!meta || meta.plan_intent !== 'pro') return null;
+  const at = Date.parse(meta.plan_intent_at || '');
+  if (!Number.isFinite(at) || now - at > PLAN_INTENT_DAYS * 864e5 || at - now > 864e5) return null;
+  if (entitlements && entitlements.plan_id && entitlements.plan_id !== 'free') return null;
+  return {plan: 'pro', at: new Date(at).toISOString()};
+}
+
 export async function me(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
-  const [profile, settings, roles, entitlements] = await Promise.all([
+  const [profile, settings, roles, entitlements, authUser] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_settings', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_roles', {user_id: `eq.${user.id}`}),
     ctx.sb.user.rpc(t, 'my_entitlements'),
+    // Fehlt die Auskunft, gibt es eben keinen Hinweis - die Kontoseite bleibt nutzbar.
+    ctx.sb.auth.getUser({accessToken: t, ip: ctx.ip}).catch(() => null),
   ]);
   return json(ctx.request, ctx.cfg, 200, {
     user: {id: user.id, email: user.email},
@@ -28,9 +43,23 @@ export async function me(ctx) {
       marketingEmails: settings.marketing_emails},
     roles: (roles || []).map(r => r.role),
     entitlements,
+    planIntent: planIntentOf(authUser, entitlements, ctx.now()),
     billingAvailable: !billingBlocker(ctx.cfg),
     checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
+}
+
+// Tarifwahl setzen ({plan: "pro"}) oder verwerfen ({plan: null}): "Pro fortsetzen" bzw. "Mit Free weiter".
+export async function setPlanIntent(ctx) {
+  const user = await requireUser(ctx);
+  await ctx.limit('planIntent', user.id);
+  const body = await readJson(ctx.request);
+  if (body.plan !== 'pro' && body.plan !== null) throw new HttpError(400, 'PLAN_INVALID');
+  const data = body.plan === 'pro' ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()}
+    : {plan_intent: null, plan_intent_at: null};
+  await ctx.sb.auth.updateUserData({accessToken: user.accessToken, data, ip: ctx.ip});
+  return json(ctx.request, ctx.cfg, 200, {state: 'PLAN_INTENT_SAVED', planIntent: body.plan === 'pro'
+    ? {plan: 'pro', at: data.plan_intent_at} : null}, {cookies: ctx.outCookies});
 }
 
 const SETTING_COLUMNS = {displayCurrency: 'display_currency', appearance: 'appearance', experienceLevel: 'experience_level',

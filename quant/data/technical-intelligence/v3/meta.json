@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-28T11:59:30.842Z",
+ "generatedAt": "2026-10-29T11:54:17.499Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,15 +43,15 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4640,
+ "runtimeSec": 2672,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
    "ABSTAIN": 4371,
-   "DATA_INVALID": 450,
+   "DATA_INVALID": 451,
    "WITHHELD": 81,
-   "NO_PROJECTION": 110,
+   "NO_PROJECTION": 109,
    "AVAILABLE": 36
   },
   "consumerVisible": 36,
@@ -107,8 +107,8 @@
      "DOWN <50%": 18,
      "UP <50%": 8,
      "UP 500-1000%": 3,
-     "UP 50-100%": 9,
      "UP >1000%": 1,
+     "UP 50-100%": 9,
      "DOWN 500-1000%": 1
     },
     "extremeMove": {
@@ -116,8 +116,8 @@
      "UP 250-500%": 9,
      "UP <50%": 1,
      "UP 50-100%": 5,
-     "UP 100-250%": 15,
      "UP >1000%": 1,
+     "UP 100-250%": 15,
      "DOWN 50-100%": 2,
      "DOWN 100-250%": 1
     }
@@ -176,21 +176,21 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-27",
+   "reference": "2026-10-28",
    "titles": 5043,
    "states": {
-    "FRESH": 14,
-    "DELAYED": 4948,
+    "FRESH": 8,
+    "DELAYED": 4954,
     "NON_TRADING": 20,
     "STALE": 61
    },
    "reasons": {
-    "REFRESH_STOPPED": 4982,
+    "REFRESH_STOPPED": 4984,
     "SECURITY_INACTIVE": 20,
-    "NO_NEWER_BARS": 27
+    "NO_NEWER_BARS": 31
    },
    "reasonsKnown": 20,
-   "delayedWithNotice": 4948,
+   "delayedWithNotice": 4954,
    "affected": {
     "titles": 81,
     "primary": 69,
@@ -201,12 +201,12 @@
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
-    "0-3": 4978,
-    "11-20": 19,
-    "21-40": 17,
+    "0-3": 4973,
+    "4-5": 6,
+    "21-40": 21,
     ">40": 21,
-    "6-10": 7,
-    "4-5": 1
+    "6-10": 4,
+    "11-20": 18
    },
    "withheldTitles": [
     "ADAMM",
@@ -224,9 +224,9 @@
     "CCO",
     "CRNX",
     "CSAN",
+    "DBRG-P-H",
     "DBRG",
     "DBRG-P-I",
-    "DBRG-P-H",
     "DBRG-P-J",
     "DOMO",
     "EFOR",
@@ -236,15 +236,15 @@
     "FGNXP",
     "FSEA",
     "GBTG",
-    "GWH",
     "GOODN",
+    "GWH",
     "HLX",
     "IWML",
     "IWFL",
     "JPM-P-M",
+    "JUPGF",
     "LBRDP",
     "LESL",
-    "JUPGF",
     "LANDP",
     "LBRDA",
     "KREF-P-A",
@@ -253,36 +253,36 @@
     "MDV",
     "MAA-P-I",
     "MDV-P-A",
-    "MS-P-O",
     "MTUL",
+    "MS-P-O",
     "NLY-P-I",
+    "NCSM",
     "NSTS",
     "NTZ",
-    "NCSM",
-    "OXLCP",
     "NVNI",
+    "OXLCP",
     "PHGE",
+    "PRIF-P-L",
     "QNCX",
     "QRVO",
     "QULL",
-    "PRIF-P-L",
     "PSA-P-Q",
-    "SCDL",
-    "SF-P-B",
     "RIV-P-A",
-    "RMAX",
+    "SCDL",
     "RPT",
-    "SNYR",
+    "RMAX",
+    "SF-P-B",
     "SAT",
     "SEVN",
-    "TWO-P-C",
+    "SNYR",
     "TALK",
-    "TWO-P-A",
     "THRD",
-    "UUU",
-    "VRME",
+    "TWO-P-C",
+    "TWO-P-A",
     "TWO",
+    "UUU",
     "TWO-P-B",
+    "VRME",
     "VTAK",
     "WBS",
     "WALD",
@@ -297,7 +297,7 @@
     "systemic": false
    }
   },
-  "lifecycleEvents": 2,
+  "lifecycleEvents": 0,
   "tracked": 443
  }
 }

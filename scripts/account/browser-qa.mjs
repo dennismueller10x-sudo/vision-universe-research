@@ -134,8 +134,11 @@ await page.click('#ka-checkout');
 await page.waitForURL(/\/__dev\/checkout\//);
 await page.click('text=Zahlungspflichtig abonnieren');
 await page.waitForURL(/\/konto\/abo\/\?checkout=success/);
+// Bestaetigt die Datenbank Pro (Webhook), geht es weiter zur Willkommensseite.
+await page.waitForURL(/\/willkommen\/$/, {timeout: 20000});
+check((await page.textContent('#wk-flash')).includes('Pro-Abonnement ist aktiv'), 'nach bestaetigter Zahlung: Willkommensseite');
+await page.goto(`${base}/konto/abo/`);
 await page.waitForSelector('#ka-sub .ka-kv');
-await page.waitForFunction(() => document.getElementById('ka-status').textContent.includes('aktiv'));
 check((await page.textContent('#ka-sub')).includes('Pro') && (await page.textContent('#ka-sub')).includes('Aktiv'), 'Pro aktiv nach Checkout');
 check((await page.textContent('#ka-invoices')).includes('bezahlt'), 'Rechnung bezahlt');
 await audit(page, 'Abonnement');

@@ -23,7 +23,7 @@ export const CATALOG = Object.freeze([
 ]);
 // Muss zu workers/vu-account/src/billing.mjs passen (SUBSCRIPTION_EVENTS, INVOICE_EVENTS, Checkout, Streitfaelle).
 export const WEBHOOK_EVENTS = Object.freeze([
-  'checkout.session.completed', 'checkout.session.async_payment_succeeded',
+  'checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed',
   'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
   'customer.subscription.paused', 'customer.subscription.resumed', 'customer.subscription.pending_update_applied',
   'customer.subscription.pending_update_expired', 'customer.subscription.trial_will_end',

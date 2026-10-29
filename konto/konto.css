@@ -44,7 +44,8 @@ body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
 .ka-btn--secondary{background:transparent;color:var(--vu-text);border-color:var(--vu-line-strong)}
 .ka-btn--danger{background:transparent;color:var(--vu-down);border-color:currentColor}
 .ka-btn--block{width:100%}
-.ka-btn[disabled],.ka-btn[aria-busy=true]{opacity:.6;cursor:wait}
+.ka-btn[disabled]{opacity:.55;cursor:not-allowed}
+.ka-btn[aria-busy=true]{opacity:.6;cursor:wait}
 .ka-link{color:var(--vu-accent-text);font-weight:600;text-underline-offset:3px}
 .ka-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:var(--vu-space-3);font-size:14px}
 
@@ -192,3 +193,24 @@ ul.ka-hint li[data-ok=true]{color:var(--vu-accent-text)}
 .wl-dist-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--vu-line)}
 .wl-dist-bar i{flex:1 1 0;min-width:2px}
 .wl-defs{font-size:13px}
+
+/* Pro-Bestellbestaetigung: grosse Tippflaeche fuer die Pflicht-Checkbox (iPhone), Zustaende statt gesperrter Checkbox */
+.ka-check--order{padding:14px;border:1px solid var(--vu-line-strong);border-radius:16px;background:var(--vu-elevated);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ka-check--order:has(input:checked){border-color:var(--vu-accent-text);background:var(--vu-accent-soft)}
+.ka-check--order input{width:24px;height:24px;cursor:pointer}
+.ka-legal{margin-top:-4px}
+.ka-blocked{display:grid;gap:10px;padding:16px;border-radius:16px;border:1px solid var(--vu-line-strong);background:var(--vu-elevated)}
+.ka-blocked-title{margin:0;font-weight:700;font-size:16px}
+#ka-confirm[data-state=loading] .ka-kv{opacity:.7}
+
+/* Kontonavigation: "Mein Dashboard" ist ein anderer Bereich, sichtbar abgesetzt */
+.ka-nav a.ka-nav-out{margin-left:auto;border-style:dashed;color:var(--vu-text-secondary)}
+.ka-nav a.ka-nav-out::after{content:"→";margin-left:6px}
+.ka-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;font-size:14px;color:var(--vu-muted)}
+.ka-lead--tight{margin-bottom:var(--vu-space-3)}
+.ka-link-card{display:block;color:var(--vu-text);text-decoration:none;transition:border-color .15s ease}
+.ka-link-card:hover{border-color:var(--vu-accent-text)}
+.ka-link-card:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+.ka-link-card h2{font-size:17px}
+.ka-pending{border-color:var(--vu-accent-text);margin-bottom:var(--vu-space-3)}

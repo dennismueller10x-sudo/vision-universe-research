@@ -51,6 +51,7 @@ const ROUTES = [
   ['POST', '/v1/auth/password', auth.changePassword, {csrf: true}],
   ['GET', '/v1/me', account.me],
   ['PATCH', '/v1/me', account.updateMe, {csrf: true}],
+  ['POST', '/v1/me/plan-intent', account.setPlanIntent, {csrf: true}],
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],

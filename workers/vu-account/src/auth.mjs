@@ -113,7 +113,9 @@ export async function signup(ctx) {
     await ctx.sb.auth.signUp({email, password, ip: ctx.ip, codeChallenge: challenge,
       redirectTo: ctx.cfg.apiOrigin + '/v1/auth/callback?flow=signup' + plan,
       data: {display_name: v.displayName(body.displayName), terms_accepted_at: new Date(ctx.now()).toISOString(),
-        terms_version: String(body.termsVersion || '').slice(0, 20) || null}});
+        terms_version: String(body.termsVersion || '').slice(0, 20) || null,
+        // Dieselbe Wahl im Konto (user_metadata): ueberdauert Geraetewechsel und neue Anmeldungen.
+        ...(plan ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()} : {})}});
   } catch (e) {
     if (e instanceof SupabaseError && e.status === 429) throw new HttpError(429, 'RATE_LIMITED');
     if (e instanceof SupabaseError && e.code === 'weak_password') throw new HttpError(400, 'PASSWORD_WEAK');

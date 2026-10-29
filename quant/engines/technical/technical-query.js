@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.10.0";
+  var QUERY_VERSION = "technical-query-1.11.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -76,6 +76,8 @@
     { id: "aboveCloud", group: "Trend", kind: "bool", tfs: D, label: "Kurs über der Ichimoku-Wolke" },
     { id: "aroonOsc", group: "Trend", kind: "num", tfs: D, label: "Aroon-Oszillator 25 (−100 bis 100)" },
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
+    /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
+    { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
@@ -128,10 +130,11 @@
        beides leer = nicht pruefbar (fehlender Wert). Linien aus der Vollhistorie (chartSeries). */
     { id: "goldenCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts)" },
     { id: "deathCrossDays", window: "smaCrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts)" },
-    { id: "crossAboveSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss über SMA 200 gekreuzt" },
-    { id: "crossBelowSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss unter SMA 200 gekreuzt" },
-    { id: "rsiExitOversoldDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von unten über 30" },
-    { id: "rsiExitOverboughtDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von oben unter 70" },
+    /* seit 1.11.0 (AP4) auch je Woche und Monat: Bars des Zeitrahmens seit dem Ereignis, Pruefraum je Zeitrahmen */
+    { id: "crossAboveSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: ALL, label: { "1D": "Tage seit Schluss über SMA 200 gekreuzt", "1W": "Wochen seit Schluss über die 40-Wochen-Linie gekreuzt", "1M": "Monate seit Schluss über die 10-Monats-Linie gekreuzt" } },
+    { id: "crossBelowSma200Days", window: "sma200CrossWindow", group: "Ereignisse", kind: "num", tfs: ALL, label: { "1D": "Tage seit Schluss unter SMA 200 gekreuzt", "1W": "Wochen seit Schluss unter die 40-Wochen-Linie gekreuzt", "1M": "Monate seit Schluss unter die 10-Monats-Linie gekreuzt" } },
+    { id: "rsiExitOversoldDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: ALL, label: { "1D": "Tage seit RSI 14 von unten über 30", "1W": "Wochen seit Wochen-RSI 14 von unten über 30", "1M": "Monate seit Monats-RSI 14 von unten über 30" } },
+    { id: "rsiExitOverboughtDays", window: "rsiEventWindow", group: "Ereignisse", kind: "num", tfs: ALL, label: { "1D": "Tage seit RSI 14 von oben unter 70", "1W": "Wochen seit Wochen-RSI 14 von oben unter 70", "1M": "Monate seit Monats-RSI 14 von oben unter 70" } },
     { id: "newHigh52wDays", window: "high52wWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage)" },
     { id: "formationNewDays", window: "formationWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit der jüngsten Formations-Erkennung" },
     { id: "candleBullDays", window: "candleWindow", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit einem bullischen Kerzenmuster" },
@@ -249,7 +252,8 @@
     var a = filter.value, b = filter.value2;
     var test = { gt: function (v) { return v > a; }, gte: function (v) { return v >= a; }, lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
                  between: function (v) { return v >= a && v <= b; } }[filter.op];
-    var w = f.window ? ds.column(f.window) : null;
+    /* Pruefraum des Zeitrahmens (seit 1.11.0): "fenster@1W" bzw. "fenster@1M" */
+    var wtf = filter.tf || tf, w = f.window ? ds.column(wtf === "1D" ? f.window : f.window + "@" + wtf) : null;
     if (!w) return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
     /* Ereignisfeld: leerer Wert mit Pruefraum W heisst "mindestens W Tage her (oder nie)". Entschieden wird nur,
        was daraus sicher folgt; sonst bleibt der Wert unbekannt (null), nie geraten. */

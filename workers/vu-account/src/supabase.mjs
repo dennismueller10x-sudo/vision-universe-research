@@ -55,6 +55,10 @@ export function createSupabase({url, publishableKey, secretKey, fetchImpl, forwa
       query: {redirect_to: redirectTo}, body: {email, code_challenge: codeChallenge, code_challenge_method: 's256'}}),
     updatePassword: ({accessToken, password, ip}) => call('/auth/v1/user', {method: 'PUT',
       headers: authHeaders(ip, accessToken), body: {password}}),
+    // Eigenes Konto lesen bzw. user_metadata ergaenzen (Tarifwahl vor der Registrierung, kein Recht, nur ein Hinweis).
+    getUser: ({accessToken, ip}) => call('/auth/v1/user', {headers: authHeaders(ip, accessToken)}),
+    updateUserData: ({accessToken, data, ip}) => call('/auth/v1/user', {method: 'PUT',
+      headers: authHeaders(ip, accessToken), body: {data}}),
     logout: ({accessToken, ip}) => call('/auth/v1/logout', {method: 'POST', headers: authHeaders(ip, accessToken),
       query: {scope: 'local'}}),
     adminDeleteUser: userId => call(`/auth/v1/admin/users/${encodeURIComponent(userId)}`, {method: 'DELETE', headers: serviceHeaders()}),

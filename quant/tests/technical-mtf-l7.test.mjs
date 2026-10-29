@@ -45,12 +45,12 @@ function naive(keyOf, upto, tf) {
 const KEY = { "1W": isoWeek, "1M": (d) => d.slice(0, 7) };
 const r4 = (v) => Math.round(v * 1e4) / 1e4;
 
-test("Musterliste gleich der des Screeners; Felder 1.1.0 vollstaendig", () => {
+test("Musterliste gleich der des Screeners; Felder 1.1.0 und 1.2.0 vollstaendig", () => {
   assert.deepEqual(MTF.CANDLES, Row.SCREEN_CANDLES);
-  assert.match(MTF.MTF_VERSION, /^technical-mtf-1\.1\./);
+  assert.match(MTF.MTF_VERSION, /^technical-mtf-1\.2\./);
   const out = MTF.compute(series(ref.date.length - 1));
   for (const tf of ["1W", "1M"]) {
-    assert.deepEqual(Object.keys(out[tf].values).sort(), OLD_KEYS.concat(MTF.FIELDS_1_1).sort(), tf);
+    assert.deepEqual(Object.keys(out[tf].values).sort(), OLD_KEYS.concat(MTF.FIELDS_1_1, MTF.FIELDS_1_2).sort(), tf);
   }
 });
 

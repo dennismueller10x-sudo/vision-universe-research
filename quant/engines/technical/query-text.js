@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.7.0";
+  var TEXT_VERSION = "technical-query-text-1.8.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -90,6 +90,8 @@
     ["abwaertsstruktur|tiefere hochs und tiefere tiefs|tiefere hochs", [{ field: "structure", op: "in", value: ["BEARISH"] }]],
     ["(neue[snm]? )?200-?wochen-?hochs?", [b("newHigh200w", true)]],
     ["(neue[snm]? )?(52-?wochen-?hochs?|52w-?hochs?|jahreshochs?)", [b("newHigh52w", true)]],
+    /* seit 1.8.0 (AP4) */
+    ["(neue[snm]? )?(52-?wochen-?tiefs?|52w-?tiefs?|jahrestiefs?)", [b("newLow52w", true)]],
     ["macd (positiv|bullisch|ueber null)", [b("macdPositive", true)]],
     ["macd (negativ|baerisch|unter null)", [b("macdPositive", false)]],
     ["ueberverkauft\\w*", [n("rsi14", "lt", 30)]],

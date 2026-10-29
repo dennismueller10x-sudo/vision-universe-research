@@ -373,12 +373,24 @@
     var main = doc.getElementById('wk-main');
     if (main) doc.documentElement.style.setProperty('--wk-top', Math.max(0, Math.round(main.getBoundingClientRect().top + global.scrollY)) + 'px');
   }
+  // Rueckmeldung nach Konto-Schritten (/konto/ leitet nach E-Mail-Bestaetigung bzw. bestaetigter Zahlung hierher).
+  // Nur feste Texte; der Parameter wird danach aus der Adresse entfernt.
+  var FLASH = { verified: 'Deine E-Mail-Adresse ist bestätigt. Willkommen bei Vision Universe.', pro: 'Dein Pro-Abonnement ist aktiv. Danke für deine Unterstützung.' };
+  function flash() {
+    var box = doc.getElementById('wk-flash'), key = null;
+    try { key = new URLSearchParams(global.location.search).get('konto'); } catch (e) { key = null; }
+    if (!box || !FLASH[key]) return;
+    box.textContent = FLASH[key]; box.hidden = false;
+    try { global.history.replaceState(null, '', global.location.pathname + global.location.hash); } catch (e) { /* nur Komfort */ }
+    requestAnimationFrame(fitNews);
+  }
   function init() {
     measureTop(); global.addEventListener('resize', measureTop);
     if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
     var hello = doc.getElementById('wk-hello');
     if (hello) hello.textContent = greeting(new Date().getHours());
     renderProducts(doc.getElementById('wk-products'));
+    flash();
     var hl = doc.getElementById('wk-highlights'), news = doc.getElementById('wk-news');
     getJSON(STORIES).then(function (c) { stories = c; renderHighlights(hl); })
       .catch(function () { hl.closest('section').hidden = true; });

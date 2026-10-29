@@ -69,7 +69,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | E1 Woche/Monat aus der Tageshistorie, nur abgeschlossene Perioden, kausal | ✔ | MULTI_TIMEFRAME.md, `technical-mtf*.test.mjs` | – |
 | E2 Alle W/M-Spalten nach der Materialisierung befüllt (Abdeckung wie in SCREENER_FIELDS_L7.md §2a vorhergesagt) | ✔ | 29.10. (`92b010e`): alle 18 L7-Spalten belegt (94–96 %). Leer sind nur Titel, die nach AP1 bewusst keine Stichtagswerte tragen. Vergleich mit der Näherung in §2d. DQ-TW-5 PASS (0/46). | – |
-| E3 Zeitrahmen-Wechsel im Screener für alle Felder mit W/M-Bedeutung | ◐ | 25 von 72 Feldern haben W/M | P1 |
+| E3 Zeitrahmen-Wechsel im Screener für alle Felder mit W/M-Bedeutung | ◐ | AP4 (#1106, gemergt 29.10.): Ereignisse je Woche und Monat (Linie, RSI 30/70) und 52-Wochen-Tief, Auswahl nach Evidenz; übrige Felder bewusst nur am Tag (SCREENER_FIELDS_AP4.md §1). Die Spalten füllt die Materialisierung vom 29./30.10.; Prüfung 30.10. 06:40 UTC, danach ✔. | P1 |
 | E4 Wochenchart mit OHLC und Indikatoren | ◐ | Wochenchart nur als Schlusslinie mit SMA 10/40 | P2 |
 
 ### F. Universumsweiter Screener und Suchlogik
@@ -99,7 +99,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | H1 Definition, Stichprobe, Konfidenz (Datums-Cluster), Mehrfachtest (Bonferroni) | ✔ | INDICATOR_EVIDENCE.md, CANDLESTICK_EVIDENCE.md, formation-evidence, WEEKLY_EVIDENCE.md | – |
 | H2 Stabilität über Marktphasen und Zeithälften | ✔ | #1071 | – |
 | H3 Kein Look-ahead in der Evidenz (Ereignis nur mit Wissen bis t, Rendite ab t+1) | ✔ | Evidenz-Tests | – |
-| H4 Evidenz im Produkt nur beschreibend und mit Grenzen | ◐ | Formations-Evidenz in `technical/data`. Indikator- und Kerzen-Evidenz nur in der Doku. | P2 |
+| H4 Evidenz im Produkt nur beschreibend und mit Grenzen | ◐ | Formations-Evidenz in `technical/data`. Indikator- und Kerzen-Evidenz als Erzeuger-Artefakt mit Methodik-Abschnitt und Trennung Ereignis / Beobachtung / kein Handelsvorteil: #1109, wartet auf Owner-Freigabe (SIGNAL_EVIDENCE.md). | P2 |
 
 ### I. Performance, CI, Datenqualität und Zuverlässigkeit
 
@@ -141,6 +141,7 @@ Jedes Paket läuft in Zyklen: analysieren → umsetzen → testen → beheben �
 |---|---|---|
 | 82 Titel mit beendeter Reihe bei aktivem Stamm (A4). Technical kennzeichnet sie seit AP1 (#1077). Die Ursache liegt in der Marktdaten-Domäne. | Owner (ein Anbieterabruf wäre nötig) | gemeldet 28.10. |
 | KI-Suche (F5): Modellaufruf ist kostenpflichtig | Owner | offen |
+| Wochenchart mit Kerzen und Formationen (E4, D5). Die lange Wochenreihe enthält nur Schlusskurse. Echte Wochenkerzen über 5 Jahre oder Max wären neue öffentliche Kursdaten (Wochen-OHLC), die MULTI_TIMEFRAME.md bewusst ausschließt; Lizenz und Rechtsfrage liegen beim Owner. Optionen: **A** Status quo (Wochen-Schlusslinie mit SMA 10/40, ehrlich und ohne neue Daten). **B** Wochenkerzen nur im Zeitraum 1J, im Browser aus den 270 bereits veröffentlichten Tagesbars gebildet (rund 54 Kerzen, keine neuen Daten); für Formationen der Woche reicht das nicht (Aufwärmphase rund 120 Bars). **C** Wochen-OHLC der Vollhistorie veröffentlichen; erst damit wären E4 und D5 vollständig, Voraussetzung ist die Lizenzprüfung. Empfehlung: A beibehalten; C nur nach Lizenzklärung. B bringt wenig. | Owner | gemeldet 29.10. |
 | Neue Fachmodell-PRs | Owner | siehe TECHNICAL_WORLD_PROGRESS.md §6 |
 
 ## 4. Wiederaufnahmepunkt

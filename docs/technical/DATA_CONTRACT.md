@@ -1,4 +1,4 @@
-# Technical – Datenvertrag v1 (`technical-screener-contract-1.0.0`)
+# Technical – Datenvertrag v1 (`technical-screener-contract-1.1.0`)
 
 Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ und Tests. Gehört zu [TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md), AP2 (Kriterien B3, I4).
 
@@ -65,7 +65,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.0.0, 135 Spalten.
+technical-screener-contract-1.1.0, 150 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -109,7 +109,11 @@ technical-screener-contract-1.0.0, 135 Spalten.
 | `cmf20` | num | ja | −1 … 1 | Chaikin Money Flow 20 (−1 bis 1) |
 | `connorsRsi` | num | ja | 0 … 100 | Connors RSI (3/2/100) |
 | `crossAboveSma200Days` | int, Prüfraum `sma200CrossWindow` | ja | 0 … ∞ | Tage seit Schluss über SMA 200 gekreuzt |
+| `crossAboveSma200Days@1M` | int, Prüfraum `sma200CrossWindow@1M` | ja | 0 … ∞ | Monate seit Schluss über die 10-Monats-Linie gekreuzt |
+| `crossAboveSma200Days@1W` | int, Prüfraum `sma200CrossWindow@1W` | ja | 0 … ∞ | Wochen seit Schluss über die 40-Wochen-Linie gekreuzt |
 | `crossBelowSma200Days` | int, Prüfraum `sma200CrossWindow` | ja | 0 … ∞ | Tage seit Schluss unter SMA 200 gekreuzt |
+| `crossBelowSma200Days@1M` | int, Prüfraum `sma200CrossWindow@1M` | ja | 0 … ∞ | Monate seit Schluss unter die 10-Monats-Linie gekreuzt |
+| `crossBelowSma200Days@1W` | int, Prüfraum `sma200CrossWindow@1W` | ja | 0 … ∞ | Wochen seit Schluss unter die 40-Wochen-Linie gekreuzt |
 | `deathCrossDays` | int, Prüfraum `smaCrossWindow` | ja | 0 … ∞ | Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts) |
 | `distChandelierLong` | pct | ja | −1 … ∞ | Abstand zum Chandelier-Stop (lang, 22/3) |
 | `distEma200` | pct | ja | −1 … ∞ | Abstand zur EMA 200 |
@@ -150,6 +154,9 @@ technical-screener-contract-1.0.0, 135 Spalten.
 | `newHigh52w@1W` | bool | ja |  | 52-Wochen-Hoch (Wochenschluss) |
 | `newHigh52wDays` | int, Prüfraum `high52wWindow` | ja | 0 … ∞ | Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage) |
 | `newLow20d` | bool | ja |  | Schluss unter dem 20-Tage-Tief (Donchian-Ausbruch) |
+| `newLow52w` | bool | ja |  | Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen |
+| `newLow52w@1M` | bool | ja |  | 12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate |
+| `newLow52w@1W` | bool | ja |  | 52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen |
 | `nr7` | bool | ja |  | NR7 (engste Tagesspanne der letzten 7 Tage) |
 | `nr7@1M` | bool | ja |  | NR7 (engste Monatsspanne der letzten 7 Monate) |
 | `nr7@1W` | bool | ja |  | NR7 (engste Wochenspanne der letzten 7 Wochen) |
@@ -177,11 +184,19 @@ technical-screener-contract-1.0.0, 135 Spalten.
 | `rsi14@1M` | num | ja | 0 … 100 | RSI 14 (Monat) |
 | `rsi14@1W` | num | ja | 0 … 100 | RSI 14 (Woche) |
 | `rsiEventWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
+| `rsiEventWindow@1M` | int | ja | 1 … ∞ | Prüfraum in Monaten |
+| `rsiEventWindow@1W` | int | ja | 1 … ∞ | Prüfraum in Wochen |
 | `rsiExitOverboughtDays` | int, Prüfraum `rsiEventWindow` | ja | 0 … ∞ | Tage seit RSI 14 von oben unter 70 |
+| `rsiExitOverboughtDays@1M` | int, Prüfraum `rsiEventWindow@1M` | ja | 0 … ∞ | Monate seit Monats-RSI 14 von oben unter 70 |
+| `rsiExitOverboughtDays@1W` | int, Prüfraum `rsiEventWindow@1W` | ja | 0 … ∞ | Wochen seit Wochen-RSI 14 von oben unter 70 |
 | `rsiExitOversoldDays` | int, Prüfraum `rsiEventWindow` | ja | 0 … ∞ | Tage seit RSI 14 von unten über 30 |
+| `rsiExitOversoldDays@1M` | int, Prüfraum `rsiEventWindow@1M` | ja | 0 … ∞ | Monate seit Monats-RSI 14 von unten über 30 |
+| `rsiExitOversoldDays@1W` | int, Prüfraum `rsiEventWindow@1W` | ja | 0 … ∞ | Wochen seit Wochen-RSI 14 von unten über 30 |
 | `s` | string | nein |  | Kürzel (eindeutig) |
 | `sid` | string | nein |  | securityId (core/identity.js) |
 | `sma200CrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
+| `sma200CrossWindow@1M` | int | ja | 1 … ∞ | Prüfraum in Monaten |
+| `sma200CrossWindow@1W` | int | ja | 1 … ∞ | Prüfraum in Wochen |
 | `sma50AboveSma200` | bool | ja |  | SMA 50 über SMA 200 |
 | `sma50AboveSma200@1M` | bool | ja |  | 5- über 10-Monats-Linie |
 | `sma50AboveSma200@1W` | bool | ja |  | 10- über 40-Wochen-Linie |
