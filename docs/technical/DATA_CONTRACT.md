@@ -14,6 +14,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 | `technical/data/meta.json` | `vu-technical-meta-1.*` | derselbe | Stichtag, Versionen (gleich wie im Screener), Zähler (`rows`, `fresh`, `stale` …), Formationszählung, Quellen |
 | `technical/data/index-v1.json` | `vu-technical-index-1.*` | derselbe | Startseite und Chart-Suche: `s`, `n`, Vorlagen, Fokus. Jedes Kürzel steht im Screener. |
 | `technical/data/formation-evidence.json` | eigener Vertrag | `formation-evidence.mjs` | historische Formations-Evidenz (Test „Formations-Evidenz: Vertrag …“) |
+| `technical/data/signal-evidence.json` | `vu-technical-signal-evidence-1.*` | `signal-evidence.mjs` (aus `build-screener.mjs`) | historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, 20-Tage-Horizont, mit Einordnung `reading` (docs/technical/SIGNAL_EVIDENCE.md; Test „Signal-Evidenz: Vertrag …“) |
 | `quant/data/product/technical-signals-v1/<Scherbe>.json.gz` | Materialisierung | `product-intelligence-materialization.yml` | 270 Tagesbars je Titel und Bündel (Features, Chartreihen, Woche/Monat). Grundlage für Chart Studio und Screener. |
 
 ## Regeln des Vertrags
