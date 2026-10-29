@@ -1,0 +1,2164 @@
+{
+ "schemaVersion": "v12-mcap-sec-sample-1.0.0",
+ "tag": "final",
+ "ruleVersion": "1.0.6",
+ "ruleSha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272",
+ "selection": "named cases (inspected before rule 1.0.0) + per-class quotas [('SCALE_ERROR', 28), ('UNRESOLVED', 10), ('MCAP_ABSOLUTE_BOUND', 3), ('PRIOR_VINTAGE_SCALE_ERROR', 4), ('GENUINE_CAPITAL_ACTION', 3), ('AMBIGUOUS_SCALE', 2)], ordered by sha256(accession|concept|value)",
+ "client": "scripts/quant/sec/http_client.py, User-Agent VisionUniverseResearch info@visionuniverse.de, <= 2.0 requests/s",
+ "secRequests": {
+  "requests": 0,
+  "cache_hits": 148,
+  "retries": 0,
+  "deduplicated": 0
+ },
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "verdicts": {
+  "CONFIRMED_COVER_STATES_CORRECTED": 17,
+  "COVER_STATES_OTHER_COUNT": 5,
+  "CONFIRMED_COVER_STATES_USED": 7,
+  "CONTRADICTED_COVER_STATES_REPORTED": 6,
+  "CONFIRMED_DOCUMENT_STATES_CORRECTED": 7,
+  "INCONCLUSIVE": 3,
+  "COVER_TYPO_SAME_DIGITS": 1,
+  "COVER_STATES_REPORTED": 5,
+  "NO_COVER_COUNT_FOUND": 5
+ },
+ "cases": 56,
+ "errors": [],
+ "results": [
+  {
+   "selection": "NAMED",
+   "named": "EEFT 10-K FY2020",
+   "securityId": "ref_EEFT",
+   "cik": "0001029199",
+   "accession": "0001213900-21-010724",
+   "concept": "ECSO",
+   "filed": "2021-02-22",
+   "periodEnd": "2020-12-31",
+   "rawDate": "2021-02-19",
+   "reported": 52752851000000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 52752851,
+   "scaleExponent": 9,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1029199/000121390021010724/0001213900-21-010724-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1029199/000121390021010724/eeft-20201231.htm",
+    "sha256": "9afd30d287b0865a6a8069ac3b57a5648f9e7b992441e90e3dd1d94ef01d5d2e",
+    "bytes": 3612864,
+    "cover": {
+     "value": 52752851.0,
+     "token": "52,752,851",
+     "quote": "aggregate market value was determined based on the closing price of the Common Stock on June 30, 2020 . As of February 19, 2021 , the registrant had 52,752,851 shares of Common Stock outstanding. Documents Incorporated By Reference Portions of the registrant's Proxy Statement for its 2021 Annual Me"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "52,752,851,000,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "52,752,851",
+     "found": true,
+     "quote": "aggregate market value was determined based on the closing price of the Common Stock on June 30, 2020 . As of February 19, 2021 , the registrant had 52,752,851 shares of Common Stock outstanding. Documents Incorporated By Reference Portions of the registrant's Proxy Statement for its 2021 Annual Me",
+     "ixScale": 9
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "ORCL 10-Q Q1 FY2013",
+   "securityId": "ref_ORCL",
+   "cik": "0001341439",
+   "accession": "0001193125-12-401697",
+   "concept": "ECSO",
+   "filed": "2012-09-24",
+   "periodEnd": "2012-08-31",
+   "rawDate": "2012-09-17",
+   "reported": 4819056000000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 4819056000,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1341439/000119312512401697/0001193125-12-401697-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312512401697/d397317d10q.htm",
+    "sha256": "1ae0424b71765009be02a9e366b953d506338706c75495d658b841a6af1d6332",
+    "bytes": 968890,
+    "cover": {
+     "value": 4819056000.0,
+     "token": "4,819,056,000",
+     "quote": "as defined in Rule 12b-2 of the Exchange Act). Yes \u00a8 No x The number of shares of registrant\u2019s common stock outstanding as of September 17, 2012 was: 4,819,056,000. Table of Contents ORACLE CORPORATION FORM 10-Q QUARTERLY REPORT TABLE OF CONTENTS Page PART I. FINANCIAL INFORMATION Item 1. Financial"
+    },
+    "coverCandidates": 9,
+    "original": {
+     "number": "4,819,056,000,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "4,819,056,000",
+     "found": true,
+     "quote": "as defined in Rule 12b-2 of the Exchange Act). Yes \u00a8 No x The number of shares of registrant\u2019s common stock outstanding as of September 17, 2012 was: 4,819,056,000. Table of Contents ORACLE CORPORATION FORM 10-Q QUARTERLY REPORT TABLE OF CONTENTS Page PART I. FINANCIAL INFORMATION Item 1. Financial"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "CB 10-Q Q2 2010",
+   "securityId": "ref_CB",
+   "cik": "0000896159",
+   "accession": "0001193125-10-180546",
+   "concept": "CSSO",
+   "filed": "2010-08-06",
+   "periodEnd": "2010-06-30",
+   "rawDate": "2010-06-30",
+   "reported": 338755604000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 338755604,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/896159/000119312510180546/0001193125-10-180546-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/896159/000119312510180546/d10q.htm",
+    "sha256": "66842d137d667415286cb9d3592801b2d5f83a9eedf97d737e3386ac29c4ed30",
+    "bytes": 2527601,
+    "cover": {
+     "value": 338875757.0,
+     "token": "338,875,757",
+     "quote": "d in Rule 12b-2 of the Exchange Act). YES \u00a8 NO x The number of registrant\u2019s Common Shares (CHF 31.21 par value) outstanding as of August 3, 2010, was 338,875,757. Table of Contents ACE LIMITED INDEX TO FORM 10-Q Page No. Part I. FINANCIAL INFORMATION Item 1. Financial Statements: Consolidated Balanc"
+    },
+    "coverCandidates": 18,
+    "original": {
+     "number": "338,755,604,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "338,755,604",
+     "found": true,
+     "quote": "8,313 Commitments and contingencies Shareholders\u2019 equity Common Shares (CHF 31.21 and CHF 31.88 par value, 340,395,245 and 337,841,616 shares issued, 338,755,604 and 336,524,657 shares outstanding) 10,365 10,503 Common Shares in treasury (1,639,641 and 1,316,959 shares) (29 ) (3 ) Additional paid-in"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "YUM 10-Q Q3 2016",
+   "securityId": "ref_YUM",
+   "cik": "0001041061",
+   "accession": "0001041061-16-000095",
+   "concept": "ECSO",
+   "filed": "2016-10-11",
+   "periodEnd": "2016-09-30",
+   "rawDate": "2016-10-07",
+   "reported": 367005511000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 367005511,
+   "scaleExponent": 6,
+   "tier": "C",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1041061/000104106116000095/0001041061-16-000095-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1041061/000104106116000095/yum-932016x10q.htm",
+    "sha256": "2015c43aa2f811ebd20d6f585282c36e436f3350bab6d7062d6a650c7def9ef1",
+    "bytes": 2286585,
+    "cover": {
+     "value": 367005511.0,
+     "token": "367,005,511",
+     "quote": "ined in Rule 12b-2 of the Exchange Act). Yes [ ] No [ \u00fc ] The number of shares outstanding of the Registrant\u2019s Common Stock as of October 7, 2016 was 367,005,511 million shares. YUM! BRANDS, INC. INDEX Page No. Part I. Financial Information Item 1 - Financial Statements Condensed Consolidated Statem"
+    },
+    "coverCandidates": 7,
+    "original": {
+     "number": "367,005,511,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "367,005,511",
+     "found": true,
+     "quote": "ined in Rule 12b-2 of the Exchange Act). Yes [ ] No [ \u00fc ] The number of shares outstanding of the Registrant\u2019s Common Stock as of October 7, 2016 was 367,005,511 million shares. YUM! BRANDS, INC. INDEX Page No. Part I. Financial Information Item 1 - Financial Statements Condensed Consolidated Statem",
+     "ixScale": 6
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "ON 10-Q Q2 2012",
+   "securityId": "ref_ON",
+   "cik": "0001097864",
+   "accession": "0001193125-12-332540",
+   "concept": "ECSO",
+   "filed": "2012-08-03",
+   "periodEnd": "2012-06-30",
+   "rawDate": "2012-07-26",
+   "reported": 455571966000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 455571966,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1097864/000119312512332540/0001193125-12-332540-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1097864/000119312512332540/d382774d10q.htm",
+    "sha256": "65833d3498db0b8db49363c8dae6294cda1383446fc452032adf2dfb513c24ea",
+    "bytes": 1661958,
+    "cover": {
+     "value": 455115270.0,
+     "token": "455,115,270",
+     "quote": "iconductor Corporation stockholders\u2019 equity: Common stock ($0.01 par value, 750,000,000 shares authorized, 507,233,966 and 502,452,084 shares issued, 455,115,270 and 451,284,220 shares outstanding, respectively) 5.1 5.0 Additional paid-in capital 3,133.6 3,113.5 Accumulated other comprehensive loss"
+    },
+    "coverCandidates": 21,
+    "original": {
+     "number": "455,571,966,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "455,571,966",
+     "found": true,
+     "quote": "er\u2019s class of common stock as of the close of business on July 26, 2012: Title of Each Class Number of Shares Common Stock, par value $0.01 per share 455,571,966 Table of Contents INDEX Part I: Financial Information Item 1. Financial Statements (unaudited) 3 Item 2. Management\u2019s Discussion and Analy"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "Citigroup 10-Q Q3 2009",
+   "securityId": "ref_C",
+   "cik": "0000831001",
+   "accession": "0001047469-09-009754",
+   "concept": "CSSO",
+   "filed": "2009-11-06",
+   "periodEnd": "2009-09-30",
+   "rawDate": "2009-09-30",
+   "reported": 22863947,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/831001/000104746909009754/0001047469-09-009754-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/831001/000104746909009754/a2195256z10-q.htm",
+    "sha256": "ec624c2b4d2cec4dafde99340046611ad377390123fe27b06fce3dadc184d39e",
+    "bytes": 7012435,
+    "cover": {
+     "value": 22863947261.0,
+     "token": "22,863,947,261",
+     "quote": "res outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of September 30, 2009: 22,863,947,261 Available on the web at www.citigroup.com CITIGROUP INC. THIRD QUARTER OF 2009\u2014FORM 10-Q THE COMPANY 3 Citigroup Segments and Regions 4"
+    },
+    "coverCandidates": 4,
+    "original": {
+     "number": "22,863,947",
+     "found": true,
+     "quote": "res outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of September 30, 2009: 22,863,947,261 Available on the web at www.citigroup.com CITIGROUP INC. THIRD QUARTER OF 2009\u2014FORM 10-Q THE COMPANY 3 Citigroup Segments and Regions 4"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_OTHER_COUNT"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "CB 10-Q Q1 2010",
+   "securityId": "ref_CB",
+   "cik": "0000896159",
+   "accession": "0001193125-10-111376",
+   "concept": "CSSO",
+   "filed": "2010-05-07",
+   "periodEnd": "2010-03-31",
+   "rawDate": "2010-03-31",
+   "reported": 338610718000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 338610718,
+   "scaleExponent": 6,
+   "tier": "B",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/896159/000119312510111376/0001193125-10-111376-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/896159/000119312510111376/d10q.htm",
+    "sha256": "db275bd6be3afd36354293f239f6932d9bd8af728bc7f7ea3e436be56ee1cc0b",
+    "bytes": 2021423,
+    "cover": {
+     "value": 338660899.0,
+     "token": "338,660,899",
+     "quote": "ined in Rule 12b-2 of the Exchange Act). YES \u00a8 NO x The number of registrant\u2019s Common Shares (CHF 31.55 par value) outstanding as of May 4, 2010, was 338,660,899. Table of Contents ACE LIMITED INDEX TO FORM 10-Q Page No. Part I. FINANCIAL INFORMATION Item 1. Financial Statements: Consolidated Balanc"
+    },
+    "coverCandidates": 18,
+    "original": {
+     "number": "338,610,718,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "338,610,718",
+     "found": true,
+     "quote": "8,313 Commitments and contingencies Shareholders\u2019 equity Common Shares (CHF 31.55 and CHF 31.88 par value, 340,158,641 and 337,841,616 shares issued, 338,610,718 and 336,524,657 shares outstanding) 10,470 10,503 Common Shares in treasury (1,547,923 and 1,316,959 shares) (27 ) (3 ) Additional paid-in"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "NAMED",
+   "named": "Citigroup 10-Q Q2 2011 (reverse split timing)",
+   "securityId": "ref_C",
+   "cik": "0000831001",
+   "accession": "0001047469-11-007016",
+   "concept": "ECSO",
+   "filed": "2011-08-05",
+   "periodEnd": "2011-03-31",
+   "rawDate": "2011-06-30",
+   "reported": 2917949115,
+   "status": "OK",
+   "class": "OK",
+   "corrected": 2917949115,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/831001/000104746911007016/0001047469-11-007016-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/831001/000104746911007016/a2205087z10-q.htm",
+    "sha256": "e25e4479e56b301f778d5c2afefbf89e04961dd596c222e6692b8f542c631788",
+    "bytes": 7606496,
+    "cover": {
+     "value": 2917949115.0,
+     "token": "2,917,949,115",
+     "quote": "f shares outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of June 30, 2011: 2,917,949,115 Available on the web at www.citigroup.com 1 CITIGROUP INC. SECOND QUARTER 2011\u2014FORM 10-Q OVERVIEW 3 CITIGROUP SEGMENTS AND REGIONS 4 MAN"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "2,917,949,115",
+     "found": true,
+     "quote": "f shares outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of June 30, 2011: 2,917,949,115 Available on the web at www.citigroup.com 1 CITIGROUP INC. SECOND QUARTER 2011\u2014FORM 10-Q OVERVIEW 3 CITIGROUP SEGMENTS AND REGIONS 4 MAN"
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_PSA",
+   "cik": "0001393311",
+   "accession": "0001393311-13-000012",
+   "concept": "ECSO",
+   "filed": "2013-05-10",
+   "periodEnd": "2013-03-31",
+   "rawDate": "2013-05-08",
+   "reported": 171858,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 171858000,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1393311/000139331113000012/0001393311-13-000012-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1393311/000139331113000012/psa-20130331x10q.htm",
+    "sha256": "d66dd1e6b2f6e3070a9a18b98b73399ac063c112b04b255c9d3e368207c9625c",
+    "bytes": 2931494,
+    "cover": {
+     "value": 171446.0,
+     "token": "171,446",
+     "quote": "per common share \u2013 diluted Continuing operations $ 0.94 $ 0.73 Discontinued operations - - 0.94 0.73 Basic weighted average common shares outstanding 171,446 170,309 Diluted weighted average common shares outstanding 172,514 171,415 Cash dividends declared per common share $ 1.25 $ 1.10 See accompan"
+    },
+    "coverCandidates": 44,
+    "original": {
+     "number": "171,858",
+     "found": false
+    },
+    "corrected": {
+     "number": "171,858,000",
+     "found": false
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_SWKS",
+   "cik": "0000004127",
+   "accession": "0000004127-12-000010",
+   "concept": "ECSO",
+   "filed": "2012-02-07",
+   "periodEnd": "2011-12-30",
+   "rawDate": "2012-01-27",
+   "reported": 188415515000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 188415515,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/4127/000000412712000010/0000004127-12-000010-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/4127/000000412712000010/swks1230201110q.htm",
+    "sha256": "291f59b76618f8154e6b9d4b381278176ad2575ab22cb05ac55245c7850cb66c",
+    "bytes": 612675,
+    "cover": {
+     "value": 38466.0,
+     "token": "38,466",
+     "quote": "compensation and benefits 28,121 35,684 Other current liabilities 71,228 70,033 Total current liabilities 212,502 247,096 Other long-term liabilities 38,466 34,198 Total liabilities 250,968 281,294 Commitments and contingencies (Note 10) Stockholders\u2019 equity: Preferred stock, no par value: 25,000 sh"
+    },
+    "coverCandidates": 29,
+    "original": {
+     "number": "188,415,515,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "188,415,515",
+     "found": true,
+     "quote": "the issuer's classes of common stock, as of the latest practicable date. Class Outstanding at January 27, 2012 Common Stock, par value $.25 per share 188,415,515 SKYWORKS SOLUTIONS, INC. QUARTERLY REPORT ON FORM 10-Q FOR THE QUARTER ENDED DECEMBER 30, 2011 TABLE OF CONTENTS PAGE NO. PART I FINANCIAL"
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_BLIN",
+   "cik": "0001378590",
+   "accession": "0001437749-12-012545",
+   "concept": "ECSO",
+   "filed": "2012-12-05",
+   "periodEnd": "2012-09-30",
+   "rawDate": "2012-11-30",
+   "reported": 152210038,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 15221003.8,
+   "scaleExponent": 1,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1378590/000143774912012545/0001437749-12-012545-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1378590/000143774912012545/bline_10k-093012.htm",
+    "sha256": "e3a576f672dca1b95eaa45c1133a148d8d0f6ba475f39c103e89183dd6b7015f",
+    "bytes": 1491342,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "152,210,038",
+     "found": false
+    },
+    "corrected": {
+     "number": "15,221,004",
+     "found": false
+    },
+    "verdict": "INCONCLUSIVE"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_TXNM",
+   "cik": "0001108426",
+   "accession": "0001108426-19-000053",
+   "concept": "ECSO",
+   "filed": "2019-08-02",
+   "periodEnd": "2019-06-30",
+   "rawDate": "2019-07-26",
+   "reported": 79653624000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 79653624,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1108426/000110842619000053/0001108426-19-000053-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/22767/000110842619000053/pnm630201910-q.htm",
+    "sha256": "5f58b8fcab0056376ff362ed9a0b4dbb3a34cfedef4380982bde1a9bc4d9f165",
+    "bytes": 5931336,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "79,653,624,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "79,653,624",
+     "found": true,
+     "quote": "cate by check mark whether any of the registrants is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 As of July 26, 2019 , 79,653,624 shares of common stock, no par value per share, of PNMR were outstanding. The total number of shares of common stock of PNM, no par value p",
+     "ixScale": 3
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_TXNM",
+   "cik": "0001108426",
+   "accession": "0001108426-19-000060",
+   "concept": "ECSO",
+   "filed": "2019-11-01",
+   "periodEnd": "2019-09-30",
+   "rawDate": "2019-10-25",
+   "reported": 79653624000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 79653624,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1108426/000110842619000060/0001108426-19-000060-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/22767/000110842619000060/pnm930201910-q.htm",
+    "sha256": "170900f012120aad0964bf6757648462b6ff819edca2fb561864cb86830f4bb4",
+    "bytes": 5976375,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "79,653,624,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "79,653,624",
+     "found": true,
+     "quote": "e by check mark whether any of the registrants is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 As of October 25, 2019 , 79,653,624 shares of common stock, no par value per share, of PNMR were outstanding. The total number of shares of common stock of PNM, no par value p",
+     "ixScale": 3
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_AA",
+   "cik": "0001675149",
+   "accession": "0001564590-19-018003",
+   "concept": "ECSO",
+   "filed": "2019-05-09",
+   "periodEnd": "2019-03-31",
+   "rawDate": "2019-05-03",
+   "reported": 185534704000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 185534704,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1675149/000156459019018003/0001564590-19-018003-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1675149/000156459019018003/aa-10q_20190331.htm",
+    "sha256": "04d1d209e189fb7bc7cac8b523fab30028808181163d384b5519298489c4ed0f",
+    "bytes": 2510798,
+    "cover": {
+     "value": 185534704.0,
+     "token": "185,534,704",
+     "quote": "ass Trading Symbol(s) Name of each exchange on which registered Common Stock, par value $0.01 per share AA New York Stock Exchange As of May 3, 2019, 185,534,704 shares of common stock, par value $0.01 per share, of the registrant were outstanding. TABLE OF CONTENTS PART I \u2013 FINANCIAL INFORMATION 1"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "185,534,704,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "185,534,704",
+     "found": true,
+     "quote": "ass Trading Symbol(s) Name of each exchange on which registered Common Stock, par value $0.01 per share AA New York Stock Exchange As of May 3, 2019, 185,534,704 shares of common stock, par value $0.01 per share, of the registrant were outstanding. TABLE OF CONTENTS PART I \u2013 FINANCIAL INFORMATION 1"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_AAP",
+   "cik": "0001158449",
+   "accession": "0001158449-12-000029",
+   "concept": "ECSO",
+   "filed": "2012-02-28",
+   "periodEnd": "2011-12-31",
+   "rawDate": "2011-12-31",
+   "reported": 72924659000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 72924.659,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1158449/000115844912000029/0001158449-12-000029-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1158449/000115844912000029/aap_10kx12312011.htm",
+    "sha256": "9406baa9bf68b0f2fd50066157cfd2e9b175e86cccfd2046e2c8275f7bf196d8",
+    "bytes": 3022047,
+    "cover": {
+     "value": 72924659.0,
+     "token": "72,924,659",
+     "quote": "les price of the Common Stock on July 15, 2011 , as reported by the New York Stock Exchange. As of February 25, 2012 , the registrant had outstanding 72,924,659 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Documents Incorporated"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "72,924,659,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "72,925",
+     "found": false
+    },
+    "verdict": "COVER_TYPO_SAME_DIGITS"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_MTEX",
+   "cik": "0001056358",
+   "accession": "0001056358-12-000032",
+   "concept": "ECSO",
+   "filed": "2012-05-10",
+   "periodEnd": "2012-03-31",
+   "rawDate": "2012-04-30",
+   "reported": 26485184,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 2648518.4,
+   "scaleExponent": 1,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1056358/000105635812000032/0001056358-12-000032-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1056358/000105635812000032/form10-q_03312012.htm",
+    "sha256": "f06de83029b46b9d68566fd4a767114ff29a6fa8dd00332392fda2819f810ac3",
+    "bytes": 941142,
+    "cover": {
+     "value": 2647735.0,
+     "token": "2,647,735",
+     "quote": "000 shares authorized, no shares issued or outstanding \u2014 \u2014 Common stock, $0.0001 par value, 99,000,000 shares authorized, 2,769,756 shares issued and 2,647,735 shares outstanding as of March 31, 2012 and 2,769,756 shares issued and 2,648,518 shares outstanding as of December 31, 2011 \u2014 \u2014 Additional"
+    },
+    "coverCandidates": 30,
+    "original": {
+     "number": "26,485,184",
+     "found": false
+    },
+    "corrected": {
+     "number": "2,648,518",
+     "found": true,
+     "quote": "ar value, 99,000,000 shares authorized, 2,769,756 shares issued and 2,647,735 shares outstanding as of March 31, 2012 and 2,769,756 shares issued and 2,648,518 shares outstanding as of December 31, 2011 \u2014 \u2014 Additional paid-in capital 42,455 42,408 Accumulated deficit (6,932 ) (5,532 ) Accumulated ot"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_PRTS",
+   "cik": "0001378950",
+   "accession": "0001193125-14-094601",
+   "concept": "ECSO",
+   "filed": "2014-03-12",
+   "periodEnd": "2013-12-28",
+   "rawDate": "2014-03-06",
+   "reported": 33377794000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 33377794,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1378950/000119312514094601/0001193125-14-094601-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1378950/000119312514094601/d658102d10k.htm",
+    "sha256": "3619609cd206d2e2ad220d28dac14e75fe06c68ccb9b54fa4402ffab1dfd292d",
+    "bytes": 1474117,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "33,377,794,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "33,377,794",
+     "found": true,
+     "quote": "affiliates. This determination of affiliate status is not necessarily a conclusive determination for other purposes. As of March 6, 2014, there were 33,377,794 shares of the registrant\u2019s common stock outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of our proxy statement for the 2014 Annua"
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_EVGO",
+   "cik": "0001821159",
+   "accession": "0001558370-22-004199",
+   "concept": "CSSO",
+   "filed": "2022-03-24",
+   "periodEnd": "2021-07-01",
+   "rawDate": "2021-07-01",
+   "reported": 264537,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 264537000,
+   "scaleExponent": -3,
+   "tier": "B",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1821159/000155837022004199/0001558370-22-004199-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1821159/000155837022004199/evgo-20211231x10k.htm",
+    "sha256": "2d1b06c2e6fe8330ba4200dc1062231cd4d6449625f466f1e854f66c5654cd63",
+    "bytes": 3314327,
+    "cover": {
+     "value": 68739480.0,
+     "token": "68,739,480",
+     "quote": "es. This determination of affiliate status is not necessarily a conclusive determination for other purposes. As of March 15, 2022, the Registrant had 68,739,480 shares of Class A common stock and 195,800,000 shares of Class B common stock outstanding. \u200b Documents Incorporated by Reference \u200b P ortion"
+    },
+    "coverCandidates": 4,
+    "original": {
+     "number": "264,537",
+     "found": true,
+     "quote": "RIS's Class A stockholders \u200b 22,987 \u200b 9 % PIPE Investors \u200b 40,000 \u200b 15 % CRIS's converted founder shares \u200b 5,750 \u200b 2 % Closing Class A and B shares \u200b 264,537 \u200b 100 % 1 Represents shares of Class B common stock. LS Power owns all of the outstanding voting interests in EVgo Holdings and as a result, c",
+     "ixScale": 0
+    },
+    "corrected": {
+     "number": "264,537,000",
+     "found": false
+    },
+    "verdict": "INCONCLUSIVE"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_GSIT",
+   "cik": "0001126741",
+   "accession": "0001126741-12-000003",
+   "concept": "ECSO",
+   "filed": "2012-02-03",
+   "periodEnd": "2011-12-31",
+   "rawDate": "2012-01-31",
+   "reported": 27922477000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 27922477,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1126741/000112674112000003/0001126741-12-000003-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1126741/000112674112000003/gsit12311110q.htm",
+    "sha256": "5ed6edd308c2c90d3e481f072f9897421240752e3a79569f3c5f5bdccd81bf22",
+    "bytes": 954060,
+    "cover": {
+     "value": 27922477.0,
+     "token": "27,922,477",
+     "quote": "(as defined in Rule 12b-2 of the Exchange Act). Yes o No x The number of shares of the registrant\u2019s common stock outstanding as of January 31, 2012 : 27,922,477 Table of Contents GSI TECHNOLOGY, INC. FORM 10-Q FOR THE QUARTERLY PERIOD ENDED DECEMBER 31, 2011 Page PART I \u2014 FINANCIAL INFORMATION Item"
+    },
+    "coverCandidates": 19,
+    "original": {
+     "number": "27,922,477,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "27,922,477",
+     "found": true,
+     "quote": "(as defined in Rule 12b-2 of the Exchange Act). Yes o No x The number of shares of the registrant\u2019s common stock outstanding as of January 31, 2012 : 27,922,477 Table of Contents GSI TECHNOLOGY, INC. FORM 10-Q FOR THE QUARTERLY PERIOD ENDED DECEMBER 31, 2011 Page PART I \u2014 FINANCIAL INFORMATION Item"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_BKH",
+   "cik": "0001130464",
+   "accession": "0001130464-12-000041",
+   "concept": "ECSO",
+   "filed": "2012-05-04",
+   "periodEnd": "2012-03-31",
+   "rawDate": "2012-04-30",
+   "reported": 44089428000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 44089428,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1130464/000113046412000041/0001130464-12-000041-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1130464/000113046412000041/bkh03311210q.htm",
+    "sha256": "62d9ca677bb273b8f783b061bbdd9f04280c2d04e510871bad09aaebef5e7849",
+    "bytes": 2373500,
+    "cover": {
+     "value": 43731.0,
+     "token": "43,731",
+     "quote": "ontinued operations, per share (0.12 ) (0.05 ) Total income (loss) per share, Diluted $ 0.68 $ 0.68 Weighted average common shares outstanding: Basic 43,731 39,059 Diluted 43,969 39,761 Dividends paid per share of common stock $ 0.37 $ 0.365 The accompanying Notes to Condensed Consolidated Financial"
+    },
+    "coverCandidates": 14,
+    "original": {
+     "number": "44,089,428,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "44,089,428",
+     "found": true,
+     "quote": "of each of the issuer's classes of common stock as of the latest practicable date. Class Outstanding at April 30, 2012 Common stock, $1.00 par value 44,089,428 shares TABLE OF CONTENTS Page Glossary of Terms and Abbreviations 3 PART I. FINANCIAL INFORMATION 5 Item 1. Financial Statements 5 Condense"
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_NTAP",
+   "cik": "0001002047",
+   "accession": "0000950170-24-023115",
+   "concept": "ECSO",
+   "filed": "2024-02-29",
+   "periodEnd": "2024-01-26",
+   "rawDate": "2024-02-23",
+   "reported": 20637666,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 206376660,
+   "scaleExponent": -1,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1002047/000095017024023115/0000950170-24-023115-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1002047/000095017024023115/ntap-20240126.htm",
+    "sha256": "7e156e6b3735b27599fdba25f5d02a1be25285c63c167620fa192c0a76989ab6",
+    "bytes": 2947485,
+    "cover": {
+     "value": 2034.0,
+     "token": "2,034",
+     "quote": "bilities 3,765 3,467 Long-term debt 1,991 2,389 Other long-term liabilities 585 708 Long-term deferred revenue and financed unearned services revenue 2,034 2,095 Total liabilities 8,375 8,659 Commitments and contingencies (Note 15) Stockholders' equity: Common stock and additional paid-in capital, $"
+    },
+    "coverCandidates": 5,
+    "original": {
+     "number": "20,637,666",
+     "found": false
+    },
+    "corrected": {
+     "number": "206,376,660",
+     "found": false
+    },
+    "verdict": "INCONCLUSIVE"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_MVIS",
+   "cik": "0000065770",
+   "accession": "0001136261-22-000126",
+   "concept": "CSSO",
+   "filed": "2022-03-01",
+   "periodEnd": "2021-12-31",
+   "rawDate": "2021-12-31",
+   "reported": 164363,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 164363000,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/65770/000113626122000126/0001136261-22-000126-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/65770/000113626122000126/form10-k.htm",
+    "sha256": "87194aa741d989ba9011229d11a85dcc619c60879c76cd8c96d7b2071babb2bb",
+    "bytes": 1128047,
+    "cover": {
+     "value": 164630093.0,
+     "token": "164,630,093",
+     "quote": "as reported by the Nasdaq Global Market on that date). The number of shares of the registrant's common stock outstanding as of February 25, 2022 was 164,630,093 . DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant's definitive Proxy Statement to be filed with the Securities and Exchange"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "164,363",
+     "found": true,
+     "quote": "ar value $ 0.001 ; 25,000 shares authorized; no and no shares issued and outstanding - - Common stock, par value $ 0.001 ; 210,000 shares authorized; 164,363 and 152,926 shares issued and outstanding at December 31, 2021 and 2020, respectively 164 153 Additional paid-in capital 742,042 601,224 Subsc"
+    },
+    "corrected": {
+     "number": "164,363,000",
+     "found": false
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_AEP",
+   "cik": "0000004904",
+   "accession": "0000004904-10-000143",
+   "concept": "ECSO",
+   "filed": "2010-11-01",
+   "periodEnd": "2010-06-30",
+   "rawDate": "2010-09-30",
+   "reported": 480276270000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 480276270,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/4904/000000490410000143/0000004904-10-000143-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/4904/000000490410000143/q310aep10q.htm",
+    "sha256": "a9bd6bd03b687b612233ca4fa8cd4c0c25737f41b94a47fb04f06af31f45d4fb",
+    "bytes": 13488689,
+    "cover": {
+     "value": 480276270.0,
+     "token": "480,276,270",
+     "quote": "truction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at October 29, 2010 American Electric Power Company, Inc. 480,276,270 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
+    },
+    "coverCandidates": 10,
+    "original": {
+     "number": "480,276,270,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "480,276,270",
+     "found": true,
+     "quote": "truction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at October 29, 2010 American Electric Power Company, Inc. 480,276,270 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_SNDX",
+   "cik": "0001395937",
+   "accession": "0000950170-23-005079",
+   "concept": "ECSO",
+   "filed": "2023-02-28",
+   "periodEnd": "2022-12-31",
+   "rawDate": "2023-02-24",
+   "reported": 68442.572,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 68442572,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1395937/000095017023005079/0000950170-23-005079-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1395937/000095017023005079/sndx-20221231.htm",
+    "sha256": "1f820924135385a54c2a89f264056da6c4cd55e17b52314d11199a08423399b8",
+    "bytes": 3907694,
+    "cover": {
+     "value": 68442.572,
+     "token": "68,442.572",
+     "quote": "culation. The determination of affiliate status is not necessarily a conclusive determination for other purposes. As of February 24, 2023, there were 68,442.572 shares of common stock outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitive proxy statement for its 202"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "68,443",
+     "found": null,
+     "note": "below 100,000: plain digit search not meaningful"
+    },
+    "corrected": {
+     "number": "68,442,572",
+     "found": false
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_ARW",
+   "cik": "0000007536",
+   "accession": "0001666359-17-000033",
+   "concept": "ECSO",
+   "filed": "2017-11-02",
+   "periodEnd": "2017-07-01",
+   "rawDate": "2017-09-30",
+   "reported": 87973,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 87973000,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/7536/000166635917000033/0001666359-17-000033-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/7536/000166635917000033/arw0930201710-q.htm",
+    "sha256": "1da2a5b550855cf80ed8bd4e97544213408b404b9518f2e6b94a19cbe556c1b7",
+    "bytes": 1260265,
+    "cover": {
+     "value": 87973.0,
+     "token": "87,973",
+     "quote": "xchange Act. o Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes o No x There were 87,973 shares of Common Stock outstanding as of October 30, 2017 . ARROW ELECTRONICS, INC. INDEX Part I. Financial Information Item 1. Financial State"
+    },
+    "coverCandidates": 28,
+    "original": {
+     "number": "87,973",
+     "found": null,
+     "note": "below 100,000: plain digit search not meaningful"
+    },
+    "corrected": {
+     "number": "87,973,000",
+     "found": false
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_ANF",
+   "cik": "0001018840",
+   "accession": "0000950123-10-111536",
+   "concept": "ECSO",
+   "filed": "2010-12-07",
+   "periodEnd": "2010-10-30",
+   "rawDate": "2010-12-02",
+   "reported": 87846,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 87846000,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1018840/000095012310111536/0000950123-10-111536-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018840/000095012310111536/c09362e10vq.htm",
+    "sha256": "300c8b5f401ee29bab8ece81597424f1b85e8f2ab3ef8587c6b7646224c6849e",
+    "bytes": 558831,
+    "cover": {
+     "value": 88236.0,
+     "token": "88,236",
+     "quote": ") NET INCOME (LOSS) PER SHARE: BASIC $ 0.57 $ 0.44 $ 0.65 $ (0.54 ) DILUTED $ 0.56 $ 0.44 $ 0.64 $ (0.54 ) WEIGHTED-AVERAGE SHARES OUTSTANDING: BASIC 88,236 87,943 88,184 87,839 DILUTED 90,069 88,730 89,731 87,839 DIVIDENDS DECLARED PER SHARE $ 0.175 $ 0.175 $ 0.525 $ 0.525 OTHER COMPREHENSIVE INCOM"
+    },
+    "coverCandidates": 44,
+    "original": {
+     "number": "87,846",
+     "found": null,
+     "note": "below 100,000: plain digit search not meaningful"
+    },
+    "corrected": {
+     "number": "87,846,000",
+     "found": false
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_UNTY",
+   "cik": "0000920427",
+   "accession": "0000920427-12-000041",
+   "concept": "ECSO",
+   "filed": "2012-11-09",
+   "periodEnd": "2012-09-30",
+   "rawDate": "2012-11-01",
+   "reported": 7506,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 7506000,
+   "scaleExponent": -3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/920427/000092042712000041/0000920427-12-000041-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/920427/000092042712000041/unty-20120930x10q.htm",
+    "sha256": "4e4ae481cd641481f86cc58a1c274fd63a1394d257be7cf2554b820e58b37407",
+    "bytes": 5248527,
+    "cover": {
+     "value": 7473.0,
+     "token": "7,473",
+     "quote": "asic $ 0.11 $ 0.09 $ 0.25 $ 0.11 Net income per common share - Diluted $ 0.10 $ 0.09 $ 0.24 $ 0.10 Weighted average common shares outstanding - Basic 7,473 7,413 7,465 7,301 Weighted average common shares outstanding - Diluted 7,782 7,781 7,786 7,719 The accompanying notes to the Consolidated Financ"
+    },
+    "coverCandidates": 27,
+    "original": {
+     "number": "7,506",
+     "found": null,
+     "note": "below 100,000: plain digit search not meaningful"
+    },
+    "corrected": {
+     "number": "7,506,000",
+     "found": false
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_PKG",
+   "cik": "0000075677",
+   "accession": "0000950170-24-055165",
+   "concept": "ECSO",
+   "filed": "2024-05-08",
+   "periodEnd": "2024-03-31",
+   "rawDate": "2024-05-03",
+   "reported": 89797979000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 89797979,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/75677/000095017024055165/0000950170-24-055165-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/75677/000095017024055165/pkg-20240331.htm",
+    "sha256": "506d24af69b9bfd1cbbaacc0975d775977c3b6cbd3d88fdbc822869e971093b3",
+    "bytes": 1887399,
+    "cover": {
+     "value": 89797979.0,
+     "token": "89,797,979",
+     "quote": "hether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of May 3, 2024, the Registrant had outstanding 89,797,979 shares of common stock, par value $0.01 per share. Securities registered pursuant to Section 12(b) of the Exchange Act: Title of each class"
+    },
+    "coverCandidates": 9,
+    "original": {
+     "number": "89,797,979,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "89,797,979",
+     "found": true,
+     "quote": "hether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of May 3, 2024, the Registrant had outstanding 89,797,979 shares of common stock, par value $0.01 per share. Securities registered pursuant to Section 12(b) of the Exchange Act: Title of each class",
+     "ixScale": 3
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_AEP",
+   "cik": "0000004904",
+   "accession": "0000004904-11-000074",
+   "concept": "ECSO",
+   "filed": "2011-05-03",
+   "periodEnd": "2011-03-31",
+   "rawDate": "2011-04-29",
+   "reported": 481790955000000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 481790955,
+   "scaleExponent": 6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/4904/000000490411000074/0000004904-11-000074-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/4904/000000490411000074/q111aep10q.htm",
+    "sha256": "c7bd72da527fbced85dccdb7cd694ab250418fdd1c12e9dd110f43ccc7210950",
+    "bytes": 11135316,
+    "cover": {
+     "value": 481790955.0,
+     "token": "481,790,955",
+     "quote": "nstruction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at April 29, 2011 American Electric Power Company, Inc. 481,790,955 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
+    },
+    "coverCandidates": 7,
+    "original": {
+     "number": "481,790,955,000,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "481,790,955",
+     "found": true,
+     "quote": "nstruction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at April 29, 2011 American Electric Power Company, Inc. 481,790,955 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_STAA",
+   "cik": "0000718937",
+   "accession": "0001564590-19-014830",
+   "concept": "ECSO",
+   "filed": "2019-05-01",
+   "periodEnd": "2019-03-29",
+   "rawDate": "2019-04-26",
+   "reported": 44472846000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 44472846,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/718937/000156459019014830/0001564590-19-014830-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/718937/000156459019014830/staa-10q_20190329.htm",
+    "sha256": "d39a53b74cbf6ca1df79fa4b3cf6470429780ee12eccbdc968c874f57bd304cf",
+    "bytes": 1632647,
+    "cover": {
+     "value": 44472846.0,
+     "token": "44,472,846",
+     "quote": "Act. \u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 The registrant has 44,472,846 shares of common stock, par value $0.01 per share, issued and outstanding as of April 26, 2019. STAAR SURGICAL COMPANY INDEX PAGE NUMBER PA"
+    },
+    "coverCandidates": 31,
+    "original": {
+     "number": "44,472,846,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "44,472,846",
+     "found": true,
+     "quote": "Act. \u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 The registrant has 44,472,846 shares of common stock, par value $0.01 per share, issued and outstanding as of April 26, 2019. STAAR SURGICAL COMPANY INDEX PAGE NUMBER PA"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_PLOW",
+   "cik": "0001287213",
+   "accession": "0001104659-11-061692",
+   "concept": "ECSO",
+   "filed": "2011-11-07",
+   "periodEnd": "2011-09-30",
+   "rawDate": "2011-11-07",
+   "reported": 220017540,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 22001754,
+   "scaleExponent": 1,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1287213/000110465911061692/0001104659-11-061692-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1287213/000110465911061692/a11-25879_110q.htm",
+    "sha256": "5cce131782e040631bb916163c17dc920858d1e8e4da9eb6f5d54ee4eb8fbde9",
+    "bytes": 1016807,
+    "cover": {
+     "value": 22017540.0,
+     "token": "22,017,540",
+     "quote": "pany (as defined in Rule 12b-2 of the Exchange Act). Yes \u00a3 No x Number of shares of registrant\u2019s common shares outstanding as of November 7, 2011 was 22,017,540 Table of Contents DOUGLAS DYNAMICS, INC. Table of C ontents PART I. FINANCIAL INFORMATION 1 Item 1. Financial Statements 1 Unaudited Consol"
+    },
+    "coverCandidates": 50,
+    "original": {
+     "number": "220,017,540",
+     "found": false
+    },
+    "corrected": {
+     "number": "22,001,754",
+     "found": false
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_SPH",
+   "cik": "0001005210",
+   "accession": "0000950170-22-025646",
+   "concept": "ECSO",
+   "filed": "2022-11-23",
+   "periodEnd": "2022-09-24",
+   "rawDate": "2022-11-22",
+   "reported": 63485760000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 63485760,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1005210/000095017022025646/0000950170-22-025646-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1005210/000095017022025646/sph-20220924.htm",
+    "sha256": "ba27d50859650d71ae3efa80ed1b16ac00ed3209751f20d6a7ebd378bb2b909e",
+    "bytes": 8345256,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "63,485,760,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "63,485,760",
+     "found": true,
+     "quote": "of such units on the New York Stock Exchange on such date ($16.27 per unit), was approximately $ 1,024,497,000 . As of November 22, 2022, there wer e 63,485,760 Com mon Units of Suburban Propane Partners, L.P. outstanding. Documents Incorporated by Reference: None Total number of pages (excluding Ex",
+     "ixScale": 3
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_AAP",
+   "cik": "0001158449",
+   "accession": "0001158449-11-000017",
+   "concept": "ECSO",
+   "filed": "2011-06-01",
+   "periodEnd": "2011-04-23",
+   "rawDate": "2011-04-23",
+   "reported": 76637258,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 76637.258,
+   "scaleExponent": 3,
+   "tier": "C",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1158449/000115844911000017/0001158449-11-000017-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1158449/000115844911000017/aap10q.htm",
+    "sha256": "0ac5bd3423a7391ba4860993da1b90ededdf2649c4310915bec11f9efe5d7f90",
+    "bytes": 1245998,
+    "cover": {
+     "value": 76637258.0,
+     "token": "76,637,258",
+     "quote": "ther the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes p No x As of May 27 , 2011, the registrant had outstanding 76,637,258 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
+    },
+    "coverCandidates": 12,
+    "original": {
+     "number": "76,637,258",
+     "found": true,
+     "quote": "ther the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes p No x As of May 27 , 2011, the registrant had outstanding 76,637,258 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
+    },
+    "corrected": {
+     "number": "76,637",
+     "found": true,
+     "quote": "ther the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes p No x As of May 27 , 2011, the registrant had outstanding 76,637,258 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
+    },
+    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_BKH",
+   "cik": "0001130464",
+   "accession": "0001130464-12-000024",
+   "concept": "CSSO",
+   "filed": "2012-02-29",
+   "periodEnd": "2011-12-31",
+   "rawDate": "2011-12-31",
+   "reported": 43957502000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 43957502,
+   "scaleExponent": 3,
+   "tier": "B",
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1130464/000113046412000024/0001130464-12-000024-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1130464/000113046412000024/bkh10k12312011.htm",
+    "sha256": "fdca89f226a38fdd80d4050569555eab3eee23d694395e408e7de2f70f150764",
+    "bytes": 6837745,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "43,957,502,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "43,957,502",
+     "found": true,
+     "quote": "ee Notes 3, 8, 9, 10, 13, 18, 19 and 20) Stockholders' equity: Common stock equity- Common stock $1 par value; 100,000,000 shares authorized; issued: 43,957,502 shares at 2011 and 39,280,048 shares at 2010, respectively 43,958 39,280 Additional paid-in capital 722,623 598,805 Retained earnings 476,6"
+    },
+    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_ENSG",
+   "cik": "0001125376",
+   "accession": "0001125376-12-000022",
+   "concept": "ECSO",
+   "filed": "2012-05-02",
+   "periodEnd": "2012-03-31",
+   "rawDate": "2012-04-30",
+   "reported": 21342085000,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 21342085,
+   "scaleExponent": 3,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1125376/000112537612000022/0001125376-12-000022-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1125376/000112537612000022/ensg3311210q.htm",
+    "sha256": "8782eed3eb5789432c91c4731a666047b0dce1282b3227ada1b56cacead34b7d",
+    "bytes": 1612957,
+    "cover": {
+     "value": 21342085.0,
+     "token": "21,342,085",
+     "quote": "Indicate by a check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). o Yes x No As of April 30, 2012 , 21,342,085 shares of the registrant\u2019s common stock were outstanding. THE ENSIGN GROUP, INC. QUARTERLY REPORT ON FORM 10-Q FOR THE THREE MONTHS ENDED M"
+    },
+    "coverCandidates": 38,
+    "original": {
+     "number": "21,342,085,000",
+     "found": false
+    },
+    "corrected": {
+     "number": "21,342,085",
+     "found": true,
+     "quote": "Indicate by a check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). o Yes x No As of April 30, 2012 , 21,342,085 shares of the registrant\u2019s common stock were outstanding. THE ENSIGN GROUP, INC. QUARTERLY REPORT ON FORM 10-Q FOR THE THREE MONTHS ENDED M"
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_SYK",
+   "cik": "0000310764",
+   "accession": "0000310764-13-000210",
+   "concept": "CSSO",
+   "filed": "2013-10-23",
+   "periodEnd": "2013-09-30",
+   "rawDate": "2013-09-30",
+   "reported": 378,
+   "status": "CORRECTED",
+   "class": "SCALE_ERROR",
+   "corrected": 378000000,
+   "scaleExponent": -6,
+   "tier": "A",
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/310764/000031076413000210/0000310764-13-000210-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/310764/000031076413000210/syk09302013q3.htm",
+    "sha256": "b85c61f1ce9d6e82ee2add010672191c352f138bb4856466ca94666d1a7b634a",
+    "bytes": 1297449,
+    "cover": {
+     "value": 378418945.0,
+     "token": "378,418,945",
+     "quote": "of the Exchange Act). YES [ ] NO [X] Number of shares outstanding of each of the issuer\u2019s classes of common stock, as of the latest practicable date: 378,418,945 shares of Common Stock, $0.10 par value, as of September 30, 2013 . PART I. - FINANCIAL INFORMATION ITEM 1. FINANCIAL STATEMENTS. Stryker"
+    },
+    "coverCandidates": 8,
+    "original": {
+     "number": "378",
+     "found": null,
+     "note": "below 100,000: plain digit search not meaningful"
+    },
+    "corrected": {
+     "number": "378,000,000",
+     "found": false
+    },
+    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_FRPH",
+   "cik": "0000844059",
+   "accession": "0000844059-12-000004",
+   "concept": "ECSO",
+   "filed": "2012-02-01",
+   "periodEnd": "2011-12-31",
+   "rawDate": "2011-12-31",
+   "reported": 9309051,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/844059/000084405912000004/0000844059-12-000004-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/844059/000084405912000004/patrdecq12.txt",
+    "sha256": "04fa6b58180b7150305660a161f2fbd3c4075b8bb54b9bff19f741f75a84ce71",
+    "bytes": 67542,
+    "cover": {
+     "value": 9309051.0,
+     "token": "9,309,051",
+     "quote": "the number of shares outstanding of each of the issuer's classes of common stock, as of the latest practicable date. On December 31, 2011 there were 9,309,051 shares of Common Stock, $.10 par value per share, outstanding (adjusted for 3-for-1 stock split). PATRIOT TRANSPORTATION HOLDING, INC. FORM"
+    },
+    "coverCandidates": 9,
+    "original": {
+     "number": "9,309,051",
+     "found": true,
+     "quote": "the number of shares outstanding of each of the issuer's classes of common stock, as of the latest practicable date. On December 31, 2011 there were 9,309,051 shares of Common Stock, $.10 par value per share, outstanding (adjusted for 3-for-1 stock split). PATRIOT TRANSPORTATION HOLDING, INC. FORM"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_PRSO",
+   "cik": "0000890394",
+   "accession": "0001564590-18-027325",
+   "concept": "ECSO",
+   "filed": "2018-11-06",
+   "periodEnd": "2018-09-30",
+   "rawDate": "2018-10-31",
+   "reported": 41640586,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/890394/000156459018027325/0001564590-18-027325-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/890394/000156459018027325/mosy-10q_20180930.htm",
+    "sha256": "fae30cfd4d5c06f40ab60bb6b0cedfc2e147917456cb416769d1b11ad8b1d729",
+    "bytes": 1445646,
+    "cover": {
+     "value": 41640586.0,
+     "token": "41,640,586",
+     "quote": "\u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of October 31, 2018, 41,640,586 shares of the Registrant\u2019s common stock, $0.001 par value, were outstanding. MOSYS, INC. FORM 10-Q September 30, 2018 TABLE OF CONTENTS PAR"
+    },
+    "coverCandidates": 13,
+    "original": {
+     "number": "41,640,586",
+     "found": true,
+     "quote": "\u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of October 31, 2018, 41,640,586 shares of the Registrant\u2019s common stock, $0.001 par value, were outstanding. MOSYS, INC. FORM 10-Q September 30, 2018 TABLE OF CONTENTS PAR"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_EDBL",
+   "cik": "0001809750",
+   "accession": "0001477932-23-001657",
+   "concept": "ECSO",
+   "filed": "2023-03-22",
+   "periodEnd": "2022-12-31",
+   "rawDate": "2023-03-22",
+   "reported": 1989645,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1809750/000147793223001657/0001477932-23-001657-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1809750/000147793223001657/edbl_10k.htm",
+    "sha256": "0c135aeb2789d14a66e4bb7d716e44c3569886ccdb47487ec374cf6d972d2fa6",
+    "bytes": 1294162,
+    "cover": {
+     "value": 1989645.0,
+     "token": "1,989,645",
+     "quote": "ss day of the registrant's most recently completed second fiscal quarter), was: approximately $ 4.9 million. As of March 22, 2023, the registrant had 1,989,645 shares of Common Stock, $0.0001 par value per share, outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitiv"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "1,989,645",
+     "found": true,
+     "quote": "ss day of the registrant's most recently completed second fiscal quarter), was: approximately $ 4.9 million. As of March 22, 2023, the registrant had 1,989,645 shares of Common Stock, $0.0001 par value per share, outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitiv",
+     "ixScale": 0
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_MDU",
+   "cik": "0000067716",
+   "accession": "0000067716-10-000068",
+   "concept": "ECSO",
+   "filed": "2010-08-06",
+   "periodEnd": "2010-06-30",
+   "rawDate": "2010-07-30",
+   "reported": 188167816,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/67716/000006771610000068/0000067716-10-000068-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/67716/000006771610000068/mduform10-q.htm",
+    "sha256": "d7974604e4f9d0af72f67a721648e7feae465ee5132ce7984c6b2e3d43b83ac0",
+    "bytes": 1882003,
+    "cover": {
+     "value": 188167816.0,
+     "token": "188,167,816",
+     "quote": "-2 of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of July 30, 2010: 188,167,816 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
+    },
+    "coverCandidates": 9,
+    "original": {
+     "number": "188,167,816",
+     "found": true,
+     "quote": "-2 of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of July 30, 2010: 188,167,816 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_CLRB",
+   "cik": "0001279704",
+   "accession": "0001144204-17-014611",
+   "concept": "ECSO",
+   "filed": "2017-03-15",
+   "periodEnd": "2016-12-31",
+   "rawDate": "2017-03-10",
+   "reported": 12837882,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1279704/000114420417014611/0001144204-17-014611-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1279704/000114420417014611/v460347_10k.htm",
+    "sha256": "d0d5253d912ccce7cc32d6633ad31022752d163682b53795b2b148ae459d12e8",
+    "bytes": 639405,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "12,837,882",
+     "found": true,
+     "quote": "quity was last sold, or the average bid and asked price of such common equity, as of June 30, 2016, was $15,546,894. As of March 10, 2017, there were 12,837,882 shares of the registrant\u2019s $0.00001 par value common stock outstanding. CELLECTAR BIOSCIENCES, INC. FORM 10-K TABLE OF CONTENTS PART I 3 It"
+    },
+    "corrected": null,
+    "verdict": "NO_COVER_COUNT_FOUND"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_SHEN",
+   "cik": "0000354963",
+   "accession": "0001140361-12-013424",
+   "concept": "ECSO",
+   "filed": "2012-03-06",
+   "periodEnd": "2011-12-31",
+   "rawDate": "2012-02-17",
+   "reported": 23837685,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/354963/000114036112013424/0001140361-12-013424-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/354963/000114036112013424/form10k.htm",
+    "sha256": "45ac9b5954d271835cbbbd21a801918ff68e9e0335f57f0b4d0fbc0df3eb2200",
+    "bytes": 2651204,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "23,837,685",
+     "found": true,
+     "quote": "elect Market on such date, was approximately $381,000,000. The number of shares of the registrant\u2019s common stock outstanding on February 17, 2012 was 23,837,685. DOCUMENTS INCORPORATED BY REFERENCE Portions of the following documents are incorporated by reference in this Form 10-K as indicated herei"
+    },
+    "corrected": null,
+    "verdict": "NO_COVER_COUNT_FOUND"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_MDU",
+   "cik": "0000067716",
+   "accession": "0000067716-10-000097",
+   "concept": "ECSO",
+   "filed": "2010-11-03",
+   "periodEnd": "2010-09-30",
+   "rawDate": "2010-10-27",
+   "reported": 188255348,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/67716/000006771610000097/0000067716-10-000097-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/67716/000006771610000097/mduform10-q.htm",
+    "sha256": "baa2ecec1830da4ff14b8a53ef2fab0ffc6e5414fe169c770ae24ccaaf2817a2",
+    "bytes": 1999441,
+    "cover": {
+     "value": 188255348.0,
+     "token": "188,255,348",
+     "quote": "of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of October 27, 2010: 188,255,348 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
+    },
+    "coverCandidates": 9,
+    "original": {
+     "number": "188,255,348",
+     "found": true,
+     "quote": "of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of October 27, 2010: 188,255,348 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_REPORTED"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_AAP",
+   "cik": "0001158449",
+   "accession": "0001158449-11-000033",
+   "concept": "ECSO",
+   "filed": "2011-08-24",
+   "periodEnd": "2011-07-16",
+   "rawDate": "2011-07-16",
+   "reported": 76637258000,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1158449/000115844911000033/0001158449-11-000033-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1158449/000115844911000033/aap_10qx6302011.htm",
+    "sha256": "af681743987cf5d915c647d979a86a3808dd2650749555f82fff4af1ed757ac9",
+    "bytes": 1275750,
+    "cover": {
+     "value": 73734169.0,
+     "token": "73,734,169",
+     "quote": "r the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes o No x As of August 22, 2011 , the registrant had outstanding 73,734,169 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
+    },
+    "coverCandidates": 17,
+    "original": {
+     "number": "76,637,258,000",
+     "found": false
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_OTHER_COUNT"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_FRPH",
+   "cik": "0000844059",
+   "accession": "0000844059-20-000028",
+   "concept": "ECSO",
+   "filed": "2020-08-14",
+   "periodEnd": "2020-06-30",
+   "rawDate": "2020-07-31",
+   "reported": 9548308,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/844059/000084405920000028/0000844059-20-000028-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/844059/000084405920000028/frphjunq20.htm",
+    "sha256": "9d8c3ca7a76aaa100c0394dd912a051d80af23a98707aaf44c2f66d1212326ee",
+    "bytes": 1265860,
+    "cover": {
+     "value": 9620.0,
+     "token": "9,620",
+     "quote": "June 30, June 30, 2020 2019 2020 2019 Weighted average common shares outstanding during the period - shares used for basic earnings per common share 9,620 9,915 9,712 9,933 Common shares issuable under share based payment plans which are potentially dilutive 29 45 32 45 Common shares used for dilut"
+    },
+    "coverCandidates": 11,
+    "original": {
+     "number": "9,548,308",
+     "found": true,
+     "quote": "of the issuer\u2019s classes of common stock, as of the latest practicable date. Class Outstanding at July 31, 2020 Common Stock, $.10 par value per share 9,548,308 shares 1 FRP HOLDINGS, INC. FORM 10-Q QUARTER ENDED JUNE 30, 2020 CONTENTS Page No. Preliminary Note Regarding Forward-Looking Statements 3"
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_OTHER_COUNT"
+   }
+  },
+  {
+   "selection": "QUOTA_UNRESOLVED",
+   "named": null,
+   "securityId": "ref_HURA",
+   "cik": "0001498382",
+   "accession": "0000950170-24-113321",
+   "concept": "ECSO",
+   "filed": "2024-10-07",
+   "periodEnd": "2024-06-30",
+   "rawDate": "2024-10-07",
+   "reported": 55660578000,
+   "status": "EXCLUDED",
+   "class": "UNRESOLVED",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1498382/000095017024113321/0000950170-24-113321-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1498382/000095017024113321/ktra-20240630.htm",
+    "sha256": "a486292691c32416f0cb84b6fdd694ab3f0e6d6586e76d58c041734fa8031ce9",
+    "bytes": 2669296,
+    "cover": {
+     "value": 55660578.0,
+     "token": "55,660,578",
+     "quote": "te status is not necessarily a conclusive determination for any other purpose. Number of shares of common stock outstanding as of October 7, 2024 was 55,660,578 . DOCUMENTS INCORPORATED BY REFERENCE: None. Auditor Name: Marcum LLP Auditor Location: San Francisco, CA Auditor Firm ID: 688 FORM 10-K FO"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "55,660,578,000",
+     "found": false
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_OTHER_COUNT"
+   }
+  },
+  {
+   "selection": "QUOTA_MCAP_ABSOLUTE_BOUND",
+   "named": null,
+   "securityId": "ref_LTM",
+   "cik": "0001047716",
+   "accession": "0001628280-25-012639",
+   "concept": "ECSO",
+   "filed": "2025-03-13",
+   "periodEnd": "2024-12-31",
+   "rawDate": "2024-12-31",
+   "reported": 604437877587,
+   "status": "EXCLUDED",
+   "class": "MCAP_ABSOLUTE_BOUND",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "20-F",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1047716/000162828025012639/0001628280-25-012639-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1047716/000162828025012639/ltm-20241231.htm",
+    "sha256": "baf00955086c559fa7e888326f6491ac526cd21fb7be9b5981e75b4c39a82c61",
+    "bytes": 9757824,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "604,437,877,587",
+     "found": true,
+     "quote": "e number of outstanding shares of each of the issuer\u2019s classes of capital or common stock as of the close of the period covered by the annual report: 604,437,877,587 . Indicate by check mark if the registrant is a well-known seasoned issuer, as defined in Rule 405 of the Securities Act. Yes x No o I",
+     "ixScale": 0
+    },
+    "corrected": null,
+    "verdict": "NO_COVER_COUNT_FOUND"
+   }
+  },
+  {
+   "selection": "QUOTA_MCAP_ABSOLUTE_BOUND",
+   "named": null,
+   "securityId": "ref_GOOG",
+   "cik": "0001652044",
+   "accession": "0001652044-22-000071",
+   "concept": "CSSO",
+   "filed": "2022-07-27",
+   "periodEnd": "2022-06-30",
+   "rawDate": "2022-06-30",
+   "reported": 13078000000,
+   "status": "EXCLUDED",
+   "class": "MCAP_ABSOLUTE_BOUND",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000071/0001652044-22-000071-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000071/goog-20220630.htm",
+    "sha256": "b2f42ec727f287645ba6177c7d6b04e021555b5de8ee3d5e1468ed181db76a0a",
+    "bytes": 2553399,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "13,078,000,000",
+     "found": false
+    },
+    "corrected": null,
+    "verdict": "NO_COVER_COUNT_FOUND"
+   }
+  },
+  {
+   "selection": "QUOTA_MCAP_ABSOLUTE_BOUND",
+   "named": null,
+   "securityId": "ref_CCL",
+   "cik": "0000815097",
+   "accession": "0000815097-21-000027",
+   "concept": "ECSO",
+   "filed": "2021-01-26",
+   "periodEnd": "2020-11-30",
+   "rawDate": "2021-01-14",
+   "reported": 932485510000,
+   "status": "EXCLUDED",
+   "class": "MCAP_ABSOLUTE_BOUND",
+   "corrected": null,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/815097/000081509721000027/0000815097-21-000027-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/815097/000081509721000027/ccl-20201130.htm",
+    "sha256": "aa9b2d56ddf0aa21130b54100b862fa58189d68897f634a9749d517e0bd1ceb1",
+    "bytes": 3817720,
+    "cover": null,
+    "coverCandidates": 0,
+    "original": {
+     "number": "932,485,510,000",
+     "found": false
+    },
+    "corrected": null,
+    "verdict": "NO_COVER_COUNT_FOUND"
+   }
+  },
+  {
+   "selection": "QUOTA_PRIOR_VINTAGE_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_CIFR",
+   "cik": "0001819989",
+   "accession": "0000950170-21-004222",
+   "concept": "ECSO",
+   "filed": "2021-11-12",
+   "periodEnd": "2021-09-30",
+   "rawDate": "2021-11-08",
+   "reported": 246381119,
+   "status": "OK",
+   "class": "PRIOR_VINTAGE_SCALE_ERROR",
+   "corrected": 246381119,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1819989/000095017021004222/0000950170-21-004222-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1819989/000095017021004222/cifr-20210930.htm",
+    "sha256": "b166eaa106072faaf107b629f6aafa25c9defe30c0ae2f97101184fc50057656",
+    "bytes": 1799754,
+    "cover": {
+     "value": 246381119.0,
+     "token": "246,381,119",
+     "quote": "mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of November 8, 2021, the registrant had 246,381,119 , shares of common stock, $0.001 par value per share, outstanding. Table of Contents Page PART I. FINANCIAL INFORMATION 4 Item 1. Financia"
+    },
+    "coverCandidates": 27,
+    "original": {
+     "number": "246,381,119",
+     "found": true,
+     "quote": "mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of November 8, 2021, the registrant had 246,381,119 , shares of common stock, $0.001 par value per share, outstanding. Table of Contents Page PART I. FINANCIAL INFORMATION 4 Item 1. Financia"
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_PRIOR_VINTAGE_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_CQP",
+   "cik": "0001383650",
+   "accession": "0001383650-21-000015",
+   "concept": "ECSO",
+   "filed": "2021-05-04",
+   "periodEnd": "2021-03-31",
+   "rawDate": "2021-04-30",
+   "reported": 484021123,
+   "status": "OK",
+   "class": "PRIOR_VINTAGE_SCALE_ERROR",
+   "corrected": 484021123,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1383650/000138365021000015/0001383650-21-000015-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1383650/000138365021000015/cqp-20210331.htm",
+    "sha256": "29cdc0c8e4fa1f89a6e516d03216fae0f861b98c77fa93859ae4a3558a0ee14e",
+    "bytes": 1573154,
+    "cover": {
+     "value": 484000000.0,
+     "token": "484.0 million",
+     "quote": "ive liabilities 42 35 Other non-current liabilities \u2014 1 Other non-current liabilities\u2014affiliate 16 17 Partners\u2019 equity Common unitholders\u2019 interest ( 484.0 million units issued and outstanding at both March 31, 2021 and December 31, 2020) 738 714 General partner\u2019s interest ( 2 % interest with 9.9 mi"
+    },
+    "coverCandidates": 5,
+    "original": {
+     "number": "484,021,123",
+     "found": true,
+     "quote": "ck mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of April 30, 2021, the registrant had 484,021,123 common units outstanding. CHENIERE ENERGY PARTNERS, L.P. TABLE OF CONTENTS Definitions 1 Part I. Financial Information Item 1. Consolidate",
+     "ixScale": 0
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_PRIOR_VINTAGE_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_TROO",
+   "cik": "0001412095",
+   "accession": "0001144204-17-027317",
+   "concept": "ECSO",
+   "filed": "2017-05-15",
+   "periodEnd": "2016-12-31",
+   "rawDate": "2016-12-31",
+   "reported": 9387928,
+   "status": "OK",
+   "class": "PRIOR_VINTAGE_SCALE_ERROR",
+   "corrected": 9387928,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "20-F",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1412095/000114420417027317/0001144204-17-027317-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1412095/000114420417027317/v466040_20f.htm",
+    "sha256": "7c2dd0276c0e96682be6fadf237689589136bf5e331479ecc5ebfb4638433954",
+    "bytes": 1184500,
+    "cover": {
+     "value": 9387928.0,
+     "token": "9,387,928",
+     "quote": "one ordinary share Title of Class Securities for which there is a reporting obligation pursuant to Section 15(d) of the Act: None The registrant had 9,387,928 ordinary shares issued and outstanding as of December 31, 2016. Indicate by check mark if the registrant is a well-known seasoned issuer, as"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "9,387,928",
+     "found": true,
+     "quote": "one ordinary share Title of Class Securities for which there is a reporting obligation pursuant to Section 15(d) of the Act: None The registrant had 9,387,928 ordinary shares issued and outstanding as of December 31, 2016. Indicate by check mark if the registrant is a well-known seasoned issuer, as"
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_PRIOR_VINTAGE_SCALE_ERROR",
+   "named": null,
+   "securityId": "ref_BEEM",
+   "cik": "0001398805",
+   "accession": "0001683168-24-002470",
+   "concept": "ECSO",
+   "filed": "2024-04-16",
+   "periodEnd": "2024-03-31",
+   "rawDate": "2024-04-09",
+   "reported": 14438270000,
+   "status": "OK",
+   "class": "PRIOR_VINTAGE_SCALE_ERROR",
+   "corrected": 14438270000,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-K",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1398805/000168316824002470/0001683168-24-002470-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1398805/000168316824002470/beam_i10k-123123.htm",
+    "sha256": "3014590027022d595b2050592e5e13c4717e18bac7f19cc2f4bd28615b05d72b",
+    "bytes": 1266363,
+    "cover": {
+     "value": 14438270.0,
+     "token": "14,438,270",
+     "quote": "Q Capital Market on that date. The number of registrant's shares of common stock, $0.001 par value, issuable and outstanding as of April 9, 2024, was 14,438,270 . DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitive proxy statement for the registrant\u2019s 2024 Annual Meeting of S"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "14,438,270,000",
+     "found": false
+    },
+    "corrected": null,
+    "verdict": "COVER_STATES_OTHER_COUNT"
+   }
+  },
+  {
+   "selection": "QUOTA_GENUINE_CAPITAL_ACTION",
+   "named": null,
+   "securityId": "ref_REED",
+   "cik": "0001140215",
+   "accession": "0001493152-25-020739",
+   "concept": "ECSO",
+   "filed": "2025-11-04",
+   "periodEnd": "2025-09-30",
+   "rawDate": "2025-10-31",
+   "reported": 8945454,
+   "status": "OK",
+   "class": "GENUINE_CAPITAL_ACTION",
+   "corrected": 8945454,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1140215/000149315225020739/0001493152-25-020739-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1140215/000149315225020739/form10-q.htm",
+    "sha256": "bf1b31dd07910c91158c7140389561d9edca69570109b628b2f99c7d547d82f9",
+    "bytes": 1050864,
+    "cover": {
+     "value": 8945454.0,
+     "token": "8,945,454",
+     "quote": "the Exchange Act. \u2610 Indicate by check mark whether the issuer is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 There are 8,945,454 shares of the Company\u2019s common stock, par value $ .0001 per share, outstanding as of October 31, 2025. TABLE OF CONTENTS PART I - FINANCIAL"
+    },
+    "coverCandidates": 27,
+    "original": {
+     "number": "8,945,454",
+     "found": true,
+     "quote": "the Exchange Act. \u2610 Indicate by check mark whether the issuer is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 There are 8,945,454 shares of the Company\u2019s common stock, par value $ .0001 per share, outstanding as of October 31, 2025. TABLE OF CONTENTS PART I - FINANCIAL"
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_GENUINE_CAPITAL_ACTION",
+   "named": null,
+   "securityId": "ref_OPCH",
+   "cik": "0001014739",
+   "accession": "0001014739-19-000031",
+   "concept": "ECSO",
+   "filed": "2019-11-06",
+   "periodEnd": "2019-09-30",
+   "rawDate": "2019-11-04",
+   "reported": 705849364,
+   "status": "OK",
+   "class": "GENUINE_CAPITAL_ACTION",
+   "corrected": 705849364,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "10-Q",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1014739/000101473919000031/0001014739-19-000031-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1014739/000101473919000031/bios-20190930x10q.htm",
+    "sha256": "0dbde85dd5235a2310c6204dcee1a6c9773bee184d8a495cae1c69ce1740058e",
+    "bytes": 1583816,
+    "cover": {
+     "value": 706943750.0,
+     "token": "706,943,750",
+     "quote": "30, 2019. No preferred stock authorized or outstanding as of December 31, 2018. \u2014 \u2014 Common stock; $0.0001 par value: 1,000,000,000 shares authorized, 706,943,750 shares issued and 705,207,530 shares outstanding as of September 30, 2019; 570,454,995 shares issued and outstanding as of December 31, 20"
+    },
+    "coverCandidates": 38,
+    "original": {
+     "number": "705,849,364",
+     "found": true,
+     "quote": "ol(s) Name of each exchange on which registered Common Stock, $0.0001 par value per share BIOS Nasdaq Capital Market On November 4, 2019 , there were 705,849,364 shares of the registrant\u2019s Common Stock outstanding. TABLE OF CONTENTS Page Number PART I Item 1. Financial Statements 3 Condensed Consoli"
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  },
+  {
+   "selection": "QUOTA_GENUINE_CAPITAL_ACTION",
+   "named": null,
+   "securityId": "ref_EJH",
+   "cik": "0001769768",
+   "accession": "0001213900-25-104179",
+   "concept": "ECSO",
+   "filed": "2025-10-30",
+   "periodEnd": "2025-06-30",
+   "rawDate": "2025-06-30",
+   "reported": 4003859,
+   "status": "OK",
+   "class": "GENUINE_CAPITAL_ACTION",
+   "corrected": 4003859,
+   "scaleExponent": null,
+   "tier": null,
+   "check": {
+    "documentType": "20-F",
+    "indexUrl": "https://www.sec.gov/Archives/edgar/data/1769768/000121390025104179/0001213900-25-104179-index.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1769768/000121390025104179/ea0262487-20f_ehomehouse.htm",
+    "sha256": "bc0658144c7c6cf20bec518a97e20c5f2a608d3ed5a47676146bc9027a038a2a",
+    "bytes": 2012199,
+    "cover": {
+     "value": 4003859.0,
+     "token": "4,003,859",
+     "quote": "f each of the issuer\u2019s classes of capital or common stock as of the close of the period covered by the annual report: As of June 30, 2025, there were 4,003,859 shares of the registrant\u2019s ordinary shares outstanding, par value $0.05 per share. Indicate by check mark if the registrant is a well-known"
+    },
+    "coverCandidates": 1,
+    "original": {
+     "number": "4,003,859",
+     "found": true,
+     "quote": "f each of the issuer\u2019s classes of capital or common stock as of the close of the period covered by the annual report: As of June 30, 2025, there were 4,003,859 shares of the registrant\u2019s ordinary shares outstanding, par value $0.05 per share. Indicate by check mark if the registrant is a well-known",
+     "ixScale": 0
+    },
+    "corrected": null,
+    "verdict": "CONFIRMED_COVER_STATES_USED"
+   }
+  }
+ ]
+}

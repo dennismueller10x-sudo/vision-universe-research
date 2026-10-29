@@ -120,24 +120,69 @@ def sample(facts, tag="development"):
     return chosen
 
 
+COVER_KEY = re.compile(r"(?i)(shares outstanding|outstanding shares|shares of (the registrant's |the issuer's )?(class [a-z] )?common stock|latest practicable date|were outstanding|outstanding as of|outstanding at)")
+NUM_RE = re.compile(r"(?<![\d,.])\d{1,3}(?:,\d{3})+(?:\.\d+)?(?![\d,])|(?<![\d,.])\d+(?:\.\d+)?\s*(?:million|billion)\b", re.I)
+
+
+def to_number(tok):
+    t = tok.lower().replace(",", "").strip()
+    m = re.match(r"([\d.]+)\s*(million|billion)", t)
+    if m:
+        return float(m.group(1)) * (1e6 if m.group(2) == "million" else 1e9)
+    return float(t)
+
+
+def cover_counts(text):
+    """Share counts stated near cover-page wording in the first 60,000 characters (candidates, with quotes)."""
+    head, out = text[:60000], []
+    for k in COVER_KEY.finditer(head):
+        win_a, win_b = max(0, k.start() - 300), min(len(head), k.end() + 400)
+        for n in NUM_RE.finditer(head, win_a, win_b):
+            pre = head[max(0, n.start() - 40):n.start()]
+            if "$" in pre or re.search(r"(?i)aggregate market value|par value", pre):
+                continue
+            try:
+                x = to_number(n.group(0))
+            except ValueError:
+                continue
+            if x >= 1000:
+                out.append((x, n.start(), n.group(0)))
+    seen, res = set(), []
+    for x, pos, tok in out:
+        if (x, pos) in seen:
+            continue
+        seen.add((x, pos)); res.append({"value": x, "token": tok, "pos": pos})
+    return res
+
+
+def near(a, b, tol=0.02):
+    return a is not None and b not in (None, 0) and abs(a / b - 1) <= tol
+
+
 def check_fact(sec, f):
     idx_url, doc_url, typ = primary_doc(sec, f["cik"], f["accn"])
     body = sec.get(doc_url)
     raw = body.decode("utf-8", "replace")
     text = strip(body)
-    orig = find_number(text, raw, f["v"])
+    orig = find_number(text, raw, f["v"]) if f["v"] >= 1e5 else {"number": fmt(f["v"]), "found": None, "note": "below 100,000: plain digit search not meaningful"}
     corr = find_number(text, raw, f["vPrime"]) if f.get("vPrime") not in (None, f["v"]) else None
+    cands = cover_counts(text)
+    hit_corr = next((c for c in cands if f.get("vPrime") not in (None, f["v"]) and near(c["value"], f["vPrime"])), None)
+    hit_orig = next((c for c in cands if near(c["value"], f["v"])), None)
+    # A document can carry the same typo as the XBRL fact (e.g. '4,512.995 outstanding shares'): digits equal up to 10^k
+    digits = lambda x: re.sub(r"[^0-9]", "", "%.6f" % x).strip("0")
+    hit_digits = next((c for c in cands if f.get("vPrime") not in (None, f["v"]) and digits(c["value"]) == digits(f["vPrime"])), None)
     if f["status"] == "CORRECTED":
-        verdict = "DOCUMENT_STATES_CORRECTED_VALUE" if corr and corr["found"] else ("DOCUMENT_STATES_ORIGINAL_VALUE" if orig["found"] else "NUMBER_NOT_FOUND_IN_PRIMARY_DOCUMENT")
+        verdict = ("CONFIRMED_COVER_STATES_CORRECTED" if hit_corr else "CONTRADICTED_COVER_STATES_REPORTED" if hit_orig
+                   else "CONFIRMED_DOCUMENT_STATES_CORRECTED" if corr and corr["found"] and f["vPrime"] >= 1e5 else "COVER_TYPO_SAME_DIGITS" if hit_digits else "INCONCLUSIVE")
     elif f["status"] == "EXCLUDED":
-        verdict = "ORIGINAL_VALUE_IN_DOCUMENT" if orig["found"] else "ORIGINAL_VALUE_NOT_IN_DOCUMENT"
+        verdict = "COVER_STATES_REPORTED" if hit_orig else ("COVER_STATES_OTHER_COUNT" if cands else "NO_COVER_COUNT_FOUND")
     else:
-        verdict = "DOCUMENT_STATES_USED_VALUE" if orig["found"] else "NUMBER_NOT_FOUND_IN_PRIMARY_DOCUMENT"
-    cover = None
-    m = re.search(r"(?i)(outstanding|latest practicable date)", text[:40000])
-    if not orig["found"] and not (corr and corr["found"]) and m:
-        cover = quote_at(text, m.start(), 20)
-    return {"documentType": typ, "indexUrl": idx_url, "url": doc_url, "sha256": sha(body), "bytes": len(body), "original": orig, "corrected": corr, "coverContext": cover, "verdict": verdict}
+        verdict = "CONFIRMED_COVER_STATES_USED" if hit_orig else ("COVER_STATES_OTHER_COUNT" if cands else "NO_COVER_COUNT_FOUND")
+    pick = hit_corr or hit_orig or hit_digits or (cands[0] if cands else None)
+    cover = {"value": pick["value"], "token": pick["token"], "quote": quote_at(text, pick["pos"], len(pick["token"]))} if pick else None
+    return {"documentType": typ, "indexUrl": idx_url, "url": doc_url, "sha256": sha(body), "bytes": len(body), "cover": cover, "coverCandidates": len(cands),
+            "original": orig, "corrected": corr, "verdict": verdict}
 
 
 def submissions(sec, cik):

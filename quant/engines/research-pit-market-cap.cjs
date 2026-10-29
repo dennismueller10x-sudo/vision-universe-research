@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.6.json, amending 1.0.0-1.0.5).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.7.json, amending 1.0.0-1.0.6).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.6',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.7',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, MIN_MCAP_USD: 1e6, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -22,8 +22,9 @@ const days = (a, b) => (Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00
 const within = (a, b, tol) => finite(a) && finite(b) && b > 0 && Math.abs(a / b - 1) <= tol;
 const median = xs => { const s = xs.filter(finite).sort((a, b) => a - b); if (!s.length) return null; const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const lg = x => Math.log10(x);
-// 1.0.3: WASO_B/WASO_D/WASO_BD come from the same income-statement table and count as one source family
-const family = c => (c.startsWith('WASO') ? 'WASO' : c);
+// 1.0.3/1.0.7: source families. The cover page (dei ECSO) is one source; balance-sheet CSSO and income-statement WASO are
+// both financial-statement tables, usually presented 'in thousands', and count as one family (common-cause scale errors).
+const family = c => (c === 'ECSO' ? 'COVER' : 'STATEMENTS');
 
 /** f or 1/f equals an integer n <= 1000 or p/q with p, q <= 10 (relative tolerance 1e-4). */
 function splitShaped(f) {
