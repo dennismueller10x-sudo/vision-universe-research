@@ -54,7 +54,9 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
    `/konto/registrieren/`, E-Mail bestätigen, anmelden, Watchlist aus Discover und Quant. Begleitend nur lesend:
    `/v1/health`, Zählungen und RLS in der Datenbank, Zustellereignisse bei Brevo.
 6. **Abrechnung** (Owner-Entscheidung 28.10.2026): `STRIPE_LIVE_MODE_APPROVED = "true"`, `VU_CHECKOUT_ACCESS = "testers"`.
-   Den Checkout nutzen nur Konten mit Rolle `billing_tester`; öffentlicher Pro-Checkout nur per eigenem Freigabe-PR
+   Den Checkout nutzen nur Konten mit Rolle `billing_tester`. Vergeben/entfernen ausschließlich über Actions →
+   „Konten — Testerrolle (billing_tester)“ (Umgebung `account-dev`, genau ein Konto je Lauf, Kennung Konto-ID, Konto
+   muss bestätigt sein, idempotent, Protokoll ohne personenbezogene Daten); kein SQL von Hand. Öffentlicher Pro-Checkout nur per eigenem Freigabe-PR
    (`"public"`, der Deploy-Workflow lehnt ihn bis dahin ab). Ablauf und Tarife: [TARIFE.md](TARIFE.md).
 
 ## Schutz der Testpreise
