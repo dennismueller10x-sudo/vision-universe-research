@@ -33,6 +33,9 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 
 ## Abläufe
 
+Ausrollen und nicht destruktive Migrationen laufen nach dem Merge automatisch; was eine Freigabe braucht, steht in
+[FREIGABEN.md](FREIGABEN.md). Die Workflows unten sind die freigabepflichtigen Wege.
+
 1. **Ausrollen** – Actions → „Konten — vu-account ausrollen (Produktion)“ → Run workflow (zwei Freigaben). Danach meldet
    `https://konto.visionuniverse.de/v1/health` `accounts: true`, `autoProcess: false`.
 2. **Auth einstellen** – „Konten — Supabase Auth einstellen (Produktion)“ (erst Probelauf;
@@ -67,7 +70,7 @@ nur Preise passend zum Schlüsselmodus, der Checkout gleicht den Preis vorher mi
 ## Sicherung und Wiederherstellung
 
 Einmalig: lokal `age-keygen -o vu-backup.key` (privater Schlüssel nur offline/Passwortmanager), den öffentlichen Teil `age1…` als
-Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`, die Session-Pooler-URI als Repository-Secret `VU_ACCOUNT_BACKUP_DB_URL`.
+Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`; die Datenbank-URL kommt aus der Umgebung `account-auto` ([FREIGABEN.md](FREIGABEN.md)).
 Ohne Empfängerschlüssel sichert der Workflow nichts (nie unverschlüsselt).
 
 Wiederherstellen: Artefakt laden, `age -d -i vu-backup.key vu-accounts-….dump.age > dump`, dann

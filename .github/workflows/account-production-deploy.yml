@@ -1,7 +1,8 @@
 name: Konten — vu-account ausrollen (Produktion)
 # Rollt workers/vu-account als Worker "vu-account" unter
 # https://konto.visionuniverse.de aus (wrangler.toml [env.production]).
-# Nur von Hand (workflow_dispatch), nie bei Merge. Anleitung:
+# Nur von Hand (workflow_dispatch), nie bei Merge. Seit FREIGABEN.md nur noch zum Setzen/Erneuern von Secrets;
+# normales Ausrollen macht "Konten — Produktion automatisch". Anleitung:
 # docs/accounts/PRODUCTION.md.
 #
 # Die Zugangsdaten liegen in zwei GitHub-Umgebungen, weil GitHub Secrets nicht
