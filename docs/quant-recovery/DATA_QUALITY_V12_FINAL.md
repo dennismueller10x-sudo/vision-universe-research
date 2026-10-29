@@ -55,7 +55,8 @@ Beleg: [v12/requal](v12/requal/README.md), [v12/mcap/impact-1.0.0.json](v12/mcap
 
 ## 6. Unabhängige Prüfung
 
-Siehe Abschnitt unten (wird nach Abschluss der V12-Prüfung ergänzt).
+Getrennter, nur lesender Prüfagent auf Stand `f9621b0326`. **Kein BLOCKER, 6 MAJOR, 11 MINOR.** Vom Prüfer nachgerechnet und korrekt: Datenhygiene (keine `*/data`-, Produktpfad- oder Workflow-Änderung, keine Rohdaten Dritter/Secrets), Loader byte-identisch ohne Option (955 IDs × 4 Optionssätze), 10/10 MCAP-Korrekturen gegen companyfacts, PIT-Fähigkeit der MCAP-Regel, MCAP-Wirkung, SPXPOP-Fehler gegen SPY, additive P5a-Zerlegung, Registrierungsreihenfolge, Formulierung „keine Überrendite abgesichert“ ohne Verallgemeinerung. Belastbar: Skalenkorrekturen ab Faktor 1000, Ausschlüsse, Indexparser, S&P-Population ab 2013-03 (quartalsweise ab 2019-09 extern ±0,25 Pp), Loader, „Faktor-IC im S&P ≈ 0“, „keine Überrendite abgesichert“. Nur bedingt belastbar: Survivorship-Höhe (szenarioabhängig), Spanne 2009-09–2013-03 (Regel nach Sicht), Abstände der Strategien zu SPY (Benchmark-Messfehler, Dividenden), MCAP-Fehlerquote (frisch 18/19).
+
 
 ### Korrekturen nach unabhängiger Prüfung (umgesetzt)
 
