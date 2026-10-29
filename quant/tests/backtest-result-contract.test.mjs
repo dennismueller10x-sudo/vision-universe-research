@@ -278,8 +278,9 @@ test('nothing outside tests and docs imports the research adapter; product servi
   const outside = files => files.filter(f => !f.startsWith('quant/tests/') && !f.startsWith('docs/'));
   assert.deepEqual(outside(grep('backtest-research-adapter')), []);
   assert.deepEqual(outside(grep('VUBacktestResearchAdapter')), ['quant/api/backtest-research-adapter.js']);
-  assert.deepEqual(outside(grep('backtest-result-adapters')).sort(), ['quant/engines/backtest-result-adapters.cjs', 'scripts/quant/verify-backtest-result-v2.py'].sort());
-  assert.deepEqual(outside(grep('backtest-result-contract.cjs')).sort(), ['quant/api/backtest-research-adapter.js', 'quant/engines/backtest-result-adapters.cjs'].sort());
+  // The only additional caller is the research backtest runner (scripts/quant/research, offline, not wired; docs/quant/BACKTEST_RUNNER.md).
+  assert.deepEqual(outside(grep('backtest-result-adapters')).sort(), ['quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs', 'scripts/quant/verify-backtest-result-v2.py'].sort());
+  assert.deepEqual(outside(grep('backtest-result-contract.cjs')).sort(), ['quant/api/backtest-research-adapter.js', 'quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs'].sort());
   for (const f of ['quant/api/product-services.js', 'quant/index.html', 'quant/app/page-backtest.js'])
     for (const needle of ['backtest-kinds', 'backtest-result-', 'backtest-research-adapter']) assert.equal(readFileSync(join(root, f), 'utf8').includes(needle), false, f + ' mentions ' + needle);
 });
