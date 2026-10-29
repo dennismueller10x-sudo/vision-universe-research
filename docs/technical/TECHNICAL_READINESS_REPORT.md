@@ -51,7 +51,7 @@ Gemessen an `research.visionuniverse.de` am 29.10.2026, gegen 13 Uhr UTC.
 
 | Punkt | Prio | Stand | Was „erledigt“ heißt |
 |---|---|---|---|
-| A1 nächtliche Kette ohne Handeingriff | P0 | ◐ Der Zeitplan von technical-world (05:10 UTC) startet bei GitHub mit Stunden Verzögerung; am 29.10. per `workflow_dispatch` nachgeholt | Ein Zeitplan-Lauf committet selbst. Prüfung 30.10. Bleibt die Verzögerung, ist der Ausweg ein Start per `workflow_run` nach der Materialisierung (Workflow-Änderung, eigener PR) |
+| A1 nächtliche Kette ohne Handeingriff | P0 | ◐ Die Zeitplan-Läufe von technical-world finden statt und sind grün, aber 5–6 Stunden zu spät: Zeitplan 05:10 UTC, Start am 27.10. 10:25, am 28.10. 11:15, am 29.10. 11:27 UTC. Am 29.10. fand der Zeitplan-Lauf nichts zu committen, weil der Erzeuger um 03:38 UTC schon von Hand gestartet war | Ein Zeitplan-Lauf committet selbst. Am 30.10. wird deshalb **nicht** von Hand gestartet: E3 wird lokal mit `--out` geprüft, A1 gegen 12:40 UTC am Commit des Zeitplan-Laufs. **Vorschlag gegen die Verspätung** (Workflow-PR, ADR-005): „Marktdaten-Refresh“ zusätzlich unter `workflow_run` eintragen. Die Materialisierung läuft dort als `workflow_call` und löst deshalb keinen eigenen `workflow_run` aus; das ist der Grund, warum heute nur der Zeitplan greift |
 | E3 Zeitrahmen-Wechsel (AP4) | P1 | ◐ gemergt (#1106), Spalten füllt die Materialisierung | Füllraten gegen SCREENER_FIELDS_AP4.md §3, DQ-TW-5 PASS. Prüfung 30.10. |
 
 Darüber hinaus ist kein P0/P1-Kriterium offen.
