@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.0.json).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.1.json, amending 1.0.0).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.0',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.1',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -86,28 +86,21 @@ function classifyFact(o, ctx) {
       v = sum; cls = 'MULTI_CLASS_SUM';
     }
   }
-  // S4 trigger
+  // S4 trigger (1.0.1: also against the prior vintage)
   const priceMax = o.maxPriceBasisD(D);
   const ref = aOut.length ? median(aOut.map(x => x.adj)) : aW.length ? median(aW.map(x => x.adj)) : P1 ? P1.adj : null;
   const refKind = aOut.length ? 'SAME_FILING_ALT' : aW.length ? 'SAME_FILING_WASO' : P1 ? 'PRIOR_VINTAGE' : null;
   const overBound = x => finite(priceMax) && x * priceMax > RULE.ABSOLUTE_MCAP_BOUND_USD;
   const relTrig = ref !== null && Math.abs(lg(v / ref)) >= lg(RULE.TRIGGER_FACTOR);
-  if (!relTrig && !overBound(v)) {
+  const priorTrig = P1 !== null && Math.abs(lg(v / P1.adj)) >= lg(RULE.TRIGGER_FACTOR);
+  if (!relTrig && !priorTrig && !overBound(v)) {
     if (cls) return result('CORRECTED', cls, v);
     return result('OK', ref === null ? 'OK_NO_REFERENCE' : 'OK', v, { refKind });
   }
-  ev.push(['TRIGGER', refKind, null, null, ref, ref ? v / ref : null]);
-  // S5 H0: value confirmed
-  const conf2 = sameVals.find(x => within(v, x.adj, RULE.SAME_FILING_TOLERANCE));
-  const conf10 = P1 && within(v, P1.adj, RULE.TWO_REFERENCE_TOLERANCE) ? sameVals.find(x => within(v, x.adj, RULE.TWO_REFERENCE_TOLERANCE)) : null;
-  if ((conf2 || conf10) && !overBound(v)) {
-    const c = conf2 || conf10; ev.push([c.c.startsWith('WASO') ? 'SAME_FILING_WASO' : 'SAME_FILING_ALT', c.c, c.accn, c.end, c.val, v / c.adj]);
-    if (conf10 && !conf2) ev.push(['PRIOR_VINTAGE', P1.c, P1.accn, P1.end, P1.val, v / P1.adj]);
-    const genuine = P1 && Math.abs(lg(v / P1.adj)) >= lg(RULE.TRIGGER_FACTOR);
-    if (genuine) ev.push(['PRIOR_VINTAGE', P1.c, P1.accn, P1.end, P1.val, v / P1.adj]);
-    return result(cls ? 'CORRECTED' : 'OK', cls || (genuine ? 'GENUINE_CAPITAL_ACTION' : 'ALTERNATIVE_CONCEPT_DEVIATES'), v);
-  }
-  // S5 H1: scale
+  ev.push(['TRIGGER', relTrig ? refKind : priorTrig ? 'PRIOR_VINTAGE' : 'ABSOLUTE_BOUND', null, null, relTrig ? ref : P1 ? P1.adj : null, relTrig ? v / ref : P1 ? v / P1.adj : null]);
+  const kind = x => (x.c.startsWith('WASO') ? 'SAME_FILING_WASO' : 'SAME_FILING_ALT');
+  const pe = x => ['PRIOR_VINTAGE', P1.c, P1.accn, P1.end, P1.val, x / P1.adj];
+  // S5 H1: scale (tested first; every tier needs prior consistency when a prior vintage exists)
   const comp = [];
   for (const f of same) {
     if (!(f.val > 0) || f.unit !== 'shares') continue;
@@ -119,16 +112,20 @@ function classifyFact(o, ctx) {
   const tiers = { A: [], B: [], C: [] };
   for (const k of RULE.SCALE_EXPONENTS) {
     const vp = v / Math.pow(10, k);
-    const a = sameVals.find(x => within(vp, x.adj, RULE.SAME_FILING_TOLERANCE));
-    if (a) tiers.A.push({ k, vp, e: [a.c.startsWith('WASO') ? 'SAME_FILING_WASO' : 'SAME_FILING_ALT', a.c, a.accn, a.end, a.val, vp / a.adj] });
-    if (Math.abs(k) >= 3 && P1 && within(vp, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE)) {
+    const priorOk = P1 !== null && within(vp, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE);
+    const hitsA = sameVals.filter(x => within(vp, x.adj, RULE.SAME_FILING_TOLERANCE));
+    if (hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => x.c)).size >= 2)) {
+      const a = hitsA[0];
+      tiers.A.push({ k, vp, e: [kind(a), a.c, a.accn, a.end, a.val, vp / a.adj], e2: P1 ? pe(vp) : (hitsA.find(x => x.c !== a.c) && [kind(hitsA.find(x => x.c !== a.c)), hitsA.find(x => x.c !== a.c).c, hitsA.find(x => x.c !== a.c).accn, hitsA.find(x => x.c !== a.c).end, hitsA.find(x => x.c !== a.c).val, vp / hitsA.find(x => x.c !== a.c).adj]) });
+    }
+    if (Math.abs(k) >= 3 && priorOk) {
       const b = comp.find(x => within(x.q, Math.pow(10, k), RULE.SAME_FILING_TOLERANCE));
       const contra = comp.some(x => x.c === o.code && within(x.q, 1, RULE.SAME_FILING_TOLERANCE));
-      if (b && !contra) tiers.B.push({ k, vp, e: ['COMPARATIVE_SCALE', b.c, b.earlierAccn, b.end, b.val, b.q], e2: ['PRIOR_VINTAGE', P1.c, P1.accn, P1.end, P1.val, vp / P1.adj] });
+      if (b && !contra) tiers.B.push({ k, vp, e: ['COMPARATIVE_SCALE', b.c, b.earlierAccn, b.end, b.val, b.q], e2: pe(vp) });
     }
     if (P1 && within(vp, P1.adj, RULE.TWO_REFERENCE_TOLERANCE)) {
       const c = sameVals.find(x => within(vp, x.adj, RULE.TWO_REFERENCE_TOLERANCE));
-      if (c) tiers.C.push({ k, vp, e: [c.c.startsWith('WASO') ? 'SAME_FILING_WASO' : 'SAME_FILING_ALT', c.c, c.accn, c.end, c.val, vp / c.adj], e2: ['PRIOR_VINTAGE', P1.c, P1.accn, P1.end, P1.val, vp / P1.adj] });
+      if (c) tiers.C.push({ k, vp, e: [kind(c), c.c, c.accn, c.end, c.val, vp / c.adj], e2: pe(vp) });
     }
   }
   for (const tier of ['A', 'B', 'C']) {
@@ -139,7 +136,18 @@ function classifyFact(o, ctx) {
     if (overBound(h.vp)) return result('EXCLUDED', 'MCAP_ABSOLUTE_BOUND', null, { scaleExponent: h.k, tier });
     return result('CORRECTED', cls ? cls + '+SCALE_ERROR' : 'SCALE_ERROR', h.vp, { scaleExponent: h.k, tier });
   }
-  if (!relTrig && overBound(v)) return result('EXCLUDED', 'MCAP_ABSOLUTE_BOUND', null);
+  // S5 H0: value confirmed
+  const hits2 = sameVals.filter(x => within(v, x.adj, RULE.SAME_FILING_TOLERANCE));
+  const twoConcepts = new Set(hits2.map(x => x.c)).size >= 2;
+  const outHit = aOut.find(x => within(v, x.adj, RULE.SAME_FILING_TOLERANCE));
+  let confirmed = false;
+  if (priorTrig) {
+    // genuine capital action: deviates >= 5x from the prior vintage, the filing itself confirms v
+    if (hits2.length) { confirmed = true; ev.push([kind(hits2[0]), hits2[0].c, hits2[0].accn, hits2[0].end, hits2[0].val, v / hits2[0].adj], pe(v)); }
+  } else if (P1 && within(v, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE)) { confirmed = true; ev.push(pe(v)); }
+  else if (!P1 && (outHit || twoConcepts)) { const x = outHit || hits2[0]; confirmed = true; ev.push([kind(x), x.c, x.accn, x.end, x.val, v / x.adj]); }
+  if (confirmed && !overBound(v)) return result(cls ? 'CORRECTED' : 'OK', cls || (priorTrig ? 'GENUINE_CAPITAL_ACTION' : 'ALTERNATIVE_CONCEPT_DEVIATES'), v);
+  if (overBound(v)) return result('EXCLUDED', 'MCAP_ABSOLUTE_BOUND', null);
   return result('EXCLUDED', 'UNRESOLVED', null);
 }
 
@@ -150,7 +158,7 @@ function classifyFact(o, ctx) {
 function classifySplitEvent(date, factor, facts) {
   const lf = Math.log(factor), small = Math.abs(lf) < RULE.SMALL_SPLIT_FACTOR_LOG_BOUND;
   const ok = facts.filter(f => OUT.includes(f.c) && f.unit === 'shares' && f.val > 0);
-  const before = ok.filter(f => f.end < date && days(f.end, date) <= RULE.SPLIT_CONTINUITY_MAX_GAP_DAYS).sort((a, b) => (a.end < b.end ? 1 : a.end > b.end ? -1 : a.filed < b.filed ? -1 : 1))[0] || null;
+  const before = ok.filter(f => f.end < date && f.filed < date && days(f.end, date) <= RULE.SPLIT_CONTINUITY_MAX_GAP_DAYS).sort((a, b) => (a.end < b.end ? 1 : a.end > b.end ? -1 : a.filed < b.filed ? -1 : 1))[0] || null;
   const afterAll = ok.filter(f => f.end >= date && days(date, f.end) <= RULE.SPLIT_CONTINUITY_MAX_GAP_DAYS).sort((a, b) => (a.end < b.end ? -1 : a.end > b.end ? 1 : a.filed < b.filed ? -1 : 1));
   const after = afterAll[0] || null;
   const base = { date, factor, splitShaped: splitShaped(factor), before: before && [before.c, before.accn, before.end, before.val, before.filed], after: after && [after.c, after.accn, after.end, after.val, after.filed] };
