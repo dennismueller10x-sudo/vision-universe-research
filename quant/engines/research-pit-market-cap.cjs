@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.2.json, amending 1.0.0/1.0.1).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.3.json, amending 1.0.0-1.0.2).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.2',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.3',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -22,6 +22,8 @@ const days = (a, b) => (Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00
 const within = (a, b, tol) => finite(a) && finite(b) && b > 0 && Math.abs(a / b - 1) <= tol;
 const median = xs => { const s = xs.filter(finite).sort((a, b) => a - b); if (!s.length) return null; const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const lg = x => Math.log10(x);
+// 1.0.3: WASO_B/WASO_D/WASO_BD come from the same income-statement table and count as one source family
+const family = c => (c.startsWith('WASO') ? 'WASO' : c);
 
 /** f or 1/f equals an integer n <= 1000 or p/q with p, q <= 10 (relative tolerance 1e-4). */
 function splitShaped(f) {
@@ -126,9 +128,9 @@ function classifyFact(o, ctx) {
     if (!(support(vp) > supportV)) continue;
     const priorOk = P1 !== null && within(vp, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE);
     const hitsA = sameVals.filter(x => within(vp, x.adj, RULE.SAME_FILING_TOLERANCE));
-    if (hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => x.c)).size >= 2)) {
+    if (hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => family(x.c))).size >= 2)) {
       const a = hitsA[0];
-      tiers.A.push({ k, vp, e: [kind(a), a.c, a.accn, a.end, a.val, vp / a.adj], e2: P1 ? pe(vp) : (hitsA.find(x => x.c !== a.c) && [kind(hitsA.find(x => x.c !== a.c)), hitsA.find(x => x.c !== a.c).c, hitsA.find(x => x.c !== a.c).accn, hitsA.find(x => x.c !== a.c).end, hitsA.find(x => x.c !== a.c).val, vp / hitsA.find(x => x.c !== a.c).adj]) });
+      tiers.A.push({ k, vp, e: [kind(a), a.c, a.accn, a.end, a.val, vp / a.adj], e2: P1 ? pe(vp) : (hitsA.find(x => family(x.c) !== family(a.c)) && [kind(hitsA.find(x => family(x.c) !== family(a.c))), hitsA.find(x => family(x.c) !== family(a.c)).c, hitsA.find(x => family(x.c) !== family(a.c)).accn, hitsA.find(x => family(x.c) !== family(a.c)).end, hitsA.find(x => family(x.c) !== family(a.c)).val, vp / hitsA.find(x => family(x.c) !== family(a.c)).adj]) });
     }
     if (Math.abs(k) >= 3 && priorOk) {
       const b = comp.find(x => within(x.q, Math.pow(10, k), RULE.SAME_FILING_TOLERANCE));
@@ -150,7 +152,7 @@ function classifyFact(o, ctx) {
   }
   // S5 H0: value confirmed
   const hits2 = sameVals.filter(x => within(v, x.adj, RULE.SAME_FILING_TOLERANCE));
-  const twoConcepts = new Set(hits2.map(x => x.c)).size >= 2;
+  const twoConcepts = new Set(hits2.map(x => family(x.c))).size >= 2;
   const outHit = aOut.find(x => within(v, x.adj, RULE.SAME_FILING_TOLERANCE));
   let confirmed = false;
   if (priorTrig) {
