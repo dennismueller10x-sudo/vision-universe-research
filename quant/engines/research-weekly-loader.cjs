@@ -26,6 +26,11 @@
  *                                               docs/quant-recovery/v13/largecap/protocol-1.0.0.json + amendment 1.0.1): CLOSED intervals
  *                                               [validFrom, validTo] confirmed by SEC price bands and symbol/exchange statements; requires
  *                                               identityEvidenceProtocolV12; a record never replaces another record (duplicate id fails closed).
+ *     identityEvidenceProtocolV13LargecapStrict: true  V13b: replace the V13 LARGECAP records by the records of
+ *                                               research-largecap-price-anchors-1.1.0.cjs (amendment docs/quant-recovery/v13b/largecap-strict/
+ *                                               protocol-amendment-1.1.0.json, STRICT_INTERVAL_BOUNDARY): each interval is a sub-interval of
+ *                                               the 1.0.1 interval; a V13 listing without a 1.1.0 record fails closed (LARGECAP_STRICT_LOCKED);
+ *                                               requires identityEvidenceProtocolV13Largecap. Without it every output is unchanged.
  *   Unknown keys or non-boolean values fail closed (INVALID_LOADER_OPTIONS).
  *   Without any enabled option it returns the adapter's own createLoader(root) loader, so outputs are byte-identical,
  *   and neither research registry module is even required.
@@ -44,14 +49,17 @@ const LOADER_OPTIONS = Object.freeze(['identityEvidence', 'identityEvidenceAllow
 const LOADER_OPTIONS_V12 = Object.freeze(['identityEvidenceProtocolV12']);
 // V13 LARGECAP (docs/quant-recovery/v13/largecap/protocol-1.0.0.json): separate list, LOADER_OPTIONS and LOADER_OPTIONS_V12 unchanged.
 const LOADER_OPTIONS_V13 = Object.freeze(['identityEvidenceProtocolV13Largecap']);
+// V13b LARGECAP-STRICT (docs/quant-recovery/v13b/largecap-strict/protocol-amendment-1.1.0.json): separate list, earlier lists unchanged.
+const LOADER_OPTIONS_V13B = Object.freeze(['identityEvidenceProtocolV13LargecapStrict']);
 function loaderOptions(options) {
   if (options === undefined) return {};
   if (!options || typeof options !== 'object' || Array.isArray(options) || Object.getPrototypeOf(options) !== Object.prototype) throw Error('INVALID_LOADER_OPTIONS');
-  for (const [k, v] of Object.entries(options)) if (!(LOADER_OPTIONS.includes(k) || LOADER_OPTIONS_V12.includes(k) || LOADER_OPTIONS_V13.includes(k)) || typeof v !== 'boolean') throw Error('INVALID_LOADER_OPTIONS:' + k);
+  for (const [k, v] of Object.entries(options)) if (!(LOADER_OPTIONS.includes(k) || LOADER_OPTIONS_V12.includes(k) || LOADER_OPTIONS_V13.includes(k) || LOADER_OPTIONS_V13B.includes(k)) || typeof v !== 'boolean') throw Error('INVALID_LOADER_OPTIONS:' + k);
   if (options.identityEvidenceAllowCoverPageOnly && !options.identityEvidence) throw Error('INVALID_LOADER_OPTIONS:identityEvidenceAllowCoverPageOnly');
   if (options.identityEvidenceProtocolV10 && !options.identityEvidence) throw Error('INVALID_LOADER_OPTIONS:identityEvidenceProtocolV10');
   if (options.identityEvidenceProtocolV12 && !options.identityEvidenceProtocolV10) throw Error('INVALID_LOADER_OPTIONS:identityEvidenceProtocolV12');
   if (options.identityEvidenceProtocolV13Largecap && !options.identityEvidenceProtocolV12) throw Error('INVALID_LOADER_OPTIONS:identityEvidenceProtocolV13Largecap');
+  if (options.identityEvidenceProtocolV13LargecapStrict && !options.identityEvidenceProtocolV13Largecap) throw Error('INVALID_LOADER_OPTIONS:identityEvidenceProtocolV13LargecapStrict');
   return { ...options };
 }
 
@@ -155,11 +163,30 @@ function validateIdentityEvidenceV12(reg) {
 // V13 LARGECAP registry (research-largecap-price-anchors-1.0.0): closed intervals confirmed by SEC price bands and symbol/exchange statements.
 const LARGECAP_V13_SCHEMA = 'research-largecap-price-anchors-1.0.0';
 const V13_RECORDS = new WeakSet();
-function validateLargecapV13(reg, existingIds = new Set()) {
-  const bad = why => { throw Error('INVALID_RESEARCH_LARGECAP_V13:' + why); };
+// V13b LARGECAP-STRICT registry (research-largecap-price-anchors-1.1.0): same record shape, protocolVersion 1.1.0, chained to amendment 1.1.0.
+const LARGECAP_V13_STRICT_SCHEMA = 'research-largecap-price-anchors-1.1.0';
+const V13_STRICT_RECORDS = new WeakSet();
+const LARGECAP_SPEC_V13 = Object.freeze({ prefix: 'INVALID_RESEARCH_LARGECAP_V13:', schema: LARGECAP_V13_SCHEMA, version: '1.0.1', strict: false });
+const LARGECAP_SPEC_V13_STRICT = Object.freeze({ prefix: 'INVALID_RESEARCH_LARGECAP_V13_STRICT:', schema: LARGECAP_V13_STRICT_SCHEMA, version: '1.1.0', strict: true });
+function validateLargecapV13(reg, existingIds = new Set()) { return validateLargecap(reg, existingIds, LARGECAP_SPEC_V13); }
+// The 1.1.0 records replace the 1.0.1 records: every id must have a 1.0.1 record (v13) and its interval must lie inside the 1.0.1 interval.
+function validateLargecapV13Strict(reg, v13, existingIds = new Set()) {
+  validateLargecap(reg, existingIds, LARGECAP_SPEC_V13_STRICT);
+  const bad = why => { throw Error('INVALID_RESEARCH_LARGECAP_V13_STRICT:' + why); };
+  if (reg.protocolSha256 !== v13.protocolSha256 || reg.amendmentSha256 !== v13.amendmentSha256 || !/^[a-f0-9]{64}$/.test(reg.amendment110Sha256 || '') || reg.ruleId !== 'STRICT_INTERVAL_BOUNDARY') bad('CHAIN');
+  for (const r of reg.records) {
+    const b = v13.records.find(x => x.securityId === r.securityId);
+    if (!b || r.validFrom < b.validFrom || r.validTo > b.validTo || r.cik !== b.cik || r.selectedCanonicalId !== b.selectedCanonicalId) bad('NOT_A_SUB_INTERVAL:' + r.securityId);
+    const k = r.strictBoundary;
+    if (!k || k.v101ValidFrom !== b.validFrom || k.v101ValidTo !== b.validTo) bad('STRICT_BOUNDARY:' + r.securityId);
+  }
+  return reg;
+}
+function validateLargecap(reg, existingIds, spec) {
+  const bad = why => { throw Error(spec.prefix + why); };
   const DATE = /^\d{4}-\d{2}-\d{2}$/, HEX = /^[a-f0-9]{64}$/, ACC = /^\d{10}-\d{2}-\d{6}$/, isDate = x => typeof x === 'string' && DATE.test(x) && new Date(x + 'T00:00:00Z').toISOString().slice(0, 10) === x;
   const pos = x => typeof x === 'number' && Number.isFinite(x) && x > 0;
-  if (!reg || reg.schemaVersion !== LARGECAP_V13_SCHEMA || reg.methodId !== 'SOURCE_PRICE_BAND_IDENTITY_INTERVAL' || !HEX.test(reg.protocolSha256 || '') || !HEX.test(reg.amendmentSha256 || '')
+  if (!reg || reg.schemaVersion !== spec.schema || reg.methodId !== 'SOURCE_PRICE_BAND_IDENTITY_INTERVAL' || !HEX.test(reg.protocolSha256 || '') || !HEX.test(reg.amendmentSha256 || '')
     || !HEX.test(reg.casesSha256 || '') || reg.productionApproved !== false || !Array.isArray(reg.records)) bad('SCHEMA');
   const seen = new Set();
   for (const r of reg.records) {
@@ -171,7 +198,7 @@ function validateLargecapV13(reg, existingIds = new Set()) {
     else if (r.masterRowAction === 'SELECT_EXISTING_ROW') { if (!sorted(r.masterRowSet) || r.masterRowSet.length < 2 || r.masterRowSet.filter(x => x === r.selectedCanonicalId).length !== 1) bad('MASTER_ROW_SET:' + id); }
     else bad('ACTION:' + id);
     if (!isDate(r.validFrom) || !isDate(r.validTo) || r.validTo <= r.validFrom) bad('INTERVAL:' + id);
-    if (r.evidenceLevel !== 'SEC_PRICE_BAND_AND_SYMBOL' || r.protocolVersion !== '1.0.1') bad('EVIDENCE_LEVEL:' + id);
+    if (r.evidenceLevel !== 'SEC_PRICE_BAND_AND_SYMBOL' || r.protocolVersion !== spec.version) bad('EVIDENCE_LEVEL:' + id);
     const g = r.historyGuard; if (!g || g.checkedFrom !== r.validFrom || g.checkedTo !== r.validTo || !HEX.test(g.pointsSha256 || '') || !Number.isInteger(g.bars) || g.bars < 104) bad('HISTORY_GUARD:' + id);
     if (!Array.isArray(r.bandConfirmedMoves) || r.bandConfirmedMoves.some(m => !isDate(m?.week) || !isDate(m.prevWeek) || m.prevWeek >= m.week || m.prevWeek < r.validFrom || m.week > r.validTo
       || !pos(m.close) || !pos(m.prevClose) || !pos(m.weeklyRatio) || Math.abs(m.close / m.prevClose - m.weeklyRatio) > CA_TOLERANCE)) bad('MOVES:' + id);
@@ -192,13 +219,20 @@ function identityEvidenceBindings(opts) {
     v12RegistryHash = hash(ext);
     for (const r of ext.records) { V12_RECORDS.add(r); bindings.set(r.securityId, r); }
   }
-  let v13RegistryHash = null;
+  let v13RegistryHash = null, v13StrictRegistryHash = null, strictLocked = null;
   if (opts.identityEvidenceProtocolV13Largecap) {
-    const v13 = validateLargecapV13(require('./research-largecap-price-anchors.cjs'), new Set(bindings.keys()));
+    const earlier = new Set(bindings.keys());
+    const v13 = validateLargecapV13(require('./research-largecap-price-anchors.cjs'), earlier);
     v13RegistryHash = hash(v13);
-    for (const r of v13.records) { V13_RECORDS.add(r); bindings.set(r.securityId, r); }
+    if (!opts.identityEvidenceProtocolV13LargecapStrict) for (const r of v13.records) { V13_RECORDS.add(r); bindings.set(r.securityId, r); }
+    else {
+      const strict = validateLargecapV13Strict(require('./research-largecap-price-anchors-1.1.0.cjs'), v13, earlier);
+      v13StrictRegistryHash = hash(strict);
+      for (const r of strict.records) { V13_RECORDS.add(r); V13_STRICT_RECORDS.add(r); bindings.set(r.securityId, r); }
+      strictLocked = new Set(v13.records.map(r => r.securityId).filter(id => !bindings.has(id)));
+    }
   }
-  return { registryHash: hash(reg), v12RegistryHash, v13RegistryHash, bindings };
+  return { registryHash: hash(reg), v12RegistryHash, v13RegistryHash, ...(opts.identityEvidenceProtocolV13LargecapStrict ? { v13StrictRegistryHash, strictLocked } : {}), bindings };
 }
 const coverAgeDays = (asOf, filingDate) => Math.round((Date.parse(asOf + 'T00:00:00Z') - Date.parse(filingDate + 'T00:00:00Z')) / 86400000);
 
@@ -280,7 +314,8 @@ function loadV13(record, securityId, doc, rows, canonical, v13RegistryHash, vali
   const points = doc.points.filter(p => p[0] >= record.validFrom && p[0] <= record.validTo);
   if (!points.length || hash(points) !== g.pointsSha256 || points.length !== g.bars || points[0][0] !== record.validFrom || points.at(-1)[0] !== record.validTo) throw Error('IDENTITY_EVIDENCE_HISTORY_GUARD_MISMATCH');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(doc.asOf) || !Number.isFinite(Date.parse(doc.asOf + 'T00:00:00Z'))) throw Error('INVALID_SOURCE_METADATA');
-  const identity = { ...row, source_provenance: LARGECAP_V13_SCHEMA + ':' + record.cik };
+  const schema = V13_STRICT_RECORDS.has(record) ? LARGECAP_V13_STRICT_SCHEMA : LARGECAP_V13_SCHEMA;
+  const identity = { ...row, source_provenance: schema + ':' + record.cik };
   const sub = { ...doc, points, from: points[0][0], to: points.at(-1)[0] };
   let r;
   const used = [];
@@ -307,7 +342,7 @@ function loadV13(record, securityId, doc, rows, canonical, v13RegistryHash, vali
   return { ...r, returnBasis: priceOnly ? 'PRICE_RETURN_ONLY' : r.returnBasis,
     warnings: r.warnings.concat(['SOURCE_RESOLVED_IDENTITY_BINDING', 'SERIES_RESTRICTED_TO_SOURCE_PRICE_BAND_INTERVAL', 'HISTORY_OUTSIDE_ANCHORED_INTERVAL_EXCLUDED', 'SERIES_TRUNCATED_AT_LAST_ANCHOR_NOT_A_DELISTING'],
       priceOnly ? ['BAND_CONFIRMED_MOVE_DISTRIBUTION_NOT_EXCLUDED'] : []),
-    identityEvidenceBinding: { schemaVersion: LARGECAP_V13_SCHEMA, registryHash: v13RegistryHash, securityId, cik: record.cik, canonicalId: row.canonical_id, masterRowAction: record.masterRowAction,
+    identityEvidenceBinding: { schemaVersion: schema, registryHash: v13RegistryHash, securityId, cik: record.cik, canonicalId: row.canonical_id, masterRowAction: record.masterRowAction,
       masterRowSet: record.masterRowSet.slice(), evidenceLevel: record.evidenceLevel, protocolVersion: record.protocolVersion, validFrom: record.validFrom, validTo: record.validTo,
       seriesFrom: points[0][0], seriesTo: points.at(-1)[0], historyBarsExcludedBefore: doc.points.filter(p => p[0] < record.validFrom).length,
       historyBarsExcludedAfter: doc.points.filter(p => p[0] > record.validTo).length, historyGuardSha256: g.pointsSha256,
@@ -475,11 +510,13 @@ function createResearchLoader(root, options) {
   // The loader without lifecycle evidence; with the default arguments exactly the behaviour before this option existed.
   const inner = (securityId, suppliedBytes, checkFn = check, ownPath = false) => {
     const record = evidence.bindings.get(securityId), caBound = !!ca && ca.byId.has(securityId);
+    if (evidence.strictLocked && evidence.strictLocked.has(securityId)) throw Error('LARGECAP_STRICT_LOCKED'); // V13b: 1.0.1 record without 1.1.0 record
     if (!record && !caBound && !ownPath) return base(securityId, suppliedBytes);
     const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel(securityId)), 'utf8') : suppliedBytes;
     const rows = byId.get(securityId) || [];
     let result;
-    if (record) result = loadBound(record, securityId, JSON.parse(bytes), rows, canonical, evidence.registryHash, checkFn, evidence.v12RegistryHash, evidence.v13RegistryHash);
+    if (record) result = loadBound(record, securityId, JSON.parse(bytes), rows, canonical, evidence.registryHash, checkFn, evidence.v12RegistryHash,
+      V13_STRICT_RECORDS.has(record) ? evidence.v13StrictRegistryHash : evidence.v13RegistryHash);
     else { // the adapter's own single-row rule, unchanged
       if (rows.length !== 1 || canonical.get(rows[0].canonical_id)?.size !== 1) throw Error('AMBIGUOUS_LISTING_IDENTITY');
       result = checkFn(JSON.parse(bytes), rows[0]);
@@ -530,7 +567,9 @@ function createResearchLoader(root, options) {
   if (opts.identityEvidence) loader.identityEvidence = Object.freeze({ schemaVersion: IDENTITY_EVIDENCE_SCHEMA, registryHash: evidence.registryHash,
     boundSecurityIds: Object.freeze([...evidence.bindings.keys()].sort()), allowCoverPageOnly: !!opts.identityEvidenceAllowCoverPageOnly, protocolV10: !!opts.identityEvidenceProtocolV10,
     ...(opts.identityEvidenceProtocolV12 ? { protocolV12: true, v12SchemaVersion: IDENTITY_EVIDENCE_V12_SCHEMA, v12RegistryHash: evidence.v12RegistryHash } : {}),
-    ...(opts.identityEvidenceProtocolV13Largecap ? { protocolV13Largecap: true, v13SchemaVersion: LARGECAP_V13_SCHEMA, v13RegistryHash: evidence.v13RegistryHash } : {}) });
+    ...(opts.identityEvidenceProtocolV13Largecap ? { protocolV13Largecap: true, v13SchemaVersion: LARGECAP_V13_SCHEMA, v13RegistryHash: evidence.v13RegistryHash } : {}),
+    ...(opts.identityEvidenceProtocolV13LargecapStrict ? { protocolV13LargecapStrict: true, v13StrictSchemaVersion: LARGECAP_V13_STRICT_SCHEMA, v13StrictRegistryHash: evidence.v13StrictRegistryHash,
+      v13StrictLockedSecurityIds: Object.freeze([...evidence.strictLocked].sort()) } : {}) });
   if (ca) loader.corporateActionEvidence = Object.freeze({ schemaVersion: CA_EVIDENCE_SCHEMA, registryHash: ca.registryHash, protocolSha256: ca.protocolSha256,
     securityIds: Object.freeze([...ca.byId.keys()].sort()) });
   if (lc) loader.listingLifecycleEvidence = Object.freeze({ schemaVersion: LIFECYCLE_SCHEMA, registryHash: lc.registryHash, protocolSha256: lc.protocolSha256,
@@ -539,4 +578,4 @@ function createResearchLoader(root, options) {
 }
 
 module.exports = { createResearchLoader, validateIdentityEvidenceRegistry, validateIdentityEvidenceV10, validateIdentityEvidenceV12, validateCaEvidenceRegistry, validateLifecycleRegistry, validatedResult, frozenTailRun,
-  validateLargecapV13, LOADER_OPTIONS, LOADER_OPTIONS_V12, LOADER_OPTIONS_V13, IDENTITY_EVIDENCE_MAX_COVER_AGE_DAYS, CA_TOLERANCE, FROZEN_TAIL_MIN_RUN, TERMINAL_KINDS };
+  validateLargecapV13, validateLargecapV13Strict, LOADER_OPTIONS, LOADER_OPTIONS_V12, LOADER_OPTIONS_V13, LOADER_OPTIONS_V13B, IDENTITY_EVIDENCE_MAX_COVER_AGE_DAYS, CA_TOLERANCE, FROZEN_TAIL_MIN_RUN, TERMINAL_KINDS };
