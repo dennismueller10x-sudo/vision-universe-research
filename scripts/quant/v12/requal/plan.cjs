@@ -7,16 +7,17 @@ const fs = require('node:fs'), path = require('node:path'), crypto = require('no
 const ROOT = path.resolve(__dirname, '../../../..');
 const DOCS = path.join(ROOT, 'docs/quant-recovery/v12/requal');
 const REG_FILE_100 = path.join(DOCS, 'registration-1.0.0.json');
-const REG_FILE = path.join(DOCS, 'registration-1.0.1.json');
+const REG_FILE = path.join(DOCS, 'registration-1.0.2.json');
 
 const sha = f => crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, f))).digest('hex');
 
 function plan() {
   return {
-    id: 'V12-REQUAL', version: '1.0.1',
-    amends: { file: 'docs/quant-recovery/v12/requal/registration-1.0.0.json', sha256: '57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd' },
+    id: 'V12-REQUAL', version: '1.0.2',
+    amends: [{ file: 'docs/quant-recovery/v12/requal/registration-1.0.0.json', sha256: '57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd' }, { file: 'docs/quant-recovery/v12/requal/registration-1.0.1.json', sha256: '79fc09f529a6b456c06000a82cbb9adb1bd55d3f5fb71c50506d17c8240159a5' }],
     amendments: [
-      'Implementation clarification BEFORE any outcome (first P5a run aborted on a null weekly date, no result written or seen): weekly bars are labelled with the last trading day of the ISO week, so the last bar <= t0 can lie 7 days before t0 (e.g. t0 = 2016-03-31, Good Friday week, bar 2016-03-24). The window [t0 - 6 days, t0] of 1.0.0 would empty whole periods. 1.0.1: [t0 - 7 days, t0] (and the same for t1) everywhere 1.0.0 says 6 days. Nothing else changed.'
+      'Implementation clarification BEFORE any outcome (first P5a run aborted on a null weekly date, no result written or seen): weekly bars are labelled with the last trading day of the ISO week, so the last bar <= t0 can lie 7 days before t0 (e.g. t0 = 2016-03-31, Good Friday week, bar 2016-03-24). The window [t0 - 6 days, t0] of 1.0.0 would empty whole periods. 1.0.1: [t0 - 7 days, t0] (and the same for t1) everywhere 1.0.0 says 6 days. Nothing else changed.',
+      '1.0.2 AFTER the P5a, P5b and P5c results and BEFORE any P6 outcome: inside the S&P subset the V10 scoring (factors.cjs scoreCrossSection, product minimum of 200 valid values per component) leaves profitability and composite unavailable in all 45 periods (P5c S3/S4 null; only about 130 S&P members carry profitability components). P6 S3 and S4 would therefore be empty. Change for P6: all P6 signal scores are the AFTER-panel scores as built by the V10 code (percentiles across the whole survivor frame at the rank date, PIT, no re-normalisation inside the S&P subset); selection still only among PIT S&P 500 members. Raw realizedVolatility252d (S5) is unaffected. Change for P5c: diagnostic D2 added = AFTER full-frame scores with the holdings outcome (ZERO/LOWER), labelled post hoc; the registered steps S3/S4 stay reported unchanged (with profitability/composite unavailable). No parameter of any strategy changed.'
     ], strand: 'requal', baseCommit: '55422d6724',
     purpose: 'P5: reproducible before/after of the V10/V11 studies on the qualified PIT S&P 500 population (fund holdings, incl. exits, bounded cases) with corrected PIT market cap; ' +
       'P6: at most six complete, pre-specified trading strategies (entry/exit, market filter, cash, risk management) on the same basis, evaluated by market phase. ' +
@@ -108,7 +109,7 @@ function plan() {
     P6: {
       span: '2010-03-31 -> 2026-03-31 (signalSpan periods); S1 additionally 2009-09-30 -> 2026-06-30',
       rebalancing: 'at each population date t0; targets fixed at t0, buy-and-hold to t1; exited members become cash at their scenario value at t1 (no cost); weights drift with returns',
-      universe: 'PIT S&P 500 members at t0; selectable = members with a panel row at the rank date (securityId = panel id); scores re-normalised inside the selectable subset (scoreCrossSection on AFTER raws); ties broken by securityId; templates (banks/insurers/REITs) have no quality/profitability score and are not selectable for S3/S4.',
+      universe: 'PIT S&P 500 members at t0; selectable = members with a panel row at the rank date (securityId = panel id); scores = AFTER-panel full-frame scores (1.0.2; 1.0.0/1.0.1 said re-normalised inside the subset); ties broken by securityId; templates (banks/insurers/REITs) have no quality/profitability score and are not selectable for S3/S4.',
       marketFilter: 'SPY close on the last trading day <= t0 above the mean of the last 10 month-end closes (month ends <= t0, the t0 month included when t0 is a month end)',
       strategies: [
         { id: 'S1_EW_SP500', rule: 'equal weight all members (incl. members without series)', exposure: 'fully invested' },
