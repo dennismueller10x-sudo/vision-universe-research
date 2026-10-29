@@ -78,7 +78,8 @@ function simulate(id, ctx, periods, sc, costRate, cashMode) {
     const next = ctx.nextChains.get(p.t0); const tot = 1 + gross;
     drift = new Map(); driftCash = ndCash / tot;
     for (const [k, v] of nd) { if (next && next.has(k)) drift.set(k, v / tot); else driftCash += v / tot; }
-    rows.push({ t0: p.t0, t1: p.t1, r, gross, cash: cashRet, traded, cost, equity: 1 - cashW, positions: w.size, boundedWeightHeld: boundedW, qualification: p.qualification, ...info });
+    const { equity: targetEquity, ...rest } = info;
+    rows.push({ t0: p.t0, t1: p.t1, r, gross, cash: cashRet, traded, cost, ...rest, targetEquity, equity: 1 - cashW, positions: w.size, boundedWeightHeld: boundedW, qualification: p.qualification });
     first = false;
   }
   return rows;
@@ -113,38 +114,49 @@ async function main() {
   const withRows = (ps, sc) => ps.map(p => ({ t0: p.t0, t1: p.t1, r: p5a.periods.find(x => x.t0 === p.t0).series[sc].EW_WITH_H }));
   // SPY daily MaxDD over the span (scale reference for period-granularity drawdowns)
   const spyDailyDD = (a, b) => { const i0 = L.lastIdx(spy.dates, a), i1 = L.lastIdx(spy.dates, b); let pk = 0, dd = 0; for (let k = i0; k <= i1; k++) { pk = Math.max(pk, spy.values[k]); dd = Math.min(dd, spy.values[k] / pk - 1); } return L.r6(dd); };
-  const res = { scenarios: {} };
-  for (const sc of L.SCENARIOS) {
-    res.scenarios[sc] = {};
-    for (const [cl, rate] of Object.entries(COSTS)) {
-      const S = {}, spyR = spyRows(periods), trR = trRows(periods), withR = withRows(periods, sc);
-      const runs = Object.fromEntries(IDS.concat(['EW_SELECTABLE']).map(id => [id, simulate(id, ctx, periods, sc, rate, 'EFFR')]));
-      const tests = [];
-      for (const id of IDS) {
-        const rows = runs[id], pf = L.perf(rows), Y = pf.years;
-        const vsSpy = L.excessStats(rows, spyR), vsEw = id === 'S1_EW_SP500' ? null : L.excessStats(rows, runs.S1_EW_SP500);
-        S[id] = { performance: pf, turnoverOneSidedPerYear: L.r6(rows.reduce((a, r) => a + r.traded, 0) / 2 / Y), costDragPerYearPp: L.r6(rows.reduce((a, r) => a + r.cost, 0) / Y * 100),
-          avgEquity: L.r6(L.mean(rows.map(r => r.equity))), avgPositions: L.r6(L.mean(rows.map(r => r.positions))), minPositions: Math.min(...rows.map(r => r.positions)), maxBoundedWeightHeld: L.r6(Math.max(...rows.map(r => r.boundedWeightHeld))),
-          boundedWeightHeldMean: L.r6(L.mean(rows.map(r => r.boundedWeightHeld))),
-          vsSpy, vsSpyTrReference: { cagrDiff: L.r6(pf.cagr - L.perf(trR).cagr), basis: 'strategy PRICE vs SPY TOTAL RETURN reference (mixed basis, labelled)' }, vsEwSp500: vsEw,
-          vsSelectableUniverse: L.excessStats(rows, runs.EW_SELECTABLE, { bootstrap: false }), vsEwWithSeriesP5a: L.excessStats(rows, withR, { bootstrap: false }),
-          qualifiedOnly: (() => { const q = rows.map((r, i) => [r, spyR[i]]).filter(([r]) => r.qualification === 'QUALIFIED'); return { periods: q.length, meanExcessVsSpyPp: L.r6(L.mean(q.map(([r, s]) => r.r - s.r)) * 100) }; })(),
-          regimesR1: regimeTable(rows, spyR, runs.S1_EW_SP500, r1), regimesR2: regimeTable(rows, spyR, runs.S1_EW_SP500, r2),
-          periods: cl === 'BASE' ? rows.map(r => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'number' ? L.r6(v) : v]))) : undefined };
-        tests.push({ id, vs: 'SPY', nwP: vsSpy.nw.p, bootP: vsSpy.bootstrap.p });
-        if (vsEw) tests.push({ id, vs: 'S1_EW_SP500', nwP: vsEw.nw.p, bootP: vsEw.bootstrap.p });
+  function evaluate(ps, withExtras) {
+    const res = { from: ps[0].t0, to: ps.at(-1).t1, periods: ps.length, scenarios: {} };
+    for (const sc of L.SCENARIOS) {
+      res.scenarios[sc] = {};
+      for (const [cl, rate] of Object.entries(COSTS)) {
+        const S = {}, spyR = spyRows(ps), trR = trRows(ps), withR = withRows(ps, sc);
+        const runs = Object.fromEntries(IDS.concat(['EW_SELECTABLE']).map(id => [id, simulate(id, ctx, ps, sc, rate, 'EFFR')]));
+        const tests = [];
+        for (const id of IDS) {
+          const rows = runs[id], pf = L.perf(rows), Y = pf.years;
+          const vsSpy = L.excessStats(rows, spyR), vsEw = id === 'S1_EW_SP500' ? null : L.excessStats(rows, runs.S1_EW_SP500);
+          S[id] = { performance: pf, turnoverOneSidedPerYear: L.r6(rows.reduce((a, r) => a + r.traded, 0) / 2 / Y), costDragPerYearPp: L.r6(rows.reduce((a, r) => a + r.cost, 0) / Y * 100),
+            avgEquity: L.r6(L.mean(rows.map(r => r.equity))), avgPositions: L.r6(L.mean(rows.map(r => r.positions))), minPositions: Math.min(...rows.map(r => r.positions)), periodsWithoutEligibleNames: rows.filter(r => r.eligible === 0).length,
+            maxBoundedWeightHeld: L.r6(Math.max(...rows.map(r => r.boundedWeightHeld))), boundedWeightHeldMean: L.r6(L.mean(rows.map(r => r.boundedWeightHeld))),
+            vsSpy, vsSpyTrReference: { cagrDiff: L.r6(pf.cagr - L.perf(trR).cagr), basis: 'strategy PRICE vs SPY TOTAL RETURN reference (mixed basis, labelled)' }, vsEwSp500: vsEw,
+            vsSelectableUniverse: L.excessStats(rows, runs.EW_SELECTABLE, { bootstrap: false }), vsEwWithSeriesP5a: L.excessStats(rows, withR, { bootstrap: false }),
+            qualifiedOnly: (() => { const q = rows.map((r, i) => [r, spyR[i]]).filter(([r]) => r.qualification === 'QUALIFIED'); return { periods: q.length, meanExcessVsSpyPp: L.r6(L.mean(q.map(([r, x]) => r.r - x.r)) * 100) }; })(),
+            regimesR1: regimeTable(rows, spyR, runs.S1_EW_SP500, r1), regimesR2: regimeTable(rows, spyR, runs.S1_EW_SP500, r2),
+            periods: withExtras && cl === 'BASE' ? rows.map(r => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'number' ? L.r6(v) : v]))) : undefined };
+          tests.push({ id, vs: 'SPY', nwP: vsSpy.nw.p, bootP: vsSpy.bootstrap.p });
+          if (vsEw) tests.push({ id, vs: 'S1_EW_SP500', nwP: vsEw.nw.p, bootP: vsEw.bootstrap.p });
+        }
+        const hn = L.holm(tests.map(t => t.nwP)), hb = L.holm(tests.map(t => t.bootP));
+        tests.forEach((t, i) => { t.holmNw = L.r6(hn[i]); t.holmBoot = L.r6(hb[i]); t.secured = hn[i] <= 0.05 && hb[i] <= 0.05; t.nwP = L.r6(t.nwP); t.bootP = L.r6(t.bootP); });
+        res.scenarios[sc][cl] = { strategies: S, references: { SPY: L.perf(spyR), SPY_TR_REFERENCE: L.perf(trR), EW_SELECTABLE: L.perf(runs.EW_SELECTABLE), EW_WITH_SERIES_P5A: L.perf(withR), spyDailyMaxDD: spyDailyDD(ps[0].t0, ps.at(-1).t1) },
+          multipleTesting: { family: tests.length, rule: 'secured = Holm <= 0.05 under Newey-West AND block bootstrap', tests } };
       }
-      const hn = L.holm(tests.map(t => t.nwP)), hb = L.holm(tests.map(t => t.bootP));
-      tests.forEach((t, i) => { t.holmNw = L.r6(hn[i]); t.holmBoot = L.r6(hb[i]); t.secured = hn[i] <= 0.05 && hb[i] <= 0.05; t.nwP = L.r6(t.nwP); t.bootP = L.r6(t.bootP); });
-      res.scenarios[sc][cl] = { strategies: S, references: { SPY: L.perf(spyR), SPY_TR_REFERENCE: L.perf(trR), EW_SELECTABLE: L.perf(runs.EW_SELECTABLE), EW_WITH_SERIES_P5A: L.perf(withR), spyDailyMaxDD: spyDailyDD(periods[0].t0, periods.at(-1).t1) },
-        multipleTesting: { family: tests.length, rule: 'secured = Holm <= 0.05 under Newey-West AND block bootstrap', tests } };
+      if (withExtras) {
+        // cash sensitivity (0 % cash) and S1 extended span, base costs
+        res.scenarios[sc].ZERO_CASH_BASE = Object.fromEntries(IDS.map(id => { const rows = simulate(id, ctx, ps, sc, COSTS.BASE, 'ZERO_CASH'); return [id, { performance: L.perf(rows.map(r => ({ ...r, cash: 0 }))), cagrDiffVsSpy: L.r6(L.perf(rows).cagr - L.perf(spyRows(ps)).cagr) }]; }));
+        const rows = simulate('S1_EW_SP500', ctx, ext, sc, COSTS.BASE, 'EFFR'); res.scenarios[sc].S1_EXTENDED_2009_2026_BASE = { performance: L.perf(rows), spy: L.perf(spyRows(ext)), vsSpy: L.excessStats(rows, spyRows(ext)) };
+      }
     }
-    // cash sensitivity (0 % cash) and S1 extended span, base costs
-    res.scenarios[sc].ZERO_CASH_BASE = Object.fromEntries(IDS.map(id => { const rows = simulate(id, ctx, periods, sc, COSTS.BASE, 'ZERO_CASH'); return [id, { performance: L.perf(rows.map(r => ({ ...r, cash: 0 }))), cagrDiffVsSpy: L.r6(L.perf(rows).cagr - L.perf(spyRows(periods)).cagr) }]; }));
-    { const rows = simulate('S1_EW_SP500', ctx, ext, sc, COSTS.BASE, 'EFFR'); res.scenarios[sc].S1_EXTENDED_2009_2026_BASE = { performance: L.perf(rows), spy: L.perf(spyRows(ext)), vsSpy: L.excessStats(rows, spyRows(ext)) }; }
+    return res;
   }
+  const registeredSpan = evaluate(periods, true);
+  // Post hoc (disclosed): S3/S4 have no eligible member (profitability score unavailable in the panel) before a mechanically determined date and sit in cash.
+  // Common span = first t0 from which every strategy has eligible members.
+  const firstAll = periods.findIndex(p => IDS.every(id => targets(id, ctx, p, pop.members(p.t0), ctx.panel.get(p.rank) || new Map(), ctx.filter.get(p.t0)).info.eligible > 0));
+  const commonSpan = { ...evaluate(periods.slice(firstAll), false), note: 'post hoc sensitivity, defined after the registered-span results showed S3/S4 in cash for the first periods (no eligible member); start = first population date at which every strategy has eligible members' };
+  const res = { registeredSpan, commonSpan };
   const out = { studyId: 'V12-REQUAL-P6', registrationSha256: reg.sha256, evidenceKind: 'HISTORICAL_DEVELOPMENT_STUDY', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
-    span: { from: periods[0].t0, to: periods.at(-1).t1, periods: periods.length }, inputs: { panelAfterSha256: panel.sha256, indexDataSha256: pop.dataSha256, frameManifestHash: fc.manifestHash, spySha256: spy.sha256, effrSha256: cash.sha256, p5aSha256: L.shaFile(o.p5a) },
+    span: { from: periods[0].t0, to: periods.at(-1).t1, periods: periods.length, commonSpanFrom: periods[firstAll].t0 }, inputs: { panelAfterSha256: panel.sha256, indexDataSha256: pop.dataSha256, frameManifestHash: fc.manifestHash, spySha256: spy.sha256, effrSha256: cash.sha256, p5aSha256: L.shaFile(o.p5a) },
     strategyDefinitions: reg.registration.P6.strategies, scoreSource: 'AFTER panel full-frame scores (registration 1.0.2)', quintileRule: 'top/bottom ceil(n/5) of the eligible selectable members, ties by securityId',
     costs: { BASE: '15 bps per side', STRESS: '50 bps per side', GROSS: 'no costs (for the cost drag)' }, cash: 'EFFR accrual (sensitivity ZERO_CASH_BASE: 0 %)',
     returnBasis: 'PRICE_RETURN strategies and SPY; SPY_TR only as labelled reference', marketFilter: Object.fromEntries([...ctx.filter].map(([k, v]) => [k, { on: v.on, price: L.r6(v.price), sma10m: L.r6(v.sma10m) }])),
