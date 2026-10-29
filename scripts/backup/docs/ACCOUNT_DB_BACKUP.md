@@ -50,18 +50,24 @@ shred -u /tmp/k.txt
 
 Im Passwortmanager einen Eintrag „VU Konten-Backup age“ anlegen: alle drei Zeilen und das Datum.
 
-### 3. Leserolle anlegen (Zustimmung zur neuen Datenbankrolle)
+### 3. Passwort der Leserolle setzen
 
-In Supabase: Projekt → **Connect** → **Session pooler** → URI kopieren. Das ist die `postgres`-URI. Dein Datenbankpasswort einsetzen.
+Die Rolle `vu_backup_ro` ist bereits angelegt (29.10.2026, ohne Passwort, damit nicht anmeldefähig).
+Du setzt nur das Passwort, verdeckt. psql überträgt dabei lediglich einen Prüfwert (SCRAM), nie den Klartext.
 
-```bash
-read -rs PGURL                                   # postgres-URI einfügen, Enter
-psql "$PGURL" -v ON_ERROR_STOP=1 -f sql/vu_backup_ro.sql
-psql "$PGURL" -c '\password vu_backup_ro'        # fragt zweimal verdeckt nach dem neuen Passwort
-unset PGURL
-```
+1. Im Passwortmanager ein neues Passwort erzeugen: 32 Zeichen, nur Buchstaben und Ziffern. Speichern als „VU Konten-Backup DB-Rolle“.
+2. In Supabase: Projekt → **Connect** → **Session pooler** → URI kopieren. Das ist die `postgres`-URI; dein Datenbankpasswort einsetzen.
+3. In der Cloud Shell:
+   ```bash
+   read -rs PGURL                                   # postgres-URI einfügen, Enter (unsichtbar)
+   psql "$PGURL"                                    # öffnet die Datenbank-Konsole
+   ```
+   In der Konsole `\password vu_backup_ro` eingeben, das neue Passwort zweimal einfügen, dann `\q`. Danach:
+   ```bash
+   unset PGURL
+   ```
 
-Das neue Passwort vorher im Passwortmanager erzeugen: 32 Zeichen, nur Buchstaben und Ziffern, dann passt es ohne Umschreiben in eine URI. Speichern als „VU Konten-Backup DB-Rolle“.
+(Falls die Rolle noch fehlt, z. B. in einem neuen Projekt: vorher `psql "$PGURL" -v ON_ERROR_STOP=1 -f sql/vu_backup_ro.sql`.)
 
 ### 4. Verbindung der Leserolle prüfen
 
