@@ -42,14 +42,14 @@ function main() {
     byScope[scope] = byScope[scope] || {}; byScope[scope][c.reason] = (byScope[scope][c.reason] || 0) + 1;
     rows.push([ev.cik, ev.eventDate, scope, c.reason, c.items, c.eightK ? c.eightK.id : null, c.eightK ? c.eightK.date : null]);
   }
-  const doc = { schemaVersion: 'v12-listref-delisting-reasons-1.0.1', evidenceKind: 'SOURCE_EVIDENCE', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
+  const doc = { schemaVersion: 'v12-listref-delisting-reasons-1.0.2', evidenceKind: 'SOURCE_EVIDENCE', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
     protocolSha256: sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-1.0.0.json'))), codeSha256: sha(fs.readFileSync(__filename)),
     inputs: { registerSha256: sha(fs.readFileSync(path.join(priv, 'work/delisting-register.json'))), reasonsResultsSha256: sha(fs.readFileSync(path.join(priv, 'work/reasons-results.json'))) },
     rule: '8-K items in [event-120d, last delisting form+30d] (efts metadata): 2.01 > 1.03 > 3.01; else merger-process forms indexed within 365d before; else issuer Form 25 without 25-NSE; else UNKNOWN. 8-K items only queried for linked events on/after 2004-08-23.',
     caveat: 'Item 2.01 also covers asset acquisitions by the registrant; 3.01 also covers voluntary transfers between exchanges and deficiency notices that were later cured. Counts are metadata-based; see verification sample for text checks.',
     counts: { events: reg.length, itemsQueried: queried, itemsMissing: missing, overall, byScope }, perYear,
     columns: ['cik', 'eventDate', 'scope', 'reason', 'items', 'decisive8K', 'decisive8KDate'], rows };
-  fs.writeFileSync(path.join(outDir, 'delisting-reasons-1.0.1.json.gz'), zlib.gzipSync(JSON.stringify(doc) + '\n', { level: 9 }));
+  fs.writeFileSync(path.join(outDir, 'delisting-reasons-1.0.2.json.gz'), zlib.gzipSync(JSON.stringify(doc) + '\n', { level: 9 }));
   fs.writeFileSync(path.join(priv, 'work/delisting-reasons.json'), JSON.stringify(doc));
   console.log(JSON.stringify(doc.counts, null, 1));
 }

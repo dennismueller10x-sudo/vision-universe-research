@@ -1,0 +1,5272 @@
+{
+ "schemaVersion": "v12-listref-reference-completeness-1.0.2",
+ "ruleVersion": "1.0.2",
+ "protocolSha256": {
+  "protocol-amendment-1.0.2.json": "7fafcb521229f42fd3d104ea6cc8111b0a986bffea42b04449b9826ef3427623",
+  "protocol-1.0.0.json": "934a421eb291441d34c88b84bbc8939089c74796b8a5bec0bd9bc1324798862a",
+  "protocol-amendment-1.0.1.json": "95a66f749e6d6df8bd08a7ad8acd0f4f41f12a18403737502a828661d5868259"
+ },
+ "codeSha256": {
+  "scripts/quant/v12/listref/build_reference.cjs": "cb286a39d15a573b0f497fe201398df3fc487b7e01291f218e3a79de4d709662",
+  "scripts/quant/v12/listref/reflib.cjs": "204a4b8d2eafda527ad5165a53b081fed2a0c883582eef5fb852551bf8ec7beb"
+ },
+ "inputs": {
+  "tiingoZipSha256": "bb35794349ae86be32a419a697b0a915344c3569fd09f9731b2198510b938b53",
+  "tiingoCsvSha256": "213c52126b62c65717e5151d40a9dbad65fec2bc78bae2dffc06cac53ecd7b93",
+  "holdingsSha256": "2dfa1fcc7631ab0593f1aa8ac7e441e1dea6421a5ff48eaa1a6bff1ca128514a",
+  "publicFloatTsvSha256": "948dd910eb44444954cb7bb2263718af05691f2e1084d154f50e09c5227a7b9f",
+  "cikMapSha256": "09ed973d2ff2bee11a987bf7afa255f7a5d0a10e4bbd83bc8559e0070482cd2b",
+  "edgarIndexFilesSha256": "de4d73394bfd0245bd319f74c1378a2c88344f2fd3da02e36c82d6aba0cb8832",
+  "ftsResultsSha256": "8214bff5ce94b5ac26cd1b096c6aa924efb3a7c52d10762936e026ba4fc8fd17"
+ },
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "dataAsOf": {
+  "tiingoFile": "2026-10-28",
+  "edgarIndexLastDataReceived": "October 27, 2026",
+  "holdingsWeekly": "2026-10-26"
+ },
+ "definition": "EDGAR delisting events (25/25-NSE 2001+, 15-12B; one event per CIK within 180 days) of operating issuers (10-K/10-KSB/20-F/40-F in [Y-2,Y]) not mapped to NYSE/Nasdaq/NYSE American in the current SEC ticker map. completenessLower = share linked to an ended reference chain of the same CIK; completenessUpper = plus events for which an ended common chain with ticker affinity >= A2 ends within [event-120d, lastForm+15d].",
+ "perYear": {
+  "1995": {
+   "edgarEvents": 20,
+   "operatingIssuer": 16,
+   "excludedStillListed": 0,
+   "consideredEvents": 16,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 16
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "1996": {
+   "edgarEvents": 46,
+   "operatingIssuer": 28,
+   "excludedStillListed": 2,
+   "consideredEvents": 26,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 26
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "1997": {
+   "edgarEvents": 113,
+   "operatingIssuer": 96,
+   "excludedStillListed": 5,
+   "consideredEvents": 91,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 91
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "1998": {
+   "edgarEvents": 174,
+   "operatingIssuer": 170,
+   "excludedStillListed": 6,
+   "consideredEvents": 164,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 164
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "1999": {
+   "edgarEvents": 195,
+   "operatingIssuer": 186,
+   "excludedStillListed": 4,
+   "consideredEvents": 182,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 182
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2000": {
+   "edgarEvents": 196,
+   "operatingIssuer": 193,
+   "excludedStillListed": 5,
+   "consideredEvents": 188,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "15-12B": 188
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2001": {
+   "edgarEvents": 207,
+   "operatingIssuer": 191,
+   "excludedStillListed": 12,
+   "consideredEvents": 179,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 15,
+    "15-12B": 164
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2002": {
+   "edgarEvents": 365,
+   "operatingIssuer": 287,
+   "excludedStillListed": 42,
+   "consideredEvents": 245,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 177,
+    "25-NSE": 1,
+    "15-12B": 67
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2003": {
+   "edgarEvents": 431,
+   "operatingIssuer": 335,
+   "excludedStillListed": 62,
+   "consideredEvents": 273,
+   "linkedToReferenceChain": 1,
+   "nameCandidateOnly": 7,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 185,
+    "25-NSE": 1,
+    "15-12B": 87
+   },
+   "completenessLower": 0.0037,
+   "completenessUpper": 0.0293
+  },
+  "2004": {
+   "edgarEvents": 420,
+   "operatingIssuer": 315,
+   "excludedStillListed": 53,
+   "consideredEvents": 262,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 182,
+    "15-12B": 80
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2005": {
+   "edgarEvents": 378,
+   "operatingIssuer": 289,
+   "excludedStillListed": 55,
+   "consideredEvents": 234,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 0,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 158,
+    "15-12B": 73,
+    "25-NSE": 3
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0
+  },
+  "2006": {
+   "edgarEvents": 748,
+   "operatingIssuer": 642,
+   "excludedStillListed": 117,
+   "consideredEvents": 525,
+   "linkedToReferenceChain": 1,
+   "nameCandidateOnly": 3,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 168,
+    "25-NSE": 284,
+    "15-12B": 73
+   },
+   "completenessLower": 0.0019,
+   "completenessUpper": 0.0076
+  },
+  "2007": {
+   "edgarEvents": 1104,
+   "operatingIssuer": 979,
+   "excludedStillListed": 147,
+   "consideredEvents": 832,
+   "linkedToReferenceChain": 0,
+   "nameCandidateOnly": 9,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 189,
+    "25-NSE": 592,
+    "15-12B": 51
+   },
+   "completenessLower": 0,
+   "completenessUpper": 0.0108
+  },
+  "2008": {
+   "edgarEvents": 859,
+   "operatingIssuer": 734,
+   "excludedStillListed": 103,
+   "consideredEvents": 631,
+   "linkedToReferenceChain": 1,
+   "nameCandidateOnly": 4,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 158,
+    "25-NSE": 447,
+    "15-12B": 26
+   },
+   "completenessLower": 0.0016,
+   "completenessUpper": 0.0079
+  },
+  "2009": {
+   "edgarEvents": 777,
+   "operatingIssuer": 713,
+   "excludedStillListed": 93,
+   "consideredEvents": 620,
+   "linkedToReferenceChain": 13,
+   "nameCandidateOnly": 36,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 150,
+    "25-NSE": 420,
+    "15-12B": 50
+   },
+   "completenessLower": 0.021,
+   "completenessUpper": 0.079
+  },
+  "2010": {
+   "edgarEvents": 677,
+   "operatingIssuer": 601,
+   "excludedStillListed": 89,
+   "consideredEvents": 512,
+   "linkedToReferenceChain": 16,
+   "nameCandidateOnly": 33,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 77,
+    "25-NSE": 393,
+    "15-12B": 42
+   },
+   "completenessLower": 0.0313,
+   "completenessUpper": 0.0957
+  },
+  "2011": {
+   "edgarEvents": 619,
+   "operatingIssuer": 558,
+   "excludedStillListed": 87,
+   "consideredEvents": 471,
+   "linkedToReferenceChain": 17,
+   "nameCandidateOnly": 71,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 70,
+    "25-NSE": 367,
+    "15-12B": 34
+   },
+   "completenessLower": 0.0361,
+   "completenessUpper": 0.1868
+  },
+  "2012": {
+   "edgarEvents": 759,
+   "operatingIssuer": 560,
+   "excludedStillListed": 104,
+   "consideredEvents": 456,
+   "linkedToReferenceChain": 17,
+   "nameCandidateOnly": 45,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 61,
+    "25-NSE": 350,
+    "15-12B": 45
+   },
+   "completenessLower": 0.0373,
+   "completenessUpper": 0.136
+  },
+  "2013": {
+   "edgarEvents": 695,
+   "operatingIssuer": 556,
+   "excludedStillListed": 110,
+   "consideredEvents": 446,
+   "linkedToReferenceChain": 53,
+   "nameCandidateOnly": 96,
+   "linkedChainWithSeries": 1,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 64,
+    "25-NSE": 346,
+    "15-12B": 36
+   },
+   "completenessLower": 0.1188,
+   "completenessUpper": 0.3341
+  },
+  "2014": {
+   "edgarEvents": 579,
+   "operatingIssuer": 460,
+   "excludedStillListed": 78,
+   "consideredEvents": 382,
+   "linkedToReferenceChain": 82,
+   "nameCandidateOnly": 76,
+   "linkedChainWithSeries": 6,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 48,
+    "25-NSE": 297,
+    "15-12B": 37
+   },
+   "completenessLower": 0.2147,
+   "completenessUpper": 0.4136
+  },
+  "2015": {
+   "edgarEvents": 610,
+   "operatingIssuer": 506,
+   "excludedStillListed": 93,
+   "consideredEvents": 413,
+   "linkedToReferenceChain": 163,
+   "nameCandidateOnly": 82,
+   "linkedChainWithSeries": 3,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 40,
+    "25-NSE": 335,
+    "15-12B": 38
+   },
+   "completenessLower": 0.3947,
+   "completenessUpper": 0.5932
+  },
+  "2016": {
+   "edgarEvents": 731,
+   "operatingIssuer": 581,
+   "excludedStillListed": 98,
+   "consideredEvents": 483,
+   "linkedToReferenceChain": 195,
+   "nameCandidateOnly": 101,
+   "linkedChainWithSeries": 1,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 44,
+    "25-NSE": 412,
+    "15-12B": 27
+   },
+   "completenessLower": 0.4037,
+   "completenessUpper": 0.6128
+  },
+  "2017": {
+   "edgarEvents": 683,
+   "operatingIssuer": 591,
+   "excludedStillListed": 150,
+   "consideredEvents": 441,
+   "linkedToReferenceChain": 183,
+   "nameCandidateOnly": 122,
+   "linkedChainWithSeries": 4,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 53,
+    "25-NSE": 351,
+    "15-12B": 37
+   },
+   "completenessLower": 0.415,
+   "completenessUpper": 0.6916
+  },
+  "2018": {
+   "edgarEvents": 663,
+   "operatingIssuer": 532,
+   "excludedStillListed": 144,
+   "consideredEvents": 388,
+   "linkedToReferenceChain": 168,
+   "nameCandidateOnly": 95,
+   "linkedChainWithSeries": 1,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 42,
+    "25-NSE": 321,
+    "15-12B": 25
+   },
+   "completenessLower": 0.433,
+   "completenessUpper": 0.6778
+  },
+  "2019": {
+   "edgarEvents": 707,
+   "operatingIssuer": 564,
+   "excludedStillListed": 158,
+   "consideredEvents": 406,
+   "linkedToReferenceChain": 145,
+   "nameCandidateOnly": 93,
+   "linkedChainWithSeries": 0,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 46,
+    "25-NSE": 331,
+    "15-12B": 29
+   },
+   "completenessLower": 0.3571,
+   "completenessUpper": 0.5862
+  },
+  "2020": {
+   "edgarEvents": 698,
+   "operatingIssuer": 558,
+   "excludedStillListed": 176,
+   "consideredEvents": 382,
+   "linkedToReferenceChain": 148,
+   "nameCandidateOnly": 89,
+   "linkedChainWithSeries": 5,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 40,
+    "15-12B": 41,
+    "25-NSE": 301
+   },
+   "completenessLower": 0.3874,
+   "completenessUpper": 0.6204
+  },
+  "2021": {
+   "edgarEvents": 868,
+   "operatingIssuer": 705,
+   "excludedStillListed": 286,
+   "consideredEvents": 419,
+   "linkedToReferenceChain": 158,
+   "nameCandidateOnly": 118,
+   "linkedChainWithSeries": 3,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 29,
+    "25-NSE": 356,
+    "15-12B": 34
+   },
+   "completenessLower": 0.3771,
+   "completenessUpper": 0.6587
+  },
+  "2022": {
+   "edgarEvents": 846,
+   "operatingIssuer": 720,
+   "excludedStillListed": 163,
+   "consideredEvents": 557,
+   "linkedToReferenceChain": 227,
+   "nameCandidateOnly": 156,
+   "linkedChainWithSeries": 3,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 49,
+    "25-NSE": 503,
+    "15-12B": 5
+   },
+   "completenessLower": 0.4075,
+   "completenessUpper": 0.6876
+  },
+  "2023": {
+   "edgarEvents": 1000,
+   "operatingIssuer": 879,
+   "excludedStillListed": 200,
+   "consideredEvents": 679,
+   "linkedToReferenceChain": 310,
+   "nameCandidateOnly": 179,
+   "linkedChainWithSeries": 7,
+   "linkedChainWithLifecycle": 0,
+   "byForm": {
+    "25": 67,
+    "25-NSE": 612
+   },
+   "completenessLower": 0.4566,
+   "completenessUpper": 0.7202
+  },
+  "2024": {
+   "edgarEvents": 819,
+   "operatingIssuer": 692,
+   "excludedStillListed": 188,
+   "consideredEvents": 504,
+   "linkedToReferenceChain": 173,
+   "nameCandidateOnly": 131,
+   "linkedChainWithSeries": 22,
+   "linkedChainWithLifecycle": 1,
+   "byForm": {
+    "25": 59,
+    "25-NSE": 445
+   },
+   "completenessLower": 0.3433,
+   "completenessUpper": 0.6032
+  },
+  "2025": {
+   "edgarEvents": 844,
+   "operatingIssuer": 685,
+   "excludedStillListed": 198,
+   "consideredEvents": 487,
+   "linkedToReferenceChain": 168,
+   "nameCandidateOnly": 107,
+   "linkedChainWithSeries": 18,
+   "linkedChainWithLifecycle": 17,
+   "byForm": {
+    "25": 62,
+    "25-NSE": 425
+   },
+   "completenessLower": 0.345,
+   "completenessUpper": 0.5647
+  },
+  "2026": {
+   "edgarEvents": 663,
+   "operatingIssuer": 508,
+   "excludedStillListed": 241,
+   "consideredEvents": 267,
+   "linkedToReferenceChain": 116,
+   "nameCandidateOnly": 57,
+   "linkedChainWithSeries": 20,
+   "linkedChainWithLifecycle": 8,
+   "byForm": {
+    "25": 17,
+    "25-NSE": 250
+   },
+   "completenessLower": 0.4345,
+   "completenessUpper": 0.6479
+  }
+ },
+ "perYearSegment": {
+  "1995": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 16,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 16,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 16,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "1996": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 26,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 26,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 26,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "1997": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 91,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 91,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 91,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "1998": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 164,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 164,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 164,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "1999": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 182,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 182,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 182,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2000": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 188,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 188,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 188,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2001": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 179,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 179,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 179,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2002": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 244,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 245,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 244,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2003": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 272,
+     "linked": 0,
+     "nameCand": 7,
+     "lower": 0,
+     "upper": 0.0257
+    },
+    "AMEX": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 273,
+     "linked": 1,
+     "nameCand": 7,
+     "lower": 0.0037,
+     "upper": 0.0293
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 272,
+     "linked": 0,
+     "nameCand": 7,
+     "lower": 0,
+     "upper": 0.0257
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    }
+   }
+  },
+  "2004": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 262,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 262,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 262,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2005": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 231,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 234,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 231,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2006": {
+   "exchange": {
+    "AMEX": {
+     "considered": 30,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.0333,
+     "upper": 0.0333
+    },
+    "NASDAQ": {
+     "considered": 111,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN": {
+     "considered": 241,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0041
+    },
+    "NYSE": {
+     "considered": 133,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.015
+    },
+    "OTHER": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 525,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.0019,
+     "upper": 0.0076
+    }
+   },
+   "exchangeXsize": {
+    "AMEX|UNKNOWN": {
+     "considered": 30,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.0333,
+     "upper": 0.0333
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 111,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 241,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0041
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 133,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.015
+    },
+    "OTHER|UNKNOWN": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2007": {
+   "exchange": {
+    "AMEX": {
+     "considered": 58,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN": {
+     "considered": 240,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.0125
+    },
+    "NYSE": {
+     "considered": 238,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0042
+    },
+    "NASDAQ": {
+     "considered": 285,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.0105
+    },
+    "ARCA": {
+     "considered": 7,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.1429
+    },
+    "OTHER": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.25
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 832,
+     "linked": 0,
+     "nameCand": 9,
+     "lower": 0,
+     "upper": 0.0108
+    }
+   },
+   "exchangeXsize": {
+    "AMEX|UNKNOWN": {
+     "considered": 58,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 240,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.0125
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 238,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0042
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 285,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.0105
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 7,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.1429
+    },
+    "OTHER|UNKNOWN": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.25
+    }
+   }
+  },
+  "2008": {
+   "exchange": {
+    "NYSE": {
+     "considered": 143,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.007,
+     "upper": 0.014
+    },
+    "UNKNOWN": {
+     "considered": 184,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0054
+    },
+    "NASDAQ": {
+     "considered": 245,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0041
+    },
+    "AMEX": {
+     "considered": 57,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0175
+    },
+    "ARCA": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 631,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.0016,
+     "upper": 0.0079
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|UNKNOWN": {
+     "considered": 143,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.007,
+     "upper": 0.014
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 184,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0054
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 245,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0041
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 57,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0175
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2009": {
+   "exchange": {
+    "AMEX": {
+     "considered": 74,
+     "linked": 1,
+     "nameCand": 7,
+     "lower": 0.0135,
+     "upper": 0.1081
+    },
+    "NYSE": {
+     "considered": 132,
+     "linked": 7,
+     "nameCand": 11,
+     "lower": 0.053,
+     "upper": 0.1364
+    },
+    "NASDAQ": {
+     "considered": 201,
+     "linked": 4,
+     "nameCand": 7,
+     "lower": 0.0199,
+     "upper": 0.0547
+    },
+    "UNKNOWN": {
+     "considered": 200,
+     "linked": 1,
+     "nameCand": 11,
+     "lower": 0.005,
+     "upper": 0.06
+    },
+    "ARCA": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "OTHER": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 605,
+     "linked": 13,
+     "nameCand": 36,
+     "lower": 0.0215,
+     "upper": 0.081
+    },
+    "MID": {
+     "considered": 10,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "SMALL": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "MEGA_LARGE": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "AMEX|UNKNOWN": {
+     "considered": 74,
+     "linked": 1,
+     "nameCand": 7,
+     "lower": 0.0135,
+     "upper": 0.1081
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 125,
+     "linked": 7,
+     "nameCand": 11,
+     "lower": 0.056,
+     "upper": 0.144
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 200,
+     "linked": 4,
+     "nameCand": 7,
+     "lower": 0.02,
+     "upper": 0.055
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 193,
+     "linked": 1,
+     "nameCand": 11,
+     "lower": 0.0052,
+     "upper": 0.0622
+    },
+    "UNKNOWN|MID": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "OTHER|UNKNOWN": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2010": {
+   "exchange": {
+    "AMEX": {
+     "considered": 46,
+     "linked": 0,
+     "nameCand": 7,
+     "lower": 0,
+     "upper": 0.1522
+    },
+    "NYSE": {
+     "considered": 129,
+     "linked": 5,
+     "nameCand": 6,
+     "lower": 0.0388,
+     "upper": 0.0853
+    },
+    "UNKNOWN": {
+     "considered": 119,
+     "linked": 0,
+     "nameCand": 6,
+     "lower": 0,
+     "upper": 0.0504
+    },
+    "NASDAQ": {
+     "considered": 216,
+     "linked": 11,
+     "nameCand": 14,
+     "lower": 0.0509,
+     "upper": 0.1157
+    },
+    "OTHER": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 478,
+     "linked": 15,
+     "nameCand": 32,
+     "lower": 0.0314,
+     "upper": 0.0983
+    },
+    "SMALL": {
+     "considered": 11,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "MID": {
+     "considered": 14,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.0714,
+     "upper": 0.1429
+    },
+    "MEGA_LARGE": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "MICRO": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "exchangeXsize": {
+    "AMEX|UNKNOWN": {
+     "considered": 46,
+     "linked": 0,
+     "nameCand": 7,
+     "lower": 0,
+     "upper": 0.1522
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 104,
+     "linked": 4,
+     "nameCand": 5,
+     "lower": 0.0385,
+     "upper": 0.0865
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 111,
+     "linked": 0,
+     "nameCand": 6,
+     "lower": 0,
+     "upper": 0.0541
+    },
+    "NYSE|SMALL": {
+     "considered": 7,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 12,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.0833,
+     "upper": 0.1667
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 215,
+     "linked": 11,
+     "nameCand": 14,
+     "lower": 0.0512,
+     "upper": 0.1163
+    },
+    "OTHER|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MICRO": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2011": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 207,
+     "linked": 13,
+     "nameCand": 40,
+     "lower": 0.0628,
+     "upper": 0.256
+    },
+    "UNKNOWN": {
+     "considered": 104,
+     "linked": 0,
+     "nameCand": 14,
+     "lower": 0,
+     "upper": 0.1346
+    },
+    "NYSE": {
+     "considered": 120,
+     "linked": 4,
+     "nameCand": 9,
+     "lower": 0.0333,
+     "upper": 0.1083
+    },
+    "AMEX": {
+     "considered": 40,
+     "linked": 0,
+     "nameCand": 8,
+     "lower": 0,
+     "upper": 0.2
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 350,
+     "linked": 14,
+     "nameCand": 51,
+     "lower": 0.04,
+     "upper": 0.1857
+    },
+    "MID": {
+     "considered": 34,
+     "linked": 2,
+     "nameCand": 4,
+     "lower": 0.0588,
+     "upper": 0.1765
+    },
+    "SMALL": {
+     "considered": 38,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.0263,
+     "upper": 0.1316
+    },
+    "MEGA_LARGE": {
+     "considered": 8,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "MICRO": {
+     "considered": 41,
+     "linked": 0,
+     "nameCand": 12,
+     "lower": 0,
+     "upper": 0.2927
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|UNKNOWN": {
+     "considered": 172,
+     "linked": 11,
+     "nameCand": 32,
+     "lower": 0.064,
+     "upper": 0.25
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 75,
+     "linked": 0,
+     "nameCand": 9,
+     "lower": 0,
+     "upper": 0.12
+    },
+    "NYSE|MID": {
+     "considered": 23,
+     "linked": 1,
+     "nameCand": 2,
+     "lower": 0.0435,
+     "upper": 0.1304
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 74,
+     "linked": 3,
+     "nameCand": 5,
+     "lower": 0.0405,
+     "upper": 0.1081
+    },
+    "NYSE|SMALL": {
+     "considered": 18,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.1111
+    },
+    "UNKNOWN|MID": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.2
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 29,
+     "linked": 0,
+     "nameCand": 5,
+     "lower": 0,
+     "upper": 0.1724
+    },
+    "NASDAQ|SMALL": {
+     "considered": 13,
+     "linked": 1,
+     "nameCand": 2,
+     "lower": 0.0769,
+     "upper": 0.2308
+    },
+    "NASDAQ|MID": {
+     "considered": 6,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.1667,
+     "upper": 0.3333
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 16,
+     "linked": 0,
+     "nameCand": 4,
+     "lower": 0,
+     "upper": 0.25
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|MICRO": {
+     "considered": 10,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.3
+    },
+    "NASDAQ|MICRO": {
+     "considered": 14,
+     "linked": 0,
+     "nameCand": 5,
+     "lower": 0,
+     "upper": 0.3571
+    },
+    "NYSE|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2012": {
+   "exchange": {
+    "ARCA": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.2
+    },
+    "UNKNOWN": {
+     "considered": 106,
+     "linked": 0,
+     "nameCand": 10,
+     "lower": 0,
+     "upper": 0.0943
+    },
+    "NYSE": {
+     "considered": 122,
+     "linked": 3,
+     "nameCand": 9,
+     "lower": 0.0246,
+     "upper": 0.0984
+    },
+    "NASDAQ": {
+     "considered": 206,
+     "linked": 14,
+     "nameCand": 20,
+     "lower": 0.068,
+     "upper": 0.165
+    },
+    "AMEX": {
+     "considered": 17,
+     "linked": 0,
+     "nameCand": 5,
+     "lower": 0,
+     "upper": 0.2941
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 176,
+     "linked": 1,
+     "nameCand": 24,
+     "lower": 0.0057,
+     "upper": 0.142
+    },
+    "MICRO": {
+     "considered": 173,
+     "linked": 9,
+     "nameCand": 16,
+     "lower": 0.052,
+     "upper": 0.1445
+    },
+    "MID": {
+     "considered": 40,
+     "linked": 3,
+     "nameCand": 3,
+     "lower": 0.075,
+     "upper": 0.15
+    },
+    "MEGA_LARGE": {
+     "considered": 14,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "SMALL": {
+     "considered": 53,
+     "linked": 4,
+     "nameCand": 2,
+     "lower": 0.0755,
+     "upper": 0.1132
+    }
+   },
+   "exchangeXsize": {
+    "ARCA|UNKNOWN": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 45,
+     "linked": 0,
+     "nameCand": 4,
+     "lower": 0,
+     "upper": 0.0889
+    },
+    "NYSE|MID": {
+     "considered": 27,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.0741,
+     "upper": 0.1111
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.2
+    },
+    "NYSE|SMALL": {
+     "considered": 22,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.0455
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 62,
+     "linked": 0,
+     "nameCand": 12,
+     "lower": 0,
+     "upper": 0.1935
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 51,
+     "linked": 1,
+     "nameCand": 5,
+     "lower": 0.0196,
+     "upper": 0.1176
+    },
+    "NASDAQ|MICRO": {
+     "considered": 104,
+     "linked": 9,
+     "nameCand": 7,
+     "lower": 0.0865,
+     "upper": 0.1538
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 52,
+     "linked": 0,
+     "nameCand": 4,
+     "lower": 0,
+     "upper": 0.0769
+    },
+    "AMEX|MICRO": {
+     "considered": 9,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "NYSE|MICRO": {
+     "considered": 13,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.1538
+    },
+    "NASDAQ|SMALL": {
+     "considered": 26,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 0.1538,
+     "upper": 0.1538
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 8,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.25
+    },
+    "NASDAQ|MID": {
+     "considered": 11,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.0909,
+     "upper": 0.1818
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MID": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|MICRO": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2013": {
+   "exchange": {
+    "NYSE": {
+     "considered": 153,
+     "linked": 22,
+     "nameCand": 37,
+     "lower": 0.1438,
+     "upper": 0.3856
+    },
+    "UNKNOWN": {
+     "considered": 100,
+     "linked": 1,
+     "nameCand": 30,
+     "lower": 0.01,
+     "upper": 0.31
+    },
+    "NASDAQ": {
+     "considered": 161,
+     "linked": 27,
+     "nameCand": 21,
+     "lower": 0.1677,
+     "upper": 0.2981
+    },
+    "AMEX": {
+     "considered": 26,
+     "linked": 3,
+     "nameCand": 6,
+     "lower": 0.1154,
+     "upper": 0.3462
+    },
+    "ARCA": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.3333
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 161,
+     "linked": 13,
+     "nameCand": 45,
+     "lower": 0.0807,
+     "upper": 0.3602
+    },
+    "SMALL": {
+     "considered": 75,
+     "linked": 17,
+     "nameCand": 19,
+     "lower": 0.2267,
+     "upper": 0.48
+    },
+    "MICRO": {
+     "considered": 179,
+     "linked": 20,
+     "nameCand": 31,
+     "lower": 0.1117,
+     "upper": 0.2849
+    },
+    "MEGA_LARGE": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "MID": {
+     "considered": 26,
+     "linked": 3,
+     "nameCand": 1,
+     "lower": 0.1154,
+     "upper": 0.1538
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|UNKNOWN": {
+     "considered": 73,
+     "linked": 7,
+     "nameCand": 22,
+     "lower": 0.0959,
+     "upper": 0.3973
+    },
+    "NYSE|SMALL": {
+     "considered": 36,
+     "linked": 9,
+     "nameCand": 11,
+     "lower": 0.25,
+     "upper": 0.5556
+    },
+    "NYSE|MICRO": {
+     "considered": 24,
+     "linked": 3,
+     "nameCand": 4,
+     "lower": 0.125,
+     "upper": 0.2917
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 47,
+     "linked": 0,
+     "nameCand": 14,
+     "lower": 0,
+     "upper": 0.2979
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 42,
+     "linked": 1,
+     "nameCand": 12,
+     "lower": 0.0238,
+     "upper": 0.3095
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|MICRO": {
+     "considered": 91,
+     "linked": 14,
+     "nameCand": 11,
+     "lower": 0.1538,
+     "upper": 0.2747
+    },
+    "UNKNOWN|MID": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|SMALL": {
+     "considered": 31,
+     "linked": 8,
+     "nameCand": 3,
+     "lower": 0.2581,
+     "upper": 0.3548
+    },
+    "NYSE|MID": {
+     "considered": 17,
+     "linked": 3,
+     "nameCand": 0,
+     "lower": 0.1765,
+     "upper": 0.1765
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 32,
+     "linked": 5,
+     "nameCand": 6,
+     "lower": 0.1563,
+     "upper": 0.3438
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 7,
+     "linked": 0,
+     "nameCand": 4,
+     "lower": 0,
+     "upper": 0.5714
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 9,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.1111,
+     "upper": 0.4444
+    },
+    "AMEX|MICRO": {
+     "considered": 16,
+     "linked": 2,
+     "nameCand": 2,
+     "lower": 0.125,
+     "upper": 0.25
+    },
+    "NASDAQ|MID": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.2
+    },
+    "AMEX|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    },
+    "ARCA|MICRO": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.3333
+    }
+   }
+  },
+  "2014": {
+   "exchange": {
+    "ARCA": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE": {
+     "considered": 127,
+     "linked": 34,
+     "nameCand": 27,
+     "lower": 0.2677,
+     "upper": 0.4803
+    },
+    "UNKNOWN": {
+     "considered": 85,
+     "linked": 1,
+     "nameCand": 21,
+     "lower": 0.0118,
+     "upper": 0.2588
+    },
+    "NASDAQ": {
+     "considered": 155,
+     "linked": 45,
+     "nameCand": 28,
+     "lower": 0.2903,
+     "upper": 0.471
+    },
+    "AMEX": {
+     "considered": 11,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.1818,
+     "upper": 0.1818
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 151,
+     "linked": 19,
+     "nameCand": 37,
+     "lower": 0.1258,
+     "upper": 0.3709
+    },
+    "MID": {
+     "considered": 31,
+     "linked": 6,
+     "nameCand": 3,
+     "lower": 0.1935,
+     "upper": 0.2903
+    },
+    "MEGA_LARGE": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.25,
+     "upper": 0.25
+    },
+    "MICRO": {
+     "considered": 134,
+     "linked": 30,
+     "nameCand": 27,
+     "lower": 0.2239,
+     "upper": 0.4254
+    },
+    "SMALL": {
+     "considered": 62,
+     "linked": 26,
+     "nameCand": 9,
+     "lower": 0.4194,
+     "upper": 0.5645
+    }
+   },
+   "exchangeXsize": {
+    "ARCA|UNKNOWN": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 19,
+     "linked": 4,
+     "nameCand": 3,
+     "lower": 0.2105,
+     "upper": 0.3684
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 60,
+     "linked": 11,
+     "nameCand": 16,
+     "lower": 0.1833,
+     "upper": 0.45
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.3333,
+     "upper": 0.3333
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 42,
+     "linked": 0,
+     "nameCand": 14,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 35,
+     "linked": 1,
+     "nameCand": 7,
+     "lower": 0.0286,
+     "upper": 0.2286
+    },
+    "NASDAQ|MICRO": {
+     "considered": 80,
+     "linked": 23,
+     "nameCand": 16,
+     "lower": 0.2875,
+     "upper": 0.4875
+    },
+    "NYSE|MICRO": {
+     "considered": 15,
+     "linked": 4,
+     "nameCand": 4,
+     "lower": 0.2667,
+     "upper": 0.5333
+    },
+    "UNKNOWN|MID": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|MID": {
+     "considered": 8,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.25,
+     "upper": 0.25
+    },
+    "NYSE|SMALL": {
+     "considered": 30,
+     "linked": 14,
+     "nameCand": 4,
+     "lower": 0.4667,
+     "upper": 0.6
+    },
+    "NASDAQ|SMALL": {
+     "considered": 28,
+     "linked": 12,
+     "nameCand": 5,
+     "lower": 0.4286,
+     "upper": 0.6071
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 39,
+     "linked": 8,
+     "nameCand": 7,
+     "lower": 0.2051,
+     "upper": 0.3846
+    },
+    "AMEX|MICRO": {
+     "considered": 4,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.5,
+     "upper": 0.5
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2015": {
+   "exchange": {
+    "NYSE": {
+     "considered": 135,
+     "linked": 63,
+     "nameCand": 22,
+     "lower": 0.4667,
+     "upper": 0.6296
+    },
+    "UNKNOWN": {
+     "considered": 78,
+     "linked": 6,
+     "nameCand": 20,
+     "lower": 0.0769,
+     "upper": 0.3333
+    },
+    "ARCA": {
+     "considered": 4,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 0.75
+    },
+    "NASDAQ": {
+     "considered": 174,
+     "linked": 85,
+     "nameCand": 33,
+     "lower": 0.4885,
+     "upper": 0.6782
+    },
+    "AMEX": {
+     "considered": 22,
+     "linked": 7,
+     "nameCand": 6,
+     "lower": 0.3182,
+     "upper": 0.5909
+    }
+   },
+   "sizeClass": {
+    "SMALL": {
+     "considered": 71,
+     "linked": 40,
+     "nameCand": 11,
+     "lower": 0.5634,
+     "upper": 0.7183
+    },
+    "UNKNOWN": {
+     "considered": 113,
+     "linked": 35,
+     "nameCand": 24,
+     "lower": 0.3097,
+     "upper": 0.5221
+    },
+    "MID": {
+     "considered": 58,
+     "linked": 23,
+     "nameCand": 8,
+     "lower": 0.3966,
+     "upper": 0.5345
+    },
+    "MICRO": {
+     "considered": 155,
+     "linked": 58,
+     "nameCand": 37,
+     "lower": 0.3742,
+     "upper": 0.6129
+    },
+    "MEGA_LARGE": {
+     "considered": 16,
+     "linked": 7,
+     "nameCand": 2,
+     "lower": 0.4375,
+     "upper": 0.5625
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|SMALL": {
+     "considered": 37,
+     "linked": 24,
+     "nameCand": 5,
+     "lower": 0.6486,
+     "upper": 0.7838
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 37,
+     "linked": 3,
+     "nameCand": 7,
+     "lower": 0.0811,
+     "upper": 0.2703
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 38,
+     "linked": 18,
+     "nameCand": 3,
+     "lower": 0.4737,
+     "upper": 0.5526
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 31,
+     "linked": 3,
+     "nameCand": 11,
+     "lower": 0.0968,
+     "upper": 0.4516
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 31,
+     "linked": 10,
+     "nameCand": 9,
+     "lower": 0.3226,
+     "upper": 0.6129
+    },
+    "NASDAQ|MICRO": {
+     "considered": 85,
+     "linked": 39,
+     "nameCand": 17,
+     "lower": 0.4588,
+     "upper": 0.6588
+    },
+    "AMEX|MICRO": {
+     "considered": 14,
+     "linked": 5,
+     "nameCand": 4,
+     "lower": 0.3571,
+     "upper": 0.6429
+    },
+    "NASDAQ|SMALL": {
+     "considered": 27,
+     "linked": 15,
+     "nameCand": 4,
+     "lower": 0.5556,
+     "upper": 0.7037
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 5,
+     "linked": 1,
+     "nameCand": 2,
+     "lower": 0.2,
+     "upper": 0.6
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 9,
+     "linked": 5,
+     "nameCand": 1,
+     "lower": 0.5556,
+     "upper": 0.6667
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 7,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.2857,
+     "upper": 0.4286
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "NYSE|MICRO": {
+     "considered": 22,
+     "linked": 9,
+     "nameCand": 4,
+     "lower": 0.4091,
+     "upper": 0.5909
+    },
+    "NASDAQ|MID": {
+     "considered": 14,
+     "linked": 5,
+     "nameCand": 5,
+     "lower": 0.3571,
+     "upper": 0.7143
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 39,
+     "linked": 21,
+     "nameCand": 6,
+     "lower": 0.5385,
+     "upper": 0.6923
+    },
+    "AMEX|SMALL": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.3333,
+     "upper": 0.3333
+    },
+    "UNKNOWN|MID": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|MICRO": {
+     "considered": 3,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.6667,
+     "upper": 1
+    }
+   }
+  },
+  "2016": {
+   "exchange": {
+    "NYSE": {
+     "considered": 173,
+     "linked": 73,
+     "nameCand": 36,
+     "lower": 0.422,
+     "upper": 0.6301
+    },
+    "AMEX": {
+     "considered": 19,
+     "linked": 5,
+     "nameCand": 4,
+     "lower": 0.2632,
+     "upper": 0.4737
+    },
+    "UNKNOWN": {
+     "considered": 71,
+     "linked": 7,
+     "nameCand": 23,
+     "lower": 0.0986,
+     "upper": 0.4225
+    },
+    "NASDAQ": {
+     "considered": 215,
+     "linked": 110,
+     "nameCand": 36,
+     "lower": 0.5116,
+     "upper": 0.6791
+    },
+    "ARCA": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.4
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 160,
+     "linked": 52,
+     "nameCand": 37,
+     "lower": 0.325,
+     "upper": 0.5563
+    },
+    "MEGA_LARGE": {
+     "considered": 13,
+     "linked": 5,
+     "nameCand": 2,
+     "lower": 0.3846,
+     "upper": 0.5385
+    },
+    "MID": {
+     "considered": 53,
+     "linked": 25,
+     "nameCand": 9,
+     "lower": 0.4717,
+     "upper": 0.6415
+    },
+    "SMALL": {
+     "considered": 83,
+     "linked": 49,
+     "nameCand": 16,
+     "lower": 0.5904,
+     "upper": 0.7831
+    },
+    "MICRO": {
+     "considered": 174,
+     "linked": 64,
+     "nameCand": 37,
+     "lower": 0.3678,
+     "upper": 0.5805
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|UNKNOWN": {
+     "considered": 58,
+     "linked": 18,
+     "nameCand": 14,
+     "lower": 0.3103,
+     "upper": 0.5517
+    },
+    "AMEX|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 38,
+     "linked": 14,
+     "nameCand": 7,
+     "lower": 0.3684,
+     "upper": 0.5526
+    },
+    "NYSE|SMALL": {
+     "considered": 28,
+     "linked": 21,
+     "nameCand": 2,
+     "lower": 0.75,
+     "upper": 0.8214
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 7,
+     "linked": 4,
+     "nameCand": 1,
+     "lower": 0.5714,
+     "upper": 0.7143
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 8,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.125,
+     "upper": 0.5
+    },
+    "NYSE|MICRO": {
+     "considered": 42,
+     "linked": 16,
+     "nameCand": 12,
+     "lower": 0.381,
+     "upper": 0.6667
+    },
+    "NASDAQ|MID": {
+     "considered": 12,
+     "linked": 11,
+     "nameCand": 0,
+     "lower": 0.9167,
+     "upper": 0.9167
+    },
+    "NASDAQ|SMALL": {
+     "considered": 44,
+     "linked": 27,
+     "nameCand": 9,
+     "lower": 0.6136,
+     "upper": 0.8182
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 39,
+     "linked": 5,
+     "nameCand": 14,
+     "lower": 0.1282,
+     "upper": 0.4872
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 55,
+     "linked": 27,
+     "nameCand": 9,
+     "lower": 0.4909,
+     "upper": 0.6545
+    },
+    "NASDAQ|MICRO": {
+     "considered": 100,
+     "linked": 44,
+     "nameCand": 17,
+     "lower": 0.44,
+     "upper": 0.61
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 21,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.0476,
+     "upper": 0.2381
+    },
+    "AMEX|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 8,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.25,
+     "upper": 0.25
+    },
+    "AMEX|MICRO": {
+     "considered": 9,
+     "linked": 3,
+     "nameCand": 4,
+     "lower": 0.3333,
+     "upper": 0.7778
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.25,
+     "upper": 0.5
+    },
+    "ARCA|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "UNKNOWN|MID": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 1
+    },
+    "ARCA|MICRO": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|SMALL": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 1
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2017": {
+   "exchange": {
+    "NYSE": {
+     "considered": 159,
+     "linked": 61,
+     "nameCand": 50,
+     "lower": 0.3836,
+     "upper": 0.6981
+    },
+    "UNKNOWN": {
+     "considered": 90,
+     "linked": 14,
+     "nameCand": 34,
+     "lower": 0.1556,
+     "upper": 0.5333
+    },
+    "NASDAQ": {
+     "considered": 171,
+     "linked": 100,
+     "nameCand": 32,
+     "lower": 0.5848,
+     "upper": 0.7719
+    },
+    "ARCA": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.3333,
+     "upper": 0.3333
+    },
+    "AMEX": {
+     "considered": 18,
+     "linked": 7,
+     "nameCand": 6,
+     "lower": 0.3889,
+     "upper": 0.7222
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 126,
+     "linked": 41,
+     "nameCand": 45,
+     "lower": 0.3254,
+     "upper": 0.6825
+    },
+    "SMALL": {
+     "considered": 85,
+     "linked": 44,
+     "nameCand": 20,
+     "lower": 0.5176,
+     "upper": 0.7529
+    },
+    "MICRO": {
+     "considered": 171,
+     "linked": 69,
+     "nameCand": 41,
+     "lower": 0.4035,
+     "upper": 0.6433
+    },
+    "MEGA_LARGE": {
+     "considered": 10,
+     "linked": 6,
+     "nameCand": 2,
+     "lower": 0.6,
+     "upper": 0.8
+    },
+    "MID": {
+     "considered": 49,
+     "linked": 23,
+     "nameCand": 14,
+     "lower": 0.4694,
+     "upper": 0.7551
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|UNKNOWN": {
+     "considered": 57,
+     "linked": 18,
+     "nameCand": 22,
+     "lower": 0.3158,
+     "upper": 0.7018
+    },
+    "NYSE|SMALL": {
+     "considered": 41,
+     "linked": 17,
+     "nameCand": 11,
+     "lower": 0.4146,
+     "upper": 0.6829
+    },
+    "NYSE|MICRO": {
+     "considered": 25,
+     "linked": 9,
+     "nameCand": 6,
+     "lower": 0.36,
+     "upper": 0.6
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 41,
+     "linked": 9,
+     "nameCand": 15,
+     "lower": 0.2195,
+     "upper": 0.5854
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 8,
+     "linked": 4,
+     "nameCand": 2,
+     "lower": 0.5,
+     "upper": 0.75
+    },
+    "NASDAQ|MICRO": {
+     "considered": 92,
+     "linked": 46,
+     "nameCand": 17,
+     "lower": 0.5,
+     "upper": 0.6848
+    },
+    "ARCA|SMALL": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|MID": {
+     "considered": 28,
+     "linked": 13,
+     "nameCand": 9,
+     "lower": 0.4643,
+     "upper": 0.7857
+    },
+    "NASDAQ|MID": {
+     "considered": 14,
+     "linked": 9,
+     "nameCand": 2,
+     "lower": 0.6429,
+     "upper": 0.7857
+    },
+    "NASDAQ|SMALL": {
+     "considered": 34,
+     "linked": 25,
+     "nameCand": 5,
+     "lower": 0.7353,
+     "upper": 0.8824
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 30,
+     "linked": 19,
+     "nameCand": 8,
+     "lower": 0.6333,
+     "upper": 0.9
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 34,
+     "linked": 2,
+     "nameCand": 12,
+     "lower": 0.0588,
+     "upper": 0.4118
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 9,
+     "linked": 2,
+     "nameCand": 4,
+     "lower": 0.2222,
+     "upper": 0.6667
+    },
+    "UNKNOWN|MID": {
+     "considered": 6,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.1667,
+     "upper": 0.6667
+    },
+    "AMEX|MICRO": {
+     "considered": 12,
+     "linked": 5,
+     "nameCand": 3,
+     "lower": 0.4167,
+     "upper": 0.6667
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "AMEX|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "ARCA|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.25,
+     "upper": 1
+    },
+    "AMEX|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    }
+   }
+  },
+  "2018": {
+   "exchange": {
+    "NYSE": {
+     "considered": 130,
+     "linked": 50,
+     "nameCand": 42,
+     "lower": 0.3846,
+     "upper": 0.7077
+    },
+    "NASDAQ": {
+     "considered": 174,
+     "linked": 99,
+     "nameCand": 32,
+     "lower": 0.569,
+     "upper": 0.7529
+    },
+    "UNKNOWN": {
+     "considered": 67,
+     "linked": 14,
+     "nameCand": 17,
+     "lower": 0.209,
+     "upper": 0.4627
+    },
+    "AMEX": {
+     "considered": 14,
+     "linked": 5,
+     "nameCand": 3,
+     "lower": 0.3571,
+     "upper": 0.5714
+    },
+    "ARCA": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    }
+   },
+   "sizeClass": {
+    "MEGA_LARGE": {
+     "considered": 23,
+     "linked": 8,
+     "nameCand": 9,
+     "lower": 0.3478,
+     "upper": 0.7391
+    },
+    "MID": {
+     "considered": 46,
+     "linked": 22,
+     "nameCand": 11,
+     "lower": 0.4783,
+     "upper": 0.7174
+    },
+    "UNKNOWN": {
+     "considered": 109,
+     "linked": 33,
+     "nameCand": 32,
+     "lower": 0.3028,
+     "upper": 0.5963
+    },
+    "SMALL": {
+     "considered": 78,
+     "linked": 45,
+     "nameCand": 9,
+     "lower": 0.5769,
+     "upper": 0.6923
+    },
+    "MICRO": {
+     "considered": 132,
+     "linked": 60,
+     "nameCand": 34,
+     "lower": 0.4545,
+     "upper": 0.7121
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|MEGA_LARGE": {
+     "considered": 17,
+     "linked": 6,
+     "nameCand": 7,
+     "lower": 0.3529,
+     "upper": 0.7647
+    },
+    "NYSE|MID": {
+     "considered": 29,
+     "linked": 14,
+     "nameCand": 9,
+     "lower": 0.4828,
+     "upper": 0.7931
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 41,
+     "linked": 9,
+     "nameCand": 17,
+     "lower": 0.2195,
+     "upper": 0.6341
+    },
+    "NYSE|SMALL": {
+     "considered": 25,
+     "linked": 11,
+     "nameCand": 5,
+     "lower": 0.44,
+     "upper": 0.64
+    },
+    "NASDAQ|MICRO": {
+     "considered": 80,
+     "linked": 41,
+     "nameCand": 18,
+     "lower": 0.5125,
+     "upper": 0.7375
+    },
+    "NASDAQ|SMALL": {
+     "considered": 46,
+     "linked": 31,
+     "nameCand": 3,
+     "lower": 0.6739,
+     "upper": 0.7391
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 35,
+     "linked": 7,
+     "nameCand": 5,
+     "lower": 0.2,
+     "upper": 0.3429
+    },
+    "NASDAQ|MID": {
+     "considered": 14,
+     "linked": 8,
+     "nameCand": 1,
+     "lower": 0.5714,
+     "upper": 0.6429
+    },
+    "UNKNOWN|MID": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 4,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.5,
+     "upper": 0.5
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 30,
+     "linked": 17,
+     "nameCand": 9,
+     "lower": 0.5667,
+     "upper": 0.8667
+    },
+    "AMEX|MICRO": {
+     "considered": 8,
+     "linked": 4,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 0.625
+    },
+    "NYSE|MICRO": {
+     "considered": 18,
+     "linked": 10,
+     "nameCand": 4,
+     "lower": 0.5556,
+     "upper": 0.7778
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 23,
+     "linked": 5,
+     "nameCand": 10,
+     "lower": 0.2174,
+     "upper": 0.6522
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 0.75
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "ARCA|MICRO": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "AMEX|SMALL": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.3333,
+     "upper": 0.6667
+    }
+   }
+  },
+  "2019": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 75,
+     "linked": 5,
+     "nameCand": 21,
+     "lower": 0.0667,
+     "upper": 0.3467
+    },
+    "NYSE": {
+     "considered": 133,
+     "linked": 49,
+     "nameCand": 30,
+     "lower": 0.3684,
+     "upper": 0.594
+    },
+    "NASDAQ": {
+     "considered": 183,
+     "linked": 87,
+     "nameCand": 39,
+     "lower": 0.4754,
+     "upper": 0.6885
+    },
+    "AMEX": {
+     "considered": 14,
+     "linked": 4,
+     "nameCand": 3,
+     "lower": 0.2857,
+     "upper": 0.5
+    },
+    "ARCA": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "MICRO": {
+     "considered": 156,
+     "linked": 37,
+     "nameCand": 45,
+     "lower": 0.2372,
+     "upper": 0.5256
+    },
+    "MEGA_LARGE": {
+     "considered": 18,
+     "linked": 8,
+     "nameCand": 1,
+     "lower": 0.4444,
+     "upper": 0.5
+    },
+    "UNKNOWN": {
+     "considered": 127,
+     "linked": 49,
+     "nameCand": 30,
+     "lower": 0.3858,
+     "upper": 0.622
+    },
+    "SMALL": {
+     "considered": 63,
+     "linked": 33,
+     "nameCand": 8,
+     "lower": 0.5238,
+     "upper": 0.6508
+    },
+    "MID": {
+     "considered": 42,
+     "linked": 18,
+     "nameCand": 9,
+     "lower": 0.4286,
+     "upper": 0.6429
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|MICRO": {
+     "considered": 33,
+     "linked": 1,
+     "nameCand": 12,
+     "lower": 0.0303,
+     "upper": 0.3939
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 41,
+     "linked": 17,
+     "nameCand": 11,
+     "lower": 0.4146,
+     "upper": 0.6829
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 50,
+     "linked": 26,
+     "nameCand": 12,
+     "lower": 0.52,
+     "upper": 0.76
+    },
+    "NASDAQ|SMALL": {
+     "considered": 34,
+     "linked": 20,
+     "nameCand": 3,
+     "lower": 0.5882,
+     "upper": 0.6765
+    },
+    "NASDAQ|MID": {
+     "considered": 12,
+     "linked": 9,
+     "nameCand": 2,
+     "lower": 0.75,
+     "upper": 0.9167
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 34,
+     "linked": 4,
+     "nameCand": 7,
+     "lower": 0.1176,
+     "upper": 0.3235
+    },
+    "NYSE|MICRO": {
+     "considered": 28,
+     "linked": 6,
+     "nameCand": 8,
+     "lower": 0.2143,
+     "upper": 0.5
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 10,
+     "linked": 4,
+     "nameCand": 1,
+     "lower": 0.4,
+     "upper": 0.5
+    },
+    "NYSE|SMALL": {
+     "considered": 27,
+     "linked": 13,
+     "nameCand": 4,
+     "lower": 0.4815,
+     "upper": 0.6296
+    },
+    "NYSE|MID": {
+     "considered": 27,
+     "linked": 9,
+     "nameCand": 6,
+     "lower": 0.3333,
+     "upper": 0.5556
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "NASDAQ|MICRO": {
+     "considered": 83,
+     "linked": 28,
+     "nameCand": 22,
+     "lower": 0.3373,
+     "upper": 0.6024
+    },
+    "AMEX|MICRO": {
+     "considered": 11,
+     "linked": 2,
+     "nameCand": 3,
+     "lower": 0.1818,
+     "upper": 0.4545
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 2,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "UNKNOWN|MID": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "AMEX|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2020": {
+   "exchange": {
+    "UNKNOWN": {
+     "considered": 81,
+     "linked": 7,
+     "nameCand": 25,
+     "lower": 0.0864,
+     "upper": 0.3951
+    },
+    "NYSE": {
+     "considered": 121,
+     "linked": 58,
+     "nameCand": 28,
+     "lower": 0.4793,
+     "upper": 0.7107
+    },
+    "NASDAQ": {
+     "considered": 158,
+     "linked": 76,
+     "nameCand": 27,
+     "lower": 0.481,
+     "upper": 0.6519
+    },
+    "AMEX": {
+     "considered": 18,
+     "linked": 7,
+     "nameCand": 6,
+     "lower": 0.3889,
+     "upper": 0.7222
+    },
+    "ARCA": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.75
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 134,
+     "linked": 47,
+     "nameCand": 38,
+     "lower": 0.3507,
+     "upper": 0.6343
+    },
+    "MICRO": {
+     "considered": 153,
+     "linked": 50,
+     "nameCand": 37,
+     "lower": 0.3268,
+     "upper": 0.5686
+    },
+    "MID": {
+     "considered": 29,
+     "linked": 17,
+     "nameCand": 4,
+     "lower": 0.5862,
+     "upper": 0.7241
+    },
+    "SMALL": {
+     "considered": 56,
+     "linked": 30,
+     "nameCand": 8,
+     "lower": 0.5357,
+     "upper": 0.6786
+    },
+    "MEGA_LARGE": {
+     "considered": 10,
+     "linked": 4,
+     "nameCand": 2,
+     "lower": 0.4,
+     "upper": 0.6
+    }
+   },
+   "exchangeXsize": {
+    "UNKNOWN|UNKNOWN": {
+     "considered": 35,
+     "linked": 3,
+     "nameCand": 13,
+     "lower": 0.0857,
+     "upper": 0.4571
+    },
+    "NYSE|MICRO": {
+     "considered": 34,
+     "linked": 17,
+     "nameCand": 6,
+     "lower": 0.5,
+     "upper": 0.6765
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 38,
+     "linked": 3,
+     "nameCand": 10,
+     "lower": 0.0789,
+     "upper": 0.3421
+    },
+    "NYSE|MID": {
+     "considered": 10,
+     "linked": 6,
+     "nameCand": 2,
+     "lower": 0.6,
+     "upper": 0.8
+    },
+    "NASDAQ|MID": {
+     "considered": 15,
+     "linked": 10,
+     "nameCand": 2,
+     "lower": 0.6667,
+     "upper": 0.8
+    },
+    "NYSE|SMALL": {
+     "considered": 25,
+     "linked": 15,
+     "nameCand": 5,
+     "lower": 0.6,
+     "upper": 0.8
+    },
+    "UNKNOWN|MID": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.25,
+     "upper": 0.25
+    },
+    "NASDAQ|MICRO": {
+     "considered": 69,
+     "linked": 28,
+     "nameCand": 15,
+     "lower": 0.4058,
+     "upper": 0.6232
+    },
+    "NASDAQ|SMALL": {
+     "considered": 28,
+     "linked": 14,
+     "nameCand": 2,
+     "lower": 0.5,
+     "upper": 0.5714
+    },
+    "AMEX|MICRO": {
+     "considered": 12,
+     "linked": 2,
+     "nameCand": 6,
+     "lower": 0.1667,
+     "upper": 0.6667
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 40,
+     "linked": 22,
+     "nameCand": 7,
+     "lower": 0.55,
+     "upper": 0.725
+    },
+    "AMEX|SMALL": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 50,
+     "linked": 18,
+     "nameCand": 15,
+     "lower": 0.36,
+     "upper": 0.66
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 6,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.3333,
+     "upper": 0.5
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 0.75
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 5,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 0.8,
+     "upper": 0.8
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    }
+   }
+  },
+  "2021": {
+   "exchange": {
+    "NYSE": {
+     "considered": 144,
+     "linked": 49,
+     "nameCand": 46,
+     "lower": 0.3403,
+     "upper": 0.6597
+    },
+    "NASDAQ": {
+     "considered": 205,
+     "linked": 101,
+     "nameCand": 45,
+     "lower": 0.4927,
+     "upper": 0.7122
+    },
+    "UNKNOWN": {
+     "considered": 63,
+     "linked": 7,
+     "nameCand": 22,
+     "lower": 0.1111,
+     "upper": 0.4603
+    },
+    "AMEX": {
+     "considered": 6,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.1667,
+     "upper": 0.8333
+    },
+    "ARCA": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 126,
+     "linked": 39,
+     "nameCand": 44,
+     "lower": 0.3095,
+     "upper": 0.6587
+    },
+    "MICRO": {
+     "considered": 139,
+     "linked": 56,
+     "nameCand": 40,
+     "lower": 0.4029,
+     "upper": 0.6906
+    },
+    "SMALL": {
+     "considered": 106,
+     "linked": 37,
+     "nameCand": 24,
+     "lower": 0.3491,
+     "upper": 0.5755
+    },
+    "MID": {
+     "considered": 40,
+     "linked": 22,
+     "nameCand": 8,
+     "lower": 0.55,
+     "upper": 0.75
+    },
+    "MEGA_LARGE": {
+     "considered": 8,
+     "linked": 4,
+     "nameCand": 2,
+     "lower": 0.5,
+     "upper": 0.75
+    }
+   },
+   "exchangeXsize": {
+    "NYSE|UNKNOWN": {
+     "considered": 51,
+     "linked": 13,
+     "nameCand": 24,
+     "lower": 0.2549,
+     "upper": 0.7255
+    },
+    "NYSE|MICRO": {
+     "considered": 27,
+     "linked": 11,
+     "nameCand": 7,
+     "lower": 0.4074,
+     "upper": 0.6667
+    },
+    "NASDAQ|SMALL": {
+     "considered": 62,
+     "linked": 25,
+     "nameCand": 14,
+     "lower": 0.4032,
+     "upper": 0.629
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 43,
+     "linked": 22,
+     "nameCand": 10,
+     "lower": 0.5116,
+     "upper": 0.7442
+    },
+    "UNKNOWN|MID": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "NYSE|MID": {
+     "considered": 23,
+     "linked": 11,
+     "nameCand": 6,
+     "lower": 0.4783,
+     "upper": 0.7391
+    },
+    "NYSE|SMALL": {
+     "considered": 38,
+     "linked": 12,
+     "nameCand": 8,
+     "lower": 0.3158,
+     "upper": 0.5263
+    },
+    "NASDAQ|MICRO": {
+     "considered": 85,
+     "linked": 41,
+     "nameCand": 21,
+     "lower": 0.4824,
+     "upper": 0.7294
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 30,
+     "linked": 4,
+     "nameCand": 9,
+     "lower": 0.1333,
+     "upper": 0.4333
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 23,
+     "linked": 3,
+     "nameCand": 9,
+     "lower": 0.1304,
+     "upper": 0.5217
+    },
+    "NASDAQ|MID": {
+     "considered": 13,
+     "linked": 11,
+     "nameCand": 0,
+     "lower": 0.8462,
+     "upper": 0.8462
+    },
+    "AMEX|MICRO": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 3,
+     "lower": 0.25,
+     "upper": 1
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 5,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.4,
+     "upper": 0.6
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 6,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    }
+   }
+  },
+  "2022": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 276,
+     "linked": 130,
+     "nameCand": 72,
+     "lower": 0.471,
+     "upper": 0.7319
+    },
+    "NYSE": {
+     "considered": 205,
+     "linked": 79,
+     "nameCand": 60,
+     "lower": 0.3854,
+     "upper": 0.678
+    },
+    "UNKNOWN": {
+     "considered": 54,
+     "linked": 5,
+     "nameCand": 19,
+     "lower": 0.0926,
+     "upper": 0.4444
+    },
+    "AMEX": {
+     "considered": 18,
+     "linked": 12,
+     "nameCand": 3,
+     "lower": 0.6667,
+     "upper": 0.8333
+    },
+    "ARCA": {
+     "considered": 4,
+     "linked": 1,
+     "nameCand": 2,
+     "lower": 0.25,
+     "upper": 0.75
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 142,
+     "linked": 42,
+     "nameCand": 38,
+     "lower": 0.2958,
+     "upper": 0.5634
+    },
+    "SMALL": {
+     "considered": 132,
+     "linked": 59,
+     "nameCand": 39,
+     "lower": 0.447,
+     "upper": 0.7424
+    },
+    "MEGA_LARGE": {
+     "considered": 13,
+     "linked": 6,
+     "nameCand": 3,
+     "lower": 0.4615,
+     "upper": 0.6923
+    },
+    "MICRO": {
+     "considered": 224,
+     "linked": 101,
+     "nameCand": 65,
+     "lower": 0.4509,
+     "upper": 0.7411
+    },
+    "MID": {
+     "considered": 46,
+     "linked": 19,
+     "nameCand": 11,
+     "lower": 0.413,
+     "upper": 0.6522
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|UNKNOWN": {
+     "considered": 54,
+     "linked": 21,
+     "nameCand": 13,
+     "lower": 0.3889,
+     "upper": 0.6296
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 52,
+     "linked": 12,
+     "nameCand": 15,
+     "lower": 0.2308,
+     "upper": 0.5192
+    },
+    "NYSE|SMALL": {
+     "considered": 66,
+     "linked": 30,
+     "nameCand": 17,
+     "lower": 0.4545,
+     "upper": 0.7121
+    },
+    "NASDAQ|SMALL": {
+     "considered": 59,
+     "linked": 28,
+     "nameCand": 18,
+     "lower": 0.4746,
+     "upper": 0.7797
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 5,
+     "linked": 2,
+     "nameCand": 2,
+     "lower": 0.4,
+     "upper": 0.8
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 23,
+     "linked": 3,
+     "nameCand": 7,
+     "lower": 0.1304,
+     "upper": 0.4348
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 8,
+     "linked": 4,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 0.625
+    },
+    "NASDAQ|MICRO": {
+     "considered": 134,
+     "linked": 71,
+     "nameCand": 34,
+     "lower": 0.5299,
+     "upper": 0.7836
+    },
+    "NASDAQ|MID": {
+     "considered": 21,
+     "linked": 6,
+     "nameCand": 6,
+     "lower": 0.2857,
+     "upper": 0.5714
+    },
+    "AMEX|MICRO": {
+     "considered": 8,
+     "linked": 5,
+     "nameCand": 3,
+     "lower": 0.625,
+     "upper": 1
+    },
+    "NYSE|MID": {
+     "considered": 24,
+     "linked": 13,
+     "nameCand": 5,
+     "lower": 0.5417,
+     "upper": 0.75
+    },
+    "NYSE|MICRO": {
+     "considered": 58,
+     "linked": 22,
+     "nameCand": 21,
+     "lower": 0.3793,
+     "upper": 0.7414
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 8,
+     "linked": 6,
+     "nameCand": 0,
+     "lower": 0.75,
+     "upper": 0.75
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 5,
+     "linked": 0,
+     "nameCand": 4,
+     "lower": 0,
+     "upper": 0.8
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 2,
+     "lower": 0.3333,
+     "upper": 1
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 25,
+     "linked": 2,
+     "nameCand": 8,
+     "lower": 0.08,
+     "upper": 0.4
+    },
+    "UNKNOWN|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|SMALL": {
+     "considered": 2,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 0.5,
+     "upper": 0.5
+    },
+    "ARCA|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2023": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 407,
+     "linked": 209,
+     "nameCand": 99,
+     "lower": 0.5135,
+     "upper": 0.7568
+    },
+    "NYSE": {
+     "considered": 148,
+     "linked": 79,
+     "nameCand": 34,
+     "lower": 0.5338,
+     "upper": 0.7635
+    },
+    "AMEX": {
+     "considered": 47,
+     "linked": 14,
+     "nameCand": 16,
+     "lower": 0.2979,
+     "upper": 0.6383
+    },
+    "UNKNOWN": {
+     "considered": 67,
+     "linked": 6,
+     "nameCand": 23,
+     "lower": 0.0896,
+     "upper": 0.4328
+    },
+    "ARCA": {
+     "considered": 10,
+     "linked": 2,
+     "nameCand": 7,
+     "lower": 0.2,
+     "upper": 0.9
+    }
+   },
+   "sizeClass": {
+    "MID": {
+     "considered": 24,
+     "linked": 19,
+     "nameCand": 1,
+     "lower": 0.7917,
+     "upper": 0.8333
+    },
+    "MICRO": {
+     "considered": 323,
+     "linked": 126,
+     "nameCand": 89,
+     "lower": 0.3901,
+     "upper": 0.6656
+    },
+    "SMALL": {
+     "considered": 108,
+     "linked": 65,
+     "nameCand": 25,
+     "lower": 0.6019,
+     "upper": 0.8333
+    },
+    "MEGA_LARGE": {
+     "considered": 14,
+     "linked": 8,
+     "nameCand": 3,
+     "lower": 0.5714,
+     "upper": 0.7857
+    },
+    "UNKNOWN": {
+     "considered": 210,
+     "linked": 92,
+     "nameCand": 61,
+     "lower": 0.4381,
+     "upper": 0.7286
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|MID": {
+     "considered": 11,
+     "linked": 8,
+     "nameCand": 0,
+     "lower": 0.7273,
+     "upper": 0.7273
+    },
+    "NYSE|MICRO": {
+     "considered": 57,
+     "linked": 29,
+     "nameCand": 13,
+     "lower": 0.5088,
+     "upper": 0.7368
+    },
+    "AMEX|SMALL": {
+     "considered": 12,
+     "linked": 7,
+     "nameCand": 2,
+     "lower": 0.5833,
+     "upper": 0.75
+    },
+    "NASDAQ|MICRO": {
+     "considered": 199,
+     "linked": 89,
+     "nameCand": 52,
+     "lower": 0.4472,
+     "upper": 0.7085
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    },
+    "AMEX|MICRO": {
+     "considered": 24,
+     "linked": 5,
+     "nameCand": 9,
+     "lower": 0.2083,
+     "upper": 0.5833
+    },
+    "NASDAQ|SMALL": {
+     "considered": 62,
+     "linked": 38,
+     "nameCand": 16,
+     "lower": 0.6129,
+     "upper": 0.871
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 46,
+     "linked": 19,
+     "nameCand": 14,
+     "lower": 0.413,
+     "upper": 0.7174
+    },
+    "NYSE|MID": {
+     "considered": 11,
+     "linked": 10,
+     "nameCand": 0,
+     "lower": 0.9091,
+     "upper": 0.9091
+    },
+    "AMEX|MID": {
+     "considered": 2,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 1
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 37,
+     "linked": 2,
+     "nameCand": 11,
+     "lower": 0.0541,
+     "upper": 0.3514
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 8,
+     "linked": 6,
+     "nameCand": 2,
+     "lower": 0.75,
+     "upper": 1
+    },
+    "NYSE|SMALL": {
+     "considered": 30,
+     "linked": 19,
+     "nameCand": 7,
+     "lower": 0.6333,
+     "upper": 0.8667
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 127,
+     "linked": 68,
+     "nameCand": 29,
+     "lower": 0.5354,
+     "upper": 0.7638
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 26,
+     "linked": 4,
+     "nameCand": 11,
+     "lower": 0.1538,
+     "upper": 0.5769
+    },
+    "AMEX|MEGA_LARGE": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 8,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.125,
+     "upper": 0.625
+    },
+    "ARCA|MICRO": {
+     "considered": 6,
+     "linked": 1,
+     "nameCand": 4,
+     "lower": 0.1667,
+     "upper": 0.8333
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 3,
+     "lower": 0,
+     "upper": 1
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.5,
+     "upper": 0.5
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "ARCA|SMALL": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    }
+   }
+  },
+  "2024": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 286,
+     "linked": 104,
+     "nameCand": 75,
+     "lower": 0.3636,
+     "upper": 0.6259
+    },
+    "NYSE": {
+     "considered": 127,
+     "linked": 53,
+     "nameCand": 23,
+     "lower": 0.4173,
+     "upper": 0.5984
+    },
+    "UNKNOWN": {
+     "considered": 59,
+     "linked": 5,
+     "nameCand": 21,
+     "lower": 0.0847,
+     "upper": 0.4407
+    },
+    "AMEX": {
+     "considered": 23,
+     "linked": 9,
+     "nameCand": 8,
+     "lower": 0.3913,
+     "upper": 0.7391
+    },
+    "ARCA": {
+     "considered": 6,
+     "linked": 2,
+     "nameCand": 3,
+     "lower": 0.3333,
+     "upper": 0.8333
+    },
+    "OTHER": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    }
+   },
+   "sizeClass": {
+    "MID": {
+     "considered": 25,
+     "linked": 13,
+     "nameCand": 6,
+     "lower": 0.52,
+     "upper": 0.76
+    },
+    "SMALL": {
+     "considered": 57,
+     "linked": 42,
+     "nameCand": 5,
+     "lower": 0.7368,
+     "upper": 0.8246
+    },
+    "UNKNOWN": {
+     "considered": 182,
+     "linked": 59,
+     "nameCand": 46,
+     "lower": 0.3242,
+     "upper": 0.5769
+    },
+    "MEGA_LARGE": {
+     "considered": 10,
+     "linked": 3,
+     "nameCand": 2,
+     "lower": 0.3,
+     "upper": 0.5
+    },
+    "MICRO": {
+     "considered": 230,
+     "linked": 56,
+     "nameCand": 72,
+     "lower": 0.2435,
+     "upper": 0.5565
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|MID": {
+     "considered": 11,
+     "linked": 5,
+     "nameCand": 3,
+     "lower": 0.4545,
+     "upper": 0.7273
+    },
+    "NYSE|MID": {
+     "considered": 13,
+     "linked": 8,
+     "nameCand": 2,
+     "lower": 0.6154,
+     "upper": 0.7692
+    },
+    "NASDAQ|SMALL": {
+     "considered": 28,
+     "linked": 21,
+     "nameCand": 2,
+     "lower": 0.75,
+     "upper": 0.8214
+    },
+    "NYSE|SMALL": {
+     "considered": 24,
+     "linked": 18,
+     "nameCand": 2,
+     "lower": 0.75,
+     "upper": 0.8333
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 41,
+     "linked": 13,
+     "nameCand": 8,
+     "lower": 0.3171,
+     "upper": 0.5122
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 6,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.1667,
+     "upper": 0.3333
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 3,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.3333,
+     "upper": 0.6667
+    },
+    "NYSE|MICRO": {
+     "considered": 43,
+     "linked": 13,
+     "nameCand": 10,
+     "lower": 0.3023,
+     "upper": 0.5349
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 7,
+     "linked": 2,
+     "nameCand": 3,
+     "lower": 0.2857,
+     "upper": 0.7143
+    },
+    "NASDAQ|MICRO": {
+     "considered": 144,
+     "linked": 36,
+     "nameCand": 45,
+     "lower": 0.25,
+     "upper": 0.5625
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 101,
+     "linked": 40,
+     "nameCand": 25,
+     "lower": 0.396,
+     "upper": 0.6436
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 31,
+     "linked": 3,
+     "nameCand": 9,
+     "lower": 0.0968,
+     "upper": 0.3871
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 23,
+     "linked": 1,
+     "nameCand": 10,
+     "lower": 0.0435,
+     "upper": 0.4783
+    },
+    "AMEX|SMALL": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "AMEX|MICRO": {
+     "considered": 15,
+     "linked": 6,
+     "nameCand": 5,
+     "lower": 0.4,
+     "upper": 0.7333
+    },
+    "ARCA|MICRO": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    },
+    "OTHER|MICRO": {
+     "considered": 3,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.3333
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "ARCA|UNKNOWN": {
+     "considered": 2,
+     "linked": 1,
+     "nameCand": 1,
+     "lower": 0.5,
+     "upper": 1
+    },
+    "ARCA|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 1
+    },
+    "ARCA|SMALL": {
+     "considered": 1,
+     "linked": 1,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "UNKNOWN|MEGA_LARGE": {
+     "considered": 2,
+     "linked": 0,
+     "nameCand": 1,
+     "lower": 0,
+     "upper": 0.5
+    }
+   }
+  },
+  "2025": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 314,
+     "linked": 108,
+     "nameCand": 69,
+     "lower": 0.3439,
+     "upper": 0.5637
+    },
+    "NYSE": {
+     "considered": 91,
+     "linked": 51,
+     "nameCand": 15,
+     "lower": 0.5604,
+     "upper": 0.7253
+    },
+    "UNKNOWN": {
+     "considered": 62,
+     "linked": 2,
+     "nameCand": 20,
+     "lower": 0.0323,
+     "upper": 0.3548
+    },
+    "AMEX": {
+     "considered": 20,
+     "linked": 7,
+     "nameCand": 3,
+     "lower": 0.35,
+     "upper": 0.5
+    }
+   },
+   "sizeClass": {
+    "MID": {
+     "considered": 32,
+     "linked": 22,
+     "nameCand": 2,
+     "lower": 0.6875,
+     "upper": 0.75
+    },
+    "UNKNOWN": {
+     "considered": 172,
+     "linked": 40,
+     "nameCand": 45,
+     "lower": 0.2326,
+     "upper": 0.4942
+    },
+    "MICRO": {
+     "considered": 206,
+     "linked": 53,
+     "nameCand": 54,
+     "lower": 0.2573,
+     "upper": 0.5194
+    },
+    "MEGA_LARGE": {
+     "considered": 11,
+     "linked": 8,
+     "nameCand": 1,
+     "lower": 0.7273,
+     "upper": 0.8182
+    },
+    "SMALL": {
+     "considered": 66,
+     "linked": 45,
+     "nameCand": 5,
+     "lower": 0.6818,
+     "upper": 0.7576
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|MID": {
+     "considered": 15,
+     "linked": 11,
+     "nameCand": 2,
+     "lower": 0.7333,
+     "upper": 0.8667
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 30,
+     "linked": 12,
+     "nameCand": 9,
+     "lower": 0.4,
+     "upper": 0.7
+    },
+    "NASDAQ|MICRO": {
+     "considered": 148,
+     "linked": 41,
+     "nameCand": 37,
+     "lower": 0.277,
+     "upper": 0.527
+    },
+    "UNKNOWN|MID": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 5,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 0.8,
+     "upper": 0.8
+    },
+    "NYSE|MID": {
+     "considered": 16,
+     "linked": 11,
+     "nameCand": 0,
+     "lower": 0.6875,
+     "upper": 0.6875
+    },
+    "NASDAQ|UNKNOWN": {
+     "considered": 108,
+     "linked": 23,
+     "nameCand": 28,
+     "lower": 0.213,
+     "upper": 0.4722
+    },
+    "NYSE|SMALL": {
+     "considered": 24,
+     "linked": 16,
+     "nameCand": 3,
+     "lower": 0.6667,
+     "upper": 0.7917
+    },
+    "AMEX|MICRO": {
+     "considered": 12,
+     "linked": 3,
+     "nameCand": 3,
+     "lower": 0.25,
+     "upper": 0.5
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 31,
+     "linked": 1,
+     "nameCand": 12,
+     "lower": 0.0323,
+     "upper": 0.4194
+    },
+    "NASDAQ|SMALL": {
+     "considered": 38,
+     "linked": 29,
+     "nameCand": 2,
+     "lower": 0.7632,
+     "upper": 0.8158
+    },
+    "NYSE|MICRO": {
+     "considered": 15,
+     "linked": 8,
+     "nameCand": 2,
+     "lower": 0.5333,
+     "upper": 0.6667
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 6,
+     "linked": 4,
+     "nameCand": 1,
+     "lower": 0.6667,
+     "upper": 0.8333
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 26,
+     "linked": 1,
+     "nameCand": 8,
+     "lower": 0.0385,
+     "upper": 0.3462
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 8,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 0.5,
+     "upper": 0.5
+    },
+    "UNKNOWN|SMALL": {
+     "considered": 4,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  },
+  "2026": {
+   "exchange": {
+    "NASDAQ": {
+     "considered": 172,
+     "linked": 70,
+     "nameCand": 36,
+     "lower": 0.407,
+     "upper": 0.6163
+    },
+    "NYSE": {
+     "considered": 70,
+     "linked": 38,
+     "nameCand": 17,
+     "lower": 0.5429,
+     "upper": 0.7857
+    },
+    "UNKNOWN": {
+     "considered": 17,
+     "linked": 2,
+     "nameCand": 4,
+     "lower": 0.1176,
+     "upper": 0.3529
+    },
+    "AMEX": {
+     "considered": 7,
+     "linked": 6,
+     "nameCand": 0,
+     "lower": 0.8571,
+     "upper": 0.8571
+    },
+    "ARCA": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   },
+   "sizeClass": {
+    "UNKNOWN": {
+     "considered": 103,
+     "linked": 28,
+     "nameCand": 26,
+     "lower": 0.2718,
+     "upper": 0.5243
+    },
+    "MID": {
+     "considered": 20,
+     "linked": 13,
+     "nameCand": 3,
+     "lower": 0.65,
+     "upper": 0.8
+    },
+    "SMALL": {
+     "considered": 45,
+     "linked": 32,
+     "nameCand": 5,
+     "lower": 0.7111,
+     "upper": 0.8222
+    },
+    "MICRO": {
+     "considered": 92,
+     "linked": 38,
+     "nameCand": 21,
+     "lower": 0.413,
+     "upper": 0.6413
+    },
+    "MEGA_LARGE": {
+     "considered": 7,
+     "linked": 5,
+     "nameCand": 2,
+     "lower": 0.7143,
+     "upper": 1
+    }
+   },
+   "exchangeXsize": {
+    "NASDAQ|UNKNOWN": {
+     "considered": 65,
+     "linked": 13,
+     "nameCand": 16,
+     "lower": 0.2,
+     "upper": 0.4462
+    },
+    "NYSE|UNKNOWN": {
+     "considered": 23,
+     "linked": 11,
+     "nameCand": 8,
+     "lower": 0.4783,
+     "upper": 0.8261
+    },
+    "NYSE|MID": {
+     "considered": 11,
+     "linked": 7,
+     "nameCand": 2,
+     "lower": 0.6364,
+     "upper": 0.8182
+    },
+    "NYSE|SMALL": {
+     "considered": 21,
+     "linked": 14,
+     "nameCand": 2,
+     "lower": 0.6667,
+     "upper": 0.7619
+    },
+    "NASDAQ|SMALL": {
+     "considered": 24,
+     "linked": 18,
+     "nameCand": 3,
+     "lower": 0.75,
+     "upper": 0.875
+    },
+    "NASDAQ|MICRO": {
+     "considered": 70,
+     "linked": 30,
+     "nameCand": 15,
+     "lower": 0.4286,
+     "upper": 0.6429
+    },
+    "NYSE|MEGA_LARGE": {
+     "considered": 3,
+     "linked": 2,
+     "nameCand": 1,
+     "lower": 0.6667,
+     "upper": 1
+    },
+    "NASDAQ|MID": {
+     "considered": 9,
+     "linked": 6,
+     "nameCand": 1,
+     "lower": 0.6667,
+     "upper": 0.7778
+    },
+    "UNKNOWN|MICRO": {
+     "considered": 6,
+     "linked": 2,
+     "nameCand": 2,
+     "lower": 0.3333,
+     "upper": 0.6667
+    },
+    "NASDAQ|MEGA_LARGE": {
+     "considered": 4,
+     "linked": 3,
+     "nameCand": 1,
+     "lower": 0.75,
+     "upper": 1
+    },
+    "AMEX|UNKNOWN": {
+     "considered": 4,
+     "linked": 4,
+     "nameCand": 0,
+     "lower": 1,
+     "upper": 1
+    },
+    "NYSE|MICRO": {
+     "considered": 12,
+     "linked": 4,
+     "nameCand": 4,
+     "lower": 0.3333,
+     "upper": 0.6667
+    },
+    "UNKNOWN|UNKNOWN": {
+     "considered": 11,
+     "linked": 0,
+     "nameCand": 2,
+     "lower": 0,
+     "upper": 0.1818
+    },
+    "AMEX|MICRO": {
+     "considered": 3,
+     "linked": 2,
+     "nameCand": 0,
+     "lower": 0.6667,
+     "upper": 0.6667
+    },
+    "ARCA|MICRO": {
+     "considered": 1,
+     "linked": 0,
+     "nameCand": 0,
+     "lower": 0,
+     "upper": 0
+    }
+   }
+  }
+ },
+ "exchangeAgents": {
+  "agents": {
+   "0000876661": {
+    "name": "NEW YORK STOCK EXCHANGE LLC",
+    "group": "NYSE",
+    "filings25NSE": 15320,
+    "source": "https://data.sec.gov/submissions/CIK0000876661.json",
+    "sha256": "f2152e06f8370474aa355bfac44024c36ab719a7ab0badeab886243ebb0373bd"
+   },
+   "0001354457": {
+    "name": "Nasdaq Stock Market LLC",
+    "group": "NASDAQ",
+    "filings25NSE": 11830,
+    "source": "https://data.sec.gov/submissions/CIK0001354457.json",
+    "sha256": "8caa11ecf75bf3ea5652bf662e0ef0cddb441648c150550bda97c9a5f89a04fe"
+   },
+   "0001143362": {
+    "name": "NYSE ARCA, INC.",
+    "group": "ARCA",
+    "filings25NSE": 3080,
+    "source": "https://data.sec.gov/submissions/CIK0001143362.json",
+    "sha256": "04ce4c291c70e2c18109ef76351991e7ccbfd699fa566c141cafcc36354963f8"
+   },
+   "0001143313": {
+    "name": "NYSE AMERICAN LLC",
+    "group": "AMEX",
+    "filings25NSE": 2724,
+    "source": "https://data.sec.gov/submissions/CIK0001143313.json",
+    "sha256": "e48807079c89e314d80067f5c9610e845f5321430973690d9fc23fdb434be437"
+   },
+   "0001417835": {
+    "name": "Cboe BZX Exchange, Inc.",
+    "group": "OTHER",
+    "filings25NSE": 430,
+    "source": "https://data.sec.gov/submissions/CIK0001417835.json",
+    "sha256": "b8e6207eab4414965cab09824c560a70278799322c89a7886014a1db9c54cc8b"
+   },
+   "0001296945": {
+    "name": "Boston Stock Exchange Inc",
+    "group": "OTHER",
+    "filings25NSE": 54,
+    "source": "https://data.sec.gov/submissions/CIK0001296945.json",
+    "sha256": "bbe63a51ad196be9c175247bb5fc69ac50b63a63d022589423f658fe9c55ebe7"
+   },
+   "0000876882": {
+    "name": "NYSE TEXAS, INC.",
+    "group": "OTHER",
+    "filings25NSE": 38,
+    "source": "https://data.sec.gov/submissions/CIK0000876882.json",
+    "sha256": "ed80ccaee0928488fae08aa90054b30312476f2dd367c4e36b3d4e110ba80daa"
+   }
+  },
+  "rule": "group from SEC entity name: ARCA, AMEX (American/NYSE MKT/Amex), NYSE (New York Stock Exchange), NASDAQ (The Nasdaq Stock Market), else OTHER",
+  "sec": {
+   "network": 0,
+   "ownCache": 7,
+   "v10Cache": 0
+  }
+ },
+ "endedChainsByYear": {
+  "1997": {
+   "endedChains": 1,
+   "byEndSource": {
+    "PROVIDER": 1
+   },
+   "linked": 0,
+   "linkedToSecDelistingForm": 0,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.011
+  },
+  "2003": {
+   "endedChains": 1,
+   "byEndSource": {
+    "DERIVED_FROM_SEC_DELISTING_FORM": 1
+   },
+   "linked": 1,
+   "linkedToSecDelistingForm": 1,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0037
+  },
+  "2006": {
+   "endedChains": 1,
+   "byEndSource": {
+    "PROVIDER": 1
+   },
+   "linked": 0,
+   "linkedToSecDelistingForm": 0,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0019
+  },
+  "2007": {
+   "endedChains": 2,
+   "byEndSource": {
+    "PROVIDER": 2
+   },
+   "linked": 1,
+   "linkedToSecDelistingForm": 1,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0024
+  },
+  "2008": {
+   "endedChains": 4,
+   "byEndSource": {
+    "PROVIDER": 4
+   },
+   "linked": 3,
+   "linkedToSecDelistingForm": 3,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0063
+  },
+  "2009": {
+   "endedChains": 37,
+   "byEndSource": {
+    "PROVIDER": 37
+   },
+   "linked": 15,
+   "linkedToSecDelistingForm": 15,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0597
+  },
+  "2010": {
+   "endedChains": 45,
+   "byEndSource": {
+    "PROVIDER": 45
+   },
+   "linked": 22,
+   "linkedToSecDelistingForm": 22,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0879
+  },
+  "2011": {
+   "endedChains": 73,
+   "byEndSource": {
+    "PROVIDER": 73
+   },
+   "linked": 22,
+   "linkedToSecDelistingForm": 22,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.155
+  },
+  "2012": {
+   "endedChains": 51,
+   "byEndSource": {
+    "PROVIDER": 50,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 1
+   },
+   "linked": 30,
+   "linkedToSecDelistingForm": 30,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.1118
+  },
+  "2013": {
+   "endedChains": 131,
+   "byEndSource": {
+    "PROVIDER": 131
+   },
+   "linked": 61,
+   "linkedToSecDelistingForm": 61,
+   "withSeries": 2,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.2937
+  },
+  "2014": {
+   "endedChains": 142,
+   "byEndSource": {
+    "PROVIDER": 142
+   },
+   "linked": 85,
+   "linkedToSecDelistingForm": 84,
+   "withSeries": 7,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.3717
+  },
+  "2015": {
+   "endedChains": 268,
+   "byEndSource": {
+    "PROVIDER": 266,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 175,
+   "linkedToSecDelistingForm": 175,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6489
+  },
+  "2016": {
+   "endedChains": 312,
+   "byEndSource": {
+    "PROVIDER": 312
+   },
+   "linked": 200,
+   "linkedToSecDelistingForm": 200,
+   "withSeries": 3,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.646
+  },
+  "2017": {
+   "endedChains": 405,
+   "byEndSource": {
+    "PROVIDER": 405
+   },
+   "linked": 195,
+   "linkedToSecDelistingForm": 195,
+   "withSeries": 10,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.9184
+  },
+  "2018": {
+   "endedChains": 421,
+   "byEndSource": {
+    "PROVIDER": 421
+   },
+   "linked": 187,
+   "linkedToSecDelistingForm": 186,
+   "withSeries": 4,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 1.0851
+  },
+  "2019": {
+   "endedChains": 276,
+   "byEndSource": {
+    "PROVIDER": 276
+   },
+   "linked": 152,
+   "linkedToSecDelistingForm": 152,
+   "withSeries": 3,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6798
+  },
+  "2020": {
+   "endedChains": 248,
+   "byEndSource": {
+    "PROVIDER": 245,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 3
+   },
+   "linked": 155,
+   "linkedToSecDelistingForm": 155,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6492
+  },
+  "2021": {
+   "endedChains": 343,
+   "byEndSource": {
+    "PROVIDER": 341,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 188,
+   "linkedToSecDelistingForm": 187,
+   "withSeries": 5,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.8186
+  },
+  "2022": {
+   "endedChains": 413,
+   "byEndSource": {
+    "PROVIDER": 411,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 243,
+   "linkedToSecDelistingForm": 242,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.7415
+  },
+  "2023": {
+   "endedChains": 489,
+   "byEndSource": {
+    "PROVIDER": 482,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 7
+   },
+   "linked": 353,
+   "linkedToSecDelistingForm": 353,
+   "withSeries": 11,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.7202
+  },
+  "2024": {
+   "endedChains": 280,
+   "byEndSource": {
+    "PROVIDER": 256,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 24
+   },
+   "linked": 189,
+   "linkedToSecDelistingForm": 189,
+   "withSeries": 22,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.5556
+  },
+  "2025": {
+   "endedChains": 264,
+   "byEndSource": {
+    "PROVIDER": 236,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 10,
+    "V10_LIFECYCLE_LAST_TRADE": 18
+   },
+   "linked": 182,
+   "linkedToSecDelistingForm": 164,
+   "withSeries": 19,
+   "lifecycle": 18,
+   "countRatioEndedChainsToEdgarEvents": 0.5421
+  },
+  "2026": {
+   "endedChains": 267,
+   "byEndSource": {
+    "PROVIDER": 245,
+    "V10_LIFECYCLE_LAST_TRADE": 9,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 13
+   },
+   "linked": 142,
+   "linkedToSecDelistingForm": 128,
+   "withSeries": 45,
+   "lifecycle": 9,
+   "countRatioEndedChainsToEdgarEvents": 1
+  }
+ }
+}

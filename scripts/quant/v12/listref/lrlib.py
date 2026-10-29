@@ -68,6 +68,14 @@ def get(url, network=True):
     return body, {'url': url, 'bytes': len(body), 'sha256': sha256(body), 'from': src}
 
 
+def drop_cached(url):
+    """Remove an error body from the own private cache so a retry fetches it again."""
+    d = hashlib.sha256(url.encode('utf-8')).hexdigest()
+    p = PRIVATE / 'http-cache' / d[:2] / (d + '.gz')
+    if p.exists():
+        p.unlink()
+
+
 def write_json(path, obj, compact=False):
     p = pathlib.Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)

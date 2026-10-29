@@ -33,6 +33,9 @@ def main():
         try:
             body, meta = L.get(q['url'])
             d = json.loads(body)
+            if 'hits' not in d:
+                L.drop_cached(q['url'])
+                raise RuntimeError('EFTS_ERROR_BODY ' + str(d)[:120])
             hits = d.get('hits', {}).get('hits', [])
             res['results'][q['url']] = {'kind': q['kind'], 'total': d.get('hits', {}).get('total', {}).get('value', 0), 'sha256': meta['sha256'],
                                         'hits': [[h['_source'].get('ciks', []), h['_source'].get('form'), h['_source'].get('file_date')] for h in hits]}

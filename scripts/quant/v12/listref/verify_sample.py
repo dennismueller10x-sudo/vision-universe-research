@@ -7,7 +7,7 @@ Deterministic stratified sample of register events with linked reference chains 
     ticker occurs in the 8-K or the Form 25 filing (link check).
 Writes the committed evidence file (quotes <= 300 chars, URLs, SHA-256) and counts documents fetched.
 
-    python3 scripts/quant/v12/listref/verify_sample.py --out docs/quant-recovery/v12/listref/verification-sample-1.0.1.json
+    python3 scripts/quant/v12/listref/verify_sample.py --out docs/quant-recovery/v12/listref/verification-sample-1.0.2.json
 """
 import argparse
 import hashlib
@@ -22,6 +22,8 @@ import lrlib as L  # noqa: E402
 
 QUOTAS = [('MERGER_ACQUISITION_COMPLETED', 22), ('LISTING_RULE_OR_TRANSFER_NOTICE', 14), ('BANKRUPTCY', 8), ('MERGER_PROCESS_INDICATED', 4), ('VOLUNTARY_ISSUER_FILING', 3), ('UNKNOWN', 9)]
 ITEM_RX = {'2.01': r'Item\s*2\.01', '3.01': r'Item\s*3\.01', '1.03': r'Item\s*1\.03'}
+ITEM_TITLE = {'2.01': r'Item\s*2\.01\.?\s*[:\-\u2013\u2014]?\s*Completion\s+of\s+Acquisition', '3.01': r'Item\s*3\.01\.?\s*[:\-\u2013\u2014]?\s*Notice\s+of\s+Delisting',
+              '1.03': r'Item\s*1\.03\.?\s*[:\-\u2013\u2014]?\s*Bankruptcy'}
 RULE_MEANING = {'(a)(1)': 'CALLED_FOR_REDEMPTION', '(a)(2)': 'REDEEMED_OR_RETIRED', '(a)(3)': 'CONVERTED_OR_EXCHANGED_SUBSTITUTED', '(a)(4)': 'RIGHTS_EXTINGUISHED',
                 '(b)': 'EXCHANGE_REMOVAL_RULES', '(c)': 'ISSUER_VOLUNTARY_WITHDRAWAL'}
 
@@ -90,9 +92,12 @@ def main():
                 t = text_of(body)
                 texts.append(t)
                 it = {'MERGER_ACQUISITION_COMPLETED': '2.01', 'LISTING_RULE_OR_TRANSFER_NOTICE': '3.01', 'BANKRUPTCY': '1.03'}[r['reason']]
-                mm = None
-                for mm in re.finditer(ITEM_RX[it], t):
-                    pass  # last occurrence = body heading, not the cover-page checkbox list
+                # body heading = the LAST occurrence of 'Item x.xx <title>' (the cover page may list the title too); fallback: last bare occurrence
+                heads = list(re.finditer(ITEM_TITLE[it], t, re.I))
+                mm = heads[-1] if heads else None
+                if mm is None:
+                    for mm in re.finditer(ITEM_RX[it], t):
+                        pass
                 quote = t[mm.start(): mm.start() + 300] if mm else None
                 case['eightK'] = {'url': url, 'sha256': m['sha256'], 'filingDate': r['decisive8KDate'], 'item': it, 'quote': quote}
                 case['documents'].append(url)
@@ -122,9 +127,9 @@ def main():
         rm = str((c.get('form25') or {}).get('ruleMeaning'))
         agg['ruleMeaningByReason'].setdefault(c['claimedReason'], {})
         agg['ruleMeaningByReason'][c['claimedReason']][rm] = agg['ruleMeaningByReason'][c['claimedReason']].get(rm, 0) + 1
-    doc = {'schemaVersion': 'v12-listref-verification-sample-1.0.1', 'evidenceKind': 'SOURCE_EVIDENCE', 'certificationStatus': 'NOT_CERTIFIED', 'productionApproved': False,
+    doc = {'schemaVersion': 'v12-listref-verification-sample-1.0.2', 'evidenceKind': 'SOURCE_EVIDENCE', 'certificationStatus': 'NOT_CERTIFIED', 'productionApproved': False,
            'selection': 'deterministic: per claimed reason the first N LINKED_ITEMS_QUERIED events ordered by sha256(cik|eventDate); quotas %s' % QUOTAS,
-           'quoteRule': 'quote = 300 characters from the last occurrence of the item heading in the 8-K text (HTML stripped)', 'summary': agg, 'sec': dict(L.STATS), 'cases': cases}
+           'quoteRule': 'quote = 300 characters from the last occurrence of the item heading with its title (else the last bare item number) in the 8-K text (HTML stripped); verdict = keyword check on the quote (merger/acquisition/consummation; delisting/listing rule/transfer/notice; bankruptcy/chapter 11/7/receiver)', 'summary': agg, 'sec': dict(L.STATS), 'cases': cases}
     L.write_json(a.out, doc)
     print(json.dumps(agg, indent=1))
 

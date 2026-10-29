@@ -8,7 +8,7 @@ Second implementation, written separately from build_reference.cjs/reflib.cjs, t
 and compares with the committed outputs: reference/chain/reuse counts, CIK link per chain, effective ends, the
 year x {all, exchange} coverage matrix, EDGAR event counts and completeness bounds, reason counts and P4 readiness.
 
-    python3 -I scripts/quant/v12/listref/check_listref.py --out docs/quant-recovery/v12/listref/independent-check-1.0.1.json
+    python3 -I scripts/quant/v12/listref/check_listref.py --out docs/quant-recovery/v12/listref/independent-check-1.0.2.json
 """
 import argparse
 import collections
@@ -137,7 +137,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
-    out = {'schemaVersion': 'v12-listref-independent-check-1.0.1', 'implementation': 'python3 -I stdlib, separate code', 'checks': {}, 'mismatches': {}}
+    out = {'schemaVersion': 'v12-listref-independent-check-1.0.2', 'implementation': 'python3 -I stdlib, separate code', 'checks': {}, 'mismatches': {}}
     chk, mis = out['checks'], out['mismatches']
 
     def compare(name, mine, theirs, sample=None):
@@ -146,7 +146,7 @@ def main():
         if not ok:
             mis[name] = sample if sample is not None else {'independent': mine, 'primary': theirs}
 
-    summary = json.loads((DOCS / 'reference-summary-1.0.1.json').read_text())
+    summary = json.loads((DOCS / 'reference-summary-1.0.2.json').read_text())
     # ---------- reference rows from the raw zip ----------
     with zipfile.ZipFile(PRIV / 'raw' / 'tiingo' / 'supported_tickers.zip') as z:
         text = z.read('supported_tickers.csv').decode('utf-8')
@@ -248,7 +248,8 @@ def main():
 
     def fts(url):
         b = cached(url)
-        return json.loads(b) if b is not None else None
+        d = json.loads(b) if b is not None else None
+        return d if d is not None and 'hits' in d else None
 
     sid_canon = collections.defaultdict(list)
     for s in hold['series']:
@@ -392,8 +393,8 @@ def main():
     floats = collections.defaultdict(list)
     with gzip.open(PRIV / 'work' / 'public-float.tsv.gz', 'rt') as fh:
         for line in fh:
-            k, end, val = line.split('\t')[:3]
-            floats[k].append((end, float(val)))
+            k, end, val, _form, filed, accn = line.rstrip('\n').split('\t')[:6]
+            floats[k].append((end, filed, accn, float(val)))
     grp = {'NYSE': 'NYSE', 'NASDAQ': 'NASDAQ', 'NYSE MKT': 'AMEX', 'AMEX': 'AMEX'}
     mat = collections.defaultdict(lambda: [0, 0, 0, 0, 0, 0])
     for c in chains:
@@ -408,7 +409,7 @@ def main():
         for y in YEARS:
             if not (c['start'] <= '%d-12-31' % y and c['end'] >= '%d-01-01' % y):
                 continue
-            cand = [v for e, v in fl if '%d-07-01' % (y - 2) <= e <= '%d-06-30' % y]
+            cand = [v for e, _f, _a, v in fl if '%d-07-01' % (y - 2) <= e <= '%d-06-30' % y]
             sz = size_class(cand[-1] if cand else None)
             endh = c['ended'] and int(c['end'][:4]) == y
             for key in (('all', 'ALL'), ('exchange', grp[c['exchange']]), ('sizeClass', sz)):
@@ -420,7 +421,7 @@ def main():
                     m[3] += 1
                     m[4] += y in sy
                     m[5] += c['lifecycle']
-    cm_doc = json.loads((DOCS / 'coverage-matrix-1.0.1.json').read_text())
+    cm_doc = json.loads((DOCS / 'coverage-matrix-1.0.2.json').read_text())
     cmis = []
     for (y, seg, val), m in sorted(mat.items()):
         p = cm_doc['years'].get(str(y), {}).get(seg, {}).get(val)
@@ -451,6 +452,15 @@ def main():
     ended = sorted((c for c in chains if c['ended']), key=lambda c: c['end'])
     edates = [c['end'] for c in ended]
     comp = collections.defaultdict(lambda: collections.Counter())
+    agents_doc = json.loads((PRIV / 'work' / 'exchange-agents.json').read_text())
+    agent_group = {}
+    for pfx, ag in agents_doc['agents'].items():
+        body = cached('https://data.sec.gov/submissions/CIK%s.json' % pfx)
+        nm = (json.loads(body).get('name') or '').upper() if body else ''
+        g = 'OTHER' if re.search('TEXAS|CHICAGO|NATIONAL', nm) else 'ARCA' if 'ARCA' in nm else 'AMEX' if re.search('AMERICAN|NYSE MKT|AMEX', nm) else 'NYSE' if ('NEW YORK STOCK EXCHANGE' in nm or nm.startswith('NYSE')) else 'NASDAQ' if 'NASDAQ STOCK MARKET' in nm else 'OTHER'
+        agent_group[pfx] = g
+    compare('exchangeAgentGroups', agent_group, {k: v['group'] for k, v in agents_doc['agents'].items()})
+    segc = collections.defaultdict(lambda: collections.Counter())
     for ev in evs:
         y = int(ev['date'][:4])
         if y < 1995:
@@ -460,17 +470,29 @@ def main():
         if re.fullmatch(r'(?i)NYSE|Nasdaq|NYSE American|NYSE MKT|AMEX', still.get(ev['cik'], '') or ''):
             continue
         comp[y]['considered'] += 1
+        nse = next((f for f in ev['forms'] if f[0] == '25-NSE'), None)
+        exch = agent_group.get(nse[3].split('/')[-1][:10], 'OTHER') if nse else 'UNKNOWN'
+        fl = sorted(floats.get(ev['cik'], []))
+        cand = [v for e, _f, _a, v in fl if '%d-07-01' % (y - 2) <= e <= '%d-06-30' % y]
+        size = size_class(cand[-1] if cand else None)
+        keys = [('exchange', exch), ('sizeClass', size)]
+        for k in keys:
+            segc[(y,) + k]['considered'] += 1
         lk = [c for c in linked_by.get(ev['cik'], []) if c['ended'] and any(-15 <= (D(f[2]) - D(c['end'])).days <= 120 for f in ev['forms'])]
         if lk:
             comp[y]['linked'] += 1
+            for k in keys:
+                segc[(y,) + k]['linked'] += 1
         else:
             i = bisect.bisect_left(edates, plus(ev['date'], -120))
             while i < len(ended) and edates[i] <= plus(ev['last'], 15):
                 if affinity(ended[i]['ticker'], ev['name']) >= 2:
                     comp[y]['nameCand'] += 1
+                    for k in keys:
+                        segc[(y,) + k]['nameCand'] += 1
                     break
                 i += 1
-    cdoc = json.loads((DOCS / 'reference-completeness-1.0.1.json').read_text())['perYear']
+    cdoc = json.loads((DOCS / 'reference-completeness-1.0.2.json').read_text())['perYear']
     comp_mis = []
     for y in YEARS:
         p = cdoc.get(str(y))
@@ -479,6 +501,14 @@ def main():
         if mine != theirs:
             comp_mis.append([y, mine, theirs])
     compare('completenessPerYear', len(comp_mis), 0, sample={'count': len(comp_mis), 'rows': comp_mis})
+    cfull = json.loads((DOCS / 'reference-completeness-1.0.2.json').read_text())['perYearSegment']
+    seg_mis = []
+    for (y, sk, sv), cnt in sorted(segc.items()):
+        p = cfull.get(str(y), {}).get(sk, {}).get(sv)
+        theirs = [p['considered'], p['linked'], p['nameCand']] if p else None
+        if theirs != [cnt['considered'], cnt['linked'], cnt['nameCand']]:
+            seg_mis.append([y, sk, sv, [cnt['considered'], cnt['linked'], cnt['nameCand']], theirs])
+    compare('completenessPerYearExchangeSize', len(seg_mis), 0, sample={'count': len(seg_mis), 'first': seg_mis[:10]})
     # ---------- P4 readiness (all/ALL) ----------
     p4 = json.loads((DOCS / 'coverage-by-year-segment.json').read_text())
     cols = p4['columns']
@@ -498,7 +528,7 @@ def main():
             p4mis.append([r['year'], rd, r['readiness']])
     compare('p4ReadinessAll', len(p4mis), 0, sample={'count': len(p4mis), 'rows': p4mis})
     # ---------- reasons ----------
-    rp = DOCS / 'delisting-reasons-1.0.1.json.gz'
+    rp = DOCS / 'delisting-reasons-1.0.2.json.gz'
     if rp.exists():
         rdoc = json.loads(gzip.decompress(rp.read_bytes()))
         rr = collections.Counter()

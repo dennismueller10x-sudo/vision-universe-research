@@ -12,7 +12,7 @@ const R = require('./reflib.cjs');
 const ROOT = path.resolve(__dirname, '../../../..');
 const YEARS = Array.from({ length: 2026 - 1995 + 1 }, (_, i) => 1995 + i);
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
-const RULE_VERSION = '1.0.1';
+const RULE_VERSION = '1.0.2';
 const FTS_FORMS = '8-K,10-K,10-Q,DEF 14A,S-1,424B4,20-F,6-K,F-1';
 
 function arg(name, def) { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : def; }
@@ -33,16 +33,19 @@ function loadInputs(priv, ftsFile) {
   for (const l of readGzLines(path.join(priv, 'work/edgar-annual.tsv.gz'))) { const [y, cik, fam] = l.split('\t'); annual.set(y + ':' + cik, fam.split(',')); }
   const floats = new Map();
   for (const l of readGzLines(path.join(priv, 'work/public-float.tsv.gz'))) {
-    const [cik, end, val] = l.split('\t'); if (!floats.has(cik)) floats.set(cik, []); floats.get(cik).push([end, Number(val)]);
+    const [cik, end, val, , filed, accn] = l.split('\t'); if (!floats.has(cik)) floats.set(cik, []); floats.get(cik).push([end, Number(val), filed, accn]);
   }
-  for (const v of floats.values()) v.sort((a, b) => cmpDate(a[0], b[0]));
+  // same period end reported more than once: the latest filing (then the larger accession) wins -> sort by end, filed, accession
+  for (const v of floats.values()) v.sort((a, b) => cmpDate(a[0], b[0]) || cmpDate(a[2], b[2]) || cmpDate(a[3], b[3]));
   const holdings = JSON.parse(fs.readFileSync(path.join(priv, 'work/holdings.json'), 'utf8'));
   const cikmap = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/universe/cik-map.json'), 'utf8'));
   const lifecycle = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v10/population/lifecycle-cases.json'), 'utf8'));
   const identity = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v10/population/identity-cases.json'), 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(path.join(priv, 'work/edgar-index-manifest.json'), 'utf8'));
   const fts = ftsFile ? JSON.parse(fs.readFileSync(ftsFile, 'utf8')) : null;
-  return { tiingo, events, annual, floats, holdings, cikmap, lifecycle, identity, manifest, fts,
+  const agentsFile = path.join(priv, 'work/exchange-agents.json');
+  const agents = fs.existsSync(agentsFile) ? JSON.parse(fs.readFileSync(agentsFile, 'utf8')) : { agents: {} };
+  return { tiingo, events, annual, floats, holdings, cikmap, lifecycle, identity, manifest, fts, agents,
     hashes: { tiingoZipSha256: sha(fs.readFileSync(zipPath)), tiingoCsvSha256: sha(fs.readFileSync(csvPath)), holdingsSha256: sha(fs.readFileSync(path.join(priv, 'work/holdings.json'))),
       publicFloatTsvSha256: sha(fs.readFileSync(path.join(priv, 'work/public-float.tsv.gz'))), cikMapSha256: sha(fs.readFileSync(path.join(ROOT, 'quant/data/universe/cik-map.json'))),
       edgarIndexFilesSha256: sha(JSON.stringify(manifest.files.map(f => [f.url, f.sha256]))), ftsResultsSha256: ftsFile ? sha(fs.readFileSync(ftsFile)) : null } };
@@ -59,6 +62,7 @@ function ftsUrl(ticker, lo, hi, cik) {
 
 function build(inp) {
   const { tiingo, events, annual, floats, holdings, cikmap, lifecycle, identity, fts } = inp;
+  const agents = (inp.agents && inp.agents.agents) || {};
   // ---------- 1. reference rows ----------
   const excluded = {}, usStock = [];
   for (const r of tiingo) {
@@ -276,7 +280,7 @@ function build(inp) {
   for (const x of chains) if (x.link.cik) { if (!linkByCik.has(x.link.cik)) linkByCik.set(x.link.cik, []); linkByCik.get(x.link.cik).push(x); }
   const endedChains = chains.filter(x => x.ended).sort((a, b) => cmpDate(a.endDate, b.endDate));
   const endDates = endedChains.map(x => x.endDate);
-  const completeness = {}, register = [];
+  const completeness = {}, register = [], segComp = {};
   for (const ev of evs) {
     const y = +ev.date.slice(0, 4);
     if (y < 1995) continue;
@@ -287,6 +291,9 @@ function build(inp) {
     c.operatingIssuer++;
     if (stillListed(ev.cik)) { c.excludedStillListed++; continue; }
     c.consideredEvents++;
+    const nseForm = ev.forms.find(f => f[0] === '25-NSE');
+    const evExchange = nseForm ? ((agents[nseForm[2].slice(0, 10)] || {}).group || 'OTHER') : 'UNKNOWN';
+    const evSize = R.sizeClass(R.floatFor(floats.get(ev.cik), y).value);
     const issuer25 = ev.forms.some(f => f[0] === '25'), nse = ev.forms.some(f => f[0] === '25-NSE');
     inc(c.byForm, nse ? '25-NSE' : issuer25 ? '25' : '15-12B');
     const linked = (linkByCik.get(ev.cik) || []).filter(x => x.ended && ev.forms.some(f => { const d = R.daysBetween(x.endDate, f[1]); return d >= -15 && d <= 120; }));
@@ -295,6 +302,10 @@ function build(inp) {
       for (let i = lowerBound(endDates, R.addDays(ev.date, -120)); i < endedChains.length && endDates[i] <= R.addDays(ev.lastDate, 15); i++) if (R.affinity(endedChains[i].ticker, ev.name) >= 2) { nameCand = true; break; }
     }
     if (linked.length) { c.linkedToReferenceChain++; if (linked.some(x => x.series && x.series.length)) c.linkedChainWithSeries++; if (linked.some(x => x.lifecycleDelisted)) c.linkedChainWithLifecycle++; } else if (nameCand) c.nameCandidateOnly++;
+    for (const [sk, sv] of [['exchange', evExchange], ['sizeClass', evSize], ['exchangeXsize', evExchange + '|' + evSize]]) {
+      const ss = (segComp[y] = segComp[y] || {}); ss[sk] = ss[sk] || {}; const t = ss[sk][sv] = ss[sk][sv] || { considered: 0, linked: 0, nameCand: 0 };
+      t.considered++; if (linked.length) t.linked++; else if (nameCand) t.nameCand++;
+    }
     const merger = (perCik.get(ev.cik) || []).some(e => MERGER_FORMS.has(e.form) && R.daysBetween(e.date, ev.date) >= 0 && R.daysBetween(e.date, ev.date) <= 365);
     register.push({ cik: ev.cik, eventDate: ev.date, name: ev.name, forms: ev.forms, mergerProcessIndexed: merger, issuerForm25: issuer25, exchangeForm25NSE: nse,
       linkedChains: linked.map(x => ({ ticker: x.ticker, exchange: x.group, grade: x.link.grade, dayDiffEndToEvent: R.daysBetween(x.endDate, ev.date), endSource: x.endSource, withSeries: !!(x.series && x.series.length), lifecycleDelisted: x.lifecycleDelisted })), nameCandidateOnly: nameCand });
@@ -306,7 +317,8 @@ function build(inp) {
   const endedByYear = {};
   for (const x of chains) if (x.ended) { const y = x.endDate.slice(0, 4); const e = endedByYear[y] = endedByYear[y] || { endedChains: 0, byEndSource: {}, linked: 0, linkedToSecDelistingForm: 0, withSeries: 0, lifecycle: 0 }; e.endedChains++; inc(e.byEndSource, x.endSource); if (x.link.cik) e.linked++; if (x.link.endForm) e.linkedToSecDelistingForm++; if (x.series && x.series.length) e.withSeries++; if (x.lifecycleDelisted) e.lifecycle++; }
   for (const [y, e] of Object.entries(endedByYear)) { const c = completeness[y]; e.countRatioEndedChainsToEdgarEvents = c && c.consideredEvents ? +(e.endedChains / c.consideredEvents).toFixed(4) : null; }
-  return { rows, chains, excluded, duplicateIds, reuse, linkCounts, holdCounts, matrix, completeness, endedByYear, register, scaleSuspect, usStockRows: usStock.length, queries };
+  for (const ys of Object.values(segComp)) for (const vs of Object.values(ys)) for (const t of Object.values(vs)) { t.lower = t.considered ? +(t.linked / t.considered).toFixed(4) : null; t.upper = t.considered ? +((t.linked + t.nameCand) / t.considered).toFixed(4) : null; }
+  return { rows, chains, excluded, duplicateIds, reuse, linkCounts, holdCounts, matrix, completeness, segComp, endedByYear, register, scaleSuspect, usStockRows: usStock.length, queries };
 }
 
 function shares(c) { return { ...c, seriesCoverage: c.ref ? +(c.withSeries / c.ref).toFixed(4) : null, frameCoverage: c.ref ? +(c.frameQualified / c.ref).toFixed(4) : null,
@@ -335,7 +347,7 @@ function main() {
   }
   if (!ftsFile) throw new Error('--fts required for the final build (amendment 1.0.1 A3/A4)');
   const outDir = path.resolve(arg('--out-dir'));
-  const protocolSha = { 'protocol-1.0.0.json': sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-1.0.0.json'))), 'protocol-amendment-1.0.1.json': sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json'))) };
+  const protocolSha = { 'protocol-amendment-1.0.2.json': sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-amendment-1.0.2.json'))), 'protocol-1.0.0.json': sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-1.0.0.json'))), 'protocol-amendment-1.0.1.json': sha(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json'))) };
   const codeSha = Object.fromEntries(['scripts/quant/v12/listref/build_reference.cjs', 'scripts/quant/v12/listref/reflib.cjs'].map(f => [f, sha(fs.readFileSync(path.join(ROOT, f)))]));
   const missing = b.queries.filter(q => !inp.fts.results[q.url]).length;
   const privRows = b.chains.map(x => ({ id: x.id, ticker: x.ticker, exchange: x.exchange, rows: x.rows, startDate: x.startDate, providerEnd: x.providerEnd, endDate: x.endDate, endSource: x.endSource, ended: x.ended,
@@ -345,7 +357,7 @@ function main() {
   fs.writeFileSync(path.join(priv, 'work/delisting-register.json'), JSON.stringify(b.register));
   const env = { ruleVersion: RULE_VERSION, protocolSha256: protocolSha, codeSha256: codeSha, inputs: inp.hashes, evidenceKind: 'SOURCE_EVIDENCE', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
     dataAsOf: { tiingoFile: '2026-10-28', edgarIndexLastDataReceived: inp.manifest.files.at(-1).lastDataReceived, holdingsWeekly: inp.holdings.series.reduce((m, s) => (s.rawLast && s.rawLast > m ? s.rawLast : m), '') } };
-  const refSummary = { schemaVersion: 'v12-listref-reference-summary-1.0.1', ...env,
+  const refSummary = { schemaVersion: 'v12-listref-reference-summary-1.0.2', ...env,
     counts: { tiingoRows: inp.tiingo.length, usExchangeStockUsdRows: b.usStockRows, referenceRows: b.rows.length, referenceChains: b.chains.length, endedChains: b.chains.filter(x => x.ended).length,
       endSource: b.chains.filter(x => x.ended).reduce((o, x) => (inc(o, x.endSource), o), {}), duplicateRowIds: b.duplicateIds,
       fiveLetterKept: b.chains.filter(x => x.fiveLetterKept).length, spacLikely: b.chains.filter(x => x.spacLikely).length, excludedRowsByReason: Object.fromEntries(Object.entries(b.excluded).sort()) },
@@ -354,35 +366,53 @@ function main() {
     privateReference: { file: 'v12-private/listref/work/reference-listings.jsonl.gz', sha256: sha(privText), chains: privRows.length }, endedChainsByYear: b.endedByYear };
   const matrix = {};
   for (const [y, segs] of Object.entries(b.matrix)) { matrix[y] = {}; for (const [k, vals] of Object.entries(segs)) { matrix[y][k] = {}; for (const [v, c] of Object.entries(vals)) matrix[y][k][v] = shares(c); } }
-  const coverageMatrix = { schemaVersion: 'v12-listref-coverage-matrix-1.0.1', ...env,
+  const coverageMatrix = { schemaVersion: 'v12-listref-coverage-matrix-1.0.2', ...env,
     definitions: { unit: 'listing chain (Tiingo rows of one ticker with gaps <= 5 days)', ref: 'reference chains active in year', withSeries: 'mapped weekly series with >= 1 bar in year', frameQualified: 'mapped series in V10/V11 frame with >= 1 loader bar in year',
       ended: 'chains whose effective end lies in year (effective end < 2026-09-28)', endedWithSeries: 'ended chains with a mapped series with a bar in that year', endedWithLifecycle: 'ended chains whose mapped series carries an SEC-sourced last trading day (DELISTED_SOURCE_VERIFIED)' },
     years: matrix };
-  const completeness = { schemaVersion: 'v12-listref-reference-completeness-1.0.1', ...env,
+  const completeness = { schemaVersion: 'v12-listref-reference-completeness-1.0.2', ...env,
     definition: 'EDGAR delisting events (25/25-NSE 2001+, 15-12B; one event per CIK within 180 days) of operating issuers (10-K/10-KSB/20-F/40-F in [Y-2,Y]) not mapped to NYSE/Nasdaq/NYSE American in the current SEC ticker map. completenessLower = share linked to an ended reference chain of the same CIK; completenessUpper = plus events for which an ended common chain with ticker affinity >= A2 ends within [event-120d, lastForm+15d].',
-    perYear: b.completeness, endedChainsByYear: b.endedByYear };
+    perYear: b.completeness, perYearSegment: b.segComp, exchangeAgents: inp.agents, endedChainsByYear: b.endedByYear };
   const p4 = [];
   for (const y of YEARS) {
-    const segs = b.matrix[String(y)] || {}, comp = b.completeness[y] || {};
+    const segs = b.matrix[String(y)] || {}, yc = b.completeness[y] || {}, sc = b.segComp[y] || {};
     for (const segKey of ['all', 'exchange', 'sizeClass', 'listingAge', 'exchangeXsize', 'exchangeXage']) for (const [val, c] of Object.entries(segs[segKey] || {})) {
       const s = shares(c);
-      p4.push([y, segKey, val, c.ref, c.withSeries, c.frameQualified, s.seriesCoverage, s.frameCoverage, c.ended, c.endedWithSeries, c.endedWithLifecycle, comp.completenessLower ?? null, comp.completenessUpper ?? null, readiness(c, comp.completenessUpper), readiness(c, comp.completenessLower)]);
+      const compKey = segKey === 'exchangeXage' ? ['exchange', val.split('|')[0]] : ['exchange', 'sizeClass', 'exchangeXsize'].includes(segKey) ? [segKey, val] : null;
+      const t = compKey && sc[compKey[0]] ? sc[compKey[0]][compKey[1]] : null;
+      const comp = t && t.considered >= 10 ? { completenessLower: t.lower, completenessUpper: t.upper, source: compKey.join(':') + ' (n=' + t.considered + ')' } : { completenessLower: yc.completenessLower ?? null, completenessUpper: yc.completenessUpper ?? null, source: 'year (n=' + (yc.consideredEvents || 0) + ')' };
+      p4.push([y, segKey, val, c.ref, c.withSeries, c.frameQualified, s.seriesCoverage, s.frameCoverage, c.ended, c.endedWithSeries, c.endedWithLifecycle, comp.completenessLower, comp.completenessUpper, readiness(c, comp.completenessUpper), readiness(c, comp.completenessLower), comp.source]);
     }
   }
-  const p4doc = { schemaVersion: 'v12-listref-coverage-by-year-segment-1.0.1', ...env,
-    readinessRule: 'n_ref >= 30 and referenceCompletenessUpper >= 0.80 required; then seriesCoverage >= 0.95 -> STUDY_READY_TRANSPARENT_GAP, >= 0.80 -> PARTIAL, else INSUFFICIENT (protocol 1.0.0 p4Readiness, amendment 1.0.1 A5)',
+  const p4doc = { schemaVersion: 'v12-listref-coverage-by-year-segment-1.0.2', ...env,
+    readinessRule: 'n_ref >= 30 and referenceCompletenessUpper >= 0.80 required; then seriesCoverage >= 0.95 -> STUDY_READY_TRANSPARENT_GAP, >= 0.80 -> PARTIAL, else INSUFFICIENT (protocol 1.0.0 p4Readiness, amendment 1.0.1 A5, amendment 1.0.2 B1/B2: segment completeness when >= 10 EDGAR events, else year)',
     caveat: 'Reference = Tiingo listing chains (survivor-biased itself where completeness is low). Size class = 10-K public float of the linked CIK (UNKNOWN when unlinked or no XBRL float). Coverage counts our weekly series regardless of qualification; frameCoverage counts the V10/V11 research frame.',
-    columns: ['year', 'segment', 'value', 'ref', 'withSeries', 'frameQualified', 'seriesCoverage', 'frameCoverage', 'refDelistings', 'delistingsWithSeries', 'delistingsWithLifecycle', 'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness', 'readinessAtLowerCompleteness'],
+    columns: ['year', 'segment', 'value', 'ref', 'withSeries', 'frameQualified', 'seriesCoverage', 'frameCoverage', 'refDelistings', 'delistingsWithSeries', 'delistingsWithLifecycle', 'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness', 'readinessAtLowerCompleteness', 'completenessSource'],
     rows: p4 };
-  const registerDoc = { schemaVersion: 'v12-listref-delisting-register-1.0.1', ...env, source: 'EDGAR full-index form.gz 1995-2026; filing index https://www.sec.gov/Archives/edgar/data/<cik>/<accession without dashes>/<accession>-index.htm',
+  const registerDoc = { schemaVersion: 'v12-listref-delisting-register-1.0.2', ...env, source: 'EDGAR full-index form.gz 1995-2026; filing index https://www.sec.gov/Archives/edgar/data/<cik>/<accession without dashes>/<accession>-index.htm',
     columns: ['cik', 'eventDate', 'name', 'forms[[form,date,accession]]', 'mergerProcessIndexed', 'issuerForm25', 'exchangeForm25NSE', 'linkedChains', 'nameCandidateOnly'], count: b.register.length,
     events: b.register.map(e => [e.cik, e.eventDate, e.name, e.forms, e.mergerProcessIndexed, e.issuerForm25, e.exchangeForm25NSE, e.linkedChains, e.nameCandidateOnly]) };
+  // owner-approval template: ended reference chains without a weekly series in our holdings (provider still lists them)
+  const cand = b.chains.filter(x => x.ended && !(x.series && x.series.length)).sort((p, q) => cmpDate(p.endDate, q.endDate) || cmpDate(p.ticker, q.ticker));
+  const candByYear = {}; for (const x of cand) { const y = x.endDate.slice(0, 4); candByYear[y] = candByYear[y] || { chains: 0, linkedCik: 0 }; candByYear[y].chains++; if (x.link.cik) candByYear[y].linkedCik++; }
+  // what series coverage would be if every candidate (ended chain without series) were fetched for its active years
+  const potential = {};
+  for (const x of b.chains) for (const [y, v] of Object.entries(x.years)) {
+    const p = potential[y] = potential[y] || { ref: 0, withSeries: 0, fetchableEnded: 0 };
+    p.ref++; if (v[2]) p.withSeries++; else if (x.ended && !(x.series && x.series.length)) p.fetchableEnded++;
+  }
+  for (const p of Object.values(potential)) { p.coverageNow = +(p.withSeries / p.ref).toFixed(4); p.coverageIfFetched = +((p.withSeries + p.fetchableEnded) / p.ref).toFixed(4); }
+  const fetchDoc = { schemaVersion: 'v12-listref-fetch-candidates-1.0.2', ...env, purpose: 'Approval template only (no fetch performed): delisted listings that the existing price provider still lists but our holdings lack. Fetching their history needs the provider key in Actions (owner decision).',
+    columns: ['ticker', 'exchange', 'startYear', 'endYear', 'cik', 'linkGrade', 'endSource'], countsByEndYear: candByYear, potentialCoverageByYear: potential,
+    potentialCaveat: 'Upper bound against the provider reference itself (which lacks most pre-2013 delistings); assumes full histories would be delivered.', count: cand.length,
+    rows: cand.map(x => [x.ticker, x.group, +x.startDate.slice(0, 4), +x.endDate.slice(0, 4), x.link.cik || null, x.link.grade, x.endSource]) };
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'reference-summary-1.0.1.json'), JSON.stringify(refSummary, null, 1) + '\n');
-  fs.writeFileSync(path.join(outDir, 'coverage-matrix-1.0.1.json'), JSON.stringify(coverageMatrix) + '\n');
-  fs.writeFileSync(path.join(outDir, 'reference-completeness-1.0.1.json'), JSON.stringify(completeness, null, 1) + '\n');
+  fs.writeFileSync(path.join(outDir, 'fetch-candidates-1.0.2.json'), JSON.stringify(fetchDoc) + '\n');
+  fs.writeFileSync(path.join(outDir, 'reference-summary-1.0.2.json'), JSON.stringify(refSummary, null, 1) + '\n');
+  fs.writeFileSync(path.join(outDir, 'coverage-matrix-1.0.2.json'), JSON.stringify(coverageMatrix) + '\n');
+  fs.writeFileSync(path.join(outDir, 'reference-completeness-1.0.2.json'), JSON.stringify(completeness, null, 1) + '\n');
   fs.writeFileSync(path.join(outDir, 'coverage-by-year-segment.json'), JSON.stringify(p4doc) + '\n');
-  fs.writeFileSync(path.join(outDir, 'delisting-register-1.0.1.json.gz'), zlib.gzipSync(JSON.stringify(registerDoc) + '\n', { level: 9 }));
+  fs.writeFileSync(path.join(outDir, 'delisting-register-1.0.2.json.gz'), zlib.gzipSync(JSON.stringify(registerDoc) + '\n', { level: 9 }));
   console.log(JSON.stringify({ chains: b.chains.length, ended: refSummary.counts.endedChains, endSource: refSummary.counts.endSource, links: refSummary.cikLinks, fts: refSummary.ftsQueries, register: b.register.length }, null, 1));
   for (const y of YEARS) { const a = (b.matrix[String(y)] || {}).all?.ALL; const c = b.completeness[y]; if (a) console.log(y, JSON.stringify(shares(a)), c ? JSON.stringify({ ev: c.consideredEvents, lo: c.completenessLower, up: c.completenessUpper }) : ''); }
 }

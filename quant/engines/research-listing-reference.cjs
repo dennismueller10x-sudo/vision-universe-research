@@ -10,10 +10,10 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const REGISTER = 'docs/quant-recovery/v12/listref/coverage-by-year-segment.json';
-const SCHEMA = 'v12-listref-coverage-by-year-segment-1.0.1';
+const SCHEMA = 'v12-listref-coverage-by-year-segment-1.0.2';
 const READINESS = ['INSUFFICIENT', 'PARTIAL', 'STUDY_READY_TRANSPARENT_GAP'];
 const COLUMNS = ['year', 'segment', 'value', 'ref', 'withSeries', 'frameQualified', 'seriesCoverage', 'frameCoverage', 'refDelistings', 'delistingsWithSeries', 'delistingsWithLifecycle',
-  'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness', 'readinessAtLowerCompleteness'];
+  'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness', 'readinessAtLowerCompleteness', 'completenessSource'];
 
 function fail(msg) { throw new Error('LISTING_REFERENCE_UNAVAILABLE: ' + msg); }
 
