@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "spinoff-evidence-1.0.0",
+  "purpose": "SEC-belegte Spin-offs, die der Kursanbieter als splitFactor fuehrt. Fuer den KURS ist der Faktor eine legitime Bereinigung (Wertabgabe an die Aktionaere) und bleibt in quant/engines/return-series.js#splitFactors (ADR-002) unveraendert. Fuer die AKTIENZAHL ist er kein Split: die Zahl der Aktien aendert sich durch einen Spin-off nicht, und spaetere Meldungen rechnen sie nicht zurueck. Verbraucher, die Aktienzahlen oder Werte je Aktie mit Anbieter-Splits bereinigen, nehmen die hier gelisteten Faktoren aus.",
+  "match": "securityId + Ex-Datum exakt + |Anbieterfaktor - factor| <= 0.0005. Weicht der Anbieterfaktor ab, gilt der Eintrag nicht (Verhalten unveraendert).",
+  "derivedFrom": {
+    "evidence": "docs/quant-recovery/v12/mcap/spinoff-sources-1.0.0.json (PR #1091, Strang V12 MCAP)",
+    "schemaVersion": "v12-mcap-spinoff-sources-1.0.0"
+  },
+  "records": [
+    {
+      "securityId": "ref_GE",
+      "cik": "0000040545",
+      "date": "2023-01-04",
+      "factor": 1.281,
+      "description": "GE HealthCare",
+      "availableAt": "2023-01-04",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-23-001157",
+          "filed": "2023-01-04",
+          "url": "https://www.sec.gov/Archives/edgar/data/40545/000119312523001157/d431727d8k.htm",
+          "sha256": "fc2fcbbd9cee86d26746dbc0e547d91a8177c925858089f27e24c3633c0a3a2a",
+          "quote": "New York City time, General Electric Company (the “Company” or “GE”) completed the previously announced separation (the “Spin-Off”) of GE HealthCare Technologies Inc."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_GE",
+      "cik": "0000040545",
+      "date": "2024-04-02",
+      "factor": 1.253,
+      "description": "GE Vernova",
+      "availableAt": "2024-04-02",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-24-084038",
+          "filed": "2024-04-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/40545/000119312524084038/d792336d8k.htm",
+          "sha256": "af48bbf6ff91a309fd8654a1b64dc9cb599f93ad42434c63ec0854ed192696e1",
+          "quote": "Eastern Time, General Electric Company completed the previously announced separation (the “Spin-Off”) of GE Vernova Inc."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_IBM",
+      "cik": "0000051143",
+      "date": "2021-11-04",
+      "factor": 1.046,
+      "description": "Kyndryl",
+      "availableAt": "2021-11-04",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001558370-21-014643",
+          "filed": "2021-11-04",
+          "url": "https://www.sec.gov/Archives/edgar/data/51143/000155837021014643/ibm-20211103x8k.htm",
+          "sha256": "6426f7d95f691ee19fddc46585d34e95629f3015b0273e24544b1588370e8d49",
+          "quote": "​ On November 3, 2021, International Business Machines Corporation (“IBM”) completed the previously announced complete legal and structural separation of its managed infrastructure services business and distribution to holders of IBM’s common stock of 80."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_ALV",
+      "cik": "0001034670",
+      "date": "2018-07-02",
+      "factor": 1.388,
+      "description": "Veoneer",
+      "availableAt": "2018-06-25",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-18-202527",
+          "filed": "2018-06-25",
+          "url": "https://www.sec.gov/Archives/edgar/data/1034670/000119312518202527/d641846d8k.htm",
+          "sha256": "f0e38a6dcea14ea31a933b15d54928ef3afc4793d6ebe83bd886492a95d97bbe",
+          "quote": "(“Veoneer”) prior to the completion of the spin-off as described in Item 2."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_T",
+      "cik": "0000732717",
+      "date": "2022-04-11",
+      "factor": 1.324,
+      "description": "WarnerMedia",
+      "availableAt": "2022-04-11",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-22-101751",
+          "filed": "2022-04-11",
+          "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312522101751/d315217d8k.htm",
+          "sha256": "289291334c489a64bc003827378cf63d2ad086f5eda4a10be8eba233633fb7ee",
+          "quote": "As a result of the completion of the Transactions, holders of AT&T Common Stock (as holders of Spinco Common Stock immediately following the Distribution) own approximately 71% of the outstanding capital stock of WBD, on a fully diluted basis (computed using the treasury method)."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_EXC",
+      "cik": "0001109357",
+      "date": "2022-02-02",
+      "factor": 1.402,
+      "description": "Constellation",
+      "availableAt": "2022-01-28",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001104659-22-009015",
+          "filed": "2022-01-28",
+          "url": "https://www.sec.gov/Archives/edgar/data/1109357/000110465922009015/tm224746d1_8k.htm",
+          "sha256": "a41696845901a87b318efee936e764fe18f4799fdad5570b92fe8f0d4fd194d7",
+          "quote": "curities on Form 10, which was filed with the Commission on December 20, 2021, and declared effective by the Commission on December 29, 2021 (as amended, the “Registration Statement”) relating to the distribution by Exelon of all of the outstanding shares of common stock, no par value, of Constellat"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_FTV",
+      "cik": "0001659166",
+      "date": "2020-10-09",
+      "factor": 1.195,
+      "description": "Vontier",
+      "availableAt": "2020-09-30",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-20-259636",
+          "filed": "2020-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1659166/000119312520259636/d77006d8k.htm",
+          "sha256": "d9c7b761ba4bcc3a4da679d60b6a9ef68ff8c64fce1744f2141eb9da7850cdc3",
+          "quote": "Borrowing of any amounts under the Credit Facilities is subject to the prior or substantially current consummation of the proposed separation of Vontier from Fortive, which separation transaction would be effectuated by the distribution to Fortive’s stockholders of 80."
+        }
+      ]
+    },
+    {
+      "securityId": "ref_WDC",
+      "cik": "0000106040",
+      "date": "2025-02-24",
+      "factor": 1.323,
+      "description": "Sandisk",
+      "availableAt": "2025-02-24",
+      "class": "SPINOFF_NOT_A_SHARE_SPLIT",
+      "sources": [
+        {
+          "form": "8-K",
+          "accession": "0001193125-25-033383",
+          "filed": "2025-02-24",
+          "url": "https://www.sec.gov/Archives/edgar/data/106040/000119312525033383/d847507d8k.htm",
+          "sha256": "9d41e0365a964b7137c1c641ce4f51739bf115c08d9cb679d5e7bc3793373b8e",
+          "quote": "ibution Agreement that sets forth, among other things, the agreement between the Company and Sandisk regarding the principal transactions necessary to separate Sandisk from the Company and effect the Spin-Off."
+        }
+      ]
+    }
+  ]
+}
