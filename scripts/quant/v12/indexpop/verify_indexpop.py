@@ -254,7 +254,10 @@ def main():
     def series(sid):
         if sid not in series_cache:
             d = json.loads((ROOT / 'quant/data/market/discover-series-long' / (sid + '.json')).read_text())
-            series_cache[sid] = (d['points'], (d.get('corporateActions') or {}).get('splits') or [])
+            wk = {}
+            for p0 in d['points']:
+                wk[week_start(p0[0])] = p0  # last bar of each ISO week
+            series_cache[sid] = (wk, (d.get('corporateActions') or {}).get('splits') or [])
         return series_cache[sid]
     def week_start(d0):
         d = date.fromisoformat(d0); return d - timedelta(days=d.weekday())
@@ -268,10 +271,10 @@ def main():
             if k % 37:
                 continue
             sid = reg['securityIds'][r[4]]
-            pts, splits = series(sid)
+            wk, splits = series(sid)
             ws = week_start(snap['date'])
-            cur = [p for p in pts if week_start(p[0]) == ws]
-            prev = [p for p in pts if week_start(p[0]) == ws - timedelta(days=7)]
+            cur = [wk[ws]] if ws in wk else []
+            prev = [wk[ws - timedelta(days=7)]] if ws - timedelta(days=7) in wk else []
             if not cur:
                 e['noBar'] += 1; continue
             def raw_close(p):
