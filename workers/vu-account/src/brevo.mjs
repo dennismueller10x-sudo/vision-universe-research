@@ -15,6 +15,7 @@ export const NEWSLETTER = Object.freeze({
   version: 'vu-newsletter-v1',
   text: 'Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.',
   templateName: 'VU | Newsletter | DE | API Double Opt In | v1',
+  templateTag: 'optin',
   redirect: 'https://www.visionuniverse.de/newsletter/bestaetigt/',
   pendingDays: 30,
 });
@@ -22,6 +23,20 @@ export const NEWSLETTER = Object.freeze({
 export async function sha256Hex(text) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Was an einer Vorlage fehlt, damit Brevo sie fuer doubleOptinConfirmation annimmt und sie zur Einwilligung passt.
+export function doiProblems(t) {
+  const html = String(t?.htmlContent || '');
+  return [
+    t?.name !== NEWSLETTER.templateName && 'NAME',
+    t?.isActive !== true && 'NICHT_AKTIV',
+    t?.doiTemplate !== true && 'KEINE_DOI_VORLAGE',
+    t?.tag !== NEWSLETTER.templateTag && 'TAG',
+    !html.includes('{{ params.DOIurl }}') && 'KEIN_DOIURL',
+    html.includes('{{ doubleoptin }}') && 'ALTER_DOI_PLATZHALTER',
+    !html.includes(NEWSLETTER.text) && 'EINWILLIGUNGSTEXT',
+  ].filter(Boolean);
 }
 
 export class BrevoError extends Error {
@@ -70,16 +85,18 @@ export function createBrevo({apiKey, apiBase = 'https://api.brevo.com', fetchImp
       if (!(r.ok || r.status === 204)) throw new BrevoError(r.status, r.data?.code);
       return true;
     },
-    // Bestehende, abgenommene DOI-Vorlage (Name, DOI-Typ, Bestaetigungslink, Einwilligungstext) – keine neue Vorlage.
+    // Bestehende, abgenommene DOI-Vorlage – keine neue Vorlage. Brevo liefert doiTemplate nur im Einzelabruf
+    // (/smtp/templates/{id}), nicht in der Liste; geprueft wird wie auf der Landingpage (landing/server/newsletter.mjs).
     async doiTemplateId() {
       if (template) return template;
       const r = await call('GET', '/smtp/templates?templateStatus=true&limit=100&offset=0');
       if (!r.ok) throw new BrevoError(r.status, r.data?.code);
-      const t = (r.data?.templates || []).find(x => x.name === NEWSLETTER.templateName && x.isActive === true && x.doiTemplate === true
-        && String(x.htmlContent || '').includes('{{ params.DOIurl }}') && String(x.htmlContent || '').includes(NEWSLETTER.text));
-      if (!t) throw new BrevoError(0, 'DOI_TEMPLATE_MISSING');
-      template = t.id;
-      return template;
+      for (const c of (r.data?.templates || []).filter(x => x.name === NEWSLETTER.templateName)) {
+        const d = await call('GET', `/smtp/templates/${encodeURIComponent(c.id)}`);
+        if (!d.ok) throw new BrevoError(d.status, d.data?.code);
+        if (doiProblems(d.data).length === 0) { template = d.data.id; return template; }
+      }
+      throw new BrevoError(0, 'DOI_TEMPLATE_MISSING');
     },
     async doubleOptIn(email, listId) {
       const templateId = await this.doiTemplateId();

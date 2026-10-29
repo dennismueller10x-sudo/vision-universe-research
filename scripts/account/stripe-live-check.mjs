@@ -72,6 +72,9 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
     report.portal = {cancel: Boolean(f.subscription_cancel?.enabled), mode: f.subscription_cancel?.mode || null,
       paymentMethodUpdate: Boolean(f.payment_method_update?.enabled), invoices: Boolean(f.invoice_history?.enabled)};
     log(`Portal ${portal.id}: Kuendigung ${report.portal.cancel ? `an (${report.portal.mode})` : 'AUS'}, Zahlungsmethode aendern ${report.portal.paymentMethodUpdate ? 'an' : 'AUS'}, Rechnungen ${report.portal.invoices ? 'an' : 'AUS'}`);
+    report.portal.terms = portal.business_profile?.terms_of_service_url || null;
+    report.portal.privacy = portal.business_profile?.privacy_policy_url || null;
+    log(`Portal-Links: AGB ${report.portal.terms || '-'}, Datenschutz ${report.portal.privacy || '-'}`);
   } else log('Portal-Konfiguration (vu_managed): FEHLT');
 
   if (probeCheckout && price) {
@@ -117,6 +120,9 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
     const b = report.business;
     log(`Unternehmensangaben: Anzeigename "${b.displayName || '-'}", Name "${b.name || '-'}", Land ${b.country || '-'}, Website ${b.url || '-'}`);
     log(`Kontoauszug: "${b.descriptor || '-'}" (Karten-Praefix "${b.descriptorPrefix || '-'}")`);
+    const inv = st.invoices || {};
+    b.invoices = {taxIds: (inv.default_account_tax_ids || []).length, supportAddress: Boolean(a.business_profile?.support_address?.line1)};
+    log(`Rechnungen: Steuer-IDs als Standard ${b.invoices.taxIds}, Support-Anschrift ${b.invoices.supportAddress ? 'hinterlegt' : '-'}`);
     log(`Support: E-Mail ${b.supportEmail || '-'}, URL ${b.supportUrl || '-'}, Telefon ${b.supportPhone ? 'hinterlegt' : '-'}; Branding: Logo ${b.branding.logo ? 'ja' : 'nein'}, Icon ${b.branding.icon ? 'ja' : 'nein'}, Farbe ${b.branding.color || '-'}`);
   }
 
