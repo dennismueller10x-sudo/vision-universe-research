@@ -135,3 +135,15 @@ test('committed register: rule hash, version and the cases named before rule 1.0
   assert.equal(ge.get('2023-01-04|1.281')[reg.splitColumns.indexOf('class')], 'NOT_A_SPLIT');
   assert.equal(reg.splits.get('ref_IBM').get('2021-11-04|1.046')[reg.splitColumns.indexOf('class')], 'NOT_A_SPLIT');
 });
+
+test('producer proposal: the measured guard is the guard in the diff (verbatim) and flags the EEFT pattern', () => {
+  const src = readFileSync(new URL('scripts/quant/v12/mcap/producer-effect.cjs', ROOT), 'utf8');
+  const guard = src.slice(src.indexOf('// ---- BEGIN GUARD (verbatim from the proposal) ----'), src.indexOf('// ---- END GUARD ----')).split('\n').slice(1).filter(l => l.trim());
+  const diff = readFileSync(new URL('docs/quant-recovery/v12/mcap/producer-patch-market-cap-1.2.0.diff', ROOT), 'utf8');
+  for (const line of guard) assert.ok(diff.includes('+  ' + line), line);
+  const { shareScaleSuspect } = require('../../scripts/quant/v12/mcap/producer-effect.cjs');
+  const doc = { columns: ['fy', 'fp', 'end', 'v', 'filed', 'accn', 'derived'], quarterly: { shares_outstanding: [[2020, 'Q3', '2020-09-30', 52314901, '2020-11-02', 'x', 0]] } };
+  assert.equal(shareScaleSuspect({ value: 52752851e9, end: '2020-12-31' }, doc, '2021-02-25'), true);
+  assert.equal(shareScaleSuspect({ value: 52752851, end: '2020-12-31' }, doc, '2021-02-25'), false);
+  assert.equal(shareScaleSuspect({ value: 6 * 52314901, end: '2020-12-31' }, doc, '2021-02-25'), false);
+});
