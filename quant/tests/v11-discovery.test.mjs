@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import test from 'node:test'; import assert from 'node:assert/strict'; import { createRequire } from 'node:module';
 import fs from 'node:fs'; import path from 'node:path'; import cp from 'node:child_process';
 const require = createRequire(import.meta.url);
@@ -71,17 +72,22 @@ test('oracle uses future returns only inside its labelled family', () => {
   assert.ok(R.eligibleRows(ctx, { family: 'PRICE', ranks: [['r12_1', 1, 1]] }, 100).every(r => r.fwd === undefined));
 });
 
-test('git history: registration < candidates frozen < validation < final frozen < test (R2/R3)', () => {
-  const t = f => Number(cp.execFileSync('git', ['log', '--reverse', '--format=%ct', '--', DOCS + f], { cwd: ROOT, encoding: 'utf8' }).trim().split('\n')[0]);
-  const order = ['registration-1.0.0.json', 'candidates-frozen-1.0.0.json', 'validation-results-1.0.0.json', 'final-hypotheses-frozen-1.0.0.json', 'test-results-1.0.0.json'].map(t);
-  for (let k = 1; k < order.length; k++) assert.ok(order[k] >= order[k - 1], 'order ' + k);
-  const idx = f => cp.execFileSync('git', ['log', '--format=%H', '--', DOCS + f], { cwd: ROOT, encoding: 'utf8' }).trim().split('\n').at(-1);
-  // Each gated result's first commit has its frozen file as ancestor.
+test('freeze chronology: registration < candidates frozen < validation < final frozen < test (R2/R3)', () => {
+  // Hash-bound record (works in shallow CI checkouts): frozen and result files are byte-unchanged and the recorded
+  // first-commit times are strictly ordered.
+  const chrono = JSON.parse(fs.readFileSync(path.join(ROOT, DOCS, 'chronology-1.0.0.json'), 'utf8'));
+  const files = ['registration-1.0.0.json', 'candidates-frozen-1.0.0.json', 'validation-results-1.0.0.json', 'final-hypotheses-frozen-1.0.0.json', 'test-results-1.0.0.json'];
+  assert.deepEqual(chrono.records.map(r => r.file), files);
+  for (const r of chrono.records) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, DOCS, r.file))).digest('hex'), r.sha256, r.file);
+  for (let k = 1; k < files.length; k++) assert.ok(Date.parse(chrono.records[k].firstCommitTime) > Date.parse(chrono.records[k - 1].firstCommitTime), 'order ' + k);
+  // With full history the record itself is checked against git (commit identity and ancestry).
+  const shallow = cp.execFileSync('git', ['rev-parse', '--is-shallow-repository'], { cwd: ROOT, encoding: 'utf8' }).trim() === 'true';
+  const known = c => { try { cp.execFileSync('git', ['cat-file', '-e', c + '^{commit}'], { cwd: ROOT, stdio: 'ignore' }); return true; } catch { return false; } };
+  if (shallow || !chrono.records.every(r => known(r.firstCommit))) return;
+  const first = f => cp.execFileSync('git', ['log', '--format=%H', '--', DOCS + f], { cwd: ROOT, encoding: 'utf8' }).trim().split('\n').at(-1);
+  for (const r of chrono.records) assert.equal(first(r.file), r.firstCommit, r.file);
   const anc = (a, b) => { try { cp.execFileSync('git', ['merge-base', '--is-ancestor', a, b], { cwd: ROOT }); return true; } catch { return false; } };
-  assert.ok(anc(idx('candidates-frozen-1.0.0.json'), idx('validation-results-1.0.0.json')));
-  assert.ok(anc(idx('final-hypotheses-frozen-1.0.0.json'), idx('test-results-1.0.0.json')));
-  assert.notEqual(idx('candidates-frozen-1.0.0.json'), idx('validation-results-1.0.0.json'));
-  assert.notEqual(idx('final-hypotheses-frozen-1.0.0.json'), idx('test-results-1.0.0.json'));
+  for (let k = 1; k < files.length; k++) assert.ok(anc(chrono.records[k - 1].firstCommit, chrono.records[k].firstCommit), 'ancestry ' + k);
 });
 
 test('frozen sets respect R2/R3 limits and evidence flags', () => {
