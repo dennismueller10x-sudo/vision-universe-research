@@ -162,7 +162,7 @@ function main() {
   const ruleText = fs.readFileSync(path.join(ROOT, RULE_FILE), 'utf8');
   const b = build(obs, sf, spin);
   const register = { schemaVersion: M.REGISTER_SCHEMA, ruleId: M.RULE.id, ruleVersion: M.RULE.version, ruleSha256: sha(ruleText), rule: RULE_FILE,
-    scope: 'Research-only corrections of the PIT share count entering the V10 factor-panel market cap (createResearch... not used; opt-in via quant/engines/research-pit-market-cap.cjs#marketCapAt). Valid for the observation set with observationsHash; a fact absent here was classified OK.',
+    scope: 'Research-only corrections of the PIT share count entering the V10 factor-panel market cap, opt-in via quant/engines/research-pit-market-cap.cjs#marketCapAt (no loader option, no product path). Valid for the observation set with observationsHash; a fact absent here was classified OK (or OK_NO_REFERENCE) by the rule.',
     builder: 'scripts/quant/v12/mcap/classify.cjs', observationsHash: sha(JSON.stringify(obs.rows.map(r => [r.id, r.t, r.s.accn, r.s.concept, r.s.v]))),
     shareFactsSource: sf.source, shareFactsSha256: sha(sfText), spinoffSourcesSha256: spin ? sha(fs.readFileSync(spinFile, 'utf8')) : null,
     factColumns: FACT_COLUMNS, splitColumns: SPLIT_COLUMNS, facts: b.regFacts, splits: b.regSplits };
