@@ -7,7 +7,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 
 **Regel für „erfüllt“:** Ein Kriterium ist erfüllt, wenn ein Test im Repository oder eine dokumentierte Produktprüfung (Lauf, Browser-QA, Universumsprüfung) es belegt. Es gibt keine geschätzten Prozentwerte. Ein Bereich ist fertig, wenn alle seine Abnahmekriterien erfüllt sind.
 
-**Status:** ✔ erfüllt (mit Nachweis) · ◐ teilweise · ✘ fehlt.
+**Status:** ✔ erfüllt (mit Nachweis) · ◐ teilweise · ✘ fehlt · ⏸ vom Owner bewusst zurückgestellt (kein Blocker der Produktreife, eigenes späteres Paket).
 
 **Priorität:**
 - P0: falsche oder veraltete Daten, falsche Rechnung, rückdatierte Signale, gescheiterte produktive Verarbeitung, kaputte Kernfunktionen, instabile Schnittstellen.
@@ -32,7 +32,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ◐ | Nachtlauf 28./29.10. grün: market-data-refresh (Lauf 40803128385, mit Discover-Prüfung) und Materialisierung (`94d7b46`). Der Zeitplan von technical-world (05:10 UTC) startet bei GitHub mit Stunden Verzögerung. Am 29.10. wurde der Erzeuger deshalb per `workflow_dispatch` ohne Anbieterabruf gestartet (`92b010e`). Ohne Handeingriff gilt die Kette erst, wenn ein Zeitplan-Lauf selbst committet. | P0 |
 | A2 Stichtag der Produktwelt ≤ 1 Sitzung hinter der letzten abgeschlossenen Sitzung | ✔ | 29.10.: Stichtag 28.10. = letzte abgeschlossene Sitzung; `system-health`: Technical (Produktwelt) OK. DQ-TW-1 PASS. | – |
 | A3 Titel mit veraltetem oder eingefrorenem Kurs liefern keine Signale „von heute“ | ✔ | AP1 (#1077, `technical-screen-row-1.10.0`, SCREENER_FRESHNESS.md). Titel hinter dem Stichtag (77) haben keine Ereignis- und Stichtagsfelder. Eingefrorene Reihen (233, `frozenSince`, Datenqualitätshinweis, kein bestätigtes Delisting) haben keine Analysefelder. Neubau auf `main` (`a433f3e`): DQ-TW-6 PASS 0/310, 5.347 aktuelle Titel ohne Abweichung. Chart Studio wendet dieselbe Regel an (#1088). | – |
-| A4 Ursache der beendeten Reihen bei aktivem Stamm | ✘ | `diagnose.mjs AVB`: `MASTER_ACTIVE_SERIES_ENDED` (Reihe bis 17.08., Stamm ACTIVE). Zuständig ist die Marktdaten-Domäne (Erzeuger `market-data-refresh.yml`), nicht Technical. Technical muss solche Titel korrekt kennzeichnen (A3). Die Klärung der Reihen braucht einen Anbieterabruf, also eine Owner-Entscheidung. | P0 (eskaliert) |
+| A4 Ursache der beendeten Reihen bei aktivem Stamm | ⏸ | `diagnose.mjs AVB`: `MASTER_ACTIVE_SERIES_ENDED` (Reihe bis 17.08., Stamm ACTIVE). Zuständig ist die Marktdaten-Domäne (Erzeuger `market-data-refresh.yml`), nicht Technical. **Owner-Entscheidung 29.10.: keine zusätzlichen Anbieterabrufe.** Die Schutzmaßnahmen bleiben unverändert: Kennzeichnung veralteter und eingefrorener Titel (A3, AP1), Ereignisse veralteter Titel `null`, DQ-TW-6. Damit ist das Risiko „falsches Signal“ abgedeckt; offen bleibt nur die Ursache in der Marktdaten-Domäne. | P0 (Owner, zurückgestellt) |
 | A5 Kein Eingriff in `*/data` von Hand. Neubau nur durch den Erzeuger | ✔ | `core-ci.yml` (Erzeuger-Eigentum), `producer-ownership.test.mjs` | – |
 
 ### B. Indikatorbibliothek und externe Referenzprüfungen
@@ -61,7 +61,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | D2 Keine Rückdatierung: sichtbar am Erkennungstag, Bestätigung/Invalidierung nicht davor, `LOOKAHEAD`-Abbruch | ✔ | Validator (B-F3), `formations.js`, Tests | – |
 | D3 Bestätigung = erster Schluss jenseits der gezeichneten Linie (Bar-Raum wie Chart) | ✔ (nach Merge #1073) | FORMATION_VALIDATION.md §8: 1.856 / 1.856 | – |
 | D4 Regeltexte entsprechen der Rechnung | ✔ | Keile: Bestätigung „mehr als 0,1 ATR (ATR des Erkennungsbars)“ mit Test (#1074). Die übrigen Typen sind geprüft; der Validator (#1073) prüft jede Bestätigung gegen die gezeichnete Linie. | – |
-| D5 Formationen im Wochenchart | ✘ | nur im Tageschart (Wochenchart = Schlusslinie) | P2 |
+| D5 Formationen im Wochenchart | ⏸ | nur im Tageschart (Wochenchart = Schlusslinie). Owner-Entscheidung 29.10.: vorläufig Option A, späteres Paket „Wochenchart“ (§3). | P2 |
 
 ### E. Multi-Timeframe-Analyse
 
@@ -70,7 +70,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | E1 Woche/Monat aus der Tageshistorie, nur abgeschlossene Perioden, kausal | ✔ | MULTI_TIMEFRAME.md, `technical-mtf*.test.mjs` | – |
 | E2 Alle W/M-Spalten nach der Materialisierung befüllt (Abdeckung wie in SCREENER_FIELDS_L7.md §2a vorhergesagt) | ✔ | 29.10. (`92b010e`): alle 18 L7-Spalten belegt (94–96 %). Leer sind nur Titel, die nach AP1 bewusst keine Stichtagswerte tragen. Vergleich mit der Näherung in §2d. DQ-TW-5 PASS (0/46). | – |
 | E3 Zeitrahmen-Wechsel im Screener für alle Felder mit W/M-Bedeutung | ◐ | AP4 (#1106, gemergt 29.10.): Ereignisse je Woche und Monat (Linie, RSI 30/70) und 52-Wochen-Tief, Auswahl nach Evidenz; übrige Felder bewusst nur am Tag (SCREENER_FIELDS_AP4.md §1). Die Spalten füllt die Materialisierung vom 29./30.10.; Prüfung 30.10. 06:40 UTC, danach ✔. | P1 |
-| E4 Wochenchart mit OHLC und Indikatoren | ◐ | Wochenchart nur als Schlusslinie mit SMA 10/40 | P2 |
+| E4 Wochenchart mit OHLC und Indikatoren | ⏸ | Wochenchart als Schlusslinie mit SMA 10/40 bleibt (Owner-Entscheidung 29.10., Option A). Keine endgültige Absage: Wochenkerzen und Wochenformationen sind als zusammenhängendes späteres Paket dokumentiert (§3). | P2 |
 
 ### F. Universumsweiter Screener und Suchlogik
 
@@ -81,7 +81,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | F3 `/screener/` nutzt dieselben Spalten (eine Quelle) | ✔ | #936, 16 Spalten | – |
 | F4 Ereignisfelder beziehen sich auf den Stichtag des Universums | ✔ | siehe A3. Für Titel hinter dem Stichtag gelten Ereignisfilter als „unbekannt“ (`null`) und sind kein Treffer. | – |
 | F6 Jeder Spaltenwert ist im Abfragekatalog wählbar | ✔ (nach Merge AP2) | **Befund 28.10.:** Marktstruktur MIXED (629 Titel) und UNDETERMINED (61) waren nicht wählbar, „Neutral“ fand nie einen Titel. Behoben in `technical-query-1.10.0`; der Vertrag prüft das künftig für jede Enum-Spalte. | P0 |
-| F5 Suche in Worten (KI) | ◐ | technisch vorbereitet. Der Modellaufruf ist ein Deploy mit Kosten und braucht eine Owner-Freigabe. | P2 (Freigabe) |
+| F5 Suche in Worten (KI) | ⏸ | Owner-Entscheidung 29.10.: kostenpflichtige KI-Suche vorläufig zurückgestellt. Die regelbasierte Wortsuche (`query-text.js`, ohne Modellaufruf) bleibt verfügbar. Der Modellpfad bleibt vorbereitet, aber ohne Deploy. | P2 (zurückgestellt) |
 
 ### G. Chart Studio und visuelle Darstellung
 
@@ -139,10 +139,17 @@ Jedes Paket läuft in Zyklen: analysieren → umsetzen → testen → beheben �
 
 | Thema | Wer entscheidet | Stand |
 |---|---|---|
-| 82 Titel mit beendeter Reihe bei aktivem Stamm (A4). Technical kennzeichnet sie seit AP1 (#1077). Die Ursache liegt in der Marktdaten-Domäne. | Owner (ein Anbieterabruf wäre nötig) | gemeldet 28.10. |
-| KI-Suche (F5): Modellaufruf ist kostenpflichtig | Owner | offen |
-| Wochenchart mit Kerzen und Formationen (E4, D5). Die lange Wochenreihe enthält nur Schlusskurse. Echte Wochenkerzen über 5 Jahre oder Max wären neue öffentliche Kursdaten (Wochen-OHLC), die MULTI_TIMEFRAME.md bewusst ausschließt; Lizenz und Rechtsfrage liegen beim Owner. Optionen: **A** Status quo (Wochen-Schlusslinie mit SMA 10/40, ehrlich und ohne neue Daten). **B** Wochenkerzen nur im Zeitraum 1J, im Browser aus den 270 bereits veröffentlichten Tagesbars gebildet (rund 54 Kerzen, keine neuen Daten); für Formationen der Woche reicht das nicht (Aufwärmphase rund 120 Bars). **C** Wochen-OHLC der Vollhistorie veröffentlichen; erst damit wären E4 und D5 vollständig, Voraussetzung ist die Lizenzprüfung. Empfehlung: A beibehalten; C nur nach Lizenzklärung. B bringt wenig. | Owner | gemeldet 29.10. |
+| 82 Titel mit beendeter Reihe bei aktivem Stamm (A4). Technical kennzeichnet sie seit AP1 (#1077). Die Ursache liegt in der Marktdaten-Domäne. | Owner (ein Anbieterabruf wäre nötig) | entschieden 29.10.: kein zusätzlicher Anbieterabruf; Schutzmaßnahmen bleiben |
+| KI-Suche (F5): Modellaufruf ist kostenpflichtig | Owner | entschieden 29.10.: zurückgestellt; regelbasierte Wortsuche bleibt |
+| Wochenchart mit Kerzen und Formationen (E4, D5). Die lange Wochenreihe enthält nur Schlusskurse. Echte Wochenkerzen über 5 Jahre oder Max wären neue öffentliche Kursdaten (Wochen-OHLC), die MULTI_TIMEFRAME.md bewusst ausschließt; Lizenz und Rechtsfrage liegen beim Owner. Optionen: **A** Status quo (Wochen-Schlusslinie mit SMA 10/40, ehrlich und ohne neue Daten). **B** Wochenkerzen nur im Zeitraum 1J, im Browser aus den 270 bereits veröffentlichten Tagesbars gebildet (rund 54 Kerzen, keine neuen Daten); für Formationen der Woche reicht das nicht (Aufwärmphase rund 120 Bars). **C** Wochen-OHLC der Vollhistorie veröffentlichen; erst damit wären E4 und D5 vollständig, Voraussetzung ist die Lizenzprüfung. Empfehlung: A beibehalten; C nur nach Lizenzklärung. B bringt wenig. | Owner | entschieden 29.10.: vorläufig A; späteres Paket unten |
 | Neue Fachmodell-PRs | Owner | siehe TECHNICAL_WORLD_PROGRESS.md §6 |
+
+**Späteres Paket „Wochenchart“ (E4 + D5, zurückgestellt am 29.10.2026, keine Absage).** Die Teile hängen zusammen und kommen nur gemeinsam:
+1. Voraussetzung: Owner klärt Lizenz und Rechtsfrage für öffentliche Wochen-OHLC (Option C). Ohne diese Klärung beginnt das Paket nicht.
+2. Daten: Wochen-OHLCV der Vollhistorie aus der Materialisierung (Bündel `multiTimeframe` rechnet sie bereits für den Screener), als eigenes Artefakt mit Vertrag, Erzeuger und DQ-Regel; kein zusätzlicher Anbieterabruf.
+3. Chart: Wochenkerzen und Wochenindikatoren in der bestehenden Chart-Ansicht (keine Neugestaltung), Zeitraum 5J/Max.
+4. Formationen der Woche: dieselbe Pattern-Engine auf Wochenbars, mit eigener Validierung (Geometrie, Bestätigung jenseits der Linie) und eigener Evidenz, bevor sie im Screener erscheinen (Fachmodell-PR).
+5. Abnahme: Universumsprüfung Wochen-OHLC gegen Tagesbars, E2E Zeile ↔ Chart für Woche, mobile Browser-QA.
 
 ## 4. Wiederaufnahmepunkt
 
