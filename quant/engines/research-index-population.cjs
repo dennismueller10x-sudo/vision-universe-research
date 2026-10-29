@@ -1,5 +1,5 @@
 'use strict';
-// Research-only PIT index population from SEC fund holdings (V12 SPXPOP, rules docs/quant-recovery/v12/spxpop/rules-1.0.1.json).
+// Research-only PIT index population from SEC fund holdings (V12 SPXPOP, rules docs/quant-recovery/v12/spxpop/rules-1.1.0.json, amending 1.0.0/1.0.1).
 // Opt-in: nothing in the product, the weekly loader or any study reads this module. It provides
 //   (1) pure functions used by the builder (scripts/quant/v12/spxpop/build-population.cjs): split classification,
 //       fund-flow factor, status groups, period qualification;
@@ -14,14 +14,15 @@ const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 
 const RULE = Object.freeze({
-  id: 'v12-spxpop-index-population', version: '1.0.1',
-  TRIGGER_LOG: Math.log(1.15), RATIO_TOL: 0.05, MARGIN: 0.10, MAX_RESIDUAL: 1.0, CLEAN_LOG: Math.log(1.10),
+  id: 'v12-spxpop-index-population', version: '1.1.0',
+  TRIGGER_LOG: Math.log(1.15), RATIO_TOL: 0.15, MARGIN: 0.10, MAX_RESIDUAL: 1.0, CLEAN_LOG: Math.log(1.10),
   FUZZY_SIM: 0.6, BREAK_SIM: 0.5, FUZZY_Q_LOG: Math.log(1.5), FUZZY_RESID: 0.7, CROSS_PRICE_TOL: 0.02,
   SERIES_MAX_GAP_DAYS: 7, FROZEN_RUN: 4,
   MIN_COVERED_W: 0.97, MAX_BOUNDED_W: 0.03, TOL_PP_QUARTER: 0.5, APPROX_EXTRA_PP: 0.25, INTERNAL_AGREE: 0.99, INTERNAL_DR_PP: 0.1
 });
-const RATIOS = Object.freeze(['2', '3', '4', '5', '6', '7', '8', '10', '15', '20', '3/2', '4/3', '5/4', '5/2', '5/3', '1/2', '1/3', '1/4', '1/5', '1/6', '1/8',
-  '1/10', '1/12', '1/15', '1/20', '1/25', '1/30', '1/40', '1/50', '2/3', '3/4', '4/5', '2/5'].map(s => { const [a, b] = s.split('/').map(Number); return Object.freeze({ label: s, num: a, den: b || 1, value: a / (b || 1) }); }));
+// 1.1.0: ratios with |log s| < log 1.5 (5/4, 4/3, 3/4, 4/5, 2/3) removed - index reweighting produces such share ratios; 25, 30, 40, 50 added (symmetric to the reverse ratios)
+const RATIOS = Object.freeze(['2', '3', '4', '5', '6', '7', '8', '10', '15', '20', '25', '30', '40', '50', '3/2', '5/2', '5/3', '1/2', '1/3', '1/4', '1/5', '1/6', '1/8',
+  '1/10', '1/12', '1/15', '1/20', '1/25', '1/30', '1/40', '1/50', '2/5'].map(s => { const [a, b] = s.split('/').map(Number); return Object.freeze({ label: s, num: a, den: b || 1, value: a / (b || 1) }); }));
 const STATUS = Object.freeze(['OBS_CHAIN', 'OBS_CROSSFUND', 'OBS_SERIES', 'EST_SERIES_END', 'EST_CASH', 'BOUNDED_AMBIGUOUS_CA', 'BOUNDED_EXIT', 'BOUNDED_EXIT_SERIES_DELISTED']);
 const GROUP = Object.freeze({ OBS_CHAIN: 'observed', OBS_CROSSFUND: 'observed', OBS_SERIES: 'observed', EST_SERIES_END: 'estimated', EST_CASH: 'estimated',
   BOUNDED_AMBIGUOUS_CA: 'bounded', BOUNDED_EXIT: 'bounded', BOUNDED_EXIT_SERIES_DELISTED: 'bounded' });
@@ -91,7 +92,7 @@ const DEFAULT_DIR = path.join(__dirname, '..', '..', 'docs', 'quant-recovery', '
 function createIndexPopulation(options = {}) {
   if (!options || options.optIn !== true) throw Error('INDEX_POPULATION_OPT_IN_REQUIRED');
   const dir = options.dir || DEFAULT_DIR;
-  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest-1.0.1.json'), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest-' + RULE.version + '.json'), 'utf8'));
   const buf = fs.readFileSync(path.join(dir, manifest.dataFile));
   const sha = crypto.createHash('sha256').update(buf).digest('hex');
   if (sha !== manifest.dataSha256) throw Error('INDEX_POPULATION_DATA_HASH_MISMATCH');
@@ -113,16 +114,18 @@ function createIndexPopulation(options = {}) {
     const per = periodsOf(p.fund).find(x => x.t0 === t0 && x.t0 >= p.from && x.t1 <= p.to);
     if (!per) throw Error('INDEX_POPULATION_NO_PERIOD:' + id + ':' + t0);
     if (!allowUnqualified && per.qualification !== 'QUALIFIED' && per.qualification !== 'QUALIFIED_INTERNAL') throw Error('INDEX_POPULATION_PERIOD_NOT_QUALIFIED:' + per.qualification);
-    const c = per.cols, out = [];
+    if (!per.cols) throw Error('INDEX_POPULATION_NO_MEMBER_DATA:' + per.qualification);
+    const c = per.cols, out = [], sf = new Map(c.sf), bnd = new Map(c.bnd.map(x => [x[0], x]));
     for (let i = 0; i < c.chain.length; i++) {
       const status = STATUS[c.status[i]], group = GROUP[status];
-      const ret = c.ret[i] == null ? null : c.ret[i] / 1e6, lo = c.lo[i] == null ? null : c.lo[i] / 1e6, hi = c.hi[i] == null ? null : c.hi[i] / 1e6;
+      const ret = c.ret[i] == null ? null : c.ret[i] / 1e6, bb = bnd.get(i);
+      const lo = bb ? (bb[1] == null ? null : bb[1] / 1e6) : ret, hi = bb ? (bb[2] == null ? null : bb[2] / 1e6) : ret;
       let used = group === 'bounded' ? null : ret;
       if (group === 'bounded' && boundedAs === 'ZERO') used = status === 'BOUNDED_AMBIGUOUS_CA' ? null : (ret == null ? 0 : ret);
       if (group === 'bounded' && boundedAs === 'LOWER') used = lo;
       const ch = chains[c.chain[i]];
       out.push({ chainId: c.chain[i], name: ch[2], cik: ch[3], securityId: c.sid[i] == null ? null : data.securityIds[c.sid[i]], weight: c.w[i] / 1e8,
-        status, group, tier: TIERS[c.tier[i]], splitClass: SPLIT_CLASSES[c.split[i]], splitFactor: c.sf[i] == null ? null : c.sf[i] / 1e6,
+        status, group, tier: TIERS[c.tier[i]], splitClass: SPLIT_CLASSES[c.split[i]], splitFactor: sf.has(i) ? sf.get(i) / 1e6 : (SPLIT_CLASSES[c.split[i]] === 'NONE' || SPLIT_CLASSES[c.split[i]] === 'SHARE_CHANGE' ? 1 : null),
         fate: FATES[c.fate[i]] || null, return: used, observedOrEstimatedReturn: group === 'bounded' ? null : ret, lower: lo, upper: hi });
     }
     return { fund: per.fund, t0: per.t0, t1: per.t1, qualification: per.qualification, summary: per.summary, members: out };

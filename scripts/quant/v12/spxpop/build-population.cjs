@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-/* V12 SPXPOP: PIT index population with period price returns from the fund holdings themselves (rules-1.0.1.json).
+/* V12 SPXPOP: PIT index population with period price returns from the fund holdings themselves (rules-1.1.0.json, amending 1.0.0/1.0.1).
  * Inputs (private, INDEXPOP): work/snapshots.json, work/mapping-1.2.0.json, work/fates-1.2.0.json, http-cache (N-PORT
  * monthly total returns). Repository (read-only): weekly series, multi-asset fund series, lifecycle register.
  * Outputs: --out-dir (repo evidence: population gz, periods, validation, summary, manifest) and --work (private detail).
@@ -17,13 +17,19 @@ const contract = require(path.join(ROOT, 'quant/engines/research-contract.cjs'))
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const PRIV = arg('--private'), WORK = arg('--work'), OUT = arg('--out-dir');
 if (!PRIV || !WORK || !OUT) throw Error('usage: --private <dir> --work <dir> --out-dir <dir>');
-const RULES_FILE = path.join(ROOT, 'docs/quant-recovery/v12/spxpop/rules-1.0.1.json');
+const V = IP.RULE.version;
+const RULES_FILE = path.join(ROOT, 'docs/quant-recovery/v12/spxpop/rules-' + V + '.json');
 const RULES = JSON.parse(fs.readFileSync(RULES_FILE, 'utf8'));
 if (RULES.ruleVersion !== IP.RULE.version) throw Error('RULE_VERSION_MISMATCH');
 const R = IP.RULE;
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
 const day = d => Date.parse(d + 'T00:00:00Z') / 864e5;
-const FUND_ORDER = ['IWV', 'IWB', 'IWM', 'SPY', 'QQQ', 'DIA'];
+const FUND_ORDER = ['IWV', 'IWB', 'IWM', 'SPY', 'QQQ'];
+// 1.1.0: DIA is price-weighted; share-ratio split detection does not apply (rules populations.notApplicable)
+const NOT_APPLICABLE = new Set((RULES.populations.notApplicable || []).map(p => p.fund));
+// member columns are published for these funds; IWV (Russell 3000 ~ IWB + IWM) only as period summary (repository size budget)
+const PUBLISH_MEMBERS = new Set(['SPY', 'IWB', 'IWM', 'QQQ']);
+const MC = require(path.join(ROOT, 'quant/engines/research-pit-market-cap.cjs'));
 
 // ---------------------------------------------------------------- inputs
 const snapFile = path.join(PRIV, 'work/snapshots.json'), mapFile = path.join(PRIV, 'work/mapping-1.2.0.json'), fateFile = path.join(PRIV, 'work/fates-1.2.0.json');
@@ -160,7 +166,7 @@ for (const [fund, list] of byFund) for (let k = 0; k + 1 < list.length; k++) {
 // cross-fund index of non-ambiguous own-fund links by (t0, t1, identity)
 const xIdx = new Map();
 for (const P of PERIODS) for (const l of P.links) {
-  if (l.point == null) continue; const a = P.A[l.a];
+  if (l.point == null || NOT_APPLICABLE.has(P.fund)) continue; const a = P.A[l.a];
   for (const t of [a.cusip && 'C' + a.cusip, a.isin && 'I' + a.isin, a.cik && 'K' + a.cik, a.nk && 'N' + a.nk]) if (t) { const k = P.t0 + '|' + P.t1 + '|' + t; if (!xIdx.has(k)) xIdx.set(k, []); xIdx.get(k).push({ fund: P.fund, point: l.point, p0: a.p, cls: l.cls }); }
 }
 function crossFund(P, a) {
@@ -256,26 +262,30 @@ for (const P of PERIODS) {
     nportTotalReturn: rnd(tr), trMinusPointPp: tr == null ? null : rnd(100 * (tr - rp), 4),
     internalAgreement: ia ? { against: others, agreeW: rnd(ia.agree), commonW: rnd(ia.commonW), n: ia.n, nAgree: ia.nAgree } : null };
   // impliedBoundedMean must not count bounded midpoint; obsSum covers observed+estimated only
-  P.qualification = IP.qualifyPeriod({ coveredW: g.observed + g.estimated, boundedW: g.bounded, errorPp, approx: refKind === 'NPORT_TR_MINUS_SPY_DIVIDEND_GAP', internalAgree: refKind ? null : ia && ia.agree }, P.t0, P.t1);
+  P.qualification = NOT_APPLICABLE.has(P.fund) ? 'NOT_APPLICABLE_PRICE_WEIGHTED' : IP.qualifyPeriod({ coveredW: g.observed + g.estimated, boundedW: g.bounded, errorPp, approx: refKind === 'NPORT_TR_MINUS_SPY_DIVIDEND_GAP', internalAgree: refKind ? null : ia && ia.agree }, P.t0, P.t1);
 }
 
 // ---------------------------------------------------------------- validation against provider splits / our series
-const val = { splitVsProvider: { pairs: 0, agreeNone: 0, agreeSplit: 0, ourSplitProviderNone: 0, providerSplitOurNone: 0, bothDifferent: 0, ambiguousProviderNone: 0, ambiguousProviderSplit: 0, cases: [] },
+const val = { splitVsProvider: { pairs: 0, agreeNone: 0, agreeSplit: 0, ourSplitProviderNone: 0, providerSplitOurNone: 0, bothDifferent: 0, ambiguousProviderNone: 0, ambiguousProviderSplit: 0, providerNonSplitFactorOurNone: 0, providerNonSplitFactorOurSplit: 0, providerNonSplitFactorOurAmbiguous: 0, cases: [], byFund: {} },
   returnVsSeries: { exactDates: [], weekly: [] }, crossFund: {} };
 for (const P of PERIODS) for (const l of P.links) {
   const a = P.A[l.a], b = P.B[l.b];
   if (!a.sid || a.sid !== b.sid) continue; const s = series(a.sid); if (!s) continue;
   const pf = providerFactor(s, P.t0, P.t1), v = val.splitVsProvider; v.pairs++;
-  const pSplit = Math.abs(Math.log(pf)) > 1e-3, ours = l.cls === 'SPLIT' ? l.factor : l.cls === 'AMBIGUOUS_CA' ? null : 1;
+  if (NOT_APPLICABLE.has(P.fund)) continue;
+  const pSplit = Math.abs(Math.log(pf)) > 1e-3 && MC.splitShaped(pf), pNonSplit = Math.abs(Math.log(pf)) > 1e-3 && !pSplit, ours = l.cls === 'SPLIT' ? l.factor : l.cls === 'AMBIGUOUS_CA' ? null : 1;
   let k;
-  if (ours == null) k = pSplit ? 'ambiguousProviderSplit' : 'ambiguousProviderNone';
+  if (pNonSplit) k = ours == null ? 'providerNonSplitFactorOurAmbiguous' : ours === 1 ? 'providerNonSplitFactorOurNone' : 'providerNonSplitFactorOurSplit';
+  else if (ours == null) k = pSplit ? 'ambiguousProviderSplit' : 'ambiguousProviderNone';
   else if (!pSplit && ours === 1) k = 'agreeNone';
   else if (pSplit && Math.abs(Math.log(ours / pf)) <= 0.01) k = 'agreeSplit';
   else if (!pSplit) k = 'ourSplitProviderNone';
   else if (ours === 1) k = 'providerSplitOurNone';
   else k = 'bothDifferent';
-  v[k]++;
-  if (k !== 'agreeNone' && k !== 'agreeSplit') v.cases.push({ fund: P.fund, t0: P.t0, t1: P.t1, securityId: a.sid, name: a.name, kind: k, providerFactor: +pf.toFixed(6), ourClass: l.cls, ourFactor: ours, q: +l.q.toFixed(4), priceRatio: +l.pr.toFixed(4), weightPct: +(100 * a.w).toFixed(4) });
+  v[k]++; const bf = v.byFund[P.fund] = v.byFund[P.fund] || {}; bf[k] = (bf[k] || 0) + 1;
+  { const mo = IP.monthsBetween(P.t0, P.t1), bk = mo <= 3 ? 'quarter' : mo <= 6 ? 'halfYear' : 'longer'; v.byPeriodLength = v.byPeriodLength || {}; const b = v.byPeriodLength[bk] = v.byPeriodLength[bk] || { pairs: 0, agree: 0, providerNonSplit: 0, disagreeOrAmbiguous: 0, weightPairs: 0, weightDisagreeOrAmbiguous: 0 };
+    b.pairs++; b.weightPairs += a.w; if (k === 'agreeNone' || k === 'agreeSplit') b.agree++; else if (k.startsWith('providerNonSplitFactor')) b.providerNonSplit++; else { b.disagreeOrAmbiguous++; b.weightDisagreeOrAmbiguous += a.w; } }
+  if (k !== 'agreeNone' && k !== 'agreeSplit' && k !== 'providerNonSplitFactorOurNone') v.cases.push({ fund: P.fund, t0: P.t0, t1: P.t1, securityId: a.sid, name: a.name, kind: k, providerFactor: +pf.toFixed(6), ourClass: l.cls, ourFactor: ours, q: +l.q.toFixed(4), priceRatio: +l.pr.toFixed(4), weightPct: +(100 * a.w).toFixed(4) });
   if (l.point == null) continue;
   const b0 = barOnOrBefore(s, P.t0), b1 = barOnOrBefore(s, P.t1);
   if (b0 && b1 && b1[0] <= s.end) { const d = l.point - (b1[1] / b0[1] - 1); val.returnVsSeries.weekly.push(d); if (b0[0] === P.t0 && b1[0] === P.t1) val.returnVsSeries.exactDates.push(d); }
@@ -312,14 +322,17 @@ for (const [fund, list] of byFund) {
   }
 }
 const FATE_I = f => { const i = IP.FATES.indexOf(f || ''); if (i < 0) throw Error('FATE ' + f); return i; };
-const POPS = [...RULES.populations.primary.map(p => ({ ...p, role: 'primary' })), ...RULES.populations.secondary.map(p => ({ ...p, role: 'secondary' }))];
+const POPS = [...RULES.populations.primary.map(p => ({ ...p, role: 'primary' })), ...RULES.populations.secondary.map(p => ({ ...p, role: 'secondary' })), ...(RULES.populations.notApplicable || []).map(p => ({ ...p, role: 'notApplicable', from: '0000', to: '9999' }))];
 const periodsOut = [];
 for (const P of PERIODS) {
-  const cols = { chain: [], w: [], status: [], tier: [], split: [], sf: [], ret: [], lo: [], hi: [], fate: [], sid: [] };
+  if (NOT_APPLICABLE.has(P.fund) || !PUBLISH_MEMBERS.has(P.fund)) { periodsOut.push({ fund: P.fund, t0: P.t0, t1: P.t1, form0: P.s0.src.form, form1: P.s1.src.form, accession0: P.s0.src.accession, accession1: P.s1.src.accession, qualification: P.qualification, summary: P.summary, cols: null }); continue; }
+  const cols = { chain: [], w: [], status: [], tier: [], split: [], ret: [], fate: [], sid: [], sf: [], bnd: [] };
   P.rows.forEach((r, i) => {
     const q6 = x => x == null ? null : Math.round(x * 1e6);
     cols.chain.push(chainOf.get(P.fund + '|' + P.t0 + '|' + i)); cols.w.push(Math.round(P.A[i].w * 1e8)); cols.status.push(IP.STATUS.indexOf(r.status)); cols.tier.push(IP.TIERS.indexOf(r.tier));
-    cols.split.push(IP.SPLIT_CLASSES.indexOf(r.cls)); cols.sf.push(q6(r.sf)); cols.ret.push(q6(r.point)); cols.lo.push(q6(r.lo)); cols.hi.push(q6(r.hi)); cols.fate.push(FATE_I(r.fate)); cols.sid.push(sidI(r.sid));
+    cols.split.push(IP.SPLIT_CLASSES.indexOf(r.cls)); cols.ret.push(q6(r.point)); cols.fate.push(FATE_I(r.fate)); cols.sid.push(sidI(r.sid));
+    if (r.cls === 'SPLIT') cols.sf.push([i, q6(r.sf)]);
+    if (q6(r.lo) !== q6(r.point) || q6(r.hi) !== q6(r.point)) cols.bnd.push([i, q6(r.lo), q6(r.hi)]);
   });
   periodsOut.push({ fund: P.fund, t0: P.t0, t1: P.t1, form0: P.s0.src.form, form1: P.s1.src.form, accession0: P.s0.src.accession, accession1: P.s1.src.accession, qualification: P.qualification, summary: P.summary, cols });
 }
@@ -331,28 +344,28 @@ for (const pop of POPS) {
   pop.qualifiedSpanPeriods = si == null ? 0 : ps.length - si;
   pop.failingPeriods = ps.filter(p => p.qualification !== 'QUALIFIED' && p.qualification !== 'QUALIFIED_INTERNAL').map(p => ({ t0: p.t0, t1: p.t1, qualification: p.qualification, observedW: p.summary.observedW, boundedW: p.summary.boundedW, errorPp: p.summary.errorPp }));
 }
-const data = { schemaVersion: 'v12-spxpop-population-1.0.1', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
-  columns: { w: 'weight x 1e8', ret: 'point return x 1e6 (null = none)', lo: 'lower bound x 1e6', hi: 'upper bound x 1e6 (null = unbounded)', sf: 'split factor x 1e6', status: IP.STATUS, tier: IP.TIERS, split: IP.SPLIT_CLASSES, fate: IP.FATES, chain: 'index into chains [fund, keyHash16, name, cik]', sid: 'index into securityIds' },
+const data = { schemaVersion: 'v12-spxpop-population-' + V + '', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
+  columns: { w: 'weight x 1e8', ret: 'point return x 1e6 (null = none)', bnd: 'sparse [row, lower x 1e6, upper x 1e6 (null = unbounded)] where a bound differs from ret', sf: 'sparse [row, split factor x 1e6] for SPLIT rows', status: IP.STATUS, tier: IP.TIERS, split: IP.SPLIT_CLASSES, fate: IP.FATES, chain: 'index into chains [fund, keyHash16, name, cik]', sid: 'index into securityIds' },
   securityIds: sidList, chains, populations: POPS, periods: periodsOut };
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(WORK, { recursive: true });
 const gz = zlib.gzipSync(Buffer.from(JSON.stringify(data)), { level: 9 });
-const dataFile = 'population-1.0.1.json.gz';
+const dataFile = 'population-' + V + '.json.gz';
 fs.writeFileSync(path.join(OUT, dataFile), gz);
 const codeHash = sha(fs.readFileSync(__filename) + fs.readFileSync(path.join(ROOT, 'quant/engines/research-index-population.cjs')));
-fs.writeFileSync(path.join(OUT, 'manifest-1.0.1.json'), JSON.stringify({ schemaVersion: data.schemaVersion, ruleVersion: data.ruleVersion, dataFile, dataSha256: sha(gz), bytes: gz.length,
-  rows: periodsOut.reduce((a, p) => a + p.cols.chain.length, 0), periods: periodsOut.length, chains: chains.length, inputHashes, codeSha256: codeHash }, null, 1) + '\n');
-fs.writeFileSync(path.join(OUT, 'periods-1.0.1.json'), JSON.stringify({ schemaVersion: 'v12-spxpop-periods-1.0.1', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION',
+fs.writeFileSync(path.join(OUT, 'manifest-' + V + '.json'), JSON.stringify({ schemaVersion: data.schemaVersion, ruleVersion: data.ruleVersion, dataFile, dataSha256: sha(gz), bytes: gz.length,
+  rows: periodsOut.reduce((a, p) => a + (p.cols ? p.cols.chain.length : 0), 0), periods: periodsOut.length, chains: chains.length, inputHashes, codeSha256: codeHash }, null, 1) + '\n');
+fs.writeFileSync(path.join(OUT, 'periods-' + V + '.json'), JSON.stringify({ schemaVersion: 'v12-spxpop-periods-' + V + '', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION',
   periods: periodsOut.map(p => ({ fund: p.fund, t0: p.t0, t1: p.t1, form0: p.form0, form1: p.form1, accession0: p.accession0, accession1: p.accession1, qualification: p.qualification, ...p.summary })) }, null, 1) + '\n');
-fs.writeFileSync(path.join(OUT, 'validation-1.0.1.json'), JSON.stringify({ schemaVersion: 'v12-spxpop-validation-1.0.1', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', ...val }, null, 1) + '\n');
-const summary = { schemaVersion: 'v12-spxpop-summary-1.0.1', studyId: 'v12-spxpop-index-population', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
+fs.writeFileSync(path.join(OUT, 'validation-' + V + '.json'), JSON.stringify({ schemaVersion: 'v12-spxpop-validation-' + V + '', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', ...val }, null, 1) + '\n');
+const summary = { schemaVersion: 'v12-spxpop-summary-' + V + '', studyId: 'v12-spxpop-index-population', ruleVersion: IP.RULE.version, evidenceKind: 'RECONSTRUCTION', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
   dataSource: 'SEC fund holdings (N-30D, N-30B-2, N-Q, NPORT-P) of SPY, QQQ, DIA, IWB, IWM, IWV as parsed and validated by V12 INDEXPOP; fund price series (multi-asset, Tiingo) only as consistency reference',
-  listingIdentity: 'identity chain C1 CUSIP/ISIN, C2 normalized name, C3 CIK, C4 fuzzy (rules-1.0.1 identityChain); securityId only from INDEXPOP T1/T2 via core/identity.js',
+  listingIdentity: 'identity chain C1 CUSIP/ISIN, C2 normalized name, C3 CIK, C4 fuzzy (rules-' + V + ' identityChain); securityId only from INDEXPOP T1/T2 via core/identity.js',
   returnBasis: 'PRICE_RETURN', availability: 'holdings as of the report date; SEC filing date is later (N-PORT ~60 days, reports ~60 days) - a study using these members must respect the filing date',
   populations: POPS.map(p => { const { failingPeriods, ...rest } = p; return { ...rest, failingPeriods: failingPeriods.length }; }), statusCounts, inputHashes,
   reproHash: contract.hash({ inputHashes, codeHash, dataSha256: sha(gz) }),
   scope: 'Holdings-frequency (annual/semiannual/quarterly) PIT index membership and price returns; no weekly study, no total return, no fundamentals except via CIK; not a strategy or signal study.' };
-fs.writeFileSync(path.join(OUT, 'summary-1.0.1.json'), JSON.stringify(summary, null, 1) + '\n');
+fs.writeFileSync(path.join(OUT, 'summary-' + V + '.json'), JSON.stringify(summary, null, 1) + '\n');
 // private detail (names, per-link diagnostics) for the Python check and inspection
-fs.writeFileSync(path.join(WORK, 'detail-1.0.1.json'), JSON.stringify(PERIODS.map(P => ({ fund: P.fund, t0: P.t0, t1: P.t1, summary: P.summary, qualification: P.qualification, breaks: P.breakList,
+fs.writeFileSync(path.join(WORK, 'detail-' + V + '.json'), JSON.stringify(PERIODS.map(P => ({ fund: P.fund, t0: P.t0, t1: P.t1, summary: P.summary, qualification: P.qualification, breaks: P.breakList,
   rows: P.rows.map((r, i) => ({ name: P.A[i].name, key: P.A[i].key, w: P.A[i].w, p0: P.A[i].p, ...r, linkTo: P.la[i] >= 0 ? P.B[P.la[i]].name : null, q: (P.links.find(l => l.a === i) || {}).q })) }))));
 console.log(JSON.stringify({ periods: periodsOut.length, bytes: gz.length, statusCounts, pops: POPS.map(p => [p.id, p.periods, p.qualificationCounts, p.qualifiedSpanFrom]) }, null, 0));
