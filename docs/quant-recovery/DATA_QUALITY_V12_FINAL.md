@@ -20,11 +20,11 @@ Die negativen V10/V11-Befunde bleiben unverändert dokumentiert. Sie zeigen, das
 
 - **Referenz selbst verzerrt:** Tiingos Tickerliste enthält vor 2009 praktisch keine beendeten Listings; gegen SEC-Delistings ist sie bis 2008 zu ≈ 0–3 %, 2015–2026 zu 34–72 % vollständig.
 - **Unsere Abdeckung:** 52–85 % der Referenzlistings je Jahr mit Kursreihe, Research-Frame 44–67 %; die Lücke sind fast ausschließlich später delistete Titel (bis 2023 je Jahr ≤ 1 mit Reihe). S&P-500-Abdeckung mit unseren Reihen 2005 52 % (Gewicht 71 %) → 2025 95,8 % (91,6 %).
-- **Survivorship innerhalb des S&P 500 direkt gemessen:** Mitglieder mit unserer Kursreihe übertreffen alle Mitglieder um **+0,67 Pp p. a.** (2009–2019 +1,04; 2019–2026 +0,11; Untergrenzen-Szenario +3,76).
+- **Survivorship innerhalb des S&P 500 direkt gemessen:** Mitglieder mit unserer Kursreihe übertreffen alle Mitglieder um **+0,67 Pp p. a.** (2009–2019 +1,04; 2019–2026 +0,11; Obergrenze der Verzerrung bei Austritten −100 %: +3,76). Nach unabhängiger Prüfung (REQUAL 1.1.0, SPXPOP 1.1.1): belegte Punktschätzung nach Folgeschicksal **+0,70** (CAGR-Differenz +0,76), Spanne +0,38 (oberes Szenario) … +3,77 (Obergrenze); p-Werte nur je Szenario.
 
 ## 3. Veränderte Studienresultate (vorher/nachher)
 
-Beleg: [v12/requal](v12/requal/README.md), [v12/mcap/impact-1.0.0.json](v12/mcap/impact-1.0.0.json).
+Beleg: [v12/requal](v12/requal/README.md), [v12/mcap/impact-1.0.0.json](v12/mcap/impact-1.0.0.json). Werte der Ergebnisversion 1.0.0; nach unabhängiger Prüfung neu als 1.1.0 auf SPXPOP 1.1.1 (EW-PIT-S&P-500 10,57 %, Survivorship +0,66, Gleichgewichtung −1,46 PP; S1 9,46 %, S6 7,09 %, S2–S5 unverändert; zusätzlich CW_ALL-Benchmark 10,91 %, gegen die keine Strategie abgesichert abweicht, und Spanne ab 2013-03 mit gleichen Vorzeichen) – siehe Abschnitt 6.
 
 | Frage | vorher (V10/V11, Survivor-Frame) | nachher (V12) |
 |---|---|---|
@@ -39,19 +39,33 @@ Beleg: [v12/requal](v12/requal/README.md), [v12/mcap/impact-1.0.0.json](v12/mcap
 ## 4. Grenzen der qualifizierten Basis
 
 - Frequenz halbjährlich bis 2019-H1, danach quartalsweise (keine Wochen-/Monatsstudien; Drawdowns an Stichtagen unterschätzt: SPY −24,8 % vs. −34,1 % täglich).
-- Kursrendite; Mitgliedsdividenden fehlen, deshalb keine Total-Return-Strategien (SPY-TR nur als Referenz).
+- Kursrendite; Mitgliedsdividenden fehlen, deshalb keine Total-Return-Strategien (SPY-TR nur als Referenz). Größenordnung (SEC-XBRL, REQUAL 1.1.0): Low-Vol +0,7, Momentum/Qualität −0,5 … −0,7 PP p. a. ggü. CW_ALL; Cash verzinst zum EFFR (+0,26 … +0,35 PP bei S2/S4/S6).
 - Vor 2009 keine qualifizierte S&P-Periode (Schranken 3–13 %); Russell 1000 vor 2019 nur intern geprüft.
 - Large-Cap-Population: Aussagen gelten nicht für Small/Micro Caps (dort keine qualifizierte Basis).
 
 ## 5. Verbleibende Freigaben (Owner)
 
-1. **Nachladen delisteter Kurse** über die bestehenden Anbieter in Actions: 4.322 bei Tiingo geführte, bei uns fehlende delistete Listings (2.483 mit CIK; Abdeckung gegen die Anbieterreferenz dann 0,88–0,98) – Kandidaten in `v12/listref/fetch-candidates-1.0.2.json`; nichts abgerufen.
+1. **Nachladen delisteter Kurse** über die bestehenden Anbieter in Actions: 4.322 bei Tiingo geführte, bei uns fehlende delistete Listings (2.483 mit CIK; Abdeckung gegen die Anbieterreferenz dann 0,88–0,98) – Kandidaten öffentlich nur aggregiert in `v12/listref/fetch-candidates-1.0.3.json` (Volltabelle privat); nichts abgerufen.
 2. **Optional:** iShares-N-CSR/N-CSRS (≈ 2,6 GB SEC) für zwei zusätzliche Russell-Stichtage je Jahr und eine externe Referenz vor 2019.
 3. **AAPL/ABT/MS/USB/DD/COR/DOC:** neue Protokollversion mit anderem Kursanker (Quartals-Hoch/Tief-Tabellen) – Entscheidung nötig.
 4. **Loader-Option `identityEvidenceProtocolV12`** (Code-Änderung am Research-Loader) und die 62 V10-Bindungen (`identityEvidenceProtocolV10`).
-5. **Nach Sicht geänderte Regeln** (offengelegt, Urteil erbeten): MCAP 1.0.1–1.0.8, INDEXPOP 1.1.0/1.2.0, SPXPOP 1.1.0, LISTREF 1.0.1, LARGECAP 1.0.1, REQUAL 1.0.2.
+5. **Nach Sicht geänderte Regeln** (offengelegt, Urteil erbeten): MCAP 1.0.1–1.0.8, INDEXPOP 1.1.0/1.2.0, SPXPOP 1.1.0/1.1.1, LISTREF 1.0.1, LARGECAP 1.0.1, REQUAL 1.0.2 und Nachtrag 1.1.0.
+7. **Git-Historie:** die zurückgezogenen LISTREF-1.0.2-Zeilendateien (Anbieter-Metadaten) liegen noch in der Branch-Historie (Commit `1ab37c75b4`); Entfernung vor einem Merge (Squash/Bereinigung) braucht Freigabe.
 6. **Erzeuger-PRs (Produkt):** Marktkap.-Patch `v12/mcap/producer-patch-market-cap-1.2.0.diff` (558 Zeilen zurückgehalten, heute nur LTM betroffen), Security-Master-Status (V10), `research-portfolio`-Vollverkauf (V10), `cli.py consumer`-Ausgabepfad.
 
 ## 6. Unabhängige Prüfung
 
 Siehe Abschnitt unten (wird nach Abschluss der V12-Prüfung ergänzt).
+
+### Korrekturen nach unabhängiger Prüfung (umgesetzt)
+
+| Befund | Korrektur | Vorher → nachher | Beleg |
+|---|---|---|---|
+| SPXPOP m4 | Regel 1.1.1: Identitätsbruch bei Fusionen (C3/C4-Verknüpfung, Aktienzahlsprung, Kurs > 2× Index unter jeder Hypothese) wird nicht verkettet, BOUNDED_EXIT/IDENTITY_BREAK; 13 Fälle (Broadcom ×4, PXRE, BPZ, Arsanis, WMIH, Aerovate, Cano, System1) | SPY 2015-09 Fehler −0,12 → −0,46 PP (weiter qualifiziert); keine Qualifikation geändert; Python bestätigt 7/7 lokalisierte Brüche | [v12/spxpop](v12/spxpop/README.md) |
+| REQUAL MAJOR 2 | Szenarien FATE/UPPER, Bezeichnungen korrigiert (ZERO keine Schranke, LOWER = Obergrenze der Verzerrung) | Survivorship +0,67 (ZERO) → FATE +0,70 / UPPER +0,38 / LOWER +3,77 PP | [v12/requal](v12/requal/README.md) |
+| REQUAL MAJOR 3/4 | CW_ALL als gleichartige Benchmark, Schranken-Gewicht, Dividenden, Cash | gegen CW_ALL (10,91 %) kein Unterschied abgesichert (min. Holm-p 0,12); S2–S5 halten ≤ 0,08 % Schranken-Gewicht | requal 1.1.0, `dividends-1.1.0.json` |
+| REQUAL MAJOR 5 | Spanne ab 2013-03 (Regel 1.0.1) | S1 −2,69, S3 −0,25, S5 −3,51 PP ggü. SPY; Vorzeichen unverändert | requal 1.1.0 |
+| REQUAL m6–m8 | CAGR neben arithmetisch, P5d-Text nicht kausal, Same-Bar offengelegt | – | requal 1.1.0 |
+| MCAP MAJOR 1, m2, m3 | Validierung ohne Überschneidung, Korrekturnotiz („32/32“ falsch, Dateinamen, `rowsValueScoreChanged`), `strict`-Option mit Laufzeit-Hashprüfung | frisch 18/19 (Wilson-Untergrenze 75,4 %); 222.316 „geänderte“ Value-Scores → 689 um > 1 Punkt | [v12/mcap](v12/mcap/README.md) |
+| LISTREF MAJOR 6 | keine zeilenweisen Anbieter-Metadaten im Repository (1.0.3: Zählungen, CIK, HMAC-Kennungen, 5-Jahres-Klassen) | 1.0.2-Zeilendateien entfernt, Vollfassung privat | [v12/listref](v12/listref/README.md) |
+| LARGECAP m9 | V10-Registererzeuger erhält die nicht aufzählbare `v12`-Erweiterung (Test: byte-identischer Neubau) | Code-Hash-Änderung der V10-Reproduktionen offengelegt | [v12/largecap](v12/largecap/README.md) |
