@@ -1,0 +1,62 @@
+{
+ "schemaVersion": "v12-indexpop-price-plausibility-1.1.0",
+ "rulesVersion": "1.1.0",
+ "rulesFile": "docs/quant-recovery/v12/indexpop/rules-1.1.0.json",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "method": "Members mapped (T1/T2) at a holding date that is itself the date of a weekly bar: |value/shares / (close x split factors after the bar) - 1|. The mapping used a 5 % bracket tolerance, so this distribution is truncated at about 5 %; it measures agreement of fund valuation with the provider close, not identity.",
+ "all": {
+  "n": 44262,
+  "median": 1.1102230246251565e-16,
+  "p90": 0.000007125538529439979,
+  "p99": 0.0006273252102985127,
+  "max": 0.8702614192112157,
+  "shareAbove1pct": 0.0007681532691699426,
+  "shareAbove0_1pct": 0.005580407573087524
+ },
+ "byEra": {
+  "REPORT_ERA": {
+   "n": 16196,
+   "median": 1.3772343931961473e-7,
+   "p90": 0.00014120210661339172,
+   "p99": 0.001333958580473249,
+   "max": 0.8702614192112157,
+   "shareAbove1pct": 0.0015435910101259571,
+   "shareAbove0_1pct": 0.01364534452951346
+  },
+  "NPORT_ERA": {
+   "n": 28066,
+   "median": 0,
+   "p90": 2.220446049250313e-16,
+   "p99": 0.00016992353440969943,
+   "max": 0.03707194470625219,
+   "shareAbove1pct": 0.0003206727000641345,
+   "shareAbove0_1pct": 0.0009263878001852776
+  }
+ },
+ "splitConsistency": {
+  "method": "Positions whose key maps to exactly one listing elsewhere but are NOT mapped at this date, on exact bar dates: ratio within 2 % of a common split ratio k or 1/k (k in 2,3,4,5,10,1.5,20,7,8) indicates a split not reflected in the provider factors or a different share basis.",
+  "count": 3,
+  "samples": [
+   {
+    "fund": "IWB",
+    "date": "2006-06-30",
+    "securityId": "ref_FNF",
+    "ratio": 1.98
+   },
+   {
+    "fund": "IWV",
+    "date": "2006-06-30",
+    "securityId": "ref_FNF",
+    "ratio": 1.98
+   },
+   {
+    "fund": "SPY",
+    "date": "2011-09-30",
+    "securityId": "ref_MCO",
+    "ratio": 2.0118
+   }
+  ]
+ }
+}
