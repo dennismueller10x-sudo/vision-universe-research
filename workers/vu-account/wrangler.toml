@@ -151,10 +151,11 @@ VU_CHECKOUT_ACCESS = "testers"
 # Siehe [vars]. Oeffentlicher Checkout zusaetzlich nur mit freigegebenen Rechtstexten (VU_LEGAL_APPROVED).
 STRIPE_TAX_MODE = "none"
 VU_LEGAL_APPROVED = ""
-# Brevo aus bis zur Abnahme; Liste 4 = bestehende Newsletter-Liste der Landingpage (DOI).
+# Brevo aus bis zur Abnahme. Listen angelegt 29.10.2026 (Lauf "Produktivstart einspielen" #1): 11 Nutzer, 12 Free,
+# 13 Pro; 4 = bestehende Newsletter-Liste der Landingpage (DOI).
 VU_BREVO_SYNC = "false"
 VU_NEWSLETTER = "false"
-VU_BREVO_LIST_USERS = ""
-VU_BREVO_LIST_FREE = ""
-VU_BREVO_LIST_PRO = ""
+VU_BREVO_LIST_USERS = "11"
+VU_BREVO_LIST_FREE = "12"
+VU_BREVO_LIST_PRO = "13"
 VU_BREVO_LIST_NEWSLETTER = "4"

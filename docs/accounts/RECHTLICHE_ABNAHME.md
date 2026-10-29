@@ -64,7 +64,7 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | A10 | Brevo-Kontaktliste (A) ohne Einwilligung: Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO, nur Service-Kommunikation | Code trennt A und B; A ausgeschaltet | Rechtsberatung | **offen** |
 | A11 | Newsletter (B): Einwilligungstext, DOI, Nachweis, Abmeldung, Tracking aus | umgesetzt; Text wortgleich mit der Landingpage (`vu-newsletter-v1`) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt, kein gesonderter Steuerausweis (`STRIPE_TAX_MODE = "none"`) | Steuerberatung | **offen** |
-| A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Lesecheck `stripe-live-check.mjs` meldet die Werte | Owner (Dashboard) | **offen** |
+| A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Befund 29.10.: Firma und Kontoauszug „VISION UNIVERSE“ korrekt, kein Privatname; Support-E-Mail/-URL leer, kein Logo, keine Steuer-ID für Rechnungen | Owner (Stripe-Dashboard → Einstellungen → Unternehmensdetails, Branding, Rechnungen) | **offen** |
 | A14 | Klarna als Zahlungsart für ein 1-€-Abo (Stripe zeigt nur, was zulässig ist) | dynamische Zahlungsarten | Owner | Entscheidung offen |
 
 ## Freigabe und Umschalten auf öffentliches Pro
