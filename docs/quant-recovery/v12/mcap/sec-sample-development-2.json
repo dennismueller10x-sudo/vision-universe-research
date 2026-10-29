@@ -15,15 +15,17 @@
  "certificationStatus": "NOT_CERTIFIED",
  "productionApproved": false,
  "verdicts": {
-  "CONFIRMED_COVER_STATES_CORRECTED": 17,
-  "COVER_STATES_OTHER_COUNT": 5,
+  "WEAK_TABLE_MATCH_CORRECTED": 3,
+  "CONFIRMED_COVER_STATES_CORRECTED": 14,
+  "COVER_STATES_OTHER_COUNT": 6,
   "CONFIRMED_COVER_STATES_USED": 7,
-  "CONTRADICTED_COVER_STATES_REPORTED": 6,
-  "CONFIRMED_DOCUMENT_STATES_CORRECTED": 7,
+  "WEAK_TABLE_MATCH_REPORTED": 4,
+  "DOCUMENT_STATES_CORRECTED_NO_COVER": 7,
   "INCONCLUSIVE": 3,
   "COVER_TYPO_SAME_DIGITS": 1,
-  "COVER_STATES_REPORTED": 5,
-  "NO_COVER_COUNT_FOUND": 5
+  "CONTRADICTED_COVER_STATES_REPORTED": 2,
+  "COVER_STATES_REPORTED": 6,
+  "NO_COVER_COUNT_FOUND": 3
  },
  "cases": 56,
  "errors": [],
@@ -56,6 +58,7 @@
      "quote": "aggregate market value was determined based on the closing price of the Common Stock on June 30, 2020 . As of February 19, 2021 , the registrant had 52,752,851 shares of Common Stock outstanding. Documents Incorporated By Reference Portions of the registrant's Proxy Statement for its 2021 Annual Me"
     },
     "coverCandidates": 1,
+    "strongCover": false,
     "original": {
      "number": "52,752,851,000,000,000",
      "found": false
@@ -66,7 +69,7 @@
      "quote": "aggregate market value was determined based on the closing price of the Common Stock on June 30, 2020 . As of February 19, 2021 , the registrant had 52,752,851 shares of Common Stock outstanding. Documents Incorporated By Reference Portions of the registrant's Proxy Statement for its 2021 Annual Me",
      "ixScale": 9
     },
-    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+    "verdict": "WEAK_TABLE_MATCH_CORRECTED"
    }
   },
   {
@@ -96,7 +99,8 @@
      "token": "4,819,056,000",
      "quote": "as defined in Rule 12b-2 of the Exchange Act). Yes \u00a8 No x The number of shares of registrant\u2019s common stock outstanding as of September 17, 2012 was: 4,819,056,000. Table of Contents ORACLE CORPORATION FORM 10-Q QUARTERLY REPORT TABLE OF CONTENTS Page PART I. FINANCIAL INFORMATION Item 1. Financial"
     },
-    "coverCandidates": 9,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "4,819,056,000,000,000",
      "found": false
@@ -136,7 +140,8 @@
      "token": "338,875,757",
      "quote": "d in Rule 12b-2 of the Exchange Act). YES \u00a8 NO x The number of registrant\u2019s Common Shares (CHF 31.21 par value) outstanding as of August 3, 2010, was 338,875,757. Table of Contents ACE LIMITED INDEX TO FORM 10-Q Page No. Part I. FINANCIAL INFORMATION Item 1. Financial Statements: Consolidated Balanc"
     },
-    "coverCandidates": 18,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "338,755,604,000,000",
      "found": false
@@ -176,7 +181,8 @@
      "token": "367,005,511",
      "quote": "ined in Rule 12b-2 of the Exchange Act). Yes [ ] No [ \u00fc ] The number of shares outstanding of the Registrant\u2019s Common Stock as of October 7, 2016 was 367,005,511 million shares. YUM! BRANDS, INC. INDEX Page No. Part I. Financial Information Item 1 - Financial Statements Condensed Consolidated Statem"
     },
-    "coverCandidates": 7,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "367,005,511,000,000",
      "found": false
@@ -218,6 +224,7 @@
      "quote": "iconductor Corporation stockholders\u2019 equity: Common stock ($0.01 par value, 750,000,000 shares authorized, 507,233,966 and 502,452,084 shares issued, 455,115,270 and 451,284,220 shares outstanding, respectively) 5.1 5.0 Additional paid-in capital 3,133.6 3,113.5 Accumulated other comprehensive loss"
     },
     "coverCandidates": 21,
+    "strongCover": false,
     "original": {
      "number": "455,571,966,000,000",
      "found": false
@@ -227,7 +234,7 @@
      "found": true,
      "quote": "er\u2019s class of common stock as of the close of business on July 26, 2012: Title of Each Class Number of Shares Common Stock, par value $0.01 per share 455,571,966 Table of Contents INDEX Part I: Financial Information Item 1. Financial Statements (unaudited) 3 Item 2. Management\u2019s Discussion and Analy"
     },
-    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+    "verdict": "WEAK_TABLE_MATCH_CORRECTED"
    }
   },
   {
@@ -257,7 +264,8 @@
      "token": "22,863,947,261",
      "quote": "res outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of September 30, 2009: 22,863,947,261 Available on the web at www.citigroup.com CITIGROUP INC. THIRD QUARTER OF 2009\u2014FORM 10-Q THE COMPANY 3 Citigroup Segments and Regions 4"
     },
-    "coverCandidates": 4,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "22,863,947",
      "found": true,
@@ -294,7 +302,8 @@
      "token": "338,660,899",
      "quote": "ined in Rule 12b-2 of the Exchange Act). YES \u00a8 NO x The number of registrant\u2019s Common Shares (CHF 31.55 par value) outstanding as of May 4, 2010, was 338,660,899. Table of Contents ACE LIMITED INDEX TO FORM 10-Q Page No. Part I. FINANCIAL INFORMATION Item 1. Financial Statements: Consolidated Balanc"
     },
-    "coverCandidates": 18,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "338,610,718,000,000",
      "found": false
@@ -335,6 +344,7 @@
      "quote": "f shares outstanding of each of the issuer's classes of common stock as of the latest practicable date: Common stock outstanding as of June 30, 2011: 2,917,949,115 Available on the web at www.citigroup.com 1 CITIGROUP INC. SECOND QUARTER 2011\u2014FORM 10-Q OVERVIEW 3 CITIGROUP SEGMENTS AND REGIONS 4 MAN"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "2,917,949,115",
      "found": true,
@@ -372,6 +382,7 @@
      "quote": "per common share \u2013 diluted Continuing operations $ 0.94 $ 0.73 Discontinued operations - - 0.94 0.73 Basic weighted average common shares outstanding 171,446 170,309 Diluted weighted average common shares outstanding 172,514 171,415 Cash dividends declared per common share $ 1.25 $ 1.10 See accompan"
     },
     "coverCandidates": 44,
+    "strongCover": false,
     "original": {
      "number": "171,858",
      "found": false
@@ -380,7 +391,7 @@
      "number": "171,858,000",
      "found": false
     },
-    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+    "verdict": "WEAK_TABLE_MATCH_REPORTED"
    }
   },
   {
@@ -410,7 +421,8 @@
      "token": "38,466",
      "quote": "compensation and benefits 28,121 35,684 Other current liabilities 71,228 70,033 Total current liabilities 212,502 247,096 Other long-term liabilities 38,466 34,198 Total liabilities 250,968 281,294 Commitments and contingencies (Note 10) Stockholders\u2019 equity: Preferred stock, no par value: 25,000 sh"
     },
-    "coverCandidates": 29,
+    "coverCandidates": 31,
+    "strongCover": false,
     "original": {
      "number": "188,415,515,000",
      "found": false
@@ -420,7 +432,7 @@
      "found": true,
      "quote": "the issuer's classes of common stock, as of the latest practicable date. Class Outstanding at January 27, 2012 Common Stock, par value $.25 per share 188,415,515 SKYWORKS SOLUTIONS, INC. QUARTERLY REPORT ON FORM 10-Q FOR THE QUARTER ENDED DECEMBER 30, 2011 TABLE OF CONTENTS PAGE NO. PART I FINANCIAL"
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -447,6 +459,7 @@
     "bytes": 1491342,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "152,210,038",
      "found": false
@@ -482,6 +495,7 @@
     "bytes": 5931336,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "79,653,624,000",
      "found": false
@@ -492,7 +506,7 @@
      "quote": "cate by check mark whether any of the registrants is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 As of July 26, 2019 , 79,653,624 shares of common stock, no par value per share, of PNMR were outstanding. The total number of shares of common stock of PNM, no par value p",
      "ixScale": 3
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -519,6 +533,7 @@
     "bytes": 5976375,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "79,653,624,000",
      "found": false
@@ -529,7 +544,7 @@
      "quote": "e by check mark whether any of the registrants is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 As of October 25, 2019 , 79,653,624 shares of common stock, no par value per share, of PNMR were outstanding. The total number of shares of common stock of PNM, no par value p",
      "ixScale": 3
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -560,6 +575,7 @@
      "quote": "ass Trading Symbol(s) Name of each exchange on which registered Common Stock, par value $0.01 per share AA New York Stock Exchange As of May 3, 2019, 185,534,704 shares of common stock, par value $0.01 per share, of the registrant were outstanding. TABLE OF CONTENTS PART I \u2013 FINANCIAL INFORMATION 1"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "185,534,704,000,000",
      "found": false
@@ -600,6 +616,7 @@
      "quote": "les price of the Common Stock on July 15, 2011 , as reported by the New York Stock Exchange. As of February 25, 2012 , the registrant had outstanding 72,924,659 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Documents Incorporated"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "72,924,659,000",
      "found": false
@@ -639,6 +656,7 @@
      "quote": "000 shares authorized, no shares issued or outstanding \u2014 \u2014 Common stock, $0.0001 par value, 99,000,000 shares authorized, 2,769,756 shares issued and 2,647,735 shares outstanding as of March 31, 2012 and 2,769,756 shares issued and 2,648,518 shares outstanding as of December 31, 2011 \u2014 \u2014 Additional"
     },
     "coverCandidates": 30,
+    "strongCover": false,
     "original": {
      "number": "26,485,184",
      "found": false
@@ -648,7 +666,7 @@
      "found": true,
      "quote": "ar value, 99,000,000 shares authorized, 2,769,756 shares issued and 2,647,735 shares outstanding as of March 31, 2012 and 2,769,756 shares issued and 2,648,518 shares outstanding as of December 31, 2011 \u2014 \u2014 Additional paid-in capital 42,455 42,408 Accumulated deficit (6,932 ) (5,532 ) Accumulated ot"
     },
-    "verdict": "CONFIRMED_COVER_STATES_CORRECTED"
+    "verdict": "WEAK_TABLE_MATCH_CORRECTED"
    }
   },
   {
@@ -675,6 +693,7 @@
     "bytes": 1474117,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "33,377,794,000,000",
      "found": false
@@ -684,7 +703,7 @@
      "found": true,
      "quote": "affiliates. This determination of affiliate status is not necessarily a conclusive determination for other purposes. As of March 6, 2014, there were 33,377,794 shares of the registrant\u2019s common stock outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of our proxy statement for the 2014 Annua"
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -715,6 +734,7 @@
      "quote": "es. This determination of affiliate status is not necessarily a conclusive determination for other purposes. As of March 15, 2022, the Registrant had 68,739,480 shares of Class A common stock and 195,800,000 shares of Class B common stock outstanding. \u200b Documents Incorporated by Reference \u200b P ortion"
     },
     "coverCandidates": 4,
+    "strongCover": false,
     "original": {
      "number": "264,537",
      "found": true,
@@ -755,7 +775,8 @@
      "token": "27,922,477",
      "quote": "(as defined in Rule 12b-2 of the Exchange Act). Yes o No x The number of shares of the registrant\u2019s common stock outstanding as of January 31, 2012 : 27,922,477 Table of Contents GSI TECHNOLOGY, INC. FORM 10-Q FOR THE QUARTERLY PERIOD ENDED DECEMBER 31, 2011 Page PART I \u2014 FINANCIAL INFORMATION Item"
     },
-    "coverCandidates": 19,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "27,922,477,000",
      "found": false
@@ -796,6 +817,7 @@
      "quote": "ontinued operations, per share (0.12 ) (0.05 ) Total income (loss) per share, Diluted $ 0.68 $ 0.68 Weighted average common shares outstanding: Basic 43,731 39,059 Diluted 43,969 39,761 Dividends paid per share of common stock $ 0.37 $ 0.365 The accompanying Notes to Condensed Consolidated Financial"
     },
     "coverCandidates": 14,
+    "strongCover": false,
     "original": {
      "number": "44,089,428,000",
      "found": false
@@ -805,7 +827,7 @@
      "found": true,
      "quote": "of each of the issuer's classes of common stock as of the latest practicable date. Class Outstanding at April 30, 2012 Common stock, $1.00 par value 44,089,428 shares TABLE OF CONTENTS Page Glossary of Terms and Abbreviations 3 PART I. FINANCIAL INFORMATION 5 Item 1. Financial Statements 5 Condense"
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -836,6 +858,7 @@
      "quote": "bilities 3,765 3,467 Long-term debt 1,991 2,389 Other long-term liabilities 585 708 Long-term deferred revenue and financed unearned services revenue 2,034 2,095 Total liabilities 8,375 8,659 Commitments and contingencies (Note 15) Stockholders' equity: Common stock and additional paid-in capital, $"
     },
     "coverCandidates": 5,
+    "strongCover": false,
     "original": {
      "number": "20,637,666",
      "found": false
@@ -875,6 +898,7 @@
      "quote": "as reported by the Nasdaq Global Market on that date). The number of shares of the registrant's common stock outstanding as of February 25, 2022 was 164,630,093 . DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant's definitive Proxy Statement to be filed with the Securities and Exchange"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "164,363",
      "found": true,
@@ -914,7 +938,8 @@
      "token": "480,276,270",
      "quote": "truction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at October 29, 2010 American Electric Power Company, Inc. 480,276,270 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
     },
-    "coverCandidates": 10,
+    "coverCandidates": 7,
+    "strongCover": true,
     "original": {
      "number": "480,276,270,000,000",
      "found": false
@@ -955,6 +980,7 @@
      "quote": "culation. The determination of affiliate status is not necessarily a conclusive determination for other purposes. As of February 24, 2023, there were 68,442.572 shares of common stock outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitive proxy statement for its 202"
     },
     "coverCandidates": 1,
+    "strongCover": false,
     "original": {
      "number": "68,443",
      "found": null,
@@ -964,7 +990,7 @@
      "number": "68,442,572",
      "found": false
     },
-    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+    "verdict": "WEAK_TABLE_MATCH_REPORTED"
    }
   },
   {
@@ -994,7 +1020,8 @@
      "token": "87,973",
      "quote": "xchange Act. o Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes o No x There were 87,973 shares of Common Stock outstanding as of October 30, 2017 . ARROW ELECTRONICS, INC. INDEX Part I. Financial Information Item 1. Financial State"
     },
-    "coverCandidates": 28,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "87,973",
      "found": null,
@@ -1035,6 +1062,7 @@
      "quote": ") NET INCOME (LOSS) PER SHARE: BASIC $ 0.57 $ 0.44 $ 0.65 $ (0.54 ) DILUTED $ 0.56 $ 0.44 $ 0.64 $ (0.54 ) WEIGHTED-AVERAGE SHARES OUTSTANDING: BASIC 88,236 87,943 88,184 87,839 DILUTED 90,069 88,730 89,731 87,839 DIVIDENDS DECLARED PER SHARE $ 0.175 $ 0.175 $ 0.525 $ 0.525 OTHER COMPREHENSIVE INCOM"
     },
     "coverCandidates": 44,
+    "strongCover": false,
     "original": {
      "number": "87,846",
      "found": null,
@@ -1044,7 +1072,7 @@
      "number": "87,846,000",
      "found": false
     },
-    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+    "verdict": "WEAK_TABLE_MATCH_REPORTED"
    }
   },
   {
@@ -1075,6 +1103,7 @@
      "quote": "asic $ 0.11 $ 0.09 $ 0.25 $ 0.11 Net income per common share - Diluted $ 0.10 $ 0.09 $ 0.24 $ 0.10 Weighted average common shares outstanding - Basic 7,473 7,413 7,465 7,301 Weighted average common shares outstanding - Diluted 7,782 7,781 7,786 7,719 The accompanying notes to the Consolidated Financ"
     },
     "coverCandidates": 27,
+    "strongCover": false,
     "original": {
      "number": "7,506",
      "found": null,
@@ -1084,7 +1113,7 @@
      "number": "7,506,000",
      "found": false
     },
-    "verdict": "CONTRADICTED_COVER_STATES_REPORTED"
+    "verdict": "WEAK_TABLE_MATCH_REPORTED"
    }
   },
   {
@@ -1114,7 +1143,8 @@
      "token": "89,797,979",
      "quote": "hether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of May 3, 2024, the Registrant had outstanding 89,797,979 shares of common stock, par value $0.01 per share. Securities registered pursuant to Section 12(b) of the Exchange Act: Title of each class"
     },
-    "coverCandidates": 9,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "89,797,979,000",
      "found": false
@@ -1156,6 +1186,7 @@
      "quote": "nstruction H(2) to Form 10-Q. Number of shares of common stock outstanding of the registrants at April 29, 2011 American Electric Power Company, Inc. 481,790,955 ($6.50 par value) Appalachian Power Company 13,499,500 (no par value) Columbus Southern Power Company 16,410,426 (no par value) Indiana Mi"
     },
     "coverCandidates": 7,
+    "strongCover": true,
     "original": {
      "number": "481,790,955,000,000",
      "found": false
@@ -1195,7 +1226,8 @@
      "token": "44,472,846",
      "quote": "Act. \u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2611 The registrant has 44,472,846 shares of common stock, par value $0.01 per share, issued and outstanding as of April 26, 2019. STAAR SURGICAL COMPANY INDEX PAGE NUMBER PA"
     },
-    "coverCandidates": 31,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "44,472,846,000",
      "found": false
@@ -1235,7 +1267,8 @@
      "token": "22,017,540",
      "quote": "pany (as defined in Rule 12b-2 of the Exchange Act). Yes \u00a3 No x Number of shares of registrant\u2019s common shares outstanding as of November 7, 2011 was 22,017,540 Table of Contents DOUGLAS DYNAMICS, INC. Table of C ontents PART I. FINANCIAL INFORMATION 1 Item 1. Financial Statements 1 Unaudited Consol"
     },
-    "coverCandidates": 50,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "220,017,540",
      "found": false
@@ -1271,6 +1304,7 @@
     "bytes": 8345256,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "63,485,760,000",
      "found": false
@@ -1281,7 +1315,7 @@
      "quote": "of such units on the New York Stock Exchange on such date ($16.27 per unit), was approximately $ 1,024,497,000 . As of November 22, 2022, there wer e 63,485,760 Com mon Units of Suburban Propane Partners, L.P. outstanding. Documents Incorporated by Reference: None Total number of pages (excluding Ex",
      "ixScale": 3
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -1311,7 +1345,8 @@
      "token": "76,637,258",
      "quote": "ther the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes p No x As of May 27 , 2011, the registrant had outstanding 76,637,258 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
     },
-    "coverCandidates": 12,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "76,637,258",
      "found": true,
@@ -1349,6 +1384,7 @@
     "bytes": 6837745,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "43,957,502,000",
      "found": false
@@ -1358,7 +1394,7 @@
      "found": true,
      "quote": "ee Notes 3, 8, 9, 10, 13, 18, 19 and 20) Stockholders' equity: Common stock equity- Common stock $1 par value; 100,000,000 shares authorized; issued: 43,957,502 shares at 2011 and 39,280,048 shares at 2010, respectively 43,958 39,280 Additional paid-in capital 722,623 598,805 Retained earnings 476,6"
     },
-    "verdict": "CONFIRMED_DOCUMENT_STATES_CORRECTED"
+    "verdict": "DOCUMENT_STATES_CORRECTED_NO_COVER"
    }
   },
   {
@@ -1388,7 +1424,8 @@
      "token": "21,342,085",
      "quote": "Indicate by a check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). o Yes x No As of April 30, 2012 , 21,342,085 shares of the registrant\u2019s common stock were outstanding. THE ENSIGN GROUP, INC. QUARTERLY REPORT ON FORM 10-Q FOR THE THREE MONTHS ENDED M"
     },
-    "coverCandidates": 38,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "21,342,085,000",
      "found": false
@@ -1428,7 +1465,8 @@
      "token": "378,418,945",
      "quote": "of the Exchange Act). YES [ ] NO [X] Number of shares outstanding of each of the issuer\u2019s classes of common stock, as of the latest practicable date: 378,418,945 shares of Common Stock, $0.10 par value, as of September 30, 2013 . PART I. - FINANCIAL INFORMATION ITEM 1. FINANCIAL STATEMENTS. Stryker"
     },
-    "coverCandidates": 8,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "378",
      "found": null,
@@ -1468,7 +1506,8 @@
      "token": "9,309,051",
      "quote": "the number of shares outstanding of each of the issuer's classes of common stock, as of the latest practicable date. On December 31, 2011 there were 9,309,051 shares of Common Stock, $.10 par value per share, outstanding (adjusted for 3-for-1 stock split). PATRIOT TRANSPORTATION HOLDING, INC. FORM"
     },
-    "coverCandidates": 9,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "9,309,051",
      "found": true,
@@ -1505,7 +1544,8 @@
      "token": "41,640,586",
      "quote": "\u2610 Indicate by check mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of October 31, 2018, 41,640,586 shares of the Registrant\u2019s common stock, $0.001 par value, were outstanding. MOSYS, INC. FORM 10-Q September 30, 2018 TABLE OF CONTENTS PAR"
     },
-    "coverCandidates": 13,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "41,640,586",
      "found": true,
@@ -1543,6 +1583,7 @@
      "quote": "ss day of the registrant's most recently completed second fiscal quarter), was: approximately $ 4.9 million. As of March 22, 2023, the registrant had 1,989,645 shares of Common Stock, $0.0001 par value per share, outstanding. DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitiv"
     },
     "coverCandidates": 1,
+    "strongCover": false,
     "original": {
      "number": "1,989,645",
      "found": true,
@@ -1580,7 +1621,8 @@
      "token": "188,167,816",
      "quote": "-2 of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of July 30, 2010: 188,167,816 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
     },
-    "coverCandidates": 9,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "188,167,816",
      "found": true,
@@ -1614,6 +1656,7 @@
     "bytes": 639405,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "12,837,882",
      "found": true,
@@ -1645,15 +1688,20 @@
     "url": "https://www.sec.gov/Archives/edgar/data/354963/000114036112013424/form10k.htm",
     "sha256": "45ac9b5954d271835cbbbd21a801918ff68e9e0335f57f0b4d0fbc0df3eb2200",
     "bytes": 2651204,
-    "cover": null,
-    "coverCandidates": 0,
+    "cover": {
+     "value": 23837685.0,
+     "token": "23,837,685",
+     "quote": "elect Market on such date, was approximately $381,000,000. The number of shares of the registrant\u2019s common stock outstanding on February 17, 2012 was 23,837,685. DOCUMENTS INCORPORATED BY REFERENCE Portions of the following documents are incorporated by reference in this Form 10-K as indicated herei"
+    },
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "23,837,685",
      "found": true,
      "quote": "elect Market on such date, was approximately $381,000,000. The number of shares of the registrant\u2019s common stock outstanding on February 17, 2012 was 23,837,685. DOCUMENTS INCORPORATED BY REFERENCE Portions of the following documents are incorporated by reference in this Form 10-K as indicated herei"
     },
     "corrected": null,
-    "verdict": "NO_COVER_COUNT_FOUND"
+    "verdict": "COVER_STATES_REPORTED"
    }
   },
   {
@@ -1683,7 +1731,8 @@
      "token": "188,255,348",
      "quote": "of the Exchange Act). Yes o No x . Indicate the number of shares outstanding of each of the issuer's classes of common stock, as of October 27, 2010: 188,255,348 shares. DEFINITIONS The following abbreviations and acronyms used in this Form 10-Q are defined below: Abbreviation or Acronym 2009 Annual"
     },
-    "coverCandidates": 9,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "188,255,348",
      "found": true,
@@ -1720,7 +1769,8 @@
      "token": "73,734,169",
      "quote": "r the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes o No x As of August 22, 2011 , the registrant had outstanding 73,734,169 shares of Common Stock, par value $0.0001 per share (the only class of common stock of the registrant outstanding). Table of Contents Page"
     },
-    "coverCandidates": 17,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "76,637,258,000",
      "found": false
@@ -1757,6 +1807,7 @@
      "quote": "June 30, June 30, 2020 2019 2020 2019 Weighted average common shares outstanding during the period - shares used for basic earnings per common share 9,620 9,915 9,712 9,933 Common shares issuable under share based payment plans which are potentially dilutive 29 45 32 45 Common shares used for dilut"
     },
     "coverCandidates": 11,
+    "strongCover": false,
     "original": {
      "number": "9,548,308",
      "found": true,
@@ -1794,6 +1845,7 @@
      "quote": "te status is not necessarily a conclusive determination for any other purpose. Number of shares of common stock outstanding as of October 7, 2024 was 55,660,578 . DOCUMENTS INCORPORATED BY REFERENCE: None. Auditor Name: Marcum LLP Auditor Location: San Francisco, CA Auditor Firm ID: 688 FORM 10-K FO"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "55,660,578,000",
      "found": false
@@ -1826,6 +1878,7 @@
     "bytes": 9757824,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "604,437,877,587",
      "found": true,
@@ -1860,6 +1913,7 @@
     "bytes": 2553399,
     "cover": null,
     "coverCandidates": 0,
+    "strongCover": false,
     "original": {
      "number": "13,078,000,000",
      "found": false
@@ -1890,14 +1944,19 @@
     "url": "https://www.sec.gov/Archives/edgar/data/815097/000081509721000027/ccl-20201130.htm",
     "sha256": "aa9b2d56ddf0aa21130b54100b862fa58189d68897f634a9749d517e0bd1ceb1",
     "bytes": 3817720,
-    "cover": null,
-    "coverCandidates": 0,
+    "cover": {
+     "value": 932485510.0,
+     "token": "932,485,510",
+     "quote": "of the last business day of the registrant\u2019s most recently completed second fiscal quarter. At January 14, 2021, Carnival Corporation had outstanding 932,485,510 shares of its Common Stock, $0.01 par value. The aggregate market value of the voting and non-voting common equity held by non-affiliates"
+    },
+    "coverCandidates": 2,
+    "strongCover": true,
     "original": {
      "number": "932,485,510,000",
      "found": false
     },
     "corrected": null,
-    "verdict": "NO_COVER_COUNT_FOUND"
+    "verdict": "COVER_STATES_OTHER_COUNT"
    }
   },
   {
@@ -1925,9 +1984,10 @@
     "cover": {
      "value": 246381119.0,
      "token": "246,381,119",
-     "quote": "mark whether the registrant is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 As of November 8, 2021, the registrant had 246,381,119 , shares of common stock, $0.001 par value per share, outstanding. Table of Contents Page PART I. FINANCIAL INFORMATION 4 Item 1. Financia"
+     "quote": "rized, no ne issued and outstanding as of September 30, 2021 and January 31, 2021 - - Common stock, $ 0.001 par value, 500,000,000 shares authorized, 246,381,119 shares issued and outstanding as of September 30, 2021, and 200,000,000 shares authorized and subscribed as of January 31, 2021 246,381 20"
     },
-    "coverCandidates": 27,
+    "coverCandidates": 14,
+    "strongCover": true,
     "original": {
      "number": "246,381,119",
      "found": true,
@@ -1964,7 +2024,8 @@
      "token": "484.0 million",
      "quote": "ive liabilities 42 35 Other non-current liabilities \u2014 1 Other non-current liabilities\u2014affiliate 16 17 Partners\u2019 equity Common unitholders\u2019 interest ( 484.0 million units issued and outstanding at both March 31, 2021 and December 31, 2020) 738 714 General partner\u2019s interest ( 2 % interest with 9.9 mi"
     },
-    "coverCandidates": 5,
+    "coverCandidates": 2,
+    "strongCover": true,
     "original": {
      "number": "484,021,123",
      "found": true,
@@ -2003,6 +2064,7 @@
      "quote": "one ordinary share Title of Class Securities for which there is a reporting obligation pursuant to Section 15(d) of the Act: None The registrant had 9,387,928 ordinary shares issued and outstanding as of December 31, 2016. Indicate by check mark if the registrant is a well-known seasoned issuer, as"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "9,387,928",
      "found": true,
@@ -2040,6 +2102,7 @@
      "quote": "Q Capital Market on that date. The number of registrant's shares of common stock, $0.001 par value, issuable and outstanding as of April 9, 2024, was 14,438,270 . DOCUMENTS INCORPORATED BY REFERENCE Portions of the registrant\u2019s definitive proxy statement for the registrant\u2019s 2024 Annual Meeting of S"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "14,438,270,000",
      "found": false
@@ -2075,7 +2138,8 @@
      "token": "8,945,454",
      "quote": "the Exchange Act. \u2610 Indicate by check mark whether the issuer is a shell company (as defined in Rule 12b-2 of the Exchange Act). Yes \u2610 No \u2612 There are 8,945,454 shares of the Company\u2019s common stock, par value $ .0001 per share, outstanding as of October 31, 2025. TABLE OF CONTENTS PART I - FINANCIAL"
     },
-    "coverCandidates": 27,
+    "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "8,945,454",
      "found": true,
@@ -2112,7 +2176,8 @@
      "token": "706,943,750",
      "quote": "30, 2019. No preferred stock authorized or outstanding as of December 31, 2018. \u2014 \u2014 Common stock; $0.0001 par value: 1,000,000,000 shares authorized, 706,943,750 shares issued and 705,207,530 shares outstanding as of September 30, 2019; 570,454,995 shares issued and outstanding as of December 31, 20"
     },
-    "coverCandidates": 38,
+    "coverCandidates": 10,
+    "strongCover": true,
     "original": {
      "number": "705,849,364",
      "found": true,
@@ -2150,6 +2215,7 @@
      "quote": "f each of the issuer\u2019s classes of capital or common stock as of the close of the period covered by the annual report: As of June 30, 2025, there were 4,003,859 shares of the registrant\u2019s ordinary shares outstanding, par value $0.05 per share. Indicate by check mark if the registrant is a well-known"
     },
     "coverCandidates": 1,
+    "strongCover": true,
     "original": {
      "number": "4,003,859",
      "found": true,
