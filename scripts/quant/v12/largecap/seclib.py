@@ -76,6 +76,42 @@ def get(url):
     return body, {'url': url, 'bytesRead': len(body), 'complete': True, 'sha256': sha256(body), 'sha256Normalized': sha256(norm_body(body)), 'via': src}
 
 
+PREFIX_SIZES_SEEN = (6 * 1024 * 1024, 3 * 1024 * 1024, 2 * 1024 * 1024)
+
+
+def get_prefix(url, size):
+    """V9/V10 prefix convention (sec_lib.get(url, prefix=size)): at most `size` bytes, complete = body shorter than size.
+    Served from a cached complete body, or from an earlier strand's cached prefix of at least `size` bytes, else fetched."""
+    body = _cache.get(url)
+    src = 'ownCache'
+    if body is None:
+        for c in _reuse:
+            body = c.get(url)
+            if body is not None:
+                src = 'reusedCache'
+                _cache.put(url, body)
+                break
+            for n in PREFIX_SIZES_SEEN:
+                if n < size:
+                    continue
+                pb = c.get(url + '#v9-prefix-%d' % n)
+                if pb is not None:
+                    if len(pb) < n:  # an earlier prefix read that ended before its limit is the complete body
+                        _cache.put(url, pb)
+                    body, src = pb, 'reusedCache'
+                    break
+            if body is not None:
+                break
+    if body is None:
+        body, _ = get(url)
+        src = None
+    else:
+        STATS[src] += 1
+    part = body[:size]
+    return part, {'url': url, 'bytesRead': len(part), 'prefixLimit': size, 'complete': len(body) < size and len(part) == len(body),
+                  'sha256': sha256(part)}
+
+
 def cik10(cik):
     return '%010d' % int(cik)
 
