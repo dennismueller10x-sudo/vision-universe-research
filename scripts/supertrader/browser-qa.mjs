@@ -194,6 +194,7 @@ async function main() {
         sfWording: [...document.querySelectorAll('.sf-host')].map((x) => x.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')).join(' ').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
         sfEmptyState: !!document.querySelector('.sf-empty'),
         sfPresent: !!document.querySelector('.sf-host'),
+        sfCandidates: document.querySelectorAll('.sf-card, .sf-row').length,
         // auch in zugeklappten Details (textContent): keine internen Regel- oder Datencodes
         sfCodes: ([...document.querySelectorAll('.sf-host')].map((x) => x.textContent).join(' ').match(/\b(?:DON|KK|DAR|MIN|WEI|WEIN|LC|PILOT|TUR|MOKA|RAS)-[A-Z0-9-]+\b|DATA_BLOCKED|[A-Z]{3,}_[A-Z_]{3,}/g) || []).slice(0, 3),
       }));
@@ -213,7 +214,7 @@ async function main() {
       if (m.sfCardsWithoutStage) errors.push(`${m.sfCardsWithoutStage} Research-Kandidaten ohne Stufenabzeichen`);
       if (m.sfPlanOutsideModel) errors.push(`${m.sfPlanOutsideModel} Plan-Marken ausserhalb eines modellierten Ablaufs`);
       if (m.sfWording) errors.push(`Research-Ansicht mit unzulaessiger Sprache: ${m.sfWording}`);
-      if (!SF && m.sfPresent) errors.push('Research-Kandidaten ohne Vorschau-Freigabe sichtbar');
+      if (!SF && m.sfCandidates) errors.push(`${m.sfCandidates} Research-Kandidaten ohne veroeffentlichten Datenstand sichtbar`);
       if (m.sfCodes.length) errors.push('interne Codes in der Research-Ansicht: ' + m.sfCodes.join(', '));
       if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.fidBanner) errors.push('Methodentreue fehlt auf der Methodenseite');
       if (hasPortfolio && /^strategy-(momentum|weinstein|darvas|minervini|donchian)/.test(name) && !m.portfolioSec) errors.push('Modellportfolio fehlt auf der Methodenseite');

@@ -226,7 +226,8 @@
     main.replaceChildren.apply(main, [keep].filter(Boolean));
     var host = h('div', { class: 'sf-host sf-view', id: 'sf' });
     main.appendChild(host); if (foot) main.appendChild(foot);
-    Promise.all([getJSON('summary.json'), getJSON('strategy/' + cid + '.json')]).then(function (res) {
+    // erst die Übersicht: ohne veröffentlichten Stand keine Anfrage der Strategiedatei
+    getJSON('summary.json').then(function (sum) { return getJSON('strategy/' + cid + '.json').then(function (data) { return [sum, data]; }); }).then(function (res) {
       var sum = res[0], data = res[1], S = byCid(sum), s = S[cid];
       if (!s) throw new Error('unbekannt');
       adoptStageLabels(sum);
