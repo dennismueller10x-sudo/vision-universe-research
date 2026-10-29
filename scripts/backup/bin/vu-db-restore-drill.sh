@@ -40,12 +40,31 @@ umask 022
 age -d -i "$W/key" -o "$W/db.dump" "$dump_age" || { echo "Entschluesseln fehlgeschlagen (falscher Schluessel?)"; exit 1; }
 shred -u "$W/key"
 
+# Umgebung wie bei Supabase, damit Richtlinien, Standardwerte und Funktionen anlegbar sind:
+# Rollen (ohne Login), Schema "extensions" mit den dort ueblichen Erweiterungen.
+cat > "$W/setup.sql" <<'SQL'
+do $$ begin
+  perform 1;
+  if not exists (select 1 from pg_roles where rolname='anon') then create role anon nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='service_role') then create role service_role nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='supabase_auth_admin') then create role supabase_auth_admin nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='supabase_admin') then create role supabase_admin nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='authenticator') then create role authenticator nologin; end if;
+end $$;
+create schema if not exists extensions;
+create extension if not exists "uuid-ossp" with schema extensions;
+create extension if not exists pgcrypto with schema extensions;
+SQL
+chmod 644 "$W/setup.sql"
+
 if [ "$mode" = docker ]; then
   docker run -d --rm --name "$CONTAINER" -e POSTGRES_PASSWORD=drill -e POSTGRES_USER=drill \
     -p "127.0.0.1:$PORT:5432" -v "$W:/drill" postgres:17 >/dev/null || exit 1
   for _ in $(seq 60); do docker exec "$CONTAINER" pg_isready -U drill >/dev/null 2>&1 && break; sleep 1; done
   # Rollen, die ein Supabase-Dump referenziert (--no-owner/--no-privileges entfernen das meiste).
   docker exec "$CONTAINER" psql -q -U drill -d postgres -c "create database drill" >/dev/null
+  docker exec -i "$CONTAINER" psql -q -U drill -d drill < "$W/setup.sql" >/dev/null 2>&1
   docker exec "$CONTAINER" pg_restore --no-owner --no-privileges -U drill -d drill /drill/db.dump > "$W/restore.log" 2>&1
   SQL() { docker exec "$CONTAINER" psql -At -U drill -d drill -c "$1"; }
 else
@@ -53,6 +72,7 @@ else
   ${AS_PG:-} "$PGBIN/initdb" -D "$W/pgdata" -U drill --auth=trust >/dev/null 2>&1 || exit 1
   ${AS_PG:-} "$PGBIN/pg_ctl" -D "$W/pgdata" -o "-p $PORT -k $W/pgdata -c listen_addresses=127.0.0.1" -l "$W/pgdata/pg.log" -w start >/dev/null || exit 1
   "$PGBIN/psql" -q -h 127.0.0.1 -p "$PORT" -U drill -d postgres -c "create database drill"
+  "$PGBIN/psql" -q -h 127.0.0.1 -p "$PORT" -U drill -d drill -f "$W/setup.sql" >/dev/null 2>&1
   "$PGBIN/pg_restore" --no-owner --no-privileges -h 127.0.0.1 -p "$PORT" -U drill -d drill "$W/db.dump" > "$W/restore.log" 2>&1
   SQL() { "$PGBIN/psql" -At -h 127.0.0.1 -p "$PORT" -U drill -d drill -c "$1"; }
 fi

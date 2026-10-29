@@ -38,11 +38,12 @@ Die Weboberfläche kennt nur grobe Zugriffsarten. Die exakten Rechte setzt das S
    - keyID und Key in die Zwischenablage bzw. den Passwortmanager.
 3. In der Shell:
    ```bash
-   git clone --depth 1 -b <branch> https://github.com/<owner>/<repo>.git vu && cd vu/scripts/backup
+   git clone --depth 1 -b claude/vu-backup-tooling https://github.com/dennismueller10x-sudo/vision-universe-research.git vu && cd vu/scripts/backup
    read -rs B2_MASTER_KEY_ID; read -rs B2_MASTER_KEY; export B2_MASTER_KEY_ID B2_MASTER_KEY
    B=vu-backup-test-xxxxxx
    python3 bin/vu-b2-make-key.py --bucket $B --role writer       --name vu-test-writer  --days 14
    python3 bin/vu-b2-make-key.py --bucket $B --role anchor       --name vu-test-anchor  --days 14
+   python3 bin/vu-b2-make-key.py --bucket $B --role reader       --name vu-test-reader  --days 14
    python3 bin/vu-b2-make-key.py --bucket $B --role test-deleter --name vu-test-deleter --days 7
    unset B2_MASTER_KEY B2_MASTER_KEY_ID
    ```
@@ -60,6 +61,7 @@ export VU_S3_ENDPOINT=https://s3.eu-central-00X.backblazeb2.com
 read -rs AWS_ACCESS_KEY_ID; read -rs AWS_SECRET_ACCESS_KEY; export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY   # writer
 read -rs VU_TEST_ANCHOR_KEY_ID; read -rs VU_TEST_ANCHOR_KEY; export VU_TEST_ANCHOR_KEY_ID VU_TEST_ANCHOR_KEY
 read -rs VU_TEST_DELETER_KEY_ID; read -rs VU_TEST_DELETER_KEY; export VU_TEST_DELETER_KEY_ID VU_TEST_DELETER_KEY
+read -rs VU_TEST_READER_KEY_ID; read -rs VU_TEST_READER_KEY; export VU_TEST_READER_KEY_ID VU_TEST_READER_KEY
 python3 tests/b2-acceptance.py now --bucket $B
 ```
 
@@ -79,6 +81,27 @@ Danach aufräumen:
 1. Legal Hold der Probe mit dem Anker-Schlüssel aufheben.
 2. Den Bucket leeren.
 3. Den Schlüssel `vu-test-deleter` in B2 löschen.
+
+## F. Privates Backup-Repository und Runner-Probe (15 min)
+
+1. GitHub-App oder Safari → **+** → **New repository** → Name `vision-universe-backup`, **Private**, ohne Vorlage.
+2. Inhalt übernehmen. Am einfachsten in der Cloud Shell, mit einem Token, das nur dieses neue Repo schreiben darf:
+   ```bash
+   git clone https://github.com/<owner>/vision-universe-backup.git vub && cd vub
+   mkdir -p scripts .github/workflows && cp -r ../vu/scripts/backup scripts/
+   cp scripts/backup/runner/github-actions/vu-runner-probe.yml .github/workflows/
+   git add . && git commit -m "vu-backup Werkzeuge und Runner-Probe" && git push
+   ```
+3. Settings → Environments → **New environment** `backup-test`.
+   - Secrets: `B2_TEST_WRITER_KEY_ID`, `B2_TEST_WRITER_KEY`.
+   - Variables: `B2_TEST_ENDPOINT`, `B2_TEST_BUCKET`.
+   - Optional für ein privates Quell-Repo: `VU_GITHUB_READ_TOKEN` (fine-grained, nur lesen).
+4. Settings → Actions → General → Workflow permissions: **Read repository contents**.
+5. Actions → „VU Runner-Probe“ → **Run workflow**. `repo_url`: `https://github.com/dennismueller10x-sudo/vision-universe-research.git`.
+   Ergebnis in der Zusammenfassung:
+   - Urteil für Folgeläufe und für den Erstlauf
+   - Mirror-Größe und -Dauer
+   - Durchsatz zu B2
 
 ## Was nicht passieren darf
 

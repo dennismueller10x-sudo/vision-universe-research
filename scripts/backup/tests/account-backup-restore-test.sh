@@ -40,12 +40,16 @@ PSQL=("$PGBIN/psql" -q -v ON_ERROR_STOP=1 -h 127.0.0.1 -p "$PORT" -U vu)
 
 # ---- 1. synthetische Konten-Datenbank (Struktur angelehnt, Inhalte erfunden)
 "${PSQL[@]}" -d "${REF}_synthetic" <<'SQL'
+create role authenticated nologin; create schema extensions; create extension "uuid-ossp" with schema extensions;
 create schema auth; create schema billing; create schema supabase_migrations;
 create table auth.users (id uuid primary key, email text not null, created_at timestamptz default now());
 create table auth.identities (id uuid primary key, user_id uuid references auth.users(id), provider text);
 create table public.profiles (id uuid primary key references auth.users(id), display_name text, prefs jsonb);
 create table public.watchlists (id bigserial primary key, user_id uuid references auth.users(id), tickers text[]);
 alter table public.profiles enable row level security;
+create policy own_profile on public.profiles for select to authenticated using (true);  -- wie Supabase: Rolle aus der Plattform
+create table public.features (id uuid primary key default extensions.uuid_generate_v4(), name text);
+insert into public.features (name) select 'f'||i from generate_series(1,7) i;
 create table billing.subscriptions (id text primary key, user_id uuid references auth.users(id), plan text, status text);
 create table billing.events (id bigserial primary key, payload jsonb, received_at timestamptz default now());
 create table supabase_migrations.schema_migrations (version text primary key, name text);
@@ -64,7 +68,7 @@ counts() {  # db -> "schema.table=rows" je Zeile, sortiert
   | while read -r t; do echo "$t=$("${PSQL[@]}" -d "$1" -At -c "select count(*) from $t")"; done
 }
 counts "${REF}_synthetic" > "$T/before.txt"
-[ "$(wc -l < "$T/before.txt")" -eq 8 ] || { echo "synthetische Datenbank unvollstaendig"; exit 2; }
+[ "$(wc -l < "$T/before.txt")" -eq 9 ] || { echo "synthetische Datenbank unvollstaendig"; exit 2; }
 
 # ---- 2. Schritt aus dem Workflow, lokal ausfuehrbar gemacht
 python3 - "$WF" "$T/step.sh" <<'PY'
@@ -97,13 +101,15 @@ check "A04 kein Schluesselmaterial in der Ausgabe des Schritts" bash -c "! grep 
 [ "$rc" -eq 0 ] || { echo "Schritt-Ausgabe:"; sed 's/^/  /' "$T/step.out" | tail -20; }
 check "A05 Entschluesseln mit dem privaten Schluessel" test -s "$T/restore.dump"
 check "A06 Dump lesbar (pg_restore --list)" bash -c "'$PGBIN/pg_restore' --list '$T/restore.dump' >/dev/null"
+supabase_like() { "${PSQL[@]}" -d "$1" -c 'create schema if not exists extensions' -c 'create extension if not exists "uuid-ossp" with schema extensions' >/dev/null; }
+supabase_like restore_target
 "$PGBIN/pg_restore" --no-owner -h 127.0.0.1 -p "$PORT" -U vu -d restore_target "$T/restore.dump" > "$T/restore.log" 2>&1
 counts restore_target > "$T/after.txt"
 check "A07 Zieldatenbank enthaelt alle Tabellen mit gleicher Zeilenzahl" diff -q "$T/before.txt" "$T/after.txt"
 counts "${REF}_synthetic" > "$T/source-after.txt"
 check "A08 Quelle unveraendert (Sicherung liest nur)" diff -q "$T/before.txt" "$T/source-after.txt"
 # Variante aus docs/accounts/PRODUCTION.md: Schema zuerst (Migrationen), dann --data-only
-"${PSQL[@]}" -d postgres -c "create database restore_dataonly"
+"${PSQL[@]}" -d postgres -c "create database restore_dataonly"; supabase_like restore_dataonly
 "$PGBIN/pg_restore" --no-owner --schema-only -h 127.0.0.1 -p "$PORT" -U vu -d restore_dataonly "$T/restore.dump" >/dev/null 2>&1
 "$PGBIN/pg_restore" --no-owner --data-only --disable-triggers -h 127.0.0.1 -p "$PORT" -U vu -d restore_dataonly "$T/restore.dump" >/dev/null 2>&1
 counts restore_dataonly > "$T/dataonly.txt"
