@@ -1,0 +1,97 @@
+{
+ "schemaVersion": "v12-indexpop-rules-1.1.0",
+ "ruleVersion": "1.1.0",
+ "fixedBefore": "1.0.0 fixed before any result; 1.1.0 fixed after the first mapping run and before any coverage, exit or price result (see changesFrom1_0_0).",
+ "funds": {
+  "SPY": {
+   "index": "SP500",
+   "cik": 884394,
+   "expectedPositions": [
+    480,
+    520
+   ]
+  },
+  "QQQ": {
+   "index": "NDX",
+   "cik": 1067839,
+   "expectedPositions": [
+    95,
+    110
+   ]
+  },
+  "DIA": {
+   "index": "DJIA",
+   "cik": 1041130,
+   "expectedPositions": [
+    30,
+    31
+   ]
+  },
+  "IWB": {
+   "index": "R1000",
+   "cik": 1100663,
+   "series": "S000004347",
+   "expectedPositions": [
+    950,
+    1100
+   ]
+  },
+  "IWM": {
+   "index": "R2000",
+   "cik": 1100663,
+   "series": "S000004344",
+   "expectedPositions": [
+    1850,
+    2150
+   ]
+  },
+  "IWV": {
+   "index": "R3000",
+   "cik": 1100663,
+   "series": "S000004341",
+   "expectedPositions": [
+    2500,
+    3150
+   ]
+  }
+ },
+ "member": "A position is an index member when it is common/preferred equity held long in shares: N-PORT assetCat EC, payoffProfile Long, units NS, valUSD > 0 (money-market/collateral STIV, derivatives DE, cash excluded). In report schedules (N-30D, N-30B-2, N-Q) every line of the common-stock section with a share count and a value.",
+ "validation": {
+  "NPORT": "VALID when (sum of member valUSD) / netAssets is within [0.98, 1.01] (an index fund holds its net assets in index equities; up to 2 % may be equitized cash via futures) AND the member count lies in expectedPositions. Otherwise the date is NOT_VALIDATED and counted, never used.",
+  "REPORT": "VALID when the parsed member values sum to the reported section total (Total Common Stocks / Total Investments in securities of the fund's schedule) within +-1 %, AND the member count lies in expectedPositions. When the document reports no section total the date is NOT_VALIDATED (TOTAL_NOT_FOUND).",
+  "duplicates": "One date per fund: the original filing; an amendment replaces it only if the original fails validation and the amendment passes."
+ },
+ "nameNormalization": "upper case; '&' -> ' AND '; drop '/THE' and '/XX' state suffixes; move share-class tokens (CLASS/CL + A-C) into a class tag; remove punctuation; drop filler tokens anywhere (COM, COMMON, STOCK, SHS, SHARES, ORD, ADR, NVS, THE); drop trailing legal-form tokens and a trailing NEW repeatedly (INC, INCORPORATED, CORP, CORPORATION, CO, COMPANY, LTD, LIMITED, PLC, LLC, LP, NV, SA, AG, SE); collapse spaces.",
+ "matching": {
+  "candidates": "Our listings with a weekly series in quant/data/market/discover-series-long whose security-master rows are all EQUITY_COMMON; names from company-names.json (companyName and candidate names), the current SEC company_tickers.json title of their ticker (ticker -> securityId only via core/identity.js#securityIdForTicker, ADR-001) and every historical EDGAR name of their CIK (cik-lookup-data.txt).",
+  "priceCheck": "raw holding price p = value/shares at holding date d; bracket = raw closes (split-adjusted weekly close x product of provider split factors after that bar, quant/engines/return-series.js#splitFactors, ADR-002) of the ISO week containing d and of the previous ISO week; dev = 0 if p inside [min,max], else relative distance to the nearer bound.",
+  "tiers": {
+   "T1_CUSIP_NAME_EXACT": "N-PORT CUSIP key whose normalized name/title equals a candidate name, mapped at date d by the per-date rule.",
+   "T2_NAME_UNIQUE": "name key (report schedules) or fuzzy name (token-set Jaccard >= 0.9), mapped at date d by the per-date rule.",
+   "T3_UNCERTAIN": "name candidates exist but at date d: more than one within tolerance (T3_AMBIGUOUS), none within tolerance (T3_PRICE_NOT_CONFIRMED), no candidate bar (T3_NO_BAR_AT_DATE), confirmation not repeated at an adjacent date (T3_ISOLATED_CONFIRMATION) or share-class conflict (T3_CLASS_CONFLICT). Not used.",
+   "UNMATCHED": "no name candidate among our listings."
+  },
+  "use": "Only T1 and T2 mappings enter the register's securityId field and the coverage.",
+  "perDate": "mapped at d to c iff c is the only candidate with dev <= 0.05 at d AND (c has a bar at only one key date OR c has dev <= 0.05 at the previous or next key date where c has a bar)."
+ },
+ "coverage": {
+  "loader": "createResearchLoader(root, {identityEvidence: true, corporateActionEvidence: true, listingLifecycleEvidence: true})",
+  "covered": "member mapped (T1/T2) to a securityId that the loader returns without error (QUALIFIED) and whose returned points contain a bar within 7 calendar days of the holding date (inside first..last bar).",
+  "measures": "per fund and date: share of members (count) and of member value (weight) covered",
+  "qualifiedSubpopulationThreshold": "a fund-date qualifies when coverage >= 95 % of members AND >= 99 % of weight; a period qualifies when every validated date in it qualifies"
+ },
+ "exits": "A member key (securityId when mapped T1/T2, else CUSIP, else normalized name) present at date t and absent at every later validated date of the same fund. Fate from SEC submissions of the issuer CIK (Form 25/25-NSE, 15-12B/15-12G/15-15D, 8-K item 2.01) within 400 days after the last holding date; STILL_REPORTING when 10-K/10-Q filings continue more than 400 days later.",
+ "quarterPrices": "For members without covered series: p = value / shares per date (raw, unadjusted, as reported). Plausibility measured on members with both: |r - 1| distribution per date, exact-week-end dates reported separately.",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "supersedes": "rules-1.0.0.json (unchanged in the repository)",
+ "changesFrom1_0_0": {
+  "reason": "Changed after inspecting the first mapping run (rules 1.0.0) - before any coverage, exit or price number was computed. Validation rules and thresholds are unchanged; all 335 fund-dates validated under 1.0.0 already.",
+  "nameNormalization": "NEW is dropped only as last token (1.0.0 dropped it everywhere and turned BANK OF NEW YORK MELLON into BANK OF YORK MELLON); THE is dropped anywhere (iShares writes PROCTER & GAMBLE CO. (THE)); NVS (non-voting shares) is a filler token.",
+  "reportParser": "column-header rows (Common Stocks / Shares / Value / Security) and date-only lines of continued pages no longer prefix the next security name (observed: COMMON STOCKS SHARES VALUE WELLS FARGO). Exact duplicate rows (same name, shares, value; page repeats in SPY 2019-09-30) are kept once. Member sums and validation results are unchanged by the header fix.",
+  "candidates": "only listings whose security-master rows are all instrument_type EQUITY_COMMON (1.0.0 also admitted preferred listings such as BAC-P-B that carry the issuer name).",
+  "priceCheck": "bracket deviation per holding date instead of one weekly close: the holding date lies inside a week, so p is compared with [min,max] of the previous weekly close and the close of its own ISO week (both as raw prices via split factors); dev = 0 inside, else distance to the nearer bound. 1.0.0 used the week close only; volatile stocks with quarter ends inside the week failed (e.g. LRCX).",
+  "perDateResolution": "mapping is decided per holding date, not per key: a key is mapped at date d to candidate c when c is the only name candidate with dev <= 0.05 at d and c is also within 0.05 at an adjacent key date where it has a bar (or has a bar at only this key date). 1.0.0 used one median over all dates, which merged different issuers sharing a name across eras (ALCOA: Alcoa Inc./Howmet vs Alcoa Corp.)."
+ }
+}
