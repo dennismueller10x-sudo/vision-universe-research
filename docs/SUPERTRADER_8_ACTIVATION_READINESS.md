@@ -13,7 +13,7 @@ Gilt unverändert:
 
 | | Voraussetzung | Status | PR |
 |---|---|---|---|
-| V1 | Datenpipeline und Aktualität | **teilweise erfüllt** – Fehlererkennung belegt, Stabilitätsschwelle noch nicht erreicht, Security Master ohne Erzeuger | – (Beobachtung) |
+| V1 | Datenpipeline und Aktualität | **teilweise erfüllt** – Fehlererkennung belegt, Stabilitätsschwelle noch nicht erreicht, Security Master ohne Erzeuger. Neubewertung 29.10.: S3 erfüllt; S1 1/5, S2, S4, S5 1/2 offen; S6, S7 nicht erfüllt → [SUPERTRADER_8_V1_STATUS_20261029.md](SUPERTRADER_8_V1_STATUS_20261029.md) | – (Beobachtung), #1098 |
 | V2 | Core-Registrierung | **erfüllt, Merge offen** | #1025 → #1027 |
 | V3 | Datenqualitätsregeln | **erfüllt, Merge offen** | #1027 (+ Anwendung in #973) |
 | V4 | Zentraler Preisabgleich | **erfüllt, Merge offen** | #1026 |
