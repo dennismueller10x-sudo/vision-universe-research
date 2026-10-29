@@ -8,7 +8,7 @@
    oeffentlichen Artefakt technical/data/signal-evidence.json. Gezeigt wird je Zeile nur der 20-Tage-Horizont.
 
    Einordnung je Zeile (`reading`), streng beschreibend (docs/technical/SIGNAL_EVIDENCE.md):
-     NO_DIFFERENCE      nach Mehrfachtest-Korrektur kein belastbarer Unterschied zum Querschnitt
+     NOT_SIGNIFICANT    nach Mehrfachtest-Korrektur kein statistisch gesicherter Unterschied nachgewiesen (kein Gleichheitsnachweis)
      MIXED              belastbar im Gesamtmittel, aber das Vorzeichen wechselt zwischen Marktphasen/Zeithaelften
      WITH_DIRECTION     belastbar und phasenstabil in der ueblichen Lesart (bullisch besser, baerisch schlechter)
      AGAINST_DIRECTION  belastbar und phasenstabil GEGEN die uebliche Lesart
@@ -21,13 +21,13 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const SIGNAL_EVIDENCE_SCHEMA = "vu-technical-signal-evidence-1.0.0";
-export const READINGS = ["NO_DIFFERENCE", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"];
+export const READINGS = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"];
 
 /** Einordnung einer Zeile aus 20-Tage-Ergebnis und Phasenstabilitaet (stableSign: 1, -1, 0 = widerspruechlich, null = zu wenig). */
 export function readingOf(row) {
   if (row.direction === "NEUTRAL") return "NEUTRAL_PATTERN";
   const h = row.h20;
-  if (!h || !h.significant) return "NO_DIFFERENCE";
+  if (!h || !h.significant) return "NOT_SIGNIFICANT";
   if (row.stableSign !== 1 && row.stableSign !== -1) return "MIXED";
   if (Math.sign(h.mean) !== row.stableSign) return "MIXED";
   return h.mean > 0 ? "WITH_DIRECTION" : "AGAINST_DIRECTION";

@@ -188,13 +188,13 @@
   /* Einordnung je Zeile (signal-evidence.mjs#readingOf). Ereignis = technisch definiert; Einordnung = historische
      Beobachtung; ein handelbarer Vorteil ist fuer keine Zeile nachgewiesen. */
   var READING_TEXT = {
-    NO_DIFFERENCE: "kein belastbarer Unterschied zum Querschnitt aller Titel",
+    NOT_SIGNIFICANT: "kein statistisch gesicherter Unterschied zum Querschnitt aller Titel nachgewiesen (das heißt nicht, dass Gleichheit bewiesen ist)",
     MIXED: "im Gesamtmittel belastbar, aber je nach Marktphase oder Zeithälfte mit wechselndem Vorzeichen, also keine stabile Beobachtung",
     WITH_DIRECTION: "phasenstabil wie die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
     AGAINST_DIRECTION: "phasenstabil gegen die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
     NEUTRAL_PATTERN: "Muster ohne Richtung, daher ohne Lesart"
   };
-  var READING_SHORT = { NO_DIFFERENCE: "kein Unterschied", MIXED: "uneinheitlich", WITH_DIRECTION: "wie übliche Lesart", AGAINST_DIRECTION: "gegen übliche Lesart", NEUTRAL_PATTERN: "ohne Richtung" };
+  var READING_SHORT = { NOT_SIGNIFICANT: "kein gesicherter Unterschied", MIXED: "uneinheitlich", WITH_DIRECTION: "wie übliche Lesart", AGAINST_DIRECTION: "gegen übliche Lesart", NEUTRAL_PATTERN: "ohne Richtung" };
   /** Ein Satz je Zeile: Kursverlauf gegenueber dem Querschnitt (nicht richtungsbereinigt) und Einordnung. */
   function signalEvidenceText(r) {
     if (!r) return "Für dieses Ereignis liegt keine historische Auswertung vor.";
@@ -206,7 +206,7 @@
   /** Zaehlung je Einordnung als ein Satz (oberhalb der Tabelle; mobil oft das Einzige, was ohne Scrollen sichtbar ist). */
   function signalEvidenceSummary(rows) {
     var c = {}; (rows || []).forEach(function (r) { c[r.reading] = (c[r.reading] || 0) + 1; });
-    var parts = ["NO_DIFFERENCE", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"].filter(function (k) { return c[k]; })
+    var parts = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"].filter(function (k) { return c[k]; })
       .map(function (k) { return c[k] + " " + READING_SHORT[k]; });
     return (rows || []).length + " ausgewiesen: " + parts.join(", ") + ". Keine Zeile ist ein Kauf- oder Verkaufssignal.";
   }

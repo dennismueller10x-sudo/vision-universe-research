@@ -25,7 +25,7 @@ Drei Ebenen werden streng getrennt (wie in der Freigabe von #1106 verlangt):
 
 | Wert | Bedeutung | Anzeige |
 |---|---|---|
-| `NO_DIFFERENCE` | nach Bonferroni-Korrektur kein belastbarer Unterschied zum Querschnitt | „kein Unterschied“ |
+| `NOT_SIGNIFICANT` | nach Bonferroni-Korrektur kein statistisch gesicherter Unterschied zum Querschnitt nachgewiesen. Das ist kein Nachweis von Gleichheit: bei rund einem Marktjahr kann ein kleiner Unterschied unentdeckt bleiben. | „kein gesicherter Unterschied“ |
 | `MIXED` | belastbar im Gesamtmittel, aber das Vorzeichen wechselt zwischen Marktphasen (SPY über/unter SMA 50) oder Zeithälften | „uneinheitlich“ |
 | `WITH_DIRECTION` | belastbar und in allen Teilmengen wie die übliche Lesart | „wie übliche Lesart“ |
 | `AGAINST_DIRECTION` | belastbar und in allen Teilmengen gegen die übliche Lesart | „gegen übliche Lesart“ |
@@ -37,7 +37,7 @@ Drei Ebenen werden streng getrennt (wie in der Freigabe von #1106 verlangt):
 
 Methodik-Seite, Abschnitt „Historische Beobachtung: Indikator-Ereignisse und Kerzenmuster“, unter den Indikatoren:
 - Einleitung zu den drei Ebenen, Messmethode, Einordnung, Grenzen (Kosten, Survivorship Bias).
-- Je Gruppe ein Satz mit der Zählung, zum Beispiel „18 ausgewiesen: 16 kein Unterschied, 2 gegen übliche Lesart. Keine Zeile ist ein Kauf- oder Verkaufssignal.“
+- Je Gruppe ein Satz mit der Zählung, zum Beispiel „18 ausgewiesen: 16 kein gesicherter Unterschied, 2 gegen übliche Lesart. Keine Zeile ist ein Kauf- oder Verkaufssignal.“
 - Tabelle: Ereignis (übliche Lesart), Einordnung, Verlauf gegenüber dem Querschnitt nach 20 Tagen (nicht richtungsbereinigt: positiv heißt, der Titel lief besser), n. Als Tooltip steht je Zeile ein Satz (`model.js#signalEvidenceText`).
 - Mobil (390 px): Die Einordnung steht in der zweiten Spalte und ist ohne Scrollen sichtbar.
 - Fehlt die Datei, entfällt der Abschnitt.
@@ -54,7 +54,7 @@ Bewusst nicht im Chart: Kerzenmarken und Befundkarten bleiben ohne Statistik. So
 
 Ergebnis, Stand 28.10.2026:
 
-| | kein Unterschied | uneinheitlich | wie übliche Lesart | gegen übliche Lesart | ohne Richtung |
+| | kein gesicherter Unterschied | uneinheitlich | wie übliche Lesart | gegen übliche Lesart | ohne Richtung |
 |---|---|---|---|---|---|
 | Indikator-Ereignisse (18) | 16 | 0 | 0 | 2 | – |
 | Kerzenmuster (77) | 65 | 0 | 1 | 6 | 5 |

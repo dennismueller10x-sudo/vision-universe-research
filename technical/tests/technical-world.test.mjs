@@ -307,6 +307,10 @@ test("Signal-Evidenz: Vertrag, Einordnung nachrechenbar, keine Signal-Sprache, T
     assert.doesNotMatch(text, /Kaufsignal|Verkaufssignal|empfehl|Chance/i, r.id);
   }
   assert.match(M.signalEvidenceText({ reading: "AGAINST_DIRECTION", direction: "BULLISH", mean: -0.02, ci95: 0.01, n: 500 }), /schwächer/);
-  assert.match(M.signalEvidenceText({ reading: "NO_DIFFERENCE", direction: "BULLISH", mean: 0.001, ci95: 0.01, n: 500 }), /kein belastbarer Unterschied/);
+  assert.match(M.signalEvidenceText({ reading: "NOT_SIGNIFICANT", direction: "BULLISH", mean: 0.001, ci95: 0.01, n: 500 }), /kein statistisch gesicherter Unterschied .*nachgewiesen/);
   assert.match(M.READING_TEXT.WITH_DIRECTION, /kein nachgewiesener Handelsvorteil/);
+  /* Owner-Auflage #1109: "nicht signifikant" ist kein Gleichheitsnachweis */
+  assert.match(M.READING_SHORT.NOT_SIGNIFICANT, /gesichert/);
+  assert.match(M.READING_TEXT.NOT_SIGNIFICANT, /nicht, dass Gleichheit bewiesen ist/);
+  for (const k of SE.READINGS) assert.doesNotMatch(M.READING_SHORT[k] + " " + M.READING_TEXT[k], /^kein Unterschied|kein belastbarer Unterschied/, k);
 });
