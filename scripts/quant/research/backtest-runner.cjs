@@ -227,12 +227,20 @@ function micOfDoc(doc) {
   return ({ NASDAQ: 'XNAS', NYSE: 'XNYS', AMEX: 'XASE', 'NYSE MKT': 'XASE' })[String(doc.listingId).split(':')[1]] || null;
 }
 // research-studies listing: identity from the loader document; a sourced last trade date bounds the identity (engine censors).
-function engineListing(l, { listingIdIsSecurityId = false } = {}) {
+function engineListing(l, { listingIdIsSecurityId = false, from = null, to = null } = {}) {
   const d = l.doc, lc = d.listingLifecycle || null, validTo = lc && lc.lastTradeDate ? lc.lastTradeDate : null;
   const identity = { mic: micOfDoc(d), instrumentClass: 'COMMON_STOCK', primary: true, validFrom: d.listingStart, availableAt: d.masterGeneratedAt || (d.asOf + 'T00:00:00Z'), sourceHash: d.identityHash };
   if (validTo) identity.validTo = validTo;
   return { listingId: listingIdIsSecurityId ? l.securityId : d.listingId, issuerId: l.securityId, securityId: l.securityId, identity,
-    bars: d.points.filter(([date]) => !validTo || date <= validTo).map(([date, close]) => ({ date, close })) };
+    bars: d.points.filter(([date]) => (!validTo || date <= validTo) && (!from || date >= from) && (!to || date <= to)).map(([date, close]) => ({ date, close })) };
+}
+// Signal rules read at most WARMUP_WEEKS bars plus the COOLDOWN_WEEKS detection memory before a signal; bars older than
+// the window start minus this buffer cannot change any event inside the window (checked in backtest-runner tests), so they
+// are dropped to stay within the engine's work budgets. Pattern/replay features (running maximum) keep the full history.
+function signalTrimDate(spec, pop, E) {
+  const k = pop.calendar.findIndex(d => d >= spec.window.from);
+  const buffer = E.Signal.WARMUP_WEEKS + E.Signal.COOLDOWN_WEEKS + 52;
+  return k < 0 ? null : pop.calendar[Math.max(0, k - buffer)];
 }
 function benchmarkBars(ctx, calendar) {
   if (!ctx.benchmark) return null;
@@ -286,7 +294,8 @@ function runPerEventKind(spec, pop, ctx, E, override = {}) {
     return { raw: r, path: 'research-studies.runPatternStudy' };
   }
   if (kind === 'SIGNAL_BACKTEST') {
-    const r = E.S.runSignalStudy(studyBase(sp, pop, ctx, { listings: pop.listings.map(l => engineListing(l)), horizonBars: posInt(eng.horizonBars, 'engine.horizonBars'), ...(eng.ruleIds ? { ruleIds: eng.ruleIds } : {}) }));
+    const from = override.untrimmed ? null : signalTrimDate(spec, pop, E);
+    const r = E.S.runSignalStudy(studyBase(sp, pop, ctx, { listings: pop.listings.map(l => engineListing(l, { from })), horizonBars: posInt(eng.horizonBars, 'engine.horizonBars'), ...(eng.ruleIds ? { ruleIds: eng.ruleIds } : {}) }));
     return { raw: r, path: 'research-studies.runSignalStudy' };
   }
   fail('INTERNAL_KIND_DISPATCH', kind);
@@ -350,7 +359,10 @@ function runFactor(spec, pop, ctx, E) {
       rows: s.rows.filter(r => ids.has(r.id)).map(r => ({ listingId: r.id, value: X.finite(r.scores[eng.factorId]) ? r.scores[eng.factorId] : null, availableAt, sourceHash: sha([r.id, s.date, r.scores]) })) };
   });
   const used = new Set(factorSnapshots.flatMap(s => s.rows.map(r => r.listingId)));
-  const listings = pop.listings.filter(l => used.has(l.securityId)).map(l => engineListing(l, { listingIdIsSecurityId: true }));
+  // Factor values come from the panel; prices are only needed for outcomes: bars from the first rank date to the last
+  // possible exit (+2 sessions), like scripts/quant/v10/factor/study.cjs (exits beyond stay IMMATURE/CENSORED as in the engine).
+  const k = pop.calendar.indexOf(snaps.at(-1).date), to = pop.calendar[Math.min(pop.calendar.length - 1, (k < 0 ? pop.calendar.length - 1 : k) + posInt(eng.horizonBars, 'engine.horizonBars') + 2)];
+  const listings = pop.listings.filter(l => used.has(l.securityId)).map(l => engineListing(l, { listingIdIsSecurityId: true, from: snaps[0].date, to }));
   const r = E.S.runFactorStudy(studyBase(spec, pop, ctx, { listings, horizonBars: posInt(eng.horizonBars, 'engine.horizonBars'), buckets: posInt(eng.buckets || 5, 'engine.buckets', 2), factorId: eng.factorId, factorSnapshots }));
   return { raw: r, path: 'research-studies.runFactorStudy (private V10 PIT panel)', panelSha256: shaFile(file), panelRankDates: snaps.length };
 }
@@ -394,7 +406,9 @@ function strategyInput(spec, pop, ctx, E, override = {}) {
       const w = t.totalReturnWindows.find(x => x.from <= spec.window.from && x.to >= spec.window.to);
       if (!w) return { missing: ['TR_WINDOW_NOT_COVERED:' + l.securityId + ':' + spec.window.from + '..' + spec.window.to] };
       trWindows[l.securityId] = w;
-      events[l.securityId] = withDividends ? t.portfolioEvents.filter(e => e.effectiveDate >= dates[0] && e.effectiveDate <= dates.at(-1)) : [];
+      // Register sequences are per title; simultaneous events of different titles are independent, the title index orders them.
+      const li = listings.indexOf(l);
+      events[l.securityId] = withDividends ? t.portfolioEvents.filter(e => e.effectiveDate >= dates[0] && e.effectiveDate <= dates.at(-1)).map(e => ({ ...e, sequence: li * 1000 + e.sequence })) : [];
     }
   }
   const initialCapital = eng.initialCapital || 100000;
@@ -501,7 +515,10 @@ function sensitivity(spec, pop, ctx, E, cfg, evaluatePoint) {
   for (const k of Object.keys(cfg.dimensions).sort()) baseline[k] = k === 'holdingPeriods' ? spec.engine.horizonBars : k === 'everySessions' ? (spec.engine.rebalance || {}).everySessions : spec.costs[k];
   const points = E.V.registerSensitivity({ id: spec.id + ':grid', ruleHash: sha(spec.engine), datasetHash: ctx.inputHash, evaluatorHash: 'pending', primaryEndpoint: cfg.endpoint || 'netReturn', registeredAt: spec.registeredAt, purpose: 'EXPLORATORY_ROBUSTNESS', dimensions: cfg.dimensions, baseline, alpha: cfg.alpha || 0.05 }).points;
   // Recorded grid: each point is evaluated by the SAME kind engine, then consumed through run-research's recorded evaluator.
-  const results = points.map(p => ({ parameters: p, result: evaluatePoint(p) }));
+  let results;
+  // A grid point whose engine inference refuses (e.g. a sparse block bootstrap) leaves the grid unrecorded: NOT_RUN with the reason.
+  try { results = points.map(p => ({ parameters: p, result: evaluatePoint(p) })); }
+  catch (e) { if (!/EMPTY_BOOTSTRAP_SAMPLE|INTEGER_OUT_OF_RANGE|OBSERVATION_BUDGET|BUDGET/.test(String(e.message))) throw e; return { state: 'NOT_RUN', result: { reason: 'GRID_POINT_INFERENCE_REFUSED:' + String(e.message), points: points.length } }; }
   const rows = new Map(results.map(r => [E.V.hash(r.parameters), r.result]));
   const evaluatorHash = E.V.hash(RR.recordedSensitivityEvaluator(rows).toString());
   const registration = E.V.registerSensitivity({ id: spec.id + ':grid', ruleHash: sha(spec.engine), datasetHash: ctx.inputHash, evaluatorHash, primaryEndpoint: cfg.endpoint || 'netReturn', registeredAt: spec.registeredAt, purpose: 'EXPLORATORY_ROBUSTNESS', dimensions: cfg.dimensions, baseline, alpha: cfg.alpha || 0.05 });
@@ -549,7 +566,9 @@ function productCertified(spec, ctx, researchState) {
 
 /* ------------------------------------------------------------- runner */
 function codeHashes() { return Object.fromEntries(CODE_FILES.map(f => [f, shaFile(path.join(ROOT, f))])); }
-function listingInputHashes(pop) { return Object.fromEntries(pop.listings.map(l => [l.securityId, { listingId: l.doc.listingId, pointsHash: sha(l.doc.points), sourceBytesHash: l.doc.sourceBytesHash || null, first: l.doc.points[0][0], last: l.doc.points.at(-1)[0] }])); }
+// Per listing: the source file bytes hash (public series) or the register-bound points hash (private delisted series), plus
+// the as-of truncation (first/last bar, count). Re-hashing every point would cost ~10 s on the full frame for no extra binding.
+function listingInputHashes(pop) { return Object.fromEntries(pop.listings.map(l => [l.securityId, { listingId: l.doc.listingId, sourceBytesHash: l.doc.sourceBytesHash || null, registerPointsSha256: l.doc.sourceBytesHash ? null : l.doc.identityHash, first: l.doc.points[0][0], last: l.doc.points.at(-1)[0], bars: l.doc.points.length }])); }
 
 function runBacktest(spec, options = {}) {
   const t0 = process.hrtime.bigint(), rss0 = process.memoryUsage().rss;
@@ -560,6 +579,9 @@ function runBacktest(spec, options = {}) {
   const E = lazy();
   const sHash = specHash(spec);
   ctx.certDoc = certificationDoc(ctx);
+  // A certification artifact whose statuses do not follow its own gates (spoof or stale edit) is never used.
+  const certViolations = req('quant/engines/backtest-certification.js').certificationViolations(ctx.certDoc);
+  if (certViolations.length) fail('CERTIFICATION_ARTIFACT_VIOLATES_ITS_CONTRACT', certViolations[0]);
   const certSha = sha(ctx.certDoc);
   ctx.benchmark = spec.benchmark === 'SPY' || Object.keys(spec.methods || {}).includes('MARKET_REGIME') ? (ctx.deps.benchmark || E.B.load(ROOT)) : null;
   const pop = resolvePopulation(spec, ctx, E);
@@ -581,12 +603,14 @@ function runBacktest(spec, options = {}) {
   inputHashes.population = { profile: pop.profile, profileSpecHash: pop.profileSpecHash, populationHash: pop.summary.populationHash, calendarHash: pop.summary.inputHashes.calendarHash, calendarLength: pop.summary.inputHashes.calendarLength,
     sourceManifestHash: pop.summary.inputHashes.sourceManifestHash, masterHash: pop.summary.inputHashes.masterHash, registers: pop.summary.inputHashes.registers, pointsHashRoot: pop.summary.inputHashes.pointsHashRoot };
   inputHashes.listings = listingInputHashes(pop);
+  if (pop.listings.length > 100) inputHashes.listings = { count: pop.listings.length, root: sha(inputHashes.listings), rule: 'sha256(canonical map securityId -> {listingId, sourceBytesHash|registerPointsSha256, first, last, bars})' };
   if (pop.listings.some(l => l.securityId.startsWith('dl_'))) inputHashes.private.delisted = { register: pop.summary.inputHashes.registers.delistedRegister, listings: pop.listings.filter(l => l.securityId.startsWith('dl_')).map(l => [l.securityId, l.doc.identityHash]) };
   if (spec.kind === 'FACTOR_RANKING_BACKTEST' && ctx.privateDirs.factorPanel && fs.existsSync(ctx.privateDirs.factorPanel)) inputHashes.private.factorPanel = shaFile(ctx.privateDirs.factorPanel);
   ctx.inputHash = sha(inputHashes);
   // Result cache (private, optional): spec hash + input hashes (incl. code) -> identical result.
-  const cacheKey = sha({ v: VERSION, specHash: sHash, inputHash: ctx.inputHash, deps: !!options.deps });
-  const cacheFile = ctx.cacheDir && !options.deps ? path.join(ctx.cacheDir, 'result-' + cacheKey + '.json') : null;
+  // Injected dependencies (test seam) disable the cache unless they carry an explicit cacheTag that enters the key.
+  const cacheKey = sha({ v: VERSION, specHash: sHash, inputHash: ctx.inputHash, deps: options.deps ? options.deps.cacheTag || null : null });
+  const cacheFile = ctx.cacheDir && (!options.deps || typeof options.deps.cacheTag === 'string') ? path.join(ctx.cacheDir, 'result-' + cacheKey + '.json') : null;
   ctx.cacheFile = cacheFile;
   if (cacheFile && fs.existsSync(cacheFile)) {
     const cached = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
@@ -599,14 +623,20 @@ function runBacktest(spec, options = {}) {
     listings: pop.listings.map(l => ({ securityId: l.securityId, ticker: l.ticker, listingId: l.doc.listingId, first: l.doc.points[0][0], last: l.doc.points.at(-1)[0], corporateActionQuality: l.doc.corporateActionQuality ? l.doc.corporateActionQuality.status : null,
       splitsInWindow: ((l.doc.corporateActions && l.doc.corporateActions.splits) || []).filter(s => s[0] >= spec.window.from && s[0] <= spec.window.to), lifecycle: l.doc.listingLifecycle ? { status: l.doc.listingLifecycle.status, lastTradeDate: l.doc.listingLifecycle.lastTradeDate || null, terminalKind: l.doc.listingLifecycle.terminal ? l.doc.listingLifecycle.terminal.kind : null, terminalScenarios: l.doc.listingLifecycle.terminal ? l.doc.listingLifecycle.terminal.scenarios || null : null } : null })),
     excluded: pop.excluded, warnings: pop.summary.dataQuality.warnings };
+  // Large cohorts: listing details are replaced by counts and a hash of the id list (the per-listing input hashes stay complete).
+  const LIST_LIMIT = 100;
+  const countBy = (list, f) => list.reduce((a, x) => { const k = String(f(x)); a[k] = (a[k] || 0) + 1; return a; }, {});
+  const caListings = popInfo.listings.map(l => ({ securityId: l.securityId, quality: l.corporateActionQuality, splitsInWindow: l.splitsInWindow }));
+  if (popInfo.listings.length > LIST_LIMIT) popInfo.listings = { count: popInfo.listings.length, idsHash: sha(popInfo.listings.map(l => l.securityId)), corporateActionQuality: countBy(popInfo.listings, l => l.corporateActionQuality), withSplitsInWindow: popInfo.listings.filter(l => l.splitsInWindow.length).length, withLifecycle: popInfo.listings.filter(l => l.lifecycle).length };
+  if (popInfo.excluded.length > LIST_LIMIT) popInfo.excluded = { count: popInfo.excluded.length, byReason: countBy(popInfo.excluded, x => x.reason) };
   const popWarnings = uniq([...pop.summary.dataQuality.warnings, ...pop.listings.flatMap(l => l.doc.warnings || [])]);
-  const commonDq = { warnings: popWarnings, corporateActions: { contract: 'LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)', listings: popInfo.listings.map(l => ({ securityId: l.securityId, quality: l.corporateActionQuality, splitsInWindow: l.splitsInWindow })) },
+  const commonDq = { warnings: popWarnings, corporateActions: { contract: 'LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)', listings: caListings.length > LIST_LIMIT ? { count: caListings.length, quality: countBy(caListings, l => l.quality), withSplitsInWindow: caListings.filter(l => l.splitsInWindow.length).length } : caListings },
     survivorship: { state: pop.listings.some(l => l.securityId.startsWith('dl_')) ? 'INCLUDES_PRIVATE_DELISTED_SERIES' : 'CONDITIONAL_CURRENT_SURVIVOR_COHORT', control: 'population profile ' + pop.profile + ' (' + pop.summary.populationHash.slice(0, 16) + ')' } };
-  const terminals = popInfo.listings.filter(l => l.lifecycle && l.lifecycle.terminalKind);
+  const terminals = pop.listings.filter(l => l.doc.listingLifecycle && l.doc.listingLifecycle.terminal).map(l => ({ securityId: l.securityId, lifecycle: { lastTradeDate: l.doc.listingLifecycle.lastTradeDate || null, terminalKind: l.doc.listingLifecycle.terminal.kind, terminalScenarios: l.doc.listingLifecycle.terminal.scenarios || null } }));
   if (terminals.length) commonDq.terminal = { state: 'SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE', listings: terminals.map(l => ({ securityId: l.securityId, lastTradeDate: l.lifecycle.lastTradeDate, terminalKind: l.lifecycle.terminalKind, terminalScenarios: l.lifecycle.terminalScenarios })) };
   const populationId = 'runner:' + pop.profile + ':' + sHash.slice(0, 16);
   const populationHash = sha({ populationHash: pop.summary.populationHash, listings: pop.listings.map(l => l.securityId), window: spec.window, asOf: spec.asOf });
-  const common = { spec, specHash: sHash, inputHashes, inputHash: ctx.inputHash, kindPath, populationId, populationHash, dataQuality: commonDq };
+  const common = { spec, specHash: sHash, inputHashes, inputHash: ctx.inputHash, kindPath, populationId, populationHash, dataQuality: commonDq, grain: 'WEEKLY' };
   const methodsCfg = spec.methods || {};
   const maxBar = Math.max(...pop.listings.map(l => Date.parse(l.doc.points.at(-1)[0])));
   const pit = { asOf: spec.asOf, latestInputBar: new Date(maxBar).toISOString().slice(0, 10), inputsAfterAsOf: pop.listings.reduce((n, l) => n + l.doc.points.filter(p => p[0] > spec.asOf).length, 0) };
@@ -703,8 +733,11 @@ function runBacktest(spec, options = {}) {
   if (spec.kind === 'SAME_STOCK_REPLAY') limitations.push('SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE');
   if (methodsCfg.WALK_FORWARD || methodsCfg.OUT_OF_SAMPLE) {
     const cfg = methodsCfg.WALK_FORWARD || methodsCfg.OUT_OF_SAMPLE;
-    if (spec.kind === 'SETUP_BACKTEST') methods.WALK_FORWARD = walkForward(spec, pop, res, cfg, E).WALK_FORWARD;
-    else Object.assign(methods, walkForward(spec, pop, res, cfg, E));
+    let wf;
+    // Only the engine's own operation budgets are turned into NOT_RUN (with the reason); every other error propagates.
+    try { wf = walkForward(spec, pop, res, cfg, E); } catch (e) { if (!/BUDGET/.test(String(e.message))) throw e; const nr = { state: 'NOT_RUN', result: { reason: String(e.message), events: res.events.length } }; wf = { WALK_FORWARD: nr, OUT_OF_SAMPLE: nr }; }
+    if (spec.kind === 'SETUP_BACKTEST') methods.WALK_FORWARD = wf.WALK_FORWARD;
+    else Object.assign(methods, wf);
   }
   if (methodsCfg.MARKET_REGIME) {
     const obs = res.events.filter(e => e.state === 'OBSERVED').map(e => ({ signalDate: e.signalDate, netReturn: e.netReturn, listingId: e.listingId, issuerId: e.issuerId, decisionAt: e.signalDate + DAY_END, timeCluster: e.signalDate }));
@@ -764,4 +797,15 @@ function runFunded(spec, pop, ctx, E) {
     extras: { metricsDetail: md, episodes: sch.episodes.length } };
 }
 
-module.exports = { VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };
+// Test seam: the windowed per-event engine result for a spec (override.untrimmed disables the signal history trim).
+function kindEvents(spec, options = {}, override = {}) {
+  validateSpec(spec);
+  const ctx = { deps: options.deps || {}, privateDirs: { ...(options.privateDirs || {}) }, cacheDir: options.cacheDir || null, diagnostics: {} };
+  const E = lazy();
+  ctx.benchmark = spec.benchmark === 'SPY' ? (ctx.deps.benchmark || E.B.load(ROOT)) : null;
+  const pop = resolvePopulation(spec, ctx, E);
+  if (pop.missing.length) fail('POPULATION_MISSING', pop.missing.join(','));
+  return windowed(runPerEventKind(spec, pop, ctx, E, override).raw, spec.window, E.S);
+}
+
+module.exports = { kindEvents, VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };
