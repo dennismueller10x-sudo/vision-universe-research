@@ -1,0 +1,124 @@
+name: Konten — Produktivstart einspielen (Ops, Produktion)
+# Auftrag Produktivstart Free/Pro (PR #1125). Eine Freigabe (Umgebung account-dev), dann:
+#   1. Migration 20261029000100_produktivstart.sql (Pruefsumme fest) mit der offiziellen CLI (supabase db push), Probelauf zuerst.
+#      Kein reset, kein migration repair; Konten, Watchlists, Abos bleiben unberuehrt.
+#   2. Nachkontrolle: neue Tabellen mit RLS, keine Einwilligung angelegt, marketing_emails fuer Nutzer nicht schreibbar.
+#   3. Brevo (scripts/account/brevo-setup.mjs): Ordner, Listen "Vision Universe App – Nutzer/Free/Pro" und Merkmal VU_TARIF
+#      anlegen, wenn sie fehlen (nie aendern oder loeschen, keine Kontakte, kein Versand). Bestand: wie viele Konten schon
+#      Brevo-Kontakte bzw. in der Newsletter-Liste 4 sind – nur Zahlen.
+# Muss vor dem Ausrollen des Workers laufen. Ausgabe nur Zaehlungen, IDs und Zustaende.
+on:
+  push:
+    branches: [ops/supabase-dev-migrations]
+    paths: ['.github/workflows/account-prod-produktivstart.yml', 'ops/production/produktivstart.trigger']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-prod-produktivstart-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  PROJECT_REF: qiytbnpoqvldsatpfkeh
+  SUPABASE_CLI: supabase@2.122.0
+  MIGRATION: 20261029000100_produktivstart.sql
+jobs:
+  einspielen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: account-dev
+    steps:
+      - name: Freigabe des Owners pruefen (fail closed, vor jedem Zugriff)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-dev}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME - Abbruch ohne jede Aenderung"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Quelle pruefen (10 Migrationen, Pruefsumme der neuen)
+        run: |
+          set -euo pipefail
+          test "$(ls supabase/migrations/*.sql | wc -l)" -eq 10
+          echo "$(cat ops/production/produktivstart.md5)  supabase/migrations/$MIGRATION" | md5sum -c --strict
+
+      - name: Ziel pruefen (Projekt, Historie 1-9 vorhanden)
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          [[ "$DB_URL" == postgresql://* && "$DB_URL" == *"$PROJECT_REF"* ]] \
+            || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL fehlt oder gehoert nicht zu $PROJECT_REF"; exit 1; }
+          q() { psql -X -q -t -A -v ON_ERROR_STOP=1 -d "$DB_URL" -c "$1"; }
+          n=$(q "select count(*) from supabase_migrations.schema_migrations where version <= '20261028000200'")
+          [ "$n" = 9 ] || { echo "::error::Historie 1-9 unvollstaendig ($n)"; exit 1; }
+          echo "Konten: $(q 'select count(*) from auth.users'); Abos: $(q 'select count(*) from public.subscriptions')"
+
+      - name: Arbeitsverzeichnis fuer die CLI
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/sb"; mkdir -p "$work"; cd "$work"
+          npx --yes "$SUPABASE_CLI" init --yes > /dev/null
+          mkdir -p supabase/migrations
+          cp "$GITHUB_WORKSPACE"/supabase/migrations/*.sql supabase/migrations/
+
+      - name: Probelauf und Einspielen (supabase db push)
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        working-directory: ${{ runner.temp }}/sb
+        run: |
+          set -euo pipefail
+          npx "$SUPABASE_CLI" db push --dry-run --db-url "$DB_URL" > "$RUNNER_TEMP/plan.txt" 2>&1
+          cat "$RUNNER_TEMP/plan.txt"
+          plan=$(node "$GITHUB_WORKSPACE/scripts/account/supabase-push-plan.mjs" --expect="$MIGRATION" "$RUNNER_TEMP/plan.txt") \
+            || { echo "::error::Unerwarteter Plan - nichts eingespielt"; exit 1; }
+          if [ "$plan" = up-to-date ]; then echo "Bereits eingespielt."; exit 0; fi
+          echo "Plan geprueft: genau $MIGRATION offen."
+          npx "$SUPABASE_CLI" db push --yes --db-url "$DB_URL"
+          npx "$SUPABASE_CLI" db push --dry-run --db-url "$DB_URL" > "$RUNNER_TEMP/after.txt" 2>&1
+          after=$(node "$GITHUB_WORKSPACE/scripts/account/supabase-push-plan.mjs" --expect="$MIGRATION" "$RUNNER_TEMP/after.txt") || true
+          [ "$after" = up-to-date ] || { cat "$RUNNER_TEMP/after.txt"; echo "::error::Nach dem Einspielen ist noch etwas offen"; exit 1; }
+
+      - name: Nachkontrolle
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          q() { psql -X -q -t -A -v ON_ERROR_STOP=1 -d "$DB_URL" -c "$1"; }
+          test "$(q "select count(*) from supabase_migrations.schema_migrations where version = '20261029000100'")" = 1
+          test "$(q "select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'billing' and c.relname in ('marketing_consents','brevo_contacts','brevo_jobs') and c.relrowsecurity")" = 3
+          test "$(q "select has_column_privilege('authenticated', 'public.user_settings', 'marketing_emails', 'UPDATE')")" = f
+          test "$(q "select count(*) from billing.marketing_consents")" = 0
+          echo "Einwilligungen: 0 (niemand nachtraeglich eingetragen); Konten mit marketing_emails: $(q 'select count(*) from public.user_settings where marketing_emails')"
+          echo "Konten: $(q 'select count(*) from auth.users'); Abos: $(q 'select count(*) from public.subscriptions') (unveraendert)"
+
+      - name: Brevo einrichten (Listen, Merkmal) und Bestand zaehlen
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          [ -n "$BREVO_API_KEY" ] || { echo "::error::BREVO_API_KEY fehlt"; exit 1; }
+          node scripts/account/brevo-setup.mjs --apply
+          psql -X -q -t -A -v ON_ERROR_STOP=1 -d "$DB_URL" -c "select lower(email) from auth.users where email_confirmed_at is not null" > "$RUNNER_TEMP/emails.txt"
+          node --input-type=module -e '
+            import {readFileSync} from "node:fs";
+            const emails = readFileSync(process.argv[1], "utf8").split("\n").filter(Boolean);
+            let contact = 0, newsletter = 0, blocked = 0;
+            for (const e of emails) {
+              const r = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(e)}`, {headers: {"api-key": process.env.BREVO_API_KEY, Accept: "application/json"}});
+              if (r.status === 404) continue;
+              if (!r.ok) throw new Error(`Brevo ${r.status}`);
+              const c = await r.json(); contact++;
+              if ((c.listIds || []).includes(4)) newsletter++;
+              if (c.emailBlacklisted) blocked++;
+            }
+            console.log(`Bestaetigte Konten: ${emails.length}; davon Brevo-Kontakt: ${contact}, in Newsletter-Liste 4: ${newsletter}, gesperrt: ${blocked}`);
+          ' "$RUNNER_TEMP/emails.txt"
+          rm -f "$RUNNER_TEMP/emails.txt"
