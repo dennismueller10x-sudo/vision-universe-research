@@ -4,12 +4,12 @@
  "evidenceKind": "RECONSTRUCTION",
  "splitVsProvider": {
   "pairs": 230216,
-  "agreeNone": 225037,
+  "agreeNone": 225038,
   "agreeSplit": 1258,
   "ourSplitProviderNone": 615,
   "providerSplitOurNone": 221,
   "bothDifferent": 124,
-  "ambiguousProviderNone": 555,
+  "ambiguousProviderNone": 554,
   "ambiguousProviderSplit": 129,
   "providerNonSplitFactorOurNone": 480,
   "providerNonSplitFactorOurSplit": 14,
@@ -1943,7 +1943,7 @@
     "providerFactor": 1.333333,
     "ourClass": "SHARE_CHANGE",
     "ourFactor": 1,
-    "q": 1.3373,
+    "q": 1.3377,
     "priceRatio": 0.9754,
     "weightPct": 0.1453
    },
@@ -2142,12 +2142,12 @@
     "providerNonSplitFactorOurAmbiguous": 1
    },
    "IWV": {
-    "agreeNone": 97133,
+    "agreeNone": 97134,
     "agreeSplit": 461,
     "providerSplitOurNone": 77,
     "bothDifferent": 45,
     "providerNonSplitFactorOurNone": 213,
-    "ambiguousProviderNone": 241,
+    "ambiguousProviderNone": 240,
     "ambiguousProviderSplit": 46,
     "ourSplitProviderNone": 259,
     "providerNonSplitFactorOurSplit": 6,
@@ -2178,11 +2178,11 @@
   "byPeriodLength": {
    "halfYear": {
     "pairs": 80494,
-    "agree": 79475,
+    "agree": 79476,
     "providerNonSplit": 229,
-    "disagreeOrAmbiguous": 790,
+    "disagreeOrAmbiguous": 789,
     "weightPairs": 69.25495240323978,
-    "weightDisagreeOrAmbiguous": 0.34066174288521833
+    "weightDisagreeOrAmbiguous": 0.3406473732239312
    },
    "longer": {
     "pairs": 7649,
@@ -2201,7 +2201,7 @@
     "weightDisagreeOrAmbiguous": 0.15575532887930962
    }
   },
-  "casesTotal": 1665
+  "casesTotal": 1664
  },
  "returnVsSeries": {
   "method": "linked members whose t0 and t1 keys map to the same securityId: holdings return s*p1/p0-1 minus series return (adjusted weekly close on/before t1 / on/before t0); exactDates = both holdings dates are weekly bar dates",
@@ -2215,7 +2215,7 @@
    "shareOver5pp": 0.00248
   },
   "weekly": {
-   "n": 227747,
+   "n": 227748,
    "medianPp": 1.2569,
    "p90Pp": 6.4148,
    "p99Pp": 21.0053,
@@ -2227,10 +2227,10 @@
  "crossFund": {
   "IWB~IWV:REPORT": {
    "periods": 27,
-   "n": 25576,
-   "nAgree": 25530,
-   "commonW": 0.9793,
-   "agreeWMean": 0.99745
+   "n": 25684,
+   "nAgree": 25663,
+   "commonW": 0.9835,
+   "agreeWMean": 0.99976
   },
   "IWB~IWV:NPORT": {
    "periods": 25,
@@ -2241,10 +2241,10 @@
   },
   "IWM~IWV:REPORT": {
    "periods": 27,
-   "n": 48459,
-   "nAgree": 47970,
-   "commonW": 0.9092,
-   "agreeWMean": 0.9944
+   "n": 48703,
+   "nAgree": 48213,
+   "commonW": 0.9141,
+   "agreeWMean": 0.99448
   },
   "IWM~IWV:NPORT": {
    "periods": 25,
@@ -2255,10 +2255,10 @@
   },
   "IWV~IWB+IWM:REPORT": {
    "periods": 27,
-   "n": 74035,
-   "nAgree": 73500,
-   "commonW": 0.9737,
-   "agreeWMean": 0.99724
+   "n": 74387,
+   "nAgree": 73876,
+   "commonW": 0.978,
+   "agreeWMean": 0.99939
   },
   "IWV~IWB+IWM:NPORT": {
    "periods": 25,
@@ -2291,37 +2291,37 @@
   "SPY~IWV+IWB+IWM+QQQ:NPORT": {
    "periods": 27,
    "n": 13399,
-   "nAgree": 13399,
+   "nAgree": 13395,
    "commonW": 0.9956,
-   "agreeWMean": 1
+   "agreeWMean": 0.99994
   }
  },
  "totals": {
   "statusCounts": {
-   "OBS_CHAIN": 334810,
-   "OBS_SERIES": 2655,
-   "BOUNDED_EXIT": 11216,
-   "OBS_CROSSFUND": 2229,
-   "BOUNDED_AMBIGUOUS_CA": 1451,
+   "OBS_CHAIN": 335162,
+   "OBS_SERIES": 2648,
+   "BOUNDED_EXIT": 11032,
+   "OBS_CROSSFUND": 2067,
+   "BOUNDED_AMBIGUOUS_CA": 1452,
    "BOUNDED_EXIT_SERIES_DELISTED": 25,
    "EST_SERIES_END": 30,
    "EST_CASH": 4
   },
   "splitClasses": {
-   "NONE": 310126,
-   "SHARE_CHANGE": 21156,
-   "SPLIT": 3528,
-   "AMBIGUOUS_CA": 1451
+   "NONE": 310458,
+   "SHARE_CHANGE": 21178,
+   "SPLIT": 3526,
+   "AMBIGUOUS_CA": 1452
   },
   "tiers": {
-   "C2_NAME": 167715,
+   "C2_NAME": 168081,
    "C3_CIK": 2039,
-   "C4_FUZZY": 354,
+   "C4_FUZZY": 341,
    "C1_CUSIP": 166118,
    "C2_NAME_DUP": 35
   },
-  "possibleIdentityBreaks": 636,
-  "exits": 16159,
-  "entries": 15797
+  "possibleIdentityBreaks": 538,
+  "exits": 15806,
+  "entries": 15444
  }
 }

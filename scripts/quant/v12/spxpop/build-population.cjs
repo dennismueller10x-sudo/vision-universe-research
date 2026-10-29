@@ -90,13 +90,16 @@ function providerFactor(s, t0, t1) {
 }
 
 // ---------------------------------------------------------------- positions
+// bug fix before publication: some INDEXPOP report names carry page-break headings ("(Percentages shown are based on Net
+// Assets) Biotechnology (continued) Amgen Inc.", 203 rows in IWB/IWM/IWV/QQQ); they are removed for the identity chain only.
+const cleanName = n => String(n || '').replace(/^.*\(continued\)\s*/i, '').replace(/^\s*\(Percentages shown are based on [^)]*\)\s*/i, '').trim() || String(n || '');
 const ISIN_RE = /^[A-Z]{2}[0-9A-Z]{9}[0-9]$/;
 function positions(s) {
   const keys = L.positionKeys(s), total = s.members.reduce((a, m) => a + m.value, 0);
   return s.members.map((m, i) => {
     const k = keys[i], e = M[k] || null, v = e && e.dateMap ? e.dateMap[s.date] : null;
-    const nn = L.normName(m.title && L.normName(m.title).cls ? m.title : m.name);
-    return { i, key: k, name: m.name, cusip: L.validCusip(m.cusip) ? m.cusip : null, isin: m.isin && ISIN_RE.test(m.isin) && !/^[A-Z]{2}0{9}/.test(m.isin) ? m.isin : null,
+    const name = cleanName(m.name), nn = L.normName(m.title && L.normName(m.title).cls ? m.title : name);
+    return { i, key: k, name, rawName: m.name, cusip: L.validCusip(m.cusip) ? m.cusip : null, isin: m.isin && ISIN_RE.test(m.isin) && !/^[A-Z]{2}0{9}/.test(m.isin) ? m.isin : null,
       nk: nn.key ? nn.key + '|' + (nn.cls || '') : null, nameKey: nn.key, cik: e && e.cik ? String(+e.cik) : null, sid: v && v.startsWith('ref_') ? v : null,
       shares: m.shares, value: m.value, p: m.value / m.shares, w: m.value / total };
   }).filter(p => p.value > 0 && p.shares > 0).map((p, i) => ({ ...p, i })); // zero-value lines (escrows) carry no weight
@@ -169,17 +172,24 @@ for (const P of PERIODS) for (const l of P.links) {
   if (l.point == null || NOT_APPLICABLE.has(P.fund)) continue; const a = P.A[l.a];
   for (const t of [a.cusip && 'C' + a.cusip, a.isin && 'I' + a.isin, a.cik && 'K' + a.cik, a.nk && 'N' + a.nk]) if (t) { const k = P.t0 + '|' + P.t1 + '|' + t; if (!xIdx.has(k)) xIdx.set(k, []); xIdx.get(k).push({ fund: P.fund, point: l.point, p0: a.p, cls: l.cls }); }
 }
-function crossFund(P, a) {
-  for (const t of [a.cusip && 'C' + a.cusip, a.isin && 'I' + a.isin, a.cik && 'K' + a.cik, a.nk && 'N' + a.nk]) {
-    if (!t) continue; const c = (xIdx.get(P.t0 + '|' + P.t1 + '|' + t) || []).filter(x => x.fund !== P.fund && Math.abs(a.p / x.p0 - 1) <= R.CROSS_PRICE_TOL);
-    if (c.length) { c.sort((x, y) => FUND_ORDER.indexOf(x.fund) - FUND_ORDER.indexOf(y.fund)); return { ...c[0], via: t[0] }; }
+/** Same security in other funds over the same (t0, t1): CUSIP, ISIN, name key (incl. share class), then CIK; a token
+ * that hits more than one position of a fund (dual share classes share a CIK, e.g. GOOGL/GOOG) is not used for that fund
+ * (bug fix before publication: the first 1.1.0 build tried the CIK before the name key and took the first hit). */
+function xLookup(P, a, allowFund) {
+  for (const t of [a.cusip && 'C' + a.cusip, a.isin && 'I' + a.isin, a.nk && 'N' + a.nk, a.cik && 'K' + a.cik]) {
+    if (!t) continue;
+    const c = (xIdx.get(P.t0 + '|' + P.t1 + '|' + t) || []).filter(x => allowFund(x.fund) && Math.abs(a.p / x.p0 - 1) <= R.CROSS_PRICE_TOL);
+    const per = new Map(); for (const x of c) per.set(x.fund, (per.get(x.fund) || 0) + 1);
+    const u = c.filter(x => per.get(x.fund) === 1);
+    if (u.length) { u.sort((x, y) => FUND_ORDER.indexOf(x.fund) - FUND_ORDER.indexOf(y.fund)); return { ...u[0], via: t[0] }; }
   }
   return null;
 }
+function crossFund(P, a) { return xLookup(P, a, f => f !== P.fund); }
 
 // ---------------------------------------------------------------- statuses per t0 member
 function exitFate(P, a) {
-  const f = fateIdx.get(P.fund + '|' + P.t0 + '|' + a.name);
+  const f = fateIdx.get(P.fund + '|' + P.t0 + '|' + a.rawName);
   if (f) return f;
   for (const t of [a.key, a.nk && 'N' + a.nk, a.cik && 'K' + a.cik, a.cusip && 'C' + a.cusip]) if (t && (lastSeen.get(P.fund + '|' + t) || '') > P.t1) return 'TEMPORARY_ABSENCE';
   return 'NOT_FATED';
@@ -224,8 +234,7 @@ function internalAgreement(P, others) {
   let cw = 0, aw = 0, n = 0, nAgree = 0;
   for (const l of P.links) {
     if (l.point == null) continue; const a = P.A[l.a];
-    let x = null;
-    for (const t of [a.cusip && 'C' + a.cusip, a.isin && 'I' + a.isin, a.cik && 'K' + a.cik, a.nk && 'N' + a.nk]) { if (!t) continue; const c = (xIdx.get(P.t0 + '|' + P.t1 + '|' + t) || []).filter(z => others.includes(z.fund) && Math.abs(a.p / z.p0 - 1) <= R.CROSS_PRICE_TOL); if (c.length) { x = c[0]; break; } }
+    const x = xLookup(P, a, f => others.includes(f));
     if (!x) continue; cw += a.w; n++; if (Math.abs(x.point - l.point) * 100 <= R.INTERNAL_DR_PP) { aw += a.w; nAgree++; }
   }
   return cw > 0 ? { agree: aw / cw, commonW: cw, n, nAgree } : null;

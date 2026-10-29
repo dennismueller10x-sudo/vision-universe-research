@@ -39,14 +39,13 @@
    "role": "primary",
    "periods": 54,
    "qualificationCounts": {
-    "QUALIFIED_INTERNAL": 23,
-    "NOT_QUALIFIED_NO_REFERENCE": 4,
+    "QUALIFIED_INTERNAL": 27,
     "QUALIFIED": 27
    },
-   "qualifiedSpanFrom": "2019-09-30",
+   "qualifiedSpanFrom": "2005-12-31",
    "qualifiedSpanTo": "2026-06-30",
-   "qualifiedSpanPeriods": 27,
-   "failingPeriods": 4
+   "qualifiedSpanPeriods": 54,
+   "failingPeriods": 0
   },
   {
    "id": "PIT_SP500_EARLY",
@@ -89,15 +88,13 @@
    "role": "secondary",
    "periods": 54,
    "qualificationCounts": {
-    "QUALIFIED_INTERNAL": 23,
-    "NOT_QUALIFIED_NO_REFERENCE": 2,
-    "NOT_QUALIFIED_COVERAGE": 2,
+    "QUALIFIED_INTERNAL": 27,
     "QUALIFIED": 27
    },
-   "qualifiedSpanFrom": "2019-09-30",
+   "qualifiedSpanFrom": "2005-12-31",
    "qualifiedSpanTo": "2026-06-30",
-   "qualifiedSpanPeriods": 27,
-   "failingPeriods": 4
+   "qualifiedSpanPeriods": 54,
+   "failingPeriods": 0
   },
   {
    "id": "PIT_NDX",
@@ -134,11 +131,11 @@
   }
  ],
  "statusCounts": {
-  "OBS_CHAIN": 334810,
-  "OBS_SERIES": 2655,
-  "BOUNDED_EXIT": 11216,
-  "OBS_CROSSFUND": 2229,
-  "BOUNDED_AMBIGUOUS_CA": 1451,
+  "OBS_CHAIN": 335162,
+  "OBS_SERIES": 2648,
+  "BOUNDED_EXIT": 11032,
+  "OBS_CROSSFUND": 2067,
+  "BOUNDED_AMBIGUOUS_CA": 1452,
   "BOUNDED_EXIT_SERIES_DELISTED": 25,
   "EST_SERIES_END": 30,
   "EST_CASH": 4
@@ -153,6 +150,6 @@
   "fundSeries_DIA": "9493fb3f69b3b04e687e8a6012c6b8993e67c4e2c92eee2443b5be14c6e932de",
   "fundSeries_IWM": "e8a0c25623367955fc25ede6427328b8076017ca6d22bbfe8efdd23063a1b87b"
  },
- "reproHash": "236db4348da0fdbec18a0bd6ad52b633ab68a709a5161bd7a8bbc3ed3e78256a",
+ "reproHash": "a68b8016f5577b8bf7e7117ee9d381e903b491f18540886a1c05623ad7d245db",
  "scope": "Holdings-frequency (annual/semiannual/quarterly) PIT index membership and price returns; no weekly study, no total return, no fundamentals except via CIK; not a strategy or signal study."
 }
