@@ -107,14 +107,17 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   async function handle(request) {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return preflight(request, cfg);
-    const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === request.method);
+    // HEAD wie GET (Link-Pruefer, Suchmaschinen), ohne Inhalt.
+    const head = request.method === 'HEAD';
+    const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === (head ? 'GET' : request.method));
     if (htmlRoute) {
       const [, , handler, opts = {}] = htmlRoute;
       const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
         cookies: parseCookies(request), outCookies: []};
       try {
         if (opts.db !== false && !supabaseReady(cfg)) throw new Error('ACCOUNTS_NOT_CONFIGURED');
-        return await handler(ctx);
+        const res = await handler(ctx);
+        return head ? new Response(null, {status: res.status, headers: res.headers}) : res;
       } catch (e) {
         if (!(e instanceof HttpError)) log('error', 'PAGE_FAILED', {route: url.pathname, code: String(e.code || e.message).slice(0, 120)});
         return pages.htmlError(e);

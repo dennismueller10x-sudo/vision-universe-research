@@ -13,12 +13,13 @@
 // workers/vu-account/wrangler.toml (VU_BREVO_LIST_USERS/FREE/PRO, VU_BREVO_LIST_NEWSLETTER).
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {doiProblems, NEWSLETTER} from '../../workers/vu-account/src/brevo.mjs';
 
 export const FOLDER = 'Vision Universe App';
 export const LISTS = Object.freeze({users: 'Vision Universe App – Nutzer', free: 'Vision Universe App – Free', pro: 'Vision Universe App – Pro'});
 export const ATTRIBUTE = 'VU_TARIF';
 export const NEWSLETTER_LIST = 4;
-const TEMPLATE = 'VU | Newsletter | DE | API Double Opt In | v1';
+const TEMPLATE = NEWSLETTER.templateName;
 
 export async function setupBrevo({apiKey, apply = false, fetchImpl = fetch, apiBase = 'https://api.brevo.com', log = console.log}) {
   if (!apiKey) throw new Error('BREVO_API_KEY fehlt');
@@ -82,9 +83,12 @@ export async function setupBrevo({apiKey, apply = false, fetchImpl = fetch, apiB
   log(`Merkmal ${ATTRIBUTE}: ${report.attribute ? 'vorhanden' : 'fehlt'}`);
 
   const tpl = await call('GET', '/smtp/templates?templateStatus=true&limit=100&offset=0');
-  const t = (tpl.data?.templates || []).find(x => x.name === TEMPLATE);
-  report.template = t ? {id: t.id, doi: t.doiTemplate === true, active: t.isActive === true, link: String(t.htmlContent || '').includes('{{ params.DOIurl }}')} : null;
-  log(`DOI-Vorlage "${TEMPLATE}": ${t ? `id ${t.id}, DOI ${report.template.doi ? 'ja' : 'NEIN'}, aktiv ${report.template.active ? 'ja' : 'NEIN'}` : 'FEHLT'}`);
+  // doiTemplate liefert Brevo nur im Einzelabruf, nicht in der Liste.
+  const listed = (tpl.data?.templates || []).find(x => x.name === TEMPLATE);
+  const t = listed ? (await call('GET', `/smtp/templates/${listed.id}`)).data : null;
+  report.template = t ? {id: t.id, doi: t.doiTemplate === true, active: t.isActive === true, problems: doiProblems(t)} : null;
+  log(`DOI-Vorlage "${TEMPLATE}": ${t ? `id ${t.id}, DOI ${report.template.doi ? 'ja' : 'NEIN'}, aktiv ${report.template.active ? 'ja' : 'NEIN'}, `
+    + (report.template.problems.length ? `PROBLEME: ${report.template.problems.join(', ')}` : 'passt (Worker darf sie nutzen)') : 'FEHLT'}`);
   log(`wrangler.toml: VU_BREVO_LIST_USERS = "${report.lists.users?.id || ''}", VU_BREVO_LIST_FREE = "${report.lists.free?.id || ''}", VU_BREVO_LIST_PRO = "${report.lists.pro?.id || ''}", VU_BREVO_LIST_NEWSLETTER = "${report.newsletter?.id || ''}"`);
   return report;
 }

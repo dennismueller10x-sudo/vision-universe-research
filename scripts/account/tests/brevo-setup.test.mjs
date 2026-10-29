@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {setupBrevo, LISTS} from '../brevo-setup.mjs';
+import {NEWSLETTER} from '../../../workers/vu-account/src/brevo.mjs';
 
 function fakeBrevo({lists = [{id: 4, name: 'Newsletter', uniqueSubscribers: 135}], folders = [], attributes = []} = {}) {
   const calls = [];
@@ -16,7 +17,9 @@ function fakeBrevo({lists = [{id: 4, name: 'Newsletter', uniqueSubscribers: 135}
     if (u.pathname === '/v3/contacts/lists' && method === 'POST') { const l = {id: next++, ...JSON.parse(body)}; lists.push(l); return json(201, {id: l.id}); }
     if (u.pathname === '/v3/contacts/attributes' && method === 'GET') return json(200, {attributes});
     if (u.pathname.startsWith('/v3/contacts/attributes/normal/') && method === 'POST') { attributes.push({name: u.pathname.split('/').pop(), category: 'normal'}); return json(201); }
-    if (u.pathname === '/v3/smtp/templates') return json(200, {templates: [{id: 5, name: 'VU | Newsletter | DE | API Double Opt In | v1', doiTemplate: true, isActive: true, htmlContent: '{{ params.DOIurl }}'}]});
+    if (u.pathname === '/v3/smtp/templates') return json(200, {templates: [{id: 5, name: NEWSLETTER.templateName, isActive: true}]});
+    if (u.pathname === '/v3/smtp/templates/5') return json(200, {id: 5, name: NEWSLETTER.templateName, doiTemplate: true, isActive: true, tag: 'optin',
+      htmlContent: `<p>${NEWSLETTER.text}</p><a href="{{ params.DOIurl }}">Bestaetigen</a>`});
     return json(404, {code: 'not_found'});
   };
   return {fetchImpl, calls, lists};
@@ -28,7 +31,7 @@ test('Probelauf: nur lesen', async () => {
   const r = await setupBrevo({apiKey: 'k', fetchImpl: b.fetchImpl, log: l => lines.push(l)});
   assert.ok(b.calls.every(c => c.startsWith('GET ')), b.calls.join(','));
   assert.equal(r.newsletter.id, 4);
-  assert.deepEqual([r.template.id, r.template.doi], [5, true]);
+  assert.deepEqual([r.template.id, r.template.doi, r.template.problems], [5, true, []], 'doiTemplate aus dem Einzelabruf');
   assert.ok(lines.some(l => l.includes('[Probelauf] wuerde: Ordner')));
 });
 

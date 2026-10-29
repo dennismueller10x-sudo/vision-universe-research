@@ -63,22 +63,27 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | A9 | Google Fonts auf `/analysten/` (Übermittlung an Google ohne Einwilligung) | nur benannt, nicht geändert (fremde Welt) | Owner | **offen** |
 | A10 | Brevo-Kontaktliste (A) ohne Einwilligung: Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO, nur Service-Kommunikation | Code trennt A und B; A ausgeschaltet | Rechtsberatung | **offen** |
 | A11 | Newsletter (B): Einwilligungstext, DOI, Nachweis, Abmeldung, Tracking aus | umgesetzt; Text wortgleich mit der Landingpage (`vu-newsletter-v1`) | Rechtsberatung | umgesetzt, Prüfung offen |
-| A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt, kein gesonderter Steuerausweis (`STRIPE_TAX_MODE = "none"`) | Steuerberatung | **offen** |
-| A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Lesecheck `stripe-live-check.mjs` meldet die Werte | Owner (Dashboard) | **offen** |
+| A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt (`inclusive`); fester Satz 19 % DE vorbereitet (`tax_rate`), noch nicht angelegt; öffentlicher Checkout verlangt USt-Ausweis | Steuerberatung | **offen** |
+| A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Befund 29.10.: Firma und Kontoauszug „VISION UNIVERSE“ korrekt, kein Privatname; Support-E-Mail/-URL leer, kein Logo, keine Steuer-ID für Rechnungen | Owner (Stripe-Dashboard → Einstellungen → Unternehmensdetails, Branding, Rechnungen) | **offen** |
 | A14 | Klarna als Zahlungsart für ein 1-€-Abo (Stripe zeigt nur, was zulässig ist) | dynamische Zahlungsarten | Owner | Entscheidung offen |
 
 ## Freigabe und Umschalten auf öffentliches Pro
 
-Drei unabhängige Schritte; fehlt einer, bleibt der Live-Checkout auf Konten mit Rolle `billing_tester` beschränkt:
+Technisch vorbereitet: Der Deploy-Workflow lässt `VU_CHECKOUT_ACCESS = "public"` nur zu, wenn
+`scripts/account/check-public-checkout.mjs` alle Bedingungen bestätigt; der Worker selbst begrenzt den Live-Checkout ohne
+freigegebene Texte zusätzlich auf Tester. Der Umschalt-PR ändert deshalb nur Text und Konfiguration, keinen Code:
 
-1. **Texte freigeben** (eigener PR, nach Abnahme A1–A14): alle [[OFFEN]]/[[PRÜFEN]] in `texts.mjs` ersetzen, Fassung
-   `LEGAL_VERSION` hochzählen (z. B. `vu-recht-2026-11-…-1`), `LEGAL_STATUS = 'freigegeben'`. Ein Unit-Test verlangt, dass eine
-   freigegebene Fassung keine Marker mehr enthält.
-2. **Fassung in der Konfiguration bestätigen**: `VU_LEGAL_APPROVED = "<LEGAL_VERSION>"` in `[env.production.vars]`.
-3. **Checkout öffnen**: `VU_CHECKOUT_ACCESS = "public"` und im Deploy-Workflow
-   (`account-production-deploy.yml`, Schritt „Produktionskonfiguration prüfen“) `public` zulassen – im selben, vom Owner
-   ausdrücklich freigegebenen PR. Danach „Konten — vu-account ausrollen (Produktion)“ mit `stripe_key = false` starten
-   (zwei Freigaben). Kontrolle: `GET https://konto.visionuniverse.de/v1/health` → `checkout: "public"`, `legal: "freigegeben"`, `legalApproved: true`.
+1. **Texte freigeben** (nach Abnahme A1–A14): alle [[OFFEN]]/[[PRÜFEN]] in `workers/vu-account/src/legal/texts.mjs` ersetzen,
+   `LEGAL_VERSION` ohne „entwurf“ (z. B. `vu-recht-2026-11-10-1`), `LEGAL_STATUS = 'freigegeben'`. Das Entwurfsbanner entfällt
+   dann automatisch.
+2. **Fassung bestätigen**: `VU_LEGAL_APPROVED = "<LEGAL_VERSION>"` in `[env.production.vars]`.
+3. **Umsatzsteuer ausweisen**: `STRIPE_TAX_MODE = "txr_…"` (Lauf „Konten — Stripe Live einrichten“ mit `tax_rate = true`)
+   oder `"automatic"` ([STEUER.md](STEUER.md)).
+4. **Checkout öffnen**: `VU_CHECKOUT_ACCESS = "public"`.
+
+Alle vier Punkte in einem PR, den der Owner ausdrücklich freigibt; danach „Konten — vu-account ausrollen (Produktion)“ mit
+`stripe_key = false` (zwei Freigaben). Kontrolle: `GET /v1/health` → `checkout: "public"`, `legalApproved: true`; `/preise/`
+zeigt den Hinweis „interner Testpreis“ nicht mehr.
 
 Zurück: `VU_CHECKOUT_ACCESS = "testers"` (eigener PR + Deploy) – bestehende Abos laufen bei Stripe weiter.
 Bestehende Free-Konten werden nie automatisch kostenpflichtig: ein Abo entsteht nur durch einen eigenen Checkout mit

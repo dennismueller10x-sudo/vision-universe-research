@@ -52,6 +52,24 @@ Segmente bei Brevo (ergeben sich aus Listen und Merkmal, keine eigenen Objekte n
 registriert = Liste „Nutzer“; Newsletter bestätigt = Liste 4; Free/Pro = Listen bzw. `VU_TARIF`.
 Für Werbung nur Liste 4 verwenden – nie eine Schnittmenge mit A ohne Liste 4.
 
+## Stand Produktion (29.10.2026, Lauf „Konten — Produktivstart einspielen“ #1)
+
+- Angelegt: Ordner „Vision Universe App“, Listen **11** Nutzer, **12** Free, **13** Pro, Merkmal `VU_TARIF`; eingetragen in
+  `[env.production.vars]`. Noch keine Kontakte in diesen Listen (Abgleich aus).
+- Liste 4 „VU | Newsletter“: 137 Kontakte. Von 1 bestätigten Konto ist 1 schon Brevo-Kontakt und in Liste 4 (über die
+  Landingpage angemeldet), 0 gesperrt.
+- DOI-Vorlage (id 8): Der erste Lauf meldete `doiTemplate: false`. **Ursache lag im Prüfskript, nicht in Brevo:** Brevo liefert
+  `doiTemplate` nur beim Einzelabruf `GET /v3/smtp/templates/{id}`, nicht in der Vorlagenliste. Worker und
+  `brevo-setup.mjs` prüfen seit PR „Produktivstart vorbereiten“ wie die Landingpage über den Einzelabruf. Die Vorlage gilt als
+  passend, wenn alle Bedingungen erfüllt sind (`doiProblems` in `src/brevo.mjs`):
+  Name exakt „VU | Newsletter | DE | API Double Opt In | v1“, aktiv, `doiTemplate: true`, Tag `optin`, Link `{{ params.DOIurl }}`,
+  **kein** alter Platzhalter `{{ doubleoptin }}`, Einwilligungstext `vu-newsletter-v1` wortgleich im Inhalt.
+  Der nächste Brevo-Lauf gibt je Bedingung „passt“ oder die konkrete Abweichung aus (z. B. `KEINE_DOI_VORLAGE`,
+  `ALTER_DOI_PLATZHALTER`, `EINWILLIGUNGSTEXT`). Erst bei „passt“ `VU_NEWSLETTER = "true"`.
+  Die Landingpage verschickt mit genau dieser Prüfung bereits DOI-Mails (Liste 4 wächst), die Vorlage passt also sehr
+  wahrscheinlich. Meldet der Lauf dennoch eine Abweichung, wird nur das genannte Merkmal in Brevo korrigiert
+  (*Transaktional → Vorlagen*, Vorlage 8); Wortlaut und Name bleiben unverändert, weil die Landingpage sie ebenfalls prüft.
+
 ## Einrichten
 
 1. Probelauf: Workflow „Konten — Brevo einrichten“ (`scripts/account/brevo-setup.mjs`) ohne Anwenden. Meldet Ordner, Listen,

@@ -45,7 +45,14 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
     const body = ['GET', 'DELETE'].includes(req.method) ? null : await req.json().catch(() => ({}));
     brevo.calls.push(`${req.method} ${u.pathname}`);
     const m = u.pathname.match(/^\/v3\/contacts\/([^/]+)$/);
-    if (u.pathname === '/v3/smtp/templates' && req.method === 'GET') return reply(200, {templates: brevo.templates, count: brevo.templates.length});
+    // Wie Brevo: doiTemplate steht nur im Einzelabruf, nicht in der Liste.
+    if (u.pathname === '/v3/smtp/templates' && req.method === 'GET')
+      return reply(200, {templates: brevo.templates.map(({doiTemplate, ...t}) => t), count: brevo.templates.length});
+    const tm = u.pathname.match(/^\/v3\/smtp\/templates\/(\d+)$/);
+    if (tm && req.method === 'GET') {
+      const t = brevo.templates.find(x => x.id === Number(tm[1]));
+      return t ? reply(200, t) : reply(404, {code: 'document_not_found'});
+    }
     if (u.pathname === '/v3/contacts' && req.method === 'POST') {
       const prior = brevo.contacts.get(body.email);
       if (prior && !body.updateEnabled) return reply(400, {code: 'duplicate_parameter'});
