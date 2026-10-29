@@ -11,13 +11,14 @@ const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '../../../..');
 const args = process.argv.slice(2);
 const arg = k => { const i = args.indexOf(k); return i < 0 ? undefined : args[i + 1]; };
-const V = arg('--version') || '1.0.0';
+const V = arg('--version') || '1.0.1';
 const D = 'docs/quant-recovery/v12/largecap';
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
 const clip = (s, n = 300) => String(s).slice(0, n);
 const read = p => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
 const protocolFile = arg('--protocol') || D + '/protocol-1.0.0.json';
 const protocolSha256 = sha(fs.readFileSync(path.join(root, protocolFile)));
+const amendment = D + '/protocol-amendment-1.0.1.json', amendmentSha256 = sha(fs.readFileSync(path.join(root, amendment)));
 const v10ProtocolSha256 = sha(fs.readFileSync(path.join(root, 'docs/quant-recovery/v10/population/protocol-1.0.0.json')));
 
 function record(c) {
@@ -37,7 +38,7 @@ function record(c) {
   if (byKey) { r.selectedRowKey = c.selectedRowKey; r.masterRowKeys = c.masterRowKeys; } else r.masterRowSet = c.masterRowSet;
   if (restrict) {
     const ev = c.caEvents.filter(e => !['GENUINE_MOVE', 'SPINOFF_DISTRIBUTION'].includes(e.verdict)).sort((a, b) => a.week < b.week ? -1 : 1).at(-1);
-    r.caEvent = { week: ev.week, prevWeek: ev.prevWeek, verdict: ev.verdict, detail: ev.detail ?? null, evidence: D + '/ca-verdicts-' + V + '.json' };
+    r.caEvent = { week: ev.week, prevWeek: ev.prevWeek, verdict: ev.verdict, detail: ev.detail ?? null, evidence: D + '/ca-verdicts-1.0.0.json' };
     r.symbolStart = { accession: c.symbolStartDocument.accession, form: c.symbolStartDocument.form, filingDate: c.symbolStartDocument.filingDate, kind: c.symbolStartDocument.kind, S0: c.S0.S0 };
   }
   Object.assign(r, { mic: cov.mic, instrumentClass: 'COMMON_STOCK', coverClassTitle: cov.row.Security12bTitle, filerType: c.filerType, currency: 'USD', activeStatus: 'ACTIVE_SEC_CONFIRMED',
@@ -49,7 +50,7 @@ function record(c) {
 }
 const cases = [...read(D + '/restrict-cases-' + V + '.json').cases, ...read(D + '/identity-cases-' + V + '.json').cases];
 const records = cases.filter(c => c.decision === 'QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER').map(record).sort((a, b) => a.securityId < b.securityId ? -1 : 1);
-const ext = { schemaVersion: 'research-identity-evidence-1.2.0', protocol: protocolFile, protocolSha256, v10ProtocolSha256,
+const ext = { schemaVersion: 'research-identity-evidence-1.2.0', protocol: protocolFile, protocolSha256, amendment, amendmentSha256, v10ProtocolSha256,
   scope: 'V12 LARGECAP bindings (OFFLINE research only): SELECT_EXISTING_ROW / SELECT_EXISTING_ROW_BY_KEY for ambiguous baseline ids and RESTRICT_SINGLE_ROW (history only after an unresolved corporate action) for single-row listings, SEC same-day price + current cover evidence only. Applied only with createResearchLoader option identityEvidenceProtocolV12 (requires identityEvidenceProtocolV10); replaces a V10 record of the same id only then. Non-enumerable: JSON.stringify of this registry and every existing registryHash are unchanged.',
   builder: 'scripts/quant/v12/largecap/build-identity-v12.cjs', evidence: [D + '/restrict-cases-' + V + '.json', D + '/identity-cases-' + V + '.json'], records };
 const file = path.join(root, 'quant/engines/research-identity-evidence.cjs');

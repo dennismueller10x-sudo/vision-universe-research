@@ -28,6 +28,11 @@ import b1_identity as B1  # noqa: E402
 PROTOCOL = ROOT / 'docs/quant-recovery/v12/largecap/protocol-1.0.0.json'
 P12 = json.loads(PROTOCOL.read_text())
 PROTOCOL_SHA = hashlib.sha256(PROTOCOL.read_bytes()).hexdigest()
+AMENDMENT = ROOT / 'docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json'
+AMENDMENT_SHA = L.sha256_file(AMENDMENT) if AMENDMENT.exists() else None
+if AMENDMENT_SHA:
+    assert json.loads(AMENDMENT.read_text())['amends']['sha256'] == PROTOCOL_SHA
+START_CAP = None if AMENDMENT_SHA else 16  # amendment 1.0.1: no cap on the symbol start search
 V10_PROTOCOL_SHA = L.sha256_file(ROOT / 'docs/quant-recovery/v10/population/protocol-1.0.0.json')
 assert V10_PROTOCOL_SHA == P12['inputs']['identityProtocol']['sha256'], 'V10 identity protocol changed'
 ADMISSIBLE = {'GENUINE_MOVE', 'SPINOFF_DISTRIBUTION'}
@@ -141,11 +146,15 @@ def apply_l5(out, rows):
 # ---- part RESTRICT: symbol start document after the last non-admissible event
 def symbol_start(cik, filings, ticker, after_week):
     tried = []
-    periodic = sorted([f for f in filings if f['form'] in ('10-K', '10-Q') and f['filingDate'] > after_week], key=lambda f: (f['filingDate'], f['accessionNumber']))[:16]
+    periodic = sorted([f for f in filings if f['form'] in ('10-K', '10-Q') and f['filingDate'] > after_week], key=lambda f: (f['filingDate'], f['accessionNumber']))[:START_CAP]
     for f in periodic:
         name = f.get('primaryDocument') or (f['accessionNumber'] + '.txt')
         url = sec_lib.doc_url(cik, f['accessionNumber'], name)
-        body, meta = L.get(url, prefix=B1.ANNUAL_PREFIX)
+        try:
+            body, meta = L.get(url, prefix=B1.ANNUAL_PREFIX)
+        except Exception as e:  # noqa: BLE001  fetch failure (e.g. 404 of a legacy document name): logged, never evidence
+            tried.append({'accession': f['accessionNumber'], 'form': f['form'], 'filingDate': f['filingDate'], 'fetchError': str(e)[:120]})
+            continue
         classes, _ = sec_lib.cover_classes(body)
         row = B1.sym_row(classes, ticker)
         rec = {'accession': f['accessionNumber'], 'form': f['form'], 'filingDate': f['filingDate'], 'url': url, 'sha256': meta['sha256'], 'sha256Normalized': meta['sha256Normalized'],
@@ -228,7 +237,7 @@ def main():
         o['part'] = 'IDENTITY'
         ident.append(o)
         print('IDENTITY', sid, o['decision'], o['reasons'], o.get('validFrom'), len(o.get('anchors', [])), o.get('l4'), seclib.STATS, file=sys.stderr, flush=True)
-    meta = {'protocol': 'docs/quant-recovery/v12/largecap/protocol-1.0.0.json', 'protocolSha256': PROTOCOL_SHA, 'v10ProtocolSha256': V10_PROTOCOL_SHA,
+    meta = {'protocol': 'docs/quant-recovery/v12/largecap/protocol-1.0.0.json', 'protocolSha256': PROTOCOL_SHA, 'amendment': 'docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json' if AMENDMENT_SHA else None, 'amendmentSha256': AMENDMENT_SHA, 'v10ProtocolSha256': V10_PROTOCOL_SHA,
             'generatedAt': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'codeSha256': {n: L.sha256_file(HERE / n) for n in ('b1run.py', 'seclib.py')} | {'b1_identity.py': L.sha256_file(ROOT / 'scripts/quant/v10/population/b1_identity.py'), 'v10lib.py': L.sha256_file(ROOT / 'scripts/quant/v10/population/v10lib.py')},
             'inputs': {'masterSha256': L.sha256_file(L.MASTER), 'caFactsSha256': L.sha256_file(a.ca_facts)}, 'productionApproved': False, 'certificationStatus': 'NOT_CERTIFIED'}

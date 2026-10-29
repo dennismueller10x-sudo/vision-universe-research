@@ -10494,3 +10494,1201 @@ module.exports = {
     ]
   }
 };
+// V12 LARGECAP extension `v12` (research-identity-evidence-1.2.0): written by scripts/quant/v12/largecap/build-identity-v12.cjs. Non-enumerable so that
+// JSON.stringify(module.exports) - the 1.0.0 records, the V10 extension and every existing registryHash - stays byte-identical.
+Object.defineProperty(module.exports, 'v12', { enumerable: false, value: {
+  "schemaVersion": "research-identity-evidence-1.2.0",
+  "protocol": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+  "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+  "amendment": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+  "amendmentSha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58",
+  "v10ProtocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+  "scope": "V12 LARGECAP bindings (OFFLINE research only): SELECT_EXISTING_ROW / SELECT_EXISTING_ROW_BY_KEY for ambiguous baseline ids and RESTRICT_SINGLE_ROW (history only after an unresolved corporate action) for single-row listings, SEC same-day price + current cover evidence only. Applied only with createResearchLoader option identityEvidenceProtocolV12 (requires identityEvidenceProtocolV10); replaces a V10 record of the same id only then. Non-enumerable: JSON.stringify of this registry and every existing registryHash are unchanged.",
+  "builder": "scripts/quant/v12/largecap/build-identity-v12.cjs",
+  "evidence": [
+    "docs/quant-recovery/v12/largecap/restrict-cases-1.0.1.json",
+    "docs/quant-recovery/v12/largecap/identity-cases-1.0.1.json"
+  ],
+  "records": [
+    {
+      "securityId": "ref_DOW",
+      "ticker": "DOW",
+      "cik": "0001751788",
+      "issuer": "DOW INC.",
+      "masterRowAction": "SELECT_EXISTING_ROW",
+      "selectedCanonicalId": "tiingo:NYSE:DOW:2019-03-20",
+      "masterRowSet": [
+        "tiingo:NYSE:DOW:1972-06-01",
+        "tiingo:NYSE:DOW:2019-03-20"
+      ],
+      "mic": "XNYS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Common Stock, par value $0.01 per share",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2024-07-12",
+      "validTo": null,
+      "intervalBasis": [
+        "FIRST_IXBRL_COVER_WITH_TICKER",
+        "FIRST_ANCHOR_730D"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2024-07-12",
+        "checkedTo": "2026-10-23",
+        "bars": 120,
+        "pointsSha256": "0222736c1ce894e35d285e178f9db0a5be404138b5951eb393b27fa1e5f88700"
+      },
+      "lastConfirmedCover": {
+        "accession": "0001751788-26-000160",
+        "filingDate": "2026-10-23",
+        "sha256": "c703ec6a6531f1602315a457c5400acd65ef9d871fcba4762a27b18d11702b8a"
+      },
+      "anchorGaps": {
+        "matchDates": 1,
+        "firstMatch": "2026-07-09",
+        "lastMatch": "2026-07-09",
+        "maxGapDays": 106
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0001751788-26-000160",
+          "url": "https://www.sec.gov/Archives/edgar/data/1751788/000175178826000160/dow-20260930.htm",
+          "sha256": "c703ec6a6531f1602315a457c5400acd65ef9d871fcba4762a27b18d11702b8a",
+          "sha256Normalized": "c703ec6a6531f1602315a457c5400acd65ef9d871fcba4762a27b18d11702b8a",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "10-Q 2026-10-23 cover: DOW / Common Stock, par value $0.01 per share / New York Stock Exchange"
+        },
+        {
+          "role": "IXBRL_COVER_FIRST",
+          "accession": "0001751788-19-000031",
+          "url": "https://www.sec.gov/Archives/edgar/data/1751788/000175178819000031/dowinc-q3x9302019.htm",
+          "sha256": "db481033a9360eec23d1a52963aa21cbf0a6f82587de10032fb581e4869e32c4",
+          "sha256Normalized": "0e8e6ccddbfce8f6ee4dd6640f90da8bbe041a22bfc2238938a65f66336450cf",
+          "bytesRead": 4616733,
+          "complete": true,
+          "claim": "DOW / Common Stock, par value $0.01 per share / NYSE"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-26-300936",
+          "url": "https://www.sec.gov/Archives/edgar/data/1751788/000119312526300936/d154928d424b5.htm",
+          "sha256": "c5528e1b61ab05c1d92c7a9c14c4b3e8749fd13e753f04e109e9f701ddd1af61",
+          "sha256Normalized": "c5528e1b61ab05c1d92c7a9c14c4b3e8749fd13e753f04e109e9f701ddd1af61",
+          "bytesRead": 572601,
+          "complete": true,
+          "claim": "424B5 2026-07-10: closing price $28.5 on 2026-07-09"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2026-07-09",
+          "rawPrice": 28.5,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2026-07-09",
+            28.5
+          ],
+          "basis": "DAILY_CROSSCHECKED",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-26-300936",
+          "sha256": "c5528e1b61ab05c1d92c7a9c14c4b3e8749fd13e753f04e109e9f701ddd1af61",
+          "quote": "mmon Stock is listed on the New York Stock Exchange under the symbol “DOW.” The last reported closing price of our Common Stock on the New York Stock Exchange on July 9, 2026 was $28.50 per share. Investin"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_GOOGL",
+      "ticker": "GOOGL",
+      "cik": "0001652044",
+      "issuer": "Alphabet Inc.",
+      "masterRowAction": "RESTRICT_SINGLE_ROW",
+      "selectedCanonicalId": "tiingo:NASDAQ:GOOGL:2004-08-19",
+      "masterRowSet": [
+        "tiingo:NASDAQ:GOOGL:2004-08-19"
+      ],
+      "caEvent": {
+        "week": "2014-04-04",
+        "prevWeek": "2014-03-28",
+        "verdict": "INSUFFICIENT_FILINGS",
+        "detail": "NO_BEFORE_BRACKET",
+        "evidence": "docs/quant-recovery/v12/largecap/ca-verdicts-1.0.0.json"
+      },
+      "symbolStart": {
+        "accession": "0001652044-16-000012",
+        "form": "10-K",
+        "filingDate": "2016-02-11",
+        "kind": "FULLTEXT_TICKER_STATEMENT",
+        "S0": "2016-02-12"
+      },
+      "mic": "XNAS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Class A Common Stock, $0.001 par value",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2016-02-12",
+      "validTo": null,
+      "intervalBasis": [
+        "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2016-02-12",
+        "checkedTo": "2026-10-23",
+        "bars": 559,
+        "pointsSha256": "b0abd8873f5d3fce3736961f728fe5599dd650c0b493f2bbff57b0244201f908"
+      },
+      "lastConfirmedCover": {
+        "accession": "0001652044-26-000071",
+        "filingDate": "2026-07-23",
+        "sha256": "018effb8564a3798040ab3cb954314b5ccee7180f280597d4e5a7cff7d99f717"
+      },
+      "anchorGaps": {
+        "matchDates": 9,
+        "firstMatch": "2016-12-31",
+        "lastMatch": "2026-02-04",
+        "maxGapDays": 1096
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0001652044-26-000071",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+          "sha256": "018effb8564a3798040ab3cb954314b5ccee7180f280597d4e5a7cff7d99f717",
+          "sha256Normalized": "fecfbc2683f630380b17937278ce3745eca150eb90e21a945fd6b78fe19728c7",
+          "bytesRead": 2464245,
+          "complete": true,
+          "claim": "10-Q 2026-07-23 cover: GOOGL / Class A Common Stock, $0.001 par value / Nasdaq Stock Market LLC"
+        },
+        {
+          "role": "FULLTEXT_TICKER_STATEMENT",
+          "accession": "0001652044-16-000012",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204416000012/goog10-k2015.htm",
+          "sha256": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+          "sha256Normalized": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "on stock has been listed on the Nasdaq Global Select Market under the symbol “GOOG” since August 19, 2004 and under the symbol \"GOOGL\" since April 3, 2014. Prior to August 19, 2004, there was no public market for our stock. The following table sets forth for the indicated periods"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-17-000170",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817917000170/lgoog2017_def14a.htm",
+          "sha256": "7d01fbf5cfc3286617720dd8c6b8e5e102ab8ca27232319e0513104a544743f2",
+          "sha256Normalized": "7d01fbf5cfc3286617720dd8c6b8e5e102ab8ca27232319e0513104a544743f2",
+          "bytesRead": 955168,
+          "complete": true,
+          "claim": "DEF 14A 2017-04-28: closing price $792.45 on 2016-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-18-000222",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817918000222/lgoog2018-def14a.htm",
+          "sha256": "4c76c042a8b0778f9a85e728abfd2be9d49244410d7f615dbd3ac808f82a86e5",
+          "sha256Normalized": "4c76c042a8b0778f9a85e728abfd2be9d49244410d7f615dbd3ac808f82a86e5",
+          "bytesRead": 1180231,
+          "complete": true,
+          "claim": "DEF 14A 2018-04-27: closing price $1053.4 on 2017-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-21-000256",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817921000256/lgoog2021_def14a.htm",
+          "sha256": "42805ed0a2b3b6ae3a3f222ac86cbdff0ad4f80cbe03e014da206cc2e812cff8",
+          "sha256Normalized": "42805ed0a2b3b6ae3a3f222ac86cbdff0ad4f80cbe03e014da206cc2e812cff8",
+          "bytesRead": 1051568,
+          "complete": true,
+          "claim": "DEF 14A 2021-04-23: closing price $1751.88 on 2020-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-22-000262",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817922000262/lgoog2022_def14a.htm",
+          "sha256": "be9e9e5d7b161c0e13c094266dda8eacd1f0c0d81b5d0a7efb0a75d55ed4ec29",
+          "sha256Normalized": "be9e9e5d7b161c0e13c094266dda8eacd1f0c0d81b5d0a7efb0a75d55ed4ec29",
+          "bytesRead": 1599307,
+          "complete": true,
+          "claim": "DEF 14A 2022-04-22: closing price $2893.59 on 2021-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-23-000736",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817923000736/lgoog2023_def14a.htm",
+          "sha256": "6ccaff4efb4a0c69cf1a993d41aedf5c296b39b9364b839e143ccec9aaa3c993",
+          "sha256Normalized": "7d2d492e6b8cf411209469e82399c59aef4ac0e25c8110db0d7a56bea9177ef1",
+          "bytesRead": 1574754,
+          "complete": true,
+          "claim": "DEF 14A 2023-04-21: closing price $88.73 on 2022-12-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-24-000612",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817924000612/lgoog2024_def14a.htm",
+          "sha256": "c5444c5428a37ed38ab77af6a9ab3495759af9bfd3e9740cedf39eaf137ab685",
+          "sha256Normalized": "ac378061308e9ef3f0075620f9f379119e2e1011142df6139b518d86ac9032af",
+          "bytesRead": 1423665,
+          "complete": true,
+          "claim": "DEF 14A 2024-04-26: closing price $140.93 on 2023-12-29"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001308179-26-000342",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817926000342/goog-20260424.htm",
+          "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+          "sha256Normalized": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2026-04-24: closing price $313.8 on 2025-12-31"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2016-12-31",
+          "rawPrice": 792.45,
+          "laterSplitProduct": 20,
+          "seriesBar": [
+            "2016-12-30",
+            39.62
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 0.999937,
+          "accession": "0001308179-17-000170",
+          "sha256": "7d01fbf5cfc3286617720dd8c6b8e5e102ab8ca27232319e0513104a544743f2",
+          "quote": " unvested GSUs was calculated by multiplying the number of unvested GSUs by the closing price of our Class A common stock or Class C capital stock on December 31, 2016, which were $792.45 per share and $771."
+        },
+        {
+          "date": "2017-12-31",
+          "rawPrice": 1053.4,
+          "laterSplitProduct": 20,
+          "seriesBar": [
+            "2017-12-29",
+            52.67
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001308179-18-000222",
+          "sha256": "4c76c042a8b0778f9a85e728abfd2be9d49244410d7f615dbd3ac808f82a86e5",
+          "quote": " unvested GSUs was calculated by multiplying the number of unvested GSUs by the closing price of our Class A common stock or Class C capital stock on December 31, 2017, which were $1,053.40 per share and $1,04"
+        },
+        {
+          "date": "2020-12-31",
+          "rawPrice": 1751.88,
+          "laterSplitProduct": 20,
+          "seriesBar": [
+            "2020-12-31",
+            87.63
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1.000411,
+          "accession": "0001308179-21-000256",
+          "sha256": "42805ed0a2b3b6ae3a3f222ac86cbdff0ad4f80cbe03e014da206cc2e812cff8",
+          "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of our Class C capital stock on December 31, 2020, which was $1,751.88 per share. (4) The "
+        },
+        {
+          "date": "2021-12-31",
+          "rawPrice": 2893.59,
+          "laterSplitProduct": 20,
+          "seriesBar": [
+            "2021-12-31",
+            144.85
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1.001178,
+          "accession": "0001308179-22-000262",
+          "sha256": "be9e9e5d7b161c0e13c094266dda8eacd1f0c0d81b5d0a7efb0a75d55ed4ec29",
+          "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 31, 2021, which was $2,893.59 per share. (4) The "
+        },
+        {
+          "date": "2022-12-30",
+          "rawPrice": 88.73,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2022-12-30",
+            88.23
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 0.994365,
+          "accession": "0001308179-23-000736",
+          "sha256": "6ccaff4efb4a0c69cf1a993d41aedf5c296b39b9364b839e143ccec9aaa3c993",
+          "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 30, 2022, which was $88.73 per share. (2) The "
+        },
+        {
+          "date": "2023-12-29",
+          "rawPrice": 140.93,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2023-12-29",
+            139.69
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 0.991201,
+          "accession": "0001308179-24-000612",
+          "sha256": "c5444c5428a37ed38ab77af6a9ab3495759af9bfd3e9740cedf39eaf137ab685",
+          "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Class C capital stock on December 29, 2023, which was $140.93 per share. (2) The "
+        },
+        {
+          "date": "2025-12-31",
+          "rawPrice": 313.8,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2025-12-31",
+            313
+          ],
+          "basis": "DAILY_CROSSCHECKED",
+          "ratioSeriesToSource": 0.997451,
+          "accession": "0001308179-26-000342",
+          "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+          "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 31, 2025, which was $313.80 per share. (2) The "
+        },
+        {
+          "date": "2026-01-12",
+          "rawPrice": 332.73,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2026-01-12",
+            331.86
+          ],
+          "basis": "DAILY_CROSSCHECKED",
+          "ratioSeriesToSource": 0.997385,
+          "accession": "0001308179-26-000342",
+          "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+          "quote": "or 2023 PSUs was calculated by multiplying 200% of the target PSU awards by the closing price of Alphabet’s Class C capital stock on January 12, 2026 (the business day immediately prior to vesting), which was $332.73 per share. Addition"
+        },
+        {
+          "date": "2026-02-04",
+          "rawPrice": 333.34,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2026-02-04",
+            333.04
+          ],
+          "basis": "DAILY_CROSSCHECKED",
+          "ratioSeriesToSource": 0.9991,
+          "accession": "0001308179-26-000342",
+          "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+          "quote": "ranche B PSU was calculated by multiplying 200% of the target PSU awards by the closing price of Alphabet's Class C capital stock on February 4, 2026 (the business day immediately prior to vesting), which was $333.34 per share. Upon ter"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_IEX",
+      "ticker": "IEX",
+      "cik": "0000832101",
+      "issuer": "IDEX CORP /DE/",
+      "masterRowAction": "RESTRICT_SINGLE_ROW",
+      "selectedCanonicalId": "tiingo:NYSE:IEX:1989-06-30",
+      "masterRowSet": [
+        "tiingo:NYSE:IEX:1989-06-30"
+      ],
+      "caEvent": {
+        "week": "1994-12-09",
+        "prevWeek": "1994-12-02",
+        "verdict": "INSUFFICIENT_FILINGS",
+        "detail": "NO_BEFORE_BRACKET",
+        "evidence": "docs/quant-recovery/v12/largecap/ca-verdicts-1.0.0.json"
+      },
+      "symbolStart": {
+        "accession": "0000832101-19-000005",
+        "form": "10-K",
+        "filingDate": "2019-02-28",
+        "kind": "FULLTEXT_TICKER_STATEMENT",
+        "S0": "2019-03-01"
+      },
+      "mic": "XNYS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Common Stock, par value $0.01 per share",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2019-03-01",
+      "validTo": null,
+      "intervalBasis": [
+        "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2019-03-01",
+        "checkedTo": "2026-10-23",
+        "bars": 400,
+        "pointsSha256": "8e8a3eb27a97ddd313f3fff5f8c4ffc339447f22b30c3fab87963c0e195c4114"
+      },
+      "lastConfirmedCover": {
+        "accession": "0000832101-26-000029",
+        "filingDate": "2026-10-28",
+        "sha256": "d60d8b73c8c7d8a21fcd9559f0c27beadb43712284ec44a7f8d7f92ac0d6a1b4"
+      },
+      "anchorGaps": {
+        "matchDates": 4,
+        "firstMatch": "2020-12-31",
+        "lastMatch": "2023-12-29",
+        "maxGapDays": 1034
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0000832101-26-000029",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000083210126000029/iex-20260930.htm",
+          "sha256": "d60d8b73c8c7d8a21fcd9559f0c27beadb43712284ec44a7f8d7f92ac0d6a1b4",
+          "sha256Normalized": "70892c48bd332e4ee55897843feb8bbc2a1ac62d399c26b844fe2f81262a1d20",
+          "bytesRead": 2042204,
+          "complete": true,
+          "claim": "10-Q 2026-10-28 cover: IEX / Common Stock, par value $0.01 per share / New York Stock Exchange"
+        },
+        {
+          "role": "FULLTEXT_TICKER_STATEMENT",
+          "accession": "0000832101-19-000005",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000083210119000005/iex-20181231x10k.htm",
+          "sha256": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+          "sha256Normalized": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "s and Issuer Purchases of Equity Securities. The Company’s common stock trades on the New York Stock Exchange under the symbol “IEX”. As of February 15, 2019 , there were approximately 5,151 stockholders of record of our common stock and there were 75,792,814 shares outstanding. "
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-21-090424",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312521090424/d104944ddef14a.htm",
+          "sha256": "f0a8228e1f086f7db4f319ff7ffeff2e3dd31de7a3ef4a3e98ee1853e784eaea",
+          "sha256Normalized": "f0a8228e1f086f7db4f319ff7ffeff2e3dd31de7a3ef4a3e98ee1853e784eaea",
+          "bytesRead": 1335906,
+          "complete": true,
+          "claim": "DEF 14A 2021-03-23: closing price $199.2 on 2020-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-22-082200",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312522082200/d221968ddef14a.htm",
+          "sha256": "2dade33c7591d16854825db73b7bbb478da5a03c87a5302fda180171883d1624",
+          "sha256Normalized": "2dade33c7591d16854825db73b7bbb478da5a03c87a5302fda180171883d1624",
+          "bytesRead": 1289361,
+          "complete": true,
+          "claim": "DEF 14A 2022-03-23: closing price $236.32 on 2021-12-31"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-23-090402",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312523090402/d389379ddef14a.htm",
+          "sha256": "d7288129b05ecf3520013f152759566816c0de9b2d6125e03729ab89735b2990",
+          "sha256Normalized": "d85f39c989b3ecbc644398606d99f9faed7dd5cdd368c610b6c3670022e9176f",
+          "bytesRead": 1602418,
+          "complete": true,
+          "claim": "DEF 14A 2023-04-04: closing price $228.33 on 2022-12-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-24-077229",
+          "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312524077229/d784515ddef14a.htm",
+          "sha256": "245718149f908d1546f1238dbdeb9e97c20072cae308f5108d6db4a7736b76f8",
+          "sha256Normalized": "f1d4c20f5da71ae1b47b7aa8f118db6967926b236362e07ce647eed4e3a66d13",
+          "bytesRead": 1901740,
+          "complete": true,
+          "claim": "DEF 14A 2024-03-26: closing price $217.11 on 2023-12-29"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2020-12-31",
+          "rawPrice": 199.2,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2020-12-31",
+            199.2
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-21-090424",
+          "sha256": "f0a8228e1f086f7db4f319ff7ffeff2e3dd31de7a3ef4a3e98ee1853e784eaea",
+          "quote": "d restricted stock, and exercise of all accelerated vested options based on the closing market price of $199.20 per share of Common Stock on December 31, 2020; • accelerated vest"
+        },
+        {
+          "date": "2021-12-31",
+          "rawPrice": 236.32,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2021-12-31",
+            236.32
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-22-082200",
+          "sha256": "2dade33c7591d16854825db73b7bbb478da5a03c87a5302fda180171883d1624",
+          "quote": "3/1/2022 02/21/2020 310 173.35 310 73,259 2/21/2023 (3) Determined based on the closing price of the Company’s Common Stock on December 31, 2021 of $236.32. (4) Represents the"
+        },
+        {
+          "date": "2022-12-30",
+          "rawPrice": 228.33,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2022-12-30",
+            228.33
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-23-090402",
+          "sha256": "d7288129b05ecf3520013f152759566816c0de9b2d6125e03729ab89735b2990",
+          "quote": "Anderson 02/21/2020 305 173.35 305 69,641 2/21/2023 (3) Determined based on the closing price of the Company’s Common Stock on December 30, 2022, of $228.33. (4) Represents the"
+        },
+        {
+          "date": "2023-12-29",
+          "rawPrice": 217.11,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2023-12-29",
+            217.11
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-24-077229",
+          "sha256": "245718149f908d1546f1238dbdeb9e97c20072cae308f5108d6db4a7736b76f8",
+          "quote": "/25/2021 08/29/2023 995 2,200 08/25/2024 08/29/2026 (3) Determined based on the closing price of the Company’s Common Stock on December 29, 2023, of $217.11. (4) Represents the"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_JCI",
+      "ticker": "JCI",
+      "cik": "0000833444",
+      "issuer": "Johnson Controls International plc",
+      "masterRowAction": "RESTRICT_SINGLE_ROW",
+      "selectedCanonicalId": "tiingo:NYSE:JCI:1985-03-27",
+      "masterRowSet": [
+        "tiingo:NYSE:JCI:1985-03-27"
+      ],
+      "caEvent": {
+        "week": "2012-10-05",
+        "prevWeek": "2012-09-28",
+        "verdict": "IDENTITY_UNVERIFIED",
+        "detail": "IDENTITY_TICKER_NOT_NAMED",
+        "evidence": "docs/quant-recovery/v12/largecap/ca-verdicts-1.0.0.json"
+      },
+      "symbolStart": {
+        "accession": "0000833444-16-000216",
+        "form": "10-K",
+        "filingDate": "2016-11-23",
+        "kind": "FULLTEXT_TICKER_STATEMENT",
+        "S0": "2016-11-25"
+      },
+      "mic": "XNYS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Ordinary Shares, Par Value $0.01",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2016-12-30",
+      "validTo": null,
+      "intervalBasis": [
+        "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+        "VENUE_TRANSFER_UNANCHORED"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2016-12-30",
+        "checkedTo": "2026-10-23",
+        "bars": 513,
+        "pointsSha256": "c45f16f547dbf1be9da8da19de5f051e31fcd9916ec34fc354b43a7ed841c6de"
+      },
+      "lastConfirmedCover": {
+        "accession": "0000833444-26-000087",
+        "filingDate": "2026-07-29",
+        "sha256": "5d1ff3700ba1586427f3d74af7531be095f2c26b9cb94dc820c6ef5a85d29c30"
+      },
+      "anchorGaps": {
+        "matchDates": 5,
+        "firstMatch": "2016-12-30",
+        "lastMatch": "2023-09-30",
+        "maxGapDays": 1463
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0000833444-26-000087",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000083344426000087/jci-20260630.htm",
+          "sha256": "5d1ff3700ba1586427f3d74af7531be095f2c26b9cb94dc820c6ef5a85d29c30",
+          "sha256Normalized": "60306dc50dec390b044cbaeac65c895d8f5442c4acd04bf157381c5dc288b350",
+          "bytesRead": 1498878,
+          "complete": true,
+          "claim": "10-Q 2026-07-29 cover: JCI / Ordinary Shares, Par Value $0.01 / New York Stock Exchange"
+        },
+        {
+          "role": "FULLTEXT_TICKER_STATEMENT",
+          "accession": "0000833444-16-000216",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000083344416000216/jciplc201610-k.htm",
+          "sha256": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+          "sha256Normalized": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "ES OF EQUITY SECURITIES The shares of the Company’s ordinary shares are traded on the New York Stock Exchange under the symbol \"JCI.\" Title of Class Number of Record Holders as of September 30, 2016 Ordinary Shares, $0.01 par value 41,299 Ordinary Shares Price Range Dividends 201"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-17-009786",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312517009786/d281956ddef14a.htm",
+          "sha256": "60aac04b10f62c0b8c966b743749c2a7ec84b001487b7fd579e3f0f03c672802",
+          "sha256Normalized": "60aac04b10f62c0b8c966b743749c2a7ec84b001487b7fd579e3f0f03c672802",
+          "bytesRead": 1484976,
+          "complete": true,
+          "claim": "DEF 14A 2017-01-13: closing price $41.19 on 2016-12-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-18-014557",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312518014557/d497342ddef14a.htm",
+          "sha256": "ff95cc98c4f8cf853b8ac035b8db48690aaa870e1c6a27b1237ffff83e3498b8",
+          "sha256Normalized": "ff95cc98c4f8cf853b8ac035b8db48690aaa870e1c6a27b1237ffff83e3498b8",
+          "bytesRead": 1344325,
+          "complete": true,
+          "claim": "DEF 14A 2018-01-19: closing price $40.29 on 2017-09-29"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-19-012893",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312519012893/d644844ddef14a.htm",
+          "sha256": "5e53d11910f15bfd0d7b08b7ec67801e44be74a8c59d66775d92206bbbd7f8f8",
+          "sha256Normalized": "5e53d11910f15bfd0d7b08b7ec67801e44be74a8c59d66775d92206bbbd7f8f8",
+          "bytesRead": 1433781,
+          "complete": true,
+          "claim": "DEF 14A 2019-01-18: closing price $35 on 2018-09-28"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-23-011980",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312523011980/d397457ddef14a.htm",
+          "sha256": "8d5af739a187c999cbf04ccf1f66d4093ca639be653945029696cbae0602adbd",
+          "sha256Normalized": "8d5af739a187c999cbf04ccf1f66d4093ca639be653945029696cbae0602adbd",
+          "bytesRead": 1775092,
+          "complete": true,
+          "claim": "DEF 14A 2023-01-20: closing price $49.22 on 2022-09-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-24-011239",
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312524011239/d554585ddef14a.htm",
+          "sha256": "1e2a5e463891a5311de2f82ffa896b7d5fd05c7e3661e03cb9c695ed9e772a50",
+          "sha256Normalized": "61d790e6a61dc0fb6361e10ac3e78d03da636d0e93227c515c224d7e70ec22cf",
+          "bytesRead": 1991693,
+          "complete": true,
+          "claim": "DEF 14A 2024-01-19: closing price $53.21 on 2023-09-30"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2016-12-30",
+          "rawPrice": 41.19,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2016-12-30",
+            41.19
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-17-009786",
+          "sha256": "60aac04b10f62c0b8c966b743749c2a7ec84b001487b7fd579e3f0f03c672802",
+          "quote": "nd the extent to which performance goals set by the Committee are achieved. The closing price of our ordinary shares on the NYSE was $41.19 per share on December 30, 2016. Equity Compensatio"
+        },
+        {
+          "date": "2017-09-29",
+          "rawPrice": 40.29,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2017-09-29",
+            40.29
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-18-014557",
+          "sha256": "ff95cc98c4f8cf853b8ac035b8db48690aaa870e1c6a27b1237ffff83e3498b8",
+          "quote": "were outstanding as of September 30, 2017. Dollar amounts are based on the NYSE closing price of $40.29 for the Company’s common stock on September 29, 2017. Option Awards Stoc"
+        },
+        {
+          "date": "2018-09-28",
+          "rawPrice": 35,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2018-09-28",
+            35
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-19-012893",
+          "sha256": "5e53d11910f15bfd0d7b08b7ec67801e44be74a8c59d66775d92206bbbd7f8f8",
+          "quote": "were outstanding as of September 30, 2018. Dollar amounts are based on the NYSE closing price of $35.00 per share for our ordinary shares on September 28, 2018. Option Awards Stoc"
+        },
+        {
+          "date": "2022-09-30",
+          "rawPrice": 49.22,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2022-09-30",
+            49.22
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-23-011980",
+          "sha256": "8d5af739a187c999cbf04ccf1f66d4093ca639be653945029696cbae0602adbd",
+          "quote": "were outstanding as of September 30, 2022. Dollar amounts are based on the NYSE closing price of $49.22 per share for our ordinary shares on September 30, 2022. Option Awards Stoc"
+        },
+        {
+          "date": "2023-09-30",
+          "rawPrice": 53.21,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2023-09-29",
+            53.21
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-24-011239",
+          "sha256": "1e2a5e463891a5311de2f82ffa896b7d5fd05c7e3661e03cb9c695ed9e772a50",
+          "quote": "were outstanding as of September 30, 2023. Dollar amounts are based on the NYSE closing price of $53.21 per share for our ordinary shares on September 30, 2023. Option Awards Stoc"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_KDP",
+      "ticker": "KDP",
+      "cik": "0001418135",
+      "issuer": "Keurig Dr Pepper Inc.",
+      "masterRowAction": "RESTRICT_SINGLE_ROW",
+      "selectedCanonicalId": "tiingo:NASDAQ:KDP:2008-04-28",
+      "masterRowSet": [
+        "tiingo:NASDAQ:KDP:2008-04-28"
+      ],
+      "caEvent": {
+        "week": "2018-07-13",
+        "prevWeek": "2018-07-06",
+        "verdict": "IDENTITY_UNVERIFIED",
+        "detail": "IDENTITY_TICKER_NOT_NAMED",
+        "evidence": "docs/quant-recovery/v12/largecap/ca-verdicts-1.0.0.json"
+      },
+      "symbolStart": {
+        "accession": "0001418135-19-000007",
+        "form": "10-K",
+        "filingDate": "2019-02-28",
+        "kind": "FULLTEXT_TICKER_STATEMENT",
+        "S0": "2019-03-01"
+      },
+      "mic": "XNAS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Common stock",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2022-10-28",
+      "validTo": null,
+      "intervalBasis": [
+        "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+        "FIRST_ANCHOR_730D"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2022-10-28",
+        "checkedTo": "2026-10-23",
+        "bars": 209,
+        "pointsSha256": "2db39497c15ea3d918fb1b0fc0b7ca367d6b76554f72de772ee0e5ed06b792e0"
+      },
+      "lastConfirmedCover": {
+        "accession": "0001418135-26-000051",
+        "filingDate": "2026-08-10",
+        "sha256": "229973724389c3cf57d15091068abf80fe7959427bdaa634d80963da047dc50a"
+      },
+      "anchorGaps": {
+        "matchDates": 1,
+        "firstMatch": "2024-10-25",
+        "lastMatch": "2024-10-25",
+        "maxGapDays": 654
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0001418135-26-000051",
+          "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813526000051/kdp-20260630.htm",
+          "sha256": "229973724389c3cf57d15091068abf80fe7959427bdaa634d80963da047dc50a",
+          "sha256Normalized": "69837cfe16ffcd79b3aa8a108b53c6003359a3bdbd16353b5e03331566998d0d",
+          "bytesRead": 2398614,
+          "complete": true,
+          "claim": "10-Q 2026-08-10 cover: KDP / Common stock / The Nasdaq Stock Market LLC"
+        },
+        {
+          "role": "FULLTEXT_TICKER_STATEMENT",
+          "accession": "0001418135-19-000007",
+          "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813519000007/kdp-10kx12312018.htm",
+          "sha256": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+          "sha256Normalized": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "URITIES Since July 9, 2018, our common stock has been listed and traded on the New York Stock Exchange under the ticker symbol \"KDP\". Prior to July 9, 2018 and the closing of the DPS Merger, our common stock was listed and traded on the New York Stock Exchange under the ticker sy"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-24-246976",
+          "url": "https://www.sec.gov/Archives/edgar/data/1418135/000119312524246976/d869791d424b7.htm",
+          "sha256": "7f7a29f9704b11e274a6f81635509349fcdc17d3a8c0b836ab216340efff3720",
+          "sha256Normalized": "7f7a29f9704b11e274a6f81635509349fcdc17d3a8c0b836ab216340efff3720",
+          "bytesRead": 516724,
+          "complete": true,
+          "claim": "424B7 2024-10-30: closing price $34.58 on 2024-10-25"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001193125-24-246002",
+          "url": "https://www.sec.gov/Archives/edgar/data/1418135/000119312524246002/d869791d424b7.htm",
+          "sha256": "ff4b521810cf4da2190369b110f6e61872ca15c7e9c96f3fe34d6cccfc14c71e",
+          "sha256Normalized": "ff4b521810cf4da2190369b110f6e61872ca15c7e9c96f3fe34d6cccfc14c71e",
+          "bytesRead": 517682,
+          "complete": true,
+          "claim": "424B7 2024-10-29: closing price $34.58 on 2024-10-25"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2024-10-25",
+          "rawPrice": 34.58,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2024-10-25",
+            34.58
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-24-246976",
+          "sha256": "7f7a29f9704b11e274a6f81635509349fcdc17d3a8c0b836ab216340efff3720",
+          "quote": "is listed on the Nasdaq Stock Market LLC (“Nasdaq”) under the symbol “KDP.” The last reported sale price of our common stock on the Nasdaq on October 25, 2024 was $34.58 per share. Investin"
+        },
+        {
+          "date": "2024-10-25",
+          "rawPrice": 34.58,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2024-10-25",
+            34.58
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001193125-24-246002",
+          "sha256": "ff4b521810cf4da2190369b110f6e61872ca15c7e9c96f3fe34d6cccfc14c71e",
+          "quote": "is listed on the Nasdaq Stock Market LLC (“Nasdaq”) under the symbol “KDP.” The last reported sale price of our common stock on the Nasdaq on October 25, 2024 was $34.58 per share. Investin"
+        }
+      ]
+    },
+    {
+      "securityId": "ref_TEL",
+      "ticker": "TEL",
+      "cik": "0001385157",
+      "issuer": "TE Connectivity plc",
+      "masterRowAction": "SELECT_EXISTING_ROW_BY_KEY",
+      "selectedCanonicalId": "tiingo:NYSE:TEL:2007-06-14",
+      "selectedRowKey": {
+        "canonicalId": "tiingo:NYSE:TEL:2007-06-14",
+        "activeStatus": "ACTIVE",
+        "endDate": "2026-09-10"
+      },
+      "masterRowKeys": [
+        "tiingo:NYSE:TEL:2007-06-14|ACTIVE|2026-09-10",
+        "tiingo:NYSE:TEL:2007-06-14|INACTIVE|2024-09-27"
+      ],
+      "mic": "XNYS",
+      "instrumentClass": "COMMON_STOCK",
+      "coverClassTitle": "Ordinary Shares, Par Value $0.01",
+      "filerType": "DOMESTIC",
+      "currency": "USD",
+      "activeStatus": "ACTIVE_SEC_CONFIRMED",
+      "validFrom": "2013-11-15",
+      "validTo": null,
+      "intervalBasis": [
+        "EARLIEST_FULLTEXT_TICKER_CONFIRMATION"
+      ],
+      "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+      "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+      "historyGuard": {
+        "checkedFrom": "2013-11-15",
+        "checkedTo": "2026-10-23",
+        "bars": 676,
+        "pointsSha256": "83679a97cc1f1b04c600ea1475e56f1fe22e14440071c991e99315a90a66a25b"
+      },
+      "lastConfirmedCover": {
+        "accession": "0001104659-26-086509",
+        "filingDate": "2026-07-24",
+        "sha256": "54b4c4d9d9dd3ac00ea999ef1ddc56b5769df2ee27c0e8d5f1cad9f018614325"
+      },
+      "anchorGaps": {
+        "matchDates": 10,
+        "firstMatch": "2014-09-26",
+        "lastMatch": "2025-09-26",
+        "maxGapDays": 735
+      },
+      "sources": [
+        {
+          "role": "IXBRL_COVER_LATEST",
+          "accession": "0001104659-26-086509",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926086509/tel-20260626x10q.htm",
+          "sha256": "54b4c4d9d9dd3ac00ea999ef1ddc56b5769df2ee27c0e8d5f1cad9f018614325",
+          "sha256Normalized": "54b4c4d9d9dd3ac00ea999ef1ddc56b5769df2ee27c0e8d5f1cad9f018614325",
+          "bytesRead": 3145728,
+          "complete": false,
+          "claim": "10-Q 2026-07-24 cover: TEL / Ordinary Shares, Par Value $0.01 / New York Stock Exchange"
+        },
+        {
+          "role": "FULLTEXT_TICKER_STATEMENT",
+          "accession": "0001047469-13-010572",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746913010572/a2217307z10-k.htm",
+          "sha256": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
+          "sha256Normalized": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "SECURITIES Market Information Our common shares are listed and traded on the New York Stock Exchange (\"NYSE\") under the symbol \"TEL.\" The following table sets forth the high and low closing sales prices of our common shares as reported by the NYSE for the quarterly periods during"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001047469-15-000223",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746915000223/a2222642zdef14a.htm",
+          "sha256": "7071504e325a8f4c5d07759da8272ab2dac183d210bc9e91f3439a73968733f2",
+          "sha256Normalized": "7071504e325a8f4c5d07759da8272ab2dac183d210bc9e91f3439a73968733f2",
+          "bytesRead": 1251897,
+          "complete": true,
+          "claim": "DEF 14A 2015-01-14: closing price $58.8 on 2014-09-26"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001047469-16-009665",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746916009665/a2226962zdef14a.htm",
+          "sha256": "ddc846b2b25ea357f38ab60550395d9be50d1a45ccfb6426e703c8ab5e6fb893",
+          "sha256Normalized": "ddc846b2b25ea357f38ab60550395d9be50d1a45ccfb6426e703c8ab5e6fb893",
+          "bytesRead": 1233210,
+          "complete": true,
+          "claim": "DEF 14A 2016-01-13: closing price $58.42 on 2015-09-25"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001047469-17-000232",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746917000232/a2230650zdef14a.htm",
+          "sha256": "e0692ac11771c841141f5daeb6e687b1ceb2dcdb22e56e18e6e94beb4a4ed20b",
+          "sha256Normalized": "e0692ac11771c841141f5daeb6e687b1ceb2dcdb22e56e18e6e94beb4a4ed20b",
+          "bytesRead": 1517358,
+          "complete": true,
+          "claim": "DEF 14A 2017-01-18: closing price $64.38 on 2016-09-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001047469-18-000264",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746918000264/a2234248zdef14a.htm",
+          "sha256": "8ea0369e85ac75c682c97d03229d3892b8e9aa39c998fe98af0872797891cfb3",
+          "sha256Normalized": "8ea0369e85ac75c682c97d03229d3892b8e9aa39c998fe98af0872797891cfb3",
+          "bytesRead": 1377458,
+          "complete": true,
+          "claim": "DEF 14A 2018-01-19: closing price $83.06 on 2017-09-29"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001047469-19-000165",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746919000165/a2237522zdef14a.htm",
+          "sha256": "f283d595e06d9c51b0b59df8595b74b8b7546541c3ddb782e28e1676c3e512e4",
+          "sha256Normalized": "f283d595e06d9c51b0b59df8595b74b8b7546541c3ddb782e28e1676c3e512e4",
+          "bytesRead": 1176845,
+          "complete": true,
+          "claim": "DEF 14A 2019-01-18: closing price $87.93 on 2018-09-28"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001558370-21-000192",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837021000192/tmb-20210310xdef14a.htm",
+          "sha256": "d38b5a7eb770715aaf0272a09889b2a69ce269e5111485991f48b40d711c0142",
+          "sha256Normalized": "d38b5a7eb770715aaf0272a09889b2a69ce269e5111485991f48b40d711c0142",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2021-01-14: closing price $95.37 on 2020-09-25"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001558370-23-000322",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837023000322/tmb-20230315xdef14a.htm",
+          "sha256": "57f4d2cf470525468d0156560404340793ba62345bf1a4beee44cfd3fbb0a224",
+          "sha256Normalized": "57f4d2cf470525468d0156560404340793ba62345bf1a4beee44cfd3fbb0a224",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2023-01-18: closing price $110.36 on 2022-09-30"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001558370-24-000315",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837024000315/tel-20240313xdef14a.htm",
+          "sha256": "de9ac2d2f42b22c17dba97cc242507f72039f44c5cb2b6ed0cd59cc4eee7f3c0",
+          "sha256Normalized": "de9ac2d2f42b22c17dba97cc242507f72039f44c5cb2b6ed0cd59cc4eee7f3c0",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2024-01-17: closing price $123.53 on 2023-09-29"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001558370-25-000262",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837025000262/tel-20250312xdef14a.htm",
+          "sha256": "3a2488467dac338381043d6fc1805792343c214907e0f980d156e09c5ebbcc14",
+          "sha256Normalized": "3a2488467dac338381043d6fc1805792343c214907e0f980d156e09c5ebbcc14",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2025-01-17: closing price $151.22 on 2024-09-27"
+        },
+        {
+          "role": "SAME_DAY_PRICE",
+          "accession": "0001104659-26-003934",
+          "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926003934/tel-20260311xdef14a.htm",
+          "sha256": "822c442b5d8b4b36e5c35a78abae51b45fd69233dbe22e2f54152f5371d243c4",
+          "sha256Normalized": "822c442b5d8b4b36e5c35a78abae51b45fd69233dbe22e2f54152f5371d243c4",
+          "bytesRead": 2097152,
+          "complete": false,
+          "claim": "DEF 14A 2026-01-15: closing price $217.04 on 2025-09-26"
+        }
+      ],
+      "priceEvidence": [
+        {
+          "date": "2014-09-26",
+          "rawPrice": 58.8,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2014-09-26",
+            58.8
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001047469-15-000223",
+          "sha256": "7071504e325a8f4c5d07759da8272ab2dac183d210bc9e91f3439a73968733f2",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $58.80 per share on September 26, 2014. (5) Represents tar"
+        },
+        {
+          "date": "2015-09-25",
+          "rawPrice": 58.42,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2015-09-25",
+            58.42
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001047469-16-009665",
+          "sha256": "ddc846b2b25ea357f38ab60550395d9be50d1a45ccfb6426e703c8ab5e6fb893",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $58.42 per share on September 25, 2015. (5) Represents tar"
+        },
+        {
+          "date": "2016-09-30",
+          "rawPrice": 64.38,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2016-09-30",
+            64.38
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001047469-17-000232",
+          "sha256": "e0692ac11771c841141f5daeb6e687b1ceb2dcdb22e56e18e6e94beb4a4ed20b",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $64.38 per share on September 30, 2016. (5) Represents tar"
+        },
+        {
+          "date": "2017-09-29",
+          "rawPrice": 83.06,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2017-09-29",
+            83.06
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001047469-18-000264",
+          "sha256": "8ea0369e85ac75c682c97d03229d3892b8e9aa39c998fe98af0872797891cfb3",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $83.06 per share on September 29, 2017. (5) Represents tar"
+        },
+        {
+          "date": "2018-09-28",
+          "rawPrice": 87.93,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2018-09-28",
+            87.93
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001047469-19-000165",
+          "sha256": "f283d595e06d9c51b0b59df8595b74b8b7546541c3ddb782e28e1676c3e512e4",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $87.93 per share on September 28, 2018. (4) Represents tar"
+        },
+        {
+          "date": "2020-09-25",
+          "rawPrice": 95.37,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2020-09-25",
+            95.37
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001558370-21-000192",
+          "sha256": "d38b5a7eb770715aaf0272a09889b2a69ce269e5111485991f48b40d711c0142",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $95.37 per share on September 25, 2020. (4) Represents tar"
+        },
+        {
+          "date": "2022-09-30",
+          "rawPrice": 110.36,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2022-09-30",
+            110.36
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001558370-23-000322",
+          "sha256": "57f4d2cf470525468d0156560404340793ba62345bf1a4beee44cfd3fbb0a224",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $110.36 per share on September 30, 2022. (4) Represents tar"
+        },
+        {
+          "date": "2023-09-29",
+          "rawPrice": 123.53,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2023-09-29",
+            123.53
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001558370-24-000315",
+          "sha256": "de9ac2d2f42b22c17dba97cc242507f72039f44c5cb2b6ed0cd59cc4eee7f3c0",
+          "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $123.53 per share on September 29, 2023. (4) Represents tar"
+        },
+        {
+          "date": "2024-09-27",
+          "rawPrice": 151.22,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2024-09-27",
+            151.22
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001558370-25-000262",
+          "sha256": "3a2488467dac338381043d6fc1805792343c214907e0f980d156e09c5ebbcc14",
+          "quote": "d. (3) Value represents the market value of TE Connectivity shares based on the closing price of $151.22 per share on September 27, 2024. (4) Represents tar"
+        },
+        {
+          "date": "2025-09-26",
+          "rawPrice": 217.04,
+          "laterSplitProduct": 1,
+          "seriesBar": [
+            "2025-09-26",
+            217.04
+          ],
+          "basis": "WEEKLY",
+          "ratioSeriesToSource": 1,
+          "accession": "0001104659-26-003934",
+          "sha256": "822c442b5d8b4b36e5c35a78abae51b45fd69233dbe22e2f54152f5371d243c4",
+          "quote": "d. (3) Value represents the market value of TE Connectivity shares based on the closing price of $217.04 per share on September 26, 2025. (4) Represents tar"
+        }
+      ]
+    }
+  ]
+} });
