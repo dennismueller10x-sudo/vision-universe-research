@@ -173,7 +173,7 @@ function main() {
       stepA: { states: countBy(S.logA[0], x => x.state), replaced: repA.length, replacedByNewChains: repA.filter(x => newSet.has(x.chainId)).length, replacedRows: repA.map(x => repRow(x, S.logA)) },
       stepB: { replacedRows: S.logB[0].map(termRow) },
       aggregates: p5aAggs, v13Aggregates: { afterTerminalS0: committed.aggregates.afterTerminalS0, afterTerminalS1: committed.aggregates.afterTerminalS1, afterTerminalS2: committed.aggregates.afterTerminalS2 },
-      decompositionVsV13_S0: deltas(p5aAggs, committed.aggregates.afterTerminalS0) },
+      decompositionVsV13_S0: deltas(p5aAggs, committed.aggregates.afterTerminalS0), periodTableStepB: periodTable(S).filter(r => r.boundedWeight.B !== r.boundedWeight.A) },
     EARLY: { span: [early.periods[0].t0, EARLY_END], periods: early.periods.length, label: 'SECONDARY DESCRIPTIVE - all periods NOT_QUALIFIED in SPXPOP; levels not interpreted, only the deltas', memberLogicIdenticalOnP5A: earlyLogicIdentical,
       qualification: countBy(early.periods, p => p.qualification), takeoverPremium: { median: W.r6(pop.premium.median), p75: W.r6(pop.premium.p75), source: 'unchanged V12 premium (P5a span)' },
       stepA: { states: countBy(E.logA[0], x => x.state), replaced: repAE.length, replacedRows: repAE.map(x => repRow(x, E.logA)) },
