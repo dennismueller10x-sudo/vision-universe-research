@@ -61,7 +61,7 @@ async function main() {
   const report = [], failures = [];
   for (const [vp, opts, mobile] of VPS) for (const theme of ['dark', 'light']) {
     const ctx = await browser.newContext(opts);
-    await ctx.addInitScript((t) => { try { localStorage.setItem('vu-discover-theme-v1', t); localStorage.setItem('vu-supertrader-sf-preview', '1'); } catch { /* ohne Speicher */ } }, theme);
+    await ctx.addInitScript((t) => { try { localStorage.setItem('vu-discover-theme-v1', t); } catch { /* ohne Speicher */ } }, theme);
     for (const [name, url, sel] of ROUTES) {
       const page = await ctx.newPage(), errors = [];
       page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
