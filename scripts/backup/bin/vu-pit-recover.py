@@ -10,7 +10,8 @@ den Original-Bucket:
   vu-pit-recover.py --at 2026-11-20T00:00:00Z --to-bucket vu-backup-recovered   (zweites Ziel)
   vu-pit-recover.py --at ... --plan          nur zaehlen
 
-Danach: restic -r /restore/repo check --read-data, dann restore wie gewohnt.
+Danach in der isolierten Kopie: restic -r /restore/repo unlock --remove-all (Sperren, die zum
+Zeitpunkt bestanden, sind in der Kopie verwaist), restic check --read-data, dann restore wie gewohnt.
 
 Umgebung: VU_S3_ENDPOINT, VU_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 (Leseschluessel genuegt fuer --to-dir), optional VU_S3_PREFIX. Benoetigt boto3.
@@ -47,9 +48,11 @@ def main():
             for v in page.get(kind, []):
                 if v["LastModified"] > at:
                     continue
+                # Gleiche Sekunde (Zeitstempel-Aufloesung): der Delete-Marker ist das spaetere Ereignis.
+                rank = (v["LastModified"], kind == "DeleteMarkers", v.get("IsLatest", False))
                 cur = best.get(v["Key"])
-                if cur is None or v["LastModified"] > cur["LastModified"]:
-                    best[v["Key"]] = dict(v, deleted=(kind == "DeleteMarkers"))
+                if cur is None or rank > cur["rank"]:
+                    best[v["Key"]] = dict(v, deleted=(kind == "DeleteMarkers"), rank=rank)
     live = {k: v for k, v in best.items() if not v["deleted"]}
     summary = {"at": a.at, "objects": len(live), "bytes": sum(v["Size"] for v in live.values()),
                "deletedAtThatTime": len(best) - len(live)}

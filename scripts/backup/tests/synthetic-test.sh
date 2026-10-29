@@ -181,6 +181,7 @@ check "T26 Angreifer kann alles verbergen (restic sieht leeres Repository)" bash
 check "T27 Loeschen gesperrter Versionen wird verweigert (Object Lock)" python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d["versionDeleteDenied"]>0 and d["versionDeleted"]==0 else 1)' "$T/attack.json"
 VU_S3_BUCKET=vu-backup-test VU_S3_PREFIX=restic/ "$PY" "$ROOT/bin/vu-pit-recover.py" --at "$ATTACK_AT" --to-dir "$T/recovered" > "$T/pit.json" 2>&1
 check "T28 Point-in-Time-Wiederherstellung in neues Verzeichnis" test -f "$T/recovered/config"
+RESTIC_REPOSITORY="$T/recovered" restic unlock --remove-all >/dev/null 2>&1
 check "T29 wiederhergestelltes Repository vollstaendig lesbar (check --read-data)" bash -c "RESTIC_REPOSITORY='$T/recovered' restic check --read-data > '$T/t29.log' 2>&1"
 RESTIC_REPOSITORY="$T/recovered" "$ROOT/bin/vu-restore.sh" drill "$T/drill2" > /dev/null 2>&1
 check "T30 Restore-Probe aus wiederhergestelltem Repository gruen" test $? -eq 0
