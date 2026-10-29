@@ -147,7 +147,57 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
   assert.match(js, /W\.PATHS\.names/, 'Namensverzeichnis nur bei Bedarf');
   assert.ok(!/compositeScore|quantScore|universeRank/.test(js), 'kein Gesamtscore oder Rang im Browser');
   assert.match(html, /Gesamtscore ist nicht freigegeben/);
-  for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html', 'watchlist/index.html']) {
-    assert.match(readFileSync(join(ROOT, p), 'utf8'), /<a href="\/konto\/watchlist\/"( aria-current="page")?>Watchlist<\/a>/, p);
+  // Owner-Auftrag 29.10.2026: Die Watchlist ist Teil von "Mein Dashboard"; die Kontonavigation fuehrt dorthin,
+  // die Detailseite /konto/watchlist/ bleibt unter ihrer Adresse erreichbar und fuehrt zurueck.
+  for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
+    const html = readFileSync(join(ROOT, p), 'utf8');
+    assert.match(html, /<a class="ka-nav-out" href="\/mein-dashboard\/">Mein Dashboard<\/a>/, p);
+    assert.ok(!/class="ka-nav"[^]*?href="\/konto\/watchlist\/"[^]*?<\/nav>/.test(html), `${p}: Watchlist nicht mehr in der Kontonavigation`);
   }
+  assert.match(html, /href="\/mein-dashboard\/">Mein Dashboard<\/a><span aria-hidden="true">›<\/span><span aria-current="page">Watchlist/);
+});
+
+test('Nutzerfuehrung: offene Pro-Bestellung vor der Willkommensseite, Deep Links bleiben, Pro nie aus dem Browser', () => {
+  const free = {entitlements: {plan_id: 'free'}, planIntent: null};
+  const intent = {entitlements: {plan_id: 'free'}, planIntent: {plan: 'pro', at: '2026-10-29T10:00:00.000Z'}};
+  const pro = {entitlements: {plan_id: 'pro'}, planIntent: {plan: 'pro', at: '2026-10-29T10:00:00.000Z'}};
+  assert.equal(A.nextAfterSignIn({me: free}), '/willkommen/', 'Standard nach der Anmeldung: Willkommensseite');
+  assert.equal(A.nextAfterSignIn({me: free, verified: true}), '/willkommen/?konto=verified');
+  assert.equal(A.nextAfterSignIn({me: free, localChoice: 'pro'}), '/konto/tarife/?plan=pro', 'gleiches Geraet');
+  assert.equal(A.nextAfterSignIn({me: intent}), '/konto/tarife/?plan=pro', 'anderes Geraet / neue Anmeldung: Wahl aus dem Konto');
+  assert.equal(A.nextAfterSignIn({me: intent, verified: true}), '/konto/tarife/?plan=pro&status=verified');
+  assert.equal(A.nextAfterSignIn({me: pro, localChoice: 'pro'}), '/willkommen/', 'mit Pro keine zweite Bestellung');
+  assert.equal(A.nextAfterSignIn({me: null, localChoice: null}), '/willkommen/', 'ohne Kontodaten: Willkommensseite');
+  assert.equal(A.nextAfterSignIn({me: intent, next: '/mein-dashboard/'}), '/mein-dashboard/', 'Deep Link bleibt');
+  assert.equal(A.nextAfterSignIn({me: free, next: '/konto/watchlist/'}), '/konto/watchlist/');
+  assert.equal(A.nextAfterSignIn({me: intent, next: '/konto/'}), '/konto/tarife/?plan=pro', 'Kontostart ist kein Deep Link');
+  for (const evil of ['https://evil.example/', '//evil.example', '/\\evil', 'javascript:alert(1)', '/a?b=1']) {
+    assert.equal(A.nextAfterSignIn({me: free, next: evil}), '/willkommen/', `kein offener Redirect: ${evil}`);
+  }
+  assert.equal(A.proPending(pro, 'pro'), false);
+  assert.equal(A.proPending(free, null), false);
+});
+
+test('Pro-Bestellbestaetigung: Checkbox nur im Zustand "ready", fehlende Freigabe ist ein eigener Zustand', () => {
+  const price = {key: 'pro_month_live', unitAmount: 100, currency: 'EUR', interval: 'month'};
+  const me = (extra) => Object.assign({entitlements: {plan_id: 'free'}, billingAvailable: true, checkoutAllowed: false}, extra);
+  assert.equal(A.checkoutState({loaded: false}), 'loading', 'vor der Antwort nichts bedienbar');
+  assert.equal(A.checkoutState({loaded: true, signedIn: false, price}), 'signed-out');
+  assert.equal(A.checkoutState({loaded: true, signedIn: true, me: me({checkoutAllowed: true}), price}), 'ready');
+  assert.equal(A.checkoutState({loaded: true, signedIn: true, me: me(), price}), 'not-open', 'ohne billing_tester: Erklaerung statt Checkbox');
+  assert.equal(A.checkoutState({loaded: true, signedIn: true, me: me({billingAvailable: false}), price}), 'unavailable');
+  assert.equal(A.checkoutState({loaded: true, signedIn: true, me: me({checkoutAllowed: true}), price: null}), 'no-price');
+  assert.equal(A.checkoutState({loaded: true, signedIn: true, me: me({entitlements: {plan_id: 'pro'}, checkoutAllowed: true}), price}), 'subscribed');
+
+  const html = readFileSync(join(ROOT, 'tarife/index.html'), 'utf8'), js = readFileSync(join(ROOT, 'konto.js'), 'utf8');
+  const ready = html.slice(html.indexOf('id="ka-confirm-ready"'), html.indexOf('id="ka-confirm-blocked"'));
+  // Ursache des Fehlers vom 29.10.: Die Checkbox wurde bei fehlender Freigabe gesperrt, der Grund stand ausserhalb des Bildschirms.
+  assert.ok(!/terms\.disabled\s*=\s*!/.test(js), 'Checkbox wird nie wegen der Berechtigung gesperrt');
+  assert.ok(!/id="ka-confirm-terms"[^>]*disabled/.test(html), 'Checkbox im HTML bedienbar');
+  assert.match(ready, /<label class="ka-check ka-check--order" for="ka-confirm-terms"><input id="ka-confirm-terms"/, 'Label umschliesst und benennt die Checkbox');
+  assert.ok(!/<a\b/.test(ready.slice(0, ready.indexOf('</label>'))), 'keine Links in der Tippflaeche der Checkbox');
+  assert.match(ready, /id="ka-checkout" disabled/, 'Zahlung erst nach dem Haken (Pflichtbestaetigung bleibt)');
+  assert.match(html, /id="ka-confirm-blocked"[^]*Pro ist für dein Konto noch nicht buchbar[^]*id="ka-continue-free"/, 'eigener Hinweis bei fehlender Freigabe');
+  assert.match(js, /pay\.disabled = !terms\.checked/);
+  assert.match(js, /\{price: proPrice\.key, confirm: true\}/, 'Bestaetigung geht an den Server (confirm: true)');
 });

@@ -211,6 +211,15 @@ async function processStripeEvent(ctx, event) {
     const subId = typeof object.subscription === 'string' ? object.subscription : object.subscription.id;
     return (await syncSubscription(ctx, subId)).result?.user_id || userId;
   }
+  // SEPA u. a.: Die verzoegerte Erstzahlung ist gescheitert. Den Zustand frisch bei Stripe holen
+  // (kein Zugang ohne bezahlte Rechnung, die Zugangsregel entscheidet); nichts aus der Nutzlast uebernehmen.
+  if (event.type === 'checkout.session.async_payment_failed') {
+    if (object.mode !== 'subscription' || !object.subscription) return 'ignored';
+    const subId = typeof object.subscription === 'string' ? object.subscription : object.subscription.id;
+    if (!STRIPE_ID.sub.test(String(subId))) throw new Error('STRIPE_SUBSCRIPTION_SHAPE');
+    ctx.log('warn', 'ASYNC_PAYMENT_FAILED', {event: event.id});
+    return (await syncSubscription(ctx, subId)).result?.user_id || null;
+  }
   if (SUBSCRIPTION_EVENTS.has(event.type)) {
     if (!STRIPE_ID.sub.test(String(object.id))) throw new Error('STRIPE_SUBSCRIPTION_SHAPE');
     return (await syncSubscription(ctx, object.id)).result?.user_id || null;

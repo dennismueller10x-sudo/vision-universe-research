@@ -151,3 +151,25 @@ html.wk-story-open,html.wk-story-open body{overflow:hidden}
 .wk-story-card.is-animated>:nth-child(5){animation-delay:.3s}
 @keyframes wk-story-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.wk-story-ring{transition:none}}
+
+/* Mein Bereich (Owner-Auftrag 29.10.2026): Einstieg "Mein Dashboard" direkt unter dem Video, Konto daneben abgesetzt.
+   Eine flache Zeile, damit die Seite auf dem Handy weiter in einen Bildschirm passt. */
+.wk-mine{display:flex;gap:8px;align-items:stretch}
+.wk-mine a{box-sizing:border-box}
+.wk-mine-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:clamp(48px,6.4dvh,64px);padding:6px 14px 6px 8px;border-radius:18px;
+  background:var(--wk-tile);color:#f4f5f1;text-decoration:none;border:1px solid var(--wk-line);transition:border-color .16s ease,transform .16s ease}
+.wk-mine-main:hover{border-color:#c8f531}
+.wk-mine-main:active{transform:scale(.985)}
+.wk-mine-icon{display:grid;place-items:center;flex:none;width:clamp(34px,4.6dvh,44px);height:clamp(34px,4.6dvh,44px);border-radius:12px;background:#c8f531;color:#08080a}
+.wk-mine-icon svg{width:56%;height:56%}
+.wk-mine-copy{display:grid;min-width:0}
+.wk-mine-copy strong{font-size:clamp(14px,2dvh,17px);font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+.wk-mine-copy span{font-size:clamp(11px,1.5dvh,13px);color:#b8beb5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-mine-go{flex:none;width:16px;height:16px;margin-left:auto;color:#c8f531}
+.wk-mine-account{flex:none;display:flex;align-items:center;justify-content:center;min-width:72px;min-height:44px;padding:0 16px;border-radius:18px;
+  border:1px solid var(--wk-line);background:var(--wk-card);color:inherit;font-size:14px;font-weight:700;text-decoration:none}
+.wk-mine-account:hover{border-color:#c8f531}
+.wk-mine-main:focus-visible,.wk-mine-account:focus-visible{outline:2px solid var(--vu-focus,#4f6b00);outline-offset:2px}
+.wk-flash{flex:none;margin:0;padding:8px 12px;border-radius:12px;background:var(--wk-soft);border:1px solid var(--wk-line);font-size:13px;line-height:1.4}
+@media (max-width:359px){.wk-mine-main{gap:10px;padding-right:10px}.wk-mine-account{padding:0 12px}}
+@media (prefers-reduced-motion:reduce){.wk-mine-main{transition:none}}
