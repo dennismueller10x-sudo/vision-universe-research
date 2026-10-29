@@ -65,8 +65,9 @@ Daten (Apify, Instagram): Aktienzoo 6 Follower, 5 Reels, 128–555 Aufrufe, 0 Ko
 - Die Figur der Vorlage ist eine Eule. Ein „aggressiveres“ Tier ist nicht der Hebel.
 
 Daraus folgt ab Reel 6:
-1. **Zoo-Ticker** (Mo–Fr, abends 18–19 Uhr, 60–80 s): 2–3 Nachrichten des Tages. Der Bulle jubelt, der Bär nennt den Haken, zu jeder Nachricht ein Urteil-Stempel BULLE/BÄR. Am Ende die Frage „Bulle oder Bär?“ für die Kommentare und die Ankündigung der nächsten Folge. Abzeichen „ZOO-TICKER · Datum“ dauerhaft oben links. Erste Folge: `reels/2026-10-29-zoo-ticker-1/`.
+1. **Zoo-Ticker** (täglich um 16:00 Uhr, Entscheidung des Owners am 29.10.2026; Sa Wochenrückblick, So Vorschau auf die nächste Woche; 60–80 s): 2–3 Nachrichten des Tages. Der Bulle jubelt, der Bär nennt den Haken, zu jeder Nachricht ein Urteil-Stempel BULLE/BÄR. Am Ende die Frage „Bulle oder Bär?“ für die Kommentare und die Ankündigung der nächsten Folge. Abzeichen „ZOO-TICKER · Datum“ dauerhaft oben links. Erste Folge: `reels/2026-10-29-zoo-ticker-1/`.
 2. **Einstieg ab dem ersten Bild:** keine Begrüßung. Die stärkste Zahl des Tages steht vom ersten Frame an riesig im Bild, der erste Satz ist eine Behauptung mit Zahl oder Namen.
 3. **Etwa einmal pro Woche ein großes Systemthema** mit deutschem Bezug (z. B. wie Neobroker Geld verdienen, Wirecard).
-4. **Ein Reel pro Tag** zur gleichen Uhrzeit, nicht mehrere in wenigen Stunden. Die Caption beginnt mit dem Aufhänger, die Quellen folgen darunter.
+4. **Ein Reel pro Tag** um 16:00 Uhr, nicht mehrere in wenigen Stunden. Die Caption beginnt mit dem Aufhänger, die Quellen folgen darunter.
 5. Tagesfakten nur mit Stand und Uhrzeit. Bewegliche Kurse als „zeitweise“ oder als Untergrenze formulieren („über 300 Mrd. $“), damit die Aussage bis zum Abend stimmt.
+6. Ein geplanter Auftrag baut die Folge täglich ab 13:23 Uhr (Berlin) und schickt Video, Cover und Captions zur Freigabe. Veröffentlicht wird nur vom Owner.
