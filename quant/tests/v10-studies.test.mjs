@@ -90,8 +90,7 @@ test('funded schedule respects slots, holding period and the outcome-free tie-br
   assert.equal(r.equity.length, input.sessions.length); assert.equal(r.equity.at(-1).positions.length, 0);
 });
 
-test('known engine limitation: research-portfolio keeps float dust of a sold-out large-unit position (absolute 1e-12 bound)', () => {
-  // Documents why the funded strategy runs with initial capital 1 (numeraire only). Not an engine change.
+test('full exit of a large-unit position leaves no float dust (regression, fixed by #1117; V10 ran with numeraire 1 before the fix)', () => {
   const d = weeks(4), closeAt = x => x + 'T23:59:59.999Z', h = '0'.repeat(64);
   const mk = cap => ({ sessions: d.map(x => ({ date: x, closeAt: closeAt(x) })), initialCapital: cap, currency: 'USD', returnBasis: 'PRICE_RETURN',
     provenance: { mode: 'HISTORICAL_PRICE_SIMULATION', datasetHash: h, priceSeriesType: 'SPLIT_ADJUSTED', populationBasis: 'CONDITIONAL_FIXED_CURRENT_COHORT', clockBasis: 'MODELED_WEEK_END_DATE' },
@@ -100,10 +99,12 @@ test('known engine limitation: research-portfolio keeps float dust of a sold-out
     memberships: [{ effectiveAt: d[0] + 'T00:00:00Z', availableAt: d[0] + 'T00:00:00Z', sourceHash: h, members: ['X'] }],
     targets: [{ decisionDate: d[0], executionDate: d[1], availableAt: closeAt(d[0]), membershipHash: h, weights: { X: 0.1 } }, { decisionDate: d[1], executionDate: d[2], availableAt: closeAt(d[1]), membershipHash: h, weights: {} }],
     benchmark: { currency: 'USD', returnBasis: 'PRICE_RETURN', sourceHash: h, costPolicy: 'PASSIVE_NO_TRANSACTION_COSTS', levels: d.map(x => ({ date: x, level: 100 })) } });
-  // 1e6 capital: 476,190 units bought at 0.21, sold to weight 0 at 0.33 -> |dust| > 1e-12 stays held and has no bar next week.
-  assert.throws(() => Portfolio.runPortfolio(mk(1e6)), /EXACT_PRICE_UNAVAILABLE/);
-  const small = Portfolio.runPortfolio(mk(1));
+  // 1e6 capital: 476,190 units bought at 0.21, sold to weight 0 at 0.33. Before #1117 a |dust| > 1e-12 stayed held and the
+  // next valuation threw EXACT_PRICE_UNAVAILABLE; now the full exit sells exactly the held units and scales like numeraire 1.
+  const big = Portfolio.runPortfolio(mk(1e6)), small = Portfolio.runPortfolio(mk(1));
+  assert.equal(big.equity.at(-1).positions.length, 0);
   assert.equal(small.equity.at(-1).positions.length, 0);
+  assert.ok(Math.abs(big.equity.at(-1).value / 1e6 - small.equity.at(-1).value) < 1e-9);
 });
 
 test('survivorship sensitivity is NOT_EVALUABLE without lifecycle and uses terminal cash when present', () => {
