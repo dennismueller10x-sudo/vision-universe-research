@@ -3,7 +3,10 @@
 // V12 REQUAL P6 - six pre-registered complete trading strategies on the PIT S&P 500 (registration 1.0.2, section P6).
 // Rebalancing at population dates, targets fixed at t0, buy-and-hold to t1 with holdings returns (incl. exits, ZERO/LOWER), cash at EFFR,
 // costs on traded notional (base 10+5, stress 20+30 bps per side). No parameter search.
-// Usage: node p6-strategies.cjs --panels <v12-private>/mcap [--out docs/quant-recovery/v12/requal/p6-strategies-1.0.0.json] [--p5a <file>]
+// 1.1.0 (correction after the independent V12 review, amendment-1.1.0.json): population SPXPOP 1.1.1; CW_ALL (same holdings source)
+// as like-for-like benchmark next to SPY (own Holm family); span from 2013-03 (SPXPOP rule 1.0.1); holdings export for the dividend
+// quantification (dividend_yield.py); execution timing disclosed. Strategy definitions and parameters unchanged (registration 1.0.2).
+// Usage: node p6-strategies.cjs --panels <v12-private>/mcap [--out docs/quant-recovery/v12/requal/p6-strategies-1.1.0.json] [--p5a <file>] [--export-holdings <private file>]
 const path = require('node:path');
 const L = require('./lib.cjs');
 const { frameContext } = require('./p5a-population.cjs');
@@ -97,7 +100,7 @@ function regimeTable(rows, bench, ew, labels) {
 }
 
 async function main() {
-  const o = L.args(process.argv.slice(2), { panels: null, out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p6-strategies-1.0.0.json'), p5a: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.0.0.json') });
+  const o = L.args(process.argv.slice(2), { panels: null, out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p6-strategies-1.1.0.json'), p5a: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.1.0.json'), 'export-holdings': null });
   if (!o.panels) throw Error('PANELS_DIR_REQUIRED');
   const t0 = Date.now(), reg = readRegistration();
   const fc = frameContext(), pop = L.makePopulation(), spy = L.makeSpy(), cash = L.makeCash(), dist = L.spyDistributions();
@@ -112,6 +115,8 @@ async function main() {
   const spyRows = ps => ps.map(p => ({ t0: p.t0, t1: p.t1, r: spy.ret(p.t0, p.t1), cash: cash.ret(p.t0, p.t1) }));
   const trRows = ps => ps.map(p => ({ t0: p.t0, t1: p.t1, r: L.spyTotalReturn(spy, dist, p.t0, p.t1).tr, cash: cash.ret(p.t0, p.t1) }));
   const withRows = (ps, sc) => ps.map(p => ({ t0: p.t0, t1: p.t1, r: p5a.periods.find(x => x.t0 === p.t0).series[sc].EW_WITH_H }));
+  // 1.1.0: holdings-weighted total population (same holdings source as the strategies, same scenario for bounded cases)
+  const cwRows = (ps, sc) => ps.map(p => ({ t0: p.t0, t1: p.t1, r: p5a.periods.find(x => x.t0 === p.t0).series[sc].CW_ALL, cash: cash.ret(p.t0, p.t1) }));
   // SPY daily MaxDD over the span (scale reference for period-granularity drawdowns)
   const spyDailyDD = (a, b) => { const i0 = L.lastIdx(spy.dates, a), i1 = L.lastIdx(spy.dates, b); let pk = 0, dd = 0; for (let k = i0; k <= i1; k++) { pk = Math.max(pk, spy.values[k]); dd = Math.min(dd, spy.values[k] / pk - 1); } return L.r6(dd); };
   function evaluate(ps, withExtras) {
@@ -119,16 +124,17 @@ async function main() {
     for (const sc of L.SCENARIOS) {
       res.scenarios[sc] = {};
       for (const [cl, rate] of Object.entries(COSTS)) {
-        const S = {}, spyR = spyRows(ps), trR = trRows(ps), withR = withRows(ps, sc);
+        const S = {}, spyR = spyRows(ps), trR = trRows(ps), withR = withRows(ps, sc), cwR = cwRows(ps, sc), cwTests = [];
         const runs = Object.fromEntries(IDS.concat(['EW_SELECTABLE']).map(id => [id, simulate(id, ctx, ps, sc, rate, 'EFFR')]));
         const tests = [];
         for (const id of IDS) {
           const rows = runs[id], pf = L.perf(rows), Y = pf.years;
-          const vsSpy = L.excessStats(rows, spyR), vsEw = id === 'S1_EW_SP500' ? null : L.excessStats(rows, runs.S1_EW_SP500);
+          const vsSpy = L.excessStats(rows, spyR), vsEw = id === 'S1_EW_SP500' ? null : L.excessStats(rows, runs.S1_EW_SP500), vsCw = L.excessStats(rows, cwR);
+          cwTests.push({ id, vs: 'CW_ALL', nwP: vsCw.nw.p, bootP: vsCw.bootstrap.p });
           S[id] = { performance: pf, turnoverOneSidedPerYear: L.r6(rows.reduce((a, r) => a + r.traded, 0) / 2 / Y), costDragPerYearPp: L.r6(rows.reduce((a, r) => a + r.cost, 0) / Y * 100),
             avgEquity: L.r6(L.mean(rows.map(r => r.equity))), avgPositions: L.r6(L.mean(rows.map(r => r.positions))), minPositions: Math.min(...rows.map(r => r.positions)), periodsWithoutEligibleNames: rows.filter(r => r.eligible === 0).length,
             maxBoundedWeightHeld: L.r6(Math.max(...rows.map(r => r.boundedWeightHeld))), boundedWeightHeldMean: L.r6(L.mean(rows.map(r => r.boundedWeightHeld))),
-            vsSpy, vsSpyTrReference: { cagrDiff: L.r6(pf.cagr - L.perf(trR).cagr), basis: 'strategy PRICE vs SPY TOTAL RETURN reference (mixed basis, labelled)' }, vsEwSp500: vsEw,
+            vsSpy, vsCwAll: vsCw, vsSpyTrReference: { cagrDiff: L.r6(pf.cagr - L.perf(trR).cagr), basis: 'strategy PRICE vs SPY TOTAL RETURN reference (mixed basis, labelled)' }, vsEwSp500: vsEw,
             vsSelectableUniverse: L.excessStats(rows, runs.EW_SELECTABLE, { bootstrap: false }), vsEwWithSeriesP5a: L.excessStats(rows, withR, { bootstrap: false }),
             qualifiedOnly: (() => { const q = rows.map((r, i) => [r, spyR[i]]).filter(([r]) => r.qualification === 'QUALIFIED'); return { periods: q.length, meanExcessVsSpyPp: L.r6(L.mean(q.map(([r, x]) => r.r - x.r)) * 100) }; })(),
             regimesR1: regimeTable(rows, spyR, runs.S1_EW_SP500, r1), regimesR2: regimeTable(rows, spyR, runs.S1_EW_SP500, r2),
@@ -138,8 +144,11 @@ async function main() {
         }
         const hn = L.holm(tests.map(t => t.nwP)), hb = L.holm(tests.map(t => t.bootP));
         tests.forEach((t, i) => { t.holmNw = L.r6(hn[i]); t.holmBoot = L.r6(hb[i]); t.secured = hn[i] <= 0.05 && hb[i] <= 0.05; t.nwP = L.r6(t.nwP); t.bootP = L.r6(t.bootP); });
-        res.scenarios[sc][cl] = { strategies: S, references: { SPY: L.perf(spyR), SPY_TR_REFERENCE: L.perf(trR), EW_SELECTABLE: L.perf(runs.EW_SELECTABLE), EW_WITH_SERIES_P5A: L.perf(withR), spyDailyMaxDD: spyDailyDD(ps[0].t0, ps.at(-1).t1) },
-          multipleTesting: { family: tests.length, rule: 'secured = Holm <= 0.05 under Newey-West AND block bootstrap', tests } };
+        const cn = L.holm(cwTests.map(t => t.nwP)), cb = L.holm(cwTests.map(t => t.bootP));
+        cwTests.forEach((t, i) => { t.holmNw = L.r6(cn[i]); t.holmBoot = L.r6(cb[i]); t.secured = cn[i] <= 0.05 && cb[i] <= 0.05; t.nwP = L.r6(t.nwP); t.bootP = L.r6(t.bootP); });
+        res.scenarios[sc][cl] = { strategies: S, references: { SPY: L.perf(spyR), CW_ALL: L.perf(cwR), SPY_TR_REFERENCE: L.perf(trR), EW_SELECTABLE: L.perf(runs.EW_SELECTABLE), EW_WITH_SERIES_P5A: L.perf(withR), spyDailyMaxDD: spyDailyDD(ps[0].t0, ps.at(-1).t1) },
+          multipleTesting: { family: tests.length, rule: 'secured = Holm <= 0.05 under Newey-West AND block bootstrap', tests },
+          multipleTestingVsCwAll: { family: cwTests.length, rule: '1.1.0 like-for-like benchmark CW_ALL (holdings-weighted total population, same scenario); own Holm family, not mixed with the registered family', tests: cwTests } };
       }
       if (withExtras) {
         // cash sensitivity (0 % cash) and S1 extended span, base costs
@@ -154,13 +163,28 @@ async function main() {
   // Common span = first t0 from which every strategy has eligible members.
   const firstAll = periods.findIndex(p => IDS.every(id => targets(id, ctx, p, pop.members(p.t0), ctx.panel.get(p.rank) || new Map(), ctx.filter.get(p.t0)).info.eligible > 0));
   const commonSpan = { ...evaluate(periods.slice(firstAll), false), note: 'post hoc sensitivity, defined after the registered-span results showed S3/S4 in cash for the first periods (no eligible member); start = first population date at which every strategy has eligible members' };
-  const res = { registeredSpan, commonSpan };
+  // 1.1.0: span from the first S&P 500 period qualified under the pre-registered SPXPOP rule 1.0.1 (2013-03-31); portfolios restart there
+  const span2013 = { ...evaluate(periods.filter(p => p.t0 >= '2013-03-31'), false), note: '1.1.0 (correction after independent review): span from 2013-03-31, the first qualified S&P 500 period under the pre-registered SPXPOP rule 1.0.1; portfolios restart at 2013-03-31' };
+  const res = { registeredSpan, commonSpan, span2013_rule101: span2013 };
+  if (o['export-holdings']) {
+    // private input of dividend_yield.py: registered span, ZERO, BASE targets per period (weights at t0) for S1-S6 and the population
+    const exp = { schemaVersion: 'v12-requal-holdings-export-1.1.0', span: [periods[0].t0, periods.at(-1).t1], periods: [] };
+    for (const p of periods) {
+      const mem = pop.members(p.t0), byChain = new Map(mem.members.map(m => [m.chainId, m])), row = { t0: p.t0, t1: p.t1, CW_ALL: mem.members.map(m => [m.cik, m.securityId, L.r6(m.weight)]), strategies: {} };
+      for (const id of IDS) { const { w } = targets(id, ctx, p, mem, ctx.panel.get(p.rank) || new Map(), ctx.filter.get(p.t0)); row.strategies[id] = [...w].map(([k, v]) => [byChain.get(k).cik, byChain.get(k).securityId, L.r6(v)]); }
+      exp.periods.push(row);
+    }
+    require('node:fs').writeFileSync(o['export-holdings'], JSON.stringify(exp));
+  }
   const out = { studyId: 'V12-REQUAL-P6', registrationSha256: reg.sha256, evidenceKind: 'HISTORICAL_DEVELOPMENT_STUDY', certificationStatus: 'NOT_CERTIFIED', productionApproved: false,
     span: { from: periods[0].t0, to: periods.at(-1).t1, periods: periods.length, commonSpanFrom: periods[firstAll].t0 }, inputs: { panelAfterSha256: panel.sha256, indexDataSha256: pop.dataSha256, frameManifestHash: fc.manifestHash, spySha256: spy.sha256, effrSha256: cash.sha256, p5aSha256: L.shaFile(o.p5a) },
     strategyDefinitions: reg.registration.P6.strategies, scoreSource: 'AFTER panel full-frame scores (registration 1.0.2)', quintileRule: 'top/bottom ceil(n/5) of the eligible selectable members, ties by securityId',
     costs: { BASE: '15 bps per side', STRESS: '50 bps per side', GROSS: 'no costs (for the cost drag)' }, cash: 'EFFR accrual (sensitivity ZERO_CASH_BASE: 0 %)',
     returnBasis: 'PRICE_RETURN strategies and SPY; SPY_TR only as labelled reference', marketFilter: Object.fromEntries([...ctx.filter].map(([k, v]) => [k, { on: v.on, price: L.r6(v.price), sma10m: L.r6(v.sma10m) }])),
-    regimes: { R1: r1, R2: r2 }, results: res, runtimeSeconds: Math.round((Date.now() - t0) / 1000) };
+    regimes: { R1: r1, R2: r2 }, resultVersion: '1.1.0', amendmentSha256: L.shaFile('docs/quant-recovery/v12/requal/amendment-1.1.0.json'), populationRules: pop.ruleVersion,
+    execution: 'same-bar: the market filter (SPY close vs 10 month-end SMA, both up to t0) and the volatility target (52 weekly bars up to the last bar <= t0) are evaluated with data up to t0 and the trades are executed at the t0 holdings prices of the same date; no execution lag (disclosed after the independent review, m7)',
+    cashBasis: 'cash accrues the EFFR daily (a total-return component), while the equity side is a price return without dividends; ZERO_CASH_BASE shows the strategies with 0 % cash',
+    results: res, runtimeSeconds: Math.round((Date.now() - t0) / 1000) };
   const h = L.writeJson(o.out, out);
   console.log(JSON.stringify({ out: path.relative(L.ROOT, o.out), sha256: h, seconds: out.runtimeSeconds }));
 }

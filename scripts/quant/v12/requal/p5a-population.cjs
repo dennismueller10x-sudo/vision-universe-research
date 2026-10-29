@@ -2,7 +2,9 @@
 'use strict';
 // V12 REQUAL P5a - population effect: equal-weighted survivor frame vs equal-weighted PIT S&P 500 (incl. exits, bounded cases) vs SPY,
 // and the direct survivorship gap INSIDE the index (members with our series vs all members). Registration 1.0.0 (P5.a_population).
-// Usage: node p5a-population.cjs [--out docs/quant-recovery/v12/requal/p5a-population-1.0.0.json] [--export <private dir>]
+// 1.1.0 (correction after the independent V12 review): population SPXPOP 1.1.1, scenarios FATE/UPPER (lib.cjs), span from 2013-03
+// (qualification under the pre-registered SPXPOP rule 1.0.1), scenario labels for the survivorship term.
+// Usage: node p5a-population.cjs [--out docs/quant-recovery/v12/requal/p5a-population-1.1.0.json] [--export <private dir>]
 //   --export writes the Python check input (frame series, ids) to <private dir>/frame-export.json.gz (outside the repository).
 const fs = require('node:fs'), path = require('node:path'), zlib = require('node:zlib');
 const L = require('./lib.cjs');
@@ -49,7 +51,7 @@ function computePeriods(ctx, pop, spy, dist) {
     const frameRets = [], frameKinds = {}; let frameGap = 0;
     for (const l of ctx.listings) { if (!L.hasBarAt(l, p.t0)) continue; const sr = L.seriesReturn(l, p.t0, p.t1); if (!sr) { frameGap++; continue; } frameRets.push(sr); frameKinds[sr.kind] = (frameKinds[sr.kind] || 0) + 1; }
     const lowerSeries = sr => sr.kind === 'LAST_CLOSE' ? -1 : sr.r;
-    for (const sc of L.SCENARIOS) {
+    for (const sc of L.SCENARIOS_P5A) {
       const s = {};
       s.SPY = spy.ret(p.t0, p.t1); s.SPY_TR = tr.tr; s.SPY_W = spyW;
       s.EW_ALL = L.mean(mem.members.map(m => m.ret[sc]));
@@ -62,8 +64,9 @@ function computePeriods(ctx, pop, spy, dist) {
       row.series[sc] = Object.fromEntries(Object.entries(s).map(([k, v]) => [k, L.r6(v)]));
     }
     const bnd = mem.members.filter(m => m.group === 'bounded');
+    const byFateClass = {}; for (const m of bnd) { const k = byFateClass[m.fateClass] = byFateClass[m.fateClass] || { n: 0, w: 0 }; k.n++; k.w = L.r6(k.w + m.weight); }
     row.counts = { members: mem.members.length, withSeries: withSet.length, withoutSeries: without.length, withSeriesWeight: L.r6(withSet.reduce((a, x) => a + x.m.weight, 0)),
-      boundedMembers: bnd.length, boundedWeight: L.r6(bnd.reduce((a, m) => a + m.weight, 0)), boundedWithSeries: withSet.filter(x => x.m.group === 'bounded').length,
+      boundedMembers: bnd.length, boundedWeight: L.r6(bnd.reduce((a, m) => a + m.weight, 0)), boundedByFateClass: byFateClass, boundedWithSeries: withSet.filter(x => x.m.group === 'bounded').length,
       withSeriesKinds: seriesKinds, frameListings: frameRets.length, frameSeriesGapExcluded: frameGap, frameKinds,
       weeklyDates: [w0.d, w1.d], spyTrDividendYield: L.r6(tr.divYield), spyTrCarriedForward: tr.carried, nportTotalReturn: p.nportTotalReturn ?? null };
     rows.push(row);
@@ -88,8 +91,16 @@ function aggregate(rows, sc, filter = () => true) {
   return { periods: sel.length, years: L.r6(Y), from: sel[0].t0, to: sel.at(-1).t1, cagr, total, terms, identityMaxAbsResidual: Math.max(...idn.map(Math.abs)) };
 }
 
+// SPXPOP rule 1.0.1 (registered before any result) qualified the S&P 500 from 2013-03-31; 1.1.0 extended it to 2009-09 after sight.
+const SPAN_101 = '2013-03-31';
+const SCENARIO_LABELS = {
+  ZERO: 'point convention: bounded exits at 0 % (last holdings price), ambiguous CA at the midpoint - NOT a bound',
+  LOWER: 'all bounded exits at -100 %, ambiguous CA at the lower bound - gives the UPPER bound of the survivorship term (EW_WITH_H - EW_ALL) and the lower bound of EW_ALL/CW_ALL',
+  FATE: 'exits by documented fate: takeover -> typical premium of documented takeovers (takeoverPremium.median), delisting/bankruptcy -> -100 %, index change -> population period return, unknown fate -> 0 %; ambiguous CA midpoint - evidence-based point estimate',
+  UPPER: 'every bounded exit at max(takeover premium p75, population period return), ambiguous CA at the upper bound - gives the lower end of the survivorship term'
+};
 function main() {
-  const o = L.args(process.argv.slice(2), { out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.0.0.json'), export: null });
+  const o = L.args(process.argv.slice(2), { out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.1.0.json'), export: null });
   const t0 = Date.now(), reg = readRegistration();
   const ctx = frameContext(), pop = L.makePopulation(), spy = L.makeSpy(), dist = L.spyDistributions();
   const rows = computePeriods(ctx, pop, spy, dist);
@@ -102,9 +113,11 @@ function main() {
     returnBasis: 'PRICE_RETURN on both sides; SPY_TR = SPY price + N-30D distributions (reference only)', inputs: { spySha256: spy.sha256, spyDistributionsSha256: dist.sha256 },
     seriesDefinitions: reg.registration.P5.a_population.series, termDefinitions: TERMS, identity: reg.registration.P5.a_population.identity,
     regimes: { R1: r1, R2: r2 },
+    amendmentSha256: L.shaFile('docs/quant-recovery/v12/requal/amendment-1.1.0.json'), resultVersion: '1.1.0', correction: 'Korrektur nach unabhaengiger Pruefung: SPXPOP 1.1.1 (Broadcom-Identitaetsbruch u. a.), Szenarien FATE/UPPER, Spanne ab 2013-03 (SPXPOP-Regel 1.0.1), Szenario-Bezeichnungen (amendment-1.1.0.json)',
+    scenarios: SCENARIO_LABELS, takeoverPremium: pop.premium,
     aggregates: {}, periods: rows, runtimeSeconds: null };
-  for (const sc of L.SCENARIOS) out.aggregates[sc] = {
-    full: aggregate(rows, sc), qualifiedOnly: aggregate(rows, sc, qualified),
+  for (const sc of L.SCENARIOS_P5A) out.aggregates[sc] = {
+    full: aggregate(rows, sc), qualifiedOnly: aggregate(rows, sc, qualified), from2013_03_rule101: aggregate(rows, sc, r => r.t0 >= SPAN_101),
     semiannual_2009_2019: aggregate(rows, sc, r => r.t1 <= '2019-09-30'), quarterly_2019_2026: aggregate(rows, sc, r => r.t0 >= '2019-09-30'),
     regimeR1: Object.fromEntries(['CRASH_BEAR', 'RECOVERY', 'SIDEWAYS', 'BULL'].map(k => [k, aggregate(rows, sc, r => r.regimeR1 === k)])),
     regimeR2: Object.fromEntries(['CRASH_BEAR', 'RECOVERY', 'SIDEWAYS', 'OTHER'].map(k => [k, aggregate(rows, sc, r => r.regimeR2 === k)])) };
@@ -119,4 +132,4 @@ function main() {
   console.log(JSON.stringify({ out: path.relative(L.ROOT, o.out), sha256: h, seconds: out.runtimeSeconds }));
 }
 if (require.main === module) main();
-module.exports = { frameContext, ewIndex, computePeriods, aggregate, SERIES, TERMS, LOADER };
+module.exports = { frameContext, ewIndex, computePeriods, aggregate, SERIES, TERMS, LOADER, SPAN_101, SCENARIO_LABELS };

@@ -1,0 +1,1993 @@
+{
+ "schemaVersion": "v12-requal-dividends-1.1.0",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "method": "V12 REQUAL 1.1.0: order of magnitude of the missing member dividends (correction after the independent V12 review, REQUAL MAJOR 3/4).\n\nStdlib only, run with python3 -I. For every P6 rebalancing date t0 (registered span, scenario ZERO, base costs) and every portfolio\n(S1-S6 targets and the holdings-weighted population CW_ALL, exported privately by p6-strategies.cjs --export-holdings):\n  dividend yield = sum_i w_i * DPS_i / P_i / sum_i w_i\n  DPS_i: trailing annual dividends per share from SEC companyfacts (us-gaap CommonStockDividendsPerShareDeclared, else\n         CommonStockDividendsPerShareCashPaid; unit USD/shares), only facts FILED on or before t0: the latest fiscal-year fact\n         (duration 330-380 days, end >= t0 - 15 months), else the sum of the four latest quarterly facts (80-100 days, distinct\n         ends within 12.5 months, latest end >= t0 - 6 months); a CIK without any such fact before t0 counts as non-payer (0).\n  P_i: raw close at t0 = split-adjusted weekly close (last bar <= t0, <= 7 days) x product of the provider split factors dated after t0.\n  Yields above 15 % are dropped (basis mismatch after a split between filing and t0) and counted.\nValidation: CW_ALL yield against the SPY N-30D distribution yield of the same periods (p5a counts.spyTrDividendYield, annualised).\nThis is an order-of-magnitude estimate, not a total-return series (no ex-dates, no reinvestment timing).",
+ "inputs": {
+  "companyfactsZipSha256": "7e4f93a398ce4e0479d3575259219f5534c0e679d90fb5c054878ec0aa0acda8",
+  "holdingsExportSha256": "47708cbb42905f2270fe2d1230d0bb2429a81de47b4fe4e30fdaab712e7f356d",
+  "p5aSha256": "ba0575017122bca99d97986bd248a3229868017d97040f6a1b8d2f58a6900d07"
+ },
+ "validationCwAllVsSpyN30D": {
+  "periods": 45,
+  "meanCwAllYieldPct": 1.353,
+  "meanSpyN30dYieldPct": 1.736,
+  "medianAbsDiffPp": 0.375
+ },
+ "spyN30dMeanYieldPct": 1.736,
+ "summary": {
+  "CW_ALL": {
+   "meanMemberYieldPct": 1.353,
+   "meanEquityWeight": 1.0,
+   "meanPortfolioDividendPctPerYear": 1.353,
+   "meanCoveredShareOfEquity": 0.9295,
+   "minusCwAllPp": 0.0,
+   "minusSpyN30dPp": -0.383
+  },
+  "S1_EW_SP500": {
+   "meanMemberYieldPct": 1.512,
+   "meanEquityWeight": 0.9999,
+   "meanPortfolioDividendPctPerYear": 1.512,
+   "meanCoveredShareOfEquity": 0.8532,
+   "minusCwAllPp": 0.159,
+   "minusSpyN30dPp": -0.224
+  },
+  "S2_MOM_Q5_FILTER": {
+   "meanMemberYieldPct": 0.887,
+   "meanEquityWeight": 0.8445,
+   "meanPortfolioDividendPctPerYear": 0.887,
+   "meanCoveredShareOfEquity": 0.9971,
+   "minusCwAllPp": -0.466,
+   "minusSpyN30dPp": -0.849
+  },
+  "S3_QP_Q5": {
+   "meanMemberYieldPct": 0.802,
+   "meanEquityWeight": 0.9333,
+   "meanPortfolioDividendPctPerYear": 0.802,
+   "meanCoveredShareOfEquity": 1.0,
+   "minusCwAllPp": -0.551,
+   "minusSpyN30dPp": -0.934
+  },
+  "S4_MOMQP_TOP30_VOLTGT": {
+   "meanMemberYieldPct": 0.747,
+   "meanEquityWeight": 0.7477,
+   "meanPortfolioDividendPctPerYear": 0.626,
+   "meanCoveredShareOfEquity": 0.9976,
+   "minusCwAllPp": -0.727,
+   "minusSpyN30dPp": -1.11
+  },
+  "S5_LOWVOL_Q1": {
+   "meanMemberYieldPct": 2.019,
+   "meanEquityWeight": 1.0,
+   "meanPortfolioDividendPctPerYear": 2.019,
+   "meanCoveredShareOfEquity": 1.0,
+   "minusCwAllPp": 0.666,
+   "minusSpyN30dPp": 0.283
+  },
+  "S6_EW_BUFFER_FILTER": {
+   "meanMemberYieldPct": 1.512,
+   "meanEquityWeight": 0.83,
+   "meanPortfolioDividendPctPerYear": 1.245,
+   "meanCoveredShareOfEquity": 0.8532,
+   "minusCwAllPp": -0.108,
+   "minusSpyN30dPp": -0.491
+  }
+ },
+ "dpsStates": {
+  "ANNUAL": 11231,
+  "STALE_OR_INCOMPLETE": 3024,
+  "NO_FACT_NON_PAYER": 3809,
+  "QUARTERLY_SUM": 1290
+ },
+ "droppedAboveMaxYield": 33,
+ "ciks": 748,
+ "ciksWithoutCompanyfacts": 4,
+ "periods": {
+  "CW_ALL": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 0.999994,
+    "coveredShareOfEquity": 0.8202,
+    "yield": 0.010372
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0.999987,
+    "coveredShareOfEquity": 0.8244,
+    "yield": 0.016088
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 0.8162,
+    "yield": 0.016328
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 0.8325,
+    "yield": 0.0193
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 1.000001,
+    "coveredShareOfEquity": 0.8365,
+    "yield": 0.017569
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 0.8432,
+    "yield": 0.017805
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 0.999995,
+    "coveredShareOfEquity": 0.831,
+    "yield": 0.018003
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 1.000002,
+    "coveredShareOfEquity": 0.835,
+    "yield": 0.016715
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 1.00001,
+    "coveredShareOfEquity": 0.838,
+    "yield": 0.016929
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 0.999996,
+    "coveredShareOfEquity": 0.8382,
+    "yield": 0.016441
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 0.999986,
+    "coveredShareOfEquity": 0.8449,
+    "yield": 0.01644
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 1.000021,
+    "coveredShareOfEquity": 0.8739,
+    "yield": 0.018357
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 0.999989,
+    "coveredShareOfEquity": 0.8559,
+    "yield": 0.017859
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 1.000002,
+    "coveredShareOfEquity": 0.8694,
+    "yield": 0.017361
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 0.8771,
+    "yield": 0.016813
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 1.000005,
+    "coveredShareOfEquity": 0.8914,
+    "yield": 0.015505
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 0.9007,
+    "yield": 0.016077
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.9054,
+    "yield": 0.014638
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.999994,
+    "coveredShareOfEquity": 0.9369,
+    "yield": 0.015915
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 1.000001,
+    "coveredShareOfEquity": 0.9626,
+    "yield": 0.013948
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 1.000012,
+    "coveredShareOfEquity": 0.9666,
+    "yield": 0.013008
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 0.9706,
+    "yield": 0.017687
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 1.000006,
+    "coveredShareOfEquity": 0.9741,
+    "yield": 0.01496
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 0.9752,
+    "yield": 0.014945
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.999994,
+    "coveredShareOfEquity": 0.9745,
+    "yield": 0.012008
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 1.000001,
+    "coveredShareOfEquity": 0.9751,
+    "yield": 0.011238
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 0.999998,
+    "coveredShareOfEquity": 0.9763,
+    "yield": 0.010196
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 1.000005,
+    "coveredShareOfEquity": 0.9782,
+    "yield": 0.009863
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 1.000013,
+    "coveredShareOfEquity": 0.9797,
+    "yield": 0.009104
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 0.9811,
+    "yield": 0.009918
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 0.9813,
+    "yield": 0.011732
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 1.00001,
+    "coveredShareOfEquity": 0.9818,
+    "yield": 0.012749
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 1.000005,
+    "coveredShareOfEquity": 0.9846,
+    "yield": 0.011752
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 1.000002,
+    "coveredShareOfEquity": 0.9865,
+    "yield": 0.011663
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.999993,
+    "coveredShareOfEquity": 0.9879,
+    "yield": 0.010937
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.999998,
+    "coveredShareOfEquity": 0.9875,
+    "yield": 0.011518
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 0.999998,
+    "coveredShareOfEquity": 0.9901,
+    "yield": 0.010315
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 1.000009,
+    "coveredShareOfEquity": 0.9904,
+    "yield": 0.009783
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 0.9925,
+    "yield": 0.009375
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 1.000006,
+    "coveredShareOfEquity": 0.9922,
+    "yield": 0.008939
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.9928,
+    "yield": 0.009037
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 1.000009,
+    "coveredShareOfEquity": 0.9923,
+    "yield": 0.011185
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 1.000011,
+    "coveredShareOfEquity": 0.9933,
+    "yield": 0.010245
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.999998,
+    "coveredShareOfEquity": 0.9952,
+    "yield": 0.009362
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 1.000002,
+    "coveredShareOfEquity": 0.9949,
+    "yield": 0.008986
+   }
+  ],
+  "S1_EW_SP500": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.654,
+    "yield": 0.008373
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.658,
+    "yield": 0.011582
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 0.999984,
+    "coveredShareOfEquity": 0.6653,
+    "yield": 0.01396
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.676,
+    "yield": 0.016775
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.688,
+    "yield": 0.015787
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 0.999996,
+    "coveredShareOfEquity": 0.7034,
+    "yield": 0.015751
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.71,
+    "yield": 0.01683
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.716,
+    "yield": 0.015574
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.728,
+    "yield": 0.01529
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.7296,
+    "yield": 0.014438
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 0.999984,
+    "coveredShareOfEquity": 0.743,
+    "yield": 0.015201
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.7545,
+    "yield": 0.017204
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.7273,
+    "yield": 0.016567
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.753,
+    "yield": 0.016021
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.7683,
+    "yield": 0.015646
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.7822,
+    "yield": 0.014907
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.7921,
+    "yield": 0.015413
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.7945,
+    "yield": 0.014925
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.8515,
+    "yield": 0.016699
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.897,
+    "yield": 0.015407
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.903,
+    "yield": 0.014904
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.903,
+    "yield": 0.023542
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.9109,
+    "yield": 0.020954
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.9089,
+    "yield": 0.019372
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.9149,
+    "yield": 0.015738
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.9229,
+    "yield": 0.013397
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.9308,
+    "yield": 0.01241
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.9328,
+    "yield": 0.012228
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.9328,
+    "yield": 0.011452
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 0.999856,
+    "coveredShareOfEquity": 0.9368,
+    "yield": 0.012016
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.9406,
+    "yield": 0.013576
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0.9999,
+    "coveredShareOfEquity": 0.9406,
+    "yield": 0.015271
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0.999936,
+    "coveredShareOfEquity": 0.9484,
+    "yield": 0.013655
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 0.999936,
+    "coveredShareOfEquity": 0.9524,
+    "yield": 0.0149
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9563,
+    "yield": 0.015366
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9543,
+    "yield": 0.015999
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9583,
+    "yield": 0.014398
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9602,
+    "yield": 0.014321
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9642,
+    "yield": 0.014322
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 0.999936,
+    "coveredShareOfEquity": 0.9643,
+    "yield": 0.013102
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9682,
+    "yield": 0.014471
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9682,
+    "yield": 0.016018
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 0.999936,
+    "coveredShareOfEquity": 0.9683,
+    "yield": 0.015963
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9801,
+    "yield": 0.015305
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.999964,
+    "coveredShareOfEquity": 0.9801,
+    "yield": 0.015439
+   }
+  ],
+  "S2_MOM_Q5_FILTER": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004396
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009695
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 0.9844,
+    "yield": 0.007816
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 1.000032,
+    "coveredShareOfEquity": 0.9848,
+    "yield": 0.007937
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 0.999975,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.012819
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.011664
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 1.000017,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006516
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 0.9857,
+    "yield": 0.007318
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 0.9857,
+    "yield": 0.010559
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008738
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 0.9857,
+    "yield": 0.017829
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 1.000027,
+    "coveredShareOfEquity": 0.9863,
+    "yield": 0.011309
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 1.000036,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.014271
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 0.999975,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008982
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009471
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007114
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.010517
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 1.000025,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.011627
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008671
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006789
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006439
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007336
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 1.000032,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.011143
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009517
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006633
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006726
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01122
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008129
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.003872
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007469
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005202
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006664
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008771
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 0.9891,
+    "yield": 0.008952
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 1.000029,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009301
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 1.000029,
+    "coveredShareOfEquity": 0.9892,
+    "yield": 0.009987
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.999972,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00712
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.999972,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008725
+   }
+  ],
+  "S3_QP_Q5": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009719
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006383
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009217
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 1.00001,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01104
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.013451
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 1.00001,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007898
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007587
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009959
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.012257
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.012736
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 0.999994,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.012051
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 1.000012,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.014454
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.013256
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008413
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00759
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006546
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005042
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004466
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.010987
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 1.000012,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006225
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00507
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005438
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007365
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004923
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005756
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00555
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006631
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00663
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008299
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0.999992,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007346
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.011616
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.010709
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006978
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005641
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005156
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00624
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00558
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009407
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009624
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005831
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 1.000007,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004209
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.003593
+   }
+  ],
+  "S4_MOMQP_TOP30_VOLTGT": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 0,
+    "coveredShareOfEquity": null,
+    "yield": null
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 0.80649,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.013976
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 0.63165,
+    "coveredShareOfEquity": 0.9667,
+    "yield": 0.006501
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 0.7749,
+    "coveredShareOfEquity": 0.9667,
+    "yield": 0.007533
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.011047
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009163
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008989
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.010365
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006727
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 0.9667,
+    "yield": 0.007196
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.015057
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 0.83439,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.008461
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.014055
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009197
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009548
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007122
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.87876,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006293
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 0.88971,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.007194
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 0.99276,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004554
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0.58326,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009326
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 0.50664,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005548
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.4662,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.003862
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.40065,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.0027
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 0.39939,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005812
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 0.71775,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005847
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 0.80499,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.003316
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 0.91383,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00329
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009273
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 0.8523,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009019
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0.78831,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.010902
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0.65205,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009813
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 0.62517,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.00775
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.53946,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.003025
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.711,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005927
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 0.7419,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004594
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 0.77472,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004377
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 0.76776,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006454
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 0.83244,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009228
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 0.80691,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.005713
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 0.99795,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.009406
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 0.69999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.006483
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.6669,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004556
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.58971,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.004473
+   }
+  ],
+  "S5_LOWVOL_Q1": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01483
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.022257
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 1.0,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.03024
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 1.000025,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.030236
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 1.000032,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.028398
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 0.999975,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.028931
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.024354
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 1.000017,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.02181
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.020902
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.021895
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019204
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 1.000027,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01954
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 1.00002,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019928
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 1.000027,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.020896
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 1.000036,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01811
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 0.999975,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017252
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019166
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017911
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.020901
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 1.000025,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018488
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 1.000008,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017563
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018695
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.016186
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.015345
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.999978,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.014259
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 1.000032,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018099
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.01818
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018255
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017185
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019999
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 1.000004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.021847
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0.99999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.021907
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017949
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017293
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019383
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.999999,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.021454
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018256
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.018066
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017866
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 1.00004,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.017706
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 1.000029,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.019207
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 1.000029,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.020835
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 1.000029,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.022704
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.999972,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.022727
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.999972,
+    "coveredShareOfEquity": 1.0,
+    "yield": 0.022147
+   }
+  ],
+  "S6_EW_BUFFER_FILTER": [
+   {
+    "t0": "2010-03-31",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.654,
+    "yield": 0.008373
+   },
+   {
+    "t0": "2010-09-30",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.658,
+    "yield": 0.011582
+   },
+   {
+    "t0": "2011-03-31",
+    "equityWeight": 0.900086,
+    "coveredShareOfEquity": 0.6653,
+    "yield": 0.01396
+   },
+   {
+    "t0": "2011-09-30",
+    "equityWeight": 0.45,
+    "coveredShareOfEquity": 0.676,
+    "yield": 0.016775
+   },
+   {
+    "t0": "2012-03-31",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.688,
+    "yield": 0.015787
+   },
+   {
+    "t0": "2012-09-30",
+    "equityWeight": 0.900196,
+    "coveredShareOfEquity": 0.7034,
+    "yield": 0.015751
+   },
+   {
+    "t0": "2013-03-31",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.71,
+    "yield": 0.01683
+   },
+   {
+    "t0": "2013-09-30",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.716,
+    "yield": 0.015574
+   },
+   {
+    "t0": "2014-03-31",
+    "equityWeight": 0.9,
+    "coveredShareOfEquity": 0.728,
+    "yield": 0.01529
+   },
+   {
+    "t0": "2014-09-30",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.7296,
+    "yield": 0.014438
+   },
+   {
+    "t0": "2015-03-31",
+    "equityWeight": 0.900086,
+    "coveredShareOfEquity": 0.743,
+    "yield": 0.015201
+   },
+   {
+    "t0": "2015-09-30",
+    "equityWeight": 0.449955,
+    "coveredShareOfEquity": 0.7545,
+    "yield": 0.017204
+   },
+   {
+    "t0": "2016-03-31",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.7273,
+    "yield": 0.016567
+   },
+   {
+    "t0": "2016-09-30",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.753,
+    "yield": 0.016021
+   },
+   {
+    "t0": "2017-03-31",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.7683,
+    "yield": 0.015646
+   },
+   {
+    "t0": "2017-09-30",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.7822,
+    "yield": 0.014907
+   },
+   {
+    "t0": "2018-03-31",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.7921,
+    "yield": 0.015413
+   },
+   {
+    "t0": "2018-09-30",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.7945,
+    "yield": 0.014925
+   },
+   {
+    "t0": "2019-03-31",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.8515,
+    "yield": 0.016699
+   },
+   {
+    "t0": "2019-09-30",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.897,
+    "yield": 0.015407
+   },
+   {
+    "t0": "2019-12-31",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.903,
+    "yield": 0.014904
+   },
+   {
+    "t0": "2020-03-31",
+    "equityWeight": 0.449955,
+    "coveredShareOfEquity": 0.903,
+    "yield": 0.023542
+   },
+   {
+    "t0": "2020-06-30",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.9109,
+    "yield": 0.020954
+   },
+   {
+    "t0": "2020-09-30",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.9089,
+    "yield": 0.019372
+   },
+   {
+    "t0": "2020-12-31",
+    "equityWeight": 0.89991,
+    "coveredShareOfEquity": 0.9149,
+    "yield": 0.015738
+   },
+   {
+    "t0": "2021-03-31",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.9229,
+    "yield": 0.013397
+   },
+   {
+    "t0": "2021-06-30",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.9308,
+    "yield": 0.01241
+   },
+   {
+    "t0": "2021-09-30",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.9328,
+    "yield": 0.012228
+   },
+   {
+    "t0": "2021-12-31",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.9328,
+    "yield": 0.011452
+   },
+   {
+    "t0": "2022-03-31",
+    "equityWeight": 0.900174,
+    "coveredShareOfEquity": 0.9368,
+    "yield": 0.012016
+   },
+   {
+    "t0": "2022-06-30",
+    "equityWeight": 0.449955,
+    "coveredShareOfEquity": 0.9406,
+    "yield": 0.013576
+   },
+   {
+    "t0": "2022-09-30",
+    "equityWeight": 0.449955,
+    "coveredShareOfEquity": 0.9406,
+    "yield": 0.015271
+   },
+   {
+    "t0": "2022-12-31",
+    "equityWeight": 0.450072,
+    "coveredShareOfEquity": 0.9484,
+    "yield": 0.013655
+   },
+   {
+    "t0": "2023-03-31",
+    "equityWeight": 0.900144,
+    "coveredShareOfEquity": 0.9524,
+    "yield": 0.0149
+   },
+   {
+    "t0": "2023-06-30",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9563,
+    "yield": 0.015366
+   },
+   {
+    "t0": "2023-09-30",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9543,
+    "yield": 0.015999
+   },
+   {
+    "t0": "2023-12-31",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9583,
+    "yield": 0.014398
+   },
+   {
+    "t0": "2024-03-31",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9602,
+    "yield": 0.014321
+   },
+   {
+    "t0": "2024-06-30",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9642,
+    "yield": 0.014322
+   },
+   {
+    "t0": "2024-09-30",
+    "equityWeight": 0.900144,
+    "coveredShareOfEquity": 0.9643,
+    "yield": 0.013102
+   },
+   {
+    "t0": "2024-12-31",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9682,
+    "yield": 0.014471
+   },
+   {
+    "t0": "2025-03-31",
+    "equityWeight": 0.450185,
+    "coveredShareOfEquity": 0.9682,
+    "yield": 0.016018
+   },
+   {
+    "t0": "2025-06-30",
+    "equityWeight": 0.900144,
+    "coveredShareOfEquity": 0.9683,
+    "yield": 0.015963
+   },
+   {
+    "t0": "2025-09-30",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9801,
+    "yield": 0.015305
+   },
+   {
+    "t0": "2025-12-31",
+    "equityWeight": 0.899867,
+    "coveredShareOfEquity": 0.9801,
+    "yield": 0.015439
+   }
+  ]
+ },
+ "reading": "minusCwAllPp is the dividend term missing in a price-vs-price comparison against CW_ALL (positive: the strategy would gain relative to CW_ALL on a total-return basis); minusSpyN30dPp the same against SPY. Order of magnitude only."
+}

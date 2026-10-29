@@ -141,3 +141,51 @@ test('committed evidence: identities, registration link, Python parity', () => {
   assert.equal(py.P5a.withSeriesOrFrameCountMismatchPeriods.length, 0);
   assert.ok(Math.abs(py.P6_S5_LOWVOL_Q1_ZERO_BASE.cagrDiff) < 1e-6);
 });
+
+test('1.1.0 correction after independent review: amendment, SPXPOP 1.1.1, scenarios FATE/UPPER, CW_ALL benchmark, span 2013, Python parity', () => {
+  const am = fs.readFileSync(path.join(DOCS, 'amendment-1.1.0.json'), 'utf8');
+  assert.equal(crypto.createHash('sha256').update(am).digest('hex'), fs.readFileSync(path.join(DOCS, 'amendment-1.1.0.sha256'), 'utf8').split(/\s+/)[0]);
+  const reg = readRegistration();
+  assert.equal(reg.registration.version, '1.0.2'); // strategies and parameters unchanged
+  const a = read('p5a-population-1.1.0.json');
+  assert.equal(a.population.rules, '1.1.1');
+  assert.deepEqual(Object.keys(a.aggregates), ['ZERO', 'LOWER', 'FATE', 'UPPER']);
+  for (const sc of Object.keys(a.aggregates)) assert.ok(a.aggregates[sc].full.identityMaxAbsResidual < 1e-12, sc);
+  // the survivorship term is largest under LOWER (its upper bound) and smallest under UPPER
+  const sv = sc => a.aggregates[sc].full.terms.survivorshipInIndex.annualizedArithmeticPp;
+  assert.ok(sv('LOWER') > sv('FATE') && sv('LOWER') > sv('ZERO') && sv('UPPER') < sv('ZERO') && sv('UPPER') < sv('FATE'));
+  assert.match(a.scenarios.LOWER, /UPPER bound of the survivorship term/);
+  assert.match(a.scenarios.ZERO, /NOT a bound/);
+  assert.ok(a.takeoverPremium.n >= 5 && a.takeoverPremium.median > 0 && a.takeoverPremium.p75 >= a.takeoverPremium.median);
+  assert.equal(a.aggregates.ZERO.from2013_03_rule101.from, '2013-03-31');
+  for (const k of Object.keys(a.aggregates.ZERO.full.terms)) assert.ok('cagrDiffPp' in a.aggregates.ZERO.full.terms[k]);
+  // FATE/UPPER mapping on the scenario object of one member
+  const p6 = read('p6-strategies-1.1.0.json');
+  assert.equal(p6.registrationSha256, reg.sha256);
+  assert.equal(p6.populationRules, '1.1.1');
+  assert.match(p6.execution, /same-bar/);
+  const z = p6.results.registeredSpan.scenarios.ZERO.BASE;
+  assert.ok(z.references.CW_ALL && z.multipleTestingVsCwAll.family === 6);
+  for (const s of Object.values(z.strategies)) assert.ok(s.vsCwAll && Number.isFinite(s.vsCwAll.cagrDiff) && Number.isFinite(s.boundedWeightHeldMean));
+  assert.equal(p6.results.span2013_rule101.from, '2013-03-31');
+  const d = read('p5d-attribution-1.1.0.json');
+  assert.doesNotMatch(d.population.text, /came from 2000-2012 and does not exist/);
+  assert.match(d.population.text, /not a causal attribution/);
+  assert.ok(d.strategies.S5_LOWVOL_Q1.vsCwAllPp !== undefined && d.population.survivorshipInIndexByScenario.FATE);
+  const py = read('python-check-1.1.0.json');
+  assert.ok(py.P5a.maxAbsDiffAll < 1e-6);
+  assert.equal(py.P5a.withSeriesOrFrameCountMismatchPeriods.length, 0);
+  assert.ok(Math.abs(py.P6_S5_LOWVOL_Q1_ZERO_BASE.cagrDiff) < 1e-6 && Math.abs(py.P6_S5_LOWVOL_Q1_ZERO_BASE_span2013.cagrDiff) < 1e-6);
+  assert.ok(py.takeoverPremium.nEqual && py.takeoverPremium.maxAbsDiff < 1e-9);
+  // the 1.0.0 results stay unchanged next to 1.1.0
+  assert.equal(read('p5a-population-1.0.0.json').population.rules, '1.1.0');
+});
+
+test('scenario mapping FATE/UPPER of bounded members (lib.FATE_CLASS)', () => {
+  assert.equal(L.FATE_CLASS.IDENTITY_BREAK, 'TAKEOVER');
+  assert.equal(L.FATE_CLASS.DELISTED_BANKRUPTCY, 'DELISTING');
+  assert.equal(L.FATE_CLASS.TEMPORARY_ABSENCE, 'INDEX_CHANGE');
+  assert.equal(L.FATE_CLASS.NO_CIK, 'UNKNOWN');
+  assert.equal(L.quant([1, 2, 3, 4], 0.5), 2.5);
+  assert.equal(L.quant([1, 2, 3, 4], 0.75), 3.25);
+});
