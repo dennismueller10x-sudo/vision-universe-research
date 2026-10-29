@@ -71,7 +71,7 @@ async function main() {
   const sfTop = SF ? Object.values(SF.top).flat() : [];
   const sfModel = sfTop.find((r) => r.s === 'MODELED_TRADE_PLAN') || sfTop[0];
   const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
-  // Beta (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
+  // Regulär (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
   // den gekennzeichneten Leerzustand (geprueft auf denselben Routen), nie erfundene Kandidaten
   routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
   routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
@@ -143,7 +143,7 @@ async function main() {
       // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
       // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
       // Firmenlogo im Aktienkopf (assets/stock-navigator.js): fehlt die Datei, zeigt der Kopf das Monogramm - kein Fehler.
-      // Ohne veroeffentlichten Datenlauf ist die fehlende Uebersicht (404) der erwartete Leerzustand der Beta.
+      // Ohne veroeffentlichten Datenlauf ist die fehlende Uebersicht (404) der erwartete Leerzustand.
       page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url()) && !(!SF && r.status() === 404 && r.url().endsWith(SF_PREFIX + 'summary.json'))) errors.push(`http ${r.status()}: ${r.url()}`); });
       // ohne Datenstand fragt das Modul nur die Uebersicht an, keine Strategie- oder Aktiendatei
       page.on('request', (r) => { if (!SF && r.url().includes(SF_PREFIX) && !r.url().endsWith(SF_PREFIX + 'summary.json')) errors.push('Research-Daten ohne veroeffentlichten Stand angefragt: ' + r.url()); });

@@ -139,6 +139,8 @@
     if (param('plan') === 'free') forgetChoice();
     if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
     passwordHints($('password'), $('pw-rules'));
+    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt).
+    A.get('/v1/plans').then(function (r) { if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false; });
     $('ka-register').addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]');
@@ -149,7 +151,8 @@
       if (!$('terms').checked) return notice(A.message('TERMS_REQUIRED'), 'error');
       busy(btn, true);
       A.post('/v1/auth/signup', {email: email, password: pw, displayName: $('display-name').value.trim() || null,
-        acceptTerms: true, termsVersion: 'entwurf-2026-10', plan: pendingChoice() === 'pro' ? 'pro' : null}).then(function (r) {
+        acceptTerms: true, newsletter: !$('newsletter-field').hidden && $('newsletter').checked,
+        plan: pendingChoice() === 'pro' ? 'pro' : null}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
         $('ka-register').hidden = true;
@@ -476,7 +479,7 @@
         $('appearance').value = s.appearance || 'system';
         $('currency').value = s.displayCurrency || 'EUR';
         $('experience').value = s.experienceLevel || 'beginner';
-        $('marketing').checked = Boolean(s.marketingEmails);
+        renderNewsletter(r.data.newsletter);
         Array.prototype.forEach.call(document.querySelectorAll('[data-notification]'), function (c) {
           c.checked = Boolean((s.notifications || {})[c.getAttribute('data-notification')]);
         });
@@ -493,13 +496,43 @@
       });
       busy(btn, true);
       A.patch('/v1/me', {profile: {displayName: $('display-name').value.trim() || null}, settings: {appearance: $('appearance').value,
-        displayCurrency: $('currency').value, experienceLevel: $('experience').value, notifications: notifications,
-        marketingEmails: $('marketing').checked}}).then(function (r) {
+        displayCurrency: $('currency').value, experienceLevel: $('experience').value, notifications: notifications}}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
         var mode = $('appearance').value;
         if ((mode === 'dark' || mode === 'light') && window.VUTheme && window.VUTheme.set) window.VUTheme.set(mode);
         notice('Gespeichert.', 'ok');
+      });
+    });
+
+    // Newsletter: Stand der eigenen Einwilligung; Bestellung per Double-Opt-in, Abmeldung sofort.
+    var NEWSLETTER_TEXT = {
+      none: 'Du hast den Newsletter nicht bestellt.',
+      withdrawn: 'Du hast den Newsletter abbestellt.',
+      expired: 'Deine Bestellung wurde nicht bestätigt und ist verfallen.',
+      failed: 'Die Bestellung konnte nicht gesendet werden. Bitte versuche es später erneut.',
+      requested: 'Bestellt – die Bestätigungs-E-Mail ist unterwegs.',
+      pending: 'Bestellt – bitte bestätige den Link in der E-Mail, die wir dir geschickt haben. Erst dann erhältst du den Newsletter.',
+      confirmed: 'Du erhältst den Newsletter.'
+    };
+    var newsletterState = null;
+    function renderNewsletter(n) {
+      newsletterState = n || {available: false, status: 'none'};
+      var active = ['requested', 'pending', 'confirmed'].indexOf(newsletterState.status) !== -1;
+      $('ka-newsletter-status').textContent = NEWSLETTER_TEXT[newsletterState.status] || NEWSLETTER_TEXT.none;
+      var btn = $('ka-newsletter-toggle');
+      btn.hidden = !active && !newsletterState.available;
+      btn.textContent = active ? 'Newsletter abbestellen' : 'Newsletter bestellen';
+      if (!newsletterState.available && !active) $('ka-newsletter-status').textContent += ' Der Newsletter ist im Konto noch nicht verfügbar.';
+    }
+    $('ka-newsletter-toggle').addEventListener('click', function () {
+      var btn = this, subscribe = ['requested', 'pending', 'confirmed'].indexOf((newsletterState || {}).status) === -1;
+      busy(btn, true);
+      A.post('/v1/me/newsletter', {subscribe: subscribe}).then(function (r) {
+        busy(btn, false);
+        if (!r.ok) return fail(r);
+        renderNewsletter(r.data.newsletter);
+        notice(subscribe ? 'Fast geschafft: Bitte bestätige den Link in der E-Mail.' : 'Du hast den Newsletter abbestellt.', 'ok');
       });
     });
 

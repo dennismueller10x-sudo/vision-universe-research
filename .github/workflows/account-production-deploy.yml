@@ -58,7 +58,9 @@ jobs:
           grep -qE '^VU_REGISTRATION_ALLOWLIST = ""$' <<<"$prod" || { echo "::error::Produktion: keine Registrierungs-Positivliste (oeffentliche Registrierung)"; exit 1; }
           grep -q 'account.visionuniverse.de' <<<"$(awk '/^\[env\.production\]/{p=1} p' wrangler.toml | grep -v '^#')" && { echo "::error::account.visionuniverse.de gehoert Shopify"; exit 1; } || true
           grep -qE '^VU_CHECKOUT_ACCESS = "(testers|off)"$' <<<"$prod" || { echo "::error::Produktion: VU_CHECKOUT_ACCESS muss \"testers\" oder \"off\" sein (oeffentlicher Checkout nur per eigenem Freigabe-PR an dieser Pruefung)"; exit 1; }
-          for k in STRIPE_LIVE_MODE_APPROVED VU_CHECKOUT_ACCESS VU_REGISTRATION_ENABLED; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
+          grep -qE '^STRIPE_TAX_MODE = "(none|automatic|txr_[A-Za-z0-9]+)"$' <<<"$prod" || { echo "::error::Produktion: STRIPE_TAX_MODE muss none, automatic oder txr_… sein"; exit 1; }
+          for k in VU_BREVO_SYNC VU_NEWSLETTER; do grep -qE "^$k = \"(true|false)\"$" <<<"$prod" || { echo "::error::Produktion: $k muss \"true\" oder \"false\" sein"; exit 1; }; done
+          for k in STRIPE_LIVE_MODE_APPROVED VU_CHECKOUT_ACCESS VU_REGISTRATION_ENABLED STRIPE_TAX_MODE VU_LEGAL_APPROVED VU_BREVO_SYNC VU_NEWSLETTER; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
           npx --yes "$WRANGLER" deploy --dry-run --env production --outdir "$RUNNER_TEMP/bundle" > /dev/null
 
   supabase:

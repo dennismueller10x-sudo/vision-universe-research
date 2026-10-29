@@ -25,7 +25,56 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
   const supabase = await createFakeSupabase({baseUrl: SIM.supabase, pg, now});
   const stripe = createFakeStripe({now, checkoutBase, portalBase});
   const mails = []; // simuliertes Brevo (Transaktions-E-Mails des Workers)
-  const brevo = {down: false}; // Ausfall simulieren
+  // Simuliertes Brevo: Kontakte, Listen, DOI (wie die echte API: DOI-Mail, erst der Klick traegt in die Liste ein).
+  const brevo = {down: false, contacts: new Map(), doi: [], calls: [],
+    templates: [{id: 7, name: 'VU | Newsletter | DE | API Double Opt In | v1', isActive: true, doiTemplate: true, tag: 'optin',
+      htmlContent: '<a href="{{ params.DOIurl }}">Bestätigen</a> Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.'}],
+    // Klick auf den Bestaetigungslink der letzten DOI-Mail an diese Adresse.
+    confirmDoi(email) {
+      const d = [...this.doi].reverse().find(x => x.email === email);
+      if (!d) throw new Error('KEINE_DOI_MAIL');
+      const c = this.contacts.get(email) || {email, listIds: [], attributes: {}, emailBlacklisted: false};
+      c.listIds = [...new Set([...c.listIds, ...d.includeListIds])];
+      Object.assign(c.attributes, d.attributes || {});
+      this.contacts.set(email, c);
+    },
+    unsubscribe(email) { const c = this.contacts.get(email); if (c) c.emailBlacklisted = true; },
+  };
+  const reply = (status, body) => new Response(body === undefined ? null : JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
+  async function brevoApi(req, u) {
+    const body = ['GET', 'DELETE'].includes(req.method) ? null : await req.json().catch(() => ({}));
+    brevo.calls.push(`${req.method} ${u.pathname}`);
+    const m = u.pathname.match(/^\/v3\/contacts\/([^/]+)$/);
+    if (u.pathname === '/v3/smtp/templates' && req.method === 'GET') return reply(200, {templates: brevo.templates, count: brevo.templates.length});
+    if (u.pathname === '/v3/contacts' && req.method === 'POST') {
+      const prior = brevo.contacts.get(body.email);
+      if (prior && !body.updateEnabled) return reply(400, {code: 'duplicate_parameter'});
+      const c = prior || {email: body.email, listIds: [], attributes: {}, emailBlacklisted: false};
+      c.listIds = [...new Set([...c.listIds, ...(body.listIds || [])])];
+      Object.assign(c.attributes, body.attributes || {});
+      brevo.contacts.set(body.email, c);
+      return prior ? reply(204) : reply(201, {id: brevo.contacts.size});
+    }
+    if (u.pathname === '/v3/contacts/doubleOptinConfirmation' && req.method === 'POST') {
+      if (!brevo.templates.some(t => t.id === body.templateId && t.doiTemplate)) return reply(400, {code: 'invalid_parameter'});
+      brevo.doi.push({email: body.email, includeListIds: body.includeListIds, attributes: body.attributes, redirectionUrl: body.redirectionUrl,
+        tracking: body.contactPixelTrackingConsent, at: new Date(now()).toISOString()});
+      return reply(brevo.contacts.has(body.email) ? 204 : 201);
+    }
+    if (m) {
+      const email = decodeURIComponent(m[1]);
+      const c = brevo.contacts.get(email);
+      if (req.method === 'GET') return c ? reply(200, structuredClone(c)) : reply(404, {code: 'document_not_found'});
+      if (req.method === 'DELETE') { if (!c) return reply(404, {code: 'document_not_found'}); brevo.contacts.delete(email); return reply(204); }
+      if (req.method === 'PUT') {
+        if (!c) return reply(404, {code: 'document_not_found'});
+        c.listIds = c.listIds.filter(id => !(body.unlinkListIds || []).includes(id));
+        if (body.listIds) c.listIds = [...new Set([...c.listIds, ...body.listIds])];
+        return reply(204);
+      }
+    }
+    return reply(404, {code: 'not_found'});
+  }
   const fetchImpl = async (input, init) => {
     const req = input instanceof Request ? input : new Request(input, init);
     if (req.url.startsWith(SIM.supabase)) return supabase.handle(req);
@@ -33,6 +82,8 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
     if (req.url.startsWith(SIM.brevo)) {
       if (req.headers.get('api-key') !== 'brevo-sim-key') return new Response('{"code":"unauthorized"}', {status: 401});
       if (brevo.down) return new Response('{"code":"service_unavailable"}', {status: 503});
+      const u = new URL(req.url);
+      if (u.pathname !== '/v3/smtp/email') return brevoApi(req, u);
       const mail = await req.json();
       mails.push({to: mail.to[0].email, subject: mail.subject, text: mail.textContent, html: mail.htmlContent, sender: mail.sender.email, at: new Date(now()).toISOString()});
       return new Response(JSON.stringify({messageId: `<sim-${mails.length}@brevo.sim>`}), {status: 201});

@@ -853,3 +853,187 @@ test('SEPA: verzoegerte Erstzahlung bestaetigt bzw. gescheitert', {skip}, async 
     assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 200, 'neuer Versuch');
   });
 });
+
+// ------------------------------------------------------------------------------------------------
+// Produktivstart: oeffentliche Rechtsseiten, Kuendigen/Widerrufen ohne Anmeldung, Vertragsbestaetigung,
+// Checkout-Hinweis, Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich.
+// ------------------------------------------------------------------------------------------------
+const page = (env, path, init = {}) => env.app.handle(new Request(env.api + path, init));
+const form = (env, path, fields, origin = env.api) => page(env, path, {method: 'POST',
+  headers: {'Content-Type': 'application/x-www-form-urlencoded', Origin: origin}, body: new URLSearchParams(fields).toString()});
+
+test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+
+  await t.test('Rechtstexte: oeffentlich, als Entwurf gekennzeichnet, ohne Skript, keine Shopify-Texte', async () => {
+    for (const p of ['/rechtliches/', '/rechtliches/impressum', '/rechtliches/datenschutz', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung',
+      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/kuendigen', '/widerrufen']) {
+      const res = await page(env, p);
+      const html = await res.text();
+      assert.equal(res.status, 200, p);
+      assert.match(res.headers.get('Content-Type'), /text\/html/);
+      assert.match(res.headers.get('Content-Security-Policy'), /default-src 'none'.*form-action 'self'/);
+      assert.ok(!/<script/i.test(html), `${p}: kein Skript`);
+      assert.match(html, /Entwurf<\/strong> – Fassung vu-recht-/, `${p}: Entwurf gekennzeichnet`);
+      assert.ok(!/policies\/(terms-of-service|refund-policy)/.test(html), `${p}: keine Shopify-Texte`);
+      assert.match(html, /href="\/kuendigen">Verträge hier kündigen<\/a>/);
+      assert.match(html, /href="\/widerrufen">Vertrag widerrufen<\/a>/);
+    }
+    const impressum = await (await page(env, '/rechtliches/impressum')).text();
+    assert.match(impressum, /HRB 803400/);
+    assert.match(impressum, /\[OFFEN: USt-IdNr\./, 'fehlende Angabe sichtbar markiert, nicht erfunden');
+  });
+
+  await t.test('Kuendigen ohne Anmeldung: Jetzt kuendigen -> gespeichert, Bestaetigung per E-Mail, fremde Herkunft abgewiesen', async () => {
+    assert.match(await (await page(env, '/kuendigen')).text(), /<button type="submit">Jetzt kündigen<\/button>/);
+    const evil = await form(env, '/kuendigen', {fullName: 'X', email: 'x@example.test'}, 'https://evil.example');
+    assert.equal(evil.status, 403);
+    const missing = await (await form(env, '/kuendigen', {fullName: '', email: 'kai@example.test'})).text();
+    assert.match(missing, /Bitte gib deinen Namen an/);
+    const ok = await form(env, '/kuendigen', {fullName: 'Kai Kunde', email: 'kai@example.test', kind: 'ordinary'});
+    const html = await ok.text();
+    assert.equal(ok.status, 200);
+    assert.match(html, /Deine Kündigung ist eingegangen/);
+    assert.match(html, /Bestätigungsnummer<\/dt><dd>[0-9a-f-]{36}/);
+    const row = await env.pg.json(`select to_json(r) from (select kind, source, confirmation_status from billing.cancellation_requests where email = 'kai@example.test') r`);
+    assert.deepEqual(row, {kind: 'ordinary', source: 'public', confirmation_status: 'sent'});
+    assert.match(env.lastMailTo('kai@example.test').subject, /Eingangsbestätigung deiner Kündigung/);
+  });
+
+  await t.test('Widerrufen (§ 356a BGB): Vertrag widerrufen -> Widerruf bestaetigen -> Eingangsbestaetigung mit Inhalt, Datum, Uhrzeit', async () => {
+    const start = await (await page(env, '/widerrufen')).text();
+    assert.match(start, /<h1>Vertrag widerrufen<\/h1>/);
+    assert.ok(!/name="reason"/.test(start), 'kein Grund abgefragt');
+    const review = await (await form(env, '/widerrufen', {step: 'review', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Vision Universe Pro'})).text();
+    assert.match(review, /<button type="submit">Widerruf bestätigen<\/button>/);
+    assert.match(review, /Hiermit widerrufe ich/);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from billing.cancellation_requests where email = 'wilma@example.test'`), 0, 'erst nach Bestaetigung');
+    const edit = await (await form(env, '/widerrufen', {step: 'edit', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Pro'})).text();
+    assert.match(edit, /value="Wilma Widerruf"/, 'Angaben aendern behaelt die Werte');
+    const done = await (await form(env, '/widerrufen', {step: 'confirm', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Vision Universe Pro'})).text();
+    assert.match(done, /Dein Widerruf ist eingegangen/);
+    const row = await env.pg.json(`select to_json(r) from (select kind, status, confirmation_status from billing.cancellation_requests where email = 'wilma@example.test') r`);
+    assert.deepEqual(row, {kind: 'withdrawal', status: 'manual_review', confirmation_status: 'sent'}, 'immer in die Pruefung, Bestaetigung gesendet');
+    const mail = env.lastMailTo('wilma@example.test');
+    assert.match(mail.subject, /Eingangsbestätigung deines Widerrufs/);
+    assert.match(mail.text, /Hiermit widerrufe ich den von mir abgeschlossenen Vertrag/);
+    assert.match(mail.text, /Eingang: \d{1,2}\. \S+ 20\d\d um \d\d:\d\d Uhr/, 'Datum und Uhrzeit');
+    assert.equal((await form(env, '/widerrufen', {step: 'confirm', fullName: 'X', email: 'x@example.test'}, 'https://evil.example')).status, 403);
+  });
+});
+
+test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfassung', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+  const b = await signedIn(env, 'vera.vertrag@example.test');
+  const res = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(res.status, 200);
+  const session = env.stripe.sim.sessions.get(res.data.url.split('/').pop());
+  assert.match(session.custom_text.submit.message, /zahlungspflichtig für 19,90\s€ pro Monat inkl\. USt/);
+  assert.match(session.custom_text.submit.message, /\/rechtliches\/agb/);
+  assert.match(session.metadata.vu_legal_version, /^vu-recht-/);
+  env.stripe.sim.completeCheckout(session.id);
+  await env.deliverWebhooks();
+  const mail = env.lastMailTo('vera.vertrag@example.test');
+  assert.equal(mail.subject, 'Vertragsbestätigung: Vision Universe Pro');
+  assert.match(mail.text, /Vertragspartner: RAM Consulting UG \(haftungsbeschränkt\)/);
+  assert.match(mail.text, /19,90\s€ pro Monat inkl\. gesetzlicher Umsatzsteuer/);
+  assert.match(mail.text, /WIDERRUFSBELEHRUNG/);
+  assert.match(mail.text, /MUSTER-WIDERRUFSFORMULAR/);
+  assert.match(mail.text, /Sofortiger Beginn verlangt/);
+  // Erneute Zustellung desselben Ereignisses: keine zweite Bestaetigung.
+  const before = env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length;
+  env.stripe.sim.events.forEach(e => { e.delivered = false; });
+  await env.deliverWebhooks();
+  assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
+});
+
+test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {
+  const lists = {VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'};
+  const env = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', ...lists}});
+  t.after(() => env.close());
+  const cron = () => env.app.scheduled();
+  const status = async email => env.pg.json(`select to_json(status) from billing.marketing_consents where email = '${email}' order by requested_at desc limit 1`);
+
+  await t.test('Registrierung ohne Haken: kein Newsletter, kein DOI', async () => {
+    const b = await signedIn(env, 'ohne.haken@example.test');
+    await cron();
+    assert.equal(await status('ohne.haken@example.test'), null);
+    assert.ok(!env.brevo.doi.some(d => d.email === 'ohne.haken@example.test'));
+    assert.equal((await b.get('/v1/me')).data.newsletter.status, 'none');
+    // Selbst setzen geht nicht mehr (nur ueber den Double-Opt-in).
+    await b.patch('/v1/me', {settings: {marketingEmails: true}});
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false);
+  });
+
+  await t.test('Registrierung mit Haken: DOI erst nach bestaetigter Adresse, Werbung erst nach Klick', async () => {
+    const b = env.browser();
+    const {location} = await register(env, b, 'mit.haken@example.test', {newsletter: true});
+    assert.ok(!env.brevo.doi.some(d => d.email === 'mit.haken@example.test'), 'vor der Kontobestaetigung keine DOI-Mail');
+    await b.open(location);
+    await cron();
+    const doi = env.brevo.doi.find(d => d.email === 'mit.haken@example.test');
+    assert.ok(doi, 'DOI-Mail ueber die bestehende Vorlage');
+    assert.deepEqual([doi.includeListIds, doi.tracking, doi.redirectionUrl], [[4], false, 'https://www.visionuniverse.de/newsletter/bestaetigt/']);
+    assert.equal(await status('mit.haken@example.test'), 'pending');
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false, 'ohne Klick keine Werbung');
+    env.brevo.confirmDoi('mit.haken@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '10 minutes' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('mit.haken@example.test'), 'confirmed');
+    const me = (await b.get('/v1/me')).data;
+    assert.deepEqual([me.newsletter.status, me.settings.marketingEmails], ['confirmed', true]);
+    const row = await env.pg.json(`select to_json(r) from (select text_version, source, confirmed_at is not null as c from billing.marketing_consents where email = 'mit.haken@example.test') r`);
+    assert.deepEqual(row, {text_version: 'vu-newsletter-v1', source: 'signup', c: true}, 'Nachweis: Fassung, Quelle, Zeitpunkt');
+    // Abmeldung ueber den Link in der Mail (Brevo) wird uebernommen.
+    env.brevo.unsubscribe('mit.haken@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '7 hours' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('mit.haken@example.test'), 'withdrawn');
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false);
+  });
+
+  await t.test('Bestandskonto: Opt-in in den Einstellungen und Abmelden im Konto', async () => {
+    const b = await signedIn(env, 'bestand@example.test');
+    const on = await b.post('/v1/me/newsletter', {subscribe: true});
+    assert.deepEqual([on.status, on.data.newsletter.status], [200, 'pending']);
+    env.brevo.confirmDoi('bestand@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '10 minutes' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('bestand@example.test'), 'confirmed');
+    const off = await b.post('/v1/me/newsletter', {subscribe: false});
+    assert.equal(off.data.newsletter.status, 'withdrawn');
+    assert.ok(!env.brevo.contacts.get('bestand@example.test').listIds.includes(4), 'aus der Newsletter-Liste entfernt');
+    assert.equal((await b.post('/v1/me/newsletter', {subscribe: 'ja'})).data.state, 'SUBSCRIBE_INVALID');
+    assert.equal((await b.post('/v1/me/newsletter', {subscribe: true}, {origin: 'https://evil.example'})).status, 403);
+  });
+
+  await t.test('Kontaktabgleich: Liste Nutzer + Free/Pro, keine Newsletter-Liste, Loeschung entfernt den Kontakt', async () => {
+    const b = await signedIn(env, 'kontakt@example.test');
+    await cron(); await cron();
+    let c = env.brevo.contacts.get('kontakt@example.test');
+    assert.deepEqual([c.listIds.sort(), c.attributes.VU_TARIF], [[11, 12], 'FREE']);
+    assert.ok(!c.listIds.includes(4), 'Kontaktverwaltung erzeugt keine Newsletter-Anmeldung');
+    await subscribe(env, b, 'pro_month');
+    await cron();
+    c = env.brevo.contacts.get('kontakt@example.test');
+    assert.deepEqual([c.listIds.sort(), c.attributes.VU_TARIF], [[11, 13], 'PRO'], 'Wechsel nach Pro');
+    await b.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: PASSWORD});
+    await cron();
+    assert.equal(env.brevo.contacts.has('kontakt@example.test'), false, 'geloeschtes Konto: Kontakt entfernt');
+  });
+
+  await t.test('Newsletter aus: kein Haken wirksam, Anmeldung abgewiesen', async () => {
+    const off = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'false'}});
+    try {
+      const b = off.browser();
+      const {location} = await register(off, b, 'aus@example.test', {newsletter: true});
+      await b.open(location);
+      await off.app.scheduled();
+      assert.equal(off.brevo.doi.length, 0);
+      assert.equal((await b.post('/v1/me/newsletter', {subscribe: true})).data.state, 'NEWSLETTER_NOT_AVAILABLE');
+      assert.equal((await b.get('/v1/me')).data.newsletter.available, false);
+    } finally { await off.close(); }
+  });
+});

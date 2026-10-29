@@ -45,6 +45,9 @@ gibt (Vorbereitung: `core/watchlist-view.js#events`, `watchlist_items.alerts`). 
                                                      ─▶ Webhook bestätigt Pro ─▶ /willkommen/?konto=pro
 ```
 
+Die Registrierung fragt Zustimmung zu AGB und Datenschutzhinweisen (Fassung `LEGAL_VERSION`) und – nur wenn Brevo-Newsletter
+eingeschaltet ist – eine freiwillige, nicht vorausgewählte Newsletter-Checkbox (Double-Opt-in, [BREVO.md](BREVO.md)).
+
 Eine Stelle entscheidet über das Ziel: `konto/account-api.js#nextAfterSignIn` (Tests in `konto/tests/konto.test.mjs`).
 
 | Lage | Ziel |
@@ -131,4 +134,5 @@ bestehende Abos (409) → Checkout. Antwortet der Worker trotz allem `CHECKOUT_N
 
 ## 6. Vor der ersten echten Zahlung prüfen
 
-Siehe [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
+Siehe [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) (Texte, öffentliche Kündigungs- und Widerrufsfunktion, Abnahmeliste,
+Umschalten) und [BREVO.md](BREVO.md) (Newsletter-Checkbox bei der Registrierung, Opt-in in den Einstellungen).

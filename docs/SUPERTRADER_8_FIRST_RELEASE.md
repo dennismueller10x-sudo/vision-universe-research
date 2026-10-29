@@ -68,13 +68,14 @@ der veröffentlichte Schluss (DQ-SF8-8). DQ-TW-3 ist auf `main` grün.
   - die Seite nennt „Tiingo, Inc.“ als Quelle.
 - Die Passwortmaske ist rein clientseitig. Die Dateien sind direkt abrufbar, und das Repository ist öffentlich. Die
   Veröffentlichung ist deshalb eine öffentliche Auslieferung.
-- **Nur der Owner kann bestätigen**, dass der Tiingo-Vertrag diese Auslieferung als herunterladbare JSON-Dateien erlaubt.
-  Ohne diese Bestätigung wird nicht veröffentlicht.
+- **Owner-Bestätigung vom 29.10.2026 (dauerhaft):** Die Tiingo-Nutzungsrechte für den vorgesehenen Betrieb sind geklärt
+  und freigegeben, einschließlich der öffentlichen Auslieferung der Kandidatendateien. Diese Entscheidung gilt für alle
+  künftigen Kandidatenstände und wird nicht je Release erneut gestellt. Die Quellenangabe „Tiingo, Inc.“ bleibt.
 
 ## Was sichtbar wird
 
 - Unterhalb von MODELED: nur Chartstruktur und beschreibende Kennzahlen. Sperrlisten und Allowlist gelten wie in DQ-SF8-4.
-- **56 modellierte Abläufe** (C07 Power Play 5, C08 Momentum Breakout 18, C12 Episodic Pivot 33) tragen einen
+- **56 modellierte Abläufe** (C07 Power Play 5, C08 Kullamägi Breakout 18, C12 Buyable Gap-Up 33) tragen einen
   hypothetischen Plan:
   - Art (z. B. `BUY_STOP_LIMIT_NEXT_SESSION`), Einstiegsmarke, Stop, Limit, früheste Sitzung, Risikoanteil;
   - die Seite zeigt sie als „Modellierter Ablauf (hypothetisch) … Keine Order, keine Empfehlung“ und zeichnet
@@ -83,7 +84,7 @@ der veröffentlichte Schluss (DQ-SF8-8). DQ-TW-3 ist auf `main` grün.
   Der Vertrag erlaubt das genau auf dieser Stufe. Öffentlich wirkt es trotzdem wie ein Orderhinweis. Soll das nicht
   öffentlich sein, braucht es eine fachliche Änderung im Erzeuger (eigener PR mit Vorher/Nachher). Sie ist nicht
   vorbereitet.
-- Bekannte Methodengrenze: Übernahmekandidaten erscheinen bei Power Play und Momentum Breakout als „enge Basis“
+- Bekannte Methodengrenze: Übernahmekandidaten erscheinen bei Power Play und Kullamägi Breakout als „enge Basis“
   (Beispiel BMBL: +134 % am 12./13.10., seitdem 5,93–5,98 $). Das ist kein Datenfehler, und die Regeln bleiben
   unverändert.
 
@@ -104,7 +105,20 @@ der veröffentlichte Schluss (DQ-SF8-8). DQ-TW-3 ist auf `main` grün.
   - den Zustand auf `PREPARED_DISABLED` setzen;
   - danach zeigt die Seite wieder „Research-Kandidaten folgen“.
 
-## Freigabevorlage
+## Owner-Entscheidungen vom 29.10.2026
+
+- Supertrader ist ein reguläres Research-Produkt. Die Beta-Kennzeichnung entfällt. Datenstand, Datenherkunft,
+  Research-Status, methodische Grenzen und der Hinweis auf die fehlende Handelszertifizierung bleiben.
+- Die modellierten Abläufe (`MODELED_TRADE_PLAN`) erscheinen gemäß ihrem tatsächlichen Status, ohne Herabstufung und ohne
+  Umdeutung zu zertifizierten Signalen. Alle 13 Methoden bleiben `LIVE_NOT_APPROVED`, `VALIDATED_TRADE_SIGNAL` bleibt
+  gesperrt. Es gibt keine Orders und keinen Broker.
+- Die lokale Prüfung vom 29.10.2026 gilt als Lauf A (Option B) für die erste Veröffentlichung. Hat sich der Stand
+  geändert, gilt der neue Fingerabdruck des Laufs, solange alle Pflichtprüfungen bestehen.
+- Ein täglicher Zeitplan ist grundsätzlich freigegeben. Er wird umgesetzt, sobald die technischen Voraussetzungen
+  erfüllt sind (V1 S1–S7, docs/SUPERTRADER_8_ACTIVATION_READINESS.md), und zwar ohne zusätzliche manuelle Freigabe
+  je Datenstand.
+
+## Freigabevorlage (erste Veröffentlichung, Stand vor den Owner-Entscheidungen)
 
 ```
 Freigabe erste Veröffentlichung Supertrader-Research-Kandidaten

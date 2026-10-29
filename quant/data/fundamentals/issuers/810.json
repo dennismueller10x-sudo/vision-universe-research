@@ -861,9 +861,9 @@
       "cik": "0001996810",
       "name": "GE Vernova Inc.",
       "sic": "3600",
-      "rawFacts": 4181,
-      "mappedFacts": 1035,
-      "unmappedFacts": 3215,
+      "rawFacts": 4593,
+      "mappedFacts": 1154,
+      "unmappedFacts": 3521,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -873,28 +873,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 16,
+      "quarterlyPeriods": 17,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0,
@@ -914,21 +914,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -942,14 +942,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -972,46 +972,47 @@
         }
       },
       "quality": {
-        "HIGH": 112,
-        "MEDIUM": 18
+        "HIGH": 120,
+        "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 130,
-        "resolvedValues": 130
+        "datableValues": 137,
+        "resolvedValues": 137
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3287,
+        "rules_version": "1.1.0",
+        "total": 3598,
         "by_severity": {
-          "INFO": 3215,
-          "WARNING": 72
+          "INFO": 3521,
+          "WARNING": 77
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 60,
+          "CONCEPT_DISAGREEMENT": 64,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 3215
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 3521
         }
       },
       "latestFiling": {
-        "accession": "0001996810-26-000148",
-        "filing_date": "2026-07-22",
+        "accession": "0001996810-26-000163",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 10
+        "periodic_filings": 11,
+        "acceptance_datetime": "2026-10-28T10:19:15.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "35baaa6bb6c42ecd2598ae84540ba91e24886659efb37d9fdc731b9afa68953a",
+      "sourceDigest": "7a9e1282abb8e1b3d971ddeb54ab99b004fa08ef57b38b13356a3d1972a6603e",
       "issuerId": "iss_cik_0001996810"
     }
   ]

@@ -11,6 +11,8 @@ import {pkcePair} from './crypto.mjs';
 import {SupabaseError} from './supabase.mjs';
 import {SITE_PATHS} from './config.mjs';
 import * as v from './validate.mjs';
+import {NEWSLETTER} from './brevo.mjs';
+import {LEGAL_VERSION} from './legal/texts.mjs';
 
 const AT = 'vu_at', RT = 'vu_rt', PKCE = 'vu_pkce';
 
@@ -113,9 +115,14 @@ export async function signup(ctx) {
     await ctx.sb.auth.signUp({email, password, ip: ctx.ip, codeChallenge: challenge,
       redirectTo: ctx.cfg.apiOrigin + '/v1/auth/callback?flow=signup' + plan,
       data: {display_name: v.displayName(body.displayName), terms_accepted_at: new Date(ctx.now()).toISOString(),
-        terms_version: String(body.termsVersion || '').slice(0, 20) || null,
+        // Fassung der Bedingungen, der zugestimmt wurde (vom Server, nicht aus der Anfrage).
+        terms_version: LEGAL_VERSION,
         // Dieselbe Wahl im Konto (user_metadata): ueberdauert Geraetewechsel und neue Anmeldungen.
-        ...(plan ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()} : {})}});
+        ...(plan ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()} : {}),
+        // Freiwillige Newsletter-Anforderung: wird erst nach bestaetigter Adresse zur Einwilligungsanfrage
+        // (Cron, billing_newsletter_due); erst der Klick in der DOI-Mail macht sie wirksam.
+        ...(body.newsletter === true && ctx.cfg.brevo.newsletter
+          ? {newsletter_requested_at: new Date(ctx.now()).toISOString(), newsletter_version: NEWSLETTER.version} : {})}});
   } catch (e) {
     if (e instanceof SupabaseError && e.status === 429) throw new HttpError(429, 'RATE_LIMITED');
     if (e instanceof SupabaseError && e.code === 'weak_password') throw new HttpError(400, 'PASSWORD_WEAK');

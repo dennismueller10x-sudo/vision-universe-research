@@ -480,7 +480,7 @@
       "sic": "6500",
       "rawFacts": 17013,
       "mappedFacts": 4672,
-      "unmappedFacts": 12266,
+      "unmappedFacts": 12315,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -598,33 +598,34 @@
         "resolvedValues": 441
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12773,
+        "rules_version": "1.1.0",
+        "total": 12816,
         "by_severity": {
-          "INFO": 12266,
-          "WARNING": 507
+          "INFO": 12315,
+          "WARNING": 501
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 496,
+          "CONCEPT_DISAGREEMENT": 490,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 12266
+          "UNKNOWN_CONCEPT": 12315
         }
       },
       "latestFiling": {
-        "accession": "0001611547-26-000059",
-        "filing_date": "2026-08-06",
+        "accession": "0001611547-26-000070",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 49
+        "periodic_filings": 50,
+        "acceptance_datetime": "2026-10-28T11:01:00.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "9b6689ef73342d51f7f9655a072b8eb76a3007ce5a9b2aaf90d5d63d79feb2cd",
@@ -634,22 +635,22 @@
       "cik": "0001717547",
       "name": "BrightSpire Capital, Inc.",
       "sic": "6798",
-      "rawFacts": 16065,
-      "mappedFacts": 3360,
-      "unmappedFacts": 12449,
+      "rawFacts": 16476,
+      "mappedFacts": 3467,
+      "unmappedFacts": 12747,
       "calendarYears": 10,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "impairment_of_real_estate": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -670,14 +671,14 @@
         },
         "real_estate_net": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "secured_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -689,28 +690,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0,
@@ -723,28 +724,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -758,14 +759,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -788,48 +789,49 @@
         }
       },
       "quality": {
-        "HIGH": 329,
-        "MEDIUM": 34
+        "HIGH": 339,
+        "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 363,
-        "resolvedValues": 363
+        "datableValues": 371,
+        "resolvedValues": 371
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13061,
+        "rules_version": "1.1.0",
+        "total": 13366,
         "by_severity": {
-          "INFO": 12449,
-          "WARNING": 612
+          "INFO": 12747,
+          "WARNING": 619
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 473,
+          "CONCEPT_DISAGREEMENT": 482,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 108,
-          "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 12449
+          "RESTATEMENT_CONFLICT": 25,
+          "UNKNOWN_CONCEPT": 12747
         }
       },
       "latestFiling": {
-        "accession": "0001717547-26-000062",
-        "filing_date": "2026-07-29",
+        "accession": "0001717547-26-000076",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 35
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-10-28T20:28:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bc24a998916baeb3a5b4cc18691dc7a49d532716008bb7fa052a0cbc51e1db7b",
+      "sourceDigest": "763cbc7bca22347776d76eec38648826345b431068d031b908007eab589ea2b4",
       "issuerId": "iss_cik_0001717547"
     },
     {

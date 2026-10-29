@@ -1,0 +1,35 @@
+# Umsatzsteuer im Pro-Abo
+
+Stand 29.10.2026. **Keine Steuerberatung.** Hält fest, was technisch eingestellt ist und was die Steuerberatung entscheiden muss.
+
+## Ausgangslage
+
+- RAM Consulting UG (haftungsbeschränkt) ist regelbesteuert, **keine** Kleinunternehmerin (Owner-Angabe 29.10.2026).
+- Preis: 1,00 € pro Monat **inkl.** gesetzlicher USt (Stripe-Preis `price_1UVYNiBNKuXfjJefGV0m6LNn`, `tax_behavior` soll
+  `inclusive` sein – der Lesecheck `stripe-live-check.mjs` meldet den tatsächlichen Wert). Kein neuer Preis.
+- Bei 19 % sind darin 0,16 € USt enthalten (netto 0,84 €). Der Kunde zahlt immer 1,00 €; eine doppelte Steuer entsteht nicht,
+  weil kein Satz *aufgeschlagen* wird.
+
+## Einstellung im Worker (`STRIPE_TAX_MODE`)
+
+| Wert | Wirkung | Wann |
+|---|---|---|
+| `none` (Standard, aktiv) | kein Steuerausweis durch Stripe; Betrag brutto | solange die Steuerberatung nicht entschieden hat |
+| `txr_…` | fester Steuersatz (z. B. „USt 19 %, inklusive“) an jedem Abo (`subscription_data.default_tax_rates`); Rechnung weist die USt aus | nur deutsche Endkunden/kein OSS |
+| `automatic` | Stripe Tax berechnet den Satz nach Kundenort (Adresse wird abgefragt), Rechnung mit Ausweis | Verkäufe an Verbraucher in andere EU-Staaten über der Schwelle, OSS |
+
+Nur ein Modus gleichzeitig; der Deploy-Workflow lässt nur diese drei Formen zu.
+
+## Offene Entscheidungen
+
+1. Rechnungen mit ausgewiesener USt (§ 14 UStG, Kleinbetragsrechnung § 33 UStDV bis 250 €): Steuersatz `txr_` oder Stripe Tax?
+   Rechnungsangaben im Stripe-Dashboard (Firma, Anschrift, Steuernummer bzw. **USt-IdNr. – fehlt**).
+2. EU-Verbraucher (B2C): Ort der Leistung beim Kunden (§ 3a Abs. 5 UStG); Lieferschwelle 10.000 € EU-weit; OSS-Registrierung ja/nein.
+3. B2B (Unternehmer mit USt-IdNr.): Reverse Charge – nur mit Abfrage der USt-IdNr. (Stripe Tax). Bis zur Entscheidung richtet
+   sich das Angebot an Verbraucher und Unternehmer ohne gesonderte Behandlung.
+4. Kunden außerhalb der EU: Steuerpflicht im Drittland (z. B. CH, UK, NO); gegebenenfalls auf EU beschränken.
+5. `tax_behavior` des bestehenden Preises: ist er `unspecified`, verlangt Stripe Tax `inclusive` – ein Preis lässt sich nicht
+   ändern; nur dann wäre ein neuer Preis mit gleichem Betrag nötig (eigene Freigabe).
+
+Der Lesecheck „Konten — Stripe prüfen“ meldet Steuereinstellungen, Registrierungen, Steuersätze und Steuer-IDs des Kontos,
+ohne etwas zu ändern.
