@@ -139,10 +139,12 @@ test("DQ-SF8-4 · keine Order-/Stopmarke, kein Plan, keine rueckrechenbare Kennz
   assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen; Statustexte und closeVsTop sind keine Order");
 });
 
-test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) und Turtle-N beschreibend erlaubt, als Order-, Stop- oder Einstiegsparameter nicht", () => {
+test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) beschreibend erlaubt; Turtle-N unterhalb MODELED nicht mehr (Owner 28.10., zweite Entscheidung)", () => {
   const ok = bundle((v) => { v.C12[0].stage = "CONFIRMED_RESEARCH_SETUP"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98 }; v.C12[0].pivot = { level: 98, kind: "GAP_DAY_LOW", distance: 0.02 };
-    v.C12[0].features = { closeVsGapLow: 0.0255, gapInAtr: 1.2 }; v.C01[0].features = { N: 0.64, nPct: 0.027, path: "FAILSAFE_55" }; });
+    v.C12[0].features = { closeVsGapLow: 0.0255, gapInAtr: 1.2 }; v.C01[0].features = { path: "FAILSAFE_55", breakoutAtOpen: false }; });
   assert.ok(!failing(ok).includes("DQ-SF8-4"), "beschreibend zulaessig");
+  /* Turtle: N und nPct ergeben mit dem Trigger den Stop (Trigger - 2N); die fruehere Ausnahme gilt nicht mehr */
+  for (const [c, f] of [["C01", { N: 0.64 }], ["C01", { nPct: 0.027 }], ["C02", { N: 0.64 }], ["C02", { nPct: 0.027 }]]) assert.ok(failing(bundle((v) => { const x = v[c][0]; x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; x.features = f; })).includes("DQ-SF8-4"), c + " " + Object.keys(f));
   for (const [c, k] of [["C12", "stopDistance"], ["C12", "stopReference"], ["C12", "gapLowStop"], ["C01", "entryN"], ["C01", "stopN"], ["C01", "limitPrice"], ["C01", "triggerLevel"]]) {
     const b = bundle((v) => { const x = v[c][0]; if (x.stage === "MODELED_TRADE_PLAN") { x.stage = "CONFIRMED_RESEARCH_SETUP"; x.plan = null; } x.features[k] = 0.64; });
     assert.ok(failing(b).includes("DQ-SF8-4"), c + " features." + k);
@@ -214,7 +216,8 @@ test("DQ-SF8-4 · Vertrag = Erzeuger (#1056): keine Marke, die in ihrer Quelle d
   for (const [c, f, name] of [["C06", { baseLengthSessions: 40 }, "C06 baseLengthSessions"], ["C06", { vcpFootprint: { contractions: 2, baseSessions: 40 } }, "C06 vcpFootprint.baseSessions"],
     ["C07", { consolidationSessions: 19 }, "C07 consolidationSessions"], ["C13", { impulseHighDate: "2026-10-01" }, "C13 impulseHighDate"], ["C13", { adxAbove30Since: "2026-09-20" }, "C13 adxAbove30Since"],
     ["C07", { startVolumeVs50d: 2.4 }, "C07 startVolumeVs50d"], ["C06", { vcpFootprint: { contractions: 2, lastContractionVolumeVs50d: 0.9181395143618434 } }, "C06 vcpFootprint.lastContractionVolumeVs50d"],
-    ["C04", { baseWeeks: 6 }, "C04 baseWeeks"], ["C05", { baseWeeks: 6 }, "C05 baseWeeks"]]) assert.ok(red((v) => { v[c][0].features = f; }), name);
+    ["C04", { baseWeeks: 6 }, "C04 baseWeeks"], ["C05", { baseWeeks: 6 }, "C05 baseWeeks"],
+    ["C04", { overheadDistance: 0.0157 }, "C04 overheadDistance"], ["C05", { overheadDistance: 0.0157 }, "C05 overheadDistance"]]) assert.ok(red((v) => { v[c][0].features = f; }), name);
   assert.ok(!red((v) => { v.C13[0].features = { adx: 0.31, closeVsEma20: 0.01 }; v.C04[0].features = { breakoutWeek: "2026-W43", breakoutDay: "2026-10-23", ma30w: 100 }; v.C03[0].features = { boxTopDate: "2026-10-01" }; }), "Ausbruchstag, Box-Daten, ADX bleiben");
   assert.ok(!red((v) => { v.C03[0].features = { boxDepth: 0.12 }; }), "andere Methoden: Tiefen bleiben");
   for (const c of ["C06", "C07", "C13"]) for (const k of ["high252", "belowHigh252"]) assert.ok(red((v) => { v[c][0].trend = { close: 10, [k]: k === "high252" ? 10.2 : 0.02 }; }), `${c} trend.${k}`);
@@ -224,10 +227,16 @@ test("DQ-SF8-4 · Vertrag = Erzeuger (#1056): keine Marke, die in ihrer Quelle d
   /* die Tabellen sind festgeschrieben (Aenderung = fachliche Aenderung mit Gegenstueck im Erzeuger) */
   assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C06, ["ma50", "ma150", "ma200"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C07, []);
   assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C11, ["ma10", "ma50"]); assert.deepEqual(DQ.SF8_STRUCTURE_LEVELS.C13, ["ema20"]);
-  assert.deepEqual(Object.keys(DQ.SF8_PIVOT_KINDS).sort(), ["C03", "C04", "C05", "C08", "C09", "C12"]);
-  assert.deepEqual(DQ.SF8_FEATURES_HIDDEN, { C04: ["baseWeeks"], C05: ["baseWeeks"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] });
+  assert.deepEqual(Object.keys(DQ.SF8_PIVOT_KINDS).sort(), ["C03", "C08", "C09", "C12"]);
+  assert.deepEqual(DQ.SF8_FEATURES_HIDDEN, { C01: ["N", "nPct"], C02: ["N", "nPct"], C04: ["baseWeeks", "overheadDistance"], C05: ["baseWeeks", "overheadDistance"], C06: ["pctBelowHigh52w", "largestCorrection", "baseLengthSessions"], C07: ["correction", "consolidationSessions", "startVolumeVs50d"], C13: ["impulseHighDate", "adxAbove30Since"] });
   assert.deepEqual(DQ.SF8_SUBFIELDS_HIDDEN, { C06: { vcpFootprint: ["depths", "baseSessions", "lastContractionVolumeVs50d"] } });
-  assert.deepEqual(DQ.SF8_PIVOT_LEVEL, { C03: "top", C04: "resistance", C05: "resistance", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" });
+  assert.deepEqual(DQ.SF8_PIVOT_LEVEL, { C03: "top", C08: "breakoutLevel", C09: "gapDayLow", C12: "gapDayLow" });
+  /* Owner-Entscheidung 28.10.2026 (Weinstein): weder genauer Widerstand noch Chartmarke unterhalb von MODELED */
+  for (const c of ["C04", "C05"]) {
+    assert.ok(failing(bundle((v) => { v[c][0].levels = { ma30w: 20, resistance: 22.3 }; })).includes("DQ-SF8-4"), c + " levels.resistance");
+    assert.ok(failing(bundle((v) => { v[c][0].levels = { ma30w: 20, resistance: 22.3 }; v[c][0].pivot = { level: 22.3, kind: "WEEKLY_RESISTANCE", distance: 0.01 }; })).includes("DQ-SF8-4"), c + " Chartmarke");
+    assert.ok(!failing(bundle((v) => { v[c][0].levels = { ma30w: 20, breakoutWeek: "2026-W43", breakoutDay: "2026-10-20" }; v[c][0].pivot = null; })).includes("DQ-SF8-4"), c + " 30-Wochen-Linie, Ausbruchswoche und -tag bleiben");
+  }
   assert.deepEqual(DQ.SF8_TREND_HIDDEN, { C06: ["high252", "belowHigh252"], C07: ["high252", "belowHigh252"], C13: ["high252", "belowHigh252"] });
 });
 
