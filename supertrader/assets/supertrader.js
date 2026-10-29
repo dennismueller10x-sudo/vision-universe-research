@@ -1546,7 +1546,7 @@
   }
 
   /* Supertrader 8.0: quellentreue Research-Kandidaten (Start, Methoden, Aktienseite). Modul und Styles werden erst hier
-     nachgeladen; ein Fehler darin laesst die bestehende Seite unberuehrt. Beta seit der Owner-Freigabe vom 29.10.2026
+     nachgeladen; ein Fehler darin laesst die bestehende Seite unberuehrt. regulär seit der Owner-Freigabe vom 29.10.2026 (zuvor Beta)
      (kontrollierter Livegang der Oberflaeche): fuer alle sichtbar, ohne Vorschau-Schalter. Kandidaten erscheinen nur,
      wenn der freigegebene Datenlauf sie unter supertrader/data/sf-candidates/ veroeffentlicht hat; sonst zeigt das
      Modul einen gekennzeichneten Leerzustand. */

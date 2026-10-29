@@ -1,4 +1,4 @@
-// Supertrader 8.0 – Ansichten der quellentreuen Research-Kandidaten (Beta seit 29.10.2026): das Modul bindet keinen
+// Supertrader 8.0 – Ansichten der quellentreuen Research-Kandidaten (regulär seit 29.10.2026): das Modul bindet keinen
 // Produktvertrag oder Producer ein und zeigt jeden Stand datiert.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -24,13 +24,14 @@ test('SF8-BETA-MOUNT: mountResearch lädt das Modul ohne Schalter, nur auf Start
   assert.doesNotMatch(ST, /sfPreview|vu-supertrader-sf-preview/, 'kein interner Vorschau-Parameter mehr');
 });
 
-test('SF8-BETA-DATED: Beta-Kennzeichnung mit Datenstand; ein älterer Stand heißt ausdrücklich „nicht aktuell“, nie „heute“', () => {
-  assert.match(SF, /'Beta · Research, keine Empfehlung'/);
+test('SF8-REGULAR-DATED: Research-Kennzeichnung mit Datenstand, ohne Beta; ein älterer Stand heißt ausdrücklich „nicht aktuell“, nie „heute“', () => {
+  assert.match(SF, /'Research, keine Empfehlung' \+/);
+  assert.doesNotMatch(SF, /'[^'\n]*\bBeta\b[^'\n]*'/, 'Owner-Freigabe 29.10.2026: keine Beta-Kennzeichnung mehr');
   assert.match(SF, /' – nicht aktuell, kein Hinweis für heute'/);
   assert.match(SF, /function stale\(sum\) \{ return !!\(sum && sum\.nextSession && new Date\(\)\.toISOString\(\)\.slice\(0, 10\) > String\(sum\.nextSession\)/);
   assert.doesNotMatch(SF, /'Heute erkannte Aktien'|erkennt heute|text: 'heute'|Vorschau · noch nicht freigeschaltet/);
   assert.match(SF, /Tiingo, Inc\./, 'Quelle der Kurse genannt (Lizenzbedingung)');
-  // jede Ansicht mit Daten trägt die datierte Beta-Zeile
+  // jede Ansicht mit Daten trägt die datierte Research-Zeile
   assert.equal((SF.match(/previewBanner\(sum\)/g) || []).length - (SF.match(/function previewBanner\(sum\)/g) || []).length, 5, 'fünf Aufrufe (Start, Methoden, Strategie, Aktie mit und ohne Treffer)');
   assert.doesNotMatch(SF, /previewBanner\(\)/);
 });
