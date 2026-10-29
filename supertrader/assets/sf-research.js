@@ -105,7 +105,7 @@
   function kpis(list) { return h('ul', { class: 'vu-kpis st-vkpis sf-kpis' }, list.map(function (k) { return h('li', { class: 'vu-kpi' }, [h('span', { class: 'vu-kpi-label', text: k[1] }), h('strong', { class: 'vu-kpi-value', text: k[0] }), k[2] ? h('span', { class: 'vu-kpi-sub', text: k[2] }) : null]); })); }
   function empty(title, text) { return h('div', { class: 'st-emptybox sf-empty' }, [h('strong', { text: title }), h('p', { text: text })]); }
   function unavailable() {
-    return empty('Research-Kandidaten folgen', 'Die quellentreuen Methoden sind als Beta freigeschaltet. Der Datenlauf für die erkannten Aktien ist noch nicht freigegeben; sobald er läuft, erscheinen hier die Kandidaten mit ihrem Datenstand.');
+    return empty('Research-Kandidaten folgen', 'Für die quellentreuen Methoden liegt noch kein veröffentlichter Datenlauf vor. Sobald er vorliegt, erscheinen hier die erkannten Aktien mit ihrem Datenstand.');
   }
   function stagesLegend() {
     return h('ul', { class: 'sf-legend' }, STAGES.map(function (s) { return h('li', null, [h('span', { class: 'sf-step', text: String(STAGE_TXT[s][3]) }), h('div', null, [stageBadge(s), h('span', { text: STAGE_TXT[s][2] })])]); })
@@ -130,13 +130,13 @@
     ];
     return moreBox('Datenherkunft und Aktualität', [h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })))]);
   }
-  /* Beta-Kennzeichnung mit Datenstand. Ein älterer Stand darf nie als heutiger Hinweis erscheinen: liegt die auf den
+  /* Research-Kennzeichnung mit Datenstand (reguläres Produkt seit der Owner-Freigabe vom 29.10.2026, ohne Beta). Ein älterer Stand darf nie als heutiger Hinweis erscheinen: liegt die auf den
      Stand folgende Sitzung bereits zurück (UTC-Datum nach nextSession), sagt die Zeile ausdrücklich „nicht aktuell“. */
   function stale(sum) { return !!(sum && sum.nextSession && new Date().toISOString().slice(0, 10) > String(sum.nextSession).slice(0, 10)); }
   function previewBanner(sum) {
     var old = stale(sum);
     return h('p', { class: 'sf-preview', role: 'note', 'data-stale': old ? 'true' : null }, [icon(old ? IC.alert : IC.lock),
-      'Beta · Research, keine Empfehlung' + (sum ? ' · Datenstand ' + dateDe(sum.asOf) + (old ? ' – nicht aktuell, kein Hinweis für heute' : '') : '')]);
+      'Research, keine Empfehlung' + (sum ? ' · Datenstand ' + dateDe(sum.asOf) + (old ? ' – nicht aktuell, kein Hinweis für heute' : '') : '')]);
   }
   function footnote(sum) {
     return h('p', { class: 'sf-foot', text: (sum ? 'Datenstand ' + dateDe(sum.asOf) + ' (Tagesschluss). ' : '') + DISCLAIMER });
