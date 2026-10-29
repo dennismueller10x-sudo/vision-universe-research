@@ -4,7 +4,7 @@
 //   node scripts/account/dev-server.mjs --port=8790 &      (braucht PG_TEST_URL)
 //   node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/konto-qa [--engine=webkit]
 //
-// Spielt den ganzen Weg im echten Browser durch: Tarifwahl Pro vor der Registrierung,
+// Spielt den ganzen Weg im echten Browser durch: oeffentliche Tarifseite /preise/, Tarifwahl Pro vor der Registrierung,
 // Registrierung, Bestaetigung per Postfach, Pro-Bestaetigung, abgebrochener und
 // erfolgreicher simulierter Checkout, Abo-Anzeige, Kundenportal, Einstellungen
 // (Dunkelmodus), Kuendigungsbutton, Abmelden.
@@ -56,7 +56,7 @@ await page.goto(`${base}/konto/`);
 await page.waitForURL(/\/konto\/anmelden\/\?next=%2Fkonto%2F/);
 check(true, 'Konto ohne Sitzung -> Anmeldung');
 
-// Tarife ohne Anmeldung: Free und Pro, gleicher Umfang; Pro merkt sich die Wahl bis nach der Bestaetigung.
+// Konto-interne Tarifseite bleibt erreichbar (Tarifwechsel fuer Angemeldete).
 await page.goto(`${base}/konto/tarife/`);
 await page.waitForLoadState('networkidle');
 check((await page.textContent('#ka-plans')).includes('Kostenlos registrieren'), 'Free: kostenlos registrieren');
@@ -64,7 +64,23 @@ check((await page.textContent('.ka-plan[data-plan=pro] .ka-price')).includes('/ 
 check((await page.textContent('#main')).includes('dieselben Funktionen'), 'gleicher Umfang offen genannt');
 await audit(page, 'Tarife ohne Anmeldung');
 await shot(page, '00-tarife');
-await page.click('#ka-choose-pro');
+
+// Oeffentliche Tarifseite /preise/: ohne Kontonavigation, Preise und Umfang aus /v1/plans.
+const plansApi = await (await page.request.get(`${base}/v1/plans`)).json();
+const proMonth = plansApi.plans.find(p => p.id === 'pro').prices.find(x => x.interval === 'month');
+await page.goto(`${base}/preise/`);
+await page.waitForFunction(() => !document.querySelector('[data-price=pro][aria-busy]'));
+check(!(await page.$('.ka-nav')), 'Preise: keine Kontonavigation');
+check(await page.locator('.pr-plan').count() === 2, 'Preise: zwei Tarifkarten');
+const shownPro = (await page.textContent('[data-price=pro]')).replace(/\s/g, ' ');
+const expectedPro = new Intl.NumberFormat('de-DE', {style: 'currency', currency: proMonth.currency}).format(proMonth.unitAmount / 100).replace(/\s/g, ' ');
+check(shownPro === expectedPro, `Preise: Pro-Preis aus dem Backend (${shownPro} = ${expectedPro})`);
+check((await page.textContent('.pr-plan[data-plan=pro]')).includes('Interner Testpreis'), 'Preise: interner Testpreis gekennzeichnet');
+check(await page.isVisible('#pr-same') && await page.locator('#pr-rows tr').count() === Object.keys(plansApi.plans.find(p => p.id === 'free').features).length,
+  'Preise: Funktionsumfang aus dem Backend, identisch');
+await audit(page, 'Preise ohne Anmeldung');
+await shot(page, '00-preise');
+await page.click('#pr-choose-pro');
 await page.waitForURL(/\/konto\/registrieren\/\?plan=pro/);
 
 // Registrierung
@@ -139,6 +155,10 @@ check((await page.textContent('.ka-plan[data-plan=pro]')).includes('Dein Tarif')
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');
 check((await page.textContent('#ka-account-facts')).includes('Pro'), 'Konto zeigt Pro');
+await page.goto(`${base}/preise/`);
+await page.waitForSelector('#pr-signed-in:not([hidden])');
+check(await page.isVisible('.pr-plan[data-plan=pro] [data-current-tag]') && (await page.getAttribute('#pr-choose-pro', 'href')) === '/konto/abo/',
+  'Preise angemeldet: Pro ist dein Tarif, Verwaltung im Konto');
 
 // Einstellungen: Dunkelmodus
 await page.goto(`${base}/konto/einstellungen/`);
@@ -187,6 +207,18 @@ check((await page.textContent('#ka-sub')).includes('automatisch Free'), 'nach La
   await anonContext.close();
 }
 
+// Free ueber /preise/: keine Pro-Wahl uebrig (eigener Kontext ohne Sitzung).
+{
+  const ctx = await browser.newContext({viewport: {width: 1280, height: 900}});
+  const p = await ctx.newPage();
+  await p.addInitScript(() => { try { localStorage.setItem('vu-plan-choice-v1', JSON.stringify({plan: 'pro', at: Date.now()})); } catch (e) {} });
+  await p.goto(`${base}/preise/`);
+  await p.click('#pr-choose-free');
+  await p.waitForURL(/\/konto\/registrieren\/\?plan=free/);
+  check(await p.isHidden('#ka-plan-hint'), 'Free gewaehlt: kein Pro-Hinweis, alte Pro-Wahl verworfen');
+  await ctx.close();
+}
+
 // Abmelden
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');
@@ -206,6 +238,10 @@ for (const theme of ['light', 'dark']) {
     await audit(m, `mobil ${theme} ${path}`);
     await m.screenshot({path: `${out}/${engine}-mobil-${theme}-${path}.png`, fullPage: true});
   }
+  await m.goto(`${base}/preise/`);
+  await m.waitForFunction(() => !document.querySelector('[data-price=pro][aria-busy]'));
+  await audit(m, `mobil ${theme} preise`);
+  await m.screenshot({path: `${out}/${engine}-mobil-${theme}-preise.png`, fullPage: true});
   await m.route('**/konto/config.js', r => r.fulfill({contentType: 'text/javascript', body: 'globalThis.VU_ACCOUNT_CONFIG={endpoint:""};'}));
   await m.goto(`${base}/konto/anmelden/`);
   check((await m.textContent('#ka-status')).includes('noch nicht freigeschaltet') && await m.isDisabled('#email'),

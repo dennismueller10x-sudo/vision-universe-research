@@ -80,7 +80,7 @@
     return e;
   }
   // Chartstruktur unterhalb des modellierten Ablaufs (records.mjs#STRUCTURE_MARK): beschreibende Marken, nie Einstieg oder Stop
-  var STRUCT_TXT = { BOX_TOP: 'Box-Obergrenze', WEEKLY_RESISTANCE: 'Widerstand (Woche)', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch (10 Tage)', GAP_DAY_LOW: 'Gap-Tief' };
+  var STRUCT_TXT = { BOX_TOP: 'Box-Obergrenze', CONSOLIDATION_10_LEVEL: 'Konsolidierungshoch (10 Tage)', GAP_DAY_LOW: 'Gap-Tief' };
   // nur belegte Strukturarten; die Engine-Marke eines modellierten Ablaufs (Einstieg) ist keine Chartstruktur
   function structOf(p) { return p && fin(p.level) && STRUCT_TXT[p.kind] ? p : null; }
   var cache = {};
@@ -232,7 +232,7 @@
       host.appendChild(previewBanner());
       host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       var list = h('div', { class: 'sf-cards' });
-      var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06'); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
+      var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06') && (k !== 'pivot' || views.some(function (v) { return v.sortKeys && v.sortKeys.pivot !== null && v.sortKeys.pivot !== undefined; })); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
       var sel = h('select', { class: 'sf-select', 'aria-label': 'Sortierung', onchange: function () { state.sort = sel.value; state.limit = 30; draw(); } }, sorts.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
       var search = h('input', { class: 'sf-search', type: 'search', placeholder: 'Ticker oder Name', 'aria-label': 'Kandidaten durchsuchen', oninput: function () { state.q = search.value.trim().toLowerCase(); state.limit = 30; draw(); } });
       var counts = {}; views.forEach(function (v) { counts[v.stage] = (counts[v.stage] || 0) + 1; });
@@ -246,7 +246,8 @@
         if (vs.length > shown.length) kids.push(h('button', { type: 'button', class: 'sf-moreBtn', onclick: function () { state.limit += 30; draw(); }, text: 'Weitere ' + Math.min(30, vs.length - shown.length) + ' von ' + (vs.length - shown.length) + ' anzeigen' }));
         list.replaceChildren.apply(list, kids);
       }
-      sorts[0][1] = 'Methodenreihenfolge (' + s.sortOrder.filter(function (k) { return k !== 'ticker'; }).map(function (k) { return (sum.sortKeys[k] || {}).label || k; }).join(', ') + ')';
+      var ownKey = s.sortOrder.some(function (k) { return k !== 'stage' && k !== 'dataQuality' && k !== 'ticker'; });
+      sorts[0][1] = 'Methodenreihenfolge (' + s.sortOrder.filter(function (k) { return k !== 'ticker' || !ownKey; }).map(function (k) { return (sum.sortKeys[k] || {}).label || k; }).join(', ') + ')';
       sel.options[0].textContent = sorts[0][1];
       host.appendChild(sec('Kandidaten', [h('div', { class: 'sf-tools' }, [search, sel]), chips, list], { kicker: 'Rangliste' }));
       draw();

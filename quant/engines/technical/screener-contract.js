@@ -51,7 +51,7 @@
     suspectJumpAt: { type: "date", nullable: true, label: "jüngster Kurssprung mit Datenverdacht (60 Bars)" },
     formations: { type: "formations", nullable: true, label: "aktive Formationen [Typ, Zustand, erkannt, Ausbruchstag, Richtung, Kennzeichen]" },
     distSma50: { type: "pct", nullable: true, range: [-1, Infinity], label: "Abstand zur SMA 50 (nur Anzeige)" },
-    frozenSince: { type: "date", nullable: true, optional: true, label: "letzter echter Handelstag bei eingefrorenem Kurs (ab screen-row 1.10.0)" }
+    frozenSince: { type: "date", nullable: true, optional: true, label: "erster Tag des unveränderten Schlusskurses im Fenster der Tagesbars (Datenqualitätshinweis, ab screen-row 1.10.0)" }
   };
 
   /** Spezifikation aller Spalten: { key: { type, nullable, range?, values?, integer?, window?, label, field? } } */

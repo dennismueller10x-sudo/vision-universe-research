@@ -28,6 +28,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const Identity = require(join(root, "core/identity.js"));
+const Staleness = require(join(root, "core/listing-staleness.js"));
 const Canonical = require(join(root, "quant/engines/technical/canonical-bars.js"));
 const Row = require(join(root, "quant/engines/technical/screen-row.js"));
 const Query = require(join(root, "quant/engines/technical/technical-query.js"));
@@ -51,6 +52,11 @@ export function seriesOf(ticker, bars) {
   const rows = bars.timestamps.map((d, i) => ({ date: d, open: bars.open[i], high: bars.high[i], low: bars.low[i], close: bars.close[i], volume: bars.volume[i] }));
   return Canonical.fromRows(rows, { instrumentId: ticker, exchange: "US", currency: "USD", timeframe: "1D",
     priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
+}
+
+/** Felder, die bei eingefrorener Reihe leer sind (SCREENER_FRESHNESS.md): alle Abfragefelder ausser Kurs und Datenqualitaet. */
+export function analyticFields() {
+  return Query.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
 }
 
 /** Spaltenform: jede Zeileneigenschaft wird eine Spalte; fehlende Werte null. */
@@ -103,6 +109,10 @@ export function build(options = {}) {
           benchmark, universeAsOf: options.universeAsOf || null
         });
         if (!bundle) row.noBundle = true;
+        /* Eingefrorenes Kursende (core/listing-staleness.js, dieselbe Schwelle wie DQ-PX-6): erster Tag des
+           gleichen Schlusses im Fenster der Tagesbars. */
+        const tail = Staleness.tailRun(inst.bars.timestamps.map((d, i) => [d, inst.bars.close[i]]));
+        row.frozenSince = tail && tail.run >= Staleness.DEFAULTS.dailyMinRun ? tail.since : null;
         rows.push(row);
       } catch (e) {
         const code = "ROW_FAILED";
@@ -114,7 +124,14 @@ export function build(options = {}) {
   const freq = {};
   rows.forEach((r) => { freq[r.asOf] = (freq[r.asOf] || 0) + 1; });
   const asOf = Object.keys(freq).sort((a, b) => freq[b] - freq[a] || (a < b ? 1 : -1))[0] || null;
-  rows.forEach((r) => { r.fresh = r.asOf === asOf; });
+  /* Veraltete Titel: keine Ereignisse und keine Stichtagszustaende (screen-row.js#markStale, SCREENER_FRESHNESS.md). */
+  /* Analysefelder = Abfragekatalog ohne Kurs und Datenqualitaet; bei eingefrorener Reihe alle leer. */
+  const analytic = analyticFields();
+  rows.forEach((r) => {
+    r.fresh = r.asOf === asOf && !r.frozenSince;
+    if (r.frozenSince) Row.markFrozen(r, r.frozenSince, analytic);
+    else if (!r.fresh) Row.markStale(r);
+  });
   rows.sort((a, b) => (a.s < b.s ? -1 : a.s > b.s ? 1 : 0));
 
   /* Quelle der Wochen-/Monatswerte nur als Zaehlung in meta, nicht als Spalte. */

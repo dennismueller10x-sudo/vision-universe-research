@@ -51,7 +51,7 @@ export function assertLiveKey(key, approved) {
   if (String(approved) !== 'true') throw new Error('STRIPE_LIVE_SETUP_APPROVED=true fehlt (Freigabe des Owners).');
 }
 
-function client(key, fetchImpl) {
+export function client(key, fetchImpl) {
   return async function request(method, path, params) {
     const headers = {Authorization: `Bearer ${key}`, 'Stripe-Version': API_VERSION};
     let url = `https://api.stripe.com${path}`, body;

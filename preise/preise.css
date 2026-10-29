@@ -1,0 +1,44 @@
+/* VISION UNIVERSE — oeffentliche Tarifuebersicht /preise/. Baut auf /konto/konto.css und den
+   gemeinsamen --vu-* Tokens auf (Hell/Dunkel). Ruhig: Typografie, Linien, ein Akzent. */
+.pr{--ka-max:960px}
+.pr-head{max-width:640px;margin:var(--vu-space-3) 0 var(--vu-space-5)}
+.pr-title{margin:0 0 14px;font-size:clamp(34px,8vw,56px);line-height:1.02;letter-spacing:-.04em;font-weight:700}
+.pr-lead{margin:0;color:var(--vu-text-secondary);font-size:17px;line-height:1.6;max-width:56ch}
+.pr-signed-in{margin:0 0 var(--vu-space-3);font-size:15px;color:var(--vu-text-secondary)}
+
+.pr-plans{display:grid;gap:var(--vu-space-3);margin-top:var(--vu-space-3)}
+@media(min-width:761px){.pr-plans{grid-template-columns:1fr 1fr}}
+.pr-plan{display:flex;flex-direction:column;gap:14px;padding:var(--vu-space-4) var(--vu-space-3);border:1px solid var(--vu-line);
+  border-radius:var(--vu-radius);background:var(--vu-surface)}
+@media(min-width:761px){.pr-plan{padding:var(--vu-space-4)}}
+.pr-plan[data-current=true]{border-color:var(--vu-accent-text)}
+.pr-plan-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pr-plan h2{margin:0 auto 0 0;font-size:20px;letter-spacing:-.015em}
+.pr-tag{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;
+  background:var(--vu-accent-soft);color:var(--vu-accent-text)}
+.pr-tag--test{background:transparent;border:1px solid var(--vu-line-strong);color:var(--vu-text-secondary)}
+.pr-price{margin:4px 0 0;font-size:44px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.pr-price small{font-size:15px;font-weight:500;letter-spacing:0;color:var(--vu-muted)}
+.pr-price [aria-busy=true]{color:var(--vu-muted)}
+.pr-terms{margin:0;font-size:14px;line-height:1.5;color:var(--vu-muted);min-height:3em}
+.pr-plan .ka-btn{margin-top:auto}
+.pr-note{margin:0;font-size:13px;line-height:1.5;color:var(--vu-muted)}
+
+.pr-compare,.pr-faq{margin-top:var(--vu-space-5)}
+.pr-compare h2,.pr-faq h2{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
+.pr-table{width:100%;border-collapse:collapse;margin:var(--vu-space-2) 0;font-size:15px}
+.pr-table th,.pr-table td{padding:14px 8px;border-bottom:1px solid var(--vu-line);text-align:right;font-variant-numeric:tabular-nums}
+.pr-table th[scope=row],.pr-table thead th:first-child{text-align:left;font-weight:500}
+.pr-table thead th{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--vu-muted)}
+.pr-table td{font-weight:600;width:22%}
+.pr-always{list-style:none;margin:var(--vu-space-2) 0;padding:0;display:grid;gap:10px;font-size:15px}
+.pr-always li{display:flex;gap:10px;line-height:1.45}
+.pr-always li::before{content:"";flex:none;width:6px;height:6px;margin-top:.55em;border-radius:50%;background:var(--vu-accent-text)}
+
+.pr-faq details{border-bottom:1px solid var(--vu-line)}
+.pr-faq summary{display:flex;align-items:center;min-height:52px;padding:10px 0;cursor:pointer;font-weight:600;list-style:none}
+.pr-faq summary::-webkit-details-marker{display:none}
+.pr-faq summary::after{content:"+";margin-left:auto;padding-left:16px;font-weight:400;font-size:20px;color:var(--vu-muted)}
+.pr-faq details[open] summary::after{content:"–"}
+.pr-faq summary:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+.pr-faq details p{margin:0 0 16px;color:var(--vu-text-secondary);line-height:1.6;max-width:62ch}
