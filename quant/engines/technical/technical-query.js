@@ -76,8 +76,8 @@
     { id: "aboveCloud", group: "Trend", kind: "bool", tfs: D, label: "Kurs über der Ichimoku-Wolke" },
     { id: "aroonOsc", group: "Trend", kind: "num", tfs: D, label: "Aroon-Oszillator 25 (−100 bis 100)" },
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
-    /* seit 1.11.0 (AP4): Gegenstueck zum Hoch; WEEKLY_EVIDENCE.md: neue 52-Wochen-Tiefs setzen sich fort */
-    { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief (Tagestief)", "1W": "52-Wochen-Tief (Wochenschluss)", "1M": "12-Monats-Tief (Monatsschluss)" } },
+    /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
+    { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },

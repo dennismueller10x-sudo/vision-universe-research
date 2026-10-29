@@ -34,7 +34,8 @@
      candleBullish/candleBearish/candleNeutral
                                 Kerzenmuster am abgeschlossenen Bar, dieselbe feste
                                 Liste wie screen-row.js (SCREEN_CANDLES)
-   Seit 1.2.0 (AP4, docs/technical/SCREENER_FIELDS_AP4.md), Auswahl nach der Wochen-Evidenz (WEEKLY_EVIDENCE.md):
+   Seit 1.2.0 (AP4, docs/technical/SCREENER_FIELDS_AP4.md): technisch definierte Ereignisse, beschreibend; keine
+   Kauf- oder Verkaufssignale (historische Einordnung in WEEKLY_EVIDENCE.md):
      crossAboveSma200Days/crossBelowSma200Days  Bars seit der Schluss die lange Linie (40 Wochen bzw.
          10 Monate) kreuzte, Pruefraum sma200CrossWindow
      rsiExitOversoldDays/rsiExitOverboughtDays  Bars seit RSI 14 von unten ueber 30 bzw. von oben unter 70,

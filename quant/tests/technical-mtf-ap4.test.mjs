@@ -154,3 +154,24 @@ test("Abfrage: Ereignisse je Zeitrahmen mit eigenem Pruefraum; Vertrag kennt die
   assert.equal(spec.sma200CrossWindow.label, "Prüfraum in Handelstagen");
   assert.equal(Q.labelOf(Q.field("crossAboveSma200Days"), "1W"), "Wochen seit Schluss über die 40-Wochen-Linie gekreuzt");
 });
+
+test("52-Wochen-Tief: Tag aus Tagestiefs (Vollhistorie, feature-store low52w), Woche/Monat aus Schlusskursen; Beschriftung nennt die Basis", () => {
+  const fsSrc = readFileSync(new URL("../engines/technical/feature-store.js", import.meta.url), "utf8");
+  assert.match(fsSrc, /low52w\s*=\s*rollingMin\(low,/, "low52w = rollierendes Minimum der Tagestiefs");
+  const n = ref.date.length, t = n - 1, lowMin = Math.min(...ref.low.slice(n - 252));
+  const base = { ticker: "AAPL", bars: { timestamps: ref.date, open: ref.open, high: ref.high, low: ref.low.slice(), close: ref.close, volume: ref.volume }, series: series(t) };
+  /* Tagestief am Stichtag unter dem Jahrestief, Schluss deutlich darueber: Tag = ja (Tagestief), nicht aus dem Schluss */
+  base.bars.low[t] = lowMin - 1;
+  const r = Row.computeRow(Object.assign({}, base, { features: { low52w: lowMin - 1, high52w: Math.max(...ref.high) } }));
+  assert.equal(r.newLow52w, true);
+  assert.ok(ref.close[t] > lowMin, "Schluss liegt ueber dem Tief");
+  const r2 = Row.computeRow(Object.assign({}, base, { bars: Object.assign({}, base.bars, { low: ref.low }), features: { low52w: lowMin - 1, high52w: Math.max(...ref.high) } }));
+  assert.equal(r2.newLow52w, false, "ohne neues Tagestief kein Tief");
+  const f = Q.field("newLow52w");
+  assert.match(Q.labelOf(f, "1D"), /Tagestief/);
+  assert.match(Q.labelOf(f, "1W"), /Wochenschluss/);
+  assert.match(Q.labelOf(f, "1M"), /Monatsschluss/);
+  /* fehlende Historie: null, nie false */
+  const r3 = Row.computeRow(Object.assign({}, base, { features: {} }));
+  assert.equal(r3.newLow52w, null);
+});

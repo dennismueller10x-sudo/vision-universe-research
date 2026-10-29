@@ -154,9 +154,9 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `newHigh52w@1W` | bool | ja |  | 52-Wochen-Hoch (Wochenschluss) |
 | `newHigh52wDays` | int, Prüfraum `high52wWindow` | ja | 0 … ∞ | Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage) |
 | `newLow20d` | bool | ja |  | Schluss unter dem 20-Tage-Tief (Donchian-Ausbruch) |
-| `newLow52w` | bool | ja |  | Neues 52-Wochen-Tief (Tagestief) |
-| `newLow52w@1M` | bool | ja |  | 12-Monats-Tief (Monatsschluss) |
-| `newLow52w@1W` | bool | ja |  | 52-Wochen-Tief (Wochenschluss) |
+| `newLow52w` | bool | ja |  | Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen |
+| `newLow52w@1M` | bool | ja |  | 12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate |
+| `newLow52w@1W` | bool | ja |  | 52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen |
 | `nr7` | bool | ja |  | NR7 (engste Tagesspanne der letzten 7 Tage) |
 | `nr7@1M` | bool | ja |  | NR7 (engste Monatsspanne der letzten 7 Monate) |
 | `nr7@1W` | bool | ja |  | NR7 (engste Wochenspanne der letzten 7 Wochen) |

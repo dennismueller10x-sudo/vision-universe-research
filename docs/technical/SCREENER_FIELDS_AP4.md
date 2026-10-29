@@ -3,21 +3,31 @@
 Fachmodell-PR zur Owner-Freigabe. Gehört zu [TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md), Kriterium E3 (P1).
 Versionen: `technical-mtf-1.2.0`, `technical-screen-row-1.11.0`, `technical-query-1.11.0`, `technical-query-text-1.8.0`, Vertrag `technical-screener-contract-1.1.0`.
 
-## 1. Auswahl
+## 1. Auswahl und Einordnung
 
-Ausgewählt wird nach Evidenz und Bedeutung, nicht nach Anzahl. Grundlage ist [WEEKLY_EVIDENCE.md](WEEKLY_EVIDENCE.md): 36 Jahre, 6.190 Titel. Robust waren drei Wochenbefunde:
+Ausgewählt wird nach Bedeutung für den Screener und nach vorhandener Evidenz, nicht nach Anzahl. Dabei sind drei Ebenen zu unterscheiden:
 
-| Befund (WEEKLY_EVIDENCE.md) | neues Feld |
-|---|---|
-| Schluss kreuzt die 40-Wochen-Linie | `crossAboveSma200Days@1W`, `crossBelowSma200Days@1W` (Monat: 10-Monats-Linie) |
-| Wochen-RSI 14 verlässt die überverkaufte Zone; Gegenstück: verlässt die überkaufte | `rsiExitOversoldDays@1W`, `rsiExitOverboughtDays@1W` (auch Monat) |
-| Neues 52-Wochen-Tief setzt sich fort | `newLow52w` je Tag, Woche, Monat |
+| Ebene | Bedeutung | Gilt hier? |
+|---|---|---|
+| **Technisch definiertes Ereignis** | Eine eindeutige, nachrechenbare Regel. Beispiel: „der Wochenschluss liegt über der 40-Wochen-Linie, der Vorwochenschluss nicht“. | Ja, für alle Felder dieses PRs. Das ist ihr einziger Anspruch. |
+| **Statistische historische Beobachtung** | Was nach dem Ereignis in der Vergangenheit im Mittel geschah, gemessen in [WEEKLY_EVIDENCE.md](WEEKLY_EVIDENCE.md): Überrendite gegen SPY über 13 Wochen, 1990–2026, 6.190 Titel, mit Robustheitsläufen. | Nur beschreibend und teils gegen die übliche Lesart, siehe unten. |
+| **Handelbarer Strategievorteil** | Ein Vorteil nach Kosten, Ausführung, Liquidität und Out-of-Sample-Prüfung. | **Nein.** Für keines der Felder ist ein solcher Vorteil nachgewiesen. Die Felder sind keine Kauf- oder Verkaufssignale. |
+
+Was die Wochen-Evidenz zu den Feldern sagt (nur Wochenbasis; für Monatswerte gibt es keine eigene Evidenz):
+
+| Ereignis | Feld | Historische Beobachtung (Überrendite gegen SPY über 13 Wochen, gemessen in Signalrichtung: positiv heißt, der Kurs lief wie das Ereignis üblicherweise gelesen wird) | Bedeutung |
+|---|---|---|---|
+| Schluss kreuzt die 40-Wochen-Linie **aufwärts** | `crossAboveSma200Days@1W` | Die Titel liefen danach im Mittel **schlechter** als der Markt: −1,2 %, ab 5 $ −1,9 %. Das Vorzeichen ist in beiden Zeiträumen gleich. Mit einer Woche Verzug ist der Effekt ab 2016 nicht mehr signifikant. | Robust **entgegen** der üblichen Lesart als Kaufsignal. Kein Kaufsignal. |
+| Schluss kreuzt die 40-Wochen-Linie **abwärts** | `crossBelowSma200Days@1W` | Das Vorzeichen ist uneinheitlich (alle −0,35 %, ab 5 $ +0,83 %). | Nicht robust. Aufgenommen als Gegenstück, damit beide Richtungen filterbar sind. |
+| Wochen-RSI 14 **von unten über 30** | `rsiExitOversoldDays@1W` | Im Mittel **schlechter** als der Markt: −2,0 %, ab 5 $ −3,7 %. Das gilt vor und nach 2016. | Robust **entgegen** der üblichen Lesart als Erholungssignal. Kein Kaufsignal. |
+| Wochen-RSI 14 **von oben unter 70** | `rsiExitOverboughtDays@1W` | −1,6 % in Signalrichtung, also eher gestiegen statt gefallen; ab 5 $ nicht signifikant. | Nicht robust. Aufgenommen als Gegenstück. |
+| **Neues 52-Wochen-Tief** | `newLow52w@1W` | Mit einer Woche Verzug und ab 5 $ setzt sich der Rückgang im Mittel fort: +1,2 % bzw. +2,1 % in Signalrichtung, vor und nach 2016. Ohne Verzug ist das Vorzeichen uneinheitlich, und die erste Woche bringt im Mittel eine Gegenbewegung. | Der einzige richtungsgleiche robuste Befund. Auch er ist ein historischer Mittelwert, kein Verkaufssignal und kein Strategievorteil: Kosten, Leerverkaufsbeschränkungen und Survivorship Bias sind nicht berücksichtigt. |
 
 Nicht aufgenommen:
-- Golden/Death Cross der 10- und 40-Wochen-Linie: Das Vorzeichen ist zwischen den Zeiträumen uneinheitlich.
-- Weitere Katalogindikatoren je Woche: Dafür fehlt Evidenz; sie kämen nur nach Anzahl dazu.
+- Golden/Death Cross der 10- und 40-Wochen-Linie: Das Vorzeichen ist zwischen den Zeiträumen uneinheitlich, und als technisches Ereignis bringen sie gegenüber den bestehenden Tagesfeldern wenig Neues.
+- Weitere Katalogindikatoren je Woche: Dafür fehlt Evidenz.
 
-Die Felder beschreiben. Sie sind keine Signale mit Erwartungswert: Die Erholungssignale liefen historisch schlechter als der Markt. Die Evidenz dazu steht in WEEKLY_EVIDENCE.md.
+In der Oberfläche heißen die Felder „Wochen seit …“ bzw. „Monate seit …“. Sie werden nicht als Signal, Empfehlung oder Chance bezeichnet. Die historische Einordnung steht in WEEKLY_EVIDENCE.md.
 
 ## 2. Regeln
 
@@ -29,9 +39,17 @@ Die Felder beschreiben. Sie sind keine Signale mit Erwartungswert: Die Erholungs
 - Linie: 40 Wochen bzw. 10 Monate (wie `aboveSma200@1W/@1M`). RSI 14 nach Wilder, Schwellen 30 und 70.
 - Abfrage: Der Prüfraum gehört zum Zeitrahmen der Bedingung (`technical-query.js`, `fenster@1W`). „Kreuzung vor mehr als 10 Wochen“ ist damit nur dann „ja“, wenn der Prüfraum das belegt (`whenAbsent`, wie beim Tag).
 
-**52-Wochen-Tief:**
-- Tag: Tagestief ≤ `low52w` der Vollhistorie. Das ist das Gegenstück zu `newHigh52w`, Tageshoch ≥ `high52w`.
-- Woche und Monat: Schluss ≤ tiefster Schluss der letzten 52 Wochen bzw. 12 Monate, einschließlich des aktuellen Bars. Das ist das Gegenstück zu `newHigh52w@1W/@1M`.
+**52-Wochen-Tief: unterschiedliche Basis je Zeitrahmen**
+
+| Zeitrahmen | Regel | Basis | Beschriftung |
+|---|---|---|---|
+| Tag | Tagestief ≤ `low52w`. Das ist das rollierende Minimum der **Tagestiefs** über 252 Handelstage aus der Vollhistorie (`feature-store.js`). | Tagestief, also Intraday-Tief | „Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen“ |
+| Woche | Wochenschluss ≤ tiefster Wochenschluss der letzten 52 Wochen, einschließlich des aktuellen Bars | Schlusskurse | „52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen“ |
+| Monat | Monatsschluss ≤ tiefster Monatsschluss der letzten 12 Monate | Schlusskurse | „12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate“ |
+
+- Die Regeln sind das Gegenstück zu `newHigh52w` (Tag: Tageshoch, Woche und Monat: Schluss).
+- Ein Titel kann deshalb am Tag ein neues Tief markieren, ohne dass der Wochenschluss ein Schlusstief ist, und umgekehrt.
+- Fehlt Historie (weniger als 52 Wochen bzw. 12 Monate, oder kein `low52w`), ist der Wert `null`, nie `false`.
 
 **Zeitbezug (AP1):**
 - Veraltete Titel tragen keine Ereignisse, in keinem Zeitrahmen. `markStale` leert seit 1.11.0 die Ereignisfelder auch mit `@1W`/`@1M`; `newLow52w` ist Stichtagszustand.
@@ -69,6 +87,7 @@ Die 232 eingefrorenen Titel zählen in der Näherung als Tief, weil ein konstant
 ## 4. Tests
 
 `quant/tests/technical-mtf-ap4.test.mjs`:
+- Tagestief-Basis des Tagesfelds und Beschriftung je Zeitrahmen; fehlende Historie ergibt `null`.
 - Ereignisse und Tief an 40 Stichtagen gleich einer naiven, unabhängigen Nachrechnung (eigene Wochen-/Monatsbildung, SMA, RSI nach Wilder), kausal.
 - Eine Wellenreihe übt Kreuzungen und RSI-Austritte an jedem Bar.
 - Bestehende Wochen- und Monatswerte bleiben unverändert.
