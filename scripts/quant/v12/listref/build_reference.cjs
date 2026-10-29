@@ -366,13 +366,13 @@ function main() {
     const segs = b.matrix[String(y)] || {}, comp = b.completeness[y] || {};
     for (const segKey of ['all', 'exchange', 'sizeClass', 'listingAge', 'exchangeXsize', 'exchangeXage']) for (const [val, c] of Object.entries(segs[segKey] || {})) {
       const s = shares(c);
-      p4.push([y, segKey, val, c.ref, c.withSeries, c.frameQualified, s.seriesCoverage, s.frameCoverage, c.ended, c.endedWithSeries, c.endedWithLifecycle, comp.completenessLower ?? null, comp.completenessUpper ?? null, readiness(c, comp.completenessUpper)]);
+      p4.push([y, segKey, val, c.ref, c.withSeries, c.frameQualified, s.seriesCoverage, s.frameCoverage, c.ended, c.endedWithSeries, c.endedWithLifecycle, comp.completenessLower ?? null, comp.completenessUpper ?? null, readiness(c, comp.completenessUpper), readiness(c, comp.completenessLower)]);
     }
   }
   const p4doc = { schemaVersion: 'v12-listref-coverage-by-year-segment-1.0.1', ...env,
     readinessRule: 'n_ref >= 30 and referenceCompletenessUpper >= 0.80 required; then seriesCoverage >= 0.95 -> STUDY_READY_TRANSPARENT_GAP, >= 0.80 -> PARTIAL, else INSUFFICIENT (protocol 1.0.0 p4Readiness, amendment 1.0.1 A5)',
     caveat: 'Reference = Tiingo listing chains (survivor-biased itself where completeness is low). Size class = 10-K public float of the linked CIK (UNKNOWN when unlinked or no XBRL float). Coverage counts our weekly series regardless of qualification; frameCoverage counts the V10/V11 research frame.',
-    columns: ['year', 'segment', 'value', 'ref', 'withSeries', 'frameQualified', 'seriesCoverage', 'frameCoverage', 'refDelistings', 'delistingsWithSeries', 'delistingsWithLifecycle', 'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness'],
+    columns: ['year', 'segment', 'value', 'ref', 'withSeries', 'frameQualified', 'seriesCoverage', 'frameCoverage', 'refDelistings', 'delistingsWithSeries', 'delistingsWithLifecycle', 'referenceCompletenessLower', 'referenceCompletenessUpper', 'readiness', 'readinessAtLowerCompleteness'],
     rows: p4 };
   const registerDoc = { schemaVersion: 'v12-listref-delisting-register-1.0.1', ...env, source: 'EDGAR full-index form.gz 1995-2026; filing index https://www.sec.gov/Archives/edgar/data/<cik>/<accession without dashes>/<accession>-index.htm',
     columns: ['cik', 'eventDate', 'name', 'forms[[form,date,accession]]', 'mergerProcessIndexed', 'issuerForm25', 'exchangeForm25NSE', 'linkedChains', 'nameCandidateOnly'], count: b.register.length,
