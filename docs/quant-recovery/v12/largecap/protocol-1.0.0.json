@@ -1,0 +1,101 @@
+{
+ "schemaVersion": "v12-largecap-protocol-1.0.0",
+ "status": "REGISTERED_BEFORE_OUTCOMES",
+ "registeredAt": "2026-10-29",
+ "base": "claude/vision-quant-v10-backtest-4ho3rd @ 10d778ebae",
+ "registration": "The git commit that adds this file is the registration. It precedes every SEC document fetch of this strand for verification (only the submissions filing lists of 16 CIKs were read before, see priorKnowledge). sha256 in protocol-1.0.0.sha256. Any later change needs a new version with reason, disclosed.",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "purpose": "Quant V12 work package P4b: qualify large S&P 500 listings that the research loader {identityEvidence, corporateActionEvidence, listingLifecycleEvidence} excludes (docs/quant-recovery/v12/indexpop/coverage-1.2.0.json, topUncoveredSince2019H2), with SEC original sources only, fail closed, opt-in.",
+ "scope": {
+  "rule": "Every listing that is a T1/T2-mapped SPY member on at least one fund date >= 2019-07-01 without a covered qualified series under the loader options above (recomputed from the INDEXPOP private snapshots/mapping/qualified files), excluding MISSING_WEEKS (not a corporate-action or identity question).",
+  "corporateAction": ["ref_AAPL", "ref_GOOGL", "ref_ABT", "ref_MS", "ref_USB", "ref_JCI", "ref_WBD", "ref_IFF", "ref_KDP", "ref_IEX", "ref_PENN", "ref_CPRI", "ref_NKTR"],
+  "identity": ["ref_TEL", "ref_DD", "ref_DOW", "ref_COR", "ref_MRNA", "ref_DOC", "ref_CZR", "ref_ECHO"],
+  "outOfScope": {"ref_OGN": "MISSING_WEEKS", "ref_VNT": "MISSING_WEEKS"},
+  "blockingReasonsAtBase": {
+   "ref_AAPL": "CORPORATE_ACTION_UNRESOLVED 2000-09-29 SINGLE_DAY_DOMINATES_WEEK (V10 1.1.2: OUT_OF_FRAME_PRE_2004)",
+   "ref_GOOGL": "CORPORATE_ACTION_UNRESOLVED 2014-04-04 SINGLE_DAY_SPLIT_SIZED_JUMP (V10: INSUFFICIENT_FILINGS NO_BEFORE_BRACKET)",
+   "ref_ABT": "CORPORATE_ACTION_UNRESOLVED 2013-01-04 SINGLE_DAY_SPLIT_SIZED_JUMP (V10: IDENTITY_TICKER_NOT_NAMED)",
+   "ref_MS": "CORPORATE_ACTION_UNRESOLVED 2008-10-17 SINGLE_DAY_DOMINATES_WEEK (V10: SPLIT_EVIDENCE_8K)",
+   "ref_USB": "CORPORATE_ACTION_UNRESOLVED 1999-04-16 PROVIDER_SPLIT_IN_WEEK (V10: OUT_OF_FRAME_PRE_2004)",
+   "ref_JCI": "CORPORATE_ACTION_UNRESOLVED 2012-10-05 SINGLE_DAY_SPLIT_SIZED_JUMP (V10: IDENTITY_TICKER_NOT_NAMED)",
+   "ref_KDP": "CORPORATE_ACTION_UNRESOLVED 2018-07-13 SINGLE_DAY_DOMINATES_WEEK (V10: IDENTITY_TICKER_NOT_NAMED)",
+   "ref_WBD": "CORPORATE_ACTION_UNRESOLVED 2014-08-08 SINGLE_DAY_SPLIT_SIZED_JUMP (V10: IDENTITY_NO_CANDIDATE_CIK)",
+   "ref_IFF": "CORPORATE_ACTION_UNRESOLVED 1994-01-21 SINGLE_DAY_SPLIT_SIZED_JUMP (V10: OUT_OF_FRAME_PRE_2004)",
+   "ref_IEX": "CORPORATE_ACTION_UNRESOLVED 1994-12-09 SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "ref_PENN": "CORPORATE_ACTION_UNRESOLVED 2020-03-20 SINGLE_DAY_DOMINATES_WEEK",
+   "ref_CPRI": "CORPORATE_ACTION_UNRESOLVED 2024-10-25 SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "ref_NKTR": "CORPORATE_ACTION_UNRESOLVED 2023-02-24 SINGLE_DAY_SPLIT_SIZED_JUMP, 2025-06-27 SINGLE_DAY_DOMINATES_WEEK",
+   "ref_TEL": "AMBIGUOUS_LISTING_IDENTITY (V10 B1: SELECTED_ROW_NOT_UNIQUE, two master rows with the same canonical_id)",
+   "ref_DD": "AMBIGUOUS_LISTING_IDENTITY (V10 B1: NO_SAME_DAY_PRICE_EVIDENCE)",
+   "ref_DOW": "AMBIGUOUS_LISTING_IDENTITY (V10 record exists, validFrom 2024-07-12; applied only with identityEvidenceProtocolV10)",
+   "ref_COR": "AMBIGUOUS_LISTING_IDENTITY (V10 B1: NO_SAME_DAY_PRICE_EVIDENCE)",
+   "ref_MRNA": "AMBIGUOUS_LISTING_IDENTITY (V10 record exists; applied only with identityEvidenceProtocolV10)",
+   "ref_DOC": "AMBIGUOUS_LISTING_IDENTITY (V10 B1: NO_SAME_DAY_PRICE_EVIDENCE)",
+   "ref_CZR": "AMBIGUOUS_LISTING_IDENTITY (V10 record exists; applied only with identityEvidenceProtocolV10)",
+   "ref_ECHO": "AMBIGUOUS_LISTING_IDENTITY (V10 B1: NO_SAME_DAY_PRICE_EVIDENCE)"
+  }
+ },
+ "inputs": {
+  "caProtocol": {"path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json", "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"},
+  "identityProtocol": {"path": "docs/quant-recovery/v10/population/protocol-1.0.0.json", "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+   "amendments": {"1.0.1": "2f87123b6c057a59b8fcc264de82b311b9a84ffd7b704c5c1dd2f393074a71f5", "1.0.2": "425cab73286999333b51abd3e129ca4a6de2cb155d427862cf080e4c0a2f48e5", "1.0.3": "a4634ffdc6936c2d702d775168c14204455b096665ac9b686392e15c64faa899"}},
+  "indexpopCoverage": {"path": "docs/quant-recovery/v12/indexpop/coverage-1.2.0.json", "sha256": "33170b16fc0544a1ff2a5f2d5cfda84c1d56f9bc16f986388ed42780f1d0559e"},
+  "securityMaster": {"path": "quant/data/market/security-master/us-security-master.json", "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332"},
+  "loaderBefore": {"path": "quant/engines/research-weekly-loader.cjs", "sha256": "cc18551ffc8ecf1c6c3f3282c9475e0f3306d2aa53651369753d53883d179b44"},
+  "caRegistryBefore": {"path": "quant/engines/research-ca-evidence.cjs", "sha256": "99345f83017622b7a10b49957bd574a00a5acc09496c6c438c5ea3b3831b1530"},
+  "identityRegistryBefore": {"path": "quant/engines/research-identity-evidence.cjs", "sha256": "488f384dd615b3182373e54ad0d37f19a5077259e6e989917c560e40a9c166ef"}
+ },
+ "priorKnowledge": "Written after (a) reading the loader errors of the scope listings, (b) the V10 1.1.2 verdicts and private V10 facts of the six frame events ABT, GOOGL, JCI, KDP, MS, WBD (who failed which rule; e.g. MS: split language in preferred-stock anti-dilution clauses of 8-Ks), (c) the V10 B1 identity cases of TEL, DD, DOW, COR, DOC, CZR, ECHO, MRNA, (d) the EDGAR submissions filing lists (form, dates, items; no document body) of the 16 CIKs of AAPL, Google Inc., Alphabet, ABT, MS, USB, JCI, KDP, WBD, IFF, TEL, DD, DOW, COR, DOC, MRNA (scripts/quant/v12/largecap/peek_filings.py) - this showed e.g. no 8-K of Apple around 2000-09-29 and Forms 15 of WBD in October 2026. The economic background of the events (Apple profit warning 2000, AbbVie spin-off 2013, Tyco ADT spin-off 2012, Class C dividends of Google 2014 and Discovery 2014, Dr Pepper Snapple / Keurig 2018, Mitsubishi UFJ investment in Morgan Stanley 2008) is public knowledge. No rule below was chosen to admit a particular listing; where a rule could only admit (L1, L2, L4, L5) this is stated. No split-evidence, share-band or affirmative-source rule of 1.1.2 is relaxed.",
+ "partCA": {
+  "name": "corporate-action verification, protocol 1.1.2 plus L1-L3",
+  "base": "Every rule of docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json applies unchanged (identity ID1-ID4 incl. E1, share continuity incl. E2, split evidence in all channels incl. E3, E4 only as provider-error proposal, spin-off rule, E6, spike-reversal guard, affirmative source, decision order, series rule). Implemented by importing scripts/quant/v10/corporate-actions/verify_ca_events_v11.py as a library; only the extensions below are added code.",
+  "L1_preXbrlFrame": {
+   "change": "Events with week < 2004-08-23 are no longer OUT_OF_FRAME_PRE_2004; they are verified with the text-era rules (E1 identity text, E2 text cover, split channels, spin-off rule, spike reversal, affirmative source).",
+   "legacyItems": "8-Ks filed before 2004-08-23 carry the old item numbers in EDGAR submissions. Split-language window items: legacy 5 (other events) and 9 (Regulation FD) in addition to 1.1.2's set, and 8-Ks with an empty item list (E3). Affirmative items: legacy 1, 2, 3, 5, 9, 12. Item 7 (exhibits) alone never qualifies.",
+   "effect": "can admit (pre-2004 events had no admission path); affirmative-source requirement unchanged: without a qualifying 8-K the event stays NEGATIVE_EVIDENCE_ONLY."
+  },
+  "L2_identityTextFullSubmission": {
+   "change": "Where E1 applies (no dei:TradingSymbol fact) and TICKER_TEXT_REGEX matches neither the bracketing filing's primary document nor the nearest same-side original 10-K's primary document, the same regex is applied to the complete submission text (<accession>.txt, all documents incl. exhibits such as EX-13 annual-report sections) of the bracketing filing, then of that nearest 10-K. ID2/ID3 unchanged; a different tagged symbol still fails.",
+   "effect": "can admit (identity only)."
+  },
+  "L3_candidateCik": {
+   "change": "The candidate CIK is fixed per listing (discovery only, not evidence): the CIK of SEC company_tickers_exchange.json for the ticker; for listings whose ticker is no longer in that file the registrant of the scope list below; for ref_GOOGL additionally the event-era registrant Google Inc. (CIK 1288776), because the current CIK 1652044 has no filing before 2015-10-02. Identity must still pass ID1-ID3 for exactly one candidate.",
+   "ciks": {"ref_AAPL": [320193], "ref_GOOGL": [1288776, 1652044], "ref_ABT": [1800], "ref_MS": [895421], "ref_USB": [36104], "ref_JCI": [833444], "ref_WBD": [1437107], "ref_IFF": [51253], "ref_KDP": [1418135], "ref_IEX": [832101], "ref_PENN": [921738], "ref_CPRI": [1530721], "ref_NKTR": [906709]}
+  },
+  "register": "Admissible series (every unresolved event GENUINE_MOVE or SPINOFF_DISTRIBUTION) are written to the non-enumerable extension `v12` of quant/engines/research-ca-evidence.cjs (schema research-ca-evidence-1.1.0, protocolSha256 = sha256 of THIS file, record fields and loader match rule exactly as research-ca-evidence-1.0.0). Applied only with the loader option corporateActionEvidenceProtocolV12 (requires corporateActionEvidence). The extension is non-enumerable so that JSON.stringify of the registry - and with it every existing registryHash and every output of the existing option sets - stays byte-identical."
+ },
+ "partRestrict": {
+  "name": "history restriction after an unresolved corporate action (single-row listings)",
+  "applies": "Scope listings of partCA with at least one event that is not admissible under partCA, whose security master holds exactly one row for the baseline id (canonical_id not shared).",
+  "principle": "No event is classified by this part and no price is changed. The listing is used only from the first weekly bar AFTER its last non-admissible event week; everything before is excluded and counted. The restricted series then passes the unchanged validate() (every remaining split-sized move must still resolve by the provider evidence or a partCA record).",
+  "S0": "S0 = the later of (a) the first weekly bar dated after the last non-admissible event week, and (b) the first weekly bar on/after the filing date of the symbol start document.",
+  "symbolStartDocument": "The earliest original 10-K or 10-Q of the bound CIK filed after the last non-admissible event week whose inline-XBRL cover row names the ticker (scripts/quant/v9/identity/sec_lib.cover_classes, COMMON class) or whose primary document (first 3 MiB) contains a ticker statement for the ticker (sec_lib.ticker_symbol_statements, factual=False); at most 16 filings are tried in filing order. None: NO_SYMBOL_START_DOCUMENT (excluded). This keeps a listing whose symbol differed before (TYC->JCI, DPS->KDP, DISCA->WBD, Google Inc. GOOG->GOOGL) out of the restricted interval until the CIK itself names the ticker.",
+  "boundCik": "The CIK of the ticker in SEC company_tickers_exchange.json; ref_WBD: 1437107 (deregistered 2026-10, see Q-CUR).",
+  "identityRules": "Then the V10 B1 rules Q-CIK, Q-CLS, Q-VEN, Q-CUR, Q-PX and Q-INT of docs/quant-recovery/v10/population/protocol-1.0.0.json (with amendments 1.0.2, 1.0.3 and L4 below) apply unchanged with S0 in place of the V9 validFrom; the symbol start document is the re-verified start document. Implemented by importing scripts/quant/v10/population/b1_identity.py (assess) as a library. Decision QUALIFIED only at evidence level SEC_SAME_DAY_PRICE_AND_COVER; NO_SAME_DAY_PRICE_EVIDENCE, COVER_NOT_CURRENT, DELISTING_FORM_AFTER_LAST_COVER etc. exclude.",
+  "register": "Qualified cases become records (masterRowAction RESTRICT_SINGLE_ROW, canonicalId of the single row, validFrom, historyGuard, lastConfirmedCover, sources, priceEvidence, caEvent {week, verdict under partCA}) of the non-enumerable extension `v12` of quant/engines/research-identity-evidence.cjs (schema research-identity-evidence-1.2.0, protocolSha256 = sha256 of THIS file). Applied only with the loader option identityEvidenceProtocolV12 (requires identityEvidence and identityEvidenceProtocolV10). The loader checks fail closed: exactly one master row with that canonical_id, history guard, cover age <= 400 days, then the unchanged validate() (through the corporate-action overlay when corporateActionEvidence is on) on the restricted points."
+ },
+ "partIdentity": {
+  "name": "V10 B1 identity protocol re-run for the identity scope",
+  "cases": "ref_TEL, ref_DD, ref_DOW, ref_COR, ref_DOC, ref_ECHO are re-assessed with scripts/quant/v10/population/b1_identity.py (assess, unchanged rules, V9 start documents) plus L4 and L5. ref_MRNA and ref_CZR keep their existing V10 records (no new evidence); they are covered whenever identityEvidenceProtocolV10 is on.",
+  "L4_priceDocumentBudget": {
+   "change": "Q-PX documentsSearched: the 40 newest candidates of 1.0.0, PLUS every DEF 14A and every 10-K/10-K405 of the bound CIK filed in [S0 - 30 days, asOf] that is not already among them (read as 1.0.0 prefixes: annual 3 MiB, others 2 MiB). Applies to partIdentity and partRestrict.",
+   "why": "For large issuers the 40 newest candidates are exhausted by recent 8-K/424B filings, so proxy statements and annual covers of earlier years - the classic sources of a dated closing price - were never read (V10 DOW: earliest anchor 2026 -> validFrom 2024-07-12). The anchor, matching and interval rules are unchanged; a MISMATCH_SAME_DAY found in an added document excludes like any other.",
+   "effect": "can admit or exclude (more documents = more anchors and more chances of a source price conflict)."
+  },
+  "L5_duplicateMasterRows": {
+   "change": "If the selected canonical_id occurs in more than one master row of the baseline id (V10 amendment 1.0.3: SELECTED_ROW_NOT_UNIQUE), the selection key is (canonical_id, active_status, end_date) of the ACTIVE row and must be unique among the rows; otherwise SELECTED_ROW_NOT_UNIQUE stands. The end_date of every other row with the same canonical_id is treated like a venue transfer of Q-INT: a MATCH anchor is required on both sides of it inside the interval, otherwise the start moves to the first bar after that end_date.",
+   "register": "masterRowAction SELECT_EXISTING_ROW_BY_KEY with selectedRowKey {canonicalId, activeStatus, endDate} and masterRowKeys (sorted 'canonical_id|active_status|end_date' of all rows); the loader requires the row set to equal masterRowKeys exactly and the key to identify exactly one row.",
+   "effect": "can admit (ref_TEL)."
+  },
+  "register": "Qualified re-assessed cases become records (SELECT_EXISTING_ROW or SELECT_EXISTING_ROW_BY_KEY) of the identity extension `v12`; a v12 record replaces the V10 record of the same id only when identityEvidenceProtocolV12 is on (V10 outputs unchanged otherwise)."
+ },
+ "fairAccess": "SEC only through scripts/quant/sec/http_client.py (User-Agent 'VisionUniverseResearch info@visionuniverse.de', token bucket <= 2 requests/second, one process at a time); private cache scratchpad/v12-private/largecap/http-cache, earlier strands' private caches re-used read-only (bodies re-hashed on use); request ledger counted and reported. No bulk submissions archive.",
+ "outputs": {
+  "evidence": "docs/quant-recovery/v12/largecap/: ca-verdicts-1.0.0.json (per event: rule outcomes and sources), restrict-cases-1.0.0.json and identity-cases-1.0.0.json (B1 outputs), before-after-1.0.0.json (QUALIFIED counts for base3 -> +identityEvidenceProtocolV10 -> +V12 options, newly qualified ids with first bar), coverage-1.0.0.json (SPY coverage per fund date: members/weight, recomputed with scripts/quant/v12/indexpop/build-outputs.cjs from the INDEXPOP private snapshots and mapping), independent-check-1.0.0.json, README.md.",
+  "effectMeasure": "Loader option sets: base3 = {identityEvidence, corporateActionEvidence, listingLifecycleEvidence}; v10 = base3 + identityEvidenceProtocolV10; v12 = v10 + identityEvidenceProtocolV12 + corporateActionEvidenceProtocolV12."
+ },
+ "independentCheck": "python3 -I, stdlib only, separate code, no repository imports: re-hash every cited body from the private cache (raw and normalized), re-extract each cited price statement and ticker/identity quote with its own parser, recompute the later split product, same-day bar and MATCH, re-derive S0/validFrom (symbol start, 730-day rule, concatenation/duplicate-row guard), re-check partCA facts (share ratio band, split-evidence absence, affirmative/spin-off source dates), replay every registry record against the series files (history guard, closes/ratio) and recompute QUALIFIED changes and SPY coverage from the loader exports.",
+ "limits": "Restricted listings carry no history before validFrom; partCA registers PRICE_RETURN_ONLY for spin-offs (distribution value not in the series); a qualified identity is SEC evidence that the series matches the issuer's stated prices on the anchor dates, not a tick-level audit; non-split-sized provider factors (e.g. spin-off adjustments recorded as splitFactor) are not examined by the corporate-action gate and are not examined here."
+}
