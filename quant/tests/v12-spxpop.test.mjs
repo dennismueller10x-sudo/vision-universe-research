@@ -13,13 +13,15 @@ const IP = require(path.join(ROOT, 'quant/engines/research-index-population.cjs'
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
 const read = f => JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8'));
 
-test('rules: frozen files match their sha256 and the code implements rules-1.1.0', () => {
-  for (const v of ['1.0.0', '1.0.1', '1.1.0']) {
+test('rules: frozen files match their sha256 and the code implements rules-1.1.1', () => {
+  for (const v of ['1.0.0', '1.0.1', '1.1.0', '1.1.1']) {
     const expected = fs.readFileSync(path.join(DIR, `rules-${v}.sha256`), 'utf8').split(/\s+/)[0];
     assert.equal(sha(fs.readFileSync(path.join(DIR, `rules-${v}.json`))), expected, v);
   }
-  const r = read('rules-1.1.0.json');
+  const r = read('rules-1.1.1.json');
   assert.equal(r.ruleVersion, IP.RULE.version);
+  assert.match(r.identityChain.identityBreak, /log 2/);
+  assert.equal(r.amendments.find(a => a.version === '1.1.1').afterSightOfResults, true);
   assert.deepEqual(IP.RATIOS.map(x => x.label).sort(), [...r.splitDetection.ratios].sort());
   assert.match(r.splitDetection.ratioTolerance, /0\.15/);
   assert.equal(IP.RULE.RATIO_TOL, 0.15);
@@ -68,9 +70,9 @@ test('loader is opt-in and fail-closed', () => {
   assert.throws(() => IP.createIndexPopulation({ optIn: true, boundedAs: 'MID' }), /BOUNDED_SCENARIO/);
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'v12-spxpop-'));
   try {
-    const man = read('manifest-1.1.0.json');
+    const man = read('manifest-1.1.1.json');
     fs.copyFileSync(path.join(DIR, man.dataFile), path.join(tmp, man.dataFile));
-    fs.writeFileSync(path.join(tmp, 'manifest-1.1.0.json'), JSON.stringify({ ...man, dataSha256: '0'.repeat(64) }));
+    fs.writeFileSync(path.join(tmp, 'manifest-1.1.1.json'), JSON.stringify({ ...man, dataSha256: '0'.repeat(64) }));
     assert.throws(() => IP.createIndexPopulation({ optIn: true, dir: tmp }), /DATA_HASH_MISMATCH/);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
   const pop = IP.createIndexPopulation({ optIn: true });
@@ -112,15 +114,45 @@ test('published population: weights, returns and the fund consistency of qualifi
 });
 
 test('evidence files: manifest hash, contract fields, no CUSIP in clear text', () => {
-  const man = read('manifest-1.1.0.json');
+  const man = read('manifest-1.1.1.json');
   const buf = fs.readFileSync(path.join(DIR, man.dataFile));
   assert.equal(sha(buf), man.dataSha256);
-  const sum = read('summary-1.1.0.json');
+  const sum = read('summary-1.1.1.json');
   for (const k of ['studyId', 'ruleVersion', 'dataSource', 'listingIdentity', 'returnBasis', 'availability', 'reproHash', 'scope']) assert.ok(sum[k], k);
   assert.equal(sum.certificationStatus, 'NOT_CERTIFIED'); assert.equal(sum.productionApproved, false); assert.equal(sum.returnBasis, 'PRICE_RETURN');
   const txt = require('node:zlib').gunzipSync(buf).toString('utf8');
   assert.equal(/"[0-9]{3}[0-9A-Z]{5}[0-9]"/.test(txt), false);
-  const val = read('validation-1.1.0.json');
+  const val = read('validation-1.1.1.json');
   assert.ok(val.returnVsSeries.exactDates.n > 1000 && val.returnVsSeries.exactDates.p99Pp < 0.1);
   assert.ok(val.splitVsProvider.agreeNone + val.splitVsProvider.agreeSplit > 0.97 * val.splitVsProvider.pairs);
+});
+
+test('1.1.1 identity break at mergers: rule, Broadcom 2015/16 and the 1.1.0 data still loadable', () => {
+  // rule: C3/C4 tier, share discontinuity, every hypothesis more than doubles relative to the index
+  assert.equal(IP.identityBreak({ tier: 'C3_CIK', cls: 'AMBIGUOUS_CA', point: null, lo: 2.004, hi: 2.004 }, 0.072).break, true);
+  assert.equal(IP.identityBreak({ tier: 'C3_CIK', cls: 'SHARE_CHANGE', point: 1.688, lo: 1.688, hi: 1.688 }, 0.03).break, true);
+  assert.equal(IP.identityBreak({ tier: 'C2_NAME', cls: 'AMBIGUOUS_CA', point: null, lo: 6.6, hi: 7.8 }, 0.2).break, false); // same name = same security
+  assert.equal(IP.identityBreak({ tier: 'C3_CIK', cls: 'NONE', point: 3.17, lo: 3.17, hi: 3.17 }, 0.2).break, false); // no share discontinuity
+  assert.equal(IP.identityBreak({ tier: 'C3_CIK', cls: 'SHARE_CHANGE', point: -0.79, lo: -0.79, hi: -0.79 }, 0.0).break, false); // downward (special dividend, spin-off)
+  assert.equal(IP.identityBreak({ tier: 'C4_FUZZY', cls: 'AMBIGUOUS_CA', point: null, lo: -0.67, hi: 5.6 }, 0.0).break, false); // one hypothesis plausible
+  assert.throws(() => IP.identityBreak({ tier: 'C3_CIK', cls: 'SHARE_CHANGE', point: 1 }, -1), /IDENTITY_BREAK_INPUT/);
+  assert.ok(IP.FATES.indexOf('IDENTITY_BREAK') === IP.FATES.length - 1);
+  const pop = IP.createIndexPopulation({ optIn: true });
+  const m = pop.members('PIT_SP500', '2015-09-30').members.filter(x => /broadcom/i.test(x.name));
+  assert.equal(m.length, 1);
+  assert.deepEqual([m[0].status, m[0].fate, m[0].return, m[0].lower, m[0].upper], ['BOUNDED_EXIT', 'IDENTITY_BREAK', null, -1, null]);
+  const val = read('validation-1.1.1.json');
+  assert.equal(val.identityBreaks.cases.length, 13);
+  assert.equal(val.totals.identityBreaksMerger, 13);
+  assert.ok(val.identityBreaks.cases.every(c => (c.tier === 'C3_CIK' || c.tier === 'C4_FUZZY') && c.excessLog > Math.log(2)));
+  // no remaining chained case of the same signature
+  assert.ok(val.identityBreaks.remainingOver100pct.every(c => !((c.tier === 'C3_CIK' || c.tier === 'C4_FUZZY') && (c.splitClass === 'SHARE_CHANGE' || c.splitClass === 'AMBIGUOUS_CA') && c.excessLog > Math.log(2))));
+  // old published state unchanged and loadable
+  const old = IP.createIndexPopulation({ optIn: true, ruleVersion: '1.1.0' });
+  assert.equal(old.ruleVersion, '1.1.0');
+  const mo = old.members('PIT_SP500', '2015-09-30').members.filter(x => /broadcom/i.test(x.name));
+  assert.equal(mo[0].status, 'BOUNDED_AMBIGUOUS_CA');
+  assert.throws(() => IP.createIndexPopulation({ optIn: true, ruleVersion: '1.0.1' }), /UNKNOWN_VERSION/);
+  const p0 = old.periods('PIT_SP500').find(p => p.t0 === '2015-09-30'), p1 = pop.periods('PIT_SP500').find(p => p.t0 === '2015-09-30');
+  assert.equal(p0.errorPp, -0.1174); assert.equal(p1.errorPp, -0.4583); assert.equal(p1.qualification, 'QUALIFIED');
 });

@@ -13,6 +13,11 @@ Separate implementation, not a port of build-population.cjs:
   R  Period index price return sum(w0 * R) with exits at 0 and ambiguous cases at the midpoint, against the fund price
      return from the multi-asset series (read independently).
   M  Member-level comparison with the JS detail (private detail-<v>.json): same fund, t0, name and weight.
+  I  (1.1.1, correction after independent review) Identity breaks at mergers: for every link the JS build unlinked
+     (detail identityBreaks), the two positions are located in the own parse (name, else unique weight / name), q, p1/p0
+     and the index base are recomputed with the own chain and the rule (C3/C4 link, SHARE_CHANGE/AMBIGUOUS_CA, every
+     hypothesis > log 2 above the index) is evaluated independently; and the own CUSIP/name chain is scanned for links
+     with the same price/share signature (exempt by tier, reported).
 Usage: python3 -I verify_spxpop.py <repo-root> <indexpop-private-dir> <spxpop-private-dir> <rules-version> <out.json> [funds]
 """
 import bisect
@@ -250,6 +255,7 @@ def main():
     out = {'schemaVersion': 'v12-spxpop-python-check-%s' % V, 'ruleVersion': V, 'evidenceKind': 'TECHNICAL_PARITY', 'funds': FUNDS,
            'note': 'Second implementation in another language on the same raw SEC documents (own parser, own chain without CIK/fuzzy tiers, own split code); not an independent data source.',
            'periods': [], 'member': {}, 'splitParity': {}, 'alternativeMethod': {}}
+    idb = {'jsCases': 0, 'located': 0, 'pyRuleBreak': 0, 'pyLinkedByCusipOrName': 0, 'cases': [], 'ownChainSameSignature': []}
     agg = {'pairs': 0, 'classEqual': 0, 'returnWithin1e-6': 0, 'returnWithin0_1pp': 0, 'jsMissing': 0, 'diffs': []}
     sp = {'NONE': 0, 'SPLIT': 0, 'SHARE_CHANGE': 0, 'AMBIGUOUS_CA': 0}
     alt = {'pairs': 0, 'sameFactor': 0, 'altAmbiguous': 0, 'ruleAmbiguous': 0, 'differentFactorWeight': 0.0, 'pairsWeight': 0.0, 'examples': []}
@@ -286,6 +292,30 @@ def main():
                 if abs(math.log(q)) < CLEAN:
                     num += A[i]['w'] * (B[j]['p'] / A[i]['p'] - 1); den += A[i]['w']
             base = math.log(1 + num / den)
+            for x in (detail.get((f, t0)) or {}).get('identityBreaks', []):
+                idb['jsCases'] += 1
+                ia = [i for i, a in enumerate(A) if a['name'].strip() == x['nameT0'].strip()] or [i for i, a in enumerate(A) if abs(a['w'] - x['w']) < 1e-9]
+                jb = [j for j, b in enumerate(B) if b['name'].strip() == x['nameT1'].strip()]
+                rec = {'fund': f, 't0': t0, 'nameT0': x['nameT0'], 'nameT1': x['nameT1'], 'located': len(ia) == 1 and len(jb) == 1}
+                if rec['located']:
+                    idb['located'] += 1
+                    a, b = A[ia[0]], B[jb[0]]
+                    q, pr = b['shares'] / a['shares'] / F, b['p'] / a['p']
+                    cls, s_, lo, hi = classify(q, pr, base)
+                    hyp = [lo] if s_ is not None else [lo, hi]
+                    ex = min(math.log(1 + h) for h in hyp) - base
+                    brk = cls in ('SHARE_CHANGE', 'AMBIGUOUS_CA') and ex > math.log(2)
+                    idb['pyRuleBreak'] += brk
+                    linked = links.get(ia[0]) == jb[0]
+                    idb['pyLinkedByCusipOrName'] += linked
+                    rec.update({'qPy': round(q, 4), 'qJs': round(x['q'], 4), 'classPy': cls, 'classJs': x['cls'], 'excessLogPy': round(ex, 4), 'excessLogJs': round(x['excessLog'], 4), 'breakPy': brk, 'linkedInPyChain': linked})
+                idb['cases'].append(rec)
+            for i, j in links.items():
+                a, b = A[i], B[j]
+                q, pr = b['shares'] / a['shares'] / F, b['p'] / a['p']
+                cls, s_, lo, hi = classify(q, pr, base)
+                if cls in ('SHARE_CHANGE', 'AMBIGUOUS_CA') and min(math.log(1 + h) for h in ([lo] if s_ is not None else [lo, hi])) - base > math.log(2):
+                    idb['ownChainSameSignature'].append([f, t0, a['name'][:40], b['name'][:40], cls, round(q, 4), round(pr, 4), round(100 * a['w'], 4)])
             rp = 0.0
             jsrows, jsw = {}, {}
             for r in (detail.get((f, t0)) or {}).get('rows', []):
@@ -345,6 +375,8 @@ def main():
                                    'rPointJs': js.get('rPoint'), 'errorPpJs': js.get('errorPp'), 'qualificationJs': js.get('qualification')})
         print(f, 'done', flush=True)
     out['member'] = agg
+    idb['note'] = 'ownChainSameSignature: links of the own CUSIP/name chain with the merger price/share signature; the rule exempts them by tier (same CUSIP or name = same security; reverse splits outside the ratio set, distress recoveries).'
+    out['identityBreaks'] = idb
     out['splitParity'] = {'pythonClassCounts': sp}
     alt['differentFactorWeightShare'] = round(alt['differentFactorWeight'] / alt['pairsWeight'], 6) if alt['pairsWeight'] else None
     out['alternativeMethod'] = alt
