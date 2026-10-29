@@ -69,7 +69,7 @@ def main():
     for s in panel0: prep(s)
     sq = V13.load_delisted(a.root, a.series, par, 'QUALIFIED')
     extra = {}
-    extra['F1'], c1 = V13.delisted_frame(calendar, sq, False)
+    extra['F1'], cnt1 = V13.delisted_frame(calendar, sq, False)
     extra['F1w'], cw = V13.delisted_frame(calendar, sq, True)
     extra['F1d'], cd = f1d_frame(calendar, sq, V13.monday)
     for f in extra:
@@ -305,7 +305,7 @@ def main():
             for p in jf['performance']: par.eq(len(uni), p['universe']['listings'], f'dg3:F1d:{p["rule"]}:engineUniverse')
     kinds = collections.Counter(':'.join(str(fl[0]).split(':')[:2]) for fl in par.fail)
     report = dict(schemaVersion='v13b-f1w-python-check-2.0.0', implementation='independent stdlib Python (F1d frame, cells, S2, DG1-DG3 new; V10/V13 Python references imported by path)',
-                  frames=dict(F1=c1, F1w=cw, F1d=cd), pValuesChecked=pcount, checks=par.checks, failures=len(par.fail), failureKinds=dict(kinds.most_common(40)),
+                  frames=dict(F1=cnt1, F1w=cw, F1d=cd), pValuesChecked=pcount, checks=par.checks, failures=len(par.fail), failureKinds=dict(kinds.most_common(40)),
                   firstFailures=[list(map(str, x)) for x in par.fail[:40]], maxRelativeDifference=par.max_rel, seconds=round(time.time() - t0, 1), state='PASS' if not par.fail else 'FAIL')
     json.dump(report, open(a.out, 'w'), indent=1)
     print(json.dumps({k: report[k] for k in ('state', 'checks', 'failures', 'maxRelativeDifference', 'seconds')}))
