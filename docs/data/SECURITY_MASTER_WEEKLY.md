@@ -185,7 +185,7 @@ Die Sonderfreigabe deckt beide über die 138 Paare ab.
 
 Reihenfolge, jeder Schritt erst nach Freigabe des vorigen:
 
-Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/security-master-v130-freeze.test.mjs` (eigener Quant-PR). Es ruft keinen Anbieter ab, schreibt nie nach `quant/data`, `discover/data`, `supertrader/data` oder `social/data` und hängt keinen Leser um.
+Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/security-master-v130-freeze.test.mjs` (eigener Quant-PR #1100). Es ruft keinen Anbieter ab, schreibt nie nach `quant/data`, `discover/data`, `supertrader/data` oder `social/data` und hängt keinen Leser um.
 
 **Was vom Stamm abhängt:**
 
@@ -230,7 +230,7 @@ Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichun
 **Was umgestellt wird:** nur `quant/data/market/security-master/us-security-master.json` und seine Begleitdateien (`summary.json`, `reconciliation.json`, `backfill-estimate.json`; `PUSH_OWNED_PATHS`). Klassifizierer 1.1.0 → 1.3.0, gleiche Anbieterliste, gleicher Bestand. `eligibility.json` und `discover/data` bleiben unverändert (P4).
 
 **Voraussetzungen:**
-- Nachweis-PR und Freeze-PR gemergt;
+- Nachweis-PR #1101 und Freeze-PR #1100 gemergt;
 - `verify-repo` INTACT;
 - privater `freeze` erstellt, `filesSha256` notiert;
 - Stamm auf `main` noch `26c82617…` (sonst gilt die Sonderfreigabe nicht, G8/P3);
@@ -265,7 +265,7 @@ Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichun
 ```
 Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Aktualisierung
 [ ] PR #1033 gemergt am 28.10.2026 (Workflow, Gate, Sonderfreigabe, Nachweis) – aktiviert nichts
-[ ] Nachweis-PR #____ gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #____ gemergt (SMF-1…5)
+[ ] Nachweis-PR #1101 gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #1100 gemergt (SMF-1…5)
 [ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
        138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
 [ ] P2 verify-repo INTACT (240 Dateien, filesSha256 02d412de…): ____
