@@ -3,7 +3,7 @@
 // Reads docs/quant-recovery/v12/listref/coverage-by-year-segment.json (built by scripts/quant/v12/listref/build_reference.cjs)
 // and answers, per calendar year and segment, how much of the historical US exchange-listed common population our
 // weekly price holdings and the V10/V11 research frame cover, how many listings ended (delisted) and how many of those
-// carry a source-verified lifecycle. Opt-in: nothing in the product or in research-weekly-loader reads this module.
+// carry a source-verified lifecycle. Opt-in: nothing in the product or in the weekly research loader reads this module.
 // Fail-closed: a missing, malformed, internally inconsistent or hash-mismatched register throws LISTING_REFERENCE_UNAVAILABLE.
 const fs = require('node:fs');
 const path = require('node:path');
