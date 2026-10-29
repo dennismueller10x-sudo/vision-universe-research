@@ -60,7 +60,9 @@ function newChainEvents(ctx, events) {
 
 async function main() {
   const o = W.args(process.argv.slice(2), { frame: null, private: C.PRIVATE, series: C.SERIES_100, series110: C.SERIES_110, skipSignal: null });
-  const regSha = C.registrationSha(), t0 = Date.now(), dir = path.join(K.privateDir(o.private), o.frame); fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+  const regSha = C.registrationSha(), amSha = C.amendmentSha(), data = C.dataState();
+  if (!data.quantDataEqualsSnapshot) throw Error('V13C_DATA_NOT_SNAPSHOT (amendment 3.0.1 D1)');
+  const t0 = Date.now(), dir = path.join(K.privateDir(o.private), o.frame); fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   const ctx = buildContext(o.frame, o.series, o.series110, dir), timings = {}; let t = Date.now();
   console.error('frame', o.frame, ctx.fr.frame.length, 'built', (Date.now() - t0) / 1000, 's', JSON.stringify(ctx.delistedInfo.newChains), JSON.stringify(ctx.r2));
   if (!o.skipSignal) { await SignalStudy.run(ctx); timings.signalStudy = (Date.now() - t) / 1000; }
@@ -70,7 +72,7 @@ async function main() {
   K.writeJson(path.join(dir, 's2-population.json'), RF.s2Population(ctx)); timings.s2 = (Date.now() - t) / 1000;
   const res = { frame: o.frame, counterpart: C.FRAMES[o.frame].counterpart, frameListings: ctx.fr.frame.length, qualified: ctx.fr.qualified.length, manifestHash: ctx.manifestHash, f0ManifestHash: ctx.f0ManifestHash,
     delisted: ctx.delistedInfo, r2: ctx.r2, newChainEvents: newChainEvents(ctx, ev.events),
-    registrationSha256: regSha, v13RegistrationSha256: W.registrationSha(), v13AmendmentSha256: W.amendmentSha(), v13bRegistrationSha256: C.L13b.registrationSha(), v10RegistrationHash: ctx.reg.registrationHash,
+    registrationSha256: regSha, amendmentSha256: amSha, data, v13RegistrationSha256: W.registrationSha(), v13AmendmentSha256: W.amendmentSha(), v13bRegistrationSha256: C.L13b.registrationSha(), v10RegistrationHash: ctx.reg.registrationHash,
     calendar: { length: ctx.fr.calendar.length, first: ctx.fr.calendar[0], last: ctx.fr.calendar.at(-1) }, studyCalendarWeeks: ctx.studyCalendar.length,
     code: K.codeHashes(['scripts/quant/v10/studies/signal-study.cjs', 'scripts/quant/v13/studies/lib.cjs', 'scripts/quant/v13/studies/run-frame.cjs', 'scripts/quant/v13b/f1w/lib.cjs', 'quant/engines/research-delisted-series.cjs', 'scripts/quant/v13c/lib.cjs', 'scripts/quant/v13c/run-frame.cjs']),
     gitHead: K.gitHead(), runtime: K.C.runtime(), timings, seconds: (Date.now() - t0) / 1000 };

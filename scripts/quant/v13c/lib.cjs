@@ -22,6 +22,21 @@ const LABEL = { F1p: "V13C_PRIMARY F1'", F1wp: "V13C_SENSITIVITY F1w'", F1dp: "V
 // spx-terminal-register-1.0.0 row excluded by name in the registration (First Data 2006, review 1.0.0 DISTRIBUTION_IN_PERIOD).
 const FIRST_DATA_KEY = '747c456cff6e81ac';
 
+// Study amendment 3.0.1 D1: frame runs use quant/data of the V13/V13b runs (tree 963779a1..., commit 885f5574cc), restored only in the worktree.
+const DATA_SNAPSHOT = Object.freeze({ commit: '885f5574cc3249f806ea7982d6b27263d1c2b001', tree: '963779a13c247e658ac051fb90b3e4714f1d1663' });
+function dataState(root = W.ROOT) {
+  const { spawnSync } = require('node:child_process');
+  const same = ref => spawnSync('git', ['-C', root, 'diff', '--quiet', ref, '--', 'quant/data'], { stdio: 'ignore' }).status === 0;
+  return { snapshotCommit: DATA_SNAPSHOT.commit, snapshotTree: DATA_SNAPSHOT.tree, quantDataEqualsSnapshot: same(DATA_SNAPSHOT.commit), quantDataEqualsHead: same('HEAD') };
+}
+function amendmentSha(root = W.ROOT) {
+  const f = 'docs/quant-recovery/v13c/study-amendment-3.0.1.json';
+  if (!fs.existsSync(path.join(root, f))) return null;
+  const s = W.shaFile(path.join(root, f)), committed = fs.readFileSync(path.join(root, f.replace(/\.json$/, '.sha256')), 'utf8').trim().split(/\s+/)[0];
+  if (s !== committed) throw Error('V13C_AMENDMENT_HASH_MISMATCH');
+  return s;
+}
+
 function registrationSha(root = W.ROOT) {
   const s = W.shaFile(path.join(root, REG_FILE)), committed = fs.readFileSync(path.join(root, REG_FILE.replace(/\.json$/, '.sha256')), 'utf8').trim().split(/\s+/)[0];
   if (s !== committed) throw Error('V13C_REGISTRATION_HASH_MISMATCH');
@@ -61,5 +76,5 @@ function delistedInfoOf(frame, dl, fr) {
 const r4 = x => typeof x === 'number' && Number.isFinite(x) ? Math.round(x * 1e4) / 1e4 : x;
 function roundDeep(x, f = W.r6) { if (Array.isArray(x)) return x.map(v => roundDeep(v, f)); if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, roundDeep(v, f)])); return f(x); }
 
-module.exports = { W, K, D, L13b, REG_FILE, OUT_DIR, SCRATCH, PRIVATE, SERIES_100, SERIES_110, MANIFEST_100, FRAMES, LABEL, FIRST_DATA_KEY,
+module.exports = { W, K, D, L13b, DATA_SNAPSHOT, dataState, amendmentSha, REG_FILE, OUT_DIR, SCRATCH, PRIVATE, SERIES_100, SERIES_110, MANIFEST_100, FRAMES, LABEL, FIRST_DATA_KEY,
   registrationSha, newQualifiedChains, loadDelisted110, mergeStudyFrame, delistedInfoOf, r4, roundDeep };
