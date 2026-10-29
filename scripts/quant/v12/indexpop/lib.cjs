@@ -51,7 +51,9 @@ function validateNport(doc, expected) {
 
 // ---------- names ----------
 const LEGAL = new Set(['INC', 'INCORPORATED', 'CORP', 'CORPORATION', 'CO', 'COMPANY', 'LTD', 'LIMITED', 'PLC', 'LLC', 'LP', 'NV', 'SA', 'AG', 'SE']);
-const FILLER = new Set(['COM', 'COMMON', 'STOCK', 'SHS', 'SHARES', 'ORD', 'NEW', 'ADR']);
+// rules 1.1.0: NEW is dropped only as the last token (EDGAR "... CORP NEW"), never inside a name ("BANK OF NEW YORK");
+// THE is dropped anywhere ("PROCTER & GAMBLE CO (THE)"); NVS (non-voting shares) is a filler token.
+const FILLER = new Set(['COM', 'COMMON', 'STOCK', 'SHS', 'SHARES', 'ORD', 'ADR', 'NVS', 'THE']);
 function normName(raw) {
   if (!raw) return { key: '', cls: null };
   let s = String(raw).toUpperCase().replace(/&AMP;/g, '&').replace(/&/g, ' AND ');
@@ -61,9 +63,8 @@ function normName(raw) {
   if (cm) { cls = cm[1]; s = s.replace(cm[0], ' '); }
   s = s.replace(/[^A-Z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
   let t = s.split(' ').filter(Boolean);
-  if (t[0] === 'THE') t = t.slice(1);
   t = t.filter(x => !FILLER.has(x));
-  while (t.length > 1 && LEGAL.has(t[t.length - 1])) t.pop();
+  while (t.length > 1 && (LEGAL.has(t[t.length - 1]) || t[t.length - 1] === 'NEW')) t.pop();
   return { key: t.join(' '), cls };
 }
 function tokenSim(a, b) { // token-set Jaccard on normalized keys
@@ -160,7 +161,9 @@ function parseReport(buf, isHtml, opts = {}) {
     }
     if (!nums.length) {
       if (pct.length || (textJoined && !/[a-z]/.test(textJoined) && textJoined.length > 3)) { pending = ''; continue; } // industry heading
-      if (/^(Shares|Value|Security|Common Stocks?)$/i.test(textJoined)) continue;
+      // column headers and date lines of a continued page are not part of the next name (rules 1.1.0)
+      if (text.every(c => /^(Shares|Value|Security|Common Stocks?|Description|Number of Shares|Market Value|Value \(Note \d\))$/i.test(c))) continue;
+      if (DATE_RE.test(textJoined) && textJoined.replace(DATE_RE, '').replace(/[^A-Za-z]/g, '').replace(/Unaudited|Security|Shares|Value|continued|Schedule of Investments/gi, '').length === 0) continue;
       pending = (pending + ' ' + textJoined).trim();
       if (pending.length > 200) pending = textJoined;
       continue;
