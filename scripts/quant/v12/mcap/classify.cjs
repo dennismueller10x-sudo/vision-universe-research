@@ -39,7 +39,7 @@ function build(obs, sf, spinoffSources) {
       if (d < M.RULE.SPLIT_WINDOW[0] || d > M.RULE.SPLIT_WINDOW[1]) continue;
       let r = M.classifySplitEvent(d, f, facts);
       const src = sources.get(id + '|' + d);
-      if (src) r = { ...r, class: src.class, availableAt: src.availableAt, source: src.sources.map(s => s.accession) };
+      if (src) r = { ...r, class: src.class, availableAt: src.availableAt > d ? src.availableAt : d, source: src.sources.map(s => s.accession) };
       splitRecs.push(r);
       splitLog.push({ id, cik, ...r });
     }
@@ -79,8 +79,9 @@ function build(obs, sf, spinoffSources) {
         return out;
       };
       const maxPriceBasisD = D => Math.max(...o.uses.map(u => u.close * u.fI * M.basisFactor(events, D, u.t)));
-      const previousObservation = filed => { for (let j = validated.length - 1; j >= 0; j--) if (validated[j].filed < filed) return validated[j]; return null; };
-      const res = M.classifyFact({ code: o.code, v: o.v, E: o.E, filed: o.filed, accn: o.accn, maxPriceBasisD }, { byAccn, priorAccns, basis, previousObservation });
+      const minPriceBasisD = D => Math.min(...o.uses.map(u => u.close * u.fI * M.basisFactor(events, D, u.t)));
+      const previousObservations = (filed, n) => { const out = []; for (let j = validated.length - 1; j >= 0 && out.length < n; j--) if (validated[j].filed < filed) out.push(validated[j]); return out; };
+      const res = M.classifyFact({ code: o.code, v: o.v, E: o.E, filed: o.filed, accn: o.accn, maxPriceBasisD, minPriceBasisD }, { byAccn, priorAccns, basis, previousObservations });
       if (res.status !== 'EXCLUDED') validated.push({ c: o.code, accn: o.accn, end: res.D, val: res.vPrime, filed: o.filed });
       if (!sanitized.has(o.accn)) sanitized.set(o.accn, new Map());
       sanitized.get(o.accn).set(o.code + '|' + o.v, res.status === 'EXCLUDED' ? null : res.vPrime);
