@@ -1,0 +1,1061 @@
+{
+ "schemaVersion": "quant-v10-setup-independence-decision-1.0.0",
+ "status": "DECISION_TEMPLATE_NOT_APPROVED_NOT_ACTIVATED",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "decidedBy": null,
+ "ownerContext": "Owner 28.10.2026: ISO-Wochen-Aenderung NICHT freigegeben; backtest-certification-1.0.0 bleibt unveraendert. Diese Vorlage aendert keinen Vertrag und kein Gate.",
+ "sources": {
+  "docs/quant-recovery/v10/setup/setup-original-inventory-1.0.0.json": "a3424cbcefdb576c3ea30de2e57d33e99a5815cd9ef28fa0a8c0d1d48348ccd1",
+  "docs/quant-recovery/v10/setup/setup-reconstruction-result-1.0.0.json": "809f9444f1f6d0b0597f7e97f044b13ed4306b7b4429345e69abb58612b2a3a2",
+  "quant/data/product/setup-outcomes-v1.json": "dfd8f98181aeaf69d6536e2a54581d547fa5de75625507fcd47fca18863ef546",
+  "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb",
+  "docs/quant-recovery/v9/setup-independence-1.0.0.json": "e42340e3fd582620983652a5981811baf569f439a12025de93176cd8f94b8108",
+  "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json": "84aad4408f57b79130c9d84ef8e72bb70cbc8a5ddc858f32e8ef539e557726a3",
+  "quant/methodology/backtest-certification-v1.json": "392f5657702e23598c4ee5ebcf36e120687f3975d31d9deb57e2e661882ad6ce"
+ },
+ "question": "Welches Unabhaengigkeitsgate macht die Setup-Zertifizierung fachlich eindeutig, und ab wann waere es mit ORIGINALEN Beobachtungen fruehestens erfuellbar?",
+ "measured": {
+  "original": {
+   "events": 4137,
+   "entryEvents": 1938,
+   "eventDates": 20,
+   "calendarMonths": 2,
+   "isoWeeks": 6,
+   "nEffSpyExcess": {
+    "ALL": 13.34,
+    "ENTRY": 13.31,
+    "SETUP_NEW": 13.3,
+    "SETUP_CONFIRMED": 12.01
+   },
+   "nEffRaw": {
+    "ALL": 17.13,
+    "ENTRY": 17.08,
+    "SETUP_NEW": 17.06,
+    "SETUP_CONFIRMED": 14.94
+   },
+   "rho": {
+    "dailyTrailing126Raw": 0.0614957432220812,
+    "dailyTrailing126SpyExcess": 0.07928103640104137,
+    "window": [
+     "2026-04-27",
+     "2026-10-26"
+    ],
+    "titles": 1333
+   },
+   "maturedM6": 0,
+   "disjointM6Windows": 1,
+   "maxEntryEventsOnOneDate": 255
+  },
+  "reconstruction": {
+   "studyId": "V10-SETUP-RECONSTRUCTION",
+   "registrationHash": "638eedc26d3687dec378ff75189bff2d8cbeff0bd44e7b215be25a90ac137805",
+   "listings": 120,
+   "period": [
+    "2005-01-01",
+    "2025-12-31"
+   ],
+   "rho": {
+    "weeklyLongRunRaw": 0.28848458181625736,
+    "weeklyLongRunSpyExcess": 0.047290012283851844,
+    "maxYearSpyExcess": 0.11012247728366222,
+    "titles": 50
+   },
+   "m6": {
+    "SETUP_NEW": {
+     "n": 4861,
+     "titles": 107,
+     "nEffModelSpyExcess": 532.4,
+     "nEffModelRaw": 122.8,
+     "nEffBootstrap": 641.6,
+     "nEffStressRho": 284.9,
+     "disjointM6Windows": 42,
+     "sdSpyExcess": 0.3485,
+     "meanSpyExcess": 0.0108,
+     "ci95Block": [
+      -0.0171,
+      0.0359
+     ],
+     "pHolm": 1
+    },
+    "SETUP_CONFIRMED": {
+     "n": 488,
+     "titles": 88,
+     "nEffModelSpyExcess": 215.7,
+     "nEffModelRaw": 88.3,
+     "nEffBootstrap": 248.9,
+     "nEffStressRho": 156.8,
+     "disjointM6Windows": 37,
+     "sdSpyExcess": 0.2962,
+     "meanSpyExcess": -0.003,
+     "ci95Block": [
+      -0.0397,
+      0.0329
+     ],
+     "pHolm": 1
+    }
+   },
+   "modelVsBootstrap": "Modell-N_eff (SPY-Ueberschuss) und bootstrap-implizites N_eff liegen in derselben Groessenordnung (siehe m6); das Modell ist dort eher vorsichtiger."
+  },
+  "saturation": {
+   "note": "Fuer SPY-Ueberschuss saettigt N_eff je Ereignisdatum bei etwa 1/rho; mehr Titel am selben Tag helfen kaum. Wachstum kommt nur ueber Zeit (nicht ueberlappende M6-Fenster).",
+   "perDateCeilingGateRho": 12.6,
+   "observedNEffAfter20DatesGateRho": {
+    "SETUP_NEW": 13.3,
+    "SETUP_CONFIRMED": 12.01
+   }
+  }
+ },
+ "proposedGate": {
+  "fields": {
+   "eventCalendarMonths": {
+    "value": 20,
+    "meaning": "verschiedene Kalendermonate mit mindestens einem Ereignis - genau das, was der Auswerter heute zaehlt (bisher irrefuehrend independentWeeks genannt)",
+    "role": "AUDIT_FIELD_NOT_AN_INDEPENDENCE_PROOF"
+   },
+   "m6SpyExcessEffectiveSampleSize": {
+    "minimum": 50,
+    "counts": "effektive Stichprobengroesse des mittleren M6-SPY-Ueberschusses der REIFEN Original-Ereignisse je Ereignisart (NEXT_CLOSE)",
+    "model": {
+     "id": "setup-neff-overlap-1.0.0",
+     "formula": "N_eff = n^2 / sum_ij rho_ij * overlap_ij / 126; overlap_ij = gemeinsame Sitzungen der M6-Fenster; rho_ij = 1 gleicher Titel, sonst rho",
+     "rho": "max(mittlere paarweise Korrelation der taeglichen SPY-Ueberschuss-Log-Renditen ueber die letzten 126 Sitzungen aller Titel mit voller Abdeckung, 0.05)",
+     "rhoFloorSource": "Rekonstruktion 2005-2025: Langfrist-Wochen-rho SPY-Ueberschuss 0.0473",
+     "reference": "scripts/quant/v9/setup-independence.py, scripts/quant/v10/setup/setup-lib.cjs#nEff",
+     "preRegistered": true
+    },
+    "rationale": "Mit der gemessenen Streuung des M6-SPY-Ueberschusses (sd 0.348, Rekonstruktion) ergibt N_eff 50 ein 95-%-Intervall von etwa +-9.7 Pp; N_eff 30 nur +-12.5 Pp. Fuer +-10 Pp braucht es 47."
+   },
+   "disjointM6Windows": {
+    "minimum": 4,
+    "counts": "disjunkte 126-Sitzungen-Fenster der Einstiege reifer Ereignisse (greedy, frueheste zuerst)",
+    "rationale": "Mindestens vier zeitlich getrennte M6-Ergebnisblocks (rund zwei Jahre Einstiege): eine einzelne Marktphase kann die Aussage nicht allein tragen. Die Rekonstruktion hat 42/37 disjunkte Fenster."
+   }
+  },
+  "appliesTo": "SETUP_BACKTEST, je zertifizierter Ereignisart; ersetzt die Unabhaengigkeitsdeutung von independentWeeks; alle anderen Gates unveraendert",
+  "reportingDuty": "Jeder Zertifizierungslauf meldet N_eff roh und SPY-Ueberschuss, rho, disjunkte M6-Fenster; nie Unabhaengigkeit aus Ereigniszahlen ableiten."
+ },
+ "earliestFulfilment": {
+  "assumptions": [
+   "Veroeffentlichung an jeder NYSE-Sitzung ab 2026-10-27 (bisher 21 von 33 Sitzungen)",
+   "Ereignisdichte wie in den 20 beobachteten Ereignisdaten",
+   "rho unveraendert",
+   "alle Ereignisse bepreist; keine unbekannte Sonderschliessung",
+   "nichts rueckdatiert: reif = Einstieg + 126 Sitzungen"
+  ],
+  "recommendedGate": [
+   {
+    "eventKind": "SETUP_NEW",
+    "gate": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_NEW",
+     "rho": 0.07928103640104137,
+     "rhoLabel": "gate",
+     "repeatedTitles": {
+      "date": "2029-01-30",
+      "lastMaturedEntry": "2028-07-31",
+      "nMatured": 41415,
+      "nEff": 50.23,
+      "disjointM6Windows": 4
+     },
+     "newTitles": {
+      "date": "2029-01-18",
+      "lastMaturedEntry": "2028-07-19",
+      "nMatured": 40636,
+      "nEff": 50.04,
+      "disjointM6Windows": 4
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    },
+    "stress": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_NEW",
+     "rho": 0.11012247728366222,
+     "rhoLabel": "stress",
+     "repeatedTitles": {
+      "date": "2029-11-07",
+      "lastMaturedEntry": "2029-05-09",
+      "nMatured": 58780,
+      "nEff": 50.06,
+      "disjointM6Windows": 6
+     },
+     "newTitles": {
+      "date": "2029-10-29",
+      "lastMaturedEntry": "2029-04-30",
+      "nMatured": 58231,
+      "nEff": 50.09,
+      "disjointM6Windows": 6
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    }
+   },
+   {
+    "eventKind": "SETUP_CONFIRMED",
+    "gate": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_CONFIRMED",
+     "rho": 0.07928103640104137,
+     "rhoLabel": "gate",
+     "repeatedTitles": {
+      "date": "2029-04-20",
+      "lastMaturedEntry": "2028-10-18",
+      "nMatured": 3796,
+      "nEff": 50.07,
+      "disjointM6Windows": 5
+     },
+     "newTitles": {
+      "date": "2029-01-29",
+      "lastMaturedEntry": "2028-07-28",
+      "nMatured": 3381,
+      "nEff": 50.02,
+      "disjointM6Windows": 4
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    },
+    "stress": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_CONFIRMED",
+     "rho": 0.11012247728366222,
+     "rhoLabel": "stress",
+     "repeatedTitles": {
+      "date": "2030-01-22",
+      "lastMaturedEntry": "2029-07-23",
+      "nMatured": 5214,
+      "nEff": 50.03,
+      "disjointM6Windows": 6
+     },
+     "newTitles": {
+      "date": "2029-11-06",
+      "lastMaturedEntry": "2029-05-08",
+      "nMatured": 4817,
+      "nEff": 50.01,
+      "disjointM6Windows": 6
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    }
+   }
+  ],
+  "underUnchangedContract": {
+   "independentWeeksMonthCounter": "2028-04-03",
+   "otherTimeGatesLatest": "2027-03-30",
+   "oos": "nie ohne Auswerter-Aenderung (konstant false)"
+  },
+  "grid": [
+   {
+    "nMin": 30,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-03-31",
+     "lastMaturedEntry": "2027-10-01",
+     "nMatured": 22726,
+     "nEff": 30.05,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-03-27",
+     "lastMaturedEntry": "2027-09-27",
+     "nMatured": 22411,
+     "nEff": 30.11,
+     "disjointM6Windows": 2
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-09-22",
+     "lastMaturedEntry": "2028-03-23",
+     "nMatured": 33472,
+     "nEff": 30.07,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-09-15",
+     "lastMaturedEntry": "2028-03-16",
+     "nMatured": 33027,
+     "nEff": 30,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-05-17",
+     "lastMaturedEntry": "2027-11-16",
+     "nMatured": 2118,
+     "nEff": 30.08,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-03-30",
+     "lastMaturedEntry": "2027-09-30",
+     "nMatured": 1868,
+     "nEff": 30.05,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-11-02",
+     "lastMaturedEntry": "2028-05-04",
+     "nMatured": 2978,
+     "nEff": 30.02,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-19",
+     "lastMaturedEntry": "2028-03-20",
+     "nMatured": 2741,
+     "nEff": 30.01,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-03-31",
+     "lastMaturedEntry": "2027-10-01",
+     "nMatured": 22726,
+     "nEff": 30.05,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-03-27",
+     "lastMaturedEntry": "2027-09-27",
+     "nMatured": 22411,
+     "nEff": 30.11,
+     "disjointM6Windows": 2
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-09-22",
+     "lastMaturedEntry": "2028-03-23",
+     "nMatured": 33472,
+     "nEff": 30.07,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-09-15",
+     "lastMaturedEntry": "2028-03-16",
+     "nMatured": 33027,
+     "nEff": 30,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-05-17",
+     "lastMaturedEntry": "2027-11-16",
+     "nMatured": 2118,
+     "nEff": 30.08,
+     "disjointM6Windows": 3
+    },
+    "newTitles": {
+     "date": "2028-03-30",
+     "lastMaturedEntry": "2027-09-30",
+     "nMatured": 1868,
+     "nEff": 30.05,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-11-02",
+     "lastMaturedEntry": "2028-05-04",
+     "nMatured": 2978,
+     "nEff": 30.02,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-19",
+     "lastMaturedEntry": "2028-03-20",
+     "nMatured": 2741,
+     "nEff": 30.01,
+     "disjointM6Windows": 3
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 33706,
+     "nEff": 41.84,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 33706,
+     "nEff": 42.4,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 33706,
+     "nEff": 30.26,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 33706,
+     "nEff": 30.54,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 2760,
+     "nEff": 37.66,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 2760,
+     "nEff": 41.76,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 30,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2028-11-02",
+     "lastMaturedEntry": "2028-05-04",
+     "nMatured": 2978,
+     "nEff": 30.02,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2028-09-27",
+     "lastMaturedEntry": "2028-03-28",
+     "nMatured": 2760,
+     "nEff": 30.19,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-01-30",
+     "lastMaturedEntry": "2028-07-31",
+     "nMatured": 41415,
+     "nEff": 50.23,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2029-01-18",
+     "lastMaturedEntry": "2028-07-19",
+     "nMatured": 40636,
+     "nEff": 50.04,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2029-11-07",
+     "lastMaturedEntry": "2029-05-09",
+     "nMatured": 58780,
+     "nEff": 50.06,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-10-29",
+     "lastMaturedEntry": "2029-04-30",
+     "nMatured": 58231,
+     "nEff": 50.09,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-04-20",
+     "lastMaturedEntry": "2028-10-18",
+     "nMatured": 3796,
+     "nEff": 50.07,
+     "disjointM6Windows": 5
+    },
+    "newTitles": {
+     "date": "2029-01-29",
+     "lastMaturedEntry": "2028-07-28",
+     "nMatured": 3381,
+     "nEff": 50.02,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2030-01-22",
+     "lastMaturedEntry": "2029-07-23",
+     "nMatured": 5214,
+     "nEff": 50.03,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-11-06",
+     "lastMaturedEntry": "2029-05-08",
+     "nMatured": 4817,
+     "nEff": 50.01,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-01-30",
+     "lastMaturedEntry": "2028-07-31",
+     "nMatured": 41415,
+     "nEff": 50.23,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2029-01-18",
+     "lastMaturedEntry": "2028-07-19",
+     "nMatured": 40636,
+     "nEff": 50.04,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2029-11-07",
+     "lastMaturedEntry": "2029-05-09",
+     "nMatured": 58780,
+     "nEff": 50.06,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-10-29",
+     "lastMaturedEntry": "2029-04-30",
+     "nMatured": 58231,
+     "nEff": 50.09,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-04-20",
+     "lastMaturedEntry": "2028-10-18",
+     "nMatured": 3796,
+     "nEff": 50.07,
+     "disjointM6Windows": 5
+    },
+    "newTitles": {
+     "date": "2029-01-29",
+     "lastMaturedEntry": "2028-07-28",
+     "nMatured": 3381,
+     "nEff": 50.02,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2030-01-22",
+     "lastMaturedEntry": "2029-07-23",
+     "nMatured": 5214,
+     "nEff": 50.03,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-11-06",
+     "lastMaturedEntry": "2029-05-08",
+     "nMatured": 4817,
+     "nEff": 50.01,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-01-30",
+     "lastMaturedEntry": "2028-07-31",
+     "nMatured": 41415,
+     "nEff": 50.23,
+     "disjointM6Windows": 4
+    },
+    "newTitles": {
+     "date": "2029-01-18",
+     "lastMaturedEntry": "2028-07-19",
+     "nMatured": 40636,
+     "nEff": 50.04,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2029-11-07",
+     "lastMaturedEntry": "2029-05-09",
+     "nMatured": 58780,
+     "nEff": 50.06,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-10-29",
+     "lastMaturedEntry": "2029-04-30",
+     "nMatured": 58231,
+     "nEff": 50.09,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2029-04-20",
+     "lastMaturedEntry": "2028-10-18",
+     "nMatured": 3796,
+     "nEff": 50.07,
+     "disjointM6Windows": 5
+    },
+    "newTitles": {
+     "date": "2029-01-29",
+     "lastMaturedEntry": "2028-07-28",
+     "nMatured": 3381,
+     "nEff": 50.02,
+     "disjointM6Windows": 4
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 50,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": {
+     "date": "2030-01-22",
+     "lastMaturedEntry": "2029-07-23",
+     "nMatured": 5214,
+     "nEff": 50.03,
+     "disjointM6Windows": 6
+    },
+    "newTitles": {
+     "date": "2029-11-06",
+     "lastMaturedEntry": "2029-05-08",
+     "nMatured": 4817,
+     "nEff": 50.01,
+     "disjointM6Windows": 6
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-02-07",
+     "lastMaturedEntry": "2030-08-08",
+     "nMatured": 86887,
+     "nEff": 100.1,
+     "disjointM6Windows": 8
+    },
+    "newTitles": {
+     "date": "2031-01-21",
+     "lastMaturedEntry": "2030-07-22",
+     "nMatured": 85645,
+     "nEff": 100.06,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-07-21",
+     "lastMaturedEntry": "2031-01-16",
+     "nMatured": 7938,
+     "nEff": 100.05,
+     "disjointM6Windows": 9
+    },
+    "newTitles": {
+     "date": "2031-02-03",
+     "lastMaturedEntry": "2030-08-02",
+     "nMatured": 7116,
+     "nEff": 100.01,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 1,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-02-07",
+     "lastMaturedEntry": "2030-08-08",
+     "nMatured": 86887,
+     "nEff": 100.1,
+     "disjointM6Windows": 8
+    },
+    "newTitles": {
+     "date": "2031-01-21",
+     "lastMaturedEntry": "2030-07-22",
+     "nMatured": 85645,
+     "nEff": 100.06,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-07-21",
+     "lastMaturedEntry": "2031-01-16",
+     "nMatured": 7938,
+     "nEff": 100.05,
+     "disjointM6Windows": 9
+    },
+    "newTitles": {
+     "date": "2031-02-03",
+     "lastMaturedEntry": "2030-08-02",
+     "nMatured": 7116,
+     "nEff": 100.01,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 2,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-02-07",
+     "lastMaturedEntry": "2030-08-08",
+     "nMatured": 86887,
+     "nEff": 100.1,
+     "disjointM6Windows": 8
+    },
+    "newTitles": {
+     "date": "2031-01-21",
+     "lastMaturedEntry": "2030-07-22",
+     "nMatured": 85645,
+     "nEff": 100.06,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_NEW",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.07928103640104137,
+    "rhoLabel": "gate",
+    "repeatedTitles": {
+     "date": "2031-07-21",
+     "lastMaturedEntry": "2031-01-16",
+     "nMatured": 7938,
+     "nEff": 100.05,
+     "disjointM6Windows": 9
+    },
+    "newTitles": {
+     "date": "2031-02-03",
+     "lastMaturedEntry": "2030-08-02",
+     "nMatured": 7116,
+     "nEff": 100.01,
+     "disjointM6Windows": 8
+    },
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   },
+   {
+    "nMin": 100,
+    "disjointM6Windows": 4,
+    "eventKind": "SETUP_CONFIRMED",
+    "rho": 0.11012247728366222,
+    "rhoLabel": "stress",
+    "repeatedTitles": null,
+    "newTitles": null,
+    "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+   }
+  ]
+ },
+ "options": {
+  "A": {
+   "title": "Status quo: Vertrag 1.0.0 unveraendert (Monatszaehler 20 unter dem Namen independentWeeks)",
+   "earliestIndependenceGate": "2028-04-03",
+   "consequences": [
+    "Das Gate misst Kalendermonate, keine Unabhaengigkeit; der Name bleibt irrefuehrend.",
+    "Fruehestens 2028-04-03 erfuellt; die effektive Stichprobe der dann reifen M6-Ergebnisse ist nicht gesteuert (Projektion: N_eff 30 erreicht SETUP_NEW 2028-03-27 bis 2028-03-31, N_eff 50 erst 2029-01-18 bis 2029-01-30); am Datum des Monatsgates liegen 3 disjunkte M6-Fenster und N_eff 30.11 (SETUP_NEW, wiederholte Titel) vor.",
+    "Ohne Auswerter-Aenderung bleibt OOS konstant false: keine Zertifizierung zu irgendeinem Datum."
+   ],
+   "atMonthGateDate": {
+    "date": "2028-04-03",
+    "lastMaturedEntry": "2027-10-04",
+    "nMatured": 22784,
+    "nEff": 30.11,
+    "disjointM6Windows": 3
+   }
+  },
+  "B": {
+   "title": "Empfohlen: Vertrag 1.1.0 - independentWeeks in eventCalendarMonths umbenennen (Zaehlung unveraendert, nur Audit) und neues Unabhaengigkeitsgate m6SpyExcessEffectiveSampleSize >= 50 UND disjointM6Windows >= 4",
+   "earliestIndependenceGate": {
+    "SETUP_NEW": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_NEW",
+     "rho": 0.07928103640104137,
+     "rhoLabel": "gate",
+     "repeatedTitles": {
+      "date": "2029-01-30",
+      "lastMaturedEntry": "2028-07-31",
+      "nMatured": 41415,
+      "nEff": 50.23,
+      "disjointM6Windows": 4
+     },
+     "newTitles": {
+      "date": "2029-01-18",
+      "lastMaturedEntry": "2028-07-19",
+      "nMatured": 40636,
+      "nEff": 50.04,
+      "disjointM6Windows": 4
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    },
+    "SETUP_CONFIRMED": {
+     "nMin": 50,
+     "disjointM6Windows": 4,
+     "eventKind": "SETUP_CONFIRMED",
+     "rho": 0.07928103640104137,
+     "rhoLabel": "gate",
+     "repeatedTitles": {
+      "date": "2029-04-20",
+      "lastMaturedEntry": "2028-10-18",
+      "nMatured": 3796,
+      "nEff": 50.07,
+      "disjointM6Windows": 5
+     },
+     "newTitles": {
+      "date": "2029-01-29",
+      "lastMaturedEntry": "2028-07-28",
+      "nMatured": 3381,
+      "nEff": 50.02,
+      "disjointM6Windows": 4
+     },
+     "note": "repeatedTitles = Titel wiederholen sich wie in den beobachteten Panels (konservativ, spaeteres Datum); newTitles = alle kuenftigen Ereignisse neue Titel (optimistisch, frueheres Datum)"
+    }
+   },
+   "consequences": [
+    "Das Gate zaehlt, was es behauptet; der Schwellenwert ist aus gemessener Streuung und Abhaengigkeit begruendet.",
+    "Gegenueber A (2028-04-03) verschiebt sich das Unabhaengigkeitsgate auf 2029-01-18 bis 2029-01-30 (SETUP_NEW) bzw. 2029-01-29 bis 2029-04-20 (SETUP_CONFIRMED); bindend ist N_eff, die Blockbedingung allein waere 2028-09-27 bis 2028-09-27 erfuellt. Mit Stress-rho 0.110: 2029-10-29 bis 2029-11-07.",
+    "Auch mit erfuelltem Gate bleibt die Zertifizierung bis zur OOS-Implementierung, Gesamtrendite und Owner-Freigabe gesperrt.",
+    "Monatszaehler bleibt sichtbar, gated aber nicht mehr.",
+    "Erfordert Owner-Freigabe und einen eigenen PR (Vertrag + Auswerter, Vorher/Nachher)."
+   ]
+  },
+  "C": {
+   "title": "Rekonstruktion als Ersatz fuer die Unabhaengigkeit anerkennen (Replay 2005-2025 erfuellt N_eff und Bloecke bereits)",
+   "earliestIndependenceGate": "sofort (Rekonstruktion N_eff 532 / 216)",
+   "consequences": [
+    "Widerspricht setup-backtest-contract-1.0.0 (Replay ausdruecklich keine Ergebnisquelle) und dem Grundsatz, dass Rueckrechnungen vorwaerts gesammelte Historie nicht ersetzen.",
+    "Rekonstruktion: 120 heutige Ueberlebende, Wochenraster, Kursrendite, damals nicht veroeffentlicht.",
+    "Nicht empfohlen; hoechstens als zusaetzliche Plausibilitaetsevidenz."
+   ]
+  }
+ },
+ "recommendation": {
+  "option": "B",
+  "summary": "Gate \"m6SpyExcessEffectiveSampleSize >= 50\" plus \"disjointM6Windows >= 4\" unter dem Modell setup-neff-overlap-1.0.0; independentWeeks ehrlich in eventCalendarMonths umbenennen (nur Audit). Fruehestes Erfuellungsdatum mit Originalbeobachtungen: SETUP_NEW 2029-01-18 bis 2029-01-30, SETUP_CONFIRMED 2029-01-29 bis 2029-04-20 (frueheres Datum: kuenftig nur neue Titel; spaeteres: Titel wiederholen sich wie beobachtet).",
+  "separateDecisionNeeded": "Der OOS-Auswerter ist konstant false und braucht eine eigene Segmentdefinition (oosMinPerSegment 30); unabhaengig von dieser Vorlage."
+ },
+ "activeGateChanged": false,
+ "productionApproved": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "reproHash": "3b8caef626cfeeb0950d67a0122f244d35a3c09653502e0fe09b8d0df2511701"
+}

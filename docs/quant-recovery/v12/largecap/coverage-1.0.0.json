@@ -1,0 +1,4645 @@
+{
+ "schemaVersion": "v12-largecap-coverage-1.0.0",
+ "producer": "scripts/quant/v12/indexpop/build-outputs.cjs (rules 1.2.0, unchanged)",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "optionSets": {
+  "base3": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "v10": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true,
+   "identityEvidenceProtocolV10": true
+  },
+  "v12": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true,
+   "identityEvidenceProtocolV10": true,
+   "identityEvidenceProtocolV12": true
+  }
+ },
+ "base3ReproducesIndexpopCoverage120": true,
+ "columns": {
+  "perDate": "base3|v10|v12 = [coveredPctN, coveredPctW]; mappedPct* = every T1/T2-mapped member counted (upper bound)"
+ },
+ "summary": {
+  "SPY": {
+   "base3": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      72.39,
+      79.5
+     ],
+     "2016": [
+      72.23,
+      80.68
+     ],
+     "2017": [
+      75.05,
+      81.73
+     ],
+     "2018": [
+      76.66,
+      82.88
+     ],
+     "2019": [
+      84.22,
+      87.44
+     ],
+     "2020": [
+      88.27,
+      87.97
+     ],
+     "2021": [
+      89.23,
+      87.34
+     ],
+     "2022": [
+      90.35,
+      87.47
+     ],
+     "2023": [
+      92.05,
+      87.73
+     ],
+     "2024": [
+      93.14,
+      88.71
+     ],
+     "2025": [
+      94.29,
+      88.89
+     ],
+     "2026": [
+      94.53,
+      87.54
+     ]
+    }
+   },
+   "v10": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      72.39,
+      79.5
+     ],
+     "2016": [
+      72.23,
+      80.68
+     ],
+     "2017": [
+      75.05,
+      81.73
+     ],
+     "2018": [
+      76.66,
+      82.88
+     ],
+     "2019": [
+      84.22,
+      87.44
+     ],
+     "2020": [
+      88.27,
+      87.97
+     ],
+     "2021": [
+      89.53,
+      87.54
+     ],
+     "2022": [
+      90.74,
+      87.66
+     ],
+     "2023": [
+      92.45,
+      87.86
+     ],
+     "2024": [
+      93.64,
+      88.82
+     ],
+     "2025": [
+      94.78,
+      88.95
+     ],
+     "2026": [
+      94.93,
+      87.62
+     ]
+    }
+   },
+   "v12": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      72.59,
+      79.65
+     ],
+     "2016": [
+      72.63,
+      82.06
+     ],
+     "2017": [
+      75.64,
+      83.34
+     ],
+     "2018": [
+      77.25,
+      84.58
+     ],
+     "2019": [
+      84.95,
+      89.22
+     ],
+     "2020": [
+      89.06,
+      89.86
+     ],
+     "2021": [
+      90.32,
+      89.91
+     ],
+     "2022": [
+      91.59,
+      89.91
+     ],
+     "2023": [
+      93.44,
+      90.2
+     ],
+     "2024": [
+      94.63,
+      91.28
+     ],
+     "2025": [
+      95.78,
+      91.64
+     ],
+     "2026": [
+      95.92,
+      91.07
+     ]
+    }
+   },
+   "topUncoveredSince2019H2_v12": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 6.409,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_ABT",
+     "cik": 1800,
+     "name": "Abbott Laboratories",
+     "meanWeightPct": 0.512,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_MS",
+     "cik": 895421,
+     "name": "Morgan Stanley",
+     "meanWeightPct": 0.308,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_USB",
+     "cik": 36104,
+     "name": "US Bancorp",
+     "meanWeightPct": 0.18,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Bank of New York Mellon Corp/The",
+     "meanWeightPct": 0.116,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard Inc",
+     "meanWeightPct": 0.113,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts Inc",
+     "meanWeightPct": 0.097,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_DD",
+     "cik": 1666700,
+     "name": "DuPont de Nemours Inc",
+     "meanWeightPct": 0.097,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.082,
+     "dates": 20,
+     "reasons": {
+      "NOT_QUALIFIED:OUTSIDE_SERIES_RANGE": 20
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1038357,
+     "name": "Pioneer Natural Resources Co",
+     "meanWeightPct": 0.077,
+     "dates": 19,
+     "reasons": {
+      "UNMATCHED": 19
+     }
+    },
+    {
+     "securityId": "ref_COR",
+     "cik": 1140859,
+     "name": "AmerisourceBergen Corp",
+     "meanWeightPct": 0.074,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.067,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1393612,
+     "name": "Discover Financial Services",
+     "meanWeightPct": 0.066,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 4447,
+     "name": "Hess Corp",
+     "meanWeightPct": 0.066,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Discovery Inc",
+     "meanWeightPct": 0.06,
+     "dates": 39,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 39
+     }
+    }
+   ]
+  },
+  "QQQ": {
+   "base3": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      61.47,
+      62.84
+     ],
+     "2016": [
+      70.48,
+      73.17
+     ],
+     "2017": [
+      71.03,
+      74.38
+     ],
+     "2018": [
+      77.67,
+      76.47
+     ],
+     "2019": [
+      84.47,
+      80.54
+     ],
+     "2020": [
+      84.19,
+      80.54
+     ],
+     "2021": [
+      86.25,
+      81.44
+     ],
+     "2022": [
+      89.19,
+      80.67
+     ],
+     "2023": [
+      89.6,
+      82.99
+     ],
+     "2024": [
+      92.59,
+      87.18
+     ],
+     "2025": [
+      94.06,
+      87.64
+     ],
+     "2026": [
+      92.62,
+      86.96
+     ]
+    }
+   },
+   "v10": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      61.47,
+      62.84
+     ],
+     "2016": [
+      70.48,
+      73.17
+     ],
+     "2017": [
+      71.03,
+      74.38
+     ],
+     "2018": [
+      77.67,
+      76.47
+     ],
+     "2019": [
+      85.44,
+      80.89
+     ],
+     "2020": [
+      85.65,
+      80.92
+     ],
+     "2021": [
+      88.21,
+      82.35
+     ],
+     "2022": [
+      91.15,
+      81.42
+     ],
+     "2023": [
+      91.58,
+      83.48
+     ],
+     "2024": [
+      93.58,
+      87.4
+     ],
+     "2025": [
+      94.06,
+      87.64
+     ],
+     "2026": [
+      92.62,
+      86.96
+     ]
+    }
+   },
+   "v12": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      61.47,
+      62.84
+     ],
+     "2016": [
+      71.43,
+      77.38
+     ],
+     "2017": [
+      71.96,
+      78.63
+     ],
+     "2018": [
+      78.64,
+      80.59
+     ],
+     "2019": [
+      86.41,
+      84.97
+     ],
+     "2020": [
+      86.62,
+      84.42
+     ],
+     "2021": [
+      89.19,
+      85.89
+     ],
+     "2022": [
+      92.39,
+      85.19
+     ],
+     "2023": [
+      93.56,
+      87.11
+     ],
+     "2024": [
+      95.56,
+      90.36
+     ],
+     "2025": [
+      96.04,
+      90.81
+     ],
+     "2026": [
+      94.59,
+      90.51
+     ]
+    }
+   },
+   "topUncoveredSince2019H2_v12": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple, Inc.",
+     "meanWeightPct": 10.47,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "ASML Holding N.V.",
+     "meanWeightPct": 0.428,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard, Inc.",
+     "meanWeightPct": 0.296,
+     "dates": 16,
+     "reasons": {
+      "UNMATCHED": 16
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts, Inc.",
+     "meanWeightPct": 0.289,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance, Inc.",
+     "meanWeightPct": 0.216,
+     "dates": 20,
+     "reasons": {
+      "UNMATCHED": 20
+     }
+    },
+    {
+     "securityId": "ref_WBD",
+     "cik": 1437107,
+     "name": "Warner Bros. Discovery, Inc.",
+     "meanWeightPct": 0.121,
+     "dates": 15,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 15
+     }
+    },
+    {
+     "securityId": "ref_KDP",
+     "cik": 1418135,
+     "name": "Keurig Dr Pepper, Inc.",
+     "meanWeightPct": 0.114,
+     "dates": 8,
+     "reasons": {
+      "NOT_QUALIFIED:OUTSIDE_SERIES_RANGE": 8
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1060736,
+     "name": "Seagen, Inc.",
+     "meanWeightPct": 0.105,
+     "dates": 12,
+     "reasons": {
+      "T3_NO_BAR_AT_DATE": 12
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 743988,
+     "name": "Xilinx, Inc.",
+     "meanWeightPct": 0.096,
+     "dates": 10,
+     "reasons": {
+      "UNMATCHED": 10
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1353283,
+     "name": "Splunk, Inc.",
+     "meanWeightPct": 0.092,
+     "dates": 13,
+     "reasons": {
+      "T3_NO_BAR_AT_DATE": 13
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 899866,
+     "name": "Alexion Pharmaceuticals, Inc.",
+     "meanWeightPct": 0.075,
+     "dates": 8,
+     "reasons": {
+      "UNMATCHED": 8
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 804753,
+     "name": "Cerner Corp.",
+     "meanWeightPct": 0.067,
+     "dates": 9,
+     "reasons": {
+      "UNMATCHED": 9
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 743316,
+     "name": "Maxim Integrated Products, Inc.",
+     "meanWeightPct": 0.052,
+     "dates": 8,
+     "reasons": {
+      "UNMATCHED": 8
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Sandisk Corp.",
+     "meanWeightPct": 0.052,
+     "dates": 1,
+     "reasons": {
+      "UNMATCHED": 1
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1060736,
+     "name": "Seattle Genetics, Inc.",
+     "meanWeightPct": 0.038,
+     "dates": 4,
+     "reasons": {
+      "UNMATCHED": 4
+     }
+    }
+   ]
+  },
+  "DIA": {
+   "base3": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 2,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      90,
+      88.81
+     ],
+     "2016": [
+      90,
+      89.32
+     ],
+     "2017": [
+      90,
+      88.85
+     ],
+     "2018": [
+      88.33,
+      88.42
+     ],
+     "2019": [
+      88.33,
+      89.76
+     ],
+     "2020": [
+      90.08,
+      90.47
+     ],
+     "2021": [
+      89.27,
+      95.15
+     ],
+     "2022": [
+      90,
+      94.86
+     ],
+     "2023": [
+      90,
+      95.08
+     ],
+     "2024": [
+      92.5,
+      95.69
+     ],
+     "2025": [
+      96.67,
+      96.78
+     ],
+     "2026": [
+      95.56,
+      95.28
+     ]
+    }
+   },
+   "v10": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 2,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      90,
+      88.81
+     ],
+     "2016": [
+      90,
+      89.32
+     ],
+     "2017": [
+      90,
+      88.85
+     ],
+     "2018": [
+      88.33,
+      88.42
+     ],
+     "2019": [
+      88.33,
+      89.76
+     ],
+     "2020": [
+      90.08,
+      90.47
+     ],
+     "2021": [
+      89.27,
+      95.15
+     ],
+     "2022": [
+      90,
+      94.86
+     ],
+     "2023": [
+      90,
+      95.08
+     ],
+     "2024": [
+      94.17,
+      96.11
+     ],
+     "2025": [
+      96.67,
+      96.78
+     ],
+     "2026": [
+      95.56,
+      95.28
+     ]
+    }
+   },
+   "v12": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 2,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      90,
+      88.81
+     ],
+     "2016": [
+      90,
+      89.32
+     ],
+     "2017": [
+      90,
+      88.85
+     ],
+     "2018": [
+      88.33,
+      88.42
+     ],
+     "2019": [
+      88.33,
+      89.76
+     ],
+     "2020": [
+      90.08,
+      90.47
+     ],
+     "2021": [
+      89.27,
+      95.15
+     ],
+     "2022": [
+      90,
+      94.86
+     ],
+     "2023": [
+      90,
+      95.08
+     ],
+     "2024": [
+      94.17,
+      96.11
+     ],
+     "2025": [
+      96.67,
+      96.78
+     ],
+     "2026": [
+      96.67,
+      96.62
+     ]
+    }
+   },
+   "topUncoveredSince2019H2_v12": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 3.885,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.741,
+     "dates": 19,
+     "reasons": {
+      "NOT_QUALIFIED:OUTSIDE_SERIES_RANGE": 19
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.56,
+     "dates": 18,
+     "reasons": {
+      "UNMATCHED": 18
+     }
+    },
+    {
+     "securityId": "ref_OGN",
+     "cik": 1821825,
+     "name": "Organon & Co",
+     "meanWeightPct": 0,
+     "dates": 1,
+     "reasons": {
+      "NOT_QUALIFIED:MISSING_WEEKS": 1
+     }
+    }
+   ]
+  },
+  "IWB": {
+   "base3": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      65.19,
+      78.23
+     ],
+     "2016": [
+      68.68,
+      82.01
+     ],
+     "2017": [
+      72.23,
+      83.11
+     ],
+     "2018": [
+      73.25,
+      83.41
+     ],
+     "2019": [
+      78.78,
+      87.21
+     ],
+     "2020": [
+      79.37,
+      86.71
+     ],
+     "2021": [
+      81.23,
+      86.42
+     ],
+     "2022": [
+      84.41,
+      86.96
+     ],
+     "2023": [
+      86.57,
+      87.32
+     ],
+     "2024": [
+      88.15,
+      88.67
+     ],
+     "2025": [
+      89.95,
+      88.78
+     ],
+     "2026": [
+      90.54,
+      87.74
+     ]
+    }
+   },
+   "v10": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      65.19,
+      78.23
+     ],
+     "2016": [
+      68.68,
+      82.01
+     ],
+     "2017": [
+      72.23,
+      83.11
+     ],
+     "2018": [
+      73.3,
+      83.42
+     ],
+     "2019": [
+      79.18,
+      87.26
+     ],
+     "2020": [
+      79.91,
+      86.83
+     ],
+     "2021": [
+      81.98,
+      86.75
+     ],
+     "2022": [
+      85.32,
+      87.23
+     ],
+     "2023": [
+      87.59,
+      87.69
+     ],
+     "2024": [
+      89.34,
+      88.98
+     ],
+     "2025": [
+      91.41,
+      89.09
+     ],
+     "2026": [
+      92.02,
+      88.07
+     ]
+    }
+   },
+   "v12": {
+    "qualifyingDates_95_99": 0,
+    "contiguousFrom_95_99": null,
+    "n90_w97": {
+     "qualifyingDates": 0,
+     "contiguousToLastDateFrom": null
+    },
+    "byYear": {
+     "2015": [
+      65.19,
+      78.23
+     ],
+     "2016": [
+      68.83,
+      83.14
+     ],
+     "2017": [
+      72.43,
+      84.49
+     ],
+     "2018": [
+      73.5,
+      84.86
+     ],
+     "2019": [
+      79.48,
+      88.76
+     ],
+     "2020": [
+      80.21,
+      88.43
+     ],
+     "2021": [
+      82.28,
+      88.75
+     ],
+     "2022": [
+      85.64,
+      89.16
+     ],
+     "2023": [
+      87.98,
+      89.71
+     ],
+     "2024": [
+      89.74,
+      91.16
+     ],
+     "2025": [
+      91.81,
+      91.48
+     ],
+     "2026": [
+      92.41,
+      91.18
+     ]
+    }
+   },
+   "topUncoveredSince2019H2_v12": [
+    {
+     "securityId": "ref_AAPL",
+     "cik": 320193,
+     "name": "Apple Inc",
+     "meanWeightPct": 5.815,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_ABT",
+     "cik": 1800,
+     "name": "Abbott Laboratories",
+     "meanWeightPct": 0.457,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_MS",
+     "cik": 895421,
+     "name": "Morgan Stanley",
+     "meanWeightPct": 0.262,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": "ref_USB",
+     "cik": 36104,
+     "name": "US Bancorp",
+     "meanWeightPct": 0.163,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": null,
+     "name": "Bank of New York Mellon Corp/The",
+     "meanWeightPct": 0.105,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 718877,
+     "name": "Activision Blizzard Inc",
+     "meanWeightPct": 0.103,
+     "dates": 17,
+     "reasons": {
+      "UNMATCHED": 17
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 712515,
+     "name": "Electronic Arts Inc",
+     "meanWeightPct": 0.091,
+     "dates": 28,
+     "reasons": {
+      "UNMATCHED": 28
+     }
+    },
+    {
+     "securityId": "ref_DD",
+     "cik": 1666700,
+     "name": "DuPont de Nemours Inc",
+     "meanWeightPct": 0.088,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": "ref_DOW",
+     "cik": 1751788,
+     "name": "DOW INC W/I",
+     "meanWeightPct": 0.074,
+     "dates": 20,
+     "reasons": {
+      "NOT_QUALIFIED:OUTSIDE_SERIES_RANGE": 20
+     }
+    },
+    {
+     "securityId": "ref_LNG",
+     "cik": 3570,
+     "name": "Cheniere Energy Inc",
+     "meanWeightPct": 0.074,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:CORPORATE_ACTION_UNRESOLVED": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1038357,
+     "name": "Pioneer Natural Resources Co",
+     "meanWeightPct": 0.069,
+     "dates": 19,
+     "reasons": {
+      "UNMATCHED": 19
+     }
+    },
+    {
+     "securityId": "ref_COR",
+     "cik": 1140859,
+     "name": "AmerisourceBergen Corp",
+     "meanWeightPct": 0.066,
+     "dates": 28,
+     "reasons": {
+      "NOT_QUALIFIED:AMBIGUOUS_LISTING_IDENTITY": 28
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 4447,
+     "name": "Hess Corp",
+     "meanWeightPct": 0.061,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1618921,
+     "name": "Walgreens Boots Alliance Inc",
+     "meanWeightPct": 0.06,
+     "dates": 24,
+     "reasons": {
+      "UNMATCHED": 24
+     }
+    },
+    {
+     "securityId": null,
+     "cik": 1393612,
+     "name": "Discover Financial Services",
+     "meanWeightPct": 0.06,
+     "dates": 23,
+     "reasons": {
+      "UNMATCHED": 23
+     }
+    }
+   ]
+  }
+ },
+ "perDate": [
+  {
+   "fund": "DIA",
+   "date": "2015-04-30",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 93.48,
+   "base3": [
+    90,
+    88.799
+   ],
+   "v10": [
+    90,
+    88.799
+   ],
+   "v12": [
+    90,
+    88.799
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2015-10-31",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 93.332,
+   "base3": [
+    90,
+    88.812
+   ],
+   "v10": [
+    90,
+    88.812
+   ],
+   "v12": [
+    90,
+    88.812
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2016-04-30",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 93.226,
+   "base3": [
+    90,
+    89.614
+   ],
+   "v10": [
+    90,
+    89.614
+   ],
+   "v12": [
+    90,
+    89.614
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2016-10-31",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 93.32,
+   "base3": [
+    90,
+    89.034
+   ],
+   "v10": [
+    90,
+    89.034
+   ],
+   "v12": [
+    90,
+    89.034
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2017-04-30",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 93.413,
+   "base3": [
+    90,
+    88.715
+   ],
+   "v10": [
+    90,
+    88.715
+   ],
+   "v12": [
+    90,
+    88.715
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2017-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 96.099,
+   "base3": [
+    90,
+    88.99
+   ],
+   "v10": [
+    90,
+    88.99
+   ],
+   "v12": [
+    90,
+    88.99
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2018-04-30",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 96.25,
+   "base3": [
+    90,
+    89.739
+   ],
+   "v10": [
+    90,
+    89.739
+   ],
+   "v12": [
+    90,
+    89.739
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2018-10-31",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 94.468,
+   "base3": [
+    86.667,
+    87.104
+   ],
+   "v10": [
+    86.667,
+    87.104
+   ],
+   "v12": [
+    86.667,
+    87.104
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2019-04-30",
+   "members": 30,
+   "mappedPctN": 93.333,
+   "mappedPctW": 94.968,
+   "base3": [
+    86.667,
+    88.403
+   ],
+   "v10": [
+    86.667,
+    88.403
+   ],
+   "v12": [
+    86.667,
+    88.403
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2019-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 98.626,
+   "base3": [
+    90,
+    91.122
+   ],
+   "v10": [
+    90,
+    91.122
+   ],
+   "v12": [
+    90,
+    91.122
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2020-01-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 98.779,
+   "base3": [
+    90,
+    90.245
+   ],
+   "v10": [
+    90,
+    90.245
+   ],
+   "v12": [
+    90,
+    90.245
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2020-04-30",
+   "members": 31,
+   "mappedPctN": 96.774,
+   "mappedPctW": 98.78,
+   "base3": [
+    90.323,
+    89.47
+   ],
+   "v10": [
+    90.323,
+    89.47
+   ],
+   "v12": [
+    90.323,
+    89.47
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2020-07-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 98.943,
+   "base3": [
+    90,
+    86.847
+   ],
+   "v10": [
+    90,
+    86.847
+   ],
+   "v12": [
+    90,
+    86.847
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2020-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.155,
+   "base3": [
+    90,
+    95.323
+   ],
+   "v10": [
+    90,
+    95.323
+   ],
+   "v12": [
+    90,
+    95.323
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2021-01-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 98.897,
+   "base3": [
+    90,
+    94.863
+   ],
+   "v10": [
+    90,
+    94.863
+   ],
+   "v12": [
+    90,
+    94.863
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2021-04-30",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 98.969,
+   "base3": [
+    90,
+    95.201
+   ],
+   "v10": [
+    90,
+    95.201
+   ],
+   "v12": [
+    90,
+    95.201
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2021-07-31",
+   "members": 31,
+   "mappedPctN": 96.774,
+   "mappedPctW": 99.111,
+   "base3": [
+    87.097,
+    95.191
+   ],
+   "v10": [
+    87.097,
+    95.191
+   ],
+   "v12": [
+    87.097,
+    95.191
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2021-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.136,
+   "base3": [
+    90,
+    95.354
+   ],
+   "v10": [
+    90,
+    95.354
+   ],
+   "v12": [
+    90,
+    95.354
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2022-01-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.066,
+   "base3": [
+    90,
+    94.667
+   ],
+   "v10": [
+    90,
+    94.667
+   ],
+   "v12": [
+    90,
+    94.667
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2022-04-30",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.153,
+   "base3": [
+    90,
+    94.673
+   ],
+   "v10": [
+    90,
+    94.673
+   ],
+   "v12": [
+    90,
+    94.673
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2022-07-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.205,
+   "base3": [
+    90,
+    94.876
+   ],
+   "v10": [
+    90,
+    94.876
+   ],
+   "v12": [
+    90,
+    94.876
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2022-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.265,
+   "base3": [
+    90,
+    95.236
+   ],
+   "v10": [
+    90,
+    95.236
+   ],
+   "v12": [
+    90,
+    95.236
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2023-01-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.287,
+   "base3": [
+    90,
+    95.35
+   ],
+   "v10": [
+    90,
+    95.35
+   ],
+   "v12": [
+    90,
+    95.35
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2023-04-30",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.319,
+   "base3": [
+    90,
+    94.987
+   ],
+   "v10": [
+    90,
+    94.987
+   ],
+   "v12": [
+    90,
+    94.987
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2023-07-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.445,
+   "base3": [
+    90,
+    94.757
+   ],
+   "v10": [
+    90,
+    94.757
+   ],
+   "v12": [
+    90,
+    94.757
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2023-10-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.58,
+   "base3": [
+    90,
+    95.211
+   ],
+   "v10": [
+    90,
+    95.211
+   ],
+   "v12": [
+    90,
+    95.211
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2024-01-31",
+   "members": 30,
+   "mappedPctN": 96.667,
+   "mappedPctW": 99.61,
+   "base3": [
+    90,
+    95.498
+   ],
+   "v10": [
+    90,
+    95.498
+   ],
+   "v12": [
+    90,
+    95.498
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2024-04-30",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    93.333,
+    96.052
+   ],
+   "v10": [
+    93.333,
+    96.052
+   ],
+   "v12": [
+    93.333,
+    96.052
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2024-07-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    93.333,
+    95.552
+   ],
+   "v10": [
+    96.667,
+    96.428
+   ],
+   "v12": [
+    96.667,
+    96.428
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2024-10-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    93.333,
+    95.67
+   ],
+   "v10": [
+    96.667,
+    96.446
+   ],
+   "v12": [
+    96.667,
+    96.446
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2025-01-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    96.743
+   ],
+   "v10": [
+    96.667,
+    96.743
+   ],
+   "v12": [
+    96.667,
+    96.743
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2025-04-30",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    96.788
+   ],
+   "v10": [
+    96.667,
+    96.788
+   ],
+   "v12": [
+    96.667,
+    96.788
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2025-07-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    97.109
+   ],
+   "v10": [
+    96.667,
+    97.109
+   ],
+   "v12": [
+    96.667,
+    97.109
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2025-10-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    96.5
+   ],
+   "v10": [
+    96.667,
+    96.5
+   ],
+   "v12": [
+    96.667,
+    96.5
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2026-01-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    96.733
+   ],
+   "v10": [
+    96.667,
+    96.733
+   ],
+   "v12": [
+    96.667,
+    96.733
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2026-04-30",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    96.667,
+    96.635
+   ],
+   "v10": [
+    96.667,
+    96.635
+   ],
+   "v12": [
+    96.667,
+    96.635
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "DIA",
+   "date": "2026-07-31",
+   "members": 30,
+   "mappedPctN": 100,
+   "mappedPctW": 100,
+   "base3": [
+    93.333,
+    92.469
+   ],
+   "v10": [
+    93.333,
+    92.469
+   ],
+   "v12": [
+    96.667,
+    96.502
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2015-06-30",
+   "members": 1028,
+   "mappedPctN": 67.412,
+   "mappedPctW": 82.221,
+   "base3": [
+    64.494,
+    76.861
+   ],
+   "v10": [
+    64.494,
+    76.861
+   ],
+   "v12": [
+    64.494,
+    76.861
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2015-12-31",
+   "members": 1032,
+   "mappedPctN": 69.089,
+   "mappedPctW": 85.475,
+   "base3": [
+    65.891,
+    79.602
+   ],
+   "v10": [
+    65.891,
+    79.602
+   ],
+   "v12": [
+    65.891,
+    79.602
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2016-06-30",
+   "members": 1000,
+   "mappedPctN": 71.3,
+   "mappedPctW": 87.135,
+   "base3": [
+    68.1,
+    81.89
+   ],
+   "v10": [
+    68.1,
+    81.89
+   ],
+   "v12": [
+    68.2,
+    82.907
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2016-12-31",
+   "members": 999,
+   "mappedPctN": 72.372,
+   "mappedPctW": 87.983,
+   "base3": [
+    69.269,
+    82.125
+   ],
+   "v10": [
+    69.269,
+    82.125
+   ],
+   "v12": [
+    69.469,
+    83.38
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2017-06-30",
+   "members": 988,
+   "mappedPctN": 74.798,
+   "mappedPctW": 88.923,
+   "base3": [
+    71.66,
+    82.639
+   ],
+   "v10": [
+    71.66,
+    82.639
+   ],
+   "v12": [
+    71.862,
+    84.007
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2017-12-31",
+   "members": 978,
+   "mappedPctN": 76.176,
+   "mappedPctW": 90.725,
+   "base3": [
+    72.802,
+    83.59
+   ],
+   "v10": [
+    72.802,
+    83.59
+   ],
+   "v12": [
+    73.006,
+    84.968
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2018-06-30",
+   "members": 987,
+   "mappedPctN": 76.19,
+   "mappedPctW": 89.375,
+   "base3": [
+    72.644,
+    82.165
+   ],
+   "v10": [
+    72.644,
+    82.165
+   ],
+   "v12": [
+    72.847,
+    83.591
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2018-12-31",
+   "members": 983,
+   "mappedPctN": 77.314,
+   "mappedPctW": 91.483,
+   "base3": [
+    73.856,
+    84.65
+   ],
+   "v10": [
+    73.957,
+    84.681
+   ],
+   "v12": [
+    74.161,
+    86.135
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2019-09-30",
+   "members": 1001,
+   "mappedPctN": 82.418,
+   "mappedPctW": 94.445,
+   "base3": [
+    78.521,
+    87.338
+   ],
+   "v10": [
+    78.921,
+    87.39
+   ],
+   "v12": [
+    79.221,
+    88.892
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2019-12-31",
+   "members": 997,
+   "mappedPctN": 82.949,
+   "mappedPctW": 94.871,
+   "base3": [
+    79.037,
+    87.073
+   ],
+   "v10": [
+    79.438,
+    87.133
+   ],
+   "v12": [
+    79.739,
+    88.634
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2020-03-31",
+   "members": 997,
+   "mappedPctN": 83.25,
+   "mappedPctW": 95.437,
+   "base3": [
+    79.338,
+    87.634
+   ],
+   "v10": [
+    79.739,
+    87.701
+   ],
+   "v12": [
+    80.04,
+    89.318
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2020-06-30",
+   "members": 1004,
+   "mappedPctN": 83.665,
+   "mappedPctW": 95.467,
+   "base3": [
+    79.482,
+    86.848
+   ],
+   "v10": [
+    79.98,
+    86.964
+   ],
+   "v12": [
+    80.279,
+    88.574
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2020-09-30",
+   "members": 1015,
+   "mappedPctN": 83.547,
+   "mappedPctW": 95.676,
+   "base3": [
+    79.015,
+    86.365
+   ],
+   "v10": [
+    79.606,
+    86.489
+   ],
+   "v12": [
+    79.901,
+    88.033
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2020-12-31",
+   "members": 1016,
+   "mappedPctN": 84.35,
+   "mappedPctW": 95.6,
+   "base3": [
+    79.626,
+    86.003
+   ],
+   "v10": [
+    80.315,
+    86.166
+   ],
+   "v12": [
+    80.61,
+    87.783
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2021-03-31",
+   "members": 1023,
+   "mappedPctN": 84.848,
+   "mappedPctW": 95.746,
+   "base3": [
+    80.059,
+    86.631
+   ],
+   "v10": [
+    80.743,
+    86.829
+   ],
+   "v12": [
+    81.036,
+    88.636
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2021-06-30",
+   "members": 1023,
+   "mappedPctN": 86.119,
+   "mappedPctW": 95.971,
+   "base3": [
+    81.134,
+    86.519
+   ],
+   "v10": [
+    81.916,
+    86.86
+   ],
+   "v12": [
+    82.209,
+    88.802
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2021-09-30",
+   "members": 1026,
+   "mappedPctN": 86.647,
+   "mappedPctW": 96.359,
+   "base3": [
+    81.676,
+    86.368
+   ],
+   "v10": [
+    82.456,
+    86.838
+   ],
+   "v12": [
+    82.749,
+    88.952
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2021-12-31",
+   "members": 1030,
+   "mappedPctN": 87.087,
+   "mappedPctW": 96.703,
+   "base3": [
+    82.039,
+    86.161
+   ],
+   "v10": [
+    82.816,
+    86.49
+   ],
+   "v12": [
+    83.107,
+    88.603
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2022-03-31",
+   "members": 1022,
+   "mappedPctN": 87.965,
+   "mappedPctW": 96.968,
+   "base3": [
+    82.975,
+    86.294
+   ],
+   "v10": [
+    83.855,
+    86.572
+   ],
+   "v12": [
+    84.149,
+    88.695
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2022-06-30",
+   "members": 1021,
+   "mappedPctN": 88.639,
+   "mappedPctW": 96.925,
+   "base3": [
+    83.937,
+    86.731
+   ],
+   "v10": [
+    84.819,
+    87
+   ],
+   "v12": [
+    85.113,
+    88.988
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2022-09-30",
+   "members": 1018,
+   "mappedPctN": 89.784,
+   "mappedPctW": 97.233,
+   "base3": [
+    84.971,
+    86.744
+   ],
+   "v10": [
+    85.855,
+    86.984
+   ],
+   "v12": [
+    86.149,
+    88.85
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2022-12-31",
+   "members": 1010,
+   "mappedPctN": 90.792,
+   "mappedPctW": 97.605,
+   "base3": [
+    85.743,
+    88.056
+   ],
+   "v10": [
+    86.733,
+    88.365
+   ],
+   "v12": [
+    87.129,
+    90.122
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2023-03-31",
+   "members": 1007,
+   "mappedPctN": 91.46,
+   "mappedPctW": 97.87,
+   "base3": [
+    86.395,
+    87.324
+   ],
+   "v10": [
+    87.488,
+    87.723
+   ],
+   "v12": [
+    87.885,
+    89.607
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2023-06-30",
+   "members": 1008,
+   "mappedPctN": 91.766,
+   "mappedPctW": 97.962,
+   "base3": [
+    86.409,
+    86.831
+   ],
+   "v10": [
+    87.401,
+    87.194
+   ],
+   "v12": [
+    87.798,
+    89.151
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2023-09-30",
+   "members": 1010,
+   "mappedPctN": 92.079,
+   "mappedPctW": 98.045,
+   "base3": [
+    86.634,
+    87.336
+   ],
+   "v10": [
+    87.624,
+    87.673
+   ],
+   "v12": [
+    88.02,
+    89.844
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2023-12-31",
+   "members": 1011,
+   "mappedPctN": 92.384,
+   "mappedPctW": 98.478,
+   "base3": [
+    86.845,
+    87.806
+   ],
+   "v10": [
+    87.834,
+    88.15
+   ],
+   "v12": [
+    88.229,
+    90.24
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2024-03-31",
+   "members": 1005,
+   "mappedPctN": 92.935,
+   "mappedPctW": 98.625,
+   "base3": [
+    87.363,
+    89.394
+   ],
+   "v10": [
+    88.358,
+    89.688
+   ],
+   "v12": [
+    88.756,
+    91.743
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2024-06-30",
+   "members": 1005,
+   "mappedPctN": 93.234,
+   "mappedPctW": 98.869,
+   "base3": [
+    87.662,
+    88.469
+   ],
+   "v10": [
+    88.756,
+    88.76
+   ],
+   "v12": [
+    89.154,
+    91.125
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2024-09-30",
+   "members": 1010,
+   "mappedPctN": 93.465,
+   "mappedPctW": 98.826,
+   "base3": [
+    88.416,
+    88.536
+   ],
+   "v10": [
+    89.703,
+    88.868
+   ],
+   "v12": [
+    90.099,
+    90.919
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2024-12-31",
+   "members": 1006,
+   "mappedPctN": 94.235,
+   "mappedPctW": 98.957,
+   "base3": [
+    89.165,
+    88.283
+   ],
+   "v10": [
+    90.557,
+    88.601
+   ],
+   "v12": [
+    90.954,
+    90.858
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2025-03-31",
+   "members": 1005,
+   "mappedPctN": 94.328,
+   "mappedPctW": 98.888,
+   "base3": [
+    89.254,
+    88.688
+   ],
+   "v10": [
+    90.647,
+    89.003
+   ],
+   "v12": [
+    91.045,
+    90.978
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2025-06-30",
+   "members": 1014,
+   "mappedPctN": 95.069,
+   "mappedPctW": 99.075,
+   "base3": [
+    89.941,
+    89.806
+   ],
+   "v10": [
+    91.42,
+    90.143
+   ],
+   "v12": [
+    91.815,
+    92.152
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2025-09-30",
+   "members": 1010,
+   "mappedPctN": 95.446,
+   "mappedPctW": 99.212,
+   "base3": [
+    90.297,
+    88.746
+   ],
+   "v10": [
+    91.782,
+    89.043
+   ],
+   "v12": [
+    92.178,
+    91.531
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2025-12-31",
+   "members": 1011,
+   "mappedPctN": 95.549,
+   "mappedPctW": 99.228,
+   "base3": [
+    90.307,
+    87.871
+   ],
+   "v10": [
+    91.79,
+    88.162
+   ],
+   "v12": [
+    92.186,
+    91.269
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2026-03-31",
+   "members": 1005,
+   "mappedPctN": 96.219,
+   "mappedPctW": 99.152,
+   "base3": [
+    90.846,
+    88.079
+   ],
+   "v10": [
+    92.338,
+    88.398
+   ],
+   "v12": [
+    92.736,
+    91.408
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "IWB",
+   "date": "2026-06-30",
+   "members": 1024,
+   "mappedPctN": 96.484,
+   "mappedPctW": 98.61,
+   "base3": [
+    90.234,
+    87.408
+   ],
+   "v10": [
+    91.699,
+    87.742
+   ],
+   "v12": [
+    92.09,
+    90.96
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2015-09-30",
+   "members": 109,
+   "mappedPctN": 66.055,
+   "mappedPctW": 76.895,
+   "base3": [
+    61.468,
+    62.843
+   ],
+   "v10": [
+    61.468,
+    62.843
+   ],
+   "v12": [
+    61.468,
+    62.843
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2016-09-30",
+   "members": 105,
+   "mappedPctN": 75.238,
+   "mappedPctW": 88.775,
+   "base3": [
+    70.476,
+    73.173
+   ],
+   "v10": [
+    70.476,
+    73.173
+   ],
+   "v12": [
+    71.429,
+    77.377
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2017-09-30",
+   "members": 107,
+   "mappedPctN": 76.636,
+   "mappedPctW": 91.088,
+   "base3": [
+    71.028,
+    74.38
+   ],
+   "v10": [
+    71.028,
+    74.38
+   ],
+   "v12": [
+    71.963,
+    78.626
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2018-09-30",
+   "members": 103,
+   "mappedPctN": 82.524,
+   "mappedPctW": 93.601,
+   "base3": [
+    77.67,
+    76.473
+   ],
+   "v10": [
+    77.67,
+    76.473
+   ],
+   "v12": [
+    78.641,
+    80.59
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2019-09-30",
+   "members": 103,
+   "mappedPctN": 89.32,
+   "mappedPctW": 96.225,
+   "base3": [
+    84.466,
+    80.657
+   ],
+   "v10": [
+    85.437,
+    80.991
+   ],
+   "v12": [
+    86.408,
+    85.061
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2019-12-31",
+   "members": 103,
+   "mappedPctN": 89.32,
+   "mappedPctW": 96.638,
+   "base3": [
+    84.466,
+    80.432
+   ],
+   "v10": [
+    85.437,
+    80.791
+   ],
+   "v12": [
+    86.408,
+    84.884
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2020-03-31",
+   "members": 103,
+   "mappedPctN": 89.32,
+   "mappedPctW": 96.643,
+   "base3": [
+    84.466,
+    81.047
+   ],
+   "v10": [
+    85.437,
+    81.324
+   ],
+   "v12": [
+    86.408,
+    85.292
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2020-06-30",
+   "members": 103,
+   "mappedPctN": 89.32,
+   "mappedPctW": 96.818,
+   "base3": [
+    84.466,
+    80.659
+   ],
+   "v10": [
+    85.437,
+    80.909
+   ],
+   "v12": [
+    86.408,
+    84.633
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2020-09-30",
+   "members": 103,
+   "mappedPctN": 89.32,
+   "mappedPctW": 97.139,
+   "base3": [
+    83.495,
+    79.751
+   ],
+   "v10": [
+    85.437,
+    80.193
+   ],
+   "v12": [
+    86.408,
+    83.616
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2020-12-31",
+   "members": 102,
+   "mappedPctN": 89.216,
+   "mappedPctW": 96.756,
+   "base3": [
+    84.314,
+    80.694
+   ],
+   "v10": [
+    86.275,
+    81.26
+   ],
+   "v12": [
+    87.255,
+    84.124
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2021-03-31",
+   "members": 102,
+   "mappedPctN": 89.216,
+   "mappedPctW": 96.767,
+   "base3": [
+    84.314,
+    81.444
+   ],
+   "v10": [
+    86.275,
+    82.076
+   ],
+   "v12": [
+    87.255,
+    85.397
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2021-06-30",
+   "members": 102,
+   "mappedPctN": 90.196,
+   "mappedPctW": 97.1,
+   "base3": [
+    85.294,
+    81.316
+   ],
+   "v10": [
+    87.255,
+    82.203
+   ],
+   "v12": [
+    88.235,
+    85.736
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2021-09-30",
+   "members": 102,
+   "mappedPctN": 92.157,
+   "mappedPctW": 97.744,
+   "base3": [
+    87.255,
+    81.3
+   ],
+   "v10": [
+    89.216,
+    82.59
+   ],
+   "v12": [
+    90.196,
+    86.381
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2021-12-31",
+   "members": 101,
+   "mappedPctN": 93.069,
+   "mappedPctW": 98.021,
+   "base3": [
+    88.119,
+    81.693
+   ],
+   "v10": [
+    90.099,
+    82.545
+   ],
+   "v12": [
+    91.089,
+    86.028
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2022-03-31",
+   "members": 102,
+   "mappedPctN": 94.118,
+   "mappedPctW": 98.237,
+   "base3": [
+    89.216,
+    80.967
+   ],
+   "v10": [
+    91.176,
+    81.663
+   ],
+   "v12": [
+    92.157,
+    85.336
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2022-06-30",
+   "members": 102,
+   "mappedPctN": 94.118,
+   "mappedPctW": 97.97,
+   "base3": [
+    89.216,
+    80.423
+   ],
+   "v10": [
+    91.176,
+    81.187
+   ],
+   "v12": [
+    92.157,
+    84.914
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2022-09-30",
+   "members": 102,
+   "mappedPctN": 94.118,
+   "mappedPctW": 98.105,
+   "base3": [
+    89.216,
+    80.18
+   ],
+   "v10": [
+    91.176,
+    80.861
+   ],
+   "v12": [
+    92.157,
+    84.296
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2022-12-31",
+   "members": 101,
+   "mappedPctN": 95.05,
+   "mappedPctW": 98.183,
+   "base3": [
+    89.109,
+    81.11
+   ],
+   "v10": [
+    91.089,
+    81.952
+   ],
+   "v12": [
+    93.069,
+    86.214
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2023-03-31",
+   "members": 101,
+   "mappedPctN": 95.05,
+   "mappedPctW": 98.264,
+   "base3": [
+    89.109,
+    80.991
+   ],
+   "v10": [
+    91.089,
+    81.562
+   ],
+   "v12": [
+    93.069,
+    85.643
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2023-06-30",
+   "members": 101,
+   "mappedPctN": 95.05,
+   "mappedPctW": 98.499,
+   "base3": [
+    89.109,
+    81.295
+   ],
+   "v10": [
+    91.089,
+    81.719
+   ],
+   "v12": [
+    93.069,
+    85.724
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2023-09-30",
+   "members": 101,
+   "mappedPctN": 96.04,
+   "mappedPctW": 98.763,
+   "base3": [
+    90.099,
+    83.702
+   ],
+   "v10": [
+    92.079,
+    84.194
+   ],
+   "v12": [
+    94.059,
+    87.714
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2023-12-31",
+   "members": 101,
+   "mappedPctN": 96.04,
+   "mappedPctW": 98.795,
+   "base3": [
+    90.099,
+    85.969
+   ],
+   "v10": [
+    92.079,
+    86.438
+   ],
+   "v12": [
+    94.059,
+    89.354
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2024-03-31",
+   "members": 101,
+   "mappedPctN": 97.03,
+   "mappedPctW": 99.002,
+   "base3": [
+    91.089,
+    88.233
+   ],
+   "v10": [
+    93.069,
+    88.635
+   ],
+   "v12": [
+    95.05,
+    91.434
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2024-06-30",
+   "members": 102,
+   "mappedPctN": 97.059,
+   "mappedPctW": 99.055,
+   "base3": [
+    92.157,
+    87.135
+   ],
+   "v10": [
+    93.137,
+    87.441
+   ],
+   "v12": [
+    95.098,
+    90.529
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2024-09-30",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.233,
+   "base3": [
+    93.069,
+    87.078
+   ],
+   "v10": [
+    94.059,
+    87.247
+   ],
+   "v12": [
+    96.04,
+    90.061
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2024-12-31",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.365,
+   "base3": [
+    94.059,
+    86.277
+   ],
+   "v10": [
+    94.059,
+    86.277
+   ],
+   "v12": [
+    96.04,
+    89.414
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2025-03-31",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.324,
+   "base3": [
+    94.059,
+    86.882
+   ],
+   "v10": [
+    94.059,
+    86.882
+   ],
+   "v12": [
+    96.04,
+    89.744
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2025-06-30",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.356,
+   "base3": [
+    94.059,
+    89.199
+   ],
+   "v10": [
+    94.059,
+    89.199
+   ],
+   "v12": [
+    96.04,
+    91.901
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2025-09-30",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.289,
+   "base3": [
+    94.059,
+    87.524
+   ],
+   "v10": [
+    94.059,
+    87.524
+   ],
+   "v12": [
+    96.04,
+    90.793
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2025-12-31",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.201,
+   "base3": [
+    94.059,
+    86.938
+   ],
+   "v10": [
+    94.059,
+    86.938
+   ],
+   "v12": [
+    96.04,
+    90.785
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2026-03-31",
+   "members": 101,
+   "mappedPctN": 98.02,
+   "mappedPctW": 99.054,
+   "base3": [
+    94.059,
+    87.391
+   ],
+   "v10": [
+    94.059,
+    87.391
+   ],
+   "v12": [
+    96.04,
+    91.027
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "QQQ",
+   "date": "2026-06-30",
+   "members": 102,
+   "mappedPctN": 95.098,
+   "mappedPctW": 96.96,
+   "base3": [
+    91.176,
+    86.537
+   ],
+   "v10": [
+    91.176,
+    86.537
+   ],
+   "v12": [
+    93.137,
+    89.998
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2015-03-31",
+   "members": 502,
+   "mappedPctN": 74.701,
+   "mappedPctW": 84.627,
+   "base3": [
+    72.311,
+    78.832
+   ],
+   "v10": [
+    72.311,
+    78.832
+   ],
+   "v12": [
+    72.51,
+    78.99
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2015-09-30",
+   "members": 505,
+   "mappedPctN": 75.05,
+   "mappedPctW": 86.674,
+   "base3": [
+    72.475,
+    80.171
+   ],
+   "v10": [
+    72.475,
+    80.171
+   ],
+   "v12": [
+    72.673,
+    80.314
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2016-03-31",
+   "members": 506,
+   "mappedPctN": 73.32,
+   "mappedPctW": 85.781,
+   "base3": [
+    71.146,
+    80.083
+   ],
+   "v10": [
+    71.146,
+    80.083
+   ],
+   "v12": [
+    71.542,
+    81.454
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2016-09-30",
+   "members": 506,
+   "mappedPctN": 75.692,
+   "mappedPctW": 87.087,
+   "base3": [
+    73.32,
+    81.281
+   ],
+   "v10": [
+    73.32,
+    81.281
+   ],
+   "v12": [
+    73.715,
+    82.67
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2017-03-31",
+   "members": 505,
+   "mappedPctN": 76.832,
+   "mappedPctW": 87.709,
+   "base3": [
+    74.455,
+    81.428
+   ],
+   "v10": [
+    74.455,
+    81.428
+   ],
+   "v12": [
+    75.05,
+    82.995
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2017-09-30",
+   "members": 505,
+   "mappedPctN": 78.218,
+   "mappedPctW": 89.135,
+   "base3": [
+    75.644,
+    82.039
+   ],
+   "v10": [
+    75.644,
+    82.039
+   ],
+   "v12": [
+    76.238,
+    83.692
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2018-03-31",
+   "members": 505,
+   "mappedPctN": 79.208,
+   "mappedPctW": 90.07,
+   "base3": [
+    76.436,
+    82.786
+   ],
+   "v10": [
+    76.436,
+    82.786
+   ],
+   "v12": [
+    77.03,
+    84.463
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2018-09-30",
+   "members": 506,
+   "mappedPctN": 79.447,
+   "mappedPctW": 90.535,
+   "base3": [
+    76.877,
+    82.98
+   ],
+   "v10": [
+    76.877,
+    82.98
+   ],
+   "v12": [
+    77.47,
+    84.703
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2019-03-31",
+   "members": 505,
+   "mappedPctN": 81.386,
+   "mappedPctW": 91.685,
+   "base3": [
+    78.812,
+    84.786
+   ],
+   "v10": [
+    78.812,
+    84.786
+   ],
+   "v12": [
+    79.406,
+    86.539
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2019-09-30",
+   "members": 505,
+   "mappedPctN": 89.901,
+   "mappedPctW": 96.304,
+   "base3": [
+    86.535,
+    88.895
+   ],
+   "v10": [
+    86.535,
+    88.895
+   ],
+   "v12": [
+    87.327,
+    90.694
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2019-12-31",
+   "members": 505,
+   "mappedPctN": 90.495,
+   "mappedPctW": 96.707,
+   "base3": [
+    87.327,
+    88.641
+   ],
+   "v10": [
+    87.327,
+    88.641
+   ],
+   "v12": [
+    88.119,
+    90.426
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2020-03-31",
+   "members": 505,
+   "mappedPctN": 90.693,
+   "mappedPctW": 97.106,
+   "base3": [
+    87.525,
+    88.778
+   ],
+   "v10": [
+    87.525,
+    88.778
+   ],
+   "v12": [
+    88.317,
+    90.647
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2020-06-30",
+   "members": 505,
+   "mappedPctN": 91.485,
+   "mappedPctW": 97.514,
+   "base3": [
+    88.515,
+    88.272
+   ],
+   "v10": [
+    88.515,
+    88.272
+   ],
+   "v12": [
+    89.307,
+    90.184
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2020-09-30",
+   "members": 505,
+   "mappedPctN": 91.287,
+   "mappedPctW": 97.593,
+   "base3": [
+    88.317,
+    87.524
+   ],
+   "v10": [
+    88.317,
+    87.524
+   ],
+   "v12": [
+    89.109,
+    89.378
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2020-12-31",
+   "members": 505,
+   "mappedPctN": 91.881,
+   "mappedPctW": 97.539,
+   "base3": [
+    88.713,
+    87.289
+   ],
+   "v10": [
+    88.713,
+    87.289
+   ],
+   "v12": [
+    89.505,
+    89.234
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2021-03-31",
+   "members": 506,
+   "mappedPctN": 92.49,
+   "mappedPctW": 97.546,
+   "base3": [
+    88.933,
+    87.836
+   ],
+   "v10": [
+    89.13,
+    87.891
+   ],
+   "v12": [
+    89.921,
+    90.038
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2021-06-30",
+   "members": 506,
+   "mappedPctN": 93.083,
+   "mappedPctW": 97.628,
+   "base3": [
+    89.328,
+    87.64
+   ],
+   "v10": [
+    89.526,
+    87.699
+   ],
+   "v12": [
+    90.316,
+    90.026
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2021-09-30",
+   "members": 506,
+   "mappedPctN": 93.281,
+   "mappedPctW": 97.823,
+   "base3": [
+    89.328,
+    87.134
+   ],
+   "v10": [
+    89.723,
+    87.569
+   ],
+   "v12": [
+    90.514,
+    90.071
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2021-12-31",
+   "members": 506,
+   "mappedPctN": 93.281,
+   "mappedPctW": 97.972,
+   "base3": [
+    89.328,
+    86.744
+   ],
+   "v10": [
+    89.723,
+    87.015
+   ],
+   "v12": [
+    90.514,
+    89.493
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2022-03-31",
+   "members": 506,
+   "mappedPctN": 93.676,
+   "mappedPctW": 98.111,
+   "base3": [
+    89.723,
+    86.834
+   ],
+   "v10": [
+    90.119,
+    87.036
+   ],
+   "v12": [
+    90.909,
+    89.492
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2022-06-30",
+   "members": 505,
+   "mappedPctN": 94.059,
+   "mappedPctW": 98.134,
+   "base3": [
+    90.099,
+    87.291
+   ],
+   "v10": [
+    90.495,
+    87.472
+   ],
+   "v12": [
+    91.287,
+    89.79
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2022-09-30",
+   "members": 505,
+   "mappedPctN": 94.059,
+   "mappedPctW": 98.177,
+   "base3": [
+    90.297,
+    87.232
+   ],
+   "v10": [
+    90.693,
+    87.386
+   ],
+   "v12": [
+    91.485,
+    89.571
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2022-12-31",
+   "members": 504,
+   "mappedPctN": 95.04,
+   "mappedPctW": 98.478,
+   "base3": [
+    91.27,
+    88.541
+   ],
+   "v10": [
+    91.667,
+    88.753
+   ],
+   "v12": [
+    92.659,
+    90.791
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2023-03-31",
+   "members": 504,
+   "mappedPctN": 95.238,
+   "mappedPctW": 98.655,
+   "base3": [
+    91.468,
+    87.664
+   ],
+   "v10": [
+    91.865,
+    87.841
+   ],
+   "v12": [
+    92.857,
+    90.019
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2023-06-30",
+   "members": 503,
+   "mappedPctN": 95.626,
+   "mappedPctW": 98.795,
+   "base3": [
+    92.048,
+    87.287
+   ],
+   "v10": [
+    92.445,
+    87.423
+   ],
+   "v12": [
+    93.439,
+    89.697
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2023-09-30",
+   "members": 503,
+   "mappedPctN": 95.626,
+   "mappedPctW": 98.773,
+   "base3": [
+    92.048,
+    87.811
+   ],
+   "v10": [
+    92.445,
+    87.933
+   ],
+   "v12": [
+    93.439,
+    90.434
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2023-12-31",
+   "members": 503,
+   "mappedPctN": 96.024,
+   "mappedPctW": 99.024,
+   "base3": [
+    92.644,
+    88.143
+   ],
+   "v10": [
+    93.042,
+    88.25
+   ],
+   "v12": [
+    94.036,
+    90.647
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2024-03-31",
+   "members": 503,
+   "mappedPctN": 96.024,
+   "mappedPctW": 99.04,
+   "base3": [
+    92.644,
+    89.7
+   ],
+   "v10": [
+    93.042,
+    89.802
+   ],
+   "v12": [
+    94.036,
+    92.137
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2024-06-30",
+   "members": 503,
+   "mappedPctN": 96.421,
+   "mappedPctW": 99.251,
+   "base3": [
+    93.042,
+    88.732
+   ],
+   "v10": [
+    93.439,
+    88.836
+   ],
+   "v12": [
+    94.433,
+    91.478
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2024-09-30",
+   "members": 504,
+   "mappedPctN": 96.627,
+   "mappedPctW": 99.263,
+   "base3": [
+    93.254,
+    88.431
+   ],
+   "v10": [
+    93.849,
+    88.575
+   ],
+   "v12": [
+    94.841,
+    90.886
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2024-12-31",
+   "members": 503,
+   "mappedPctN": 97.018,
+   "mappedPctW": 99.321,
+   "base3": [
+    93.638,
+    87.985
+   ],
+   "v10": [
+    94.235,
+    88.084
+   ],
+   "v12": [
+    95.229,
+    90.601
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2025-03-31",
+   "members": 503,
+   "mappedPctN": 97.018,
+   "mappedPctW": 99.265,
+   "base3": [
+    93.638,
+    88.739
+   ],
+   "v10": [
+    94.235,
+    88.822
+   ],
+   "v12": [
+    95.229,
+    91.034
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2025-06-30",
+   "members": 504,
+   "mappedPctN": 97.222,
+   "mappedPctW": 99.395,
+   "base3": [
+    93.849,
+    90.023
+   ],
+   "v10": [
+    94.444,
+    90.088
+   ],
+   "v12": [
+    95.437,
+    92.38
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2025-09-30",
+   "members": 503,
+   "mappedPctN": 98.012,
+   "mappedPctW": 99.52,
+   "base3": [
+    94.831,
+    88.873
+   ],
+   "v10": [
+    95.229,
+    88.917
+   ],
+   "v12": [
+    96.223,
+    91.718
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2025-12-31",
+   "members": 503,
+   "mappedPctN": 98.012,
+   "mappedPctW": 99.491,
+   "base3": [
+    94.831,
+    87.933
+   ],
+   "v10": [
+    95.229,
+    87.979
+   ],
+   "v12": [
+    96.223,
+    91.423
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2026-03-31",
+   "members": 503,
+   "mappedPctN": 98.211,
+   "mappedPctW": 99.364,
+   "base3": [
+    94.831,
+    88.112
+   ],
+   "v10": [
+    95.229,
+    88.197
+   ],
+   "v12": [
+    96.223,
+    91.535
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  },
+  {
+   "fund": "SPY",
+   "date": "2026-06-30",
+   "members": 503,
+   "mappedPctN": 97.614,
+   "mappedPctW": 98.279,
+   "base3": [
+    94.235,
+    86.969
+   ],
+   "v10": [
+    94.632,
+    87.037
+   ],
+   "v12": [
+    95.626,
+    90.613
+   ],
+   "qualifies95_99": {
+    "base3": false,
+    "v10": false,
+    "v12": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,1181 @@
+{
+ "studyId": "V12-REQUAL-P5D",
+ "registrationSha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "resultVersion": "1.1.0",
+ "amendmentSha256": "103d99ac3761ce2c308a7939a7a44b22caea13fb24e9123df4338cb83b580ee5",
+ "inputs": {
+  "p5a-population-1.1.0.json": "ba0575017122bca99d97986bd248a3229868017d97040f6a1b8d2f58a6900d07",
+  "p5b-signals-1.1.0.json": "7bae6cc69d9e585ee5c3e5a0950ce5ab4b7b365468d800a782ba32d6598af25a",
+  "p5c-factor-1.1.0.json": "c253b6bd160bcceae3068c2ee7a2705fdb3f590e3e5b8215fd8a7ae6e20064e1",
+  "p6-strategies-1.1.0.json": "18c2df9ad721de8e4f2f7be60eef9b5eb9cab5bce8318cce07d4cedafec12326",
+  "dividends-1.1.0.json": "372a16c464131c79f830dc24a43d74b0c3cb095482ae60060b12c948d3968def"
+ },
+ "population": {
+  "question": "How much of the V10/V11 \"excess over SPY\" is the population?",
+  "cagr": {
+   "ZERO": {
+    "SPY": 0.123901,
+    "SPY_TR": 0.144015,
+    "SPY_W": 0.123013,
+    "EW_ALL": 0.105729,
+    "CW_ALL": 0.119743,
+    "EW_WITH_H": 0.112812,
+    "EW_WITHOUT_H": 0.084968,
+    "EW_WITH_S": 0.11423,
+    "EW_FRAME": 0.112328,
+    "EW_FRAME_WREB": 0.126681
+   },
+   "LOWER": {
+    "SPY": 0.123901,
+    "SPY_TR": 0.144015,
+    "SPY_W": 0.123013,
+    "EW_ALL": 0.072617,
+    "CW_ALL": 0.104328,
+    "EW_WITH_H": 0.112453,
+    "EW_WITHOUT_H": -0.061677,
+    "EW_WITH_S": 0.11423,
+    "EW_FRAME": 0.111051,
+    "EW_FRAME_WREB": 0.126681
+   }
+  },
+  "additiveTermsAnnualizedPp": {
+   "ZERO": {
+    "universe": 0.529717,
+    "measurement": 0.100875,
+    "survivorshipInIndex": 0.660513,
+    "equalWeightInIndex": -1.45522,
+    "benchmarkTrMinusPrice": 1.86794,
+    "rebalancingWeekly": 1.418755,
+    "dateAlignmentSpy": -0.074417,
+    "frameMinusSpy": -0.164115,
+    "frameWrebMinusSpyW": 1.329057
+   },
+   "LOWER": {
+    "universe": 0.410893,
+    "measurement": 0.13488,
+    "survivorshipInIndex": 3.766607,
+    "equalWeightInIndex": -4.595319,
+    "benchmarkTrMinusPrice": 1.86794,
+    "rebalancingWeekly": 1.537579,
+    "dateAlignmentSpy": -0.074417,
+    "frameMinusSpy": -0.282939,
+    "frameWrebMinusSpyW": 1.329057
+   }
+  },
+  "additiveTermsCagrDiffPp": {
+   "ZERO": {
+    "universe": -0.1902,
+    "measurement": 0.1418,
+    "survivorshipInIndex": 0.7083,
+    "equalWeightInIndex": -1.8172,
+    "benchmarkTrMinusPrice": 2.0114,
+    "rebalancingWeekly": 1.4353,
+    "dateAlignmentSpy": -0.0888,
+    "frameMinusSpy": -1.1573,
+    "frameWrebMinusSpyW": 0.3668
+   },
+   "LOWER": {
+    "universe": -0.3179,
+    "measurement": 0.1777,
+    "survivorshipInIndex": 3.9836,
+    "equalWeightInIndex": -5.1284,
+    "benchmarkTrMinusPrice": 2.0114,
+    "rebalancingWeekly": 1.563,
+    "dateAlignmentSpy": -0.0888,
+    "frameMinusSpy": -1.285,
+    "frameWrebMinusSpyW": 0.3668
+   }
+  },
+  "survivorshipInIndexByScenario": {
+   "ZERO": {
+    "label": "point convention: bounded exits at 0 % (last holdings price), ambiguous CA at the midpoint - NOT a bound",
+    "annualizedArithmeticPp": 0.660513,
+    "cagrDiffPp": 0.7083,
+    "nwP": 0.005048,
+    "positivePeriods": 31,
+    "periods": 47,
+    "from2013_03": 0.549845
+   },
+   "LOWER": {
+    "label": "all bounded exits at -100 %, ambiguous CA at the lower bound - gives the UPPER bound of the survivorship term (EW_WITH_H - EW_ALL) and the lower bound of EW_ALL/CW_ALL",
+    "annualizedArithmeticPp": 3.766607,
+    "cagrDiffPp": 3.9836,
+    "nwP": 0.000006,
+    "positivePeriods": 44,
+    "periods": 47,
+    "from2013_03": 3.480337
+   },
+   "FATE": {
+    "label": "exits by documented fate: takeover -> typical premium of documented takeovers (takeoverPremium.median), delisting/bankruptcy -> -100 %, index change -> population period return, unknown fate -> 0 %; ambiguous CA midpoint - evidence-based point estimate",
+    "annualizedArithmeticPp": 0.704759,
+    "cagrDiffPp": 0.7583,
+    "nwP": 0.00313,
+    "positivePeriods": 31,
+    "periods": 47,
+    "from2013_03": 0.564564
+   },
+   "UPPER": {
+    "label": "every bounded exit at max(takeover premium p75, population period return), ambiguous CA at the upper bound - gives the lower end of the survivorship term",
+    "annualizedArithmeticPp": 0.378786,
+    "cagrDiffPp": 0.4178,
+    "nwP": 0.058497,
+    "positivePeriods": 27,
+    "periods": 47,
+    "from2013_03": 0.328884
+   }
+  },
+  "survivorshipReading": "Per scenario only (no p-value across scenarios). LOWER (exits -100 %) is the UPPER bound of the term; UPPER (exits at max(takeover premium p75, population return)) its lower end; FATE the evidence-based point estimate; ZERO a point convention, not a bound.",
+  "bySubspanPp": {
+   "semiannual_2009_2019": {
+    "ZERO": {
+     "survivorshipInIndex": 1.031371,
+     "equalWeightInIndex": -0.035515,
+     "universe": 0.353338
+    },
+    "LOWER": {
+     "survivorshipInIndex": 5.345392,
+     "equalWeightInIndex": -4.373099,
+     "universe": 0.353338
+    }
+   },
+   "quarterly_2019_2026": {
+    "ZERO": {
+     "survivorshipInIndex": 0.111072,
+     "equalWeightInIndex": -3.558572,
+     "universe": 0.791029
+    },
+    "LOWER": {
+     "survivorshipInIndex": 1.427572,
+     "equalWeightInIndex": -4.924548,
+     "universe": 0.496162
+    }
+   }
+  },
+  "text": "Period buy-and-hold 2009-09 -> 2026-06, price return on both sides. The equal-weighted survivor frame does not beat SPY in this window; its gap to SPY splits additively into (i) survivor titles outside the index, (ii) measurement weekly series vs holdings (~0), (iii) survivorship inside the index: members with our series beat all members (positive in ZERO/FATE, at most the LOWER value, close to zero after 2019), (iv) equal weighting inside the index (negative, largest after 2019). The V11 population term (+0.87 to +1.10 pp per 13 W, 2000-2025) is not observed on the qualified population 2009-2026; on the frame it shrinks to about zero when the window starts in 2009. This is an accounting decomposition of returns, not a causal attribution (correction after the independent review, m6)."
+ },
+ "selection": {
+  "signalBridge": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.4803,
+     -0.424,
+     -0.5802,
+     -0.5802
+    ],
+    "populationMinusSpyPp": [
+     1.0875,
+     0.038,
+     -0.2613,
+     -0.4723
+    ],
+    "signalMinusPopulationPp": [
+     -0.2984,
+     -0.1531,
+     -0.0109,
+     0.2002
+    ],
+    "costPp": [
+     0.3088,
+     0.3088,
+     0.3081,
+     0.3081
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2143,
+     "signalMinusPopulationAllPp": 0.9421
+    }
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.6353,
+     0.0059,
+     -0.2098,
+     -0.2098
+    ],
+    "populationMinusSpyPp": [
+     0.9705,
+     0.1407,
+     -0.1778,
+     -0.3631
+    ],
+    "signalMinusPopulationPp": [
+     -0.0252,
+     0.176,
+     0.2789,
+     0.4643
+    ],
+    "costPp": [
+     0.31,
+     0.3108,
+     0.311,
+     0.311
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.0933,
+     "signalMinusPopulationAllPp": 1.1945
+    }
+   },
+   {
+    "rule": "TREND_UP",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.2026,
+     -0.6391,
+     -0.7959,
+     -0.7959
+    ],
+    "populationMinusSpyPp": [
+     1.0989,
+     0.0228,
+     -0.3332,
+     -0.5115
+    ],
+    "signalMinusPopulationPp": [
+     -0.5886,
+     -0.3542,
+     -0.1552,
+     0.0231
+    ],
+    "costPp": [
+     0.3077,
+     0.3076,
+     0.3075,
+     0.3075
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2667,
+     "signalMinusPopulationAllPp": 0.7783
+    }
+   },
+   {
+    "rule": "TREND_DOWN",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.0242,
+     -0.574,
+     -0.4899,
+     -0.4899
+    ],
+    "populationMinusSpyPp": [
+     0.7003,
+     -0.1318,
+     -0.2655,
+     -0.4437
+    ],
+    "signalMinusPopulationPp": [
+     -0.3677,
+     -0.1331,
+     0.0854,
+     0.2635
+    ],
+    "costPp": [
+     0.3083,
+     0.3091,
+     0.3098,
+     0.3098
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.1677,
+     "signalMinusPopulationAllPp": 0.9875
+    }
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     1.0728,
+     -0.1267,
+     -0.6624,
+     -0.6624
+    ],
+    "populationMinusSpyPp": [
+     0.8743,
+     -0.2034,
+     -0.355,
+     -0.5178
+    ],
+    "signalMinusPopulationPp": [
+     0.5082,
+     0.3852,
+     -0.0013,
+     0.1615
+    ],
+    "costPp": [
+     0.3097,
+     0.3085,
+     0.3061,
+     0.3061
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2832,
+     "signalMinusPopulationAllPp": 0.9269
+    }
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.7898,
+     -0.6094,
+     -2.1451,
+     -2.1451
+    ],
+    "populationMinusSpyPp": [
+     4.6586,
+     -0.1161,
+     -1.4384,
+     -2.2952
+    ],
+    "signalMinusPopulationPp": [
+     -0.5266,
+     -0.1538,
+     -0.3718,
+     0.485
+    ],
+    "costPp": [
+     0.3422,
+     0.3394,
+     0.3349,
+     0.3349
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.2763,
+     "signalMinusPopulationAllPp": 3.4661
+    }
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.3909,
+     -0.0056,
+     -1.862,
+     -1.862
+    ],
+    "populationMinusSpyPp": [
+     4.8405,
+     0.7354,
+     -1.1885,
+     -1.948
+    ],
+    "signalMinusPopulationPp": [
+     -1.1086,
+     -0.3991,
+     -0.3366,
+     0.4229
+    ],
+    "costPp": [
+     0.341,
+     0.3419,
+     0.3369,
+     0.3369
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -4.8893,
+     "signalMinusPopulationAllPp": 3.3642
+    }
+   },
+   {
+    "rule": "TREND_UP",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.5314,
+     -0.6055,
+     -2.3275,
+     -2.3275
+    ],
+    "populationMinusSpyPp": [
+     4.59,
+     -0.0946,
+     -1.4258,
+     -2.1541
+    ],
+    "signalMinusPopulationPp": [
+     -0.717,
+     -0.1705,
+     -0.5663,
+     0.1619
+    ],
+    "costPp": [
+     0.3416,
+     0.3403,
+     0.3353,
+     0.3353
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.1938,
+     "signalMinusPopulationAllPp": 3.2016
+    }
+   },
+   {
+    "rule": "TREND_DOWN",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     2.2187,
+     -1.0482,
+     -1.8612,
+     -1.8612
+    ],
+    "populationMinusSpyPp": [
+     4.3588,
+     0.3724,
+     -1.1011,
+     -1.8267
+    ],
+    "signalMinusPopulationPp": [
+     -1.8027,
+     -1.0817,
+     -0.4231,
+     0.3025
+    ],
+    "costPp": [
+     0.3374,
+     0.3389,
+     0.337,
+     0.337
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -4.7372,
+     "signalMinusPopulationAllPp": 3.213
+    }
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.3871,
+     -0.5474,
+     -1.346,
+     -1.346
+    ],
+    "populationMinusSpyPp": [
+     3.2341,
+     -0.7735,
+     -1.3339,
+     -1.9998
+    ],
+    "signalMinusPopulationPp": [
+     0.491,
+     0.5624,
+     0.3196,
+     0.9855
+    ],
+    "costPp": [
+     0.338,
+     0.3363,
+     0.3317,
+     0.3317
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.0809,
+     "signalMinusPopulationAllPp": 4.0666
+    }
+   }
+  ],
+  "factorBridge": {
+   "quality": {
+    "v10Published13W": 0.028341,
+    "v10Published26W": 0.034806,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.035159,
+     "icNwP": 0.001774,
+     "q5MinusQ1Pp": -0.7169,
+     "q5MinusSpyPp": 0.3582
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.035159,
+     "icNwP": 0.001774,
+     "q5MinusQ1Pp": -0.7169,
+     "q5MinusSpyPp": 0.3582
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.013307,
+     "icNwP": 0.412682,
+     "q5MinusQ1Pp": 0.1596,
+     "q5MinusSpyPp": -0.0222
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.0142,
+     "icNwP": 0.375983,
+     "q5MinusQ1Pp": 0.0594,
+     "q5MinusSpyPp": -0.0963
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.014212,
+     "icNwP": 0.375539,
+     "q5MinusQ1Pp": 0.0471,
+     "q5MinusSpyPp": -0.1151
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.017899,
+     "icNwP": 0.27979,
+     "q5MinusQ1Pp": 0.8468,
+     "q5MinusSpyPp": 0.2771
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.018704,
+     "icNwP": 0.251304,
+     "q5MinusQ1Pp": 0.7539,
+     "q5MinusSpyPp": 0.2227
+    }
+   },
+   "growth": {
+    "v10Published13W": 0.011843,
+    "v10Published26W": 0.014203,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.008921,
+     "icNwP": 0.55447,
+     "q5MinusQ1Pp": 0.2591,
+     "q5MinusSpyPp": 0.7236
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.008921,
+     "icNwP": 0.55447,
+     "q5MinusQ1Pp": 0.2591,
+     "q5MinusSpyPp": 0.7236
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.023518,
+     "icNwP": 0.286401,
+     "q5MinusQ1Pp": 0.9769,
+     "q5MinusSpyPp": 0.1191
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.022426,
+     "icNwP": 0.28999,
+     "q5MinusQ1Pp": 0.9418,
+     "q5MinusSpyPp": 0.0431
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.022407,
+     "icNwP": 0.291258,
+     "q5MinusQ1Pp": 0.9273,
+     "q5MinusSpyPp": 0.0159
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.023076,
+     "icNwP": 0.288461,
+     "q5MinusQ1Pp": 0.9332,
+     "q5MinusSpyPp": 0.0264
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.021827,
+     "icNwP": 0.296323,
+     "q5MinusQ1Pp": 0.9028,
+     "q5MinusSpyPp": -0.0435
+    }
+   },
+   "value": {
+    "v10Published13W": 0.03434,
+    "v10Published26W": 0.039462,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.055116,
+     "icNwP": 0.006016,
+     "q5MinusQ1Pp": -2.2981,
+     "q5MinusSpyPp": 0.2633
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.053542,
+     "icNwP": 0.00784,
+     "q5MinusQ1Pp": -2.4296,
+     "q5MinusSpyPp": 0.2677
+    },
+    "S3_SP_SERIES": {
+     "meanIC": -0.011929,
+     "icNwP": 0.548568,
+     "q5MinusQ1Pp": -1.3597,
+     "q5MinusSpyPp": -1.0062
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": -0.01128,
+     "icNwP": 0.558159,
+     "q5MinusQ1Pp": -1.34,
+     "q5MinusSpyPp": -0.9756
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": -0.011256,
+     "icNwP": 0.560089,
+     "q5MinusQ1Pp": -1.333,
+     "q5MinusSpyPp": -0.9756
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": -0.005237,
+     "icNwP": 0.794577,
+     "q5MinusQ1Pp": -0.6891,
+     "q5MinusSpyPp": -0.7516
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": -0.004391,
+     "icNwP": 0.822746,
+     "q5MinusQ1Pp": -0.6835,
+     "q5MinusSpyPp": -0.7335
+    }
+   },
+   "profitability": {
+    "v10Published13W": 0.044314,
+    "v10Published26W": 0.050819,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.050919,
+     "icNwP": 0.011298,
+     "q5MinusQ1Pp": -1.3361,
+     "q5MinusSpyPp": 0.4515
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.050919,
+     "icNwP": 0.011298,
+     "q5MinusQ1Pp": -1.3361,
+     "q5MinusSpyPp": 0.4515
+    },
+    "S3_SP_SERIES": null,
+    "S4_SP_HOLDINGS_ZERO": null,
+    "S4_SP_HOLDINGS_LOWER": null,
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.024712,
+     "icNwP": 0.354321,
+     "q5MinusQ1Pp": 1.0139,
+     "q5MinusSpyPp": 0.7948
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.027442,
+     "icNwP": 0.28123,
+     "q5MinusQ1Pp": 1.0179,
+     "q5MinusSpyPp": 0.8045
+    }
+   },
+   "momentum": {
+    "v10Published13W": 0.045271,
+    "v10Published26W": 0.063221,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.050623,
+     "icNwP": 0.001796,
+     "q5MinusQ1Pp": 0.9493,
+     "q5MinusSpyPp": 0.8898
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.050623,
+     "icNwP": 0.001796,
+     "q5MinusQ1Pp": 0.9493,
+     "q5MinusSpyPp": 0.8898
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.009251,
+     "icNwP": 0.702008,
+     "q5MinusQ1Pp": 0.3287,
+     "q5MinusSpyPp": -0.1835
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.008281,
+     "icNwP": 0.723027,
+     "q5MinusQ1Pp": 0.3006,
+     "q5MinusSpyPp": -0.2169
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.008154,
+     "icNwP": 0.72699,
+     "q5MinusQ1Pp": 0.291,
+     "q5MinusSpyPp": -0.2399
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.00817,
+     "icNwP": 0.736907,
+     "q5MinusQ1Pp": 0.1408,
+     "q5MinusSpyPp": -0.2591
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.00712,
+     "icNwP": 0.762288,
+     "q5MinusQ1Pp": 0.1162,
+     "q5MinusSpyPp": -0.2916
+    }
+   },
+   "risk": {
+    "v10Published13W": 0.059437,
+    "v10Published26W": 0.074484,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.0758,
+     "icNwP": 0.017105,
+     "q5MinusQ1Pp": -2.5723,
+     "q5MinusSpyPp": -1.2685
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.0758,
+     "icNwP": 0.017105,
+     "q5MinusQ1Pp": -2.5723,
+     "q5MinusSpyPp": -1.2685
+    },
+    "S3_SP_SERIES": {
+     "meanIC": -0.003791,
+     "icNwP": 0.918574,
+     "q5MinusQ1Pp": -1.232,
+     "q5MinusSpyPp": -0.5738
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": -0.007567,
+     "icNwP": 0.835831,
+     "q5MinusQ1Pp": -1.2887,
+     "q5MinusSpyPp": -0.6138
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": -0.007272,
+     "icNwP": 0.841915,
+     "q5MinusQ1Pp": -1.2833,
+     "q5MinusSpyPp": -0.6189
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": -0.003801,
+     "icNwP": 0.918708,
+     "q5MinusQ1Pp": -1.1541,
+     "q5MinusSpyPp": -0.5213
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": -0.00758,
+     "icNwP": 0.836242,
+     "q5MinusQ1Pp": -1.2132,
+     "q5MinusSpyPp": -0.5627
+    }
+   },
+   "composite": {
+    "v10Published13W": 0.04841,
+    "v10Published26W": 0.065691,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.056228,
+     "icNwP": 0.016604,
+     "q5MinusQ1Pp": -1.3378,
+     "q5MinusSpyPp": 0.8699
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.054691,
+     "icNwP": 0.019449,
+     "q5MinusQ1Pp": -1.249,
+     "q5MinusSpyPp": 0.8705
+    },
+    "S3_SP_SERIES": null,
+    "S4_SP_HOLDINGS_ZERO": null,
+    "S4_SP_HOLDINGS_LOWER": null,
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.042148,
+     "icNwP": 0.109037,
+     "q5MinusQ1Pp": 1.4432,
+     "q5MinusSpyPp": 0.8298
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.040661,
+     "icNwP": 0.114821,
+     "q5MinusQ1Pp": 1.2973,
+     "q5MinusSpyPp": 0.7322
+    }
+   }
+  },
+  "text": "Selection = signal minus the same-week population (P5b), rank IC/quintiles inside the scored population (P5c), strategy minus the equal-weighted selectable universe (P6). On the S&P population the factor ICs that are clearly positive on the survivor frame shrink to about zero; the change happens between S2 (frame) and S3 (S&P members), not through the market-cap correction (S1 -> S2) nor through the exits (S3 -> S4)."
+ },
+ "costs": {
+  "p5bPerEventPp": [
+   [
+    "MOMENTUM_IMPROVED",
+    13,
+    0.3081
+   ],
+   [
+    "MOMENTUM_DETERIORATED",
+    13,
+    0.311
+   ],
+   [
+    "TREND_UP",
+    13,
+    0.3075
+   ],
+   [
+    "TREND_DOWN",
+    13,
+    0.3098
+   ],
+   [
+    "NEW_52W_HIGH",
+    13,
+    0.3061
+   ],
+   [
+    "MOMENTUM_IMPROVED",
+    52,
+    0.3349
+   ],
+   [
+    "MOMENTUM_DETERIORATED",
+    52,
+    0.3369
+   ],
+   [
+    "TREND_UP",
+    52,
+    0.3353
+   ],
+   [
+    "TREND_DOWN",
+    52,
+    0.337
+   ],
+   [
+    "NEW_52W_HIGH",
+    52,
+    0.3317
+   ]
+  ],
+  "p6CostDragPpPerYear": {
+   "S1_EW_SP500": [
+    0.061058,
+    0.203525
+   ],
+   "S2_MOM_Q5_FILTER": [
+    0.436752,
+    1.455839
+   ],
+   "S3_QP_Q5": [
+    0.202741,
+    0.675804
+   ],
+   "S4_MOMQP_TOP30_VOLTGT": [
+    0.314862,
+    1.04954
+   ],
+   "S5_LOWVOL_Q1": [
+    0.209998,
+    0.699993
+   ],
+   "S6_EW_BUFFER_FILTER": [
+    0.08258,
+    0.275266
+   ]
+  },
+  "text": "Costs are mechanical: 10+5 bps per side per event (P5b); in P6 they scale with turnover (EW 0.2x, momentum 1.5x one-sided per year)."
+ },
+ "benchmarkCwAll": {
+  "text": "1.1.0: CW_ALL = holdings-weighted total population from the same holdings source and the same bounded-case scenario as the strategies; the like-for-like benchmark next to SPY (CW_ALL - SPY measures the population measurement error, P5a).",
+  "cwAllMinusSpyCagrPp": {
+   "ZERO": -0.411,
+   "LOWER": -1.8688
+  }
+ },
+ "dividends": {
+  "validation": {
+   "periods": 45,
+   "meanCwAllYieldPct": 1.353,
+   "meanSpyN30dYieldPct": 1.736,
+   "medianAbsDiffPp": 0.375
+  },
+  "spyN30dMeanYieldPct": 1.736,
+  "perPortfolio": {
+   "CW_ALL": {
+    "meanMemberYieldPct": 1.353,
+    "meanEquityWeight": 1,
+    "meanPortfolioDividendPctPerYear": 1.353,
+    "meanCoveredShareOfEquity": 0.9295,
+    "minusCwAllPp": 0,
+    "minusSpyN30dPp": -0.383
+   },
+   "S1_EW_SP500": {
+    "meanMemberYieldPct": 1.512,
+    "meanEquityWeight": 0.9999,
+    "meanPortfolioDividendPctPerYear": 1.512,
+    "meanCoveredShareOfEquity": 0.8532,
+    "minusCwAllPp": 0.159,
+    "minusSpyN30dPp": -0.224
+   },
+   "S2_MOM_Q5_FILTER": {
+    "meanMemberYieldPct": 0.887,
+    "meanEquityWeight": 0.8445,
+    "meanPortfolioDividendPctPerYear": 0.887,
+    "meanCoveredShareOfEquity": 0.9971,
+    "minusCwAllPp": -0.466,
+    "minusSpyN30dPp": -0.849
+   },
+   "S3_QP_Q5": {
+    "meanMemberYieldPct": 0.802,
+    "meanEquityWeight": 0.9333,
+    "meanPortfolioDividendPctPerYear": 0.802,
+    "meanCoveredShareOfEquity": 1,
+    "minusCwAllPp": -0.551,
+    "minusSpyN30dPp": -0.934
+   },
+   "S4_MOMQP_TOP30_VOLTGT": {
+    "meanMemberYieldPct": 0.747,
+    "meanEquityWeight": 0.7477,
+    "meanPortfolioDividendPctPerYear": 0.626,
+    "meanCoveredShareOfEquity": 0.9976,
+    "minusCwAllPp": -0.727,
+    "minusSpyN30dPp": -1.11
+   },
+   "S5_LOWVOL_Q1": {
+    "meanMemberYieldPct": 2.019,
+    "meanEquityWeight": 1,
+    "meanPortfolioDividendPctPerYear": 2.019,
+    "meanCoveredShareOfEquity": 1,
+    "minusCwAllPp": 0.666,
+    "minusSpyN30dPp": 0.283
+   },
+   "S6_EW_BUFFER_FILTER": {
+    "meanMemberYieldPct": 1.512,
+    "meanEquityWeight": 0.83,
+    "meanPortfolioDividendPctPerYear": 1.245,
+    "meanCoveredShareOfEquity": 0.8532,
+    "minusCwAllPp": -0.108,
+    "minusSpyN30dPp": -0.491
+   }
+  },
+  "text": "Order of magnitude of the dividends missing on the strategy side (SEC XBRL dividends per share / raw close at t0), checked against the SPY N-30D distributions; not a total-return series."
+ },
+ "cashBasis": {
+  "text": "Cash accrues the EFFR (total-return component) while the equity side is price-only; cashEffrContributionPp per strategy = CAGR with EFFR minus CAGR with 0 % cash (base costs, ZERO)."
+ },
+ "benchmark": {
+  "spyTrMinusPriceCagrPp": 2.0114,
+  "spyTrVsNportNote": "quarterly SPY TR reference vs N-PORT fund total return 2019-09+: see p5a periods counts.nportTotalReturn",
+  "text": "Every comparison is price vs price. SPY total return exceeds the SPY price return by about 2 pp per year; a strategy whose members pay similar dividends would gain about as much, which is why the price-vs-TR comparison (vsSpyTrReference) is mixed basis and only shows the size of the definition term."
+ },
+ "totalReturn": {
+  "state": "NOT_AVAILABLE_FOR_STRATEGY_SIDE",
+  "text": "Holdings returns are price returns (Wert/Stueck); member dividends are not in the population. No total-return statement about strategies is possible; the SPY TR reference bounds the definition effect."
+ },
+ "portfolioConstruction": {
+  "weeklyRebalancingPp": 1.418755,
+  "equalVsCapWeightInIndexPp": -1.45522,
+  "text": "The V11 equal-weighted index was rebalanced weekly; period buy-and-hold of the same frame earns about 1.4 pp per year less (rebalancing bonus in a high-dispersion universe). Equal versus cap weighting inside the index is the largest single term after 2019."
+ },
+ "strategies": {
+  "S1_EW_SP500": {
+   "cagr": 0.094581,
+   "vsSpyPp": -1.8584,
+   "vsSpyArithmeticPp": -1.6836,
+   "vsSpyStressPp": -2.0143,
+   "vsSpyLowerPp": -5.0811,
+   "vsSpyCommonSpanPp": -2.1844,
+   "vsCwAllPp": -1.4474,
+   "vsCwAllLowerPp": -3.2123,
+   "vsCwAllNwP": 0.315865,
+   "vsSpySpan2013Pp": -2.6948,
+   "vsCwAllSpan2013Pp": -2.285,
+   "boundedWeightHeldMean": 0.011256,
+   "boundedWeightHeldMax": 0.047525,
+   "dividendTermVsCwAllPp": 0.159,
+   "dividendTermVsSpyPp": -0.224,
+   "cashEffrContributionPp": 0,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": -0.7939,
+    "costDragPp": 0.061058,
+    "avgEquity": 1,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.186563,
+   "bootP": 0.172
+  },
+  "S2_MOM_Q5_FILTER": {
+   "cagr": 0.063817,
+   "vsSpyPp": -4.9348,
+   "vsSpyArithmeticPp": -4.5344,
+   "vsSpyStressPp": -6.0174,
+   "vsSpyLowerPp": -4.9986,
+   "vsSpyCommonSpanPp": -4.8082,
+   "vsCwAllPp": -4.5238,
+   "vsCwAllLowerPp": -3.1298,
+   "vsCwAllNwP": 0.109511,
+   "vsSpySpan2013Pp": -3.8782,
+   "vsCwAllSpan2013Pp": -3.4684,
+   "boundedWeightHeldMean": 0.000834,
+   "boundedWeightHeldMax": 0.014925,
+   "dividendTermVsCwAllPp": -0.466,
+   "dividendTermVsSpyPp": -0.849,
+   "cashEffrContributionPp": 0.2595,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": -3.8703,
+    "costDragPp": 0.436752,
+    "avgEquity": 0.844444,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.076542,
+   "bootP": 0.061
+  },
+  "S3_QP_Q5": {
+   "cagr": 0.11551,
+   "vsSpyPp": 0.2345,
+   "vsSpyArithmeticPp": 0.2104,
+   "vsSpyStressPp": -0.293,
+   "vsSpyLowerPp": 0.2345,
+   "vsSpyCommonSpanPp": -0.0162,
+   "vsCwAllPp": 0.6455,
+   "vsCwAllLowerPp": 2.1033,
+   "vsCwAllNwP": 0.721704,
+   "vsSpySpan2013Pp": -0.2456,
+   "vsCwAllSpan2013Pp": 0.1642,
+   "boundedWeightHeldMean": 0,
+   "boundedWeightHeldMax": 0,
+   "dividendTermVsCwAllPp": -0.551,
+   "dividendTermVsSpyPp": -0.934,
+   "cashEffrContributionPp": 0.016,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": 1.299,
+    "costDragPp": 0.202741,
+    "avgEquity": 0.933333,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.897842,
+   "bootP": 0.8899
+  },
+  "S4_MOMQP_TOP30_VOLTGT": {
+   "cagr": 0.095871,
+   "vsSpyPp": -1.7294,
+   "vsSpyArithmeticPp": -1.5658,
+   "vsSpyStressPp": -2.5339,
+   "vsSpyLowerPp": -1.776,
+   "vsSpyCommonSpanPp": -2.2056,
+   "vsCwAllPp": -1.3184,
+   "vsCwAllLowerPp": 0.0928,
+   "vsCwAllNwP": 0.514811,
+   "vsSpySpan2013Pp": -2.0989,
+   "vsCwAllSpan2013Pp": -1.6891,
+   "boundedWeightHeldMean": 0.000677,
+   "boundedWeightHeldMax": 0.030461,
+   "dividendTermVsCwAllPp": -0.727,
+   "dividendTermVsSpyPp": -1.11,
+   "cashEffrContributionPp": 0.3451,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": -0.6649,
+    "costDragPp": 0.314862,
+    "avgEquity": 0.747733,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.38452,
+   "bootP": 0.3871
+  },
+  "S5_LOWVOL_Q1": {
+   "cagr": 0.091649,
+   "vsSpyPp": -2.1516,
+   "vsSpyArithmeticPp": -1.9518,
+   "vsSpyStressPp": -2.6862,
+   "vsSpyLowerPp": -2.1674,
+   "vsSpyCommonSpanPp": -3.4456,
+   "vsCwAllPp": -1.7406,
+   "vsCwAllLowerPp": -0.2986,
+   "vsCwAllNwP": 0.448281,
+   "vsSpySpan2013Pp": -3.5061,
+   "vsCwAllSpan2013Pp": -3.0963,
+   "boundedWeightHeldMean": 0.00025,
+   "boundedWeightHeldMax": 0.011236,
+   "dividendTermVsCwAllPp": 0.666,
+   "dividendTermVsSpyPp": 0.283,
+   "cashEffrContributionPp": 0,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": -1.0871,
+    "costDragPp": 0.209998,
+    "avgEquity": 1,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.346513,
+   "bootP": 0.3246
+  },
+  "S6_EW_BUFFER_FILTER": {
+   "cagr": 0.070916,
+   "vsSpyPp": -4.2249,
+   "vsSpyArithmeticPp": -3.8693,
+   "vsSpyStressPp": -4.4313,
+   "vsSpyLowerPp": -6.8875,
+   "vsSpyCommonSpanPp": -4.8504,
+   "vsCwAllPp": -3.8139,
+   "vsCwAllLowerPp": -5.0187,
+   "vsCwAllNwP": 0.020531,
+   "vsSpySpan2013Pp": -4.5557,
+   "vsCwAllSpan2013Pp": -4.1459,
+   "boundedWeightHeldMean": 0.009396,
+   "boundedWeightHeldMax": 0.042772,
+   "dividendTermVsCwAllPp": -0.108,
+   "dividendTermVsSpyPp": -0.491,
+   "cashEffrContributionPp": 0.273,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8584,
+    "universeSelectableVsEwPp": 0.7939,
+    "selectionVsSelectablePp": -3.1604,
+    "costDragPp": 0.08258,
+    "avgEquity": 0.83,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.009152,
+   "bootP": 0.004
+  }
+ }
+}

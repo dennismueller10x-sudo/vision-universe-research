@@ -1,0 +1,96 @@
+{
+ "schemaVersion": "v12-largecap-independent-check-1.0.0",
+ "implementation": "python3 -I stdlib, no repository imports",
+ "checks": {
+  "A_bodies": {
+   "ok": 41,
+   "mismatch": [],
+   "missingInCache": [],
+   "pass": true
+  },
+  "B_priceEvidence": {
+   "ok": 31,
+   "bad": [],
+   "pass": true
+  },
+  "C_D_interval_guard_moves": {
+   "rows": [
+    {
+     "securityId": "ref_DOW",
+     "action": "SELECT_EXISTING_ROW",
+     "validFrom": "2024-07-12",
+     "derivedValidFrom": "2024-07-12",
+     "historyGuard": true,
+     "bars": 120,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    },
+    {
+     "securityId": "ref_GOOGL",
+     "action": "RESTRICT_SINGLE_ROW",
+     "validFrom": "2016-02-12",
+     "derivedValidFrom": "2016-02-12",
+     "historyGuard": true,
+     "bars": 559,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    },
+    {
+     "securityId": "ref_IEX",
+     "action": "RESTRICT_SINGLE_ROW",
+     "validFrom": "2019-03-01",
+     "derivedValidFrom": "2019-03-01",
+     "historyGuard": true,
+     "bars": 400,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    },
+    {
+     "securityId": "ref_JCI",
+     "action": "RESTRICT_SINGLE_ROW",
+     "validFrom": "2016-12-30",
+     "derivedValidFrom": "2016-12-30",
+     "historyGuard": true,
+     "bars": 513,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    },
+    {
+     "securityId": "ref_KDP",
+     "action": "RESTRICT_SINGLE_ROW",
+     "validFrom": "2022-10-28",
+     "derivedValidFrom": "2022-10-28",
+     "historyGuard": true,
+     "bars": 209,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    },
+    {
+     "securityId": "ref_TEL",
+     "action": "SELECT_EXISTING_ROW_BY_KEY",
+     "validFrom": "2013-11-15",
+     "derivedValidFrom": "2013-11-15",
+     "historyGuard": true,
+     "bars": 676,
+     "splitSizedMovesAfter": [],
+     "withoutProviderEvidence": []
+    }
+   ],
+   "fail": [],
+   "pass": true
+  },
+  "E_partCA": {
+   "events": 14,
+   "admissible": 0,
+   "inconsistent": [],
+   "pass": true
+  },
+  "F_coverage": {
+   "comparisons": 426,
+   "mismatch": [],
+   "tolerance": "members 0.01 pp; weight 0.02 pp (register values are rounded to USD)",
+   "pass": true
+  }
+ },
+ "pass": true
+}

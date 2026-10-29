@@ -1,0 +1,15 @@
+{
+ "schemaVersion": "v12-listref-verification-adjudication-1.0.2",
+ "subject": "verification-sample-1.0.2.json (60 Fälle, 162 Originaldokumente)",
+ "method": "Manuelle Sichtprüfung je Fall: verknüpfter Ticker gegen Emittentenname der SEC-Meldung (Index/Form 25), Item-Zitat des 8-K, Wertpapierklasse und Regelziffer des Form 25/25-NSE.",
+ "linkAdjudication": {"plausible": 60, "implausible": 0, "note": "Alle 60 Ticker passen erkennbar zum Emittenten (z. B. KDN – Kaydon, SRCL – Stericycle, KMP – Kinder Morgan Energy Partners, RP – RealPage, CNCO – Cencosud). Die automatische Prüfung 'Ticker im Dokumenttext' trifft nur 31/60, weil 8-K vor 2019 und 25-NSE-XML keine Handelssymbole tragen; sie ist daher kein Präzisionsmaß."},
+ "reasonAdjudication": {"itemClaims": 44, "confirmedByQuote": 44, "noItemClaim": 16},
+ "findings": [
+  "Fusionen (Item 2.01): 21/21 Form 25-NSE mit 17 CFR 240.12d2-2(a)(3) (Wertpapiere durch andere Wertpapiere/Barabfindung ersetzt).",
+  "Insolvenz (Item 1.03): 8/8 mit 12d2-2(b) (Entfernung durch die Börse).",
+  "Item 3.01 ist kein reines 'Delisting wegen Regelverstoß': 7 der 14 Fälle sind SPAC-Rückkäufe/Liquidationen (12d2-2(a)(1)), 4 sind Fusionen ((a)(3)), 3 sind (b).",
+  "Unter UNKNOWN/VOLUNTARY dominieren SPAC-Liquidationen und ausländische Emittenten (ADS) mit (a)(1).",
+  "Wertpapierklasse laut Form 25: 50 Common/Ordinary/Class A, 3 andere (Warrants, Units), 7 ohne Angabe – das Ereignisregister enthält einzelne Nicht-Common-Ereignisse desselben Emittenten."
+ ],
+ "consequence": "Gründeklassen aus Item-Metadaten sind für Fusion und Insolvenz belastbar; LISTING_RULE_OR_TRANSFER_NOTICE und UNKNOWN müssen als Mischklassen (inkl. SPAC-Liquidation) gelesen werden."
+}

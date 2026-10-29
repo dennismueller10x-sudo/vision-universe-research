@@ -1,0 +1,1422 @@
+{
+ "schemaVersion": "v11-discovery-wf-train-1.0.0",
+ "studyId": "V11-DISCOVERY:WF_TRAIN",
+ "period": "TRAIN",
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "engine": "research-validation buildWalkForward/runWalkForward (EXPANDING)",
+ "question": "Does picking the best explored TRAIN variant (top 5 on the train fold, best of those on the validation fold) beat the average variant on the test fold?",
+ "results": [
+  {
+   "family": "PRICE",
+   "endpoint": "OWN_EW",
+   "subset": "ALL",
+   "variantsUsed": 114,
+   "variantsExcludedOtherCalendar": 4,
+   "config": {
+    "train": 39,
+    "validation": 13,
+    "test": 13
+   },
+   "partitionHash": "76e6110864ca1ca02e9b174ba3341395a8eed2d542bf7457248e00ba6bf764c3",
+   "registrationHash": "89f9c72c7083e8902fc30df3a34d3428eaaf4390ced666b5bde757d6a4768612",
+   "executionHash": "63abfe66f4cc51e4d9d1ae6abde7aec308bbc605e77a3afed580e72e8ede61a1",
+   "oosIntervals": 104,
+   "oosMeanPerInterval": 0.01655946216180008,
+   "averageVariantOosMeanPerInterval": -0.002333337642840925,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2003-12-05T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-01-02T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "test": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ]
+     },
+     "trainN": 38,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": -0.005441941594017128,
+     "averageVariantTestMean": 0.0016882030934092407,
+     "selectedTestRankAmongVariants": 89,
+     "variants": 114
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "test": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ]
+     },
+     "trainN": 51,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM_REV1-N10-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.0156081945509013,
+     "averageVariantTestMean": -0.0012746901654098978,
+     "selectedTestRankAmongVariants": 9,
+     "variants": 114
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "validation": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "test": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 64,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N20-R4-FULL-EW",
+     "selectedTestMean": 0.03208371557308845,
+     "averageVariantTestMean": 0.009008649809826304,
+     "selectedTestRankAmongVariants": 3,
+     "variants": 114
+    },
+    {
+     "id": 3,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "validation": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "test": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ]
+     },
+     "trainN": 77,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM_REV1-N10-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": 0.011189862623081782,
+     "averageVariantTestMean": -0.008813503361092453,
+     "selectedTestRankAmongVariants": 16,
+     "variants": 114
+    },
+    {
+     "id": 4,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "validation": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "test": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ]
+     },
+     "trainN": 90,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": 0.0358418295215592,
+     "averageVariantTestMean": -0.016917223951957994,
+     "selectedTestRankAmongVariants": 3,
+     "variants": 114
+    },
+    {
+     "id": 5,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 103,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N20-R4-FULL-EW",
+     "selectedTestMean": 0.0010621724586150371,
+     "averageVariantTestMean": -0.0010331819527542303,
+     "selectedTestRankAmongVariants": 51,
+     "variants": 114
+    },
+    {
+     "id": 6,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ]
+     },
+     "trainN": 116,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.009622982672620926,
+     "averageVariantTestMean": 0.0013536935767224372,
+     "selectedTestRankAmongVariants": 14,
+     "variants": 114
+    },
+    {
+     "id": 7,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ],
+      "test": [
+       "2011-12-23T00:00:00.000Z",
+       "2012-11-23T00:00:00.000Z"
+      ]
+     },
+     "trainN": 129,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N50-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.03250888148855112,
+     "averageVariantTestMean": -0.002678648191470805,
+     "selectedTestRankAmongVariants": 1,
+     "variants": 114
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  },
+  {
+   "family": "PRICE",
+   "endpoint": "OWN_EW",
+   "subset": "QUOTED_PRICE_GE_5_ONLY",
+   "variantsUsed": 76,
+   "variantsExcludedOtherCalendar": 4,
+   "config": {
+    "train": 39,
+    "validation": 13,
+    "test": 13
+   },
+   "partitionHash": "76e6110864ca1ca02e9b174ba3341395a8eed2d542bf7457248e00ba6bf764c3",
+   "registrationHash": "7b4af46add49d34c1fc9e94f65e7da4db332fe3892d247fc0f3d5e534fd7ff9b",
+   "executionHash": "77fcff795861eece6b00b1251e1666e80fb523f2579d23aa89958f0d27113cac",
+   "oosIntervals": 104,
+   "oosMeanPerInterval": -0.005267275145180287,
+   "averageVariantOosMeanPerInterval": -0.0022622364597165673,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2003-12-05T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-01-02T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "test": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ]
+     },
+     "trainN": 38,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM12_1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM3-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.0030772491396880985,
+     "averageVariantTestMean": 0.0027196339683328513,
+     "selectedTestRankAmongVariants": 57,
+     "variants": 76
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "test": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ]
+     },
+     "trainN": 51,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM12_1-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM6-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.00947844653557055,
+     "averageVariantTestMean": -0.0023022126621365163,
+     "selectedTestRankAmongVariants": 64,
+     "variants": 76
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "validation": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "test": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 64,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.0013587228569143987,
+     "averageVariantTestMean": 0.007889622185882674,
+     "selectedTestRankAmongVariants": 61,
+     "variants": 76
+    },
+    {
+     "id": 3,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "validation": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "test": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ]
+     },
+     "trainN": 77,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM6-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.0015666984865597188,
+     "averageVariantTestMean": -0.007476447963357033,
+     "selectedTestRankAmongVariants": 22,
+     "variants": 76
+    },
+    {
+     "id": 4,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "validation": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "test": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ]
+     },
+     "trainN": 90,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P1b-MOM6-N20-R4-FULL-EW-PX5"
+     ],
+     "selected": "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+     "selectedTestMean": -0.02052887714242577,
+     "averageVariantTestMean": -0.015797803629304344,
+     "selectedTestRankAmongVariants": 43,
+     "variants": 76
+    },
+    {
+     "id": 5,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 103,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P1b-MOM6-N20-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5"
+     ],
+     "selected": "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.00003163633800630826,
+     "averageVariantTestMean": 0.0006642089354865453,
+     "selectedTestRankAmongVariants": 43,
+     "variants": 76
+    },
+    {
+     "id": 6,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ]
+     },
+     "trainN": 116,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P2-MOM3-N20-R4-BUFFER90-EW-PX5"
+     ],
+     "selected": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+     "selectedTestMean": 0.0059575425064340905,
+     "averageVariantTestMean": -0.0004347032117106746,
+     "selectedTestRankAmongVariants": 14,
+     "variants": 76
+    },
+    {
+     "id": 7,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ],
+      "test": [
+       "2011-12-23T00:00:00.000Z",
+       "2012-11-23T00:00:00.000Z"
+      ]
+     },
+     "trainN": 129,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+      "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5"
+     ],
+     "selected": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.012054113168711548,
+     "averageVariantTestMean": -0.0033601893009260393,
+     "selectedTestRankAmongVariants": 73,
+     "variants": 76
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  },
+  {
+   "family": "FUND",
+   "endpoint": "OWN_EW",
+   "subset": "ALL",
+   "variantsUsed": 69,
+   "variantsExcludedOtherCalendar": 6,
+   "config": {
+    "train": 24,
+    "validation": 12,
+    "test": 12
+   },
+   "partitionHash": "38a23f1e3c36fddfc6d1c2054f9eba92e7f52b35f2281d47108b2c9969b8ea7b",
+   "registrationHash": "113996732766411adad2200f05df43269110d2c0f48468e68ec4e1384e7dc24a",
+   "executionHash": "fe96bfb2586aa8bf2f2bcc36911f60748c34e1b6a5ca093dc55d4219bca84ed3",
+   "oosIntervals": 36,
+   "oosMeanPerInterval": -0.0008829023711709461,
+   "averageVariantOosMeanPerInterval": -0.0012437065147867527,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2012-12-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2013-01-25T00:00:00.000Z",
+       "2013-12-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2014-01-31T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 23,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F2-VALUE_PROF-N20-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F2-VALUE_MOM-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+      "F1-VALUE_MOM-N10-M1-FULL-EW-PX5-MC300"
+     ],
+     "selected": "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": -0.0022087929695363087,
+     "averageVariantTestMean": 0.0007942801301497961,
+     "selectedTestRankAmongVariants": 52,
+     "variants": 69
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2013-12-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2014-01-31T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2015-01-30T00:00:00.000Z",
+       "2015-12-31T00:00:00.000Z"
+      ]
+     },
+     "trainN": 35,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F1-GPA-N10-M1-FULL-EW-PX5-MC300",
+      "F1-QUAL-N10-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-FULL-EW-PX5-MC300"
+     ],
+     "selected": "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": 0.0023277815723225883,
+     "averageVariantTestMean": -0.0019322751261517301,
+     "selectedTestRankAmongVariants": 21,
+     "variants": 69
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2015-01-30T00:00:00.000Z",
+       "2015-12-31T00:00:00.000Z"
+      ],
+      "test": [
+       "2016-01-29T00:00:00.000Z",
+       "2016-12-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 47,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F2-VALUE_MOM-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+      "F3-VALUE_PROF_MOM-N30-M1-FULL-EW-PX5-MC300",
+      "F1-VALUE_MOM-N10-M1-FULL-EW-PX5-MC300"
+     ],
+     "selected": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": -0.002767695716299118,
+     "averageVariantTestMean": -0.002593124548358324,
+     "selectedTestRankAmongVariants": 32,
+     "variants": 69
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  },
+  {
+   "family": "PRICE",
+   "endpoint": "SPY",
+   "subset": "ALL",
+   "variantsUsed": 114,
+   "variantsExcludedOtherCalendar": 4,
+   "config": {
+    "train": 39,
+    "validation": 13,
+    "test": 13
+   },
+   "partitionHash": "76e6110864ca1ca02e9b174ba3341395a8eed2d542bf7457248e00ba6bf764c3",
+   "registrationHash": "b9002146e21e45c46aa2733afa74a642de7d8c1832a59a0d5c3010c75d10b25a",
+   "executionHash": "22f41b50e38657a2be535dfbc438a85bedbfecbccc893980dde948bf987d45f1",
+   "oosIntervals": 104,
+   "oosMeanPerInterval": 0.022352257018124697,
+   "averageVariantOosMeanPerInterval": 0.0017896894838389046,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2003-12-05T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-01-02T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "test": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ]
+     },
+     "trainN": 38,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": 0.0017781816255380085,
+     "averageVariantTestMean": 0.008270536552953758,
+     "selectedTestRankAmongVariants": 88,
+     "variants": 114
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "test": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ]
+     },
+     "trainN": 51,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM_REV1-N10-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.021979306334731066,
+     "averageVariantTestMean": 0.003690012900043048,
+     "selectedTestRankAmongVariants": 7,
+     "variants": 114
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "validation": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "test": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 64,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N20-R4-FULL-EW",
+     "selectedTestMean": 0.029634939532285902,
+     "averageVariantTestMean": 0.006272674403695462,
+     "selectedTestRankAmongVariants": 3,
+     "variants": 114
+    },
+    {
+     "id": 3,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "validation": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "test": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ]
+     },
+     "trainN": 77,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM_REV1-N10-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": 0.015165477188553024,
+     "averageVariantTestMean": -0.0042699246597593206,
+     "selectedTestRankAmongVariants": 16,
+     "variants": 114
+    },
+    {
+     "id": 4,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "validation": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "test": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ]
+     },
+     "trainN": 90,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N10-R4-FULL-EW",
+     "selectedTestMean": 0.05600098820501546,
+     "averageVariantTestMean": -0.006036389741349951,
+     "selectedTestRankAmongVariants": 3,
+     "variants": 114
+    },
+    {
+     "id": 5,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 103,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-MOM3-N20-R4-FULL-EW",
+     "selectedTestMean": 0.011624994602147515,
+     "averageVariantTestMean": 0.007991596293976886,
+     "selectedTestRankAmongVariants": 42,
+     "variants": 114
+    },
+    {
+     "id": 6,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ]
+     },
+     "trainN": 116,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM6-N20-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.006481727531349218,
+     "averageVariantTestMean": -0.0015235129235645316,
+     "selectedTestRankAmongVariants": 14,
+     "variants": 114
+    },
+    {
+     "id": 7,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ],
+      "test": [
+       "2011-12-23T00:00:00.000Z",
+       "2012-11-23T00:00:00.000Z"
+      ]
+     },
+     "trainN": 129,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1-MOM3-N20-R4-FULL-EW",
+      "P1-LOWBETA-N10-R4-FULL-EW",
+      "P1-MOM3-N10-R4-FULL-EW",
+      "P1-MOM6-N10-R4-FULL-EW",
+      "P1-MOM3-N50-R4-FULL-EW"
+     ],
+     "selected": "P1-LOWBETA-N10-R4-FULL-EW",
+     "selectedTestMean": 0.03615244112537745,
+     "averageVariantTestMean": -0.0000774769552841182,
+     "selectedTestRankAmongVariants": 1,
+     "variants": 114
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  },
+  {
+   "family": "PRICE",
+   "endpoint": "SPY",
+   "subset": "QUOTED_PRICE_GE_5_ONLY",
+   "variantsUsed": 76,
+   "variantsExcludedOtherCalendar": 4,
+   "config": {
+    "train": 39,
+    "validation": 13,
+    "test": 13
+   },
+   "partitionHash": "76e6110864ca1ca02e9b174ba3341395a8eed2d542bf7457248e00ba6bf764c3",
+   "registrationHash": "089fc0a703f9eea3863c530e13db6b8f5e6546dbec73d38ea575b56f8951272e",
+   "executionHash": "c9eaab6a7377cae5583c697a8ea121a0adac8852a50e3605e840f8e679809a4e",
+   "oosIntervals": 104,
+   "oosMeanPerInterval": -0.001885721520129424,
+   "averageVariantOosMeanPerInterval": 0.0010259068021408685,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2003-12-05T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-01-02T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "test": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ]
+     },
+     "trainN": 38,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM12_1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM3-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": 0.003177051682044305,
+     "averageVariantTestMean": 0.008983072547872057,
+     "selectedTestRankAmongVariants": 57,
+     "variants": 76
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2004-12-03T00:00:00.000Z"
+      ],
+      "validation": [
+       "2004-12-31T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "test": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ]
+     },
+     "trainN": 51,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM12_1-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM6-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.00522744655732375,
+     "averageVariantTestMean": 0.0019592860441280196,
+     "selectedTestRankAmongVariants": 64,
+     "variants": 76
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2005-12-02T00:00:00.000Z"
+      ],
+      "validation": [
+       "2005-12-30T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "test": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 64,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P1b-MOM3-N10-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.004242123603965151,
+     "averageVariantTestMean": 0.005010047097087685,
+     "selectedTestRankAmongVariants": 61,
+     "variants": 76
+    },
+    {
+     "id": 3,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2006-12-01T00:00:00.000Z"
+      ],
+      "validation": [
+       "2006-12-29T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "test": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ]
+     },
+     "trainN": 77,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P1b-SMOOTHMOM-N10-R4-FULL-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5"
+     ],
+     "selected": "P1b-MOM6-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": 0.0033065057952669915,
+     "averageVariantTestMean": -0.002648887194092942,
+     "selectedTestRankAmongVariants": 22,
+     "variants": 76
+    },
+    {
+     "id": 4,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2007-11-30T00:00:00.000Z"
+      ],
+      "validation": [
+       "2007-12-28T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "test": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ]
+     },
+     "trainN": 90,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P1b-MOM6-N20-R4-FULL-EW-PX5"
+     ],
+     "selected": "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+     "selectedTestMean": -0.01364932230944635,
+     "averageVariantTestMean": -0.009556131655120396,
+     "selectedTestRankAmongVariants": 41,
+     "variants": 76
+    },
+    {
+     "id": 5,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2008-11-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2008-12-26T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 103,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P1b-MOM6-N10-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P1b-MOM6-N20-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5"
+     ],
+     "selected": "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+     "selectedTestMean": 0.008345065011919272,
+     "averageVariantTestMean": 0.008919965233816976,
+     "selectedTestRankAmongVariants": 42,
+     "variants": 76
+    },
+    {
+     "id": 6,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2009-11-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2009-12-24T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ]
+     },
+     "trainN": 116,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+      "P2-MOM3-N20-R4-BUFFER90-EW-PX5"
+     ],
+     "selected": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+     "selectedTestMean": 0.0031868863995563835,
+     "averageVariantTestMean": -0.003179885391505272,
+     "selectedTestRankAmongVariants": 14,
+     "variants": 76
+    },
+    {
+     "id": 7,
+     "bounds": {
+      "train": [
+       "2001-01-05T00:00:00.000Z",
+       "2010-11-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2010-12-23T00:00:00.000Z",
+       "2011-11-25T00:00:00.000Z"
+      ],
+      "test": [
+       "2011-12-23T00:00:00.000Z",
+       "2012-11-23T00:00:00.000Z"
+      ]
+     },
+     "trainN": 129,
+     "validationN": 12,
+     "testN": 13,
+     "excluded": 2,
+     "shortlist": [
+      "P1b-MOM_REV1-N10-R4-FULL-EW-PX5",
+      "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+      "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+      "P2-MOM6-N20-R4-FULL-INVVOL-PX5"
+     ],
+     "selected": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+     "selectedTestMean": -0.00998238857908709,
+     "averageVariantTestMean": -0.0012802122650591784,
+     "selectedTestRankAmongVariants": 73,
+     "variants": 76
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  },
+  {
+   "family": "FUND",
+   "endpoint": "SPY",
+   "subset": "ALL",
+   "variantsUsed": 69,
+   "variantsExcludedOtherCalendar": 6,
+   "config": {
+    "train": 24,
+    "validation": 12,
+    "test": 12
+   },
+   "partitionHash": "38a23f1e3c36fddfc6d1c2054f9eba92e7f52b35f2281d47108b2c9969b8ea7b",
+   "registrationHash": "8716c97591e87e4ba1480130096a56e741450048aa35b8a0a462fe94001d6ff6",
+   "executionHash": "5e8cae6c013d3a718879a8c2abd97c31f6b0431938e25f0dad0717bc3aefcf07",
+   "oosIntervals": 36,
+   "oosMeanPerInterval": -0.0009728325047036745,
+   "averageVariantOosMeanPerInterval": -0.00037250925253709256,
+   "folds": [
+    {
+     "id": 0,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2012-12-28T00:00:00.000Z"
+      ],
+      "validation": [
+       "2013-01-25T00:00:00.000Z",
+       "2013-12-27T00:00:00.000Z"
+      ],
+      "test": [
+       "2014-01-31T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ]
+     },
+     "trainN": 23,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F2-VALUE_PROF-N20-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+      "F1-GPA_MOM-N20-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_MOM-N20-M1-BUFFER90-EW-PX5-MC300"
+     ],
+     "selected": "F1-GPA_MOM-N20-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": -0.008269169392105072,
+     "averageVariantTestMean": -0.0013754486430332359,
+     "selectedTestRankAmongVariants": 64,
+     "variants": 69
+    },
+    {
+     "id": 1,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2013-12-27T00:00:00.000Z"
+      ],
+      "validation": [
+       "2014-01-31T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ],
+      "test": [
+       "2015-01-30T00:00:00.000Z",
+       "2015-12-31T00:00:00.000Z"
+      ]
+     },
+     "trainN": 35,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F1-GPA-N10-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F2-VALUE_PROF-N20-M1-FULL-EW-PX5-MC300",
+      "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+      "F1-GPA_MOM-N20-M1-FULL-EW-PX5-MC300"
+     ],
+     "selected": "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": -0.003765680363759442,
+     "averageVariantTestMean": -0.00793696927166502,
+     "selectedTestRankAmongVariants": 23,
+     "variants": 69
+    },
+    {
+     "id": 2,
+     "bounds": {
+      "train": [
+       "2011-01-28T00:00:00.000Z",
+       "2014-12-26T00:00:00.000Z"
+      ],
+      "validation": [
+       "2015-01-30T00:00:00.000Z",
+       "2015-12-31T00:00:00.000Z"
+      ],
+      "test": [
+       "2016-01-29T00:00:00.000Z",
+       "2016-12-30T00:00:00.000Z"
+      ]
+     },
+     "trainN": 47,
+     "validationN": 11,
+     "testN": 12,
+     "excluded": 2,
+     "shortlist": [
+      "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_MOM-N20-M1-BUFFER90-EW-PX5-MC300",
+      "F3-VALUE_PROF_MOM-N30-M1-FULL-EW-PX5-MC300",
+      "F2-VALUE_PROF_MOM-N50-M1-FULL-EW-PX5-MC300"
+     ],
+     "selected": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+     "selectedTestMean": 0.009116352241753492,
+     "averageVariantTestMean": 0.008194890157086979,
+     "selectedTestRankAmongVariants": 29,
+     "variants": 69
+    }
+   ],
+   "status": "MECHANICS_ONLY_NOT_CERTIFIED",
+   "limitations": [
+    "Callback hash declarations require independent code/provenance audit; callbacks are not sandboxed.",
+    "No callback may use external test labels, tune after evaluation, or consume an independent holdout without its exposure ledger.",
+    "This execution is historical developmental walk-forward, not proof of an untouched holdout."
+   ]
+  }
+ ],
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

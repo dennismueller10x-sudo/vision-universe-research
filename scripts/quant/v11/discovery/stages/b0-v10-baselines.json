@@ -1,0 +1,105 @@
+{
+ "stage": "B0-V10-BASELINES (the five V10 rules in the same portfolio frame: 13-week signal window, 13-week rebalance, 10 by V10 hash tie-break or all signalers EW)",
+ "specs": [
+  {
+   "id": "B-V10-NEW_52W_HIGH-N10-H13-HASH",
+   "family": "V10RULE",
+   "v10Rule": "NEW_52W_HIGH",
+   "signalWindowWeeks": 13,
+   "positions": 10,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-NEW_52W_HIGH-ALL-H13",
+   "family": "V10RULE",
+   "v10Rule": "NEW_52W_HIGH",
+   "signalWindowWeeks": 13,
+   "positions": 100000,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-MOMENTUM_IMPROVED-N10-H13-HASH",
+   "family": "V10RULE",
+   "v10Rule": "MOMENTUM_IMPROVED",
+   "signalWindowWeeks": 13,
+   "positions": 10,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-MOMENTUM_IMPROVED-ALL-H13",
+   "family": "V10RULE",
+   "v10Rule": "MOMENTUM_IMPROVED",
+   "signalWindowWeeks": 13,
+   "positions": 100000,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-MOMENTUM_DETERIORATED-N10-H13-HASH",
+   "family": "V10RULE",
+   "v10Rule": "MOMENTUM_DETERIORATED",
+   "signalWindowWeeks": 13,
+   "positions": 10,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-MOMENTUM_DETERIORATED-ALL-H13",
+   "family": "V10RULE",
+   "v10Rule": "MOMENTUM_DETERIORATED",
+   "signalWindowWeeks": 13,
+   "positions": 100000,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-TREND_UP-N10-H13-HASH",
+   "family": "V10RULE",
+   "v10Rule": "TREND_UP",
+   "signalWindowWeeks": 13,
+   "positions": 10,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-TREND_UP-ALL-H13",
+   "family": "V10RULE",
+   "v10Rule": "TREND_UP",
+   "signalWindowWeeks": 13,
+   "positions": 100000,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-TREND_DOWN-N10-H13-HASH",
+   "family": "V10RULE",
+   "v10Rule": "TREND_DOWN",
+   "signalWindowWeeks": 13,
+   "positions": 10,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "B-V10-TREND_DOWN-ALL-H13",
+   "family": "V10RULE",
+   "v10Rule": "TREND_DOWN",
+   "signalWindowWeeks": 13,
+   "positions": 100000,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW"
+  }
+ ]
+}

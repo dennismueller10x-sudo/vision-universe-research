@@ -1,0 +1,401 @@
+{
+ "schemaVersion": "v11-discovery-capweight-correction-1.0.1",
+ "period": "VALIDATION",
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "postHoc": true,
+ "reason": "Benchmark invalid in validation-results-1.0.0 (unfiltered panel market caps with XBRL scale errors). Strategies, candidate choice and Holm families are unchanged; this only replaces a descriptive benchmark. Residual known error: ADS share counts (e.g. HSBC) remain.",
+ "filter": "cap <= 5e12 USD and implied share-count change within 0.2..5x versus the panel value 12 rank dates earlier (past information only)",
+ "returnBasis": "PRICE_RETURN",
+ "costs": {
+  "feeBps": 10,
+  "slippageBps": 5
+ },
+ "results": [
+  {
+   "id": "CP01",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.10824770507447568,
+   "excessCagr": 0.008738721260178384,
+   "excessWeekly": {
+    "annualisedMean": 0.030533535701983076,
+    "pValue": 0.596,
+    "ci": [
+     -0.0016735185591319004,
+     0.0027341317344721913
+    ]
+   }
+  },
+  {
+   "id": "CP02",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.09575336197528528,
+   "excessCagr": -0.0037556218390120133,
+   "excessWeekly": {
+    "annualisedMean": 0.012310195529936707,
+    "pValue": 0.803,
+    "ci": [
+     -0.0016068171443838716,
+     0.0019958317669461554
+    ]
+   }
+  },
+  {
+   "id": "CP03",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.14385690107145344,
+   "excessCagr": 0.044347917257156144,
+   "excessWeekly": {
+    "annualisedMean": 0.05921984369837206,
+    "pValue": 0.2155,
+    "ci": [
+     -0.0006291809348753551,
+     0.002825237783909745
+    ]
+   }
+  },
+  {
+   "id": "CP04",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.09940234478398913,
+   "excessCagr": -0.00010663903030816435,
+   "excessWeekly": {
+    "annualisedMean": 0.02588161089363387,
+    "pValue": 0.749,
+    "ci": [
+     -0.0024437938523482272,
+     0.003480738920309842
+    ]
+   }
+  },
+  {
+   "id": "CP05",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.08993723710275114,
+   "excessCagr": -0.009571746711546147,
+   "excessWeekly": {
+    "annualisedMean": 0.012159339748468955,
+    "pValue": 0.84,
+    "ci": [
+     -0.0018791828755008848,
+     0.0024202711479625097
+    ]
+   }
+  },
+  {
+   "id": "CP06",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.10931134233448048,
+   "excessCagr": 0.009802358520183185,
+   "excessWeekly": {
+    "annualisedMean": 0.02307964665363032,
+    "pValue": 0.6795,
+    "ci": [
+     -0.0015501167421876397,
+     0.0025474650480358384
+    ]
+   }
+  },
+  {
+   "id": "CP07",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.10621516476721515,
+   "excessCagr": 0.006706180952917862,
+   "excessWeekly": {
+    "annualisedMean": 0.024111864138763095,
+    "pValue": 0.708,
+    "ci": [
+     -0.0017345416021184498,
+     0.0029089553948498945
+    ]
+   }
+  },
+  {
+   "id": "CP08",
+   "capWeightedCagr": 0.10800314854813386,
+   "capWeightedMaxDrawdown": -0.17244608982957987,
+   "avgNames": 1655.3333333333333,
+   "strategyCagr": 0.022247445004322852,
+   "excessCagr": -0.08575570354381101,
+   "excessWeekly": {
+    "annualisedMean": -0.04963319664200969,
+    "pValue": 0.4675,
+    "ci": [
+     -0.0036974795756607084,
+     0.001657903471578885
+    ]
+   }
+  },
+  {
+   "id": "CP09",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.09262707405311676,
+   "excessCagr": -0.006881909761180527,
+   "excessWeekly": {
+    "annualisedMean": 0.006137731212977161,
+    "pValue": 0.909,
+    "ci": [
+     -0.0019745278286601425,
+     0.002132891609999253
+    ]
+   }
+  },
+  {
+   "id": "CP10",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.11863139353619623,
+   "excessCagr": 0.019122409721898936,
+   "excessWeekly": {
+    "annualisedMean": 0.028101314157974025,
+    "pValue": 0.56,
+    "ci": [
+     -0.0014110817191219953,
+     0.002408722734135013
+    ]
+   }
+  },
+  {
+   "id": "CP11",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.08570819345522263,
+   "excessCagr": -0.013800790359074666,
+   "excessWeekly": {
+    "annualisedMean": 0.0010779270200883201,
+    "pValue": 0.985,
+    "ci": [
+     -0.002042922133136301,
+     0.001994834498660291
+    ]
+   }
+  },
+  {
+   "id": "CP12",
+   "capWeightedCagr": 0.09950898381429729,
+   "capWeightedMaxDrawdown": -0.17327072761245854,
+   "avgNames": 1653.685534591195,
+   "strategyCagr": 0.06737550477979593,
+   "excessCagr": -0.03213347903450137,
+   "excessWeekly": {
+    "annualisedMean": -0.002226100541107265,
+    "pValue": 0.9705,
+    "ci": [
+     -0.002635381824266765,
+     0.0026158757506543995
+    ]
+   }
+  },
+  {
+   "id": "CF01",
+   "capWeightedCagr": 0.1305593676296668,
+   "capWeightedMaxDrawdown": -0.32785335273903293,
+   "avgNames": 1909.6587677725117,
+   "strategyCagr": 0.08239455517203642,
+   "excessCagr": -0.04816481245763038,
+   "excessWeekly": {
+    "annualisedMean": -0.026357814424677835,
+    "pValue": 0.6225,
+    "ci": [
+     -0.0024618228425189537,
+     0.001564337527379269
+    ]
+   }
+  },
+  {
+   "id": "CF02",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.12174757339581443,
+   "excessCagr": -0.011978983696052214,
+   "excessWeekly": {
+    "annualisedMean": 0.006745341622506339,
+    "pValue": 0.89,
+    "ci": [
+     -0.0019043931593727913,
+     0.002138052332745269
+    ]
+   }
+  },
+  {
+   "id": "CF03",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.11627343015973168,
+   "excessCagr": -0.017453126932134966,
+   "excessWeekly": {
+    "annualisedMean": -0.002433247705377732,
+    "pValue": 0.947,
+    "ci": [
+     -0.00169316763287402,
+     0.0015227185407858351
+    ]
+   }
+  },
+  {
+   "id": "CF04",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": -0.024471169355623656,
+   "excessCagr": -0.1581977264474903,
+   "excessWeekly": {
+    "annualisedMean": -0.09342658943219873,
+    "pValue": 0.3265,
+    "ci": [
+     -0.005583050259306261,
+     0.00173936156827672
+    ]
+   }
+  },
+  {
+   "id": "CF05",
+   "capWeightedCagr": 0.1305593676296668,
+   "capWeightedMaxDrawdown": -0.32785335273903293,
+   "avgNames": 1909.6587677725117,
+   "strategyCagr": -0.018006502467841856,
+   "excessCagr": -0.14856587009750866,
+   "excessWeekly": {
+    "annualisedMean": -0.08597971814892935,
+    "pValue": 0.4045,
+    "ci": [
+     -0.005368942283060237,
+     0.0023519568691086766
+    ]
+   }
+  },
+  {
+   "id": "CF06",
+   "capWeightedCagr": 0.1305593676296668,
+   "capWeightedMaxDrawdown": -0.32785335273903293,
+   "avgNames": 1909.6587677725117,
+   "strategyCagr": 0.31415530994224405,
+   "excessCagr": 0.18359594231257725,
+   "excessWeekly": {
+    "annualisedMean": 0.16452144355292006,
+    "pValue": 0.007,
+    "ci": [
+     0.0008397977993720709,
+     0.005461069641426692
+    ]
+   }
+  },
+  {
+   "id": "CF07",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.18971560629844975,
+   "excessCagr": 0.0559890492065831,
+   "excessWeekly": {
+    "annualisedMean": 0.054415038352239785,
+    "pValue": 0.1305,
+    "ci": [
+     -0.0003046718824829247,
+     0.0023711825172910888
+    ]
+   }
+  },
+  {
+   "id": "CF08",
+   "capWeightedCagr": 0.1305593676296668,
+   "capWeightedMaxDrawdown": -0.32785335273903293,
+   "avgNames": 1909.6587677725117,
+   "strategyCagr": 0.16391991229371228,
+   "excessCagr": 0.03336054466404548,
+   "excessWeekly": {
+    "annualisedMean": 0.02778473308197785,
+    "pValue": 0.3105,
+    "ci": [
+     -0.00046264380921541386,
+     0.0015434398197628272
+    ]
+   }
+  },
+  {
+   "id": "CF09",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.16808629683245857,
+   "excessCagr": 0.03435973974059192,
+   "excessWeekly": {
+    "annualisedMean": 0.024184792341164447,
+    "pValue": 0.3235,
+    "ci": [
+     -0.0005280344066496314,
+     0.0013736937045408194
+    ]
+   }
+  },
+  {
+   "id": "CF10",
+   "capWeightedCagr": 0.1305593676296668,
+   "capWeightedMaxDrawdown": -0.32785335273903293,
+   "avgNames": 1909.6587677725117,
+   "strategyCagr": 0.28181143738085046,
+   "excessCagr": 0.15125206975118366,
+   "excessWeekly": {
+    "annualisedMean": 0.14326954329339234,
+    "pValue": 0.004,
+    "ci": [
+     0.0007528182396792423,
+     0.004662510829654811
+    ]
+   }
+  },
+  {
+   "id": "CF11",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.05525315169437395,
+   "excessCagr": -0.0784734053974927,
+   "excessWeekly": {
+    "annualisedMean": -0.04971396540510759,
+    "pValue": 0.347,
+    "ci": [
+     -0.002830001116990801,
+     0.0010555776816449152
+    ]
+   }
+  },
+  {
+   "id": "CF12",
+   "capWeightedCagr": 0.13372655709186665,
+   "capWeightedMaxDrawdown": -0.329251201449295,
+   "avgNames": 1918.4075829383887,
+   "strategyCagr": 0.31759675160230905,
+   "excessCagr": 0.1838701945104424,
+   "excessWeekly": {
+    "annualisedMean": 0.17158854897111006,
+    "pValue": 0.028,
+    "ci": [
+     0.0002777433659387138,
+     0.00614832528063103
+    ]
+   }
+  }
+ ],
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}
