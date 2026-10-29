@@ -1,6 +1,6 @@
 # Produktionsplan – öffentlicher Start Free/Pro
 
-Stand 29.10.2026, verbindlich. Ziel: **ein** abschließender PR und **ein** Produktions-Deploy (zwei Freigaben). Keine weiteren
+Stand 29.10.2026, verbindlich. Ziel: **ein** abschließender PR, ausgerollt automatisch mit **einer** Freigabe (Zahlungsfreigabe, [FREIGABEN.md](FREIGABEN.md)). Keine weiteren
 Prüf- oder Einrichtungsläufe: alles Übrige wird lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 
 ## 1. Was in Produktion funktioniert (geprüft, lesend)
@@ -46,19 +46,19 @@ In `main`, aber noch nicht ausgerollt (kommt mit dem einen Abschluss-Deploy): DO
      prüft wie der Deploy-Workflow; verweigert, solange etwas fehlt;
    - alle Tests lokal und in der CI.
 3. **Deine ausdrückliche Endfreigabe** zum Merge dieses PR (Kommentar „freigegeben“).
-4. **Ein Produktions-Deploy** „Konten — vu-account ausrollen (Produktion)“, `stripe_key = false`:
-   **zwei Freigaben** (`account-dev`, `account-production`). Unvermeidbar, weil Worker-Konfiguration nur so nach
-   Cloudflare gelangt und die Umgebungen Freigaben verlangen.
-5. **Kontrolle lesend** (kein Lauf): `GET /v1/health` → `checkout: "public"`, `legalApproved: true`, `tax: "rate"`,
+4. **Ausrollen automatisch** nach dem Merge („Konten — Produktion automatisch“): Weil sich Checkout-Zugang, Rechtsfreigabe
+   und Umsatzsteuer ändern, wartet genau **ein** Job auf deine Freigabe (`account-production`). Das ist die gewollte, letzte
+   Freigabe für öffentliche Zahlungen. Voraussetzung: einmalige Einrichtung von `account-auto` ([FREIGABEN.md](FREIGABEN.md)).
+5. **Kontrolle lesend** (kein Lauf): `GET /v1/health` → `checkout: "public"`, `legalApproved: true`, `tax: "txr_…"`,
    `newsletterTemplate: "ok"`, `contactSync: true`; `/preise/` ohne „interner Testpreis“; erste echte Bestellung im
    Stripe-Dashboard sichtbar.
 
-**Gesamt bis zum Start: 1 Workflow-Lauf, 2 Freigaben.** Der Newsletter-Schalter ist optional: Dieselbe Vorlage 8
+**Gesamt bis zum Start: 1 automatischer Lauf, 1 Freigabe.** Der Newsletter-Schalter ist optional: Dieselbe Vorlage 8
 verschickt die Landingpage heute erfolgreich mit derselben Prüfung, daher wird „ok“ erwartet. Meldet `/v1/health` etwas
 anderes, verschickt der Worker keine DOI-Mail (Einwilligung `failed`, kein Werbeversand); die Ursache steht im Feld
 (z. B. `DOI_TEMPLATE_MISSING`), die Vorlage wird in Brevo korrigiert und Betroffene setzen den Haken erneut – ohne Lauf.
-Wer kein Restrisiko will, lässt `--newsletter` im Abschluss-PR weg und schaltet ihn mit dem nächsten ohnehin nötigen
-Deploy ein.
+Wer kein Restrisiko will, lässt `--newsletter` im Abschluss-PR weg; Brevo-Schalter sind nicht zahlungsrelevant und rollen
+später ohne Freigabe automatisch aus.
 
 ## 4. Was ausdrücklich nicht mehr gestartet wird
 
