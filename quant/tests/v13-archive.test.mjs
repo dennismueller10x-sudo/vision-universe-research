@@ -14,10 +14,10 @@ test('SigV4 query presigning matches the AWS example (GET examplebucket/test.txt
 });
 
 test('public archive manifest carries no paths, prices or private key material', () => {
-  const file = path.join(ROOT, 'docs/quant-recovery/v13/archive/manifest-1.0.0.json');
+  const file = path.join(ROOT, 'docs/quant-recovery/v13/archive/manifest-1.1.0.json');
   const m = JSON.parse(fs.readFileSync(file, 'utf8'));
-  assert.equal(m.schemaVersion, 'v13-research-archive-manifest-1.0.0');
-  assert.deepEqual(m.parts.map(p => p.part), ['v13-raw', 'v13-derived', 'v13-studies', 'v13b-hist', 'v13b-f1w', 'v12-listref']);
+  assert.equal(m.schemaVersion, 'v13-research-archive-manifest-1.1.0');
+  assert.deepEqual(m.parts.map(p => p.part), ['v13-raw', 'v13-derived', 'v13-studies', 'v13b-hist', 'v13b-f1w', 'v12-listref', 'v13c-study']);
   for (const p of m.parts) {
     assert.match(p.cipherSha256, /^[0-9a-f]{64}$/); assert.match(p.plainSha256, /^[0-9a-f]{64}$/);
     assert.ok(p.cipherBytes > p.plainBytes && p.cipherBytes - p.plainBytes <= 32);

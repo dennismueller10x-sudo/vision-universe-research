@@ -17,6 +17,7 @@ PARTS=(
   "v13b-hist|$SP/v13b-private|http-cache crash spx series-1.1.0 request-ledger.jsonl tiingo-fetch-spec.json work tools docs cache extra-caches.txt"
   "v13b-f1w|$SP/v13b-f1w|private"
   "v12-listref|$SP/v12-private/listref|work full raw http-cache probe out-draft"
+  "v13c-study|$SP/v13c-private|."
 )
 entries=()
 for spec in "${PARTS[@]}"; do
@@ -40,6 +41,6 @@ for spec in "${PARTS[@]}"; do
   echo "$name: $files Dateien, $plain_size B klar, $enc_size B verschlüsselt"
 done
 pubfp=$(openssl pkey -pubin -in "$PUB" -outform DER | sha256sum | cut -c1-64)
-{ printf '{"schemaVersion":"v13-research-archive-manifest-1.0.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt (key file 32 B)","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
+{ printf '{"schemaVersion":"v13-research-archive-manifest-1.1.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt (key file 32 B)","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
   (IFS=,; printf '%s' "${entries[*]}")
   printf ']}\n'; } > "$MANIFEST"

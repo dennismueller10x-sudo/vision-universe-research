@@ -3,7 +3,7 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 # Sicherung und Wiederherstellungsprobe des privaten V13-Research-Archivs im bestehenden privaten R2-Eimer
 # (Praefix research-snapshots/quant-v13/, wie docs/SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md).
 # Das Archiv ist vor dem Upload verschluesselt (scripts/quant/v13/archive/build-archive.sh, Manifest
-# docs/quant-recovery/v13/archive/manifest-1.0.0.json). Nur ueber eine Marke in der Commit-Nachricht auf claude/**:
+# docs/quant-recovery/v13/archive/manifest-1.1.0.json). Nur ueber eine Marke in der Commit-Nachricht auf claude/**:
 #   [v13-archive:usage]   nur lesen: Eimerbelegung, Nullkostengrenze, Praefix frei?
 #   [v13-archive:put]     wie usage, dann vorsignierte PUT-URLs (3 h), verschluesselt mit archive-pub.pem als Artefakt
 #   [v13-archive:get]     vorsignierte GET-URLs (3 h) fuer die Wiederherstellungsprobe, ebenso verschluesselt
@@ -50,8 +50,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/a"
-          P=research-snapshots/quant-v13/archive-1.0.0/
-          M=docs/quant-recovery/v13/archive/manifest-1.0.0.json
+          P=research-snapshots/quant-v13/archive-1.1.0/
+          M=docs/quant-recovery/v13/archive/manifest-1.1.0.json
           case "$MODE" in
             usage) node scripts/quant/v13/archive/presign.mjs --mode usage --manifest "$M" --prefix "$P" ;;
             put|get) node scripts/quant/v13/archive/presign.mjs --mode "$MODE" --manifest "$M" --prefix "$P" --out "$RUNNER_TEMP/a/urls.json" ;;
