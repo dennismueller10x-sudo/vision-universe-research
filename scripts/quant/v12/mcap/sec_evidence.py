@@ -132,27 +132,41 @@ def to_number(tok):
     return float(t)
 
 
+STRONG_COVER = re.compile(r"(?i)(latest practicable date|outstanding as of|outstanding at [A-Z]|were outstanding|had outstanding|shares outstanding of|number of shares (of [^.]{0,60})?outstanding|outstanding shares of)")
+
+
 def cover_counts(text):
-    """Share counts stated near cover-page wording in the first 60,000 characters (candidates, with quotes)."""
-    head, out = text[:60000], []
-    for k in COVER_KEY.finditer(head):
-        win_a, win_b = max(0, k.start() - 300), min(len(head), k.end() + 400)
-        for n in NUM_RE.finditer(head, win_a, win_b):
+    """The cover-page share statement: share counts (>= 1,000, no $ amount) in the window of the FIRST strong cover phrase
+    within the first 60,000 characters; if there is none, candidates near any cover wording (weaker, flagged)."""
+    head = text[:60000]
+    def numbers(a, b):
+        out = []
+        for n in NUM_RE.finditer(head, a, b):
             pre = head[max(0, n.start() - 40):n.start()]
-            if "$" in pre or re.search(r"(?i)aggregate market value|par value", pre):
+            if "$" in pre or re.search(r"(?i)aggregate market value", pre):
                 continue
             try:
                 x = to_number(n.group(0))
             except ValueError:
                 continue
             if x >= 1000:
-                out.append((x, n.start(), n.group(0)))
-    seen, res = set(), []
-    for x, pos, tok in out:
-        if (x, pos) in seen:
-            continue
-        seen.add((x, pos)); res.append({"value": x, "token": tok, "pos": pos})
-    return res
+                out.append({"value": x, "token": n.group(0), "pos": n.start()})
+        return out
+    m = STRONG_COVER.search(head)
+    if m:
+        res = numbers(max(0, m.start() - 250), min(len(head), m.end() + 450))
+        if res:
+            for r in res:
+                r["strong"] = True
+            return res
+    res = []
+    for k in COVER_KEY.finditer(head):
+        res.extend(numbers(max(0, k.start() - 300), min(len(head), k.end() + 400)))
+    seen, out = set(), []
+    for r in res:
+        if r["pos"] not in seen:
+            seen.add(r["pos"]); r["strong"] = False; out.append(r)
+    return out
 
 
 def near(a, b, tol=0.02):
@@ -172,16 +186,18 @@ def check_fact(sec, f):
     # A document can carry the same typo as the XBRL fact (e.g. '4,512.995 outstanding shares'): digits equal up to 10^k
     digits = lambda x: re.sub(r"[^0-9]", "", "%.6f" % x).strip("0")
     hit_digits = next((c for c in cands if f.get("vPrime") not in (None, f["v"]) and digits(c["value"]) == digits(f["vPrime"])), None)
+    strong = bool(cands) and cands[0].get("strong")
     if f["status"] == "CORRECTED":
-        verdict = ("CONFIRMED_COVER_STATES_CORRECTED" if hit_corr else "CONTRADICTED_COVER_STATES_REPORTED" if hit_orig
-                   else "CONFIRMED_DOCUMENT_STATES_CORRECTED" if corr and corr["found"] and f["vPrime"] >= 1e5 else "COVER_TYPO_SAME_DIGITS" if hit_digits else "INCONCLUSIVE")
+        verdict = ("CONFIRMED_COVER_STATES_CORRECTED" if hit_corr and strong else "CONTRADICTED_COVER_STATES_REPORTED" if hit_orig and strong
+                   else "COVER_TYPO_SAME_DIGITS" if hit_digits and strong else "WEAK_TABLE_MATCH_CORRECTED" if hit_corr else "WEAK_TABLE_MATCH_REPORTED" if hit_orig
+                   else "DOCUMENT_STATES_CORRECTED_NO_COVER" if corr and corr["found"] and f["vPrime"] >= 1e5 else "INCONCLUSIVE")
     elif f["status"] == "EXCLUDED":
         verdict = "COVER_STATES_REPORTED" if hit_orig else ("COVER_STATES_OTHER_COUNT" if cands else "NO_COVER_COUNT_FOUND")
     else:
         verdict = "CONFIRMED_COVER_STATES_USED" if hit_orig else ("COVER_STATES_OTHER_COUNT" if cands else "NO_COVER_COUNT_FOUND")
     pick = hit_corr or hit_orig or hit_digits or (cands[0] if cands else None)
     cover = {"value": pick["value"], "token": pick["token"], "quote": quote_at(text, pick["pos"], len(pick["token"]))} if pick else None
-    return {"documentType": typ, "indexUrl": idx_url, "url": doc_url, "sha256": sha(body), "bytes": len(body), "cover": cover, "coverCandidates": len(cands),
+    return {"documentType": typ, "indexUrl": idx_url, "url": doc_url, "sha256": sha(body), "bytes": len(body), "cover": cover, "coverCandidates": len(cands), "strongCover": strong,
             "original": orig, "corrected": corr, "verdict": verdict}
 
 
