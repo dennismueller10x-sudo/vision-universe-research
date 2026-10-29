@@ -11,7 +11,7 @@ const M = require(ROOT + '/quant/engines/research-pit-market-cap.cjs');
 const SCRATCH = '/tmp/claude-0/-home-user-vision-universe-research/f429e7bd-1176-554d-8fa5-5081d98ef531/scratchpad';
 const arg = (n, d = null) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
-const RULE_FILE = 'docs/quant-recovery/v12/mcap/rule-1.0.1.json';
+const RULE_FILE = 'docs/quant-recovery/v12/mcap/rule-' + M.RULE.version + '.json';
 const FACT_COLUMNS = ['accn', 'concept', 'v', 'status', 'class', 'D', 'vPrime', 'E', 'filed', 'scaleExponent', 'tier', 'evidence'];
 const SPLIT_COLUMNS = ['date', 'factor', 'class', 'availableAt', 'ratio', 'before', 'after', 'source'];
 
@@ -61,6 +61,7 @@ function build(obs, sf, spinoffSources) {
     }
     const order = [...distinct.values()].sort((a, b) => (a.filed < b.filed ? -1 : a.filed > b.filed ? 1 : a.accn < b.accn ? -1 : a.accn > b.accn ? 1 : a.code < b.code ? -1 : 1));
     const sanitized = new Map(); // accn -> {code|val -> vPrime|null}
+    const validated = []; // non-excluded observations in filed order (1.0.2 primary prior vintage)
     for (const o of order) {
       const events = keptAt(o.filed);
       const basis = (from, to) => M.basisFactor(events, from, to);
@@ -78,7 +79,9 @@ function build(obs, sf, spinoffSources) {
         return out;
       };
       const maxPriceBasisD = D => Math.max(...o.uses.map(u => u.close * u.fI * M.basisFactor(events, D, u.t)));
-      const res = M.classifyFact({ code: o.code, v: o.v, E: o.E, filed: o.filed, accn: o.accn, maxPriceBasisD }, { byAccn, priorAccns, basis });
+      const previousObservation = filed => { for (let j = validated.length - 1; j >= 0; j--) if (validated[j].filed < filed) return validated[j]; return null; };
+      const res = M.classifyFact({ code: o.code, v: o.v, E: o.E, filed: o.filed, accn: o.accn, maxPriceBasisD }, { byAccn, priorAccns, basis, previousObservation });
+      if (res.status !== 'EXCLUDED') validated.push({ c: o.code, accn: o.accn, end: res.D, val: res.vPrime, filed: o.filed });
       if (!sanitized.has(o.accn)) sanitized.set(o.accn, new Map());
       sanitized.get(o.accn).set(o.code + '|' + o.v, res.status === 'EXCLUDED' ? null : res.vPrime);
       // D is needed at runtime only when a provider split lies between E and D

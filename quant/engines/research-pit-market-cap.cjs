@@ -1,5 +1,5 @@
 'use strict';
-// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.1.json, amending 1.0.0).
+// Research-only corrected PIT market capitalization (V12 MCAP, rule docs/quant-recovery/v12/mcap/rule-1.0.2.json, amending 1.0.0/1.0.1).
 // Opt-in: nothing in the product or in the V10 factor code reads this module. It provides
 //   (1) pure classification functions used by the register builder (scripts/quant/v12/mcap/classify.cjs), and
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
@@ -7,7 +7,7 @@
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
 
 const RULE = Object.freeze({
-  id: 'v12-mcap-pit-share-correction', version: '1.0.1',
+  id: 'v12-mcap-pit-share-correction', version: '1.0.2',
   SAME_FILING_TOLERANCE: 0.02, TWO_REFERENCE_TOLERANCE: 0.10, TIER_B_PRIOR_TOLERANCE: 0.25, TRIGGER_FACTOR: 5,
   ABSOLUTE_MCAP_BOUND_USD: 8e12, SAME_FILING_WINDOW_DAYS: 120, WASO_MAX_DURATION_DAYS: 370,
   SCALE_EXPONENTS: Object.freeze([-9, -6, -3, -2, -1, 1, 2, 3, 6, 9]), PRIOR_VINTAGES: 2,
@@ -67,13 +67,18 @@ function classifyFact(o, ctx) {
   const conv = f => ({ c: f.c, accn: f.accn, end: f.end, val: f.val, adj: f.val * ctx.basis(f.end, D) });
   const aOut = same.filter(f => OUT.includes(f.c) && f !== own && !isDup(f) && f.unit === 'shares' && f.val > 0 && Math.abs(days(f.end, D)) <= RULE.SAME_FILING_WINDOW_DAYS).map(conv);
   const aW = same.filter(f => WASO.includes(f.c) && f.unit === 'shares' && f.val > 0 && f.start && days(f.start, f.end) <= RULE.WASO_MAX_DURATION_DAYS && Math.abs(days(f.end, D)) <= RULE.SAME_FILING_WINDOW_DAYS).map(conv);
+  // 1.0.2: the primary prior vintage is the issuer's latest earlier observation already validated by this rule
+  // (filed < O.filed, corrected value, excluded ones skipped); the latest earlier accession is the secondary one.
   const prior = [];
+  const q = ctx.previousObservation ? ctx.previousObservation(o.filed) : null;
+  if (q) prior.push({ c: q.c, accn: q.accn, end: q.end, val: q.val, adj: q.val * ctx.basis(q.end, D), filed: q.filed, kind: 'VALIDATED_OBSERVATION' });
   for (const a of ctx.priorAccns(o.filed)) {
+    if (prior.some(x => x.accn === a.accn)) continue;
     const cand = a.facts.filter(f => OUT.includes(f.c) && f.unit === 'shares' && f.val > 0).sort((x, y) => (x.end < y.end ? 1 : x.end > y.end ? -1 : x.c < y.c ? -1 : 1));
-    if (cand.length) prior.push({ ...conv(cand[0]), filed: a.filed });
+    if (cand.length) prior.push({ ...conv(cand[0]), filed: a.filed, kind: 'LATEST_EARLIER_ACCESSION' });
     if (prior.length >= RULE.PRIOR_VINTAGES) break;
   }
-  const P1 = prior[0] || null;
+  const P1 = prior[0] || null, P2 = prior[1] || null;
   const sameVals = aOut.concat(aW);
   let v = o.v, cls = null;
   if (dupVals.length >= 2 && dupVals.includes(o.v)) {
@@ -109,9 +114,16 @@ function classifyFact(o, ctx) {
       if (g) { comp.push({ c: f.c, end: f.end, val: f.val, earlier: g.val, earlierAccn: g.accn, q: f.val / g.val }); break; }
     }
   }
+  // 1.0.2 support: one value per same-filing concept (end closest to D) plus P1 and P2; a scale correction needs more support for v' than for v
+  const perConcept = new Map();
+  for (const x of sameVals) { const cur = perConcept.get(x.c); if (!cur || Math.abs(days(x.end, D)) < Math.abs(days(cur.end, D))) perConcept.set(x.c, x); }
+  const supportRefs = [...perConcept.values()].map(x => x.adj).concat(P1 ? [P1.adj] : [], P2 ? [P2.adj] : []);
+  const support = x => supportRefs.filter(r => within(x, r, RULE.TIER_B_PRIOR_TOLERANCE)).length;
+  const supportV = support(v);
   const tiers = { A: [], B: [], C: [] };
   for (const k of RULE.SCALE_EXPONENTS) {
     const vp = v / Math.pow(10, k);
+    if (!(support(vp) > supportV)) continue;
     const priorOk = P1 !== null && within(vp, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE);
     const hitsA = sameVals.filter(x => within(vp, x.adj, RULE.SAME_FILING_TOLERANCE));
     if (hitsA.length && (P1 ? priorOk : new Set(hitsA.map(x => x.c)).size >= 2)) {
@@ -146,7 +158,9 @@ function classifyFact(o, ctx) {
     if (hits2.length) { confirmed = true; ev.push([kind(hits2[0]), hits2[0].c, hits2[0].accn, hits2[0].end, hits2[0].val, v / hits2[0].adj], pe(v)); }
   } else if (P1 && within(v, P1.adj, RULE.TIER_B_PRIOR_TOLERANCE)) { confirmed = true; ev.push(pe(v)); }
   else if (!P1 && (outHit || twoConcepts)) { const x = outHit || hits2[0]; confirmed = true; ev.push([kind(x), x.c, x.accn, x.end, x.val, v / x.adj]); }
-  if (confirmed && !overBound(v)) return result(cls ? 'CORRECTED' : 'OK', cls || (priorTrig ? 'GENUINE_CAPITAL_ACTION' : 'ALTERNATIVE_CONCEPT_DEVIATES'), v);
+  // 1.0.2 label: a prior vintage off by a power of ten (within 25 %) is the erroneous one, not a capital action
+  const priorPow = priorTrig && P1 && RULE.SCALE_EXPONENTS.some(k => within(P1.adj * Math.pow(10, k), v, RULE.TIER_B_PRIOR_TOLERANCE));
+  if (confirmed && !overBound(v)) return result(cls ? 'CORRECTED' : 'OK', cls || (priorTrig ? (priorPow ? 'PRIOR_VINTAGE_SCALE_ERROR' : 'GENUINE_CAPITAL_ACTION') : 'ALTERNATIVE_CONCEPT_DEVIATES'), v);
   if (overBound(v)) return result('EXCLUDED', 'MCAP_ABSOLUTE_BOUND', null);
   return result('EXCLUDED', 'UNRESOLVED', null);
 }
