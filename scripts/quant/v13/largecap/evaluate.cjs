@@ -42,16 +42,16 @@ function evaluate(sid, docs, opt) {
   const P = opt.P, ticker = sid.slice(4), cands = P.listingIdentity.candidateSymbols[sid];
   const seriesPath = path.join(ROOT, 'quant/data/market/discover-series-long', sid + '.json');
   const seriesBytes = fs.readFileSync(seriesPath, 'utf8'), series = JSON.parse(seriesBytes), pts = series.points;
-  const master = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/market/security-master/us-security-master.json'), 'utf8'));
-  const rows = master.rows.filter(r => r.baseline_security_id === sid);
+  const masterDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/market/security-master/us-security-master.json'), 'utf8'));
+  const rows = masterDoc.rows.filter(r => r.baseline_security_id === sid);
   // ---- filings (identity is a property of the filing = accession; all fetched documents of it)
   const byAcc = new Map();
   for (const d of docs) {
     if (!byAcc.has(d.accession)) byAcc.set(d.accession, { accession: d.accession, form: d.form, filingDate: d.filingDate, reportDate: d.reportDate, docs: [], symbols: new Set(), exchange: null, changes: [], splits: [], symbolQuotes: [] });
     const f = byAcc.get(d.accession);
     f.docs.push(d);
-    for (const s of d.symbols) { f.symbols.add(s.symbol); f.symbolQuotes.push({ symbol: s.symbol, url: d.url, quote: s.quote }); }
-    if (d.exchange && !f.exchange) f.exchange = { url: d.url, quote: d.exchange.quote };
+    for (const s of d.symbols) { f.symbols.add(s.symbol); f.symbolQuotes.push({ symbol: s.symbol, url: d.url, sha256: d.sha256, quote: s.quote }); }
+    if (d.exchange && !f.exchange) f.exchange = { url: d.url, sha256: d.sha256, quote: d.exchange.quote };
     for (const c of d.changes) f.changes.push({ ...c, url: d.url, sha256: d.sha256 });
     for (const s of d.splits) f.splits.push({ ...s, url: d.url, sha256: d.sha256 });
   }
@@ -198,7 +198,8 @@ function evaluate(sid, docs, opt) {
   const out = { securityId: sid, ticker, cik: P.listingIdentity.cik[sid], protocolVersion: opt.version, status: chosen && master ? 'UNLOCKED' : 'LOCKED', reasons,
     series: { sha256: sha(seriesBytes), from: pts[0][0], to: pts.at(-1)[0], bars: pts.length, asOf: series.asOf },
     master, identity: { candidateSymbols: cands, validSymbols: [...valid].sort(), identityFilings: idFilings.length, firstIdentityFiling: idDates[0] || null, lastIdentityFiling: idDates.at(-1) || null, bound: idBound,
-      firstIdentityQuote: idFilings[0] ? { accession: idFilings[0].accession, ...idFilings[0].symbolQuotes[0], exchangeQuote: idFilings[0].exchange.quote } : null,
+      firstIdentityQuote: idFilings[0] ? { accession: idFilings[0].accession, filingDate: idFilings[0].filingDate, form: idFilings[0].form, ...idFilings[0].symbolQuotes[0], exchange: idFilings[0].exchange } : null,
+      lastIdentityQuote: idFilings.length ? { accession: idFilings.at(-1).accession, filingDate: idFilings.at(-1).filingDate, form: idFilings.at(-1).form, ...idFilings.at(-1).symbolQuotes[0], exchange: idFilings.at(-1).exchange } : null,
       changeAnchors, filingsWithSymbol: filings.filter(f => f.symbols.size).length, filingsTotal: filings.length },
     factors, counts, breaks, runs: runs.map(({ _run, ...r }) => r), events: events.map(e => ({ ...e })) };
   if (chosen && master) {
