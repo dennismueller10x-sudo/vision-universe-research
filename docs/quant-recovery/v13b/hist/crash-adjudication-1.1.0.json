@@ -1,0 +1,1079 @@
+{
+ "schemaVersion": "v13b-crash-adjudication-1.1.0",
+ "protocol": "protocol-amendment-1.1.0.json",
+ "protocolSha256": "4604a0d5a9c2021601081c2a10230718bdfb299a75c07509a18f7f7431e26e4b",
+ "decisionsSha256": "8813f3d05c35217401ba32b5e7bbafe0335ec4963777fe3974742da8eb4b33f4",
+ "codeSha256": "03b08de3cb2f1119a21ed302fff856dc32da0530fd590d8ccb59e80f9884c1ea",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "publicRedaction": "no prices, no provider dates (jump year only); SEC filing dates/accessions/quotes are public SEC facts",
+ "chains": 28,
+ "chainDecisions": {
+  "ADJUDICATED_RESOLVED": 13,
+  "STAYS_CA_UNRESOLVED": 15
+ },
+ "jumpClasses": {
+  "A_REAL_PRICE_EVENT": 13,
+  "B_CORPORATE_ACTION:B2_DISTRIBUTION": 2,
+  "C_UNRESOLVED": 16
+ },
+ "errors": [],
+ "cases": [
+  {
+   "chainId": "3af1e5ce5d23e2ca",
+   "cik": 1660719,
+   "secName": "Old API Wind-down Ltd.",
+   "submissionsSha256": "e0ae38490cb1d3c8db39cdddf222c3f5136963602805fb5e49d22ddcc8139b90",
+   "documentsRetrieved": 10,
+   "documentsTruncated": 2,
+   "caScanHits": 30,
+   "caScanDispositions": {
+    "HISTORICAL_OTHER_DATE": 1,
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 29
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2018,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "GOING_CONCERN_GUIDANCE_WITHDRAWN",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2018-05-08",
+       "accession": "0001558370-18-004221",
+       "url": "https://www.sec.gov/Archives/edgar/data/1660719/000155837018004221/0001558370-18-004221.txt",
+       "docSha256": "e7b55db5a994a4e7828966061c9dc4633d8f00c0831aff6a1565d77b9c3bf1ed",
+       "bytes": 255857,
+       "parsedBytes": 255857,
+       "truncated": false,
+       "quote": "the Company has determined that there is a reasonable possibility that the Company will not have sufficient liquidity to fund its current and planned operations through the next 12 months, which raises substantial doubt about the Company’s ability to continue as a going concern",
+       "quoteSha256": "3700730c5417f884b6987fd47455daabd323510f63e90468a8a050698749aecb",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "00fade89a169b68d",
+   "cik": 1036141,
+   "secName": "Correvio Pharma Corp.",
+   "submissionsSha256": "126b9783fabd68895b26fb4faae48e34afe1fbcc8929bc443746457d608ae403",
+   "documentsRetrieved": 12,
+   "documentsTruncated": 0,
+   "caScanHits": 0,
+   "caScanDispositions": {},
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "NEGATIVE_REGULATORY_OUTCOME",
+     "evidence": [
+      {
+       "form": "6-K",
+       "filingDate": "2019-12-10",
+       "accession": "0001279569-19-002475",
+       "url": "https://www.sec.gov/Archives/edgar/data/1036141/000127956919002475/0001279569-19-002475.txt",
+       "docSha256": "53e41e990404e4a5eb20bbc200caed4536c02f3875949bc2a26852ba65aa4103",
+       "bytes": 245672,
+       "parsedBytes": 245672,
+       "truncated": false,
+       "quote": "The Committee jointly voted that the benefit-risk profile was not adequate to support approval (Vote: 2 Yes to 11 No).",
+       "quoteSha256": "6b7bde19564a1ae3638698403916b3ea29ba342485c9c8697745ab6d559447dc",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "1fee711d72176daa",
+   "cik": 1171014,
+   "secName": "COSI INC",
+   "submissionsSha256": "3210db11ed4803ff7582726d1b30dfdb49d7158047321535a4aea3cf23917dca",
+   "documentsRetrieved": 10,
+   "documentsTruncated": 2,
+   "caScanHits": 2,
+   "caScanDispositions": {
+    "CONDITIONAL_INTENTION_NOT_EFFECTED": 2
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2016,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "BANKRUPTCY_PETITION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2016-09-28",
+       "accession": "0001140361-16-080937",
+       "url": "https://www.sec.gov/Archives/edgar/data/1171014/000114036116080937/0001140361-16-080937.txt",
+       "docSha256": "c50aaa4429d8cb946a78378be49f9012c473b208f9976fe3c3ca1beb25a6b90a",
+       "bytes": 138934,
+       "parsedBytes": 138934,
+       "truncated": false,
+       "quote": "Cosi, Inc. (the “Company”) and its direct and indirect subsidiaries (collectively with the Company, the “Debtors”) filed voluntary petitions in the United States Bankruptcy Court for the District of Massachusetts",
+       "quoteSha256": "7ea8a18153ddcbe9ee3c036726e225679c5663dfdb3037ce326dc512863644fc",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "32c24a94810ba3f4",
+   "cik": 920321,
+   "secName": "CENVEO, INC",
+   "submissionsSha256": "dbc99399d8fd7663d951a22977fe03a25d7449a06c7b6b7eede1040f5ea26af8",
+   "documentsRetrieved": 5,
+   "documentsTruncated": 2,
+   "caScanHits": 3,
+   "caScanDispositions": {
+    "PLAN_TERM_FUTURE": 1,
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 2
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2018,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "BANKRUPTCY_PETITION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2018-02-02",
+       "accession": "0001193125-18-030024",
+       "url": "https://www.sec.gov/Archives/edgar/data/920321/000119312518030024/0001193125-18-030024.txt",
+       "docSha256": "05a9fd6dc2e612f085434f8eda712d23e858c08c91cd3b9d46acfacddcd837ec",
+       "bytes": 17755746,
+       "parsedBytes": 2000000,
+       "truncated": true,
+       "quote": "On February 2, 2018, the Company, together with certain of its affiliates (collectively, the “Debtors”) filed voluntary petitions (the “Bankruptcy Petitions”) for relief under chapter 11 of title 11 of the United States Code",
+       "quoteSha256": "488bef49174af7e843ee7143f98ec6c0817a526f0fe618b2ef22f54036a31385",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "41be23b04c2f313e",
+   "cik": 1366649,
+   "secName": "Dialogic Inc.",
+   "submissionsSha256": "79b5c6b0b41f1fb738dfba32ba6bc96238ea405ff86d8f52fa22656071dd9e0f",
+   "documentsRetrieved": 7,
+   "documentsTruncated": 1,
+   "caScanHits": 16,
+   "caScanDispositions": {
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 10,
+    "HISTORICAL_OTHER_DATE": 6
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2014,
+     "direction": "FALL",
+     "ratioClass": 5,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "TAKE_UNDER_OFFER",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2014-10-10",
+       "accession": "0001193125-14-369238",
+       "url": "https://www.sec.gov/Archives/edgar/data/1366649/000119312514369238/0001193125-14-369238.txt",
+       "docSha256": "d0cb167f2416567fc93593b6a4fca820fe549b1eeed3bfd2f6ca02ec0a83aec8",
+       "bytes": 36868,
+       "parsedBytes": 36868,
+       "truncated": false,
+       "quote": "On October 10, 2014, Dialogic Inc., a Delaware corporation (“ Dialogic ”), and Novacap TMT, a Canadian private equity firm (“ Novacap ”), issued a press release",
+       "quoteSha256": "c17a09dd8f051d8bf998345ca35cb53bc6e799904d2d6dbc886445ec0309f8e0",
+       "quoteFound": true
+      },
+      {
+       "form": "8-K",
+       "filingDate": "2014-10-15",
+       "accession": "0001193125-14-372770",
+       "url": "https://www.sec.gov/Archives/edgar/data/1366649/000119312514372770/0001193125-14-372770.txt",
+       "docSha256": "0ce066a384c53b8c8a93de252b19e28ef0e7bf19e7e6627a23fe92a1eb4d11ec",
+       "bytes": 877953,
+       "parsedBytes": 877953,
+       "truncated": false,
+       "quote": "at a purchase price of $0.15 per Share, net to the seller thereof in cash without interest and less any applicable withholdings",
+       "quoteSha256": "f3bc658363b2cb1073f5921e7407cf33560cab3e8aae78e09d781f73ee2bdcf9",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true,
+      "takeUnderBelowPriorClose": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "b313e8f2af088e45",
+   "cik": 1610092,
+   "secName": "Diplomat Pharmacy, Inc.",
+   "submissionsSha256": "5922ef6ea60a81d789c18ef1a5779a9131b97b9ad8c4b5822df344cf21b0a9b7",
+   "documentsRetrieved": 3,
+   "documentsTruncated": 2,
+   "caScanHits": 14,
+   "caScanDispositions": {
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 14
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "GOING_CONCERN",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2019-11-12",
+       "accession": "0001104659-19-062116",
+       "url": "https://www.sec.gov/Archives/edgar/data/1610092/000110465919062116/0001104659-19-062116.txt",
+       "docSha256": "e2fcef097cadc1d0b1acf99940a811415fd5e2b04d9504ee7e0a58b2d59e1f20",
+       "bytes": 2444326,
+       "parsedBytes": 2000000,
+       "truncated": true,
+       "quote": "will include management’s assessment that expresses substantial doubt surrounding our ability to continue as a going concern.",
+       "quoteSha256": "1839259e35a5b78d0bc25341eeeed560957fca19ce25c559733a0a0e06be9273",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "b9cfce58970e1046",
+   "cik": 840889,
+   "secName": "DORAL FINANCIAL CORP",
+   "submissionsSha256": "fa006d1f86c8f9e267183c319a963213a63b4cb8fedace91bcb1f2ddd9d3e1c2",
+   "documentsRetrieved": 8,
+   "documentsTruncated": 1,
+   "caScanHits": 48,
+   "caScanDispositions": {
+    "HISTORICAL_OTHER_DATE": 48
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2014,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "REGULATORY_ACTION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2014-05-01",
+       "accession": "0001193125-14-177602",
+       "url": "https://www.sec.gov/Archives/edgar/data/840889/000119312514177602/0001193125-14-177602.txt",
+       "docSha256": "35185700158ef85863d773e55f137650f00d10560ce6d5246c8e53af3c649039",
+       "bytes": 22005,
+       "parsedBytes": 22005,
+       "truncated": false,
+       "quote": "The FDIC’s determination will cause Doral Bank to no longer be in compliance with its capital requirements under its Consent Order with the FDIC.",
+       "quoteSha256": "f985b11bbcd11418a38c70abfafdba2d31d79f276d4ab092605e525e53664f46",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "7ec6a1744b61b280",
+   "cik": 1013606,
+   "secName": "ENDOLOGIX INC /DE/",
+   "submissionsSha256": "7c743beffe9106720d739dc702c875df059adf6eafe7d865bad3320d440d161e",
+   "documentsRetrieved": 12,
+   "documentsTruncated": 2,
+   "caScanHits": 4,
+   "caScanDispositions": {
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 4
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2020,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "BANKRUPTCY_PETITION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2020-07-06",
+       "accession": "0001013606-20-000117",
+       "url": "https://www.sec.gov/Archives/edgar/data/1013606/000101360620000117/0001013606-20-000117.txt",
+       "docSha256": "379de1002469cd30fd30d0f4f965ec35a7fe35bebb9adde9e7818eb1c7b4eeec",
+       "bytes": 211993,
+       "parsedBytes": 211993,
+       "truncated": false,
+       "quote": "On July 5, 2020, Endologix, Inc. (the “Company”) issued a press release announcing that the Company had initiated a voluntary Chapter 11 case",
+       "quoteSha256": "7c738bc899caa5f2f36a098497016a4005cc9e1feee15c499498b21e6f68ad22",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    },
+    {
+     "n": 2,
+     "year": 2020,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "DELISTING_DETERMINATION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2020-07-09",
+       "accession": "0001193125-20-190549",
+       "url": "https://www.sec.gov/Archives/edgar/data/1013606/000119312520190549/0001193125-20-190549.txt",
+       "docSha256": "66d2a7511f3ad130bf78811c8951596371a18e4468a3a5dc4b512758cb9e75c8",
+       "bytes": 1543075,
+       "parsedBytes": 1543075,
+       "truncated": false,
+       "quote": "On July 7, 2020, the Company received a letter from the Listing Qualifications Department staff of The Nasdaq Stock Market (“Nasdaq”) notifying it that, as a result of the Chapter 11 Cases",
+       "quoteSha256": "2e8620e8e494298cbfe6493fd1b6ddcec94b0a1c01a32e95c9eac701cb655c3c",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "54e8c2a015150c02",
+   "cik": 1135906,
+   "secName": "EPIRUS Biopharmaceuticals, Inc.",
+   "submissionsSha256": "84b49ee0f7fab9de0024fbebd51c770760e9f6021c811ac6e598a3e20042144f",
+   "documentsRetrieved": 4,
+   "documentsTruncated": 0,
+   "caScanHits": 0,
+   "caScanDispositions": {},
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2016,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "BANKRUPTCY_PETITION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2016-07-25",
+       "accession": "0001104659-16-134031",
+       "url": "https://www.sec.gov/Archives/edgar/data/1135906/000110465916134031/0001104659-16-134031.txt",
+       "docSha256": "ccba3c942203091a7c6195182de5ccddfb8935706948ece4668b644ee7d5cc6b",
+       "bytes": 24590,
+       "parsedBytes": 24590,
+       "truncated": false,
+       "quote": "On July 25, 2016, the Company filed a voluntary petition for relief under the provisions of Chapter 7 of Title 11 of the United States Code",
+       "quoteSha256": "29e348e6223581b3083051d9c889fa94e1f907ee430a30fa2d65ac9ef8d092e3",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    },
+    {
+     "n": 2,
+     "year": 2016,
+     "direction": "RISE",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "price rose ~2x two days after the fall; no favourable event in the window (the only later filing is the Nasdaq delisting notice, adverse)",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "908a24b6914f5c75",
+   "cik": 1540729,
+   "secName": "Foresight Energy LP",
+   "submissionsSha256": "d12a512f4688b09b7703e83f27e05f8718d9575a062c601708a73f70c7be9fcc",
+   "documentsRetrieved": 9,
+   "documentsTruncated": 1,
+   "caScanHits": 0,
+   "caScanDispositions": {},
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 4,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "DELISTING_DETERMINATION",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2019-11-08",
+       "accession": "0001564590-19-042344",
+       "url": "https://www.sec.gov/Archives/edgar/data/1540729/000156459019042344/0001564590-19-042344.txt",
+       "docSha256": "fcacb7db11cf0badc7cd595e2de71d6035cb0669d145d77ce8f2c2a5d6babdf5",
+       "bytes": 64268,
+       "parsedBytes": 64268,
+       "truncated": false,
+       "quote": "the NYSE has determined to commence proceedings to delist the Partnership’s common units",
+       "quoteSha256": "1080dcbdf39b60ec925db9825adfbda57e30bebb7de3bb7c9b33577391cb1dfe",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "b440b1279acf9d0d",
+   "cik": 1549848,
+   "secName": "Hi-Crush Inc.",
+   "submissionsSha256": "7163572598f2e529ebadc1298e1007fe5a76688467d9f3357e6a6f5a88ef10c3",
+   "documentsRetrieved": 9,
+   "documentsTruncated": 3,
+   "caScanHits": 62,
+   "caScanDispositions": {
+    "PLAN_TERM_FUTURE": 60,
+    "CONTRACT_OR_PLAN_ADJUSTMENT_CLAUSE": 2
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2020,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "GOING_CONCERN_DEFAULT",
+     "evidence": [
+      {
+       "form": "10-Q",
+       "filingDate": "2020-06-25",
+       "accession": "0001549848-20-000034",
+       "url": "https://www.sec.gov/Archives/edgar/data/1549848/000154984820000034/0001549848-20-000034.txt",
+       "docSha256": "f58c578400034041a087f2b05a3e19c7944448357f93325d19f7b02a0f2c75d0",
+       "bytes": 7448701,
+       "parsedBytes": 2000000,
+       "truncated": true,
+       "quote": "These conditions and events indicate that there is substantial doubt about the Company's ability to continue as a going concern within one year from the issuance date of the financial statements for the three months ended March 31, 2020.",
+       "quoteSha256": "4eaa4fd805f48ee6f6e309a1a471746a127aa590e45d4466ff01106b26698cfa",
+       "quoteFound": true
+      },
+      {
+       "form": "8-K",
+       "filingDate": "2020-06-26",
+       "accession": "0001549848-20-000037",
+       "url": "https://www.sec.gov/Archives/edgar/data/1549848/000154984820000037/0001549848-20-000037.txt",
+       "docSha256": "fc0acd1b5471e0fa95002e552a77c6d4d123fcb5a6a3a3bb5a0ef7c1aa936b2f",
+       "bytes": 466407,
+       "parsedBytes": 466407,
+       "truncated": false,
+       "quote": "Due to the Specified Default, Hi-Crush is currently unable to borrow any amounts under the ABL Credit Facility.",
+       "quoteSha256": "bda15be245ebcd468a542b833685716320256dd0e296872600fa7f6474c658fa",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "b607adc2fab69f6e",
+   "cik": 1166380,
+   "secName": "QUANTUM FUEL SYSTEMS TECHNOLOGIES WORLDWIDE, INC.",
+   "submissionsSha256": "375482bfeecc122bcb592716d505b2432cb452bf08ee8349c648b5b08288c0fb",
+   "documentsRetrieved": 8,
+   "documentsTruncated": 0,
+   "caScanHits": 0,
+   "caScanDispositions": {},
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2016,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "A_REAL_PRICE_EVENT",
+     "eventType": "BANKRUPTCY_PETITION_DELISTING",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2016-03-23",
+       "accession": "0001166380-16-000125",
+       "url": "https://www.sec.gov/Archives/edgar/data/1166380/000116638016000125/0001166380-16-000125.txt",
+       "docSha256": "b1a0c031199605f5562b7390768d8c3eab43ebea32b4aa25f1b140c59649e24f",
+       "bytes": 303175,
+       "parsedBytes": 303175,
+       "truncated": false,
+       "quote": "On March 22, 2016 (the “Petition Date”), Quantum Fuel Systems Technologies Worldwide, Inc. (the “Debtor”) filed a voluntary petition for relief (the “Bankruptcy Petition) under chapter 11 of the United States Code",
+       "quoteSha256": "851fad1a3a6e88d5549f93063a0c0b48be92203191b03b31681bca860a971d59",
+       "quoteFound": true
+      },
+      {
+       "form": "8-K",
+       "filingDate": "2016-03-24",
+       "accession": "0001166380-16-000126",
+       "url": "https://www.sec.gov/Archives/edgar/data/1166380/000116638016000126/0001166380-16-000126.txt",
+       "docSha256": "a7fe81a5c9107a485e4cd380d68a1f55784c9c0d89a82821f69ceb4549d09a24",
+       "bytes": 41436,
+       "parsedBytes": 41436,
+       "truncated": false,
+       "quote": "stating that Nasdaq has determined that the Company’s securities will be delisted from The Nasdaq Stock Market.",
+       "quoteSha256": "5625a4b10509f297275f2cf69e53fd6d8c724f6137eef553ddea1c8d3a74e67f",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "E1_filingInWindow": true,
+      "E2_noProviderSplitWithin5Bars": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "602f3f86d1b79352",
+   "cik": 1458696,
+   "secName": "Changyou.com Ltd",
+   "submissionsSha256": "7e04afe50e5cb53320ee8fd9281885b6ef802abe8d2ba415bd38b4f94c621eef",
+   "documentsRetrieved": 3,
+   "documentsTruncated": 0,
+   "caScanHits": 16,
+   "caScanDispositions": {
+    "DOCUMENTED_CA_USED": 16
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "B_CORPORATE_ACTION",
+     "subClass": "B2_DISTRIBUTION",
+     "perShare": 9.4,
+     "unit": "ADS",
+     "exDate": "2019-06-03",
+     "evidence": [
+      {
+       "form": "6-K",
+       "filingDate": "2019-04-29",
+       "accession": "0001193125-19-123686",
+       "url": "https://www.sec.gov/Archives/edgar/data/1458696/000119312519123686/0001193125-19-123686.txt",
+       "docSha256": "4be0e01370e5bbcaca653b17475a82e0d5ae8d73df28975a2ce2335e34a43da9",
+       "bytes": 45000,
+       "parsedBytes": 45000,
+       "truncated": false,
+       "quote": "declared a special cash dividend of US$4.70 per Class A ordinary or Class B ordinary share, or US$9.40 per American depositary share (“ADS”)",
+       "quoteSha256": "6230c8f112424bd78232291e0546309da9d458a9c424db2aaf6f5d5685d60ffa",
+       "quoteFound": true
+      },
+      {
+       "form": "6-K",
+       "filingDate": "2019-05-10",
+       "accession": "0001193125-19-143561",
+       "url": "https://www.sec.gov/Archives/edgar/data/1458696/000119312519143561/0001193125-19-143561.txt",
+       "docSha256": "7d41bb2ab7ad9b22c57f66d74617999168e154d92a3e6e1fbf4a4a29c9683f9b",
+       "bytes": 39881,
+       "parsedBytes": 39881,
+       "truncated": false,
+       "quote": "NASDAQ has established June 3, 2019 as the ex-dividend date for the registrant’s previously-announced special cash dividend of US$9.40 per American depositary share.",
+       "quoteSha256": "62fdcc6d96e26573ef80ba9fa71a788636879723a42bcebc76b546b7e9737560",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "B_dateWithin1TradingDay": true,
+      "B2_amountMatchesDrop": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "ad7ea699a5668cca",
+   "cik": 1080056,
+   "secName": "THESTREET, INC.",
+   "submissionsSha256": "5d33333ee2ea3b106f8c3578bf0aa4281576bf6068d5d286d56b378d71903453",
+   "documentsRetrieved": 6,
+   "documentsTruncated": 1,
+   "caScanHits": 44,
+   "caScanDispositions": {
+    "HISTORICAL_OTHER_DATE": 6,
+    "DOCUMENTED_CA_USED": 38
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "B_CORPORATE_ACTION",
+     "subClass": "B2_DISTRIBUTION",
+     "perShare": 1.77,
+     "unit": "share (pre 1-for-10 reverse split of 2019-04-26, which the provider records as splitFactor 0.1 on that day)",
+     "exDate": "2019-04-23",
+     "exDateKind": "EXPECTED_AS_STATED_BY_ISSUER",
+     "evidence": [
+      {
+       "form": "8-K",
+       "filingDate": "2019-04-03",
+       "accession": "0001753926-19-000054",
+       "url": "https://www.sec.gov/Archives/edgar/data/1080056/000175392619000054/0001753926-19-000054.txt",
+       "docSha256": "240cbc2beefcb9552921905d0642c75cd7dc76de523280c63668b2fad4eb5632",
+       "bytes": 48840,
+       "parsedBytes": 48840,
+       "truncated": false,
+       "quote": "a special cash distribution of approximately $94.3 million or $1.77 per share of common stock payable on April 22, 2019 to all stockholders of record on April 15, 2019",
+       "quoteSha256": "0b028536fb9a13594eb5e49ff19f3b8d3325f5d8704292433f06baf9af93239a",
+       "quoteFound": true
+      },
+      {
+       "form": "8-K",
+       "filingDate": "2019-04-03",
+       "accession": "0001753926-19-000054",
+       "url": "https://www.sec.gov/Archives/edgar/data/1080056/000175392619000054/0001753926-19-000054.txt",
+       "docSha256": "240cbc2beefcb9552921905d0642c75cd7dc76de523280c63668b2fad4eb5632",
+       "bytes": 48840,
+       "parsedBytes": 48840,
+       "truncated": false,
+       "quote": "The Company expects Nasdaq to set the ex-dividend date as April 23, 2019.",
+       "quoteSha256": "f938ba9b01f0942f8888c4beee91ab8047c7100edd7fc8a8e84117be982a3c23",
+       "quoteFound": true
+      }
+     ],
+     "checks": {
+      "B_dateWithin1TradingDay": true,
+      "B2_amountMatchesDrop": true
+     }
+    }
+   ],
+   "chainDecision": "ADJUDICATED_RESOLVED"
+  },
+  {
+   "chainId": "500ce853bc4e734a",
+   "cik": 1864032,
+   "secName": "Ault Disruptive Technologies Corp",
+   "submissionsSha256": "deb0cab7682e476d35368ece39f3f41e94a4cc192e6cd773b8c2243c9b4f1599",
+   "documentsRetrieved": 8,
+   "documentsTruncated": 2,
+   "caScanHits": 79,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 79
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2024,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC; the only filing in [J-14d, J+7d] is a 10-Q without a listed event; merger agreement announced later",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "89b124cd81df0152",
+   "cik": 1868775,
+   "secName": "ASPAC I Acquisition Corp.",
+   "submissionsSha256": "726eeb836eb4e9ae091bfa087055423650c6c135ac54e398c553f546809d9647",
+   "documentsRetrieved": 9,
+   "documentsTruncated": 2,
+   "caScanHits": 19,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 19
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2024,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC business-combination closing on the jump day (Form 25-NSE 12d2-2(a)(3)); shares converted into successor shares, no listed adverse event, no cash redemption of all public shares",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "a510af451ec628e4",
+   "cik": 1956055,
+   "secName": "Bukit Jalil Global Acquisition 1 Ltd.",
+   "submissionsSha256": "17ad78136fd4b04e22e7c55d21b110ff25f47d96adc0fe65c932c52496e19d1b",
+   "documentsRetrieved": 13,
+   "documentsTruncated": 2,
+   "caScanHits": 18,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 18
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2025,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC business-combination closing (Form 25-NSE on the jump day, 8-K item 2.01 after); no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "ced76447f428cb67",
+   "cik": 1878074,
+   "secName": "Blue World Acquisition Corp",
+   "submissionsSha256": "6ae6bf3f4af064705a25a8db9970dc37d59333dc1a895eee3beeb98a48677f0e",
+   "documentsRetrieved": 20,
+   "documentsTruncated": 2,
+   "caScanHits": 13,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 13
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2024,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC business-combination closing (Form 25-NSE on the jump day, 8-K item 2.01 after); no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "26132f3d23b380eb",
+   "cik": 1856948,
+   "secName": "Chenghe Acquisition Co.",
+   "submissionsSha256": "35ef4cea414364be697913ae97b1110fe7eeb76bc428f5d962d9a5ffb9121d2c",
+   "documentsRetrieved": 8,
+   "documentsTruncated": 2,
+   "caScanHits": 18,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 18
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2024,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC shareholder vote / lock-up waiver in the window; no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "a9fc4de3005234b6",
+   "cik": 1895144,
+   "secName": "Golden Star Acquisition Corp",
+   "submissionsSha256": "8847c575814027dcba684fd63f6a85fcab1ae20178d09a3b34271845a821c36b",
+   "documentsRetrieved": 6,
+   "documentsTruncated": 1,
+   "caScanHits": 21,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 21
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2025,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC business combination approved, Form 25-NSE on the jump day; no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "2d3aec9175f309a1",
+   "cik": 1866001,
+   "secName": "JVSPAC Acquisition Corp.",
+   "submissionsSha256": "04b64ef6ac3d13db604bbb8a800a6311ca71c90a7f00e63f5bcdb2cae31e90a4",
+   "documentsRetrieved": 15,
+   "documentsTruncated": 2,
+   "caScanHits": 18,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 18
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2025,
+     "direction": "FALL",
+     "ratioClass": 3,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC business-combination closing announced on the jump day; no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "408f29d0ae7e5d5f",
+   "cik": 1931691,
+   "secName": "Mobiv Acquisition Corp",
+   "submissionsSha256": "53a765c4fc986cd3be44c972d945fbe4c64fa505309766dc96c242a768937ef1",
+   "documentsRetrieved": 20,
+   "documentsTruncated": 2,
+   "caScanHits": 49,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 49
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2023,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "SPAC extension and non-redemption agreement in the window; no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "2ca5821c4fb844ab",
+   "cik": 1830029,
+   "secName": "GRIID Infrastructure Inc.",
+   "submissionsSha256": "652b949699c4bec36478ea19224639b0958a50f0bae3b2ab7444a5a222ff9334",
+   "documentsRetrieved": 16,
+   "documentsTruncated": 4,
+   "caScanHits": 24,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 24
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2024,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "only an exchange-transfer press release in the window; no listed adverse event",
+     "evidence": [],
+     "checks": {}
+    },
+    {
+     "n": 2,
+     "year": 2024,
+     "direction": "RISE",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "price rise precedes the merger agreement dated after the jump (strict E1 reading); the in-window Nasdaq bid-price notice is adverse",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "a5c8c9f4f7431e69",
+   "cik": 708819,
+   "secName": "MCDERMOTT INTERNATIONAL INC",
+   "submissionsSha256": "17956fec3f31b7d0d31d4462b0e4027252f1f27778561db96222fc1c0143b45e",
+   "documentsRetrieved": 13,
+   "documentsTruncated": 3,
+   "caScanHits": 69,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 69
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2019,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "no filing of the issuer in [J-14d, J+7d] (nearest: 17 days before, 16 days after)",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "d889c3a8bb60ac24",
+   "cik": 1096061,
+   "secName": "NATIONAL BANK OF GREECE SA",
+   "submissionsSha256": "67ee3d9c28fa1e75dfc096338177c318402d4470be3b40986ae1c733c832dfb7",
+   "documentsRetrieved": 33,
+   "documentsTruncated": 3,
+   "caScanHits": 22,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 22
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2015,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "deeply discounted recapitalisation, 1-for-15 reverse split and warrant/ADS adjustments around the jump; no listed adverse event and no documented ratio/date matching the jump day",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "a16bf8c15164fe50",
+   "cik": 1474464,
+   "secName": "New York REIT Liquidating LLC",
+   "submissionsSha256": "22f7224aeff462014cf576dd439f176f5760e1481bfd39c37f78c7320717ba60",
+   "documentsRetrieved": 2,
+   "documentsTruncated": 0,
+   "caScanHits": 3,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 3
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2018,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "no filing in [J-14d, J+7d]; the documented liquidating distribution ($1.00, ex-date 2017-12-15) does not match the jump day",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "37211030959a65f2",
+   "cik": 1102112,
+   "secName": "PACWEST BANCORP",
+   "submissionsSha256": "3b619238c85b3b920ae63d623f5cbcbd5ce3c1473ad4c186ca8e62760434c352",
+   "documentsRetrieved": 10,
+   "documentsTruncated": 3,
+   "caScanHits": 11,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 11
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2023,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "the in-window press release is a reassurance in light of press reports; no listed adverse event reported",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  },
+  {
+   "chainId": "cf2870a6861f62e4",
+   "cik": 1397702,
+   "secName": "Silk Road Medical Inc",
+   "submissionsSha256": "750607c11f1cfec8938edeede86d4c1833f0e8f3261d3ffe32d0ede4dcb7b9fe",
+   "documentsRetrieved": 5,
+   "documentsTruncated": 1,
+   "caScanHits": 0,
+   "caScanDispositions": {
+    "CHAIN_CLASS_C": 0
+   },
+   "jumps": [
+    {
+     "n": 1,
+     "year": 2023,
+     "direction": "FALL",
+     "ratioClass": 2,
+     "class": "C_UNRESOLVED",
+     "reason": "'revised 2023 outlook' without stated direction in the window documents (prior guidance outside the window)",
+     "evidence": [],
+     "checks": {}
+    }
+   ],
+   "chainDecision": "STAYS_CA_UNRESOLVED"
+  }
+ ]
+}
