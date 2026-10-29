@@ -51,7 +51,7 @@ Alle Jahre und Segmente: [coverage-matrix-1.0.2.json](coverage-matrix-1.0.2.json
 
 ## Delisting-Register und Gründe
 
-[delisting-register-1.0.2.json.gz](delisting-register-1.0.2.json.gz) enthält 12.161 Ereignisse aus 25/25-NSE (ab 2001) und 15-12B. Je CIK werden Formulare innerhalb von 180 Tagen zu einem Ereignis zusammengefasst. Erfasst sind operative Emittenten, deren CIK heute nicht mehr an NYSE/Nasdaq/NYSE American notiert ist. Jedes Ereignis trägt Akzessionsnummern und die verknüpften Referenzketten.
+[delisting-register-1.0.3.json.gz](delisting-register-1.0.3.json.gz) (öffentliche Fassung, s. Korrektur unten) enthält 12.161 Ereignisse aus 25/25-NSE (ab 2001) und 15-12B. Je CIK werden Formulare innerhalb von 180 Tagen zu einem Ereignis zusammengefasst. Erfasst sind operative Emittenten, deren CIK heute nicht mehr an NYSE/Nasdaq/NYSE American notiert ist. Jedes Ereignis trägt Akzessionsnummern und die verknüpften Referenzketten.
 
 Für die Gründe ([delisting-reasons-1.0.2.json.gz](delisting-reasons-1.0.2.json.gz)) wurden die 8-K-Item-Codes aus der EDGAR-Volltextsuche gelesen, also Metadaten und keine Dokumente. Das betrifft die 2.354 verknüpften Ereignisse ab 23.08.2004:
 
@@ -87,7 +87,7 @@ Die maschinenlesbare Entscheidungsgrundlage ist [coverage-by-year-segment.json](
 - **1995–2012: nicht studienfähig gegen eine Referenz.** Die Anbieterliste fehlt dort fast vollständig an Delistings; jede Abdeckungsquote ist nach oben verzerrt. Für Large Caps kommt nur die PIT-Indexmitgliedschaft (INDEXPOP) als Referenz in Frage.
 - **2013–2026: teilweise.** Die beste Lage haben NYSE-Large- und Mid-Caps sowie Mid- und Small-Caps mit Float, mit Abdeckung 0,82–0,94 und Vollständigkeit (oben) um 0,80. Die Lücke besteht dort fast nur aus delisteten Titeln. Titel mit unbekannter Größe (häufig unverknüpft, oft später delistet) sind am schlechtesten abgedeckt (0,33–0,70).
 - **Junge Listings** sind schlechter abgedeckt als ältere (2018: < 5 Jahre 0,52, 5–10 Jahre 0,54, ≥ 10 Jahre 0,64–0,77).
-- **Hebel:** Nachladen der [4.322 Kandidaten](fetch-candidates-1.0.2.json) über den bestehenden Anbieter. Das ist eine reine Freigabevorlage; es wurde nichts abgerufen.
+- **Hebel:** Nachladen der [4.322 Kandidaten](fetch-candidates-1.0.3.json) (öffentlich nur Zählungen, CIK, Hash-Kennung, 5-Jahres-Klassen; Volltabelle privat) über den bestehenden Anbieter. Das ist eine reine Freigabevorlage; es wurde nichts abgerufen.
 
 ## Grenzen
 
@@ -108,7 +108,7 @@ Private Daten liegen unter `…/scratchpad/v12-private/listref/`. Die Skripte un
 4. `resolve_agents.py --out`
 5. `build_reference.cjs --emit-queries`
 6. `fts_links.py`, mehrfach, bis keine Abfragen mehr offen sind (`purge_error_bodies.py` entfernt gecachte Fehlerantworten)
-7. `build_reference.cjs --fts … --out-dir`
+7. `build_reference.cjs --fts … --out-dir` (Vollfassungen privat unter `full/`, öffentlich die Redaktion 1.0.3; nachträglich: `redact_public.cjs --private … --out-dir …`)
 8. `fetch_reasons.py`
 9. `reasons.cjs`
 10. `verify_sample.py`
@@ -129,3 +129,25 @@ SEC-Abrufe dieses Strangs, alle über `scripts/quant/sec/http_client.py` mit 2/s
 | **Summe** | **≈ 7.600** |
 
 Hinzu kam 1 Abruf der Tiingo-Datei.
+
+## Korrektur nach unabhängiger Prüfung (Befund MAJOR 6): keine zeilenweisen Anbieter-Metadaten im Repository
+
+- **Befund:** `fetch-candidates-1.0.2.json` (4.322 Zeilen Ticker, Börse, Start-/Endjahr, CIK, Link-Grad, `endSource`) und
+  `delisting-register-1.0.2.json.gz` (je SEC-Ereignis die verknüpften Anbieterketten mit Ticker, Börse, `dayDiffEndToEvent`,
+  `endSource`) gaben die Anbieter-Tickerliste zeilenweise und tagesgenau wieder.
+- **Korrektur (keine Neuberechnung):** Beide Dateien sind aus dem Arbeitsbaum entfernt und liegen unverändert privat
+  (`…/v12-private/listref/full/`, sha256 im Feld `privateFullVersion` der neuen Dateien). Öffentlich stehen nur noch
+  [fetch-candidates-1.0.3.json](fetch-candidates-1.0.3.json) – Spalten `chainId`, `cik`, `startYearBucket`, `endYearBucket`
+  (5-Jahres-Klassen) plus Zählungen je Endjahr und je 5-Jahres-Klasse (nach Börse, Link-Grad, Endquelle aggregiert) – und
+  [delisting-register-1.0.3.json.gz](delisting-register-1.0.3.json.gz) – SEC-Ereignisdaten unverändert (CIK, Ereignisdatum,
+  Formulare/Akzessionen, Emittentenname), verknüpfte Anbieterketten nur als Anzahl, Hash-Kennungen, Anzahl mit Kursreihe/mit
+  Lifecycle und Zählung je Link-Grad. `chainId` = HMAC-SHA256 mit privatem Schlüssel über Ticker|Börse|Endjahr (16 Hex), in
+  beiden Dateien gleich (verknüpfbar), ohne Schlüssel nicht per Ticker-Wörterbuch umkehrbar.
+- Erzeuger: `scripts/quant/v12/listref/redact.cjs` (Redaktion, `assertRedacted` fail-closed), `redact_public.cjs` (aus den
+  privaten Vollfassungen); `build_reference.cjs` schreibt die Vollfassungen künftig nur privat und ins Repository nur 1.0.3.
+  Modul: `research-listing-reference.cjs#createFetchCandidates` liest nur die öffentliche Fassung und verweigert jede Datei mit
+  Anbieter-Spalten. Test: `quant/tests/v12-listref.test.mjs` („LISTREF 1.0.3 public redaction“).
+- **Offen (Owner):** Die 1.0.2-Dateien bleiben in der Git-Historie dieses Branches (Commit `1ab37c75b4`); vor einem Merge nach
+  `main` müssten sie per Squash/History-Bereinigung entfernt werden – nicht ohne Freigabe ausgeführt.
+- Weiterhin mit Tickern im Repository: `verification-sample-1.0.2.json` (60 adjudizierte Fälle mit Ticker, SEC-belegt) und
+  Aggregate (`reference-summary`, `coverage-matrix`); nicht Gegenstand des Befunds, zur Owner-Entscheidung benannt.

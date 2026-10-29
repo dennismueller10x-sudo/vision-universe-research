@@ -112,3 +112,18 @@ test('evidence files: every v12 record is backed by a qualified case; counts con
   assert.equal(ca.registeredEvents, 0);
   for (const r of ext.records) for (const p of r.priceEvidence) assert.ok(p.quote.length <= 300);
 });
+
+test('V10 builder build-registers.cjs preserves the non-enumerable v12 extension (byte-identical rebuild, LARGECAP m9)', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const tmp = mkdtempSync(join(tmpdir(), 'v12-largecap-br-'));
+  const ie = join(tmp, 'identity.cjs'), ll = join(tmp, 'lifecycle.cjs');
+  execFileSync(process.execPath, [join(root, 'scripts/quant/v10/population/build-registers.cjs'), '--identity-out', ie, '--lifecycle-out', ll], { stdio: 'pipe' });
+  const committed = readFileSync(join(root, 'quant/engines/research-identity-evidence.cjs'));
+  assert.equal(sha(readFileSync(ie)), sha(committed), 'rebuild of the identity register is byte-identical incl. v12');
+  const rebuilt = require(ie);
+  const d = Object.getOwnPropertyDescriptor(rebuilt, 'v12');
+  assert.ok(d && !d.enumerable);
+  assert.deepEqual(d.value, ext);
+  assert.equal(JSON.stringify(rebuilt), JSON.stringify(Identity));
+  assert.equal(sha(readFileSync(ll)), sha(readFileSync(join(root, 'quant/engines/research-listing-lifecycle.cjs'))));
+});

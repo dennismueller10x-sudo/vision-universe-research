@@ -2,7 +2,7 @@
 'use strict';
 // V12 REQUAL P5c - V10 factor rank IC and quintiles on the PIT S&P 500 with corrected PIT market cap (registration 1.0.1, P5.c_factor).
 // Steps S1 FRAME_BEFORE -> S2 FRAME_AFTER -> S3 SP_SERIES -> S4 SP_HOLDINGS (ZERO/LOWER), diagnostic D1 (full-frame scores on the S&P subset).
-// Usage: node p5c-factor.cjs --panels <v12-private>/mcap [--out docs/quant-recovery/v12/requal/p5c-factor-1.0.0.json]
+// Usage: node p5c-factor.cjs --panels <v12-private>/mcap [--out docs/quant-recovery/v12/requal/p5c-factor-1.1.0.json]
 const path = require('node:path');
 const L = require('./lib.cjs');
 const X = require(L.ROOT + '/scripts/quant/v10/factor/factors.cjs');
@@ -22,7 +22,7 @@ function periodStats(rows) {
 }
 
 async function main() {
-  const o = L.args(process.argv.slice(2), { panels: null, out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5c-factor-1.0.0.json') });
+  const o = L.args(process.argv.slice(2), { panels: null, out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5c-factor-1.1.0.json') });
   if (!o.panels) throw Error('PANELS_DIR_REQUIRED');
   const t0 = Date.now(), reg = readRegistration();
   const ctx = frameContext(), pop = L.makePopulation(), spy = L.makeSpy();

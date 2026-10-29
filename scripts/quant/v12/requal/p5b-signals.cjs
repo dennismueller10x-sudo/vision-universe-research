@@ -4,7 +4,7 @@
 // Steps: FRAME_2009 (full survivor frame, window 2009-10..2025), SP500_WITH_SERIES (events and population restricted to members at the latest
 // population date <= signal date), SP500_ALL_ESTIMATE (population term shifted by the within-index survivorship gap of P5a).
 // Reuses the V10 frame/panel/eligibility/benchmark/inference blocks and the V11 window/decomposition semantics unchanged.
-// Usage: node p5b-signals.cjs [--out docs/quant-recovery/v12/requal/p5b-signals-1.0.0.json] [--p5a docs/.../p5a-population-1.0.0.json]
+// Usage: node p5b-signals.cjs [--out docs/quant-recovery/v12/requal/p5b-signals-1.1.0.json] [--p5a docs/.../p5a-population-1.1.0.json]
 const path = require('node:path');
 const L = require('./lib.cjs');
 const K = require(L.ROOT + '/scripts/quant/v10/studies/common.cjs');
@@ -62,7 +62,7 @@ function cell(ctx, rule, h, isMember, pop, shifts) {
 }
 
 async function main() {
-  const o = L.args(process.argv.slice(2), { out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5b-signals-1.0.0.json'), p5a: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.0.0.json') });
+  const o = L.args(process.argv.slice(2), { out: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5b-signals-1.1.0.json'), p5a: path.join(L.ROOT, 'docs/quant-recovery/v12/requal/p5a-population-1.1.0.json') });
   const t0 = Date.now(), reg = readRegistration(), spec = reg.registration.P5.b_signalDecomposition;
   const fr = K.buildFrame(LOADER), manifestHash = K.V.hash(K.sourceManifest(fr)), panel = K.buildPanel(fr), benchmark = K.loadBenchmark();
   for (const p of panel) { p.elig = new Uint8Array(p.closes.length); for (let k = K.Signal.WARMUP_WEEKS; k < p.closes.length; k++) if (K.eligibleAt(p, k, LOOKBACK)) p.elig[k] = 1; }

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-/* V12 SPXPOP: PIT index population with period price returns from the fund holdings themselves (rules-1.1.0.json, amending 1.0.0/1.0.1).
+/* V12 SPXPOP: PIT index population with period price returns from the fund holdings themselves (rules-<IP.RULE.version>.json; 1.1.1 amends
+ * 1.1.0 after independent review: identity break at mergers, see IP.identityBreak).
  * Inputs (private, INDEXPOP): work/snapshots.json, work/mapping-1.2.0.json, work/fates-1.2.0.json, http-cache (N-PORT
  * monthly total returns). Repository (read-only): weekly series, multi-asset fund series, lifecycle register.
  * Outputs: --out-dir (repo evidence: population gz, periods, validation, summary, manifest) and --work (private detail).
@@ -150,15 +151,19 @@ function linkPeriod(A, B) {
     const eN = Math.log(pr) - base, eS = Math.log(near.ratio.value * pr) - base;
     if ((Math.abs(Math.log(q)) <= R.FUZZY_Q_LOG || near.dist <= R.RATIO_TOL) && (Math.abs(eN) <= R.FUZZY_RESID || Math.abs(eS) <= R.FUZZY_RESID)) set(i, j, 'C4_FUZZY');
   }
-  const links = [];
+  const links = [], idBreaks = [];
   for (let i = 0; i < A.length; i++) if (la[i] >= 0) {
     const j = la[i], q = B[j].shares / A[i].shares / fi.F, pr = B[j].p / A[i].p;
-    links.push({ a: i, b: j, tier: tier[i], q, pr, ...IP.classifySplit(q, pr, fi.ridx) });
+    const l = { a: i, b: j, tier: tier[i], q, pr, ...IP.classifySplit(q, pr, fi.ridx) };
+    // 1.1.1: identity break at a merger - not chained; the t0 position becomes an exit (BOUNDED_EXIT, fate IDENTITY_BREAK)
+    const ib = IP.identityBreak(l, fi.ridx);
+    if (ib.break) { idBreaks.push({ ...l, excessLog: ib.excessLog }); la[i] = -1; lb[j] = -1; continue; }
+    links.push(l);
   }
   // possible identity breaks
   const ex = freeA(), en = freeB(); let breaks = 0; const breakList = [];
   for (const i of ex) { const j = en.find(jj => (A[i].cik && A[i].cik === B[jj].cik) || L.tokenSim(A[i].nameKey || '', B[jj].nameKey || '') >= R.BREAK_SIM); if (j !== undefined) { breaks++; if (breakList.length < 5) breakList.push([A[i].name, B[j].name]); } }
-  return { links, la, lb, F: fi.F, ridx: fi.ridx, nBase: fi.nBase, exits: ex, entries: en, breaks, breakList };
+  return { links, la, lb, F: fi.F, ridx: fi.ridx, nBase: fi.nBase, exits: ex, entries: en, breaks, breakList, idBreaks, idBreakSet: new Set(idBreaks.map(x => x.a)) };
 }
 
 const PERIODS = [];
@@ -204,6 +209,7 @@ for (const P of PERIODS) {
     rows[l.a].sid = a.sid || P.B[l.b].sid;
   }
   for (const i of P.exits) {
+    if (P.idBreakSet.has(i)) { rows[i] = { status: 'BOUNDED_EXIT', point: 0, lo: -1, hi: null, tier: 'NONE', cls: 'NA', sf: null, fate: 'IDENTITY_BREAK', sid: P.A[i].sid }; continue; }
     const a = P.A[i], fate = exitFate(P, a), r = { tier: 'NONE', cls: 'NA', sf: null, fate, sid: a.sid };
     const x = crossFund(P, a);
     if (x) { Object.assign(r, { status: 'OBS_CROSSFUND', point: x.point, lo: x.point, hi: x.point, via: x.fund + ':' + x.via }); rows[i] = r; continue; }
@@ -264,7 +270,7 @@ for (const P of PERIODS) {
   const tierCounts = {}; for (const l of P.links) tierCounts[l.tier] = (tierCounts[l.tier] || 0) + 1;
   const rnd = (x, d = 6) => x == null ? null : +x.toFixed(d);
   P.summary = { months: IP.monthsBetween(P.t0, P.t1), members: P.A.length, membersT1: P.B.length, links: P.links.length, tierCounts, exits: P.exits.length, entries: P.entries.length,
-    possibleIdentityBreaks: P.breaks, fundFlowF: rnd(P.F), indexPrelim: rnd(P.ridx), splitCounts, byStatus: Object.fromEntries(Object.entries(byStatus).map(([k, v]) => [k, { n: v.n, w: rnd(v.w) }])),
+    possibleIdentityBreaks: P.breaks, identityBreaksMerger: P.idBreaks.length, fundFlowF: rnd(P.F), indexPrelim: rnd(P.ridx), splitCounts, byStatus: Object.fromEntries(Object.entries(byStatus).map(([k, v]) => [k, { n: v.n, w: rnd(v.w) }])),
     observedW: rnd(g.observed), estimatedW: rnd(g.estimated), boundedW: rnd(g.bounded), boundedByFate: Object.fromEntries(Object.entries(fatesB).map(([k, v]) => [k, { n: v.n, w: rnd(v.w) }])),
     rPoint: rnd(rp), rLow: rnd(rl), rFund: rnd(rfund), referenceKind: refKind, errorPp: rnd(errorPp, 4), tolerancePp: rnd(IP.tolerancePp(P.t0, P.t1, refKind === 'NPORT_TR_MINUS_SPY_DIVIDEND_GAP'), 4),
     impliedBoundedMean: rfund != null && g.bounded > 1e-9 ? rnd((rfund - obsSum - 0) / g.bounded, 4) : null,
@@ -316,8 +322,17 @@ for (const P of PERIODS) {
 }
 for (const c of Object.values(val.crossFund)) { c.agreeWMean = +(c.agreeWMean / c.periods).toFixed(5); c.commonW = +(c.commonW / c.periods).toFixed(4); }
 // split-class totals and tiers
-val.totals = { statusCounts, splitClasses: {}, tiers: {}, possibleIdentityBreaks: 0, exits: 0, entries: 0 };
-for (const P of PERIODS) { for (const [k, v] of Object.entries(P.summary.splitCounts)) val.totals.splitClasses[k] = (val.totals.splitClasses[k] || 0) + v; for (const [k, v] of Object.entries(P.summary.tierCounts)) val.totals.tiers[k] = (val.totals.tiers[k] || 0) + v; val.totals.possibleIdentityBreaks += P.breaks; val.totals.exits += P.exits.length; val.totals.entries += P.entries.length; }
+val.totals = { statusCounts, splitClasses: {}, tiers: {}, possibleIdentityBreaks: 0, identityBreaksMerger: 0, exits: 0, entries: 0 };
+for (const P of PERIODS) { for (const [k, v] of Object.entries(P.summary.splitCounts)) val.totals.splitClasses[k] = (val.totals.splitClasses[k] || 0) + v; for (const [k, v] of Object.entries(P.summary.tierCounts)) val.totals.tiers[k] = (val.totals.tiers[k] || 0) + v; val.totals.possibleIdentityBreaks += P.breaks; val.totals.identityBreaksMerger += P.idBreaks.length; val.totals.exits += P.exits.length; val.totals.entries += P.entries.length; }
+
+// 1.1.1: identity breaks (all funds) and the review list of the remaining > +100 % cases on bounded/ambiguous or C3/C4 links
+const rnd6 = x => x == null ? null : +x.toFixed(6);
+val.identityBreaks = { rule: 'rules-' + V + ' identityChain.identityBreak', cases: PERIODS.flatMap(P => P.idBreaks.map(l => ({ fund: P.fund, t0: P.t0, t1: P.t1, nameT0: P.A[l.a].name, nameT1: P.B[l.b].name,
+  tier: l.tier, splitClass: l.cls, q: rnd6(l.q), priceRatio: rnd6(l.pr), returnHypotheses: l.point != null ? [rnd6(l.point)] : [rnd6(l.lo), rnd6(l.hi)], indexPrelim: rnd6(P.ridx), excessLog: rnd6(l.excessLog),
+  weightPct: +(100 * P.A[l.a].w).toFixed(4), qualification: P.qualification, nowStatus: 'BOUNDED_EXIT', nowFate: 'IDENTITY_BREAK' }))) };
+val.identityBreaks.remainingOver100pct = PERIODS.flatMap(P => P.links.filter(l => { const hyp = l.point != null ? [l.point] : [l.lo, l.hi]; return Math.min(...hyp) > 1 && (l.cls === 'AMBIGUOUS_CA' || l.tier === 'C3_CIK' || l.tier === 'C4_FUZZY'); })
+  .map(l => ({ fund: P.fund, t0: P.t0, t1: P.t1, nameT0: P.A[l.a].name, nameT1: P.B[l.b].name, tier: l.tier, splitClass: l.cls, q: rnd6(l.q), returnHypotheses: l.point != null ? [rnd6(l.point)] : [rnd6(l.lo), rnd6(l.hi)], excessLog: rnd6(Math.min(...(l.point != null ? [l.point] : [l.lo, l.hi]).map(v => Math.log(1 + v))) - Math.log(1 + P.ridx)), weightPct: +(100 * P.A[l.a].w).toFixed(4), qualification: P.qualification })));
+val.identityBreaks.note = 'remainingOver100pct: links that stay chained although every return hypothesis is above +100 % and the link is ambiguous or without CUSIP/name identity; they keep CUSIP/name identity (C1/C2: same security, e.g. Corning 2003, Avaya 2003) or are not share-count discontinuities (NONE) - listed for review, not changed.';
 
 // ---------------------------------------------------------------- chains + compact data
 const chains = [], sidList = [], sidIdx = new Map(), sidI = id => { if (id == null) return null; if (!sidIdx.has(id)) { sidIdx.set(id, sidList.length); sidList.push(id); } return sidIdx.get(id); };
@@ -375,6 +390,6 @@ const summary = { schemaVersion: 'v12-spxpop-summary-' + V + '', studyId: 'v12-s
   scope: 'Holdings-frequency (annual/semiannual/quarterly) PIT index membership and price returns; no weekly study, no total return, no fundamentals except via CIK; not a strategy or signal study.' };
 fs.writeFileSync(path.join(OUT, 'summary-' + V + '.json'), JSON.stringify(summary, null, 1) + '\n');
 // private detail (names, per-link diagnostics) for the Python check and inspection
-fs.writeFileSync(path.join(WORK, 'detail-' + V + '.json'), JSON.stringify(PERIODS.map(P => ({ fund: P.fund, t0: P.t0, t1: P.t1, summary: P.summary, qualification: P.qualification, breaks: P.breakList,
+fs.writeFileSync(path.join(WORK, 'detail-' + V + '.json'), JSON.stringify(PERIODS.map(P => ({ fund: P.fund, t0: P.t0, t1: P.t1, summary: P.summary, qualification: P.qualification, breaks: P.breakList, identityBreaks: P.idBreaks.map(l => ({ nameT0: P.A[l.a].name, nameT1: P.B[l.b].name, keyT0: P.A[l.a].key, w: P.A[l.a].w, q: l.q, pr: l.pr, tier: l.tier, cls: l.cls, excessLog: l.excessLog })),
   rows: P.rows.map((r, i) => ({ name: P.A[i].name, key: P.A[i].key, w: P.A[i].w, p0: P.A[i].p, ...r, linkTo: P.la[i] >= 0 ? P.B[P.la[i]].name : null, q: (P.links.find(l => l.a === i) || {}).q })) }))));
 console.log(JSON.stringify({ periods: periodsOut.length, bytes: gz.length, statusCounts, pops: POPS.map(p => [p.id, p.periods, p.qualificationCounts, p.qualifiedSpanFrom]) }, null, 0));

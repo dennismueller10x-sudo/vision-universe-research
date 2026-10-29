@@ -8,6 +8,17 @@ const IP = require(ROOT + '/quant/engines/research-index-population.cjs');
 const SPAN = ['2009-09-30', '2026-06-30'];
 const SIGNAL_MAX_STALE_DAYS = 35;
 const SCENARIOS = ['ZERO', 'LOWER'];
+// 1.1.0 (correction after the independent V12 review, REQUAL MAJOR 2): two further scenarios for the bounded cases, used by P5a.
+//   FATE  = exits by their documented fate: takeover (ACQUIRED_*, IDENTITY_BREAK) -> typical premium of documented cash/observed
+//           takeovers (takeoverPremium().median); delisting/bankruptcy -> -100 %; index change (STILL_REPORTING_INDEX_EXIT,
+//           TEMPORARY_ABSENCE) -> the population's period return (EW of the observed/estimated members); unknown fate
+//           (NO_CIK, NO_SEC_EVIDENCE, CIK_NAME_MISMATCH, NOT_FATED) -> 0 % (point convention, weight reported); ambiguous CA -> midpoint.
+//   UPPER = every bounded exit at max(premium p75, population period return); ambiguous CA at its upper bound.
+// Reading for the survivorship term EW_WITH_H - EW_ALL: LOWER (exits -100 %) gives its UPPER bound, UPPER gives its lower end,
+// ZERO is a point convention (no bound), FATE the evidence-based point estimate.
+const SCENARIOS_P5A = ['ZERO', 'LOWER', 'FATE', 'UPPER'];
+const FATE_CLASS = Object.freeze({ ACQUIRED_OR_MERGED: 'TAKEOVER', ACQUIRED_OR_MERGED_NO_25_15: 'TAKEOVER', IDENTITY_BREAK: 'TAKEOVER', DELISTED_OTHER: 'DELISTING', DELISTED_BANKRUPTCY: 'DELISTING',
+  BANKRUPTCY_NO_25_15: 'DELISTING', STILL_REPORTING_INDEX_EXIT: 'INDEX_CHANGE', TEMPORARY_ABSENCE: 'INDEX_CHANGE', NO_SEC_EVIDENCE: 'UNKNOWN', NO_CIK: 'UNKNOWN', CIK_NAME_MISMATCH: 'UNKNOWN', NOT_FATED: 'UNKNOWN' });
 const finite = v => typeof v === 'number' && Number.isFinite(v);
 const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
 const sd = a => { if (a.length < 2) return null; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); };
@@ -78,27 +89,60 @@ function spyTotalReturn(spy, dist, t0, t1) {
   return { tr: g - 1, price: spy.ret(t0, t1), divYield: dy, carried };
 }
 
+// ---------------------------------------------------------------- takeover premium (FATE/UPPER scenarios)
+const quant = (a, p) => { const x = a.slice().sort((u, v) => u - v); if (!x.length) return null; const h = (x.length - 1) * p, lo = Math.floor(h); return x[lo] + (x[Math.min(lo + 1, x.length - 1)] - x[lo]) * (h - lo); };
+/** Documented takeover returns from the last known valuation to the exit: (a) V10 lifecycle register CASH_MERGER (SEC-sourced cash per
+ *  share) against our weekly close at the last calendar quarter end before the last trading day; (b) population exits of PIT_SP500 and
+ *  PIT_NDX (span) with fate ACQUIRED_* and an estimated/observed return (EST_CASH, EST_SERIES_END, OBS_SERIES). */
+function takeoverPremium(pop) {
+  const LC = require(ROOT + '/quant/engines/research-listing-lifecycle.cjs').records, cases = [];
+  const qEndBefore = d => { const y = +d.slice(0, 4), m = +d.slice(5, 7), q = Math.floor((m - 1) / 3) * 3; return q === 0 ? (y - 1) + '-12-31' : y + '-' + String(q).padStart(2, '0') + '-' + (q === 3 ? '31' : '30'); };
+  for (const r of LC) {
+    if (!r.terminal || r.terminal.kind !== 'CASH_MERGER' || !(r.terminal.cashPerShare > 0)) continue;
+    const f = path.join(ROOT, 'quant/data/market/discover-series-long', r.securityId + '.json'); if (!fs.existsSync(f)) continue;
+    const pts = JSON.parse(fs.readFileSync(f, 'utf8')).points, q0 = qEndBefore(r.lastTradeDate), k = lastIdx(pts.map(p => p[0]), q0, 7);
+    if (k < 0) continue;
+    cases.push({ source: 'V10_LIFECYCLE_CASH_MERGER', id: r.securityId, t0: q0, r: r.terminal.cashPerShare / pts[k][1] - 1 });
+  }
+  for (const id of ['PIT_SP500', 'PIT_NDX']) for (const p of pop.periods(id)) {
+    if (p.t0 < SPAN[0] || p.t1 > SPAN[1]) continue;
+    for (const m of pop.members(id, p.t0).members) if (/^ACQUIRED/.test(m.fate || '') && ['EST_CASH', 'EST_SERIES_END', 'OBS_SERIES'].includes(m.status)) cases.push({ source: id + ':' + m.status, id: m.securityId || m.name, t0: p.t0, r: m.observedOrEstimatedReturn });
+  }
+  // the same takeover seen in two funds (e.g. ANSYS in SPY and QQQ) counts once
+  const seen = new Set(); cases.splice(0, cases.length, ...cases.filter(c => { const k = c.id + '|' + c.t0; if (seen.has(k)) return false; seen.add(k); return true; }));
+  const rs = cases.map(c => c.r);
+  return { n: cases.length, median: quant(rs, 0.5), p25: quant(rs, 0.25), p75: quant(rs, 0.75), cases: cases.map(c => ({ ...c, r: r6(c.r) })) };
+}
+
 // ---------------------------------------------------------------- index population (scenarios)
 function makePopulation() {
   const z = IP.createIndexPopulation({ optIn: true, allowUnqualified: true, boundedAs: 'ZERO' });
   const l = IP.createIndexPopulation({ optIn: true, allowUnqualified: true, boundedAs: 'LOWER' });
+  const premium = takeoverPremium(z);
   const periods = z.periods('PIT_SP500').filter(p => p.t0 >= SPAN[0] && p.t1 <= SPAN[1]);
   const cache = new Map();
   function members(t0) {
     if (cache.has(t0)) return cache.get(t0);
     const a = z.members('PIT_SP500', t0), b = l.members('PIT_SP500', t0);
+    const covered = a.members.filter(m => m.group !== 'bounded'), popRet = mean(covered.map(m => m.observedOrEstimatedReturn));
     const out = a.members.map((m, i) => {
       const mb = b.members[i];
       if (mb.chainId !== m.chainId) throw Error('SCENARIO_MEMBER_ORDER');
-      let zero = m.return, lower = mb.return;
-      if (m.status === 'BOUNDED_AMBIGUOUS_CA') zero = (m.lower + m.upper) / 2;
-      if (!finite(zero) || !finite(lower)) throw Error('SCENARIO_RETURN_MISSING:' + t0 + ':' + m.chainId);
-      return { chainId: m.chainId, name: m.name, cik: m.cik, securityId: m.securityId, weight: m.weight, status: m.status, group: m.group, ret: { ZERO: zero, LOWER: lower } };
+      let zero = m.return, lower = mb.return, fate = zero, upper = zero, fateClass = null;
+      if (m.status === 'BOUNDED_AMBIGUOUS_CA') { zero = (m.lower + m.upper) / 2; fate = zero; upper = m.upper; fateClass = 'AMBIGUOUS_CA'; }
+      else if (m.status === 'BOUNDED_EXIT_SERIES_DELISTED') { fateClass = FATE_CLASS[m.fate] || 'UNKNOWN'; fate = fateClass === 'DELISTING' ? -1 : m.return; upper = m.upper; }
+      else if (m.group === 'bounded') {
+        fateClass = FATE_CLASS[m.fate] || 'UNKNOWN';
+        fate = fateClass === 'TAKEOVER' ? premium.median : fateClass === 'DELISTING' ? -1 : fateClass === 'INDEX_CHANGE' ? popRet : 0;
+        upper = Math.max(premium.p75, popRet);
+      }
+      if (![zero, lower, fate, upper].every(finite)) throw Error('SCENARIO_RETURN_MISSING:' + t0 + ':' + m.chainId);
+      return { chainId: m.chainId, name: m.name, cik: m.cik, securityId: m.securityId, weight: m.weight, status: m.status, group: m.group, fate: m.fate, fateClass, ret: { ZERO: zero, LOWER: lower, FATE: fate, UPPER: upper } };
     });
     const r = { t0, t1: a.t1, qualification: a.qualification, members: out };
     cache.set(t0, r); return r;
   }
-  return { periods, members, ruleVersion: z.ruleVersion, dataSha256: z.dataSha256 };
+  return { periods, members, ruleVersion: z.ruleVersion, dataSha256: z.dataSha256, premium };
 }
 
 // ---------------------------------------------------------------- weekly frame helpers
@@ -192,5 +236,5 @@ function excessStats(a, b, opts = {}) {
 function writeJson(file, x, gz = false) { fs.mkdirSync(path.dirname(file), { recursive: true }); const s = JSON.stringify(x, null, gz ? 0 : 1) + '\n'; fs.writeFileSync(file, gz ? zlib.gzipSync(s, { level: 9 }) : s); return sha256(gz ? fs.readFileSync(file) : s); }
 function args(argv, spec) { const o = { ...spec }; for (let i = 0; i < argv.length; i++) { const k = argv[i].replace(/^--/, ''); if (!(k in spec)) throw Error('UNKNOWN_ARGUMENT:' + argv[i]); o[k] = argv[++i]; } return o; }
 
-module.exports = { ROOT, IP, SPAN, SIGNAL_MAX_STALE_DAYS, SCENARIOS, finite, mean, sd, days, addDays, years, sha256, shaFile, r6, lastIdx, dailySeries, makeSpy, makeCash,
+module.exports = { ROOT, IP, SPAN, SIGNAL_MAX_STALE_DAYS, SCENARIOS, SCENARIOS_P5A, FATE_CLASS, takeoverPremium, quant, finite, mean, sd, days, addDays, years, sha256, shaFile, r6, lastIdx, dailySeries, makeSpy, makeCash,
   spyDistributions, fiscalYearOf, spyTotalReturn, makePopulation, seriesReturn, hasBarAt, regimeR1, regimeR2, bartlettLrv, neweyWest, mulberry32, blockBootstrap, holm, perf, excessStats, writeJson, args };

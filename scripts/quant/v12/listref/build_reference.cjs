@@ -407,12 +407,22 @@ function main() {
     potentialCaveat: 'Upper bound against the provider reference itself (which lacks most pre-2013 delistings); assumes full histories would be delivered.', count: cand.length,
     rows: cand.map(x => [x.ticker, x.group, +x.startDate.slice(0, 4), +x.endDate.slice(0, 4), x.link.cik || null, x.link.grade, x.endSource]) };
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'fetch-candidates-1.0.2.json'), JSON.stringify(fetchDoc) + '\n');
+  // correction after the independent V12 review (LISTREF MAJOR 6): the row-level files with provider metadata are written only to
+  // the private directory (full 1.0.2); the repository receives the public redaction 1.0.3 (scripts/quant/v12/listref/redact.cjs).
+  const X = require('./redact.cjs'), fullDir = path.join(priv, 'full'); fs.mkdirSync(fullDir, { recursive: true });
+  const keyFile = path.join(priv, 'work/chain-hash-key.txt');
+  if (!fs.existsSync(keyFile)) fs.writeFileSync(keyFile, require('node:crypto').randomBytes(32).toString('hex') + '\n', { mode: 0o600 });
+  const hashKey = fs.readFileSync(keyFile, 'utf8').trim();
+  fs.writeFileSync(path.join(fullDir, 'fetch-candidates-1.0.2.json'), JSON.stringify(fetchDoc) + '\n');
+  fs.writeFileSync(path.join(fullDir, 'delisting-register-1.0.2.json.gz'), zlib.gzipSync(JSON.stringify(registerDoc) + '\n', { level: 9 }));
+  const pubFetch = X.redactFetchCandidates(fetchDoc, hashKey), pubReg = X.redactDelistingRegister(registerDoc, hashKey);
+  X.assertRedacted(pubFetch); X.assertRedacted(pubReg);
+  fs.writeFileSync(path.join(outDir, 'fetch-candidates-1.0.3.json'), JSON.stringify(pubFetch) + '\n');
   fs.writeFileSync(path.join(outDir, 'reference-summary-1.0.2.json'), JSON.stringify(refSummary, null, 1) + '\n');
   fs.writeFileSync(path.join(outDir, 'coverage-matrix-1.0.2.json'), JSON.stringify(coverageMatrix) + '\n');
   fs.writeFileSync(path.join(outDir, 'reference-completeness-1.0.2.json'), JSON.stringify(completeness, null, 1) + '\n');
   fs.writeFileSync(path.join(outDir, 'coverage-by-year-segment.json'), JSON.stringify(p4doc) + '\n');
-  fs.writeFileSync(path.join(outDir, 'delisting-register-1.0.2.json.gz'), zlib.gzipSync(JSON.stringify(registerDoc) + '\n', { level: 9 }));
+  fs.writeFileSync(path.join(outDir, 'delisting-register-1.0.3.json.gz'), zlib.gzipSync(JSON.stringify(pubReg) + '\n', { level: 9 }));
   console.log(JSON.stringify({ chains: b.chains.length, ended: refSummary.counts.endedChains, endSource: refSummary.counts.endSource, links: refSummary.cikLinks, fts: refSummary.ftsQueries, register: b.register.length }, null, 1));
   for (const y of YEARS) { const a = (b.matrix[String(y)] || {}).all?.ALL; const c = b.completeness[y]; if (a) console.log(y, JSON.stringify(shares(a)), c ? JSON.stringify({ ev: c.consideredEvents, lo: c.completenessLower, up: c.completenessUpper }) : ''); }
 }

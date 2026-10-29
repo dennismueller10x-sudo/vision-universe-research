@@ -152,10 +152,42 @@ Position über die Perioden eines Fonds. Fundamentaldaten nur über `cik` (Gewic
 
 ```bash
 P=<scratchpad>/v12-private
-node --max-old-space-size=6000 scripts/quant/v12/spxpop/build-population.cjs --private $P/indexpop --work $P/spxpop --out-dir docs/quant-recovery/v12/spxpop   # ~40 s
-python3 -I scripts/quant/v12/spxpop/verify_spxpop.py <repo> $P/indexpop $P/spxpop 1.1.0 docs/quant-recovery/v12/spxpop/python-check-1.1.0.json SPY,IWB,QQQ,IWM
+node --max-old-space-size=6000 scripts/quant/v12/spxpop/build-population.cjs --private $P/indexpop --work $P/spxpop --out-dir docs/quant-recovery/v12/spxpop   # ~30 s, Regeln 1.1.1 (Version aus research-index-population.cjs)
+python3 -I scripts/quant/v12/spxpop/verify_spxpop.py <repo> $P/indexpop $P/spxpop 1.1.1 docs/quant-recovery/v12/spxpop/python-check-1.1.1.json SPY,IWB,QQQ,IWM
 node --test quant/tests/v12-spxpop.test.mjs
 ```
 
 Eingaben: INDEXPOP-Privatdaten (`snapshots.json`, `mapping-1.2.0.json`, `fates-1.2.0.json`, HTTP-Cache der Rohdokumente);
 Hashes in `manifest-1.1.0.json`. **SEC-Abrufe dieses Strangs: 0** (alles aus dem INDEXPOP-Cache).
+
+## Korrektur nach unabhängiger Prüfung: Regeln 1.1.1 (Befund m4, Identitätsbruch bei Fusionen)
+
+- **Befund:** Broadcom Corp. (Klasse A) wurde über die CIK (C3) mit Broadcom Ltd. verkettet – SPY 2015-09 → 2016-03 als
+  AMBIGUOUS_CA mit beiden Schranken +200 % (Index-Mittelpunkt +0,34 PP), QQQ 2015-09 → 2016-09 +235 %, IWB/IWV 2015-12 → 2016-06
+  sogar als beobachtete Rendite (+169 %, SHARE_CHANGE). Der Kurs von Broadcom Ltd. ist der Kurs eines anderen Papiers (Avago als
+  Übernehmer wurde zugleich Schranken-Austritt). Die Kette hatte für C3/C4 keine Plausibilitätsgrenze.
+- **Regel 1.1.1** (`rules-1.1.1.json` → `identityChain.identityBreak`, sha256 `ab837a84…`, nach Sicht offengelegt): Eine
+  C3_CIK- oder C4_FUZZY-Verknüpfung (keine CUSIP-/Namensgleichheit) mit SHARE_CHANGE oder AMBIGUOUS_CA, deren Kurs **unter jeder
+  zulässigen Hypothese** mehr als das Doppelte der Indexrendite erreicht (min_h log(1+R_h) − log(1+R_idx) > log 2), wird nicht
+  verkettet; die t₀-Position ist `BOUNDED_EXIT` (Punkt 0 %, Untergrenze −100 %) mit Folgeschicksal `IDENTITY_BREAK`, ohne
+  Austrittskaskade. Nach unten gerichtete Sprünge (Abspaltungen, Sonderdividenden wie HP 2015, KDP 2018) sind nicht betroffen.
+- **Weitere Fälle (Suche über alle Fonds und alle Verknüpfungen, gleiche Behandlung):** 13 Brüche – Broadcom ×4, PXRE → Argo 2007
+  (IWM, IWV), BPZ Energy → BPZ Resources 2007 (IWM, IWV), Arsanis → X4 2019, WMIH → Mr Cooper 2018, Aerovate → Jade 2025 (Reverse
+  Merger), Cano Health 2023 und System1 2025 (Reverse-Splits außerhalb des Verhältnissatzes). Liste: `validation-1.1.1.json` →
+  `identityBreaks.cases`. Die übrigen 201 verketteten Fälle mit allen Hypothesen > +100 % (`remainingOver100pct`) haben
+  CUSIP-/Namensidentität (z. B. Corning/Avaya 2003) oder keinen Aktienzahlsprung; im S&P 500 ab 2009-09 gibt es **keinen**.
+- **Wirkung (1.1.0 → 1.1.1):** Status OBS_CHAIN 335.162 → 335.158, AMBIGUOUS_CA 1.452 → 1.443, BOUNDED_EXIT 11.032 → 11.045.
+  Keine Qualifikation und keine qualifizierte Spanne ändert sich (S&P 500 weiter 2009-09 … 2026-06, 44/47). SPY 2015-09 → 2016-03:
+  Fehler −0,12 → **−0,46 PP** (Toleranz 0,71, weiter qualifiziert; Schranken-Anteil unverändert 1,33 %); halbjährlicher
+  Medianfehler 0,22 → 0,25 PP, Maximum 1,25 PP und Quartalswerte (0,06 / 0,25 PP) unverändert. IWB/IWV 2015-12: beobachtetes
+  Gewicht 98,35 → 98,20 % bzw. 98,22 → 98,08 % (weiter QUALIFIED_INTERNAL). QQQ 2015-09 → 2016-09 Fehler −1,59 → −3,01 PP (war und
+  bleibt nicht qualifiziert). Dateien: `population/periods/validation/summary/manifest-1.1.1.json(.gz)`; die 1.1.0-Stände bleiben
+  unverändert und sind mit `createIndexPopulation({ optIn: true, ruleVersion: '1.1.0' })` ladbar.
+- **Python-Gegenprüfung 1.1.1** (`python-check-1.1.1.json`, 7 min): Mitgliederebene unverändert (173.564 Paare, Split-Klasse gleich
+  173.523). Neu `identityBreaks`: 9 der 13 Brüche liegen in den geprüften Fonds (SPY, IWB, QQQ, IWM); 7 im eigenen Parse
+  lokalisiert, alle 7 erfüllen die Regel unabhängig (eigenes q, eigene Klasse, Überschuss-Log ≤ 0,001 Abweichung), keiner ist in der
+  eigenen CUSIP-/Namenskette verknüpft; 2 (PXRE, BPZ 2007) nicht lokalisiert (Namensparse). Die eigene Kette enthält 269
+  Verknüpfungen mit derselben Kurs-/Stück-Signatur, alle mit gleichem Namen bzw. CUSIP (Krisenerholungen 2009, Reverse-Splits) – die
+  Regel nimmt sie bewusst aus. SPY 2015-09 Python-Fehler (eigene Kette, Austritte 0 %) −0,60 PP.
+- Größe: die Strangablage wächst mit `population-1.1.1.json.gz` (2,5 MB) auf ≈ 6,8 MB (über dem Richtwert ~5 MB; die alten
+  Stände bleiben vereinbarungsgemäß).

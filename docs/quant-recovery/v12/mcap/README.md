@@ -110,7 +110,38 @@ node --test quant/tests/v12-mcap.test.mjs
 ```
 
 Grenzen: Register gilt für die Beobachtungsmenge mit `observationsHash` (andere Eingaben: Builder neu laufen lassen; nicht klassifizierte
-Fakten gelten im Wrapper als OK). Ausschlüsse (3.067 Zeilen) betreffen überwiegend Microcaps → leichte Größenverschiebung der Population.
+Fakten gelten im Wrapper per Default als OK; fail-closed mit `strict`, siehe Korrektur unten). Ausschlüsse (3.067 Zeilen) betreffen überwiegend Microcaps → leichte Größenverschiebung der Population.
 Spin-off-Kontinuität nutzt die erste Meldung nach dem Ereignis (Verfügbarkeit entsprechend gesetzt). Das automatische Deckblatt-Prüfskript
 ist unvollständig (Tabellen „in Tausend“, Tippfehler im Dokument selbst, z. B. ARW „87,973 shares“, SNDX „68,442.572“); jede
 nicht automatisch bestätigte Korrektur der Validierungsstichprobe ist einzeln adjudiziert. SEC-Abrufe: 311 (Cache privat).
+
+## Korrektur nach unabhängiger Prüfung (Befunde MAJOR 1, m2, m3)
+
+Beleg: `review-correction-1.0.0.json` (Erzeuger `scripts/quant/v12/mcap/review-correction.cjs`, liest nur die committeten
+Stichproben/Adjudikationen und die privaten Vorher/Nachher-Panels). Regel, Register und Studienergebnisse bleiben unverändert.
+
+- **Validierung ohne Überschneidung mit den Entwicklungsstichproben (MAJOR 1):** Die Validierungsstichprobe enthielt die 6 vorab
+  benannten Fälle (in jeder Stichprobe) und weitere Akzessionen aus den beiden Entwicklungsstichproben. Ohne diese
+  (Beobachtungsebene) bleiben 23 Korrekturen der Regel 1.0.7: 20 bestätigt, 2 falsch, 1 unbestätigt. **Unter 1.0.8 bleiben 19
+  davon korrigiert, 18 bestätigt, 1 unbestätigt, 0 falsch: 18/19 = 94,7 %, Wilson-95-%-Untergrenze 75,4 %.** Strenger
+  (zusätzlich ohne jeden Emittenten aus einer Entwicklungsstichprobe): 14/15, Untergrenze 70,2 %. 1.0.8 wurde nach dieser
+  Stichprobe beschlossen (nur Ausschlüsse); die 1.0.8-Anteile sind in-sample, die Untergrenze ist die ehrliche Kurzform.
+- **Falsche Angabe in `rule-1.0.8.json`:** Dort steht „32/32 confirmed“ für die unter 1.0.8 verbleibenden Korrekturen. Richtig:
+  von 34 gezogenen Korrekturen bleiben 30 korrigiert, 29 bestätigt, 1 unbestätigt (LOCO 10-Q 2022), 0 falsch
+  (`sec-adjudication-validation.json` → `summary.underRule1_0_8`). Die Regeldatei ist eingefroren (sha256) und wird nicht
+  geändert; diese Notiz ersetzt den Satz. Die Kurzfassung oben („29/30 richtig, 1 unbestätigt“) war bereits richtig.
+- **Dateinamen (m3):** Die Regeldateien nennen `sec-sample-1.0.0.json` (= `sec-sample-development.json`, Register 1.0.5) und
+  `sec-sample-final.json` (= `sec-sample-development-2.json`, Register 1.0.6); `panel.jsonl.gz` liegt privat (sha256 in
+  `impact-1.0.0.json`).
+- **Beschriftung `rowsValueScoreChanged` (m3):** Der Zähler (222.316) zählt jede Zeile, deren Value-Score sich um irgendeinen
+  Betrag ändert. Der Score ist ein Querschnitts-Perzentil (0,9–99,1): ein korrigierter oder ausgeschlossener Börsenwert verschiebt
+  die Ränge aller Zeilen des Stichtags. Tatsächlich: 755 Zeilen verlieren den Score, 221.561 verschieben sich, davon nur
+  **689 um > 1 Punkt, 559 um > 5, 412 um > 10**; Zeilen mit geänderter Marktkap. und geändertem Score: 893. Die Wirkungszahlen
+  (IC, Top-50, AUC) sind davon unberührt.
+- **Wrapper für nicht registrierte Fakten (m2):** `research-pit-market-cap.cjs#marketCapAt(args, base, register, options)`.
+  **Default unverändert:** ein Fakt, der nicht im Register steht, gilt als OK – das ist nur für die klassifizierte
+  Beobachtungsmenge richtig (`observationsHash`). **Neu `strict`:** `marketCapAt(…, { strict: true, observed })` mit
+  `observed = bindObservations(rows)`; `bindObservations` hasht die Beobachtungszeilen zur Laufzeit genau wie der Erzeuger und
+  wirft `PIT_MCAP_OBSERVATIONS_HASH_MISMATCH`, wenn der Hash nicht dem Register entspricht; ein Fakt, der weder im Register noch
+  in der gebundenen Menge steht, wird `EXCLUDED` (`NOT_IN_CLASSIFIED_OBSERVATIONS`). Die private Beobachtungsmenge bindet
+  (117.888 Schlüssel, Hash `f96a8dcc…`). Test: `quant/tests/v12-mcap.test.mjs` („runtime strict mode“).

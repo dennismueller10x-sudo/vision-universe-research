@@ -6,11 +6,17 @@ Recomputes from raw inputs, without the JS modules:
       SPY/EFFR raw series, SPY N-30D distributions);
   (2) P6 strategy S5_LOWVOL_Q1 (scenario ZERO, base costs) with its own realised-volatility computation from the weekly
       series (V10 definition: 52 weekly log returns, >= 50 valid, sample SD x sqrt(52)) and its own ledger.
-Usage: python3 -I verify_requal.py <repo> <frame-export.json.gz> <after panel.jsonl.gz> <out.json>
+  1.1.0 (correction after the independent V12 review): population SPXPOP 1.1.1; scenarios FATE and UPPER with an own
+      computation of the takeover premium (V10 lifecycle register parsed as text + weekly series, population exits);
+      S5 also on the span from 2013-03-31 and against CW_ALL.
+Usage: python3 -I verify_requal.py <repo> <frame-export.json.gz> <after panel.jsonl.gz> <out.json> [result version, default 1.1.0]
 """
 import gzip, json, math, sys, bisect, datetime, hashlib
 
 REPO, EXPORT, PANEL, OUT = sys.argv[1:5]
+RV = sys.argv[5] if len(sys.argv) > 5 else '1.1.0'
+POP_RULES = '1.1.1' if RV == '1.1.0' else '1.1.0'
+SCEN = ('ZERO', 'LOWER', 'FATE', 'UPPER') if RV == '1.1.0' else ('ZERO', 'LOWER')
 D = lambda s: datetime.date.fromisoformat(s)
 
 
@@ -30,8 +36,12 @@ def last_le(dates, d, max_gap=None):
 
 
 # ---------------- raw inputs
-pop = load(REPO + '/docs/quant-recovery/v12/spxpop/population-1.1.0.json.gz')
+pop = load(REPO + '/docs/quant-recovery/v12/spxpop/population-%s.json.gz' % POP_RULES)
 STATUS = pop['columns']['status']
+FATES = pop['columns']['fate']
+TAKEOVER = {'ACQUIRED_OR_MERGED', 'ACQUIRED_OR_MERGED_NO_25_15', 'IDENTITY_BREAK'}
+DELIST = {'DELISTED_OTHER', 'DELISTED_BANKRUPTCY', 'BANKRUPTCY_NO_25_15'}
+INDEXCH = {'STILL_REPORTING_INDEX_EXIT', 'TEMPORARY_ABSENCE'}
 spy_doc = load(REPO + '/quant/data/market/multi-asset/series/SPY.json')
 spy_pts = sorted([p for p in spy_doc['points'] if isinstance(p[1], (int, float))])
 spy_d = [p[0] for p in spy_pts]; spy_v = [p[1] for p in spy_pts]
@@ -51,10 +61,60 @@ periods = [p for p in pop['periods'] if p['fund'] == 'SPY' and p['t0'] >= '2009-
 periods.sort(key=lambda p: p['t0'])
 
 
+def interp_q(a, q):
+    x = sorted(a)
+    h = (len(x) - 1) * q
+    lo = int(math.floor(h))
+    return x[lo] + (x[min(lo + 1, len(x) - 1)] - x[lo]) * (h - lo)
+
+
+def own_premium():
+    # (a) V10 lifecycle register (JS data module): the JSON after 'module.exports = '
+    txt = open(REPO + '/quant/engines/research-listing-lifecycle.cjs').read()
+    reg = json.loads(txt[txt.index('module.exports = ') + len('module.exports = '):].rstrip().rstrip(';'))
+    cases, seen = [], set()
+    for r in reg['records']:
+        t = r.get('terminal') or {}
+        if t.get('kind') != 'CASH_MERGER' or not (t.get('cashPerShare') or 0) > 0:
+            continue
+        try:
+            pts = load(REPO + '/quant/data/market/discover-series-long/%s.json' % r['securityId'])['points']
+        except FileNotFoundError:
+            continue
+        y, m = int(r['lastTradeDate'][:4]), int(r['lastTradeDate'][5:7])
+        qm = (m - 1) // 3 * 3
+        q0 = '%d-12-31' % (y - 1) if qm == 0 else '%d-%02d-%s' % (y, qm, '31' if qm == 3 else '30')
+        k = last_le([x[0] for x in pts], q0, 7)
+        if k < 0:
+            continue
+        cases.append((r['securityId'], q0, t['cashPerShare'] / pts[k][1] - 1)); seen.add((r['securityId'], q0))
+    # (b) population exits with an acquired fate and an estimated/observed return
+    for fund in ('SPY', 'QQQ'):
+        for pp in pop['periods']:
+            if pp['fund'] != fund or not (pp['t0'] >= '2009-09-30' and pp['t1'] <= '2026-06-30') or not pp.get('cols'):
+                continue
+            c = pp['cols']
+            for i in range(len(c['chain'])):
+                st = STATUS[c['status'][i]]; fate = FATES[c['fate'][i]] or ''
+                if fate.startswith('ACQUIRED') and st in ('EST_CASH', 'EST_SERIES_END', 'OBS_SERIES'):
+                    sid = None if c['sid'][i] is None else pop['securityIds'][c['sid'][i]]
+                    key = (sid or pop['chains'][c['chain'][i]][2], pp['t0'])
+                    if key in seen:
+                        continue
+                    seen.add(key); cases.append((key[0], pp['t0'], c['ret'][i] / 1e6))
+    rs = [x[2] for x in cases]
+    return {'n': len(rs), 'median': interp_q(rs, 0.5), 'p75': interp_q(rs, 0.75)}
+
+
+PREM = own_premium() if RV == '1.1.0' else None
+
+
 def members(p):
     c = p['cols']
     bnd = {b[0]: b for b in c['bnd']}
     out = []
+    obs = [c['ret'][i] / 1e6 for i in range(len(c['chain'])) if not STATUS[c['status'][i]].startswith('BOUNDED')]
+    pop_ret = sum(obs) / len(obs)
     for i in range(len(c['chain'])):
         st = STATUS[c['status'][i]]
         ret = None if c['ret'][i] is None else c['ret'][i] / 1e6
@@ -62,14 +122,24 @@ def members(p):
         lo = (None if b[1] is None else b[1] / 1e6) if b else ret
         hi = (None if b[2] is None else b[2] / 1e6) if b else ret
         bounded = st.startswith('BOUNDED')
+        fate = FATES[c['fate'][i]] or ''
         if not bounded:
-            z = l = ret
+            z = l = f = u = ret
         elif st == 'BOUNDED_AMBIGUOUS_CA':
             z, l = (lo + hi) / 2, lo
+            f, u = z, hi
+        elif st == 'BOUNDED_EXIT_SERIES_DELISTED':
+            z, l = (0.0 if ret is None else ret), lo
+            f, u = (-1.0 if fate in DELIST else ret), hi
         else:
             z, l = (0.0 if ret is None else ret), lo
+            if PREM:
+                f = PREM['median'] if fate in TAKEOVER else -1.0 if fate in DELIST else pop_ret if fate in INDEXCH else 0.0
+                u = max(PREM['p75'], pop_ret)
+            else:
+                f = u = None
         sid = None if c['sid'][i] is None else pop['securityIds'][c['sid'][i]]
-        out.append({'chain': c['chain'][i], 'w': c['w'][i] / 1e8, 'sid': sid, 'bounded': bounded, 'ZERO': z, 'LOWER': l})
+        out.append({'chain': c['chain'][i], 'w': c['w'][i] / 1e8, 'sid': sid, 'bounded': bounded, 'ZERO': z, 'LOWER': l, 'FATE': f, 'UPPER': u})
     return out
 
 
@@ -152,7 +222,7 @@ for p in periods:
         if sr:
             frame.append(sr)
     row = {'t0': t0, 't1': t1, 'counts': {'members': len(mem), 'withSeries': len(withs), 'frame': len(frame)}, 'series': {}}
-    for sc in ('ZERO', 'LOWER'):
+    for sc in SCEN:
         low = lambda sr: -1.0 if (sc == 'LOWER' and sr[0] == 'LAST_CLOSE') else sr[1]
         row['series'][sc] = {
             'SPY': spy_at(t1) / spy_at(t0) - 1, 'SPY_TR': spy_tr(t0, t1), 'SPY_W': spy_at(cal[w1]) / spy_at(cal[w0]) - 1,
@@ -161,9 +231,9 @@ for p in periods:
             'EW_WITH_S': mean([low(sr) for _, sr in withs]), 'EW_FRAME': mean([low(sr) for sr in frame]), 'EW_FRAME_WREB': I[w1] / I[w0] - 1}
     py.append(row)
 
-js = load(REPO + '/docs/quant-recovery/v12/requal/p5a-population-1.0.0.json')
+js = load(REPO + '/docs/quant-recovery/v12/requal/p5a-population-%s.json' % RV)
 cmp = {}
-for sc in ('ZERO', 'LOWER'):
+for sc in SCEN:
     for key in js['periods'][0]['series'][sc]:
         diffs = [abs(a['series'][sc][key] - b['series'][sc][key]) for a, b in zip(py, js['periods']) if a['series'][sc][key] is not None and b['series'][sc][key] is not None]
         cmp[sc + ':' + key] = {'n': len(diffs), 'maxAbsDiff': max(diffs) if diffs else None}
@@ -201,36 +271,55 @@ def vol(sid, r):
     return math.sqrt(sum((v - m) ** 2 for v in lr) / (len(lr) - 1)) * math.sqrt(52)
 
 
+def run_s5(sp):
+  held = {}  # chain -> weight (fraction of portfolio) after drift
+  first = True; wealth = 1.0; s5 = []
+  for idx, p in enumerate(sp):
+      mem = members(p); r = rank_for(p['t0']); ids = panel_ids[r]
+      seen = set(); cand = []
+      for m in mem:
+          if not m['sid'] or m['sid'] in seen or m['sid'] not in ids:
+              continue
+          seen.add(m['sid'])
+          v = vol(m['sid'], r)
+          if v is not None:
+              cand.append((v, m['sid'], m['chain']))
+      cand.sort()
+      pick = cand[:math.ceil(len(cand) / 5)]
+      tgt = {c: 1.0 / len(pick) for _, _, c in pick}
+      traded = sum(abs(tgt.get(c, 0) - (0 if first else held.get(c, 0))) for c in set(tgt) | set(held))
+      byc = {m['chain']: m for m in mem}
+      gross = sum(w * byc[c]['ZERO'] for c, w in tgt.items())
+      ret = (1 - traded * 15e-4) * (1 + gross) - 1
+      nxt = set(m['chain'] for m in members(periods[periods.index(p) + 1])) if periods.index(p) + 1 < len(periods) else set()
+      held = {c: w * (1 + byc[c]['ZERO']) / (1 + gross) for c, w in tgt.items() if c in nxt}
+      first = False; wealth *= 1 + ret
+      s5.append({'t0': p['t0'], 'r': ret, 'traded': traded, 'picked': [s for _, s, _ in pick]})
+  yrs = (D(sp[-1]['t1']) - D(sp[0]['t0'])).days / 365.25
+  return s5, wealth ** (1 / yrs) - 1, yrs
+
+
 sp = [p for p in periods if rank_for(p['t0'])]
-held = {}  # chain -> weight (fraction of portfolio) after drift
-first = True; wealth = 1.0; s5 = []
-for idx, p in enumerate(sp):
-    mem = members(p); r = rank_for(p['t0']); ids = panel_ids[r]
-    seen = set(); cand = []
-    for m in mem:
-        if not m['sid'] or m['sid'] in seen or m['sid'] not in ids:
-            continue
-        seen.add(m['sid'])
-        v = vol(m['sid'], r)
-        if v is not None:
-            cand.append((v, m['sid'], m['chain']))
-    cand.sort()
-    pick = cand[:math.ceil(len(cand) / 5)]
-    tgt = {c: 1.0 / len(pick) for _, _, c in pick}
-    traded = sum(abs(tgt.get(c, 0) - (0 if first else held.get(c, 0))) for c in set(tgt) | set(held))
-    byc = {m['chain']: m for m in mem}
-    gross = sum(w * byc[c]['ZERO'] for c, w in tgt.items())
-    ret = (1 - traded * 15e-4) * (1 + gross) - 1
-    nxt = set(m['chain'] for m in members(periods[periods.index(p) + 1])) if periods.index(p) + 1 < len(periods) else set()
-    held = {c: w * (1 + byc[c]['ZERO']) / (1 + gross) for c, w in tgt.items() if c in nxt}
-    first = False; wealth *= 1 + ret
-    s5.append({'t0': p['t0'], 'r': ret, 'traded': traded, 'picked': [s for _, s, _ in pick]})
-yrs = (D(sp[-1]['t1']) - D(sp[0]['t0'])).days / 365.25
-cagr = wealth ** (1 / yrs) - 1
-p6 = load(REPO + '/docs/quant-recovery/v12/requal/p6-strategies-1.0.0.json')
+s5, cagr, yrs = run_s5(sp)
+p6 = load(REPO + '/docs/quant-recovery/v12/requal/p6-strategies-%s.json' % RV)
 jsS5 = p6['results']['registeredSpan']['scenarios']['ZERO']['BASE']['strategies']['S5_LOWVOL_Q1']
 dr = [abs(a['r'] - b['r']) for a, b in zip(s5, jsS5['periods'])]
-res = {'schemaVersion': 'v12-requal-python-check-1.0.0', 'python': sys.version.split()[0], 'evidenceKind': 'TECHNICAL_PARITY', 'note': 'second language, not a holdout',
+extra = {}
+if RV == '1.1.0':
+    sp13 = [p for p in sp if p['t0'] >= '2013-03-31']
+    s5b, cagr13, _ = run_s5(sp13)
+    js13 = p6['results']['span2013_rule101']['scenarios']['ZERO']['BASE']['strategies']['S5_LOWVOL_Q1']
+    cw = {r['t0']: r['series']['ZERO']['CW_ALL'] for r in py}
+    g = 1.0
+    for x in s5:
+        g *= 1 + cw[x['t0']]
+    cw_cagr = g ** (1 / yrs) - 1
+    jsP = js['takeoverPremium']
+    extra = {'takeoverPremium': {'python': PREM, 'js': {'n': jsP['n'], 'median': jsP['median'], 'p75': jsP['p75']},
+                                 'maxAbsDiff': max(abs(PREM['median'] - jsP['median']), abs(PREM['p75'] - jsP['p75'])), 'nEqual': PREM['n'] == jsP['n']},
+             'P6_S5_LOWVOL_Q1_ZERO_BASE_span2013': {'periods': len(s5b), 'pythonCagr': cagr13, 'jsCagr': js13['performance']['cagr'], 'cagrDiff': cagr13 - js13['performance']['cagr']},
+             'P6_S5_vs_CW_ALL_ZERO_BASE': {'pythonCagrDiff': cagr - cw_cagr, 'jsCagrDiff': jsS5['vsCwAll']['cagrDiff']}}
+res = {'schemaVersion': 'v12-requal-python-check-%s' % RV, **extra, 'python': sys.version.split()[0], 'evidenceKind': 'TECHNICAL_PARITY', 'note': 'second language, not a holdout',
        'inputs': {'frameExportSha256': hashlib.sha256(open(EXPORT, 'rb').read()).hexdigest(), 'panelSha256': hashlib.sha256(open(PANEL, 'rb').read()).hexdigest()},
        'P5a': {'periods': len(py), 'seriesComparison': cmp, 'withSeriesOrFrameCountMismatchPeriods': count_mismatch,
                'maxAbsDiffAll': max(v['maxAbsDiff'] for v in cmp.values() if v['maxAbsDiff'] is not None)},

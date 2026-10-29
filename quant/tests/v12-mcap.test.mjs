@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
 const require = createRequire(import.meta.url);
@@ -146,4 +146,43 @@ test('producer proposal: the measured guard is the guard in the diff (verbatim) 
   assert.equal(shareScaleSuspect({ value: 52752851e9, end: '2020-12-31' }, doc, '2021-02-25'), true);
   assert.equal(shareScaleSuspect({ value: 52752851, end: '2020-12-31' }, doc, '2021-02-25'), false);
   assert.equal(shareScaleSuspect({ value: 6 * 52314901, end: '2020-12-31' }, doc, '2021-02-25'), false);
+});
+
+test('runtime strict mode (MCAP m2): default treats unregistered facts as OK; strict binds the observation set by hash and excludes unknown facts', () => {
+  const rows = [{ id: 'ref_X', t: '2011-08-26', s: { accn: 'A', concept: 'dei:EntityCommonStockSharesOutstanding', v: 1000 } }];
+  const h = M.observationsHashOf(rows);
+  const reg = M.indexRegister({ schemaVersion: M.REGISTER_SCHEMA, ruleVersion: M.RULE.version, observationsHash: h, factColumns: ['accn', 'concept', 'v', 'status', 'class', 'D', 'vPrime', 'E', 'filed', 'scaleExponent', 'tier', 'evidence'],
+    splitColumns: ['date', 'factor', 'class', 'availableAt', 'ratio', 'before', 'after', 'source'], facts: {}, splits: {} });
+  const known = args(shares(1000, '2011-06-30', 'A'), '2011-08-26', 10, 1, []), unknown = args(shares(5000, '2011-06-30', 'Z'), '2011-08-26', 10, 1, []);
+  // default (documented, unchanged): absent from the register = OK
+  assert.equal(M.marketCapAt(unknown, { value: 5e4 }, reg).status, 'OK');
+  assert.throws(() => M.marketCapAt(known, { value: 1e4 }, reg, { strict: true }), /STRICT_REQUIRES_BOUND_OBSERVATIONS/);
+  assert.throws(() => M.marketCapAt(known, { value: 1e4 }, reg, { strict: 'yes' }), /INVALID_OPTIONS/);
+  assert.throws(() => M.bindObservations(rows.concat(rows), reg), /OBSERVATIONS_HASH_MISMATCH/);
+  const observed = M.bindObservations(rows, reg);
+  assert.equal(M.marketCapAt(known, { value: 1e4 }, reg, { strict: true, observed }).status, 'OK');
+  const x = M.marketCapAt(unknown, { value: 5e4 }, reg, { strict: true, observed });
+  assert.deepEqual([x.status, x.reason, x.value], ['EXCLUDED', 'NOT_IN_CLASSIFIED_OBSERVATIONS', null]);
+  // a bound set of another register is refused
+  const other = M.indexRegister({ ...reg.meta, observationsHash: '0'.repeat(64) });
+  assert.throws(() => M.marketCapAt(known, { value: 1e4 }, other, { strict: true, observed }), /STRICT_REQUIRES_BOUND_OBSERVATIONS/);
+  // the committed register carries the hash the strict mode checks against
+  assert.match(M.loadRegister().meta.observationsHash, /^[0-9a-f]{64}$/);
+});
+
+test('review correction note (MCAP MAJOR 1/m3): fresh validation 18/19 with Wilson bound, rule statement and label corrected', () => {
+  const { wilson } = require('../../scripts/quant/v12/mcap/review-correction.cjs');
+  const w = wilson(18, 19);
+  assert.ok(Math.abs(w.lower95 - 0.7536) < 1e-4 && w.share === 0.9474);
+  const n = JSON.parse(readFileSync(new URL('docs/quant-recovery/v12/mcap/review-correction-1.0.0.json', ROOT), 'utf8'));
+  const f = n.corrections[0].result;
+  assert.deepEqual([f.observationLevelFresh.stillCorrectedCorrect, f.observationLevelFresh.stillCorrected_1_0_8, f.observationLevelFresh.stillCorrectedWrong], [18, 19, 0]);
+  assert.deepEqual([f.issuerLevelFresh.stillCorrectedCorrect, f.issuerLevelFresh.stillCorrected_1_0_8], [14, 15]);
+  assert.deepEqual(n.corrections[1].check, { stillCorrected: 30, stillCorrectedAndCorrect: 29 });
+  const rule = readFileSync(new URL('docs/quant-recovery/v12/mcap/rule-1.0.8.json', ROOT), 'utf8');
+  assert.ok(rule.includes('32/32 confirmed')); // frozen file keeps the wrong sentence; the note names it
+  for (const m of n.corrections[2].map) if (m.file.startsWith('docs/')) assert.ok(existsSync(new URL(m.file, ROOT)), m.file);
+  const vb = n.corrections[3].valueScoreBreakdown;
+  assert.equal(vb.withValueScoreBefore, n.corrections[3].published.rowsValueScoreChanged);
+  assert.ok(vb.absDiffGt1Point < 0.01 * vb.withValueScoreBefore);
 });

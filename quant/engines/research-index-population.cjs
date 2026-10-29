@@ -1,5 +1,7 @@
 'use strict';
-// Research-only PIT index population from SEC fund holdings (V12 SPXPOP, rules docs/quant-recovery/v12/spxpop/rules-1.1.0.json, amending 1.0.0/1.0.1).
+// Research-only PIT index population from SEC fund holdings (V12 SPXPOP, rules docs/quant-recovery/v12/spxpop/rules-1.1.1.json, amending 1.0.0/1.0.1/1.1.0).
+// 1.1.1 (correction after independent review): identity break at mergers (identityBreak) - such links are not chained, the t0
+// position is a BOUNDED_EXIT with fate IDENTITY_BREAK. The 1.1.0 data stay loadable with {ruleVersion: '1.1.0'}.
 // Opt-in: nothing in the product, the weekly loader or any study reads this module. It provides
 //   (1) pure functions used by the builder (scripts/quant/v12/spxpop/build-population.cjs): split classification,
 //       fund-flow factor, status groups, period qualification;
@@ -14,10 +16,11 @@ const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 
 const RULE = Object.freeze({
-  id: 'v12-spxpop-index-population', version: '1.1.0',
+  id: 'v12-spxpop-index-population', version: '1.1.1',
   TRIGGER_LOG: Math.log(1.15), RATIO_TOL: 0.15, MARGIN: 0.10, MAX_RESIDUAL: 1.0, CLEAN_LOG: Math.log(1.10),
   FUZZY_SIM: 0.6, BREAK_SIM: 0.5, FUZZY_Q_LOG: Math.log(1.5), FUZZY_RESID: 0.7, CROSS_PRICE_TOL: 0.02,
   SERIES_MAX_GAP_DAYS: 7, FROZEN_RUN: 4,
+  IDENTITY_BREAK_LOG: Math.log(2),
   MIN_COVERED_W: 0.97, MAX_BOUNDED_W: 0.03, TOL_PP_QUARTER: 0.5, APPROX_EXTRA_PP: 0.25, INTERNAL_AGREE: 0.99, INTERNAL_DR_PP: 0.1
 });
 // 1.1.0: ratios with |log s| < log 1.5 (5/4, 4/3, 3/4, 4/5, 2/3) removed - index reweighting produces such share ratios; 25, 30, 40, 50 added (symmetric to the reverse ratios)
@@ -29,7 +32,8 @@ const GROUP = Object.freeze({ OBS_CHAIN: 'observed', OBS_CROSSFUND: 'observed', 
 const TIERS = Object.freeze(['C1_CUSIP', 'C2_NAME', 'C2_NAME_DUP', 'C3_CIK', 'C4_FUZZY', 'NONE']);
 const SPLIT_CLASSES = Object.freeze(['NONE', 'SPLIT', 'SHARE_CHANGE', 'AMBIGUOUS_CA', 'NA']);
 const FATES = Object.freeze(['', 'ACQUIRED_OR_MERGED', 'ACQUIRED_OR_MERGED_NO_25_15', 'DELISTED_OTHER', 'DELISTED_BANKRUPTCY', 'BANKRUPTCY_NO_25_15',
-  'STILL_REPORTING_INDEX_EXIT', 'NO_SEC_EVIDENCE', 'NO_CIK', 'CIK_NAME_MISMATCH', 'TEMPORARY_ABSENCE', 'NOT_FATED']);
+  'STILL_REPORTING_INDEX_EXIT', 'NO_SEC_EVIDENCE', 'NO_CIK', 'CIK_NAME_MISMATCH', 'TEMPORARY_ABSENCE', 'NOT_FATED', 'IDENTITY_BREAK']); // IDENTITY_BREAK appended in 1.1.1 (indices of 1.1.0 data unchanged)
+const KNOWN_VERSIONS = Object.freeze(['1.1.0', '1.1.1']);
 
 const finite = v => typeof v === 'number' && Number.isFinite(v);
 function median(xs) { const s = xs.filter(finite).sort((a, b) => a - b); if (!s.length) return null; const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
@@ -59,6 +63,23 @@ function classifySplit(q, pr, ridx) {
     return { cls: 'SHARE_CHANGE', factor: 1, point: pr - 1, lo: pr - 1, hi: pr - 1, ratio: within ? near.ratio.label : null, eSplit: within ? eSplit : null, eNone };
   const a = pr - 1, b = within ? s * pr - 1 : a;
   return { cls: 'AMBIGUOUS_CA', factor: null, point: null, lo: Math.min(a, b), hi: Math.max(a, b), ratio: within ? near.ratio.label : null, eSplit: within ? eSplit : null, eNone };
+}
+
+/**
+ * Identity break at a merger (rules-1.1.1 identityChain.identityBreak): a link without CUSIP/ISIN or name-key identity (C3_CIK,
+ * C4_FUZZY) whose share count moved without a clean split (SHARE_CHANGE, AMBIGUOUS_CA) and whose price, under every admissible
+ * hypothesis, more than doubled relative to the preliminary index return (min_h log(1+R_h) - log(1+Ridx) > log 2) is the target
+ * of a merger linked to the acquirer's (new holding's) position - e.g. Broadcom Corp. -> Broadcom Ltd. 2015/16 (+200 %).
+ * Such links are not chained. l: {tier, cls, point|null, lo, hi}. Returns {break: bool, excessLog}.
+ */
+function identityBreak(l, ridx) {
+  if (!finite(ridx) || ridx <= -1) throw Error('IDENTITY_BREAK_INPUT');
+  if (l.tier !== 'C3_CIK' && l.tier !== 'C4_FUZZY') return { break: false, excessLog: null };
+  if (l.cls !== 'SHARE_CHANGE' && l.cls !== 'AMBIGUOUS_CA') return { break: false, excessLog: null };
+  const hyp = l.point != null ? [l.point] : [l.lo, l.hi];
+  if (!hyp.every(v => finite(v) && v > -1)) throw Error('IDENTITY_BREAK_INPUT');
+  const ex = Math.min(...hyp.map(v => Math.log(1 + v))) - Math.log(1 + ridx);
+  return { break: ex > RULE.IDENTITY_BREAK_LOG, excessLog: ex };
 }
 
 /** Months between two ISO dates (calendar months, rounded). */
@@ -92,12 +113,14 @@ const DEFAULT_DIR = path.join(__dirname, '..', '..', 'docs', 'quant-recovery', '
 function createIndexPopulation(options = {}) {
   if (!options || options.optIn !== true) throw Error('INDEX_POPULATION_OPT_IN_REQUIRED');
   const dir = options.dir || DEFAULT_DIR;
-  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest-' + RULE.version + '.json'), 'utf8'));
+  const version = options.ruleVersion == null ? RULE.version : options.ruleVersion; // earlier published versions stay loadable
+  if (!KNOWN_VERSIONS.includes(version)) throw Error('INDEX_POPULATION_UNKNOWN_VERSION:' + version);
+  const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest-' + version + '.json'), 'utf8'));
   const buf = fs.readFileSync(path.join(dir, manifest.dataFile));
   const sha = crypto.createHash('sha256').update(buf).digest('hex');
   if (sha !== manifest.dataSha256) throw Error('INDEX_POPULATION_DATA_HASH_MISMATCH');
   const data = JSON.parse(zlib.gunzipSync(buf).toString('utf8'));
-  if (data.schemaVersion !== manifest.schemaVersion || data.ruleVersion !== RULE.version) throw Error('INDEX_POPULATION_VERSION_MISMATCH');
+  if (data.schemaVersion !== manifest.schemaVersion || data.ruleVersion !== version) throw Error('INDEX_POPULATION_VERSION_MISMATCH');
   const chains = data.chains; // [fund, keyHash, name, cik|null, securityId|null]
   const allowUnqualified = options.allowUnqualified === true;
   const boundedAs = options.boundedAs == null ? null : options.boundedAs;
@@ -130,8 +153,8 @@ function createIndexPopulation(options = {}) {
     }
     return { fund: per.fund, t0: per.t0, t1: per.t1, qualification: per.qualification, summary: per.summary, members: out };
   }
-  return { ruleVersion: RULE.version, schemaVersion: data.schemaVersion, dataSha256: sha, populations: () => data.populations.map(p => ({ ...p })), periods, members,
+  return { ruleVersion: version, schemaVersion: data.schemaVersion, dataSha256: sha, populations: () => data.populations.map(p => ({ ...p })), periods, members,
     chain: idx => { const ch = chains[idx]; if (!ch) throw Error('INDEX_POPULATION_NO_CHAIN'); return { fund: ch[0], keyHash: ch[1], name: ch[2], cik: ch[3] }; } };
 }
 
-module.exports = { RULE, RATIOS, STATUS, GROUP, TIERS, SPLIT_CLASSES, FATES, median, nearestRatio, classifySplit, monthsBetween, tolerancePp, qualifyPeriod, qualifiedSpan, createIndexPopulation };
+module.exports = { RULE, KNOWN_VERSIONS, RATIOS, STATUS, GROUP, TIERS, SPLIT_CLASSES, FATES, median, nearestRatio, classifySplit, identityBreak, monthsBetween, tolerancePp, qualifyPeriod, qualifiedSpan, createIndexPopulation };
