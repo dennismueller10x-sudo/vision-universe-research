@@ -99,7 +99,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | H1 Definition, Stichprobe, Konfidenz (Datums-Cluster), Mehrfachtest (Bonferroni) | ✔ | INDICATOR_EVIDENCE.md, CANDLESTICK_EVIDENCE.md, formation-evidence, WEEKLY_EVIDENCE.md | – |
 | H2 Stabilität über Marktphasen und Zeithälften | ✔ | #1071 | – |
 | H3 Kein Look-ahead in der Evidenz (Ereignis nur mit Wissen bis t, Rendite ab t+1) | ✔ | Evidenz-Tests | – |
-| H4 Evidenz im Produkt nur beschreibend und mit Grenzen | ◐ | Formations-Evidenz in `technical/data`. Indikator- und Kerzen-Evidenz als Erzeuger-Artefakt mit Methodik-Abschnitt und Trennung Ereignis / Beobachtung / kein Handelsvorteil: #1109, wartet auf Owner-Freigabe (SIGNAL_EVIDENCE.md). | P2 |
+| H4 Evidenz im Produkt nur beschreibend und mit Grenzen | ✔ | Formations-Evidenz und seit #1109 (`ebf0bfc`, Owner-Freigabe 29.10. mit Auflage „kein statistisch gesicherter Unterschied nachgewiesen“) Indikator- und Kerzen-Evidenz (`signal-evidence.json`), nur auf der Methodik-Seite. Drei Ebenen getrennt: Ereignis, historische Beobachtung, kein nachgewiesener Handelsvorteil (SIGNAL_EVIDENCE.md). Live seit 29.10.; Browser-QA: Chart, Screener und Start ohne Evidenztext. | – |
 
 ### I. Performance, CI, Datenqualität und Zuverlässigkeit
 
@@ -134,6 +134,7 @@ Jedes Paket läuft in Zyklen: analysieren → umsetzen → testen → beheben �
 | **AP5** | **Chart-Integration vorhandener Funktionen.** Kerzenmarker (Auswahl mit Evidenz, siehe C4). Relevante Katalogindikatoren als Schicht oder Unterfenster und Screener-Feld. Auswahl nach Nutzung in der Praxis und nach Evidenz, nicht nach Anzahl. Keine Neugestaltung, nur Einhängen in bestehende Schichten und Unterfenster. | C3, G3, G4, B4 | P1 | ja, sobald Screener-Felder entstehen |
 | AP6 | Evidenz im Produkt (beschreibend), Wochen-OHLC, Formationen im Wochenchart | H4, E4, D5 | P2 | ja |
 | AP7 | weitere Spezialindikatoren und seltene Muster | – | P2 | je nach Fall |
+| **AP8** | **Strategie-Vorlagen** (Owner-Auftrag 29.10.): erklärte Kombinationen bestehender Filter mit Kriterien-Checkliste je Treffer, z. B. Trendvorlage (8 Kriterien), Dreiecke, Trendfilter. Architektur, Lücken (SMA 150, Steigung SMA 200, Abstand zum 52-Wochen-Tief, RS-Rang, Ausbruchsrichtung) und Pakete S1–S4: [STRATEGY_TEMPLATES_PLAN.md](STRATEGY_TEMPLATES_PLAN.md). | neues Produktpaket | P1 nach Readiness | ja (Auswahl, Texte; S2 Fachmodell) |
 
 ## 3. Blockaden und Eskalationen
 
@@ -158,7 +159,12 @@ Wer die Arbeit fortsetzt, beginnt hier:
 2. Nächstes offenes Arbeitspaket in §2 nehmen. Den Status in §1 erst mit Nachweis auf ✔ setzen.
 3. Jede abgeschlossene Prüfung mit Datum, Commit und Ergebnis im Verlauf von TECHNICAL_WORLD_PROGRESS.md festhalten.
 
-**Aktueller Stand (28.10.2026, 17 Uhr UTC):**
+**Aktueller Stand (29.10.2026, 13 Uhr UTC):**
+- Readiness-Bericht: [TECHNICAL_READINESS_REPORT.md](TECHNICAL_READINESS_REPORT.md). Offen sind nur A1 (P0) und E3 (P1); beide werden am 30.10. um 06:40 UTC geprüft, danach wird der Bericht ergänzt.
+- #1109 (H4) gemergt und live. E4/D5, F5 und A4 sind vom Owner zurückgestellt (⏸).
+- Nächstes Produktpaket AP8 (Strategie-Vorlagen) ist geplant und wartet auf die Owner-Entscheidungen in STRATEGY_TEMPLATES_PLAN.md §7.
+
+**Stand 28.10.2026, 17 Uhr UTC:**
 - AP1 ist abgeschlossen: #1077 (Owner-Freigabe mit Bedingungen, alle erfüllt) und #1088 (Chart Studio) sind gemergt. `technical/data` wurde mit dem Erzeuger neu gebaut (`a433f3e`, kein Anbieterabruf). DQ-TW-1..7 PASS.
 - AP2, AP3 (E2E, Budget), AP5 und AP5b sind gemergt.
 - Offen: Prüfung des Nachtlaufs mit L7-Abdeckung am 29.10. um 06:30 UTC (AP3). AP4 beginnt erst, wenn diese Prüfung bestanden ist.
