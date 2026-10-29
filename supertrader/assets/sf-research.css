@@ -86,6 +86,7 @@
 .sf-hero .sf-limits { margin-top: 10px; }
 .sf-preview { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-size: 12.5px; font-weight: 650; color: var(--st-muted); }
 .sf-preview .st-ic { width: 14px; height: 14px; display: inline-flex; } .sf-preview .st-ic svg { width: 100%; height: 100%; }
+.sf-preview[data-stale="true"] { color: var(--st-warn); }
 .sf-prov { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
 .sf-prov dt { color: var(--st-muted); font-weight: 650; } .sf-prov dd { margin: 0; color: var(--st-text-2); overflow-wrap: anywhere; }
 @media (max-width: 520px) { .sf-prov { grid-template-columns: 1fr; } .sf-prov dd { margin-bottom: 4px; } }

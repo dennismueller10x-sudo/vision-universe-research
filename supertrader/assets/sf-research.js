@@ -22,7 +22,7 @@
   }
   var DISCLAIMER = 'Research-Ergebnisse regelbasierter Modelle. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Aussage zur Handelbarkeit.';
   var WHY_TXT = {
-    STRATEGY_CEILING: 'Die Methode ist heute höchstens bis zu dieser Stufe freigegeben',
+    STRATEGY_CEILING: 'Die Methode ist derzeit höchstens bis zu dieser Stufe freigegeben',
     SETUP_RULE_NOT_MET: 'Mechanische Regel nicht erfüllt',
     PLAN_NOT_MODELLED: 'Kein modellierter Ablauf',
     NO_MECHANICAL_SETUP_RULE_IN_CONTRACT: 'Die Methode hat keine mechanische Setup-Regel – nur Chart-Kandidaten',
@@ -105,7 +105,7 @@
   function kpis(list) { return h('ul', { class: 'vu-kpis st-vkpis sf-kpis' }, list.map(function (k) { return h('li', { class: 'vu-kpi' }, [h('span', { class: 'vu-kpi-label', text: k[1] }), h('strong', { class: 'vu-kpi-value', text: k[0] }), k[2] ? h('span', { class: 'vu-kpi-sub', text: k[2] }) : null]); })); }
   function empty(title, text) { return h('div', { class: 'st-emptybox sf-empty' }, [h('strong', { text: title }), h('p', { text: text })]); }
   function unavailable() {
-    return empty('Research-Kandidaten noch nicht verfügbar', 'Die Erkennung für die 13 quellentreuen Methoden ist vorbereitet, aber der tägliche Datenlauf ist noch nicht freigeschaltet. Sobald er läuft, erscheinen hier die erkannten Aktien mit Datenstand.');
+    return empty('Research-Kandidaten folgen', 'Die quellentreuen Methoden sind als Beta freigeschaltet. Der Datenlauf für die erkannten Aktien ist noch nicht freigegeben; sobald er läuft, erscheinen hier die Kandidaten mit ihrem Datenstand.');
   }
   function stagesLegend() {
     return h('ul', { class: 'sf-legend' }, STAGES.map(function (s) { return h('li', null, [h('span', { class: 'sf-step', text: String(STAGE_TXT[s][3]) }), h('div', null, [stageBadge(s), h('span', { text: STAGE_TXT[s][2] })])]); })
@@ -123,15 +123,20 @@
     var v = sum.versions || {}, dq = sum.dataQuality || {}, inp = sum.inputs || {};
     var rows = [
       ['Datenstand', dateDe(sum.asOf) + ' (Tagesschluss US) · nächste Sitzung ' + dateDe(sum.nextSession)],
-      ['Kurse', 'Split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
+      ['Kurse', 'Tiingo, Inc. · split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
       ['Universum', num(dq.securities, 0) + ' Aktien mit Tagesreihe · ' + num(dq.FAIL, 0) + ' wegen Datenqualität nicht bewertet'],
       ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
       ['Prüfsumme der Eingaben', String(inp.inputsSha256 || '').slice(0, 12)],
     ];
     return moreBox('Datenherkunft und Aktualität', [h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })))]);
   }
-  function previewBanner() {
-    return h('p', { class: 'sf-preview', role: 'note' }, [icon(IC.lock), 'Vorschau · noch nicht freigeschaltet · Research, keine Empfehlung']);
+  /* Beta-Kennzeichnung mit Datenstand. Ein älterer Stand darf nie als heutiger Hinweis erscheinen: liegt die auf den
+     Stand folgende Sitzung bereits zurück (UTC-Datum nach nextSession), sagt die Zeile ausdrücklich „nicht aktuell“. */
+  function stale(sum) { return !!(sum && sum.nextSession && new Date().toISOString().slice(0, 10) > String(sum.nextSession).slice(0, 10)); }
+  function previewBanner(sum) {
+    var old = stale(sum);
+    return h('p', { class: 'sf-preview', role: 'note', 'data-stale': old ? 'true' : null }, [icon(old ? IC.alert : IC.lock),
+      'Beta · Research, keine Empfehlung' + (sum ? ' · Datenstand ' + dateDe(sum.asOf) + (old ? ' – nicht aktuell, kein Hinweis für heute' : '') : '')]);
   }
   function footnote(sum) {
     return h('p', { class: 'sf-foot', text: (sum ? 'Datenstand ' + dateDe(sum.asOf) + ' (Tagesschluss). ' : '') + DISCLAIMER });
@@ -164,20 +169,20 @@
         Object.keys(sum.top).forEach(function (cid) { if (!filter.cid || filter.cid === cid) rows = rows.concat(sum.top[cid]); });
         rows = rows.filter(function (r) { return !filter.stage || r.s === filter.stage; });
         rows.sort(function (a, b) { return STAGES.indexOf(b.s) - STAGES.indexOf(a.s) || a.r - b.r || (a.c < b.c ? -1 : 1); });
-        list.replaceChildren.apply(list, rows.length ? rows.slice(0, filter.cid ? 5 : 6).map(function (r) { return row(r, S, { hideStrategy: !!filter.cid }); }) : [empty('Keine Kandidaten', 'Für diese Auswahl erkennt heute keine Methode eine Aktie.')]);
+        list.replaceChildren.apply(list, rows.length ? rows.slice(0, filter.cid ? 5 : 6).map(function (r) { return row(r, S, { hideStrategy: !!filter.cid }); }) : [empty('Keine Kandidaten', 'Für diese Auswahl erkennt am Stichtag keine Methode eine Aktie.')]);
       }
       var stageChips = chipRow([[null, 'Alle', sum.counts.candidates]].concat(STAGES.slice().reverse().map(function (s) { return [s, STAGE_TXT[s][0], c[s]]; })), function (v) { filter.stage = v; draw(); });
       var stratChips = chipRow([[null, 'Alle Methoden', null]].concat(sum.strategies.map(function (s) { return [s.candidateId, s.name.replace(/ \(.*\)$/, ''), s.counts.published]; })), function (v) { filter.cid = v; draw(); });
       draw();
-      host.appendChild(sec('Heute erkannte Aktien', [
-        previewBanner(),
+      host.appendChild(sec('Erkannte Aktien', [
+        previewBanner(sum),
         kpis([[num(sum.counts.candidates, 0), 'Kandidaten', '13 Methoden'], [num(c.MODELED_TRADE_PLAN, 0), 'Modellierte Abläufe'], [num(c.CONFIRMED_RESEARCH_SETUP, 0), 'Bestätigte Setups'], [dateDe(sum.asOf), 'Datenstand', 'Tagesschluss']]),
         stageChips, stratChips, list,
         h('p', null, [h('a', { class: 'st-more', href: '/supertrader/strategies/#sf' }, ['Alle 13 Methoden', icon(IC.arrow)])]),
         moreBox('Was bedeuten die Stufen?', [stagesLegend(), h('p', { class: 'st-hint', text: 'Je Methode zählt eine eigene Reihenfolge (Stufe, Datenqualität, dann Abstand zur Chartmarke, Volumen oder Momentum). Die Methoden werden nicht miteinander verrechnet.' })]),
         provenance(sum), footnote(sum),
       ], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' }));
-    }).catch(function () { host.appendChild(sec('Heute erkannte Aktien', [unavailable(), stagesLegend()], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' })); });
+    }).catch(function () { host.appendChild(sec('Erkannte Aktien', [unavailable(), stagesLegend()], { kicker: 'Quellentreue Methoden · Research', id: 'sf-home' })); });
   }
   function chipRow(items, onPick) {
     var wrap = h('div', { class: 'st-chips sf-chips', role: 'group' });
@@ -198,7 +203,7 @@
     getJSON('summary.json').then(function (sum) {
       adoptStageLabels(sum);
       host.appendChild(sec('Quellentreue Methoden (13)', [
-        previewBanner(),
+        previewBanner(sum),
         h('p', { class: 'st-hint', text: 'Regeln nach den Originalquellen, getrennt von den Modellbeobachtungen oben. Jede Methode erkennt heutige Kandidaten auf Tagesschlusskursen.' }),
         h('div', { class: 'st-list sf-strats' }, sum.strategies.map(function (s) { return stratCard(s); })),
         moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
@@ -208,7 +213,7 @@
   function stratCard(s) {
     var b = s.counts.byStage;
     return h('a', { class: 'sf-strat', href: stratUrl(s.candidateId) }, [
-      h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.name }), h('div', { class: 'who', text: s.author + ' · ' + s.family + ' · ' + s.timeframe })]), h('div', { class: 'cnt' }, [h('strong', { text: num(s.counts.published, 0) }), h('span', { text: 'heute' })])]),
+      h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.name }), h('div', { class: 'who', text: s.author + ' · ' + s.family + ' · ' + s.timeframe })]), h('div', { class: 'cnt' }, [h('strong', { text: num(s.counts.published, 0) }), h('span', { text: 'am Stichtag' })])]),
       h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling), b.MODELED_TRADE_PLAN ? h('span', { class: 'sf-mini', text: num(b.MODELED_TRADE_PLAN, 0) + ' modelliert' }) : null, s.direction === 'SHORT_RESEARCH_ONLY' ? h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Short · nur Forschung' }) : null]),
       h('p', { class: 'sf-strat-why', text: s.short }),
       limitsLine(s),
@@ -229,7 +234,7 @@
       var L = sum.ruleLabels, views = data.views, state = { stage: null, q: '', sort: 'default', limit: 30 };
       var byS = s.counts.byStage;
       host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
-      host.appendChild(previewBanner());
+      host.appendChild(previewBanner(sum));
       host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       var list = h('div', { class: 'sf-cards' });
       var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06') && (k !== 'pivot' || views.some(function (v) { return v.sortKeys && v.sortKeys.pivot !== null && v.sortKeys.pivot !== undefined; })); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
@@ -242,7 +247,7 @@
         var vs = views.filter(function (v) { return (!state.stage || v.stage === state.stage) && (!state.q || v.ticker.toLowerCase().indexOf(state.q) >= 0 || String(v.companyName || '').toLowerCase().indexOf(state.q) >= 0); });
         if (state.sort !== 'default') { var dir = sum.sortKeys[state.sort].dir === 'asc' ? 1 : -1; vs = vs.slice().sort(function (a, b) { var x = keyOf(a, state.sort), y = keyOf(b, state.sort); if (x === y) return a.rank - b.rank; if (x === null) return 1; if (y === null) return -1; return (x < y ? -1 : 1) * dir; }); }
         var shown = vs.slice(0, state.limit);
-        var kids = shown.length ? shown.map(function (v) { return card(v, s, L, { compact: true }); }) : [empty('Keine Kandidaten', views.length ? 'Kein Kandidat passt zur Auswahl.' : 'Heute erkennt die Methode keine Aktie. Das ist ein gültiges Ergebnis, kein Fehler.')];
+        var kids = shown.length ? shown.map(function (v) { return card(v, s, L, { compact: true }); }) : [empty('Keine Kandidaten', views.length ? 'Kein Kandidat passt zur Auswahl.' : 'Am Stichtag erkennt die Methode keine Aktie. Das ist ein gültiges Ergebnis, kein Fehler.')];
         if (vs.length > shown.length) kids.push(h('button', { type: 'button', class: 'sf-moreBtn', onclick: function () { state.limit += 30; draw(); }, text: 'Weitere ' + Math.min(30, vs.length - shown.length) + ' von ' + (vs.length - shown.length) + ' anzeigen' }));
         list.replaceChildren.apply(list, kids);
       }
@@ -343,12 +348,12 @@
       adoptStageLabels(sum);
       var vs = (res[1].views || []).filter(function (v) { return v.ticker === sym; });
       vs.sort(function (a, b) { return STAGES.indexOf(b.stage) - STAGES.indexOf(a.stage) || (a.candidateId < b.candidateId ? -1 : 1); });
-      if (!vs.length) { host.appendChild(sec('Quellentreue Methoden', [previewBanner(), empty('Keine quellentreue Methode erkennt ' + sym, 'Am Stichtag ' + dateDe(sum.asOf) + ' passt die Aktie zu keinem Muster der 13 Methoden. Das ist ein gültiges Ergebnis.')], { kicker: 'Research', id: 'sf-stock' })); return; }
+      if (!vs.length) { host.appendChild(sec('Quellentreue Methoden', [previewBanner(sum), empty('Keine quellentreue Methode erkennt ' + sym, 'Am Stichtag ' + dateDe(sum.asOf) + ' passt die Aktie zu keinem Muster der 13 Methoden. Das ist ein gültiges Ergebnis.')], { kicker: 'Research', id: 'sf-stock' })); return; }
       var chartHost = h('div', { class: 'sf-chart' }), cards = h('div', { class: 'sf-cards' });
       var pick = chipRow(vs.map(function (v) { return [v.candidateId, stratName(S, v.candidateId), null, v.stage]; }), function (cid) { var v = vs.filter(function (x) { return x.candidateId === cid; })[0]; show(v); });
       function show(v) { cards.replaceChildren(card(v, S[v.candidateId], L, {})); drawChart(chartHost, v, S[v.candidateId]); }
       host.appendChild(sec(vs.length === 1 ? '1 quellentreue Methode erkennt ' + sym : vs.length + ' quellentreue Methoden erkennen ' + sym, [
-        previewBanner(), pick, chartHost, cards,
+        previewBanner(sum), pick, chartHost, cards,
         moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
       ], { kicker: 'Research · Stand ' + dateDe(sum.asOf), id: 'sf-stock' }));
       show(vs[0]);

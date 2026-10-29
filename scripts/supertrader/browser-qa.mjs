@@ -7,7 +7,7 @@
 // sichtbar, Chart zeichnet auf der Strategy Lens. Screenshots nach --out.
 //
 // Aufruf: node scripts/supertrader/browser-qa.mjs [--site=.] [--out=qa] [--base=http://...] [--sf-candidates=<dir>]
-// --sf-candidates: Ausgabe des (noch nicht freigeschalteten) Kandidatenlaufs fuer eine Vorschau; der Server liefert sie
+// --sf-candidates: Ausgabe eines Kandidatenlaufs fuer die befuellte Pruefung; der Server liefert sie
 // unter /supertrader/data/sf-candidates/. Ohne Daten muss jede Ansicht den gekennzeichneten Leerzustand zeigen.
 import http from 'node:http';
 import fs from 'node:fs';
@@ -71,12 +71,13 @@ async function main() {
   const sfTop = SF ? Object.values(SF.top).flat() : [];
   const sfModel = sfTop.find((r) => r.s === 'MODELED_TRADE_PLAN') || sfTop[0];
   const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
-  // ohne Vorschaudaten: die Ansichten bleiben aus (kein Abschnitt, keine Anfrage); geprueft auf denselben Routen
-  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '.st-cmp']);
-  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '.st-cmp']);
-  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, SF ? '#sf-stock' : '.st-emptybox, .st-lensblock, .st-research']);
-  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', SF ? '#sf-stock' : '.st-emptybox']);
-  const SF_ROUTE_SELECTOR = SF ? { home: '#sf-home', strategies: '#sf' } : {};
+  // Beta (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
+  // den gekennzeichneten Leerzustand (geprueft auf denselben Routen), nie erfundene Kandidaten
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
+  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
+  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, SF ? '#sf-stock' : '#sf-stock .sf-empty']);
+  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', SF ? '#sf-stock' : '#sf-stock .sf-empty']);
+  const SF_ROUTE_SELECTOR = SF ? { home: '#sf-home', strategies: '#sf' } : { home: '#sf-home .sf-empty', strategies: '#sf .sf-empty' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -107,8 +108,6 @@ async function main() {
   const report = [];
   for (const [vpName, vp, isMobile] of viewports) {
     const ctx = await browser.newContext(vp);
-    // Research-Kandidaten sind standardmaessig aus (Owner-Freigabe offen); mit Vorschaudaten wird die Vorschau eingeschaltet
-    if (SF) await ctx.addInitScript(() => { try { localStorage.setItem('vu-supertrader-sf-preview', '1'); } catch { /* ohne Speicher */ } });
     // Research-Zugangsmaske: der Smoke geht den echten geschuetzten Weg. Zuerst
     // wird geprueft, dass die Maske ohne Login schuetzt - auch gegen einen aus
     // dem oeffentlichen Pruefwert gebauten Browserzustand -, dann wird ueber das
@@ -144,9 +143,10 @@ async function main() {
       // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
       // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
       // Firmenlogo im Aktienkopf (assets/stock-navigator.js): fehlt die Datei, zeigt der Kopf das Monogramm - kein Fehler.
-      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
-      // ohne Freigabe (keine Vorschau) darf keine Seite die Research-Daten oder das Modul anfragen
-      page.on('request', (r) => { if (!SF && /\/sf-candidates\/|\/sf-research\./.test(r.url())) errors.push('Research-Vorschau ohne Freigabe angefragt: ' + r.url()); });
+      // Ohne veroeffentlichten Datenlauf ist die fehlende Uebersicht (404) der erwartete Leerzustand der Beta.
+      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url()) && !(!SF && r.status() === 404 && r.url().endsWith(SF_PREFIX + 'summary.json'))) errors.push(`http ${r.status()}: ${r.url()}`); });
+      // ohne Datenstand fragt das Modul nur die Uebersicht an, keine Strategie- oder Aktiendatei
+      page.on('request', (r) => { if (!SF && r.url().includes(SF_PREFIX) && !r.url().endsWith(SF_PREFIX + 'summary.json')) errors.push('Research-Daten ohne veroeffentlichten Stand angefragt: ' + r.url()); });
       page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse|^Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
