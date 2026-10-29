@@ -73,7 +73,8 @@ async function audit(page, label) {
 }
 const shot = (page, name) => page.screenshot({path: `${out}/${engine}-${name}.png`, fullPage: true});
 
-async function register(page, email, {from = 'preise', plan = 'free'} = {}) {
+const NEWSLETTER_ON = Boolean((await (await fetch(base + '/v1/plans')).json()).newsletter);
+async function register(page, email, {from = 'preise', plan = 'free', newsletter = false} = {}) {
   if (from === 'preise') {
     await page.goto(`${base}/preise/`);
     await page.waitForFunction(() => !document.querySelector('[data-price=pro][aria-busy]'));
@@ -84,6 +85,11 @@ async function register(page, email, {from = 'preise', plan = 'free'} = {}) {
   await page.fill('#display-name', 'QA ' + plan);
   await page.fill('#password', PASSWORD);
   await page.check('#terms');
+  if (newsletter) {
+    await page.waitForSelector('#newsletter-field:not([hidden])');
+    check(!(await page.isChecked('#newsletter')), 'Newsletter nicht vorausgewaehlt');
+    await page.check('#newsletter');
+  }
   await page.click('#ka-register button[type=submit]');
   await page.waitForFunction(() => !document.getElementById('ka-register-done').hidden || document.getElementById('ka-status').getAttribute('data-kind') === 'error');
   // Die Simulation meldet jede Anfrage als 127.0.0.1: je Lauf ein frischer Testserver (signup 5/h je IP bleibt unveraendert).
@@ -190,7 +196,8 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   // Trennung der Konten: ein zweites Konto sieht nichts vom ersten.
   const other = await context('desktop');
   const otherMail = mail('andere');
-  await register(other.page, otherMail, {plan: 'free'});
+  // Mit Newsletter-Haken, falls angeboten (Pruefung weiter unten, ohne weitere Registrierung: 5/h je IP).
+  await register(other.page, otherMail, {plan: 'free', newsletter: NEWSLETTER_ON});
   await confirmLink(other.page, otherMail);
   await other.page.waitForURL(/\/willkommen\//);
   await other.page.goto(`${base}/mein-dashboard/`);
@@ -351,6 +358,61 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await shot(page, 'sepa-01-ausstehend');
   await fetch(`${base}/__dev/sepa/latest/paid`, {method: 'POST'});
   check((await me(page)).entitlements.plan_id === 'pro', 'SEPA bestaetigt: Pro');
+  await ctx.close();
+}
+
+// ============================================================ Rechtliches, Kuendigen, Widerrufen (oeffentlich, ohne Anmeldung)
+{
+  const {ctx, page} = await context('mobile', 'dark');
+  for (const p of ['/rechtliches/', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung', '/rechtliches/datenschutz', '/rechtliches/impressum']) {
+    await page.goto(base + p);
+    check((await page.textContent('.draft')).includes('noch nicht rechtlich freigegeben'), `${p}: als Entwurf gekennzeichnet`);
+    const r = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+    check(r, `${p}: kein waagrechter Ueberlauf (mobil)`);
+  }
+  await page.goto(base + '/widerrufen');
+  check((await page.textContent('h1')) === 'Vertrag widerrufen', 'Widerrufsfunktion: Beschriftung „Vertrag widerrufen“');
+  await page.fill('input[name=fullName]', 'QA Widerruf');
+  await page.fill('input[name=email]', mail('widerruf'));
+  await page.tap('button[type=submit]');
+  await page.waitForSelector('text=Widerruf bestätigen');
+  await shot(page, 'recht-01-widerruf-bestaetigen');
+  await page.tap('button:has-text("Widerruf bestätigen")');
+  await page.waitForSelector('text=Dein Widerruf ist eingegangen');
+  check((await page.textContent('dl')).includes('versendet'), 'Widerruf: Eingangsbestaetigung per E-Mail versendet');
+  await shot(page, 'recht-02-widerruf-eingegangen');
+  await page.goto(base + '/kuendigen');
+  await page.fill('input[name=fullName]', 'QA Kuendigung');
+  await page.fill('input[name=email]', mail('kuendigung'));
+  await page.tap('button:has-text("Jetzt kündigen")');
+  await page.waitForSelector('text=Deine Kündigung ist eingegangen');
+  check(true, 'Kuendigungsfunktion ohne Anmeldung');
+  await ctx.close();
+}
+
+// ============================================================ Newsletter (nur wenn der Testserver ihn anbietet: --newsletter)
+if (NEWSLETTER_ON) {
+  const {ctx, page} = await context('desktop');
+  const email = mail('andere');
+  await login(page, email);
+  await page.waitForURL(/\/willkommen\//);
+  await fetch(`${base}/__dev/cron`, {method: 'POST'});
+  await page.goto(`${base}/konto/einstellungen/`);
+  await page.waitForSelector('#ka-settings-wrap:not([hidden])');
+  check((await page.textContent('#ka-newsletter-status')).includes('bitte bestätige'), 'nach Registrierung mit Haken: Bestaetigung ausstehend (Double-Opt-in)');
+  await fetch(`${base}/__dev/brevo/confirm?email=${encodeURIComponent(email)}`, {method: 'POST'});
+  await fetch(`${base}/__dev/cron`, {method: 'POST'});
+  await page.reload();
+  await page.waitForSelector('#ka-settings-wrap:not([hidden])');
+  check((await page.textContent('#ka-newsletter-status')).includes('Du erhältst den Newsletter'), 'nach Klick in der DOI-Mail: bestaetigt');
+  await audit(page, 'Einstellungen Newsletter');
+  await shot(page, 'newsletter-01-bestaetigt');
+  await page.click('#ka-newsletter-toggle');
+  await page.waitForFunction(() => document.getElementById('ka-newsletter-status').textContent.includes('abbestellt'));
+  check(true, 'Abmeldung im Konto');
+  await page.click('#ka-newsletter-toggle');
+  await page.waitForFunction(() => document.getElementById('ka-newsletter-status').textContent.includes('bitte bestätige'));
+  check(true, 'erneute Bestellung: wieder Double-Opt-in');
   await ctx.close();
 }
 

@@ -1,5 +1,8 @@
 # Rechtliche und steuerliche Prüfpunkte vor der ersten Zahlung
 
+> **Abgelöst (29.10.2026)** durch [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md): eigene Texte statt Shop-Richtlinien (R1, R2, R8, R9),
+> Vertragsbestätigung (R4), Regelbesteuerung (R6, [STEUER.md](STEUER.md)). Die Tabelle unten ist der Stand vom 29.10. vormittags.
+
 Stand 29.10.2026. **Keine Rechtsberatung.** Diese Liste hält fest, was technisch geprüft wurde und welche Entscheidungen
 die RAM Consulting UG (haftungsbeschränkt) bzw. ihre Rechts- und Steuerberatung treffen muss. Der Code nimmt keinen dieser Punkte
 als gelöst an. Status: **offen – vor der ersten Zahlung eines Kunden prüfen.** Für den internen 1-EUR-Test des Owners

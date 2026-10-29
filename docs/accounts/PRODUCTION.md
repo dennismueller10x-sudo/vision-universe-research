@@ -9,11 +9,12 @@ und D gelten weiter.
 
 | Teil | Produktion | Hinweis |
 |---|---|---|
-| Datenbank | Supabase `qiytbnpoqvldsatpfkeh` (Frankfurt, Free) | heißt historisch `vision-universe-dev`; 8 Migrationen, RLS, Tests 01–08 grün |
+| Datenbank | Supabase `qiytbnpoqvldsatpfkeh` (Frankfurt, Free) | heißt historisch `vision-universe-dev`; 10 Migrationen, RLS, Tests 01–10 grün |
 | API | Worker `vu-account` unter `https://konto.visionuniverse.de` | `wrangler.toml` `[env.production]`; **nicht** `account.visionuniverse.de` (Shopify-Kundenkonten) |
 | Seiten | `/konto/` auf research.visionuniverse.de, hinter der Research-Passwortmaske | `konto/config.js` bleibt leer bis zur Freischaltung |
 | Abrechnung | Stripe Live, Restricted Key `rk_live_` | Live angebunden; Checkout nur für Konten mit Rolle `billing_tester` (`VU_CHECKOUT_ACCESS = "testers"`), siehe [TARIFE.md](TARIFE.md) |
-| E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Kündigungsbestätigungen über die Brevo-API |
+| E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Vertrags-, Kündigungs- und Widerrufsbestätigungen über die Brevo-API; Kontaktabgleich und Newsletter aus ([BREVO.md](BREVO.md)) |
+| Rechtstexte, Kündigen, Widerrufen | `https://konto.visionuniverse.de/rechtliches/`, `/kuendigen`, `/widerrufen` (ohne Passwortmaske) | Entwürfe, [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) |
 | Sicherung | `account-backup.yml`, täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
 
 ## Zugangsdaten (GitHub)

@@ -69,6 +69,7 @@ Jede Variante ist ein eigener PR mit Vorher/Nachher; Daten werden nie gelöscht 
 
 ## Öffentlich öffnen (später, eigene Freigabe)
 
-`VU_CHECKOUT_ACCESS = "public"` in `[env.production.vars]` und die Prüfung im Deploy-Workflow anpassen – erst nach dem
-gemeinsamen Ende-zu-Ende-Test mit echter Zahlung und rechtlicher Prüfung (Impressum, AGB/Nutzungsbedingungen,
-Widerrufsbelehrung, Umsatzsteuer/Kleinunternehmerstatus, Rechnungsangaben in Stripe).
+Drei unabhängige Schritte, Ablauf in [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) „Freigabe und Umschalten“:
+Rechtstexte freigegeben (`LEGAL_STATUS`, neue `LEGAL_VERSION`), `VU_LEGAL_APPROVED` = diese Fassung, `VU_CHECKOUT_ACCESS =
+"public"` samt Deploy-Prüfung. Fehlt einer, bleibt der Live-Checkout auf Tester beschränkt (`effectiveCheckoutAccess`).
+Steuer: [STEUER.md](STEUER.md). Newsletter und Brevo: [BREVO.md](BREVO.md).

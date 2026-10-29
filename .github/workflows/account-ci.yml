@@ -116,7 +116,7 @@ jobs:
           port=8795
           for engine in chromium webkit; do
             port=$((port + 1))
-            node scripts/account/dev-server.mjs --port=$port --checkout-access=testers > /tmp/account-evidence/server-journey-$engine.log 2>&1 &
+            node scripts/account/dev-server.mjs --port=$port --checkout-access=testers --newsletter > /tmp/account-evidence/server-journey-$engine.log 2>&1 &
             server_pid=$!
             for i in $(seq 1 30); do curl --fail --silent http://localhost:$port/v1/health > /dev/null && break; sleep 1; done
             node scripts/account/journey-qa.mjs --engine=$engine --url=http://localhost:$port --out=/tmp/account-evidence || status=1
