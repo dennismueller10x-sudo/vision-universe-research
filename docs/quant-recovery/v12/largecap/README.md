@@ -84,3 +84,23 @@ SEC: 1.045 Netzabrufe (Ledger `request-ledger.jsonl`), ≤ 2/s über `scripts/qu
 - RESTRICT-Listings haben keine Historie vor validFrom (GOOGL ab 2016, JCI ab 2016-12, KDP ab 2022-10); die Ereignisse selbst bleiben unklassifiziert.
 - IFF/WBD: V10-Regel Q-CUR schließt bei jedem Form 25 nach dem letzten Cover aus (IFF vermutlich Anleihe-Delisting – nicht geprüft, Regel nicht gelockert); WBD ist tatsächlich deregistriert (Lifecycle-Fall).
 - Nicht split-große Anbieterfaktoren (z. B. Spin-off-Anpassungen) werden weder vom CA-Gate noch hier geprüft.
+
+## Korrektur nach unabhängiger Prüfung (Befund m9)
+
+- **Befund:** Der V10-Erzeuger `scripts/quant/v10/population/build-registers.cjs` schrieb `research-identity-evidence.cjs` als
+  `Kopf + module.exports = JSON.stringify(Register)`. Die V12-Erweiterung steht **nach** `module.exports` und ist nicht aufzählbar;
+  ein erneuter V10-Lauf hätte sie stillschweigend gelöscht.
+- **Korrektur:** Der Erzeuger übernimmt den V12-Block (ab der Markierung `// V12 LARGECAP extension `v12``) jetzt wörtlich.
+  `quant/tests/v12-largecap.test.mjs` baut das Register in ein Temp-Verzeichnis neu und prüft: Ergebnis **byte-identisch** zur
+  committeten Datei, `v12` vorhanden, nicht aufzählbar, inhaltsgleich; Lifecycle-Register ebenfalls byte-identisch.
+- **Transparenz von `v12`:** Weil die Eigenschaft nicht aufzählbar ist, sieht sie kein Werkzeug, das das Register über
+  `Object.keys`/`JSON.stringify` liest (auch nicht der `registryHash`). Sichtbar ist sie nur über
+  `Object.getOwnPropertyDescriptor(require('quant/engines/research-identity-evidence.cjs'), 'v12')` bzw.
+  `research-weekly-loader.cjs#validateIdentityEvidenceV12` und wirkt nur mit `identityEvidenceProtocolV12`. Wer das Register
+  inhaltlich prüft, muss `v12` ausdrücklich lesen.
+- **Code-Hash der V10-Reproduktionen:** Die Dateibytes haben sich geändert, die JSON-Inhalte nicht. Gegen
+  `docs/quant-recovery/v10/artifact-manifest-1.0.0.json` weicht deshalb ab: `quant/engines/research-identity-evidence.cjs`
+  `488f384d…` (V10) → `599c4df0…` (V12-Erweiterung, Commit `6f3bb9a1e7`); `scripts/quant/v10/population/build-registers.cjs`
+  `335ccc15…` → `7669c086…` (diese Korrektur). Eine V10-Reproduktion, die Code-Hashes vergleicht, meldet diese beiden Dateien als
+  geändert; Register-Inhalt, `registryHash` und alle V10-Optionssätze sind unverändert (Test oben und
+  `v12 extension is non-enumerable`).

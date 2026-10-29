@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* V10 POPULATION: build the research registers from the committed evidence files.
  *  - quant/engines/research-identity-evidence.cjs: keeps the five 1.0.0 records byte-identical and (re)writes the
- *    extension block `v10` (research-identity-evidence-1.1.0) from docs/quant-recovery/v10/population/identity-cases.json
+ *    extension block `v10` (research-identity-evidence-1.1.0) from docs/quant-recovery/v10/population/identity-cases.json;
+ *    a non-enumerable V12 extension `v12` appended after module.exports (V12 LARGECAP) is preserved verbatim
  *  - quant/engines/research-listing-lifecycle.cjs (research-listing-lifecycle-1.0.0) from lifecycle-cases.json
  * Never hand-edit a record; rerun this builder.
  *   node scripts/quant/v10/population/build-registers.cjs [--root <dir>] [--identity-out <file>] [--lifecycle-out <file>]
@@ -43,6 +44,7 @@ function identityRecords() {
     };
   }).sort((a, b) => a.securityId < b.securityId ? -1 : 1);
 }
+const V12_MARKER = '\n// V12 LARGECAP extension `v12`';
 function writeIdentity(out) {
   const file = path.join(root, 'quant/engines/research-identity-evidence.cjs');
   const src = fs.readFileSync(file, 'utf8');
@@ -54,7 +56,10 @@ function writeIdentity(out) {
     builder: 'scripts/quant/v10/population/build-registers.cjs', evidence: 'docs/quant-recovery/v10/population/identity-cases.json', records };
   const head = src.slice(0, src.indexOf('module.exports = '));
   const note = '// V10 extension `v10` (research-identity-evidence-1.1.0): written by scripts/quant/v10/population/build-registers.cjs; the five 1.0.0 records stay byte-identical.\n';
-  fs.writeFileSync(out || file, (head.includes(note) ? head : head + note) + 'module.exports = ' + JSON.stringify(reg, null, 2) + ';\n');
+  // V12 LARGECAP appends a non-enumerable extension `v12` after the module.exports statement (scripts/quant/v12/largecap/build-identity-v12.cjs).
+  // JSON.stringify(require(file)) above does not see it, so it is carried over verbatim (correction after the independent V12 review, LARGECAP m9).
+  const k = src.indexOf(V12_MARKER), v12Tail = k < 0 ? '' : src.slice(k + 1);
+  fs.writeFileSync(out || file, (head.includes(note) ? head : head + note) + 'module.exports = ' + JSON.stringify(reg, null, 2) + ';\n' + v12Tail);
   return records.length;
 }
 // ------------------------------------------------------------ listing lifecycle
