@@ -38,6 +38,8 @@
      node scripts/market/build-us-security-master.mjs --from-csv <p>
      node scripts/market/build-us-security-master.mjs --from-universe <p>
      node scripts/market/build-us-security-master.mjs --offline        # nur Bestand
+     ... --delisting-evidence <p|none>   SEC-Delisting-Register (Standard:
+                                         quant/config/security-master-delisting-evidence.json)
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -89,6 +91,13 @@ const PROVIDER_SUMMARY_FILE = arg("--provider-summary",
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "security-master"));
 const WORK_DIR = arg("--work-dir",
   join(root, SCALE.storage.workingDir, "tiingo", "security-master"));
+/* SEC-Delisting-Register (quant/engines/us-security-master.js, Abschnitt
+   SEC-DELISTING-BELEG). Standardmaessig Pflicht: fehlt die committete Datei,
+   bricht der Lauf ab, statt beendete Listings still wieder ACTIVE zu fuehren.
+   "--delisting-evidence none" schaltet es ausdruecklich ab (Vorher-Lauf). */
+const { loadDelistingEvidence, DEFAULT_DELISTING_EVIDENCE_FILE } =
+  await import(join(root, "scripts", "market", "lib", "security-master-delisting-evidence.mjs"));
+const DELISTING_EVIDENCE_ARG = arg("--delisting-evidence", DEFAULT_DELISTING_EVIDENCE_FILE);
 
 /* ------------------------------------------------------------ ZIP/CSV
 
@@ -417,11 +426,21 @@ async function main() {
     process.exit(3);
   }
 
+  let delisting;
+  try { delisting = loadDelistingEvidence(DELISTING_EVIDENCE_ARG); }
+  catch (err) { console.error("ABBRUCH: " + err.message + " Nichts geschrieben."); process.exit(2); }
   const stamp = STAMP || new Date().toISOString();
   const result = Master.buildSecurityMaster({
     providerRows, baseline, today: TODAY,
-    providerAvailable: providerRows.length > 0, stamp
+    providerAvailable: providerRows.length > 0, stamp,
+    delistingEvidence: delisting.doc
   });
+  const delistingEvidence = result.delistingEvidence
+    ? { ...result.delistingEvidence, file: delisting.file, sha256: delisting.sha256 }
+    : { status: "DISABLED_BY_FLAG" };
+  console.log(`  SEC-Delisting-Register: ${result.delistingEvidence
+    ? result.delistingEvidence.records + " Eintraege, " + result.delistingEvidence.appliedRows + " Zeilen INACTIVE"
+    : "abgeschaltet"}`);
 
   const c = result.counts;
   const newEligible = result.rows.filter((r) => r.reconciliation_status === "ADDED");
@@ -632,6 +651,7 @@ async function main() {
     headline,
     additions: additionBreakdown,
     counts: c,
+    delistingEvidence,
     invariants: result.invariants,
     nonDestructive: {
       baselineFile: BASELINE_FILE.replace(root + "/", ""),
@@ -717,6 +737,7 @@ async function main() {
       priceLevels: "NONE_IN_THIS_ARTEFACT"
     },
     counts: c,
+    delistingEvidence,
     rowsDelivered: masterRows.length
   }, masterRows);
 
@@ -727,6 +748,7 @@ async function main() {
     exchangeBreakdown: c.byExchange,
     venueBreakdown: c.byVenueTier,
     activeBreakdown: c.byActiveStatus,
+    delistingEvidence,
     classificationBreakdown: c.byClassificationStatus,
     largestContaminationCategories: result.findings
       .slice()
