@@ -54,7 +54,9 @@
     WATCHLIST_ITEM_NOT_FOUND: 'Dieser Eintrag ist nicht mehr auf deiner Watchlist.',
     ALERTS_INVALID: 'Diese Benachrichtigung gibt es nicht.',
     TEXT_TOO_LONG: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
-    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.'
+    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.',
+    NEWSLETTER_NOT_AVAILABLE: 'Der Newsletter ist im Konto noch nicht verfügbar.',
+    SUBSCRIBE_INVALID: 'Das hat nicht geklappt. Bitte versuche es noch einmal.'
   };
 
   var STATUS = {

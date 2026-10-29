@@ -112,7 +112,9 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
       const s = {id: rid('cs_test'), object: 'checkout.session', mode: 'subscription', status: 'open', livemode: false,
         customer: params.customer, client_reference_id: params.client_reference_id, metadata: params.metadata || {},
         subscription_data: params.subscription_data || {}, line_items: params.line_items, subscription: null,
-        success_url: params.success_url, cancel_url: params.cancel_url};
+        success_url: params.success_url, cancel_url: params.cancel_url,
+        // Fuer Pruefungen festgehalten (Stripe zeigt den Text ueber der Bestellschaltflaeche).
+        custom_text: params.custom_text || null, automatic_tax: params.automatic_tax || null};
       s.url = `${checkoutBase}/${s.id}`;
       sessions.set(s.id, s);
       return done(s);

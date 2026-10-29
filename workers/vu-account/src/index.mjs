@@ -20,6 +20,8 @@ import * as account from './account.mjs';
 import * as billing from './billing.mjs';
 import * as watchlist from './watchlist.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
+import {createBrevo, runBrevo} from './brevo.mjs';
+import * as pages from './public-pages.mjs';
 
 // Gesundheit, oeffentlich und ohne Zahlen: Kuendigungen "ok" | "attention" | "unknown"
 // (fuer die Ueberwachung ohne Schluessel, .github/workflows/account-monitor.yml). 60 s zwischengespeichert.
@@ -35,7 +37,8 @@ async function health(ctx) {
     cancellations = cancellationState.value;
   }
   return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
-    mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess});
+    mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess,
+    checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved, newsletter: ctx.cfg.brevo.newsletter, contactSync: ctx.cfg.brevo.sync});
 }
 export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; };
 
@@ -52,6 +55,7 @@ const ROUTES = [
   ['GET', '/v1/me', account.me],
   ['PATCH', '/v1/me', account.updateMe, {csrf: true}],
   ['POST', '/v1/me/plan-intent', account.setPlanIntent, {csrf: true}],
+  ['POST', '/v1/me/newsletter', account.newsletter, {csrf: true}],
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],
@@ -71,6 +75,18 @@ const ROUTES = [
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
 ];
 
+// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kuendigen, Widerrufen.
+const PAGES = [
+  ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
+  ['GET', '/rechtliches', pages.legalIndex, {db: false}],
+  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter']
+    .map(k => ['GET', `/rechtliches/${k}`, pages.legalPage(k), {db: false}]),
+  ['GET', '/kuendigen', pages.cancelGet, {db: false}],
+  ['POST', '/kuendigen', pages.cancelPost],
+  ['GET', '/widerrufen', pages.withdrawGet, {db: false}],
+  ['POST', '/widerrufen', pages.withdrawPost],
+];
+
 function defaultLog(level, message, fields) {
   console[level === 'error' ? 'error' : 'log'](JSON.stringify({level, message, ...fields}));
 }
@@ -86,17 +102,31 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     apiVersion: cfg.stripe.apiVersion, fetchImpl});
   const limit = createLimiter({binding: env.VU_ACCOUNT_LIMITER, now});
   const mailer = createMailer({...cfg.mail, fetchImpl});
+  const brevo = createBrevo({apiKey: cfg.mail.apiKey, apiBase: cfg.mail.apiBase, fetchImpl});
 
   async function handle(request) {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return preflight(request, cfg);
+    const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === request.method);
+    if (htmlRoute) {
+      const [, , handler, opts = {}] = htmlRoute;
+      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
+        cookies: parseCookies(request), outCookies: []};
+      try {
+        if (opts.db !== false && !supabaseReady(cfg)) throw new Error('ACCOUNTS_NOT_CONFIGURED');
+        return await handler(ctx);
+      } catch (e) {
+        if (!(e instanceof HttpError)) log('error', 'PAGE_FAILED', {route: url.pathname, code: String(e.code || e.message).slice(0, 120)});
+        return pages.htmlError(e);
+      }
+    }
     const route = ROUTES.find(([m, p]) => p === url.pathname && m === request.method);
     if (!route) {
       const known = ROUTES.some(([, p]) => p === url.pathname);
       return json(request, cfg, known ? 405 : 404, {state: known ? 'METHOD_NOT_ALLOWED' : 'NOT_FOUND'});
     }
     const [, , handler, opts = {}] = route;
-    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, ip: clientIp(request),
+    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
       cookies: parseCookies(request), outCookies: []};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
@@ -115,9 +145,13 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   // Cron (wrangler.toml [triggers]): Postausgang wiederholen, Fristen ueberwachen.
   async function scheduled() {
     if (!supabaseReady(cfg)) return {skipped: 'ACCOUNTS_NOT_CONFIGURED'};
-    return runScheduled({store, stripe, mailer, cfg, log, now});
+    const result = await runScheduled({store, stripe, mailer, cfg, log, now});
+    let brevoResult = null;
+    try { brevoResult = await runBrevo({store, brevo, cfg, log, now}); }
+    catch (e) { log('error', 'BREVO_RUN_FAILED', {code: String(e.code || e.message).slice(0, 120)}); }
+    return {...result, brevo: brevoResult};
   }
-  return {handle, scheduled, cfg, deps: {store, stripe, mailer, cfg, log, now}};
+  return {handle, scheduled, cfg, deps: {store, stripe, mailer, brevo, cfg, log, now}};
 }
 
 let cached = null;

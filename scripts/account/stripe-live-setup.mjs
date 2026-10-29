@@ -22,7 +22,8 @@ import {fileURLToPath} from 'node:url';
 import {formEncode} from '../../workers/vu-account/src/stripe.mjs';
 import {API_VERSION, WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 
-const LEGAL = {privacy: 'https://www.visionuniverse.de/policies/privacy-policy', terms: 'https://www.visionuniverse.de/policies/terms-of-service'};
+// Eigene Rechtstexte (oeffentlich, ohne Passwortmaske; workers/vu-account/src/legal/texts.mjs) statt der Shopify-Shop-Texte.
+const LEGAL = {privacy: 'https://konto.visionuniverse.de/rechtliches/datenschutz', terms: 'https://konto.visionuniverse.de/rechtliches/agb'};
 
 // Pro: Einfuehrungspreis 1,00 EUR im Monat (interner Testpreis). free hat keinen Preis.
 export const LIVE_CATALOG = Object.freeze([

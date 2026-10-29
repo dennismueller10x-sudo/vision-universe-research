@@ -201,3 +201,23 @@ test('Pro-Bestellbestaetigung: Checkbox nur im Zustand "ready", fehlende Freigab
   assert.match(js, /pay\.disabled = !terms\.checked/);
   assert.match(js, /\{price: proPrice\.key, confirm: true\}/, 'Bestaetigung geht an den Server (confirm: true)');
 });
+
+test('Rechtstexte und Newsletter: eigene Texte statt Shopify, Newsletter freiwillig und nicht vorausgewaehlt', async () => {
+  const {NEWSLETTER} = await import('../../workers/vu-account/src/brevo.mjs');
+  const reg = readFileSync(join(ROOT, 'registrieren/index.html'), 'utf8');
+  const box = reg.match(/<label class="ka-check" id="newsletter-field" hidden><input id="newsletter" name="newsletter" type="checkbox">[^]*?<\/label>/);
+  assert.ok(box, 'eigene Checkbox, ohne checked/required, zunaechst verborgen');
+  assert.ok(!/checked|required/.test(box[0].match(/<input[^>]*>/)[0]));
+  assert.ok(box[0].replace(/<[^>]+>/g, '').includes(NEWSLETTER.text), 'Einwilligungstext wortgleich mit der gespeicherten Fassung');
+  for (const p of pages()) {
+    const html = readFileSync(p, 'utf8');
+    assert.ok(!/policies\/(terms-of-service|refund-policy|privacy-policy)/.test(html), `${p}: keine Shopify-Texte`);
+    assert.match(html, /href="https:\/\/konto\.visionuniverse\.de\/widerrufen">Vertrag widerrufen<\/a>/, `${p}: Widerrufsfunktion verlinkt`);
+  }
+  const tarife = readFileSync(join(ROOT, 'tarife/index.html'), 'utf8');
+  assert.match(tarife, /href="https:\/\/konto\.visionuniverse\.de\/rechtliches\/agb"/);
+  assert.match(tarife, /href="https:\/\/konto\.visionuniverse\.de\/rechtliches\/widerrufsbelehrung"/);
+  const settings = readFileSync(join(ROOT, 'einstellungen/index.html'), 'utf8');
+  assert.ok(!/id="marketing"/.test(settings), 'kein direkt setzbarer Werbe-Haken');
+  assert.match(settings, /id="ka-newsletter-toggle"/);
+});
