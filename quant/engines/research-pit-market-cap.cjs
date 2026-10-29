@@ -5,6 +5,12 @@
 //   (2) marketCapAt(): the V10 market-cap computation with the register applied (status OK / CORRECTED / EXCLUDED + evidence).
 // The V10 function scripts/quant/v10/factor/factors.cjs#marketCapAt stays unchanged and is called first; this module only
 // replaces the share value and the split basis of its result. Fail-closed: an EXCLUDED observation returns value null.
+// Unregistered facts (correction after the independent V12 review, MCAP m2): the register stores only the non-OK facts of the
+// classified observation set (observationsHash). DEFAULT (strict off, unchanged behaviour): a fact absent from the register is
+// treated as OK - correct only for that observation set. STRICT ({strict: true, observed: bindObservations(rows)}): the caller's
+// observation rows are hashed at runtime exactly as the builder did and must equal register.observationsHash (else throw); a fact
+// that is neither in the register nor in the bound observation set returns EXCLUDED (NOT_IN_CLASSIFIED_OBSERVATIONS).
+const crypto = require('node:crypto');
 
 const RULE = Object.freeze({
   id: 'v12-mcap-pit-share-correction', version: '1.0.8',
@@ -209,18 +215,33 @@ function loadRegister() {
   return REGISTER;
 }
 
+/** observationsHash of panel observation rows [{id, t, s: {accn, concept, v}}] - the same definition as scripts/quant/v12/mcap/classify.cjs. */
+function observationsHashOf(rows) { return crypto.createHash('sha256').update(JSON.stringify(rows.map(r => [r.id, r.t, r.s.accn, r.s.concept, r.s.v]))).digest('hex'); }
+/** Runtime check for strict mode: the rows must hash to the register's observationsHash; returns the bound key set (accn|code|v). */
+function bindObservations(rows, register = loadRegister()) {
+  const h = observationsHashOf(rows);
+  if (h !== register.meta.observationsHash) throw Error('PIT_MCAP_OBSERVATIONS_HASH_MISMATCH');
+  return Object.freeze({ observationsHash: h, keys: new Set(rows.map(r => r.s.accn + '|' + (CONCEPT_CODE[r.s.concept] || null) + '|' + r.s.v)) });
+}
+
 /**
  * Corrected PIT market cap. args = the V10 marketCapAt arguments plus {securityId, cik, splits} (provider split list of the listing).
+ * options: {strict: false (default, unregistered fact = OK) | true (requires options.observed from bindObservations; unregistered
+ * and unobserved fact = EXCLUDED)}.
  * base: the unchanged V10 result (scripts/quant/v10/factor/factors.cjs#marketCapAt) for the same arguments.
  * Returns {value, status: 'OK'|'CORRECTED'|'EXCLUDED'|'NOT_APPLICABLE', classes, reason, base, evidence}.
  */
-function marketCapAt(args, base, register = loadRegister()) {
+function marketCapAt(args, base, register = loadRegister(), options = {}) {
+  if (options && options.strict !== undefined && typeof options.strict !== 'boolean') throw Error('PIT_MCAP_INVALID_OPTIONS');
+  const strict = !!options && options.strict === true;
+  if (strict && !(options.observed && options.observed.observationsHash === register.meta.observationsHash && options.observed.keys instanceof Set)) throw Error('PIT_MCAP_STRICT_REQUIRES_BOUND_OBSERVATIONS');
   if (!base || base.value === null) return { value: null, status: 'NOT_APPLICABLE', reason: base ? base.reason : 'NO_BASE', classes: [], base: base ? base.value : null };
   const s = args.doc.ttm.shares_outstanding, code = CONCEPT_CODE[s.concept] || null;
   const key = args.cik + '|' + s.accn + '|' + code + '|' + s.v;
   const rec = register.facts.get(key) || null, C = register.columns;
   const col = name => (rec ? rec[C.indexOf(name)] : null);
   const classes = [];
+  if (strict && !rec && !options.observed.keys.has(s.accn + '|' + code + '|' + s.v)) return { value: null, status: 'EXCLUDED', reason: 'NOT_IN_CLASSIFIED_OBSERVATIONS', classes: ['NOT_IN_CLASSIFIED_OBSERVATIONS'], base: base.value };
   const status0 = rec ? col('status') : 'OK';
   if (status0 === 'EXCLUDED') return { value: null, status: 'EXCLUDED', reason: col('class'), classes: [col('class')], base: base.value, fact: rec };
   const vPrime = rec && finite(col('vPrime')) ? col('vPrime') : s.v;
@@ -247,4 +268,4 @@ function marketCapAt(args, base, register = loadRegister()) {
   return { value, status: classes.length ? 'CORRECTED' : 'OK', reason: null, classes, base: base.value, fact: rec };
 }
 
-module.exports = { RULE, CONCEPT_CODE, splitShaped, basisFactor, classifyFact, classifySplitEvent, marketCapAt, loadRegister, indexRegister, REGISTER_SCHEMA, _days: days, _median: median };
+module.exports = { RULE, CONCEPT_CODE, splitShaped, basisFactor, classifyFact, classifySplitEvent, marketCapAt, observationsHashOf, bindObservations, loadRegister, indexRegister, REGISTER_SCHEMA, _days: days, _median: median };
