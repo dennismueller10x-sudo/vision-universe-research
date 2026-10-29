@@ -2,72 +2,117 @@
 
 Gilt für `.github/workflows/account-backup.yml`. Der Workflow braucht zwei Einstellungen.
 Fehlt eine, bricht er bewusst ab („fail closed“). Es wird nie unverschlüsselt gesichert.
-
-## Voraussetzungen
+Am Workflow selbst ist nichts zu ändern.
 
 | Art | Name | Inhalt |
 |---|---|---|
-| Repository-**Variable** | `VU_ACCOUNT_BACKUP_AGE_RECIPIENT` | öffentlicher age-Schlüssel `age1…`; nicht geheim |
-| Repository-**Secret** | `VU_ACCOUNT_BACKUP_DB_URL` | Session-Pooler-URI der Produktionsdatenbank (enthält das DB-Passwort) |
+| Repository-**Variable** | `VU_ACCOUNT_BACKUP_AGE_RECIPIENT` | öffentlicher age-Schlüssel `age1…` (nicht geheim) |
+| Repository-**Secret** | `VU_ACCOUNT_BACKUP_DB_URL` | Session-Pooler-URI der **Leserolle** `vu_backup_ro` (empfohlen) oder von `postgres` |
 
-Am Workflow selbst ist dafür nichts zu ändern.
+## Warum eine eigene Leserolle
 
-## Schlüssel erzeugen, ohne Laptop (10 min)
+`postgres` darf in Supabase alles ändern. Liegt dessen Passwort in einem GitHub-Secret, reicht ein kompromittierter Workflow, um die Konten-Datenbank zu verändern.
+`sql/vu_backup_ro.sql` legt deshalb eine Rolle an, die alles lesen, aber nichts schreiben kann:
 
-Der private Schlüssel entsteht in einer Wegwerf-Shell und landet nur im Passwortmanager.
+- `pg_read_all_data`: Lesen auf alle Tabellen, auch auf die `auth`-Tabellen, die `postgres` nicht weitergeben darf
+- `BYPASSRLS`: `pg_dump` braucht das bei Tabellen mit Row Level Security
+- keine Schreib-, Anlege- oder Rollenrechte
+- `default_transaction_read_only = on` als zweite Sperre
+- höchstens 2 Verbindungen
 
-1. Safari → `shell.cloud.google.com` → Menü → **Ephemeral Mode**.
-2. In der Shell:
+Getestet mit `tests/backup-role-test.sh` (R01–R10, synthetisch):
+- Anlegen als Nicht-Superuser
+- vollständiger Dump, inkl. fremder `auth`-Tabellen und RLS
+- jede Schreibart verweigert, auch ohne die Lesesperre
+- Daten unverändert
+
+## Einrichtung am iPhone (Safari, ca. 20 min)
+
+Alles in **Google Cloud Shell**: `shell.cloud.google.com` → Menü (⋮) → **Ephemeral Mode**. Nach dem Schließen bleibt nichts gespeichert.
+Passwörter und Schlüssel werden nur mit `read -rs` eingegeben: ohne Anzeige, ohne Shell-Verlauf.
+
+### 1. Werkzeuge
+
+```bash
+sudo apt-get install -y -qq age postgresql-client >/dev/null
+git clone -q --depth 1 -b claude/vu-backup-tooling https://github.com/dennismueller10x-sudo/vision-universe-research.git vu
+cd vu/scripts/backup
+```
+
+### 2. age-Schlüsselpaar
+
+```bash
+umask 077; age-keygen -o /tmp/k.txt 2>/dev/null
+age-keygen -y /tmp/k.txt     # öffentlicher Teil age1…  → später GitHub-Variable
+cat /tmp/k.txt               # privater Teil (3 Zeilen) → NUR Passwortmanager + Papier
+shred -u /tmp/k.txt
+```
+
+Im Passwortmanager einen Eintrag „VU Konten-Backup age“ anlegen: alle drei Zeilen und das Datum.
+
+### 3. Leserolle anlegen (Zustimmung zur neuen Datenbankrolle)
+
+In Supabase: Projekt → **Connect** → **Session pooler** → URI kopieren. Das ist die `postgres`-URI. Dein Datenbankpasswort einsetzen.
+
+```bash
+read -rs PGURL                                   # postgres-URI einfügen, Enter
+psql "$PGURL" -v ON_ERROR_STOP=1 -f sql/vu_backup_ro.sql
+psql "$PGURL" -c '\password vu_backup_ro'        # fragt zweimal verdeckt nach dem neuen Passwort
+unset PGURL
+```
+
+Das neue Passwort vorher im Passwortmanager erzeugen: 32 Zeichen, nur Buchstaben und Ziffern, dann passt es ohne Umschreiben in eine URI. Speichern als „VU Konten-Backup DB-Rolle“.
+
+### 4. Verbindung der Leserolle prüfen
+
+Die URI der Leserolle gleicht der postgres-URI, nur Benutzer und Passwort ändern sich:
+`postgresql://vu_backup_ro.<projekt-ref>:<passwort>@<pooler-host>:5432/postgres`
+
+```bash
+read -rs ROURL                                   # URI der Leserolle einfügen
+psql "$ROURL" -Atc "select current_user, current_setting('default_transaction_read_only'), has_table_privilege('public.profiles','INSERT')"
+```
+
+Erwartet: `vu_backup_ro|on|f`.
+- Meldet der Pooler einen Fehler bei der Anmeldung: Schritt 5 mit der postgres-URI einrichten und mir Bescheid geben (Ausweichweg, weniger streng).
+- Danach `unset ROURL`.
+
+### 5. GitHub eintragen
+
+GitHub-App oder Safari → Repository → **Settings** → **Secrets and variables** → **Actions**:
+- **Variables** → New repository variable: `VU_ACCOUNT_BACKUP_AGE_RECIPIENT` = `age1…` aus Schritt 2
+- **Secrets** → New repository secret: `VU_ACCOUNT_BACKUP_DB_URL` = URI der Leserolle aus Schritt 4
+
+### 6. Erster Lauf
+
+Actions → **„Konten — Datenbank-Sicherung (verschlüsselt)“** → **Run workflow** (Branch `main`).
+- Erwartet: grün, Artefakt `vu-accounts-backup`.
+- `pg_dump` liest in einer reinen Lesetransaktion. Mit der Leserolle ist Schreiben zusätzlich technisch ausgeschlossen.
+
+## Wiederherstellungsprobe (isoliert, Postgres 17)
+
+1. Actions → Lauf → Artifacts → `vu-accounts-backup` herunterladen.
+2. In der Cloud Shell hochladen: Menü → Upload. Dann:
    ```bash
-   sudo apt-get install -y -qq age >/dev/null
-   umask 077; age-keygen -o /tmp/vu-accounts.key 2>/dev/null
-   age-keygen -y /tmp/vu-accounts.key        # öffentlicher Teil age1…  -> GitHub-Variable
-   cat /tmp/vu-accounts.key                  # privater Teil AGE-SECRET-KEY-1… -> Passwortmanager
-   shred -u /tmp/vu-accounts.key
+   unzip -o vu-accounts-backup.zip
+   bin/vu-db-restore-drill.sh vu-accounts-*.dump.age erwartet.txt
    ```
-3. Im Passwortmanager einen Eintrag „VU Konten-Backup age-Schlüssel“ anlegen:
-   - die drei Zeilen der Schlüsseldatei
-   - Datum
-   - Hinweis „nur für Wiederherstellung“
-4. Zweite Kopie offline: auf Papier oder als Ausdruck im Safe.
-   - Der private Schlüssel ist kurz (74 Zeichen).
-   - Ohne ihn sind alle Sicherungen unlesbar.
-5. Shell schließen. Im Ephemeral Mode bleibt nichts zurück.
+3. Den privaten Schlüssel (Zeile `AGE-SECRET-KEY-1…`) einfügen, wenn gefragt. Die Eingabe bleibt unsichtbar und wird danach gelöscht.
 
-Nie: den privaten Schlüssel in GitHub, in ein Repository, in einen Chat, in eine Notiz-App oder in einen Screenshot.
+Das Skript:
+- startet eine **Wegwerf**-Datenbank (Docker `postgres:17`, nur lokal erreichbar)
+- legt die Supabase-Rollen und Erweiterungen an
+- spielt die Sicherung ein
+- vergleicht die Zeilenzahlen mit `erwartet.txt`
 
-## Eintragen (5 min, GitHub-App oder Safari)
+`erwartet.txt` (nur Tabellennamen und Zahlen) erstellt Claude direkt vor dem Lauf per Lese-Abfrage.
 
-1. Repository → Settings → Secrets and variables → Actions.
-2. **Variables** → New: `VU_ACCOUNT_BACKUP_AGE_RECIPIENT` = `age1…`.
-3. **Secrets** → New: `VU_ACCOUNT_BACKUP_DB_URL`.
-   - Wert aus Supabase: Projekt → **Connect** → **Session pooler** (Port 5432, nicht der Transaction-Pooler 6543).
-   - Das Datenbank-Passwort einsetzen.
-   - Die URI muss die Projektkennung enthalten. Der Workflow prüft das.
-4. Actions → „Konten — Datenbank-Sicherung“ → **Run workflow** (main). Erwartet: grün, Artefakt `vu-accounts-backup` (30 Tage).
-
-## Wiederherstellung (immer zuerst isoliert)
-
-1. Artefakt herunterladen. Nach Phase 2 liegt es zusätzlich verschlüsselt im Backup-Bucket.
-2. In einer Wegwerf-Shell: privaten Schlüssel aus dem Passwortmanager in eine Datei mit Rechten 600 einfügen.
-   `age -d -i key.txt -o db.dump vu-accounts-….dump.age`, danach `shred -u key.txt`.
-3. **Zuerst in eine leere Testdatenbank** spielen:
-   - ein leeres Supabase-Projekt oder ein lokales/Container-Postgres 17
-   - `pg_restore --no-owner -d <test-uri> db.dump`
-   - oder wie in `docs/accounts/PRODUCTION.md`: Schema über die Migrationen, dann `--data-only`
-4. Zeilenzahlen prüfen. **Nie** direkt in die Produktionsdatenbank.
-   Eine Wiederherstellung in Produktion ist eine eigene Owner-Entscheidung mit vorheriger Sicherung des Ist-Zustands.
-
-Hinweis zum Schema `auth`: Ein neues Supabase-Projekt bringt eigene `auth`-Tabellen und -Migrationen mit.
-Nutzerdaten aus `auth` deshalb nur mit `--data-only` und nur für die Tabellen zurückspielen, die fehlen; vorher im Testprojekt üben.
+**Nie** in die Produktionsdatenbank zurückspielen. Das wäre eine eigene Entscheidung mit vorheriger Sicherung des Ist-Zustands.
+Hinweis zum Schema `auth` bei einer echten Wiederherstellung in ein neues Supabase-Projekt: Das Projekt bringt eigene `auth`-Tabellen mit, deshalb dort nur `--data-only` und vorher im Testprojekt üben.
 
 ## Getestet
 
-`scripts/backup/tests/account-backup-restore-test.sh` nimmt den Schritt **unverändert** aus dem Workflow. Nur das Docker-Image wird durch ein lokales `pg_dump` ersetzt. Der Test läuft mit synthetischen Daten und einem Wegwerf-Schlüssel und prüft:
-
-- Verschlüsselung
-- kein Klartext in der Sicherung
-- Entschlüsseln
-- vollständige Wiederherstellung in eine leere Datenbank, in beiden Varianten
-- Quelle unverändert
-- Gegenproben: fehlender Empfänger, falsches Projekt, ungültiger Schlüssel, Datenbank nicht erreichbar
+| Test | Prüft |
+|---|---|
+| `tests/account-backup-restore-test.sh` (A01–A16) | Workflow-Schritt unverändert, synthetische DB mit RLS-Richtlinie und Erweiterung, Wegwerf-Schlüssel, Verschlüsselung, Wiederherstellung, Quelle unverändert, Gegenproben |
+| `tests/backup-role-test.sh` (R01–R10) | Leserolle |
