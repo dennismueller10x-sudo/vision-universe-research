@@ -10,12 +10,15 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("../../quant/engines/technical/technical-query.js") : global.VUTechnical.Query;
+  /* Strategie-Vorlagen (AP8): Kriterien-Checklisten ueber bestehende Filter, technical/engine/templates.js */
+  var TPL = isNode ? require("./templates.js") : global.VUTechnical.Templates;
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
   /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
   var INDEX_PATH = "/technical/data/index-v1.json";
-  var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* 1.1.0: zusaetzlich templates = {id: [erfuellt, fast erfuellt, unvollstaendig]} (Startseite, Vorlagen-Auswahl). */
+  var INDEX_SCHEMA = "vu-technical-index-1.1.0";
   /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
   var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
   /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, docs/technical/SIGNAL_EVIDENCE.md */
@@ -39,13 +42,14 @@
     if (!head) return { view: "home", params: params };
     if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" ? "saved" : "build", params: params };
     if (head === "methodik") return { view: "method", params: params };
+    if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "chart") {
       var t = String(path[1] || "").toUpperCase();
       return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : "chart", params: params } : { view: "chart", ticker: null, params: params };
     }
     return { view: "notfound", params: params };
   }
-  function chartHref(ticker, tab) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : ""); }
+  function chartHref(ticker, tab, query) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : "") + (query ? "?" + query : ""); }
   /** Zweistelliger Schluessel der technical-signals-Scherben (wie quant/api/product-services.js#technicalShard). */
   function technicalShard(ticker) { return (String(ticker) + "_").slice(0, 2); }
   function technicalPaths(ticker) { return [TECH_DIR + "by-ticker/" + ticker + ".json.gz", TECH_DIR + technicalShard(ticker) + ".json.gz"]; }
@@ -515,7 +519,7 @@
       if (FOCUS.indexOf(p.id) >= 0) r.indices.forEach(function (i) { union[i] = 1; });
     });
     return { schemaVersion: INDEX_SCHEMA, asOf: artifact.asOf, count: artifact.count, s: artifact.cols.s.slice(), n: artifact.cols.n.slice(),
-      presets: presets, focusUnion: Object.keys(union).length };
+      presets: presets, focusUnion: Object.keys(union).length, templates: TPL ? TPL.counts(ds) : {} };
   }
 
   var api = {

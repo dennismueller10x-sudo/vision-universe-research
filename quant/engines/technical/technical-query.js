@@ -249,7 +249,7 @@
     };
   }
 
-  /** Praedikat: true | false | null (null = kein Wert). */
+  /** Praedikat: true | false | null (null = kein Wert). Exportiert als predicate (Vorlagen-Checklisten, technical/engine/templates.js). */
   function compile(ds, filter, tf) {
     var f = field(filter.field), c = ds.column(columnKey(filter.field, filter.tf || tf));
     if (!f || !c) return function () { return null; };
@@ -420,7 +420,7 @@
     QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, STRUCTURES_LEGACY: STRUCTURES_LEGACY, PRESETS: PRESETS,
     MAX_GROUPS: MAX_GROUPS, MAX_FILTERS: MAX_FILTERS,
     field: field, labelOf: labelOf, columnKey: columnKey, opsFor: opsFor,
-    validate: validate, createDataset: createDataset, evaluate: evaluate, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
+    validate: validate, createDataset: createDataset, evaluate: evaluate, predicate: compile, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
   };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Query = api; }

@@ -418,3 +418,29 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-enum-pick .tc-enum{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0 12px;padding-bottom:8px}
 .tc-bgroup>*,.tc-builder-body>*{min-width:0}
 .tc-dq dd.is-warn{color:var(--tc-down)}
+/* Strategie-Vorlagen (AP8): Kriterien, Haken je Treffer, Pruefleiste im Chart Studio */
+.tc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tc-tpl-groups>section+section{margin-top:8px}
+.tc-crit-list{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.tc-crit{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;align-items:baseline}
+.tc-crit>b{grid-column:1/-1;font-size:15px}
+.tc-crit>.tc-mini{justify-self:start;grid-column:1/-1;margin-top:2px}
+.tc-crit-why,.tc-crit-n{grid-column:1/-1;font-size:13px;color:var(--vu-text-secondary)}
+.tc-crit-n{font-variant-numeric:tabular-nums}
+.tc-tpl-panel .tc-crit{grid-template-columns:22px minmax(0,1fr)}
+.tc-tpl-panel .tc-crit>b,.tc-tpl-panel .tc-crit>.tc-crit-why{grid-column:2}
+.tc-crit-mark{grid-row:1/3;font-weight:800;text-align:center}
+.tc-crit.is-pass .tc-crit-mark{color:var(--tc-up)}.tc-crit.is-fail .tc-crit-mark{color:var(--tc-down)}.tc-crit.is-unknown .tc-crit-mark{color:var(--tc-watch)}
+.tc-tpl-panel{margin:0 0 12px}
+.tc-tpl-panel>summary>span:not(.tc-row-icon){flex:1;display:grid;grid-template-columns:minmax(0,1fr);min-width:0}
+.tc-tpl-panel>summary b{font-size:17px}
+.tc-tpl-panel .tc-filter-body{padding-left:14px}
+.tc-tpl-crit .tc-filter-body,.tc-tpl-groups+.tc-filter-body{padding-left:14px}
+.tc-tpl-seg{margin:4px 0 6px}
+.tc-tpl-seg .tc-seg-b{display:inline-flex;align-items:center;gap:6px;text-decoration:none;min-width:0}
+.tc-ticks{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0;padding:0;list-style:none}
+.tc-ticks li{display:grid;place-items:center;min-width:26px;height:26px;border-radius:8px;font-weight:800;font-size:14px;background:var(--tc-soft)}
+.tc-ticks li.is-pass{color:var(--tc-up)}
+.tc-ticks li.is-fail{color:var(--tc-down);background:color-mix(in srgb,var(--tc-down) 12%,transparent)}
+.tc-ticks li.is-unknown{color:var(--tc-watch);background:transparent;border:1px dashed var(--vu-line-strong)}
+.tc-miss{color:var(--vu-text)}
