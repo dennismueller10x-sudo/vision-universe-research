@@ -694,7 +694,8 @@
         el("div", { class: "tc-filter-body" }, [
           el("ol", { class: "tc-crit-list" }, t.criteria.map(function (x, k) {
             var m = MARK[ck.states[k]], f = x.filter, v = f.kind ? null : row[Q.columnKey(f.field, f.tf || "1D")];
-            var val = f.kind || v === null || v === undefined || Array.isArray(v) ? "" : " · " + valueText(f.field, v);
+            /* Ja/Nein steht schon im Status ("erfüllt"/"nicht erfüllt"); gezeigt werden nur Zahlenwerte. */
+            var val = f.kind || v === null || v === undefined || Array.isArray(v) || typeof v === "boolean" ? "" : " · " + valueText(f.field, v);
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
           el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
@@ -769,7 +770,7 @@
       var analysis = VT.Formations.analyzeAt(prep, t), ctx = VT.TIContext.at(prep, t), levels = VT.TILevels.supportResistance(ctx);
       var fromIdx = Math.max(0, series.length - 252), hist = VT.Formations.history(prep, fromIdx, t);
       var S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume };
-      var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values,
+      var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values, sma150: VT.Indicators.compute(S, "sma", { period: 150 }).values,
         bb: VT.Indicators.compute(S, "bollinger").values, rsi: VT.Indicators.compute(S, "rsi").values, macd: VT.Indicators.compute(S, "macd").values, stoch: VT.Indicators.compute(S, "stochastic").values };
       /* Weitere Katalog-Indikatoren; ohne Volumen liefert compute() einen Fehler und die Schicht bleibt leer. */
       ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf",
@@ -886,6 +887,8 @@
     var from = Math.max(0, S.dates.length - win), firstDate = S.dates[from];
     if (L.sma) {
       if (X.cs.sma50) { overlays.push({ id: "sma50", label: "SMA 50", values: X.cs.sma50, color: "var(--tc-c1)" }); legend.push(["SMA 50", "var(--tc-c1)"]); }
+      /* SMA 150 (AP8 L1) aus den Tagesbars wie die Screener-Spalte aboveSma150 */
+      if (X.ind.sma150 && X.ind.sma150.some(isNum)) { overlays.push({ id: "sma150", label: "SMA 150", values: X.ind.sma150, color: "var(--tc-c4)", dash: "6 3" }); legend.push(["SMA 150", "var(--tc-c4)"]); }
       if (X.cs.sma200) { overlays.push({ id: "sma200", label: "SMA 200", values: X.cs.sma200, color: "var(--tc-c2)" }); legend.push(["SMA 200", "var(--tc-c2)"]); }
     }
     if (L.ema) {

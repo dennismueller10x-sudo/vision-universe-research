@@ -25,11 +25,6 @@ import {API_VERSION, WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 // Eigene Rechtstexte (oeffentlich, ohne Passwortmaske; workers/vu-account/src/legal/texts.mjs) statt der Shopify-Shop-Texte.
 const LEGAL = {privacy: 'https://konto.visionuniverse.de/rechtliches/datenschutz', terms: 'https://konto.visionuniverse.de/rechtliches/agb'};
 
-// Umsatzsteuer fester Satz (nur mit taxRate: true / --tax-rate, docs/accounts/STEUER.md): 19 % DE, im Preis enthalten.
-// Wirkt erst, wenn die ausgegebene txr_-ID als STRIPE_TAX_MODE im Worker steht.
-export const TAX_RATE_DE = Object.freeze({display_name: 'USt.', description: 'Umsatzsteuer Deutschland 19 % (im Preis enthalten)',
-  percentage: 19, inclusive: true, country: 'DE', jurisdiction: 'DE', tax_type: 'vat'});
-
 // Pro: Einfuehrungspreis 1,00 EUR im Monat (interner Testpreis). free hat keinen Preis.
 export const LIVE_CATALOG = Object.freeze([
   {product: 'vu_pro', name: 'Vision Universe Pro', plan: 'pro',
@@ -83,7 +78,7 @@ export function livePriceSql(rows) {
     + `  currency = excluded.currency, livemode = true, active = true;\ncommit;\n`;
 }
 
-export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_CATALOG, fetchImpl = fetch, dryRun = false, taxRate = false, log = console.log}) {
+export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_CATALOG, fetchImpl = fetch, dryRun = false, log = console.log}) {
   assertLiveKey(key, approved);
   if (!/^https:\/\/[a-z0-9.-]+$/.test(String(apiOrigin || ''))) throw new Error('VU_ACCOUNT_API_ORIGIN fehlt (https://<host>, ohne Pfad).');
   const stripe = client(key, fetchImpl);
@@ -152,17 +147,7 @@ export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_
     webhookSecret = created?.secret || null;
     webhookId = created?.id || null;
   }
-  let taxRateId = null;
-  if (taxRate) {
-    const rates = (await stripe('GET', '/v1/tax_rates', {active: 'true', limit: 100}))?.data || [];
-    const t = TAX_RATE_DE;
-    const fit = rates.find(r => r.metadata?.vu_managed === 'true' && r.percentage === t.percentage && r.inclusive === t.inclusive
-      && r.country === t.country && r.tax_type === t.tax_type);
-    if (fit) { taxRateId = fit.id; log(`Steuersatz vorhanden: ${fit.id} (${fit.percentage} %, inklusive)`); }
-    else taxRateId = (await write(`Steuersatz ${t.percentage} % DE inklusive anlegen`, () => stripe('POST', '/v1/tax_rates',
-      {...t, percentage: String(t.percentage), inclusive: String(t.inclusive), active: 'true', metadata: {vu_managed: 'true'}})))?.id || null;
-  }
-  return {prices, portalId, webhookId, webhookSecret, webhookCreated: !own, paymentMethods, taxRateId};
+  return {prices, portalId, webhookId, webhookSecret, webhookCreated: !own, paymentMethods};
 }
 
 // Standard-Konfiguration der Zahlungsmethoden: einschalten, was verfuegbar ist; der Rest ist ein Hinweis, kein Fehler
@@ -205,11 +190,10 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const dryRun = process.argv.includes('--dry-run');
   const e = process.env;
   Promise.resolve().then(() => setupStripeLive({key: e.STRIPE_LIVE_KEY, approved: e.STRIPE_LIVE_SETUP_APPROVED, apiOrigin: e.VU_ACCOUNT_API_ORIGIN,
-    dryRun, taxRate: process.argv.includes('--tax-rate')})).then(r => {
+    dryRun})).then(r => {
     for (const p of r.prices) console.log(`${p.plan}_${p.interval} ${(p.amount / 100).toFixed(2)} EUR -> ${p.priceId}`);
     console.log(`Portal-Konfiguration: ${r.portalId || '-'}`);
     console.log(`Webhook: ${r.webhookId || '-'}${r.webhookCreated && !dryRun ? ' (neu angelegt)' : ''}`);
-    if (r.taxRateId) console.log(`Steuersatz: ${r.taxRateId} -> als STRIPE_TAX_MODE in [env.production.vars] eintragen (eigener PR)`);
     if (opt('sql-out') && !dryRun && r.prices.length) writeFileSync(opt('sql-out'), livePriceSql(r.prices), {mode: 0o600});
     if (opt('portal-out') && !dryRun && r.portalId) writeFileSync(opt('portal-out'), r.portalId, {mode: 0o600});
     if (r.webhookSecret) {

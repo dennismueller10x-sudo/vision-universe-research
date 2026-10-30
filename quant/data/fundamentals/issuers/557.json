@@ -642,9 +642,9 @@
       "cik": "0001093557",
       "name": "DEXCOM INC",
       "sic": "3841",
-      "rawFacts": 20341,
-      "mappedFacts": 6583,
-      "unmappedFacts": 13976,
+      "rawFacts": 20676,
+      "mappedFacts": 6697,
+      "unmappedFacts": 14321,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -654,28 +654,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 68,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -695,21 +695,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -723,14 +723,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -753,46 +753,47 @@
         }
       },
       "quality": {
-        "HIGH": 556,
+        "HIGH": 563,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 562,
-        "resolvedValues": 562
+        "datableValues": 569,
+        "resolvedValues": 569
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14433,
+        "rules_version": "1.1.0",
+        "total": 14685,
         "by_severity": {
-          "INFO": 13976,
-          "WARNING": 457
+          "INFO": 14321,
+          "WARNING": 364
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 364,
-          "RESTATEMENT_CONFLICT": 90,
+          "CONCEPT_DISAGREEMENT": 272,
+          "RESTATEMENT_CONFLICT": 89,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 13976
+          "UNKNOWN_CONCEPT": 14321
         }
       },
       "latestFiling": {
-        "accession": "0001093557-26-000143",
-        "filing_date": "2026-07-30",
+        "accession": "0001093557-26-000195",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 89
+        "periodic_filings": 90,
+        "acceptance_datetime": "2026-10-29T21:22:41.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fbd65ebfd12df99be79f20067d59c074b3067ec2ea2c33bc964adf3965f1d368",
+      "sourceDigest": "5da789460626edf2cf89f0a6d1292eb98e3d8d25b142f053c5d86df54397cccd",
       "issuerId": "iss_cik_0001093557"
     },
     {

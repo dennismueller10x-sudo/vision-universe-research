@@ -1,0 +1,79 @@
+{
+ "version": "security-master-v130-count-reconciliation-1.0.0",
+ "inputs": {
+  "masterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "masterVersion": "us-security-master-1.1.0",
+  "engineVersion": "us-security-master-1.3.0",
+  "baselineRows": 8021
+ },
+ "perSecurityId": {
+  "meaning": "Zählweise des Gates (compareMasters): je stabiler securityId ein Wechsel, egal wie viele Zeilen sie hat",
+  "instrumentTypeChanges": 138,
+  "instrumentTypeByTransition": {
+   "EQUITY_COMMON->PREFERRED": 127,
+   "EQUITY_COMMON->TEST_SECURITY": 11
+  },
+  "eligibilityFlips": 138,
+  "eligibilityByTransition": {
+   "true->false": 138
+  },
+  "sameIdsForTypeAndEligibility": true,
+  "byRowCount": {
+   "1_ZEILEN": 127,
+   "2_ZEILEN": 11
+  }
+ },
+ "perRow": {
+  "meaning": "je Zeile des Bestands, gepaart über canonical_id, securityId, Ticker, Börse, Anbietersymbol und Aktivstatus",
+  "unpairedRows": 0,
+  "instrumentTypeRowChanges": 149,
+  "instrumentTypeRowsByTransition": {
+   "EQUITY_COMMON->PREFERRED ACTIVE eligible true->false": 127,
+   "EQUITY_COMMON->PREFERRED INACTIVE eligible false->false": 11,
+   "EQUITY_COMMON->TEST_SECURITY ACTIVE eligible true->false": 11
+  },
+  "eligibilityRowsTrueToFalse": 138,
+  "eligibilityRowsFalseToTrue": 0,
+  "eligibleRows": {
+   "prev": 6583,
+   "next": 6445,
+   "delta": -138
+  }
+ },
+ "twoDifferent127": {
+  "meaning": "Zwei verschiedene Mengen mit derselben Größe 127; sie sind nicht dieselben IDs",
+  "equityCommonToPreferredIds": 127,
+  "equityCommonToPreferredIdsByRowCount": {
+   "1_ZEILEN": 116,
+   "2_ZEILEN": 11
+  },
+  "backtestableLost": 127,
+  "backtestableLostByNewType": {
+   "PREFERRED": 116,
+   "TEST_SECURITY": 11
+  },
+  "overlap": 116,
+  "onlyPreferredNotLost": 11,
+  "onlyLostNotPreferred": 11,
+  "multiRowIds": [
+   "ref_ADAMM",
+   "ref_ADAMN",
+   "ref_AGNCP",
+   "ref_GOODN",
+   "ref_GOODO",
+   "ref_HBANP",
+   "ref_LANDP",
+   "ref_MBINN",
+   "ref_OXLCN",
+   "ref_OXLCO",
+   "ref_OXLCP"
+  ]
+ },
+ "claim133": {
+  "claim": "„133 Eignungswechsel“ (frühere grobe Zählung; Herleitung im Dokument: 127 eindeutige + 14 mehrdeutige true → false − 4 mehrdeutige false → true)",
+  "derivationArithmetic": 137,
+  "multiRowEligibilityRowsTrueToFalse": 11,
+  "multiRowEligibilityRowsFalseToTrue": 0,
+  "reproducibleFromCommittedInputs": false
+ }
+}

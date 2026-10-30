@@ -37,6 +37,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
   const customers = new Map(), sessions = new Map(), subscriptions = new Map(), invoices = new Map();
   const idempotency = new Map();
   const priceOverrides = new Map(); // Simulation: Preis im Stripe-Dashboard geaendert
+  let taxSettings = {status: 'active'}; // Simulation: Stripe Tax im Dashboard
   const events = [];
   const t = () => Math.floor(now() / 1000);
 
@@ -64,7 +65,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
   function priceObject(id) {
     const p = SIM_PRICES[id];
     if (!p) return null;
-    return {id, object: 'price', unit_amount: p.amount, currency: 'eur', recurring: {interval: p.interval}, livemode: false};
+    return {id, object: 'price', unit_amount: p.amount, currency: 'eur', recurring: {interval: p.interval}, tax_behavior: 'inclusive', livemode: false};
   }
 
   function newSubscription(session, {paid}) {
@@ -160,6 +161,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
       const price = priceOverrides.get(m[1]) || priceObject(m[1]);
       return price ? reply(200, {...price, active: price.active ?? true}) : notFound('price');
     }
+    if (p === '/v1/tax/settings' && req.method === 'GET') return reply(200, {object: 'tax.settings', livemode: false, ...taxSettings});
     if ((m = p.match(/^\/v1\/invoices\/(in_\w+)$/)) && req.method === 'GET') {
       return invoices.has(m[1]) ? reply(200, invoices.get(m[1])) : notFound('invoice');
     }
@@ -271,6 +273,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
     },
     pendingEvents: () => events.filter(e => !e.delivered),
     overridePrice(id, patch) { priceOverrides.set(id, {...priceObject(id), ...patch}); },
+    setTaxSettings(patch) { taxSettings = {...taxSettings, ...patch}; },
     // Stellt alle offenen Ereignisse signiert zu. post(rawBody, signatureHeader) -> Response
     async deliver(post, {only} = {}) {
       const results = [];

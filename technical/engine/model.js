@@ -343,15 +343,17 @@
    */
   var FIELD_CHART = {
     aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveSma150: ["layer", "sma"], sma150AboveSma200: ["layer", "sma"], sma50AboveSma150: ["layer", "sma"], distSma150: ["layer", "sma"],
+    sma200Rising: ["layer", "sma"], sma200Slope21: ["layer", "sma"],
     aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
     adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
-    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], distLow52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
     rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
     roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
     hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
     choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
-    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"], rsRank: ["pane", "rs"],
     relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
     cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
   };
@@ -474,7 +476,7 @@
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen" || x.field === "formationConfirmedUp" || x.field === "formationConfirmedDown") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 

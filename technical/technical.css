@@ -428,7 +428,7 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-crit-why,.tc-crit-n{grid-column:1/-1;font-size:13px;color:var(--vu-text-secondary)}
 .tc-crit-n{font-variant-numeric:tabular-nums}
 .tc-tpl-panel .tc-crit{grid-template-columns:22px minmax(0,1fr)}
-.tc-tpl-panel .tc-crit>b,.tc-tpl-panel .tc-crit-why{grid-column:2}
+.tc-tpl-panel .tc-crit>b,.tc-tpl-panel .tc-crit>.tc-crit-why{grid-column:2}
 .tc-crit-mark{grid-row:1/3;font-weight:800;text-align:center}
 .tc-crit.is-pass .tc-crit-mark{color:var(--tc-up)}.tc-crit.is-fail .tc-crit-mark{color:var(--tc-down)}.tc-crit.is-unknown .tc-crit-mark{color:var(--tc-watch)}
 .tc-tpl-panel{margin:0 0 12px}
