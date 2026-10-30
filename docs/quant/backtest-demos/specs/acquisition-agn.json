@@ -1,0 +1,33 @@
+{
+ "schemaVersion": "backtest-runner-spec-1.0.0",
+ "version": "1.0.0",
+ "registeredAt": "2026-10-29T00:00:00Z",
+ "asOf": "2025-12-31",
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "SPY",
+ "id": "acquisition-agn",
+ "description": "Five weekly signal rules on an acquired listing (private V13 series), 26 weeks",
+ "kind": "SIGNAL_BACKTEST",
+ "window": {
+  "from": "2015-01-01",
+  "to": "2020-05-08"
+ },
+ "population": {
+  "profile": "V13_DELISTED_F1",
+  "securityIds": [
+   "dl_392eb87953a4f307"
+  ],
+  "privateInputs": [
+   "delistedSeries"
+  ]
+ },
+ "engine": {
+  "horizonBars": 26
+ },
+ "methods": {
+  "MARKET_REGIME": {}
+ }
+}
