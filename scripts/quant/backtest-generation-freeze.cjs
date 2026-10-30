@@ -7,7 +7,7 @@
    node scripts/quant/backtest-generation-freeze.cjs freeze --generations <privat> --out <datei>
    node scripts/quant/backtest-generation-freeze.cjs verify --generations <privat> --manifest <datei>
    node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-alt> --manifest <datei> --output <privat-neu> [--ids a,b]
-   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei>] --out <datei>
+   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei> ...] --out <datei>
 
    masterHash bleibt, was er ist (SHA-256 der ganzen Stammdatei, quant/engines/weekly-real-adapter.cjs); dieses Skript
    liest ihn nur aus den Snapshots und ändert keinen Hash-Vertrag. Der Inhalts-Fingerabdruck-Entwurf wird nicht geladen. */
@@ -24,10 +24,11 @@ const inside=(parent,child)=>{const r=path.relative(parent,child);return r===''|
 // Echter Pfad auch für noch nicht angelegte Ziele: Symlinks im vorhandenen Teil werden aufgelöst (Review #1100).
 const real=p=>{let q=path.resolve(p),rest=[];while(!fs.existsSync(q)){rest.unshift(path.basename(q));const up=path.dirname(q);if(up===q)break;q=up;}return path.join(fs.realpathSync(q),...rest);};
 
-/* Eingefrorene, committete Quant-Evidenz: abgeschlossene Generationen V5.1–V9 samt Folgearbeit und Methodik-Entwurf.
-   V10 ist eine offene Übergabe und bleibt bewusst außen vor. */
-const FROZEN_DIRS=['docs/quant-recovery/methodology-v1','docs/quant-recovery/v51','docs/quant-recovery/v6','docs/quant-recovery/v6-securement','docs/quant-recovery/v6-securement-final','docs/quant-recovery/v7','docs/quant-recovery/v7-securement','docs/quant-recovery/v8','docs/quant-recovery/v9','docs/quant-recovery/v9-followups'];
-const FROZEN_DOC=/^docs\/quant-recovery\/BACKTEST_V(51|6|7|8|9)(_[A-Z_]+)?\.md$/;
+/* Eingefrorene, committete Quant-Evidenz: abgeschlossene Generationen V5.1–V9 samt Folgearbeit und Methodik-Entwurf,
+   seit der Übergabe V13 (Merge #1132, 30.10.2026) auch V10–V13c mit ihren Berichten. */
+const FROZEN_DIRS=['docs/quant-recovery/methodology-v1','docs/quant-recovery/v51','docs/quant-recovery/v6','docs/quant-recovery/v6-securement','docs/quant-recovery/v6-securement-final','docs/quant-recovery/v7','docs/quant-recovery/v7-securement','docs/quant-recovery/v8','docs/quant-recovery/v9','docs/quant-recovery/v9-followups',
+ 'docs/quant-recovery/v10','docs/quant-recovery/v11','docs/quant-recovery/v12','docs/quant-recovery/v13','docs/quant-recovery/v13b','docs/quant-recovery/v13c'];
+const FROZEN_DOC=/^docs\/quant-recovery\/(BACKTEST_V(51|6|7|8|9|10)(_[A-Z_]+)?|ALPHA_DISCOVERY_V11|DATA_QUALITY_V1[23]_[A-Z]+|HANDOVER_V13)\.md$/;
 /* Committete Ausgaben, die vom Stamm abhängen und beim Wechsel NICHT still neu entstehen: jede bekommt einen eigenen
    Erzeuger-PR mit Vorher/Nachher. Ihre Bytes stehen in der Git-Historie; sie werden hier nicht festgenagelt, weil ihre
    Erzeuger sie mit den Datenläufen fortschreiben. */
@@ -142,7 +143,10 @@ if(require.main===module){
   else if(cmd==='freeze'){if(!get('--out'))throw Error('OUT_REQUIRED');const m=freeze({generations:get('--generations')});write(get('--out'),m);console.log(`[freeze] ${m.count} Dateien, Generation ${m.release.generation}, filesSha256 ${m.filesSha256}`);}
   else if(cmd==='verify'){const r=verify({generations:get('--generations'),manifest:json(get('--manifest'))});console.log(JSON.stringify(r));if(r.state!=='INTACT')process.exitCode=1;}
   else if(cmd==='build-post-switch'){console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest:json(get('--manifest')),output:get('--output'),ids:get('--ids')?.split(',')||null})));}
-  else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');const ap=get('--approved')?json(get('--approved')):null;const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:ap?ap.instrumentTypeChanges.map(x=>x.securityId):[]});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
+  else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');// mehrere --approved (Klassifiziererwechsel und Nachholdrift): jede in der Freigabe genannte securityId gilt als erwartet
+  const files=args.flatMap((a,i)=>a==='--approved'?[args[i+1]]:[]);if(files.some(f=>!f||f.startsWith('--')))throw Error('APPROVED_FILE_REQUIRED');
+  const ids=files.map(json).flatMap(ap=>['instrumentTypeChanges','eligibilityFlips','canonicalIdChanges','deactivations'].flatMap(k=>(ap[k]||[]).map(x=>x.securityId)));
+  const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:[...new Set(ids)]});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
   else throw Error('UNKNOWN_COMMAND');
  }catch(e){console.error(e.message);process.exitCode=2;}
 }

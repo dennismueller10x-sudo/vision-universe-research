@@ -7,7 +7,7 @@
  *
  *   node scripts/market/security-master-refresh-gate.mjs --prev <dir> --next <dir>
  *        [--prev-names <file>] [--next-names <file>] [--today YYYY-MM-DD] [--allow-version-change]
- *        [--thresholds <json-file>] [--out <report.json>]
+ *        [--thresholds <json-file>] [--approved-changes <file> ...] [--out <report.json>]
  *
  * Fail closed (Exit 4, nichts wird übernommen):
  *   G1  Anbieterliste nicht erhoben (summary.status != OK, providerFetch != FETCHED)
@@ -134,28 +134,81 @@ const days = (from, to) => (Date.parse(`${to}T00:00:00Z`) - Date.parse(String(fr
  * Erzeugt von scripts/market/security-master-v130-evidence.mjs.
  */
 export const APPROVED_CHANGES_SCHEMA = "security-master-approved-changes-1.0.0";
-function applyApproval(cmp, approved, ctx, fail) {
-  const ok = approved && approved.schema === APPROVED_CHANGES_SCHEMA && Array.isArray(approved.instrumentTypeChanges) && Array.isArray(approved.eligibilityFlips);
-  if (!ok) { fail.push("G10 Sonderfreigabe unlesbar oder falsches Schema"); return null; }
-  // Einträge streng: securityId und Typen als Text, Eignung als Wahrheitswert, keine Doppelungen (kein stilles Umdeuten)
-  const shape = { instrumentTypeChanges: "string", eligibilityFlips: "boolean" };
-  for (const k of Object.keys(shape)) {
-    const seen = new Set();
-    for (const x of approved[k]) {
-      if (!x || typeof x.securityId !== "string" || typeof x.from !== shape[k] || typeof x.to !== shape[k] || x.from === x.to) { fail.push(`G10 Sonderfreigabe: ungültiger Eintrag in ${k}`); return null; }
-      if (seen.has(x.securityId)) { fail.push(`G10 Sonderfreigabe: doppelte securityId ${x.securityId} in ${k}`); return null; }
-      seen.add(x.securityId);
+/**
+ * Nachholfreigabe (Schema 1.1.0): die in einem datierten Probelauf gemessene Anbieterdrift seit dem letzten Stand,
+ * Liste für Liste vom Owner geprüft (scripts/market/security-master-drift-evidence.mjs). Dieselbe Bindung wie 1.0.0
+ * (Versionen, SHA-256 des Ausgangsstamms, nur mit --allow-version-change). Zulässig nur in Richtung „weniger“:
+ * Deaktivierungen, Eignung true → false, canonical_id-Wechsel, Typwechsel, gefüllte oder geänderte Firmennamen und
+ * genannte neue Doppelungen. Reaktivierungen, neue Eignung, Tickerwechsel, neue oder verlorene IDs sind nie freigebbar.
+ */
+export const APPROVED_DRIFT_SCHEMA = "security-master-approved-changes-1.1.0";
+const PAIR_KINDS = { instrumentTypeChanges: "string", eligibilityFlips: "boolean", canonicalIdChanges: "string" };
+const KINDS_BY_SCHEMA = {
+  [APPROVED_CHANGES_SCHEMA]: ["instrumentTypeChanges", "eligibilityFlips"],
+  [APPROVED_DRIFT_SCHEMA]: ["instrumentTypeChanges", "eligibilityFlips", "canonicalIdChanges", "deactivations", "nameChanges", "newDuplicateCanonicalIds"],
+};
+const ALL_KINDS = KINDS_BY_SCHEMA[APPROVED_DRIFT_SCHEMA];
+const HEADER = ["schema", "purpose", "fromVersion", "toVersion", "prevMasterSha256", "measuredOn", "source", "note"];
+const nameKey = (x) => `${x.securityId}|${x.from === null ? "\u2205" : x.from}|${x.to === null ? "\u2205" : x.to}`;
+const pairKey = (x) => `${x.securityId}|${x.from}|${x.to}`;
+
+function validEntry(kind, x, schema) {
+  if (kind === "newDuplicateCanonicalIds") return typeof x === "string" && x.length > 0;
+  if (!x || typeof x.securityId !== "string" || !x.securityId) return false;
+  if (kind === "deactivations") return Object.keys(x).every((k) => k === "securityId" || k === "ticker");
+  if (kind === "nameChanges") return (x.from === null || typeof x.from === "string") && typeof x.to === "string" && x.from !== x.to;
+  const t = PAIR_KINDS[kind];
+  if (typeof x.from !== t || typeof x.to !== t || x.from === x.to) return false;
+  // Nachholdrift nur in die vorsichtige Richtung: eine Eignung darf entfallen, nie entstehen
+  if (kind === "eligibilityFlips" && schema === APPROVED_DRIFT_SCHEMA && !(x.from === true && x.to === false)) return false;
+  return true;
+}
+const entryKey = (kind, x) => kind === "newDuplicateCanonicalIds" ? x : kind === "deactivations" ? x.securityId : kind === "nameChanges" ? nameKey(x) : pairKey(x);
+
+/**
+ * Sonderfreigaben (eine oder mehrere Dateien): nehmen GENAU die belegten Wechsel aus der G6/G7/G9-Zählung. Jede Datei
+ * ist an Quell-/Zielversion und den SHA-256 des Ausgangsstamms gebunden und gilt nur mit allowVersionChange. Jeder
+ * nicht genannte Wechsel zählt weiter gegen die unveränderten Grenzen; nicht genutzte Einträge blockieren nicht.
+ */
+function applyApproval(cmp, approvedList, ctx, fail) {
+  const list = Array.isArray(approvedList) ? approvedList : [approvedList];
+  const allow = Object.fromEntries(ALL_KINDS.map((k) => [k, new Map()]));
+  for (const [i, approved] of list.entries()) {
+    const kinds = approved && KINDS_BY_SCHEMA[approved.schema];
+    if (!kinds || !Array.isArray(approved.instrumentTypeChanges) || !Array.isArray(approved.eligibilityFlips)) { fail.push("G10 Sonderfreigabe unlesbar oder falsches Schema"); return null; }
+    const extra = Object.keys(approved).filter((k) => !HEADER.includes(k) && !kinds.includes(k));
+    if (extra.length) { fail.push(`G10 Sonderfreigabe: nicht freigebbare Art ${extra.join(", ")}`); return null; }
+    // Einträge streng: securityId und Typen als Text, Eignung als Wahrheitswert, keine Doppelungen (kein stilles Umdeuten)
+    for (const k of kinds) {
+      if (approved[k] === undefined) continue;
+      if (!Array.isArray(approved[k])) { fail.push(`G10 Sonderfreigabe: ${k} ist keine Liste`); return null; }
+      const seen = new Set();
+      for (const x of approved[k]) {
+        if (!validEntry(k, x, approved.schema)) { fail.push(`G10 Sonderfreigabe: ungültiger Eintrag in ${k}`); return null; }
+        const id = k === "newDuplicateCanonicalIds" ? x : x.securityId;
+        if (seen.has(id) || [...allow[k].values()].some((v) => v.id === id)) { fail.push(`G10 Sonderfreigabe: doppelte securityId ${id} in ${k}`); return null; }
+        seen.add(id);
+        allow[k].set(entryKey(k, x), { id, file: i });
+      }
     }
+    if (approved.fromVersion !== ctx.prevVersion || approved.toVersion !== ctx.nextVersion) fail.push(`G8 Sonderfreigabe gilt für ${approved.fromVersion} → ${approved.toVersion}, nicht für ${ctx.prevVersion} → ${ctx.nextVersion}`);
+    if (!ctx.prevMasterSha256 || approved.prevMasterSha256 !== ctx.prevMasterSha256) fail.push("G8 Sonderfreigabe gehört zu einem anderen Ausgangsstamm (SHA-256)");
   }
   if (!ctx.allowVersionChange) fail.push("G8 Sonderfreigabe nur zusammen mit --allow-version-change");
-  if (approved.fromVersion !== ctx.prevVersion || approved.toVersion !== ctx.nextVersion) fail.push(`G8 Sonderfreigabe gilt für ${approved.fromVersion} → ${approved.toVersion}, nicht für ${ctx.prevVersion} → ${ctx.nextVersion}`);
-  if (!ctx.prevMasterSha256 || approved.prevMasterSha256 !== ctx.prevMasterSha256) fail.push("G8 Sonderfreigabe gehört zu einem anderen Ausgangsstamm (SHA-256)");
-  const key = (x) => `${x.securityId}|${x.from}|${x.to}`, used = { instrumentTypeChanges: 0, eligibilityFlips: 0 }, out = { ...cmp };
-  for (const k of ["instrumentTypeChanges", "eligibilityFlips"]) {
-    const allow = new Set(approved[k].map(key));
-    out[k] = cmp[k].filter((x) => { const hit = allow.has(key(x)); if (hit) used[k]++; return !hit; });
+  const present = ALL_KINDS.filter((k) => list.some((a) => a[k] !== undefined));
+  const used = Object.fromEntries(present.map((k) => [k, 0])), hit = (k, key) => { const ok = allow[k].has(key); if (ok) used[k]++; return ok; };
+  const out = { ...cmp };
+  for (const k of ["instrumentTypeChanges", "eligibilityFlips", "canonicalIdChanges", "deactivations"]) {
+    if (!present.includes(k)) continue;
+    out[k] = cmp[k].filter((x) => !hit(k, k === "deactivations" ? x.securityId : pairKey(x)));
   }
-  return { cmp: out, applied: used, unused: { instrumentTypeChanges: approved.instrumentTypeChanges.length - used.instrumentTypeChanges, eligibilityFlips: approved.eligibilityFlips.length - used.eligibilityFlips } };
+  const unused = () => Object.fromEntries(present.map((k) => [k, allow[k].size - used[k]]));
+  return {
+    cmp: out,
+    keepName: (x) => !(present.includes("nameChanges") && hit("nameChanges", nameKey(x))),
+    keepDuplicate: (k) => !(present.includes("newDuplicateCanonicalIds") && hit("newDuplicateCanonicalIds", k)),
+    applied: used, unused, files: list.map((a) => ({ schema: a.schema, purpose: a.purpose ?? null, measuredOn: a.measuredOn ?? null })),
+  };
 }
 
 export function evaluateRefresh(inputs, { today, allowVersionChange = false, thresholds = DEFAULT_THRESHOLDS, approvedChanges = null, prevMasterSha256 = null } = {}) {
@@ -176,12 +229,13 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
   if (cmp.lostIds.length) fail.push(`G5 ${cmp.lostIds.length} Bestands-securityIds fehlen (z. B. ${cmp.lostIds.slice(0, 5).join(", ")})`);
   if (idf.nonCanonicalIds.length) fail.push(`G5 ${idf.nonCanonicalIds.length} securityIds nicht nach core/identity.js (z. B. ${idf.nonCanonicalIds.slice(0, 5).join(", ")})`);
   // bekannte Doppelungen der Anbieterliste (heute 7, als REVIEW geführt) bleiben sichtbar; neue blockieren
-  const knownDup = new Set(identityFindings(prevMaster).duplicateCanonicalIds), newDup = idf.duplicateCanonicalIds.filter((k) => !knownDup.has(k));
-  if (newDup.length) fail.push(`G6 ${newDup.length} neue doppelte canonical_id (z. B. ${newDup.slice(0, 5).join(", ")})`);
-  const lim = [["canonicalIdChanges", "maxCanonicalIdChanges", "canonical_id-Wechsel"], ["instrumentTypeChanges", "maxInstrumentTypeChanges", "Instrumenttyp-Wechsel"], ["deactivations", "maxDeactivations", "aktiv → inaktiv (Delistings)"], ["eligibilityFlips", "maxEligibilityFlips", "Eignungswechsel"], ["tickerChanges", "maxTickerChanges", "Tickerwechsel je securityId"]];
   const approval = approvedChanges ? applyApproval(cmp, approvedChanges, { allowVersionChange, prevVersion: prevMaster.version, nextVersion: nextMaster.version, prevMasterSha256 }, fail) : null;
+  const knownDup = new Set(identityFindings(prevMaster).duplicateCanonicalIds), newDup = idf.duplicateCanonicalIds.filter((k) => !knownDup.has(k));
+  const countedDup = approval ? newDup.filter(approval.keepDuplicate) : newDup;
+  if (countedDup.length) fail.push(`G6 ${countedDup.length} neue doppelte canonical_id (z. B. ${countedDup.slice(0, 5).join(", ")})${approval && countedDup.length < newDup.length ? ", ohne die freigegebenen" : ""}`);
+  const lim = [["canonicalIdChanges", "maxCanonicalIdChanges", "canonical_id-Wechsel"], ["instrumentTypeChanges", "maxInstrumentTypeChanges", "Instrumenttyp-Wechsel"], ["deactivations", "maxDeactivations", "aktiv → inaktiv (Delistings)"], ["eligibilityFlips", "maxEligibilityFlips", "Eignungswechsel"], ["tickerChanges", "maxTickerChanges", "Tickerwechsel je securityId"]];
   const counted = approval ? approval.cmp : cmp;
-  for (const [k, tk, label] of lim) if (counted[k].length > t[tk]) fail.push(`G7 ${counted[k].length} ${label} (Grenze ${t[tk]}${approval && (k === "instrumentTypeChanges" || k === "eligibilityFlips") ? ", ohne die freigegebenen" : ""})`);
+  for (const [k, tk, label] of lim) if (counted[k].length > t[tk]) fail.push(`G7 ${counted[k].length} ${label} (Grenze ${t[tk]}${approval && k in approval.applied ? ", ohne die freigegebenen" : ""})`);
   const versionChanged = prevMaster.version !== nextMaster.version;
   if (versionChanged && !allowVersionChange) fail.push(`G8 Klassifikator-Version ${prevMaster.version} → ${nextMaster.version}: nur mit --allow-version-change nach Vorher/Nachher-Prüfung`);
   let names = null;
@@ -192,7 +246,8 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
       if (names.productUniverse.prev !== names.productUniverse.next) fail.push(`G9 Produktuniversum der Namensschicht ${names.productUniverse.prev} → ${names.productUniverse.next}`);
       if (names.lostIds.length) fail.push(`G9 ${names.lostIds.length} securityIds fehlen in den Firmennamen`);
       if (names.withName.next < names.withName.prev - t.maxNamesCoverageDrop) fail.push(`G9 Namensabdeckung ${names.withName.prev} → ${names.withName.next} (höchstens −${t.maxNamesCoverageDrop})`);
-      if (names.nameChanges.length > t.maxNameChanges) fail.push(`G9 ${names.nameChanges.length} Namenswechsel (Grenze ${t.maxNameChanges})`);
+      const countedNames = approval ? names.nameChanges.filter(approval.keepName) : names.nameChanges;
+      if (countedNames.length > t.maxNameChanges) fail.push(`G9 ${countedNames.length} Namenswechsel (Grenze ${t.maxNameChanges}${approval && "nameChanges" in approval.applied ? ", ohne die freigegebenen" : ""})`);
     }
   }
   const material = cmp.canonicalIdChanges.length + cmp.instrumentTypeChanges.length + cmp.deactivations.length + cmp.reactivations.length + cmp.eligibilityFlips.length + cmp.tickerChanges.length + cmp.newIds.length + (versionChanged ? 1 : 0) + (names ? names.nameChanges.length + names.addedIds.length : 0);
@@ -206,7 +261,7 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
       prev: { version: prevMaster.version, generatedAt: prevMaster.generatedAt, rowsDelivered: prevMaster.rowsDelivered, providerRows: pr },
       next: { version: nextMaster.version, generatedAt: nextMaster.generatedAt, rowsDelivered: nextMaster.rowsDelivered, providerRows: nr, newProviderListings: h.NEW_ELIGIBLE_ADDITIONS ?? null, redistribution: nextMaster.redistribution ?? null },
       ageDays, materialChanges: material, versionChanged,
-      approval: approval && { fromVersion: approvedChanges.fromVersion, toVersion: approvedChanges.toVersion, prevMasterSha256: approvedChanges.prevMasterSha256, applied: approval.applied, unused: approval.unused },
+      approval: approval && (() => { const first = [].concat(approvedChanges)[0]; return { fromVersion: first.fromVersion, toVersion: first.toVersion, prevMasterSha256: first.prevMasterSha256, applied: approval.applied, unused: approval.unused(), files: approval.files }; })(),
       counts: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, v.length])),
       samples: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, s(v)])),
       identity: { nonCanonicalIds: s(idf.nonCanonicalIds), duplicateCanonicalIds: s(idf.duplicateCanonicalIds), newDuplicateCanonicalIds: s(newDup) },
@@ -224,12 +279,14 @@ function main() {
   const loadFile = (p) => { try { return p && existsSync(p) ? readJson(p) : null; } catch { return null; } };
   let thresholds = DEFAULT_THRESHOLDS, res;
   // Sonderfreigabe: Datei unlesbar → G10; der SHA-256 kommt aus den Bytes des Ausgangsstamms, nicht aus der Datei selbst
+  // mehrfach zulässig (Klassifiziererwechsel und Nachholdrift); jede Datei wird einzeln gebunden
   const approvalArgs = () => {
-    if (!argv.includes("--approved-changes")) return {};
-    if (!arg("--approved-changes") || arg("--approved-changes").startsWith("--")) throw new Error("G10 --approved-changes ohne Datei");
-    const a = loadFile(arg("--approved-changes")); if (!a) throw new Error("G10 --approved-changes nicht lesbar");
+    const at = argv.flatMap((a, i) => (a === "--approved-changes" ? [i] : []));
+    if (!at.length) return {};
+    const files = at.map((i) => { const f = argv[i + 1]; if (!f || f.startsWith("--")) throw new Error("G10 --approved-changes ohne Datei"); return f; });
+    const list = files.map((f) => { const a = loadFile(f); if (!a) throw new Error("G10 --approved-changes nicht lesbar"); return a; });
     const pm = prev && join(prev, "us-security-master.json");
-    return { approvedChanges: a, prevMasterSha256: pm && existsSync(pm) ? createHash("sha256").update(readFileSync(pm)).digest("hex") : null };
+    return { approvedChanges: list.length === 1 ? list[0] : list, prevMasterSha256: pm && existsSync(pm) ? createHash("sha256").update(readFileSync(pm)).digest("hex") : null };
   };
   // jeder Ausgang schreibt eine Entscheidung (BLOCKED bei jedem Fehler), auch bei unlesbaren Grenzen oder einer Ausnahme
   try {

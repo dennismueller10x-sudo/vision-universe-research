@@ -12,15 +12,18 @@ const F=require('../../scripts/quant/backtest-generation-freeze.cjs'),{materiali
 const MANIFEST='docs/data/security-master/v130-quant-freeze.json',MASTER='quant/data/market/security-master/us-security-master.json';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 
-test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V9 ist bytegleich und vollständig (neue Dateien erlaubt)',()=>{
+test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V13c ist bytegleich und vollständig (neue Dateien erlaubt)',()=>{
  const m=JSON.parse(fs.readFileSync(join(root,MANIFEST),'utf8'));
  assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/BACKTEST_V51.md'),'V5.1-Hauptbericht eingefroren');
  assert.equal(m.schema,'quant-v130-repository-freeze-1.0.0');assert.ok(m.frozen.count>=240);assert.equal(Object.keys(m.frozen.files).length,m.frozen.count);
  assert.equal(sha(JSON.stringify(m.frozen.files)),m.frozen.filesSha256,'Manifest selbst unverändert');
  assert.deepEqual(F.verifyRepo(m,{root}),{state:'INTACT',changed:[],missing:[]});
- // jede abgeschlossene Generation ist erfasst; die offene V10-Übergabe bewusst nicht
- for(const d of ['v6','v7','v8','v9','v9-followups','v51','methodology-v1'])assert.ok(Object.keys(m.frozen.files).some(p=>p.startsWith('docs/quant-recovery/'+d+'/')),d);
- assert.equal(Object.keys(m.frozen.files).some(p=>/\/v10\/|V10_/.test(p)),false);
+ // jede abgeschlossene Generation ist erfasst, seit der V13-Übergabe auch V10–V13c und ihre Berichte
+ for(const d of ['v6','v7','v8','v9','v9-followups','v51','methodology-v1','v10','v11','v12','v13','v13b','v13c'])assert.ok(Object.keys(m.frozen.files).some(p=>p.startsWith('docs/quant-recovery/'+d+'/')),d);
+ for(const f of ['BACKTEST_V10_FINAL.md','ALPHA_DISCOVERY_V11.md','DATA_QUALITY_V12_FINAL.md','DATA_QUALITY_V13_FINAL.md','HANDOVER_V13.md'])assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/'+f),f);
+ // jede committete Datei unter docs/quant-recovery/ ist eingefroren (keine offene Generation daneben)
+ const all=[];const walk=d=>{for(const e of fs.readdirSync(join(root,d),{withFileTypes:true}))e.isDirectory()?walk(d+'/'+e.name):all.push(d+'/'+e.name);};walk('docs/quant-recovery');
+ assert.deepEqual(all.filter(p=>!Object.hasOwn(m.frozen.files,p)).sort(),[]);
 });
 
 test('SMF-2 · Ausgangsstamm des Freeze = Ausgangsstamm der Sonderfreigabe; masterHash-Vertrag unverändert, kein Inhalts-Fingerabdruck',()=>{

@@ -1,0 +1,4059 @@
+{
+ "schema": "security-master-approved-changes-1.1.0",
+ "purpose": "EINMALIGE_NACHHOLDRIFT seit 2026-09-11 vor dem Wechsel 1.1.0 → 1.3.0 (gemessen 2026-10-30)",
+ "fromVersion": "us-security-master-1.1.0",
+ "toVersion": "us-security-master-1.3.0",
+ "prevMasterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+ "measuredOn": "2026-10-30",
+ "source": {
+  "probeMasterSha256": "335bf70bf57a515e21d9398a18ad9a40cd4019fc64211da9a5a3e2ca58518deb",
+  "providerRows": null,
+  "generator": "security-master-drift-evidence-1.0.0"
+ },
+ "instrumentTypeChanges": [
+  {
+   "securityId": "ref_AAAP",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_ABI",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_ANV",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_CAM",
+   "from": "EQUITY_COMMON",
+   "to": "ETF"
+  },
+  {
+   "securityId": "ref_DINE",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_LMNX",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_LQ",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_PCS",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_PTNT",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  },
+  {
+   "securityId": "ref_VOLT",
+   "from": "EQUITY_COMMON",
+   "to": "EQUITY_COMMON|ETF"
+  }
+ ],
+ "eligibilityFlips": [
+  {
+   "securityId": "ref_AAAP",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_ABI",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_AIHS",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_AMZE",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_ANV",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_APGE",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_AREN",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_ATAI",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_AVB",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_BCAR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_BNRG",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_BTOG",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_CAM",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_CMII",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_COOL",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_CRNX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_DINE",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_DVXE",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_FBRX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_FEED",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_FGNX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_GBTG",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_GLYC",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HCWC",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HLX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HONIV",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HOOZ",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HRYU",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_HVII",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_IPCX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_IVCB",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_IWFL",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_IWML",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_JAB",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_JUPGF",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_KWM",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_LBRDA",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_LBRDK",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_LEG",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_LMNX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_LQ",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_MDV",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_MESA",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_MTUL",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_NCNC",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_NCSM",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_NTZ",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_NYMT",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_ORIS",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_PCS",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_PTNT",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_QETA",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_QULL",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_RITR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_RIVR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_RMAX",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SAT",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SBXD",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SCDL",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SNBR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SNYR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SOBR",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_SVMH",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_TALK",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_TWO",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_VLNWF",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_VOLT",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_VSEE",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_WBS",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_WILC",
+   "from": true,
+   "to": false
+  },
+  {
+   "securityId": "ref_ZTEK",
+   "from": true,
+   "to": false
+  }
+ ],
+ "canonicalIdChanges": [
+  {
+   "securityId": "ref_AAAP",
+   "from": "tiingo:NASDAQ:AAAP:2015-11-11",
+   "to": "tiingo:NASDAQ:AAAP:2015-11-11|tiingo:NASDAQ:AAAP:2026-06-23"
+  },
+  {
+   "securityId": "ref_ABI",
+   "from": "tiingo:NASDAQ:ABI:2009-05-11",
+   "to": "tiingo:NASDAQ:ABI:2009-05-11|tiingo:NASDAQ:ABI:2025-06-26"
+  },
+  {
+   "securityId": "ref_ADIL",
+   "from": "tiingo:NASDAQ:ADIL:2018-07-27",
+   "to": "tiingo:NASDAQ:ADIL:2026-10-29"
+  },
+  {
+   "securityId": "ref_AEC",
+   "from": "tiingo:NASDAQ:AEC:1993-11-11",
+   "to": "tiingo:NASDAQ:AEC:1993-11-11|tiingo:NASDAQ:AEC:2025-09-18"
+  },
+  {
+   "securityId": "ref_ALPS",
+   "from": "tiingo:NASDAQ:ALPS:2022-09-28",
+   "to": "tiingo:EXPM:ALPS:2021-10-18|tiingo:NASDAQ:ALPS:2022-09-28|tiingo:NASDAQ:ALPS:2025-10-31"
+  },
+  {
+   "securityId": "ref_AMBR",
+   "from": "tiingo:NASDAQ:AMBR:2014-03-21",
+   "to": "tiingo:NASDAQ:AMBR:2014-03-21|tiingo:NASDAQ:AMBR:2025-03-13"
+  },
+  {
+   "securityId": "ref_AMZE",
+   "from": "tiingo:NYSE MKT:AMZE:2021-12-14",
+   "to": "tiingo:OTCMKTS:AMZE:2021-12-14"
+  },
+  {
+   "securityId": "ref_ANV",
+   "from": "tiingo:NASDAQ:ANV:2007-05-10",
+   "to": "tiingo:NASDAQ:ANV:2007-05-10|tiingo:NASDAQ:ANV:2026-02-03"
+  },
+  {
+   "securityId": "ref_APAD",
+   "from": "tiingo:NYSE:APAD:2025-08-27",
+   "to": "tiingo:NASDAQ:APAD:2025-08-27"
+  },
+  {
+   "securityId": "ref_ARTC",
+   "from": "tiingo:NASDAQ:ARTC:1996-02-05",
+   "to": "tiingo:NASDAQ:ARTC:1996-02-05|tiingo:NASDAQ:ARTC:2026-02-27"
+  },
+  {
+   "securityId": "ref_ATCX",
+   "from": "tiingo:NASDAQ:ATCX:2019-01-23",
+   "to": "tiingo:NASDAQ:ATCX:2019-01-23|tiingo:NASDAQ:ATCX:2026-01-09"
+  },
+  {
+   "securityId": "ref_AZTR",
+   "from": "tiingo:AMEX:AZTR:2023-06-16",
+   "to": "tiingo:NYSE MKT:AZTR:2023-06-16"
+  },
+  {
+   "securityId": "ref_BCAR",
+   "from": "tiingo:NASDAQ:BCAR:2012-03-07",
+   "to": "tiingo:NASDAQ:BCAR:2012-03-07|tiingo:NASDAQ:BCAR:2025-08-20"
+  },
+  {
+   "securityId": "ref_BLUW",
+   "from": "tiingo:NASDAQ:BLUW:2021-02-09",
+   "to": "tiingo:NASDAQ:BLUW:2021-02-09|tiingo:NASDAQ:BLUW:2025-07-31"
+  },
+  {
+   "securityId": "ref_BPAC",
+   "from": "tiingo:NASDAQ:BPAC:2022-01-25",
+   "to": "tiingo:NASDAQ:BPAC:2022-01-25|tiingo:NASDAQ:BPAC:2026-01-06"
+  },
+  {
+   "securityId": "ref_CAM",
+   "from": "tiingo:NYSE:CAM:1995-07-05",
+   "to": "tiingo:NYSE ARCA:CAM:2025-10-06"
+  },
+  {
+   "securityId": "ref_CCXI",
+   "from": "tiingo:NASDAQ:CCXI:2012-02-08",
+   "to": "tiingo:NASDAQ:CCXI:2012-02-08|tiingo:NASDAQ:CCXI:2026-02-09"
+  },
+  {
+   "securityId": "ref_CHOW",
+   "from": "tiingo:AMEX:CHOW:2025-09-16",
+   "to": "tiingo:NYSE MKT:CHOW:2025-09-16|tiingo:NYSE MKT:CHOW:2026-10-23"
+  },
+  {
+   "securityId": "ref_CLRCU",
+   "from": "tiingo:NASDAQ:CLRCU:2022-04-28",
+   "to": "tiingo:OTCMKTS:CLRCU:2022-04-28"
+  },
+  {
+   "securityId": "ref_DBRG_P_H",
+   "from": "tiingo:NYSE:DBRG-P-H:2017-01-11|tiingo:NYSE:DBRG-P-H:2021-06-22",
+   "to": "tiingo:NYSE:DBRG-P-H:2021-06-22"
+  },
+  {
+   "securityId": "ref_DDC",
+   "from": "tiingo:AMEX:DDC:1992-06-22",
+   "to": "tiingo:AMEX:DDC:1992-06-22|tiingo:AMEX:DDC:2023-11-17"
+  },
+  {
+   "securityId": "ref_DINE",
+   "from": "tiingo:NASDAQ:DINE:2001-01-02",
+   "to": "tiingo:NASDAQ:DINE:2001-01-02|tiingo:NASDAQ:DINE:2026-05-05"
+  },
+  {
+   "securityId": "ref_EFTY",
+   "from": "tiingo:NASDAQ:EFTY:2025-08-08",
+   "to": "tiingo:NASDAQ:EFTY:2025-08-08|tiingo:NASDAQ:EFTY:2026-10-19"
+  },
+  {
+   "securityId": "ref_ELE",
+   "from": "tiingo:NASDAQ:ELE:2026-05-26",
+   "to": "tiingo:NASDAQ:ELE:2025-11-25"
+  },
+  {
+   "securityId": "ref_FEED",
+   "from": "tiingo:NASDAQ:FEED:2017-06-13",
+   "to": "tiingo:OTCMKTS:FEED:2017-06-13"
+  },
+  {
+   "securityId": "ref_FGNX",
+   "from": "tiingo:NASDAQ:FGNX:2014-04-01",
+   "to": "tiingo:NASDAQ:FGNX:2026-09-28"
+  },
+  {
+   "securityId": "ref_FGNXP",
+   "from": "tiingo:NASDAQ:FGNXP:2018-02-28",
+   "to": "tiingo:NASDAQ:FGNXP:2026-09-28"
+  },
+  {
+   "securityId": "ref_GIW",
+   "from": "tiingo:NASDAQ:GIW:2021-07-12",
+   "to": "tiingo:NASDAQ:GIW:2021-07-12|tiingo:NASDAQ:GIW:2025-10-27|tiingo:NYSE:GIW:2002-08-06"
+  },
+  {
+   "securityId": "ref_ILLRW",
+   "from": "tiingo:NASDAQ:ILLRW:2019-07-30",
+   "to": "tiingo:OTCMKTS:ILLRW:2019-07-30"
+  },
+  {
+   "securityId": "ref_INCR",
+   "from": "tiingo:NASDAQ:INCR:2014-11-07|tiingo:NASDAQ:INCR:2019-01-28",
+   "to": "tiingo:NASDAQ:INCR:2014-11-07|tiingo:NASDAQ:INCR:2019-01-28|tiingo:NASDAQ:INCR:2021-09-01"
+  },
+  {
+   "securityId": "ref_IVCB",
+   "from": "tiingo:NASDAQ:IVCB:2022-02-04",
+   "to": "tiingo:OTCMKTS:IVCB:2022-02-04"
+  },
+  {
+   "securityId": "ref_IVCBU",
+   "from": "tiingo:NASDAQ:IVCBU:2021-12-15",
+   "to": "tiingo:OTCMKTS:IVCBU:2021-12-15"
+  },
+  {
+   "securityId": "ref_JCSE",
+   "from": "tiingo:NASDAQ:JCSE:2022-04-22",
+   "to": "tiingo:NASDAQ:JCSE:2022-04-22|tiingo:NASDAQ:JCSE:2026-09-21"
+  },
+  {
+   "securityId": "ref_KG",
+   "from": "tiingo:NASDAQ:KG:2011-02-28",
+   "to": "tiingo:NASDAQ:KG:2011-02-28|tiingo:NASDAQ:KG:2025-05-28"
+  },
+  {
+   "securityId": "ref_LEGO",
+   "from": "tiingo:AMEX:LEGO:2021-03-04",
+   "to": "tiingo:AMEX:LEGO:2021-03-04|tiingo:AMEX:LEGO:2026-03-16"
+  },
+  {
+   "securityId": "ref_LESL",
+   "from": "tiingo:NASDAQ:LESL:2020-10-29",
+   "to": "tiingo:NASDAQ:LESL:2026-10-05"
+  },
+  {
+   "securityId": "ref_LILMW",
+   "from": "tiingo:NASDAQ:LILMW:2021-09-15",
+   "to": "tiingo:OTCMKTS:LILMW:2021-09-15"
+  },
+  {
+   "securityId": "ref_LMNX",
+   "from": "tiingo:NASDAQ:LMNX:2000-04-06",
+   "to": "tiingo:NASDAQ:LMNX:2000-04-06|tiingo:NASDAQ:LMNX:2025-10-16"
+  },
+  {
+   "securityId": "ref_LQ",
+   "from": "tiingo:NASDAQ:LQ:2014-04-09",
+   "to": "tiingo:NASDAQ:LQ:2014-04-09|tiingo:NASDAQ:LQ:2026-05-05"
+  },
+  {
+   "securityId": "ref_LRHC",
+   "from": "tiingo:NASDAQ:LRHC:2023-10-09",
+   "to": "tiingo:NASDAQ:LRHC:2026-10-19"
+  },
+  {
+   "securityId": "ref_MDCX",
+   "from": "tiingo:NASDAQ:MDCX:2016-02-03",
+   "to": "tiingo:NASDAQ:MDCX:2011-02-23"
+  },
+  {
+   "securityId": "ref_MMA",
+   "from": "tiingo:AMEX:MMA:2024-03-28",
+   "to": "tiingo:NYSE MKT:MMA:2024-03-28"
+  },
+  {
+   "securityId": "ref_MRLN",
+   "from": "tiingo:NASDAQ:MRLN:2003-11-12",
+   "to": "tiingo:NASDAQ:MRLN:2003-11-12|tiingo:NASDAQ:MRLN:2026-03-16"
+  },
+  {
+   "securityId": "ref_MRT",
+   "from": "tiingo:AMEX:MRT:2016-09-29",
+   "to": "tiingo:AMEX:MRT:2016-09-29|tiingo:AMEX:MRT:2023-07-11"
+  },
+  {
+   "securityId": "ref_MSSAU",
+   "from": "tiingo:NASDAQ:MSSAU:2022-04-01",
+   "to": "tiingo:OTCMKTS:MSSAU:2022-04-01"
+  },
+  {
+   "securityId": "ref_MTNB",
+   "from": "tiingo:AMEX:MTNB:2014-08-18",
+   "to": "tiingo:NYSE MKT:MTNB:2014-08-18"
+  },
+  {
+   "securityId": "ref_NAVI",
+   "from": "tiingo:NASDAQ:NAVI:2014-04-17",
+   "to": "tiingo:NASDAQ:NAVI:2014-04-17|tiingo:NASDAQ:NAVI:2026-10-29"
+  },
+  {
+   "securityId": "ref_NVNI",
+   "from": "tiingo:NASDAQ:NVNI:2023-09-29",
+   "to": "tiingo:NASDAQ:NVNI:2026-10-09"
+  },
+  {
+   "securityId": "ref_NVNIW",
+   "from": "tiingo:NASDAQ:NVNIW:2023-10-02",
+   "to": "tiingo:PINK:NVNIW:2026-10-09"
+  },
+  {
+   "securityId": "ref_NXDR",
+   "from": "tiingo:NYSE:NXDR:2021-03-24",
+   "to": "tiingo:NASDAQ:NXDR:2021-03-24"
+  },
+  {
+   "securityId": "ref_OGC",
+   "from": "tiingo:NYSE:OGC:2026-05-26",
+   "to": "tiingo:NYSE:OGC:2026-04-07"
+  },
+  {
+   "securityId": "ref_OPTT",
+   "from": "tiingo:AMEX:OPTT:2007-04-25",
+   "to": "tiingo:NYSE MKT:OPTT:2007-04-25"
+  },
+  {
+   "securityId": "ref_ORIS",
+   "from": "tiingo:NASDAQ:ORIS:2024-10-17",
+   "to": "tiingo:OTCMKTS:ORIS:2024-10-17"
+  },
+  {
+   "securityId": "ref_PCS",
+   "from": "tiingo:BATS:PCS:2007-04-19",
+   "to": "tiingo:BATS:PCS:2007-04-19|tiingo:BATS:PCS:2025-08-01"
+  },
+  {
+   "securityId": "ref_POAS",
+   "from": "tiingo:AMEX:POAS:2025-11-13",
+   "to": "tiingo:NYSE MKT:POAS:2025-11-13"
+  },
+  {
+   "securityId": "ref_PS",
+   "from": "tiingo:NYSE:PS:2018-05-17",
+   "to": "tiingo:NYSE:PS:2018-05-17|tiingo:NYSE:PS:2026-04-29"
+  },
+  {
+   "securityId": "ref_PTNT",
+   "from": "tiingo:BATS:PTNT:1999-07-23",
+   "to": "tiingo:BATS:PTNT:1999-07-23|tiingo:BATS:PTNT:2026-05-06"
+  },
+  {
+   "securityId": "ref_QETA",
+   "from": "tiingo:NASDAQ:QETA:2023-11-30",
+   "to": "tiingo:OTCMKTS:QETA:2023-11-30"
+  },
+  {
+   "securityId": "ref_QETAR",
+   "from": "tiingo:NASDAQ:QETAR:2023-11-30",
+   "to": "tiingo:OTCMKTS:QETAR:2023-11-30"
+  },
+  {
+   "securityId": "ref_QNCX",
+   "from": "tiingo:NASDAQ:QNCX:2019-05-09",
+   "to": "tiingo:NASDAQ:QNCX:2026-10-12"
+  },
+  {
+   "securityId": "ref_RCAT",
+   "from": "tiingo:NASDAQ:RCAT:2017-09-22",
+   "to": "tiingo:NASDAQ:RCAT:2008-01-31"
+  },
+  {
+   "securityId": "ref_RITR",
+   "from": "tiingo:NASDAQ:RITR:2024-08-23",
+   "to": "tiingo:NASDAQ:RITR:2026-09-17"
+  },
+  {
+   "securityId": "ref_SBXD",
+   "from": "tiingo:NYSE:SBXD:2024-10-07",
+   "to": "tiingo:PINK:SBXD:2026-09-28"
+  },
+  {
+   "securityId": "ref_SNBR",
+   "from": "tiingo:NASDAQ:SNBR:1998-12-04",
+   "to": "tiingo:OTCMKTS:SNBR:1998-12-04"
+  },
+  {
+   "securityId": "ref_SNYR",
+   "from": "tiingo:NASDAQ:SNYR:2016-01-04",
+   "to": "tiingo:OTCMKTS:SNYR:2016-01-04"
+  },
+  {
+   "securityId": "ref_SOAR",
+   "from": "tiingo:AMEX:SOAR:2022-01-21",
+   "to": "tiingo:NYSE MKT:SOAR:2022-01-21"
+  },
+  {
+   "securityId": "ref_SOBR",
+   "from": "tiingo:NASDAQ:SOBR:2013-05-14",
+   "to": "tiingo:OTCMKTS:SOBR:2013-05-14"
+  },
+  {
+   "securityId": "ref_SPKL",
+   "from": "tiingo:NASDAQ:SPKL:2023-11-27",
+   "to": "tiingo:NASDAQ:SPKL:2026-10-07"
+  },
+  {
+   "securityId": "ref_SPKLU",
+   "from": "tiingo:NASDAQ:SPKLU:2023-10-06",
+   "to": "tiingo:PINK:SPKLU:2026-10-07"
+  },
+  {
+   "securityId": "ref_SPKLW",
+   "from": "tiingo:NASDAQ:SPKLW:2023-11-27",
+   "to": "tiingo:PINK:SPKLW:2026-10-07"
+  },
+  {
+   "securityId": "ref_SUNS",
+   "from": "tiingo:NASDAQ:SUNS:2011-02-25",
+   "to": "tiingo:NASDAQ:SUNS:2011-02-25|tiingo:NASDAQ:SUNS:2024-07-10"
+  },
+  {
+   "securityId": "ref_SVMH",
+   "from": "tiingo:NASDAQ:SVMH:2023-12-08",
+   "to": "tiingo:OTCMKTS:SVMH:2023-12-08"
+  },
+  {
+   "securityId": "ref_SVMHW",
+   "from": "tiingo:NASDAQ:SVMHW:2023-12-11",
+   "to": "tiingo:OTCMKTS:SVMHW:2023-12-11"
+  },
+  {
+   "securityId": "ref_TETE",
+   "from": "tiingo:NASDAQ:TETE:2022-03-09",
+   "to": "tiingo:NASDAQ:TETE:2026-10-07"
+  },
+  {
+   "securityId": "ref_TETEU",
+   "from": "tiingo:NASDAQ:TETEU:2022-01-18",
+   "to": "tiingo:OTCMKTS:TETEU:2022-01-18"
+  },
+  {
+   "securityId": "ref_TETEW",
+   "from": "tiingo:NASDAQ:TETEW:2022-03-14",
+   "to": "tiingo:NASDAQ:TETEW:2026-10-07"
+  },
+  {
+   "securityId": "ref_TRT",
+   "from": "tiingo:AMEX:TRT:1995-04-24",
+   "to": "tiingo:NYSE MKT:TRT:1995-04-24"
+  },
+  {
+   "securityId": "ref_TRUE",
+   "from": "tiingo:NASDAQ:TRUE:2000-05-02",
+   "to": "tiingo:NASDAQ:TRUE:2014-05-16"
+  },
+  {
+   "securityId": "ref_VAL",
+   "from": "tiingo:NYSE:VAL:1992-03-17",
+   "to": "tiingo:NYSE:VAL:1992-03-17|tiingo:NYSE:VAL:2021-05-03"
+  },
+  {
+   "securityId": "ref_VLNWF",
+   "from": "tiingo:NYSE:VLNWF:2020-09-23",
+   "to": "tiingo:OTCMKTS:VLNWF:2020-09-23"
+  },
+  {
+   "securityId": "ref_VOLT",
+   "from": "tiingo:NASDAQ:VOLT:1990-03-26",
+   "to": "tiingo:NASDAQ:VOLT:1990-03-26|tiingo:NASDAQ:VOLT:2024-12-04"
+  },
+  {
+   "securityId": "ref_VSEE",
+   "from": "tiingo:NASDAQ:VSEE:2021-12-31",
+   "to": "tiingo:OTCMKTS:VSEE:2021-12-31"
+  },
+  {
+   "securityId": "ref_VTAK",
+   "from": "tiingo:AMEX:VTAK:2018-09-27",
+   "to": "tiingo:AMEX:VTAK:2026-10-05"
+  },
+  {
+   "securityId": "ref_XRPN",
+   "from": "tiingo:NASDAQ:XRPN:2025-06-24",
+   "to": "tiingo:NASDAQ:XRPN:2025-06-24|tiingo:NASDAQ:XRPN:2026-10-09"
+  },
+  {
+   "securityId": "ref_XRPNW",
+   "from": "tiingo:NASDAQ:XRPNW:2025-06-24",
+   "to": "tiingo:NASDAQ:XRPNW:2025-06-24|tiingo:NASDAQ:XRPNW:2026-10-12"
+  }
+ ],
+ "deactivations": [
+  {
+   "securityId": "ref_AACBR"
+  },
+  {
+   "securityId": "ref_AIHS"
+  },
+  {
+   "securityId": "ref_ANSCW"
+  },
+  {
+   "securityId": "ref_APGE"
+  },
+  {
+   "securityId": "ref_AREN"
+  },
+  {
+   "securityId": "ref_ARQQW"
+  },
+  {
+   "securityId": "ref_ATAI"
+  },
+  {
+   "securityId": "ref_AVB"
+  },
+  {
+   "securityId": "ref_BBCQU"
+  },
+  {
+   "securityId": "ref_BCAR"
+  },
+  {
+   "securityId": "ref_BCARU"
+  },
+  {
+   "securityId": "ref_BNRG"
+  },
+  {
+   "securityId": "ref_BRRWW"
+  },
+  {
+   "securityId": "ref_BTOG"
+  },
+  {
+   "securityId": "ref_CMII"
+  },
+  {
+   "securityId": "ref_CMIIU"
+  },
+  {
+   "securityId": "ref_CMIIW"
+  },
+  {
+   "securityId": "ref_CRNX"
+  },
+  {
+   "securityId": "ref_DRMAW"
+  },
+  {
+   "securityId": "ref_DVXE"
+  },
+  {
+   "securityId": "ref_FBRX"
+  },
+  {
+   "securityId": "ref_FGNX"
+  },
+  {
+   "securityId": "ref_FGNXP"
+  },
+  {
+   "securityId": "ref_GBTG"
+  },
+  {
+   "securityId": "ref_GDEVW"
+  },
+  {
+   "securityId": "ref_GIPRW"
+  },
+  {
+   "securityId": "ref_GLYC"
+  },
+  {
+   "securityId": "ref_HCWC"
+  },
+  {
+   "securityId": "ref_HLX"
+  },
+  {
+   "securityId": "ref_HONDW"
+  },
+  {
+   "securityId": "ref_HONIV"
+  },
+  {
+   "securityId": "ref_HOOZ"
+  },
+  {
+   "securityId": "ref_HRYU"
+  },
+  {
+   "securityId": "ref_HUMAW"
+  },
+  {
+   "securityId": "ref_HVII"
+  },
+  {
+   "securityId": "ref_HVIIU"
+  },
+  {
+   "securityId": "ref_HWELW"
+  },
+  {
+   "securityId": "ref_IPCX"
+  },
+  {
+   "securityId": "ref_IPCXR"
+  },
+  {
+   "securityId": "ref_IPCXU"
+  },
+  {
+   "securityId": "ref_IPEXR"
+  },
+  {
+   "securityId": "ref_IPEXU"
+  },
+  {
+   "securityId": "ref_IWFL"
+  },
+  {
+   "securityId": "ref_IWML"
+  },
+  {
+   "securityId": "ref_JAB"
+  },
+  {
+   "securityId": "ref_JABRR"
+  },
+  {
+   "securityId": "ref_JABRU"
+  },
+  {
+   "securityId": "ref_JABRW"
+  },
+  {
+   "securityId": "ref_JSPRW"
+  },
+  {
+   "securityId": "ref_JUPGF"
+  },
+  {
+   "securityId": "ref_KLXER"
+  },
+  {
+   "securityId": "ref_KTTAW"
+  },
+  {
+   "securityId": "ref_KWM"
+  },
+  {
+   "securityId": "ref_KWMWW"
+  },
+  {
+   "securityId": "ref_LBRDA"
+  },
+  {
+   "securityId": "ref_LBRDK"
+  },
+  {
+   "securityId": "ref_LBRDP"
+  },
+  {
+   "securityId": "ref_LEG"
+  },
+  {
+   "securityId": "ref_LIDRW"
+  },
+  {
+   "securityId": "ref_MDV"
+  },
+  {
+   "securityId": "ref_MDV_P_A"
+  },
+  {
+   "securityId": "ref_MESA"
+  },
+  {
+   "securityId": "ref_MTUL"
+  },
+  {
+   "securityId": "ref_NCNC"
+  },
+  {
+   "securityId": "ref_NCSM"
+  },
+  {
+   "securityId": "ref_NTZ"
+  },
+  {
+   "securityId": "ref_NYMT"
+  },
+  {
+   "securityId": "ref_PDYNW"
+  },
+  {
+   "securityId": "ref_QULL"
+  },
+  {
+   "securityId": "ref_RCKTW"
+  },
+  {
+   "securityId": "ref_RITR"
+  },
+  {
+   "securityId": "ref_RIVR"
+  },
+  {
+   "securityId": "ref_RMAX"
+  },
+  {
+   "securityId": "ref_RNWWW"
+  },
+  {
+   "securityId": "ref_SAT"
+  },
+  {
+   "securityId": "ref_SBXD"
+  },
+  {
+   "securityId": "ref_SCDL"
+  },
+  {
+   "securityId": "ref_SNYR"
+  },
+  {
+   "securityId": "ref_SVMH"
+  },
+  {
+   "securityId": "ref_TALK"
+  },
+  {
+   "securityId": "ref_TMCWW"
+  },
+  {
+   "securityId": "ref_TWO"
+  },
+  {
+   "securityId": "ref_TWO_P_A"
+  },
+  {
+   "securityId": "ref_TWO_P_B"
+  },
+  {
+   "securityId": "ref_TWO_P_C"
+  },
+  {
+   "securityId": "ref_WBS"
+  },
+  {
+   "securityId": "ref_WBS_P_F"
+  },
+  {
+   "securityId": "ref_WBS_P_G"
+  },
+  {
+   "securityId": "ref_WILC"
+  },
+  {
+   "securityId": "ref_ZTEK"
+  }
+ ],
+ "nameChanges": [
+  {
+   "securityId": "ref_AACIW",
+   "from": null,
+   "to": "Armada Acquisition Corp. III"
+  },
+  {
+   "securityId": "ref_AACOU",
+   "from": null,
+   "to": "Abony Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_AACOW",
+   "from": null,
+   "to": "Abony Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_AACPR",
+   "from": null,
+   "to": "Apogee Acquisition Corp"
+  },
+  {
+   "securityId": "ref_AACPU",
+   "from": null,
+   "to": "Apogee Acquisition Corp"
+  },
+  {
+   "securityId": "ref_AACPW",
+   "from": null,
+   "to": "Apogee Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ABLVW",
+   "from": null,
+   "to": "Able View Global Inc."
+  },
+  {
+   "securityId": "ref_ACAAU",
+   "from": null,
+   "to": "Averin Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ACAAW",
+   "from": null,
+   "to": "Averin Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ACGCU",
+   "from": null,
+   "to": "ACP Holdings Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ACGCW",
+   "from": null,
+   "to": "ACP Holdings Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ACONW",
+   "from": null,
+   "to": "Aclarion, Inc."
+  },
+  {
+   "securityId": "ref_ADACU",
+   "from": null,
+   "to": "American Drive Acquisition Co"
+  },
+  {
+   "securityId": "ref_ADACW",
+   "from": null,
+   "to": "American Drive Acquisition Co"
+  },
+  {
+   "securityId": "ref_ADSEW",
+   "from": null,
+   "to": "Ads-Tec Energy Public Ltd Co"
+  },
+  {
+   "securityId": "ref_AEAQU",
+   "from": null,
+   "to": "Activate Energy Acquisition Corp."
+  },
+  {
+   "securityId": "ref_AEAQW",
+   "from": null,
+   "to": "Activate Energy Acquisition Corp."
+  },
+  {
+   "securityId": "ref_AENTW",
+   "from": null,
+   "to": "ALLIANCE ENTERTAINMENT HOLDING CORP"
+  },
+  {
+   "securityId": "ref_AESPU",
+   "from": null,
+   "to": "Aeon Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_AFJKR",
+   "from": null,
+   "to": "Aimei Health Technology Co., Ltd."
+  },
+  {
+   "securityId": "ref_AFJKU",
+   "from": null,
+   "to": "Aimei Health Technology Co., Ltd."
+  },
+  {
+   "securityId": "ref_AFRIW",
+   "from": null,
+   "to": "Forafric Global PLC"
+  },
+  {
+   "securityId": "ref_AIIOW",
+   "from": null,
+   "to": "ROBO.AI INC."
+  },
+  {
+   "securityId": "ref_AIMDW",
+   "from": null,
+   "to": "Ainos, Inc."
+  },
+  {
+   "securityId": "ref_AIRJW",
+   "from": null,
+   "to": "AirJoule Technologies Corp."
+  },
+  {
+   "securityId": "ref_AISPW",
+   "from": null,
+   "to": "Airship AI Holdings, Inc."
+  },
+  {
+   "securityId": "ref_ALDFU",
+   "from": null,
+   "to": "Aldel Financial II Inc."
+  },
+  {
+   "securityId": "ref_ALDFW",
+   "from": null,
+   "to": "Aldel Financial II Inc."
+  },
+  {
+   "securityId": "ref_ALISR",
+   "from": null,
+   "to": "Calisa Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ALISU",
+   "from": null,
+   "to": "Calisa Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ALOVU",
+   "from": null,
+   "to": "Aldabra 4 Liquidity Opportunity Vehicle, Inc."
+  },
+  {
+   "securityId": "ref_ALOVW",
+   "from": null,
+   "to": "Aldabra 4 Liquidity Opportunity Vehicle, Inc."
+  },
+  {
+   "securityId": "ref_ALPXR",
+   "from": null,
+   "to": "Alpex Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ALPXW",
+   "from": null,
+   "to": "Alpex Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ALVOW",
+   "from": null,
+   "to": "Alvotech"
+  },
+  {
+   "securityId": "ref_AMACU",
+   "from": null,
+   "to": "AMR Resources Acquisition Corp."
+  },
+  {
+   "securityId": "ref_AMACW",
+   "from": null,
+   "to": "AMR Resources Acquisition Corp."
+  },
+  {
+   "securityId": "ref_AMODW",
+   "from": null,
+   "to": "ALPHA MODUS HOLDINGS, INC."
+  },
+  {
+   "securityId": "ref_ANGHW",
+   "from": null,
+   "to": "Anghami Inc"
+  },
+  {
+   "securityId": "ref_ANNAW",
+   "from": null,
+   "to": "AleAnna, Inc."
+  },
+  {
+   "securityId": "ref_APACR",
+   "from": null,
+   "to": "StoneBridge Acquisition II Corp"
+  },
+  {
+   "securityId": "ref_APLMW",
+   "from": null,
+   "to": "Apollomics Inc."
+  },
+  {
+   "securityId": "ref_APMCU",
+   "from": null,
+   "to": "AmperCap Acquisition Co"
+  },
+  {
+   "securityId": "ref_APURR",
+   "from": null,
+   "to": "Aperture AC"
+  },
+  {
+   "securityId": "ref_APXTW",
+   "from": null,
+   "to": "Apex Treasury Corp"
+  },
+  {
+   "securityId": "ref_ARCIU",
+   "from": null,
+   "to": "Archimedes Tech SPAC Partners III Co."
+  },
+  {
+   "securityId": "ref_ARCIW",
+   "from": null,
+   "to": "Archimedes Tech SPAC Partners III Co."
+  },
+  {
+   "securityId": "ref_ARCLR",
+   "from": null,
+   "to": "ARC Group Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_ARCLU",
+   "from": null,
+   "to": "ARC Group Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_ARCLW",
+   "from": null,
+   "to": "ARC Group Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_AREBW",
+   "from": null,
+   "to": "AMERICAN REBEL HOLDINGS INC"
+  },
+  {
+   "securityId": "ref_ARTCU",
+   "from": null,
+   "to": "Art Technology Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ARTCW",
+   "from": null,
+   "to": "Art Technology Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ASBPW",
+   "from": null,
+   "to": "Aspire-Lakewood Holdings, Inc."
+  },
+  {
+   "securityId": "ref_ASPCR",
+   "from": null,
+   "to": "ASPAC III Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ASPSW",
+   "from": null,
+   "to": "ALTISOURCE PORTFOLIO SOLUTIONS S.A."
+  },
+  {
+   "securityId": "ref_ASTLW",
+   "from": null,
+   "to": "Algoma Steel Group Inc."
+  },
+  {
+   "securityId": "ref_ATIIU",
+   "from": null,
+   "to": "Archimedes Tech SPAC Partners II Co."
+  },
+  {
+   "securityId": "ref_ATIIW",
+   "from": null,
+   "to": "Archimedes Tech SPAC Partners II Co."
+  },
+  {
+   "securityId": "ref_ATLQR",
+   "from": null,
+   "to": "JAB Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_ATLQU",
+   "from": null,
+   "to": "JAB Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_ATLQW",
+   "from": null,
+   "to": "JAB Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_AXINU",
+   "from": null,
+   "to": "Axiom Intelligence Acquisition Corp 1"
+  },
+  {
+   "securityId": "ref_BACCU",
+   "from": null,
+   "to": "Blue Acquisition Corp/Cayman"
+  },
+  {
+   "securityId": "ref_BAERW",
+   "from": null,
+   "to": "Bridger Aerospace Group Holdings, Inc."
+  },
+  {
+   "securityId": "ref_BCCQU",
+   "from": null,
+   "to": "Bleichroeder Acquisition Corp. III"
+  },
+  {
+   "securityId": "ref_BCCQW",
+   "from": null,
+   "to": "Bleichroeder Acquisition Corp. III"
+  },
+  {
+   "securityId": "ref_BDCIU",
+   "from": null,
+   "to": "BTC Development Corp."
+  },
+  {
+   "securityId": "ref_BDCIW",
+   "from": null,
+   "to": "BTC Development Corp."
+  },
+  {
+   "securityId": "ref_BDMDW",
+   "from": null,
+   "to": "Baird Medical Investment Holdings Ltd"
+  },
+  {
+   "securityId": "ref_BEAGR",
+   "from": null,
+   "to": "Bold Eagle Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BEAGU",
+   "from": null,
+   "to": "Bold Eagle Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BEATW",
+   "from": null,
+   "to": "HeartBeam, Inc."
+  },
+  {
+   "securityId": "ref_BENFW",
+   "from": null,
+   "to": "Beneficient"
+  },
+  {
+   "securityId": "ref_BETRW",
+   "from": null,
+   "to": "Better Home & Finance Holding Co"
+  },
+  {
+   "securityId": "ref_BFRGW",
+   "from": null,
+   "to": "BullFrog AI Holdings, Inc."
+  },
+  {
+   "securityId": "ref_BFRIW",
+   "from": null,
+   "to": "Biofrontera Inc."
+  },
+  {
+   "securityId": "ref_BHAVR",
+   "from": null,
+   "to": "BHAV Acquisition Corp"
+  },
+  {
+   "securityId": "ref_BHAVU",
+   "from": null,
+   "to": "BHAV Acquisition Corp"
+  },
+  {
+   "securityId": "ref_BIAFW",
+   "from": null,
+   "to": "bioAffinity Technologies, Inc."
+  },
+  {
+   "securityId": "ref_BIVIW",
+   "from": null,
+   "to": "BIOVIE INC."
+  },
+  {
+   "securityId": "ref_BIXIU",
+   "from": null,
+   "to": "Bitcoin Infrastructure Acquisition Corp Ltd"
+  },
+  {
+   "securityId": "ref_BIXIW",
+   "from": null,
+   "to": "Bitcoin Infrastructure Acquisition Corp Ltd"
+  },
+  {
+   "securityId": "ref_BKHAR",
+   "from": null,
+   "to": "Black Hawk Acquisition Corp"
+  },
+  {
+   "securityId": "ref_BKHAU",
+   "from": null,
+   "to": "Black Hawk Acquisition Corp"
+  },
+  {
+   "securityId": "ref_BLRKU",
+   "from": null,
+   "to": "Bluerock Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BLRKW",
+   "from": null,
+   "to": "Bluerock Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BLUWW",
+   "from": null,
+   "to": "Blue Water Acquisition Corp. III"
+  },
+  {
+   "securityId": "ref_BLZRU",
+   "from": null,
+   "to": "Trailblazer Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BLZRW",
+   "from": null,
+   "to": "Trailblazer Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BNAIW",
+   "from": null,
+   "to": "Brand Engagement Network Inc."
+  },
+  {
+   "securityId": "ref_BNC",
+   "from": "CEA Industries Inc",
+   "to": "BNB Standard Corp"
+  },
+  {
+   "securityId": "ref_BNCWW",
+   "from": "CEA Industries Inc - Warrants (11/02/2027)",
+   "to": "BNB Standard Corp"
+  },
+  {
+   "securityId": "ref_BNCWZ",
+   "from": "CEA Industries Inc Warrants",
+   "to": "BNB Standard Corp"
+  },
+  {
+   "securityId": "ref_BPACR",
+   "from": null,
+   "to": "Blueport Acquisition Ltd"
+  },
+  {
+   "securityId": "ref_BREZR",
+   "from": null,
+   "to": "Breeze Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_BRLSW",
+   "from": null,
+   "to": "Borealis Foods Inc."
+  },
+  {
+   "securityId": "ref_BRTMU",
+   "from": null,
+   "to": "B&R Technology Merger Corp."
+  },
+  {
+   "securityId": "ref_BRTMW",
+   "from": null,
+   "to": "B&R Technology Merger Corp."
+  },
+  {
+   "securityId": "ref_BSAAR",
+   "from": null,
+   "to": "BEST SPAC I Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BSAAU",
+   "from": null,
+   "to": "BEST SPAC I Acquisition Corp."
+  },
+  {
+   "securityId": "ref_BTBDW",
+   "from": null,
+   "to": "BT Brands, Inc."
+  },
+  {
+   "securityId": "ref_BTSGU",
+   "from": null,
+   "to": "BrightSpring Health Services, Inc."
+  },
+  {
+   "securityId": "ref_BULLW",
+   "from": null,
+   "to": "Webull Corp"
+  },
+  {
+   "securityId": "ref_BZAIW",
+   "from": null,
+   "to": "Blaize Holdings, Inc."
+  },
+  {
+   "securityId": "ref_BZFDW",
+   "from": null,
+   "to": "BuzzFeed, Inc."
+  },
+  {
+   "securityId": "ref_CAIIU",
+   "from": null,
+   "to": "Collective Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CAIIW",
+   "from": null,
+   "to": "Collective Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CAPNR",
+   "from": null,
+   "to": "Cayson Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CAPNU",
+   "from": null,
+   "to": "Cayson Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CCCTW",
+   "from": null,
+   "to": "Columbus Circle Capital Corp III"
+  },
+  {
+   "securityId": "ref_CCIIU",
+   "from": null,
+   "to": "Cohen Circle Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CCIIW",
+   "from": null,
+   "to": "Cohen Circle Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CCXIU",
+   "from": null,
+   "to": "Churchill Capital Corp XI"
+  },
+  {
+   "securityId": "ref_CCXIW",
+   "from": null,
+   "to": "Churchill Capital Corp XI"
+  },
+  {
+   "securityId": "ref_CDIOW",
+   "from": null,
+   "to": "Cardio Diagnostics Holdings, Inc."
+  },
+  {
+   "securityId": "ref_CDROW",
+   "from": null,
+   "to": "Codere Online Luxembourg, S.A."
+  },
+  {
+   "securityId": "ref_CEROW",
+   "from": null,
+   "to": "CERO THERAPEUTICS HOLDINGS, INC."
+  },
+  {
+   "securityId": "ref_CGCFW",
+   "from": null,
+   "to": "Cartesian Growth Corp IV"
+  },
+  {
+   "securityId": "ref_CHAI",
+   "from": null,
+   "to": "Core AI Holdings, Inc."
+  },
+  {
+   "securityId": "ref_CHARR",
+   "from": null,
+   "to": "Charlton Aria Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CHARU",
+   "from": null,
+   "to": "Charlton Aria Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CHECU",
+   "from": null,
+   "to": "Chenghe Acquisition III Co."
+  },
+  {
+   "securityId": "ref_CHECW",
+   "from": null,
+   "to": "Chenghe Acquisition III Co."
+  },
+  {
+   "securityId": "ref_CHPGR",
+   "from": null,
+   "to": "ChampionsGate Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CHPGU",
+   "from": null,
+   "to": "ChampionsGate Acquisition Corp"
+  },
+  {
+   "securityId": "ref_CINGW",
+   "from": null,
+   "to": "Cingulate Inc."
+  },
+  {
+   "securityId": "ref_CLSKW",
+   "from": null,
+   "to": "CLEANSPARK, INC."
+  },
+  {
+   "securityId": "ref_CNCKW",
+   "from": null,
+   "to": "Coincheck Group N.V."
+  },
+  {
+   "securityId": "ref_COCHW",
+   "from": null,
+   "to": "Envoy Medical, Inc."
+  },
+  {
+   "securityId": "ref_COOTW",
+   "from": null,
+   "to": "Australian Oilseeds Holdings Ltd"
+  },
+  {
+   "securityId": "ref_CRACR",
+   "from": null,
+   "to": "Crown Reserve Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_CRACW",
+   "from": null,
+   "to": "Crown Reserve Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_CRANR",
+   "from": null,
+   "to": "Crane Harbor Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CRANU",
+   "from": null,
+   "to": "Crane Harbor Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_CRAQR",
+   "from": null,
+   "to": "Cal Redwood Acquisition Corp."
+  },
+  {
+   "securityId": "ref_CRGOW",
+   "from": null,
+   "to": "Freightos Ltd"
+  },
+  {
+   "securityId": "ref_CRMLW",
+   "from": null,
+   "to": "Critical Metals Corp."
+  },
+  {
+   "securityId": "ref_CSHRW",
+   "from": null,
+   "to": "CoinShares PLC"
+  },
+  {
+   "securityId": "ref_CTAAR",
+   "from": null,
+   "to": "Clearthink 1 Acquisition Corp."
+  },
+  {
+   "securityId": "ref_CTAAU",
+   "from": null,
+   "to": "Clearthink 1 Acquisition Corp."
+  },
+  {
+   "securityId": "ref_CXAIW",
+   "from": null,
+   "to": "CXApp Inc."
+  },
+  {
+   "securityId": "ref_CXIIU",
+   "from": null,
+   "to": "Churchill Capital Corp XII"
+  },
+  {
+   "securityId": "ref_CXIIW",
+   "from": null,
+   "to": "Churchill Capital Corp XII"
+  },
+  {
+   "securityId": "ref_CYCUW",
+   "from": null,
+   "to": "Cycurion, Inc."
+  },
+  {
+   "securityId": "ref_DAAQU",
+   "from": null,
+   "to": "Digital Asset Acquisition Corp."
+  },
+  {
+   "securityId": "ref_DAAQW",
+   "from": null,
+   "to": "Digital Asset Acquisition Corp."
+  },
+  {
+   "securityId": "ref_DAICW",
+   "from": null,
+   "to": "CID Holdco, Inc."
+  },
+  {
+   "securityId": "ref_DAVEW",
+   "from": null,
+   "to": "Dave Inc./DE"
+  },
+  {
+   "securityId": "ref_DBCAU",
+   "from": null,
+   "to": "D. Boral Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_DBCAW",
+   "from": null,
+   "to": "D. Boral Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_DFDVW",
+   "from": null,
+   "to": "DeFi Development Corp."
+  },
+  {
+   "securityId": "ref_DFLIW",
+   "from": null,
+   "to": "Dragonfly Energy Holdings Corp."
+  },
+  {
+   "securityId": "ref_DFNSW",
+   "from": null,
+   "to": "T3 Defense Inc."
+  },
+  {
+   "securityId": "ref_DFSCW",
+   "from": null,
+   "to": "DEFSEC Technologies Inc."
+  },
+  {
+   "securityId": "ref_DMAAR",
+   "from": null,
+   "to": "Drugs Made In America Acquisition Corp."
+  },
+  {
+   "securityId": "ref_DMAAU",
+   "from": null,
+   "to": "Drugs Made In America Acquisition Corp."
+  },
+  {
+   "securityId": "ref_DMIIR",
+   "from": null,
+   "to": "Drugs Made In America Acquisition II Corp."
+  },
+  {
+   "securityId": "ref_DMIIU",
+   "from": null,
+   "to": "Drugs Made In America Acquisition II Corp."
+  },
+  {
+   "securityId": "ref_DNMXU",
+   "from": null,
+   "to": "Dynamix Corp III"
+  },
+  {
+   "securityId": "ref_DNMXW",
+   "from": null,
+   "to": "Dynamix Corp III"
+  },
+  {
+   "securityId": "ref_DOO",
+   "from": null,
+   "to": "BRP Inc."
+  },
+  {
+   "securityId": "ref_DPU",
+   "from": "Top KingWin Ltd - Class A",
+   "to": "Nexpu Ltd."
+  },
+  {
+   "securityId": "ref_DRDBU",
+   "from": null,
+   "to": "Roman DBDR Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_DRDBW",
+   "from": null,
+   "to": "Roman DBDR Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_DRTSW",
+   "from": null,
+   "to": "Alpha Tau Medical Ltd."
+  },
+  {
+   "securityId": "ref_DSACW",
+   "from": null,
+   "to": "Daedalus Special Acquisition Corp."
+  },
+  {
+   "securityId": "ref_DTSQR",
+   "from": null,
+   "to": "DT Cloud Star Acquisition Corp"
+  },
+  {
+   "securityId": "ref_DTSQU",
+   "from": null,
+   "to": "DT Cloud Star Acquisition Corp"
+  },
+  {
+   "securityId": "ref_DUKRW",
+   "from": null,
+   "to": "DUKE Robotics Corp."
+  },
+  {
+   "securityId": "ref_DYNCU",
+   "from": null,
+   "to": "Dynamix Corp"
+  },
+  {
+   "securityId": "ref_DYNCW",
+   "from": null,
+   "to": "Dynamix Corp"
+  },
+  {
+   "securityId": "ref_DYORU",
+   "from": null,
+   "to": "Insight Digital Partners II"
+  },
+  {
+   "securityId": "ref_DYORW",
+   "from": null,
+   "to": "Insight Digital Partners II"
+  },
+  {
+   "securityId": "ref_EDBLW",
+   "from": null,
+   "to": "Edible Garden AG Inc"
+  },
+  {
+   "securityId": "ref_EGHAR",
+   "from": null,
+   "to": "EGH Acquisition Corp."
+  },
+  {
+   "securityId": "ref_EGHAU",
+   "from": null,
+   "to": "EGH Acquisition Corp."
+  },
+  {
+   "securityId": "ref_EMISR",
+   "from": null,
+   "to": "Emmis Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ENGNW",
+   "from": null,
+   "to": "enGene Therapeutics Inc."
+  },
+  {
+   "securityId": "ref_ENRDW",
+   "from": null,
+   "to": "Einride AB"
+  },
+  {
+   "securityId": "ref_ERNAW",
+   "from": null,
+   "to": "Ernexa Therapeutics Inc."
+  },
+  {
+   "securityId": "ref_ESLAW",
+   "from": null,
+   "to": "Estrella Immunopharma, Inc."
+  },
+  {
+   "securityId": "ref_EUDAW",
+   "from": null,
+   "to": "EUDA Health Holdings Ltd"
+  },
+  {
+   "securityId": "ref_EURKR",
+   "from": null,
+   "to": "Eureka Acquisition Corp"
+  },
+  {
+   "securityId": "ref_EURKU",
+   "from": null,
+   "to": "Eureka Acquisition Corp"
+  },
+  {
+   "securityId": "ref_EVOXU",
+   "from": null,
+   "to": "Evolution Global Acquisition Corp"
+  },
+  {
+   "securityId": "ref_EVOXW",
+   "from": null,
+   "to": "Evolution Global Acquisition Corp"
+  },
+  {
+   "securityId": "ref_EWAVR",
+   "from": null,
+   "to": "East West Ave Acquisition Corp."
+  },
+  {
+   "securityId": "ref_EWAVU",
+   "from": null,
+   "to": "East West Ave Acquisition Corp."
+  },
+  {
+   "securityId": "ref_EXYNW",
+   "from": null,
+   "to": "Exyn Technologies, Inc."
+  },
+  {
+   "securityId": "ref_FACTU",
+   "from": null,
+   "to": "FACT II Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FACTW",
+   "from": null,
+   "to": "FACT II Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FBYDW",
+   "from": null,
+   "to": "Falcon's Beyond Global, Inc."
+  },
+  {
+   "securityId": "ref_FDMMU",
+   "from": null,
+   "to": "Freedom Metals Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FDMMW",
+   "from": null,
+   "to": "Freedom Metals Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FERAR",
+   "from": null,
+   "to": "Fifth Era Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_FERAU",
+   "from": null,
+   "to": "Fifth Era Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_FGIIU",
+   "from": null,
+   "to": "FG Imperii Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FGIIW",
+   "from": null,
+   "to": "FG Imperii Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FIGXU",
+   "from": null,
+   "to": "FIGX Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FIGXW",
+   "from": null,
+   "to": "FIGX Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_FMACR",
+   "from": null,
+   "to": "Future Money Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FMACU",
+   "from": null,
+   "to": "Future Money Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FMSTW",
+   "from": null,
+   "to": "Foremost Clean Energy Ltd."
+  },
+  {
+   "securityId": "ref_FOXXW",
+   "from": null,
+   "to": "Foxx Development Holdings Inc."
+  },
+  {
+   "securityId": "ref_FSHPR",
+   "from": null,
+   "to": "Flag Ship Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FSHPU",
+   "from": null,
+   "to": "Flag Ship Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FTHAU",
+   "from": null,
+   "to": "Forefront Tech Holdings Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FTHAW",
+   "from": null,
+   "to": "Forefront Tech Holdings Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FUFUW",
+   "from": null,
+   "to": "Bitfufu Inc."
+  },
+  {
+   "securityId": "ref_FUSEW",
+   "from": null,
+   "to": "Fusemachines Inc."
+  },
+  {
+   "securityId": "ref_FWACR",
+   "from": null,
+   "to": "Futurewave Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FWACW",
+   "from": null,
+   "to": "Futurewave Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FXACU",
+   "from": null,
+   "to": "FortuneX Acquisition Corp"
+  },
+  {
+   "securityId": "ref_FXACW",
+   "from": null,
+   "to": "FortuneX Acquisition Corp"
+  },
+  {
+   "securityId": "ref_GCGRU",
+   "from": null,
+   "to": "General Catalyst Global Resilience Merger Corp."
+  },
+  {
+   "securityId": "ref_GCGRW",
+   "from": null,
+   "to": "General Catalyst Global Resilience Merger Corp."
+  },
+  {
+   "securityId": "ref_GFUZW",
+   "from": null,
+   "to": "General Fusion Group Ltd."
+  },
+  {
+   "securityId": "ref_GHXIU",
+   "from": null,
+   "to": "Gores Holdings XI, Inc."
+  },
+  {
+   "securityId": "ref_GHXIW",
+   "from": null,
+   "to": "Gores Holdings XI, Inc."
+  },
+  {
+   "securityId": "ref_GIBOW",
+   "from": null,
+   "to": "GIBO HOLDINGS Ltd"
+  },
+  {
+   "securityId": "ref_GLNDW",
+   "from": null,
+   "to": "Greenland Energy Co"
+  },
+  {
+   "securityId": "ref_GPACW",
+   "from": null,
+   "to": "General Purpose Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GPATU",
+   "from": null,
+   "to": "GP-Act III Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GPATW",
+   "from": null,
+   "to": "GP-Act III Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GRABW",
+   "from": null,
+   "to": "Grab Holdings Ltd"
+  },
+  {
+   "securityId": "ref_GRMLW",
+   "from": null,
+   "to": "Greenland Mines Ltd"
+  },
+  {
+   "securityId": "ref_GRRRW",
+   "from": null,
+   "to": "Gorilla Technology Group Inc."
+  },
+  {
+   "securityId": "ref_GSHRU",
+   "from": null,
+   "to": "Gesher Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_GSHRW",
+   "from": null,
+   "to": "Gesher Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_GSRFR",
+   "from": null,
+   "to": "GSR IV Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GSRFU",
+   "from": null,
+   "to": "GSR IV Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GSRVR",
+   "from": null,
+   "to": "GSR V Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GSRVU",
+   "from": null,
+   "to": "GSR V Acquisition Corp."
+  },
+  {
+   "securityId": "ref_GTENU",
+   "from": null,
+   "to": "Gores Holdings X, Inc. / CI"
+  },
+  {
+   "securityId": "ref_GTENW",
+   "from": null,
+   "to": "Gores Holdings X, Inc. / CI"
+  },
+  {
+   "securityId": "ref_GUACU",
+   "from": null,
+   "to": "Berto Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_GUACW",
+   "from": null,
+   "to": "Berto Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_HACQU",
+   "from": null,
+   "to": "HCM IV Acquisition Corp."
+  },
+  {
+   "securityId": "ref_HACQW",
+   "from": null,
+   "to": "HCM IV Acquisition Corp."
+  },
+  {
+   "securityId": "ref_HAVAR",
+   "from": null,
+   "to": "Harvard Ave Acquisition Corp"
+  },
+  {
+   "securityId": "ref_HAVAU",
+   "from": null,
+   "to": "Harvard Ave Acquisition Corp"
+  },
+  {
+   "securityId": "ref_HCACR",
+   "from": null,
+   "to": "Hall Chadwick Acquisition Corp"
+  },
+  {
+   "securityId": "ref_HCICR",
+   "from": null,
+   "to": "Hennessy Capital Investment Corp. VIII"
+  },
+  {
+   "securityId": "ref_HCMAW",
+   "from": null,
+   "to": "HCM III ACQUISITION CORP."
+  },
+  {
+   "securityId": "ref_HDRNW",
+   "from": null,
+   "to": "Hadron Energy, Inc."
+  },
+  {
+   "securityId": "ref_HELP",
+   "from": "Cybin Inc",
+   "to": "Helus Pharma Inc."
+  },
+  {
+   "securityId": "ref_HOLOW",
+   "from": null,
+   "to": "MicroCloud Hologram Inc."
+  },
+  {
+   "securityId": "ref_HOVRW",
+   "from": null,
+   "to": "New Horizon Aircraft Ltd."
+  },
+  {
+   "securityId": "ref_HPAIW",
+   "from": null,
+   "to": "Helport AI Ltd"
+  },
+  {
+   "securityId": "ref_HSCSW",
+   "from": null,
+   "to": "HeartSciences Inc."
+  },
+  {
+   "securityId": "ref_HUBCW",
+   "from": null,
+   "to": "Hub Cyber Security Ltd."
+  },
+  {
+   "securityId": "ref_HVMCU",
+   "from": null,
+   "to": "Highview Merger Corp."
+  },
+  {
+   "securityId": "ref_HVMCW",
+   "from": null,
+   "to": "Highview Merger Corp."
+  },
+  {
+   "securityId": "ref_IACOU",
+   "from": null,
+   "to": "Idea Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IACOW",
+   "from": null,
+   "to": "Idea Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IACQU",
+   "from": null,
+   "to": "Irenic Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IACQW",
+   "from": null,
+   "to": "Irenic Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IBACR",
+   "from": null,
+   "to": "IB Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IDACU",
+   "from": null,
+   "to": "Iron Dome Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_IDACW",
+   "from": null,
+   "to": "Iron Dome Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_IEAGR",
+   "from": null,
+   "to": "Infinite Eagle Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IEAGU",
+   "from": null,
+   "to": "Infinite Eagle Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IGACR",
+   "from": null,
+   "to": "Invest Green Acquisition Corp"
+  },
+  {
+   "securityId": "ref_ILLRW",
+   "from": null,
+   "to": "Triller Group Inc."
+  },
+  {
+   "securityId": "ref_ILLUU",
+   "from": null,
+   "to": "Illumination Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_ILLUW",
+   "from": null,
+   "to": "Illumination Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_IMAQU",
+   "from": null,
+   "to": "International Media Acquisition Corp."
+  },
+  {
+   "securityId": "ref_IMSRW",
+   "from": null,
+   "to": "Terrestrial Energy Inc. /DE/"
+  },
+  {
+   "securityId": "ref_INACR",
+   "from": null,
+   "to": "Indigo Acquisition Corp."
+  },
+  {
+   "securityId": "ref_INACU",
+   "from": null,
+   "to": "Indigo Acquisition Corp."
+  },
+  {
+   "securityId": "ref_INVE",
+   "from": "Identiv Inc",
+   "to": "INVE Technologies, Inc."
+  },
+  {
+   "securityId": "ref_IPFXU",
+   "from": null,
+   "to": "Inflection Point Acquisition Corp. VI"
+  },
+  {
+   "securityId": "ref_IPFXW",
+   "from": null,
+   "to": "Inflection Point Acquisition Corp. VI"
+  },
+  {
+   "securityId": "ref_IPVVU",
+   "from": null,
+   "to": "InterPrivate Investment Partners V, Inc."
+  },
+  {
+   "securityId": "ref_IPVVW",
+   "from": null,
+   "to": "InterPrivate Investment Partners V, Inc."
+  },
+  {
+   "securityId": "ref_IPXGU",
+   "from": null,
+   "to": "Inflection Point Acquisition Corp. VII"
+  },
+  {
+   "securityId": "ref_IPXGW",
+   "from": null,
+   "to": "Inflection Point Acquisition Corp. VII"
+  },
+  {
+   "securityId": "ref_IQMXW",
+   "from": null,
+   "to": "IQM Quantum Computers Oyj"
+  },
+  {
+   "securityId": "ref_IRHOR",
+   "from": null,
+   "to": "Iron Horse Acquisition II Corp."
+  },
+  {
+   "securityId": "ref_IRHOU",
+   "from": null,
+   "to": "Iron Horse Acquisition II Corp."
+  },
+  {
+   "securityId": "ref_ISNRU",
+   "from": null,
+   "to": "Snow Rothschild Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ISNRW",
+   "from": null,
+   "to": "Snow Rothschild Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ITHAU",
+   "from": null,
+   "to": "ITHAX Acquisition Corp III"
+  },
+  {
+   "securityId": "ref_ITHAW",
+   "from": null,
+   "to": "ITHAX Acquisition Corp III"
+  },
+  {
+   "securityId": "ref_IVDAW",
+   "from": null,
+   "to": "Iveda Solutions, Inc."
+  },
+  {
+   "securityId": "ref_JONER",
+   "from": null,
+   "to": "Jones Ventures INTL Acquisition1 Corp"
+  },
+  {
+   "securityId": "ref_JONEU",
+   "from": null,
+   "to": "Jones Ventures INTL Acquisition1 Corp"
+  },
+  {
+   "securityId": "ref_KBONU",
+   "from": null,
+   "to": "Karbon Capital Partners Corp."
+  },
+  {
+   "securityId": "ref_KBONW",
+   "from": null,
+   "to": "Karbon Capital Partners Corp."
+  },
+  {
+   "securityId": "ref_KCHVR",
+   "from": null,
+   "to": "Kochav Defense Acquisition Corp."
+  },
+  {
+   "securityId": "ref_KCHVU",
+   "from": null,
+   "to": "Kochav Defense Acquisition Corp."
+  },
+  {
+   "securityId": "ref_KEYYU",
+   "from": null,
+   "to": "Keystone Acquisition Corp."
+  },
+  {
+   "securityId": "ref_KEYYW",
+   "from": null,
+   "to": "Keystone Acquisition Corp."
+  },
+  {
+   "securityId": "ref_KFIIR",
+   "from": null,
+   "to": "K&F GROWTH ACQUISITION CORP. II"
+  },
+  {
+   "securityId": "ref_KFIIU",
+   "from": null,
+   "to": "K&F GROWTH ACQUISITION CORP. II"
+  },
+  {
+   "securityId": "ref_KIDZW",
+   "from": null,
+   "to": "KIDZ AI Inc."
+  },
+  {
+   "securityId": "ref_KITTW",
+   "from": null,
+   "to": "Nauticus Robotics, Inc."
+  },
+  {
+   "securityId": "ref_KOYNU",
+   "from": null,
+   "to": "CSLM Digital Asset Acquisition Corp III, Ltd"
+  },
+  {
+   "securityId": "ref_KOYNW",
+   "from": null,
+   "to": "CSLM Digital Asset Acquisition Corp III, Ltd"
+  },
+  {
+   "securityId": "ref_KRAQU",
+   "from": null,
+   "to": "KRAKacquisition Corp"
+  },
+  {
+   "securityId": "ref_KRAQW",
+   "from": null,
+   "to": "KRAKacquisition Corp"
+  },
+  {
+   "securityId": "ref_KTWOR",
+   "from": null,
+   "to": "K2 Capital Acquisition Corp"
+  },
+  {
+   "securityId": "ref_KTWOU",
+   "from": null,
+   "to": "K2 Capital Acquisition Corp"
+  },
+  {
+   "securityId": "ref_KYIVW",
+   "from": null,
+   "to": "Kyivstar Group Ltd."
+  },
+  {
+   "securityId": "ref_LAFAR",
+   "from": null,
+   "to": "LaFayette Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LAFAU",
+   "from": null,
+   "to": "LaFayette Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LATAU",
+   "from": null,
+   "to": "Galata Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_LATAW",
+   "from": null,
+   "to": "Galata Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_LCCCR",
+   "from": null,
+   "to": "Lakeshore Acquisition III Corp."
+  },
+  {
+   "securityId": "ref_LCCCU",
+   "from": null,
+   "to": "Lakeshore Acquisition III Corp."
+  },
+  {
+   "securityId": "ref_LCFYW",
+   "from": null,
+   "to": "Locafy Ltd"
+  },
+  {
+   "securityId": "ref_LIMNW",
+   "from": null,
+   "to": "Liminatus Pharma, Inc."
+  },
+  {
+   "securityId": "ref_LKSPR",
+   "from": null,
+   "to": "Lake Superior Acquisition Corp"
+  },
+  {
+   "securityId": "ref_LKSPU",
+   "from": null,
+   "to": "Lake Superior Acquisition Corp"
+  },
+  {
+   "securityId": "ref_LNZAW",
+   "from": null,
+   "to": "LanzaTech Global, Inc."
+  },
+  {
+   "securityId": "ref_LPAAU",
+   "from": null,
+   "to": "Launch One Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LPAAW",
+   "from": null,
+   "to": "Launch One Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LPBBU",
+   "from": null,
+   "to": "Launch Two Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LPBBW",
+   "from": null,
+   "to": "Launch Two Acquisition Corp."
+  },
+  {
+   "securityId": "ref_LPCVU",
+   "from": null,
+   "to": "Launchpad Cadenza Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_LPCVW",
+   "from": null,
+   "to": "Launchpad Cadenza Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_LTGRU",
+   "from": null,
+   "to": "Long Table Growth Corp."
+  },
+  {
+   "securityId": "ref_LTGRW",
+   "from": null,
+   "to": "Long Table Growth Corp."
+  },
+  {
+   "securityId": "ref_LTRYW",
+   "from": null,
+   "to": "Sports Entertainment Gaming Global Corp"
+  },
+  {
+   "securityId": "ref_LUCYW",
+   "from": null,
+   "to": "Innovative Eyewear Inc"
+  },
+  {
+   "securityId": "ref_LWACW",
+   "from": null,
+   "to": "LightWave Acquisition Corp."
+  },
+  {
+   "securityId": "ref_MACIU",
+   "from": null,
+   "to": "Melar Acquisition Corp. I/Cayman"
+  },
+  {
+   "securityId": "ref_MACIW",
+   "from": null,
+   "to": "Melar Acquisition Corp. I/Cayman"
+  },
+  {
+   "securityId": "ref_MBAI",
+   "from": "CheckCap Ltd",
+   "to": "MBody AI Ltd."
+  },
+  {
+   "securityId": "ref_MBVIU",
+   "from": null,
+   "to": "M3-Brigade Acquisition VI Corp."
+  },
+  {
+   "securityId": "ref_MBVIW",
+   "from": null,
+   "to": "M3-Brigade Acquisition VI Corp."
+  },
+  {
+   "securityId": "ref_MCAGR",
+   "from": null,
+   "to": "Mountain Crest Acquisition Corp. V"
+  },
+  {
+   "securityId": "ref_MCAHR",
+   "from": null,
+   "to": "Mountain Crest Acquisition 6 Corp."
+  },
+  {
+   "securityId": "ref_MCAHU",
+   "from": null,
+   "to": "Mountain Crest Acquisition 6 Corp."
+  },
+  {
+   "securityId": "ref_MCGAU",
+   "from": null,
+   "to": "Yorkville Acquisition Corp."
+  },
+  {
+   "securityId": "ref_MCGAW",
+   "from": null,
+   "to": "Yorkville Acquisition Corp."
+  },
+  {
+   "securityId": "ref_MDAIW",
+   "from": null,
+   "to": "Spectral AI, Inc."
+  },
+  {
+   "securityId": "ref_MDCXW",
+   "from": null,
+   "to": "Medicus Pharma Ltd."
+  },
+  {
+   "securityId": "ref_MESHU",
+   "from": null,
+   "to": "Meshflow Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MESHW",
+   "from": null,
+   "to": "Meshflow Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MEVOU",
+   "from": null,
+   "to": "M Evo Global Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_MEVOW",
+   "from": null,
+   "to": "M Evo Global Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_MIACU",
+   "from": null,
+   "to": "Meridian3 Industrials Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MIACW",
+   "from": null,
+   "to": "Meridian3 Industrials Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MKDWW",
+   "from": null,
+   "to": "MKDWELL Tech Inc."
+  },
+  {
+   "securityId": "ref_MKLYR",
+   "from": null,
+   "to": "McKinley Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MKLYU",
+   "from": null,
+   "to": "McKinley Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MLAAU",
+   "from": null,
+   "to": "Mountain Lake Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_MLAAW",
+   "from": null,
+   "to": "Mountain Lake Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_MLECW",
+   "from": null,
+   "to": "Moolec Science SA"
+  },
+  {
+   "securityId": "ref_MMTXU",
+   "from": null,
+   "to": "Miluna Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MMTXW",
+   "from": null,
+   "to": "Miluna Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MOBXW",
+   "from": null,
+   "to": "MOBIX LABS, INC"
+  },
+  {
+   "securityId": "ref_MRCOU",
+   "from": null,
+   "to": "Mercator Acquisition Corp."
+  },
+  {
+   "securityId": "ref_MRCOW",
+   "from": null,
+   "to": "Mercator Acquisition Corp."
+  },
+  {
+   "securityId": "ref_MRNOW",
+   "from": null,
+   "to": "Murano Global Investments Plc"
+  },
+  {
+   "securityId": "ref_MSAIW",
+   "from": null,
+   "to": "MultiSensor AI Holdings, Inc."
+  },
+  {
+   "securityId": "ref_MTEKW",
+   "from": null,
+   "to": "Maris Tech Ltd."
+  },
+  {
+   "securityId": "ref_MUZEU",
+   "from": null,
+   "to": "Muzero Acquisition Corp"
+  },
+  {
+   "securityId": "ref_MUZEW",
+   "from": null,
+   "to": "Muzero Acquisition Corp"
+  },
+  {
+   "securityId": "ref_NAMMW",
+   "from": null,
+   "to": "Namib Minerals"
+  },
+  {
+   "securityId": "ref_NAMSW",
+   "from": null,
+   "to": "NewAmsterdam Pharma Co N.V."
+  },
+  {
+   "securityId": "ref_NBRGR",
+   "from": null,
+   "to": "Newbridge Acquisition Ltd"
+  },
+  {
+   "securityId": "ref_NBRGU",
+   "from": null,
+   "to": "Newbridge Acquisition Ltd"
+  },
+  {
+   "securityId": "ref_NCPLW",
+   "from": null,
+   "to": "Netcapital Inc."
+  },
+  {
+   "securityId": "ref_NEOVW",
+   "from": null,
+   "to": "NeoVolta Inc."
+  },
+  {
+   "securityId": "ref_NEXRW",
+   "from": null,
+   "to": "Nexera Technologies Ltd"
+  },
+  {
+   "securityId": "ref_NHIVU",
+   "from": null,
+   "to": "NewHold Investment Corp IV"
+  },
+  {
+   "securityId": "ref_NHIVW",
+   "from": null,
+   "to": "NewHold Investment Corp IV"
+  },
+  {
+   "securityId": "ref_NIVFW",
+   "from": null,
+   "to": "NewGenIvf Group Ltd"
+  },
+  {
+   "securityId": "ref_NOEMR",
+   "from": null,
+   "to": "CO2 Energy Transition Corp."
+  },
+  {
+   "securityId": "ref_NOEMU",
+   "from": null,
+   "to": "CO2 Energy Transition Corp."
+  },
+  {
+   "securityId": "ref_NOEMW",
+   "from": null,
+   "to": "CO2 Energy Transition Corp."
+  },
+  {
+   "securityId": "ref_NOVTU",
+   "from": null,
+   "to": "NOVANTA INC"
+  },
+  {
+   "securityId": "ref_NPACU",
+   "from": null,
+   "to": "New Providence Acquisition Corp. III/Cayman"
+  },
+  {
+   "securityId": "ref_NPACW",
+   "from": null,
+   "to": "New Providence Acquisition Corp. III/Cayman"
+  },
+  {
+   "securityId": "ref_NRSNW",
+   "from": null,
+   "to": "NeuroSense Therapeutics Ltd."
+  },
+  {
+   "securityId": "ref_NSAIR",
+   "from": null,
+   "to": "NorthStrive Acquisition Corp I."
+  },
+  {
+   "securityId": "ref_NSAIU",
+   "from": null,
+   "to": "NorthStrive Acquisition Corp I."
+  },
+  {
+   "securityId": "ref_NSAIW",
+   "from": null,
+   "to": "NorthStrive Acquisition Corp I."
+  },
+  {
+   "securityId": "ref_NTWOU",
+   "from": null,
+   "to": "Newbury Street II Acquisition Corp"
+  },
+  {
+   "securityId": "ref_NTWOW",
+   "from": null,
+   "to": "Newbury Street II Acquisition Corp"
+  },
+  {
+   "securityId": "ref_NUAIW",
+   "from": null,
+   "to": "New ERA Energy & Digital, Inc."
+  },
+  {
+   "securityId": "ref_NUCLW",
+   "from": null,
+   "to": "Eagle Nuclear Energy Corp."
+  },
+  {
+   "securityId": "ref_NXATW",
+   "from": null,
+   "to": "Nexus Advanced Technologies Inc."
+  },
+  {
+   "securityId": "ref_NXGLW",
+   "from": null,
+   "to": "NEXGEL, INC."
+  },
+  {
+   "securityId": "ref_OABIW",
+   "from": null,
+   "to": "OmniAb, Inc."
+  },
+  {
+   "securityId": "ref_OACCU",
+   "from": null,
+   "to": "Oaktree Acquisition Corp. III Life Sciences"
+  },
+  {
+   "securityId": "ref_OACCW",
+   "from": null,
+   "to": "Oaktree Acquisition Corp. III Life Sciences"
+  },
+  {
+   "securityId": "ref_OHACR",
+   "from": null,
+   "to": "Oceanhawk Acquisition Corp."
+  },
+  {
+   "securityId": "ref_OHACU",
+   "from": null,
+   "to": "Oceanhawk Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ONCHU",
+   "from": null,
+   "to": "1RT Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ONCHW",
+   "from": null,
+   "to": "1RT Acquisition Corp."
+  },
+  {
+   "securityId": "ref_ONFOW",
+   "from": null,
+   "to": "Onfolio Holdings, Inc"
+  },
+  {
+   "securityId": "ref_ONMDW",
+   "from": null,
+   "to": "OneMedNet Corp"
+  },
+  {
+   "securityId": "ref_OPENW",
+   "from": null,
+   "to": "Opendoor Technologies Inc."
+  },
+  {
+   "securityId": "ref_ORIQU",
+   "from": null,
+   "to": "Origin Investment Corp I"
+  },
+  {
+   "securityId": "ref_ORIQW",
+   "from": null,
+   "to": "Origin Investment Corp I"
+  },
+  {
+   "securityId": "ref_OTGAU",
+   "from": null,
+   "to": "OTG Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_OTGAW",
+   "from": null,
+   "to": "OTG Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_OXBRW",
+   "from": null,
+   "to": "OXBRIDGE RE HOLDINGS Ltd"
+  },
+  {
+   "securityId": "ref_OYSER",
+   "from": null,
+   "to": "Oyster Enterprises II Acquisition Corp"
+  },
+  {
+   "securityId": "ref_OYSEU",
+   "from": null,
+   "to": "Oyster Enterprises II Acquisition Corp"
+  },
+  {
+   "securityId": "ref_PACHU",
+   "from": null,
+   "to": "Pioneer Acquisition I Corp"
+  },
+  {
+   "securityId": "ref_PACHW",
+   "from": null,
+   "to": "Pioneer Acquisition I Corp"
+  },
+  {
+   "securityId": "ref_PALOU",
+   "from": null,
+   "to": "PALOMA ACQUISITION CORP I"
+  },
+  {
+   "securityId": "ref_PALOW",
+   "from": null,
+   "to": "PALOMA ACQUISITION CORP I"
+  },
+  {
+   "securityId": "ref_PARAW",
+   "from": null,
+   "to": "Banzai International, Inc."
+  },
+  {
+   "securityId": "ref_PCAPU",
+   "from": null,
+   "to": "ProCap Acquisition Corp"
+  },
+  {
+   "securityId": "ref_PCAPW",
+   "from": null,
+   "to": "ProCap Acquisition Corp"
+  },
+  {
+   "securityId": "ref_PECER",
+   "from": null,
+   "to": "Peace Acquisition Corp."
+  },
+  {
+   "securityId": "ref_PECEU",
+   "from": null,
+   "to": "Peace Acquisition Corp."
+  },
+  {
+   "securityId": "ref_PECEW",
+   "from": null,
+   "to": "Peace Acquisition Corp."
+  },
+  {
+   "securityId": "ref_PGACR",
+   "from": null,
+   "to": "PANTAGES CAPITAL ACQUISITION Corp"
+  },
+  {
+   "securityId": "ref_PGACU",
+   "from": null,
+   "to": "PANTAGES CAPITAL ACQUISITION Corp"
+  },
+  {
+   "securityId": "ref_PIIIW",
+   "from": null,
+   "to": "P3 Health Partners Inc."
+  },
+  {
+   "securityId": "ref_PLCIR",
+   "from": null,
+   "to": "Pelican Acquisition II Corp"
+  },
+  {
+   "securityId": "ref_PLCIU",
+   "from": null,
+   "to": "Pelican Acquisition II Corp"
+  },
+  {
+   "securityId": "ref_PLMKU",
+   "from": null,
+   "to": "Plum Acquisition Corp. IV"
+  },
+  {
+   "securityId": "ref_PLMKW",
+   "from": null,
+   "to": "Plum Acquisition Corp. IV"
+  },
+  {
+   "securityId": "ref_PMTRU",
+   "from": null,
+   "to": "Perimeter Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_PMTRW",
+   "from": null,
+   "to": "Perimeter Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_POLEU",
+   "from": null,
+   "to": "Andretti Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_POLEW",
+   "from": null,
+   "to": "Andretti Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_PONOR",
+   "from": null,
+   "to": "Pono Capital Four, Inc."
+  },
+  {
+   "securityId": "ref_PONOU",
+   "from": null,
+   "to": "Pono Capital Four, Inc."
+  },
+  {
+   "securityId": "ref_PSNYW",
+   "from": null,
+   "to": "Polestar Automotive Holding UK PLC"
+  },
+  {
+   "securityId": "ref_PSQLW",
+   "from": null,
+   "to": "Pasqal Holding SA"
+  },
+  {
+   "securityId": "ref_PTACW",
+   "from": null,
+   "to": "Patriot Acquisition Corp./CI"
+  },
+  {
+   "securityId": "ref_PTORU",
+   "from": null,
+   "to": "Praetorian Acquisition Corp."
+  },
+  {
+   "securityId": "ref_PTORW",
+   "from": null,
+   "to": "Praetorian Acquisition Corp."
+  },
+  {
+   "securityId": "ref_PUSA",
+   "from": "Aureus Greenway Holdings Inc",
+   "to": "Powerus Corp"
+  },
+  {
+   "securityId": "ref_QADRU",
+   "from": null,
+   "to": "QDRO Acquisition Corp."
+  },
+  {
+   "securityId": "ref_QADRW",
+   "from": null,
+   "to": "QDRO Acquisition Corp."
+  },
+  {
+   "securityId": "ref_QETAR",
+   "from": null,
+   "to": "Quetta Acquisition Corp"
+  },
+  {
+   "securityId": "ref_QETAU",
+   "from": null,
+   "to": "Quetta Acquisition Corp"
+  },
+  {
+   "securityId": "ref_QSEAR",
+   "from": null,
+   "to": "Quartzsea Acquisition Corp"
+  },
+  {
+   "securityId": "ref_QSEAU",
+   "from": null,
+   "to": "Quartzsea Acquisition Corp"
+  },
+  {
+   "securityId": "ref_QUMSR",
+   "from": null,
+   "to": "Quantumsphere Acquisition Corp"
+  },
+  {
+   "securityId": "ref_QUMSU",
+   "from": null,
+   "to": "Quantumsphere Acquisition Corp"
+  },
+  {
+   "securityId": "ref_RAINW",
+   "from": null,
+   "to": "Rain Enhancement Technologies Holdco, Inc."
+  },
+  {
+   "securityId": "ref_RANGR",
+   "from": null,
+   "to": "Range Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RANGU",
+   "from": null,
+   "to": "Range Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RDACR",
+   "from": null,
+   "to": "Rising Dragon Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RDACU",
+   "from": null,
+   "to": "Rising Dragon Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RDAGU",
+   "from": null,
+   "to": "Republic Digital Acquisition Co"
+  },
+  {
+   "securityId": "ref_RDAGW",
+   "from": null,
+   "to": "Republic Digital Acquisition Co"
+  },
+  {
+   "securityId": "ref_RDZNW",
+   "from": null,
+   "to": "Roadzen Inc."
+  },
+  {
+   "securityId": "ref_REVBW",
+   "from": null,
+   "to": "REVELATION BIOSCIENCES, INC."
+  },
+  {
+   "securityId": "ref_RFAIR",
+   "from": null,
+   "to": "RF Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_RFAIU",
+   "from": null,
+   "to": "RF Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_RFAMR",
+   "from": null,
+   "to": "RF Acquisition Corp III"
+  },
+  {
+   "securityId": "ref_RFAMU",
+   "from": null,
+   "to": "RF Acquisition Corp III"
+  },
+  {
+   "securityId": "ref_RGTIW",
+   "from": null,
+   "to": "Rigetti Computing, Inc."
+  },
+  {
+   "securityId": "ref_RIBBR",
+   "from": null,
+   "to": "Ribbon Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RIBBU",
+   "from": null,
+   "to": "Ribbon Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RMCOW",
+   "from": null,
+   "to": "Royalty Management Holding Corp"
+  },
+  {
+   "securityId": "ref_RMSGW",
+   "from": null,
+   "to": "Real Messenger Corp"
+  },
+  {
+   "securityId": "ref_RNGTU",
+   "from": null,
+   "to": "Range Capital Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_RNGTW",
+   "from": null,
+   "to": "Range Capital Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_RREVU",
+   "from": null,
+   "to": "RRE Ventures Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RREVW",
+   "from": null,
+   "to": "RRE Ventures Acquisition Corp."
+  },
+  {
+   "securityId": "ref_RTACU",
+   "from": null,
+   "to": "Renatus Tactical Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_RTACW",
+   "from": null,
+   "to": "Renatus Tactical Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_RVMDW",
+   "from": null,
+   "to": "Revolution Medicines, Inc."
+  },
+  {
+   "securityId": "ref_RVSNW",
+   "from": null,
+   "to": "Rail Vision Ltd."
+  },
+  {
+   "securityId": "ref_RZLVW",
+   "from": null,
+   "to": "REZOLVE AI PLC"
+  },
+  {
+   "securityId": "ref_SAAQU",
+   "from": null,
+   "to": "Space Asset Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SAAQW",
+   "from": null,
+   "to": "Space Asset Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SABSW",
+   "from": null,
+   "to": "SAB Biotherapeutics, Inc."
+  },
+  {
+   "securityId": "ref_SAIHW",
+   "from": null,
+   "to": "SAIHEAT Ltd"
+  },
+  {
+   "securityId": "ref_SATLW",
+   "from": null,
+   "to": "Satellogic Inc."
+  },
+  {
+   "securityId": "ref_SBFMW",
+   "from": null,
+   "to": "Sunshine Biopharma Inc."
+  },
+  {
+   "securityId": "ref_SCAGW",
+   "from": null,
+   "to": "Scage Future"
+  },
+  {
+   "securityId": "ref_SCIIR",
+   "from": null,
+   "to": "SC II Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SCIIU",
+   "from": null,
+   "to": "SC II Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SCLXW",
+   "from": null,
+   "to": "Scilex Holding Co"
+  },
+  {
+   "securityId": "ref_SCPQU",
+   "from": null,
+   "to": "Social Commerce Partners Corp"
+  },
+  {
+   "securityId": "ref_SCPQW",
+   "from": null,
+   "to": "Social Commerce Partners Corp"
+  },
+  {
+   "securityId": "ref_SDHIR",
+   "from": null,
+   "to": "Siddhi Acquisition Corp (Cayman Islands)"
+  },
+  {
+   "securityId": "ref_SDHIU",
+   "from": null,
+   "to": "Siddhi Acquisition Corp (Cayman Islands)"
+  },
+  {
+   "securityId": "ref_SDSTW",
+   "from": null,
+   "to": "Stardust Power Inc."
+  },
+  {
+   "securityId": "ref_SEATW",
+   "from": null,
+   "to": "Vivid Seats Inc."
+  },
+  {
+   "securityId": "ref_SHFSW",
+   "from": null,
+   "to": "SHF Holdings, Inc."
+  },
+  {
+   "securityId": "ref_SHMDW",
+   "from": null,
+   "to": "SCHMID Group N.V."
+  },
+  {
+   "securityId": "ref_SHOTR",
+   "from": null,
+   "to": "RMG ML Sports Holdings"
+  },
+  {
+   "securityId": "ref_SHOTU",
+   "from": null,
+   "to": "RMG ML Sports Holdings"
+  },
+  {
+   "securityId": "ref_SIMAU",
+   "from": null,
+   "to": "SIM Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_SIMAW",
+   "from": null,
+   "to": "SIM Acquisition Corp. I"
+  },
+  {
+   "securityId": "ref_SKYAW",
+   "from": null,
+   "to": "SkyAI, Inc."
+  },
+  {
+   "securityId": "ref_SLDPW",
+   "from": null,
+   "to": "Solid Power, Inc."
+  },
+  {
+   "securityId": "ref_SLXNW",
+   "from": null,
+   "to": "Silexion Therapeutics Corp"
+  },
+  {
+   "securityId": "ref_SOCAU",
+   "from": null,
+   "to": "Solarius Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SOCAW",
+   "from": null,
+   "to": "Solarius Capital Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SORNU",
+   "from": null,
+   "to": "Soren Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SORNW",
+   "from": null,
+   "to": "Soren Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SOUNW",
+   "from": null,
+   "to": "SOUNDHOUND AI, INC."
+  },
+  {
+   "securityId": "ref_SPEGR",
+   "from": null,
+   "to": "Silver Pegasus Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SPEGU",
+   "from": null,
+   "to": "Silver Pegasus Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SPWRW",
+   "from": null,
+   "to": "SunPower Inc."
+  },
+  {
+   "securityId": "ref_SQFTW",
+   "from": null,
+   "to": "Presidio Property Trust, Inc."
+  },
+  {
+   "securityId": "ref_SSACR",
+   "from": null,
+   "to": "SPACSphere Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SSACU",
+   "from": null,
+   "to": "SPACSphere Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SSACW",
+   "from": null,
+   "to": "SPACSphere Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SSEAR",
+   "from": null,
+   "to": "STARRY SEA ACQUISITION CORP"
+  },
+  {
+   "securityId": "ref_SSEAU",
+   "from": null,
+   "to": "STARRY SEA ACQUISITION CORP"
+  },
+  {
+   "securityId": "ref_STLNW",
+   "from": null,
+   "to": "Starling Oncology, Inc."
+  },
+  {
+   "securityId": "ref_SUMAR",
+   "from": null,
+   "to": "SUMA Acquisition Corp"
+  },
+  {
+   "securityId": "ref_SUMAU",
+   "from": null,
+   "to": "SUMA Acquisition Corp"
+  },
+  {
+   "securityId": "ref_SVAQU",
+   "from": null,
+   "to": "Silicon Valley Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SVAQW",
+   "from": null,
+   "to": "Silicon Valley Acquisition Corp."
+  },
+  {
+   "securityId": "ref_SVCCU",
+   "from": null,
+   "to": "Stellar V Capital Corp. (Cayman Islands)"
+  },
+  {
+   "securityId": "ref_SVCCW",
+   "from": null,
+   "to": "Stellar V Capital Corp. (Cayman Islands)"
+  },
+  {
+   "securityId": "ref_SVIVU",
+   "from": null,
+   "to": "Spring Valley Acquisition Corp. IV"
+  },
+  {
+   "securityId": "ref_SVIVW",
+   "from": null,
+   "to": "Spring Valley Acquisition Corp. IV"
+  },
+  {
+   "securityId": "ref_SVREW",
+   "from": null,
+   "to": "SaverOne 2014 Ltd."
+  },
+  {
+   "securityId": "ref_SVRN",
+   "from": "OceanPal Inc",
+   "to": "SVRN, Inc."
+  },
+  {
+   "securityId": "ref_SWAGW",
+   "from": null,
+   "to": "Stran & Company, Inc."
+  },
+  {
+   "securityId": "ref_SWVLW",
+   "from": null,
+   "to": "Swvl Holdings Corp"
+  },
+  {
+   "securityId": "ref_SXTPW",
+   "from": null,
+   "to": "60 DEGREES PHARMACEUTICALS, INC."
+  },
+  {
+   "securityId": "ref_SZZLR",
+   "from": null,
+   "to": "Sizzle Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_SZZLU",
+   "from": null,
+   "to": "Sizzle Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_TACHU",
+   "from": null,
+   "to": "Titan Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TACHW",
+   "from": null,
+   "to": "Titan Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TAVIR",
+   "from": null,
+   "to": "Tavia Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TAVIU",
+   "from": null,
+   "to": "Tavia Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TDACW",
+   "from": null,
+   "to": "Translational Development Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TDWDR",
+   "from": null,
+   "to": "Tailwind 2.0 Acquisition Corp."
+  },
+  {
+   "securityId": "ref_TDWDU",
+   "from": null,
+   "to": "Tailwind 2.0 Acquisition Corp."
+  },
+  {
+   "securityId": "ref_THEOR",
+   "from": null,
+   "to": "BOA Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_THEOU",
+   "from": null,
+   "to": "BOA Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_TLNCU",
+   "from": null,
+   "to": "Talon Capital Corp."
+  },
+  {
+   "securityId": "ref_TLNCW",
+   "from": null,
+   "to": "Talon Capital Corp."
+  },
+  {
+   "securityId": "ref_TLSIW",
+   "from": null,
+   "to": "TriSalus Life Sciences, Inc."
+  },
+  {
+   "securityId": "ref_TNONW",
+   "from": null,
+   "to": "Tenon Medical, Inc."
+  },
+  {
+   "securityId": "ref_TRGSR",
+   "from": null,
+   "to": "TRG Latin America Acquisitions Corp."
+  },
+  {
+   "securityId": "ref_TRGSU",
+   "from": null,
+   "to": "TRG Latin America Acquisitions Corp."
+  },
+  {
+   "securityId": "ref_TVAIR",
+   "from": null,
+   "to": "Thayer Ventures Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_TVAIU",
+   "from": null,
+   "to": "Thayer Ventures Acquisition Corp II"
+  },
+  {
+   "securityId": "ref_TVGNW",
+   "from": null,
+   "to": "Tevogen Inc."
+  },
+  {
+   "securityId": "ref_TVIVU",
+   "from": null,
+   "to": "Texas Ventures Acquisition IV Corp"
+  },
+  {
+   "securityId": "ref_TVIVW",
+   "from": null,
+   "to": "Texas Ventures Acquisition IV Corp"
+  },
+  {
+   "securityId": "ref_TWLVR",
+   "from": null,
+   "to": "Twelve Seas Investment Co III/Cayman"
+  },
+  {
+   "securityId": "ref_UCFIW",
+   "from": null,
+   "to": "CN Healthy Food Tech Group Corp."
+  },
+  {
+   "securityId": "ref_UYSCR",
+   "from": null,
+   "to": "UY Scuti Acquisition Corp."
+  },
+  {
+   "securityId": "ref_UYSCU",
+   "from": null,
+   "to": "UY Scuti Acquisition Corp."
+  },
+  {
+   "securityId": "ref_VEEAW",
+   "from": null,
+   "to": "VEEA INC."
+  },
+  {
+   "securityId": "ref_VGASW",
+   "from": null,
+   "to": "Verde Clean Fuels, Inc."
+  },
+  {
+   "securityId": "ref_VHCPU",
+   "from": null,
+   "to": "Vine Hill Capital Investment Corp. II"
+  },
+  {
+   "securityId": "ref_VHCPW",
+   "from": null,
+   "to": "Vine Hill Capital Investment Corp. II"
+  },
+  {
+   "securityId": "ref_VLOSU",
+   "from": null,
+   "to": "Velos Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_VLOSW",
+   "from": null,
+   "to": "Velos Acquisition I Corp."
+  },
+  {
+   "securityId": "ref_VNMEU",
+   "from": null,
+   "to": "Vendome Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_VNMEW",
+   "from": null,
+   "to": "Vendome Acquisition Corp I"
+  },
+  {
+   "securityId": "ref_VRXAW",
+   "from": null,
+   "to": "Veraxa Biotech AG - Post de-SPAC"
+  },
+  {
+   "securityId": "ref_VSECU",
+   "from": null,
+   "to": "VSE CORP"
+  },
+  {
+   "securityId": "ref_VSEEW",
+   "from": null,
+   "to": "VSEE HEALTH, INC."
+  },
+  {
+   "securityId": "ref_VSME",
+   "from": "Vs Media Holdings Ltd - Class A",
+   "to": "Forcendra Holding Ltd"
+  },
+  {
+   "securityId": "ref_VWAVW",
+   "from": null,
+   "to": "VisionWave Holdings, Inc."
+  },
+  {
+   "securityId": "ref_WENNU",
+   "from": null,
+   "to": "WEN Acquisition Corp"
+  },
+  {
+   "securityId": "ref_WENNW",
+   "from": null,
+   "to": "WEN Acquisition Corp"
+  },
+  {
+   "securityId": "ref_WKEY",
+   "from": "WISeKey International Holding Ltd",
+   "to": "WISeQey Corp."
+  },
+  {
+   "securityId": "ref_WLCOU",
+   "from": null,
+   "to": "Wilco 63 Corp"
+  },
+  {
+   "securityId": "ref_WLCOW",
+   "from": null,
+   "to": "Wilco 63 Corp"
+  },
+  {
+   "securityId": "ref_WLDSW",
+   "from": null,
+   "to": "Wearable Devices Ltd."
+  },
+  {
+   "securityId": "ref_WLIIU",
+   "from": null,
+   "to": "Willow Lane Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_WLIIW",
+   "from": null,
+   "to": "Willow Lane Acquisition Corp. II"
+  },
+  {
+   "securityId": "ref_WPRT",
+   "from": "Westport Fuel Systems Inc",
+   "to": "AETHERION TECHNOLOGIES INC."
+  },
+  {
+   "securityId": "ref_WSTNR",
+   "from": null,
+   "to": "Westin Acquisition Corp"
+  },
+  {
+   "securityId": "ref_WSTNU",
+   "from": null,
+   "to": "Westin Acquisition Corp"
+  },
+  {
+   "securityId": "ref_XCBEU",
+   "from": null,
+   "to": "X3 Acquisition Corp. Ltd."
+  },
+  {
+   "securityId": "ref_XCBEW",
+   "from": null,
+   "to": "X3 Acquisition Corp. Ltd."
+  },
+  {
+   "securityId": "ref_XLABW",
+   "from": null,
+   "to": "Exascale Labs Holdings Inc."
+  },
+  {
+   "securityId": "ref_XRPN",
+   "from": "Armada Acquisition Corp II - Class A",
+   "to": "Evernorth Holdings Inc."
+  },
+  {
+   "securityId": "ref_XRPNW",
+   "from": null,
+   "to": "Evernorth Holdings Inc."
+  },
+  {
+   "securityId": "ref_XSLLU",
+   "from": null,
+   "to": "Xsolla SPAC 1"
+  },
+  {
+   "securityId": "ref_XSLLW",
+   "from": null,
+   "to": "Xsolla SPAC 1"
+  },
+  {
+   "securityId": "ref_XTER",
+   "from": "Karman Line Acquisition Corp - Class A",
+   "to": "Xterax Corp II"
+  },
+  {
+   "securityId": "ref_XTERU",
+   "from": null,
+   "to": "Xterax Corp II"
+  },
+  {
+   "securityId": "ref_XTERW",
+   "from": null,
+   "to": "Xterax Corp II"
+  },
+  {
+   "securityId": "ref_YDESW",
+   "from": null,
+   "to": "YD Bio Ltd"
+  },
+  {
+   "securityId": "ref_YHNAR",
+   "from": null,
+   "to": "YHN Acquisition I Ltd"
+  },
+  {
+   "securityId": "ref_YHNAU",
+   "from": null,
+   "to": "YHN Acquisition I Ltd"
+  },
+  {
+   "securityId": "ref_YICCU",
+   "from": null,
+   "to": "Yorkville International Capital Corp."
+  },
+  {
+   "securityId": "ref_YICCW",
+   "from": null,
+   "to": "Yorkville International Capital Corp."
+  },
+  {
+   "securityId": "ref_ZOOZW",
+   "from": null,
+   "to": "ZOOZ Strategy Ltd."
+  }
+ ],
+ "newDuplicateCanonicalIds": []
+}

@@ -1,6 +1,6 @@
 # US-Wertpapierstamm und Firmennamen – wöchentliche Aktualisierung (vorbereitet, Zeitplan aus)
 
-Stand 28.10.2026. Owner-Entscheidung vom selben Tag: regelmäßige, kontrollierte Aktualisierung des Security Masters und der Firmennamen. Zielrhythmus wöchentlich, nach der Aktualisierung von Stammdaten und Universum. Dieses Dokument gehört zum Draft-PR mit `.github/workflows/security-master-weekly.yml`. Ein Zeitplan ist **nicht** aktiv, und es wird **keine** Repository-Variable gesetzt.
+Stand 28.10.2026, Nachtrag 30.10.2026 (Nachholdrift, erweiterter Freeze). Owner-Entscheidung vom selben Tag: regelmäßige, kontrollierte Aktualisierung des Security Masters und der Firmennamen. Zielrhythmus wöchentlich, nach der Aktualisierung von Stammdaten und Universum. Dieses Dokument gehört zum Draft-PR mit `.github/workflows/security-master-weekly.yml`. Ein Zeitplan ist **nicht** aktiv, und es wird **keine** Repository-Variable gesetzt.
 
 Ergänzt am 29.10.2026 (Workstream D2):
 - Reproduktion und Zählabgleich 138 / 127 / 133 (P1);
@@ -223,6 +223,79 @@ Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/s
 5. **Emerging Leaders:** eigener PR über `emerging-leaders-study.yml`, mit Vorher/Nachher der Aktienmenge und der Ergebnisse.
 6. `docs/quant-recovery/**` und archivierte Generationen werden nie neu geschrieben.
 
+## Nachholdrift seit 11.09. (gemessen 30.10.2026)
+
+**Befund.** Der erste echte Lauf 40942100928 (29.10., `commit=false`, `allow_version_change` und `approved_changes`) wurde vom Gate blockiert. Ein Probelauf am 30.10. mit denselben Erzeugern bestätigt das; seine Ausgaben gingen nur in ein Arbeitsverzeichnis, es gab keinen Commit. Grundlage: offene Tiingo-Liste, 109.165 Zeilen, und SEC `company_tickers_exchange.json`, beide ohne Kosten. Ergebnis: **Die Sonderfreigabe v130 allein reicht nicht.** Sie deckt den Klassifiziererwechsel ab, aber nicht sieben Wochen Anbieterdrift.
+
+| Gate | 29.10. (Lauf) | 30.10. (Probelauf) | Ursache |
+|---|---|---|---|
+| G6 neue doppelte `canonical_id` | 1 | 1 | `tiingo:NYSE:OKE:1985-07-01`: Die Anbieterliste führt ONEOK zweimal, einmal ACTIVE und einmal INACTIVE bis 14.09. |
+| G7 `canonical_id`-Wechsel | 83 | 85 | 34 neue Listings mit wiederverwendetem Ticker, 19 Wechsel zu OTC, 17 korrigierte Startdaten, 9 umbenannte Börsen (z. B. AMEX → NYSE MKT), 5 Börse und Start, 1 entfallenes Listing |
+| G7 aktiv → inaktiv | 100 | 104 | 90 Ende passt zur eigenen Tagesreihe bzw. ohne Produktreihe; **14 Identitätsbefunde**: Die eigene Reihe läuft weiter, das Anbieter-Ende liegt bei 2016–2026 (Tickerwiederverwendung, z. B. PCLN, NYNY, ACTS) |
+| G7 Eignung, über v130 hinaus | 82 | 85 | alle true → false: 65 durch Delisting, 19 durch mehrdeutiges Listing, 1 sonstige |
+| G7 Instrumenttyp, über v130 hinaus | – | 10 | ETF-Listing mit demselben Ticker (unter der Grenze 25) |
+| G9 Namenswechsel | 592 | 592 | 573 gefüllte Lücken (vorher ohne Namen, jetzt SEC), 14 Tiingo → SEC, 1 kuratiert → SEC, **4 SEC → Tiingo-Metadaten** (P5-Konflikt) |
+
+Reaktivierungen, Tickerwechsel, verlorene und neue IDs: 0.
+
+**Weg, ohne Grenzen anzuheben:** Eine zweite, gleich gebundene Freigabedatei. Das Schema `security-master-approved-changes-1.1.0` erzeugt `scripts/market/security-master-drift-evidence.mjs` aus dem Probelauf.
+
+| Regel | umgesetzt |
+|---|---|
+| Bindung wie v130 | dieselben Versionen 1.1.0 → 1.3.0, SHA-256 des Ausgangsstamms `26c82617…`, nur mit `allow_version_change`; im Workflow nur zusammen mit `approved_changes` (`approved_drift`) |
+| nur vorsichtige Richtung | Delistings, Eignung true → false, `canonical_id`-Wechsel, Typwechsel und Namen. Reaktivierung, neue Eignung, Tickerwechsel, neue oder verlorene IDs sind nicht freigebbar (G10) |
+| exakt | Paare (`securityId`, vorher, nachher) bzw. die `securityId` bei Delistings. Nicht genannte Wechsel, auch Drift nach dem 30.10., zählen gegen die unveränderten Grenzen 25 / 25 / 50 / 50 / 25 / 200 |
+| Identitätsbefunde nie in der Freigabe | die 14 Titel und ihre Eignungswechsel zählen gegen die Grenzen (14 ≤ 50) und werden ausgewiesen |
+| Namen nach P5 | freigegeben sind nur gefüllte Lücken aus SEC und SEC statt Tiingo (587). Nicht freigegeben, aber unter der Grenze: SEC → Tiingo-Metadaten (4) und kuratiert → SEC (1) |
+| Doppelung OKE | **nicht** in der committeten Datei. Ohne eigene Entscheidung blockiert G6 weiter |
+
+Nachweis committet unter `docs/data/security-master/`:
+- `drift-lists.md`: alle Listen zum Lesen;
+- `drift-evidence.json`: Klassen und erwartetes Gate-Ergebnis;
+- `drift-approved-changes.json`: die Freigabe.
+
+Tests: SMW-12 (Gate), SMW-13 (Klassen), SMW-14 (committete Datei).
+
+| Freigaben im Probelauf 30.10. | Gate |
+|---|---|
+| v130 | BLOCKED (G6, G7 ×3, G9) |
+| v130 + Nachholdrift | BLOCKED, nur noch G6 OKE |
+| v130 + Nachholdrift + OKE (`--include-duplicates`) | PASS, Entscheidung COMMIT |
+
+**OKE ist eine eigene Entscheidung.** Mit der Freigabe der Doppelung hat ONEOK zwei Zeilen und gilt nicht mehr als backtestfähig (genau eine Zeile verlangt). Discover bleibt unverändert, weil `eligibility.json` nicht neu gebaut wird (P4). Ohne Freigabe bleibt der ganze Stamm blockiert, bis der Anbieter die Zeile entfernt. Ab dem 11.11. bleibt dann auch der Supertrader-Tageslauf stehen (Eingangsprüfung STALE). Eine Bereinigung exakt gleicher Anbieterzeilen in der Engine wäre eine fachliche Änderung des Stamms: eigener PR mit Versionswechsel, nicht vorbereitet.
+
+**Erneuern:** Die Drift wächst täglich. Vor dem Lauf misst derselbe Probelauf neu:
+
+```bash
+# Arbeitsverzeichnis W, nichts im Repository
+for f in us-security-master.json summary.json reconciliation.json company-names.json; do git show HEAD:quant/data/market/security-master/$f > W/prev/$f; done
+node scripts/market/build-us-security-master.mjs --require-provider --today <T> --stamp <T>T00:00:00Z --out W/next --work-dir W/work
+node scripts/market/universe-source.mjs && node scripts/market/build-company-names.mjs --sec   # schreibt Namen ins Repo: danach kopieren und git checkout -- quant/data
+node scripts/market/security-master-drift-evidence.mjs --prev W/prev --next W/next --prev-names W/prev/company-names.json \
+  --next-names W/next-company-names.json --measured-on <T> --out docs/data/security-master [--include-duplicates]
+```
+
+Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Messung und Lauf zählt gegen die normalen Grenzen und blockiert nur, wenn sie diese überschreitet.
+
+**Quant:**
+- Delistings und mehrdeutige Listings nehmen weitere IDs aus der Menge der backtestfähigen Titel. Am 30.10. sind es neben den 127 aus v130 bis zu 104 Delistings und 34 neu mehrdeutige.
+- `backtest-generation-freeze.cjs compare` nimmt dafür mehrere `--approved` an. `ONLY_APPROVED_CHANGES` heißt dann: Geändert haben sich nur IDs aus einer der beiden Freigaben.
+- Die erwarteten Zählungen „6.397 → 6.270“ und „191 → 180“ gelten nur für den Wechsel allein. Die tatsächlichen Werte liefert der Lauf (`compare`, Survivorship-Erzeuger).
+
+**Verhältnis zu #1119** (SEC-belegte Delistings, 132 Zeilen):
+- #1119 ändert die Engine und bekommt eine eigene G7-Freigabe.
+- Erst nach diesem Wechsel mergen, damit sich die zwei Freigaben nicht überlagern.
+- Manche der 132 kann die Anbieterdrift schon selbst inaktiv setzen; sie fallen im späteren Lauf dann weg.
+
+### Eingefrorene Quant-Evidenz erweitert
+
+Seit dem Merge von #1132 (30.10.) sind V10–V13c auf `main`. `backtest-generation-freeze.cjs repo-manifest` friert jetzt alles unter `docs/quant-recovery/` ein:
+- 550 Dateien;
+- `filesSha256` `12bdbbe1…`;
+- Quelle `main` `adbc2f04`.
+
+SMF-1 prüft zusätzlich, dass keine Datei unter `docs/quant-recovery/` außerhalb des Manifests liegt. Eine neue Generation ist deshalb nur mit erneuertem Manifest möglich, und eine Änderung einer bestehenden Datei bleibt rot.
+
 ## Freigabevorlage
 
 Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichung (Commit des Stamms auf `main`), und er ändert produktive Quant-Bezüge (`masterHash` aller Generationen). Deshalb endet die Vorbereitung hier. Ausgeführt wird erst nach Owner-Freigabe.
@@ -234,6 +307,7 @@ Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichun
 - `verify-repo` INTACT;
 - privater `freeze` erstellt, `filesSha256` notiert;
 - Stamm auf `main` noch `26c82617…` (sonst gilt die Sonderfreigabe nicht, G8/P3);
+- Nachholdrift am Lauftag oder kurz davor neu gemessen und committet (`drift-approved-changes.json`);
 - Scheduler aus, keine Repository-Variable.
 
 **Erwartete Diffs je Klasse** (je stabiler `securityId`; Zählabgleich oben):
@@ -242,7 +316,7 @@ Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichun
 |---|---|---|
 | Instrumenttyp | 138: 127 → PREFERRED, 11 → TEST_SECURITY | G7 über Sonderfreigabe, `report.approval.applied` 138 |
 | Eignung `eligible_us_equity` | 138, alle true → false (dieselben IDs) | G7 über Sonderfreigabe |
-| `canonical_id`, Ticker, aktiv → inaktiv, Reaktivierung, verlorene oder neue IDs | 0 aus dem Wechsel; Anbieterdrift seit 11.09. nur innerhalb der normalen Grenzen | G3–G7 unverändert 25 / 25 / 50 / 50 / 25 |
+| `canonical_id`, Ticker, aktiv → inaktiv, Reaktivierung, verlorene oder neue IDs | 0 aus dem Wechsel; die Anbieterdrift seit 11.09. ist über die normalen Grenzen hinaus (Abschnitt Nachholdrift) und braucht die Nachholfreigabe | G3–G7 unverändert 25 / 25 / 50 / 50 / 25, Drift über `drift-approved-changes.json` |
 | Zeilen | 149 Typzeilen, 138 Eignungszeilen; geeignete Zeilen 6.583 → 6.445 | – |
 | backtestfähige IDs | 6.397 → 6.270 (−127, +0) | `compare`: 127 `NEWLY_BLOCKED`, sonst gleiche Kennzahlen |
 | Survivorship-Kontrolle | 191 → 180 inaktive Stammaktien-Zeilen | eigener Erzeuger-PR |
@@ -268,14 +342,18 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
 [ ] Nachweis-PR #1101 gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #1100 gemergt (SMF-1…5)
 [ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
        138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
-[ ] P2 verify-repo INTACT (241 Dateien, filesSha256 5e4c4424…): ____
+[ ] P2 verify-repo INTACT (550 Dateien, filesSha256 12bdbbe1…): ____
 [ ] P2 privater freeze: Wurzel ____, Generation ____, filesSha256 ____, Archiv ____
 [ ] P3 Sonderfreigabe v130-approved-changes.json (prevMasterSha256 26c82617…) freigegeben: ja / nein
-[ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true: Lauf ______
-       Gate PASS, report.approval.applied 138/138, sonst keine Wechsel über den Grenzen: ____
+[ ] Nachholdrift drift-lists.md geprüft (Messung ____): Delistings ___, canonical_id ___, Eignung ___, Typ ___, Namen ___
+       14 Identitätsbefunde (nicht freigegeben, zählen gegen die Grenzen) zur Kenntnis: ja / nein
+       4 Namen SEC → Tiingo-Metadaten und 1 kuratiert → SEC (nicht freigegeben, P5) zur Kenntnis: ja / nein
+[ ] OKE-Doppelung tiingo:NYSE:OKE:1985-07-01 freigeben (ONEOK danach nicht backtestfähig): ja (--include-duplicates) / nein (Lauf bleibt blockiert)
+[ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true approved_drift=true: Lauf ______
+       Gate PASS, report.approval.applied ____, sonst keine Wechsel über den Grenzen: ____
 [ ] Lauf 2  dieselben Eingaben, commit=true: Lauf ______ (Datenveröffentlichung, nicht umkehrbar außer per Revert)
 [ ] P2 build-post-switch: neue Wurzel ____, Generation ____, lineage.json frozenRootVerified INTACT/INTACT
-[ ] P2 compare ONLY_APPROVED_CHANGES, NEWLY_BLOCKED 127, unexpected 0: ____
+[ ] P2 compare --approved v130 --approved drift: ONLY_APPROVED_CHANGES, unexpected 0, NEWLY_BLOCKED ____: ____
 [ ] Leser auf neue Wurzel umgestellt (eigene Freigabe): ja / nein / später
 [ ] Survivorship-PR #____ (191 → 180)    [ ] Emerging-Leaders-PR #____
 [ ] P4 eligibility.json unverändert    [ ] P5 nur SEC/kuratierte Namen
