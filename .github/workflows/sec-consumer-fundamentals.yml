@@ -204,3 +204,31 @@ jobs:
               node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); for (const k of ["productUniverse","cikMapped","withoutCik","secAvailable","notInCompanyFacts","annualHistory","quarterlyHistory","ttmPossible","latestFundamentals","history3y","history5y","history10y"]) console.log("| "+k+" | "+c[k]+" |"); console.log(""); console.log("| Kennzahl | annual | quarterly | ttm |"); console.log("|---|---|---|---|"); for (const [m,v] of Object.entries(c.perMetric)) console.log("| "+m+" | "+v.annual+" | "+v.quarterly+" | "+v.ttm+" |"); console.log(""); console.log("Fehler: "+c.failures.length);'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Ein roter Consumer-Lauf bleibt nicht unbemerkt (V1-Befund 30.10.2026: 40570986935, 40758243298,
+  # 40943676672 rot, ohne Alarm; die Health-Anzeige misst nur das Alter). Issue mit Label pipeline-alarm
+  # ueber den bestehenden Boten, ein gruener Lauf schliesst es. Nur main, nicht fuer Testlaeufe per push.
+  alarm:
+    needs: consumer
+    if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALARM_SOURCE: sec-consumer-fundamentals
+          ALARM_TITLE: SEC-Consumer-Lauf ohne neuen Stand
+          RESULT_CONSUMER: ${{ needs.consumer.result }}
+        run: node scripts/ci/pipeline-alarm.mjs
