@@ -26,7 +26,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("../../quant/engines/technical/technical-query.js") : global.VUTechnical.Query;
 
-  var TEMPLATES_VERSION = "technical-templates-1.0.0";
+  var TEMPLATES_VERSION = "technical-templates-1.1.0";
   var TRIANGLES = ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"];
 
   /** Gilt fuer jede Vorlage; die Ansicht zeigt den Text unter den Kriterien. */
@@ -38,7 +38,10 @@
    * Gruppen in der Auswahl. Reihenfolge = Anzeige.
    * criteria[].filter: Filter im Format von technical-query.js (field, op, value[, tf]) oder
    *   { kind: "formationDirection", types, direction } - Ausbruchsrichtung aus der Spalte "formations"
-   *   (Feld 5: UP/DOWN), nur fuer Formationen, die auch formationConfirmed meldet.
+   *   (Feld 5: UP/DOWN), nur fuer Formationen, die auch formationConfirmed meldet;
+   *   oder { kind: "all", filters: [...] } - mehrere Bedingungen als EIN Kriterium (eine nicht erfuellt -> nicht erfuellt,
+   *   sonst eine unbekannt -> unbekannt).
+   * requires: Abfragefelder, ohne die die Vorlage nicht angeboten wird (Fachmodell-Felder aus S2, AP8).
    */
   var GROUPS = [
     { id: "trend", title: "Trend" },
@@ -47,6 +50,23 @@
   ];
 
   var TEMPLATES = [
+    /* S3 (seit 1.1.0): vollstaendige Trendvorlage mit 8 Kriterien. Angeboten erst, wenn die Felder aus S2 (L1-L4) im
+       Katalog stehen. Kein Name einer Person oder eines Anbieters im Produkt (Owner-Entscheidung 30.10.). */
+    { id: "establishedUptrend", group: "trend", icon: "trend", title: "Etablierter Aufwärtstrend",
+      summary: "Acht Kriterien: Kurs und Durchschnittslinien in Aufwärtsordnung, steigende 200-Tage-Linie, deutlich über dem Jahrestief, nahe am Jahreshoch, relative Stärke im oberen Drittel.",
+      requires: ["aboveSma150", "sma150AboveSma200", "sma50AboveSma150", "sma200Rising", "distLow52w", "rsRank"],
+      criteria: [
+        c("aboveSma150and200", "Kurs über SMA 150 und SMA 200", "Mittel- und langfristiger Trend zeigen nach oben.",
+          { kind: "all", filters: [{ field: "aboveSma150", op: "is", value: true }, { field: "aboveSma200", op: "is", value: true }] }),
+        c("sma150AboveSma200", "SMA 150 über SMA 200", "Die langfristigen Durchschnittslinien stehen in Aufwärtsordnung.", { field: "sma150AboveSma200", op: "is", value: true }),
+        c("sma200Rising", "SMA 200 steigt seit mindestens einem Monat", "Die 200-Tage-Linie liegt höher als vor 21 Handelstagen.", { field: "sma200Rising", op: "is", value: true }),
+        c("sma50AboveSma150and200", "SMA 50 über SMA 150 und SMA 200", "Der kürzere Durchschnitt führt die längeren an.",
+          { kind: "all", filters: [{ field: "sma50AboveSma150", op: "is", value: true }, { field: "sma50AboveSma200", op: "is", value: true }] }),
+        c("aboveSma50", "Kurs über SMA 50", "Auch kurzfristig liegt der Kurs über seinem Durchschnitt.", { field: "aboveSma50", op: "is", value: true }),
+        c("aboveLow30", "Mindestens 30 % über dem 52-Wochen-Tief", "Der Kurs hat sich deutlich vom Jahrestief (Tagestief) gelöst.", { field: "distLow52w", op: "gte", value: 0.3 }),
+        c("nearHigh", "Höchstens 25 % unter dem 52-Wochen-Hoch", "Der Kurs ist nicht weit vom Jahreshoch entfernt.", { field: "distHigh52w", op: "gte", value: -0.25 }),
+        c("rsRank70", "RS-Rang mindestens 70", "Die relative Stärke über 6 Monate gehört zum oberen Drittel aller aktuellen Aktien.", { field: "rsRank", op: "gte", value: 70 })
+      ], sort: { field: "rsRank", dir: "desc" } },
     { id: "uptrendBasic", group: "trend", icon: "trend", title: "Aufwärtstrend, vereinfacht",
       summary: "Kurs und Durchschnittslinien in Aufwärtsordnung, nahe am 52-Wochen-Hoch und stärker als der S&P 500.",
       note: "Vereinfachte Fassung mit 5 Kriterien. Die vollständige Trendvorlage mit 8 Kriterien folgt, sobald SMA 150, Steigung der SMA 200, Abstand zum 52-Wochen-Tief und der RS-Rang als Felder freigegeben sind.",
@@ -74,7 +94,10 @@
     { id: "triangleBreakoutUp", group: "formation", icon: "breakout", title: "Dreieck mit Ausbruch nach oben",
       summary: "Dreiecke, deren Ausbruch über die obere Linie bestätigt ist.",
       note: "Nur Ausbrüche nach oben. Bestätigte Ausbrüche nach unten sind häufiger und hier ausdrücklich nicht enthalten.",
-      criteria: [
+      /* Mit L5 (formationConfirmedUp) ein Abfragefeld, sonst die Richtung aus der Spalte formations (S1). */
+      criteria: Q.field("formationConfirmedUp") ? [
+        c("triangleUp", "Dreieck mit bestätigtem Ausbruch nach oben", "Ein Schlusskurs lag über der oberen Dreieckslinie; Ausbrüche nach unten zählen nicht.", { field: "formationConfirmedUp", op: "in", value: TRIANGLES })
+      ] : [
         c("triangleConfirmed", "Dreieck mit bestätigtem Ausbruch", "Ein Schlusskurs lag jenseits der gezeichneten Dreieckslinie.", { field: "formationConfirmed", op: "in", value: TRIANGLES }),
         c("directionUp", "Ausbruchsrichtung: nach oben", "Der bestätigte Ausbruch ging über die obere Linie, nicht unter die untere.", { kind: "formationDirection", types: TRIANGLES, direction: "UP" })
       ], sort: { field: "relVol", dir: "desc" } },
@@ -120,7 +143,7 @@
   var NEAR_MIN = 3;
 
   function presetOf(id) { return Q.PRESETS.filter(function (p) { return p.id === id; })[0] || null; }
-  function filterKey(f) { return f.kind === "formationDirection" ? "dir:" + f.direction + ":" + f.types.join(",") : [f.field, f.op, JSON.stringify(f.value), f.value2 === undefined ? "" : f.value2, f.tf || ""].join("|"); }
+  function filterKey(f) { return f.kind === "all" ? "all:" + f.filters.map(filterKey).join("&") : f.kind === "formationDirection" ? "dir:" + f.direction + ":" + f.types.join(",") : [f.field, f.op, JSON.stringify(f.value), f.value2 === undefined ? "" : f.value2, f.tf || ""].join("|"); }
 
   /** Vollstaendige Vorlage: bestehende Vorlagen aus PRESETS ergaenzt (Titel, Beschreibung, Kriterien, Sortierung). */
   function resolve(t) {
@@ -133,7 +156,9 @@
         return c(f.field, Q.describeFilter(f, tf), PRESET_CRIT_WHY[f.field] || PRESET_WHY[t.id] || "", x);
       }) };
   }
-  var RESOLVED = TEMPLATES.map(resolve);
+  /** Vorlage nur anbieten, wenn alle benoetigten Felder im Abfragekatalog stehen. */
+  function available(t) { return !(t.requires || []).some(function (f) { return !Q.field(f); }); }
+  var RESOLVED = TEMPLATES.filter(available).map(resolve);
   function list() { return RESOLVED.slice(); }
   function get(id) { return RESOLVED.filter(function (t) { return t.id === id; })[0] || null; }
   function block(id) { return BLOCKS.filter(function (b) { return b.id === id; })[0] || null; }
@@ -151,6 +176,14 @@
 
   /** Praedikat je Kriterium: function(i) -> true | false | null. */
   function predicate(ds, filter) {
+    if (filter.kind === "all") {
+      var ps = filter.filters.map(function (f) { return predicate(ds, f); });
+      return function (i) {
+        var unknown = false;
+        for (var k = 0; k < ps.length; k++) { var r = ps[k](i); if (r === false) return false; if (r !== true) unknown = true; }
+        return unknown ? null : true;
+      };
+    }
     if (filter.kind === "formationDirection") {
       var fc = ds.column("formations"), conf = ds.column("formationConfirmed"), types = {};
       filter.types.forEach(function (t) { types[t] = 1; });
@@ -215,7 +248,10 @@
   /** Abfrage fuer den Filter-Baukasten (Anpassen). Kriterien ohne Abfragefeld (Ausbruchsrichtung) entfallen und werden genannt. */
   function toQuery(t) {
     var filters = [FRESH], dropped = [];
-    t.criteria.forEach(function (x) { if (x.filter.kind) dropped.push(x.label); else filters.push(x.filter); });
+    t.criteria.forEach(function (x) {
+      if (x.filter.kind === "all") x.filter.filters.forEach(function (f) { filters.push(f); });
+      else if (x.filter.kind) dropped.push(x.label); else filters.push(x.filter);
+    });
     return { query: { timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: filters }], sort: t.sort || null }, dropped: dropped };
   }
 
@@ -248,7 +284,7 @@
       (t.criteria || []).forEach(function (x) {
         [x.label, x.why].forEach(function (s) { if (BANNED.test(s || "")) errors.push("WORDING " + t.id + "/" + x.id); });
         if (x.filter.kind === "formationDirection") return;
-        var v = Q.validate({ timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: [x.filter] }] });
+        var v = Q.validate({ timeframe: "1D", logic: "AND", groups: [{ op: "AND", filters: x.filter.kind === "all" ? x.filter.filters : [x.filter] }] });
         if (!v.ok) errors.push("FILTER " + t.id + "/" + x.id + " " + JSON.stringify(v.errors));
       });
     });
@@ -256,7 +292,7 @@
   }
 
   var api = { TEMPLATES_VERSION: TEMPLATES_VERSION, GROUPS: GROUPS, BLOCKS: BLOCKS, LIMITS: LIMITS, STATES: STATES, FRESH: FRESH, NEAR_MIN: NEAR_MIN,
-    list: list, get: get, block: block, compose: compose, predicate: predicate, evaluate: evaluate, checklist: checklist, toQuery: toQuery,
+    list: list, get: get, block: block, available: available, TEMPLATES: TEMPLATES, compose: compose, predicate: predicate, evaluate: evaluate, checklist: checklist, toQuery: toQuery,
     counts: counts, href: href, paramsOf: paramsOf, blocksFromParam: blocksFromParam, validateAll: validateAll };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Templates = api; }
