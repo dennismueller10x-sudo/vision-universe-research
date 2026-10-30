@@ -34,7 +34,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.11.0";
+  var ROW_VERSION = "technical-screen-row-1.12.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -282,19 +282,24 @@
 
     /* ---- Formationen ---- */
     row.formationActive = []; row.formationConfirmed = []; row.formationOpen = []; row.formations = [];
+    /* Seit 1.12.0 (AP8 L5, docs/technical/SCREENER_FIELDS_AP8_L5.md): bestaetigte Formationen nach Ausbruchsrichtung.
+       Dieselben Formationen wie formationConfirmed, aufgeteilt nach breakout.direction (UP/DOWN); ohne Richtung in keiner. */
+    row.formationConfirmedUp = []; row.formationConfirmedDown = [];
     try {
       var series = input.series;
       var res = Fm.analyzeAt(Ctx.prepare(series), series.length - 1);
       res.formations.forEach(function (x) {
         if (x.state !== "INVALIDATED" && row.formationActive.indexOf(x.type) < 0) row.formationActive.push(x.type);
         if (x.state === "CONFIRMED" && row.formationConfirmed.indexOf(x.type) < 0) row.formationConfirmed.push(x.type);
+        var dirList = x.state === "CONFIRMED" && x.breakout ? { UP: row.formationConfirmedUp, DOWN: row.formationConfirmedDown }[x.breakout.direction] : null;
+        if (dirList && dirList.indexOf(x.type) < 0) dirList.push(x.type);
         if (x.state === "DETECTED" && row.formationOpen.indexOf(x.type) < 0) row.formationOpen.push(x.type);
         /* [Typ, Zustand, erkannt, Ausbruchstag, Ausbruchsrichtung, Kennzeichen]: Kennzeichen "B" = bei Erkennung bereits
            ausgebrochen, "V" = vorlaeufiger Kanal (4 Punkte), "O" = Richtung offen. */
         if (x.state !== "INVALIDATED") row.formations.push([x.type, x.state, x.detectedAt, x.breakout ? x.breakout.at : null, x.breakout ? x.breakout.direction : null,
           (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
-    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationConfirmedUp = null; row.formationConfirmedDown = null; row.formationError = String(e && e.message || e).slice(0, 80); }
 
     /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
     Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));

@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.11.0";
+  var QUERY_VERSION = "technical-query-1.12.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -124,6 +124,9 @@
     { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    /* AP8 L5 (seit 1.12.0): bestaetigte Formationen nach Ausbruchsrichtung, docs/technical/SCREENER_FIELDS_AP8_L5.md */
+    { id: "formationConfirmedUp", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach oben", values: FORMATION_TYPES },
+    { id: "formationConfirmedDown", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach unten", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
     /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
        mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
