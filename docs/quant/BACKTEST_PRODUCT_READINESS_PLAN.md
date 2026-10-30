@@ -51,7 +51,7 @@ Eine Art erreicht C nur über das Zertifizierungsartefakt (`scripts/quant/build-
 | P0.1 | Anzeigefehler Parität in `measure-backtest-signal-intelligence.mjs` (zeigte `checked/checked` statt `(checked−mismatches)/checked`) | Messwert ist auch bei Abweichungen korrekt | **erledigt in diesem PR**; heute `3478/3478`, Ausgabe unverändert |
 | P0.2 | Test: JSON-Schema `docs/quant/backtest-result-v2.schema.json` stimmt mit `validate()` überein (Enums, Pflichtfelder) | verhindert eine stille Abweichung im Vertrag | **besteht bereits** (`backtest-result-contract.test.mjs`, Test „schema document and contract engine agree“) |
 | P0.3 | Test: Runner-Pfad gegen das **committete** Zertifizierungsartefakt (`certificationViolations` = 0, keine Art C) | Runner und Artefakt können nicht auseinanderlaufen | **besteht bereits** (`backtest-certification.test.mjs` prüft das committete Artefakt; der Runner bricht bei Verstößen mit `CERTIFICATION_ARTIFACT_VIOLATES_ITS_CONTRACT` ab) |
-| P0.4 | Veraltungswächter für die 16 Demofälle: Ergebnis-Hashes gegen `CODE_FILES` des Runners | Demos veralten nicht unbemerkt | **#1171**: Wächter `check-backtest-demo-freshness.cjs`. Befund: Alle 16 Demos zeichnen `research-delisted-series.cjs` im Stand `45d7a67c9e` auf, `main` hat `8315b0c82b`. Neubau mit privaten Daten nötig, danach `--strict` in CI |
+| P0.4 | Veraltungswächter für die 16 Demofälle: Ergebnis-Hashes gegen `CODE_FILES` des Runners | Demos veralten nicht unbemerkt | **#1171**: Wächter `check-backtest-demo-freshness.cjs`. Befund: Alle 16 Demos zeichnen `research-delisted-series.cjs` im Stand `45d7a67c9e` auf, `main` hat `8315b0c82b`. **erledigt in #1178** (Neubau auf dem Runner aus dem R2-Archiv, Python 276.828 Prüfungen/0 Abweichungen, 15/16 Fälle ohne Kennzahländerung); mit #1171+#1178 meldet der Wächter `Code CURRENT`, danach `--strict` in CI möglich |
 | P0.5 | `run-backtest.cjs`: `--help` und Prüfung der eigenen Ausgabe gegen den Vertrag | Bedienbarkeit, fail closed | Ausgabe nur nach `--out` |
 | P0.6 | Opt-in-CI-Job (workflow_dispatch, `permissions: contents: read`) für `BACKTEST_RUNNER_FULL=1` | Echtdaten-Tests laufen regelmäßig, nicht nur lokal | kein Commit, nur Bericht |
 | P0.7 | Reproduzierbarkeit über Laufzeiten: Kennzahlen-Hash ohne Node-Binär-Hash zusätzlich ausweisen | Determinismus in CI prüfbar | zwei Node-Versionen liefern denselben Kennzahlen-Hash |
@@ -80,7 +80,7 @@ Voraussetzungen: Security Master 1.3.0 ist produktiv, die Backtest-Identitätssp
 | Nr. | Paket | Hinweis |
 |---|---|---|
 | P3.1 | Delisted-Register 1.0.0/1.1.0 (1.675/1.688 QUALIFIED, hashgebundener Loader `research-delisted-series.cjs`) als **zusätzliche** Population im Runner für Pattern und Signal; Ergebnis als Sensitivität neben dem Überlebenden-Ergebnis | Wiederverwendung, keine neue Forschung; Befund bleibt, was er ist |
-| P3.2 | Owner-Entscheidung: Dürfen private Anbieterreihen (Lizenz) als Evidenz in ein Produktartefakt einfließen, oder nur aggregiert? | Voraussetzung für P3.3 |
+| P3.2 | Owner-Klärung der Tiingo-Rechte für delistete Historie (Bestandsaufnahme `TIINGO_LICENSE_REVIEW.md`, #1179): interne Berechnung wahrscheinlich zulässig, öffentliche Ergebnisanzeige nicht belegt, Rohkurse nein | Voraussetzung für P3.3 |
 | P3.3 | Gate `survivorship` liest die Sensitivität (bestehende Gate-Definition, keine neue Schwelle) | nur nach P3.2 |
 | P3.4 | SAME_STOCK_REPLAY bleibt beschreibend (`ruleTest` strukturell). Produktziel ist eine klar beschriftete Beschreibung, keine Zertifizierung | keine Normänderung |
 
@@ -95,7 +95,7 @@ Voraussetzungen: Security Master 1.3.0 ist produktiv, die Backtest-Identitätssp
 
 | Nr. | Entscheidung | Wirkung | spätestens |
 |---|---|---|---|
-| A1–A6 | Setup-OOS-Segmentierung | ohne Entscheidung bleibt OOS aus | vor dem eingefrorenen Schnitt (Empfehlung 2027-03-31) |
+| A1–A6 | Setup-OOS-Segmentierung | ohne Entscheidung bleibt OOS aus | vor dem ersten M6-Ergebnis (etwa 2027-03-26); empfohlener Schnitt jetzt 2027-05-31 (#1179) |
 | B1 | Strategy-Research-Artefakt | Research-Ablage unter `docs/` | ohne Frist |
 | C1 | Factor-Rekonstruktion | Research-Ablage | ohne Frist |
 | Vorschau | #1138 nur intern | interne Prüfansicht | ohne Frist |
@@ -121,4 +121,4 @@ Keine Art wird vor dem Erfüllen ihrer bestehenden Gates zertifiziert. Ein negat
 
 - Einstieg: dieses Dokument, dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - Nächste autonome Pakete: P0.5 (`run-backtest.cjs --help` und Ausgabeprüfung), P0.6 (Opt-in-CI-Job), P0.7 (Kennzahlen-Hash).
-- Mit Owner-Schlüssel: Demos neu bauen (P0.4), dann `--strict`.
+- P0.4 abgeschlossen mit #1171 und #1178. Owner-Vorlagen: Setup-OOS A1–A6 und Tiingo-Lizenz in #1179; Security Master in #1167/#1175.
