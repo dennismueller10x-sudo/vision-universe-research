@@ -390,7 +390,29 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen,
+  /**
+   * RS-Rang (seit 1.12.0, AP8 L4, docs/technical/SCREENER_FIELDS_AP8_L4.md): Perzentilrang von rs6m ueber das Universum.
+   *   Universum: Zeilen mit fresh === true und endlichem rs6m (aktuell und gueltig auswertbar); alle anderen: rsRank = null.
+   *   Richtung:  hoeheres rs6m = hoeherer Rang.
+   *   Rang:      100 * (B + (E - 1) / 2) / (N - 1); B = Zahl kleinerer Werte, E = Zahl gleicher Werte (inkl. eigener),
+   *              N = Groesse des Universums. Schwaechster Titel 0, staerkster 100, Gleichstaende in der Mitte; N = 1 -> 50.
+   *   Gerundet auf eine Nachkommastelle. Eine Kennzahl dieses Produkts, keine Bewertung eines Drittanbieters.
+   */
+  function rankRs(rows) {
+    var U = rows.filter(function (r) { return r.fresh === true && isNum(r.rs6m); });
+    rows.forEach(function (r) { r.rsRank = null; });
+    var v = U.map(function (r) { return r.rs6m; }).sort(function (a, b) { return a - b; }), N = v.length;
+    function lower(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] < x) lo = m + 1; else hi = m; } return lo; }
+    function upper(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] <= x) lo = m + 1; else hi = m; } return lo; }
+    U.forEach(function (r) {
+      var B = lower(r.rs6m), E = upper(r.rs6m) - B;
+      r.rsRank = N === 1 ? 50 : r1(100 * (B + (E - 1) / 2) / (N - 1));
+    });
+    return N;
+  }
+  function r1(v) { return Math.round(v * 10) / 10; }
+
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen, rankRs: rankRs,
               STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }

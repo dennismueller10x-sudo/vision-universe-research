@@ -115,6 +115,8 @@
     { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
+    /* AP8 L4 (seit 1.12.0): Perzentilrang von rs6m, docs/technical/SCREENER_FIELDS_AP8_L4.md */
+    { id: "rsRank", group: "Relative Stärke", kind: "num", tfs: D, label: "RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
     { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
     { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
