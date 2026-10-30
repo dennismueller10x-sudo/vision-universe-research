@@ -32,10 +32,13 @@
   var Ctx = isNode ? require("./ti/context.js") : global.VUTechnical.TIContext;
   var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
   var PJ = isNode ? require("./price-jumps.js") : global.VUTechnical.PriceJumps;
+  var MTF = isNode ? require("./multi-timeframe.js") : global.VUTechnical.MultiTimeframe;
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.13.0";
+  var ROW_VERSION = "technical-screen-row-1.14.0";
+  /* Mindestzahl abgeschlossener Wochen fuer Wochenformationen: ein halbes Jahr (Pivots brauchen Vor- und Nachlauf). */
+  var WEEKLY_MIN_BARS = 26;
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -320,6 +323,24 @@
           (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
     } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationConfirmedUp = null; row.formationConfirmedDown = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+
+    /* ---- Formationen im Wochenchart (seit 1.14.0, docs/technical/WEEKLY_FORMATIONS.md) ----
+       Dieselbe Engine auf den ABGESCHLOSSENEN Wochenbars der Tagesbars (multi-timeframe.js#completedSeries, Regel
+       STICHTAG_FREITAG): echte Wochen-OHLC (Eroeffnung der ersten, Hoch/Tief der Woche, Schluss der letzten Sitzung,
+       Volumensumme). Chart Studio zeigt dieselben Wochen. Unter WEEKLY_MIN_BARS Wochen keine Aussage (null). */
+    row["formationActive@1W"] = null; row["formationConfirmed@1W"] = null; row.weeklyFormationBars = null;
+    try {
+      var wk = MTF.completedSeries(input.series, "1W");
+      row.weeklyFormationBars = wk ? wk.bars : 0;
+      if (wk && wk.bars >= WEEKLY_MIN_BARS) {
+        var wa = [], wc = [];
+        Fm.analyzeAt(Ctx.prepare(wk.series), wk.series.length - 1).formations.forEach(function (x) {
+          if (x.state !== "INVALIDATED" && wa.indexOf(x.type) < 0) wa.push(x.type);
+          if (x.state === "CONFIRMED" && wc.indexOf(x.type) < 0) wc.push(x.type);
+        });
+        row["formationActive@1W"] = wa; row["formationConfirmed@1W"] = wc;
+      }
+    } catch (e) { row["formationActive@1W"] = null; row["formationConfirmed@1W"] = null; }
 
     /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
     Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));

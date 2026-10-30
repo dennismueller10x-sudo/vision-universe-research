@@ -140,7 +140,8 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js", "/core/listing-staleness.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js",
+    "/quant/engines/technical/timeframe.js", "/quant/engines/technical/multi-timeframe.js", "/core/listing-staleness.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -763,7 +764,8 @@
   var LAYERS = M.CHART_LAYERS, PANE_LIST = M.CHART_PANES;
   var PANES = {};
   PANE_LIST.forEach(function (p) { PANES[p[0]] = 1; });
-  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["5J", 260], ["Max", 0]];
+  /* "1J·W": Wochenkerzen aus den Tagesbars (abgeschlossene Wochen, dieselben wie die Screener-Spalten formation…@1W). */
+  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["1J·W", 0], ["5J", 260], ["Max", 0]];
   var studio = { layers: { trend: true, muster: true, niveaus: true, sma: true, volumen: true }, range: "1J", full: false };
 
   function viewChartPicker(main) {
@@ -885,8 +887,15 @@
     put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
-    if (weekly) {
-      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen nur im Tageschart" }));
+    if (!X.focus && studio.range === "1J·W") {
+      var W = weeklyCandleConfig(X);
+      if (!W) put(host, stateBox("Keine Wochenkerzen", "Aus den Tagesbars entstehen weniger als zwei abgeschlossene Wochen."));
+      else {
+        put(legend, legendItems(W.cfg.legend).concat([el("span", { class: "tc-note", text: W.note })]));
+        chart = Chart.render(host, W.cfg);
+      }
+    } else if (weekly) {
+      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen im Tageschart und unter „1J·W“" }));
       loadWeekly(X.T).then(function (w) {
         var pts = (w.points || []).filter(function (p) { return isNum(p[1]); });
         var dates = pts.map(function (p) { return p[0]; }), close = pts.map(function (p) { return p[1]; });
@@ -924,6 +933,63 @@
   }
 
   function legendItems(items) { return items.map(function (it) { return el("span", { class: "tc-leg" }, [el("i", { style: "background:" + it[1] }), it[0]]); }); }
+
+  /**
+   * Wochenkerzen aus den geladenen Tagesbars: multi-timeframe.js#completedSeries (abgeschlossene Wochen, Regel
+   * STICHTAG_FREITAG), Formationen mit derselben Engine wie die Screener-Spalten formationActive@1W/formationConfirmed@1W
+   * (screen-row 1.14.0, ab 26 Wochen). Keine neue Kursreihe: nur eine andere Sicht auf die veroeffentlichten Tagesbars.
+   */
+  function weeklyCandleConfig(X) {
+    var VT = global.VUTechnical, S = X.S;
+    if (!VT.MultiTimeframe) return null;
+    var series = VT.CanonicalBars.fromRows(S.dates.map(function (d, i) { return { date: d, open: S.open[i], high: S.high[i], low: S.low[i], close: S.close[i], volume: S.volume[i] }; }),
+      { instrumentId: X.T, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
+    var wk = VT.MultiTimeframe.completedSeries(series, "1W");
+    if (!wk) return null;
+    var w = wk.series, WS = { dates: w.timestamps.map(function (t) { return String(t).slice(0, 10); }), open: w.open, high: w.high, low: w.low, close: w.close, volume: w.volume };
+    var frozen = X.st && X.st.frozenSince, enough = wk.bars >= 26;
+    var analysis = frozen || !enough ? { formations: [] } : VT.Formations.analyzeAt(VT.TIContext.prepare(w), w.length - 1);
+    var L = studio.layers, lines = [], zones = [], markers = [], overlays = [], legend = [["Kurs (Woche)", "var(--tc-price)"]];
+    if (L.sma) {
+      overlays.push({ id: "s10", label: "SMA 10 W", values: VT.Indicators.sma(w.close, 10), color: "var(--tc-c1)" });
+      overlays.push({ id: "s40", label: "SMA 40 W", values: VT.Indicators.sma(w.close, 40), color: "var(--tc-c2)" });
+      legend.push(["SMA 10 W", "var(--tc-c1)"], ["SMA 40 W", "var(--tc-c2)"]);
+    }
+    formationLayers(analysis, WS, L, null, WS.dates[0], lines, zones, markers);
+    var active = [];
+    (analysis.formations || []).forEach(function (f) { if (f.state !== "INVALIDATED" && active.indexOf(f.name) < 0) active.push(f.name); });
+    var note = wk.bars + " abgeschlossene Wochen bis " + M.dateDe(wk.asOf) + (wk.droppedOpenBar ? " (laufende Woche nicht enthalten)" : "") + " · " +
+      (frozen ? "Kurs unverändert: keine Formationen" : !enough ? "unter 26 Wochen: keine Wochenformationen" : active.length ? "Wochenformationen: " + active.join(", ") : "keine Wochenformation erkannt");
+    return { cfg: { title: X.T + " Wochenkerzen", mode: "candles", window: 0, data: WS, overlays: overlays, lines: lines, zones: zones, levels: [], markers: markers, volume: !!L.volumen, pane: null, legend: legend },
+      note: note, analysis: analysis, weeks: wk };
+  }
+
+  /** Linien, Zonen und Marken der Formationen (Tages- und Wochenchart dieselbe Darstellung). */
+  function formationLayers(analysis, S, L, focusF, firstDate, lines, zones, markers) {
+    var forms = focusF ? [focusF] : (analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
+    forms.forEach(function (f) {
+      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
+      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
+      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
+      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
+      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
+      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
+        var ci = S.dates.indexOf(f.confirmedAt);
+        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
+      }
+    });
+  }
 
   function studioConfig(X, win, focusF) {
     var S = X.S, L = studio.layers, overlays = [], lines = [], zones = [], levels = [], markers = [], legend = [["Kurs", "var(--tc-price)"]];
@@ -974,29 +1040,7 @@
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
       overlays.push({ id: "bbl", label: "Bollinger unten", values: X.ind.bb.lower, color: "var(--tc-c5)", dash: "2 3" }); legend.push(["Bollinger 20/2", "var(--tc-c5)"]);
     }
-    var forms = focusF ? [focusF] : (X.analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
-    forms.forEach(function (f) {
-      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
-      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
-      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
-      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
-      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
-      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
-        var ci = S.dates.indexOf(f.confirmedAt);
-        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
-      }
-      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
-        var ii = S.dates.indexOf(f.invalidatedAt);
-        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
-      }
-      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
-      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
-        var di = S.dates.indexOf(f.detectedAt);
-        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
-      }
-    });
+    formationLayers(X.analysis, S, L, focusF, firstDate, lines, zones, markers);
     if (L.niveaus) {
       (X.levels.resistances || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "negative", label: i ? null : "Widerstand" }); });
       (X.levels.supports || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "positive", label: i ? null : "Unterstützung" }); });
