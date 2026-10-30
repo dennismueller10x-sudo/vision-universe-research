@@ -28,7 +28,9 @@ Die Sicherung hängt nicht mehr an der bauenden Sitzung. Details in Abschnitt 4.
 | #1140 | Archiv 1.2.0 (Manifest, Werkzeuge, Runner-Restore-Schritt), Entscheidungsvorlage, diese Übergabe | **gemergt** `99af26c091` (Owner-Freigabe 30.10.). Ersetzt **nicht** das Backup |
 
 PRs anderer Sitzungen, die diese Arbeit berühren:
-- #1136 (Security Master Nachholdrift, konkurrierendes Freigabeschema 1.1.0): von der Supertrader-9-Sitzung als **abgelöst** markiert („nicht mergen“), aber noch nicht geschlossen; das Schließen entscheidet der Owner. Nicht zusammen mit #1143 integrieren.
+- #1136: **geschlossen** (abgelöst durch #1143).
+- #1100, #1101 und #1159 sind gemergt (Sperrliste, Freeze, Alarm). Auf `main` laufen Quant 3.694/0 und Core 300/0, der Freeze ist INTACT (Stand 30.10., 15:35 UTC, laut Supertrader-9-Sitzung).
+- #1163 (Draft, Supertrader-9-Sitzung): Erzeuger-PR für identische canonical_id.
 - #1159 (Draft, gestapelt auf #1100): nur die von der Freigabe unabhängigen Teile.
   - Backtest-Identitätssperre (Probelauf 72 IDs).
   - `compare` liest die Freigabeliste 1.1.0 aus #1143.
@@ -196,13 +198,14 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
   - Die Identität ist eindeutig, aber mit den bestehenden Mitteln **nicht regelkonform auflösbar**: Der Erzeuger führt beide Tiingo-Zeilen. Ein Zurückhalten im Gate wäre die abgelehnte Ausnahme unter anderem Namen.
   - Der Einzelfall bleibt ausgeschlossen. Der Lauf bleibt BLOCKED an G6 (Simulation: sonst alles unter den Grenzen, 0 ungenutzte Einträge).
   - **Empfohlener nächster PR:** im Erzeuger `quant/engines/us-security-master.js` identische canonical_id zusammenführen (gleicher Ticker, gleiche Börse, gleicher Beginn, gleiche Gattung und Währung; das jüngste Ende gewinnt), mit Vorher/Nachher-Vergleich. Betroffen sind 8 securityIds: OKE, BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B. **Beauftragt** (Owner, 30.10.) in der Supertrader-9-Sitzung, Branch `claude/supertrader-9-data-certification-jnejw3-sm-duplicates`. Keinen zweiten PR dazu starten.
-  - Näherung ohne die inaktive OKE-Zeile: Die unveränderte Liste ergibt PASS.
+  - Die frühere Näherung „ohne die inaktive OKE-Zeile ergibt PASS“ gilt **nicht** für #1163. Sie entfernte nur die OKE-Zeile. #1163 führt alle 8 zusammen und ändert damit auch die canonical_id der 7 bisherigen Doppelungen; die Supertrader-9-Sitzung meldet G7 canonical 27 > 25. **Die Liste 1.1.0 muss nach #1163 neu erzeugt werden:** Probelauf `commit=false` mit dem #1163-Erzeuger, dann Builder, mit Belegen aus dem #1163-Register und unveränderten Grenzen (Kommentar in #1143).
+  - FUN bleibt in #1163 fail closed: Zusammenschluss nach 12g-3(c), kein 1:1-Nachfolger nach 12g-3(a).
 - **Überschneidung #1136:** Beide PRs ändern Gate und Workflow, mit gleichem Schema-Namen und anderem Format. #1136 übernimmt OKE (`--include-duplicates`) und ist auf #1100/#1101 gestapelt, die nicht in `main` sind. Unabhängig davon wären nur die Freeze-Manifeste (#1100), die Belege aus #1101 und der Alarm-Job SMW-15 (Tabelle im Prüfdokument, Abschnitt 11).
 - **Teststand #1143** (Kopf `651732d462`): security-master 76/76, `core` 300/300, Isolation sauber.
 - **Reihenfolge:**
-  1. Owner-Freigabe der Liste.
-  2. Erzeuger-PR für die Doppelungen.
-  3. Neuer Probelauf `commit=false` (Liste bei Drift mit dem Builder neu), erwartet PASS.
+  1. #1163 reviewen und mergen.
+  2. Neuer Probelauf `commit=false`, dann die Liste mit dem Builder neu erzeugen.
+  3. Owner-Freigabe der neuen Liste; erwartet PASS.
   4. `commit=true` am selben Tag.
   5. Erst nach erfolgreicher Schutzprüfung und ausdrücklicher Abschlussfreigabe #1119 und die echte 1.3.0-Umstellung.
 
