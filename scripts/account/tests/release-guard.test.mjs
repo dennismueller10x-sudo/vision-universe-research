@@ -41,3 +41,30 @@ test('aelterer Worker ohne tax-Feld gilt als "none"', () => {
   const {tax, ...old} = healthToday;
   assert.equal(liveState(old, {mode: 'live'}).tax, 'none');
 });
+
+test('Richtung: nur Oeffnen oder Schutz-Entfernen braucht die Freigabe', async () => {
+  const {needsApproval} = await import('../release-guard.mjs');
+  const a = (key, from, to) => needsApproval({key, from, to});
+  // Zahlungen oeffnen / Berechtigungen erweitern -> Freigabe
+  assert.equal(a('checkout', 'testers', 'public'), true, 'oeffentliche Zahlungen');
+  assert.equal(a('checkout', 'off', 'testers'), true, 'neue Zahlungsberechtigung');
+  assert.equal(a('liveApproved', false, true), true, 'Live-Abrechnung');
+  assert.equal(a('autoProcess', false, true), true, 'Kuendigungen automatisch ausfuehren');
+  assert.equal(a('tax', 'automatic', 'none'), true, 'Steuerausweis entfernen');
+  assert.equal(a('checkout', 'testers', 'unbekannt'), true, 'unbekannter Wert: fail closed');
+  // Einschraenken oder gepruefte Schutzfunktion hinzufuegen -> automatisch
+  assert.equal(a('checkout', 'public', 'testers'), false, 'zurueck auf Tester');
+  assert.equal(a('checkout', 'testers', 'off'), false, 'Checkout aus');
+  assert.equal(a('liveApproved', true, false), false, 'Live-Abrechnung aus');
+  assert.equal(a('autoProcess', true, false), false);
+  assert.equal(a('tax', 'none', 'automatic'), false, 'Stripe Tax ein (fail closed im Worker)');
+  assert.equal(a('legalApproved', false, true), false, 'ohne Checkout-Aenderung keine Zahlungswirkung');
+});
+
+test('heutiger Stripe-Tax-Wechsel waere jetzt automatisch, der oeffentliche Start nicht', () => {
+  const live = liveState({...healthToday, tax: 'none'}, {mode: 'live'});
+  const tax = sensitiveChanges(desiredState({...vars, STRIPE_TAX_MODE: 'automatic'}), live);
+  assert.deepEqual(tax.map(c => [c.key, c.approval]), [['tax', false]]);
+  const golive = sensitiveChanges({...desiredState(vars), checkout: 'public'}, liveState(healthToday, {mode: 'live'}));
+  assert.ok(golive.some(c => c.key === 'checkout' && c.approval));
+});
