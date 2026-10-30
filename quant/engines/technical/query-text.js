@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.8.0";
+  var TEXT_VERSION = "technical-query-text-1.9.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -62,6 +62,13 @@
     ["hull(-? ?ma)? faellt|fallende hull(-? ?ma)?", [b("hmaRising", false)]],
     ["elder[- ]impuls(e)? (gruen|positiv)", [n("elderImpulse", "gt", 0)]],
     ["elder[- ]impuls(e)? (rot|negativ)", [n("elderImpulse", "lt", 0)]],
+    /* AP8 L1 (seit 1.9.0): SMA 150 */
+    ["sma ?150 (ueber|oberhalb)( der| die)? sma ?200", [b("sma150AboveSma200", true)]],
+    ["sma ?150 (unter|unterhalb)( der| die)? sma ?200", [b("sma150AboveSma200", false)]],
+    ["sma ?50 (ueber|oberhalb)( der| die)? sma ?150", [b("sma50AboveSma150", true)]],
+    ["sma ?50 (unter|unterhalb)( der| die)? sma ?150", [b("sma50AboveSma150", false)]],
+    ["(ueber|oberhalb)( der| dem| die)? (sma ?150|gd ?150|150-tage-(linie|durchschnitt)|150er( linie)?)", [b("aboveSma150", true)]],
+    ["(unter|unterhalb)( der| dem| die)? (sma ?150|gd ?150|150-tage-(linie|durchschnitt)|150er( linie)?)", [b("aboveSma150", false)]],
     /* Zustand "SMA 50 ueber SMA 200". "Golden/Death Cross" meint seit 1.5.0 das Ereignis (siehe Ereignisse unten). */
     ["sma ?50 (ueber|oberhalb)( der| die)? sma ?200", [b("sma50AboveSma200", true)]],
     ["sma ?50 (unter|unterhalb)( der| die)? sma ?200", [b("sma50AboveSma200", false)]],
@@ -144,7 +151,7 @@
     ["connors[- ]rsi|crsi", "connorsRsi"], ["z-?score( ?20)?", "zScore20"], ["elder[- ]impuls(e)?", "elderImpulse"],
     ["choppiness( index)?( ?14)?|chop( ?14)?", "choppiness14"], ["historische volatilitaet|hist\\. volatilitaet|hv ?20", "histVol20"],
     ["ulcer( index)?", "ulcer14"], ["abstand zum chandelier(-?stop)?", "distChandelierLong"],
-    ["abstand zur sma ?200|abstand zum 200er", "distSma200"], ["abstand zur ema ?200", "distEma200"], ["abstand zum 52-?wochen-?hoch", "distHigh52w"], ["abstand zum 200-?wochen-?hoch", "distHigh200w"],
+    ["abstand zur sma ?200|abstand zum 200er", "distSma200"], ["abstand zur sma ?150|abstand zum 150er", "distSma150"], ["abstand zur ema ?200", "distEma200"], ["abstand zum 52-?wochen-?hoch", "distHigh52w"], ["abstand zum 200-?wochen-?hoch", "distHigh200w"],
     ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
     ["chaikin money flow|cmf( ?20)?", "cmf20"], ["money flow index|mfi( ?14)?", "mfi14"], ["stochastik( %k)?|%k", "stochK"],
