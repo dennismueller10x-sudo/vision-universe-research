@@ -1,0 +1,54 @@
+# Ablage im privaten Backup-Repo: .github/workflows/vu-selftest.yml
+# Selbsttest der Backup-Werkzeuge auf dem echten Runner, OHNE Secrets und ohne Netzziele:
+# S3 = lokaler Emulator (moto), APIs = tests/fake_api.py, Datenbank = Wegwerf-Postgres 17
+# (gleiche Hauptversion wie die Produktion). Laeuft bei jeder Aenderung der Werkzeuge und von Hand.
+name: VU Selbsttest
+on:
+  workflow_dispatch:
+  push:
+    paths: ['scripts/backup/**', '.github/workflows/**']
+permissions:
+  contents: read
+concurrency:
+  group: vu-selftest-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  selftest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Werkzeuge (feste Versionen, Pruefsummen)
+        run: |
+          set -euo pipefail
+          scripts/backup/runner/github-actions/setup-tools.sh restic rclone pg age
+          sudo apt-get install -y -qq postgresql-17 >/dev/null
+          sudo systemctl stop postgresql || true
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet 'moto[server]==5.1.4' boto3==1.40.0
+      - name: Backup, Pruefung, Wiederherstellung (T01-T42)
+        working-directory: scripts/backup
+        run: VU_TEST_PYTHON="$RUNNER_TEMP/venv/bin/python" timeout 1800 tests/synthetic-test.sh
+      - name: Konten-DB-Export und Restore-Probe (D01-D13, Postgres 17)
+        working-directory: scripts/backup
+        run: PGBIN=/usr/lib/postgresql/17/bin VU_TEST_PYTHON="$RUNNER_TEMP/venv/bin/python" timeout 900 tests/db-export-test.sh
+      - name: Leserolle vu_backup_ro (R01-R10, Postgres 17)
+        working-directory: scripts/backup
+        run: PGBIN=/usr/lib/postgresql/17/bin VU_TEST_PYTHON="$RUNNER_TEMP/venv/bin/python" timeout 900 tests/backup-role-test.sh
+      - name: Abnahme-Skript gegen den Emulator
+        working-directory: scripts/backup
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/venv/bin/python" -m moto.server -H 127.0.0.1 -p 5917 >/dev/null 2>&1 &
+          sleep 3
+          export AWS_ACCESS_KEY_ID=t AWS_SECRET_ACCESS_KEY=t AWS_DEFAULT_REGION=us-east-1 VU_S3_ENDPOINT=http://127.0.0.1:5917
+          "$RUNNER_TEMP/venv/bin/python" - <<'PY'
+          import boto3
+          c = boto3.client("s3", endpoint_url="http://127.0.0.1:5917")
+          c.create_bucket(Bucket="vu-backup-test-selftest", ObjectLockEnabledForBucket=True)
+          c.put_object_lock_configuration(Bucket="vu-backup-test-selftest", ObjectLockConfiguration={
+              "ObjectLockEnabled": "Enabled", "Rule": {"DefaultRetention": {"Mode": "COMPLIANCE", "Days": 1}}})
+          PY
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/venv/bin/python" "$GITHUB_WORKSPACE/scripts/backup/tests/b2-acceptance.py" now \
+            --bucket vu-backup-test-selftest --emulator --state-in-bucket

@@ -1,0 +1,54 @@
+# Ablage im privaten Backup-Repo: .github/workflows/vu-b2-acceptance.yml
+# Abnahme gegen den ECHTEN B2-Test-Bucket, ausschliesslich synthetische Daten (tests/b2-acceptance.py).
+# Prueft: Schluesselrechte, kein Loeschen mit dem Schreibschluessel, Object Lock (Compliance,
+# Standard-Sperre, Legal Hold), Lifecycle, Verschluesselung (restic + SSE-B2), Integritaet
+# (restic check --read-data), Wiederherstellung (Datei fuer Datei, Point-in-Time).
+#   now      sofort                        later  fruehestens 2 Tage nach "now"
+#   cleanup  Test-Bucket leeren (nach later)
+# Das Skript bricht ab, wenn der Bucketname kein "test" enthaelt oder fremde Objekte darin liegen.
+name: VU B2-Abnahme
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'now | later | cleanup'
+        type: choice
+        options: [now, later, cleanup]
+        default: now
+permissions:
+  contents: read
+concurrency:
+  group: vu-b2-acceptance-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: backup-test
+    env:
+      PHASE: ${{ inputs.phase }}
+      BUCKET: ${{ vars.B2_TEST_BUCKET }}
+      VU_S3_ENDPOINT: ${{ vars.B2_TEST_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.B2_TEST_WRITER_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_TEST_WRITER_KEY }}
+      VU_TEST_ANCHOR_KEY_ID: ${{ secrets.B2_TEST_ANCHOR_KEY_ID }}
+      VU_TEST_ANCHOR_KEY: ${{ secrets.B2_TEST_ANCHOR_KEY }}
+      VU_TEST_READER_KEY_ID: ${{ secrets.B2_TEST_READER_KEY_ID }}
+      VU_TEST_READER_KEY: ${{ secrets.B2_TEST_READER_KEY }}
+      VU_TEST_DELETER_KEY_ID: ${{ secrets.B2_TEST_DELETER_KEY_ID }}
+      VU_TEST_DELETER_KEY: ${{ secrets.B2_TEST_DELETER_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/backup/runner/github-actions/setup-tools.sh restic py
+      - name: Abnahme
+        run: |
+          set -euo pipefail
+          [[ "$BUCKET" == *test* ]] || { echo "B2_TEST_BUCKET muss 'test' enthalten"; exit 1; }
+          [[ "$VU_S3_ENDPOINT" =~ ^https://s3\.[a-z0-9-]+\.backblazeb2\.com$ ]] || { echo "B2_TEST_ENDPOINT: https://s3.<region>.backblazeb2.com"; exit 1; }
+          cd "$RUNNER_TEMP"
+          set +e
+          python3 "$GITHUB_WORKSPACE/scripts/backup/tests/b2-acceptance.py" "$PHASE" --bucket "$BUCKET" --state-in-bucket | tee out.txt
+          rc=${PIPESTATUS[0]}
+          set -e
+          { echo "## B2-Abnahme: $PHASE"; echo; echo '```'; grep -E '^(PASS|FAIL|n/a)|ohne Fehler' out.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit "$rc"

@@ -20,6 +20,7 @@ Umgebung (Werte nur aus dem Passwortmanager einfuegen, nie in Dateien):
 Schutz: Bricht ab, wenn der Bucketname kein "test" enthaelt oder im Bucket irgendein
 Objekt ausserhalb von vu-acceptance/ liegt. Schreibt nur unter vu-acceptance/.
 Ausgabe: Ergebnis je Test und b2-acceptance-<phase>.json (ohne Schluesselwerte).
+Als GitHub-Lauf: Workflow "VU B2-Abnahme" (Environment backup-test, --state-in-bucket).
 --emulator: gegen einen lokalen S3-Emulator (Codepfade pruefen; Rechte-Tests entfallen).
 """
 import argparse
@@ -70,6 +71,38 @@ def restic(env, *args, check=True):
     if check and p.returncode != 0:
         raise RuntimeError(f"restic {args[0]} rc={p.returncode}: {p.stderr.strip()[-300:]}")
     return p
+
+
+def sha_file(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+STATE_KEY = PREFIX + "state.json"
+
+
+def load_state(a, s3):
+    if a.state_in_bucket:
+        return json.loads(s3.get_object(Bucket=a.bucket, Key=STATE_KEY)["Body"].read())
+    return json.load(open(a.state))
+
+
+def save_state(a, s3, state):
+    """Zustand fuer 'later'/'cleanup'. Mit --state-in-bucket im Test-Bucket (fuer GitHub-Laeufe ohne
+    bleibende Platte); er enthaelt nur Testkennungen und das Wegwerf-Passwort der synthetischen Daten."""
+    if a.state_in_bucket:
+        import base64, hashlib
+        body = json.dumps(state, indent=1).encode()
+        s3.put_object(Bucket=a.bucket, Key=STATE_KEY, Body=body,
+                      ContentMD5=base64.b64encode(hashlib.md5(body).digest()).decode())
+        return
+    fd = os.open(a.state, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as fh:
+        json.dump(state, fh, indent=1)
 
 
 def guard(s3, bucket):
@@ -123,6 +156,12 @@ def phase_now(a, s3, state):
                    f"{code} (erwartbar ohne Pruefsumme)" if mode == "when_required" else code, na=mode == "when_required")
     probe = f"{base}probe-when_supported.bin"
     vid = state.get("probes", {}).get(probe)
+    # T-B2-12 Standard-Sperre des Buckets greift ohne Zutun (Compliance)
+    if vid:
+        h = s3.head_object(Bucket=a.bucket, Key=probe, VersionId=vid)
+        mode, until = h.get("ObjectLockMode"), h.get("ObjectLockRetainUntilDate")
+        record("T-B2-12 neue Objekte automatisch gesperrt (Compliance)", a.emulator or mode == "COMPLIANCE",
+               f"{mode} bis {until}", na=a.emulator and mode is None)
     # T-B2-3 Schreibschluessel: Version loeschen muss scheitern
     if a.emulator:
         record("T-B2-3 writer kann Versionen nicht loeschen", True, na=True)
@@ -158,6 +197,8 @@ def phase_now(a, s3, state):
         os.makedirs(data)
         for i in range(20):
             open(os.path.join(data, f"f{i}.bin"), "wb").write(os.urandom(512 * 1024))
+        marker = b"VU-KLARTEXT-MARKER-" + os.urandom(8).hex().encode()
+        open(os.path.join(data, "klartext.txt"), "wb").write(marker * 64)
         restic(env, "init")
         restic(env, "backup", data, "--tag", "acc1")
         open(os.path.join(data, "f0.bin"), "wb").write(os.urandom(512 * 1024))
@@ -166,6 +207,24 @@ def phase_now(a, s3, state):
         restic(env, "prune")
         restic(env, "check", "--read-data")
         record("T-B2-2 restic init/backup/forget/prune/check mit Schreibschluessel", True)
+        # T-B2-10 Wiederherstellung: Stand zurueckholen und Datei fuer Datei vergleichen
+        back = os.path.join(work, "restored")
+        restic(env, "restore", "latest", "--target", back)
+        src = {f: sha_file(os.path.join(data, f)) for f in sorted(os.listdir(data))}
+        root = os.path.join(back, data.lstrip("/"))
+        dst = {f: sha_file(os.path.join(root, f)) for f in sorted(os.listdir(root))} if os.path.isdir(root) else {}
+        record("T-B2-10 Wiederherstellung aus B2: alle Dateien identisch (SHA-256)", src == dst, f"{len(dst)}/{len(src)} Dateien")
+        # T-B2-11 Verschluesselung: kein Klartext in den Objekten (restic), SSE-B2 auf dem Bucket
+        plain = sse = 0
+        objs = [o for pg in s3.get_paginator("list_objects_v2").paginate(Bucket=a.bucket, Prefix=f"{base}restic/")
+                for o in pg.get("Contents", [])]
+        for o in objs:
+            r = s3.get_object(Bucket=a.bucket, Key=o["Key"])
+            plain += marker in r["Body"].read()
+            sse += r.get("ServerSideEncryption") == "AES256"
+        record("T-B2-11 kein Klartext in B2 (restic-Verschluesselung)", plain == 0 and len(objs) > 0, f"{len(objs)} Objekte, Treffer {plain}")
+        record("T-B2-11b serverseitige Verschluesselung SSE-B2", a.emulator or sse == len(objs),
+               f"{sse}/{len(objs)} Objekte mit SSE", na=a.emulator)
     except RuntimeError as err:
         record("T-B2-2 restic init/backup/forget/prune/check mit Schreibschluessel", False, str(err))
     # T-B2-7 Angriff simulieren (alles verbergen) und Point-in-Time-Wiederherstellung
@@ -256,6 +315,7 @@ def main():
     ap.add_argument("phase", choices=["now", "later", "cleanup"])
     ap.add_argument("--bucket", required=True)
     ap.add_argument("--state", default="b2-acceptance-state.json")
+    ap.add_argument("--state-in-bucket", action="store_true", help="Zustand unter vu-acceptance/state.json im Test-Bucket")
     ap.add_argument("--emulator", action="store_true")
     a = ap.parse_args()
     s3 = s3_for()
@@ -264,15 +324,11 @@ def main():
         state = {"run": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), "bucket": a.bucket,
                  "resticPassword": os.urandom(24).hex()}   # nur fuer synthetische Testdaten
         phase_now(a, s3, state)
-        fd = os.open(a.state, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(fd, "w") as fh:
-            json.dump(state, fh, indent=1)
+        save_state(a, s3, state)
     elif a.phase == "later":
-        state = json.load(open(a.state))
-        phase_later(a, s3, state)
+        phase_later(a, s3, load_state(a, s3))
     else:
-        state = json.load(open(a.state))
-        phase_cleanup(a, s3, state)
+        phase_cleanup(a, s3, load_state(a, s3))
     if a.phase != "cleanup":
         usage_report(s3, a.bucket)
     report = {"phase": a.phase, "bucket": a.bucket, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "results": results}

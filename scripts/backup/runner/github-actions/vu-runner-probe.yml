@@ -13,6 +13,7 @@ on:
       repo_url:
         description: 'Zu messendes Repository (https-URL, oeffentlich oder per Lesetoken)'
         required: true
+        default: https://github.com/dennismueller10x-sudo/vision-universe-research
 permissions:
   contents: read
 jobs:

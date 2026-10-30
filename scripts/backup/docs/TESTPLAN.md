@@ -42,6 +42,9 @@ Ein **eigener Test-Bucket** im Backup-Konto, getrennt vom späteren Produktions-
 | T-B2-7 | `vu-pit-recover.py` gegen B2 | Zustand vor dem hide wiederhergestellt | B2-Versionen-Listing über S3 |
 | T-B2-8 | Durchsatz und Dauer: 5 GB synthetisch hoch und runter vom Runner | Messwerte für die Laufzeitplanung | — |
 | T-B2-9 | Aufräumen: Test-Bucket leeren | Retention 1 Tag abwarten | — |
+| T-B2-10 | Wiederherstellung aus B2: jede Datei per SHA-256 gleich der Quelle | sofort | — |
+| T-B2-11 | kein Klartext in den Objekten (restic), SSE-B2 auf jedem Objekt | sofort | — |
+| T-B2-12 | neue Objekte ohne Zutun gesperrt (Compliance) | sofort | — |
 
 Erst wenn T-B2-1 bis T-B2-7 grün sind, wird der Produktions-Bucket angelegt.
 
