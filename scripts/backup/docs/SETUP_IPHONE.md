@@ -52,7 +52,7 @@ Jede Ausgabe (keyID und applicationKey) direkt in den Passwortmanager übernehme
 1. **VU B2-Abnahme** → `now`. Erwartet: grün.
    - geprüft werden Rechte, Löschverbot, Object Lock, Legal Hold, Verschlüsselung, Integrität und Wiederherstellung
    - schick mir die Zusammenfassung
-2. **VU Runner-Probe** (Standardwert lassen). Prüft Platz und Durchsatz. Schick mir das Ergebnis.
+2. Optional: **VU Runner-Probe** (Standardwert lassen). Sie misst jetzt zusätzlich den Durchsatz zu B2. Platz und Klonzeit sind bereits gemessen.
 3. Frühestens **2 Tage** später: **VU B2-Abnahme** → `later` (Lifecycle), danach → `cleanup`. Dann in Backblaze den Schlüssel `vu-test-deleter` löschen.
 
 Ab hier nichts Echtes, bevor ich A4.1 als grün bestätigt habe.
