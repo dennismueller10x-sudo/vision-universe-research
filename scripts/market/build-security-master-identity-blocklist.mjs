@@ -24,7 +24,7 @@ import { compareMasters, identityFindings, baselineIndex } from "./security-mast
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BLOCKLIST_SCHEMA = "security-master-identity-blocklist-1.0.0";
-export const BLOCKLIST_GENERATOR = "security-master-identity-blocklist-builder-1.0.0";
+export const BLOCKLIST_GENERATOR = "security-master-identity-blocklist-builder-1.1.0";
 const sha = (b) => createHash("sha256").update(b).digest("hex");
 
 /** Klasse eines canonical_id-Wechsels (canonical_id = provider:exchange:ticker:startDate, mehrere Zeilen mit „|“). */
@@ -33,9 +33,12 @@ export function canonicalClass(from, to) {
   if (t.length > f.length) return "NEW_LISTING_SAME_TICKER";
   if (t.length < f.length) return "LISTING_DROPPED";
   const pf = f.map((s) => s.split(":")), pt = t.map((s) => s.split(":"));
-  if (pt.some((p) => /^OTC/.test(p[1])) && !pf.some((p) => /^OTC/.test(p[1]))) return "MOVED_TO_OTC";
+  // Anbieter oder Ticker anders: keine bekannte Klasse (fail closed); Startdatum vor OTC (Review #1159)
+  if (pf.some((p, i) => p[0] !== pt[i][0] || p[2] !== pt[i][2])) return "UNCLASSIFIED";
   const ex = pf.some((p, i) => p[1] !== pt[i][1]), st = pf.some((p, i) => p[3] !== pt[i][3]);
-  return ex && st ? "EXCHANGE_AND_START_DATE" : ex ? "EXCHANGE_LABEL" : st ? "START_DATE_REVISION" : "REORDERED";
+  if (st) return ex ? "EXCHANGE_AND_START_DATE" : "START_DATE_REVISION";
+  if (pt.some((p) => /^OTC/.test(p[1])) && !pf.some((p) => /^OTC/.test(p[1]))) return "MOVED_TO_OTC";
+  return ex ? "EXCHANGE_LABEL" : "UNCLASSIFIED";
 }
 
 /**
@@ -52,13 +55,17 @@ export function buildBlocklist({ prevMaster, nextMaster, seriesEnd, prevMasterSh
     else if (s !== null && (end === null || s > end)) add(d.securityId, "SERIES_CONTINUES_AFTER_PROVIDER_END");
   }
   for (const x of cmp.tickerChanges) add(x.securityId, "TICKER_CHANGED");
+  // inaktiv → aktiv: typisches Zeichen einer Wiederverwendung (Review #1159)
+  for (const x of cmp.reactivations) add(x.securityId, "REACTIVATED");
   for (const x of cmp.canonicalIdChanges) {
     const c = canonicalClass(x.from, x.to);
     if (c === "NEW_LISTING_SAME_TICKER") add(x.securityId, "TICKER_REUSE_NEW_LISTING");
     else if (c === "LISTING_DROPPED") add(x.securityId, "LISTING_DROPPED");
     else if (c === "START_DATE_REVISION" || c === "EXCHANGE_AND_START_DATE") add(x.securityId, "START_DATE_CHANGED");
+    else if (c === "UNCLASSIFIED") add(x.securityId, "CANONICAL_ID_CHANGED_UNCLASSIFIED");
   }
-  for (const x of cmp.instrumentTypeChanges) if (/ETF/.test(x.to) && !/ETF/.test(x.from)) add(x.securityId, "TICKER_REUSE_ETF");
+  // jeder Typwechsel: ETF unter derselben ID ist Wiederverwendung, alle übrigen sind keine belastbare Fortsetzung
+  for (const x of cmp.instrumentTypeChanges) add(x.securityId, /ETF/.test(x.to) && !/ETF/.test(x.from) ? "TICKER_REUSE_ETF" : "INSTRUMENT_TYPE_CHANGED");
   const known = new Set(identityFindings(prevMaster).duplicateCanonicalIds);
   for (const k of identityFindings(nextMaster).duplicateCanonicalIds) if (!known.has(k)) for (const r of nextMaster.rows) if (r.canonical_id === k) add(r.baseline_security_id, "PROVIDER_DUPLICATE_ROW");
   return {
@@ -69,6 +76,16 @@ export function buildBlocklist({ prevMaster, nextMaster, seriesEnd, prevMasterSh
   };
 }
 
+/** Letzter Tag der eigenen Tagesreihe je securityId: null = keine Reihe, "UNREADABLE" = Reihe ohne lesbares Ende. */
+export function seriesEndReader(seriesDir) {
+  if (!existsSync(join(seriesDir, "index.json"))) throw new Error(`SERIES_DIR_MISSING:${seriesDir}`);
+  return (id) => {
+    const p = join(seriesDir, `${id}.json`);
+    if (!existsSync(p)) return null;
+    try { const s = JSON.parse(readFileSync(p, "utf8")); return typeof s.to === "string" && /^\d{4}-\d{2}-\d{2}/.test(s.to) ? s.to.slice(0, 10) : "UNREADABLE"; } catch { return "UNREADABLE"; }
+  };
+}
+
 function main() {
   const argv = process.argv.slice(2), arg = (k) => { const i = argv.indexOf(k); const v = i >= 0 ? argv[i + 1] : null; return v && !v.startsWith("--") ? v : null; };
   const need = ["--prev", "--next", "--out"].filter((k) => !arg(k));
@@ -76,11 +93,7 @@ function main() {
   const seriesDir = arg("--series-dir") || join(ROOT, "quant/data/market/discover-series");
   // ohne Reihenverzeichnis wäre jedes Delisting „ohne Reihe“ und keines gesperrt (fail closed)
   if (!existsSync(join(seriesDir, "index.json"))) { console.error(`[identity-blocklist] Reihenverzeichnis ohne index.json: ${seriesDir}`); process.exit(2); }
-  const end = (id) => {
-    const p = join(seriesDir, `${id}.json`);
-    if (!existsSync(p)) return null;
-    try { const s = JSON.parse(readFileSync(p, "utf8")); return typeof s.to === "string" && /^\d{4}-\d{2}-\d{2}/.test(s.to) ? s.to.slice(0, 10) : "UNREADABLE"; } catch { return "UNREADABLE"; }
-  };
+  const end = seriesEndReader(seriesDir);
   const pb = readFileSync(join(arg("--prev"), "us-security-master.json")), nb = readFileSync(join(arg("--next"), "us-security-master.json"));
   const out = buildBlocklist({ prevMaster: JSON.parse(pb), nextMaster: JSON.parse(nb), seriesEnd: end, prevMasterSha256: sha(pb), nextMasterSha256: sha(nb), measuredOn: arg("--measured-on") });
   writeFileSync(arg("--out"), JSON.stringify(out, null, 1) + "\n");

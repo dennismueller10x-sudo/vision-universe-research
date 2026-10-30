@@ -23,9 +23,13 @@ test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V13c ist bytegleich und vollst�
  for(const f of ['BACKTEST_V10_FINAL.md','ALPHA_DISCOVERY_V11.md','DATA_QUALITY_V12_FINAL.md','DATA_QUALITY_V13_FINAL.md','HANDOVER_V13.md'])assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/'+f),f);
  // jede Datei in den eingefrorenen Generationen ist im Manifest; neue Generationen (neue Verzeichnisse, neue Berichte) bleiben möglich
  const gens=[...new Set(Object.keys(m.frozen.files).filter(p=>/^docs\/quant-recovery\/[^/]+\//.test(p)).map(p=>p.split('/').slice(0,3).join('/')))];
- const all=[];const walk=d=>{for(const e of fs.readdirSync(join(root,d),{withFileTypes:true}))e.isDirectory()?(F.NOT_FROZEN.has(d+'/'+e.name)||walk(d+'/'+e.name)):all.push(d+'/'+e.name);};for(const g of gens)walk(g);
- // ausgenommen sind nur die Betriebsunterlagen des Archivs, nie eine Ergebnisgeneration
- assert.deepEqual([...F.NOT_FROZEN],['docs/quant-recovery/v13/archive']);
+ const all=[];const walk=d=>{for(const e of fs.readdirSync(join(root,d),{withFileTypes:true}))e.isDirectory()?walk(d+'/'+e.name):F.NOT_FROZEN.has(d+'/'+e.name)||all.push(d+'/'+e.name);};for(const g of gens)walk(g);
+ // ausgenommen ist je Datei nur die fortgeschriebene Archiv-Anleitung; Archiv-Manifeste und Schlüssel bleiben eingefroren (Review #1159)
+ assert.deepEqual([...F.NOT_FROZEN.keys()],['docs/quant-recovery/v13/archive/README.md']);
+ for(const f of ['archive-pub.pem','manifest-1.0.0.json','manifest-1.1.0.json','manifest-1.2.0.json'])assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/v13/archive/'+f),f);
+ // jedes Dokument direkt unter docs/quant-recovery/ ist eingefroren, außer den laufenden Sitzungsübergaben
+ const top=fs.readdirSync(join(root,'docs/quant-recovery'),{withFileTypes:true}).filter(e=>e.isFile()).map(e=>'docs/quant-recovery/'+e.name);
+ assert.deepEqual(top.filter(p=>!Object.hasOwn(m.frozen.files,p)&&!F.NOT_FROZEN_DOC.some(([re])=>re.test(p))),[]);
  for(const d of ['v13/delisted','v13/studies','v13/largecap','v13/provenance'])assert.ok(Object.keys(m.frozen.files).some(p=>p.startsWith('docs/quant-recovery/'+d+'/')),d);
  assert.deepEqual(all.filter(p=>!Object.hasOwn(m.frozen.files,p)).sort(),[]);
 });
@@ -107,7 +111,7 @@ test('SMF-5 · nach dem Wechsel: neue Generation in neuer Wurzel, alte bytegleic
 
 test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, der Vergleich verlangt genau das, Formfehler brechen ab',()=>{
  const STOP='ref_MSFT',bl=join(folder,'identity-blocklist.json'),none=globalThis.__smfNone;
- const write=(o)=>fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,prevMasterSha256:none.prevMasterSha256,nextMasterSha256:none.nextMasterSha256,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}],...o}));
+ const write=(o)=>fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,generator:F.BLOCKLIST_GENERATOR,prevMasterSha256:none.prevMasterSha256,nextMasterSha256:none.nextMasterSha256,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}],...o}));
  write({});const list=F.loadBlocklist(bl);
  const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bl',blocklist:list});
  assert.deepEqual(lineage.identityBlocklist.excludedFromScope,[STOP]);assert.equal(lineage.identityBlocklist.count,1);assert.equal(lineage.identityBlocklist.sha256,list.sha256);
@@ -128,7 +132,27 @@ test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, 
  fs.rmSync(join(newRoot+'-bl',gen,'listings',STOP),{recursive:true});fs.cpSync(join(newRoot+'-bl',gen,'listings','ref_XOM'),join(newRoot+'-bl',gen,'listings','ref_ZZZZ'),{recursive:true});
  const extra=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:[...approved,'ref_ZZZZ'],blocklist:list});
  assert.equal(extra.state,'UNEXPECTED_CHANGES');assert.equal(extra.unexpected.find(x=>x.securityId==='ref_ZZZZ').class,'NEW_IN_NEW');
- for(const bad of [{schema:'x'},{entries:[]},{entries:[{securityId:STOP,reason:'x'},{securityId:STOP,reason:'y'}]},{entries:[{securityId:'',reason:'x'}]},{prevMasterSha256:'kurz'},{nextMasterSha256:undefined}]){
+ for(const bad of [{schema:'x'},{entries:[{securityId:STOP,reason:'x'},{securityId:STOP,reason:'y'}]},{entries:[{securityId:'',reason:'x'}]},{prevMasterSha256:'kurz'},{nextMasterSha256:undefined},{generator:'von Hand'},{entries:[{securityId:STOP,reason:''}]}]){
   write(bad);assert.throws(()=>F.loadBlocklist(bl),/BLOCKLIST_INVALID/);
  }
+});
+
+test('SMF-7 · Sperrliste nur, wenn sie sich aus den tatsächlichen Stämmen nachrechnen lässt (keine handgeschriebene Liste)',async()=>{
+ const B=await import('../../scripts/market/build-security-master-identity-blocklist.mjs');
+ const prevFile=join(folder,'prev-master.json'),nextFile=join(fixture,MASTER),out=join(folder,'repro.json');
+ fs.copyFileSync(join(root,MASTER),prevFile);
+ const pb=fs.readFileSync(prevFile),nb=fs.readFileSync(nextFile);
+ const exp=B.buildBlocklist({prevMaster:JSON.parse(pb),nextMaster:JSON.parse(nb),seriesEnd:B.seriesEndReader(join(root,'quant/data/market/discover-series')),prevMasterSha256:sha(pb),nextMasterSha256:sha(nb)});
+ assert.equal(exp.generator,F.BLOCKLIST_GENERATOR);assert.ok(exp.entries.some(e=>e.securityId===LOST),'Typwechsel ACGLO gesperrt');
+ fs.writeFileSync(out,JSON.stringify(exp));
+ const args={prevMasterFile:prevFile,nextMasterFile:nextFile,seriesDir:join(root,'quant/data/market/discover-series')};
+ await F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args});
+ // eine ID weniger (von Hand entfernt) oder eine erfundene dazu: nicht nachrechenbar
+ fs.writeFileSync(out,JSON.stringify({...exp,entries:exp.entries.slice(1)}));
+ await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args}),/BLOCKLIST_NOT_REPRODUCIBLE/);
+ fs.writeFileSync(out,JSON.stringify({...exp,entries:[...exp.entries,{securityId:'ref_ZZZZ',reason:'X'}]}));
+ await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args}),/BLOCKLIST_NOT_REPRODUCIBLE/);
+ fs.writeFileSync(out,JSON.stringify(exp));
+ await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args,prevMasterFile:nextFile}),/BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER/);
+ await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args,nextMasterFile:prevFile}),/BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER|BLOCKLIST_NOT_FROM_COMMITTED_MASTER/);
 });

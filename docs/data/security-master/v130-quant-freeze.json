@@ -1,7 +1,7 @@
 {
  "schema": "quant-v130-repository-freeze-1.0.0",
  "purpose": "Historische Quant-Ergebnisse vor dem Klassifiziererwechsel 1.1.0 -> 1.3.0 unveränderlich (Owner P2, 28.10.2026)",
- "sourceCommit": "8be4f8799349b716b32a0b6143183c53a301f9d6",
+ "sourceCommit": "b8efea83cd821d5f90bf1678e50bb99af627261a",
  "rule": "Jede gelistete Datei bleibt bytegleich und vorhanden. Neue Dateien sind erlaubt (neue Generation = neues Verzeichnis). Nie von Hand ändern; Neuaufbau nur mit diesem Skript.",
  "preSwitchMaster": {
   "path": "quant/data/market/security-master/us-security-master.json",
@@ -29,9 +29,19 @@
    "docs/quant-recovery/v13b",
    "docs/quant-recovery/v13c"
   ],
-  "docs": "^docs\\/quant-recovery\\/(BACKTEST_V(51|6|7|8|9|10)(_[A-Z_]+)?|ALPHA_DISCOVERY_V11|DATA_QUALITY_V1[23]_[A-Z]+|HANDOVER_V13)\\.md$",
-  "count": 546,
-  "filesSha256": "3361172aab679b38d2960b42803b54480847a5388d9cb4bb72eef6fdc3f425af",
+  "docs": "alle Dateien direkt unter docs/quant-recovery/ außer NOT_FROZEN_DOC",
+  "notFrozen": [
+   {
+    "path": "docs/quant-recovery/v13/archive/README.md",
+    "reason": "Anleitung des verschlüsselten Archivs, wird mit jedem Archivstand fortgeschrieben"
+   },
+   {
+    "pattern": "^docs\\/quant-recovery\\/SESSION_HANDOVER_\\d{4}-\\d{2}-\\d{2}\\.md$",
+    "reason": "laufende Sitzungsübergabe, kein Ergebnis"
+   }
+  ],
+  "count": 550,
+  "filesSha256": "6cabb00cf2e02c0b4ce818d69fe2536c7cebb21326cc65c2cba8e5f691679842",
   "files": {
    "docs/quant-recovery/ALPHA_DISCOVERY_V11.md": "edbadef1406968a93b54ec2b05dcf2e3fa1dadc2c2414d84e11782d299b5579d",
    "docs/quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md": "b59ac5ca06e151b92a32723e3562814b56df09ac4eb6dd01fd427a8987f3e38e",
@@ -309,6 +319,10 @@
    "docs/quant-recovery/v12/spxpop/validation-1.0.1.json": "c40d6e62226c90b0007b34b15147180799f9f6aa7839d1e6d5c6b81d6c16f1d6",
    "docs/quant-recovery/v12/spxpop/validation-1.1.0.json": "6b258c145859888893a3b52e71d6d40f0ca91a330ee3724e503a87e8881f979e",
    "docs/quant-recovery/v12/spxpop/validation-1.1.1.json": "2b7e1d75ecf572311cecb1f8b66595a8bfe6bcc036fac27edae83527a9d9592f",
+   "docs/quant-recovery/v13/archive/archive-pub.pem": "bdc5096ac86407f8fbe3832928beadfa9aef090e410f11ebddf64ac9d9a6cc13",
+   "docs/quant-recovery/v13/archive/manifest-1.0.0.json": "3a5923cefc916479915c8d0a851eb6b81e95aef4558fed6b0eee44ddd622f4d7",
+   "docs/quant-recovery/v13/archive/manifest-1.1.0.json": "bf1c7c54247b97ceaae22b9359318354e0f85e4b18d7ec8c9199eaee8a722a19",
+   "docs/quant-recovery/v13/archive/manifest-1.2.0.json": "23efb9d27ad968a0f67b491e07247c33c65717dccc7bbf3ed05f58c3f9756ec3",
    "docs/quant-recovery/v13/delisted/coverage-1.0.0.json": "f3093002b89766b8d276e8a8d2fc32205dd7638be571329f098661d44d7d88fa",
    "docs/quant-recovery/v13/delisted/protocol-1.0.0.json": "4efcba25f331c60a88f1acd0e995cbe4df334c2c4080af14b5c03cb398f728a7",
    "docs/quant-recovery/v13/delisted/protocol-1.0.0.sha256": "39278abbaf9e28bc1c4bafbccd9a2c2611ad1a167c148b77d5f30b3828af9ee7",

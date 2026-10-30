@@ -1,6 +1,6 @@
 {
  "schema": "security-master-identity-blocklist-1.0.0",
- "generator": "security-master-identity-blocklist-builder-1.0.0",
+ "generator": "security-master-identity-blocklist-builder-1.1.0",
  "purpose": "Backtest-Identitätssperre: diese securityIds gehen in keine neue Backtest-Generation (backtest-generation-freeze.cjs --blocklist)",
  "measuredOn": "2026-10-30",
  "prevMasterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
@@ -15,8 +15,28 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_ACGLN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ACGLO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_ACTS",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_ADAMM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ADAMN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ADAMO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_ADIL",
@@ -25,6 +45,26 @@
   {
    "securityId": "ref_AEC",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_AGNCM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_AGNCN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_AGNCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_AGNCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_AIRTP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_ALPS",
@@ -47,8 +87,32 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_ATLCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BANFP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_BCAR",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_BHFAM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BHFAN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BHFAO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BHFAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_BLUW",
@@ -59,24 +123,100 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_BPOPM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BPYPM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BPYPN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BPYPO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BPYPP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_BREW",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_BRKRP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BUSEP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_BWBBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_CAM",
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_CCLDO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CCLDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CCNEP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_CCXI",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_CDZIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_CHOW",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_CHSCM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CHSCN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CHSCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CHSCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CHTRP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_CNOBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_DBRG_P_H",
    "reason": "LISTING_DROPPED"
+  },
+  {
+   "securityId": "ref_DCOMP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_DDC",
@@ -91,6 +231,10 @@
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
   },
   {
+   "securityId": "ref_EFSCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_EFTY",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
@@ -103,6 +247,26 @@
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
   },
   {
+   "securityId": "ref_FBIOP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FCNCN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FCNCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FCNCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FGBIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_FGNX",
    "reason": "START_DATE_CHANGED"
   },
@@ -111,8 +275,52 @@
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_FITBM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FITBO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FITBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FRMEP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FTAIM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FTAIN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FTAIO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_FTAIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_FTPA",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_FULTP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_GECCM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_GECCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_GIW",
@@ -121,6 +329,34 @@
   {
    "securityId": "ref_GNMX",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_GOODN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_GOODO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_HBANM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_HBANP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_HOVNP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_HTLFP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_IMPPP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_INCR",
@@ -139,12 +375,36 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_LANDM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_LANDO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_LANDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_LBRDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_LEGO",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
    "securityId": "ref_LESL",
    "reason": "START_DATE_CHANGED"
+  },
+  {
+   "securityId": "ref_LFMDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_LILAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_LMNX",
@@ -159,8 +419,44 @@
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_MBINM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MBINN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MBINO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MBNKO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MBNKP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MCHPP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_MDCX",
    "reason": "START_DATE_CHANGED"
+  },
+  {
+   "securityId": "ref_MDRRP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MINDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_MNSBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_MRLN",
@@ -171,12 +467,40 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_MSBIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_NAVI",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_NEEPN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_NEWTO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_NEWTP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_NHPAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_NHPBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_NMBL",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_NTRSO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_NVNI",
@@ -191,12 +515,56 @@
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
   },
   {
+   "securityId": "ref_OCCIM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OCCIN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OCFCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OFSSO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_OGC",
    "reason": "START_DATE_CHANGED"
   },
   {
    "securityId": "ref_OKE",
    "reason": "PROVIDER_DUPLICATE_ROW"
+  },
+  {
+   "securityId": "ref_ONBPO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ONBPP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OXLCM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OXLCN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OXLCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OXLCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_OZKAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_PCLN",
@@ -207,6 +575,10 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_POWWP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_PS",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
@@ -215,12 +587,40 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_PXSAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_QNCX",
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_QRTEP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_RCAT",
    "reason": "START_DATE_CHANGED"
+  },
+  {
+   "securityId": "ref_REGCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_REGCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_RILYM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_RILYP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_RITR",
@@ -229,6 +629,22 @@
   {
    "securityId": "ref_SBXD",
    "reason": "START_DATE_CHANGED"
+  },
+  {
+   "securityId": "ref_SIGIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_SLMBP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_SLNHP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_SMCIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_SPKL",
@@ -243,8 +659,20 @@
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_SQFTP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_SUNS",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_TCBIO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_TECTP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_TETE",
@@ -255,12 +683,24 @@
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_TFINP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_TRIL",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
   },
   {
    "securityId": "ref_TRUE",
    "reason": "START_DATE_CHANGED"
+  },
+  {
+   "securityId": "ref_UMBFO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_UMBFP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_USX",
@@ -271,6 +711,22 @@
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
   {
+   "securityId": "ref_VIASP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_VLYPN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_VLYPO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_VLYPP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_VOLT",
    "reason": "TICKER_REUSE_NEW_LISTING"
   },
@@ -279,12 +735,52 @@
    "reason": "START_DATE_CHANGED"
   },
   {
+   "securityId": "ref_WAFDP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WHLRP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_WR",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
   },
   {
+   "securityId": "ref_WSBCO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WSBCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WTFCM",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WTFCN",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WTFCP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_WVVIP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
    "securityId": "ref_WX",
    "reason": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+  },
+  {
+   "securityId": "ref_XOMAO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_XOMAP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   },
   {
    "securityId": "ref_XRPN",
@@ -293,6 +789,58 @@
   {
    "securityId": "ref_XRPNW",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_ZAZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZBZX",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZBZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZCZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZIONO",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZIONP",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZJZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZTST",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZVV",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZVZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZWZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZXYZ_A",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
+  },
+  {
+   "securityId": "ref_ZXZZT",
+   "reason": "INSTRUMENT_TYPE_CHANGED"
   }
  ]
 }

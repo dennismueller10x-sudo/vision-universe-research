@@ -18,11 +18,11 @@ Owner-Entscheidung vom 30.10.2026:
 | Teil | Inhalt |
 |---|---|
 | `scripts/market/build-security-master-identity-blocklist.mjs` | Liest alten und neuen Stamm sowie die eigene Tagesreihe und schreibt `security-master-identity-blocklist-1.0.0`. Ohne Reihenverzeichnis bricht es ab |
-| Gründe | `SERIES_CONTINUES_AFTER_PROVIDER_END`, `SERIES_UNREADABLE`, `TICKER_CHANGED`, `TICKER_REUSE_NEW_LISTING`, `LISTING_DROPPED`, `START_DATE_CHANGED`, `TICKER_REUSE_ETF`, `PROVIDER_DUPLICATE_ROW` |
-| nicht gesperrt | reine Börsenumbenennung bei gleichem Startdatum, z. B. AMEX → NYSE MKT; Wechsel zu OTC (macht die ID ohnehin nicht backtestfähig); Delisting, dessen eigene Reihe mit dem Anbieter endet |
-| `backtest-generation-freeze.cjs build-post-switch --blocklist` | **Pflicht** (`BLOCKLIST_REQUIRED`). Die Liste muss zum alten Stamm der eingefrorenen Generation und zum tatsächlich eingesetzten neuen Stamm gehören. Gesperrte IDs gehen nicht in die neue Generation; `lineage.json` nennt sie |
+| Gründe | `SERIES_CONTINUES_AFTER_PROVIDER_END`, `SERIES_UNREADABLE`, `TICKER_CHANGED`, `REACTIVATED`, `TICKER_REUSE_NEW_LISTING`, `LISTING_DROPPED`, `START_DATE_CHANGED` (wird vor OTC geprüft), `CANONICAL_ID_CHANGED_UNCLASSIFIED`, `TICKER_REUSE_ETF`, `INSTRUMENT_TYPE_CHANGED` (jeder Typwechsel), `PROVIDER_DUPLICATE_ROW` |
+| nicht gesperrt | nur drei Fälle: reine Börsenumbenennung bei gleichem Startdatum (z. B. AMEX → NYSE MKT); Wechsel zu OTC bei gleichem Startdatum (macht die ID ohnehin nicht backtestfähig); Delisting, dessen eigene Reihe mit dem Anbieter endet. Alles andere ist fail closed |
+| `backtest-generation-freeze.cjs build-post-switch --blocklist --prev-master` | **Pflicht** (`BLOCKLIST_REQUIRED`). Die Liste muss den Erzeuger `…-builder-1.1.0` tragen und sich aus dem alten Stamm und dem committeten neuen Stamm **genau nachrechnen** lassen; der alte Stamm ist dabei hashgeprüft gegen die eingefrorene Generation. Sonst bricht der Lauf ab (`BLOCKLIST_NOT_REPRODUCIBLE`); eine handgeschriebene Liste gilt nicht. Gesperrte IDs gehen nicht in die neue Generation, `lineage.json` nennt sie |
 | `compare --blocklist` | Pflicht, und zwar dieselbe Liste wie beim Bau. Eine gesperrte ID muss fehlen; ist sie gebaut, gilt `BLOCKLISTED_BUT_PRESENT`. Fehlt eine ID ohne Sperre, oder taucht eine nur in der neuen Generation auf (`NEW_IN_NEW`), ist das Ergebnis `UNEXPECTED_CHANGES`. Eine Freigabe ersetzt die Sperre nicht |
-| `compare --approved` | liest Freigabelisten 1.0.0 und 1.1.0 (#1143), mehrfach zulässig |
+| `compare --approved` | liest nur Freigabelisten mit Schema 1.0.0 oder 1.1.0 (#1143), mehrfach zulässig. Jede muss an denselben alten Stamm gebunden sein wie die Sperrliste. Die neue Generation muss Nachfolger der eingefrorenen sein (`OUTPUT_NOT_SUCCESSOR_OF_FROZEN`) |
 
 Die Sperre wirkt nur auf Backtest-Generationen. Stamm, Discover und Supertrader-Live-Daten bleiben unberührt.
 
@@ -32,14 +32,15 @@ Erzeuger wie im Workflow, nur in ein Arbeitsverzeichnis, ohne Commit. Quellen si
 
 | Grund | IDs |
 |---|---:|
+| `INSTRUMENT_TYPE_CHANGED` (darunter die 138 Typwechsel des Klassifiziererwechsels, die die ID ohnehin ungeeignet machen) | 137 |
 | `TICKER_REUSE_NEW_LISTING` | 34 |
 | `START_DATE_CHANGED` | 22 |
 | `SERIES_CONTINUES_AFTER_PROVIDER_END` | 14 |
 | `LISTING_DROPPED` (`ref_DBRG_P_H`) | 1 |
 | `PROVIDER_DUPLICATE_ROW` (`ref_OKE`) | 1 |
-| **gesamt** | **72** |
+| **gesamt** | **209** (je ID der erste zutreffende Grund) |
 
-`ref_CAM` (EQUITY_COMMON → ETF) steht unter `START_DATE_CHANGED`, weil sich auch das Startdatum geändert hat. Gegen den Stamm des Probelaufs ergibt sich:
+`ref_CAM` (EQUITY_COMMON → ETF) steht unter `START_DATE_CHANGED`, weil sich auch das Startdatum geändert hat. Die 137 Typwechsel betreffen IDs, die nach dem Wechsel ohnehin nicht backtestfähig sind; die Sperre sorgt nur dafür, dass sie im Vergleich als gesperrt fehlen und nicht als freigegebene Änderung durchgehen. Gegen den Stamm des Probelaufs ergibt sich:
 - backtestfähig 6.397 → 6.163 im Stamm, **6.150 mit Sperre**;
 - 0 neu backtestfähig;
 - keine der 35 Tickerwiederverwendungen und nicht ONEOK backtestfähig;
@@ -49,10 +50,26 @@ ONEOK bleibt im Gate blockiert, bis ein eigener Erzeuger-PR identische `canonica
 
 ## Freeze V10–V13c
 
-- `repo-manifest` friert alles unter `docs/quant-recovery/` ein: 546 Dateien, V5.1–V13c, `filesSha256` `3361172a…`, Quelle `main` `8be4f879`.
+- `repo-manifest` friert alles unter `docs/quant-recovery/` ein: 550 Dateien, V5.1–V13c samt Archiv-Manifesten, `filesSha256` `6cabb00c…`, Quelle `main` `b8efea83`. `verify-repo` INTACT.
 - `verify-repo` meldet INTACT.
 - Ausgenommen sind nur die Betriebsunterlagen `docs/quant-recovery/v13/archive/` (Anleitung, öffentlicher Schlüssel, Archiv-Manifeste, die ihre Teile selbst per SHA-256 binden). #1140 hatte die README dort fortgeschrieben.
+- Korrektur nach dem Review: **550 Dateien**, `filesSha256` `6cabb00c…`. Ausgenommen ist nur noch eine einzelne Datei, `v13/archive/README.md`; die Archiv-Manifeste 1.0.0 bis 1.2.0 und `archive-pub.pem` sind eingefroren. Jedes Dokument direkt unter `docs/quant-recovery/` ist eingefroren, außer den laufenden Sitzungsübergaben (`SESSION_HANDOVER_<Datum>.md`). Ausnahmen und Gründe stehen im Manifest (`frozen.notFrozen`).
 - SMF-1 verlangt Vollständigkeit in jeder eingefrorenen Generation. Neue Generationen in neuen Verzeichnissen bleiben möglich.
+
+**Abgleich mit den früheren Manifesten:**
+
+| Manifest | Dateien | Verhältnis zu 550 (dieser PR) |
+|---|---:|---|
+| #1100, Stand 29.10. (`5e4c4424…`, V5.1–V9) | 241 | alle 241 enthalten, **0 geänderte Hashes** |
+| #1136, Stand 30.10. vormittags (`12bdbbe1…`) | 550 | 549 enthalten; ausgenommen ist nur die fortgeschriebene `v13/archive/README.md`. Neu ist `manifest-1.2.0.json` |
+| dieser PR (`6cabb00c…`) | 550 | – |
+
+Neu gegenüber den 241 Dateien: V10 (79 und 7 Berichte), V11 (32 und 1), V12 (119 und 2), V13 (27 und 2), V13b (25), V13c (11).
+
+**Warum die eine Ausnahme den Schutz nicht aufhebt:**
+- Die README enthält keine Ergebnisse und keine Hashes.
+- Die Hash-Anker des privaten Archivs (`manifest-<version>.json` mit `cipherSha256`, `plainSha256` und `wrappedKeyB64`) und der öffentliche Schlüssel sind eingefroren. Eine Änderung macht SMF-1 rot; eine neue Archivversion ist eine neue Datei.
+- SMF-1 prüft ausdrücklich, dass `v13/delisted`, `v13/studies`, `v13/largecap`, `v13/provenance` und die Archiv-Manifeste eingefroren sind.
 
 ## Alarm
 
@@ -67,7 +84,7 @@ node scripts/market/build-security-master-identity-blocklist.mjs --prev W/prev -
   --measured-on <T> --out W/identity-blocklist.json
 # 2. neue Generation, nie in der eingefrorenen Wurzel
 node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-1.1.0> --manifest <freeze.json> \
-  --output <privat-1.3.0> --blocklist W/identity-blocklist.json
+  --output <privat-1.3.0> --blocklist W/identity-blocklist.json --prev-master W/prev/us-security-master.json
 # 3. Vergleich: nur freigegebene Änderungen, gesperrte IDs fehlen
 node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-1.1.0> --output <privat-1.3.0> \
   --approved docs/data/security-master/v130-approved-changes-1.1.0.json --blocklist W/identity-blocklist.json --out W/compare.json
@@ -80,5 +97,5 @@ Den Leser auf die neue Generation umzustellen ist ein eigener Schritt mit eigene
 | Test | prüft |
 |---|---|
 | SMB-1…4 | Klassen, fail closed, Bindung an beide Stämme, Nachweis des Probelaufs |
-| SMF-1…6 | Freeze und Sperre: Pflicht, Bindung, `BLOCKLISTED_BUT_PRESENT`, `NEW_IN_NEW`, Formfehler |
+| SMF-1…7 | Freeze und Sperre: Pflicht, Bindung, `BLOCKLISTED_BUT_PRESENT`, `NEW_IN_NEW`, Formfehler; SMF-7: nur nachrechenbare Listen |
 | SMA-1 | Alarm |
