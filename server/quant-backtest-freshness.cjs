@@ -2,6 +2,8 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path');
 const A=require('../quant/engines/weekly-real-adapter.cjs'),C=require('../quant/api/real-backtest-contract.js');
+const H=require('../quant/engines/security-master-content-hash.js');
+const MASTER='quant/data/market/security-master/us-security-master.json';
 function create({root,directory,clock=Date.now}){
  const cache=new Map();let snapshot=null;
  async function hash(relative){
@@ -9,12 +11,23 @@ function create({root,directory,clock=Date.now}){
   const key=[stat.dev,stat.ino,stat.size,stat.mtimeMs,stat.ctimeMs].join(':');const hit=cache.get(relative);if(hit?.key===key)return hit.hash;
   const h=A.hash(await fs.readFile(file,'utf8'));if(cache.size>=128)cache.delete(cache.keys().next().value);cache.set(relative,{key,hash:h});return h;
  }
+ // Bytes-Hash weicht ab: Ist der Inhalt laut Fingerabdruck im Snapshot gleich? Nur mit genau diesem Algorithmus,
+ // nur aus denselben Bytes, die gerade gelesen wurden; jeder Fehler oder fehlende Wert gilt als geändert (heutige Byte-Regel).
+ const contentCache=new Map();
+ async function masterContentUnchanged(input){
+  try{
+   if(input.masterContentAlgorithm!==H.ALGORITHM||!/^[a-f0-9]{64}$/.test(input.masterContentHash||''))return false;
+   const bytes=await fs.readFile(path.join(root,MASTER),'utf8'),bytesHash=A.hash(bytes);if(bytesHash===input.masterHash)return false;
+   if(!contentCache.has(bytesHash)){if(contentCache.size>=4)contentCache.delete(contentCache.keys().next().value);let h=null;try{h=H.contentHash(JSON.parse(bytes));}catch{}contentCache.set(bytesHash,h);}
+   return contentCache.get(bytesHash)===input.masterContentHash;
+  }catch{return false;}
+ }
  return async result=>{
   const gen=result.generation,id=result.identity?.sourceSecurityId;if(!/^[a-f0-9]{64}$/.test(gen||'')||!C.safeId(id))throw Error('INVALID_FRESHNESS_IDENTITY');
   if(snapshot?.generation!==gen){const file=path.join(directory,gen,'snapshot.json'),stat=await fs.stat(file);if(stat.size>2097152)throw Error('SNAPSHOT_TOO_LARGE');const s=JSON.parse(await fs.readFile(file));if(s.generation!==gen||A.hash(s.input)!==gen)throw Error('INVALID_SNAPSHOT');snapshot=s;}
   const input=snapshot.input,changed=new Set(),source=input.sources.find(s=>s.securityId===id);if(!source)throw Error('SNAPSHOT_SOURCE_MISSING');
   if(await hash('quant/data/market/discover-series-long/'+id+'.json')!==source.sourceHash)changed.add('PRICE_SERIES');
-  if(await hash('quant/data/market/security-master/us-security-master.json')!==input.masterHash)changed.add('SECURITY_MASTER');
+  if(await hash(MASTER)!==input.masterHash)changed.add(await masterContentUnchanged(input)?'SECURITY_MASTER_UNCHANGED_CONTENT':'SECURITY_MASTER');
   // Classification evidence is an identity dependency. Legacy generations did
   // not bind it and must be rebuilt before any financial payload is returned.
   const classificationEvidence='quant/engines/research-classification-evidence.cjs';

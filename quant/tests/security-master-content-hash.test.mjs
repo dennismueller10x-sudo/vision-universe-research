@@ -1,4 +1,4 @@
-// Vorschlag masterContentHash (Entwurf, nicht verdrahtet): Golden Cases, Gegenproben und die Festschreibung der
+// masterContentHash (Schritte 2+3 verdrahtet: Materialisierung, Freshness): Golden Cases, Gegenproben und die Festschreibung der
 // bestehenden masterHash-Semantik (ganze Datei), die dieser Entwurf ausdrücklich NICHT ändert.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -57,10 +57,11 @@ test("MCH-4 · fail closed: fehlende Felder, falsche Typen, kein Stamm", () => {
 test("MCH-5 · bestehender Vertrag unverändert: masterHash = SHA-256 der ganzen Datei (Adapter, Loader)", () => {
   assert.equal(A.createLoader(ROOT).masterHash, crypto.createHash("sha256").update(bytes).digest("hex"));
   assert.equal(A.createLoader(ROOT).masterHash, A.hash(bytes));
-  // der Entwurf ist nirgends verdrahtet: kein Verbraucher lädt das Modul
+  // genau zwei Verbraucher (Migrationsschritte 2 und 3): Materialisierung schreibt den Fingerabdruck, Freshness liest ihn.
+  // Adapter (masterHash) und Leser laden das Modul nicht.
   const users = ["quant/engines/weekly-real-adapter.cjs", "server/quant-backtest-freshness.cjs", "server/quant-backtest-reader.cjs", "scripts/quant/materialize-real-backtest-read.cjs"]
     .filter((p) => readFileSync(join(ROOT, p), "utf8").includes("security-master-content-hash"));
-  assert.deepEqual(users, []);
+  assert.deepEqual(users, ["server/quant-backtest-freshness.cjs", "scripts/quant/materialize-real-backtest-read.cjs"]);
 });
 
 test("MCH-6 · Festschreibung heute: Freshness meldet SECURITY_MASTER schon bei einem reinen generatedAt-Wechsel (Byte-Semantik)", async () => {

@@ -2,6 +2,14 @@
 
 Stand 28.10.2026. **Dieser PR ändert keinen Hash-Vertrag.** Er bringt ein nicht verdrahtetes Modul (`quant/engines/security-master-content-hash.js`) mit Golden Cases und schreibt die heutige `masterHash`-Semantik in Tests fest. Jede tatsächliche Änderung eines Hash-Vertrags braucht eine gesonderte Owner-Freigabe (Owner 28.10.2026).
 
+## Stand (30.10.2026): Schritte 2 und 3 umgesetzt, Schritt 4 offen
+
+- **Schritt 2:** `scripts/quant/materialize-real-backtest-read.cjs` schreibt in **neue** Snapshots zusätzlich `masterContentHash` und `masterContentAlgorithm` (`us-security-master-backtest-content-1`), berechnet aus denselben Bytes wie `masterHash` (sonst `INPUT_CHANGED_DURING_MATERIALIZATION`). Ist der Fingerabdruck nicht berechenbar, fehlen beide Felder. `calculationKey`, `masterHash`, `identityHash`, `resultHash`, Qualitätsklasse und Prüfliste bleiben unverändert. Das Modul ist keine Rechen-Abhängigkeit (`codes`). Alte Generationen bleiben unberührt. Weil das Skript selbst in `codes` steht, ändert diese Änderung wie jede Code-Änderung einmalig die Generation und alle `calculationKey`-Werte.
+- **Schritt 3:** `server/quant-backtest-freshness.cjs` meldet `SECURITY_MASTER_UNCHANGED_CONTENT` statt `SECURITY_MASTER` nur, wenn der Bytes-Hash abweicht, der Snapshot `masterContentHash` mit genau diesem Algorithmus trägt und der neu berechnete Fingerabdruck des aktuellen Stamms gleich ist. Jeder Fehler, ein fehlendes Feld, ein anderer Algorithmus oder eine Abweichung ergibt `SECURITY_MASTER` wie bisher. Der Zustand bleibt `STALE_INPUT_SNAPSHOT`.
+- **Schritt 4 (offen):** `server/quant-backtest-reader.cjs` hält `SECURITY_MASTER_UNCHANGED_CONTENT` weiter mit `BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED` zurück. Für Nutzer ändert sich also noch nichts. Ob der Zustand als aktuell ausgeliefert wird, braucht eine eigene Produktentscheidung.
+- **Freigabe:** Schritte 2 und 3 ändern einen Hash- und Freshness-Vertrag additiv (neue Snapshot-Felder, neuer Abhängigkeitsname). Sie brauchen vor dem Merge eine Owner-Freigabe.
+- Tests: `quant/tests/security-master-content-freshness.test.mjs` (MCF-0 bis MCF-8), MCH-5 erlaubt jetzt genau die zwei Verbraucher Materialisierung und Freshness.
+
 ## Heute
 
 `masterHash` = SHA-256 der **ganzen** Datei `quant/data/market/security-master/us-security-master.json` (`quant/engines/weekly-real-adapter.cjs:63`). Er enthält auch `generatedAt`, Zeilen-Zeitstempel (`first_seen_at`, `last_seen_at`), Zähler und flüchtige Felder. Deshalb ändert ihn jede Übernahme, auch ohne fachliche Änderung. Geschützte Backtests melden dann `BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED` und werden zurückgehalten.

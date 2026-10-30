@@ -30,7 +30,9 @@ function create({directory,root=path.resolve(__dirname,'..'),enabled=false,audie
    if(key!==contextKey||shards.has(before.shard)&&shards.get(before.shard)!==before.identityHash){service=makeService(before.policySource);contextKey=key;shards.clear();}
    shards.set(before.shard,before.identityHash);const reader=service,r=await reader.getRealBacktest(ticker,selection);if(!r.generation)return r;
    r.delivery=await freshness(r);
-   if(r.delivery.changedDependencies.some(x=>x==='SECURITY_MASTER'||x==='PRODUCT_IDENTITY'))return fail('BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED');
+   // SECURITY_MASTER_UNCHANGED_CONTENT (gleicher Inhalts-Fingerabdruck) wird bewusst weiter wie SECURITY_MASTER zurückgehalten;
+   // ob er als aktuell gilt, ist ein eigener Schritt mit eigener Freigabe (docs/SECURITY_MASTER_CONTENT_HASH.md, Schritt 4).
+   if(r.delivery.changedDependencies.some(x=>x==='SECURITY_MASTER'||x==='SECURITY_MASTER_UNCHANGED_CONTENT'||x==='PRODUCT_IDENTITY'))return fail('BACKTEST_IDENTITY_CHANGED_REBUILD_REQUIRED');
    const pointer=await store.loadJSON('release.json');if(pointer.generation!==r.generation)return fail('GENERATION_CHANGED');
    const after=await context(ticker);if(after.key!==before.key||after.identityHash!==before.identityHash)return fail('BACKTEST_ACCESS_CONTEXT_CHANGED');
    return r;
