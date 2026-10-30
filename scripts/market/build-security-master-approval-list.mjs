@@ -15,6 +15,7 @@
  *        [--sec <company_tickers_exchange.json>] [--sec-as-of YYYY-MM-DD] [--delisting-register <json>]
  *        [--delisting-register-ref <text>] [--classification-out <json>] [--markdown-out <md>]
  *        [--accept-duplicate <canonical_id> --accept-duplicate-ref <Fundstelle der Owner-Entscheidung>]
+ *        [--series-dir <dir>]   eigene Tagesreihen (Standard quant/data/market/discover-series, nur gelesen)
  *
  * --prev/--next: Verzeichnisse mit us-security-master.json (next zusätzlich reconciliation.json für die Lauf-ID).
  * --prev muss die Bytes des committeten Stamms enthalten (der SHA-256 bindet die Freigabe), wie im Workflow
@@ -22,10 +23,11 @@
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compareMasters, compareNames, baselineIndex, identityFindings, APPROVED_CHANGES_SCHEMA_V11 } from "./security-master-refresh-gate.mjs";
 
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BUILDER_VERSION = "security-master-approval-list-1.0.0";
 const RECENT_RESTART_DAYS = 60;
 const EXCHANGE_FAMILY = { NASDAQ: "Nasdaq", NYSE: "NYSE", "NYSE MKT": "NYSE", AMEX: "NYSE", "NYSE ARCA": "NYSE", BATS: "CBOE", OTCMKTS: "OTC", PINK: "OTC", OTCBB: "OTC", EXPM: "OTC" };
@@ -102,7 +104,7 @@ export function classifyCanonical(P, N, { today, secBy }) {
 }
 
 /** Klassiert eine Deaktivierung (aktiv → inaktiv) einer Bestands-securityId (rein). */
-export function classifyDeactivation(P, N, { secBy, register, canonical }) {
+export function classifyDeactivation(P, N, { secBy, register, canonical, seriesEnd = () => null }) {
   const ticker = P[0].ticker, chk = secCheck(null, ticker, secBy), reg = register.get(P[0].baseline_security_id) || null;
   const same = P.length === N.length && P.every((r) => N.some((n) => n.canonical_id === r.canonical_id && n.end_date === r.end_date));
   const provider = `prev [${P.map(rowText).join("; ")}] → next [${N.map(rowText).join("; ")}]`;
@@ -110,7 +112,10 @@ export function classifyDeactivation(P, N, { secBy, register, canonical }) {
   let approvable = chk.status !== "CONTRADICTS", reason = same ? "Anbieter-Enddatum unverändert, inzwischen älter als 30 Tage (Schwelle des Erzeugers)" : `Anbieter meldet als letztes Handelsdatum ${N.map((r) => r.end_date).join(", ")} (älter als 30 Tage)`;
   if (canonical && !canonical.approvable) { approvable = false; reason = `folgt aus dem nicht freigabefähigen canonical_id-Wechsel (${canonical.class})`; }
   if (chk.status === "CONTRADICTS") reason = `SEC führt den Ticker weiter an einer Börse (${chk.ref})`;
-  return { class: cls, approvable, reason, provider, sec: chk, form25: reg && { form: reg.form, accession: reg.accession, filingDate: reg.filingDate, effectiveDate: reg.effectiveDate, url: reg.url } };
+  // eigene veröffentlichte Tagesreihe läuft über das Anbieter-Ende hinaus: Kurse gehören einem laufenden Listing → Identitätsbefund
+  const end = N.map((r) => r.end_date).filter(Boolean).sort().at(-1) ?? null, own = seriesEnd(P[0].baseline_security_id);
+  if (own && end && own > end) { approvable = false; reason = `eigene Tagesreihe (discover-series) läuft bis ${own}, Anbieter-Ende ${end}: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting`; }
+  return { seriesEnd: own, class: cls, approvable, reason, provider, sec: chk, form25: reg && { form: reg.form, accession: reg.accession, filingDate: reg.filingDate, effectiveDate: reg.effectiveDate, url: reg.url } };
 }
 
 /** Name-Wechsel (rein): nur Ergänzung oder Umfirmierung desselben Emittenten (CIK), bestätigt durch die Quelle. */
@@ -128,7 +133,7 @@ export function classifyName(change, prevRow, nextRow, secBy) {
 }
 
 /** Kern (rein): Klassierung aller vom Gate gezählten Änderungen und Freigabeliste 1.1.0. */
-export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [] }) {
+export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null }) {
   const today = String(next.today || next.generatedAt || "").slice(0, 10), secBy = indexSec(sec);
   const reg = new Map((register?.records || []).map((r) => [r.securityId, r]));
   const cmp = compareMasters(prev, next), a = baselineIndex(prev), b = baselineIndex(next);
@@ -150,7 +155,7 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
     return c;
   });
   const canBy = new Map(canonical.map((c) => [c.securityId, c]));
-  const deactivations = cmp.deactivations.map((x) => ({ securityId: x.securityId, from: "ACTIVE", to: "INACTIVE", ticker: x.ticker, ...classifyDeactivation(a.get(x.securityId), b.get(x.securityId), { secBy, register: reg, canonical: canBy.get(x.securityId) }) }));
+  const deactivations = cmp.deactivations.map((x) => ({ securityId: x.securityId, from: "ACTIVE", to: "INACTIVE", ticker: x.ticker, ...classifyDeactivation(a.get(x.securityId), b.get(x.securityId), { secBy, register: reg, canonical: canBy.get(x.securityId), seriesEnd }) }));
   const deBy = new Map(deactivations.map((d) => [d.securityId, d]));
   const baseKey = (x) => `${x.securityId}|${x.from}|${x.to}`;
   const baseType = new Set((baseApproval?.instrumentTypeChanges || []).map(baseKey)), baseElig = new Set((baseApproval?.eligibilityFlips || []).map(baseKey));
@@ -262,6 +267,7 @@ function main() {
     prevBytes, prev: JSON.parse(prevBytes.toString("utf8")), next, prevNames: opt("--prev-names"), nextNames: opt("--next-names"), baseApproval: opt("--base-approval"),
     sec: secBytes && JSON.parse(secBytes.toString("utf8")), secAsOf: arg("--sec-as-of"), secSha256: secBytes && sha256(secBytes),
     register: opt("--delisting-register"), registerRef: arg("--delisting-register-ref"), runId: rec?.run?.runId ?? null, gateReport: opt("--gate-report"),
+    seriesEnd: (id) => { const p = join(arg("--series-dir") || join(ROOT, "quant/data/market/discover-series"), `${id}.json`); try { const s = existsSync(p) ? J(p) : null; return s && typeof s.to === "string" ? s.to.slice(0, 10) : null; } catch { return null; } },
     acceptDuplicates: arg("--accept-duplicate") ? [{ canonicalId: arg("--accept-duplicate"), ref: arg("--accept-duplicate-ref") || "Owner-Freigabe ohne Fundstelle" }] : [],
   });
   writeFileSync(arg("--out"), JSON.stringify(res.approval, null, 2) + "\n");

@@ -198,6 +198,10 @@ test("SMA-5 · Builder: Klassen, SEC-Abgleich, nur Freigabefähiges in der Datei
   assert.deepEqual(approval.eligibilityFlips.map((d) => d.securityId).sort(), ["ref_GON", "ref_OTCX"]);
   for (const k of ["eligibilityFlips", "deactivations", "canonicalIdChanges", "nameChanges"]) for (const e of approval[k]) assert.ok(e.evidence.source && e.evidence.ref, `${k} ${e.securityId} ohne Beleg`);
   assert.ok(listsMarkdown(classification).includes("ref_STL"));
+  // eigene Tagesreihe läuft über das Anbieter-Ende hinaus → Identitätsbefund, nicht freigabefähig
+  const withSeries = buildApprovalList({ prevBytes, prev, next, sec: SEC, seriesEnd: (id) => (id === "ref_GON" ? "2026-10-28" : null) });
+  assert.deepEqual(withSeries.approval.deactivations, []);
+  assert.match(withSeries.classification.items.deactivations.find((d) => d.securityId === "ref_GON").reason, /Identitätsbefund/);
   // Gate: die Datei nimmt genau die freigabefähigen aus, der Rest zählt
   const r = evaluateRefresh({ prevMaster: prev, nextMaster: next, prevSummary: summary(5), nextSummary: summary(5), nextReconciliation: recon(), prevNames: nm(() => null), nextNames: nm((i) => (i === "NAD" ? "Name Added Corp" : null)) },
     { today: "2026-10-28", allowVersionChange: true, approvedChanges: approval, prevMasterSha256: approval.prevMasterSha256 });

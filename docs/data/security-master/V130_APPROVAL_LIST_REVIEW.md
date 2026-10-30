@@ -6,7 +6,7 @@ Stand 30.10.2026. Owner-Entscheidung vom selben Tag: eine quellengebundene, exak
 
 ## Ergebnis in einem Satz
 
-Von 1.144 gezählten Änderungen des Probelaufs sind 1.081 mit Beleg freigabefähig. 63 sind es nicht und zählen weiter gegen die unveränderten Grenzen. Mit dieser Liste bleibt **genau ein Gate-Befund**: G6, die doppelte canonical_id von ONEOK (`tiingo:NYSE:OKE:1985-07-01`). Sie ist ein Fehler in der Anbieterliste und wird bewusst **nicht** zur Freigabe vorgeschlagen (Abschnitt 4).
+Von 1.144 gezählten Änderungen des Probelaufs sind 1.085 mit Beleg freigabefähig. 59 sind es nicht und zählen weiter gegen die unveränderten Grenzen. Mit dieser Liste bleibt **genau ein Gate-Befund**: G6, die doppelte canonical_id von ONEOK (`tiingo:NYSE:OKE:1985-07-01`). Sie ist ein Fehler in der Anbieterliste und wird bewusst **nicht** zur Freigabe vorgeschlagen (Abschnitt 4).
 
 ## 1. Grundlage
 
@@ -17,6 +17,7 @@ Von 1.144 gezählten Änderungen des Probelaufs sind 1.081 mit Beleg freigabefä
 | Anbieter | Tiingo `supported_tickers.csv` aus diesem Lauf (109.156 Zeilen); die Zeilen der Bestandstitel stehen im Folgestamm |
 | SEC | `company_tickers_exchange.json`, abgerufen am 30.10.2026 über `scripts/quant/sec/http_client.py`, SHA-256 `76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46` (10.430 Einträge) |
 | SEC-Delisting-Belege | Register aus PR #1119 (`quant/config/security-master-delisting-evidence.json` @ `4f16be7`, 133 Belege mit 8-K 2.01+3.01 oder Form 25). Es ist nur Zusatzbeleg und nicht Teil dieses PR. |
+| Eigene Tagesreihen | `quant/data/market/discover-series/<securityId>.json` (Feld `to`, Stand `main`), nur gelesen: Gegenprobe für Deaktivierungen. Die Prüfung entspricht #1136 (`SERIES_CONTINUES_AFTER_PROVIDER_END`). |
 | Freigabe 1.0.0 | `v130-approved-changes.json`: 138 Typ- und 138 Eignungswechsel des Klassifiziererwechsels. Sie sind unverändert übernommen. |
 
 Die Zählung ist die des Gates (`compareMasters`, `identityFindings`, `compareNames`). Die lokale Gate-Simulation mit der Freigabe 1.0.0 ergibt **denselben Bericht wie der CI-Lauf** (ohne Grenzwerte verglichen: identisch). Die Eingaben sind also exakt nachgebildet.
@@ -28,8 +29,8 @@ Die Zählung ist die des Gates (`compareMasters`, `identityFindings`, `compareNa
 | G6 neue doppelte canonical_id | 1 | 0 | 1 | 0 | **1 → BLOCKED** |
 | G7 canonical_id-Wechsel | 83 | 60 | 23 | 25 | 23 |
 | G7 Instrumenttyp-Wechsel | 148 | 147 (138 aus 1.0.0) | 1 | 25 | 1 |
-| G7 aktiv → inaktiv | 100 | 97 | 3 | 50 | 3 |
-| G7 Eignungswechsel | 220 | 216 (138 aus 1.0.0) | 4 | 50 | 4 |
+| G7 aktiv → inaktiv | 100 | 84 | 16 | 50 | 16 |
+| G7 Eignungswechsel | 220 | 203 (138 aus 1.0.0) | 17 | 50 | 17 |
 | G7 Tickerwechsel je securityId | 0 | 0 | 0 | 25 | 0 |
 | G9 Namenswechsel | 592 | 591 | 1 | 200 | 1 |
 
@@ -38,7 +39,7 @@ Die Zählung ist die des Gates (`compareMasters`, `identityFindings`, `compareNa
 ```
 [security-master-gate] BLOCKED · Entscheidung BLOCKED
 ::error::G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01)
-angewandt {instrumentTypeChanges 147, eligibilityFlips 216, deactivations 97, canonicalIdChanges 60, tickerChanges 0, newDuplicateCanonicalIds 0, nameChanges 591}, ungenutzt 0
+angewandt {instrumentTypeChanges 147, eligibilityFlips 203, deactivations 84, canonicalIdChanges 60, tickerChanges 0, newDuplicateCanonicalIds 0, nameChanges 591}, ungenutzt 0
 ```
 
 Zur Gegenprobe: Würde der Owner die OKE-Doppelung ausdrücklich übernehmen (`--accept-duplicate`, Abschnitt 4, Option b), wäre die Simulation `PASS · COMMIT`. Diese Variante ist **nicht** Teil der vorgeschlagenen Datei.
@@ -75,17 +76,17 @@ Folge bei Übernahme: `ref_OKE` hätte zwei Zeilen (REVIEW, `BASELINE_MATCH_AMBI
 
 | Klasse | Anzahl | Urteil |
 |---|---:|---|
-| PROVIDER_ENDDATE_AGED: Anbieter-Enddatum unverändert seit dem 11.09., inzwischen älter als 30 Tage (Schwelle des Erzeugers) | 67 | 66 freigabefähig; **EDVA nicht**: SEC führt EDVA an der NYSE (Endovia Health Sciences), also Widerspruch |
-| PROVIDER_ENDDATE_RESTATED: Anbieter meldet ein neues letztes Handelsdatum, älter als 30 Tage. Teils Ende im September (de-SPAC, Delisting), teils Jahre zurück (ACTS 2016, BREW 2020, ENTL 2018, INVN 2017 …): getrennte Sammelzeilen wie in Abschnitt 3 | 28 | freigabefähig |
+| PROVIDER_ENDDATE_AGED: Anbieter-Enddatum unverändert seit dem 11.09., inzwischen älter als 30 Tage (Schwelle des Erzeugers) | 67 | 66 freigabefähig; **EDVA nicht**: SEC führt EDVA an der NYSE (Endovia Health Sciences), und die eigene Tagesreihe läuft bis 2026-10-29 |
+| PROVIDER_ENDDATE_RESTATED: Anbieter meldet ein neues letztes Handelsdatum, älter als 30 Tage | 28 | 15 freigabefähig: Ende im September (de-SPAC, Delisting), die eigene Reihe endet mit dem Anbieter oder fehlt. **13 nicht** (ACTS, BREW, ENTL, FTPA, GNMX, INVN, NMBL, NYNY, PCLN, TRIL, USX, WR, WX): Der Anbieter datiert das Ende Jahre zurück (z. B. ACTS 2016, BREW 2020, INVN 2017), aber unsere eigene Tagesreihe läuft bis 2026-10-29. Die Kurse unter dieser securityId stammen also von einem laufenden Listing (Ticker-Wiederverwendung an anderer Börse oder Anbieterkorrektur). Das ist ein **Identitätsbefund** und kein Delisting. Eine Freigabe würde einen Titel mit lebender Kursreihe als inaktiv führen. |
 | mit freigabefähigem canonical_id-Wechsel (BCAR, SNYR, SVMH) | 3 | freigabefähig |
 | mit nicht freigabefähigem canonical_id-Wechsel (FGNXP, RITR) | 2 | **nicht** |
 
-SEC-Gegenprobe: 98 der 100 Ticker stehen nicht mehr in `company_tickers_exchange`. NTZ (Natuzzi) steht dort ohne Börse, das passt. EDVA steht dort an der NYSE, das widerspricht. Form 25 bzw. 8-K 2.01+3.01 aus dem Register #1119 liegt nur für MDV vor und steht als Zusatzbeleg im Eintrag. Mehr Form-25-Abrufe wären teuer und würden am Urteil nichts ändern. Das Register #1119 deckt andere Fälle ab (132 Bestandszeilen ohne Anbieter-Enddatum). Es ist unabhängig von diesen 100 und wird nach der 1.3.0-Umstellung gestaffelt nachgezogen (Option A in #1119).
+SEC-Gegenprobe: 98 der 100 Ticker stehen nicht mehr in `company_tickers_exchange`. NTZ (Natuzzi) steht dort ohne Börse, das passt. EDVA steht dort an der NYSE, das widerspricht. Eigene Tagesreihe: Bei 14 der 100 läuft sie über das Anbieter-Ende hinaus (die 13 oben und EDVA). Alle 14 sind nicht freigabefähig. Form 25 bzw. 8-K 2.01+3.01 aus dem Register #1119 liegt nur für MDV vor und steht als Zusatzbeleg im Eintrag. Mehr Form-25-Abrufe wären teuer und würden am Urteil nichts ändern. Das Register #1119 deckt andere Fälle ab (132 Bestandszeilen ohne Anbieter-Enddatum). Es ist unabhängig von diesen 100 und wird nach der 1.3.0-Umstellung gestaffelt nachgezogen (Option A in #1119).
 
 ## 6. Eignungswechsel (220) und Typwechsel (148)
 
 * 138 + 138 sind die schon freigegebenen Wechsel des Klassifizierers (1.0.0). Sie sind unverändert enthalten.
-* Die **82 übrigen Eignungswechsel** haben keine eigene Ursache, sie folgen aus den anderen Kategorien: 57 aus einer Deaktivierung, 24 aus einem canonical_id-Wechsel (meist: das neue Listing ist ein ETF oder steht im Freiverkehr) und 1 aus einer gealterten Zeile einer schon mehrzeiligen securityId (COOL: die Stammaktienzeile endete am 2026-08-12, aktiv bleibt nur die ETF-Zeile). Kein Wechsel stammt aus einer Klassifiziereränderung außerhalb der Liste 1.0.0. Freigabefähig ist ein Wechsel genau dann, wenn seine Ursache freigabefähig ist: 78 ja, 4 nein (CAM, EDVA, RITR, SBXD).
+* Die **82 übrigen Eignungswechsel** haben keine eigene Ursache, sie folgen aus den anderen Kategorien: 57 aus einer Deaktivierung, 24 aus einem canonical_id-Wechsel (meist: das neue Listing ist ein ETF oder steht im Freiverkehr) und 1 aus einer gealterten Zeile einer schon mehrzeiligen securityId (COOL: die Stammaktienzeile endete am 2026-08-12, aktiv bleibt nur die ETF-Zeile). Kein Wechsel stammt aus einer Klassifiziereränderung außerhalb der Liste 1.0.0. Freigabefähig ist ein Wechsel genau dann, wenn seine Ursache freigabefähig ist: 65 ja, 17 nein (die 13 Identitätsbefunde aus Abschnitt 5 sowie CAM, EDVA, RITR, SBXD).
 * Die **10 übrigen Typwechsel** folgen alle aus canonical_id-Wechseln (eine neue ETF- oder Vorzugszeile kommt zur Typmenge hinzu): 9 freigabefähig, CAM nicht.
 
 ## 7. Namenswechsel (592)
@@ -101,7 +102,7 @@ Die Produktnamen im Universum ändern sich nur bei den 18 Umfirmierungen. Die Na
 
 ## 8. Folgen der Übernahme (zur Kenntnis)
 
-* Backtestfähige securityIds (genau eine Zeile, aktiv, geeignet, Stammaktie): 6.397 → 6.167 (−230, +0). Davon gehen 127 auf den schon freigegebenen Klassifiziererwechsel zurück, 56 auf Deaktivierungen, 39 auf freigabefähige canonical_id-Wechsel (Wiederverwendung, Freiverkehr), 7 auf nicht freigabefähige Fälle und 1 auf OKE.
+* Backtestfähige securityIds (genau eine Zeile, aktiv, geeignet, Stammaktie): 6.397 → 6.167 (−230, +0). Davon gehen 127 auf den schon freigegebenen Klassifiziererwechsel zurück, 43 auf freigabefähige Deaktivierungen, 39 auf freigabefähige canonical_id-Wechsel (Wiederverwendung, Freiverkehr), 20 auf nicht freigabefähige Fälle (darunter die 13 Identitätsbefunde) und 1 auf OKE. Die 21 nicht freigegebenen gehen nur verloren, wenn der Lauf trotzdem übernommen wird, weil sie unter den Grenzen bleiben. Siehe Abschnitt 9.5.
 * masterHash ändert sich, die Quant-Backtest-Schlüssel werden ungültig (bekannt aus #1119).
 * Nicht Teil dieses Laufs (Workflow-Kommentar): Produkteignung `eligibility.json`, Universum, Discover-Neubau.
 
@@ -114,6 +115,7 @@ Die Produktnamen im Universum ändern sich nur bei den 18 Umfirmierungen. Die Na
    * c) abwarten, bis Tiingo die Doppelzeile entfernt, und dann neuer Probelauf.
 3. Die 23 nicht freigabefähigen canonical_id-Wechsel bleiben unter der Grenze 25. Weitere Drift kann sie darüber heben. Dann gilt: neu erzeugen und neu prüfen, keine Grenze ändern.
 4. Workflow: Die Eingabe `approved_changes` zeigt in diesem PR in einem eigenen Commit auf die Datei 1.1.0. Sie enthält 1.0.0 vollständig.
+5. **Identitätsbefunde (13 + EDVA):** Diese Titel bleiben unter den Grenzen und würden bei Übernahme trotzdem inaktiv geführt. Exakt heißt nicht, dass sie blockieren, sondern dass sie gegen die Grenze zählen. Will der Owner sie vor der Übernahme klären (Zuordnung ticker → laufendes Listing im Erzeuger), ist das ein eigener Erzeuger-PR.
 
 ## 10. Owner-Schritte
 
@@ -135,7 +137,7 @@ node scripts/market/build-security-master-approval-list.mjs \
   --prev-names /tmp/sm-prev/company-names.json --next-names /tmp/art/<…>/quant/data/market/security-master/company-names.json \
   --base-approval docs/data/security-master/v130-approved-changes.json \
   --sec /tmp/company_tickers_exchange.json --sec-as-of <Datum> \
-  --delisting-register <Register aus #1119> --delisting-register-ref "<PR/Commit/Pfad>" \
+  --delisting-register <Register aus #1119> --delisting-register-ref "<PR/Commit/Pfad>" [--series-dir quant/data/market/discover-series] \
   --out docs/data/security-master/v130-approved-changes-1.1.0.json --markdown-out /tmp/lists.md
 # Gegenprobe wie im Workflow
 node scripts/market/security-master-refresh-gate.mjs --prev /tmp/sm-prev --next /tmp/art/_temp/sm-next \
@@ -227,7 +229,7 @@ Alle nicht freigabefähigen Einträge stehen vollständig darin. Von den freigab
 | ref_JCSE | tiingo:NASDAQ:JCSE:2022-04-22 | tiingo:NASDAQ:JCSE:2022-04-22\|tiingo:NASDAQ:JCSE:2026-09-21 | LISTING_RESTART | prev [NASDAQ:2022-04-22..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2022-04-22..2026-09-18 INACTIVE EQUITY_COMMON; NASDAQ:2026-09-21..2026-10-28 ACTIVE EQUITY_COMMON geeignet] · SEC: JCSE → CIK 0001905511 JE Cleantech Holdings Ltd (Nasdaq) |
 | ref_NXDR | tiingo:NYSE:NXDR:2021-03-24 | tiingo:NASDAQ:NXDR:2021-03-24 | EXCHANGE_TRANSFER | prev [NYSE:2021-03-24..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2021-03-24..2026-10-28 ACTIVE EQUITY_COMMON geeignet] · SEC: NXDR → CIK 0001846069 Nextdoor Holdings, Inc. (Nasdaq) |
 
-### Deaktivierungen (aktiv → inaktiv): 100 gesamt, 97 freigabefähig, 3 nicht freigabefähig
+### Deaktivierungen (aktiv → inaktiv): 100 gesamt, 84 freigabefähig, 16 nicht freigabefähig
 
 | Klasse | Anzahl |
 |---|---:|
@@ -237,13 +239,26 @@ Alle nicht freigabefähigen Einträge stehen vollständig darin. Von den freigab
 | WITH_CANONICAL_CHANGE:MOVED_TO_OTC | 2 |
 | WITH_CANONICAL_CHANGE:TICKER_REUSE_NEW_LISTING | 1 |
 
-**Nicht freigabefähig (vollständig, 3):**
+**Nicht freigabefähig (vollständig, 16):**
 
 | securityId | von | nach | Klasse | Grund |
 |---|---|---|---|---|
-| ref_EDVA | ACTIVE | INACTIVE | PROVIDER_ENDDATE_AGED | SEC führt den Ticker weiter an einer Börse (EDVA → CIK 0001553788 Endovia Health Sciences, Inc. (NYSE)) |
+| ref_ACTS | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2016-12-20: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_BREW | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2020-09-30: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_EDVA | ACTIVE | INACTIVE | PROVIDER_ENDDATE_AGED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2026-08-21: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_ENTL | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2018-02-28: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
 | ref_FGNXP | ACTIVE | INACTIVE | WITH_CANONICAL_CHANGE:PROVIDER_HISTORY_RESTARTED | folgt aus dem nicht freigabefähigen canonical_id-Wechsel (PROVIDER_HISTORY_RESTARTED) |
+| ref_FTPA | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2023-03-15: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_GNMX | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2020-02-03: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_INVN | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2017-07-17: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_NMBL | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2017-08-17: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_NYNY | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2019-11-22: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_PCLN | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2018-02-26: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
 | ref_RITR | ACTIVE | INACTIVE | WITH_CANONICAL_CHANGE:PROVIDER_HISTORY_RESTARTED | folgt aus dem nicht freigabefähigen canonical_id-Wechsel (PROVIDER_HISTORY_RESTARTED) |
+| ref_TRIL | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2021-11-18: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_USX | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2023-06-30: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_WR | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2018-06-05: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
+| ref_WX | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | eigene Tagesreihe (discover-series) läuft bis 2026-10-29, Anbieter-Ende 2015-12-10: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting |
 
 **Freigabefähig (Stichprobe je Klasse, höchstens 8; vollständig in der Freigabedatei):**
 
@@ -257,37 +272,50 @@ Alle nicht freigabefähigen Einträge stehen vollständig darin. Von den freigab
 | ref_ARQQW | ACTIVE | INACTIVE | PROVIDER_ENDDATE_AGED | prev [NASDAQ:2021-04-06..2026-09-02 ACTIVE WARRANT] → next [NASDAQ:2021-04-06..2026-09-02 INACTIVE WARRANT] · SEC: ARQQW nicht gelistet |
 | ref_AVB | ACTIVE | INACTIVE | PROVIDER_ENDDATE_AGED | prev [NYSE:1994-03-11..2026-08-17 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:1994-03-11..2026-08-17 INACTIVE EQUITY_COMMON] · SEC: AVB nicht gelistet |
 | ref_BBCQU | ACTIVE | INACTIVE | PROVIDER_ENDDATE_AGED | prev [NASDAQ:2026-01-08..2026-08-27 ACTIVE UNIT] → next [NASDAQ:2026-01-08..2026-08-27 INACTIVE UNIT] · SEC: BBCQU nicht gelistet |
-| ref_ACTS | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NYSE:2005-11-30..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2005-11-30..2016-12-20 INACTIVE EQUITY_COMMON] · SEC: ACTS nicht gelistet |
 | ref_ATAI | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2021-06-18..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2021-06-18..2026-09-11 INACTIVE EQUITY_COMMON] · SEC: ATAI nicht gelistet |
-| ref_BREW | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:1995-08-18..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1995-08-18..2020-09-30 INACTIVE EQUITY_COMMON] · SEC: BREW nicht gelistet |
 | ref_BRRWW | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-07-31..2026-09-10 ACTIVE WARRANT] → next [NASDAQ:2025-07-31..2026-09-25 INACTIVE WARRANT] · SEC: BRRWW nicht gelistet |
-| ref_ENTL | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2015-01-29..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-29..2018-02-28 INACTIVE EQUITY_COMMON] · SEC: ENTL nicht gelistet |
-| ref_FTPA | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NYSE:2021-05-07..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2021-05-07..2023-03-15 INACTIVE EQUITY_COMMON] · SEC: FTPA nicht gelistet |
-| ref_GNMX | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2011-04-08..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2011-04-08..2020-02-03 INACTIVE EQUITY_COMMON] · SEC: GNMX nicht gelistet |
 | ref_HCWC | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [AMEX:2024-09-16..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [AMEX:2024-09-16..2026-09-17 INACTIVE EQUITY_COMMON] · SEC: HCWC nicht gelistet |
+| ref_HVII | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-02-10..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-02-10..2026-09-23 INACTIVE EQUITY_COMMON] · SEC: HVII nicht gelistet |
+| ref_HVIIU | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-01-17..2026-09-10 ACTIVE UNIT] → next [NASDAQ:2025-01-17..2026-09-24 INACTIVE UNIT] · SEC: HVIIU nicht gelistet |
+| ref_IPEXR | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-03-07..2026-09-10 ACTIVE RIGHT] → next [NASDAQ:2025-03-07..2026-09-28 INACTIVE RIGHT] · SEC: IPEXR nicht gelistet |
+| ref_IPEXU | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-02-13..2026-09-10 ACTIVE UNIT] → next [NASDAQ:2025-02-13..2026-09-28 INACTIVE UNIT] · SEC: IPEXU nicht gelistet |
+| ref_JSPRW | ACTIVE | INACTIVE | PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2020-01-10..2026-09-10 ACTIVE WARRANT] → next [NASDAQ:2020-01-10..2026-09-25 INACTIVE WARRANT] · SEC: JSPRW nicht gelistet |
 | ref_BCAR | ACTIVE | INACTIVE | WITH_CANONICAL_CHANGE:TICKER_REUSE_NEW_LISTING | prev [NASDAQ:2012-03-07..2026-08-27 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-08-20..2026-08-27 INACTIVE EQUITY_COMMON; NASDAQ:2012-03-07..2015-08-03 INACTIVE EQUITY_COMMON] · SEC: BCAR nicht gelistet |
 | ref_SNYR | ACTIVE | INACTIVE | WITH_CANONICAL_CHANGE:MOVED_TO_OTC | prev [NASDAQ:2016-01-04..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2016-01-04..2026-09-18 INACTIVE EQUITY_COMMON] · SEC: SNYR nicht gelistet |
 | ref_SVMH | ACTIVE | INACTIVE | WITH_CANONICAL_CHANGE:MOVED_TO_OTC | prev [NASDAQ:2023-12-08..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2023-12-08..2026-09-23 INACTIVE EQUITY_COMMON] · SEC: SVMH nicht gelistet |
 
-### Eignungswechsel: 220 gesamt, 216 freigabefähig, 4 nicht freigabefähig
+### Eignungswechsel: 220 gesamt, 203 freigabefähig, 17 nicht freigabefähig
 
 | Klasse | Anzahl |
 |---|---:|
 | APPROVED_1_0_0 | 138 |
-| CAUSED_BY:Deaktivierung=freigabefähig | 56 |
+| CAUSED_BY:Deaktivierung=freigabefähig | 43 |
 | CAUSED_BY:canonical_id=freigabefähig | 21 |
+| CAUSED_BY:Deaktivierung=nicht | 14 |
 | CAUSED_BY:canonical_id=nicht | 3 |
 | ELIGIBLE_ROW_AGED_OUT | 1 |
-| CAUSED_BY:Deaktivierung=nicht | 1 |
 
-**Nicht freigabefähig (vollständig, 4):**
+**Nicht freigabefähig (vollständig, 17):**
 
 | securityId | von | nach | Klasse | Grund |
 |---|---|---|---|---|
+| ref_ACTS | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_BREW | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
 | ref_CAM | true | false | CAUSED_BY:canonical_id=UNCLEAR_REPLACEMENT | Folge von canonical_id (UNCLEAR_REPLACEMENT, nicht freigabefähig) |
 | ref_EDVA | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED | Folge von Deaktivierung (PROVIDER_ENDDATE_AGED, nicht freigabefähig) |
+| ref_ENTL | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_FTPA | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_GNMX | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_INVN | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_NMBL | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_NYNY | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_PCLN | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
 | ref_RITR | true | false | CAUSED_BY:canonical_id=PROVIDER_HISTORY_RESTARTED+Deaktivierung=WITH_CANONICAL_CHANGE:PROVIDER_HISTORY_RESTARTED | Folge von canonical_id (PROVIDER_HISTORY_RESTARTED, nicht freigabefähig) und Deaktivierung (WITH_CANONICAL_CHANGE:PROVIDER_HISTORY_RESTARTED, nicht freigabefähig) |
 | ref_SBXD | true | false | CAUSED_BY:canonical_id=PROVIDER_HISTORY_RESTARTED | Folge von canonical_id (PROVIDER_HISTORY_RESTARTED, nicht freigabefähig) |
+| ref_TRIL | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_USX | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_WR | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
+| ref_WX | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig) |
 
 **Freigabefähig (Stichprobe je Klasse, höchstens 8; vollständig in der Freigabedatei):**
 
@@ -301,14 +329,6 @@ Alle nicht freigabefähigen Einträge stehen vollständig darin. Von den freigab
 | ref_LQ | true | false | CAUSED_BY:canonical_id=TICKER_REUSE_NEW_LISTING | prev [NASDAQ:2014-04-09..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2014-04-09..2018-05-31 INACTIVE EQUITY_COMMON; NASDAQ:2026-05-05..2026-10-28 ACTIVE ETF] · SEC: LQ nicht gelistet |
 | ref_PCS | true | false | CAUSED_BY:canonical_id=TICKER_REUSE_NEW_LISTING | prev [BATS:2007-04-19..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [BATS:2007-04-19..2013-10-17 INACTIVE EQUITY_COMMON; BATS:2025-08-01..2026-10-28 ACTIVE ETF] · SEC: PCS nicht gelistet |
 | ref_PTNT | true | false | CAUSED_BY:canonical_id=TICKER_REUSE_NEW_LISTING | prev [BATS:1999-07-23..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [BATS:1999-07-23..2015-09-22 INACTIVE EQUITY_COMMON; BATS:2026-05-06..2026-10-28 ACTIVE ETF] · SEC: PTNT nicht gelistet |
-| ref_ACTS | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NYSE:2005-11-30..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2005-11-30..2016-12-20 INACTIVE EQUITY_COMMON] · SEC: ACTS nicht gelistet |
-| ref_ATAI | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2021-06-18..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2021-06-18..2026-09-11 INACTIVE EQUITY_COMMON] · SEC: ATAI nicht gelistet |
-| ref_BREW | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:1995-08-18..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1995-08-18..2020-09-30 INACTIVE EQUITY_COMMON] · SEC: BREW nicht gelistet |
-| ref_ENTL | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2015-01-29..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-29..2018-02-28 INACTIVE EQUITY_COMMON] · SEC: ENTL nicht gelistet |
-| ref_FTPA | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NYSE:2021-05-07..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2021-05-07..2023-03-15 INACTIVE EQUITY_COMMON] · SEC: FTPA nicht gelistet |
-| ref_GNMX | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2011-04-08..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2011-04-08..2020-02-03 INACTIVE EQUITY_COMMON] · SEC: GNMX nicht gelistet |
-| ref_HCWC | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [AMEX:2024-09-16..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [AMEX:2024-09-16..2026-09-17 INACTIVE EQUITY_COMMON] · SEC: HCWC nicht gelistet |
-| ref_HVII | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-02-10..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-02-10..2026-09-23 INACTIVE EQUITY_COMMON] · SEC: HVII nicht gelistet |
 | ref_AIHS | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED | prev [NASDAQ:2026-08-26..2026-08-27 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2026-08-26..2026-08-27 INACTIVE EQUITY_COMMON] · SEC: AIHS nicht gelistet |
 | ref_APGE | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED | prev [NASDAQ:2023-07-14..2026-09-04 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2023-07-14..2026-09-04 INACTIVE EQUITY_COMMON] · SEC: APGE nicht gelistet |
 | ref_AREN | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED | prev [NYSE MKT:2007-07-13..2026-08-28 ACTIVE EQUITY_COMMON geeignet] → next [NYSE MKT:2007-07-13..2026-08-28 INACTIVE EQUITY_COMMON] · SEC: AREN nicht gelistet |
@@ -325,6 +345,10 @@ Alle nicht freigabefähigen Einträge stehen vollständig darin. Von den freigab
 | ref_SNBR | true | false | CAUSED_BY:canonical_id=MOVED_TO_OTC | prev [NASDAQ:1998-12-04..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:1998-12-04..2026-10-28 ACTIVE EQUITY_COMMON] · SEC: SNBR nicht gelistet |
 | ref_SOBR | true | false | CAUSED_BY:canonical_id=MOVED_TO_OTC | prev [NASDAQ:2013-05-14..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2013-05-14..2026-10-28 ACTIVE EQUITY_COMMON] · SEC: SOBR → CIK 0001425627 SOBR Safe, Inc. (OTC) |
 | ref_VLNWF | true | false | CAUSED_BY:canonical_id=MOVED_TO_OTC | prev [NYSE:2020-09-23..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2020-09-23..2026-10-01 ACTIVE EQUITY_COMMON] · SEC: VLNWF nicht gelistet |
+| ref_ATAI | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2021-06-18..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2021-06-18..2026-09-11 INACTIVE EQUITY_COMMON] · SEC: ATAI nicht gelistet |
+| ref_HCWC | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [AMEX:2024-09-16..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [AMEX:2024-09-16..2026-09-17 INACTIVE EQUITY_COMMON] · SEC: HCWC nicht gelistet |
+| ref_HVII | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2025-02-10..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-02-10..2026-09-23 INACTIVE EQUITY_COMMON] · SEC: HVII nicht gelistet |
+| ref_RIVR | true | false | CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED | prev [NASDAQ:2016-01-04..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2016-01-04..2026-09-22 INACTIVE EQUITY_COMMON] · SEC: RIVR nicht gelistet |
 | ref_BCAR | true | false | CAUSED_BY:canonical_id=TICKER_REUSE_NEW_LISTING+Deaktivierung=WITH_CANONICAL_CHANGE:TICKER_REUSE_NEW_LISTING | prev [NASDAQ:2012-03-07..2026-08-27 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-08-20..2026-08-27 INACTIVE EQUITY_COMMON; NASDAQ:2012-03-07..2015-08-03 INACTIVE EQUITY_COMMON] · SEC: BCAR nicht gelistet |
 | ref_COOL | true | false | ELIGIBLE_ROW_AGED_OUT | prev [NASDAQ:1999-08-17..2026-05-28 INACTIVE EQUITY_COMMON; NASDAQ:2026-08-13..2026-09-10 ACTIVE ETF; NASDAQ:2021-02-19..2026-08-12 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2026-08-13..2026-10-28 ACTIVE ETF; NASDAQ:2021-02-19..2026-08-12 INACTIVE EQUITY_COMMON; NASDAQ:1999-08-17..2026-05-28 INACTIVE EQUITY_COMMON] · SEC: COOL nicht gelistet |
 | ref_SNYR | true | false | CAUSED_BY:canonical_id=MOVED_TO_OTC+Deaktivierung=WITH_CANONICAL_CHANGE:MOVED_TO_OTC | prev [NASDAQ:2016-01-04..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2016-01-04..2026-09-18 INACTIVE EQUITY_COMMON] · SEC: SNYR nicht gelistet |
