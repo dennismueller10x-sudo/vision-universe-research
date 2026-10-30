@@ -6,7 +6,7 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 
 ## 1. Stand `main` und PRs
 
-`main` = `adbc2f0444` (Merge #1132). Seitdem gibt es auf `main` nur automatische Datenläufe.
+`main` enthält #1132 (`adbc2f0444`) und #1133 (`5e9d2b9d5a`), dazu automatische Datenläufe und PRs anderer Sitzungen.
 
 | PR | Inhalt | Stand |
 |---|---|---|
@@ -15,8 +15,8 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1119 | Security-Master-Status (Option A) | **zurückgehalten**; geht erst nach Review, eigener Freigabe und dem regulären Wechsel 1.1.0→1.3.0 weiter |
 | #1129 | V13b (strikte Large-Cap-Grenze, F1w, HIST) | gemergt `0e28622a35` |
 | #1132 | V13 Abschluss II (V13c-Studie, Archivwerkzeuge, R2-Workflow) | gemergt `adbc2f0444` |
-| #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | offen, Merge genehmigt (nach #1132). **Blockiert:** `core` rot wie auf `main` (siehe 6.1). Kein Merge vor grünem `core` |
-| #1138 | interne Backtest-Vorschau (Draft, auf #1133) | Draft; standardmäßig aus, nicht verdrahtet |
+| #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | **gemergt** `5e9d2b9d5a` (30.10.2026, nach Owner-Freigabe; vorher main, Checks, Reviews, Scope und Konflikte geprüft) |
+| #1138 | interne Backtest-Vorschau (Basis seit dem Merge von #1133: `main`) | Draft; standardmäßig aus, nicht verdrahtet |
 | #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft. Simulation: 1.085/1.144 Änderungen freigabefähig, Rest unter den unveränderten Grenzen außer G6 OKE → BLOCKED bis Owner-Entscheidung a/b/c |
 | #1140 | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
 
@@ -29,7 +29,7 @@ PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachho
   - Register 1.0.0 mit 1.675 QUALIFIED und 151 nur Kurs;
   - Register 1.1.0 (V13b HIST) mit 1.688 QUALIFIED;
   - hashgebundener Loader `quant/engines/research-delisted-series.cjs`, opt-in.
-- **Backtest-Engineering P2 (#1133):** sechs Arten, Ergebnisvertrag `backtest-result-2.0.0`, Runner, 16 echte Demofälle, unabhängige QA. Einstieg: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md` (auf dem #1133-Branch).
+- **Backtest-Engineering P2 (#1133):** sechs Arten, Ergebnisvertrag `backtest-result-2.0.0`, Runner, 16 echte Demofälle, unabhängige QA. Einstieg: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - **Interne Vorschau (#1138):** Einstieg `docs/quant/BACKTEST_PREVIEW.md`.
 - **Entscheidungsvorlage** Setup-OOS / Strategy / Factor: keine Normänderung, Gates unverändert. Einstieg: [../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md).
 - **GitHub-Support-Anfrage** zur Bereinigung alter Commits und Blobs: Text an den Owner übergeben. Den Versand macht der Owner.
@@ -149,7 +149,9 @@ Teststand:
 
 ## 6. Offene Probleme und Freigaben
 
-### 6.1 `core` rot auf `main` (blockiert den Merge von #1133)
+### 6.1 `core` war rot auf `main` (erledigt)
+
+Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-SF8-8 wieder grün gemacht, danach wurde #1133 gemergt. Befund zur Erinnerung, falls er wiederkehrt:
 
 - **Fehler:** DQ-SF8-8 meldet „C01 BOOM/ULBI 2026-10-28: kein zeitgleicher veröffentlichter Schluss (Reihe 2026-10-29)“.
 - **Ursache:** Die SF8-Kandidaten (`supertrader/data/sf-candidates`, Stand 28.10.) laufen nur manuell (`supertrader-sf8-candidates.yml`, workflow_dispatch, `commit=true` mit `expected_sha256`). Die veröffentlichte Tagesreihe ist mit dem Marktdaten-Refresh auf den 29.10. gesprungen.
@@ -187,7 +189,7 @@ Teststand:
 ## 7. Nächste Prioritäten
 
 1. **Archiv:** Owner-Schritte 4.3, dann Upload, Verify und Runner-Restore. Erst danach gilt die Sicherung als abgeschlossen.
-2. **#1133:** nach grünem `core` mergen (genehmigt); dann die Basis von #1138 auf `main` umstellen.
+2. **#1133:** erledigt (gemergt `5e9d2b9d5a`); #1138 steht auf `main`.
 3. **Security Master:** Review der Freigabeliste, mit #1136 abstimmen, Owner-Freigabe, 1.3.0-Lauf, dann #1119.
 4. Owner-Entscheidungen aus 6.3, sobald gewünscht. Keine Normänderung ohne Freigabe.
 
