@@ -2,6 +2,12 @@
 # Restore-Probe fuer eine age-verschluesselte Konten-Datenbanksicherung - isoliert.
 #
 #   vu-db-restore-drill.sh <vu-accounts-....dump.age> [erwartete-zeilen.txt]
+#   vu-db-restore-drill.sh --from-s3 latest|<objekt> [erwartete-zeilen.txt]
+#
+# --from-s3 holt die Sicherung direkt aus dem Backup-Ziel (B2) - ohne GitHub:
+#   VU_S3_ENDPOINT, VU_S3_BUCKET, AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY (Leseschluessel),
+#   optional VU_DB_PREFIX (Standard db/accounts/). Die Pruefsumme wird gegen das Manifest
+#   neben dem Objekt verglichen, bevor entschluesselt wird.
 #
 # - Spielt die Sicherung in eine WEGWERF-Datenbank (Docker postgres:17 auf 127.0.0.1,
 #   ohne Netzzugang nach aussen), nie in Supabase.
@@ -14,9 +20,22 @@
 # Umgebung: VU_DRILL_MODE=docker (Standard, z. B. Google Cloud Shell) oder local
 # (PGBIN=/usr/lib/postgresql/<v>/bin, fuer Tests). VU_AGE_KEY_FILE nur fuer Tests.
 set -uo pipefail
-dump_age="${1:?Pfad zur .dump.age-Datei}"; expected="${2:-}"
 mode="${VU_DRILL_MODE:-docker}"
 W="$(mktemp -d /tmp/vu-db-drill.XXXXXX)"; chmod 755 "$W"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ "${1:-}" = --from-s3 ]; then
+  obj="${2:?latest oder Objektname}"; expected="${3:-}"
+  [ "$obj" = latest ] && obj=$(python3 "$HERE/lib/s3_put.py" latest "${VU_DB_PREFIX:-db/accounts/}" .dump.age)
+  python3 "$HERE/lib/s3_put.py" get "$obj" "$W/from-s3.dump.age" >/dev/null || { echo "Laden aus dem Backup-Ziel fehlgeschlagen"; exit 1; }
+  python3 "$HERE/lib/s3_put.py" get "${obj%.dump.age}.json" "$W/manifest.json" >/dev/null || { echo "Manifest fehlt"; exit 1; }
+  want=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sha256"])' "$W/manifest.json")
+  have=$(sha256sum "$W/from-s3.dump.age" | cut -c1-64)
+  [ "$want" = "$have" ] || { echo "Pruefsumme passt nicht zum Manifest"; exit 1; }
+  echo "Aus dem Backup-Ziel: $obj ($(stat -c %s "$W/from-s3.dump.age") Bytes), SHA-256 wie im Manifest"
+  dump_age="$W/from-s3.dump.age"
+else
+  dump_age="${1:?Pfad zur .dump.age-Datei}"; expected="${2:-}"
+fi
 CONTAINER="vu-db-drill-$$" PORT="${VU_DRILL_PORT:-55433}"
 cleanup() {
   [ -f "$W/key" ] && shred -u "$W/key" 2>/dev/null

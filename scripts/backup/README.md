@@ -18,14 +18,16 @@ scripts/backup/
   bin/vu-pit-recover.py   Zustand zu einem Zeitpunkt aus Objektversionen (nach Angriff/Fehler)
   bin/vu-anchor-lock.py   Legal Hold auf die Erstsicherung (nur mit Anker-Schlüssel)
   bin/vu-key-check.py     prüft vor jedem Lauf, dass der B2-Schlüssel NICHT löschen darf
-  bin/vu-db-restore-drill.sh  Restore-Probe der verschlüsselten Konten-DB in eine Wegwerf-Datenbank
+  bin/vu-db-export.sh     Konten-DB: Leserolle, age vor dem Upload, direkt nach B2 (kein Artefakt)
+  bin/vu-db-restore-drill.sh  Restore-Probe der verschlüsselten Konten-DB (Datei oder --from-s3) in eine Wegwerf-Datenbank
   bin/vu-cost-estimate.py Speicher- und Kostenhochrechnung (liest nur die öffentliche Repo-Größe)
   bin/vu-b2-make-key.py   legt B2-Schlüssel mit genau den Rechten einer Rolle an (einmalig, Wegwerf-Shell)
   bin/vu-status.py        Statusbericht (Markdown, JSON, Kurzfassung für Benachrichtigung)
   sources/                git (Bundle-Kette oder Mirror), api_export.py (GitHub-Metadaten, Artefakte,
                           Cloudflare KV/DNS/Worker, Brevo), r2 (rclone), supabase (pg_dump)
   config/backup.env.example   alle Einstellungen, ohne Werte
-  runner/github-actions/  Workflow-Vorlagen für ein separates privates Backup-Repository (Sicherung, Runner-Probe)
+  runner/github-actions/  Workflow-Vorlagen für ein separates privates Backup-Repository (Sicherung, Konten-DB, Runner-Probe)
+  sql/vu_backup_ro.sql    Leserolle für den Datenbankexport
   runner/container/       portables Image (Cloud Run Job, Cloud Batch, jede Container-Laufzeit)
   runner/cloud-run/       Job-Vorlage für den Ersatz-Runner
   tests/                  Ende-zu-Ende-Test mit synthetischen Daten und lokalen Emulatoren

@@ -1,0 +1,112 @@
+# VORLAGE – fuer das PRIVATE Backup-Repository (.github/workflows/vu-db-backup.yml).
+# Ersetzt die Ablage der Konten-Datenbank als Actions-Artefakt im oeffentlichen Repo:
+# Export mit der Leserolle vu_backup_ro, age-Verschluesselung VOR dem Upload, Ablage direkt
+# im B2-Bucket (Object Lock). Es wird KEIN Artefakt hochgeladen; das Log enthaelt nur
+# Groessen, Objektnamen und Pruefsummen.
+#
+# Modus "synthetic": gleicher Weg mit einer Wegwerf-Postgres-17-Instanz und erfundenen Daten
+# in den TEST-Bucket (Environment backup-test). Erst wenn das gruen ist, "real".
+#
+# Bedienung vom iPhone: GitHub-App -> vision-universe-backup -> Actions -> "VU Konten-DB-Backup"
+# -> Run workflow -> mode waehlen.
+name: VU Konten-DB-Backup
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'synthetic (Test-Bucket, erfundene Daten) | real (Produktions-Bucket, Leserolle)'
+        type: choice
+        options: [synthetic, real]
+        default: synthetic
+  # Erst nach erfolgreichem ersten echten Lauf und Restore-Probe einschalten:
+  # schedule:
+  #   - cron: '23 2 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: vu-db-backup-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    if: ${{ inputs.mode == 'synthetic' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: backup-test
+    services:
+      pg:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: synthetic-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 2s --health-timeout 2s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Werkzeuge
+        run: |
+          set -euo pipefail
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSLo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17 age >/dev/null
+          pip install --quiet boto3==1.40.0
+      - name: Synthetische Datenbank und Leserolle (nur im Wegwerf-Container)
+        env:
+          PGPASSWORD: synthetic-only
+        run: |
+          set -euo pipefail
+          P="psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q"
+          $P -c "create database synthetic_vu"
+          $P -d synthetic_vu -c "create schema auth; create schema billing; create schema supabase_migrations;
+            create table auth.users(id int primary key, email text); insert into auth.users select i, 'p'||i||'@example.invalid' from generate_series(1,50) i;
+            create table public.profiles(id int primary key); alter table public.profiles enable row level security; insert into public.profiles select generate_series(1,50);
+            create table billing.payment_events(id int primary key); insert into billing.payment_events select generate_series(1,5);
+            create table supabase_migrations.schema_migrations(version text primary key); insert into supabase_migrations.schema_migrations values ('1');"
+          $P -d synthetic_vu -f scripts/backup/sql/vu_backup_ro.sql
+          $P -c "alter role vu_backup_ro password 'synthetic-ro-only'"
+      - name: Export in den Test-Bucket
+        env:
+          VU_DB_URL: postgresql://vu_backup_ro:synthetic-ro-only@127.0.0.1:5432/synthetic_vu?application_name=synthetic0000000000
+          VU_DB_PROJECT: synthetic0000000000
+          VU_DB_AGE_RECIPIENT: ${{ vars.VU_DB_TEST_AGE_RECIPIENT }}
+          VU_DB_PREFIX: vu-acceptance/db-accounts/
+          VU_S3_ENDPOINT: ${{ vars.B2_TEST_ENDPOINT }}
+          VU_S3_BUCKET: ${{ vars.B2_TEST_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_TEST_WRITER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_TEST_WRITER_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$VU_S3_BUCKET" == *test* ]] || { echo "synthetic nur gegen den Test-Bucket"; exit 1; }
+          python3 scripts/backup/bin/vu-key-check.py writer
+          scripts/backup/bin/vu-db-export.sh
+
+  real:
+    if: ${{ inputs.mode == 'real' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: backup
+    steps:
+      - uses: actions/checkout@v4
+      - name: Werkzeuge
+        run: |
+          set -euo pipefail
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSLo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17 age >/dev/null
+          pip install --quiet boto3==1.40.0
+      - name: Schluessel pruefen (fail closed)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_WRITER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_WRITER_KEY }}
+        run: python3 scripts/backup/bin/vu-key-check.py writer
+      - name: Export (Leserolle, age, direkt nach B2)
+        env:
+          VU_DB_URL: ${{ secrets.VU_DB_BACKUP_RO_URL }}
+          VU_DB_PROJECT: ${{ vars.VU_DB_PROJECT }}
+          VU_DB_AGE_RECIPIENT: ${{ vars.VU_DB_AGE_RECIPIENT }}
+          VU_S3_ENDPOINT: ${{ vars.B2_ENDPOINT }}
+          VU_S3_BUCKET: ${{ vars.B2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_WRITER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_WRITER_KEY }}
+        run: scripts/backup/bin/vu-db-export.sh
