@@ -34,6 +34,19 @@
   }
   function put(host, kids) { host.replaceChildren.apply(host, [].concat(kids || []).filter(Boolean)); }
   function isNum(v) { return typeof v === "number" && isFinite(v); }
+  /* Langtext der Kurssprung-Kennzeichnung unter der Pruefleiste (Chart Studio); null ohne Kennzeichnung. */
+  function jumpNote(row) {
+    var f = jumpFlag(row);
+    return f ? el("p", { class: "tc-note " + (row.suspectJumpStatus === "CONFIRMED" ? "is-bad" : "is-warn"), role: "note", text: f.title }) : null;
+  }
+  /* Kurssprung-Kennzeichnung der Zeile (price-jumps.js, screen-row 1.13.0): Verdacht oder bestaetigter Datenfehler. */
+  function jumpFlag(row) {
+    if (!row || !row.suspectJumpAt) return null;
+    var PJ = global.VUTechnical && global.VUTechnical.PriceJumps;
+    var j = { date: row.suspectJumpAt, factor: isNum(row.suspectJumpFactor) ? row.suspectJumpFactor : null, status: row.suspectJumpStatus || "SUSPECT", splitSignature: PJ && isNum(row.suspectJumpFactor) ? PJ.splitSignature(row.suspectJumpFactor) : true };
+    var d = PJ ? PJ.describe(j.factor === null ? Object.assign({}, j, { factor: "?" }) : j, M.dateDe) : { short: "Kurssprung prüfen (" + M.dateDe(j.date) + ")", long: "" };
+    return el("span", { class: "tc-flag" + (j.status === "CONFIRMED" ? " is-bad" : " is-warn"), title: d.long, text: d.short });
+  }
   var GLYPH = {
     trend: "M4 17l5-5 4 3 7-8M15 7h5v5", breakout: "M3 15h7l3-8 3 5h5M14 4h6v6", triangle: "M4 5l16 7-16 7z", flag: "M5 21V4M5 4h11l-3 4 3 4H5",
     bars: "M5 20V12M10 20V7M15 20v-5M20 20V4", pulse: "M3 12h4l3-7 4 14 3-7h4", range: "M4 7h16M4 17h16M7 7v10M17 7v10", contraction: "M3 6l5 5 4-3 4 2 5-1M3 18l5-4 4 2 4-1 5 1",
@@ -455,7 +468,7 @@
         if (row.frozenSince) flags.push(el("span", { class: "tc-flag", title: "Datenqualitätshinweis: seitdem unveränderter Schlusskurs. Kein bestätigtes Delisting, auch bei illiquiden Titeln möglich. Keine Kennzahlen", text: "Kurs unverändert seit " + M.dateDe(row.frozenSince) }));
         else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
@@ -651,7 +664,7 @@
         var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
         var flags = [];
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
         return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
@@ -712,6 +725,7 @@
             var val = f.kind || v === null || v === undefined || Array.isArray(v) || typeof v === "boolean" ? "" : " · " + valueText(f.field, v);
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
+          jumpNote(row),
           el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
       ]);
     }).catch(function () { put(box, [el("summary", {}, [el("b", { text: "Vorlage konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
@@ -1066,9 +1080,8 @@
           : "nicht veröffentlicht: " + (p.barsAfterSeed !== null && p.barsAfterSeed < p.warmupBars ? "Historie zu kurz (frühestens ab " + p.minimumBars + " Tagesbars)" : "Fehlerschranke " + pct(p.errorBoundAtCutoff) + " über 0,1 % (Startfenster weit vom heutigen Kurs)") })];
       })(),
       (function () {
-        var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
-        if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
-        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet." })] : null;
+        var PJ = global.VUTechnical && global.VUTechnical.PriceJumps, at = PJ ? PJ.all(b).map(function (j) { return M.dateDe(j.date) + " (×" + String(j.factor).replace(".", ",") + ")"; }) : [];
+        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet. Ob ein Sprung als Datenfehler bestätigt ist, zeigt die Vorlagen-Prüfleiste." })] : null;
       })(),
       el("dt", { text: "Volumen" }), el("dd", { text: b.volume && b.volume.some(function (v) { return v > 0; }) ? "vorhanden" : "nicht vorhanden – Volumenindikatoren entfallen" }),
       el("dt", { text: "Formationen" }), el("dd", { text: "Nur bestätigte Swing-Punkte; Erkennung ohne Blick in die Zukunft (Engine " + global.VUTechnical.Formations.ENGINE_VERSION + ")" }),
