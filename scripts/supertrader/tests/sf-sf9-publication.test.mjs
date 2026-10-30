@@ -22,7 +22,9 @@ const synthetic = () => ({
 });
 const base = () => (fs.existsSync(SUMMARY) ? JSON.parse(fs.readFileSync(SUMMARY, 'utf8')) : synthetic());
 const dq = (over = {}) => ({ rules: Array.from({ length: 8 }, (_, i) => ({ id: `DQ-SF8-${i + 1}`, status: 'PASS', checked: 10, failed: 0, ...(over[i + 1] || {}) })) });
-const nextOf = (prev, f = (x) => x) => { const n = structuredClone(prev); n.asOf = '2026-10-29'; n.nextSession = '2026-10-30'; return f(n) ?? n; };
+// der neue Stand liegt immer einen bzw. zwei Kalendertage nach dem veröffentlichten (unabhängig vom Datenstand auf main)
+const plusDays = (iso, d) => new Date(Date.parse(`${iso}T00:00:00Z`) + d * 864e5).toISOString().slice(0, 10);
+const nextOf = (prev, f = (x) => x) => { const n = structuredClone(prev); n.asOf = plusDays(prev.asOf, 1); n.nextSession = plusDays(prev.asOf, 2); return f(n) ?? n; };
 const evalWith = (o = {}) => { const prev = o.prev === undefined ? base() : o.prev; return evaluatePublication({ next: o.next === undefined ? nextOf(prev) : o.next, prev, fingerprint: o.fp ?? FP, rebuildFingerprint: o.fp2 ?? FP, dq: o.dq ?? dq(), registryOk: o.registryOk ?? true }); };
 const blockedBy = (o, re) => { const r = evalWith(o); assert.equal(r.decision, 'BLOCKED'); assert.ok(r.failures.some((x) => re.test(x)), `${re} in ${r.failures.join(' | ')}`); };
 
@@ -69,7 +71,7 @@ test('SF9-PUB-4 · C4 gleiche Fachmodelle: jede Versionsänderung verlangt die m
 });
 
 test('SF9-PUB-5 · C5 Zeitachse: nie älter, kein Stand ohne Vorgänger, nextSession nach asOf', () => {
-  blockedBy({ next: nextOf(base(), (n) => { n.asOf = '2026-10-27'; n.nextSession = '2026-10-28'; }) }, /^C5 neuer Stand 2026-10-27 älter/);
+  blockedBy({ next: nextOf(base(), (n) => { n.asOf = plusDays(base().asOf, -1); n.nextSession = base().asOf; }) }, /^C5 neuer Stand \d{4}-\d{2}-\d{2} älter/);
   blockedBy({ next: nextOf(base(), (n) => { n.nextSession = n.asOf; }) }, /^C5 nextSession/);
   blockedBy({ next: nextOf(base(), (n) => { n.asOf = '28.10.2026'; }) }, /^C5 asOf ungültig/);
   blockedBy({ prev: null, next: nextOf(base()) }, /^C5 kein veröffentlichter Stand: die erste Veröffentlichung ist manuell/);
@@ -94,7 +96,7 @@ test('SF9-PUB-7 · Nachweis und CLI: Eingaben-Fingerabdruck, Exit 5 bei BLOCKED,
   const rec = publicationRecord({ next, prev, fingerprint: FP, decision: 'PUBLISH', failures: [], codeCommit: 'c0ffee', run: '1' });
   assert.equal(rec.inputsSha256, next.inputs.inputsSha256, 'derselbe Wert wie in summary.json'); assert.match(rec.inputsSha256, /^[0-9a-f]{64}$/);
   assert.equal(rec.sourceFilesSha256, sourceFilesSha256(next)); assert.equal(inputsSha256({ inputs: { inputsSha256: 'kurz' } }), null);
-  assert.equal(rec.asOf, '2026-10-29'); assert.equal(rec.previousAsOf, prev.asOf); assert.equal(rec.contract, PUBLICATION_CONTRACT);
+  assert.equal(rec.asOf, plusDays(prev.asOf, 1)); assert.equal(rec.previousAsOf, prev.asOf); assert.equal(rec.contract, PUBLICATION_CONTRACT);
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sf9-pub-'));
   try {
     for (const [k, v] of [['next', next], ['prev', prev]]) { fs.mkdirSync(path.join(d, k)); fs.writeFileSync(path.join(d, k, 'summary.json'), JSON.stringify(v)); }

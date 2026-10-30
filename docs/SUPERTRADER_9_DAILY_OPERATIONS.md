@@ -105,6 +105,25 @@ Eine Lockerung von DQ-SF8-8 ist keiner der Wege.
 
 Ohne veröffentlichten Stand (`prev.counts.candidates = 0` oder fehlend) bleibt der automatische Weg BLOCKED, bis ein manueller Lauf veröffentlicht.
 
+## Probelauf und S7-Prüfung (30.10.2026, ~10:00 UTC, ohne Commit)
+
+Lokal auf `main` (5e9d2b9) zusammen mit diesem PR. Es wurde nichts committet und kein Lauf ausgelöst.
+
+| Schritt | Ergebnis |
+|---|---|
+| Eingangsprüfung | `CURRENT`: Stand 29.10., erwartet 29.10. (Materialisierung 9685f63, 06:44 UTC) |
+| zwei unabhängige Erzeugungen | 3.840 Kandidaten (2.304 / 1.468 / 68 / 0 VALIDATED), 5.100 Titel; Fingerabdrücke **gleich** `defb6d63…` |
+| Budget | 14,2 MB, keine Datei über 2 MB |
+| DQ-SF8-1..8 | alle **PASS** (Preisabgleich 0/3.840, Identität 0/3.840, Stufensperren 0/11.585) |
+| Vertrag mit heutiger Registry (`ACTIVATING`) | **BLOCKED** (C7), kein Commit. So vorgesehen: Ohne #1146 kein Dauerbetrieb |
+| Vertrag mit Registry ohne `activation` (#1146) | `SKIP_SAME_SESSION`: Der Stand vom 29.10. ist schon veröffentlicht, also kein Commit |
+
+**Bereits veröffentlicht:** Der manuelle Weg lief am 30.10. um 07:29 UTC (Lauf 41020409882, Commit 204a517, Stand 29.10.). Sein Fingerabdruck `977c3a03…` weicht vom Probelauf ab, und das ist erwartet: Er rechnete die Änderungen gegen den Stand vom 28.10., der Probelauf gegen den vom 29.10. (`--previous`). Innerhalb eines Laufs sind beide Erzeugungen gleich (C1).
+
+**Löst der erste automatische Lauf den S7-Zirkel auf?**
+- **DQ-SF8-8: ja.** Mit dem Stand vom 29.10. ist DQ-SF8-8 auf `main` grün. Der Zustandstest in `core/tests` ist wieder 300/300. Ab dem ersten automatischen Lauf bleibt das jeden Tag so, außer im Fenster zwischen dem Refresh der Nachtkette und dem Kandidaten-Commit (siehe oben). Weder ein Test noch die Registry wird dafür abgeschwächt: Der Vertrag verlangt alle acht Regeln, und #1146 entfernt nur das Feld der ersten Veröffentlichung.
+- **S7 insgesamt: noch nicht.** `data-quality` meldet am 30.10. weiter ERROR für DQ-PX-4 (ATYR, AXG, OMEX) und DQ-TW-3 (ATYR, OMEX). Ursache sind Reverse-Splits in Wochenreihe und Technical. Zuständig sind `long-series.yml` und `technical-world.yml`, nicht der Tageslauf. S7 gilt erst, wenn nach dem Kandidaten-Commit eines Tages beides grün ist.
+
 ## Prüfungen
 
 - `node --test scripts/supertrader/tests/sf-sf9-publication.test.mjs`: 7/7, jede Vertragsregel mit Gegenprobe.
