@@ -38,6 +38,8 @@
      node scripts/market/build-us-security-master.mjs --from-csv <p>
      node scripts/market/build-us-security-master.mjs --from-universe <p>
      node scripts/market/build-us-security-master.mjs --offline        # nur Bestand
+     ... --duplicate-resolution <p|none>  Register belegter Doppelzeilen (Standard:
+                                          quant/config/security-master-duplicate-resolution.json)
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -89,6 +91,14 @@ const PROVIDER_SUMMARY_FILE = arg("--provider-summary",
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "security-master"));
 const WORK_DIR = arg("--work-dir",
   join(root, SCALE.storage.workingDir, "tiingo", "security-master"));
+/* Register belegter Doppelzeilen (quant/engines/us-security-master.js,
+   Abschnitt BELEGTE DOPPELZEILEN). Standardmaessig Pflicht: fehlt die
+   committete Datei, bricht der Lauf ab. "--duplicate-resolution none"
+   schaltet es ausdruecklich ab (Vorher-Lauf); die Ausgabe ist dann
+   byte-gleich mit dem Stand ohne Register. */
+const { loadDuplicateResolution, DEFAULT_DUPLICATE_RESOLUTION_FILE } =
+  await import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs"));
+const DUPLICATE_RESOLUTION_ARG = arg("--duplicate-resolution", DEFAULT_DUPLICATE_RESOLUTION_FILE);
 
 /* ------------------------------------------------------------ ZIP/CSV
 
@@ -417,11 +427,24 @@ async function main() {
     process.exit(3);
   }
 
+  let dupRegister;
+  try { dupRegister = loadDuplicateResolution(DUPLICATE_RESOLUTION_ARG); }
+  catch (err) { console.error("ABBRUCH: " + err.message + " Nichts geschrieben."); process.exit(2); }
   const stamp = STAMP || new Date().toISOString();
   const result = Master.buildSecurityMaster({
     providerRows, baseline, today: TODAY,
-    providerAvailable: providerRows.length > 0, stamp
+    providerAvailable: providerRows.length > 0, stamp,
+    duplicateResolution: dupRegister.doc
   });
+  /* Nur mit Register im Kopf der Artefakte; ohne Register bleibt jede Datei byte-gleich. */
+  const dupHeader = result.duplicateResolution
+    ? { duplicateResolution: { ...result.duplicateResolution, file: dupRegister.file, sha256: dupRegister.sha256 } }
+    : {};
+  console.log(`  Doppelzeilen-Register: ${result.duplicateResolution
+    ? result.duplicateResolution.records + " Eintraege, angewandt " + result.duplicateResolution.applied.length +
+      ", nicht angewandt " + result.duplicateResolution.notApplied.length +
+      result.duplicateResolution.notApplied.map((n) => " [" + n.securityId + ": " + n.reason + "]").join("")
+    : "abgeschaltet"}`);
 
   const c = result.counts;
   const newEligible = result.rows.filter((r) => r.reconciliation_status === "ADDED");
@@ -583,7 +606,7 @@ async function main() {
     generatedAt: stamp, version: Master.VERSION, provider: "tiingo",
     today: TODAY, source: providerSource, providerError,
     baselineFile: BASELINE_FILE.replace(root + "/", ""),
-    counts: c, rows: result.rows
+    counts: c, ...dupHeader, rows: result.rows
   }));
   console.log(`  Arbeitsablage: ${workFile.replace(root + "/", "")} (${result.rows.length} Zeilen)`);
 
@@ -632,6 +655,7 @@ async function main() {
     headline,
     additions: additionBreakdown,
     counts: c,
+    ...dupHeader,
     invariants: result.invariants,
     nonDestructive: {
       baselineFile: BASELINE_FILE.replace(root + "/", ""),
@@ -717,6 +741,7 @@ async function main() {
       priceLevels: "NONE_IN_THIS_ARTEFACT"
     },
     counts: c,
+    ...dupHeader,
     rowsDelivered: masterRows.length
   }, masterRows);
 
@@ -724,6 +749,7 @@ async function main() {
     generatedAt: stamp, version: Master.VERSION, provider: "tiingo", today: TODAY,
     status: result.providerAvailable ? "OK" : "BASELINE_ONLY",
     headline, counts: c,
+    ...dupHeader,
     exchangeBreakdown: c.byExchange,
     venueBreakdown: c.byVenueTier,
     activeBreakdown: c.byActiveStatus,
