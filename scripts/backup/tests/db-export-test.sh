@@ -99,5 +99,10 @@ check "D10 Restore-Probe aus dem Ziel: Pruefsumme = Manifest, Zeilenzahlen = Erw
 check "D11 Quelle unveraendert" \
   bash -c "[ \"\$(PGPASSWORD=boot-synthetic '$PGBIN/psql' -h 127.0.0.1 -p $PORT -U boot -d synth_qiytest0000 -At -c 'select count(*) from auth.users')\" = 60 ]"
 
+python3 "$ROOT/lib/s3_put.py" check-latest db/accounts/ 26 > "$T/check.json" 2>&1; rc=$?
+check "D12 Taegliche Pruefung: juengste Sicherung < 26 h, SHA-256 = Manifest, age-Format" bash -c "[ $rc -eq 0 ] && grep -q '\"problems\": \[\]' '$T/check.json'"
+python3 "$ROOT/lib/s3_put.py" check-latest db/accounts/ 0 > /dev/null 2>&1; rc=$?
+check "D13 Taegliche Pruefung meldet veraltete Sicherung (Grenze 0 h)" test "$rc" -ne 0
+
 echo; echo "Ergebnis: $PASS bestanden, $FAIL fehlgeschlagen (Postgres $("$PGBIN/pg_dump" --version | awk '{print $3}'))"
 [ "$FAIL" -eq 0 ]

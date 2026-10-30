@@ -1,3 +1,5 @@
+> **Ersetzt durch [SETUP_IPHONE.md](SETUP_IPHONE.md)** (kompakte Reihenfolge, täglicher Workflow `vu-backup-daily.yml`). Dieses Dokument bleibt als Hintergrund.
+
 # Einrichtung durch den Owner (Schritt für Schritt)
 
 Alles hier erst nach Freigabe. Jeder Schritt geht im Browser am iPhone. Ein Laptop ist nicht nötig, am iPad oder Desktop ist es bequemer.
@@ -54,7 +56,7 @@ Einen Schlüssel mit `deleteFiles` gibt es nicht. Endgültig gelöscht wird nur 
 
 Empfohlen: privates Repository `vision-universe-backup`.
 
-1. Neues privates Repo anlegen. Inhalt: `scripts/backup/` aus diesem Branch, `runner/github-actions/vu-backup.yml` nach `.github/workflows/`.
+1. Neues privates Repo anlegen. Inhalt: `scripts/backup/` aus diesem Branch, `runner/github-actions/vu-backup-daily.yml` nach `.github/workflows/`.
 2. In der Workflow-Datei die Prüfsummen von restic und rclone eintragen, aus den SHA256SUMS der Releases. Die Datei ist so gebaut, dass sie ohne Prüfsummen abbricht.
 3. Settings → Environments → `backup` anlegen. Dort alle Secrets und Variablen aus `config/backup.env.example` eintragen.
 4. Settings → Actions → General → „Workflow permissions: Read repository contents“.

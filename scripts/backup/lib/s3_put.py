@@ -4,6 +4,8 @@
   s3_put.py verify <objekt> <sha256>                          zuruecklesen und vergleichen
   s3_put.py latest <praefix> <suffix>                         juengstes Objekt (Name) ausgeben
   s3_put.py get <objekt> <datei>                              herunterladen (z. B. Wiederherstellung)
+  s3_put.py check-latest <praefix> <max-alter-stunden>        juengste DB-Sicherung pruefen: Alter,
+                                                              SHA-256 = Manifest, age-Format, Groesse
 
 Umgebung: VU_S3_ENDPOINT, VU_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY.
 Der Upload sendet Content-MD5 und eine SHA-256-Pruefsumme: S3 verlangt bei Object Lock
@@ -34,7 +36,7 @@ def sha_of(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["put", "verify", "latest", "get"])
+    ap.add_argument("cmd", choices=["put", "verify", "latest", "get", "check-latest"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--meta", action="append", default=[])
     a = ap.parse_args()
@@ -69,6 +71,33 @@ def main():
         if not best:
             sys.exit("kein Objekt gefunden")
         print(best)
+    elif a.cmd == "check-latest":
+        import datetime as dt
+        import json as _json
+        prefix, max_age = a.args[0], float(a.args[1])
+        objs = []
+        for page in c.get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=prefix):
+            objs += [o for o in page.get("Contents", []) if o["Key"].endswith(".dump.age")]
+        if not objs:
+            sys.exit("keine DB-Sicherung im Ziel")
+        objs.sort(key=lambda o: o["Key"])
+        last = objs[-1]
+        age_h = (dt.datetime.now(dt.timezone.utc) - last["LastModified"]).total_seconds() / 3600
+        manifest = _json.loads(c.get_object(Bucket=bucket, Key=last["Key"][:-len(".dump.age")] + ".json")["Body"].read())
+        body = c.get_object(Bucket=bucket, Key=last["Key"])["Body"].read()
+        problems = []
+        if age_h > max_age:
+            problems.append(f"juengste Sicherung {age_h:.1f} h alt (Grenze {max_age:.0f} h)")
+        if hashlib.sha256(body).hexdigest() != manifest["sha256"]:
+            problems.append("SHA-256 passt nicht zum Manifest")
+        if not body.startswith(b"age-encryption.org/v1"):
+            problems.append("kein age-Format")
+        if len(objs) > 1 and objs[-2]["Size"] and len(body) < 0.5 * objs[-2]["Size"]:
+            problems.append(f"Groesse auf {len(body)} Bytes gefallen (vorher {objs[-2]['Size']})")
+        print(_json.dumps({"object": last["Key"], "bytes": len(body), "ageHours": round(age_h, 1),
+                           "count": len(objs), "problems": problems}))
+        if problems:
+            sys.exit(1)
     else:
         key, path = a.args
         c.download_file(bucket, key, path)

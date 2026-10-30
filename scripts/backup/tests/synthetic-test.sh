@@ -102,6 +102,8 @@ cd "$T/src/work" && git checkout -q feature/a && git reset -q --hard HEAD~1 && e
 "$ROOT/bin/vu-restore.sh" get gitb-demo "$T/pit2" "$SNAP2" > /dev/null 2>&1
 check "T40 Stand vor dem Force-Push aus der Bundle-Kette wiederherstellbar" \
   test "$(git -C "$T/pit2$VU_WORK/git/demo.git" rev-parse refs/heads/feature/a 2>/dev/null)" = "$REF2"
+"$ROOT/bin/vu-verify.sh" chain > "$T/chain.out" 2>&1; rc=$?
+check "T42 Kettenpruefung (nur Metadaten): Bundle-Kette vollstaendig" bash -c "[ $rc -eq 0 ] && grep -q 'gitb-demo: Kette vollstaendig (3 Bundles)' '$T/chain.out'"
 VU_GIT_MODE=incremental "$ROOT/bin/vu-backup.sh" --only git > "$T/run-inc.md" 2>&1
 check "T41 Modus incremental (Mirror) bleibt nutzbar" grep -q '| git-demo | OK' "$T/run-inc.md"
 
