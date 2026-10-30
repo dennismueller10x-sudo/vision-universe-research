@@ -281,8 +281,23 @@
       if (r.recognized.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Erkannt" })].concat(r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok", text: t }); }))));
       if (r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Nicht erkannt" })].concat(r.unknown.map(function (t) { return el("span", { class: "tc-mini is-warn", text: t }); }))));
       r.errors.filter(function (e) { return e.code !== "EMPTY"; }).forEach(function (e) { kids.push(el("p", { class: "tc-note is-warn", text: ERROR_TEXT[e.code] ? ERROR_TEXT[e.code](e.text) : e.code + (e.text ? ": " + e.text : "") })); });
-      if (r.query.groups.length) kids.push(el("p", { class: "tc-note" }, ["Abfrage: ", el("code", { text: r.canonical || "–" })]));
+      if (r.query.groups.length) kids.push(queryEditor(r.canonical || ""));
       put(preview, kids);
+    }
+    /* Die uebersetzte Abfrage ist vor dem Ausfuehren bearbeitbar (kanonische Schreibweise, Rundreise parse(toText(q)) = q). */
+    function queryEditor(canonical) {
+      var edit = el("textarea", { class: "tc-input tc-input-code", rows: "2", spellcheck: "false", autocomplete: "off", "aria-label": "Übersetzte Abfrage bearbeiten" });
+      edit.value = canonical;
+      var state = el("p", { class: "tc-note", role: "status" });
+      function check() {
+        var r = QT.parse(edit.value), bad = r.errors.filter(function (e) { return e.code !== "EMPTY"; });
+        state.className = "tc-note" + (r.ok ? "" : " is-warn");
+        state.textContent = r.ok ? "Abfrage gültig." : (r.unknown.length ? "Nicht erkannt: " + r.unknown.join(", ") : bad.length ? (ERROR_TEXT[bad[0].code] ? ERROR_TEXT[bad[0].code](bad[0].text) : bad[0].code) : "Keine Bedingung.");
+        return r;
+      }
+      edit.addEventListener("input", check);
+      return el("div", { class: "tc-ts-edit" }, [el("label", { class: "tc-note", text: "Abfrage (vor dem Ausführen änderbar)" }), edit,
+        el("button", { class: "tc-btn tc-btn-ghost", type: "button", text: "Abfrage ausführen", onclick: function () { if (check().ok) location.hash = "#/screener?q=" + encodeURIComponent(edit.value.trim()); } }), state]);
     }
     var timer = null;
     input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { paint(input.value.trim() ? QT.parse(input.value) : null); }, 120); });
