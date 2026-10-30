@@ -314,7 +314,7 @@
     },
     {
       "id": "supertrader-sf8-candidates",
-      "label": "Supertrader Research-Kandidaten (Beta)",
+      "label": "Supertrader Research-Kandidaten",
       "layer": "PRODUCT",
       "group": "Products",
       "critical": false,
@@ -325,13 +325,9 @@
       "role": "Quellentreue Research-Kandidaten der 13 Supertrader-Methoden (Stufen 1-3, Stufe 4 gesperrt). Keine Signale, keine Empfehlungen, keine Orders.",
       "producer": "scripts/supertrader/source-faithful/product/build-candidates.mjs",
       "workflow": "supertrader-sf8-candidates.yml",
-      "schedule": "Kein Zeitplan; manuell und nur mit Repository-Variable SF8_CANDIDATES_ENABLED=true (Owner-Entscheidung O-2).",
+      "schedule": "Taeglich nach der Nachtkette (Anstoss aus supertrader-signals.yml, Rueckfall 11:43 UTC Di-Sa), nur mit SF8_CANDIDATES_ENABLED und SF8_AUTO_PUBLISH; Commit nur nach Veroeffentlichungsvertrag sf8-auto-publication-1.0.0 (docs/SUPERTRADER_9_DAILY_OPERATIONS.md).",
       "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 2 },
-      "activation": {
-        "state": "ACTIVATING",
-        "decision": "Erste Veroeffentlichung (Owner-Freigabe AUSSTEHEND, docs/SUPERTRADER_8_FIRST_RELEASE.md): ein freigegebener, datierter Stand per workflow_dispatch mit Fingerabdruck. Kein Zeitplan; O-2 (26.10.2026) gilt fuer den Tageslauf weiter. Dauerbetrieb (Feld entfernen) nur nach V1-V6 und eigener Freigabe."
-      },
-      "consumers": ["/supertrader/ (Beta)"]
+      "consumers": ["/supertrader/"]
     },
     {
       "id": "marketPulse",
