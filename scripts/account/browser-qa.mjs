@@ -45,8 +45,8 @@ async function shot(page, name) { await page.screenshot({path: `${out}/${engine}
 const desktop = await browser.newContext({viewport: {width: 1280, height: 900}});
 const page = await desktop.newPage();
 const consoleErrors = [];
-// Der absichtlich provozierte Doppel-Checkout antwortet 409; das protokolliert der Browser selbst.
-page.on('console', m => { if (m.type() === 'error' && !/status of 409/.test(m.text())) consoleErrors.push(m.text()); });
+// Der absichtlich provozierte Doppel-Checkout antwortet 409, die Tarifverwaltung ohne Rolle 403; das protokolliert der Browser selbst.
+page.on('console', m => { if (m.type() === 'error' && !/status of (409|403)/.test(m.text())) consoleErrors.push(m.text()); });
 page.on('pageerror', e => consoleErrors.push(String(e)));
 const email = `qa-${Date.now()}@example.test`;
 const password = 'Sicheres-Passwort-26';
@@ -222,6 +222,31 @@ check((await page.textContent('#ka-sub')).includes('automatisch Free'), 'nach La
   await ctx.close();
 }
 
+// Tarifverwaltung: ohne Rolle gesperrt; mit Rolle Vorschau -> Zusammenfassung -> Passwort + Haken -> neuer Preis.
+await page.goto(`${base}/konto/admin/tarife/`);
+await page.waitForFunction(() => document.querySelector('#ka-status').textContent.length > 0);
+check((await page.textContent('#ka-status')).includes('keine Berechtigung') && await page.isHidden('#ka-pricing-wrap'), 'Tarifverwaltung ohne Rolle gesperrt');
+await page.request.post(`${base}/__dev/pricing-admin?email=${encodeURIComponent(email)}`);
+await page.reload();
+await page.waitForSelector('#ka-pricing-wrap:not([hidden])');
+check((await page.textContent('#pa-prices')).includes('stimmt überein, inkl. USt'), 'Tarifverwaltung: Stripe-Abgleich sichtbar');
+await page.fill('#pa-amount', '24,90');
+await page.click('#pa-preview-form button[type=submit]');
+await page.waitForSelector('#pa-apply-form:not([hidden])');
+check((await page.textContent('#pa-summary')).includes('Bestehende Abos'), 'Tarifverwaltung: Zusammenfassung vor der Aenderung');
+await audit(page, 'Tarifverwaltung');
+await shot(page, 'tarifverwaltung-vorschau');
+await page.fill('#pa-password', password);
+await page.click('#pa-apply-form button[type=submit]');
+check((await page.textContent('#ka-status')).includes('bestätige'), 'Tarifverwaltung: ohne Haken nichts geaendert');
+await page.check('#pa-confirm');
+await page.fill('#pa-password', password);
+await page.click('#pa-apply-form button[type=submit]');
+await page.waitForFunction(() => document.querySelector('#ka-status').getAttribute('data-kind') === 'ok');
+await page.waitForFunction(() => document.querySelector('#pa-log').textContent.includes('angewendet'));
+check((await page.textContent('#pa-prices')).includes('24,90'), 'Tarifverwaltung: neuer Preis aktiv, Protokoll');
+await shot(page, 'tarifverwaltung-geaendert');
+
 // Abmelden
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');
@@ -235,11 +260,11 @@ for (const theme of ['light', 'dark']) {
   const mobile = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 2, isMobile: engine !== 'firefox', hasTouch: true});
   await mobile.addInitScript(t => { try { localStorage.setItem('vu-discover-theme-v1', t); } catch (e) {} }, theme);
   const m = await mobile.newPage();
-  for (const path of ['anmelden', 'registrieren', 'passwort', 'kuendigen', 'tarife']) {
+  for (const path of ['anmelden', 'registrieren', 'passwort', 'kuendigen', 'tarife', 'admin/tarife']) {
     await m.goto(`${base}/konto/${path}/`);
     await m.waitForLoadState('networkidle');
     await audit(m, `mobil ${theme} ${path}`);
-    await m.screenshot({path: `${out}/${engine}-mobil-${theme}-${path}.png`, fullPage: true});
+    await m.screenshot({path: `${out}/${engine}-mobil-${theme}-${path.replace('/', '-')}.png`, fullPage: true});
   }
   await m.goto(`${base}/preise/`);
   await m.waitForFunction(() => !document.querySelector('[data-price=pro][aria-busy]'));
