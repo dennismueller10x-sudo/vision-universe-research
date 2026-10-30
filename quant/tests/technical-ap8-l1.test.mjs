@@ -64,6 +64,8 @@ test("L1: Datensatz - Spalte = SMA 150 der veroeffentlichten Bars, eingefroren l
     const inst = JSON.parse(gunzipSync(readFileSync(join(dir, file)))).instruments || {};
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
+      /* nur Titel, deren Zeile auf denselben Bars beruht (Datensatz und Materialisierung koennen einen Tag auseinander liegen) */
+      if (c.asOf[i] !== String(x.bars.timestamps[x.bars.timestamps.length - 1]).slice(0, 10)) continue;
       const b = x.bars, t = b.close.length - 1, s150 = I.compute(b, "sma", { period: 150 }).values[t];
       assert.equal(c.aboveSma150[i], Number.isFinite(s150) ? b.close[t] > s150 : null, tk);
       checked++;
