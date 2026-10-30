@@ -1,7 +1,7 @@
 # Historische Evidenz der Kerzenmuster
 
 Stand 28.10.2026 (Marktphasen ergänzt), `technical-candlesticks-1.1.0` (58 Muster), Datenstand 26.10.2026.
-- Skript: `scripts/technical/candlestick-evidence.mjs`. Es schreibt nur mit `--out` und ist kein Produktartefakt.
+- Skript: `scripts/technical/candlestick-evidence.mjs`. Es schreibt nur mit `--out`. Für das Produkt verdichtet `scripts/technical/world/signal-evidence.mjs` das Ergebnis zu `technical/data/signal-evidence.json` (SIGNAL_EVIDENCE.md).
 - Test der Bausteine: `quant/tests/technical-candlestick-evidence.test.mjs`.
 
 Die Bibliothek (CANDLESTICKS.md) beantwortet, ob ein Muster richtig **erkannt** wird. Diese Auswertung beschreibt, was danach im Mittel geschah. Sie empfiehlt nichts.

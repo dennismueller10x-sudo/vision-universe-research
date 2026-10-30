@@ -76,6 +76,19 @@
       ]
     },
     {
+      "cause": "IFRS_REMAINING",
+      "count": 1,
+      "percent": 0.7143,
+      "consequence": "SEC_RECOVERABLE",
+      "examples": [
+        {
+          "symbol": "THH",
+          "cik": "0002044241",
+          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=2"
+        }
+      ]
+    },
+    {
       "cause": "NO_XBRL_FACTS",
       "count": 39,
       "percent": 27.8571,
@@ -128,8 +141,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 44,
-      "percent": 31.4286,
+      "count": 43,
+      "percent": 30.7143,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -156,12 +169,13 @@
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 44,
+    "RESOLVES_WITH_TIME": 43,
     "NOT_APPLICABLE": 53,
     "EXTERNAL_PROVIDER_CANDIDATE": 42,
-    "INDUSTRY_LAYER": 1
+    "INDUSTRY_LAYER": 1,
+    "SEC_RECOVERABLE": 1
   },
-  "stillRecoverableBySec": 0,
+  "stillRecoverableBySec": 1,
   "ciksByCause": {
     "SPAC_BLANK_CHECK": [
       "0002079109",
@@ -222,6 +236,9 @@
     ],
     "BANK": [
       "0001841644"
+    ],
+    "IFRS_REMAINING": [
+      "0002044241"
     ],
     "NO_XBRL_FACTS": [
       "0000062362",
@@ -291,7 +308,6 @@
       "0002027329",
       "0002039972",
       "0002041208",
-      "0002044241",
       "0002052053",
       "0002054507",
       "0002070534",
@@ -316,7 +332,9 @@
       "0002132582"
     ]
   },
-  "ciksStillRecoverable": [],
+  "ciksStillRecoverable": [
+    "0002044241"
+  ],
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -328,5 +346,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-28T13:02:11+00:00"
+  "generatedAtUtc": "2026-10-30T13:12:54+00:00"
 }

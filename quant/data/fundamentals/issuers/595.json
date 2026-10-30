@@ -167,7 +167,7 @@
       "sic": "6798",
       "rawFacts": 14893,
       "mappedFacts": 4172,
-      "unmappedFacts": 10399,
+      "unmappedFacts": 10483,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
@@ -216,8 +216,7 @@
       },
       "fiscalYearEnd": "1231",
       "tickers": [
-        "MAA",
-        "MAA-PI"
+        "MAA"
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
@@ -329,37 +328,38 @@
         "resolvedValues": 441
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11022,
+        "rules_version": "1.1.0",
+        "total": 11104,
         "by_severity": {
-          "INFO": 10399,
+          "INFO": 10483,
           "ERROR": 2,
-          "WARNING": 621
+          "WARNING": 619
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 567,
+          "CONCEPT_DISAGREEMENT": 565,
           "FISCAL_PERIOD_CONFLICT": 14,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 10399
+          "UNKNOWN_CONCEPT": 10483
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-326153",
-        "filing_date": "2026-07-30",
+        "accession": "0001193125-26-437813",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 126
+        "periodic_filings": 127,
+        "acceptance_datetime": "2026-10-29T20:15:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "e92dbd7b0d3fadbaf78fa66119ab79becb4e097e9dac91a111f3f1f22acb6228",

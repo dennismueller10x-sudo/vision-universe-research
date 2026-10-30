@@ -3,7 +3,7 @@
    ist der einzige Pass ohne Pruefung; Daten ohne Freigabe, Freigabe ohne Daten und Unlesbares sind Fehler. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -307,12 +307,24 @@ test("DQ-SF8-8 · eine Preiswahrheit: ohne Toleranz, gleiche Sitzung, gleiche Id
   }
 });
 
-test("DQ-SF8 · Repository-Stand: vorbereitet, keine Daten -> alle Regeln PASS; --sf8-activated ohne Daten -> streng rot", () => {
+test("DQ-SF8 · Repository-Stand: ohne Daten alle Regeln PASS (0 geprueft); veroeffentlicht DQ-SF8-2..8 PASS; --sf8-activated ohne Daten -> streng rot", () => {
   const run = (args) => spawnSync(process.execPath, [join(ROOT, "scripts", "core", "data-quality.mjs"), "--only=sf8", "--json", ...args], { encoding: "utf8" });
   const repo = run([]);
   assert.equal(repo.status, 0, repo.stderr);
   const rep = JSON.parse(repo.stdout);
-  assert.equal(rep.rules.length, 8); assert.ok(rep.rules.every((r) => r.status === "PASS" && r.checked === 0));
+  assert.equal(rep.rules.length, 8);
+  /* Erste Veroeffentlichung (docs/SUPERTRADER_8_FIRST_RELEASE.md): liegen Daten vor, muss die Datenart freigegeben sein
+     (ACTIVATING oder ohne Feld) und ihr Inhalt besteht DQ-SF8-2..8. DQ-SF8-1 (Frische) haengt vom Kalendertag ab: ein
+     einmaliger Stand altert, das zeigen data-quality und system-health im Bericht, kein Unit-Test. */
+  const domain = JSON.parse(readFileSync(join(ROOT, "core", "registry", "domains.json"), "utf8")).domains.find((d) => d.id === "supertrader-sf8-candidates");
+  const published = existsSync(join(ROOT, "supertrader", "data", "sf-candidates", "summary.json"));
+  if (!published) assert.ok(rep.rules.every((r) => r.status === "PASS" && r.checked === 0), "ohne Daten nichts zu pruefen");
+  else {
+    assert.ok(!domain.activation || domain.activation.state === "ACTIVATING", "veroeffentlicht nur nach Freigabe");
+    const content = rep.rules.filter((r) => r.id !== "DQ-SF8-1");
+    assert.equal(content.length, 7);
+    assert.deepEqual(content.filter((r) => r.status !== "PASS" || r.checked === 0).map((r) => r.id + " " + r.samples.slice(0, 2).join("; ")), []);
+  }
   const empty = mkdtempSync(join(tmpdir(), "sf8-dq-"));
   try {
     const r = run(["--sf8-dir=" + empty, "--sf8-activated", "--strict"]);

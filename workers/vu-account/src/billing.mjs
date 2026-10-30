@@ -14,7 +14,8 @@ import {verifyStripeSignature, StripeError} from './stripe.mjs';
 import {normalizeStripeSubscription, normalizeStripeInvoice, stripeInvoiceSubscriptionId} from './providers/stripe-adapter.mjs';
 import {SupabaseError} from './supabase.mjs';
 import {featureDecision} from './entitlements.mjs';
-import {receivePublicCancellation, receiveSignedInCancellation} from './cancellation.mjs';
+import {receivePublicCancellation, receiveSignedInCancellation, queueContractConfirmation} from './cancellation.mjs';
+import {LEGAL_BASE} from './legal/texts.mjs';
 import * as v from './validate.mjs';
 
 const STRIPE_ID = {sub: /^sub_[A-Za-z0-9]{6,}$/, in: /^in_[A-Za-z0-9]{6,}$/, cus: /^cus_[A-Za-z0-9]{6,}$/};
@@ -38,7 +39,10 @@ export async function plans(ctx) {
         .map(x => ({key: x.id, interval: x.billing_interval, currency: x.currency, unitAmount: x.unit_amount})),
     }));
     catalogCache = {at: ctx.now(), body: {plans: data, features: featureRows.map(f => ({key: f.key, description: f.description})),
-      mode: ctx.cfg.stripe.mode === 'live' ? 'live' : 'test', checkout: billingBlocker(ctx.cfg) ? 'off' : ctx.cfg.stripe.checkoutAccess}};
+      mode: ctx.cfg.stripe.mode === 'live' ? 'live' : 'test', checkout: billingBlocker(ctx.cfg) ? 'off' : ctx.cfg.stripe.checkoutAccess,
+      // Freiwillige Newsletter-Bestellung bei der Registrierung anbieten?
+      newsletter: Boolean(ctx.cfg.brevo.newsletter && ctx.cfg.brevo.lists.newsletter && ctx.cfg.mail.apiKey),
+      legal: {version: ctx.cfg.legal.version, status: ctx.cfg.legal.status}}};
   }
   return json(ctx.request, ctx.cfg, 200, catalogCache.body, {headers: {'Cache-Control': 'public, max-age=300'}});
 }
@@ -89,24 +93,77 @@ export async function checkout(ctx) {
     ctx.log('error', 'PRICE_MISMATCH', {price: key});
     throw new HttpError(409, 'PRICE_NOT_AVAILABLE');
   }
+  // Mit Steuerausweis darf der Bruttopreis nie steigen: Preis und Steuersatz muessen "inklusive" sein (fail closed).
+  const taxProblem = await taxProblemFor(ctx, stripePrice);
+  if (taxProblem) {
+    ctx.log('error', 'TAX_CONFIG_INVALID', {price: key, code: taxProblem});
+    throw new HttpError(503, 'TAX_CONFIG_INVALID');
+  }
   const customer = await ensureCustomer(ctx, user);
   const site = ctx.cfg.siteOrigin;
   const bucket = Math.floor(ctx.now() / 600_000); // Doppelklick -> dieselbe Sitzung
   const session = await ctx.stripe.createCheckoutSession({
     mode: 'subscription', customer, client_reference_id: user.id,
     line_items: [{price: price.provider_price_id, quantity: 1}],
-    subscription_data: {metadata: {vu_user_id: user.id, vu_price_key: key}},
+    subscription_data: {metadata: {vu_user_id: user.id, vu_price_key: key},
+      ...(ctx.cfg.stripe.tax.mode === 'rate' ? {default_tax_rates: [ctx.cfg.stripe.tax.rate]} : {})},
     metadata: {vu_user_id: user.id, vu_price_key: key, vu_confirmation: CHECKOUT_CONFIRMATION_VERSION,
-      vu_confirmed_at: new Date(ctx.now()).toISOString()},
+      vu_confirmed_at: new Date(ctx.now()).toISOString(), vu_legal_version: ctx.cfg.legal.version},
     success_url: `${site}${SITE_PATHS.subscription}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${site}${SITE_PATHS.plans}?checkout=canceled`,
     locale: 'de', allow_promotion_codes: 'true', billing_address_collection: 'auto',
     customer_update: {address: 'auto', name: 'auto'},
+    // Hinweis direkt ueber der letzten Schaltflaeche (Stripe beschriftet sie im Abo-Modus mit "Abonnieren"):
+    // zahlungspflichtige Bestellung, Preis, Verlaengerung, Kuendigung, Bedingungen (§ 312j Abs. 3 BGB, zu pruefen).
+    custom_text: {submit: {message: checkoutSubmitText(price)}},
+    ...checkoutTax(ctx.cfg.stripe.tax),
     ...(ctx.cfg.stripe.requireTerms ? {consent_collection: {terms_of_service: 'required'}} : {}),
   }, `vu-checkout-${user.id}-${key}-${bucket}`);
   const host = new URL(session.url).hostname;
   if (!ctx.cfg.stripe.checkoutHosts.has(host)) throw new HttpError(502, 'CHECKOUT_URL_UNEXPECTED');
   return json(ctx.request, ctx.cfg, 200, {url: session.url}, {cookies: ctx.outCookies});
+}
+
+export function checkoutSubmitText(price) {
+  const amount = new Intl.NumberFormat('de-DE', {style: 'currency', currency: price.currency}).format(price.unit_amount / 100);
+  const period = price.billing_interval === 'year' ? 'Jahr' : 'Monat';
+  return `Mit „Abonnieren“ bestellst du Vision Universe Pro zahlungspflichtig für ${amount} pro ${period} inkl. USt. `
+    + `Das Abo verlängert sich monatlich und ist jederzeit zum Ende des bezahlten ${period}s kündbar. `
+    + `Es gelten die Bedingungen (${LEGAL_BASE}/rechtliches/agb) und die Widerrufsbelehrung (${LEGAL_BASE}/rechtliches/widerrufsbelehrung).`;
+}
+
+// Warum die Steuerkonfiguration einen hoeheren als den angezeigten Bruttopreis ergeben koennte - oder null.
+// Steuersatz (txr_) wird hoechstens alle 10 Minuten bei Stripe gelesen.
+let taxRateCache = {id: null, at: 0, value: null};
+export async function taxRateState(ctx) {
+  const tax = ctx.cfg.stripe.tax;
+  if (tax.mode !== 'rate') return null;
+  if (taxRateCache.id !== tax.rate || ctx.now() - taxRateCache.at > 600_000) {
+    let value;
+    try {
+      const r = await ctx.stripe.retrieveTaxRate(tax.rate);
+      value = !r.active ? 'TAX_RATE_INACTIVE' : r.inclusive !== true ? 'TAX_RATE_NOT_INCLUSIVE'
+        : Boolean(r.livemode) !== (ctx.cfg.stripe.mode === 'live') ? 'TAX_RATE_LIVEMODE' : 'ok';
+    } catch (e) { value = 'TAX_RATE_UNREADABLE'; }
+    taxRateCache = {id: tax.rate, at: ctx.now(), value};
+  }
+  return taxRateCache.value;
+}
+export const resetTaxRateCache = () => { taxRateCache = {id: null, at: 0, value: null}; };
+async function taxProblemFor(ctx, stripePrice) {
+  const tax = ctx.cfg.stripe.tax;
+  if (tax.mode === 'none') return null;
+  if (stripePrice.tax_behavior !== 'inclusive') return 'PRICE_NOT_INCLUSIVE';
+  if (tax.mode === 'rate') { const s = await taxRateState(ctx); return s === 'ok' ? null : s; }
+  return null;
+}
+
+// Umsatzsteuer im Checkout: der Preis ist brutto (tax_behavior=inclusive); ein inklusiver Steuersatz bzw.
+// Stripe Tax weisen die enthaltene Steuer auf der Rechnung aus, ohne den Betrag zu erhoehen.
+export function checkoutTax(tax) {
+  if (tax?.mode === 'automatic') return {automatic_tax: {enabled: 'true'}};
+  // Steuersatz: wird ueber subscription_data.default_tax_rates gesetzt (siehe checkout).
+  return {};
 }
 
 export async function portal(ctx) {
@@ -183,6 +240,15 @@ async function syncSubscription(ctx, id) {
   return {...snapshot, result};
 }
 
+async function sendContractConfirmation(ctx, userId, snapshot, session) {
+  const email = await ctx.store.accountEmail(userId);
+  const [price] = await ctx.sb.anon.select('plan_prices', {provider: 'eq.stripe', provider_price_id: `eq.${snapshot.provider_price_id}`});
+  await queueContractConfirmation(ctx, {email, subscriptionRef: snapshot.provider_subscription_id, plan: price?.plan_id || 'pro',
+    amount: price?.unit_amount ?? null, currency: price?.currency || 'EUR', interval: price?.billing_interval || 'month',
+    confirmedAt: /^\d{4}-\d{2}-\d{2}T/.test(String(session.metadata?.vu_confirmed_at || '')) ? session.metadata.vu_confirmed_at : null,
+    paymentPending: !['active', 'trialing'].includes(snapshot.status)});
+}
+
 async function syncInvoice(ctx, id) {
   const inv = await ctx.stripe.retrieveInvoice(id);
   const subId = stripeInvoiceSubscriptionId(inv);
@@ -209,7 +275,23 @@ async function processStripeEvent(ctx, event) {
     if (!/^[0-9a-f-]{36}$/.test(userId) || !STRIPE_ID.cus.test(String(customer))) throw new Error('CHECKOUT_SESSION_INCOMPLETE');
     await ctx.store.linkCustomer(userId, 'stripe', customer); // wirft bei Widerspruch
     const subId = typeof object.subscription === 'string' ? object.subscription : object.subscription.id;
-    return (await syncSubscription(ctx, subId)).result?.user_id || userId;
+    const snapshot = await syncSubscription(ctx, subId);
+    const owner = snapshot.result?.user_id || userId;
+    // Vertrag geschlossen: Bestaetigung einmal je Abo (dedupe), auch wenn die Zahlung (SEPA) noch aussteht.
+    if (event.type === 'checkout.session.completed') {
+      try { await sendContractConfirmation(ctx, owner, snapshot, object); }
+      catch (e) { ctx.log('error', 'CONTRACT_CONFIRMATION_FAILED', {subscription: subId, code: String(e.code || e.message).slice(0, 80)}); }
+    }
+    return owner;
+  }
+  // SEPA u. a.: Die verzoegerte Erstzahlung ist gescheitert. Den Zustand frisch bei Stripe holen
+  // (kein Zugang ohne bezahlte Rechnung, die Zugangsregel entscheidet); nichts aus der Nutzlast uebernehmen.
+  if (event.type === 'checkout.session.async_payment_failed') {
+    if (object.mode !== 'subscription' || !object.subscription) return 'ignored';
+    const subId = typeof object.subscription === 'string' ? object.subscription : object.subscription.id;
+    if (!STRIPE_ID.sub.test(String(subId))) throw new Error('STRIPE_SUBSCRIPTION_SHAPE');
+    ctx.log('warn', 'ASYNC_PAYMENT_FAILED', {event: event.id});
+    return (await syncSubscription(ctx, subId)).result?.user_id || null;
   }
   if (SUBSCRIPTION_EVENTS.has(event.type)) {
     if (!STRIPE_ID.sub.test(String(object.id))) throw new Error('STRIPE_SUBSCRIPTION_SHAPE');

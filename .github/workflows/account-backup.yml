@@ -6,8 +6,9 @@ name: Konten — Datenbank-Sicherung (verschluesselt)
 # Empfaengerschluessel wird nichts gesichert (fail closed) - nie unverschluesselt.
 # Wiederherstellung: docs/accounts/PRODUCTION.md, Abschnitt "Sicherung".
 #
-# Braucht (einmalig, docs/accounts/PRODUCTION.md):
-#   Repository-Secret   VU_ACCOUNT_BACKUP_DB_URL        Session-Pooler-URI
+# Braucht (einmalig, docs/accounts/FREIGABEN.md):
+#   Umgebung account-auto (ohne Review, nur main): VU_ACCOUNT_SUPABASE_DB_URL - dieselbe URL wie fuer die
+#     automatischen Migrationen; kein Datenbank-Zugang mehr als Repository-Secret
 #   Repository-Variable VU_ACCOUNT_BACKUP_AGE_RECIPIENT age1… (oeffentlich)
 # Keine Umgebung mit Pflicht-Review: ein naechtlicher Lauf kann nicht warten.
 on:
@@ -16,23 +17,44 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: account-backup-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
-  backup:
+  umgebung:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.pruefen.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Umgebung account-auto vorhanden und nur fuer main?
+        id: pruefen
+        env: {GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}'}
+        run: node scripts/account/check-auto-env.mjs
+
+  backup:
+    needs: umgebung
+    if: needs.umgebung.outputs.ready == 'true'
+    runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: account-auto
     steps:
       - name: Sichern und verschluesseln
         env:
-          DB_URL: ${{ secrets.VU_ACCOUNT_BACKUP_DB_URL }}
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
           RECIPIENT: ${{ vars.VU_ACCOUNT_BACKUP_AGE_RECIPIENT }}
         run: |
           set -euo pipefail
           [[ "$RECIPIENT" =~ ^age1[0-9a-z]{58}$ ]] || { echo "::error::VU_ACCOUNT_BACKUP_AGE_RECIPIENT fehlt (age1…) - keine Sicherung ohne Verschluesselung"; exit 1; }
-          [[ "$DB_URL" == postgresql://*qiytbnpoqvldsatpfkeh* ]] || { echo "::error::VU_ACCOUNT_BACKUP_DB_URL fehlt oder gehoert nicht zum Produktionsprojekt"; exit 1; }
+          [[ "$DB_URL" == postgresql://*qiytbnpoqvldsatpfkeh* ]] || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL (account-auto) fehlt oder gehoert nicht zum Produktionsprojekt"; exit 1; }
           sudo apt-get install -y -qq age > /dev/null
           umask 077
           out="$RUNNER_TEMP/backup"; mkdir -p "$out"

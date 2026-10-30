@@ -1,20 +1,25 @@
 {
   "note": "Wodurch entstehen die SEC_RECOVERABLE-Luecken? Die Reihenfolge hier ist die Reihenfolge der naechsten Arbeit - gemessen, nicht vermutet. NICHTS davon wurde repariert.",
   "denominator": {
-    "SEC_RECOVERABLE": 1
+    "SEC_RECOVERABLE": 2
   },
   "byCause": [
     {
       "cause": "IFRS_OR_FOREIGN_TAXONOMY",
-      "count": 1,
+      "count": 2,
       "percent": 100.0,
       "formTypes": {
-        "20-F": 1
+        "20-F": 2
       },
       "examples": [
         {
           "symbol": "PICS",
           "cik": "0001841644",
+          "form": "20-F"
+        },
+        {
+          "symbol": "THH",
+          "cik": "0002044241",
           "form": "20-F"
         }
       ]
@@ -32,5 +37,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-28T13:02:11+00:00"
+  "generatedAtUtc": "2026-10-30T13:12:54+00:00"
 }

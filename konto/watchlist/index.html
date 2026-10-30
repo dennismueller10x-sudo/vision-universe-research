@@ -13,9 +13,10 @@
 </head>
 <body class="ka-body" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka ka--wide" id="main">
-<p class="ka-eyebrow">Konto</p>
+<nav class="ka-crumbs" aria-label="Pfad"><a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a><span aria-hidden="true">›</span><span aria-current="page">Watchlist</span></nav>
 <h1 class="ka-title">Watchlist</h1>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/" aria-current="page">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<p class="ka-lead ka-lead--tight">Alle Kennzahlen deiner gespeicherten Aktien. Kurzansicht im <a class="ka-link" href="/mein-dashboard/">Dashboard</a>.</p>
+
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="wl-loading" aria-hidden="true"></div>
 <div id="wl-app" hidden>
@@ -57,7 +58,7 @@
 <p class="wl-fine">Keine Anlageberatung. Alle Werte stammen aus den veröffentlichten Daten der Produktwelten.</p>
 </details>
 </div>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

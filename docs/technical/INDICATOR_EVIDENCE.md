@@ -1,7 +1,7 @@
 # Historische Evidenz klassischer Indikator-Ereignisse
 
 Stand 28.10.2026 (Marktphasen ergänzt), Engine `technical-indicators-1.5.0`/1.6.0 (Ereignisse unverändert), Datenstand 26.10.2026.
-- Skript: `scripts/technical/indicator-evidence.mjs`. Es schreibt nur mit `--out` und ist kein Produktartefakt.
+- Skript: `scripts/technical/indicator-evidence.mjs`. Es schreibt nur mit `--out`. Für das Produkt verdichtet `scripts/technical/world/signal-evidence.mjs` das Ergebnis zu `technical/data/signal-evidence.json` (SIGNAL_EVIDENCE.md).
 - Test der Bausteine: `quant/tests/technical-indicator-evidence.test.mjs`.
 
 Diese Auswertung beschreibt, was nach 18 verbreiteten Indikator-Ereignissen im Mittel geschah. Sie empfiehlt nichts. Die Methode ist dieselbe wie bei den Kerzenmustern ([CANDLESTICK_EVIDENCE.md](CANDLESTICK_EVIDENCE.md)).

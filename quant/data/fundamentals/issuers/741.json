@@ -6,9 +6,9 @@
       "cik": "0000024741",
       "name": "CORNING INC /NY",
       "sic": "3357",
-      "rawFacts": 27439,
-      "mappedFacts": 7642,
-      "unmappedFacts": 20301,
+      "rawFacts": 27799,
+      "mappedFacts": 7629,
+      "unmappedFacts": 20672,
       "calendarYears": 21,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 20,
-      "quarterlyPeriods": 75,
+      "quarterlyPeriods": 76,
       "firstPeriodEnd": "2006-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "eps_diluted": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "free_cash_flow": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0,
@@ -59,42 +59,42 @@
         },
         "net_income": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "operating_cash_flow": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "revenue": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "stockholders_equity": {
           "annualPeriods": 20,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 618,
-        "MEDIUM": 45
+        "HIGH": 628,
+        "MEDIUM": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 663,
-        "resolvedValues": 663
+        "datableValues": 671,
+        "resolvedValues": 671
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 20789,
+        "rules_version": "1.1.0",
+        "total": 21061,
         "by_severity": {
-          "INFO": 20301,
-          "WARNING": 488
+          "INFO": 20672,
+          "WARNING": 389
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 393,
+          "CONCEPT_DISAGREEMENT": 320,
           "FISCAL_PERIOD_CONFLICT": 24,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 64,
+          "RESTATEMENT_CONFLICT": 38,
           "UNIT_MISMATCH": 4,
-          "UNKNOWN_CONCEPT": 20301
+          "UNKNOWN_CONCEPT": 20672
         }
       },
       "latestFiling": {
-        "accession": "0000024741-26-000255",
-        "filing_date": "2026-07-29",
+        "accession": "0000024741-26-000279",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 138
+        "periodic_filings": 139,
+        "acceptance_datetime": "2026-10-29T14:55:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "beb234c4e451039f18d37ddf8e7341825126a8cbbc376100e7a11306841ec64c",
+      "sourceDigest": "321aa441c677933ceb03b5f712c6be8aba5ac449913a2db8ca0b8279d51d39d1",
       "issuerId": "iss_cik_0000024741"
     },
     {
@@ -797,9 +798,9 @@
       "cik": "0001956741",
       "name": "Zone Frontier Inc.",
       "sic": "2842",
-      "rawFacts": 2636,
-      "mappedFacts": 913,
-      "unmappedFacts": 1792,
+      "rawFacts": 2638,
+      "mappedFacts": 914,
+      "unmappedFacts": 1794,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -916,10 +917,10 @@
         "resolvedValues": 102
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1832,
+        "rules_version": "1.1.0",
+        "total": 1834,
         "by_severity": {
-          "INFO": 1792,
+          "INFO": 1794,
           "WARNING": 40
         },
         "by_code": {
@@ -927,28 +928,28 @@
           "PERIOD_MISMATCH": 3,
           "RESTATEMENT_CONFLICT": 5,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 1792
+          "UNKNOWN_CONCEPT": 1794
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-104157",
-        "filing_date": "2026-09-28",
-        "form": "10-K",
-        "periodic_filings": 11,
-        "acceptance_datetime": "2026-09-28T21:22:53.000Z"
+        "accession": "0001213900-26-113383",
+        "filing_date": "2026-10-28",
+        "form": "10-K/A",
+        "periodic_filings": 12,
+        "acceptance_datetime": "2026-10-28T21:15:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bec68881cbd92eebac2a10543f8a99046ba401ffe2afbca85006f9ee7580efb6",
+      "sourceDigest": "79dfb5e622f9190c7cec10de8ef96cd6220134f0a9e23eae935197a369164e59",
       "issuerId": "iss_cik_0001956741"
     }
   ]

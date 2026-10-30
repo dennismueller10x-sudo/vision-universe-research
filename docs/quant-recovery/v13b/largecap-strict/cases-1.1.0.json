@@ -1,0 +1,1443 @@
+{
+ "schemaVersion": "v13b-largecap-strict-cases-1.1.0",
+ "protocolVersion": "1.1.0",
+ "ruleId": "STRICT_INTERVAL_BOUNDARY",
+ "protocolSha256": "3710f99d5bb10ff95538fd8bdde73e8dc805888589d0a386d958a7465780ef28",
+ "amendmentSha256": "52a3ef0d18986bc246cdfdf2fbb4c9e30af4a682e5083f41c67b80d301e0e4aa",
+ "amendment110Sha256": "a90fa885b646f3fc3bdf9a39b316f56e016dfa7a1706428282b76e6db4fed823",
+ "resultStatus": "REGISTERED_AMENDMENT_1.1.0_OWNER_APPROVED_RESTRICTION_ONLY",
+ "basedOn": {
+  "cases": "docs/quant-recovery/v13/largecap/cases-1.0.0.json",
+  "casesSha256": "f15feb58cc0f63570487c906876a1784c26bf93dd337b3eceebe0154a9b7f2cd",
+  "reEvaluatedIdentical": true
+ },
+ "codeSha256": {
+  "evaluate-1.1.0.cjs": "5b68850e1c0b38c783dc0cb67608ac02badd836dc120fb8b1bf048de7035726a",
+  "evaluate.cjs": "4d2a627c6f4960fec6a11d1badcd86c46bc53b37e52c227258338fe6ec434165"
+ },
+ "factsSha256": "c3124d835cd6841258ac5d89b8bb817e5b73198c601d70884912d968a2b78fbd",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "summary": [
+  {
+   "securityId": "ref_AAPL",
+   "status": "UNLOCKED",
+   "validFrom": "2012-11-09",
+   "validTo": "2025-09-26",
+   "bars": 673,
+   "v101": {
+    "validFrom": "2012-10-05",
+    "validTo": "2025-09-26",
+    "bars": 678
+   },
+   "changed": true,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_ABT",
+   "status": "UNLOCKED",
+   "validFrom": "2022-08-05",
+   "validTo": "2026-06-26",
+   "bars": 204,
+   "v101": {
+    "validFrom": "2022-08-05",
+    "validTo": "2026-06-26",
+    "bars": 204
+   },
+   "changed": false,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_MS",
+   "status": "UNLOCKED",
+   "validFrom": "2008-11-07",
+   "validTo": "2026-06-26",
+   "bars": 921,
+   "v101": {
+    "validFrom": "2008-09-05",
+    "validTo": "2026-06-26",
+    "bars": 930
+   },
+   "changed": true,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_USB",
+   "status": "UNLOCKED",
+   "validFrom": "2001-04-12",
+   "validTo": "2026-06-26",
+   "bars": 1316,
+   "v101": {
+    "validFrom": "2001-04-06",
+    "validTo": "2026-06-26",
+    "bars": 1317
+   },
+   "changed": true,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_DD",
+   "status": "UNLOCKED",
+   "validFrom": "2017-11-03",
+   "validTo": "2024-01-26",
+   "bars": 326,
+   "v101": {
+    "validFrom": "2017-11-03",
+    "validTo": "2024-01-26",
+    "bars": 326
+   },
+   "changed": false,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_COR",
+   "status": "UNLOCKED",
+   "validFrom": "2016-09-02",
+   "validTo": "2026-06-26",
+   "bars": 513,
+   "v101": {
+    "validFrom": "2016-07-01",
+    "validTo": "2026-06-26",
+    "bars": 522
+   },
+   "changed": true,
+   "reasons": []
+  },
+  {
+   "securityId": "ref_DOC",
+   "status": "UNLOCKED",
+   "validFrom": "2024-03-01",
+   "validTo": "2026-04-24",
+   "bars": 113,
+   "v101": {
+    "validFrom": "2024-03-01",
+    "validTo": "2026-04-24",
+    "bars": 113
+   },
+   "changed": false,
+   "reasons": []
+  }
+ ],
+ "cases": [
+  {
+   "securityId": "ref_AAPL",
+   "ticker": "AAPL",
+   "cik": "0000320193",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "e85c98350a8c95c4d7fb7a0f3739285286c91e24c53e52189631c1e52e834eba",
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "bars": 1921,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SINGLE_ROW_INTERVAL",
+    "selectedCanonicalId": "tiingo:NASDAQ:AAPL:1980-12-12",
+    "masterRowSet": [
+     "tiingo:NASDAQ:AAPL:1980-12-12"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "AAPL"
+    ],
+    "firstIdentityFiling": "1994-12-13",
+    "lastIdentityFiling": "2025-10-31",
+    "bound": {
+     "from": "1993-11-08",
+     "to": "2026-12-05"
+    },
+    "firstIdentityQuote": {
+     "accession": "0000320193-94-000016",
+     "filingDate": "1994-12-13",
+     "form": "10-K",
+     "symbol": "AAPL",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019394000016/0000320193-94-000016.txt",
+     "sha256": "6da0a5e72359f60ec25cba91adb4c4fdd31ac54d3f7fa2205dc06838b2b38cdb",
+     "quote": "arket and is quoted on the Nasdaq National Market under the symbol AAPL, on the Tokyo Stock Exchange under the symbol APPLE, and on the Frankfurt Stock Exchange under the symbol APCD. Options are traded on the Chicago Board Options Exchange and the American Stock Exchange. Information regarding the ",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019394000016/0000320193-94-000016.txt",
+      "sha256": "6da0a5e72359f60ec25cba91adb4c4fdd31ac54d3f7fa2205dc06838b2b38cdb",
+      "quote": "trant was approximately $ 4,193,708,403 as of December 2, 1994, based upon the closing price on the Nasdaq National Market reported for such date. Shares of Common Stock held by each executive officer and director and by each person who beneficially "
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0000320193-25-000079",
+     "filingDate": "2025-10-31",
+     "form": "10-K",
+     "symbol": "AAPL",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+     "sha256": "b9820c677562512182ea9d48a02219d46859e25458087118baa8fb6defd225d3",
+     "quote": "on stock is traded on The Nasdaq Stock Market LLC under the symbol AAPL. Holders As of October 17, 2025, there were 22,429 shareholders of record. Purchases of Equity Securities by the Issuer and Affiliated Purchasers Share repurchase activity during the three months ended September 27, 2025, was as",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+      "sha256": "b9820c677562512182ea9d48a02219d46859e25458087118baa8fb6defd225d3",
+      "quote": "ol(s) Name of each exchange on which registered Common Stock, $0.00001 par value per share AAPL The Nasdaq Stock Market LLC 0.000% Notes due 2025 — The Nasdaq Stock Market LLC 1.625% Notes due 2026 — The Nasdaq Stock Market LLC 2.000% Notes due 2027 "
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2012-10-05",
+    "validTo": "2025-09-26",
+    "bars": 678,
+    "anchoredStart": "2012-10-01",
+    "anchoredEnd": "2025-09-27",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 1,
+    "memberIndexes": [
+     150,
+     331
+    ],
+    "members": 182,
+    "gaps": 0,
+    "start": "2012-10-01",
+    "end": "2025-09-27"
+   },
+   "strict": {
+    "start": "2012-11-04",
+    "end": "2025-09-27",
+    "clipStart": [
+     {
+      "index": 149,
+      "type": "B",
+      "start": "2012-09-30",
+      "end": "2012-11-03",
+      "pass": false,
+      "deviation": 11.0646,
+      "avgPrice": 8050,
+      "accession": "0001193125-13-022339",
+      "filingDate": "2013-01-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312513022339/d453687d10q.htm",
+      "sha256": "9a522d8c74914fde01a0a11504c077738a3b4009611c25ae35232bb0cff1e9f4",
+      "quote": "September 30 to November 3, 2012 2,582,782 (a) (a) 2,582,782 (a) $ 8,050"
+     }
+    ],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 150,
+     "type": "A",
+     "start": "2012-10-01",
+     "end": "2012-12-31",
+     "pass": true,
+     "deviation": 0,
+     "fy": 2013,
+     "q": 1,
+     "high": 676.75,
+     "low": 501.23,
+     "accession": "0001193125-13-416534",
+     "filingDate": "2013-10-30",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312513416534/d590790d10k.htm",
+     "sha256": "5e8392d246dc1b240eca1a6b57855a5575fc89f1e28adb231bf1ef66c60a7ef7",
+     "quote": "2013 price range per share $ 513.74 - $401.22 $ 465.75 - $385.10 $ 555.00 - $419.00 $ 676.75 - $501.23"
+    },
+    "endEvidence": {
+     "index": 331,
+     "type": "B",
+     "start": "2025-08-31",
+     "end": "2025-09-27",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 238.56,
+     "accession": "0000320193-25-000079",
+     "filingDate": "2025-10-31",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+     "sha256": "b9820c677562512182ea9d48a02219d46859e25458087118baa8fb6defd225d3",
+     "quote": "August 31, 2025 to September 27, 2025: | Open market and privately negotiated purchases 27,247 $ 238.56 27,247"
+    }
+   },
+   "interval": {
+    "validFrom": "2012-11-09",
+    "validTo": "2025-09-26",
+    "bars": 673,
+    "anchoredStart": "2012-11-04",
+    "anchoredEnd": "2025-09-27",
+    "changedFrom101": true,
+    "barsRemovedBefore": 5,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2012-11-09",
+    "checkedTo": "2025-09-26",
+    "pointsSha256": "8ce061906ee03fab393217e0ebe1a264adfad7ced356330d949ef175f361eadf",
+    "bars": 673
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [
+    {
+     "date": "2014-06-09",
+     "factor": 7.000007,
+     "class": "SPLIT"
+    },
+    {
+     "date": "2020-08-31",
+     "factor": 4,
+     "class": "SPLIT"
+    }
+   ],
+   "anchorsInside": {
+    "A": 36,
+    "B": 146,
+    "pass": 182,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 150,
+    "type": "A",
+    "start": "2012-10-01",
+    "end": "2012-12-31",
+    "pass": true,
+    "deviation": 0,
+    "fy": 2013,
+    "q": 1,
+    "high": 676.75,
+    "low": 501.23,
+    "accession": "0001193125-13-416534",
+    "filingDate": "2013-10-30",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312513416534/d590790d10k.htm",
+    "sha256": "5e8392d246dc1b240eca1a6b57855a5575fc89f1e28adb231bf1ef66c60a7ef7",
+    "quote": "2013 price range per share $ 513.74 - $401.22 $ 465.75 - $385.10 $ 555.00 - $419.00 $ 676.75 - $501.23"
+   },
+   "lastPassInside": {
+    "index": 331,
+    "type": "B",
+    "start": "2025-08-31",
+    "end": "2025-09-27",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 238.56,
+    "accession": "0000320193-25-000079",
+    "filingDate": "2025-10-31",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+    "sha256": "b9820c677562512182ea9d48a02219d46859e25458087118baa8fb6defd225d3",
+    "quote": "August 31, 2025 to September 27, 2025: | Open market and privately negotiated purchases 27,247 $ 238.56 27,247"
+   }
+  },
+  {
+   "securityId": "ref_ABT",
+   "ticker": "ABT",
+   "cik": "0000001800",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "9e7387eff2c14ce8d7fe22f90584a84528e293363e467a707fa1f10f02bb5a0b",
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "bars": 1921,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SINGLE_ROW_INTERVAL",
+    "selectedCanonicalId": "tiingo:NYSE:ABT:1983-04-06",
+    "masterRowSet": [
+     "tiingo:NYSE:ABT:1983-04-06"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "ABT"
+    ],
+    "firstIdentityFiling": "2019-02-22",
+    "lastIdentityFiling": "2026-07-28",
+    "bound": {
+     "from": "2018-01-18",
+     "to": "2027-09-01"
+    },
+    "firstIdentityQuote": {
+     "accession": "0001047469-19-000624",
+     "filingDate": "2019-02-22",
+     "form": "10-K",
+     "symbol": "ABT",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000104746919000624/a2237733z10-k.htm",
+     "sha256": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+     "quote": "tt's common shares is the New York Stock Exchange under the symbol \"ABT.\" Shares are also listed on the Chicago Stock Exchange and traded on various regional and electronic exchanges. Outside the United States, Abbott's shares are listed on the SIX Swiss Exchange. Shareholders There were 42,827 shar",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1800/000104746919000624/a2237733z10-k.htm",
+      "sha256": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+      "quote": "Act: Title of Each Class Name of Each Exchange on Which Registered Common Shares, Without Par Value New York Stock Exchange Chicago Stock Exchange Indicate by check mark if the registrant is a well-known seasoned issuer, as defined in Rule 405 of the"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0001628280-26-050134",
+     "filingDate": "2026-07-28",
+     "form": "10-Q",
+     "symbol": "ABT",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+     "sha256": "bb63b203e53f4550dccafb01cdd5127a8680a2d76325c01831eb52ebfc147c87",
+     "quote": "d Pursuant to Section 12(b) of the Act: Title of Each Class Trading Symbol(s) Name of Each Exchange on Which Registered Common Shares, Without Par Value ABT New York Stock Exchange NYSE Texas Indicate by check mark whether the registrant: (l) has filed all reports required to be filed by Section 13 ",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+      "sha256": "bb63b203e53f4550dccafb01cdd5127a8680a2d76325c01831eb52ebfc147c87",
+      "quote": "ss Trading Symbol(s) Name of Each Exchange on Which Registered Common Shares, Without Par Value ABT New York Stock Exchange NYSE Texas Indicate by check mark whether the registrant: (l) has filed all reports required to be filed by Section 13 or 15(d"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2022-08-05",
+    "validTo": "2026-06-26",
+    "bars": 204,
+    "anchoredStart": "2022-08-01",
+    "anchoredEnd": "2026-06-30",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 1,
+    "memberIndexes": [
+     5,
+     23
+    ],
+    "members": 19,
+    "gaps": 0,
+    "start": "2022-08-01",
+    "end": "2026-06-30"
+   },
+   "strict": {
+    "start": "2022-08-01",
+    "end": "2026-06-30",
+    "clipStart": [],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 5,
+     "type": "B",
+     "start": "2022-08-01",
+     "end": "2022-08-31",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 102.567,
+     "accession": "0001628280-22-027550",
+     "filingDate": "2022-11-01",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828022027550/abt-20220930.htm",
+     "sha256": "33b210c7cff1d95312af6c7685ba820fe1db4643fa20d2bde408cd38ecda091e",
+     "quote": "August 1, 2022 - August 31, 2022 1,050,000 102.567 1,050,000 3,873,473,475"
+    },
+    "endEvidence": {
+     "index": 23,
+     "type": "B",
+     "start": "2026-06-01",
+     "end": "2026-06-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 91.743,
+     "accession": "0001628280-26-050134",
+     "filingDate": "2026-07-28",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+     "sha256": "bb63b203e53f4550dccafb01cdd5127a8680a2d76325c01831eb52ebfc147c87",
+     "quote": "June 1, 2026 - June 30, 2026 4,500,000 (1) 91.743 4,500,000 5,649,179,754 (2)"
+    }
+   },
+   "interval": {
+    "validFrom": "2022-08-05",
+    "validTo": "2026-06-26",
+    "bars": 204,
+    "anchoredStart": "2022-08-01",
+    "anchoredEnd": "2026-06-30",
+    "changedFrom101": false,
+    "barsRemovedBefore": 0,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2022-08-05",
+    "checkedTo": "2026-06-26",
+    "pointsSha256": "6002b6eb6d9a3821cd8c961b4fef91c6a23c4fba7d83dffe54a599cc50b34bfc",
+    "bars": 204
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [],
+   "anchorsInside": {
+    "A": 0,
+    "B": 19,
+    "pass": 19,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 5,
+    "type": "B",
+    "start": "2022-08-01",
+    "end": "2022-08-31",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 102.567,
+    "accession": "0001628280-22-027550",
+    "filingDate": "2022-11-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828022027550/abt-20220930.htm",
+    "sha256": "33b210c7cff1d95312af6c7685ba820fe1db4643fa20d2bde408cd38ecda091e",
+    "quote": "August 1, 2022 - August 31, 2022 1,050,000 102.567 1,050,000 3,873,473,475"
+   },
+   "lastPassInside": {
+    "index": 23,
+    "type": "B",
+    "start": "2026-06-01",
+    "end": "2026-06-30",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 91.743,
+    "accession": "0001628280-26-050134",
+    "filingDate": "2026-07-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+    "sha256": "bb63b203e53f4550dccafb01cdd5127a8680a2d76325c01831eb52ebfc147c87",
+    "quote": "June 1, 2026 - June 30, 2026 4,500,000 (1) 91.743 4,500,000 5,649,179,754 (2)"
+   }
+  },
+  {
+   "securityId": "ref_MS",
+   "ticker": "MS",
+   "cik": "0000895421",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "a636405dcec8ddb389cffa26aa51e7e65487c98eab9f0a69cfd75d331c53047e",
+    "from": "1993-02-26",
+    "to": "2026-10-23",
+    "bars": 1757,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SINGLE_ROW_INTERVAL",
+    "selectedCanonicalId": "tiingo:NYSE:MS:1993-02-23",
+    "masterRowSet": [
+     "tiingo:NYSE:MS:1993-02-23"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "MS"
+    ],
+    "firstIdentityFiling": "2006-02-13",
+    "lastIdentityFiling": "2026-08-04",
+    "bound": {
+     "from": "2005-01-09",
+     "to": "2027-09-08"
+    },
+    "firstIdentityQuote": {
+     "accession": "0001193125-06-028736",
+     "filingDate": "2006-02-13",
+     "form": "10-K",
+     "symbol": "MS",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312506028736/0001193125-06-028736.txt",
+     "sha256": "1a3c68a47c81c574f6643f9439487de7ddb729306513f9f95bcfa1537362681c",
+     "quote": "stock trades on the NYSE and the Pacific Exchange under the symbol “MS.” At November 30, 2005, Morgan Stanley had approximately 117,000 holders of record; however, Morgan Stanley believes the number of beneficial owners of common stock exceeds this number. The table below sets forth, for each of the",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312506028736/0001193125-06-028736.txt",
+      "sha256": "1a3c68a47c81c574f6643f9439487de7ddb729306513f9f95bcfa1537362681c",
+      "quote": "registered Securities registered pursuant to Section 12(b) of the Act: Common Stock, $.01 par value New York Stock Exchange Pacific Exchange Rights to Purchase Series A Junior Participating Preferred Stock New York Stock Exchange Pacific Exchange 8.0"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0000895421-26-000212",
+     "filingDate": "2026-08-04",
+     "form": "10-Q",
+     "symbol": "MS",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+     "sha256": "acc02ceb83f5b5e2bacc14fc06ad83f4a4e267c72cf04fb1abb7fb0c78958ba3",
+     "quote": "d pursuant to Section 12(b) of the Act: Title of each class Trading Symbol(s) Name of exchange on which registered Common Stock, $0.01 par value MS New York Stock Exchange Depositary Shares, each representing 1/1,000th interest in a share of Floating Rate MS/PA New York Stock Exchange Non-Cumulative",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+      "sha256": "acc02ceb83f5b5e2bacc14fc06ad83f4a4e267c72cf04fb1abb7fb0c78958ba3",
+      "quote": " each class Trading Symbol(s) Name of exchange on which registered Common Stock, $0.01 par value MS New York Stock Exchange Depositary Shares, each representing 1/1,000th interest in a share of Floating Rate MS/PA New York Stock Exchange Non-Cumulati"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2008-09-05",
+    "validTo": "2026-06-26",
+    "bars": 930,
+    "anchoredStart": "2008-09-01",
+    "anchoredEnd": "2026-06-30",
+    "bandConfirmedMoves": [
+     "2008-10-17"
+    ]
+   },
+   "selectedRun": {
+    "index": 2,
+    "memberIndexes": [
+     89,
+     471
+    ],
+    "members": 383,
+    "gaps": 0,
+    "start": "2008-09-01",
+    "end": "2026-06-30"
+   },
+   "strict": {
+    "start": "2008-11-01",
+    "end": "2026-06-30",
+    "clipStart": [
+     {
+      "index": 85,
+      "type": "B",
+      "start": "2008-09-01",
+      "end": "2008-09-30",
+      "pass": false,
+      "deviation": 0.1635,
+      "avgPrice": 20.01,
+      "accession": "0001193125-09-013429",
+      "filingDate": "2009-01-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+      "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+      "quote": "Month #1 (September 1, 2008—September 30, 2008) | Share Repurchase Program(A) 24,325,126 $ 20.01 24,325,126 $ 1,785"
+     },
+     {
+      "index": 88,
+      "type": "B",
+      "start": "2008-10-01",
+      "end": "2008-10-31",
+      "pass": false,
+      "deviation": 0.4598,
+      "avgPrice": 36.13,
+      "accession": "0001193125-09-013429",
+      "filingDate": "2009-01-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+      "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+      "quote": "Month #2 (October 1, 2008—October 31, 2008) | Employee Transactions(B) 107,807 $ 36.13 N/A N/A"
+     }
+    ],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 91,
+     "type": "B",
+     "start": "2008-11-01",
+     "end": "2008-11-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 14.44,
+     "accession": "0001193125-09-013429",
+     "filingDate": "2009-01-29",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+     "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+     "quote": "Month #3 (November 1, 2008—November 30, 2008) | Employee Transactions(B) 103,935 $ 14.44 N/A N/A"
+    },
+    "endEvidence": {
+     "index": 471,
+     "type": "B",
+     "start": "2026-06-01",
+     "end": "2026-06-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 214.98,
+     "accession": "0000895421-26-000212",
+     "filingDate": "2026-08-04",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+     "sha256": "acc02ceb83f5b5e2bacc14fc06ad83f4a4e267c72cf04fb1abb7fb0c78958ba3",
+     "quote": "June 1,787,311 $ 214.98 1,778,513 $ 14,165"
+    }
+   },
+   "interval": {
+    "validFrom": "2008-11-07",
+    "validTo": "2026-06-26",
+    "bars": 921,
+    "anchoredStart": "2008-11-01",
+    "anchoredEnd": "2026-06-30",
+    "changedFrom101": true,
+    "barsRemovedBefore": 9,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2008-11-07",
+    "checkedTo": "2026-06-26",
+    "pointsSha256": "7687d2945238c88498112da93e73e6aea46cdd11b5c3af3ddd3e7a5fce24d1d3",
+    "bars": 921
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [
+    "2008-10-17"
+   ],
+   "factorsInside": [],
+   "anchorsInside": {
+    "A": 70,
+    "B": 313,
+    "pass": 383,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 89,
+    "type": "A",
+    "start": "2008-09-01",
+    "end": "2008-11-30",
+    "pass": true,
+    "deviation": 0,
+    "fy": 2008,
+    "q": 4,
+    "high": 44.5,
+    "low": 6.71,
+    "accession": "0001193125-09-013429",
+    "filingDate": "2009-01-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+    "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+    "quote": "Fourth Quarter $ 6.71 $ 44.50 $ 0.27"
+   },
+   "lastPassInside": {
+    "index": 471,
+    "type": "B",
+    "start": "2026-06-01",
+    "end": "2026-06-30",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 214.98,
+    "accession": "0000895421-26-000212",
+    "filingDate": "2026-08-04",
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+    "sha256": "acc02ceb83f5b5e2bacc14fc06ad83f4a4e267c72cf04fb1abb7fb0c78958ba3",
+    "quote": "June 1,787,311 $ 214.98 1,778,513 $ 14,165"
+   }
+  },
+  {
+   "securityId": "ref_USB",
+   "ticker": "USB",
+   "cik": "0000036104",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "55bf4e8637af146d8d646b543e0419521ba366c7ef5b80b87b453c3b49a87516",
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "bars": 1921,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SINGLE_ROW_INTERVAL",
+    "selectedCanonicalId": "tiingo:NYSE:USB:1987-11-05",
+    "masterRowSet": [
+     "tiingo:NYSE:USB:1987-11-05"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "USB"
+    ],
+    "firstIdentityFiling": "1998-02-27",
+    "lastIdentityFiling": "2026-08-06",
+    "bound": {
+     "from": "1997-01-23",
+     "to": "2027-09-10"
+    },
+    "firstIdentityQuote": {
+     "accession": "0001047469-98-008045",
+     "filingDate": "1998-02-27",
+     "form": "10-K405",
+     "symbol": "USB",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000104746998008045/0001047469-98-008045.txt",
+     "sha256": "d88bd67bf8986d60345f680eb962270253ac36baaaff5d6bd42b7bbff16b2671",
+     "quote": " Bancorp is listed on the New York Stock Exchange under the ticker symbol USB. *The August 1, 1997 acquisition of U.S. Bancorp by First Bank System, Inc. was accounted for as a pooling-of-interests. Accordingly, this report provides financial information reflecting the results of the operations of t",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/36104/000104746998008045/0001047469-98-008045.txt",
+      "sha256": "d88bd67bf8986d60345f680eb962270253ac36baaaff5d6bd42b7bbff16b2671",
+      "quote": "405 PUBLIC DOCUMENT COUNT: 18 CONFORMED PERIOD OF REPORT: 19971231 FILED AS OF DATE: 19980227 SROS: NYSE FILER: COMPANY DATA: COMPANY CONFORMED NAME: US BANCORP \\DE\\ CENTRAL INDEX KEY: 0000036104 STANDARD INDUSTRIAL CLASSIFICATION: NATIONAL COMMERCIA"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0000036104-26-000044",
+     "filingDate": "2026-08-06",
+     "form": "10-Q",
+     "symbol": "USB",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+     "sha256": "b5a62c065b764dd6e1b978717160227d0821f65558696479eecc37e98526a781",
+     "quote": " listed and traded on the New York Stock Exchange under the ticker symbol USB. Dividends and Reinvestment Plan U.S. Bancorp currently pays quarterly dividends on our common stock on or about the 15th day of January, April, July and October, subject to approval by our Board of Directors. U.S. Bancorp",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+      "sha256": "b5a62c065b764dd6e1b978717160227d0821f65558696479eecc37e98526a781",
+      "quote": "rading symbols Name of each exchange on which registered Common Stock, $.01 par value per share USB New York Stock Exchange Depositary Shares (each representing 1/100th interest in a share of Series A Non-Cumulative Perpetual Preferred Stock, par val"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2001-04-06",
+    "validTo": "2026-06-26",
+    "bars": 1317,
+    "anchoredStart": "2001-04-01",
+    "anchoredEnd": "2026-06-30",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 5,
+    "memberIndexes": [
+     38,
+     333
+    ],
+    "members": 296,
+    "gaps": 0,
+    "start": "2001-04-01",
+    "end": "2026-06-30"
+   },
+   "strict": {
+    "start": "2001-04-11",
+    "end": "2026-06-30",
+    "clipStart": [
+     {
+      "index": 36,
+      "type": "A",
+      "start": "2001-01-01",
+      "end": "2001-03-31",
+      "pass": false,
+      "deviation": 0.1519,
+      "fy": 2001,
+      "q": 1,
+      "high": 26.06,
+      "low": 18.49,
+      "accession": "0000950137-02-000971",
+      "filingDate": "2002-02-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013702000971/0000950137-02-000971.txt",
+      "sha256": "45fa076c761d9384f3917b019bf317269431e33e74cf0e295f8036443328a494",
+      "quote": "First quarter..................... $26.06 $18.49 $.1875 $24.88 $16.38 $.1625"
+     },
+     {
+      "index": 37,
+      "type": "A",
+      "start": "2001-01-01",
+      "end": "2001-03-31",
+      "pass": false,
+      "deviation": 0.1519,
+      "fy": 2001,
+      "q": 1,
+      "high": 26.06,
+      "low": 18.49,
+      "accession": "0000950134-03-003243",
+      "filingDate": "2003-02-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013403003243/0000950134-03-003243.txt",
+      "sha256": "29fb1777d22c431a3a50858816b568026b05e61ec2b78a8864a2d6a9033d16e2",
+      "quote": "First quarter $ 23.07 $ 19.02 $ 22.57 $ .195 $ 26.06 $ 18.49 $ 23.20 $ .1875"
+     }
+    ],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 38,
+     "type": "A",
+     "start": "2001-04-01",
+     "end": "2001-06-30",
+     "pass": true,
+     "deviation": 0,
+     "fy": 2001,
+     "q": 2,
+     "high": 23.6,
+     "low": 20.71,
+     "accession": "0000950137-02-000971",
+     "filingDate": "2002-02-28",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013702000971/0000950137-02-000971.txt",
+     "sha256": "45fa076c761d9384f3917b019bf317269431e33e74cf0e295f8036443328a494",
+     "quote": "Second quarter.................... 23.60 20.71 .1875 28.00 20.88 .1625"
+    },
+    "endEvidence": {
+     "index": 333,
+     "type": "B",
+     "start": "2026-06-01",
+     "end": "2026-06-30",
+     "pass": true,
+     "deviation": 0.0042,
+     "avgPrice": 54.62,
+     "accession": "0000036104-26-000044",
+     "filingDate": "2026-08-06",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+     "sha256": "b5a62c065b764dd6e1b978717160227d0821f65558696479eecc37e98526a781",
+     "quote": "June 114 54.62 114 3,912"
+    }
+   },
+   "interval": {
+    "validFrom": "2001-04-12",
+    "validTo": "2026-06-26",
+    "bars": 1316,
+    "anchoredStart": "2001-04-11",
+    "anchoredEnd": "2026-06-30",
+    "changedFrom101": true,
+    "barsRemovedBefore": 1,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2001-04-12",
+    "checkedTo": "2026-06-26",
+    "pointsSha256": "296c5b2453a8b95fe6a4ec73eacc1c28b399bd99ea91507de5b30ebf1c19e0b2",
+    "bars": 1316
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [],
+   "anchorsInside": {
+    "A": 122,
+    "B": 174,
+    "pass": 296,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 38,
+    "type": "A",
+    "start": "2001-04-01",
+    "end": "2001-06-30",
+    "pass": true,
+    "deviation": 0,
+    "fy": 2001,
+    "q": 2,
+    "high": 23.6,
+    "low": 20.71,
+    "accession": "0000950137-02-000971",
+    "filingDate": "2002-02-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013702000971/0000950137-02-000971.txt",
+    "sha256": "45fa076c761d9384f3917b019bf317269431e33e74cf0e295f8036443328a494",
+    "quote": "Second quarter.................... 23.60 20.71 .1875 28.00 20.88 .1625"
+   },
+   "lastPassInside": {
+    "index": 333,
+    "type": "B",
+    "start": "2026-06-01",
+    "end": "2026-06-30",
+    "pass": true,
+    "deviation": 0.0042,
+    "avgPrice": 54.62,
+    "accession": "0000036104-26-000044",
+    "filingDate": "2026-08-06",
+    "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+    "sha256": "b5a62c065b764dd6e1b978717160227d0821f65558696479eecc37e98526a781",
+    "quote": "June 114 54.62 114 3,912"
+   }
+  },
+  {
+   "securityId": "ref_DD",
+   "ticker": "DD",
+   "cik": "0001666700",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "df6bc0d70ab3f1915d6e3f18ac483fdc5afd871ce595281d9666d8e665415df3",
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "bars": 1921,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SELECT_EXISTING_ROW",
+    "selectedCanonicalId": "tiingo:NYSE:DD:1962-01-02",
+    "masterRowSet": [
+     "tiingo:NYSE:DD:1962-01-02",
+     "tiingo:NYSE:DD:2017-08-03"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "DD",
+     "DWDP"
+    ],
+    "firstIdentityFiling": "2017-11-06",
+    "lastIdentityFiling": "2026-08-04",
+    "bound": {
+     "from": "2016-10-02",
+     "to": "2027-09-08"
+    },
+    "firstIdentityQuote": {
+     "accession": "0001666700-17-000026",
+     "filingDate": "2017-11-06",
+     "form": "10-Q",
+     "symbol": "DWDP",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670017000026/dowdupont3q17093017.htm",
+     "sha256": "73c4d3927d9b2d4286e46ccb11b8ff017581ef567702b21f391313445dac49f6",
+     "quote": " value $0.01 per share, commenced trading on the NYSE under ticker symbol DWDP on September 1, 2017. The unaudited interim consolidated financial statements of DowDuPont and its subsidiaries were prepared in accordance with accounting principles generally accepted in the United States of America (“U",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670017000026/dowdupont3q17093017.htm",
+      "sha256": "73c4d3927d9b2d4286e46ccb11b8ff017581ef567702b21f391313445dac49f6",
+      "quote": "per share, and DuPont's common stock, par value $0.30 per share, were voluntarily delisted from the New York Stock Exchange (\"NYSE\") in connection with the Merger and were suspended from trading on the NYSE prior to the open of trading on September 1"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0001666700-26-000053",
+     "filingDate": "2026-08-04",
+     "form": "10-Q",
+     "symbol": "DD",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670026000053/dd-20260630.htm",
+     "sha256": "c535463b4b568bf62b7cc24ab8f3465e8ad566eb3577f0dbefbbfd1b99d7a962",
+     "quote": "d pursuant to Section 12(b) of the Act: Title of each class Trading Symbol(s) Name of each exchange on which registered Common Stock, par value $0.01 per share DD New York Stock Exchange Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670026000053/dd-20260630.htm",
+      "sha256": "c535463b4b568bf62b7cc24ab8f3465e8ad566eb3577f0dbefbbfd1b99d7a962",
+      "quote": "ding Symbol(s) Name of each exchange on which registered Common Stock, par value $0.01 per share DD New York Stock Exchange Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(d) of the Sec"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2017-11-03",
+    "validTo": "2024-01-26",
+    "bars": 326,
+    "anchoredStart": "2017-11-01",
+    "anchoredEnd": "2024-01-31",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 0,
+    "memberIndexes": [
+     0,
+     39
+    ],
+    "members": 40,
+    "gaps": 0,
+    "start": "2017-11-01",
+    "end": "2024-01-31"
+   },
+   "strict": {
+    "start": "2017-11-01",
+    "end": "2024-01-31",
+    "clipStart": [],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 0,
+     "type": "B",
+     "start": "2017-11-01",
+     "end": "2017-11-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 70.29,
+     "accession": "0001666700-18-000009",
+     "filingDate": "2018-02-15",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670018000009/a2017dwdp10-k.htm",
+     "sha256": "4464830822a10db75a893998629fafbfd6bbf09cea9ca3b025f8f3f9ba72f5fc",
+     "quote": "November 2017 7,518,052 $ 70.29 7,518,052 $ 3,472"
+    },
+    "endEvidence": {
+     "index": 39,
+     "type": "B",
+     "start": "2024-01-01",
+     "end": "2024-01-31",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 67.1,
+     "accession": "0001666700-24-000013",
+     "filingDate": "2024-05-01",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670024000013/dd-20240331.htm",
+     "sha256": "8254f8a19cd11c0ff190f88478e06a346e14aa3862afd42678e312c64786c241",
+     "quote": "January — $ — — $ — | February 2 5,961,252 67.10 5,961,252 500"
+    }
+   },
+   "interval": {
+    "validFrom": "2017-11-03",
+    "validTo": "2024-01-26",
+    "bars": 326,
+    "anchoredStart": "2017-11-01",
+    "anchoredEnd": "2024-01-31",
+    "changedFrom101": false,
+    "barsRemovedBefore": 0,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2017-11-03",
+    "checkedTo": "2024-01-26",
+    "pointsSha256": "8b0d55b0859fe37aa963e88ca4b9515d27f673002136e1925869a7f6d1cce5f2",
+    "bars": 326
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [
+    {
+     "date": "2019-04-02",
+     "factor": 1.487,
+     "class": "NON_SPLIT"
+    },
+    {
+     "date": "2019-06-03",
+     "factor": 0.333333,
+     "class": "SPLIT"
+    }
+   ],
+   "anchorsInside": {
+    "A": 0,
+    "B": 40,
+    "pass": 40,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 0,
+    "type": "B",
+    "start": "2017-11-01",
+    "end": "2017-11-30",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 70.29,
+    "accession": "0001666700-18-000009",
+    "filingDate": "2018-02-15",
+    "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670018000009/a2017dwdp10-k.htm",
+    "sha256": "4464830822a10db75a893998629fafbfd6bbf09cea9ca3b025f8f3f9ba72f5fc",
+    "quote": "November 2017 7,518,052 $ 70.29 7,518,052 $ 3,472"
+   },
+   "lastPassInside": {
+    "index": 39,
+    "type": "B",
+    "start": "2024-01-01",
+    "end": "2024-01-31",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 67.1,
+    "accession": "0001666700-24-000013",
+    "filingDate": "2024-05-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670024000013/dd-20240331.htm",
+    "sha256": "8254f8a19cd11c0ff190f88478e06a346e14aa3862afd42678e312c64786c241",
+    "quote": "January — $ — — $ — | February 2 5,961,252 67.10 5,961,252 500"
+   }
+  },
+  {
+   "securityId": "ref_COR",
+   "ticker": "COR",
+   "cik": "0001140859",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "8b167c9cf1dbec4dad283206d60a53d11a45b564cb58eb19cf7e2c5b700525ce",
+    "from": "1995-04-07",
+    "to": "2026-10-23",
+    "bars": 1647,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SELECT_EXISTING_ROW",
+    "selectedCanonicalId": "tiingo:NYSE:COR:1995-04-04",
+    "masterRowSet": [
+     "tiingo:NYSE:COR:1995-04-04",
+     "tiingo:NYSE:COR:2010-09-23"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "ABC",
+     "COR"
+    ],
+    "firstIdentityFiling": "2001-12-28",
+    "lastIdentityFiling": "2026-08-05",
+    "bound": {
+     "from": "2000-11-23",
+     "to": "2027-09-09"
+    },
+    "firstIdentityQuote": {
+     "accession": "0000011454-01-500032",
+     "filingDate": "2001-12-28",
+     "form": "10-K",
+     "symbol": "ABC",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000001145401500032/0000011454-01-500032.txt",
+     "sha256": "80d3f8d5f1c287535299cb366b7a493593d5f53cbe3e5f1ccba28b074888df46",
+     "quote": " is traded on the New York Stock Exchange under the trading symbol \"ABC.\" The aggregate market value of the registrant's voting stock held by non-affiliates of the registrant (based upon the closing price of such stock on the New York Stock Exchange on December 3, 2001 and the assumption for this co",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1140859/000001145401500032/0000011454-01-500032.txt",
+      "sha256": "80d3f8d5f1c287535299cb366b7a493593d5f53cbe3e5f1ccba28b074888df46",
+      "quote": "er 3, 2001, held 101,416,031 shares of voting stock. The registrant's voting stock is traded on the New York Stock Exchange under the trading symbol \"ABC.\" The aggregate market value of the registrant's voting stock held by non-affiliates of the regi"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0001140859-26-000034",
+     "filingDate": "2026-08-05",
+     "form": "10-Q",
+     "symbol": "COR",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+     "sha256": "fe4ddda3b3b780481cb35529203ea0490393d13a6d71e9e86ae0d7ac407e06c8",
+     "quote": "d pursuant to Section 12(b) of the Act: Title of each class Trading Symbol(s) Name of exchange on which registered Common stock, par value $0.01 per share COR New York Stock Exchange (NYSE) 2.875% Senior Notes due 2028 COR28 New York Stock Exchange (NYSE) 3.625% Senior Notes due 2032 COR32 New York ",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+      "sha256": "fe4ddda3b3b780481cb35529203ea0490393d13a6d71e9e86ae0d7ac407e06c8",
+      "quote": " Trading Symbol(s) Name of exchange on which registered Common stock, par value $0.01 per share COR New York Stock Exchange (NYSE) 2.875% Senior Notes due 2028 COR28 New York Stock Exchange (NYSE) 3.625% Senior Notes due 2032 COR32 New York Stock Exc"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2016-07-01",
+    "validTo": "2026-06-26",
+    "bars": 522,
+    "anchoredStart": "2016-07-01",
+    "anchoredEnd": "2026-06-30",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 7,
+    "memberIndexes": [
+     260,
+     382
+    ],
+    "members": 123,
+    "gaps": 0,
+    "start": "2016-07-01",
+    "end": "2026-06-30"
+   },
+   "strict": {
+    "start": "2016-09-01",
+    "end": "2026-06-30",
+    "clipStart": [
+     {
+      "index": 259,
+      "type": "B",
+      "start": "2016-08-01",
+      "end": "2016-08-31",
+      "pass": false,
+      "deviation": 0.2912,
+      "avgPrice": 60.38,
+      "accession": "0001140859-16-000022",
+      "filingDate": "2016-11-22",
+      "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085916000022/abc10-kxseptember302016.htm",
+      "sha256": "2b47cb8bd30ef5a18a513fa7897f699ebdf8264820b934422fbb29fae561bf67",
+      "quote": "August 1 to August 31 12,049,393 $ 60.38 12,013,456 $ 1,378,434,875"
+     }
+    ],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 262,
+     "type": "B",
+     "start": "2016-09-01",
+     "end": "2016-09-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 86.18,
+     "accession": "0001140859-16-000022",
+     "filingDate": "2016-11-22",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085916000022/abc10-kxseptember302016.htm",
+     "sha256": "2b47cb8bd30ef5a18a513fa7897f699ebdf8264820b934422fbb29fae561bf67",
+     "quote": "September 1 to September 30 6,020,480 $ 86.18 6,020,480 $ 859,615,476"
+    },
+    "endEvidence": {
+     "index": 382,
+     "type": "B",
+     "start": "2026-06-01",
+     "end": "2026-06-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 277.19,
+     "accession": "0001140859-26-000034",
+     "filingDate": "2026-08-05",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+     "sha256": "fe4ddda3b3b780481cb35529203ea0490393d13a6d71e9e86ae0d7ac407e06c8",
+     "quote": "June 1 to June 30 1,380,532 $ 277.19 1,380,476 $ 1,882,241,770"
+    }
+   },
+   "interval": {
+    "validFrom": "2016-09-02",
+    "validTo": "2026-06-26",
+    "bars": 513,
+    "anchoredStart": "2016-09-01",
+    "anchoredEnd": "2026-06-30",
+    "changedFrom101": true,
+    "barsRemovedBefore": 9,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2016-09-02",
+    "checkedTo": "2026-06-26",
+    "pointsSha256": "a46a1446d2a7783d1c72fbbdc6e90e8fa0a7e3dbb113c8bbbeedd317b3d3e5e8",
+    "bars": 513
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [],
+   "anchorsInside": {
+    "A": 6,
+    "B": 117,
+    "pass": 123,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 260,
+    "type": "A",
+    "start": "2016-07-01",
+    "end": "2016-09-30",
+    "pass": true,
+    "deviation": 0,
+    "fy": 2016,
+    "q": 4,
+    "high": 89.89,
+    "low": 80.16,
+    "accession": "0001140859-16-000022",
+    "filingDate": "2016-11-22",
+    "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085916000022/abc10-kxseptember302016.htm",
+    "sha256": "2b47cb8bd30ef5a18a513fa7897f699ebdf8264820b934422fbb29fae561bf67",
+    "quote": "Fourth Quarter $ 89.89 $ 80.16"
+   },
+   "lastPassInside": {
+    "index": 382,
+    "type": "B",
+    "start": "2026-06-01",
+    "end": "2026-06-30",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 277.19,
+    "accession": "0001140859-26-000034",
+    "filingDate": "2026-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+    "sha256": "fe4ddda3b3b780481cb35529203ea0490393d13a6d71e9e86ae0d7ac407e06c8",
+    "quote": "June 1 to June 30 1,380,532 $ 277.19 1,380,476 $ 1,882,241,770"
+   }
+  },
+  {
+   "securityId": "ref_DOC",
+   "ticker": "DOC",
+   "cik": "0000765880",
+   "protocolVersion": "1.1.0",
+   "status": "UNLOCKED",
+   "reasons": [],
+   "series": {
+    "sha256": "300e6e47af1c2b37ebb6bf6063bf60728227a0147672702bcff3f8859282bafc",
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "bars": 1921,
+    "asOf": "2026-10-23"
+   },
+   "master": {
+    "masterRowAction": "SELECT_EXISTING_ROW",
+    "selectedCanonicalId": "tiingo:NYSE:DOC:1987-11-05",
+    "masterRowSet": [
+     "tiingo:NYSE:DOC:1987-11-05",
+     "tiingo:NYSE:DOC:2013-07-19"
+    ]
+   },
+   "identity": {
+    "validSymbols": [
+     "DOC"
+    ],
+    "firstIdentityFiling": "2024-03-11",
+    "lastIdentityFiling": "2026-08-05",
+    "bound": {
+     "from": "2023-02-05",
+     "to": "2027-09-09"
+    },
+    "firstIdentityQuote": {
+     "accession": "0001104659-24-032999",
+     "filingDate": "2024-03-11",
+     "form": "8-K",
+     "symbol": "DOC",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000110465924032999/tm248304d1_8k.htm",
+     "sha256": "9ee7092c36814ea7a67377ffeb6b76937dd9674659eab045d9f3c334e0f8426e",
+     "quote": "d pursuant to Section 12(b) of the Act: Title of each class Trading Symbol(s) Name of each exchange on which registered Common stock, $1.00 par value DOC New York Stock Exchange Indicate by check mark whether the registrant is an emerging growth company as defined in Rule 405 of the Securities Act o",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/765880/000110465924032999/tm248304d1_8k.htm",
+      "sha256": "9ee7092c36814ea7a67377ffeb6b76937dd9674659eab045d9f3c334e0f8426e",
+      "quote": "class Trading Symbol(s) Name of each exchange on which registered Common stock, $1.00 par value DOC New York Stock Exchange Indicate by check mark whether the registrant is an emerging growth company as defined in Rule 405 of the Securities Act of 19"
+     }
+    },
+    "lastIdentityQuote": {
+     "accession": "0001628280-26-053373",
+     "filingDate": "2026-08-05",
+     "form": "10-Q",
+     "symbol": "DOC",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+     "sha256": "8ca51bd1cd03bdbd4970fcf5bb02a03ccd0bb92c13de8cd0e5ed613dbc905cb4",
+     "quote": "d pursuant to Section 12(b) of the Act: Title of each class Trading Symbol(s) Name of each exchange on which registered Common Stock, $1.00 par value DOC New York Stock Exchange Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(d) of the",
+     "exchange": {
+      "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+      "sha256": "8ca51bd1cd03bdbd4970fcf5bb02a03ccd0bb92c13de8cd0e5ed613dbc905cb4",
+      "quote": "class Trading Symbol(s) Name of each exchange on which registered Common Stock, $1.00 par value DOC New York Stock Exchange Indicate by check mark whether the registrant (1) has filed all reports required to be filed by Section 13 or 15(d) of the Sec"
+     }
+    }
+   },
+   "v101": {
+    "status": "UNLOCKED",
+    "validFrom": "2024-03-01",
+    "validTo": "2026-04-24",
+    "bars": 113,
+    "anchoredStart": "2024-03-01",
+    "anchoredEnd": "2026-04-30",
+    "bandConfirmedMoves": []
+   },
+   "selectedRun": {
+    "index": 0,
+    "memberIndexes": [
+     0,
+     6
+    ],
+    "members": 7,
+    "gaps": 0,
+    "start": "2024-03-01",
+    "end": "2026-04-30"
+   },
+   "strict": {
+    "start": "2024-03-01",
+    "end": "2026-04-30",
+    "clipStart": [],
+    "clipEnd": [],
+    "startEvidence": {
+     "index": 0,
+     "type": "B",
+     "start": "2024-03-01",
+     "end": "2024-03-31",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 17.11,
+     "accession": "0001628280-24-018706",
+     "filingDate": "2024-04-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828024018706/peak-20240331.htm",
+     "sha256": "70985aea241fe27d36a5f2c1d8eaa320fd073be6066e6d9b0678f98d4e76d4eb",
+     "quote": "March 1-31, 2024 5,845,889 17.11 5,845,889 344,018,711"
+    },
+    "endEvidence": {
+     "index": 6,
+     "type": "B",
+     "start": "2026-04-01",
+     "end": "2026-04-30",
+     "pass": true,
+     "deviation": 0,
+     "avgPrice": 16.81,
+     "accession": "0001628280-26-053373",
+     "filingDate": "2026-08-05",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+     "sha256": "8ca51bd1cd03bdbd4970fcf5bb02a03ccd0bb92c13de8cd0e5ed613dbc905cb4",
+     "quote": "April 1-30, 2026 5,948,030 $ 16.81 5,948,030 $ 305,831,754"
+    }
+   },
+   "interval": {
+    "validFrom": "2024-03-01",
+    "validTo": "2026-04-24",
+    "bars": 113,
+    "anchoredStart": "2024-03-01",
+    "anchoredEnd": "2026-04-30",
+    "changedFrom101": false,
+    "barsRemovedBefore": 0,
+    "barsRemovedAfter": 0
+   },
+   "historyGuard": {
+    "checkedFrom": "2024-03-01",
+    "checkedTo": "2026-04-24",
+    "pointsSha256": "e77d0de7390f370d4eb236e60733109bc929cf7446bc3d4a0577a27a9bb4a30e",
+    "bars": 113
+   },
+   "bandConfirmedMoves": [],
+   "bandConfirmedMovesExcluded": [],
+   "factorsInside": [],
+   "anchorsInside": {
+    "A": 0,
+    "B": 7,
+    "pass": 7,
+    "fail": 0
+   },
+   "firstPassInside": {
+    "index": 0,
+    "type": "B",
+    "start": "2024-03-01",
+    "end": "2024-03-31",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 17.11,
+    "accession": "0001628280-24-018706",
+    "filingDate": "2024-04-26",
+    "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828024018706/peak-20240331.htm",
+    "sha256": "70985aea241fe27d36a5f2c1d8eaa320fd073be6066e6d9b0678f98d4e76d4eb",
+    "quote": "March 1-31, 2024 5,845,889 17.11 5,845,889 344,018,711"
+   },
+   "lastPassInside": {
+    "index": 6,
+    "type": "B",
+    "start": "2026-04-01",
+    "end": "2026-04-30",
+    "pass": true,
+    "deviation": 0,
+    "avgPrice": 16.81,
+    "accession": "0001628280-26-053373",
+    "filingDate": "2026-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+    "sha256": "8ca51bd1cd03bdbd4970fcf5bb02a03ccd0bb92c13de8cd0e5ed613dbc905cb4",
+    "quote": "April 1-30, 2026 5,948,030 $ 16.81 5,948,030 $ 305,831,754"
+   }
+  }
+ ]
+}

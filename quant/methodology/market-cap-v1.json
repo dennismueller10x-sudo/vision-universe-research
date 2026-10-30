@@ -1,6 +1,6 @@
 {
   "schemaVersion": "market-cap-methodology-1.0.0",
-  "methodologyVersion": "market-cap-1.1.0",
+  "methodologyVersion": "market-cap-1.2.0",
   "status": "APPROVED",
   "effectiveFrom": "2026-10-05",
   "purpose": "Wann Quant einen Börsenwert nennt und wann nicht. Börsenwert = ausstehende Aktien × veröffentlichter Schlusskurs genau dieser Notierung, und nur wenn die Geschäftszahlen in der Währung des Kurses (US-Dollar) berichtet sind. Fehlt eine Zutat, wird der Börsenwert zurückgehalten – mit Grund – und mit ihm jede Bewertungskennzahl. Kein Ersatzwert, nur damit die Abdeckung steigt.",
@@ -22,7 +22,8 @@
     "SHARE_COUNT_NOT_OUTSTANDING": "Gemeldet ist nur die Zahl ausgegebener Aktien.",
     "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": "Geschäftszahlen nicht in US-Dollar berichtet (z. B. CNFinance in CNY, ADR): Gewinn und Börsenwert in verschiedenen Währungen, und ein ADS entspricht nicht einer gemeldeten Aktie.",
     "NO_PUBLISHED_CLOSE": "Für die Notierung gibt es keinen veröffentlichten Schlusskurs.",
-    "NOT_AN_EQUITY_LISTING": "Vorzugsaktie, Schuldverschreibung, ETN oder Fonds: keine Aktienbewertung."
+    "NOT_AN_EQUITY_LISTING": "Vorzugsaktie, Schuldverschreibung, ETN oder Fonds: keine Aktienbewertung.",
+    "SHARE_COUNT_SCALE_SUSPECT": "Die Aktienzahl weicht um eine Zehnerpotenz (10^k, |k| ≥ 3, ±25 %) vom Median der bis zu vier vorherigen Quartalszahlen ab, oder der Börsenwert läge über 8 Billionen US-Dollar: ein XBRL-Skalenfehler (z. B. EEFT 10-K 2020: 5,28e16 statt 52,75 Mio. Aktien) ist wahrscheinlicher als eine echte Kapitalmaßnahme. Der Börsenwert wird zurückgehalten, nie umskaliert."
   },
   "consequence": "Alle Bewertungskennzahlen, die am Börsenwert hängen (Gewinn-, Umsatz-, Cashflow-, EBITDA-Rendite, Buchwert zu Börsenwert), bleiben bei zurückgehaltenem Börsenwert offen.",
   "versionHistory": [
@@ -35,11 +36,23 @@
       "version": "market-cap-1.1.0",
       "date": "2026-10-05",
       "change": "Gleiche Währung: Emittenten, die nicht in USD berichten (ADR, ausländische Emittenten), erhalten keinen Börsenwert mehr. Anlass CNFinance: Stammaktien × ADS-Kurs, Gewinn in CNY."
+    },
+    {
+      "version": "market-cap-1.2.0",
+      "date": "2026-10-29",
+      "change": "Skalenwächter: Aktienzahl um 10^k (|k| ≥ 3) gegen die vorherigen Quartalszahlen oder Börsenwert > 8e12 USD → zurückgehalten (SHARE_COUNT_SCALE_SUSPECT), keine Korrektur geschätzt. Beleg: docs/quant-recovery/v12/mcap (Forschungspanel: 558 von 370.389 Zeilen, 141 der 149 Zeilen > 5e12)."
     }
   ],
   "currency": {
     "listingCurrency": "USD",
     "reportingCurrencySource": "Einheiten der SEC-Konsumschicht (units) der Kennzahlen, die in eine Bewertungskennzahl eingehen (VALUATION_INPUTS in quant/engines/market-cap.js).",
     "rule": "Berichtswährung ungleich USD oder gemischt: Börsenwert zurückgehalten (REPORTING_CURRENCY_NOT_LISTING_CURRENCY). Keine Umrechnung, keine ADS-Quote geschätzt."
+  },
+  "scaleGuard": {
+    "history": "bis zu vier vorherige Quartalszahlen (quarterly.shares_outstanding), gemeldet bis zum Stichtag, Periodenende vor dem der verwendeten Zahl",
+    "minExponent": 3,
+    "tolerance": 1.25,
+    "absoluteMarketCapBoundUsd": 8000000000000,
+    "rule": "Ausreißer gegen den Median → zurückhalten. Ist eine Vorquartalszahl selbst falsch skaliert, wird auch eine richtige aktuelle Zahl zurückgehalten (fail-closed). Die Korrektur statt Zurückhaltung ist Sache der SEC-Konsumschicht."
   }
 }

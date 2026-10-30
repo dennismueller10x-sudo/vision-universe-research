@@ -1,0 +1,80 @@
+name: Konten — Produktion lesend pruefen (Stripe, Brevo, Worker)
+# Taeglich und von Hand, OHNE Owner-Freigabe (docs/accounts/FREIGABEN.md). Aendert nichts:
+#   Worker   /v1/health, /v1/plans, Rechtsseiten, Kuendigen/Widerrufen erreichbar
+#   Stripe   Preis, Zahlungsmethoden, Webhook-Ereignisse, Kundenportal, Steuer, Unternehmensangaben
+#            (scripts/account/stripe-live-check.mjs OHNE --probe-checkout) mit einem NUR LESENDEN Restricted Key
+#            VU_ACCOUNT_STRIPE_READ_KEY (Umgebung account-auto, nur main). Fehlt er: Stripe wird uebersprungen.
+#   Brevo    Listen, Merkmal, DOI-Vorlage (scripts/account/brevo-setup.mjs ohne --apply), Repository-Secret BREVO_API_KEY
+# Ausgabe nur IDs, Zustaende und Zaehler; keine Adressen, keine Schluessel.
+on:
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-production-checks-${{ github.ref_name }}
+  cancel-in-progress: true
+env:
+  API_ORIGIN: https://konto.visionuniverse.de
+jobs:
+  umgebung:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.pruefen.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Umgebung account-auto vorhanden und nur fuer main?
+        id: pruefen
+        env: {GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}'}
+        run: node scripts/account/check-auto-env.mjs
+
+  lesen:
+    needs: umgebung
+    if: needs.umgebung.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: account-auto
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Worker (oeffentlich)
+        run: |
+          set -euo pipefail
+          curl -fsS "$API_ORIGIN/v1/health" | jq -c .
+          curl -fsS "$API_ORIGIN/v1/plans" | jq -c '{mode, checkout, newsletter, legal}'
+          for p in rechtliches/ rechtliches/impressum rechtliches/agb rechtliches/widerrufsbelehrung rechtliches/widerrufsformular \
+                   rechtliches/datenschutz rechtliches/newsletter kuendigen widerrufen; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$API_ORIGIN/$p"); echo "$p $code"
+            [ "$code" = 200 ] || { echo "::error::$API_ORIGIN/$p antwortet $code"; exit 1; }
+          done
+          node scripts/account/release-guard.mjs --toml=workers/vu-account/wrangler.toml --api="$API_ORIGIN"
+      - name: Stripe (nur lesen)
+        env:
+          STRIPE_LIVE_KEY: ${{ secrets.VU_ACCOUNT_STRIPE_READ_KEY }}
+          STRIPE_LIVE_SETUP_APPROVED: 'true'
+          VU_ACCOUNT_API_ORIGIN: https://konto.visionuniverse.de
+        run: |
+          set -euo pipefail
+          if [ -z "$STRIPE_LIVE_KEY" ]; then echo "::warning::VU_ACCOUNT_STRIPE_READ_KEY fehlt in account-auto - Stripe uebersprungen"; exit 0; fi
+          [[ "$STRIPE_LIVE_KEY" == rk_live_* ]] || { echo "::error::VU_ACCOUNT_STRIPE_READ_KEY muss ein Restricted Key (rk_live_) sein"; exit 1; }
+          node scripts/account/stripe-live-check.mjs
+      - name: Brevo (nur lesen)
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$BREVO_API_KEY" ]; then echo "::warning::BREVO_API_KEY fehlt - Brevo uebersprungen"; exit 0; fi
+          node scripts/account/brevo-setup.mjs

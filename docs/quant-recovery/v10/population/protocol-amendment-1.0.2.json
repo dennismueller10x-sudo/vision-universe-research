@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "v10-population-protocol-amendment-1.0.2",
+  "amends": { "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json", "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c" },
+  "registeredAt": "2026-10-28",
+  "timing": "after a 4-case technical smoke run (ref_ACB, ref_ACI, ref_BBAI, ref_OPTX) and before the full B1 run. Disclosed as a post-hoc clarification; it does not change any decision criterion, only how a re-fetched document is compared with its V9 citation.",
+  "finding": "www.sec.gov injects a per-request bot-manager tag '<script type=\"text/javascript\"  src=\"/<random path>\"></script>' right before '</body>' into complete HTML documents. The random path changes length and content on every request, so the sha256 of a complete re-fetched body never reproduces the V9 sha256 (example: acb-20210630.htm V9 926298 bytes, now 926288 bytes, identical apart from that tag). Prefix reads that stop before '</body>' are unaffected.",
+  "changes": [
+    { "rule": "Q-INT.validFrom re-verification of the V9 start document", "before": "re-verify sha256 and ticker statement", "after": "re-verify the content: the fresh body must again contain the V9 evidence (iXBRL cover row with the ticker and a COMMON class title, or a venue-checked ticker statement). The record cites the fresh body with sha256 (raw) and sha256Normalized (bot-manager tag removed); 'v9Sha256Reproduced' says whether the raw V9 sha256 was reproduced. A missing V9 start document remains START_DOCUMENT_NOT_REVERIFIED." },
+    { "rule": "all cited SEC bodies", "after": "every cited complete HTML body additionally carries sha256Normalized = sha256(body with the trailing bot-manager script tag removed, regex <script type=\"text/javascript\"\\s+src=\"/[^\"]*\"></script>(?=</body>)). The independent check verifies sha256Normalized." }
+  ]
+}

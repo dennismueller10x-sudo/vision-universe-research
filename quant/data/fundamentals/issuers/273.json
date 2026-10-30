@@ -6,10 +6,10 @@
       "cik": "0000727273",
       "name": "CADIZ INC",
       "sic": "4941",
-      "rawFacts": 12915,
-      "mappedFacts": 5602,
-      "unmappedFacts": 7754,
-      "calendarYears": 20,
+      "rawFacts": 12917,
+      "mappedFacts": 5562,
+      "unmappedFacts": 7890,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -53,7 +53,7 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -81,28 +81,28 @@
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -118,50 +118,51 @@
         }
       },
       "quality": {
-        "HIGH": 594,
-        "MEDIUM": 22
+        "HIGH": 613,
+        "MEDIUM": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 616,
-        "resolvedValues": 616
+        "datableValues": 632,
+        "resolvedValues": 632
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8037,
+        "rules_version": "1.1.0",
+        "total": 8093,
         "by_severity": {
-          "INFO": 7754,
+          "INFO": 7890,
           "ERROR": 6,
-          "WARNING": 277
+          "WARNING": 197
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 156,
-          "FISCAL_PERIOD_CONFLICT": 19,
+          "CONCEPT_DISAGREEMENT": 139,
           "FUTURE_DATA_LEAK": 6,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 82,
+          "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 17,
-          "UNKNOWN_CONCEPT": 7754
+          "UNKNOWN_CONCEPT": 7890,
+          "UNPLACEABLE_PERIOD": 2
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-027664",
-        "filing_date": "2026-08-13",
-        "form": "10-Q",
-        "periodic_filings": 132
+        "accession": "0001213900-26-113579",
+        "filing_date": "2026-10-29",
+        "form": "10-K/A",
+        "periodic_filings": 133,
+        "acceptance_datetime": "2026-10-29T12:42:24.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "96785c5d308d717f76e8dff2661139fffb582bea3f4cefd548cc47f1cb4e6987",
+      "sourceDigest": "c15c902e0dff116af953ca695bec0e73e8b9baffc243e09d0efc9a2b4009e5a2",
       "issuerId": "iss_cik_0000727273"
     },
     {

@@ -632,9 +632,9 @@
       "cik": "0001910139",
       "name": "Mobileye Global Inc.",
       "sic": "7372",
-      "rawFacts": 4604,
-      "mappedFacts": 1669,
-      "unmappedFacts": 2964,
+      "rawFacts": 4889,
+      "mappedFacts": 1780,
+      "unmappedFacts": 3140,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -644,28 +644,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2019-12-28",
-      "lastPeriodEnd": "2026-06-27",
+      "lastPeriodEnd": "2026-09-26",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 19,
-          "firstAvailablePeriod": "2020-12-26",
-          "lastAvailablePeriod": "2025-12-27",
-          "historyYears": 5.0
-        },
-        "eps_diluted": {
           "annualPeriods": 6,
           "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 5.0
         },
+        "eps_diluted": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-26",
+          "lastAvailablePeriod": "2025-12-27",
+          "historyYears": 5.0
+        },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 5.0,
@@ -685,21 +685,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 5.0
@@ -713,14 +713,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-28",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-25",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 4.0
@@ -743,44 +743,45 @@
         }
       },
       "quality": {
-        "HIGH": 180
+        "HIGH": 187
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 180,
-        "resolvedValues": 180
+        "datableValues": 187,
+        "resolvedValues": 187
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3032,
+        "rules_version": "1.1.0",
+        "total": 3210,
         "by_severity": {
-          "INFO": 2964,
-          "WARNING": 68
+          "INFO": 3140,
+          "WARNING": 70
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 59,
-          "RESTATEMENT_CONFLICT": 9,
-          "UNKNOWN_CONCEPT": 2964
+          "CONCEPT_DISAGREEMENT": 63,
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 3140
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-086264",
-        "filing_date": "2026-07-23",
+        "accession": "0001104659-26-120226",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 16
+        "periodic_filings": 17,
+        "acceptance_datetime": "2026-10-29T20:31:00.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "9601d5fa196fe499eef82dee1a5c994153c5d64c099bbda6a1d261266cc4442f",
+      "sourceDigest": "70ebfd2684a4883acdbf93c6cd1604a0bdc6eb7c114eed4aaf9df10bd6ff2b22",
       "issuerId": "iss_cik_0001910139"
     },
     {

@@ -3,7 +3,9 @@
  *
  * core/registry/domains.json darf den Produktpfad (source-faithful/product, Kandidatenvertrag, sf-candidates) an
  * GENAU EINER Stelle nennen: im Eintrag `supertrader-sf8-candidates`. Dessen Felder sind festgeschrieben; der
- * Aktivierungszustand bleibt `PREPARED_DISABLED`, bis der Owner die Aktivierung (V6) in einem eigenen PR freigibt.
+ * Aktivierungszustand ist `PREPARED_DISABLED` oder, nach Owner-Freigabe in einem eigenen Core-PR, `ACTIVATING`
+ * (erste Veröffentlichung, docs/SUPERTRADER_8_FIRST_RELEASE.md). Ein dritter Zustand oder ein fehlendes Feld (Dauerbetrieb)
+ * braucht eine eigene Freigabe und eine Änderung hier.
  * Jeder zweite Eintrag, jedes geänderte Feld und jeder andere Verweis ist eine Verletzung.
  *
  * Rein: liest nur den übergebenen Text, schreibt nichts. Genutzt von SF-PRODUCT-NO-RUN-INTEGRATION und
@@ -21,6 +23,9 @@ export const SF8_DOMAIN_PINNED = Object.freeze({
 });
 /** Solange V6 nicht freigegeben ist, bleibt der Eintrag vorbereitet und abgeschaltet. */
 export const SF8_ACTIVATION_STATE = 'PREPARED_DISABLED';
+/** Zulässige Zustände: vorbereitet, oder freigegeben für die erste Veröffentlichung (Core-PR mit Owner-Freigabe). Den
+ *  Commit sperrt zusätzlich der Workflow (nur ACTIVATING) und die Repository-Variable SF8_CANDIDATES_ENABLED. */
+export const SF8_ACTIVATION_STATES = Object.freeze([SF8_ACTIVATION_STATE, 'ACTIVATING']);
 /** Was in der Registry nur dieser Eintrag nennen darf: der Produktpfad und alles, was SF2-LEGACY-ISOLATION verbietet
  *  (Completion- und Signalmodule), unabhängig von Groß-/Kleinschreibung. */
 export const SF8_PRODUCT_REF = /candidate-contract|supertraderCandidates|source-faithful\/|sf-candidates|research-signal\.mjs|completion\/(gaps|status|facts|build-completion)/i;
@@ -39,7 +44,7 @@ export function sf8RegistryViolations(text) {
   if (own.length > 1) out.push('SF8_DOMAIN_DUPLICATE');
   for (const d of own) {
     for (const [k, v] of Object.entries(SF8_DOMAIN_PINNED)) if (d[k] !== v) out.push(`SF8_DOMAIN_FIELD:${k}`);
-    if (d.activation?.state !== SF8_ACTIVATION_STATE) out.push('SF8_DOMAIN_ACTIVATION_NOT_PREPARED_DISABLED');
+    if (!SF8_ACTIVATION_STATES.includes(d.activation?.state)) out.push('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED');
     for (const k of Object.keys(d)) if (!SF8_DOMAIN_KEYS.includes(k)) out.push(`SF8_DOMAIN_UNKNOWN_FIELD:${k}`);
     // nur die festgeschriebenen Felder artifact/producer dürfen den Produktpfad nennen; Texte, Verbraucher, Entscheidung nicht
     for (const [k, v] of Object.entries(d)) if (!PINNED_REF_FIELDS.has(k) && strings(v).some((x) => SF8_PRODUCT_REF.test(x))) out.push(`SF8_DOMAIN_REF_IN:${k}`);

@@ -33,6 +33,7 @@
     RATE_LIMITED: 'Zu viele Versuche. Bitte warte einige Minuten.',
     ALREADY_SUBSCRIBED: 'Du hast bereits ein aktives Abonnement. Tarifwechsel und Laufzeit änderst du in der Abo-Verwaltung.',
     PRICE_NOT_AVAILABLE: 'Dieser Tarif ist gerade nicht buchbar.',
+    TAX_CONFIG_INVALID: 'Pro ist gerade nicht buchbar (Steuereinstellung wird geprüft). Es wurde nichts berechnet.',
     CHECKOUT_NOT_OPEN: 'Pro ist noch nicht buchbar. Bis dahin nutzt du alle Funktionen kostenlos mit Free.',
     CHECKOUT_CONFIRMATION_REQUIRED: 'Bitte bestätige Preis, Laufzeit und Kündigungsbedingungen.',
     NO_BILLING_ACCOUNT: 'Für dein Konto gibt es noch keine Zahlungsdaten.',
@@ -54,7 +55,9 @@
     WATCHLIST_ITEM_NOT_FOUND: 'Dieser Eintrag ist nicht mehr auf deiner Watchlist.',
     ALERTS_INVALID: 'Diese Benachrichtigung gibt es nicht.',
     TEXT_TOO_LONG: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
-    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.'
+    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.',
+    NEWSLETTER_NOT_AVAILABLE: 'Der Newsletter ist im Konto noch nicht verfügbar.',
+    SUBSCRIBE_INVALID: 'Das hat nicht geklappt. Bitte versuche es noch einmal.'
   };
 
   var STATUS = {
@@ -159,7 +162,53 @@
     return isNaN(d) ? '–' : d.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'});
   }
 
+  /* ----------------------------------------------------- Nutzerfuehrung
+     Eine Stelle fuer die Wege nach Anmeldung, Bestaetigung und Bezahlung (Seiten: konto/konto.js,
+     mein-dashboard/). Die Entscheidungen hier sind reine Darstellung; ob ein Konto Pro hat oder Pro
+     buchen darf, entscheidet allein der Worker (effective_entitlements, Rolle billing_tester). */
+  var HOME = '/willkommen/', PRO_CONFIRM = '/konto/tarife/?plan=pro';
+
+  // Nur eigene Pfade (kein offener Redirect); sonst null.
+  function safePath(value) {
+    return typeof value === 'string' && /^\/[A-Za-z0-9/_.-]*$/.test(value) && value.indexOf('//') === -1 ? value : null;
+  }
+
+  // Offene Pro-Wahl: lokal gemerkt (gleiches Geraet) oder im Konto (planIntent aus /v1/me, jedes Geraet).
+  // Gilt nur, solange das Konto Free ist.
+  function proPending(me, localChoice) {
+    var plan = me && me.entitlements && me.entitlements.plan_id;
+    if (plan && plan !== 'free') return false;
+    return localChoice === 'pro' || Boolean(me && me.planIntent && me.planIntent.plan === 'pro');
+  }
+
+  // Ziel nach Anmeldung bzw. E-Mail-Bestaetigung: offene Pro-Bestellung vor der Willkommensseite;
+  // ein ausdruecklicher Deep Link (next) bleibt erhalten.
+  function nextAfterSignIn(opts) {
+    opts = opts || {};
+    var next = safePath(opts.next);
+    if (next === '/konto/' || next === '/konto/anmelden/' || next === HOME) next = null;
+    if (next) return next;
+    if (proPending(opts.me, opts.localChoice)) return PRO_CONFIRM + (opts.verified ? '&status=verified' : '');
+    return HOME + (opts.verified ? '?konto=verified' : '');
+  }
+
+  // Zustand der Pro-Bestellbestaetigung. Die Pflicht-Checkbox gibt es nur im Zustand "ready";
+  // eine fehlende Freigabe (Tester-Rolle) ist ein eigener, erklaerter Zustand - nie eine gesperrte Checkbox.
+  function checkoutState(opts) {
+    opts = opts || {};
+    if (!opts.loaded) return 'loading';
+    if (!opts.signedIn) return 'signed-out';
+    var me = opts.me || {};
+    var plan = me.entitlements && me.entitlements.plan_id;
+    if (plan && plan !== 'free') return 'subscribed';
+    if (me.billingAvailable === false) return 'unavailable';
+    if (!opts.price) return 'no-price';
+    return me.checkoutAllowed === true ? 'ready' : 'not-open';
+  }
+
   return {
+    HOME: HOME, PRO_CONFIRM: PRO_CONFIRM, safePath: safePath, proPending: proPending, nextAfterSignIn: nextAfterSignIn,
+    checkoutState: checkoutState,
     config: config, available: function () { return Boolean(config().endpoint); }, request: request, message: message,
     statusMessage: function (code) { return STATUS[code] || null; },
     subscriptionStatus: function (s) { return SUBSCRIPTION_STATUS[s] || s; },

@@ -322,9 +322,9 @@
       "cik": "0001575515",
       "name": "Sprouts Farmers Market, Inc.",
       "sic": "5411",
-      "rawFacts": 16439,
-      "mappedFacts": 5364,
-      "unmappedFacts": 11195,
+      "rawFacts": 16687,
+      "mappedFacts": 5471,
+      "unmappedFacts": 11448,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -334,28 +334,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 58,
+      "quarterlyPeriods": 59,
       "firstPeriodEnd": "2010-02-02",
-      "lastPeriodEnd": "2026-06-28",
+      "lastPeriodEnd": "2026-09-27",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2012-12-30",
-          "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 13.0
-        },
-        "eps_diluted": {
           "annualPeriods": 13,
           "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
         },
+        "eps_diluted": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-30",
+          "lastAvailablePeriod": "2025-12-28",
+          "historyYears": 13.0
+        },
         "free_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0,
@@ -375,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
         },
         "revenue": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2012-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 13.0
@@ -433,47 +433,48 @@
         }
       },
       "quality": {
-        "HIGH": 495,
+        "HIGH": 502,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 504,
-        "resolvedValues": 504
+        "datableValues": 511,
+        "resolvedValues": 511
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11665,
+        "rules_version": "1.1.0",
+        "total": 11920,
         "by_severity": {
-          "INFO": 11195,
-          "WARNING": 470
+          "INFO": 11448,
+          "WARNING": 472
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 340,
+          "CONCEPT_DISAGREEMENT": 342,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 128,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11195
+          "UNKNOWN_CONCEPT": 11448
         }
       },
       "latestFiling": {
-        "accession": "0001575515-26-000037",
-        "filing_date": "2026-07-29",
+        "accession": "0001575515-26-000060",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 56
+        "periodic_filings": 57,
+        "acceptance_datetime": "2026-10-28T20:06:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e23a0903cfad702a37504560b6ba429738da3e3739938a9e8e9ea0871e2d6e71",
+      "sourceDigest": "921927a17a3f6910c9986ae629551daebe172d142e2a39920bfc80f6d027ca3b",
       "issuerId": "iss_cik_0001575515"
     },
     {

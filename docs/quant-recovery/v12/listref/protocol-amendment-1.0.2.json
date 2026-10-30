@@ -1,0 +1,13 @@
+{
+ "schemaVersion": "v12-listref-protocol-amendment-1.0.2",
+ "amends": ["protocol-1.0.0.json", "protocol-amendment-1.0.1.json"],
+ "seenBeforeAmendment": [
+  "Nur Ergebnisse der Regeln 1.0.0 (siehe Nachtrag 1.0.1). Von 1.0.1 noch keine Jahres-, Verknüpfungs- oder Vollständigkeitszahl gesehen (Volltextabfragen laufen).",
+  "Zählung der Einreicher (Akzessionspräfix) aller 25-NSE: 0000876661 15.320, 0001354457 11.830, 0001143362 3.080, 0001143313 2.724, 0001417835 430, Rest < 60."
+ ],
+ "changes": [
+  {"id": "B1-segment-completeness", "rule": "Die Referenz-Vollständigkeit (untere/obere Schranke, 1.0.1 A5) wird zusätzlich je Segment berechnet: Börse des Ereignisses = Einreicher des 25-NSE laut Akzessionspräfix (Zuordnung Präfix -> Börse über den SEC-Entitätsnamen des Einreichers, im Beleg ausgewiesen; 25 des Emittenten und 15-12B ohne 25-NSE: Börse UNKNOWN); Größenklasse des Ereignisses = Public Float der Ereignis-CIK nach derselben Regel wie für Listings (Jahr des Ereignisses).", "why": "Die Referenz kann in großen bzw. NYSE-Segmenten vollständiger sein als im Jahresmittel; P4 fragt segmentweise."},
+  {"id": "B2-readiness-by-segment", "rule": "P4-Bereitschaft einer Zelle (Jahr, Segment) nutzt die Vollständigkeit desselben Segments (exchange, sizeClass; exchangeXsize: Börse x Größe), wenn dort >= 10 betrachtete EDGAR-Ereignisse vorliegen; sonst die Jahresvollständigkeit. listingAge/exchangeXage nutzen die Jahres- bzw. Börsenvollständigkeit. Die verwendete Vollständigkeitsquelle wird je Zeile ausgewiesen.", "why": "s. B1"}
+ ],
+ "unchanged": "Alle Schwellen (n >= 30, Vollständigkeit >= 0,80, Abdeckung >= 0,95/0,80)."
+}

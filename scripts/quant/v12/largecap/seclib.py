@@ -1,0 +1,155 @@
+"""V12 LARGECAP: SEC access helpers (stdlib only).
+
+Every network request goes through the repository fair-access client scripts/quant/sec/http_client.py
+(User-Agent 'VisionUniverseResearch info@visionuniverse.de', token bucket <= 2 requests/second, retry/backoff).
+Raw bodies live only in the private scratchpad (V12_LARGECAP_PRIVATE/http-cache). Bodies already fetched by earlier
+strands (V10 corporate actions, V10 population, V12 indexpop) are re-used read-only from their private caches; they are
+re-hashed on use, so a cited sha256 is always the sha256 of the bytes this strand read.
+Request ledger: V12_LARGECAP_PRIVATE/request-ledger.jsonl (one line per network request, never per cache hit).
+"""
+import gzip
+import hashlib
+import html
+import json
+import os
+import pathlib
+import re
+import sys
+import time
+
+ROOT = pathlib.Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'scripts' / 'quant' / 'sec'))
+from http_client import SECHttpClient, RateLimiter, DiskCache  # noqa: E402
+
+SCRATCH = pathlib.Path('/tmp/claude-0/-home-user-vision-universe-research/f429e7bd-1176-554d-8fa5-5081d98ef531/scratchpad')
+PRIVATE = pathlib.Path(os.environ.get('V12_LARGECAP_PRIVATE', str(SCRATCH / 'v12-private' / 'largecap')))
+REUSE_CACHES = [SCRATCH / 'v10-private' / 'corporate-actions' / 'http-cache', SCRATCH / 'v10-private' / 'population' / 'http-cache',
+                SCRATCH / 'v12-private' / 'indexpop' / 'http-cache']
+
+
+def _assert_private(p):
+    p = pathlib.Path(p).resolve()
+    if p == ROOT or ROOT in p.parents:
+        raise SystemExit('PRIVATE_OUTPUT_REQUIRED: ' + str(p))
+    return p
+
+
+_cache = DiskCache(directory=_assert_private(PRIVATE / 'http-cache'), ttl_seconds=None)
+_reuse = [DiskCache(directory=d, ttl_seconds=None) for d in REUSE_CACHES if d.exists()]
+_limiter = RateLimiter(rate_per_second=2, burst=1)
+CLIENT = SECHttpClient(cache=_cache, rate_limiter=_limiter)
+STATS = {'network': 0, 'ownCache': 0, 'reusedCache': 0}
+
+
+def sha256(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+BOT_TAG = re.compile(rb'<script type="text/javascript"\s+src="/[^"]*"></script>(?=</body>)')
+
+
+def norm_body(b):
+    """V10 population amendment 1.0.2: drop the per-request bot-manager tag before </body>."""
+    return BOT_TAG.sub(b'', b)
+
+
+def get(url):
+    """(bytes, meta). Own cache, then earlier strands' caches (read-only), then network (<= 2/s)."""
+    body = _cache.get(url)
+    src = 'ownCache'
+    if body is None:
+        for c in _reuse:
+            body = c.get(url)
+            if body is not None:
+                src = 'reusedCache'
+                _cache.put(url, body)
+                break
+    if body is None:
+        before = CLIENT.stats['requests']
+        body = CLIENT.get_bytes(url, use_cache=False)
+        _cache.put(url, body)
+        src = 'network'
+        with open(PRIVATE / 'request-ledger.jsonl', 'a') as fh:
+            fh.write(json.dumps({'t': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'url': url, 'bytes': len(body),
+                                 'requests': CLIENT.stats['requests'] - before}) + '\n')
+    STATS[src] += 1
+    return body, {'url': url, 'bytesRead': len(body), 'complete': True, 'sha256': sha256(body), 'sha256Normalized': sha256(norm_body(body)), 'via': src}
+
+
+PREFIX_SIZES_SEEN = (6 * 1024 * 1024, 3 * 1024 * 1024, 2 * 1024 * 1024)
+
+
+def get_prefix(url, size):
+    """V9/V10 prefix convention (sec_lib.get(url, prefix=size)): at most `size` bytes, complete = body shorter than size.
+    Served from a cached complete body, or from an earlier strand's cached prefix of at least `size` bytes, else fetched."""
+    body = _cache.get(url)
+    src = 'ownCache'
+    if body is None:
+        for c in _reuse:
+            body = c.get(url)
+            if body is not None:
+                src = 'reusedCache'
+                _cache.put(url, body)
+                break
+            for n in PREFIX_SIZES_SEEN:
+                if n < size:
+                    continue
+                pb = c.get(url + '#v9-prefix-%d' % n)
+                if pb is not None:
+                    if len(pb) < n:  # an earlier prefix read that ended before its limit is the complete body
+                        _cache.put(url, pb)
+                    body, src = pb, 'reusedCache'
+                    break
+            if body is not None:
+                break
+    if body is None:
+        body, _ = get(url)
+        src = None
+    else:
+        STATS[src] += 1
+    part = body[:size]
+    return part, {'url': url, 'bytesRead': len(part), 'prefixLimit': size, 'complete': len(body) < size and len(part) == len(body),
+                  'sha256': sha256(part)}
+
+
+def cik10(cik):
+    return '%010d' % int(cik)
+
+
+def submissions(cik):
+    url = 'https://data.sec.gov/submissions/CIK%s.json' % cik10(cik)
+    body, meta = get(url)
+    doc = json.loads(body)
+    metas = [meta]
+    cols = doc['filings']['recent']
+    filings = [dict(zip(cols.keys(), vals)) for vals in zip(*cols.values())]
+    for f in doc['filings'].get('files', []):
+        b, m = get('https://data.sec.gov/submissions/' + f['name'])
+        metas.append(m)
+        page = json.loads(b)
+        filings += [dict(zip(page.keys(), vals)) for vals in zip(*page.values())]
+    filings.sort(key=lambda f: (f['filingDate'], f['accessionNumber']))
+    head = {k: doc.get(k) for k in ('cik', 'name', 'tickers', 'exchanges', 'formerNames')}
+    return head, filings, metas
+
+
+def archive_url(cik, accession, name=''):
+    return 'https://www.sec.gov/Archives/edgar/data/%d/%s/%s' % (int(cik), accession.replace('-', ''), name)
+
+
+def full_text_url(cik, accession):
+    return archive_url(cik, accession, accession + '.txt')
+
+
+def text_of(body):
+    t = body.decode('utf-8', errors='replace') if isinstance(body, bytes) else body
+    t = re.sub(r'(?is)<(script|style)\b.*?</\1>', ' ', t)
+    t = re.sub(r'<[^>]+>', ' ', t)
+    return re.sub(r'\s+', ' ', html.unescape(t)).strip()
+
+
+def quote(text, start, end, width=300):
+    """<= width characters around [start, end)."""
+    pad = max(0, (width - (end - start)) // 2)
+    s = max(0, start - pad)
+    return text[s:s + width]

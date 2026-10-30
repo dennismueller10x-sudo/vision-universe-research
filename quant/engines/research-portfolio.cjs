@@ -6,11 +6,18 @@
 // result of inputs that do not use them: SPINOFF, ADS successor listings,
 // informationAvailableAt (entitlement separated from information time) and
 // cash with a NOT_STATED pay date (claim never credited, reported separately).
+// 1.3.0 (opt-in input.exitRules, research only): exit rules evaluated on the session close (WEEKLY_CLOSE_STOP on
+// weekly sessions, maxHoldingSessions); a triggered position is sold in full at the NEXT session's close (the
+// existing execution timing), never intraweek. Inputs without exitRules keep every output byte-identical,
+// including schemaVersion research-portfolio-1.2.0 (only sourceHashes/generation/resultHash follow the file hash).
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const Profile = require('./profile-backtest.js');
 const Legacy = require('./backtest.js');
 const VERSION = 'research-portfolio-1.2.0';
+const VERSION_EXIT_RULES = 'research-portfolio-1.3.0';
+const EXIT_RULE_KEYS = ['stop', 'maxHoldingSessions', 'reentry'], STOP_KEYS = ['semantics', 'threshold', 'reference'];
+const STOP_REFERENCES = ['AVERAGE_ENTRY_PRICE', 'TRAILING_HIGH_CLOSE'], REENTRY_POLICIES = ['NEXT_TARGET', 'AFTER_TARGET_DROPS'];
 const INFORMATION_TIME_TYPES = ['CASH_DIVIDEND', 'TERMINAL_CASH', 'TERMINAL_EXCHANGE', 'SPINOFF'];
 const HASH = /^[a-f0-9]{64}$/;
 const cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
@@ -100,6 +107,30 @@ function buildProfileTargets(options) {
     return { ...s, availableAt: decision.closeAt, membershipHash: m.sourceHash, factorSnapshotHash: f.sourceHash, weights, selectionKind: 'PROFILE' };
   });
 }
+// Opt-in exit rules (1.3.0). Fail closed on anything not modelled with weekly closes.
+function validateExitRules(x, sessions, allEvents) {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) fail('INVALID_EXIT_RULES');
+  Object.keys(x).forEach(k => { if (!EXIT_RULE_KEYS.includes(k)) fail('INVALID_EXIT_RULES', k); });
+  if (x.stop === undefined && x.maxHoldingSessions === undefined) fail('EXIT_RULES_EMPTY');
+  if (!REENTRY_POLICIES.includes(x.reentry)) fail('EXIT_RULES_REENTRY_REQUIRED');
+  let stop = null;
+  if (x.stop !== undefined) {
+    if (!x.stop || typeof x.stop !== 'object' || Array.isArray(x.stop)) fail('INVALID_STOP_RULE');
+    Object.keys(x.stop).forEach(k => { if (!STOP_KEYS.includes(k)) fail('INVALID_STOP_RULE', k); });
+    if (x.stop.semantics !== 'WEEKLY_CLOSE_STOP') fail('STOP_SEMANTICS_REQUIRED');
+    finite(x.stop.threshold, 'INVALID_STOP_THRESHOLD', Number.MIN_VALUE); if (x.stop.threshold >= 1) fail('INVALID_STOP_THRESHOLD');
+    if (!STOP_REFERENCES.includes(x.stop.reference)) fail('INVALID_STOP_REFERENCE');
+    // A weekly-close stop needs one session per ISO week (no intraweek valuation sessions).
+    const monday = d => { const t = Date.parse(d + 'T00:00:00Z'); return t - ((new Date(t).getUTCDay() + 6) % 7) * 86400000; };
+    sessions.forEach((s, i) => { if (i && monday(s.date) <= monday(sessions[i - 1].date)) fail('WEEKLY_CLOSE_STOP_REQUIRES_WEEKLY_SESSIONS', s.date); });
+    stop = { semantics: x.stop.semantics, threshold: x.stop.threshold, reference: x.stop.reference };
+  }
+  if (x.maxHoldingSessions !== undefined && (!Number.isInteger(x.maxHoldingSessions) || x.maxHoldingSessions < 1)) fail('INVALID_MAX_HOLDING');
+  // Units received without a purchase price (spin-off, successor exchange) have no entry reference: not modelled.
+  const unsupported = allEvents.find(e => e.type === 'SPINOFF' || e.type === 'TERMINAL_EXCHANGE');
+  if (unsupported) fail('EXIT_RULES_UNSUPPORTED_EVENT', unsupported.id);
+  return { stop, maxHoldingSessions: x.maxHoldingSessions === undefined ? null : x.maxHoldingSessions, reentry: x.reentry };
+}
 function runPortfolio(input) {
   canonical(input); // Reject non-JSON/nonfinite values before hashing or finance.
   validateSessions(input.sessions);
@@ -178,6 +209,7 @@ function runPortfolio(input) {
     });
   }
   if (!listings.size || allEvents.length > 100000) fail('PORTFOLIO_INPUT_BUDGET');
+  const exitRules = input.exitRules === undefined ? null : validateExitRules(input.exitRules, sessions, allEvents);
   const spinoffKeys = new Set();
   for (const l of listings.values()) {
     // ADS: successor-only consideration of a terminal exchange; own distributions are not modelled.
@@ -238,6 +270,8 @@ function runPortfolio(input) {
   const usesNotStated = allEvents.some(e => e.payDate === null), usesInformationTime = allEvents.some(e => e.informationAvailableAt !== undefined);
   const usesSpinoff = allEvents.some(e => e.type === 'SPINOFF'), usesAds = [...listings.values()].some(l => l.instrumentClass === 'ADS');
   let retainedPositionCells = 0;
+  // Exit-rule state (only with input.exitRules): open-position references, pending next-session exits, re-entry blocks.
+  const track = new Map(), pendingExits = new Map(), blocked = new Map(), exitLedger = [];
   function price(k, session) {
     const l = listings.get(k), b = l.barMap.get(session.date);
     if (terminated.has(k) || session.date < l.firstTradeDate || (l.lastTradeDate && session.date > l.lastTradeDate)) fail('LISTING_NOT_TRADABLE', k + '@' + session.date);
@@ -250,7 +284,7 @@ function runPortfolio(input) {
       if (!informationTime && instant(e.availableAt) > instant(session.closeAt)) fail('EVENT_NOT_AVAILABLE', e.id);
       const units = holdings.get(e.listingId) || 0;
       if (informationTime && units) informationPending.push({ eventId: e.id, at: instant(e.informationAvailableAt) });
-      if (e.type === 'SPLIT') { if (units) holdings.set(e.listingId, units * e.ratio); }
+      if (e.type === 'SPLIT') { if (units) holdings.set(e.listingId, units * e.ratio); if (exitRules && track.has(e.listingId)) { const tr = track.get(e.listingId); tr.avgCost /= e.ratio; tr.high /= e.ratio; } }
       else if (e.type === 'SPINOFF') {
         if (units) {
           const d = listings.get(e.distributedListingId);
@@ -265,6 +299,7 @@ function runPortfolio(input) {
         if (e.type.startsWith('TERMINAL_')) {
           if (terminated.has(e.listingId)) fail('DUPLICATE_TERMINAL_EVENT');
           terminated.add(e.listingId); holdings.delete(e.listingId);
+          if (exitRules) track.delete(e.listingId);
           if (e.type === 'TERMINAL_EXCHANGE' && units) {
             const successor = listings.get(e.successorListingId);
             if (session.date < successor.firstTradeDate || (successor.lastTradeDate && session.date > successor.lastTradeDate) || terminated.has(successor.listingId)) fail('SUCCESSOR_NOT_VALID');
@@ -280,15 +315,43 @@ function runPortfolio(input) {
     const due = receivables.filter(r => r.payDate <= session.date);
     cash += due.reduce((s, r) => s + r.amount, 0);
     receivables = receivables.filter(r => r.payDate > session.date);
-    const marked = new Map([...holdings].map(([k, units]) => [k, units * price(k, session)]));
+    let marked = new Map([...holdings].map(([k, units]) => [k, units * price(k, session)]));
     const claims = receivables.reduce((s, r) => s + r.amount, 0);
-    const before = cash + claims + [...marked.values()].reduce((a, b) => a + b, 0);
-    const t = targetMap.get(session.date);
+    let before = cash + claims + [...marked.values()].reduce((a, b) => a + b, 0);
+    const t = targetMap.get(session.date), sessionIndex = byDate.get(session.date).i;
+    if (exitRules && pendingExits.size) {
+      // Exits triggered at the previous session close: full sale at this session's close, before any target.
+      let traded = 0, fees = 0, slippage = 0;
+      for (const [k, x] of [...pendingExits].sort(([a], [b]) => cmp(a, b))) {
+        pendingExits.delete(k);
+        if (!holdings.has(k)) { exitLedger.push({ ...x, state: 'SUPERSEDED_POSITION_CLOSED_BEFORE_EXECUTION' }); continue; }
+        const rawPrice = price(k, session), units = holdings.get(k), notional = units * rawPrice, fee = notional * feeRate, slip = notional * slipRate;
+        if (input.liquidity) {
+          const dollarVolume = finite(listings.get(k).barMap.get(session.date).dollarVolume, 'LIQUIDITY_DATA_UNAVAILABLE', 0);
+          if (notional > dollarVolume * input.liquidity.maxParticipation) fail('LIQUIDITY_CAPACITY_EXCEEDED', k);
+        }
+        cash += notional - fee - slip; holdings.delete(k); track.delete(k);
+        trades.push({ date: session.date, decisionDate: x.triggerDate, listingId: k, side: 'SELL', units, price: rawPrice, notional, fee, slippage: slip, reason: x.rule });
+        exitLedger.push({ ...x, state: 'EXECUTED_NEXT_SESSION_CLOSE', executionDate: session.date, executionPrice: rawPrice, units, notional });
+        traded += notional; fees += fee; slippage += slip;
+      }
+      if (traded > 0) {
+        totalFees += fees; totalSlippage += slippage; turnover += before > 0 ? traded / (2 * before) : 0;
+        marked = new Map([...holdings].map(([k, units]) => [k, units * price(k, session)]));
+        before = cash + claims + [...marked.values()].reduce((a, b) => a + b, 0);
+      }
+    }
     if (t) {
       // A decision taken before an applied event became known cannot rely on the state it changed.
       const decisionAt = instant(byDate.get(t.decisionDate).closeAt), unknown = informationPending.find(x => x.at > decisionAt);
       if (unknown) fail('DECISION_BEFORE_EVENT_INFORMATION', unknown.eventId + '@' + t.decisionDate);
-      const weights = t.weights, keys = [...new Set([...holdings.keys(), ...Object.keys(weights)])].sort();
+      let weights = t.weights;
+      if (exitRules && blocked.size) {
+        // Re-entry: NEXT_TARGET = any target decided after the trigger close; AFTER_TARGET_DROPS = only after a later target omitted it.
+        for (const [k, b] of [...blocked]) if (t.decisionDate > b.triggerDate && (exitRules.reentry === 'NEXT_TARGET' || !(weights[k] > 0))) blocked.delete(k);
+        if ([...blocked.keys()].some(k => weights[k] > 0)) weights = Object.fromEntries(Object.entries(weights).filter(([k]) => !blocked.has(k)));
+      }
+      const keys = [...new Set([...holdings.keys(), ...Object.keys(weights)])].sort();
       keys.forEach(k => price(k, session));
       const drift = Math.max(0, ...keys.map(k => Math.abs((before ? (marked.get(k) || 0) / before : 0) - (weights[k] || 0))));
       const unchanged = previousTarget !== null && canonical(previousTarget) === canonical(weights);
@@ -311,11 +374,21 @@ function runPortfolio(input) {
             const dollarVolume = finite(listings.get(k).barMap.get(session.date).dollarVolume, 'LIQUIDITY_DATA_UNAVAILABLE', 0);
             if (notional > dollarVolume * input.liquidity.maxParticipation) fail('LIQUIDITY_CAPACITY_EXCEEDED', k);
           }
-          const units = delta / rawPrice;
+          // Full exit (target weight 0): sell exactly the held units, so no scale-dependent rounding dust remains.
+          const exit = !(weights[k] > 0) && holdings.has(k);
+          const units = exit ? -holdings.get(k) : delta / rawPrice;
           cash -= delta + fee + slip;
           const newUnits = (holdings.get(k) || 0) + units;
           if (newUnits < -1e-10) fail('NEGATIVE_UNITS');
-          if (Math.abs(newUnits) <= 1e-12) holdings.delete(k); else holdings.set(k, newUnits);
+          if (exit || Math.abs(newUnits) <= 1e-12) holdings.delete(k); else holdings.set(k, newUnits);
+          if (exitRules) {
+            if (!holdings.has(k)) track.delete(k);
+            else if (units > 0) {
+              const tr = track.get(k), prev = newUnits - units;
+              if (!tr) track.set(k, { openIndex: sessionIndex, openDate: session.date, avgCost: rawPrice, high: rawPrice });
+              else tr.avgCost = (prev * tr.avgCost + units * rawPrice) / newUnits;
+            }
+          }
           trades.push({ date: session.date, decisionDate: t.decisionDate, listingId: k, side: delta > 0 ? 'BUY' : 'SELL', units: Math.abs(units), price: rawPrice, notional, fee, slippage: slip });
           traded += notional; fees += fee; slippage += slip;
         }
@@ -327,6 +400,20 @@ function runPortfolio(input) {
       }
     }
     const positions = [...holdings].sort(([a], [b]) => cmp(a, b)).map(([listingId, units]) => ({ listingId, units, price: price(listingId, session) }));
+    if (exitRules) for (const pos of positions) {
+      // Evaluated on this session's close only; the exit executes at the next session's close.
+      const tr = track.get(pos.listingId);
+      if (!tr) fail('EXIT_RULES_UNTRACKED_POSITION', pos.listingId);
+      tr.high = Math.max(tr.high, pos.price);
+      if (pendingExits.has(pos.listingId)) continue;
+      const s = exitRules.stop, reference = s ? (s.reference === 'AVERAGE_ENTRY_PRICE' ? tr.avgCost : tr.high) : null, held = sessionIndex - tr.openIndex + 1;
+      const rule = s && pos.price <= reference * (1 - s.threshold) ? 'WEEKLY_CLOSE_STOP' : exitRules.maxHoldingSessions !== null && held >= exitRules.maxHoldingSessions ? 'MAX_HOLDING_PERIOD' : null;
+      if (!rule) continue;
+      const x = { listingId: pos.listingId, rule, triggerDate: session.date, triggerClose: pos.price, referencePrice: rule === 'WEEKLY_CLOSE_STOP' ? reference : null, openDate: tr.openDate, heldSessionsAtTrigger: held };
+      blocked.set(pos.listingId, { triggerDate: session.date });
+      if (sessionIndex === sessions.length - 1) exitLedger.push({ ...x, state: 'TRIGGERED_AT_LAST_SESSION_NOT_EXECUTED' });
+      else pendingExits.set(pos.listingId, x);
+    }
     retainedPositionCells += positions.length;
     if (retainedPositionCells > 100000) fail('POSITION_HISTORY_MEMORY_BUDGET');
     const value = cash + claims + positions.reduce((s, h) => s + h.units * h.price, 0);
@@ -337,7 +424,7 @@ function runPortfolio(input) {
     equity.push(row);
   }
   const values = [initialCapital, ...equity.map(e => e.value)], years = (Date.parse(dates.at(-1)) - Date.parse(dates[0])) / (365.25 * 86400000), endCapital = equity.at(-1).value;
-  const result = { schemaVersion: VERSION, returnBasis, conditionalPriceSimulation: priceSimulation, currency: input.currency, mode: p.mode, certification: 'NOT_CERTIFIED', productionApproved: false,
+  const result = { schemaVersion: exitRules ? VERSION_EXIT_RULES : VERSION, returnBasis, conditionalPriceSimulation: priceSimulation, currency: input.currency, mode: p.mode, certification: 'NOT_CERTIFIED', productionApproved: false,
     inputHash: sha(input), sourceHashes: sourceIdentity(), runtime: runtimeIdentity(), initialCapital, endCapital,
     equity, trades, eventLedger, rebalances, openReceivables: receivables,
     metrics: { cumulativeReturn: endCapital / initialCapital - 1, cagr: years > 0 ? Math.pow(endCapital / initialCapital, 1 / years) - 1 : null, maxDrawdown: Legacy.maxDrawdownOf(values), fees: totalFees, slippage: totalSlippage, oneWayTurnoverSum: turnover },
@@ -345,11 +432,18 @@ function runPortfolio(input) {
       ...(usesInformationTime ? ['EVENTS_APPLIED_AT_ENTITLEMENT_DECISIONS_BEFORE_INFORMATION_TIME_REJECTED'] : []),
       ...(usesSpinoff ? ['SPINOFF_UNITS_COST_BASIS_NEUTRAL_FRACTIONS_KEPT_NO_CASH_IN_LIEU'] : []),
       ...(usesAds ? ['ADS_SUCCESSOR_ONLY_NO_ADS_DISTRIBUTIONS_DEPOSITARY_FEES_OR_FX_MODELLED'] : []),
-      ...(usesNotStated ? ['NOT_STATED_PAY_DATE_CLAIMS_EXCLUDED_FROM_EQUITY_NEVER_CREDITED_OR_INVESTABLE'] : [])] };
+      ...(usesNotStated ? ['NOT_STATED_PAY_DATE_CLAIMS_EXCLUDED_FROM_EQUITY_NEVER_CREDITED_OR_INVESTABLE'] : []),
+      ...(exitRules ? ['EXIT_RULES_EVALUATED_ON_SESSION_CLOSE_ONLY_NO_INTRAWEEK_PRICES', 'EXIT_AT_NEXT_SESSION_CLOSE_GAP_LOSS_BEYOND_THRESHOLD_INCLUDED', 'EXITED_WEIGHT_HELD_AS_CASH_UNTIL_NEXT_TARGET',
+        ...(exitRules.stop ? ['STOP_REFERENCE_RAW_CLOSE_SPLIT_SCALED_NO_DIVIDEND_ADJUSTMENT'] : [])] : [])] };
   if (usesNotStated) result.notStatedClaims = notStatedClaims;
-  result.generation = sha({ version: VERSION, inputHash: result.inputHash, sourceHashes: result.sourceHashes, runtime: result.runtime });
+  if (exitRules) {
+    result.exitRules = exitRules;
+    result.exitLedger = exitLedger;
+    result.openExitBlocks = [...blocked].sort(([a], [b]) => cmp(a, b)).map(([listingId, b]) => ({ listingId, triggerDate: b.triggerDate }));
+  }
+  result.generation = sha({ version: result.schemaVersion, inputHash: result.inputHash, sourceHashes: result.sourceHashes, runtime: result.runtime });
   result.resultHash = sha(result);
   return result;
 }
 
-module.exports = { VERSION, runPortfolio, buildSchedule, buildProfileTargets, canonical, hash: sha };
+module.exports = { VERSION, VERSION_EXIT_RULES, runPortfolio, buildSchedule, buildProfileTargets, canonical, hash: sha };

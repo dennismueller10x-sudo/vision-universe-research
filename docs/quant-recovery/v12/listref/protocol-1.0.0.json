@@ -1,0 +1,70 @@
+{
+ "schemaVersion": "v12-listref-protocol-1.0.0",
+ "workPackage": "V12 P3 – historische Listingreferenz der US-Common-Stock-Population",
+ "strand": "listref",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "priorKnowledgeDisclosure": [
+  "Vor dieser Registrierung gesehen: Profil der Tiingo-Datei (Zeilen je Börse/assetType, Start-/Endjahr-Verteilung, Suffixe, Anzahl aktiver Listings je Jahr mit vorläufigem Common-Filter: kaum Enden vor 2009) sowie Zählungen distinkter CIKs je Formular und Jahr aus den EDGAR-Vollindizes 1994–2026.",
+  "Aus V10 bekannt: Abdeckung gegenüber 10-K-Meldern 14 % (2000) – 69 % (2026), Frame 4.329, 121 beendete Listings.",
+  "Keine Abdeckungs- oder Verknüpfungsquote vor der Registrierung berechnet."
+ ],
+ "sources": {
+  "tiingoSupportedTickers": {"url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip", "use": "private only; repo holds counts, hashes and tickers as identifiers", "columns": ["ticker", "exchange", "assetType", "priceCurrency", "startDate", "endDate"]},
+  "edgarFullIndex": {"url": "https://www.sec.gov/Archives/edgar/full-index/{YYYY}/QTR{q}/form.gz", "range": "1994Q1-2026Q4", "note": "form.gz = gzip(form.idx); same rows as company.idx (sorted by form type). V10 cache reused for 2000-2026."},
+  "secTickerMap": {"path": "quant/data/universe/cik-map.json", "note": "company_tickers_exchange as of 2026-09-13; current only"},
+  "holdings": "quant/data/market/discover-series-long (weekly) + security master; research loader {identityEvidence, corporateActionEvidence, listingLifecycleEvidence} and V10 common.buildFrame",
+  "v10Registers": ["docs/quant-recovery/v10/population/lifecycle-cases.json", "docs/quant-recovery/v10/population/identity-cases.json"],
+  "publicFloat": "dei:EntityPublicFloat (USD, 10-K forms) from the private companyfacts.zip of the V10 factor strand",
+  "secSubmissionsPerCik": "https://data.sec.gov/submissions/CIK##########.json (+ older pages) for linked delisting issuers: 8-K item codes, SIC, former names; metadata, not documents",
+  "originalDocuments": "Form 25/25-NSE primary documents and 8-K documents for the verification sample only (budget <= 3000 documents in total)"
+ },
+ "referenceListing": {
+  "row": "Tiingo row with assetType == 'Stock', priceCurrency == 'USD', exchange in {NYSE, NASDAQ, NYSE MKT, AMEX}. The exchange is Tiingo's last known label for the row; exchange transfers are not visible.",
+  "commonSymbolRule": {
+   "keep": ["^[A-Z]{1,4}$", "^[A-Z]{1,4}-[ABC]$ (share classes)", "^[A-Z]{4}[A-Z]$ on NASDAQ unless the fifth letter is in the exclusion set"],
+   "excludeNasdaqFifthLetter": {"W": "warrant", "U": "unit", "R": "right", "P": "1st preferred", "O": "2nd preferred", "N": "3rd preferred", "M": "4th preferred", "V": "when-issued", "Y": "ADR", "F": "foreign issue", "G": "convertible", "H": "convertible", "I": "convertible", "T": "with warrants/rights"},
+   "exclude": ["any '-P' preferred", "-W, -WS*, -U, -R, -RI, -WI, -WD, -CL, -V and every other dash suffix except -A/-B/-C", "5-letter non-NASDAQ symbols", "digits or other characters"],
+   "note": "Nasdaq relaxed the fifth-letter convention; 5-letter symbols with a kept fifth letter (e.g. A, B, K, L, Q, E) stay in and are counted separately (FIVE_LETTER_KEPT)."
+  },
+  "activeInYear": "startDate <= Y-12-31 and endDate >= Y-01-01",
+  "ended": "endDate < 2026-09-28 (30 days before the file date 2026-10-28); a row ending later is ACTIVE",
+  "delistingYear": "calendar year of endDate for ended rows",
+  "tickerReuse": "same ticker on several rows: rows whose intervals are separated by more than 5 calendar days are distinct listings (REUSE_GAP); a gap of 0-5 days or an overlap is a provider restart (ADJACENT_RESTART). Both are counted; CIK links decide whether the issuer is the same.",
+  "leftCensoring": "startDate <= 1995-01-03 is treated as provider data start, not listing start (age bucket 'GE10_CENSORED').",
+  "spacLikely": "a unit or warrant sibling (ROOT-U/ROOT-WS*/ROOT-W or 5-letter ROOT+U/W on NASDAQ) overlapping the row's interval",
+  "issuerType": "linked CIK filed a 10-K/10-KSB in [Y-1, Y+1] -> DOMESTIC_FILER; only 20-F/40-F -> FOREIGN_PRIVATE_ISSUER; otherwise UNKNOWN"
+ },
+ "cikLink": {
+  "HIGH_CURRENT_MAP": "row ended == false and it is the latest row of its ticker; ticker (dot/dash normalised) in cik-map (any exchange label; disagreement with the Tiingo label is recorded)",
+  "HIGH_V10_REGISTER": "V10 lifecycle or identity case with a resolved CIK for the series whose master canonical_id equals tiingo:EXCHANGE:TICKER:STARTDATE of the row",
+  "MEDIUM_EDGAR_END": "ended row; candidate CIKs = filers of 25, 25-NSE, 15-12B (and 15-12G before 2007-01-01 for NASDAQ rows) with filing date in [endDate-15, endDate+120]; the index company name at filing time must have strong ticker affinity (A3); exactly one CIK with A3 and no other A3 candidate; date distance reported",
+  "MEDIUM_EDGAR_START_END": "row with startDate > 1995-01-03: an 8-A12B/8-A12G filer within [startDate-30, startDate+10] AND the same CIK as a delisting filer in the END window, affinity >= A2, unique",
+  "affinity": {"A3": "ticker == initials of significant name words, or ticker is a prefix (>= 3 letters) of the first significant word, or ticker == first word, or ticker == initials of the first k words followed by a prefix", "A2": "first letter of ticker == first letter of first significant word and ticker letters are an ordered subsequence of the name", "A1": "ordered subsequence only", "A0": "none"},
+  "rule": "Uncertain links are not made. Unlinked rows stay in the reference and are counted as UNLINKED."
+ },
+ "coverage": {
+  "seriesMapping": "holding series maps to a reference row by master canonical_id (exchange:ticker:startDate, exchange alias NYSE MKT/AMEX), else by same ticker with unique interval overlap >= 365 days; otherwise unmapped (counted)",
+  "withSeries": "mapped series has >= 1 raw weekly bar in year Y",
+  "frameQualified": "mapped series is QUALIFIED and in the V10/V11 frame and its loader points have >= 1 bar in Y",
+  "delistingWithLifecycle": "reference row ended in Y and mapped series carries listingLifecycle.status == DELISTED_SOURCE_VERIFIED (SEC-sourced last trading day) in the research loader",
+  "segments": ["exchange (NYSE, NASDAQ, AMEX incl. NYSE MKT)", "sizeClass by public float (MEGA_LARGE >= 10e9, MID >= 2e9, SMALL >= 3e8, MICRO < 3e8, UNKNOWN; latest 10-K float with end in [Y-2-07-01, Y-06-30]; > 5e12 flagged SCALE_SUSPECT -> UNKNOWN)", "listingAge at Y-07-01 (LT2, 2_5, 5_10, GE10, GE10_CENSORED)", "issuerType", "spacLikely"]
+ },
+ "referenceCompleteness": {
+  "edgarDelistingEvent": "25 or 25-NSE (2001+), 15-12B (all years) by a CIK that filed a 10-K/10-KSB/20-F/40-F in [Y-2, Y]; several such forms of one CIK within 180 days are one event",
+  "stillListedExclusion": "events of CIKs whose current SEC ticker map entry has an exchange NYSE/Nasdaq/NYSE American are excluded (class delistings, transfers)",
+  "ratio": "share of EDGAR events in year Y that are linked to an ended Tiingo reference row (any link grade); a low share means Tiingo's file itself lacks delisted listings of that year"
+ },
+ "delistingReason": {
+  "source": "8-K item codes from SEC submissions metadata within [event-120d, event+30d]; issuer-filed Form 25; merger-process forms in the full index within 365 days before",
+  "priority": ["2.01 -> MERGER_ACQUISITION_COMPLETED", "1.03 -> BANKRUPTCY", "3.01 -> LISTING_RULE_OR_TRANSFER_NOTICE", "DEFM14A/DEFM14C/PREM14A/SC 14D9/SC TO-T/SC 13E3 -> MERGER_PROCESS_INDICATED", "issuer Form 25 only -> VOLUNTARY_ISSUER_FILING", "else UNKNOWN"],
+  "sample": ">= 50 events verified against the original Form 25/25-NSE primary document and/or the 8-K, quote <= 300 characters, SHA-256"
+ },
+ "p4Readiness": {
+  "STUDY_READY_TRANSPARENT_GAP": "n_ref >= 30, series coverage >= 0.95 and reference completeness >= 0.80 in the year",
+  "PARTIAL": "series coverage >= 0.80 (other conditions as above)",
+  "INSUFFICIENT": "otherwise; also whenever reference completeness < 0.80 (reference itself survivor-biased)"
+ },
+ "independentCheck": "scripts/quant/v12/listref/check_listref.py (stdlib, python3 -I): rebuilds reference, year counts, coverage and completeness from the raw zip, raw index files and holdings with its own code"
+}

@@ -21,7 +21,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
 
-  var CONTRACT_VERSION = "technical-screener-contract-1.0.0";
+  var CONTRACT_VERSION = "technical-screener-contract-1.1.0";
   var SCHEMAS = { screener: /^vu-technical-screener-1\./, meta: /^vu-technical-meta-1\./, index: /^vu-technical-index-1\./ };
   var DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -32,8 +32,8 @@
     /* ATR % und relatives Volumen sind nach oben offen: Reverse-Split-Ketten (WHLR: Wochenschluss 402.408 -> 0,357 in
        70 Wochen, split-bereinigt) und Volumen-Median 0 ergeben echte, extreme Werte. */
     atrPct: [0, Infinity], relVol: [0, Infinity], ulcer14: [0, Infinity], histVol20: [0, Infinity], close: [0, Infinity],
-    distHigh52w: [-1, 0], distHigh200w: [-1, 0],
-    chg1d: [-1, Infinity], distSma200: [-1, Infinity], distSma50: [-1, Infinity], distEma200: [-1, Infinity], distChandelierLong: [-1, Infinity],
+    distHigh52w: [-1, 0], distHigh200w: [-1, 0], distLow52w: [0, Infinity],
+    chg1d: [-1, Infinity], distSma200: [-1, Infinity], distSma150: [-1, Infinity], sma200Slope21: [-1, Infinity], distSma50: [-1, Infinity], distEma200: [-1, Infinity], distChandelierLong: [-1, Infinity],
     roc21: [-1, Infinity], roc63: [-1, Infinity], roc126: [-1, Infinity], roc252: [-1, Infinity]
   };
   var INTEGER = { elderImpulse: 1, aroonOsc: 1 };
@@ -67,12 +67,15 @@
         } else {
           spec.type = f.window ? "int" : f.kind === "pct" ? "pct" : "num";
           if (RANGES[f.id]) spec.range = RANGES[f.id];
-          if (f.window) { spec.range = [0, Infinity]; spec.window = f.window; }
+          if (f.window) { spec.range = [0, Infinity]; spec.window = tf === "1D" ? f.window : f.window + "@" + tf; }
           if (INTEGER[f.id]) spec.integer = true;
         }
         out[key] = spec;
       });
-      if (f.window && !out[f.window]) out[f.window] = { type: "int", nullable: true, range: [1, Infinity], label: "Prüfraum in Handelstagen" };
+      if (f.window) f.tfs.forEach(function (tf) {
+        var wk = tf === "1D" ? f.window : f.window + "@" + tf;
+        if (!out[wk]) out[wk] = { type: "int", nullable: true, range: [1, Infinity], label: "Prüfraum in " + { "1D": "Handelstagen", "1W": "Wochen", "1M": "Monaten" }[tf] };
+      });
     });
     Object.keys(EXTRA).forEach(function (k) { out[k] = EXTRA[k]; });
     return out;

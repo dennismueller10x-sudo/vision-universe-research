@@ -1,0 +1,784 @@
+{
+ "schemaVersion": "v10-population-before-after-1.0.0",
+ "total": 6190,
+ "defaultParity": {
+  "compared": 6190,
+  "identicalOutputs": 6190,
+  "differing": [],
+  "rule": "sha256(JSON.stringify(result or error)) of the unchanged adapter loader vs createResearchLoader(root) with no option"
+ },
+ "configs": {
+  "default": {
+   "options": null,
+   "qualified": 4449,
+   "deltaVsDefault": 0,
+   "counts": {
+    "QUALIFIED": 4449,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 600,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "identity": {
+   "options": {
+    "identityEvidence": true
+   },
+   "qualified": 4453,
+   "deltaVsDefault": 4,
+   "counts": {
+    "QUALIFIED": 4453,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 600,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_BGC",
+    "ref_COHR",
+    "ref_DCOM",
+    "ref_SGI"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "identityV10": {
+   "options": {
+    "identityEvidence": true,
+    "identityEvidenceProtocolV10": true
+   },
+   "qualified": 4510,
+   "deltaVsDefault": 61,
+   "counts": {
+    "QUALIFIED": 4510,
+    "INSUFFICIENT_HISTORY": 441,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 603,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 118,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_ACI",
+    "ref_AERT",
+    "ref_ALTI",
+    "ref_ARRY",
+    "ref_BBAI",
+    "ref_BEAM",
+    "ref_BGC",
+    "ref_BHVN",
+    "ref_BNL",
+    "ref_BOLT",
+    "ref_BTDR",
+    "ref_BUR",
+    "ref_CHRD",
+    "ref_CNH",
+    "ref_CNR",
+    "ref_COCO",
+    "ref_COGT",
+    "ref_COHR",
+    "ref_CRC",
+    "ref_CSR",
+    "ref_CWBC",
+    "ref_CZR",
+    "ref_DCOM",
+    "ref_DERM",
+    "ref_DOW",
+    "ref_EE",
+    "ref_ESI",
+    "ref_EVER",
+    "ref_FBRT",
+    "ref_FRSH",
+    "ref_FSBC",
+    "ref_HCC",
+    "ref_HR",
+    "ref_IMCC",
+    "ref_INM",
+    "ref_IOT",
+    "ref_LAB",
+    "ref_MIR",
+    "ref_MOVE",
+    "ref_MRNA",
+    "ref_MXCT",
+    "ref_NMIH",
+    "ref_OPEN",
+    "ref_PAY",
+    "ref_PD",
+    "ref_PPTA",
+    "ref_RELY",
+    "ref_RENT",
+    "ref_RPRX",
+    "ref_S",
+    "ref_SAFE",
+    "ref_SDRL",
+    "ref_SEVN",
+    "ref_SGI",
+    "ref_SIRI",
+    "ref_SNOW",
+    "ref_TW",
+    "ref_UK",
+    "ref_UWMC",
+    "ref_VS",
+    "ref_WEST"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "ca": {
+   "options": {
+    "corporateActionEvidence": true
+   },
+   "qualified": 4477,
+   "deltaVsDefault": 28,
+   "counts": {
+    "QUALIFIED": 4477,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 572,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [
+    "ref_ACAD",
+    "ref_ACRS",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_ARLO",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_CPIX",
+    "ref_ERII",
+    "ref_FMC",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HYFM",
+    "ref_MDRR",
+    "ref_MGNX",
+    "ref_MIRA",
+    "ref_MOH",
+    "ref_MVST",
+    "ref_NSIT",
+    "ref_NTLA",
+    "ref_OM",
+    "ref_PACB",
+    "ref_PBYI",
+    "ref_RDN",
+    "ref_REPL",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_VRRM"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "lifecycle": {
+   "options": {
+    "listingLifecycleEvidence": true
+   },
+   "qualified": 4494,
+   "deltaVsDefault": 45,
+   "counts": {
+    "QUALIFIED": 4494,
+    "INSUFFICIENT_HISTORY": 473,
+    "CORPORATE_ACTION_UNRESOLVED": 610,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "MISSING_WEEKS": 129,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 4,
+    "LISTING_IDENTITY_MISMATCH": 3,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2
+   },
+   "gainedVsDefault": [
+    "ref_AACT",
+    "ref_ACHL",
+    "ref_ADVM",
+    "ref_AFAR",
+    "ref_AITR",
+    "ref_AL",
+    "ref_ALE",
+    "ref_ANSS",
+    "ref_ARBKL",
+    "ref_ATCOL",
+    "ref_ATMC",
+    "ref_BGFV",
+    "ref_CFB",
+    "ref_CFFS",
+    "ref_CGBDL",
+    "ref_CORX",
+    "ref_CVAC",
+    "ref_DENN",
+    "ref_DYCQ",
+    "ref_EBTC",
+    "ref_ENFN",
+    "ref_ETWO",
+    "ref_EVGR",
+    "ref_FFNW",
+    "ref_FLIC",
+    "ref_FNA",
+    "ref_FOSLL",
+    "ref_FTAIO",
+    "ref_GAINL",
+    "ref_GHLD",
+    "ref_GIFI",
+    "ref_GLADZ",
+    "ref_GORV",
+    "ref_HBI",
+    "ref_HONE",
+    "ref_HSII",
+    "ref_HYZN",
+    "ref_ICCH",
+    "ref_INFA",
+    "ref_MBNKP",
+    "ref_MCAA",
+    "ref_METCL",
+    "ref_MODV",
+    "ref_MURA",
+    "ref_MYNA",
+    "ref_NKLA",
+    "ref_NPAB",
+    "ref_OCFCP",
+    "ref_ODP",
+    "ref_ONCT",
+    "ref_OXSQZ",
+    "ref_PET",
+    "ref_PLYA",
+    "ref_PRLH",
+    "ref_PVBC",
+    "ref_RENE",
+    "ref_RILYM",
+    "ref_RVNC",
+    "ref_SASR",
+    "ref_SBT",
+    "ref_SCCC",
+    "ref_SHLT",
+    "ref_SLRN",
+    "ref_SNCRL",
+    "ref_STRM",
+    "ref_TBNK",
+    "ref_TFFP",
+    "ref_TRML",
+    "ref_TRUE",
+    "ref_VBTX",
+    "ref_VLCN",
+    "ref_WSBCP",
+    "ref_WTFCM",
+    "ref_WTFCP",
+    "ref_ZIMV",
+    "ref_ZK"
+   ],
+   "lostVsDefault": [
+    {
+     "securityId": "ref_ADEX",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_APAD",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_ARD",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CCCX",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CEO",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CHL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CHU",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CMPOV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_EFTY",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_EMPG",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_HCHL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_KNL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LAWR",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LGV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LN",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MAGH",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MAMK",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MBT",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_OZON",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PLT",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PLTS",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PTNM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PVG",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SDM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SVA",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SVAC",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_TBHC",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_TTM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_VEDL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_XPVVV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_ZZK",
+     "reason": "INSUFFICIENT_HISTORY"
+    }
+   ],
+   "qualifiedWithLifecycleCut": 150
+  },
+  "identityCa": {
+   "options": {
+    "identityEvidence": true,
+    "corporateActionEvidence": true
+   },
+   "qualified": 4481,
+   "deltaVsDefault": 32,
+   "counts": {
+    "QUALIFIED": 4481,
+    "INSUFFICIENT_HISTORY": 439,
+    "MISSING_WEEKS": 218,
+    "CORPORATE_ACTION_UNRESOLVED": 572,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "AMBIGUOUS_LISTING_IDENTITY": 180,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_ACAD",
+    "ref_ACRS",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_ARLO",
+    "ref_BGC",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_COHR",
+    "ref_CPIX",
+    "ref_DCOM",
+    "ref_ERII",
+    "ref_FMC",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HYFM",
+    "ref_MDRR",
+    "ref_MGNX",
+    "ref_MIRA",
+    "ref_MOH",
+    "ref_MVST",
+    "ref_NSIT",
+    "ref_NTLA",
+    "ref_OM",
+    "ref_PACB",
+    "ref_PBYI",
+    "ref_RDN",
+    "ref_REPL",
+    "ref_SGI",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_VRRM"
+   ],
+   "lostVsDefault": [],
+   "qualifiedWithLifecycleCut": 0
+  },
+  "all": {
+   "options": {
+    "identityEvidence": true,
+    "identityEvidenceProtocolV10": true,
+    "corporateActionEvidence": true,
+    "listingLifecycleEvidence": true
+   },
+   "qualified": 4583,
+   "deltaVsDefault": 134,
+   "counts": {
+    "QUALIFIED": 4583,
+    "INSUFFICIENT_HISTORY": 475,
+    "CORPORATE_ACTION_UNRESOLVED": 585,
+    "INELIGIBLE_EQUITY_LISTING": 295,
+    "MISSING_WEEKS": 129,
+    "AMBIGUOUS_LISTING_IDENTITY": 118,
+    "LISTING_IDENTITY_MISMATCH": 2,
+    "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+    "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+   },
+   "gainedVsDefault": [
+    "ref_AACT",
+    "ref_ACAD",
+    "ref_ACHL",
+    "ref_ACI",
+    "ref_ACRS",
+    "ref_ADVM",
+    "ref_AERT",
+    "ref_AFAR",
+    "ref_AITR",
+    "ref_AL",
+    "ref_ALE",
+    "ref_ALEC",
+    "ref_ALNY",
+    "ref_ALTI",
+    "ref_ANSS",
+    "ref_ARBKL",
+    "ref_ARLO",
+    "ref_ARRY",
+    "ref_ATCOL",
+    "ref_ATMC",
+    "ref_BBAI",
+    "ref_BEAM",
+    "ref_BGC",
+    "ref_BGFV",
+    "ref_BHVN",
+    "ref_BKSY",
+    "ref_BMEA",
+    "ref_BNL",
+    "ref_BOLT",
+    "ref_BTDR",
+    "ref_BUR",
+    "ref_CFB",
+    "ref_CFFS",
+    "ref_CGBDL",
+    "ref_CHRD",
+    "ref_CNH",
+    "ref_CNR",
+    "ref_COCO",
+    "ref_COGT",
+    "ref_COHR",
+    "ref_CORX",
+    "ref_CPIX",
+    "ref_CRC",
+    "ref_CSR",
+    "ref_CVAC",
+    "ref_CWBC",
+    "ref_CZR",
+    "ref_DCOM",
+    "ref_DENN",
+    "ref_DERM",
+    "ref_DOW",
+    "ref_DYCQ",
+    "ref_EBTC",
+    "ref_EE",
+    "ref_ENFN",
+    "ref_ERII",
+    "ref_ESI",
+    "ref_ETWO",
+    "ref_EVER",
+    "ref_EVGR",
+    "ref_FBRT",
+    "ref_FFNW",
+    "ref_FLIC",
+    "ref_FMC",
+    "ref_FNA",
+    "ref_FOSLL",
+    "ref_FRSH",
+    "ref_FSBC",
+    "ref_FTAIO",
+    "ref_GAINL",
+    "ref_GHLD",
+    "ref_GIFI",
+    "ref_GLADZ",
+    "ref_GORV",
+    "ref_GRAL",
+    "ref_GRCE",
+    "ref_HBI",
+    "ref_HCC",
+    "ref_HONE",
+    "ref_HR",
+    "ref_HSII",
+    "ref_HYFM",
+    "ref_HYZN",
+    "ref_ICCH",
+    "ref_IMCC",
+    "ref_INFA",
+    "ref_INM",
+    "ref_IOT",
+    "ref_LAB",
+    "ref_MBNKP",
+    "ref_MCAA",
+    "ref_MDRR",
+    "ref_METCL",
+    "ref_MGNX",
+    "ref_MIR",
+    "ref_MIRA",
+    "ref_MODV",
+    "ref_MOH",
+    "ref_MOVE",
+    "ref_MRNA",
+    "ref_MURA",
+    "ref_MVST",
+    "ref_MXCT",
+    "ref_MYNA",
+    "ref_NKLA",
+    "ref_NMIH",
+    "ref_NPAB",
+    "ref_NSIT",
+    "ref_NTLA",
+    "ref_OCFCP",
+    "ref_ODP",
+    "ref_OM",
+    "ref_ONCT",
+    "ref_OPEN",
+    "ref_OXSQZ",
+    "ref_PACB",
+    "ref_PAY",
+    "ref_PBYI",
+    "ref_PD",
+    "ref_PET",
+    "ref_PLYA",
+    "ref_PPTA",
+    "ref_PRLH",
+    "ref_PVBC",
+    "ref_RDN",
+    "ref_RELY",
+    "ref_RENE",
+    "ref_RENT",
+    "ref_REPL",
+    "ref_RILYM",
+    "ref_RPRX",
+    "ref_RVNC",
+    "ref_S",
+    "ref_SAFE",
+    "ref_SASR",
+    "ref_SBT",
+    "ref_SCCC",
+    "ref_SDRL",
+    "ref_SEVN",
+    "ref_SGI",
+    "ref_SHLT",
+    "ref_SIRI",
+    "ref_SLRN",
+    "ref_SNCRL",
+    "ref_SNOW",
+    "ref_SRPT",
+    "ref_SSRM",
+    "ref_STRM",
+    "ref_TBNK",
+    "ref_TFFP",
+    "ref_TRML",
+    "ref_TRUE",
+    "ref_TW",
+    "ref_UK",
+    "ref_UWMC",
+    "ref_VBTX",
+    "ref_VLCN",
+    "ref_VRRM",
+    "ref_VS",
+    "ref_WEST",
+    "ref_WSBCP",
+    "ref_WTFCM",
+    "ref_WTFCP",
+    "ref_ZIMV",
+    "ref_ZK"
+   ],
+   "lostVsDefault": [
+    {
+     "securityId": "ref_ADEX",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_APAD",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_ARD",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CCCX",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CEO",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CHL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CHU",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_CMPOV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_EFTY",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_EMPG",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_HCHL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_KNL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LAWR",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LGV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_LN",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MAGH",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MAMK",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_MBT",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_OZON",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PLT",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PLTS",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PTNM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_PVG",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SDM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SVA",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_SVAC",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_TBHC",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_TTM",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_VEDL",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_XPVVV",
+     "reason": "INSUFFICIENT_HISTORY"
+    },
+    {
+     "securityId": "ref_ZZK",
+     "reason": "INSUFFICIENT_HISTORY"
+    }
+   ],
+   "qualifiedWithLifecycleCut": 150
+  }
+ }
+}

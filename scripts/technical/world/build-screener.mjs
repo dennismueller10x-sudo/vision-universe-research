@@ -187,6 +187,10 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     const ev = await import("./formation-evidence.mjs");
     const r = ev.buildAndWrite(join(out, "formation-evidence.json"));
     console.log(`Formations-Evidenz: ${r.detections} Erkennungen, ${r.titles} Titel, ${r.runtimeSec}s`);
+    /* Historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern (AP6, beschreibend, docs/technical/SIGNAL_EVIDENCE.md) */
+    const se = await import("./signal-evidence.mjs");
+    const s = await se.buildAndWrite(join(out, "signal-evidence.json"));
+    console.log(`Signal-Evidenz: ${s.indicators.length} Indikator-Ereignisse, ${s.candles.length} Kerzenmuster, ${s.runtimeSec}s`);
   }
   console.log("Uebersprungen:", JSON.stringify(meta.skipped));
 }

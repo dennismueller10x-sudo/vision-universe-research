@@ -136,7 +136,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -289,4 +289,28 @@ test("Relative Staerke: nur bei gleichem Datum in beiden Reihen, Rendite minus S
   const gap = M.relativeStrength(dates, close, { dates: ["d0", "d2", "d3"], close: [100, 105, 110] }, 2);
   assert.ok(gap.every((v) => Number.isNaN(v)));
   assert.ok(M.relativeStrength(dates, close, null, 2).every((v) => Number.isNaN(v)));
+});
+
+test("Signal-Evidenz: Vertrag, Einordnung nachrechenbar, keine Signal-Sprache, Texte ehrlich", async () => {
+  const e = JSON.parse(readFileSync(join(root, "technical/data/signal-evidence.json"), "utf8"));
+  const SE = await import(join(root, "scripts/technical/world/signal-evidence.mjs"));
+  assert.match(e.schemaVersion, /^vu-technical-signal-evidence-1\./);
+  assert.equal(e.horizonBars, 20);
+  assert.equal(e.claims.strategyEdge, "nicht nachgewiesen");
+  assert.ok(e.indicators.length >= 10 && e.candles.length >= 30);
+  for (const r of e.indicators.concat(e.candles)) {
+    assert.ok(SE.READINGS.includes(r.reading), r.id);
+    assert.equal(r.reading, SE.readingOf({ direction: r.direction, h20: { mean: r.mean, significant: r.significant }, stableSign: r.stableSign }), r.id);
+    assert.ok(r.n >= e.method.minN, r.id + ": nur ab Mindeststichprobe");
+    if (r.significant) assert.ok(Math.abs(r.mean) > r.ci95, r.id + ": belastbar nur ausserhalb des 95-%-Bands");
+    const text = M.signalEvidenceText(r);
+    assert.doesNotMatch(text, /Kaufsignal|Verkaufssignal|empfehl|Chance/i, r.id);
+  }
+  assert.match(M.signalEvidenceText({ reading: "AGAINST_DIRECTION", direction: "BULLISH", mean: -0.02, ci95: 0.01, n: 500 }), /schwächer/);
+  assert.match(M.signalEvidenceText({ reading: "NOT_SIGNIFICANT", direction: "BULLISH", mean: 0.001, ci95: 0.01, n: 500 }), /kein statistisch gesicherter Unterschied .*nachgewiesen/);
+  assert.match(M.READING_TEXT.WITH_DIRECTION, /kein nachgewiesener Handelsvorteil/);
+  /* Owner-Auflage #1109: "nicht signifikant" ist kein Gleichheitsnachweis */
+  assert.match(M.READING_SHORT.NOT_SIGNIFICANT, /gesichert/);
+  assert.match(M.READING_TEXT.NOT_SIGNIFICANT, /nicht, dass Gleichheit bewiesen ist/);
+  for (const k of SE.READINGS) assert.doesNotMatch(M.READING_SHORT[k] + " " + M.READING_TEXT[k], /^kein Unterschied|kein belastbarer Unterschied/, k);
 });

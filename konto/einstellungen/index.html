@@ -15,7 +15,7 @@
 <main class="ka" id="main">
 <p class="ka-eyebrow">Konto</p>
 <h1 class="ka-title">Einstellungen</h1>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a><a class="ka-nav-out" href="/mein-dashboard/">Mein Dashboard</a></nav>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
 <div id="ka-settings-wrap" hidden>
@@ -35,18 +35,24 @@
 <label class="ka-check"><input type="checkbox" data-notification="QUANT_CHANGE"><span>Änderungen in Quant</span></label>
 <label class="ka-check"><input type="checkbox" data-notification="MARKET_REGIME_CHANGE"><span>Wechsel des Marktregimes</span></label>
 </fieldset>
-<label class="ka-check"><input type="checkbox" id="marketing"><span>Gelegentliche E-Mails zu neuen Funktionen (jederzeit abbestellbar)</span></label>
+
 <div class="ka-actions"><button class="ka-btn" type="submit">Speichern</button></div>
 </form>
 <form class="ka-card ka-form" id="ka-password" novalidate>
-<h2>Passwort ändern</h2>
+<h2 id="sicherheit">Passwort und Sicherheit</h2>
 <input type="email" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
 <div class="ka-field"><label for="current-password">Aktuelles Passwort</label><div class="ka-pw"><input class="ka-input" id="current-password" name="current-password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="current-password" aria-controls="current-password" aria-pressed="false">Anzeigen</button></div></div>
 <div class="ka-field"><label for="new-password">Neues Passwort</label><div class="ka-pw"><input class="ka-input" id="new-password" name="new-password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="new-password" aria-controls="new-password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint" id="pw-rules" aria-live="polite"></ul></div>
 <div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="submit">Passwort ändern</button></div>
 </form>
+<section class="ka-card" id="ka-newsletter">
+<h2>Newsletter</h2>
+<p class="ka-muted" id="ka-newsletter-status">Wird geladen …</p>
+<p class="ka-hint">Freiwillig und jederzeit abbestellbar; keine Voraussetzung für Free oder Pro. Nach der Bestellung bekommst du eine E-Mail mit einem Bestätigungslink (Double-Opt-in). <a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/newsletter" target="_blank" rel="noopener">Datenschutzhinweise</a></p>
+<div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-newsletter-toggle" hidden></button></div>
+</section>
 <section class="ka-card">
-<h2>Deine Daten</h2>
+<h2 id="datenschutz">Datenschutz: deine Daten</h2>
 <p class="ka-muted">Lade alles herunter, was zu deinem Konto gespeichert ist (Art. 15 und 20 DSGVO). Zahlungsdaten liegen nur beim Zahlungsanbieter.</p>
 <div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-export">Daten herunterladen</button></div>
 </section>
@@ -58,7 +64,7 @@
 <div class="ka-actions"><button class="ka-btn ka-btn--danger" type="submit">Konto endgültig löschen</button></div>
 </form>
 </div>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

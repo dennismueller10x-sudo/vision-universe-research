@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "v10-population-protocol-amendment-1.0.3",
+  "amends": { "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json", "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c" },
+  "registeredAt": "2026-10-28",
+  "timing": "after the first full B1 run, found while building the register (the loader validator rejected ref_FUN). Disclosed post-hoc; strictly fail-closed (can only exclude).",
+  "finding": "In 7 baseline ids the security master holds two rows with the SAME canonical_id (ref_BAM, ref_CCSI, ref_FUN, ref_HUT, ref_NYXH, ref_TEL, ref_UHAL_B; e.g. ref_FUN: tiingo:NYSE:FUN:1987-04-23 once ACTIVE to 2026-09-10 and once INACTIVE to 2024-07-16). A SELECT_EXISTING_ROW binding identifies its row by canonical_id, so for these ids the selection is not unique.",
+  "changes": [
+    { "rule": "Q-INT / registry", "after": "new exclusion reason SELECTED_ROW_NOT_UNIQUE when the selected canonical_id occurs in more than one master row of the baseline id; the loader additionally fails closed (IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED) if the selected canonical_id is not unique among the rows, and the register validator rejects such a record." }
+  ]
+}
