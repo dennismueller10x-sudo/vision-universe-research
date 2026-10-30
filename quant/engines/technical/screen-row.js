@@ -208,6 +208,13 @@
     row.sma150AboveSma200 = isNum(s150) && isNum(s200b) ? s150 > s200b : null;
     row.sma50AboveSma150 = isNum(s50b) && isNum(s150) ? s50b > s150 : null;
     row.distSma150 = r(pct(c, s150));
+    /* Seit 1.12.0 (AP8 L2, docs/technical/SCREENER_FIELDS_AP8_L2.md): Richtung der SMA 200 ueber einen Monat
+       (21 Handelstage), aus den veroeffentlichten Tagesbars: SMA 200 heute gegen SMA 200 vor 21 Handelstagen.
+       Leer, wenn die Bars dafuer nicht reichen (221). */
+    var s200 = t + 1 >= 221 ? I.compute(b, "sma", { period: 200 }).values : null;
+    var s200t = s200 ? lastAt(s200, t) : null, s200m = s200 ? lastAt(s200, t - 21) : null;
+    row.sma200Rising = isNum(s200t) && isNum(s200m) ? s200t > s200m : null;
+    row.sma200Slope21 = r(pct(s200t, s200m));
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;

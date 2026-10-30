@@ -69,6 +69,9 @@
     { id: "sma150AboveSma200", group: "Trend", kind: "bool", tfs: D, label: "SMA 150 über SMA 200" },
     { id: "sma50AboveSma150", group: "Trend", kind: "bool", tfs: D, label: "SMA 50 über SMA 150" },
     { id: "distSma150", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur SMA 150" },
+    /* AP8 L2 (seit 1.12.0): Richtung der SMA 200 ueber 21 Handelstage, docs/technical/SCREENER_FIELDS_AP8_L2.md */
+    { id: "sma200Rising", group: "Trend", kind: "bool", tfs: D, label: "SMA 200 steigt (gegenüber vor einem Monat)" },
+    { id: "sma200Slope21", group: "Trend", kind: "pct", tfs: D, label: "Veränderung der SMA 200 über einen Monat" },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
