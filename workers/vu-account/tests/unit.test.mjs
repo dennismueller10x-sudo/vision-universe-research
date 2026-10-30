@@ -6,7 +6,8 @@ import {verifyStripeSignature, signStripePayload, formEncode, StripeError} from 
 import {formDecode} from '../../../scripts/account/sim/fake-stripe.mjs';
 import {verifyAccessToken, createJwksCache, JwtError} from '../src/jwt.mjs';
 import {base64UrlEncode} from '../src/crypto.mjs';
-import {loadConfig, billingBlocker, stripeKeyMode} from '../src/config.mjs';
+import {loadConfig, billingBlocker, stripeKeyMode, effectiveCheckoutAccess} from '../src/config.mjs';
+import {LEGAL_VERSION, LEGAL_STATUS} from '../src/legal/texts.mjs';
 import {normalizeStripeSubscription, normalizeStripeInvoice} from '../src/providers/stripe-adapter.mjs';
 import {normalizeAppleTransaction, normalizeGoogleSubscription} from '../src/providers/store-adapters.mjs';
 import {subscriptionGrantsAccess, featureDecision} from '../src/entitlements.mjs';
@@ -107,7 +108,14 @@ test('Konfiguration: Testmodus-Sperre fuer Live-Schluessel', () => {
   assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', STRIPE_LIVE_MODE_APPROVED: 'true'}), 'testers');
   assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'oeffentlich'}), 'testers');
   assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'OFF'}), 'off');
-  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'public'}), 'public');
+  // Oeffentlich (live) erst mit freigegebenen Rechtstexten: Code-Status "freigegeben" UND VU_LEGAL_APPROVED = Fassung.
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'public'}), 'testers', 'ohne Rechtsfreigabe nur Tester');
+  assert.equal(access({STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: LEGAL_VERSION}),
+    LEGAL_STATUS === 'freigegeben' ? 'public' : 'testers', 'Entwurf bleibt Entwurf, auch mit gesetzter Variable');
+  assert.equal(effectiveCheckoutAccess('public', true, 'live'), 'public', 'beide Freigaben: oeffentlich');
+  assert.equal(effectiveCheckoutAccess('public', false, 'live'), 'testers');
+  assert.equal(effectiveCheckoutAccess('public', false, 'test'), 'public', 'Testmodus unveraendert');
+  assert.equal(loadConfig({...base, STRIPE_SECRET_KEY: 'rk_live_1', VU_CHECKOUT_ACCESS: 'public'}).stripe.requestedCheckoutAccess, 'public');
   assert.equal(access({STRIPE_SECRET_KEY: 'sk_test_1'}), 'public');
   const cfg = loadConfig({...base, VU_REGISTRATION_ALLOWLIST: 'A@x.de, b@y.de'});
   assert.equal(cfg.registration.enabled, false, 'Registrierung standardmaessig geschlossen');
@@ -262,4 +270,46 @@ test('Worker ohne Konfiguration: Gesundheit ja, Kontofunktionen 503, Store-Webho
   const ok = await call('OPTIONS', '/v1/me', {Origin: 'https://research.visionuniverse.de'});
   assert.equal(ok.status, 204);
   assert.equal(ok.headers.get('Access-Control-Allow-Credentials'), 'true');
+});
+
+test('Newsletter: Einwilligungstext und Fassung wortgleich mit der abgenommenen Landingpage', async () => {
+  const {NEWSLETTER} = await import('../src/brevo.mjs');
+  const landing = await import('../../../landing/server/newsletter.mjs');
+  assert.equal(NEWSLETTER.text, landing.CONSENT_TEXT);
+  assert.equal(NEWSLETTER.version, landing.CONSENT_VERSION);
+  assert.equal(NEWSLETTER.templateName, landing.TEMPLATE_NAME);
+});
+
+test('Rechtstexte: sichere Darstellung, keine Shopify-Links, Firmendaten nur aus der bestaetigten Quelle', async () => {
+  const {inline} = await import('../src/public-pages.mjs');
+  const {DOCS, COMPANY, plainText} = await import('../src/legal/texts.mjs');
+  assert.equal(inline('<script>x</script> **a** [b](/c) [d](javascript:alert(1))'),
+    '&lt;script&gt;x&lt;/script&gt; <strong>a</strong> <a href="/c">b</a> [d](javascript:alert(1))');
+  const all = JSON.stringify(DOCS);
+  assert.ok(!/policies\/(terms-of-service|refund-policy|privacy-policy)|myshopify|Shopify Payments/.test(all), 'keine Shopify-Texte');
+  assert.deepEqual([COMPANY.name, COMPANY.register, COMPANY.taxNumber], ['RAM Consulting UG (haftungsbeschränkt)', 'Amtsgericht Stuttgart, HRB 803400', '65204/71409']);
+  assert.equal(COMPANY.vatId, null, 'USt-IdNr. nicht erfunden');
+  assert.match(plainText('widerrufsbelehrung'), /Vertrag widerrufen \(https:\/\/konto\.visionuniverse\.de\/widerrufen\)/);
+  for (const k of ['impressum', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'datenschutz', 'newsletter']) assert.ok(DOCS[k].blocks.length > 2, k);
+  // Eine freigegebene Fassung darf keine offenen Stellen mehr enthalten; ein Entwurf muss als Entwurf erkennbar sein.
+  const {LEGAL_STATUS: status, LEGAL_VERSION: version} = await import('../src/legal/texts.mjs');
+  if (status === 'freigegeben') assert.ok(!/\[\[(OFFEN|PRÜFEN)/.test(all) && !/entwurf/.test(version), 'Freigabe ohne offene Stellen');
+  else assert.equal(status, 'entwurf');
+});
+
+test('Brevo: DOI-Vorlage wird ueber den Einzelabruf geprueft (doiTemplate fehlt in der Liste)', async () => {
+  const {createBrevo, doiProblems, NEWSLETTER} = await import('../src/brevo.mjs');
+  const good = {id: 8, name: NEWSLETTER.templateName, isActive: true, doiTemplate: true, tag: 'optin',
+    htmlContent: `${NEWSLETTER.text} <a href="{{ params.DOIurl }}">ok</a>`};
+  assert.deepEqual(doiProblems(good), []);
+  assert.deepEqual(doiProblems({...good, doiTemplate: false, htmlContent: good.htmlContent + '{{ doubleoptin }}'}), ['KEINE_DOI_VORLAGE', 'ALTER_DOI_PLATZHALTER']);
+  const calls = [];
+  const fetchImpl = async url => {
+    const p = new URL(url).pathname; calls.push(p);
+    if (p === '/v3/smtp/templates') return new Response(JSON.stringify({templates: [{id: 8, name: good.name, isActive: true}]}));
+    if (p === '/v3/smtp/templates/8') return new Response(JSON.stringify(good));
+    return new Response('{}', {status: 404});
+  };
+  assert.equal(await createBrevo({apiKey: 'k', fetchImpl}).doiTemplateId(), 8);
+  assert.ok(calls.includes('/v3/smtp/templates/8'));
 });

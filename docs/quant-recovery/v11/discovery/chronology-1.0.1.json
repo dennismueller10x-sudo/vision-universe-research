@@ -1,0 +1,46 @@
+{
+ "schemaVersion": "v11-discovery-chronology-1.0.1",
+ "purpose": "Hash-bound record of the R2/R3 freeze order taken from full git history, so that shallow CI checkouts can verify that frozen and result files are unchanged; the commit order itself is verified against git only where full history is available.",
+ "supersedes": {
+  "file": "chronology-1.0.0.json",
+  "sha256": "3d5232201787d63e38b652091b02a5636a6828c011f977f343d8999554ecc95d"
+ },
+ "reason": "V13 PR-#1091 history cleanup (filter-branch removing two V12 listref 1.0.2 files with row-level provider metadata from origin/main..HEAD) changed commit SHAs only; tree, commit order, author/committer times and messages unchanged. Old->new map: docs/quant-recovery/v13/provenance/pr1091-history-before-rewrite.json.",
+ "records": [
+  {
+   "file": "registration-1.0.0.json",
+   "firstCommit": "288a629491595b4159ad0f3433c674609befdd25",
+   "firstCommitTime": "2026-10-28T17:13:20+00:00",
+   "sha256": "a6290ef147305b9d2633d0d9520a0d342de0c7c6e31f5d1cdd49ba59e2f485d7",
+   "preRewriteCommit": "7f0d20e9e1dcbc76017ea881e60f49778db238d6"
+  },
+  {
+   "file": "candidates-frozen-1.0.0.json",
+   "firstCommit": "04a39b5fb55639d2f6004e42ee7cf405afbebe21",
+   "firstCommitTime": "2026-10-28T17:47:36+00:00",
+   "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70",
+   "preRewriteCommit": "05ca5f85ed34099542a44e36b9838bdd60e77e79"
+  },
+  {
+   "file": "validation-results-1.0.0.json",
+   "firstCommit": "b61dad07e64ebb5816146d83e4cbeb920b37d8ae",
+   "firstCommitTime": "2026-10-28T17:50:45+00:00",
+   "sha256": "746a9f2abe86b110fe1f7b6da897754cccb00d331c26b3935a03010c229a34cf",
+   "preRewriteCommit": "7a91051b6f765ae97696cec616309a00bc1b79aa"
+  },
+  {
+   "file": "final-hypotheses-frozen-1.0.0.json",
+   "firstCommit": "0728b8bd2395d3012084ab2f7106d362a64c6a51",
+   "firstCommitTime": "2026-10-28T17:55:56+00:00",
+   "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154",
+   "preRewriteCommit": "7b10e91177dcd459db264b71552017706f8985af"
+  },
+  {
+   "file": "test-results-1.0.0.json",
+   "firstCommit": "bef55684b721ed8d399a12e7f2c19e56679a8ce1",
+   "firstCommitTime": "2026-10-28T17:57:06+00:00",
+   "sha256": "c3a09726de40273c3ecd1157f3d8b7eaac3a173e5373851846e55cc43eecb05b",
+   "preRewriteCommit": "245b852e339abe46346f3129d23995483c2af98e"
+  }
+ ]
+}

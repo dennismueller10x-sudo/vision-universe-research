@@ -556,6 +556,16 @@ test('SF8-WEINSTEIN-SORT: C04/C05 nach Name sortiert, ohne Sortierung nach einer
   assert.deepEqual(STRATEGY_CATALOG.find((x) => x.candidateId === 'C03').defaultSort, ['stage', 'dataQuality', 'pivot', 'ticker']);
 });
 
+// V5 (visuelle Abnahme 28.10.2026): Zahlen der Kandidatenzeile tragen eine sichtbare Bezeichnung (kein Tooltip auf dem iPhone);
+// die Kandidatenkarten einer Strategieseite wiederholen die Grenzen der Methode nicht, die im Seitenkopf stehen.
+test('SF8-UI-V5: beschriftete Zahlen in der Kandidatenzeile, keine wiederholten Grenzen in der Liste', () => {
+  const ui = fs.readFileSync(path.join(ROOT, 'supertrader/assets/sf-research.js'), 'utf8');
+  assert.match(ui, /pct\(r\.pd, 1, true\) \+ ' zur Marke'/);
+  assert.match(ui, /times\(r\.v\) \+ ' Vol\.'/);
+  assert.match(ui, /var lim = !opts\.compact && s && STRONG_LIMITS\[s\.candidateId\]/);
+  assert.match(ui, /limitsLine\(s, true\)/, 'der Seitenkopf zeigt die Grenzen weiter');
+});
+
 // Owner-Entscheidung 28.10.2026 (SEPA): eine einzelne Kontraktion reicht nicht, um ein bestätigtes VCP oder einen modellierten Plan
 // zu behaupten; keine neue Mindestzahl als Originalregel. Geprüft wird, dass die bestehende Einstufung das schon trägt.
 test('SF8-SEPA-ONE-CONTRACTION: eine Kontraktion hebt nichts an – Stufe, Lebenszyklus und Beschriftung (Owner 28.10.)', () => {

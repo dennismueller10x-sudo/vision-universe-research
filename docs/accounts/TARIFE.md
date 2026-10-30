@@ -14,12 +14,19 @@ Quelle: `supabase/migrations/20261028000200_free_pro.sql`.
 
 ## Abläufe
 
-- **Free:** `/konto/tarife/` → „Kostenlos registrieren“ → E-Mail bestätigen → anmelden → Konto und Watchlist.
-- **Pro (neu):** „Pro auswählen“ → Registrierung (`?plan=pro`, Wahl im Browser gemerkt, 7 Tage) → E-Mail bestätigen →
-  automatisch zur Pro-Bestätigung auf `/konto/tarife/?plan=pro` → Preis, Laufzeit, Kündigung, Widerrufsfolgen
-  bestätigen → Stripe Checkout → `/konto/abo/?checkout=success` → Pro.
+Stand 29.10.2026, Einzelheiten und Ursache des Checkbox-Fehlers: [NUTZERFUEHRUNG.md](NUTZERFUEHRUNG.md).
+
+- **Free:** `/preise/` → „Kostenlos starten“ → Registrierung → E-Mail bestätigen → **Willkommensseite** (`/willkommen/`).
+- **Pro (neu):** „Pro wählen“ → Registrierung (`?plan=pro`; Wahl im Browser **und im Konto** gemerkt, `user_metadata.plan_intent`) →
+  E-Mail bestätigen (auch auf einem anderen Gerät: dort anmelden) → direkt zur Pro-Bestätigung `/konto/tarife/?plan=pro`, ohne zweite
+  Tarifwahl → Preis, Laufzeit, Kündigung, Widerrufsfolgen bestätigen → Stripe Checkout → `/konto/abo/?checkout=success` → sobald
+  der Webhook Pro bestätigt: Willkommensseite (`?konto=pro`).
+- **Pro ohne Tester-Freigabe:** Die Bestätigung zeigt „Pro ist für dein Konto noch nicht buchbar“ mit „Mit Free weiter“ (keine
+  gesperrte Checkbox); die Wahl wird verworfen.
 - **Pro (bestehendes Konto):** `/konto/tarife/` → „Pro auswählen“ → bestätigen → Stripe Checkout.
-- **Abbruch/abgelehnte Karte:** Rücksprung `/konto/tarife/?checkout=canceled`, kein Abo, Konto bleibt Free.
+- **Abbruch/abgelehnte Karte:** Rücksprung `/konto/tarife/?checkout=canceled`, kein Abo, Konto bleibt Free, Wahl verworfen;
+  fortsetzen nur über „Pro auswählen“.
+- **SEPA:** bis zur Bestätigung durch Stripe Free mit Hinweis; danach Pro. Gescheiterte Lastschrift → Abo endet, Free.
 - **Kündigung:** Kundenportal oder `/konto/kuendigen/` (§ 312k BGB), immer zum Ende der bezahlten Zeit; danach
   rechnet die Datenbank automatisch Free (`effective_entitlements`). Fehlgeschlagene Zahlung: `past_due` mit Kulanzfrist,
   Hinweis auf `/konto/abo/`, danach Free.
@@ -62,6 +69,7 @@ Jede Variante ist ein eigener PR mit Vorher/Nachher; Daten werden nie gelöscht 
 
 ## Öffentlich öffnen (später, eigene Freigabe)
 
-`VU_CHECKOUT_ACCESS = "public"` in `[env.production.vars]` und die Prüfung im Deploy-Workflow anpassen – erst nach dem
-gemeinsamen Ende-zu-Ende-Test mit echter Zahlung und rechtlicher Prüfung (Impressum, AGB/Nutzungsbedingungen,
-Widerrufsbelehrung, Umsatzsteuer/Kleinunternehmerstatus, Rechnungsangaben in Stripe).
+Drei unabhängige Schritte, Ablauf in [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) „Freigabe und Umschalten“:
+Rechtstexte freigegeben (`LEGAL_STATUS`, neue `LEGAL_VERSION`), `VU_LEGAL_APPROVED` = diese Fassung, `VU_CHECKOUT_ACCESS =
+"public"` samt Deploy-Prüfung. Fehlt einer, bleibt der Live-Checkout auf Tester beschränkt (`effectiveCheckoutAccess`).
+Steuer: [STEUER.md](STEUER.md). Newsletter und Brevo: [BREVO.md](BREVO.md).

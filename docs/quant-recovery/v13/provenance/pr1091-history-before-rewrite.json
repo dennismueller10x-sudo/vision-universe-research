@@ -1,0 +1,3450 @@
+{
+ "schemaVersion": "v13-pr1091-provenance-1.0.0",
+ "purpose": "Provenienz der PR-#1091-Historie vor der genehmigten Bereinigung (Entfernung zeilenweiser Anbieter-Metadaten aus docs/quant-recovery/v12/listref/*-1.0.2). Enth\u00e4lt je Commit SHA, Eltern, Zeiten, Betreff und SHA-256 aller Registrierungs-/Protokoll-/Freeze-Dateien in diesem Commit; keine Anbieterdaten.",
+ "base": "0fe5cec1a69ff077cf4d2a0b40f493519db933fc",
+ "headBeforeRewrite": "77b041ddc28e300a82e7764d4e8ce52423ae027e",
+ "commits": [
+  {
+   "commit": "94a0293459cac145ecb708af958b42ca56360b09",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:32:32+00:00",
+   "authoredAt": "2026-10-28T13:32:32+00:00",
+   "subject": "Quant V10 A: Materialisierungsstatus der V9-Datenkorrekturen (SEC P1\u2013P4, PZZA)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "e758e48722b26a6dada2d0fc85edd2b6eedf7d9d",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:41:32+00:00",
+   "authoredAt": "2026-10-28T13:41:32+00:00",
+   "subject": "V10 Setup: Original-Bestandsaufnahme, Reifekalender und Registrierung der Rekonstruktion",
+   "filesChanged": 6,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    }
+   ]
+  },
+  {
+   "commit": "bb15657f2dfe0ac4d954180a94b428c6153d8ef1",
+   "parents": [
+    "e758e48722b26a6dada2d0fc85edd2b6eedf7d9d"
+   ],
+   "committedAt": "2026-10-28T13:53:22+00:00",
+   "authoredAt": "2026-10-28T13:53:22+00:00",
+   "subject": "V10 Setup: Rekonstruktionsstudie, Entscheidungsvorlage Unabhaengigkeitsgate, Python-Gegenrechnung",
+   "filesChanged": 9,
+   "protocolFiles": []
+  },
+  {
+   "commit": "0afa452eee4b29f9779bd25f2162c5fe638afc07",
+   "parents": [
+    "bb15657f2dfe0ac4d954180a94b428c6153d8ef1"
+   ],
+   "committedAt": "2026-10-28T13:54:29+00:00",
+   "authoredAt": "2026-10-28T13:54:29+00:00",
+   "subject": "V10 Setup: Machbarkeitsnachweis der Rekonstruktion (Eingabeablation, Replay-Paritaet)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "75bb4a27d9480496488da21baba344e52d25de13",
+   "parents": [
+    "94a0293459cac145ecb708af958b42ca56360b09",
+    "0afa452eee4b29f9779bd25f2162c5fe638afc07"
+   ],
+   "committedAt": "2026-10-28T14:02:13+00:00",
+   "authoredAt": "2026-10-28T14:02:13+00:00",
+   "subject": "Quant V10: Setup-Strang integriert (Bestand, Reifekalender, Rekonstruktion, Entscheidungsvorlage)",
+   "filesChanged": 16,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    }
+   ]
+  },
+  {
+   "commit": "8ec1833482223f8a28dbec05d3fab25aac990705",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:36:52+00:00",
+   "authoredAt": "2026-10-28T13:36:52+00:00",
+   "subject": "Quant V10 Studien: Registrierung vor Ergebnis (Signal Backtest, Pattern Evidence, Same Stock Replay)",
+   "filesChanged": 5,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    }
+   ]
+  },
+  {
+   "commit": "79bf2d574287d6ab04c14734402165a8b6f7f1cc",
+   "parents": [
+    "8ec1833482223f8a28dbec05d3fab25aac990705"
+   ],
+   "committedAt": "2026-10-28T14:59:12+00:00",
+   "authoredAt": "2026-10-28T14:59:12+00:00",
+   "subject": "Quant V10 Studien: Signal Backtest, Pattern Evidence und Same Stock Replay auf 4.282 Listings",
+   "filesChanged": 18,
+   "protocolFiles": []
+  },
+  {
+   "commit": "c152e4ccc2a0bad42ebaf97d9f1fecc57f8aeae9",
+   "parents": [
+    "75bb4a27d9480496488da21baba344e52d25de13",
+    "79bf2d574287d6ab04c14734402165a8b6f7f1cc"
+   ],
+   "committedAt": "2026-10-28T14:59:53+00:00",
+   "authoredAt": "2026-10-28T14:59:53+00:00",
+   "subject": "Quant V10: Studien-Strang integriert (Signal Backtest, Pattern Evidence, Same Stock Replay)",
+   "filesChanged": 37,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    },
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    }
+   ]
+  },
+  {
+   "commit": "f74c80ccde7f86ea6fa253fa8a6fdba2ec296605",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:33:59+00:00",
+   "authoredAt": "2026-10-28T13:33:59+00:00",
+   "subject": "V10 CA: Pr\u00fcfprotokoll 1.1.0 und TR-Dividendenprotokoll 1.0.0 vor jedem SEC-Abruf registriert",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.json",
+     "sha256": "e372e20a10bb5f1237db3e13a452de97267af50eaa42991ee46a0b0cdde7febe"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.sha256",
+     "sha256": "51d437e218369c68da239dfc67e49a8a6432c41f87b9e7dba5b9572af396cd0c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.sha256",
+     "sha256": "b8f7428b956af265ae45ab8ec77c2fdbf9326a180b71401c8c782c53cf544393"
+    }
+   ]
+  },
+  {
+   "commit": "d6b056ea507734e1f3ad6188fa0680ab1d1bd357",
+   "parents": [
+    "f74c80ccde7f86ea6fa253fa8a6fdba2ec296605"
+   ],
+   "committedAt": "2026-10-28T13:37:56+00:00",
+   "authoredAt": "2026-10-28T13:37:56+00:00",
+   "subject": "V10 CA: Protokoll 1.1.1 (E2-Ankerkorrektur nach Rauchtest) und Pr\u00fcfer vor dem Rahmenlauf",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json",
+     "sha256": "5319de6fa25d534cec4079b488c3752d62d02446464b614cd335d31b3f0ba3f9"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.sha256",
+     "sha256": "e86ab6884b5f5aba8ae749894be598f91d342551a4644630cce9d2c2fc044707"
+    }
+   ]
+  },
+  {
+   "commit": "455a03fee4a17c56af3c03279a7baafde0df5d03",
+   "parents": [
+    "d6b056ea507734e1f3ad6188fa0680ab1d1bd357"
+   ],
+   "committedAt": "2026-10-28T13:45:32+00:00",
+   "authoredAt": "2026-10-28T13:45:32+00:00",
+   "subject": "V10 CA: Erzeuger, Vorher/Nachher, unabh\u00e4ngige Pr\u00fcfungen und TR-Ledger-Skripte",
+   "filesChanged": 8,
+   "protocolFiles": []
+  },
+  {
+   "commit": "6158c0c9101171fb7de6115408678a2cefd29203",
+   "parents": [
+    "455a03fee4a17c56af3c03279a7baafde0df5d03"
+   ],
+   "committedAt": "2026-10-28T14:02:54+00:00",
+   "authoredAt": "2026-10-28T14:02:54+00:00",
+   "subject": "V10 CA: Protokoll 1.1.2 (E6: Spin-off-8-K ist keine affirmative Quelle), nur Versch\u00e4rfung",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+     "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.sha256",
+     "sha256": "c40c2f1729e4a1e7010bbb437aa722944fe41ce54e70000179d9574eb38f6ce1"
+    }
+   ]
+  },
+  {
+   "commit": "4bc61d6443122bf9a3ee7deb79d141cd60083e2f",
+   "parents": [
+    "6158c0c9101171fb7de6115408678a2cefd29203"
+   ],
+   "committedAt": "2026-10-28T14:26:39+00:00",
+   "authoredAt": "2026-10-28T14:26:39+00:00",
+   "subject": "V10 TR: Dividendenprotokoll 1.0.1 (Extraktion zus\u00e4tzlich auf zusammengezogenem Leerraum)",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+     "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.sha256",
+     "sha256": "21408933402f05b9d7f79d4e480fdbbe09b78ed7abe2a783a80079d1ea2539df"
+    }
+   ]
+  },
+  {
+   "commit": "ef3136f0efe58b2b6c5e4653655d3282f028dad3",
+   "parents": [
+    "4bc61d6443122bf9a3ee7deb79d141cd60083e2f"
+   ],
+   "committedAt": "2026-10-28T14:29:56+00:00",
+   "authoredAt": "2026-10-28T14:29:56+00:00",
+   "subject": "V10 TR: Dividendenprotokoll 1.0.2 (zusammengezogener Text nur als R\u00fcckfall je Dokument)",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+     "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.sha256",
+     "sha256": "d4fc89a19ca570334065876d2b39ff54ea12dbd54c1fb92c65ce7341fb2e89e1"
+    }
+   ]
+  },
+  {
+   "commit": "85342e190bcf93da3369e938f96fb9c5bbb9fbeb",
+   "parents": [
+    "ef3136f0efe58b2b6c5e4653655d3282f028dad3"
+   ],
+   "committedAt": "2026-10-28T14:32:28+00:00",
+   "authoredAt": "2026-10-28T14:32:28+00:00",
+   "subject": "V10 TR: Dividenden-Register (8 Titel), Ledger-L\u00e4ufe und unabh\u00e4ngige Python-Parit\u00e4t",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "72e13e03d16606d6426da4dfb837f3981c8fe0e0",
+   "parents": [
+    "85342e190bcf93da3369e938f96fb9c5bbb9fbeb"
+   ],
+   "committedAt": "2026-10-28T14:33:51+00:00",
+   "authoredAt": "2026-10-28T14:33:51+00:00",
+   "subject": "V10 TR: Dividendenprotokoll 1.0.3 (mehrdeutige Betr\u00e4ge im Satz werden nicht verwendet), nur Versch\u00e4rfung",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+     "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.sha256",
+     "sha256": "3bed354fe68b1ba512b3ff432717ad665b9fe4ae5c4e2b4b421807c238f81c20"
+    }
+   ]
+  },
+  {
+   "commit": "94b937422426f74bf1f3c4af92cd133ff083a236",
+   "parents": [
+    "72e13e03d16606d6426da4dfb837f3981c8fe0e0"
+   ],
+   "committedAt": "2026-10-28T14:35:10+00:00",
+   "authoredAt": "2026-10-28T14:35:10+00:00",
+   "subject": "V10 TR: Dividendenprotokoll 1.0.4 (Takt-Schnitt bei >120 Tagen zwischen Stichtagen), nur Versch\u00e4rfung",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+     "sha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.sha256",
+     "sha256": "3635c666748c638f63a59f67fac93a79cd959ebf4475a4fa82c7c5c5cdf11e9b"
+    }
+   ]
+  },
+  {
+   "commit": "581788f46222a0588eecf98a3368ddcfa4fcf8c6",
+   "parents": [
+    "94b937422426f74bf1f3c4af92cd133ff083a236"
+   ],
+   "committedAt": "2026-10-28T14:35:42+00:00",
+   "authoredAt": "2026-10-28T14:35:42+00:00",
+   "subject": "V10 TR: Register und Parit\u00e4t nach Protokoll 1.0.4 neu erzeugt",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "6b964d9eff9a0df82c7c01c2aec50bb31de0fe7d",
+   "parents": [
+    "581788f46222a0588eecf98a3368ddcfa4fcf8c6"
+   ],
+   "committedAt": "2026-10-28T15:12:23+00:00",
+   "authoredAt": "2026-10-28T15:12:23+00:00",
+   "subject": "V10 CA: Register nach Protokoll 1.1.2 (30 Ereignisse / 28 Reihen), Anbieterfehler, Abgleich, unabh\u00e4ngige Pr\u00fcfung",
+   "filesChanged": 10,
+   "protocolFiles": []
+  },
+  {
+   "commit": "c7bce05e9cc5fb8bb016efc0c54cdb6fa10dc5ea",
+   "parents": [
+    "c152e4ccc2a0bad42ebaf97d9f1fecc57f8aeae9",
+    "6b964d9eff9a0df82c7c01c2aec50bb31de0fe7d"
+   ],
+   "committedAt": "2026-10-28T15:23:54+00:00",
+   "authoredAt": "2026-10-28T15:23:54+00:00",
+   "subject": "Quant V10: CA-Strang integriert (Register 30 Ereignisse/28 Reihen, TR-Dividendenregister 8 Titel)",
+   "filesChanged": 74,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.json",
+     "sha256": "e372e20a10bb5f1237db3e13a452de97267af50eaa42991ee46a0b0cdde7febe"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.sha256",
+     "sha256": "51d437e218369c68da239dfc67e49a8a6432c41f87b9e7dba5b9572af396cd0c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json",
+     "sha256": "5319de6fa25d534cec4079b488c3752d62d02446464b614cd335d31b3f0ba3f9"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.sha256",
+     "sha256": "e86ab6884b5f5aba8ae749894be598f91d342551a4644630cce9d2c2fc044707"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+     "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.sha256",
+     "sha256": "c40c2f1729e4a1e7010bbb437aa722944fe41ce54e70000179d9574eb38f6ce1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.sha256",
+     "sha256": "b8f7428b956af265ae45ab8ec77c2fdbf9326a180b71401c8c782c53cf544393"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+     "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.sha256",
+     "sha256": "21408933402f05b9d7f79d4e480fdbbe09b78ed7abe2a783a80079d1ea2539df"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+     "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.sha256",
+     "sha256": "d4fc89a19ca570334065876d2b39ff54ea12dbd54c1fb92c65ce7341fb2e89e1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+     "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.sha256",
+     "sha256": "3bed354fe68b1ba512b3ff432717ad665b9fe4ae5c4e2b4b421807c238f81c20"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+     "sha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.sha256",
+     "sha256": "3635c666748c638f63a59f67fac93a79cd959ebf4475a4fa82c7c5c5cdf11e9b"
+    },
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    }
+   ]
+  },
+  {
+   "commit": "0a951cfedbf51fc1e299cb2dbceaac7633477dbc",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:32:45+00:00",
+   "authoredAt": "2026-10-28T13:32:45+00:00",
+   "subject": "V10 Population: Qualifikationsprotokoll 1.0.0 vor der Quellenpruefung registriert",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json",
+     "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.sha256",
+     "sha256": "2728262143f977bcb92062aad522e256eee93109ccfc949146171e59cc274a73"
+    }
+   ]
+  },
+  {
+   "commit": "97416695188188bc71736fff71f6d46cc4b3b2d4",
+   "parents": [
+    "0a951cfedbf51fc1e299cb2dbceaac7633477dbc"
+   ],
+   "committedAt": "2026-10-28T13:34:39+00:00",
+   "authoredAt": "2026-10-28T13:34:39+00:00",
+   "subject": "V10 Population: Protokollnachtrag 1.0.1 (B3-Referenz aus EDGAR-Vollindizes statt Bulk-Archiv)",
+   "filesChanged": 1,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.1.json",
+     "sha256": "2f87123b6c057a59b8fcc264de82b311b9a84ffd7b704c5c1dd2f393074a71f5"
+    }
+   ]
+  },
+  {
+   "commit": "e8eee55ba3b38eea14a25ad22ef1f60b892291bd",
+   "parents": [
+    "97416695188188bc71736fff71f6d46cc4b3b2d4"
+   ],
+   "committedAt": "2026-10-28T13:39:34+00:00",
+   "authoredAt": "2026-10-28T13:39:34+00:00",
+   "subject": "V10 Population: Protokollnachtrag 1.0.2 (SEC-Bot-Tag beim Hash-Vergleich, offengelegt)",
+   "filesChanged": 1,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.2.json",
+     "sha256": "425cab73286999333b51abd3e129ca4a6de2cb155d427862cf080e4c0a2f48e5"
+    }
+   ]
+  },
+  {
+   "commit": "87428d30875447f62a150a3965b2a6a59a50b256",
+   "parents": [
+    "e8eee55ba3b38eea14a25ad22ef1f60b892291bd"
+   ],
+   "committedAt": "2026-10-28T14:22:06+00:00",
+   "authoredAt": "2026-10-28T14:22:06+00:00",
+   "subject": "V10 Population: Pruefskripte B1-B3, Loader-Optionen identityEvidenceProtocolV10 und listingLifecycleEvidence",
+   "filesChanged": 12,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.3.json",
+     "sha256": "a4634ffdc6936c2d702d775168c14204455b096665ac9b686392e15c64faa899"
+    }
+   ]
+  },
+  {
+   "commit": "db38d3d90f49abdb6168fee3f2138cf64fff2c0f",
+   "parents": [
+    "87428d30875447f62a150a3965b2a6a59a50b256"
+   ],
+   "committedAt": "2026-10-28T14:24:50+00:00",
+   "authoredAt": "2026-10-28T14:24:50+00:00",
+   "subject": "V10 Population B1: 132 V9-Identitaetsfaelle gegen SEC-Originale geprueft, 62 nach Protokoll qualifiziert",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "c9fd505c649e242861a2f3bb4a1e6914a8c85a2d",
+   "parents": [
+    "db38d3d90f49abdb6168fee3f2138cf64fff2c0f"
+   ],
+   "committedAt": "2026-10-28T15:27:38+00:00",
+   "authoredAt": "2026-10-28T15:27:38+00:00",
+   "subject": "V10 Population B2/B3: Listing-Lebenszyklus-Register, Populationsrahmen, unabhaengige Gegenpruefung, Tests",
+   "filesChanged": 14,
+   "protocolFiles": []
+  },
+  {
+   "commit": "0274878f894c0bbd89934e5c75506f1925fa9d97",
+   "parents": [
+    "c7bce05e9cc5fb8bb016efc0c54cdb6fa10dc5ea",
+    "c9fd505c649e242861a2f3bb4a1e6914a8c85a2d"
+   ],
+   "committedAt": "2026-10-28T15:28:13+00:00",
+   "authoredAt": "2026-10-28T15:28:13+00:00",
+   "subject": "Quant V10: Population-Strang integriert (Identit\u00e4t V10, Lifecycle-Register, Populationsframe)",
+   "filesChanged": 103,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json",
+     "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.sha256",
+     "sha256": "2728262143f977bcb92062aad522e256eee93109ccfc949146171e59cc274a73"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.1.json",
+     "sha256": "2f87123b6c057a59b8fcc264de82b311b9a84ffd7b704c5c1dd2f393074a71f5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.2.json",
+     "sha256": "425cab73286999333b51abd3e129ca4a6de2cb155d427862cf080e4c0a2f48e5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.3.json",
+     "sha256": "a4634ffdc6936c2d702d775168c14204455b096665ac9b686392e15c64faa899"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.json",
+     "sha256": "e372e20a10bb5f1237db3e13a452de97267af50eaa42991ee46a0b0cdde7febe"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.sha256",
+     "sha256": "51d437e218369c68da239dfc67e49a8a6432c41f87b9e7dba5b9572af396cd0c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json",
+     "sha256": "5319de6fa25d534cec4079b488c3752d62d02446464b614cd335d31b3f0ba3f9"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.sha256",
+     "sha256": "e86ab6884b5f5aba8ae749894be598f91d342551a4644630cce9d2c2fc044707"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+     "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.sha256",
+     "sha256": "c40c2f1729e4a1e7010bbb437aa722944fe41ce54e70000179d9574eb38f6ce1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.sha256",
+     "sha256": "b8f7428b956af265ae45ab8ec77c2fdbf9326a180b71401c8c782c53cf544393"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+     "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.sha256",
+     "sha256": "21408933402f05b9d7f79d4e480fdbbe09b78ed7abe2a783a80079d1ea2539df"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+     "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.sha256",
+     "sha256": "d4fc89a19ca570334065876d2b39ff54ea12dbd54c1fb92c65ce7341fb2e89e1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+     "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.sha256",
+     "sha256": "3bed354fe68b1ba512b3ff432717ad665b9fe4ae5c4e2b4b421807c238f81c20"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+     "sha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.sha256",
+     "sha256": "3635c666748c638f63a59f67fac93a79cd959ebf4475a4fa82c7c5c5cdf11e9b"
+    },
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    }
+   ]
+  },
+  {
+   "commit": "55489dd3ebd98cb38f6424f443a14886d5b19fa2",
+   "parents": [
+    "0274878f894c0bbd89934e5c75506f1925fa9d97"
+   ],
+   "committedAt": "2026-10-28T15:30:53+00:00",
+   "authoredAt": "2026-10-28T15:30:53+00:00",
+   "subject": "Quant V10: vorbereitete Reparatur research-portfolio (Rundungsstaub bei Vollverkauf), nicht angewendet",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "ae3c3c7b42c9ccae5db926901c0fb94bbf696188",
+   "parents": [
+    "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420"
+   ],
+   "committedAt": "2026-10-28T13:34:58+00:00",
+   "authoredAt": "2026-10-28T13:34:58+00:00",
+   "subject": "V10 Faktor: Studienregistrierung vor Outcomes (Rekonstruktion, Pfad A) und companyfacts-Abruf",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/factor/registration-1.0.0.json",
+     "sha256": "2c271aef0f525465b25f5c32c8b8939359b059f58da1e643b5b061cfaa3571cb"
+    }
+   ]
+  },
+  {
+   "commit": "5c669bd5abd4179f01f571ef468ded9e8ab709dd",
+   "parents": [
+    "ae3c3c7b42c9ccae5db926901c0fb94bbf696188"
+   ],
+   "committedAt": "2026-10-28T13:35:14+00:00",
+   "authoredAt": "2026-10-28T13:35:14+00:00",
+   "subject": "V10 Faktor: W\u00e4chter-konforme Formulierung im Abrufskript",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "44ff98b8060e79732ca4e424390fc7014367ff75",
+   "parents": [
+    "5c669bd5abd4179f01f571ef468ded9e8ab709dd"
+   ],
+   "committedAt": "2026-10-28T13:46:19+00:00",
+   "authoredAt": "2026-10-28T13:46:19+00:00",
+   "subject": "V10 Faktor: Rekonstruktions-Pipeline (PIT-Dokumente, Faktorpanel, Studie, Strategie) und Tests",
+   "filesChanged": 7,
+   "protocolFiles": []
+  },
+  {
+   "commit": "83bce1e73b9d74c1a9cb187c9b257310436aa9ae",
+   "parents": [
+    "44ff98b8060e79732ca4e424390fc7014367ff75"
+   ],
+   "committedAt": "2026-10-28T13:50:02+00:00",
+   "authoredAt": "2026-10-28T13:50:02+00:00",
+   "subject": "V10 Faktor: unabh\u00e4ngige Python-Gegenrechnung; Memo f\u00fcr to_instant (nur Laufzeit, identische Dokumente)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "a96020260578071849ba48cb5be1a4ded40fd986",
+   "parents": [
+    "83bce1e73b9d74c1a9cb187c9b257310436aa9ae"
+   ],
+   "committedAt": "2026-10-28T14:55:40+00:00",
+   "authoredAt": "2026-10-28T14:55:40+00:00",
+   "subject": "V10 Faktor: speicherschonendes Panel (JSONL), Studie mit Fenster-Kalender je Jahresblock",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "77e4189e83c79f38d155a38efc0990047c8235b4",
+   "parents": [
+    "a96020260578071849ba48cb5be1a4ded40fd986"
+   ],
+   "committedAt": "2026-10-28T15:38:50+00:00",
+   "authoredAt": "2026-10-28T15:38:50+00:00",
+   "subject": "V10 Faktor: Ergebnisse der rekonstruierten Faktorstudie, Top-50-Strategie, Python-Gegenrechnung und README",
+   "filesChanged": 6,
+   "protocolFiles": []
+  },
+  {
+   "commit": "2b023ad5e5cc105352f7db17be7fa1c76e309fcf",
+   "parents": [
+    "55489dd3ebd98cb38f6424f443a14886d5b19fa2",
+    "77e4189e83c79f38d155a38efc0990047c8235b4"
+   ],
+   "committedAt": "2026-10-28T15:39:59+00:00",
+   "authoredAt": "2026-10-28T15:39:59+00:00",
+   "subject": "Quant V10: Faktor-Strang integriert (rekonstruierte Faktorvintages, Rang-IC, Top-50-Strategie)",
+   "filesChanged": 120,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/factor/registration-1.0.0.json",
+     "sha256": "2c271aef0f525465b25f5c32c8b8939359b059f58da1e643b5b061cfaa3571cb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.json",
+     "sha256": "e372e20a10bb5f1237db3e13a452de97267af50eaa42991ee46a0b0cdde7febe"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.sha256",
+     "sha256": "51d437e218369c68da239dfc67e49a8a6432c41f87b9e7dba5b9572af396cd0c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json",
+     "sha256": "5319de6fa25d534cec4079b488c3752d62d02446464b614cd335d31b3f0ba3f9"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.sha256",
+     "sha256": "e86ab6884b5f5aba8ae749894be598f91d342551a4644630cce9d2c2fc044707"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+     "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.sha256",
+     "sha256": "c40c2f1729e4a1e7010bbb437aa722944fe41ce54e70000179d9574eb38f6ce1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.sha256",
+     "sha256": "b8f7428b956af265ae45ab8ec77c2fdbf9326a180b71401c8c782c53cf544393"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+     "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.sha256",
+     "sha256": "21408933402f05b9d7f79d4e480fdbbe09b78ed7abe2a783a80079d1ea2539df"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+     "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.sha256",
+     "sha256": "d4fc89a19ca570334065876d2b39ff54ea12dbd54c1fb92c65ce7341fb2e89e1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+     "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.sha256",
+     "sha256": "3bed354fe68b1ba512b3ff432717ad665b9fe4ae5c4e2b4b421807c238f81c20"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+     "sha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.sha256",
+     "sha256": "3635c666748c638f63a59f67fac93a79cd959ebf4475a4fa82c7c5c5cdf11e9b"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json",
+     "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.sha256",
+     "sha256": "2728262143f977bcb92062aad522e256eee93109ccfc949146171e59cc274a73"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.1.json",
+     "sha256": "2f87123b6c057a59b8fcc264de82b311b9a84ffd7b704c5c1dd2f393074a71f5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.2.json",
+     "sha256": "425cab73286999333b51abd3e129ca4a6de2cb155d427862cf080e4c0a2f48e5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.3.json",
+     "sha256": "a4634ffdc6936c2d702d775168c14204455b096665ac9b686392e15c64faa899"
+    },
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    }
+   ]
+  },
+  {
+   "commit": "93ed41e5c9d5baf8c316602629cb4f07beee4278",
+   "parents": [
+    "2b023ad5e5cc105352f7db17be7fa1c76e309fcf"
+   ],
+   "committedAt": "2026-10-28T15:49:21+00:00",
+   "authoredAt": "2026-10-28T15:49:21+00:00",
+   "subject": "Quant V10 Studien: Neulauf mit Lifecycle-Option (integriertes CA-Register, Delisting-Schnitt)",
+   "filesChanged": 10,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-lifecycle-1.0.0.json.gz",
+     "sha256": "bb97257279d5c468c2a6b0574a00a0f8f8697ef57a5c61b593929b163d923c93"
+    }
+   ]
+  },
+  {
+   "commit": "89a2541faa7c904a1225df3a6368af73e8992675",
+   "parents": [
+    "93ed41e5c9d5baf8c316602629cb4f07beee4278"
+   ],
+   "committedAt": "2026-10-28T15:52:14+00:00",
+   "authoredAt": "2026-10-28T15:52:14+00:00",
+   "subject": "Quant V10: Berichte Datenrettung, Realstudien, Zertifizierungsreife (Entwurf)",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "7f9bd0d1e72ddbccfd3dee9df6f260c3fbd68307",
+   "parents": [
+    "89a2541faa7c904a1225df3a6368af73e8992675"
+   ],
+   "committedAt": "2026-10-28T16:01:45+00:00",
+   "authoredAt": "2026-10-28T16:01:45+00:00",
+   "subject": "Quant V10: Korrekturen nach unabh\u00e4ngiger Pr\u00fcfung (Lifecycle-Zensur, Basisrate-Einheiten, Mischabfindung)",
+   "filesChanged": 10,
+   "protocolFiles": []
+  },
+  {
+   "commit": "81320acb7bbb7d6a12c5be127e292fb13c54bae1",
+   "parents": [
+    "7f9bd0d1e72ddbccfd3dee9df6f260c3fbd68307"
+   ],
+   "committedAt": "2026-10-28T16:01:58+00:00",
+   "authoredAt": "2026-10-28T16:01:58+00:00",
+   "subject": "Quant V10 Population: Lifecycle-F\u00e4lle und -Register mit korrigiertem Abfindungsparser (EBTC, BLFS bar + Aktie)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "616c3a266de25de33a8f69cc15be72fb11228889",
+   "parents": [
+    "81320acb7bbb7d6a12c5be127e292fb13c54bae1"
+   ],
+   "committedAt": "2026-10-28T16:09:52+00:00",
+   "authoredAt": "2026-10-28T16:09:52+00:00",
+   "subject": "Quant V10 Population: Abfindungszitat bei Mischabfindung vollst\u00e4ndig speichern",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "a771864041bb953b5d8e40152de8dc451444813d",
+   "parents": [
+    "616c3a266de25de33a8f69cc15be72fb11228889"
+   ],
+   "committedAt": "2026-10-28T16:10:01+00:00",
+   "authoredAt": "2026-10-28T16:10:01+00:00",
+   "subject": "Quant V10 Population: Belege nach Lifecycle-Korrektur neu erzeugt (Zwischenstand)",
+   "filesChanged": 6,
+   "protocolFiles": []
+  },
+  {
+   "commit": "b4670f6506def77ece97be96a2fcf9eb4e366c37",
+   "parents": [
+    "a771864041bb953b5d8e40152de8dc451444813d"
+   ],
+   "committedAt": "2026-10-28T16:10:14+00:00",
+   "authoredAt": "2026-10-28T16:10:14+00:00",
+   "subject": "Quant V10 Population: Lifecycle-Register mit vollst\u00e4ndigem Mischzitat (EBTC)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "eb5ccc06cb9c15873bd2ca0b54f65b068ae40b4a",
+   "parents": [
+    "b4670f6506def77ece97be96a2fcf9eb4e366c37"
+   ],
+   "committedAt": "2026-10-28T16:19:12+00:00",
+   "authoredAt": "2026-10-28T16:19:12+00:00",
+   "subject": "Quant V10 Population: unabh\u00e4ngige Pr\u00fcfung nach Korrektur ohne Lifecycle-Abweichung",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "bcdae0d9c1a69927af96011786d018539747538d",
+   "parents": [
+    "eb5ccc06cb9c15873bd2ca0b54f65b068ae40b4a"
+   ],
+   "committedAt": "2026-10-28T16:20:43+00:00",
+   "authoredAt": "2026-10-28T16:20:43+00:00",
+   "subject": "Quant V10: Validierungsbericht, Datenrettung mit korrigierten Lifecycle-Z\u00e4hlungen",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "dae3a2ddeca3ea01b82c012ded030eb088c8efe9",
+   "parents": [
+    "bcdae0d9c1a69927af96011786d018539747538d"
+   ],
+   "committedAt": "2026-10-28T16:36:40+00:00",
+   "authoredAt": "2026-10-28T16:36:40+00:00",
+   "subject": "Quant V10 Studien: Lifecycle-Lauf nach Pr\u00fcfungskorrekturen (4.329 Listings, 121 beendet), Bericht aktualisiert",
+   "filesChanged": 11,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-lifecycle-1.0.0.json.gz",
+     "sha256": "97921d4a78f5f5eed67746a03354dc29b30f3d69ee29bebc84619ed02ff4aa57"
+    }
+   ]
+  },
+  {
+   "commit": "5f3f051d91543028791bb997286b4e6bd593b84f",
+   "parents": [
+    "dae3a2ddeca3ea01b82c012ded030eb088c8efe9"
+   ],
+   "committedAt": "2026-10-28T16:38:32+00:00",
+   "authoredAt": "2026-10-28T16:38:32+00:00",
+   "subject": "Quant V10: Evidenzmatrix, Abschlussbericht, Manifest-Erzeuger",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "472134a6be2d7242ede2b439212a933c2f14635d",
+   "parents": [
+    "5f3f051d91543028791bb997286b4e6bd593b84f"
+   ],
+   "committedAt": "2026-10-28T16:48:51+00:00",
+   "authoredAt": "2026-10-28T16:48:51+00:00",
+   "subject": "Quant V10: Reproduktionsmanifest, Endstand der Tests (quant 3.429/0, core 295/0, Python 585 OK, Isolation OK)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/artifact-manifest-1.0.0.json",
+     "sha256": "5553983157ab80408334d6c5d156ad2f041853ea07aba0d5615fa2ca22b23462"
+    }
+   ]
+  },
+  {
+   "commit": "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb",
+   "parents": [
+    "472134a6be2d7242ede2b439212a933c2f14635d"
+   ],
+   "committedAt": "2026-10-28T16:59:36+00:00",
+   "authoredAt": "2026-10-28T16:59:36+00:00",
+   "subject": "Quant V11 Alpha Discovery: Zeitsplit-Protokoll vor jeder Ergebnisberechnung registriert",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/protocol/time-split-1.0.0.json",
+     "sha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69"
+    },
+    {
+     "path": "docs/quant-recovery/v11/protocol/time-split-1.0.0.sha256",
+     "sha256": "e2259e485cdef067dda375fa0e2752fb870d2b0b2355a5165379dd7f4da187cc"
+    }
+   ]
+  },
+  {
+   "commit": "62f0d70ab7acf9aa757cef70d3b042e345bb1300",
+   "parents": [
+    "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb"
+   ],
+   "committedAt": "2026-10-28T17:07:38+00:00",
+   "authoredAt": "2026-10-28T17:07:38+00:00",
+   "subject": "Quant V11 Winners: Winner-Anatomie vor jeder Ergebnisberechnung registriert",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-1.0.0.json",
+     "sha256": "13389b529f01f68f9a79ba7af1e6c419f2233ac054b0acba5e045c809f88c0ee"
+    }
+   ]
+  },
+  {
+   "commit": "0aeb32bf727a4eabb6006a88242a3e054afaed74",
+   "parents": [
+    "62f0d70ab7acf9aa757cef70d3b042e345bb1300"
+   ],
+   "committedAt": "2026-10-28T17:13:26+00:00",
+   "authoredAt": "2026-10-28T17:13:26+00:00",
+   "subject": "Quant V11 Winners: Registrierungsnachtrag 1.0.1 (Ersatzmerkmale P/S und Eigenkapitalquote)",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json",
+     "sha256": "199e10330784f683e88075f3b10a402646095ec77b9b841b5e045a58cf373e24"
+    }
+   ]
+  },
+  {
+   "commit": "5b31ca62c38fc75ce00f5c6015ee050c7a19a523",
+   "parents": [
+    "0aeb32bf727a4eabb6006a88242a3e054afaed74"
+   ],
+   "committedAt": "2026-10-28T17:42:04+00:00",
+   "authoredAt": "2026-10-28T17:42:04+00:00",
+   "subject": "Quant V11 Winners: Anatomie der Gewinner, Fallstudien NVIDIA und 8 systematische Winner, Python-Gegenrechnung",
+   "filesChanged": 8,
+   "protocolFiles": []
+  },
+  {
+   "commit": "a16aabcdb393e69fe94e564c454a3d778f2c3d1f",
+   "parents": [
+    "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb",
+    "5b31ca62c38fc75ce00f5c6015ee050c7a19a523"
+   ],
+   "committedAt": "2026-10-28T17:42:40+00:00",
+   "authoredAt": "2026-10-28T17:42:40+00:00",
+   "subject": "Quant V11: Winners-Strang integriert (Anatomie au\u00dfergew\u00f6hnlicher Gewinner, Fallstudien, FULL_DESCRIPTIVE)",
+   "filesChanged": 13,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-1.0.0.json",
+     "sha256": "13389b529f01f68f9a79ba7af1e6c419f2233ac054b0acba5e045c809f88c0ee"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json",
+     "sha256": "199e10330784f683e88075f3b10a402646095ec77b9b841b5e045a58cf373e24"
+    }
+   ]
+  },
+  {
+   "commit": "26fc0670b052d226f8e01cb2a05abcf9a9536dfd",
+   "parents": [
+    "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb"
+   ],
+   "committedAt": "2026-10-28T17:11:11+00:00",
+   "authoredAt": "2026-10-28T17:11:11+00:00",
+   "subject": "Quant V11 Decomposition: Studienregistrierung vor jeder Ergebnisberechnung",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/decomposition/registration-1.0.0.json",
+     "sha256": "443569f158d1ae67bb451515676b37bd8eb91e4e0761fa7ab0d50a2fad75b673"
+    }
+   ]
+  },
+  {
+   "commit": "473dc0274d0bb50c94ce95e93e259a2d82d5dafd",
+   "parents": [
+    "26fc0670b052d226f8e01cb2a05abcf9a9536dfd"
+   ],
+   "committedAt": "2026-10-28T17:33:07+00:00",
+   "authoredAt": "2026-10-28T17:33:07+00:00",
+   "subject": "Quant V11 Decomposition: Analyseskripte (Ereignisse, Portfolio, SPY-Ausschuettungen, Dividenden, Python-Referenz) und Tests",
+   "filesChanged": 7,
+   "protocolFiles": []
+  },
+  {
+   "commit": "fcd008038f955b95a5ebd65a870bed32b8ba421a",
+   "parents": [
+    "473dc0274d0bb50c94ce95e93e259a2d82d5dafd"
+   ],
+   "committedAt": "2026-10-28T17:54:44+00:00",
+   "authoredAt": "2026-10-28T17:54:44+00:00",
+   "subject": "Quant V11 Decomposition: Ergebnisse, Benchmark-Referenzpruefung, Power-Analyse, Ursachenmatrix",
+   "filesChanged": 8,
+   "protocolFiles": []
+  },
+  {
+   "commit": "02446e09b1a6083a5b958666cb0bf4e4cf7ecc2a",
+   "parents": [
+    "a16aabcdb393e69fe94e564c454a3d778f2c3d1f",
+    "fcd008038f955b95a5ebd65a870bed32b8ba421a"
+   ],
+   "committedAt": "2026-10-28T17:55:25+00:00",
+   "authoredAt": "2026-10-28T17:55:25+00:00",
+   "subject": "Quant V11: Decomposition-Strang integriert (Ursachenzerlegung der f\u00fcnf Regeln, Benchmark-Referenz, Power)",
+   "filesChanged": 29,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/decomposition/registration-1.0.0.json",
+     "sha256": "443569f158d1ae67bb451515676b37bd8eb91e4e0761fa7ab0d50a2fad75b673"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-1.0.0.json",
+     "sha256": "13389b529f01f68f9a79ba7af1e6c419f2233ac054b0acba5e045c809f88c0ee"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json",
+     "sha256": "199e10330784f683e88075f3b10a402646095ec77b9b841b5e045a58cf373e24"
+    }
+   ]
+  },
+  {
+   "commit": "7f0d20e9e1dcbc76017ea881e60f49778db238d6",
+   "parents": [
+    "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb"
+   ],
+   "committedAt": "2026-10-28T17:13:20+00:00",
+   "authoredAt": "2026-10-28T17:13:20+00:00",
+   "subject": "Quant V11 Discovery: Registrierung des Explorationsplans vor jedem Discovery-Ergebnis",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/discovery/registration-1.0.0.json",
+     "sha256": "a6290ef147305b9d2633d0d9520a0d342de0c7c6e31f5d1cdd49ba59e2f485d7"
+    }
+   ]
+  },
+  {
+   "commit": "dadd1d964904fadef44d77e27b2d0d61579c8324",
+   "parents": [
+    "7f0d20e9e1dcbc76017ea881e60f49778db238d6"
+   ],
+   "committedAt": "2026-10-28T17:47:06+00:00",
+   "authoredAt": "2026-10-28T17:47:06+00:00",
+   "subject": "Quant V11 Discovery: TRAIN-Exploration (203 Varianten), Walk-Forward in TRAIN, Oracle TRAIN",
+   "filesChanged": 18,
+   "protocolFiles": []
+  },
+  {
+   "commit": "05ca5f85ed34099542a44e36b9838bdd60e77e79",
+   "parents": [
+    "dadd1d964904fadef44d77e27b2d0d61579c8324"
+   ],
+   "committedAt": "2026-10-28T17:47:36+00:00",
+   "authoredAt": "2026-10-28T17:47:36+00:00",
+   "subject": "Quant V11 Discovery: Kandidaten eingefroren (12 Kurs, 12 Fundamental) vor VALIDATION (R2)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/discovery/candidates-frozen-1.0.0.json",
+     "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70"
+    }
+   ]
+  },
+  {
+   "commit": "76480d017f9aa4365dcd979948c19f19ff4adbee",
+   "parents": [
+    "05ca5f85ed34099542a44e36b9838bdd60e77e79"
+   ],
+   "committedAt": "2026-10-28T17:48:14+00:00",
+   "authoredAt": "2026-10-28T17:48:14+00:00",
+   "subject": "Quant V11 Discovery: Auswertungsskript f\u00fcr VALIDATION/TEST (einmalig, an eingefrorene Dateien gebunden)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "7a91051b6f765ae97696cec616309a00bc1b79aa",
+   "parents": [
+    "76480d017f9aa4365dcd979948c19f19ff4adbee"
+   ],
+   "committedAt": "2026-10-28T17:50:45+00:00",
+   "authoredAt": "2026-10-28T17:50:45+00:00",
+   "subject": "Quant V11 Discovery: VALIDATION einmal gerechnet, unver\u00e4ndert (0/12 Holm je Familie, beide Endpunkte)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "108cb658c1213b6ee0d14da88ddf4fa69db1af70",
+   "parents": [
+    "7a91051b6f765ae97696cec616309a00bc1b79aa"
+   ],
+   "committedAt": "2026-10-28T17:55:56+00:00",
+   "authoredAt": "2026-10-28T17:55:56+00:00",
+   "subject": "Quant V11 Discovery: Benchmark-Korrektur kapitalgewichtete Population (XBRL-Skalenfehler im V10-Panel), Plausibilit\u00e4tsregel 1.0.1",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "7b10e91177dcd459db264b71552017706f8985af",
+   "parents": [
+    "108cb658c1213b6ee0d14da88ddf4fa69db1af70"
+   ],
+   "committedAt": "2026-10-28T17:55:56+00:00",
+   "authoredAt": "2026-10-28T17:55:56+00:00",
+   "subject": "Quant V11 Discovery: finale Hypothesen eingefroren (H1 QUAL-N10-M3, H2 PROF_MOM-N20-M3) vor TEST (R3)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/discovery/final-hypotheses-frozen-1.0.0.json",
+     "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154"
+    }
+   ]
+  },
+  {
+   "commit": "245b852e339abe46346f3129d23995483c2af98e",
+   "parents": [
+    "7b10e91177dcd459db264b71552017706f8985af"
+   ],
+   "committedAt": "2026-10-28T17:57:06+00:00",
+   "authoredAt": "2026-10-28T17:57:06+00:00",
+   "subject": "Quant V11 Discovery: TEST einmal gerechnet und unbedingt berichtet (H1 signifikant schlechter als SPY, H2 ohne \u00dcberschuss)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "86ececa64910c026c45a2acdd7b5c1a6ceec40b5",
+   "parents": [
+    "245b852e339abe46346f3129d23995483c2af98e"
+   ],
+   "committedAt": "2026-10-28T18:14:57+00:00",
+   "authoredAt": "2026-10-28T18:14:57+00:00",
+   "subject": "Quant V11 Discovery: Oracle-Obergrenze und Oracle-L\u00fccke f\u00fcr VALIDATION und TEST (nach den jeweiligen Einfrierungen)",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "dc92f5f68b7b7a241287a18082be0b02bc909977",
+   "parents": [
+    "86ececa64910c026c45a2acdd7b5c1a6ceec40b5"
+   ],
+   "committedAt": "2026-10-28T18:17:14+00:00",
+   "authoredAt": "2026-10-28T18:17:14+00:00",
+   "subject": "Quant V11 Discovery: Renditeattribution aller 24 Kandidaten (VALIDATION) und beider Hypothesen (TEST)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "81149d1604b803d0a805c93d15bd6b8ba8c336e9",
+   "parents": [
+    "dc92f5f68b7b7a241287a18082be0b02bc909977"
+   ],
+   "committedAt": "2026-10-28T18:19:11+00:00",
+   "authoredAt": "2026-10-28T18:19:11+00:00",
+   "subject": "Quant V11 Discovery: Plausibilit\u00e4t PIT-Marktkapitalisierung gez\u00e4hlt (4.589 von 370.386 Zeilen), Sensitivit\u00e4t der FUND-Kandidaten",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "2516f50493f8727ee35ff1f9fde529af46619250",
+   "parents": [
+    "81149d1604b803d0a805c93d15bd6b8ba8c336e9"
+   ],
+   "committedAt": "2026-10-28T18:21:39+00:00",
+   "authoredAt": "2026-10-28T18:21:39+00:00",
+   "subject": "Quant V11 Discovery: Python-Gegenrechnung (4 Hypothesenzellen + 1 Oracle-Zelle, PASS) und Tests",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "b5f613a8d4c885c6a242eaa30d1eb1e62e2fd7d2",
+   "parents": [
+    "2516f50493f8727ee35ff1f9fde529af46619250"
+   ],
+   "committedAt": "2026-10-28T18:29:57+00:00",
+   "authoredAt": "2026-10-28T18:29:57+00:00",
+   "subject": "Quant V11 Discovery: README (Chronologie, Ergebnisse, Oracle, Attribution, Grenzen)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "31d6b1ec3bcd5a0d9c40d60bd8b13bb0286a96f0",
+   "parents": [
+    "02446e09b1a6083a5b958666cb0bf4e4cf7ecc2a",
+    "b5f613a8d4c885c6a242eaa30d1eb1e62e2fd7d2"
+   ],
+   "committedAt": "2026-10-28T18:30:37+00:00",
+   "authoredAt": "2026-10-28T18:30:37+00:00",
+   "subject": "Quant V11: Discovery-Strang integriert (Oracle, TRAIN-Exploration, VALIDATION, TEST, Attribution)",
+   "filesChanged": 68,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/discovery/candidates-frozen-1.0.0.json",
+     "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70"
+    },
+    {
+     "path": "docs/quant-recovery/v11/discovery/final-hypotheses-frozen-1.0.0.json",
+     "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154"
+    },
+    {
+     "path": "docs/quant-recovery/v11/discovery/registration-1.0.0.json",
+     "sha256": "a6290ef147305b9d2633d0d9520a0d342de0c7c6e31f5d1cdd49ba59e2f485d7"
+    },
+    {
+     "path": "docs/quant-recovery/v11/decomposition/registration-1.0.0.json",
+     "sha256": "443569f158d1ae67bb451515676b37bd8eb91e4e0761fa7ab0d50a2fad75b673"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-1.0.0.json",
+     "sha256": "13389b529f01f68f9a79ba7af1e6c419f2233ac054b0acba5e045c809f88c0ee"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json",
+     "sha256": "199e10330784f683e88075f3b10a402646095ec77b9b841b5e045a58cf373e24"
+    }
+   ]
+  },
+  {
+   "commit": "0bfbeaedcdc8fc5d70a3d75d9e0b3c3d532a5214",
+   "parents": [
+    "31d6b1ec3bcd5a0d9c40d60bd8b13bb0286a96f0"
+   ],
+   "committedAt": "2026-10-28T18:34:08+00:00",
+   "authoredAt": "2026-10-28T18:34:08+00:00",
+   "subject": "Quant V11: Synthesebericht Reverse Strategy Discovery & Alpha Attribution (Entwurf vor Pr\u00fcfung)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "58ad09e424e70a0b8a88fa08850299dfb69edd8d",
+   "parents": [
+    "0bfbeaedcdc8fc5d70a3d75d9e0b3c3d532a5214"
+   ],
+   "committedAt": "2026-10-28T18:44:12+00:00",
+   "authoredAt": "2026-10-28T18:44:12+00:00",
+   "subject": "Quant V11: Befunde der unabh\u00e4ngigen methodischen Pr\u00fcfung in Synthese und Strang-READMEs",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "7992560ba4d48ec93a24c7bc87504d78d68168dc",
+   "parents": [
+    "58ad09e424e70a0b8a88fa08850299dfb69edd8d"
+   ],
+   "committedAt": "2026-10-29T06:35:32+00:00",
+   "authoredAt": "2026-10-29T06:35:32+00:00",
+   "subject": "Quant V12: Plan Datenqualit\u00e4t vor Strategieoptimierung (Bestandspr\u00fcfung, Arbeitspakete)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "ff8b084c3ef2ba80c7f9e0dbac4d92505a520abd",
+   "parents": [
+    "7992560ba4d48ec93a24c7bc87504d78d68168dc"
+   ],
+   "committedAt": "2026-10-29T06:56:53+00:00",
+   "authoredAt": "2026-10-29T06:56:53+00:00",
+   "subject": "Quant V12 MCAP: Korrekturregel 1.0.0 vor Anwendung eingefroren",
+   "filesChanged": 5,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.json",
+     "sha256": "b7cb5ee8dedb291f92ea59ef699221123ac7c43c92e581e2e3ff3db642e98621"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.sha256",
+     "sha256": "a49aaa4bd324f88e64d909452e5713b53ba232335deef9d4cceef60093c4e12c"
+    }
+   ]
+  },
+  {
+   "commit": "55634c4cdabfa36077527a393218d5b20e061790",
+   "parents": [
+    "ff8b084c3ef2ba80c7f9e0dbac4d92505a520abd"
+   ],
+   "committedAt": "2026-10-29T07:01:18+00:00",
+   "authoredAt": "2026-10-29T07:01:18+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.1 nach Sicht auf die Klassifikation 1.0.0",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.json",
+     "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.sha256",
+     "sha256": "57fff5d1f30795eb8bb4ae729fe6c36d70f4205baa96f216bc539429ef92a974"
+    }
+   ]
+  },
+  {
+   "commit": "7bd07e2e26cee073a49d642453deb239bd97cbbd",
+   "parents": [
+    "55634c4cdabfa36077527a393218d5b20e061790"
+   ],
+   "committedAt": "2026-10-29T07:03:47+00:00",
+   "authoredAt": "2026-10-29T07:03:47+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.2 \u2013 Vorvintage aus validierter Beobachtung, Mehrheitsunterst\u00fctzung",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.json",
+     "sha256": "e0561586a1a58347b848a90cf39ae5f5273fb5f50e2b712dd6aba8fa6299c423"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.sha256",
+     "sha256": "be1753d7f6a7cbcbebf3253e1c02306c31c89465efd34ef19ce40975ddc8cccf"
+    }
+   ]
+  },
+  {
+   "commit": "2e4df63b87de24c0225958f739f8fcff10255d6d",
+   "parents": [
+    "7bd07e2e26cee073a49d642453deb239bd97cbbd"
+   ],
+   "committedAt": "2026-10-29T07:05:31+00:00",
+   "authoredAt": "2026-10-29T07:05:31+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.3 \u2013 WASO-Varianten z\u00e4hlen als eine Quelle",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.json",
+     "sha256": "98f704c14c21367f60260f6b088b283f67653fe0dfc1f50dacbadcc7985c0dea"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.sha256",
+     "sha256": "dc8113d2dea88f3e9a5c0727145ea8a2c85441d59f6a846b08b79335f3bd8d54"
+    }
+   ]
+  },
+  {
+   "commit": "b526202a413ae816beda68ad31a137483ca82df7",
+   "parents": [
+    "2e4df63b87de24c0225958f739f8fcff10255d6d"
+   ],
+   "committedAt": "2026-10-29T07:07:25+00:00",
+   "authoredAt": "2026-10-29T07:07:25+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.4 \u2013 Stufe B z\u00e4hlt nur externe Belege",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.json",
+     "sha256": "a3dc1521dca597e41d8a8be11ca7dab956294556b36bebb7a9c11b7c78cd4afa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.sha256",
+     "sha256": "7d03686649bcd46345a8a6baeea36fd94c359f1cb878ec6fa8744b436ae0be26"
+    }
+   ]
+  },
+  {
+   "commit": "654014845bca51c222fdf04fbeb2581e5565659c",
+   "parents": [
+    "b526202a413ae816beda68ad31a137483ca82df7"
+   ],
+   "committedAt": "2026-10-29T07:09:14+00:00",
+   "authoredAt": "2026-10-29T07:09:14+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.5 \u2013 widersprochene Splits statt Spin-off",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.json",
+     "sha256": "2997754d576aee07052e5669a0dd144812f16ac5e27e216651189eaa72ee862f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.sha256",
+     "sha256": "67b88f32620c509be8fe6755e7a7621d6c010db9bd1c885178d1b3bae9a37a8d"
+    }
+   ]
+  },
+  {
+   "commit": "8c7cc1dfa4303f78f48032471f9a7bf34f5bdc7d",
+   "parents": [
+    "654014845bca51c222fdf04fbeb2581e5565659c"
+   ],
+   "committedAt": "2026-10-29T07:15:09+00:00",
+   "authoredAt": "2026-10-29T07:15:09+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.6 nach erster SEC-Stichprobe, Spin-off-Quellen",
+   "filesChanged": 7,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.json",
+     "sha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.sha256",
+     "sha256": "88c184a5fcd884169f2b0782c2aff272d7b9f9d016dea11c9e7f9db4c749424b"
+    }
+   ]
+  },
+  {
+   "commit": "76ef9896b8371770df6790c76de929c2839fbd5b",
+   "parents": [
+    "8c7cc1dfa4303f78f48032471f9a7bf34f5bdc7d"
+   ],
+   "committedAt": "2026-10-29T07:18:30+00:00",
+   "authoredAt": "2026-10-29T07:18:30+00:00",
+   "subject": "Quant V12 MCAP: Regel 1.0.7 \u2013 Bilanz- und GuV-Zahlen als eine Quelle",
+   "filesChanged": 6,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.json",
+     "sha256": "477534222d6d5312f03df0fa907a05608746056203628d7611f2411246c1592f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.sha256",
+     "sha256": "3528fc1de1bce0621c974c59ef946720530c838628ab7ca4f32ebc617988a80b"
+    }
+   ]
+  },
+  {
+   "commit": "30302a83a6f8a36b590da91d46ac4439dd92d2a8",
+   "parents": [
+    "76ef9896b8371770df6790c76de929c2839fbd5b"
+   ],
+   "committedAt": "2026-10-29T07:20:31+00:00",
+   "authoredAt": "2026-10-29T07:20:31+00:00",
+   "subject": "Quant V12 MCAP: Validierungsstichprobe 1.0.7 und Versch\u00e4rfung 1.0.8",
+   "filesChanged": 5,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.json",
+     "sha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.sha256",
+     "sha256": "2ca864829311667ab31355bf2b6737af9da7bef7a577231d8a54a6f29d259f7a"
+    }
+   ]
+  },
+  {
+   "commit": "335ac954be9f33b4b71697fe72ceb46c14c29c90",
+   "parents": [
+    "30302a83a6f8a36b590da91d46ac4439dd92d2a8"
+   ],
+   "committedAt": "2026-10-29T07:21:48+00:00",
+   "authoredAt": "2026-10-29T07:21:48+00:00",
+   "subject": "Quant V12 MCAP: Register 1.0.8 und Zusammenfassung",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "00cb334e6a7ad0d5ee71b263885c10369337ff42",
+   "parents": [
+    "335ac954be9f33b4b71697fe72ceb46c14c29c90"
+   ],
+   "committedAt": "2026-10-29T07:42:11+00:00",
+   "authoredAt": "2026-10-29T07:42:11+00:00",
+   "subject": "Quant V12 MCAP: Tests, Panel-Neuaufbau, Winners-Preload, Python-Gegenpr\u00fcfung",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "981c268befab5dc31402a15a6ffbc07f664bd2b8",
+   "parents": [
+    "00cb334e6a7ad0d5ee71b263885c10369337ff42"
+   ],
+   "committedAt": "2026-10-29T07:47:30+00:00",
+   "authoredAt": "2026-10-29T07:47:30+00:00",
+   "subject": "Quant V12 MCAP: Erzeuger-Vorschlag market-cap-1.2.0 (nicht angewandt)",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "646486fe1d24b78c492df5032fd1668b379f1f5a",
+   "parents": [
+    "981c268befab5dc31402a15a6ffbc07f664bd2b8"
+   ],
+   "committedAt": "2026-10-29T07:52:36+00:00",
+   "authoredAt": "2026-10-29T07:52:36+00:00",
+   "subject": "Quant V12 MCAP: SEC-Stichproben mit Deckblatt-Pr\u00fcfung, Adjudikation der Validierung",
+   "filesChanged": 7,
+   "protocolFiles": []
+  },
+  {
+   "commit": "eb72f5387e6cc73451fd545b0eaa0414180c5ab0",
+   "parents": [
+    "646486fe1d24b78c492df5032fd1668b379f1f5a"
+   ],
+   "committedAt": "2026-10-29T07:52:47+00:00",
+   "authoredAt": "2026-10-29T07:52:47+00:00",
+   "subject": "Quant V12 MCAP: Entwicklungsstichprobe 2 mit finalem Pr\u00fcfskript neu bewertet",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "767e99b924235a104b01b164caea7ea50549fc88",
+   "parents": [
+    "eb72f5387e6cc73451fd545b0eaa0414180c5ab0"
+   ],
+   "committedAt": "2026-10-29T08:02:05+00:00",
+   "authoredAt": "2026-10-29T08:02:05+00:00",
+   "subject": "Quant V12 MCAP: Wirkung vorher/nachher und README",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "6c87df6067cb3b78f271f0fdccec95ced92d852b",
+   "parents": [
+    "7992560ba4d48ec93a24c7bc87504d78d68168dc",
+    "767e99b924235a104b01b164caea7ea50549fc88"
+   ],
+   "committedAt": "2026-10-29T08:03:05+00:00",
+   "authoredAt": "2026-10-29T08:03:05+00:00",
+   "subject": "Quant V12 P1: Korrekturregister PIT-Marktkapitalisierung (XBRL-Skalenfehler, Split-Zeitpunkt, Spin-off-als-Split)",
+   "filesChanged": 42,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.json",
+     "sha256": "b7cb5ee8dedb291f92ea59ef699221123ac7c43c92e581e2e3ff3db642e98621"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.sha256",
+     "sha256": "a49aaa4bd324f88e64d909452e5713b53ba232335deef9d4cceef60093c4e12c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.json",
+     "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.sha256",
+     "sha256": "57fff5d1f30795eb8bb4ae729fe6c36d70f4205baa96f216bc539429ef92a974"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.json",
+     "sha256": "e0561586a1a58347b848a90cf39ae5f5273fb5f50e2b712dd6aba8fa6299c423"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.sha256",
+     "sha256": "be1753d7f6a7cbcbebf3253e1c02306c31c89465efd34ef19ce40975ddc8cccf"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.json",
+     "sha256": "98f704c14c21367f60260f6b088b283f67653fe0dfc1f50dacbadcc7985c0dea"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.sha256",
+     "sha256": "dc8113d2dea88f3e9a5c0727145ea8a2c85441d59f6a846b08b79335f3bd8d54"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.json",
+     "sha256": "a3dc1521dca597e41d8a8be11ca7dab956294556b36bebb7a9c11b7c78cd4afa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.sha256",
+     "sha256": "7d03686649bcd46345a8a6baeea36fd94c359f1cb878ec6fa8744b436ae0be26"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.json",
+     "sha256": "2997754d576aee07052e5669a0dd144812f16ac5e27e216651189eaa72ee862f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.sha256",
+     "sha256": "67b88f32620c509be8fe6755e7a7621d6c010db9bd1c885178d1b3bae9a37a8d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.json",
+     "sha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.sha256",
+     "sha256": "88c184a5fcd884169f2b0782c2aff272d7b9f9d016dea11c9e7f9db4c749424b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.json",
+     "sha256": "477534222d6d5312f03df0fa907a05608746056203628d7611f2411246c1592f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.sha256",
+     "sha256": "3528fc1de1bce0621c974c59ef946720530c838628ab7ca4f32ebc617988a80b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.json",
+     "sha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.sha256",
+     "sha256": "2ca864829311667ab31355bf2b6737af9da7bef7a577231d8a54a6f29d259f7a"
+    }
+   ]
+  },
+  {
+   "commit": "a6cdce746b9f8f5e350a7b95139699f42d417d11",
+   "parents": [
+    "6c87df6067cb3b78f271f0fdccec95ced92d852b",
+    "d3c7deb49f8ae8549c1b307978e97262b6775b33"
+   ],
+   "committedAt": "2026-10-29T08:03:33+00:00",
+   "authoredAt": "2026-10-29T08:03:33+00:00",
+   "subject": "Merge origin/main in den V10/V11/V12-Branch (Fix research-exposure #1105)",
+   "filesChanged": 28289,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v10/artifact-manifest-1.0.0.json",
+     "sha256": "5553983157ab80408334d6c5d156ad2f041853ea07aba0d5615fa2ca22b23462"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.json",
+     "sha256": "e372e20a10bb5f1237db3e13a452de97267af50eaa42991ee46a0b0cdde7febe"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.0.sha256",
+     "sha256": "51d437e218369c68da239dfc67e49a8a6432c41f87b9e7dba5b9572af396cd0c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.json",
+     "sha256": "5319de6fa25d534cec4079b488c3752d62d02446464b614cd335d31b3f0ba3f9"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.1.sha256",
+     "sha256": "e86ab6884b5f5aba8ae749894be598f91d342551a4644630cce9d2c2fc044707"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+     "sha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.sha256",
+     "sha256": "c40c2f1729e4a1e7010bbb437aa722944fe41ce54e70000179d9574eb38f6ce1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.sha256",
+     "sha256": "b8f7428b956af265ae45ab8ec77c2fdbf9326a180b71401c8c782c53cf544393"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+     "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.sha256",
+     "sha256": "21408933402f05b9d7f79d4e480fdbbe09b78ed7abe2a783a80079d1ea2539df"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+     "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.sha256",
+     "sha256": "d4fc89a19ca570334065876d2b39ff54ea12dbd54c1fb92c65ce7341fb2e89e1"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+     "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.sha256",
+     "sha256": "3bed354fe68b1ba512b3ff432717ad665b9fe4ae5c4e2b4b421807c238f81c20"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.json",
+     "sha256": "379d1434017795a9c5f08230bfb5892b0e48c0b57e34f040bf4d337716568fad"
+    },
+    {
+     "path": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.4.sha256",
+     "sha256": "3635c666748c638f63a59f67fac93a79cd959ebf4475a4fa82c7c5c5cdf11e9b"
+    },
+    {
+     "path": "docs/quant-recovery/v10/factor/registration-1.0.0.json",
+     "sha256": "2c271aef0f525465b25f5c32c8b8939359b059f58da1e643b5b061cfaa3571cb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json",
+     "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-1.0.0.sha256",
+     "sha256": "2728262143f977bcb92062aad522e256eee93109ccfc949146171e59cc274a73"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.1.json",
+     "sha256": "2f87123b6c057a59b8fcc264de82b311b9a84ffd7b704c5c1dd2f393074a71f5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.2.json",
+     "sha256": "425cab73286999333b51abd3e129ca4a6de2cb155d427862cf080e4c0a2f48e5"
+    },
+    {
+     "path": "docs/quant-recovery/v10/population/protocol-amendment-1.0.3.json",
+     "sha256": "a4634ffdc6936c2d702d775168c14204455b096665ac9b686392e15c64faa899"
+    },
+    {
+     "path": "docs/quant-recovery/v10/setup/setup-reconstruction-registration-1.0.0.json",
+     "sha256": "92a0d49e03b2c375f833de34bb0aef46fa851a0544922102c509c442d94778bb"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/registration-1.0.0.json",
+     "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-1.0.0.json.gz",
+     "sha256": "a236e0cf57cf539497391f339d46a346229bb217bdaadd04c9bffceeeb6d0470"
+    },
+    {
+     "path": "docs/quant-recovery/v10/studies/source-manifest-ca-id-lifecycle-1.0.0.json.gz",
+     "sha256": "97921d4a78f5f5eed67746a03354dc29b30f3d69ee29bebc84619ed02ff4aa57"
+    },
+    {
+     "path": "docs/quant-recovery/v11/decomposition/registration-1.0.0.json",
+     "sha256": "443569f158d1ae67bb451515676b37bd8eb91e4e0761fa7ab0d50a2fad75b673"
+    },
+    {
+     "path": "docs/quant-recovery/v11/discovery/candidates-frozen-1.0.0.json",
+     "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70"
+    },
+    {
+     "path": "docs/quant-recovery/v11/discovery/final-hypotheses-frozen-1.0.0.json",
+     "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154"
+    },
+    {
+     "path": "docs/quant-recovery/v11/discovery/registration-1.0.0.json",
+     "sha256": "a6290ef147305b9d2633d0d9520a0d342de0c7c6e31f5d1cdd49ba59e2f485d7"
+    },
+    {
+     "path": "docs/quant-recovery/v11/protocol/time-split-1.0.0.json",
+     "sha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69"
+    },
+    {
+     "path": "docs/quant-recovery/v11/protocol/time-split-1.0.0.sha256",
+     "sha256": "e2259e485cdef067dda375fa0e2752fb870d2b0b2355a5165379dd7f4da187cc"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-1.0.0.json",
+     "sha256": "13389b529f01f68f9a79ba7af1e6c419f2233ac054b0acba5e045c809f88c0ee"
+    },
+    {
+     "path": "docs/quant-recovery/v11/winners/registration-amendment-1.0.1.json",
+     "sha256": "199e10330784f683e88075f3b10a402646095ec77b9b841b5e045a58cf373e24"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.json",
+     "sha256": "b7cb5ee8dedb291f92ea59ef699221123ac7c43c92e581e2e3ff3db642e98621"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.sha256",
+     "sha256": "a49aaa4bd324f88e64d909452e5713b53ba232335deef9d4cceef60093c4e12c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.json",
+     "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.sha256",
+     "sha256": "57fff5d1f30795eb8bb4ae729fe6c36d70f4205baa96f216bc539429ef92a974"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.json",
+     "sha256": "e0561586a1a58347b848a90cf39ae5f5273fb5f50e2b712dd6aba8fa6299c423"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.sha256",
+     "sha256": "be1753d7f6a7cbcbebf3253e1c02306c31c89465efd34ef19ce40975ddc8cccf"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.json",
+     "sha256": "98f704c14c21367f60260f6b088b283f67653fe0dfc1f50dacbadcc7985c0dea"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.sha256",
+     "sha256": "dc8113d2dea88f3e9a5c0727145ea8a2c85441d59f6a846b08b79335f3bd8d54"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.json",
+     "sha256": "a3dc1521dca597e41d8a8be11ca7dab956294556b36bebb7a9c11b7c78cd4afa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.sha256",
+     "sha256": "7d03686649bcd46345a8a6baeea36fd94c359f1cb878ec6fa8744b436ae0be26"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.json",
+     "sha256": "2997754d576aee07052e5669a0dd144812f16ac5e27e216651189eaa72ee862f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.sha256",
+     "sha256": "67b88f32620c509be8fe6755e7a7621d6c010db9bd1c885178d1b3bae9a37a8d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.json",
+     "sha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.sha256",
+     "sha256": "88c184a5fcd884169f2b0782c2aff272d7b9f9d016dea11c9e7f9db4c749424b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.json",
+     "sha256": "477534222d6d5312f03df0fa907a05608746056203628d7611f2411246c1592f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.sha256",
+     "sha256": "3528fc1de1bce0621c974c59ef946720530c838628ab7ca4f32ebc617988a80b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.json",
+     "sha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.sha256",
+     "sha256": "2ca864829311667ab31355bf2b6737af9da7bef7a577231d8a54a6f29d259f7a"
+    }
+   ]
+  },
+  {
+   "commit": "56b05802b791a9f4cca3919b7e24231c5cb177b7",
+   "parents": [
+    "7992560ba4d48ec93a24c7bc87504d78d68168dc"
+   ],
+   "committedAt": "2026-10-29T06:45:19+00:00",
+   "authoredAt": "2026-10-29T06:45:19+00:00",
+   "subject": "Quant V12 INDEXPOP: Regeln 1.0.0 vor Ergebnissen, SEC-Inventar- und Abrufskripte",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.0.0.json",
+     "sha256": "1408aff67d1c5680ac58c3111d5e70c551b1867c6977d34a6157960476416d84"
+    }
+   ]
+  },
+  {
+   "commit": "a7380941a15a38ab693fcc86e05c5cba106012f0",
+   "parents": [
+    "56b05802b791a9f4cca3919b7e24231c5cb177b7"
+   ],
+   "committedAt": "2026-10-29T06:58:35+00:00",
+   "authoredAt": "2026-10-29T06:58:35+00:00",
+   "subject": "Quant V12 INDEXPOP: Parser N-PORT/Berichte, Validierung aller Stichtage",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "6a6d316138d8d5bed2f589a91fe671eb83cf3b46",
+   "parents": [
+    "a7380941a15a38ab693fcc86e05c5cba106012f0"
+   ],
+   "committedAt": "2026-10-29T07:08:47+00:00",
+   "authoredAt": "2026-10-29T07:08:47+00:00",
+   "subject": "Quant V12 INDEXPOP: Regeln 1.1.0 (Namensnormalisierung, Stammaktien-Kandidaten, Preis-Klammer, Zuordnung je Stichtag) vor Abdeckungsergebnissen",
+   "filesChanged": 5,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.1.0.json",
+     "sha256": "648c5f4c7f0ce668489cb12509d36f949059605c6d1284c67a22b7a529520548"
+    }
+   ]
+  },
+  {
+   "commit": "ad405251dffdd4ad2e8f0c14d3fba3c3c2f1a727",
+   "parents": [
+    "6a6d316138d8d5bed2f589a91fe671eb83cf3b46"
+   ],
+   "committedAt": "2026-10-29T07:09:59+00:00",
+   "authoredAt": "2026-10-29T07:09:59+00:00",
+   "subject": "Quant V12 INDEXPOP: Register, Abdeckung, Quartalspreise nach Regeln 1.1.0",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "ba9b97aa0fb27a05da5917b2eec940d60fe187f8",
+   "parents": [
+    "ad405251dffdd4ad2e8f0c14d3fba3c3c2f1a727"
+   ],
+   "committedAt": "2026-10-29T07:43:07+00:00",
+   "authoredAt": "2026-10-29T07:43:07+00:00",
+   "subject": "Quant V12 INDEXPOP: Regeln 1.2.0 (CUSIP-Kontinuitaet, eindeutige Schluessel je Stichtag), spaltenweises Register, Python-Gegenpruefung, Tests",
+   "filesChanged": 17,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.2.0.json",
+     "sha256": "800ca76eae5877adfad1cc25a8004e599ce8b2837e58f8cd43dbb4bf15ee4e39"
+    }
+   ]
+  },
+  {
+   "commit": "58599a38a16b97fe34102cdbaa155758cbfdaf7f",
+   "parents": [
+    "ba9b97aa0fb27a05da5917b2eec940d60fe187f8"
+   ],
+   "committedAt": "2026-10-29T08:09:16+00:00",
+   "authoredAt": "2026-10-29T08:09:16+00:00",
+   "subject": "Quant V12 INDEXPOP: Austritte mit SEC-Folgeschicksal, Inventar, README mit Bewertung",
+   "filesChanged": 6,
+   "protocolFiles": []
+  },
+  {
+   "commit": "10d778ebaee80dc41b45e1157dc962e59fced55a",
+   "parents": [
+    "a6cdce746b9f8f5e350a7b95139699f42d417d11",
+    "58599a38a16b97fe34102cdbaa155758cbfdaf7f"
+   ],
+   "committedAt": "2026-10-29T08:10:22+00:00",
+   "authoredAt": "2026-10-29T08:10:22+00:00",
+   "subject": "Quant V12 P2: historische Indexmitgliedschaften aus SEC-Fondsmeldungen (SPY, QQQ, DIA, IWB/IWM/IWV)",
+   "filesChanged": 28107,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.0.0.json",
+     "sha256": "1408aff67d1c5680ac58c3111d5e70c551b1867c6977d34a6157960476416d84"
+    },
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.1.0.json",
+     "sha256": "648c5f4c7f0ce668489cb12509d36f949059605c6d1284c67a22b7a529520548"
+    },
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.2.0.json",
+     "sha256": "800ca76eae5877adfad1cc25a8004e599ce8b2837e58f8cd43dbb4bf15ee4e39"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.json",
+     "sha256": "b7cb5ee8dedb291f92ea59ef699221123ac7c43c92e581e2e3ff3db642e98621"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.sha256",
+     "sha256": "a49aaa4bd324f88e64d909452e5713b53ba232335deef9d4cceef60093c4e12c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.json",
+     "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.sha256",
+     "sha256": "57fff5d1f30795eb8bb4ae729fe6c36d70f4205baa96f216bc539429ef92a974"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.json",
+     "sha256": "e0561586a1a58347b848a90cf39ae5f5273fb5f50e2b712dd6aba8fa6299c423"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.sha256",
+     "sha256": "be1753d7f6a7cbcbebf3253e1c02306c31c89465efd34ef19ce40975ddc8cccf"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.json",
+     "sha256": "98f704c14c21367f60260f6b088b283f67653fe0dfc1f50dacbadcc7985c0dea"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.sha256",
+     "sha256": "dc8113d2dea88f3e9a5c0727145ea8a2c85441d59f6a846b08b79335f3bd8d54"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.json",
+     "sha256": "a3dc1521dca597e41d8a8be11ca7dab956294556b36bebb7a9c11b7c78cd4afa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.sha256",
+     "sha256": "7d03686649bcd46345a8a6baeea36fd94c359f1cb878ec6fa8744b436ae0be26"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.json",
+     "sha256": "2997754d576aee07052e5669a0dd144812f16ac5e27e216651189eaa72ee862f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.sha256",
+     "sha256": "67b88f32620c509be8fe6755e7a7621d6c010db9bd1c885178d1b3bae9a37a8d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.json",
+     "sha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.sha256",
+     "sha256": "88c184a5fcd884169f2b0782c2aff272d7b9f9d016dea11c9e7f9db4c749424b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.json",
+     "sha256": "477534222d6d5312f03df0fa907a05608746056203628d7611f2411246c1592f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.sha256",
+     "sha256": "3528fc1de1bce0621c974c59ef946720530c838628ab7ca4f32ebc617988a80b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.json",
+     "sha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.sha256",
+     "sha256": "2ca864829311667ab31355bf2b6737af9da7bef7a577231d8a54a6f29d259f7a"
+    }
+   ]
+  },
+  {
+   "commit": "e23e4d0ad0be5df9f83a41396f8a8e1b21a7a511",
+   "parents": [
+    "10d778ebaee80dc41b45e1157dc962e59fced55a"
+   ],
+   "committedAt": "2026-10-29T08:17:24+00:00",
+   "authoredAt": "2026-10-29T08:17:24+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Regeln 1.0.0 vorab registriert (Identit\u00e4tskette, Split-Erkennung, Status, Konsistenz, Populationen)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.json",
+     "sha256": "bd4b889b9d3e8cfad2a678ec9cce84060e8e72190d80104d9764037654318e9d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.sha256",
+     "sha256": "bebe100fcd4fe4603d38423956180d1952b9f09332d8ddb6b7cef726888bc31e"
+    }
+   ]
+  },
+  {
+   "commit": "32a69ff81c64d42b5fe53cb7230a6232823efba2",
+   "parents": [
+    "e23e4d0ad0be5df9f83a41396f8a8e1b21a7a511"
+   ],
+   "committedAt": "2026-10-29T08:19:39+00:00",
+   "authoredAt": "2026-10-29T08:19:39+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Regeln 1.0.1 (Umsetzungskl\u00e4rungen vor jedem Ergebnis)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.json",
+     "sha256": "333fe37e9c48e06b31d4eeecefb94c23a468c15b2f9f668dfeaf75e587a8e54b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.sha256",
+     "sha256": "d9775fa3a5ee6df978eb0432fd25fa81bbc55e7455446135272a9e7569c69814"
+    }
+   ]
+  },
+  {
+   "commit": "7c14b77a78152b78becd7f2231e89fb0a9684e44",
+   "parents": [
+    "32a69ff81c64d42b5fe53cb7230a6232823efba2"
+   ],
+   "committedAt": "2026-10-29T08:28:25+00:00",
+   "authoredAt": "2026-10-29T08:28:25+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Builder und Research-Modul, Ergebnisstand Regeln 1.0.1 (Perioden, Validierung)",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "e6c784b81016691d3442d3f9b659c32b3bb220b7",
+   "parents": [
+    "7c14b77a78152b78becd7f2231e89fb0a9684e44"
+   ],
+   "committedAt": "2026-10-29T08:33:38+00:00",
+   "authoredAt": "2026-10-29T08:33:38+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Regeln 1.1.0 (nach Sicht, offengelegt) und Population 1.1.0 (S&P 500 2009-2026 qualifiziert, Russell 1000 2005-2026 \u00fcberwiegend)",
+   "filesChanged": 9,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+     "sha256": "3d5f833821df354f5d64a77f1c69207b7a7ca352af027edc84ec3b46494ed3e6"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.json",
+     "sha256": "e4627c416484b34bc2b609840bd1fd56f963e34553bbae15038b0b51b613cc59"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.sha256",
+     "sha256": "cdb75a5abe7c84a58c4f57ce087212911df9702b9ccb61223cb5e3d2f03f2d01"
+    }
+   ]
+  },
+  {
+   "commit": "695a738a5c8741ad5a61011c2c32979de2fc5411",
+   "parents": [
+    "e6c784b81016691d3442d3f9b659c32b3bb220b7"
+   ],
+   "committedAt": "2026-10-29T08:47:23+00:00",
+   "authoredAt": "2026-10-29T08:47:23+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Fehlerkorrekturen (Zweiklassen-CIK, Seitenkopf-Namen), Tests, Python-Gegenpr\u00fcfung, README",
+   "filesChanged": 9,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+     "sha256": "c054da5492fcf123e69df5b58e7a51a2f37d92389e3ec01dbcc4e363803175d8"
+    }
+   ]
+  },
+  {
+   "commit": "d3e57b91b8ba9b2bb4de3e7e25fca64d8b560d10",
+   "parents": [
+    "695a738a5c8741ad5a61011c2c32979de2fc5411"
+   ],
+   "committedAt": "2026-10-29T08:59:20+00:00",
+   "authoredAt": "2026-10-29T08:59:20+00:00",
+   "subject": "Quant V12 P4 SPXPOP: Python-Gegenpr\u00fcfung 1.1.0 und README-Ergebnisse",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "55422d672493a1197628847c0100ecbfd9040305",
+   "parents": [
+    "10d778ebaee80dc41b45e1157dc962e59fced55a",
+    "d3e57b91b8ba9b2bb4de3e7e25fca64d8b560d10"
+   ],
+   "committedAt": "2026-10-29T09:00:29+00:00",
+   "authoredAt": "2026-10-29T09:00:29+00:00",
+   "subject": "Quant V12 P4: PIT-Indexpopulation aus Fondsbest\u00e4nden (S&P 500 ab 2009-09, Russell 1000/3000 ab 2005-12 qualifiziert)",
+   "filesChanged": 20,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+     "sha256": "c054da5492fcf123e69df5b58e7a51a2f37d92389e3ec01dbcc4e363803175d8"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.json",
+     "sha256": "bd4b889b9d3e8cfad2a678ec9cce84060e8e72190d80104d9764037654318e9d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.sha256",
+     "sha256": "bebe100fcd4fe4603d38423956180d1952b9f09332d8ddb6b7cef726888bc31e"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.json",
+     "sha256": "333fe37e9c48e06b31d4eeecefb94c23a468c15b2f9f668dfeaf75e587a8e54b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.sha256",
+     "sha256": "d9775fa3a5ee6df978eb0432fd25fa81bbc55e7455446135272a9e7569c69814"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.json",
+     "sha256": "e4627c416484b34bc2b609840bd1fd56f963e34553bbae15038b0b51b613cc59"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.sha256",
+     "sha256": "cdb75a5abe7c84a58c4f57ce087212911df9702b9ccb61223cb5e3d2f03f2d01"
+    }
+   ]
+  },
+  {
+   "commit": "fde4ae2c41db4ab661e4fadd70d8530e0b678c18",
+   "parents": [
+    "10d778ebaee80dc41b45e1157dc962e59fced55a"
+   ],
+   "committedAt": "2026-10-29T08:27:15+00:00",
+   "authoredAt": "2026-10-29T08:27:15+00:00",
+   "subject": "Quant V12 LARGECAP: Protokoll 1.0.0 registriert (vor jeder Beleg-Abfrage)",
+   "filesChanged": 4,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+     "sha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.sha256",
+     "sha256": "ec743d2b6e636a9ccdb7a003b7a4978e2a2fbf2486c017204b1be861bbd33e66"
+    }
+   ]
+  },
+  {
+   "commit": "25fea6bbc3e96642a1f2491676f8c392ef511efa",
+   "parents": [
+    "fde4ae2c41db4ab661e4fadd70d8530e0b678c18"
+   ],
+   "committedAt": "2026-10-29T08:38:31+00:00",
+   "authoredAt": "2026-10-29T08:38:31+00:00",
+   "subject": "Quant V12 LARGECAP: Teil CA (0 zulaessige Ereignisse), Lauf RESTRICT/IDENTITAET 1.0.0, Nachtrag 1.0.1 (post hoc offengelegt)",
+   "filesChanged": 11,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+     "sha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.sha256",
+     "sha256": "7bfea0bc165f76c492458afc86db22422efc0c4a05b85b3dd747c710737eb139"
+    }
+   ]
+  },
+  {
+   "commit": "4dc02e2c125e6179f29ad479d28d2c4f63516590",
+   "parents": [
+    "25fea6bbc3e96642a1f2491676f8c392ef511efa"
+   ],
+   "committedAt": "2026-10-29T09:02:15+00:00",
+   "authoredAt": "2026-10-29T09:02:15+00:00",
+   "subject": "Quant V12 LARGECAP: Identitaetsregister v12, Loader-Option identityEvidenceProtocolV12, Wirkung und Gegenpruefung",
+   "filesChanged": 14,
+   "protocolFiles": []
+  },
+  {
+   "commit": "6f3bb9a1e72d6ab4a27a91fb93f39a6905a7c235",
+   "parents": [
+    "55422d672493a1197628847c0100ecbfd9040305",
+    "4dc02e2c125e6179f29ad479d28d2c4f63516590"
+   ],
+   "committedAt": "2026-10-29T09:13:59+00:00",
+   "authoredAt": "2026-10-29T09:13:59+00:00",
+   "subject": "Quant V12 P4b: gezielte Belege f\u00fcr gro\u00dfe gesperrte Listings (GOOGL, JCI, KDP, IEX, TEL; Option identityEvidenceProtocolV12)",
+   "filesChanged": 46,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+     "sha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.sha256",
+     "sha256": "ec743d2b6e636a9ccdb7a003b7a4978e2a2fbf2486c017204b1be861bbd33e66"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+     "sha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.sha256",
+     "sha256": "7bfea0bc165f76c492458afc86db22422efc0c4a05b85b3dd747c710737eb139"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+     "sha256": "c054da5492fcf123e69df5b58e7a51a2f37d92389e3ec01dbcc4e363803175d8"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.json",
+     "sha256": "bd4b889b9d3e8cfad2a678ec9cce84060e8e72190d80104d9764037654318e9d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.sha256",
+     "sha256": "bebe100fcd4fe4603d38423956180d1952b9f09332d8ddb6b7cef726888bc31e"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.json",
+     "sha256": "333fe37e9c48e06b31d4eeecefb94c23a468c15b2f9f668dfeaf75e587a8e54b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.sha256",
+     "sha256": "d9775fa3a5ee6df978eb0432fd25fa81bbc55e7455446135272a9e7569c69814"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.json",
+     "sha256": "e4627c416484b34bc2b609840bd1fd56f963e34553bbae15038b0b51b613cc59"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.sha256",
+     "sha256": "cdb75a5abe7c84a58c4f57ce087212911df9702b9ccb61223cb5e3d2f03f2d01"
+    }
+   ]
+  },
+  {
+   "commit": "e08ed2173a0b749d3a51aced6fcbd8913e09a95e",
+   "parents": [
+    "7992560ba4d48ec93a24c7bc87504d78d68168dc"
+   ],
+   "committedAt": "2026-10-29T06:54:57+00:00",
+   "authoredAt": "2026-10-29T06:54:57+00:00",
+   "subject": "Quant V12 LISTREF: Protokoll 1.0.0 (vor Ergebnissen), Index-, Bestands- und Float-Export",
+   "filesChanged": 6,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.json",
+     "sha256": "934a421eb291441d34c88b84bbc8939089c74796b8a5bec0bd9bc1324798862a"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.sha256",
+     "sha256": "6776db7fcf2e1eb368466e6f3bd70d3f1a97658f852007e5e7f72baae6f15122"
+    }
+   ]
+  },
+  {
+   "commit": "26dfef81733dd323153e9a984cf35c0de77739a9",
+   "parents": [
+    "e08ed2173a0b749d3a51aced6fcbd8913e09a95e"
+   ],
+   "committedAt": "2026-10-29T07:01:06+00:00",
+   "authoredAt": "2026-10-29T07:01:06+00:00",
+   "subject": "Quant V12 LISTREF: Protokollnachtrag 1.0.1 (Anbieter-Neustarts, eingefrorene Enden, Volltext-Best\u00e4tigung) nach erstem Lauf",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json",
+     "sha256": "072bc259911f0f85b0b9e8dc887c364c83d2475fe6ee1c9e74bacb791d09d33d"
+    }
+   ]
+  },
+  {
+   "commit": "5a06d3473ff129e1b94f1a3bbd0a3baa5581ca13",
+   "parents": [
+    "26dfef81733dd323153e9a984cf35c0de77739a9"
+   ],
+   "committedAt": "2026-10-29T07:06:04+00:00",
+   "authoredAt": "2026-10-29T07:06:04+00:00",
+   "subject": "Quant V12 LISTREF: Volltext-Abfragen (Best\u00e4tigung/Entdeckung), Nachtrag 1.0.1 um 20-F/6-K/F-1 erg\u00e4nzt (Rauchtest)",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json",
+     "sha256": "95a66f749e6d6df8bd08a7ad8acd0f4f41f12a18403737502a828661d5868259"
+    }
+   ]
+  },
+  {
+   "commit": "c771762a629bac9efa7cb056aca3c65a9f7b918a",
+   "parents": [
+    "5a06d3473ff129e1b94f1a3bbd0a3baa5581ca13"
+   ],
+   "committedAt": "2026-10-29T07:12:03+00:00",
+   "authoredAt": "2026-10-29T07:12:03+00:00",
+   "subject": "Quant V12 LISTREF: Gr\u00fcnde-, Stichproben- und Gegenpr\u00fcfungsskripte, Research-Modul research-listing-reference (opt-in), Tests",
+   "filesChanged": 7,
+   "protocolFiles": []
+  },
+  {
+   "commit": "f46bfc601604a154ff3afbd109b7377725654e75",
+   "parents": [
+    "c771762a629bac9efa7cb056aca3c65a9f7b918a"
+   ],
+   "committedAt": "2026-10-29T07:12:52+00:00",
+   "authoredAt": "2026-10-29T07:12:52+00:00",
+   "subject": "Quant V12 LISTREF: Nachtrag 1.0.2 (segmentweise Referenz-Vollst\u00e4ndigkeit) vor Sicht auf 1.0.1-Ergebnisse",
+   "filesChanged": 1,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.2.json",
+     "sha256": "7fafcb521229f42fd3d104ea6cc8111b0a986bffea42b04449b9826ef3427623"
+    }
+   ]
+  },
+  {
+   "commit": "de57dbb055e6af47f21b4033fdc609f3f5c2db96",
+   "parents": [
+    "f46bfc601604a154ff3afbd109b7377725654e75"
+   ],
+   "committedAt": "2026-10-29T09:02:18+00:00",
+   "authoredAt": "2026-10-29T09:02:18+00:00",
+   "subject": "Quant V12 LISTREF: Listingreferenz 1995-2026, Abdeckungsmatrix, Delisting-Register mit Gr\u00fcnden, Stichprobe (60 F\u00e4lle), P4-Tabelle, Python-Gegenpr\u00fcfung 16/16",
+   "filesChanged": 21,
+   "protocolFiles": []
+  },
+  {
+   "commit": "c45d882fb7e550b7d70789627110e7ee52c83dec",
+   "parents": [
+    "de57dbb055e6af47f21b4033fdc609f3f5c2db96"
+   ],
+   "committedAt": "2026-10-29T09:03:56+00:00",
+   "authoredAt": "2026-10-29T09:03:56+00:00",
+   "subject": "Quant V12 LISTREF: Research-Modul ohne Nennung der Loader-Datei (Isolationsw\u00e4chter)",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "1ab37c75b4c27281d3dd0a5a670e08283713c450",
+   "parents": [
+    "6f3bb9a1e72d6ab4a27a91fb93f39a6905a7c235",
+    "c45d882fb7e550b7d70789627110e7ee52c83dec"
+   ],
+   "committedAt": "2026-10-29T09:21:35+00:00",
+   "authoredAt": "2026-10-29T09:21:35+00:00",
+   "subject": "Quant V12 P3: historische Listingreferenz, Delisting-Register, Abdeckungsmatrix je Jahr und Segment",
+   "filesChanged": 28183,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.json",
+     "sha256": "934a421eb291441d34c88b84bbc8939089c74796b8a5bec0bd9bc1324798862a"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.sha256",
+     "sha256": "6776db7fcf2e1eb368466e6f3bd70d3f1a97658f852007e5e7f72baae6f15122"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json",
+     "sha256": "95a66f749e6d6df8bd08a7ad8acd0f4f41f12a18403737502a828661d5868259"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.2.json",
+     "sha256": "7fafcb521229f42fd3d104ea6cc8111b0a986bffea42b04449b9826ef3427623"
+    },
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.0.0.json",
+     "sha256": "1408aff67d1c5680ac58c3111d5e70c551b1867c6977d34a6157960476416d84"
+    },
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.1.0.json",
+     "sha256": "648c5f4c7f0ce668489cb12509d36f949059605c6d1284c67a22b7a529520548"
+    },
+    {
+     "path": "docs/quant-recovery/v12/indexpop/rules-1.2.0.json",
+     "sha256": "800ca76eae5877adfad1cc25a8004e599ce8b2837e58f8cd43dbb4bf15ee4e39"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+     "sha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.sha256",
+     "sha256": "ec743d2b6e636a9ccdb7a003b7a4978e2a2fbf2486c017204b1be861bbd33e66"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+     "sha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.sha256",
+     "sha256": "7bfea0bc165f76c492458afc86db22422efc0c4a05b85b3dd747c710737eb139"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.json",
+     "sha256": "b7cb5ee8dedb291f92ea59ef699221123ac7c43c92e581e2e3ff3db642e98621"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.0.sha256",
+     "sha256": "a49aaa4bd324f88e64d909452e5713b53ba232335deef9d4cceef60093c4e12c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.json",
+     "sha256": "c93cc38f7c6c0138f38411374116aeac6c4bed796c2bed86dbcae4969770c4e9"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.1.sha256",
+     "sha256": "57fff5d1f30795eb8bb4ae729fe6c36d70f4205baa96f216bc539429ef92a974"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.json",
+     "sha256": "e0561586a1a58347b848a90cf39ae5f5273fb5f50e2b712dd6aba8fa6299c423"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.2.sha256",
+     "sha256": "be1753d7f6a7cbcbebf3253e1c02306c31c89465efd34ef19ce40975ddc8cccf"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.json",
+     "sha256": "98f704c14c21367f60260f6b088b283f67653fe0dfc1f50dacbadcc7985c0dea"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.3.sha256",
+     "sha256": "dc8113d2dea88f3e9a5c0727145ea8a2c85441d59f6a846b08b79335f3bd8d54"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.json",
+     "sha256": "a3dc1521dca597e41d8a8be11ca7dab956294556b36bebb7a9c11b7c78cd4afa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.4.sha256",
+     "sha256": "7d03686649bcd46345a8a6baeea36fd94c359f1cb878ec6fa8744b436ae0be26"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.json",
+     "sha256": "2997754d576aee07052e5669a0dd144812f16ac5e27e216651189eaa72ee862f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.5.sha256",
+     "sha256": "67b88f32620c509be8fe6755e7a7621d6c010db9bd1c885178d1b3bae9a37a8d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.json",
+     "sha256": "44d9a1c0220493f5e85bf7e7fc1e4fb1e520693465a61ff66d0371d21aa90272"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.6.sha256",
+     "sha256": "88c184a5fcd884169f2b0782c2aff272d7b9f9d016dea11c9e7f9db4c749424b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.json",
+     "sha256": "477534222d6d5312f03df0fa907a05608746056203628d7611f2411246c1592f"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.7.sha256",
+     "sha256": "3528fc1de1bce0621c974c59ef946720530c838628ab7ca4f32ebc617988a80b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.json",
+     "sha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/mcap/rule-1.0.8.sha256",
+     "sha256": "2ca864829311667ab31355bf2b6737af9da7bef7a577231d8a54a6f29d259f7a"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+     "sha256": "c054da5492fcf123e69df5b58e7a51a2f37d92389e3ec01dbcc4e363803175d8"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.json",
+     "sha256": "bd4b889b9d3e8cfad2a678ec9cce84060e8e72190d80104d9764037654318e9d"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.0.sha256",
+     "sha256": "bebe100fcd4fe4603d38423956180d1952b9f09332d8ddb6b7cef726888bc31e"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.json",
+     "sha256": "333fe37e9c48e06b31d4eeecefb94c23a468c15b2f9f668dfeaf75e587a8e54b"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.0.1.sha256",
+     "sha256": "d9775fa3a5ee6df978eb0432fd25fa81bbc55e7455446135272a9e7569c69814"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.json",
+     "sha256": "e4627c416484b34bc2b609840bd1fd56f963e34553bbae15038b0b51b613cc59"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.0.sha256",
+     "sha256": "cdb75a5abe7c84a58c4f57ce087212911df9702b9ccb61223cb5e3d2f03f2d01"
+    }
+   ]
+  },
+  {
+   "commit": "12137ff581f982377843f1d8da6346fe08a700dd",
+   "parents": [
+    "55422d672493a1197628847c0100ecbfd9040305"
+   ],
+   "committedAt": "2026-10-29T09:22:13+00:00",
+   "authoredAt": "2026-10-29T09:22:13+00:00",
+   "subject": "Quant V12 P5/P6 REQUAL: Registrierung 1.0.0 vor jedem Ergebnis (Studien P5a-d, sechs Strategien, Regime, Szenarien, Inferenz)",
+   "filesChanged": 3,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.0.json",
+     "sha256": "57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.0.sha256",
+     "sha256": "36b4e80b899e865c94de1512503dd30631e577811d6decfacbe63890c210edac"
+    }
+   ]
+  },
+  {
+   "commit": "5cd068dbb164e8a4843c4f70065092dc78ecac93",
+   "parents": [
+    "12137ff581f982377843f1d8da6346fe08a700dd"
+   ],
+   "committedAt": "2026-10-29T09:27:00+00:00",
+   "authoredAt": "2026-10-29T09:27:00+00:00",
+   "subject": "Quant V12 REQUAL: Registrierung 1.0.1 (Umsetzungskl\u00e4rung Wochenfenster 7 Tage, vor jedem Ergebnis), Bibliothek und P5a-Skript",
+   "filesChanged": 5,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.1.json",
+     "sha256": "79fc09f529a6b456c06000a82cbb9adb1bd55d3f5fb71c50506d17c8240159a5"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.1.sha256",
+     "sha256": "1c0e25748d47e2021078bc9f2a072c9bfd63078be81d5ba648cf58ec43700ca5"
+    }
+   ]
+  },
+  {
+   "commit": "08f85fa7a94a018d6357c89edfe77e25f02a6dd5",
+   "parents": [
+    "5cd068dbb164e8a4843c4f70065092dc78ecac93"
+   ],
+   "committedAt": "2026-10-29T09:30:41+00:00",
+   "authoredAt": "2026-10-29T09:30:41+00:00",
+   "subject": "Quant V12 REQUAL P5a/P5b: Populationseffekt (Survivor-Frame vs PIT-S&P-500 vs SPY, Survivorship im Index) und V11-Zerlegung auf S&P-500-Mitgliedern",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "fe29cf11f5aa3d05ab78cddcbcc31044e204c1f3",
+   "parents": [
+    "08f85fa7a94a018d6357c89edfe77e25f02a6dd5"
+   ],
+   "committedAt": "2026-10-29T09:37:14+00:00",
+   "authoredAt": "2026-10-29T09:37:14+00:00",
+   "subject": "Quant V12 REQUAL P5c: Faktor-IC/Quintile auf PIT-S&P-500 mit korrigierter Marktkap.; Registrierung 1.0.2 (P6-Scores aus Gesamt-Frame, vor P6-Ergebnissen, offengelegt)",
+   "filesChanged": 6,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.2.json",
+     "sha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.2.sha256",
+     "sha256": "14c3586b7ba14cb7ec2394616153f92c037528d37eea14331d88891bc9ef1112"
+    }
+   ]
+  },
+  {
+   "commit": "907cb4a74c930e9f0940f27bbc2f0e121d343e51",
+   "parents": [
+    "fe29cf11f5aa3d05ab78cddcbcc31044e204c1f3"
+   ],
+   "committedAt": "2026-10-29T09:40:17+00:00",
+   "authoredAt": "2026-10-29T09:40:17+00:00",
+   "subject": "Quant V12 REQUAL P6: sechs vorab registrierte Handelsstrategien auf PIT-S&P-500 (Kosten Basis/Stress, Szenarien ZERO/LOWER, Regime, Inferenz)",
+   "filesChanged": 2,
+   "protocolFiles": []
+  },
+  {
+   "commit": "df6b8fe9b01e9baf68d9e76f22892cd7a20dbe10",
+   "parents": [
+    "907cb4a74c930e9f0940f27bbc2f0e121d343e51"
+   ],
+   "committedAt": "2026-10-29T09:45:00+00:00",
+   "authoredAt": "2026-10-29T09:45:00+00:00",
+   "subject": "Quant V12 REQUAL: P6 Aktienquote korrekt ausgewiesen, gemeinsame Spanne ab 2011-09 als offengelegte Nachsensitivit\u00e4t; Python-Gegenpr\u00fcfung P5a und S5",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "f4a2a21e0dc8012e15503070ecfee5c24855612b",
+   "parents": [
+    "df6b8fe9b01e9baf68d9e76f22892cd7a20dbe10"
+   ],
+   "committedAt": "2026-10-29T09:51:26+00:00",
+   "authoredAt": "2026-10-29T09:51:26+00:00",
+   "subject": "Quant V12 REQUAL: P5d-Zerlegung, Tests, README (erkl\u00e4rend)",
+   "filesChanged": 4,
+   "protocolFiles": []
+  },
+  {
+   "commit": "f9621b0326c9fbc3856bdd9ab456677a91390fe3",
+   "parents": [
+    "1ab37c75b4c27281d3dd0a5a670e08283713c450",
+    "f4a2a21e0dc8012e15503070ecfee5c24855612b"
+   ],
+   "committedAt": "2026-10-29T09:54:54+00:00",
+   "authoredAt": "2026-10-29T09:54:54+00:00",
+   "subject": "Quant V12 P5/P6: Vorher/Nachher auf qualifizierter PIT-S&P-500-Population und sechs vorab registrierte Strategien",
+   "filesChanged": 79,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.0.json",
+     "sha256": "57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.0.sha256",
+     "sha256": "36b4e80b899e865c94de1512503dd30631e577811d6decfacbe63890c210edac"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.1.json",
+     "sha256": "79fc09f529a6b456c06000a82cbb9adb1bd55d3f5fb71c50506d17c8240159a5"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.1.sha256",
+     "sha256": "1c0e25748d47e2021078bc9f2a072c9bfd63078be81d5ba648cf58ec43700ca5"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.2.json",
+     "sha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/registration-1.0.2.sha256",
+     "sha256": "14c3586b7ba14cb7ec2394616153f92c037528d37eea14331d88891bc9ef1112"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+     "sha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.sha256",
+     "sha256": "ec743d2b6e636a9ccdb7a003b7a4978e2a2fbf2486c017204b1be861bbd33e66"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+     "sha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58"
+    },
+    {
+     "path": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.sha256",
+     "sha256": "7bfea0bc165f76c492458afc86db22422efc0c4a05b85b3dd747c710737eb139"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.json",
+     "sha256": "934a421eb291441d34c88b84bbc8939089c74796b8a5bec0bd9bc1324798862a"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-1.0.0.sha256",
+     "sha256": "6776db7fcf2e1eb368466e6f3bd70d3f1a97658f852007e5e7f72baae6f15122"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.1.json",
+     "sha256": "95a66f749e6d6df8bd08a7ad8acd0f4f41f12a18403737502a828661d5868259"
+    },
+    {
+     "path": "docs/quant-recovery/v12/listref/protocol-amendment-1.0.2.json",
+     "sha256": "7fafcb521229f42fd3d104ea6cc8111b0a986bffea42b04449b9826ef3427623"
+    }
+   ]
+  },
+  {
+   "commit": "a2acf8555e79e9bcad7c72b2f6b00990e6177a28",
+   "parents": [
+    "f9621b0326c9fbc3856bdd9ab456677a91390fe3"
+   ],
+   "committedAt": "2026-10-29T09:56:29+00:00",
+   "authoredAt": "2026-10-29T09:56:29+00:00",
+   "subject": "Quant V12: Abschlussbericht Datenqualit\u00e4t (Korrekturen, gemessene Verzerrungen, Vorher/Nachher, Freigaben) \u2013 Entwurf vor Pr\u00fcfung",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "ee9ea312ecf102483a446ed6d39914d926d2ebfd",
+   "parents": [
+    "a2acf8555e79e9bcad7c72b2f6b00990e6177a28"
+   ],
+   "committedAt": "2026-10-29T10:07:22+00:00",
+   "authoredAt": "2026-10-29T10:07:22+00:00",
+   "subject": "Quant V11: Freeze-Reihenfolge auch in flachen CI-Checkouts pr\u00fcfbar (hashgebundene Chronologie)",
+   "filesChanged": 2,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v11/discovery/chronology-1.0.0.json",
+     "sha256": "3d5232201787d63e38b652091b02a5636a6828c011f977f343d8999554ecc95d"
+    }
+   ]
+  },
+  {
+   "commit": "df481c5ae7eb12cf61d66c4e10c1b4613349127d",
+   "parents": [
+    "ee9ea312ecf102483a446ed6d39914d926d2ebfd"
+   ],
+   "committedAt": "2026-10-29T10:21:36+00:00",
+   "authoredAt": "2026-10-29T10:21:36+00:00",
+   "subject": "Quant V12 FIX12 LARGECAP m9: V10-Registererzeuger erh\u00e4lt die nicht aufz\u00e4hlbare v12-Erweiterung (Test byte-identisch), README zu Transparenz und Code-Hash",
+   "filesChanged": 3,
+   "protocolFiles": []
+  },
+  {
+   "commit": "9b7473f6c8988672cd86db40cec07bdf7cb2a274",
+   "parents": [
+    "df481c5ae7eb12cf61d66c4e10c1b4613349127d"
+   ],
+   "committedAt": "2026-10-29T10:29:20+00:00",
+   "authoredAt": "2026-10-29T10:29:20+00:00",
+   "subject": "Quant V12 FIX12 MCAP: Validierung ohne \u00dcberschneidung (frisch 18/19, Wilson 75,4 %), Korrekturnotiz (32/32, Dateinamen, rowsValueScoreChanged), strict-Option mit observationsHash-Pr\u00fcfung zur Laufzeit",
+   "filesChanged": 5,
+   "protocolFiles": []
+  },
+  {
+   "commit": "69b43353ed39556274391c805ede6c83d53080f0",
+   "parents": [
+    "9b7473f6c8988672cd86db40cec07bdf7cb2a274"
+   ],
+   "committedAt": "2026-10-29T10:32:47+00:00",
+   "authoredAt": "2026-10-29T10:32:47+00:00",
+   "subject": "Quant V12 FIX12 LISTREF MAJOR 6: zeilenweise Anbieter-Metadaten aus dem Repository genommen (fetch-candidates/delisting-register 1.0.3: Z\u00e4hlungen, CIK, HMAC-Kennungen, 5-Jahres-Klassen; Vollfassung privat)",
+   "filesChanged": 10,
+   "protocolFiles": []
+  },
+  {
+   "commit": "da22b239403d946f53d47d9ec1c455fe0e2e3333",
+   "parents": [
+    "69b43353ed39556274391c805ede6c83d53080f0"
+   ],
+   "committedAt": "2026-10-29T10:39:50+00:00",
+   "authoredAt": "2026-10-29T10:39:50+00:00",
+   "subject": "Quant V12 FIX12 SPXPOP 1.1.1: Identit\u00e4tsbruch bei Fusionen (Broadcom Corp -> Broadcom Ltd u. a., 13 F\u00e4lle) nicht verketten, als BOUNDED_EXIT/IDENTITY_BREAK; Population, Validierung und Python-Gegenpr\u00fcfung neu",
+   "filesChanged": 13,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.1.json",
+     "sha256": "b3b3a252ad3243a73ba6b89643dd44ffbf73d2477b35b819c8dcdeacaa4374aa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.1.json",
+     "sha256": "ab837a8433d83c68e5f306a1d8d3eefb670631ec6f411edaee3ce8df6406d654"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.1.sha256",
+     "sha256": "851323d859ff1438203d703f3204bb5e1347613153c4379a5c524787d3a3c217"
+    }
+   ]
+  },
+  {
+   "commit": "f47ff1a0fb014df17f12e80cca37d34cef4e2864",
+   "parents": [
+    "da22b239403d946f53d47d9ec1c455fe0e2e3333"
+   ],
+   "committedAt": "2026-10-29T10:45:22+00:00",
+   "authoredAt": "2026-10-29T10:45:22+00:00",
+   "subject": "Quant V12 FIX12 REQUAL 1.1.0: Neuberechnung auf SPXPOP 1.1.1, Survivorship-Szenarien FATE/UPPER mit korrigierten Bezeichnungen, CW_ALL-Benchmark, Spanne ab 2013-03, CAGR neben arithmetisch, Dividenden-/Cash-Einordnung, Same-Bar offengelegt",
+   "filesChanged": 19,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/amendment-1.1.0.json",
+     "sha256": "103d99ac3761ce2c308a7939a7a44b22caea13fb24e9123df4338cb83b580ee5"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/amendment-1.1.0.sha256",
+     "sha256": "7a878e6b27af14361f5a1bc04ff064efbf1050de53326f2eb035e17efba7ec40"
+    }
+   ]
+  },
+  {
+   "commit": "6ff1f2f6b4f058a836963e55b6783776ae7079d6",
+   "parents": [
+    "f47ff1a0fb014df17f12e80cca37d34cef4e2864"
+   ],
+   "committedAt": "2026-10-29T10:45:55+00:00",
+   "authoredAt": "2026-10-29T10:45:55+00:00",
+   "subject": "Quant V12 FIX12: Abschlussbericht um die Korrekturen nach unabh\u00e4ngiger Pr\u00fcfung erg\u00e4nzt",
+   "filesChanged": 1,
+   "protocolFiles": []
+  },
+  {
+   "commit": "fd0c3eed9140a82777d44363c81a03b05662c569",
+   "parents": [
+    "ee9ea312ecf102483a446ed6d39914d926d2ebfd",
+    "6ff1f2f6b4f058a836963e55b6783776ae7079d6"
+   ],
+   "committedAt": "2026-10-29T10:53:51+00:00",
+   "authoredAt": "2026-10-29T10:53:51+00:00",
+   "subject": "Quant V12: Befunde der unabh\u00e4ngigen Pr\u00fcfung umgesetzt (SPXPOP 1.1.1, REQUAL 1.1.0, MCAP-Korrekturnotiz, LISTREF ohne Anbieterzeilen, v12-Erhalt im Erzeuger)",
+   "filesChanged": 51,
+   "protocolFiles": [
+    {
+     "path": "docs/quant-recovery/v12/requal/amendment-1.1.0.json",
+     "sha256": "103d99ac3761ce2c308a7939a7a44b22caea13fb24e9123df4338cb83b580ee5"
+    },
+    {
+     "path": "docs/quant-recovery/v12/requal/amendment-1.1.0.sha256",
+     "sha256": "7a878e6b27af14361f5a1bc04ff064efbf1050de53326f2eb035e17efba7ec40"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/manifest-1.1.1.json",
+     "sha256": "b3b3a252ad3243a73ba6b89643dd44ffbf73d2477b35b819c8dcdeacaa4374aa"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.1.json",
+     "sha256": "ab837a8433d83c68e5f306a1d8d3eefb670631ec6f411edaee3ce8df6406d654"
+    },
+    {
+     "path": "docs/quant-recovery/v12/spxpop/rules-1.1.1.sha256",
+     "sha256": "851323d859ff1438203d703f3204bb5e1347613153c4379a5c524787d3a3c217"
+    }
+   ]
+  },
+  {
+   "commit": "77b041ddc28e300a82e7764d4e8ce52423ae027e",
+   "parents": [
+    "fd0c3eed9140a82777d44363c81a03b05662c569"
+   ],
+   "committedAt": "2026-10-29T10:55:09+00:00",
+   "authoredAt": "2026-10-29T10:55:09+00:00",
+   "subject": "Quant V12: Abschlussbericht um Ergebnis der unabh\u00e4ngigen Pr\u00fcfung erg\u00e4nzt",
+   "filesChanged": 1,
+   "protocolFiles": []
+  }
+ ],
+ "rewrite": {
+  "method": "git filter-branch --index-filter 'git rm --cached --ignore-unmatch <paths>' -- origin/main..HEAD",
+  "removedPaths": [
+   "docs/quant-recovery/v12/listref/fetch-candidates-1.0.2.json",
+   "docs/quant-recovery/v12/listref/delisting-register-1.0.2.json.gz"
+  ],
+  "finalTreeIdentical": true,
+  "commitCount": 134,
+  "metadataPreserved": "subject, author name, author time, committer time per commit compared: 0 mismatches",
+  "oldToNew": [
+   {
+    "old": "94a0293459cac145ecb708af958b42ca56360b09",
+    "new": "48d9d6d345b6476a5a5fcb91f07a1ab310e2a67e"
+   },
+   {
+    "old": "e758e48722b26a6dada2d0fc85edd2b6eedf7d9d",
+    "new": "58c081656d0fbae791e8c1b8db547508284c0445"
+   },
+   {
+    "old": "bb15657f2dfe0ac4d954180a94b428c6153d8ef1",
+    "new": "81fd615ab96d59f8ed80f2738e646b41b3915734"
+   },
+   {
+    "old": "0afa452eee4b29f9779bd25f2162c5fe638afc07",
+    "new": "b284e09128dc6ae9bd20c1699577f8975960a317"
+   },
+   {
+    "old": "75bb4a27d9480496488da21baba344e52d25de13",
+    "new": "96f94a97df54091e8526b0844efbeb78813070b0"
+   },
+   {
+    "old": "8ec1833482223f8a28dbec05d3fab25aac990705",
+    "new": "124d993fe36202874253ff3be14fd244f9ed3d8b"
+   },
+   {
+    "old": "79bf2d574287d6ab04c14734402165a8b6f7f1cc",
+    "new": "956a435451994561a4947c44f1c32c5766a1b90e"
+   },
+   {
+    "old": "c152e4ccc2a0bad42ebaf97d9f1fecc57f8aeae9",
+    "new": "f3644c93edfbfd681f8d166f4497098cf21fe6d7"
+   },
+   {
+    "old": "f74c80ccde7f86ea6fa253fa8a6fdba2ec296605",
+    "new": "87604b62e6bf3adc4543f972bc568eda1d9d03d7"
+   },
+   {
+    "old": "d6b056ea507734e1f3ad6188fa0680ab1d1bd357",
+    "new": "58597e97827170c8814ce95274558f67bd63d9c2"
+   },
+   {
+    "old": "455a03fee4a17c56af3c03279a7baafde0df5d03",
+    "new": "ac6c622c094f3a9a51a00480b70a6d52b5969a8f"
+   },
+   {
+    "old": "6158c0c9101171fb7de6115408678a2cefd29203",
+    "new": "219431c38b9f5a371d70dfcfa65a7c5a218f2a04"
+   },
+   {
+    "old": "4bc61d6443122bf9a3ee7deb79d141cd60083e2f",
+    "new": "1367cd331fc68246fef22c526e04cfff95f06030"
+   },
+   {
+    "old": "ef3136f0efe58b2b6c5e4653655d3282f028dad3",
+    "new": "1bc1cfe11ae972f2aa66d47a4a335350d5a5878a"
+   },
+   {
+    "old": "85342e190bcf93da3369e938f96fb9c5bbb9fbeb",
+    "new": "6a65a69c3cae95023f971e5b7e093e8e95a08057"
+   },
+   {
+    "old": "72e13e03d16606d6426da4dfb837f3981c8fe0e0",
+    "new": "3c08bb8122bb190cb94fd905cc1e088c480a695a"
+   },
+   {
+    "old": "94b937422426f74bf1f3c4af92cd133ff083a236",
+    "new": "8e02e8964159b8e077a7681cc754eeb3e2172004"
+   },
+   {
+    "old": "581788f46222a0588eecf98a3368ddcfa4fcf8c6",
+    "new": "44842820f87946e7ce4dcaba407c3773e723e138"
+   },
+   {
+    "old": "6b964d9eff9a0df82c7c01c2aec50bb31de0fe7d",
+    "new": "4eef44bcda574b5442e6dd20a8bdb091ee226933"
+   },
+   {
+    "old": "c7bce05e9cc5fb8bb016efc0c54cdb6fa10dc5ea",
+    "new": "d1d620b1bb469b555ddc2a0e4aafb74acb9a9900"
+   },
+   {
+    "old": "0a951cfedbf51fc1e299cb2dbceaac7633477dbc",
+    "new": "03b601e358e4728dc85ad534fe24a714cdde949c"
+   },
+   {
+    "old": "97416695188188bc71736fff71f6d46cc4b3b2d4",
+    "new": "800278ccc481e59c1efc87dabb96e5e410126cdf"
+   },
+   {
+    "old": "e8eee55ba3b38eea14a25ad22ef1f60b892291bd",
+    "new": "322bcee655902ea9f623c318e0b4dab85936db49"
+   },
+   {
+    "old": "87428d30875447f62a150a3965b2a6a59a50b256",
+    "new": "cb6b1680c9a37eeebc6bdbddfe41db06b0c62e27"
+   },
+   {
+    "old": "db38d3d90f49abdb6168fee3f2138cf64fff2c0f",
+    "new": "8ccd6478031168b0f71ca40c320d12b0e4b85c15"
+   },
+   {
+    "old": "c9fd505c649e242861a2f3bb4a1e6914a8c85a2d",
+    "new": "aa99c367c030eb8d8b5bf30e91dcabe867f4a39e"
+   },
+   {
+    "old": "0274878f894c0bbd89934e5c75506f1925fa9d97",
+    "new": "309911c26ec808afaddb0a717718d7d4a1af79d9"
+   },
+   {
+    "old": "55489dd3ebd98cb38f6424f443a14886d5b19fa2",
+    "new": "396f86800a9635c663cd829c2469d2ac3634f4fd"
+   },
+   {
+    "old": "ae3c3c7b42c9ccae5db926901c0fb94bbf696188",
+    "new": "995a4a8bbf5001f3744352b293871e2383333dc0"
+   },
+   {
+    "old": "5c669bd5abd4179f01f571ef468ded9e8ab709dd",
+    "new": "056937f28085b10a12affa76cb9d5fb5abe663cf"
+   },
+   {
+    "old": "44ff98b8060e79732ca4e424390fc7014367ff75",
+    "new": "09c4b3a2b782498f5c88f4bc49a08cd2204e57ef"
+   },
+   {
+    "old": "83bce1e73b9d74c1a9cb187c9b257310436aa9ae",
+    "new": "4e3ad7e436c27657817e15b456dac278e4a2ef61"
+   },
+   {
+    "old": "a96020260578071849ba48cb5be1a4ded40fd986",
+    "new": "809e54809e9c5f31545eba782294939e1450d59c"
+   },
+   {
+    "old": "77e4189e83c79f38d155a38efc0990047c8235b4",
+    "new": "14e0c45079d741de3cece6199fc4c77f5ff1eb3a"
+   },
+   {
+    "old": "2b023ad5e5cc105352f7db17be7fa1c76e309fcf",
+    "new": "53ea18587deb981cd9de3fdfbd7d965f4160c20c"
+   },
+   {
+    "old": "93ed41e5c9d5baf8c316602629cb4f07beee4278",
+    "new": "939e5d34a83a27df4ee45db5938d974f627ba99e"
+   },
+   {
+    "old": "89a2541faa7c904a1225df3a6368af73e8992675",
+    "new": "64f78640df3d3b0c36c484896b340d6270f69ad2"
+   },
+   {
+    "old": "7f9bd0d1e72ddbccfd3dee9df6f260c3fbd68307",
+    "new": "320244bf0af0c0ec88b807200c042377e06cf4ea"
+   },
+   {
+    "old": "81320acb7bbb7d6a12c5be127e292fb13c54bae1",
+    "new": "6f88f52851819459a96fa9d5559315b010eed649"
+   },
+   {
+    "old": "616c3a266de25de33a8f69cc15be72fb11228889",
+    "new": "d42b858632527415f181f80c14b29ac7e49a612e"
+   },
+   {
+    "old": "a771864041bb953b5d8e40152de8dc451444813d",
+    "new": "0c67dfce33f6e4d8bd7f58c9b132b0e029c46111"
+   },
+   {
+    "old": "b4670f6506def77ece97be96a2fcf9eb4e366c37",
+    "new": "fff2b5908e035aa62efbce059d37a038c7017bc1"
+   },
+   {
+    "old": "eb5ccc06cb9c15873bd2ca0b54f65b068ae40b4a",
+    "new": "69b51e047e36d9ef1a0f861cc88ae1f42c63232c"
+   },
+   {
+    "old": "bcdae0d9c1a69927af96011786d018539747538d",
+    "new": "523bbec8c162cf86b6d4852b77b2224dc042abee"
+   },
+   {
+    "old": "dae3a2ddeca3ea01b82c012ded030eb088c8efe9",
+    "new": "2cdacc36c9fd8aca166f160a58d1ad519f772064"
+   },
+   {
+    "old": "5f3f051d91543028791bb997286b4e6bd593b84f",
+    "new": "21b556b2b8c06aaf068214adca8e26450dff402f"
+   },
+   {
+    "old": "472134a6be2d7242ede2b439212a933c2f14635d",
+    "new": "d18161ccaa60f47de26d37ad3480b10a9b298fe5"
+   },
+   {
+    "old": "fa8c460c4ef511a5133a1a76e652603bc9f7ddeb",
+    "new": "e98817f9767f1b9eff50523568d67f72144238a9"
+   },
+   {
+    "old": "62f0d70ab7acf9aa757cef70d3b042e345bb1300",
+    "new": "0eb5ba74a72fd36cfa777ba7d35c01f3f3cf9ea1"
+   },
+   {
+    "old": "0aeb32bf727a4eabb6006a88242a3e054afaed74",
+    "new": "0bb89e4206cfceca92df167de59c324aec834fc7"
+   },
+   {
+    "old": "5b31ca62c38fc75ce00f5c6015ee050c7a19a523",
+    "new": "0d6ccb637703d09647429f7cfbcf91e177ff584c"
+   },
+   {
+    "old": "a16aabcdb393e69fe94e564c454a3d778f2c3d1f",
+    "new": "54e8503e61ef51fc8d10bdd04d954b4fbe32fcf2"
+   },
+   {
+    "old": "26fc0670b052d226f8e01cb2a05abcf9a9536dfd",
+    "new": "cdeae37fc9e4a79ef738161cba0c49fddd5ce3a3"
+   },
+   {
+    "old": "473dc0274d0bb50c94ce95e93e259a2d82d5dafd",
+    "new": "a3cd829674eb90109e08bc31655e80b9584f59b9"
+   },
+   {
+    "old": "fcd008038f955b95a5ebd65a870bed32b8ba421a",
+    "new": "c30a385b854b73d1c2ee4966708cbb574e2f740d"
+   },
+   {
+    "old": "02446e09b1a6083a5b958666cb0bf4e4cf7ecc2a",
+    "new": "f5ba0a269633374e87823e4b2487bd5302e3ece1"
+   },
+   {
+    "old": "7f0d20e9e1dcbc76017ea881e60f49778db238d6",
+    "new": "288a629491595b4159ad0f3433c674609befdd25"
+   },
+   {
+    "old": "dadd1d964904fadef44d77e27b2d0d61579c8324",
+    "new": "208f309d85212095fc639b66c02b0594a98da6c0"
+   },
+   {
+    "old": "05ca5f85ed34099542a44e36b9838bdd60e77e79",
+    "new": "04a39b5fb55639d2f6004e42ee7cf405afbebe21"
+   },
+   {
+    "old": "76480d017f9aa4365dcd979948c19f19ff4adbee",
+    "new": "14f79a8275e5ef21806f1f5f05a2340e5b27922f"
+   },
+   {
+    "old": "7a91051b6f765ae97696cec616309a00bc1b79aa",
+    "new": "b61dad07e64ebb5816146d83e4cbeb920b37d8ae"
+   },
+   {
+    "old": "108cb658c1213b6ee0d14da88ddf4fa69db1af70",
+    "new": "f61fa721b4a1670d1f84050badd2646f56828b39"
+   },
+   {
+    "old": "7b10e91177dcd459db264b71552017706f8985af",
+    "new": "0728b8bd2395d3012084ab2f7106d362a64c6a51"
+   },
+   {
+    "old": "245b852e339abe46346f3129d23995483c2af98e",
+    "new": "bef55684b721ed8d399a12e7f2c19e56679a8ce1"
+   },
+   {
+    "old": "86ececa64910c026c45a2acdd7b5c1a6ceec40b5",
+    "new": "c64ef35037475576466ebf51e15b8e02ae9c6e20"
+   },
+   {
+    "old": "dc92f5f68b7b7a241287a18082be0b02bc909977",
+    "new": "ef8bde61d95e1e1841f91be19d1e8bcafb7fb6b5"
+   },
+   {
+    "old": "81149d1604b803d0a805c93d15bd6b8ba8c336e9",
+    "new": "9244b100539848466482a59c6226aaf039709c1f"
+   },
+   {
+    "old": "2516f50493f8727ee35ff1f9fde529af46619250",
+    "new": "9633eb1b2f3e7030cc3f1e0e294303b2891dfa8f"
+   },
+   {
+    "old": "b5f613a8d4c885c6a242eaa30d1eb1e62e2fd7d2",
+    "new": "595af8316e4b9e5ea3faaa9bfafb7284e434228b"
+   },
+   {
+    "old": "31d6b1ec3bcd5a0d9c40d60bd8b13bb0286a96f0",
+    "new": "41f56f9f27f7c516af2d53ba6ae6b871a835c136"
+   },
+   {
+    "old": "0bfbeaedcdc8fc5d70a3d75d9e0b3c3d532a5214",
+    "new": "3fe1d26399bbe7f76cbc86ce8e102d2f5d7c2776"
+   },
+   {
+    "old": "58ad09e424e70a0b8a88fa08850299dfb69edd8d",
+    "new": "91cdd64b9838d951a1b90f005694fb91e6f99166"
+   },
+   {
+    "old": "7992560ba4d48ec93a24c7bc87504d78d68168dc",
+    "new": "c303a5e5b8b0ea7de3d1f55726357068fea192cf"
+   },
+   {
+    "old": "ff8b084c3ef2ba80c7f9e0dbac4d92505a520abd",
+    "new": "e6d8ad187db1241782d46891dca240a41496b7f6"
+   },
+   {
+    "old": "55634c4cdabfa36077527a393218d5b20e061790",
+    "new": "1e3450e55a94191546ad39310df074cab59d4030"
+   },
+   {
+    "old": "7bd07e2e26cee073a49d642453deb239bd97cbbd",
+    "new": "09ec9f5fb477db7e8bb8291ebf2f4d227bd4c03a"
+   },
+   {
+    "old": "2e4df63b87de24c0225958f739f8fcff10255d6d",
+    "new": "369d8f04df0ed64723c20df45099c18278d8f25f"
+   },
+   {
+    "old": "b526202a413ae816beda68ad31a137483ca82df7",
+    "new": "dc9bf0611a480b50de042be3e7b21698e8768aad"
+   },
+   {
+    "old": "654014845bca51c222fdf04fbeb2581e5565659c",
+    "new": "5c24861bcf421dcf3fb35555b37fb1dbd4c7c311"
+   },
+   {
+    "old": "8c7cc1dfa4303f78f48032471f9a7bf34f5bdc7d",
+    "new": "5970c0814cc3d9a134e0e4af78339c91555cad5c"
+   },
+   {
+    "old": "76ef9896b8371770df6790c76de929c2839fbd5b",
+    "new": "ea87f6c103d935fd04b0df1c4495f5d5326efd0c"
+   },
+   {
+    "old": "30302a83a6f8a36b590da91d46ac4439dd92d2a8",
+    "new": "89e01994d7d071c298999d2a5a4b0d3c40e6b8a4"
+   },
+   {
+    "old": "335ac954be9f33b4b71697fe72ceb46c14c29c90",
+    "new": "5e981d7c2c34bbbd634119e98b3e7ef270f7f2a5"
+   },
+   {
+    "old": "00cb334e6a7ad0d5ee71b263885c10369337ff42",
+    "new": "8e734dbd7278629ec71274ae3a842faf137b5052"
+   },
+   {
+    "old": "981c268befab5dc31402a15a6ffbc07f664bd2b8",
+    "new": "2269d747f12a08eb249049642d61b28f8f6a56c9"
+   },
+   {
+    "old": "646486fe1d24b78c492df5032fd1668b379f1f5a",
+    "new": "3d770b9d1fabe04cefa465961351fb89bcdb79ed"
+   },
+   {
+    "old": "eb72f5387e6cc73451fd545b0eaa0414180c5ab0",
+    "new": "82ec3e2dbec8b373d4113bd40ef6602a7a9156a1"
+   },
+   {
+    "old": "767e99b924235a104b01b164caea7ea50549fc88",
+    "new": "0dc0dc79ac0f0a2ece008a16b5ec091e69caeb55"
+   },
+   {
+    "old": "6c87df6067cb3b78f271f0fdccec95ced92d852b",
+    "new": "357e36979c8029a47c2573a96400789b50dbbb74"
+   },
+   {
+    "old": "a6cdce746b9f8f5e350a7b95139699f42d417d11",
+    "new": "8d3f04b13b4abeba3573cee209f6b3e00940dbc0"
+   },
+   {
+    "old": "56b05802b791a9f4cca3919b7e24231c5cb177b7",
+    "new": "0e274bf8f4d6fefd4f67ea464d07db97df3effcd"
+   },
+   {
+    "old": "a7380941a15a38ab693fcc86e05c5cba106012f0",
+    "new": "941469943794800ea2db0cd5a7a2c79dc4919928"
+   },
+   {
+    "old": "6a6d316138d8d5bed2f589a91fe671eb83cf3b46",
+    "new": "2878b33fd915bf197001276376922b7a4e4d6bf6"
+   },
+   {
+    "old": "ad405251dffdd4ad2e8f0c14d3fba3c3c2f1a727",
+    "new": "b5e5ea82edc6e637881aff569733ff8841b3e23b"
+   },
+   {
+    "old": "ba9b97aa0fb27a05da5917b2eec940d60fe187f8",
+    "new": "9203902681783e040d0896eef8b1abc1d7dfb390"
+   },
+   {
+    "old": "58599a38a16b97fe34102cdbaa155758cbfdaf7f",
+    "new": "e63dd2debf439b6de48a9d4a216e0762880fff74"
+   },
+   {
+    "old": "10d778ebaee80dc41b45e1157dc962e59fced55a",
+    "new": "550c331de120a2d0150cccbfd155f4fffa27c750"
+   },
+   {
+    "old": "e23e4d0ad0be5df9f83a41396f8a8e1b21a7a511",
+    "new": "456f11291468088ce0c9fc60f8de050d08850649"
+   },
+   {
+    "old": "32a69ff81c64d42b5fe53cb7230a6232823efba2",
+    "new": "4906c1090ae909ee330accb432d08adcd41c4cf0"
+   },
+   {
+    "old": "7c14b77a78152b78becd7f2231e89fb0a9684e44",
+    "new": "aa8c89b896e75beebed91ef9d6c9322d4652dac8"
+   },
+   {
+    "old": "e6c784b81016691d3442d3f9b659c32b3bb220b7",
+    "new": "0b142d0f57e40ee0ca15d2f6bcdac46d67b6fb5f"
+   },
+   {
+    "old": "695a738a5c8741ad5a61011c2c32979de2fc5411",
+    "new": "b57309dee4288d3edd987f5e7223c290e2b94cdd"
+   },
+   {
+    "old": "d3e57b91b8ba9b2bb4de3e7e25fca64d8b560d10",
+    "new": "179e04186835284f938ebe3b0e621885a8716a6a"
+   },
+   {
+    "old": "55422d672493a1197628847c0100ecbfd9040305",
+    "new": "8b298b79f1c3d41a890865e30a800d18919a4aae"
+   },
+   {
+    "old": "fde4ae2c41db4ab661e4fadd70d8530e0b678c18",
+    "new": "112b67d7357ac6682c13a4a1e78edb8cb1d30af0"
+   },
+   {
+    "old": "25fea6bbc3e96642a1f2491676f8c392ef511efa",
+    "new": "52f001ce164c5b10dfd638c1584c70988f3b0217"
+   },
+   {
+    "old": "4dc02e2c125e6179f29ad479d28d2c4f63516590",
+    "new": "6fd36401265b22205e6512ea505a61bc5c385160"
+   },
+   {
+    "old": "6f3bb9a1e72d6ab4a27a91fb93f39a6905a7c235",
+    "new": "e86da4f50326b8dd2e60f924a4b0f91c46abb018"
+   },
+   {
+    "old": "e08ed2173a0b749d3a51aced6fcbd8913e09a95e",
+    "new": "8eab0360b1be1822ee944540427546d76be15bb5"
+   },
+   {
+    "old": "26dfef81733dd323153e9a984cf35c0de77739a9",
+    "new": "84eb361fbc0bf8fcfc8fa6cc945698ce2dd19b4e"
+   },
+   {
+    "old": "5a06d3473ff129e1b94f1a3bbd0a3baa5581ca13",
+    "new": "668111187b00022663b3bf287730a2b1b2d86db4"
+   },
+   {
+    "old": "c771762a629bac9efa7cb056aca3c65a9f7b918a",
+    "new": "f39f414bd18d7fd50d4187fb17516c7c5b9583ed"
+   },
+   {
+    "old": "f46bfc601604a154ff3afbd109b7377725654e75",
+    "new": "25819a2494f5f7ac321ca171ccf132d2c91b3f52"
+   },
+   {
+    "old": "de57dbb055e6af47f21b4033fdc609f3f5c2db96",
+    "new": "e7248284ef3ea7e9bad2e3b8a0e19b4588e6edac"
+   },
+   {
+    "old": "c45d882fb7e550b7d70789627110e7ee52c83dec",
+    "new": "55f09c6b65065c5cd64b0de2df0f91362137d644"
+   },
+   {
+    "old": "1ab37c75b4c27281d3dd0a5a670e08283713c450",
+    "new": "27b92ad7262148af55646c844278c1dbf3015ba4"
+   },
+   {
+    "old": "12137ff581f982377843f1d8da6346fe08a700dd",
+    "new": "78f3bf973acb1c2eddbe6f2684d394ca480ed637"
+   },
+   {
+    "old": "5cd068dbb164e8a4843c4f70065092dc78ecac93",
+    "new": "2dd8807d91362e2ca15a90b722ecda999bce1d2d"
+   },
+   {
+    "old": "08f85fa7a94a018d6357c89edfe77e25f02a6dd5",
+    "new": "c482365ea7a8e1e130c215183260710675b85054"
+   },
+   {
+    "old": "fe29cf11f5aa3d05ab78cddcbcc31044e204c1f3",
+    "new": "a3c1de3516fe8f81fda6f8a10ee356b8a1c99d35"
+   },
+   {
+    "old": "907cb4a74c930e9f0940f27bbc2f0e121d343e51",
+    "new": "3d1676f8e262de76f1a1289b6dcd2bbe10ad688b"
+   },
+   {
+    "old": "df6b8fe9b01e9baf68d9e76f22892cd7a20dbe10",
+    "new": "866345e5e30d202362aa567725bf14d40804f2af"
+   },
+   {
+    "old": "f4a2a21e0dc8012e15503070ecfee5c24855612b",
+    "new": "f6ecdb7d3eff2e3af262e1d607a1072d80113efb"
+   },
+   {
+    "old": "f9621b0326c9fbc3856bdd9ab456677a91390fe3",
+    "new": "400488df45ce977509ce2966ac2df2d476538ef9"
+   },
+   {
+    "old": "a2acf8555e79e9bcad7c72b2f6b00990e6177a28",
+    "new": "50337ec2ba5281f6d649eb0e0922f4ea78a93896"
+   },
+   {
+    "old": "ee9ea312ecf102483a446ed6d39914d926d2ebfd",
+    "new": "4a1c7e14b605b884ffc64bffa5d7be5595d0bc5c"
+   },
+   {
+    "old": "df481c5ae7eb12cf61d66c4e10c1b4613349127d",
+    "new": "0a8edfcb5a350f6ee890bb7a1a29b392df9c5cbb"
+   },
+   {
+    "old": "9b7473f6c8988672cd86db40cec07bdf7cb2a274",
+    "new": "d8b28fb8d3cd4eaa58b30559ee6b3ffc4273e668"
+   },
+   {
+    "old": "69b43353ed39556274391c805ede6c83d53080f0",
+    "new": "3453ae0c5388cc9a305998325de37dec1409e011"
+   },
+   {
+    "old": "da22b239403d946f53d47d9ec1c455fe0e2e3333",
+    "new": "31a8a0c512cb037e9f11aea82e27d57fc6e8ce7d"
+   },
+   {
+    "old": "f47ff1a0fb014df17f12e80cca37d34cef4e2864",
+    "new": "5a6a9e1fa29746c0d467bf9f5b153e49ab210414"
+   },
+   {
+    "old": "6ff1f2f6b4f058a836963e55b6783776ae7079d6",
+    "new": "c8562a878cba300905ba4a6998eecb5217fac81a"
+   },
+   {
+    "old": "fd0c3eed9140a82777d44363c81a03b05662c569",
+    "new": "0de71684c30a0108569b1d24e5213de556cd61bf"
+   },
+   {
+    "old": "77b041ddc28e300a82e7764d4e8ce52423ae027e",
+    "new": "7eb444e8430d895045deb6228490b545c44d1192"
+   }
+  ]
+ }
+}

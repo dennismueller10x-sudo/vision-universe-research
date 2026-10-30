@@ -1,0 +1,26 @@
+{
+ "schemaVersion": "v13-delisted-study-registration-1.0.0",
+ "registeredBefore": "Committed before batches 0-4 of the delisted fetch were received and before any study ran on delisted series. Known: smoke batch 5 qualification counts (121 QUALIFIED / 278 chains) and smoke coverage counts.",
+ "principle": "Repeat existing studies unchanged on an extended population. No new rule, parameter, horizon, cost level, benchmark or period. No search. Results are HISTORICAL_DEVELOPMENT_STUDY on already explored history, not confirmation.",
+ "populations": {
+  "F0": "V10 lifecycle research frame: createResearchLoader({identityEvidence, corporateActionEvidence, listingLifecycleEvidence}) via scripts/quant/v10/studies/common.cjs#buildFrame (4,329 listings).",
+  "F1": "F0 plus QUALIFIED delisted chains (quant/engines/research-delisted-series.cjs, include QUALIFIED) passing the same frame rules (modal week labels of F0's calendar, MIC in XNAS/XNYS/XASE). Delisted series end at their last traded week; nothing is carried forward.",
+  "F1c": "Sensitivity only: F1 plus PRICE_ONLY_CENSORED_END chains (censored at last trade)."
+ },
+ "studies": {
+  "S1_signal": "V10 signal study (scripts/quant/v10/studies/signal-study.cjs semantics: five rules, all registered horizons, net of V10 costs, SPY price-return benchmark same dates, block bootstrap, Holm families as V10) on F0 vs F1, window 2000-01-01..2025-12-31.",
+  "S2_population": "Equal-weight population return (V11 decomposition definitions: buy-and-hold per listing averaged, and weekly-rebalanced EW) F0 vs F1 vs SPY, same window and subperiods (V10 SUBPERIODS).",
+  "S3_spx_exits": "V12 REQUAL P5a (PIT S&P 500 from SPY holdings, rules 1.1.0/1.1.1): bounded exits (BOUNDED_EXIT*) whose CIK has a QUALIFIED delisted chain ending in [t0, t1+120d] get the observed price return from that series instead of the ZERO/LOWER bound; everything else unchanged."
+ },
+ "decomposition": {
+  "survivorship_population": "F1 - F0 with terminal value = last traded close (scenario 0).",
+  "delisting_terminal": "terminal scenarios applied in the last held week of a delisted series: MERGER 0 / -10% / +10%; DISTRESS and UNKNOWN 0 / -30% / -100% (protocol R6). Reported as a band, the 0 scenario is the point estimate.",
+  "total_return": "delisted subset: provider adjClose-based total return vs split-adjusted price return (F0 has no TR except 8 titles; primary comparison stays price vs price, SPY TR only as labelled reference as in V12).",
+  "costs": "gross vs net at V10 cost levels.",
+  "weighting": "EW (S1/S2) vs holdings weight (S3 CW_ALL).",
+  "selection": "rule events vs population mean on the same population (S1 base-rate comparison as V10)."
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

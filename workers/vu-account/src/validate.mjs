@@ -32,7 +32,6 @@ const SETTINGS = {
   display_currency: v => /^[A-Z]{3}$/.test(v) && ['EUR', 'USD', 'CHF', 'GBP'].includes(v),
   appearance: v => ['light', 'dark', 'system'].includes(v),
   experience_level: v => ['beginner', 'advanced'].includes(v),
-  marketing_emails: v => typeof v === 'boolean',
   notification_settings: v => v && typeof v === 'object' && !Array.isArray(v)
     && Object.entries(v).every(([k, b]) => ['WATCHLIST_NEWS', 'EARNINGS', 'PRICE_EVENT', 'SUPERTRADER_SIGNAL',
       'QUANT_CHANGE', 'MARKET_REGIME_CHANGE'].includes(k) && typeof b === 'boolean'),

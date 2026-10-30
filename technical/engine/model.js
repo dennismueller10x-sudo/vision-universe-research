@@ -18,6 +18,8 @@
   var INDEX_SCHEMA = "vu-technical-index-1.0.0";
   /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
   var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
+  /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, docs/technical/SIGNAL_EVIDENCE.md */
+  var SIGNAL_EVIDENCE_PATH = "/technical/data/signal-evidence.json";
   /* Startseite: "Setups im Fokus" und Ranglisten (Vorlagen aus technical-query.js). */
   var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var TECH_DIR = "/quant/data/product/technical-signals-v1/";
@@ -183,6 +185,32 @@
       (e.significant ? "nach Mehrfachtest-Korrektur belastbar, aber nur ein Marktjahr." : "statistisch nicht belastbar.");
   }
 
+  /* Einordnung je Zeile (signal-evidence.mjs#readingOf). Ereignis = technisch definiert; Einordnung = historische
+     Beobachtung; ein handelbarer Vorteil ist fuer keine Zeile nachgewiesen. */
+  var READING_TEXT = {
+    NOT_SIGNIFICANT: "kein statistisch gesicherter Unterschied zum Querschnitt aller Titel nachgewiesen (das heißt nicht, dass Gleichheit bewiesen ist)",
+    MIXED: "im Gesamtmittel belastbar, aber je nach Marktphase oder Zeithälfte mit wechselndem Vorzeichen, also keine stabile Beobachtung",
+    WITH_DIRECTION: "phasenstabil wie die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
+    AGAINST_DIRECTION: "phasenstabil gegen die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
+    NEUTRAL_PATTERN: "Muster ohne Richtung, daher ohne Lesart"
+  };
+  var READING_SHORT = { NOT_SIGNIFICANT: "kein gesicherter Unterschied", MIXED: "uneinheitlich", WITH_DIRECTION: "wie übliche Lesart", AGAINST_DIRECTION: "gegen übliche Lesart", NEUTRAL_PATTERN: "ohne Richtung" };
+  /** Ein Satz je Zeile: Kursverlauf gegenueber dem Querschnitt (nicht richtungsbereinigt) und Einordnung. */
+  function signalEvidenceText(r) {
+    if (!r) return "Für dieses Ereignis liegt keine historische Auswertung vor.";
+    var excess = isNum(r.mean) ? (r.direction === "BEARISH" ? -r.mean : r.mean) : null;
+    var move = isNum(excess) ? "nach 20 Handelstagen im Mittel " + (excess >= 0 ? "stärker" : "schwächer") + " als der Querschnitt (" + signedPct(excess) + " ± " + pctDe(r.ci95, 1) + ")" : "ohne Messwert";
+    return "n = " + (isNum(r.n) ? r.n.toLocaleString("de-DE") : "–") + ": " + move + " – " + (READING_TEXT[r.reading] || "nicht eingeordnet") + ".";
+  }
+
+  /** Zaehlung je Einordnung als ein Satz (oberhalb der Tabelle; mobil oft das Einzige, was ohne Scrollen sichtbar ist). */
+  function signalEvidenceSummary(rows) {
+    var c = {}; (rows || []).forEach(function (r) { c[r.reading] = (c[r.reading] || 0) + 1; });
+    var parts = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"].filter(function (k) { return c[k]; })
+      .map(function (k) { return c[k] + " " + READING_SHORT[k]; });
+    return (rows || []).length + " ausgewiesen: " + parts.join(", ") + ". Keine Zeile ist ein Kauf- oder Verkaufssignal.";
+  }
+
   /** Umbenennen bzw. Filter einer gespeicherten Suchstrategie ersetzen (gleiche ID, Zeitstempel "updatedAt"). */
   function updateScreen(storage, id, patch, now) {
     var list = loadScreens(storage), hit = false;
@@ -311,9 +339,11 @@
    */
   var FIELD_CHART = {
     aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveSma150: ["layer", "sma"], sma150AboveSma200: ["layer", "sma"], sma50AboveSma150: ["layer", "sma"], distSma150: ["layer", "sma"],
+    sma200Rising: ["layer", "sma"], sma200Slope21: ["layer", "sma"],
     aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
     adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
-    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], distLow52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
     rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
     roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
@@ -489,7 +519,8 @@
   }
 
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
+    SIGNAL_EVIDENCE_PATH: SIGNAL_EVIDENCE_PATH, READING_TEXT: READING_TEXT, READING_SHORT: READING_SHORT, signalEvidenceText: signalEvidenceText, signalEvidenceSummary: signalEvidenceSummary, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,

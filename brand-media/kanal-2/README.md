@@ -56,3 +56,18 @@ Reel 1 war verständlich, aber optisch zu ruhig. Die Vorlage wechselt etwa jede 
 - Schnitte: Punch-in-Zooms auf das Schlüsselwort, Wischblenden und Reißschwenks zwischen Szenen, kurzer Weißblitz oder Wackler bei Schock-Momenten, Split-Screen bei Bulle gegen Bär, Zähler und Balken mit Schwung. Jeder Schnitt bekommt einen passenden Soundeffekt.
 - Figuren: weiter per Mundbild sprechen, zusätzlich Reaktionsbilder als Zwischenschnitt (Bulle schockiert, Bär rollt die Augen). Ein Gesichtsausdruck steht nur kurz am Satzanfang (etwa 0,6 s), danach bewegt sich der Mund mit der Stimme. Wer spricht, hat nie ein Standbild. Mundbilder ändern nur die Mundpartie (Augen, Hände, Handy bleiben pixelgleich), die Lautstärke wird über 5 Bilder geglättet; Bulle: Mund zu → Grinsen → halb offen, weit offen nur bei sehr lauten Silben.
 - Bildmaterial: nur eigenes, generiertes oder eindeutig freies Material. Vorhanden: `icons/` (20 Icons, Aufträge `aktienzoo-icons-*`), Outfits in `figuren/entwurf-1/outfits/` (Bulle Hemd/Sakko, Bär Hemd/Pullover, je mit allen Mund- und Gesichtsbildern). Erstes Reel nach diesen Regeln: `reels/2026-10-28-buffett-zeit/`. Für wiederkehrende Motive (Geldsack, Münzstapel, Tresor, Börsengebäude, Chart, Steuerbescheid, Rakete, Kaffeetasse …) eine eigene Icon-Bibliothek im Stil der Figuren anlegen (Bildauftrag mit Recraft, etwa 0,04 USD je Icon).
+
+## Reichweite: Analyse vom 29.10.2026 und Format „Zoo-Ticker“
+
+Daten (Apify, Instagram): Aktienzoo 6 Follower, 5 Reels, 128–555 Aufrufe, 0 Kommentare. `@finanz.lehre` 10.011 Follower (dazu 15.000+ auf TikTok), 6.600–287.000 Aufrufe. Like-Quote ähnlich (1–3 %). Die Zuschauer springen bei uns früh ab.
+
+- Bei der Vorlage laufen aktuelle Themen am besten: Tagesnachrichten 27.000–78.000, Quartalszahlen und Börsengänge 26.000–57.000, große Systemthemen bis 287.000. Zeitlose Erklärstücke wie unsere Reels 1–5 sind dort am schwächsten (6.600–13.000).
+- Die Figur der Vorlage ist eine Eule. Ein „aggressiveres“ Tier ist nicht der Hebel.
+
+Daraus folgt ab Reel 6:
+1. **Zoo-Ticker** (täglich um 16:00 Uhr, Entscheidung des Owners am 29.10.2026; Sa Wochenrückblick, So Vorschau auf die nächste Woche; 60–80 s): 2–3 Nachrichten des Tages. Der Bulle jubelt, der Bär nennt den Haken, zu jeder Nachricht ein Urteil-Stempel BULLE/BÄR. Am Ende die Frage „Bulle oder Bär?“ für die Kommentare und die Ankündigung der nächsten Folge. Abzeichen „ZOO-TICKER · Datum“ dauerhaft oben links. Erste Folge: `reels/2026-10-29-zoo-ticker-1/`.
+2. **Einstieg ab dem ersten Bild:** keine Begrüßung. Die stärkste Zahl des Tages steht vom ersten Frame an riesig im Bild, der erste Satz ist eine Behauptung mit Zahl oder Namen.
+3. **Etwa einmal pro Woche ein großes Systemthema** mit deutschem Bezug (z. B. wie Neobroker Geld verdienen, Wirecard).
+4. **Ein Reel pro Tag** um 16:00 Uhr, nicht mehrere in wenigen Stunden. Die Caption beginnt mit dem Aufhänger, die Quellen folgen darunter.
+5. Tagesfakten nur mit Stand und Uhrzeit. Bewegliche Kurse als „zeitweise“ oder als Untergrenze formulieren („über 300 Mrd. $“), damit die Aussage bis zum Abend stimmt.
+6. Ein geplanter Auftrag baut die Folge täglich ab 13:23 Uhr (Berlin) und schickt Video, Cover und Captions zur Freigabe. Veröffentlicht wird nur vom Owner.

@@ -1,0 +1,66 @@
+{
+ "schemaVersion": "backtest-runner-spec-1.0.0",
+ "version": "1.0.0",
+ "registeredAt": "2026-10-29T00:00:00Z",
+ "asOf": "2025-12-31",
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "SPY",
+ "id": "strategy-2019-bull",
+ "description": "Equal-weight 10 large caps, rebalanced every 4 weekly sessions, 2019",
+ "kind": "STRATEGY_BACKTEST",
+ "window": {
+  "from": "2019-01-01",
+  "to": "2019-12-31"
+ },
+ "population": {
+  "profile": "V10_PRIMARY",
+  "tickers": [
+   "MSFT",
+   "JPM",
+   "KO",
+   "PG",
+   "XOM",
+   "NVDA",
+   "INTC",
+   "CSCO",
+   "ORCL",
+   "WMT"
+  ]
+ },
+ "engine": {
+  "variant": "FIXED_WEIGHTS",
+  "weights": "EQUAL",
+  "rebalance": {
+   "frequency": "sessions",
+   "everySessions": 4
+  },
+  "initialCapital": 100000
+ },
+ "methods": {
+  "MONTE_CARLO": {
+   "simulations": 2000,
+   "horizon": 52,
+   "blockLength": 8,
+   "seed": 20261029
+  },
+  "MARKET_REGIME": {},
+  "PARAMETER_SENSITIVITY": {
+   "dimensions": {
+    "feeBps": [
+     0,
+     5,
+     25
+    ],
+    "everySessions": [
+     1,
+     4,
+     13
+    ]
+   },
+   "blockLength": 8
+  }
+ }
+}

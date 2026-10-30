@@ -1,0 +1,13 @@
+{
+ "schemaVersion": "v12-largecap-protocol-amendment-1.0.1",
+ "amends": {"path": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json", "sha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da"},
+ "registeredAt": "2026-10-29",
+ "timing": "POST-HOC: written after the first complete run of parts RESTRICT and IDENTITY under 1.0.0 (results visible). Disclosed as such.",
+ "finding": "partRestrict.symbolStartDocument tried at most 16 original 10-K/10-Q after the last non-admissible event. For 7 of 13 restrict cases (ref_ABT, ref_MS, ref_USB, ref_JCI, ref_WBD, ref_IFF, ref_IEX) no document within these 16 filings (about four years) satisfied the unchanged ticker test, so they ended NO_SYMBOL_START_DOCUMENT without any later filing being examined: events from 1994/1999 lie decades before the first qualifying statement, symbol changes (TYC->JCI 2016, DISCA->WBD 2022) lie more than 16 filings after the event, and sec_lib.ticker_symbol_statements requires an own-security phrase ('our', 'we', 'the registrant') that e.g. 'Morgan Stanley's common stock trades on the NYSE under the symbol MS' lacks, so those issuers qualify only from their first inline-XBRL cover. The cap was a search-window choice, not an evidence rule.",
+ "change": {
+  "rule": "partRestrict.symbolStartDocument",
+  "before": "at most 16 filings are tried in filing order",
+  "after": "every original 10-K/10-Q of the bound CIK filed after the last non-admissible event week is tried in filing order until the first one that passes the unchanged test (inline-XBRL cover row naming the ticker with a COMMON class, or sec_lib.ticker_symbol_statements on the first 3 MiB of the primary document)."
+ },
+ "unchanged": "The evidence test itself, S0, every V10 B1 rule, L4, L5 and part CA. The change can only admit cases or move a start date to a filing that the 1.0.0 cap did not reach; for the 6 cases with a start document under 1.0.0 the result is identical by construction (the first passing filing is the same). All cases are recomputed under 1.0.1; the 1.0.0 run is kept unchanged as restrict-cases-1.0.0.json for comparison; the 1.0.1 results are restrict-cases-1.0.1.json and identity-cases-1.0.1.json (identity part unaffected, recomputed)."
+}

@@ -12,7 +12,8 @@ const root=resolve(import.meta.dirname,'../..');
 // sha256 on main 07dfe5dd55: the research option must not touch the productive adapter or the CA evidence engine.
 const MAIN_ADAPTER_SHA256='15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a';
 const MAIN_CA_EVIDENCE_SHA256='6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d';
-const PROTOCOL_SHA256=readFileSync(join(root,'docs/quant-recovery/v9-followups/ca-registry/protocol.sha256'),'utf8').split(/\s+/)[0];
+// The registry names its own registered protocol (V9 follow-up 1.0.0, since V10 the superset 1.1.x); its sidecar .sha256 is the registered hash.
+const PROTOCOL_SHA256=readFileSync(join(root,Registry.protocol.replace(/\.json$/,'.sha256')),'utf8').split(/\s+/)[0];
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const seriesBytes=id=>readFileSync(join(root,'quant/data/market/discover-series-long',id+'.json'),'utf8');
 const outcome=fn=>{try{return {ok:true,value:JSON.stringify(fn())};}catch(e){return {ok:false,value:e.message};}};
@@ -22,7 +23,8 @@ const CA_ON={identityEvidence:true,corporateActionEvidence:true};
 test('registry schema: protocol-bound records with SEC sources pass; every broken variant fails closed',()=>{
  assert.equal(Registry.schemaVersion,'research-ca-evidence-1.0.0');
  assert.equal(Registry.protocolSha256,PROTOCOL_SHA256);
- assert.equal(sha(readFileSync(join(root,'docs/quant-recovery/v9-followups/ca-registry/protocol.json'))),PROTOCOL_SHA256);
+ assert.equal(sha(readFileSync(join(root,Registry.protocol))),PROTOCOL_SHA256);
+ assert.equal(sha(readFileSync(join(root,'docs/quant-recovery/v9-followups/ca-registry/protocol.json'))),'db7e31a8fd9a34c1f50d2b3dea968a978eaf51e6cbb2826be1827b6d3c7171c2');
  assert.equal(R.validateCaEvidenceRegistry(Registry),Registry);
  assert.ok(Registry.records.length>=1);
  for(const r of Registry.records){
@@ -55,7 +57,7 @@ test('registry schema: protocol-bound records with SEC sources pass; every broke
 });
 
 test('opt-in only: default, identity-only and unknown options leave every registry id unresolved and never load the registry',()=>{
- assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence']);
+ assert.deepEqual([...R.LOADER_OPTIONS],['identityEvidence','identityEvidenceAllowCoverPageOnly','corporateActionEvidence','identityEvidenceProtocolV10','listingLifecycleEvidence']);
  for(const bad of [{corporateActionEvidance:true},{corporateActionEvidence:'yes'},{corporateActionEvidence:1}])assert.throws(()=>R.createResearchLoader(root,bad),/^Error: INVALID_LOADER_OPTIONS/);
  const base=A.createLoader(root);
  for(const L of [R.createResearchLoader(root),R.createResearchLoader(root,{corporateActionEvidence:false}),R.createResearchLoader(root,{identityEvidence:true})]){

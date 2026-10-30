@@ -16,7 +16,7 @@ const bars = { timestamps: ref.date.slice(n - 270), open: ref.open.slice(n - 270
   close: ref.close.slice(n - 270), volume: ref.volume.slice(n - 270) };
 const asOf = bars.timestamps[269];
 const row = (universeAsOf) => Row.computeRow({ ticker: "AAPL", bars, features: {}, chartSeries: null, universeAsOf });
-const ALL = Row.STALE_EVENT_FIELDS.concat(Row.STALE_DAY_FIELDS, ...Row.STALE_TF_FIELDS.map((k) => [k, k + "@1W", k + "@1M"]));
+const ALL = Row.STALE_DAY_FIELDS.concat(...Row.STALE_EVENT_FIELDS.concat(Row.STALE_TF_FIELDS).map((k) => [k, k + "@1W", k + "@1M"]));
 
 test("frischer Titel: unveraendert gegenueber der Zeile ohne Stichtag", () => {
   const a = row(asOf), b = row(null);

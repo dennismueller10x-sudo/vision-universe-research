@@ -1,0 +1,99 @@
+{
+ "schemaVersion": "v10-factor-registration-1.0.0",
+ "studyId": "V10-FACTOR-RECONSTRUCTION",
+ "ruleVersion": "1.0.0",
+ "evidenceKind": "RECONSTRUCTION",
+ "registeredAt": "2026-10-28T13:34:00Z",
+ "gitHeadAtRegistration": "a1a0dd972ada2845a108e23cefa2f9cf4a2a2420",
+ "status": "REGISTERED_BEFORE_OUTCOMES",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "label": "RECONSTRUCTION - rueckblickend aus heute verfuegbaren Quellen nachgerechnet; niemals ein damals veroeffentlichtes VU-Signal",
+ "purpose": "Pfad A: methodisch zulaessige, rueckblickende Rekonstruktion der PIT-rekonstruierbaren Teilmenge der VU-Faktoren (vu-factor-evidence-2.0.0 / quant-v2.2.0) mit Rang-IC-, Quintil- und Strategie-Auswertung. Ersetzt NICHT die vorwaerts gesammelte veroeffentlichte Faktor- und Membership-Historie der aktiven Vertraege FACTOR_RANKING_BACKTEST und STRATEGY_BACKTEST (Pfad B bleibt unveraendert).",
+ "priorExposure": [
+  "V7-V9 haben NEW_52W_HIGH und kursbasierte Regeln auf derselben woechentlichen Kurshistorie 2000-2025 untersucht; der Momentumfaktor ist dieser Historie inhaltlich verwandt (Naehe zum 52-Wochen-Hoch ist eine Komponente).",
+  "Die Faktordefinitionen und Gewichte von quant-v2.2.0 wurden mit Kenntnis der akademischen Literatur (Momentum, Quality, Value, Low-Risk) festgelegt; die Literatur dokumentiert Effekte auf US-Aktien in ueberlappenden Zeitraeumen.",
+  "Es existieren 21 veroeffentlichte vu-factor-evidence-2.0.0-Staende (2026-09-23 bis 2026-10-26); dieser Strang hat aus ihnen keine Folgerenditen berechnet.",
+  "Dieser Strang hat vor dieser Registrierung keine Faktorwerte, Raenge, Folgerenditen oder Portfolioergebnisse auf der Studienpopulation berechnet; berechnet wurden nur Laufzeitmessungen der SEC-Pipeline fuer vier Emittenten (AAPL, MSFT, NVDA, JPM) ohne Kurs- oder Renditebezug.",
+  "Kein unberuehrter Holdout: 2010-2025 ist erkundete Historie."
+ ],
+ "dataSource": {
+  "prices": "quant/data/market/discover-series-long/<securityId>.json (Tiingo, woechentlich, Schluss des letzten Handelstags jeder ISO-Woche, SPLIT_ADJUSTED) ueber quant/engines/research-weekly-loader.cjs",
+  "benchmark": "quant/engines/weekly-benchmark.cjs (SPY, PRICE_RETURN, split-bereinigt) an den Kalenderdaten der Studie",
+  "fundamentals": "SEC companyfacts.zip (Bulk, ein Abruf, privat), verarbeitet mit der bestehenden SEC-Pipeline scripts/quant/sec (normalization_logic 1.14.0 inkl. P1-P4) und Policy as_of_latest; Ableitung der Rohkennzahlen mit quant/engines/fundamental-inputs.js (unveraendert)",
+  "splitFactors": "quant/engines/return-series.js#splitFactors (ADR-002) aus corporateActions.splits der Kursreihe",
+  "notUsed": ["submissions.zip (Acceptance-Versatz)", "FSDS-Ergaenzung und Emittenten-Erweiterungen der Konsumschicht (nicht historisch versioniert)", "Analysten-, Ownership-, Nachrichten- und Volumendaten"]
+ },
+ "listingIdentity": "createResearchLoader(ROOT, loaderOptions) mit Standard {identityEvidence:true, corporateActionEvidence:true}; CLI --loader-options erlaubt zusaetzlich listingLifecycleEvidence:true, sobald der Strang POPULATION die Option liefert (Feld listingLifecycle wird defensiv gelesen). Emittent (CIK) je Listing aus quant/data/sec/consumer/*.json (securityIds), Bindungen der Identitaetsregistry ueber identityEvidenceBinding.cik.",
+ "population": {
+  "frame": "QUALIFIED Listings des Loaders, abzueglich Listings mit Wochenlabel abweichend vom modalen Label ihrer ISO-Woche, abzueglich aktueller Boerse ausserhalb {NASDAQ, NYSE, AMEX, NYSE MKT}, abzueglich belegter Nicht-Aktien (Instrumentenstamm, Konfidenz HIGH, Basis SECURITY_NAME/PROVIDER_ASSET_TYPE, Gattung nicht COMMON_STOCK/ADR) - dieselbe Regel wie build-factor-evidence.mjs.",
+  "rankPopulationPerDate": "Frame-Listings mit einem Wochenschluss genau am Rangstichtag (am Stichtag im Frame lebendig). Keine heutige Index-Mitgliedschaft wird rueckprojiziert.",
+  "survivorship": "Der Loader qualifiziert nur heute aktive Listings (INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED wird ausgeschlossen). Die Population ist daher bedingt auf Ueberleben bis 2026 (CONDITIONAL_CURRENT_CLASSIFICATION); delistete, uebernommene und insolvente Unternehmen fehlen. Das wird quantitativ berichtet (Listings je Stichtag), nicht korrigiert.",
+  "cohortMode": "CONDITIONAL_CURRENT_CLASSIFICATION, sourceMode HISTORICAL_SIMULATION, executionClock OBSERVED_WEEKLY_DATES, analysisMode EXPLORATORY"
+ },
+ "rankDates": {
+  "rule": "Letztes Datum des modalen Wochenkalenders (modale Labels je ISO-Woche unter den QUALIFIED Listings) in jedem Kalendermonat 2010-01 bis 2025-12 (192 Stichtage, sofern der Kalender sie traegt).",
+  "decisionAt": "Rangstichtag (Wochenschluss); Einstieg zum naechsten beobachteten Wochenschluss (entryDelayBars 1)."
+ },
+ "availability": {
+  "fundamentals": "Ein SEC-Wert ist an Stichtag t nutzbar, wenn der naechste Wochenschluss NACH seinem filed-Datum <= t ist, d. h. filed < t (Kalendertag). Umsetzung: SEC-Resolver as_of = t - 1 Tag (Policy as_of_latest) und fundamental-inputs.compute(doc, cutoff = t - 1 Tag). Acceptance-Zeit bleibt Obergrenze; Bulk-submissions-acceptance wird nie verwendet. Restatements werden erst ab ihrem eigenen filed-Datum sichtbar.",
+  "prices": "Wochenschluesse bis einschliesslich t (ex post split-bereinigte Reihe, nicht as-published; Warnung EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT bleibt bestehen).",
+  "marketCap": "Aktienzahl = shares aus fundamental-inputs.compute (TTM-Block shares_outstanding des PIT-Dokuments, dei/us-gaap mit filed < t, periodenausgerichtet) x unbereinigter Kurs. Unbereinigter Kurs = split-bereinigter Wochenschluss x splitFactors-Faktor. Split-konsistent: verwendet wird der splitFactors-Faktor am letzten Wochenschluss <= Stichtag der Aktienzahl (end); liegt kein Split zwischen end und t, ist das identisch mit Kurs(t) unbereinigt x Aktienzahl. Abweichende Faelle werden gezaehlt. Zurueckgehalten (wie im Produkt): mehrere Frame-Listings je CIK (SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING), Konzept nicht ausstehend (SHARE_COUNT_NOT_OUTSTANDING), Berichtswaehrung ungleich USD (REPORTING_CURRENCY_NOT_LISTING_CURRENCY)."
+ },
+ "reconstructedFactorSet": {
+  "productDefinition": "vu-factor-evidence-2.0.0, derivedFrom quant-v2.2.0 (scripts/quant/build-factor-evidence.mjs, quant/engines/factor-evidence.js, quant/engines/fundamental-inputs.js, quant/engines/market-factors.js)",
+  "factors": {
+   "quality": {"weight": 0.10, "components": ["accrualRatio 0.25 lower", "netDebtToAssets 0.20 lower", "equityToAssets 0.15 higher", "positiveFcfYears 0.20 higher (keine Winsorisierung)", "operatingMarginStability 0.20 lower"], "inputs": "fundamental-inputs.compute auf PIT-Konsumdokument"},
+   "growth": {"weight": 0.15, "components": ["revenueCagr3y 0.30", "epsCagr3y 0.20", "fcfCagr3y 0.15", "revenueGrowthTtmYoy 0.15", "operatingMarginExpansion3y 0.10", "revenueGrowthAcceleration 0.10"], "inputs": "fundamental-inputs.compute auf PIT-Konsumdokument"},
+   "value": {"weight": 0.15, "components": ["fcfYield 0.30", "earningsYield 0.25", "ebitdaYield 0.20", "salesYield 0.10", "bookToMarket 0.15"], "inputs": "fundamental-inputs.compute mit PIT-Marktkapitalisierung"},
+   "profitability": {"weight": 0.15, "components": ["roicTtm 0.25", "roicMedian3y 0.15", "grossProfitabilityTtm 0.20", "operatingMarginTtm 0.15", "fcfMarginTtm 0.15", "roaTtm 0.10"], "inputs": "fundamental-inputs.compute auf PIT-Konsumdokument"},
+   "momentum": {"weight": 0.25, "components": ["priceReturn12m1m 0.30: c[t-4]/c[t-52]-1", "priceReturn6m 0.20: c[t]/c[t-26]-1", "priceReturn3m 0.10: c[t]/c[t-13]-1", "relativeStrength12m1m 0.20: ln(c[t-4]/c[t-52]) - ln(SPY[t-4]/SPY[t-52])", "distanceTo52wHigh 0.10 lower: 1 - c[t]/max(c[t-51..t])", "distanceToSma200 0.10: c[t]/mean(c[t-39..t]) - 1"], "inputs": "woechentliche split-bereinigte Schluesse; Zeitfenster in Wochen statt Sitzungen (52/26/13/4/40 Wochen fuer 252/126/63/21/200 Sitzungen)"},
+   "risk": {"weight": 0.05, "components": ["realizedVolatility252d 0.35 lower: Stichproben-SD der 52 woechentlichen Log-Renditen x sqrt(52)", "downsideVolatility252d 0.25 lower: sqrt(sum(min(r,0)^2)/(n-1)) x sqrt(52)", "maxDrawdown252d 0.25 lower: |max. Rueckgang der Wochenschluesse ueber 53 Schluesse|", "beta252d 0.15 lower: Kovarianz/Varianz der 52 woechentlichen Renditen gegen SPY"], "inputs": "woechentliche split-bereinigte Schluesse und SPY"},
+   "revisions": {"weight": 0.15, "status": "NOT_RECONSTRUCTIBLE", "reason": "keine lizenzierte historische PIT-Konsensquelle (BLOCKED_EXTERNAL wie im Produkt)"}
+  },
+  "normalization": "Je Stichtag und Komponente: Winsorisierung 2/98 (FactorEvidence.winsorBounds/clamp), deterministische Midrank-Perzentile (FactorEvidence.midrankPercentiles), Richtung lower invertiert; Universumsbein nur, wenn >= 200 gueltige Werte (Vertragsminimum universe). Faktorscore = FactorEvidence.assembleFactor mit minimumComponents 3 und minimumOriginalWeight 0.6 aus quant-v2.json plus Pflichtkomponenten (mandatoryUnmet wie build-factor-evidence.mjs).",
+  "composite": "Rekonstruierter Gesamtrang (Forschungsgroesse, im Produkt nicht veroeffentlicht: compositeAllowed=false) = Summe w_f x score_f / 0.85 ueber die sechs Faktoren quality 0.10, growth 0.15, momentum 0.25, value 0.15, profitability 0.15, risk 0.05; nur wenn alle sechs AVAILABLE sind. Revisions (0.15) fehlt und wird nicht ersetzt.",
+  "deviationsFromProduct": [
+   "Revisions nicht rekonstruierbar; der Gesamtrang ist auf 0.85 Gewicht renormiert und ist keine Produktgroesse (Quant V2 Publikation geschlossen).",
+   "Kursfaktoren aus Wochenschluessen statt Tagesbalken: 52/26/13/4/40 Wochen statt 252/126/63/21/200 Sitzungen; 52-Wochen-Hoch aus Wochenschluessen statt Tageshochs; Volatilitaeten mit sqrt(52); Beta aus Wochenrenditen. Mindesthistorie 56 Wochenschluesse (Momentum) bzw. 53 (Risiko) statt 273/252 Sitzungen; benchmark-stale-Status entfaellt (SPY am selben Kalenderdatum).",
+   "Peer-Bein (SIC4 / SIC-Division, 70/30-Mischung) entfaellt: nur Universumsperzentile innerhalb der Rangpopulation des Stichtags. Grund: die Produkt-Taxonomie ist CURRENT_ONLY mit historicalPolicy FAIL_CLOSED.",
+   "Branchenvorlagen (Banken SIC 6020-6220, Versicherer 6300-6399, REITs 6798) nicht rekonstruiert: fuer diese Emittenten sind quality, value und profitability NOT_APPLICABLE (Stand vor den Vorlagen); Wachstum bleibt generisch. Das Branchentor nutzt den heutigen SIC-Code aus quant/data/product/sic-peer-taxonomy-v1.json (aktuelle Klassifikation, offengelegt).",
+   "Grundgesamtheit der Perzentile = Rangpopulation des Stichtags (heutige Survivors mit Kurs am Stichtag) statt kanonisches Produktuniversum; keine Groessen-/Liquiditaetsfilter (Volumen nicht in den Wochenreihen).",
+   "Konsumdokument je Stichtag aus companyfacts ohne FSDS-Ergaenzung und ohne Emittenten-Erweiterungen; Jahresfenster auf die Geschaeftsjahre mit am Stichtag sichtbaren Werten beschraenkt (statt der 13 juengsten Geschaeftsjahre heute).",
+   "Konfidenz, Freshness-Gewichtung und Stufen (Positionen) werden nicht rekonstruiert; ausgewertet werden die Faktorscores."
+  ]
+ },
+ "horizons": {"bars": [4, 13, 26, 52], "approxMonths": [1, 3, 6, 12], "entryDelayBars": 1, "returnBasis": "PRICE_RETURN (keine Dividenden; TOTAL_RETURN nirgends belegt fuer die Breite)"},
+ "endpoints": {
+  "primary": "E1 Rang-IC: Spearman zwischen Faktorscore und Brutto-Folgerendite (PRICE_RETURN, ohne Kosten) je Stichtag ueber Listings mit beobachtetem Ausgang (research-studies.runFactorStudy spearmanObservedOnly); Mittelwert ueber Stichtage.",
+  "secondary": [
+   "E2 Quintil-Spread Q5-Q1 der mittleren Brutto-Folgerendite je Stichtag (Quintile aus runFactorStudy-Buckets, Rang vor Ausgang; beobachtete Ausgaenge).",
+   "E3 Top-Quintil-Ueberschuss ggue. SPY: mittlere Q5-Rendite minus SPY-Rendite zwischen denselben Ein- und Ausstiegsdaten.",
+   "E4 Top-Quintil-Ueberschuss ggue. gleichgewichteter Population: mittlere Q5-Rendite minus mittlere Rendite aller beobachteten Listings mit Faktorscore am Stichtag."
+  ],
+  "minimumPerDate": "Ein Stichtag zaehlt fuer Faktor x Horizont, wenn >= 200 Listings den Faktorscore tragen und >= 100 davon einen beobachteten Ausgang haben; sonst ausgeschlossen und gezaehlt."
+ },
+ "costs": {"factorStudy": "keine (IC und Spreads brutto, PER_SIDE 0 bps)", "strategy": {"BASE": {"feeBps": 2.5, "slippageBps": 12.5, "note": "strategy-backtest-contract BASE 30 bps Round-Trip je Seite zur Haelfte"}, "LOW": {"feeBps": 0, "slippageBps": 5}, "HIGH": {"feeBps": 5, "slippageBps": 25}}},
+ "inference": {
+  "unit": "Zeitreihe der Stichtagsstatistik (ein Wert je Stichtag)",
+  "primaryTest": "research-validation.inferTemporalBlockMean: zirkulaerer Kalender-Blockbootstrap, Blocklaenge max(12, 2 x Horizontmonate) Stichtage (12/12/12/24), Mindestblock 6, 1999 Replikate, Seed 20261028, alpha 0.05, CONDITIONAL_WEAK_STATIONARITY_AND_MIXING; zweiseitiger zentrierter p-Wert.",
+  "secondaryTest": "Newey-West (Bartlett, Bandbreite max(4, 2 x Horizontmonate) = 4/6/12/24) t-Statistik und Normal-p; bartlettLrv aus scripts/quant/v9/sensitivity/dependence.cjs.",
+  "overlap": "Horizonte > 1 Monat ueberlappen bei monatlichen Stichtagen (MA(h-1)); deshalb Blocklaenge und Bandbreite >= 2h.",
+  "multipleTesting": "Holm (research-validation.holm) ueber die Familie 7 Signale (6 Faktoren + Gesamtrang) x 4 Horizonte = 28 Tests auf E1 (primaer, Blockbootstrap-p). E2-E4 je eigene 28er-Holm-Familie (sekundaer). Keine Korrektur ueber Familien oder fruehere V7-V9-Suchen.",
+  "subperiods": ["2010-01..2014-12", "2015-01..2019-12", "2020-01..2025-12"],
+  "regimes": "research-studies.classifyRegimes (PIT_AVAILABLE) auf SPY-Wochenschluessen der Studie: Trend 26 Wochen, Band 0, Volatilitaet 13 Wochen, Schwelle 0.20 annualisiert (sqrt 52); E1 je Regimezustand am Stichtag deskriptiv (Mittel, n, NW).",
+  "missingOutcomes": "IMMATURE (Fenster nach Datenstand), CENSORED (Luecke/Reihenende) und INELIGIBLE werden je Faktor x Horizont gezaehlt. Schranken fuer E3: zensierte Q5-Ausgaenge einmal mit -100 % und einmal mit 0 % (letzter beobachteter Kurs) eingesetzt. Mit listingLifecycleEvidence: Fenster ueber lastTradeDate -> bekannte Barabfindung als TERMINAL_CONSIDERATION, sonst zensiert."
+ },
+ "strategy": {
+  "id": "V10-FACTOR-RECON-TOP50",
+  "rule": "An jedem Rangstichtag die 50 Listings mit dem hoechsten rekonstruierten Gesamtrang (Gleichstand: listingId aufsteigend), gleichgewichtet je 1/50; Ausfuehrung zum naechsten Wochenschluss; monatliches Rebalancing; Rest in unverzinstem Cash (weniger als 50 Kandidaten -> Restgewicht Cash).",
+  "engine": "quant/engines/research-portfolio.cjs runPortfolio, provenance.mode HISTORICAL_PRICE_SIMULATION (PRICE_RETURN, SPLIT_ADJUSTED, CONDITIONAL_FIXED_CURRENT_COHORT, MODELED_WEEK_END_DATE); Memberships je Stichtag = Rangpopulation (lebendige Frame-Listings).",
+  "whyNotQuintile": "Ein gleichgewichtetes Top-Quintil (hunderte Positionen) ueberschreitet die Positions-Budgets der Engine; das Top-Quintil wird ueber E3/E4 der Faktorstudie berichtet.",
+  "benchmark": "SPY PRICE_RETURN (weekly-benchmark), zusaetzlich gleichgewichtete Rangpopulation (deskriptiv, ohne Kosten).",
+  "metrics": ["CAGR", "Volatilitaet (Wochenrenditen x sqrt 52)", "Sharpe (rf 0)", "MaxDD", "Turnover p. a.", "Drawdown-Verlauf", "Unsicherheit: Blockbootstrap (Block 12) der monatlichen Ueberschussrendite ggue. SPY"],
+  "period": "Entscheidungen 2010-01 bis 2025-12; Bewertung bis zum letzten Kalenderdatum <= 2026-01-31."
+ },
+ "pythonCrossCheck": "Unabhaengige stdlib-Implementierung (python3 -I) aus Rohdaten: (a) ausgewaehlte Fundamentalrohwerte einer deterministischen Stichprobe direkt aus companyfacts-JSON (as-filed, filed < t), (b) Kursfaktoren, Perzentile, Faktorscores, IC und Quintile aus den Wochenreihen, (c) Strategie-Ledger. Rechenparitaet, kein Holdout.",
+ "notProvable": ["Survivorship: bedingt auf heutige Survivors; kein Marktschluss.", "Ex post bereinigte Kurse, nicht as-published.", "Keine Dividenden (PRICE_RETURN).", "Erkundete Historie, kein Holdout.", "Rekonstruktion ist kein damals veroeffentlichtes Signal und ersetzt keine Vorwaertshistorie."],
+ "activeContractsAffected": []
+}

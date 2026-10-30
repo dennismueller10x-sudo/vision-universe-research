@@ -55,8 +55,13 @@ export function createSupabase({url, publishableKey, secretKey, fetchImpl, forwa
       query: {redirect_to: redirectTo}, body: {email, code_challenge: codeChallenge, code_challenge_method: 's256'}}),
     updatePassword: ({accessToken, password, ip}) => call('/auth/v1/user', {method: 'PUT',
       headers: authHeaders(ip, accessToken), body: {password}}),
+    // Eigenes Konto lesen bzw. user_metadata ergaenzen (Tarifwahl vor der Registrierung, kein Recht, nur ein Hinweis).
+    getUser: ({accessToken, ip}) => call('/auth/v1/user', {headers: authHeaders(ip, accessToken)}),
+    updateUserData: ({accessToken, data, ip}) => call('/auth/v1/user', {method: 'PUT',
+      headers: authHeaders(ip, accessToken), body: {data}}),
     logout: ({accessToken, ip}) => call('/auth/v1/logout', {method: 'POST', headers: authHeaders(ip, accessToken),
       query: {scope: 'local'}}),
+    adminGetUser: userId => call(`/auth/v1/admin/users/${encodeURIComponent(userId)}`, {headers: serviceHeaders()}),
     adminDeleteUser: userId => call(`/auth/v1/admin/users/${encodeURIComponent(userId)}`, {method: 'DELETE', headers: serviceHeaders()}),
   };
 
@@ -109,6 +114,16 @@ export function createBillingStore(service) {
     enqueueMail: entry => service.rpc('billing_enqueue_mail', {p: entry}),
     claimDueMails: (limit = 20) => service.rpc('billing_claim_due_mails', {p_limit: limit}),
     mailResult: (id, result, error = null) => service.rpc('billing_mail_result', {p_id: id, p_result: result, p_error: error}),
+    accountEmail: userId => service.rpc('billing_account_email', {p_user: userId}),
+    newsletterRequest: (userId, source, version, sha) => service.rpc('billing_newsletter_request',
+      {p_user: userId, p_source: source, p_version: version, p_sha: sha}),
+    newsletterDue: (limit, version, sha) => service.rpc('billing_newsletter_due', {p_limit: limit, p_version: version, p_sha: sha}),
+    newsletterUpdate: (id, status, note = null) => service.rpc('billing_newsletter_update', {p_id: id, p_status: status, p_note: note}),
+    newsletterStatus: userId => service.rpc('billing_newsletter_status', {p_user: userId}),
+    brevoPending: (limit = 50) => service.rpc('billing_brevo_pending', {p_limit: limit}),
+    brevoMark: (userId, email, state, error = null) => service.rpc('billing_brevo_mark', {p_user: userId, p_email: email, p_state: state, p_error: error}),
+    brevoJobsDue: (limit = 50) => service.rpc('billing_brevo_jobs_due', {p_limit: limit}),
+    brevoJobDone: (id, error = null) => service.rpc('billing_brevo_job_done', {p_id: id, p_error: error}),
     resolveMails: (cancellationId, action, operator, note = null) => service.rpc('billing_resolve_mails',
       {p_cancellation: cancellationId, p_action: action, p_operator: operator, p_note: note}),
   };

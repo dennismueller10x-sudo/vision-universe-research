@@ -13,21 +13,28 @@
 </head>
 <body class="ka-body" data-view="account"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka" id="main">
-<p class="ka-eyebrow">Konto</p>
+<p class="ka-eyebrow">Mein Konto</p>
 <h1 class="ka-title" id="ka-hello">Mein Konto</h1>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a><a class="ka-nav-out" href="/mein-dashboard/">Mein Dashboard</a></nav>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
 <div id="ka-account" hidden>
-<section class="ka-card"><h2>Überblick</h2><dl class="ka-kv" id="ka-account-facts"></dl></section>
-<div class="ka-grid ka-grid--3 ka-section">
-<a class="ka-card ka-link" href="/konto/abo/"><h2>Abonnement</h2><p class="ka-muted">Tarif, Zahlungen, Rechnungen</p></a>
-<a class="ka-card ka-link" href="/konto/tarife/"><h2>Tarife</h2><p class="ka-muted">Free, Plus und Pro im Vergleich</p></a>
-<a class="ka-card ka-link" href="/konto/einstellungen/"><h2>Einstellungen</h2><p class="ka-muted">Profil, Darstellung, Benachrichtigungen, Datenschutz</p></a>
+<section class="ka-card ka-pending" id="ka-pro-pending" hidden aria-labelledby="ka-pro-pending-title">
+<h2 id="ka-pro-pending-title">Deine Pro-Bestellung ist noch offen</h2>
+<p class="ka-muted">Du hast vor der Registrierung Pro gewählt. Bis du die Bestellung bestätigst und bei Stripe bezahlst, gilt Free – es wurde nichts berechnet.</p>
+<div class="ka-actions"><a class="ka-btn" href="/konto/tarife/?plan=pro">Pro fortsetzen</a><button class="ka-btn ka-btn--secondary" type="button" id="ka-pro-dismiss">Mit Free weiter</button></div>
+</section>
+<section class="ka-card"><h2>Persönliche Daten</h2><dl class="ka-kv" id="ka-account-facts"></dl></section>
+<div class="ka-grid ka-grid--2 ka-section">
+<a class="ka-card ka-link-card" href="/konto/abo/"><h2>Abonnement und Rechnungen</h2><p class="ka-muted">Aktueller Tarif, Zahlungsmethoden, Rechnungen, Kündigung</p></a>
+<a class="ka-card ka-link-card" href="/konto/tarife/"><h2>Tarife</h2><p class="ka-muted">Free und Pro im Vergleich</p></a>
+<a class="ka-card ka-link-card" href="/konto/einstellungen/#sicherheit"><h2>Profil und Sicherheit</h2><p class="ka-muted">Anzeigename, Darstellung, Passwort</p></a>
+<a class="ka-card ka-link-card" href="/konto/einstellungen/#datenschutz"><h2>Datenschutz</h2><p class="ka-muted">Benachrichtigungen, Datenexport, Konto löschen</p></a>
 </div>
+<p class="ka-muted ka-section">Deine Watchlist und gespeicherten Aktien findest du in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
 <div class="ka-actions ka-section"><button class="ka-btn ka-btn--secondary" type="button" id="ka-logout">Abmelden</button></div>
 </div>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

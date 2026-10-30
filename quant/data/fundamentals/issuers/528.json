@@ -586,15 +586,15 @@
       "cik": "0001562528",
       "name": "Franklin BSP Realty Trust, Inc.",
       "sic": "6798",
-      "rawFacts": 18636,
-      "mappedFacts": 5054,
-      "unmappedFacts": 13300,
+      "rawFacts": 19159,
+      "mappedFacts": 5150,
+      "unmappedFacts": 13821,
       "calendarYears": 13,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -629,7 +629,7 @@
         },
         "secured_debt": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -642,9 +642,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 55,
+      "quarterlyPeriods": 56,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
@@ -656,7 +656,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -683,21 +683,21 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "revenue": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -711,14 +711,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -741,47 +741,48 @@
         }
       },
       "quality": {
-        "HIGH": 359,
-        "MEDIUM": 57
+        "HIGH": 368,
+        "MEDIUM": 54
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 416,
-        "resolvedValues": 416
+        "datableValues": 422,
+        "resolvedValues": 422
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13994,
+        "rules_version": "1.1.0",
+        "total": 14457,
         "by_severity": {
-          "INFO": 13300,
-          "WARNING": 694
+          "INFO": 13821,
+          "WARNING": 636
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 513,
+          "CONCEPT_DISAGREEMENT": 470,
           "PERIOD_MISMATCH": 55,
-          "RESTATEMENT_CONFLICT": 65,
+          "RESTATEMENT_CONFLICT": 50,
           "UNEXPECTED_DURATION": 61,
-          "UNKNOWN_CONCEPT": 13300
+          "UNKNOWN_CONCEPT": 13821
         }
       },
       "latestFiling": {
-        "accession": "0001562528-26-000024",
-        "filing_date": "2026-07-29",
+        "accession": "0001562528-26-000033",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 57
+        "periodic_filings": 58,
+        "acceptance_datetime": "2026-10-28T20:23:09.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "dd847a16699a0f51251ee57d9817de9dae6051854a255a8c9b086e764d96246a",
+      "sourceDigest": "e5db4bbb114a8153a864dec4ade664633ebe48cb7b244bd545e29f27aac5ab01",
       "issuerId": "iss_cik_0001562528"
     },
     {

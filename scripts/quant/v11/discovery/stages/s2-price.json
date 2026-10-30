@@ -1,0 +1,855 @@
+{
+ "stage": "S2-PRICE holding/rebalance/weighting/market-filter/volatility-cap variants on the S1b signals (universe quoted price >= 5 USD)",
+ "specs": [
+  {
+   "id": "P2-MOM6-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM3-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM_REV1-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM6-N20-R13-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM12_1-N20-R13-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-SLOPER2-N20-R13-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM3-N20-R13-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 13,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM6-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM6-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P2-MOM_REV1-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true
+  },
+  {
+   "id": "P2-MOM12_1-N20-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true
+  },
+  {
+   "id": "P2-MOM6-N10-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 10,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true
+  },
+  {
+   "id": "P2-SLOPER2-N10-R4-RUN-E95-X50-TX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 10,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-RUN-E95-X30-NOTX-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.3,
+   "trendExit": false
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-RUN-E95-X50-TX-TRIM15-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "RUN",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "entryRankPct": 0.95,
+   "exitRankPct": 0.5,
+   "trendExit": true,
+   "trimAbove": 0.15
+  },
+  {
+   "id": "P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ],
+    [
+     "vol",
+     "lte",
+     0.6
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM_REV1-N20-R4-FULL-EW-PX5-VOL60",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ],
+    [
+     "vol",
+     "lte",
+     0.6
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P2-SLOPER2-N20-R4-FULL-EW-PX5-VOL60",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ],
+    [
+     "vol",
+     "lte",
+     0.6
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM6_SLOPER2-N20-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM3_MOM12_REV1-N20-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM_REV1-N20-R4-BUFFER90-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ],
+   "keepRankPct": 0.9,
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM6-N20-R4-BUFFER90-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9,
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P2-MOM6-N50-R4-FULL-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "marketFilter": "SPY_SMA40"
+  }
+ ]
+}
