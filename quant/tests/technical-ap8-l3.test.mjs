@@ -46,6 +46,8 @@ test("L3: Datensatz - Spalte = Schluss / tiefstes Tagestief (252) - 1 auf den Ba
     const inst = JSON.parse(gunzipSync(readFileSync(join(dir, file)))).instruments || {};
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
+      /* nur Titel, deren Zeile auf denselben Bars beruht (Datensatz und Materialisierung koennen einen Tag auseinander liegen) */
+      if (c.asOf[i] !== String(x.bars.timestamps[x.bars.timestamps.length - 1]).slice(0, 10)) continue;
       const b = x.bars, n = b.low.length, lo = Math.min(...b.low.slice(Math.max(0, n - 252))), want = b.close[n - 1] / lo - 1;
       assert.ok(Math.abs(c.distLow52w[i] - want) <= 5e-5 + 1e-4 * Math.abs(want), tk + " " + c.distLow52w[i] + " vs " + want);
       checked++;
