@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 156 Spalten.
+technical-screener-contract-1.1.0, 157 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -123,6 +123,7 @@ technical-screener-contract-1.1.0, 156 Spalten.
 | `distHigh52w` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Hoch |
 | `distHigh52w@1M` | pct | ja | −1 … 0 | Abstand zum 12-Monats-Schlusshoch |
 | `distHigh52w@1W` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Schlusshoch |
+| `distLow52w` | pct | ja | 0 … ∞ | Abstand über dem 52-Wochen-Tief (Tagestief) |
 | `distSma150` | pct | ja | −1 … ∞ | Abstand zur SMA 150 |
 | `distSma200` | pct | ja | −1 … ∞ | Abstand zur SMA 200 |
 | `distSma200@1M` | pct | ja | −1 … ∞ | Abstand zur 10-Monats-Linie |

@@ -229,6 +229,9 @@
     row.distHigh52w = r(f.distanceTo52wHigh);
     /* Seit 1.11.0 (AP4): Gegenstueck zum Hoch, Tagestief <= 52-Wochen-Tief der Vollhistorie. */
     row.newLow52w = isNum(f.low52w) ? b.low[t] <= f.low52w : null;
+    /* Seit 1.12.0 (AP8 L3, docs/technical/SCREENER_FIELDS_AP8_L3.md): Abstand des Schlusskurses zum 52-Wochen-Tief
+       (tiefstes Tagestief der letzten 252 Handelstage, Vollhistorie der Materialisierung), Gegenstueck zu distHigh52w. */
+    row.distLow52w = r(f.distanceTo52wLow);
 
     /* ---- Tag: Momentum ---- */
     row.rsi14 = r(f.rsi14, 2);
