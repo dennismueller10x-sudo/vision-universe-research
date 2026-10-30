@@ -45,6 +45,12 @@ Nur ein Modus gleichzeitig; der Deploy-Workflow lässt nur diese drei Formen zu.
   einmalig den Steuersatz „USt. 19 % DE, im Preis enthalten“ an (bzw. findet ihn) und gibt die `txr_…`-ID aus. Erst wenn diese ID
   als `STRIPE_TAX_MODE` in `[env.production.vars]` steht, bekommt jedes neue Abo den Satz; die Rechnung zeigt dann
   1,00 € brutto, darin 0,16 € USt (19 %). Bestehende Abos bleiben unverändert.
+- **Schutz gegen Preiserhöhung:** Vor jedem Checkout mit Steuerausweis prüft der Worker bei Stripe, dass der Preis
+  `inclusive` und der Steuersatz aktiv und **inklusive** ist; sonst kein Checkout (`TAX_CONFIG_INVALID`, nichts berechnet).
+  `/v1/health` zeigt den Zustand als `taxRate` (`ok`, `TAX_RATE_NOT_INCLUSIVE`, `TAX_RATE_INACTIVE`, `TAX_RATE_UNREADABLE`).
+- **Steuersatz im Dashboard statt Workflow** (keine GitHub-Freigabe): Stripe → Produktkatalog → Steuersätze →
+  „Steuersatz erstellen“: Anzeigename `USt.`, Prozentsatz **19**, **Inklusive** (nicht „Exklusive“), Land Deutschland,
+  Steuertyp Umsatzsteuer (VAT). Die angezeigte ID `txr_…` geht in den Abschluss-PR.
 - **Öffentlicher Checkout** wird vom Deploy-Workflow abgelehnt, solange `STRIPE_TAX_MODE = "none"` ist
   (`scripts/account/check-public-checkout.mjs`), weil eine regelbesteuerte UG die USt ausweisen muss.
 

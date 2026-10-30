@@ -480,9 +480,9 @@
       "cik": "0000825313",
       "name": "ALLIANCEBERNSTEIN HOLDING L.P.",
       "sic": "6282",
-      "rawFacts": 11843,
-      "mappedFacts": 2002,
-      "unmappedFacts": 10006,
+      "rawFacts": 12011,
+      "mappedFacts": 2031,
+      "unmappedFacts": 10143,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -492,9 +492,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 70,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -533,14 +533,14 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -568,7 +568,7 @@
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -591,43 +591,44 @@
         }
       },
       "quality": {
-        "HIGH": 256
+        "HIGH": 259
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 256,
-        "resolvedValues": 256
+        "datableValues": 259,
+        "resolvedValues": 259
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10019,
+        "rules_version": "1.1.0",
+        "total": 10156,
         "by_severity": {
-          "INFO": 10006,
+          "INFO": 10143,
           "WARNING": 13
         },
         "by_code": {
           "RESTATEMENT_CONFLICT": 13,
-          "UNKNOWN_CONCEPT": 10006
+          "UNKNOWN_CONCEPT": 10143
         }
       },
       "latestFiling": {
-        "accession": "0000825313-26-000050",
-        "filing_date": "2026-07-31",
+        "accession": "0000825313-26-000083",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 135
+        "periodic_filings": 136,
+        "acceptance_datetime": "2026-10-29T20:44:42.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "eba107d918b3f86d97514a16c8c2427a29d275f4ca4b97c098ea245360049e1f",
+      "sourceDigest": "9ed2f61083c4586707f1ece7c7a094b8499bb3c051c7680743f964aaca83f324",
       "issuerId": "iss_cik_0000825313"
     },
     {

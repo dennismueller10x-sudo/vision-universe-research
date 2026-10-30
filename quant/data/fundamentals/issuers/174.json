@@ -230,9 +230,9 @@
       "cik": "0001468174",
       "name": "Hyatt Hotels Corp",
       "sic": "7011",
-      "rawFacts": 27618,
-      "mappedFacts": 6741,
-      "unmappedFacts": 20808,
+      "rawFacts": 28090,
+      "mappedFacts": 6839,
+      "unmappedFacts": 21171,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -242,28 +242,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 68,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -283,21 +283,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -311,14 +311,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -341,46 +341,47 @@
         }
       },
       "quality": {
-        "HIGH": 640,
-        "MEDIUM": 39
+        "HIGH": 648,
+        "MEDIUM": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 679,
-        "resolvedValues": 679
+        "datableValues": 686,
+        "resolvedValues": 686
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 21394,
+        "rules_version": "1.1.0",
+        "total": 21772,
         "by_severity": {
-          "INFO": 20808,
-          "WARNING": 586
+          "INFO": 21171,
+          "WARNING": 601
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 478,
+          "CONCEPT_DISAGREEMENT": 493,
           "PERIOD_MISMATCH": 64,
           "RESTATEMENT_CONFLICT": 44,
-          "UNKNOWN_CONCEPT": 20808
+          "UNKNOWN_CONCEPT": 21171
         }
       },
       "latestFiling": {
-        "accession": "0001468174-26-000025",
-        "filing_date": "2026-07-30",
+        "accession": "0001468174-26-000034",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 70
+        "periodic_filings": 71,
+        "acceptance_datetime": "2026-10-29T19:43:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0ba03cd1ecc143e07b65bfa9b631fdb4849ea41be2e3379445c776dbd1e93454",
+      "sourceDigest": "7da8dddc1c2f3fbb5143243b575e5d0307b39b5d4f26f369084767f7cbd18d17",
       "issuerId": "iss_cik_0001468174"
     },
     {

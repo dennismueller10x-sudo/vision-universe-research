@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 151 Spalten.
+technical-screener-contract-1.1.0, 157 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -74,6 +74,7 @@ technical-screener-contract-1.1.0, 151 Spalten.
 | `aboveEma20` | bool | ja |  | Kurs über EMA 20 |
 | `aboveEma200` | bool | ja |  | Kurs über EMA 200 |
 | `aboveEma50` | bool | ja |  | Kurs über EMA 50 |
+| `aboveSma150` | bool | ja |  | Kurs über SMA 150 |
 | `aboveSma200` | bool | ja |  | Kurs über SMA 200 |
 | `aboveSma200@1M` | bool | ja |  | Kurs über 10-Monats-Linie |
 | `aboveSma200@1W` | bool | ja |  | Kurs über 40-Wochen-Linie |
@@ -122,6 +123,8 @@ technical-screener-contract-1.1.0, 151 Spalten.
 | `distHigh52w` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Hoch |
 | `distHigh52w@1M` | pct | ja | −1 … 0 | Abstand zum 12-Monats-Schlusshoch |
 | `distHigh52w@1W` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Schlusshoch |
+| `distLow52w` | pct | ja | 0 … ∞ | Abstand über dem 52-Wochen-Tief (Tagestief) |
+| `distSma150` | pct | ja | −1 … ∞ | Abstand zur SMA 150 |
 | `distSma200` | pct | ja | −1 … ∞ | Abstand zur SMA 200 |
 | `distSma200@1M` | pct | ja | −1 … ∞ | Abstand zur 10-Monats-Linie |
 | `distSma200@1W` | pct | ja | −1 … ∞ | Abstand zur 40-Wochen-Linie |
@@ -181,7 +184,6 @@ technical-screener-contract-1.1.0, 151 Spalten.
 | `rs3m` | pct | ja | endlich | Relative Stärke 3 Monate ggü. S&P 500 (SPY) |
 | `rs6m` | pct | ja | endlich | Relative Stärke 6 Monate ggü. S&P 500 (SPY) |
 | `rsPositive` | bool | ja |  | Positive relative Stärke (6 Monate) |
-| `rsRank` | num | ja | 0 … 100 | RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel) |
 | `rsi14` | num | ja | 0 … 100 | RSI 14 |
 | `rsi14@1M` | num | ja | 0 … 100 | RSI 14 (Monat) |
 | `rsi14@1W` | num | ja | 0 … 100 | RSI 14 (Woche) |
@@ -196,9 +198,13 @@ technical-screener-contract-1.1.0, 151 Spalten.
 | `rsiExitOversoldDays@1W` | int, Prüfraum `rsiEventWindow@1W` | ja | 0 … ∞ | Wochen seit Wochen-RSI 14 von unten über 30 |
 | `s` | string | nein |  | Kürzel (eindeutig) |
 | `sid` | string | nein |  | securityId (core/identity.js) |
+| `sma150AboveSma200` | bool | ja |  | SMA 150 über SMA 200 |
 | `sma200CrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `sma200CrossWindow@1M` | int | ja | 1 … ∞ | Prüfraum in Monaten |
 | `sma200CrossWindow@1W` | int | ja | 1 … ∞ | Prüfraum in Wochen |
+| `sma200Rising` | bool | ja |  | SMA 200 steigt (gegenüber vor einem Monat) |
+| `sma200Slope21` | pct | ja | −1 … ∞ | Veränderung der SMA 200 über einen Monat |
+| `sma50AboveSma150` | bool | ja |  | SMA 50 über SMA 150 |
 | `sma50AboveSma200` | bool | ja |  | SMA 50 über SMA 200 |
 | `sma50AboveSma200@1M` | bool | ja |  | 5- über 10-Monats-Linie |
 | `sma50AboveSma200@1W` | bool | ja |  | 10- über 40-Wochen-Linie |
