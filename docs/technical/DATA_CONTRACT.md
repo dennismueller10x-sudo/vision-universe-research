@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 150 Spalten.
+technical-screener-contract-1.1.0, 151 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -181,6 +181,7 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `rs3m` | pct | ja | endlich | Relative Stärke 3 Monate ggü. S&P 500 (SPY) |
 | `rs6m` | pct | ja | endlich | Relative Stärke 6 Monate ggü. S&P 500 (SPY) |
 | `rsPositive` | bool | ja |  | Positive relative Stärke (6 Monate) |
+| `rsRank` | num | ja | 0 … 100 | RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel) |
 | `rsi14` | num | ja | 0 … 100 | RSI 14 |
 | `rsi14@1M` | num | ja | 0 … 100 | RSI 14 (Monat) |
 | `rsi14@1W` | num | ja | 0 … 100 | RSI 14 (Woche) |

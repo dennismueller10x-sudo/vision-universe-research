@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.8.0";
+  var TEXT_VERSION = "technical-query-text-1.9.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -145,7 +145,7 @@
     ["choppiness( index)?( ?14)?|chop( ?14)?", "choppiness14"], ["historische volatilitaet|hist\\. volatilitaet|hv ?20", "histVol20"],
     ["ulcer( index)?", "ulcer14"], ["abstand zum chandelier(-?stop)?", "distChandelierLong"],
     ["abstand zur sma ?200|abstand zum 200er", "distSma200"], ["abstand zur ema ?200", "distEma200"], ["abstand zum 52-?wochen-?hoch", "distHigh52w"], ["abstand zum 200-?wochen-?hoch", "distHigh200w"],
-    ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
+    ["rs-?rang|rang der relativen staerke|relative[rn]? staerke-?rang", "rsRank"], ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
     ["chaikin money flow|cmf( ?20)?", "cmf20"], ["money flow index|mfi( ?14)?", "mfi14"], ["stochastik( %k)?|%k", "stochK"],
     ["bollinger %b|%b", "bbPctB"], ["atr( ?%| in %| ?14)?", "atrPct"], ["rsi( ?14)?", "rsi14"], ["adx( ?14)?", "adx"], ["cci( ?20)?", "cci20"],
