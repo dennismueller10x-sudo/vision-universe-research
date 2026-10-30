@@ -52,8 +52,16 @@ test('production loader decompresses one same-origin artifact and rejects oversi
  }finally{globalThis.fetch=original;}
 });
 test('future-dated share facts are withheld by the same validator, never repaired or leaked',async()=>{
+ // Seit #1043 stellt der SEC-Erzeuger Zukunftsperioden (FUTURE_PERIOD_END) selbst unter Quarantaene; ob der
+ // committete Bestand noch einen solchen Fakt enthaelt, haengt also vom Datenstand ab (Datenlauf 40758243298 rot).
+ // Der Validator muss ihn trotzdem zurueckhalten, wenn er ihn erreicht: deshalb wird er hier gezielt eingesetzt,
+ // statt ihn im Produktionsbestand vorauszusetzen.
  for(const cik of ['0000006201','0000006207','0001056943','0001754170']){
-  const original=await load('quant/data/sec/consumer/CIK'+cik+'.json'),before=JSON.stringify(original),projection=projectQuarterly(original);
+  const original=structuredClone(await load('quant/data/sec/consumer/CIK'+cik+'.json')),rows=original.quarterly.shares_outstanding;
+  assert.ok(Array.isArray(rows)&&rows.length>0,cik+': shares_outstanding im Bestand');
+  const last=rows[rows.length-1],filed=last[4];
+  rows.push([last[0]+1,last[1],(Number(filed.slice(0,4))+1)+filed.slice(4),last[3],filed,last[5],0]);
+  const before=JSON.stringify(original),projection=projectQuarterly(original);
   assert.equal(projection.quarterly.shares_outstanding,undefined);assert.equal(projection.unavailableMetrics.shares_outstanding,'INVALID_FACT_EVIDENCE');assert.equal(JSON.stringify(original),before);
   assert.equal(History.buildQuarterly(projection,{...options,cik,metric:'shares_outstanding'}).reason,'INVALID_FACT_EVIDENCE');
   assert.ok(Object.keys(projection.quarterly).length>0,'unrelated valid metrics must remain available');

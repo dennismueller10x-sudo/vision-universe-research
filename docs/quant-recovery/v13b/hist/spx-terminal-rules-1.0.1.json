@@ -1,0 +1,25 @@
+{
+ "schemaVersion": "v13b-spx-exit-terminal-rules-1.0.1",
+ "amends": {"spx-terminal-rules-1.0.0.json": "56a8838a70fbc930129e0b124c1cb22daabea10b3279fd6c8df34a4e385b7786"},
+ "registeredAfter": "Written AFTER the 1.0.0 results were seen (register spx-terminal-register-1.0.0.json, commit c2d1ad92e5). Disclosed as an after-sight amendment; the 1.0.0 register stays unchanged and both are reported side by side. Acceptance criteria S4 (fixed consideration only), S6 (acquirer price from the SPY report at t1, no acquirer split), S7 and S8 are unchanged; the amendment makes retrieval find the deciding documents more often and adds one more reason to stay bounded.",
+ "implementationCorrectionsIn1.0.0": {
+  "note": "Corrections of the 1.0.0 code to the 1.0.0 rule text, found while reviewing the first run (before the 1.0.0 register was committed). First run: 27 TERMINAL_CASH, of which 4 contradicted the rule text and 1 is the spin-off case below.",
+  "C1": "Amount of a preferred/series class taken as the common consideration (Harcourt General 2001: $77.29 preferred instead of $59.00 common) -> amounts whose nearest preceding security noun is preferred/series are skipped.",
+  "C2": "Election/proration markers were only honoured in sentences containing the word 'share' (Sears 2005: 'Elections are subject to proration ... $50 in cash') -> markers count in every consideration sentence; 'X in cash ... or ...' alternatives count as election; markers in non-consideration sentences (credit agreements, by-laws) no longer count (the rule text says 'within the same sentence').",
+  "C3": "Exchange ratios written as words ('one share') or with a leading dot ('.45 shares') were not or wrongly parsed (Clear Channel 2008, Allied Waste 2008).",
+  "C4": "A second security next to cash ('$39.90 in cash and 0.6272 Teva ADSs', Barr 2008) was ignored -> treated as a stock component (MIXED).",
+  "C5": "S6 'FILED BY' CIK of a 425/SC TO-T was only read from documents fetched for the consideration search -> the newest 425/SC TO-T in the window is read when needed.",
+  "C6": "Reason code: a deregistration filed before the consideration document is reported as DEREGISTRATION_BEFORE_DOCUMENT, not COMPLETION_AFTER_T1.",
+  "C7": "Row-order check uses weight and status per row; the population chain key hash is the key at the chain's first date (abort on the first run, before any document was read)."
+ },
+ "amendments": {
+  "A1_retrieval_order": "Reason: in 74 of 82 first-run NO_CONSIDERATION_DOCUMENT rows the 6 newest filings were routine 8-K/425/DEFA14A (often filed after completion by issuers that keep reporting for debt) and the proxy/tender documents were never read. New order: only filings dated on or before (first deregistration in (t0, t1+120d], else t1 + 30d); group 1 = DEFM14A, DEFM14C, DEFS14A, DEFR14A, PREM14A, SC TO-T, SC TO-T/A, SC 14D1, SC 14D1/A, SC 14D9, SC 14D9/A, SC 13E3, SC 13E3/A, newest first, at most 4; group 2 = 8-K, 8-K/A, 425, DEFA14A filed within 10 days of the first deregistration (completion statements), newest first, at most 3. Decision document = newest group-2 document with a consideration sentence if any, else newest group-1 document with one. If both groups yield a decided kind and the values differ -> BOUNDED_AMBIGUOUS_CONSIDERATION.",
+  "A2_completion_order": "Reason: completion statements are often filed on or after the Form 15/25 day (PeopleSoft 2005, Springs 2001). Completion evidence = a deregistration form or a completion statement filed in (t0, t1 + 10d]; the decision document may be filed up to 30 days after that completion evidence.",
+  "A3_distribution_guard": "Reason: First Data (t0 2006-09-30) spun off Western Union on 2006-09-29; p0 is the pre-spin price, so cash $34.00 / p0 gives -19 % although holders also received Western Union shares. New S8b: the issuer's newest 10-K and newest 10-Q filed in (t0, completion + 30d] (at most 2 documents) and all documents already read for the row are scanned for spin-off / special or liquidating distribution / 'distribution of all (the) outstanding shares' statements; if such a statement carries a date in [t0 - 5d, completion] -> BOUNDED_DISTRIBUTION_IN_PERIOD.",
+  "A4_acquirer": "SC 14D1 / SC 14D1/A (pre-2000 tender form) count like SC TO-T for the 'FILED BY' acquirer CIK."
+ },
+ "unchanged": "Scope, candidate fates, S3 patterns (as corrected), S4 kinds, S6 acquirer price rule, S7 return, S8 plausibility guard, outputs, independent check. SEC budget for 1.0.0 + 1.0.1 together <= 1,500 requests.",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

@@ -417,9 +417,9 @@
       "cik": "0000918541",
       "name": "NN INC",
       "sic": "3540",
-      "rawFacts": 21974,
-      "mappedFacts": 6991,
-      "unmappedFacts": 15309,
+      "rawFacts": 22332,
+      "mappedFacts": 7108,
+      "unmappedFacts": 15629,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -429,28 +429,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -463,56 +463,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -528,48 +528,49 @@
         }
       },
       "quality": {
-        "HIGH": 635,
-        "MEDIUM": 108
+        "HIGH": 644,
+        "MEDIUM": 109
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 743,
-        "resolvedValues": 743
+        "datableValues": 753,
+        "resolvedValues": 753
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 15871,
+        "rules_version": "1.1.0",
+        "total": 16193,
         "by_severity": {
-          "INFO": 15309,
-          "WARNING": 562
+          "INFO": 15629,
+          "WARNING": 564
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 399,
+          "CONCEPT_DISAGREEMENT": 401,
           "EXTREME_VALUE": 2,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 153,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 15309
+          "UNKNOWN_CONCEPT": 15629
         }
       },
       "latestFiling": {
-        "accession": "0000918541-26-000064",
-        "filing_date": "2026-08-05",
+        "accession": "0000918541-26-000120",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 136
+        "periodic_filings": 137,
+        "acceptance_datetime": "2026-10-28T21:21:55.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3a0f4f4670f846cabd53f5ef6f0972a1015bb1d1c8f80254f7837cb9ae8f164c",
+      "sourceDigest": "686899d3b144a9fbf5200b5e185b7b803480d7a638cefdd54ba90f712f8a3194",
       "issuerId": "iss_cik_0000918541"
     },
     {

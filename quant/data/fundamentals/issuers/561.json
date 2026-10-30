@@ -163,10 +163,10 @@
       "cik": "0001169561",
       "name": "COMMVAULT SYSTEMS INC",
       "sic": "7372",
-      "rawFacts": 19616,
-      "mappedFacts": 6519,
-      "unmappedFacts": 13101,
-      "calendarYears": 19,
+      "rawFacts": 19908,
+      "mappedFacts": 6738,
+      "unmappedFacts": 13410,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0331",
@@ -175,28 +175,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2008-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0,
@@ -216,21 +216,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
@@ -244,14 +244,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
@@ -274,44 +274,45 @@
         }
       },
       "quality": {
-        "HIGH": 574
+        "HIGH": 612
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 574,
-        "resolvedValues": 574
+        "datableValues": 612,
+        "resolvedValues": 612
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13480,
+        "rules_version": "1.1.0",
+        "total": 13608,
         "by_severity": {
-          "INFO": 13101,
-          "WARNING": 379
+          "INFO": 13410,
+          "WARNING": 198
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 279,
-          "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 13101
+          "CONCEPT_DISAGREEMENT": 168,
+          "RESTATEMENT_CONFLICT": 30,
+          "UNKNOWN_CONCEPT": 13410
         }
       },
       "latestFiling": {
-        "accession": "0001169561-26-000024",
-        "filing_date": "2026-07-29",
+        "accession": "0001169561-26-000035",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 80
+        "periodic_filings": 81,
+        "acceptance_datetime": "2026-10-28T20:29:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7fcdf107e68c166c5fa56648066345a6883b8c29df7bc7af388b4df83ff2c2d4",
+      "sourceDigest": "64dcb7afdd45a089e45a4fc77206e06142061066ff00ef7108e48646c900b10d",
       "issuerId": "iss_cik_0001169561"
     },
     {

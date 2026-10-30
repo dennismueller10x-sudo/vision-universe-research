@@ -145,3 +145,28 @@ test('prefix cash/units and costs are independent of future prices and membershi
   assert.deepEqual(changed.equity.slice(0, -1), full.equity.slice(0, -1)); assert.deepEqual(changed.trades, full.trades);
   assert.notEqual(changed.inputHash, full.inputHash); assert.notEqual(changed.generation, full.generation);
 });
+
+test('full exit to weight 0 sells exactly the held units at any capital scale, without residual units', () => {
+  // Regression: units = delta / price left scale-dependent float dust (> 1e-12) or a negative remainder (NEGATIVE_UNITS).
+  const d = ['2000-01-07', '2000-01-14', '2000-01-21', '2000-01-28'], at = x => x + 'T23:59:59.999Z', h = '0'.repeat(64);
+  const mk = (cap, prices, weight, exitWeights) => ({ sessions: d.map(x => ({ date: x, closeAt: at(x) })), initialCapital: cap, currency: 'USD', returnBasis: 'PRICE_RETURN',
+    provenance: { mode: 'HISTORICAL_PRICE_SIMULATION', datasetHash: h, priceSeriesType: 'SPLIT_ADJUSTED', populationBasis: 'CONDITIONAL_FIXED_CURRENT_COHORT', clockBasis: 'MODELED_WEEK_END_DATE' },
+    costs: { basis: 'PER_SIDE_NOTIONAL', feeBps: 10, slippageBps: 5 }, maxMembershipAgeDays: 45, maxFactorAgeDays: 45, factorSnapshots: [],
+    // No bar after the exit session: any residual unit would fail the next valuation.
+    listings: [{ listingId: 'X', issuerId: 'X', mic: 'XNAS', instrumentClass: 'COMMON_STOCK', primary: true, currency: 'USD', firstTradeDate: d[0], lastTradeDate: null, events: [], bars: [d[1], d[2]].map((x, i) => ({ date: x, close: prices[i], availableAt: at(x) })) }],
+    memberships: [{ effectiveAt: d[0] + 'T00:00:00Z', availableAt: d[0] + 'T00:00:00Z', sourceHash: h, members: ['X'] }],
+    targets: [{ decisionDate: d[0], executionDate: d[1], availableAt: at(d[0]), membershipHash: h, weights: { X: weight } }, { decisionDate: d[1], executionDate: d[2], availableAt: at(d[1]), membershipHash: h, weights: exitWeights }],
+    benchmark: { currency: 'USD', returnBasis: 'PRICE_RETURN', sourceHash: h, costPolicy: 'PASSIVE_NO_TRANSACTION_COSTS', levels: d.map(x => ({ date: x, level: 100 })) } });
+  for (const [prices, weight] of [[[0.21, 0.33], 0.1], [[0.0137, 0.0191], 0.1], [[3.17, 2.93], 0.37], [[101.3, 97.7], 1]]) for (const exitWeights of [{}, { X: 0 }]) {
+    const unit = P.runPortfolio(mk(1, prices, weight, exitWeights));
+    for (const cap of [1e6, 1e9]) {
+      const r = P.runPortfolio(mk(cap, prices, weight, exitWeights)), held = r.equity[1].positions[0].units, sell = r.trades.find(t => t.side === 'SELL');
+      assert.equal(sell.units, held); assert.equal(sell.notional, held * sell.price);
+      // Cash change of the exit equals sold units times price, less per-side costs.
+      near(r.equity[2].cash - r.equity[1].cash, held * sell.price - sell.fee - sell.slippage, 1e-12);
+      for (const row of r.equity.slice(2)) assert.deepEqual(row.positions, []);
+      // Scale invariance: the large-numeraire run is the numeraire-1 run scaled.
+      near(r.equity.at(-1).cash, unit.equity.at(-1).cash * cap, 1e-12); near(r.endCapital, unit.endCapital * cap, 1e-12);
+    }
+  }
+});

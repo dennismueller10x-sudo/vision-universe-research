@@ -6,9 +6,9 @@
       "cik": "0000912061",
       "name": "NATURAL HEALTH TRENDS CORP",
       "sic": "5190",
-      "rawFacts": 15490,
-      "mappedFacts": 5512,
-      "unmappedFacts": 10121,
+      "rawFacts": 16087,
+      "mappedFacts": 5636,
+      "unmappedFacts": 10623,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,50 +117,51 @@
         }
       },
       "quality": {
-        "HIGH": 529,
+        "HIGH": 543,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 544,
-        "resolvedValues": 544
+        "datableValues": 558,
+        "resolvedValues": 558
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10423,
+        "rules_version": "1.1.0",
+        "total": 10854,
         "by_severity": {
-          "INFO": 10121,
+          "INFO": 10623,
           "ERROR": 8,
-          "WARNING": 294
+          "WARNING": 223
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 249,
+          "CONCEPT_DISAGREEMENT": 198,
           "FUTURE_DATA_LEAK": 8,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 12,
-          "RESTATEMENT_CONFLICT": 22,
+          "RESTATEMENT_CONFLICT": 2,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 10121
+          "UNKNOWN_CONCEPT": 10623
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-024770",
-        "filing_date": "2026-07-29",
+        "accession": "0001437749-26-033713",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 90
+        "periodic_filings": 91,
+        "acceptance_datetime": "2026-10-28T13:20:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5d1d255136c0605f39c518bd49b796089c11321220a6a5ba044e2d8eeeaf758b",
+      "sourceDigest": "0ba5129f51fc5f8ca24720e1242d1ef33a28467dc8d8951d30bfa419d2ab3a49",
       "issuerId": "iss_cik_0000912061"
     },
     {
@@ -640,8 +641,8 @@
       "cik": "0002003061",
       "name": "Star Fashion Culture Holdings Ltd",
       "sic": "7310",
-      "rawFacts": 586,
-      "mappedFacts": 198,
+      "rawFacts": 587,
+      "mappedFacts": 200,
       "unmappedFacts": 375,
       "calendarYears": 5,
       "industry": null,
@@ -760,7 +761,7 @@
         "resolvedValues": 38
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
+        "rules_version": "1.1.0",
         "total": 455,
         "by_severity": {
           "INFO": 375,
@@ -773,24 +774,24 @@
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-112167",
-        "filing_date": "2026-10-23",
-        "form": "20-F",
-        "periodic_filings": 3,
-        "acceptance_datetime": "2026-10-23T21:00:41.000Z"
+        "accession": "0001213900-26-113311",
+        "filing_date": "2026-10-28",
+        "form": "20-F/A",
+        "periodic_filings": 4,
+        "acceptance_datetime": "2026-10-28T20:10:18.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.6.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "dd3d7b51b64b80f043a0e384cb0f5af7f28a150184aa2ad957b2f0ece519067d",
+      "sourceDigest": "01e2f24118244047df4a03785df8ab9086e5bde4b7f644a7cc035649db8c272a",
       "issuerId": "iss_cik_0002003061"
     },
     {

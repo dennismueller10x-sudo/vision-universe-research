@@ -8,18 +8,36 @@ import {requireUser, reauthenticate, clearSession} from './auth.mjs';
 import {billingBlocker} from './config.mjs';
 import {checkoutAllowed} from './billing.mjs';
 import * as v from './validate.mjs';
+import {NEWSLETTER, sha256Hex, advanceConsent} from './brevo.mjs';
+import {LEGAL_VERSION, LEGAL_STATUS} from './legal/texts.mjs';
 
 const one = rows => (Array.isArray(rows) ? rows[0] || null : null);
+
+// Tarifwahl vor der Registrierung ("Pro"), gespeichert in user_metadata. Nur ein Hinweis fuer die
+// Seitenfuehrung (Pro-Bestaetigung statt Willkommensseite) - nie ein Recht: Pro gibt es ausschliesslich
+// ueber effective_entitlements (verifizierte Stripe-Ereignisse). Gilt 30 Tage und nur, solange Free gilt.
+export const PLAN_INTENT_DAYS = 30;
+export function planIntentOf(authUser, entitlements, now) {
+  const meta = authUser && authUser.user_metadata;
+  if (!meta || meta.plan_intent !== 'pro') return null;
+  const at = Date.parse(meta.plan_intent_at || '');
+  if (!Number.isFinite(at) || now - at > PLAN_INTENT_DAYS * 864e5 || at - now > 864e5) return null;
+  if (entitlements && entitlements.plan_id && entitlements.plan_id !== 'free') return null;
+  return {plan: 'pro', at: new Date(at).toISOString()};
+}
 
 export async function me(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
-  const [profile, settings, roles, entitlements] = await Promise.all([
+  const [profile, settings, roles, entitlements, authUser] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_settings', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_roles', {user_id: `eq.${user.id}`}),
     ctx.sb.user.rpc(t, 'my_entitlements'),
+    // Fehlt die Auskunft, gibt es eben keinen Hinweis - die Kontoseite bleibt nutzbar.
+    ctx.sb.auth.getUser({accessToken: t, ip: ctx.ip}).catch(() => null),
   ]);
+  const newsletter = await ctx.store.newsletterStatus(user.id).catch(() => null);
   return json(ctx.request, ctx.cfg, 200, {
     user: {id: user.id, email: user.email},
     profile: profile && {displayName: profile.display_name, locale: profile.locale, createdAt: profile.created_at},
@@ -28,20 +46,69 @@ export async function me(ctx) {
       marketingEmails: settings.marketing_emails},
     roles: (roles || []).map(r => r.role),
     entitlements,
+    planIntent: planIntentOf(authUser, entitlements, ctx.now()),
+    // Newsletter: Stand der eigenen Einwilligung (none | requested | pending | confirmed | withdrawn | expired | failed).
+    newsletter: {available: newsletterAvailable(ctx), status: newsletter?.status || 'none', since: newsletter?.confirmedAt || newsletter?.requestedAt || null},
+    legal: {version: LEGAL_VERSION, status: LEGAL_STATUS},
     billingAvailable: !billingBlocker(ctx.cfg),
     checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
 }
 
+// Tarifwahl setzen ({plan: "pro"}) oder verwerfen ({plan: null}): "Pro fortsetzen" bzw. "Mit Free weiter".
+export async function setPlanIntent(ctx) {
+  const user = await requireUser(ctx);
+  await ctx.limit('planIntent', user.id);
+  const body = await readJson(ctx.request);
+  if (body.plan !== 'pro' && body.plan !== null) throw new HttpError(400, 'PLAN_INVALID');
+  const data = body.plan === 'pro' ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()}
+    : {plan_intent: null, plan_intent_at: null};
+  await ctx.sb.auth.updateUserData({accessToken: user.accessToken, data, ip: ctx.ip});
+  return json(ctx.request, ctx.cfg, 200, {state: 'PLAN_INTENT_SAVED', planIntent: body.plan === 'pro'
+    ? {plan: 'pro', at: data.plan_intent_at} : null}, {cookies: ctx.outCookies});
+}
+
+export const newsletterAvailable = ctx => Boolean(ctx.cfg.brevo.newsletter && ctx.cfg.brevo.lists.newsletter && ctx.brevo?.configured);
+
+// Newsletter an- oder abmelden ({subscribe: true|false}). Anmeldung: Einwilligung mit Textfassung speichern,
+// Brevo schickt die Bestaetigungs-E-Mail (Double-Opt-in); erst nach Klick gilt sie. Abmeldung wirkt sofort.
+export async function newsletter(ctx) {
+  const user = await requireUser(ctx);
+  await ctx.limit('planIntent', user.id);
+  const body = await readJson(ctx.request);
+  if (typeof body.subscribe !== 'boolean') throw new HttpError(400, 'SUBSCRIBE_INVALID');
+  if (body.subscribe) {
+    if (!newsletterAvailable(ctx)) throw new HttpError(503, 'NEWSLETTER_NOT_AVAILABLE');
+    const consent = await ctx.store.newsletterRequest(user.id, 'settings', NEWSLETTER.version, await sha256Hex(NEWSLETTER.text));
+    let status = consent.status;
+    if (status === 'requested') {
+      try { status = await advanceConsent(ctx, consent); }
+      catch (e) { ctx.log('error', 'NEWSLETTER_REQUEST_FAILED', {code: String(e.code || e.message).slice(0, 80)}); }
+    }
+    return json(ctx.request, ctx.cfg, 200, {state: 'NEWSLETTER_REQUESTED', newsletter: {available: true, status}}, {cookies: ctx.outCookies});
+  }
+  const current = await ctx.store.newsletterStatus(user.id);
+  if (['requested', 'pending', 'confirmed'].includes(current?.status)) {
+    if (ctx.brevo?.configured && ctx.cfg.brevo.lists.newsletter) {
+      const email = await ctx.store.accountEmail(user.id);
+      if (email) await ctx.brevo.unlink(email, [ctx.cfg.brevo.lists.newsletter]);
+    }
+    await ctx.store.newsletterUpdate(current.id, 'withdrawn', 'ABGEMELDET_IM_KONTO');
+  }
+  return json(ctx.request, ctx.cfg, 200, {state: 'NEWSLETTER_WITHDRAWN', newsletter: {available: newsletterAvailable(ctx), status: 'withdrawn'}},
+    {cookies: ctx.outCookies});
+}
+
+// marketingEmails ist nicht mehr direkt schreibbar (nur bestaetigter Double-Opt-in, siehe newsletter()).
 const SETTING_COLUMNS = {displayCurrency: 'display_currency', appearance: 'appearance', experienceLevel: 'experience_level',
-  notifications: 'notification_settings', marketingEmails: 'marketing_emails'};
+  notifications: 'notification_settings'};
 
 export async function updateMe(ctx) {
   const user = await requireUser(ctx);
   const body = await readJson(ctx.request);
   const profile = v.profilePatch(Object.fromEntries(Object.entries(body.profile || {})
     .map(([k, val]) => [k === 'displayName' ? 'display_name' : k, val])));
-  const settings = v.settingsPatch(Object.fromEntries(Object.entries(body.settings || {}).map(([k, val]) => {
+  const settings = v.settingsPatch(Object.fromEntries(Object.entries(body.settings || {}).filter(([k]) => k !== 'marketingEmails').map(([k, val]) => {
     if (!SETTING_COLUMNS[k]) throw new HttpError(400, 'SETTING_INVALID', k);
     return [SETTING_COLUMNS[k], val];
   })));

@@ -1114,10 +1114,10 @@
       "cik": "0001905920",
       "name": "Galaxy Payroll Group Ltd",
       "sic": "8700",
-      "rawFacts": 791,
-      "mappedFacts": 193,
-      "unmappedFacts": 564,
-      "calendarYears": 4,
+      "rawFacts": 1162,
+      "mappedFacts": 290,
+      "unmappedFacts": 831,
+      "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -1125,32 +1125,32 @@
         "GLXG"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 5,
+      "annualPeriods": 6,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2021-06-30",
-      "lastPeriodEnd": "2025-06-30",
-      "historyYears": 4.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 3,
+          "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0
         },
         "eps_diluted": {
-          "annualPeriods": 3,
+          "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0
         },
         "free_cash_flow": {
-          "annualPeriods": 3,
+          "annualPeriods": 4,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0,
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -1166,25 +1166,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 4,
+          "annualPeriods": 5,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2022-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 3.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 4.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 4,
+          "annualPeriods": 5,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2022-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 3.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 4.0
         },
         "revenue": {
-          "annualPeriods": 4,
+          "annualPeriods": 5,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2022-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 3.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 4.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -1194,18 +1194,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 5,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2021-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 5.0
         },
         "total_assets": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 3,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2023-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 3.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -1225,46 +1225,47 @@
         }
       },
       "quality": {
-        "HIGH": 25,
+        "HIGH": 34,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 34,
-        "resolvedValues": 34
+        "datableValues": 43,
+        "resolvedValues": 43
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 651,
+        "rules_version": "1.1.0",
+        "total": 955,
         "by_severity": {
-          "INFO": 564,
-          "WARNING": 87
+          "INFO": 831,
+          "WARNING": 124
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 76,
+          "CONCEPT_DISAGREEMENT": 112,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 564
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 831
         }
       },
       "latestFiling": {
-        "accession": "0001213900-25-102144",
-        "filing_date": "2025-10-24",
+        "accession": "0001213900-26-113297",
+        "filing_date": "2026-10-28",
         "form": "20-F",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-10-28T20:05:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0c5a7a16bf151bcd01ada6e2e57f6442b0db0b0925f29ad34394dce79c2d5e13",
+      "sourceDigest": "bbf718a07244cc732b03a3c98636357f810086ba846fc4b09d356d6b300241d6",
       "issuerId": "iss_cik_0001905920"
     }
   ]

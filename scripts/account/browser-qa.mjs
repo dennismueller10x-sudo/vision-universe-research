@@ -75,7 +75,7 @@ check(await page.locator('.pr-plan').count() === 2, 'Preise: zwei Tarifkarten');
 const shownPro = (await page.textContent('[data-price=pro]')).replace(/\s/g, ' ');
 const expectedPro = new Intl.NumberFormat('de-DE', {style: 'currency', currency: proMonth.currency}).format(proMonth.unitAmount / 100).replace(/\s/g, ' ');
 check(shownPro === expectedPro, `Preise: Pro-Preis aus dem Backend (${shownPro} = ${expectedPro})`);
-check((await page.textContent('.pr-plan[data-plan=pro]')).includes('Interner Testpreis'), 'Preise: interner Testpreis gekennzeichnet');
+check(await page.isVisible('#pr-test-tag') === (plansApi.checkout !== 'public'), `Preise: Hinweis "interner Testpreis" genau solange der Checkout nicht oeffentlich ist (${plansApi.checkout})`);
 check(await page.isVisible('#pr-same') && await page.locator('#pr-rows tr').count() === Object.keys(plansApi.plans.find(p => p.id === 'free').features).length,
   'Preise: Funktionsumfang aus dem Backend, identisch');
 await audit(page, 'Preise ohne Anmeldung');
@@ -134,8 +134,11 @@ await page.click('#ka-checkout');
 await page.waitForURL(/\/__dev\/checkout\//);
 await page.click('text=Zahlungspflichtig abonnieren');
 await page.waitForURL(/\/konto\/abo\/\?checkout=success/);
+// Bestaetigt die Datenbank Pro (Webhook), geht es weiter zur Willkommensseite.
+await page.waitForURL(/\/willkommen\/$/, {timeout: 20000});
+check((await page.textContent('#wk-flash')).includes('Pro-Abonnement ist aktiv'), 'nach bestaetigter Zahlung: Willkommensseite');
+await page.goto(`${base}/konto/abo/`);
 await page.waitForSelector('#ka-sub .ka-kv');
-await page.waitForFunction(() => document.getElementById('ka-status').textContent.includes('aktiv'));
 check((await page.textContent('#ka-sub')).includes('Pro') && (await page.textContent('#ka-sub')).includes('Aktiv'), 'Pro aktiv nach Checkout');
 check((await page.textContent('#ka-invoices')).includes('bezahlt'), 'Rechnung bezahlt');
 await audit(page, 'Abonnement');

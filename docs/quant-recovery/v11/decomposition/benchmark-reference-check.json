@@ -1,0 +1,801 @@
+{
+ "studyId": "V11-DECOMPOSITION",
+ "part": "benchmark-reference-check",
+ "registrationHash": "f3354b1f87b369a189c683db77471b0df383a0ad3018f90b51c4ee3b499111fa",
+ "protocol": {
+  "file": "docs/quant-recovery/v11/protocol/time-split-1.0.0.json",
+  "sha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69"
+ },
+ "period": "FULL_DESCRIPTIVE",
+ "firewall": "R4: FULL_DESCRIPTIVE output of the DECOMPOSITION strand - must not be read by the DISCOVERY strand.",
+ "population": {
+  "frame": 4329,
+  "loaderOptions": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "sourceManifestHash": "2c27039fd782cccced62ac28cebfb808eea07670ba2c79e58e373824bcc0b679",
+  "survivorshipGap": "Provider universe of today plus ended series; coverage of SEC 10-K filers 2000 14 %, 2010 22 %, 2020 48 % (protocol). Survivorship of issuers that vanished before universe formation is NOT measurable here; only the in-sample ended listings (V10 bounds) and the cap-weighted vs equal-weighted comparison are quantified."
+ },
+ "returnBasis": {
+  "strategyOrEvents": "PRICE_RETURN (split-adjusted weekly closes, no dividends)",
+  "spy": "PRICE_RETURN (SPY split-adjusted close, same dates, no dividends)",
+  "population": "PRICE_RETURN equal-weighted, same dates",
+  "totalReturn": "only as labelled ESTIMATE in benchmark-reference-check.json"
+ },
+ "costs": {
+  "events": {
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "stress": {
+   "feeBps": 20,
+   "slippageBps": 30
+  },
+  "benchmarks": "none (SPY passive, population benchmark gross)"
+ },
+ "weighting": "events: equal per event; funded: see A3",
+ "investmentAssumption": "events: fully invested per event; funded strategy: slots of 1/N, unfilled slots in cash at 0 %; SPY: fully invested buy-and-hold",
+ "observedVsSecured": "every cell reports the observed estimate and, separately, whether it is statistically secured (block bootstrap, Holm within the stated family)",
+ "evidenceKind": "TECHNICAL_PARITY (Python) + SOURCE_EVIDENCE (SPY N-30D) + RECONSTRUCTION (dividend order of magnitude)",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "definitionsCompared": {
+  "strategyReturn": "PRICE_RETURN: split-adjusted weekly closes of the provider series; no dividends; costs 10+5 bps per side on traded notional; uninvested weight in cash at 0 % interest",
+  "spyReturn": "PRICE_RETURN: SPY split-adjusted daily close (Tiingo) at exactly the strategy session dates; no dividends; no costs; fully invested from the first session",
+  "eventSpy": "SPY price return from the entry close date to the exit close date of each event (identical dates)",
+  "populationBenchmark": "equal-weighted mean of the same-window price returns of all eligible frame listings of the signal week (no costs)"
+ },
+ "pythonReference": {
+  "script": "scripts/quant/v11/decomposition/verify_decomposition.py",
+  "inputChecks": {
+   "qualified": 4526,
+   "fileShaOk": 4526,
+   "pointCountOk": 4526,
+   "calendarLengthOk": true,
+   "frame": 4329
+  },
+  "parity": {
+   "maxAbsDiffEventTerms": 5.578870698741412e-15,
+   "allEventCountsEqual": true,
+   "tolerance": 1e-9,
+   "pass": true
+  },
+  "funded": {
+   "rule": "NEW_52W_HIGH",
+   "N": 10,
+   "sessions": 1370,
+   "from": "2000-01-07",
+   "to": "2026-04-02",
+   "cagr": 0.1642444419974758,
+   "spyCagr": 0.05900432573612746,
+   "jsCagr": 0.16424444199747912,
+   "jsSpyCagr": 0.05900432573612746,
+   "cagrAbsDiff": 3.3306690738754696e-15,
+   "spyCagrWith36525DayYears": 0.05900557241172666,
+   "yearConventionNote": "strategy CAGR (research-portfolio) uses 365.25-day years, SPY CAGR (weekly-benchmark.compare) 365.2425; effect on the excess CAGR ~1e-6",
+   "spyCagrAbsDiff": 0,
+   "meanInvestedShare": 0.9878414107087952,
+   "jsMeanInvestedShare": 0.9878414107087948,
+   "sessionDatesAllOnSpy": true,
+   "sessionCountEqualJs": true,
+   "firstLastEqualJs": true
+  },
+  "A1": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "horizonWeeks": 13,
+    "n": 65737,
+    "nEqual": true,
+    "maxAbsDiff": 7.979727989493313e-16
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "horizonWeeks": 13,
+    "n": 65497,
+    "nEqual": true,
+    "maxAbsDiff": 3.157196726277789e-16
+   },
+   {
+    "rule": "TREND_UP",
+    "horizonWeeks": 13,
+    "n": 63802,
+    "nEqual": true,
+    "maxAbsDiff": 5.93275428784068e-16
+   },
+   {
+    "rule": "TREND_DOWN",
+    "horizonWeeks": 13,
+    "n": 63291,
+    "nEqual": true,
+    "maxAbsDiff": 5.898059818321144e-16
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "horizonWeeks": 13,
+    "n": 42395,
+    "nEqual": true,
+    "maxAbsDiff": 4.163336342344337e-16
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "horizonWeeks": 52,
+    "n": 65112,
+    "nEqual": true,
+    "maxAbsDiff": 5.578870698741412e-15
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "horizonWeeks": 52,
+    "n": 64441,
+    "nEqual": true,
+    "maxAbsDiff": 3.70536934468646e-15
+   },
+   {
+    "rule": "TREND_UP",
+    "horizonWeeks": 52,
+    "n": 62950,
+    "nEqual": true,
+    "maxAbsDiff": 5.4817261840867104e-15
+   },
+   {
+    "rule": "TREND_DOWN",
+    "horizonWeeks": 52,
+    "n": 62488,
+    "nEqual": true,
+    "maxAbsDiff": 4.121702978920894e-15
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "horizonWeeks": 52,
+    "n": 41766,
+    "nEqual": true,
+    "maxAbsDiff": 1.0269562977782698e-15
+   }
+  ],
+  "entryDelay": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "delayWeeks": 0,
+    "n": 65738,
+    "nEqual": true,
+    "maxAbsDiff": 1.734723475976807e-18
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "delayWeeks": 0,
+    "n": 65498,
+    "nEqual": true,
+    "maxAbsDiff": 1.9081958235744878e-17
+   },
+   {
+    "rule": "TREND_UP",
+    "delayWeeks": 0,
+    "n": 63803,
+    "nEqual": true,
+    "maxAbsDiff": 1.951563910473908e-18
+   },
+   {
+    "rule": "TREND_DOWN",
+    "delayWeeks": 0,
+    "n": 63292,
+    "nEqual": true,
+    "maxAbsDiff": 1.22514845490862e-17
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "delayWeeks": 0,
+    "n": 42397,
+    "nEqual": true,
+    "maxAbsDiff": 1.9081958235744878e-17
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "delayWeeks": 1,
+    "n": 65737,
+    "nEqual": true,
+    "maxAbsDiff": 3.903127820947816e-18
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "delayWeeks": 1,
+    "n": 65497,
+    "nEqual": true,
+    "maxAbsDiff": 1.734723475976807e-18
+   },
+   {
+    "rule": "TREND_UP",
+    "delayWeeks": 1,
+    "n": 63802,
+    "nEqual": true,
+    "maxAbsDiff": 1.8214596497756474e-17
+   },
+   {
+    "rule": "TREND_DOWN",
+    "delayWeeks": 1,
+    "n": 63291,
+    "nEqual": true,
+    "maxAbsDiff": 6.613633252161577e-18
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "delayWeeks": 1,
+    "n": 42395,
+    "nEqual": true,
+    "maxAbsDiff": 3.469446951953614e-18
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "delayWeeks": 2,
+    "n": 65737,
+    "nEqual": true,
+    "maxAbsDiff": 1.9949319973733282e-17
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "delayWeeks": 2,
+    "n": 65496,
+    "nEqual": true,
+    "maxAbsDiff": 3.469446951953614e-18
+   },
+   {
+    "rule": "TREND_UP",
+    "delayWeeks": 2,
+    "n": 63802,
+    "nEqual": true,
+    "maxAbsDiff": 7.37257477290143e-18
+   },
+   {
+    "rule": "TREND_DOWN",
+    "delayWeeks": 2,
+    "n": 63291,
+    "nEqual": true,
+    "maxAbsDiff": 6.938893903907228e-18
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "delayWeeks": 2,
+    "n": 42394,
+    "nEqual": true,
+    "maxAbsDiff": 5.204170427930421e-18
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "delayWeeks": 4,
+    "n": 65734,
+    "nEqual": true,
+    "maxAbsDiff": 8.673617379884035e-18
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "delayWeeks": 4,
+    "n": 65491,
+    "nEqual": true,
+    "maxAbsDiff": 2.0816681711721685e-17
+   },
+   {
+    "rule": "TREND_UP",
+    "delayWeeks": 4,
+    "n": 63799,
+    "nEqual": true,
+    "maxAbsDiff": 1.474514954580286e-17
+   },
+   {
+    "rule": "TREND_DOWN",
+    "delayWeeks": 4,
+    "n": 63290,
+    "nEqual": true,
+    "maxAbsDiff": 3.469446951953614e-18
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "delayWeeks": 4,
+    "n": 42388,
+    "nEqual": true,
+    "maxAbsDiff": 1.734723475976807e-17
+   }
+  ],
+  "seconds": 104.1,
+  "limitation": "Loader qualification and series bounds are taken from the committed V10 manifest (inputs); same author, independent code path; a second language is not a holdout."
+ },
+ "sameDatesCheck": {
+  "events": "SPY return computed between the identical entry and exit close dates of each event in JS and Python (A1 terms agree to the stated tolerance)",
+  "funded": {
+   "sessionsIdenticalToSpy": [
+    {
+     "rule": "MOMENTUM_IMPROVED",
+     "identical": true
+    },
+    {
+     "rule": "TREND_UP",
+     "identical": true
+    },
+    {
+     "rule": "NEW_52W_HIGH",
+     "identical": true
+    }
+   ],
+   "investedShare": [
+    {
+     "rule": "MOMENTUM_IMPROVED",
+     "strategyMeanInvested": 0.99635,
+     "spyInvested": 1
+    },
+    {
+     "rule": "TREND_UP",
+     "strategyMeanInvested": 0.996347,
+     "spyInvested": 1
+    },
+    {
+     "rule": "NEW_52W_HIGH",
+     "strategyMeanInvested": 0.987841,
+     "spyInvested": 1
+    }
+   ]
+  },
+  "returnDefinition": "both PRICE_RETURN, both split-adjusted by the provider (Tiingo); no total return on either side",
+  "costs": "strategy 10+5 bps per side; SPY none (passive buy-and-hold, an investor would also pay ~0.09 % p.a. expense ratio which is already inside the SPY price)",
+  "investment": "strategy holds slots of 1/N, cash at 0 % for empty slots (see averageInvestedShare); SPY fully invested"
+ },
+ "spyDividends": {
+  "source": {
+   "issuer": "SPDR S&P 500 ETF Trust (SPY)",
+   "cik": "884394",
+   "form": "N-30D annual report, Financial Highlights",
+   "documents": [
+    {
+     "accession": "0001193125-25-297563",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000119312525297563/d18808dn30d.htm",
+     "sha256": "0e91e0e260ff80e010070455c3dc83d11487d0481cda3ce08f2bc317e92148aa",
+     "periodOfReport": "2025-09-30",
+     "state": "PARSED",
+     "quote": "Less Distributions from: Net investment income (7.25) (7.01) (6.51) (6.18) (5.66)"
+    },
+    {
+     "accession": "0001193125-20-305082",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000119312520305082/d72640dn30d.htm",
+     "sha256": "e5d713212d6fc75119d3430d5855ced8594e5cfc43f9db5b2cf5b78d94776b4d",
+     "periodOfReport": "2020-09-30",
+     "state": "PARSED",
+     "quote": "Less Distributions from: Net investment income (5.68 ) (5.48 ) (5.02 ) (4.78 ) (4.42 )"
+    },
+    {
+     "accession": "0001193125-15-390230",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000119312515390230/d80506dn30d.htm",
+     "sha256": "b3098cdef380104accb3087800235fd2354164e5bb96ebca3db70854afb503c0",
+     "periodOfReport": "2015-09-30",
+     "state": "PARSED",
+     "quote": "Less distributions from: Net investment income (4.13 ) (3.68 ) (3.39 ) (2.85 ) (2.46 )"
+    },
+    {
+     "accession": "0000950123-10-109631",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000095012310109631/b82994a1nv30d.htm",
+     "sha256": "7088ac5ad6869d2796e1df60da3e752f21c5dbb3fe08d75a086685480207cc86",
+     "periodOfReport": "2010-09-30",
+     "state": "PARSED",
+     "quote": "Less distributions from: Net investment income (2.20 ) (2.31 ) (2.78 ) (2.72 ) (2.33 )"
+    },
+    {
+     "accession": "0000950135-05-006765",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000095013505006765/b57342mfnv30d.txt",
+     "sha256": "0b15a59d6d3ac20d7c00effd3596664f73b3e2258a765cb53f81e348a47c5788",
+     "periodOfReport": "2005-09-30",
+     "state": "PARSED",
+     "quote": "Less distributions from: Net investment income.......................... (2.40) (1.79) (1.55) (1.46) (1.44)"
+    },
+    {
+     "accession": "0000950135-00-005227",
+     "url": "https://www.sec.gov/Archives/edgar/data/884394/000095013500005227/b37488ssn-30d.txt",
+     "sha256": "bbb97bbf909d3cb3dbce4246702048d3fbaaa9ad883acc49efc3bf9ab1e5c658",
+     "periodOfReport": "2000-09-30",
+     "state": "PARSED",
+     "quote": "Total distributions ...................... (1.44) (1.49)"
+    }
+   ],
+   "navChainConsistent": {
+    "checks": 26,
+    "agree": 26
+   },
+   "secRequests": 8
+  },
+  "fiscalYears": {
+   "1999-09-30": {
+    "navBegin": 101.8,
+    "distributionsPerUnit": 1.49,
+    "navEnd": 128.39,
+    "distributionYield": 0.014637,
+    "priceReturnNav": 0.261198,
+    "totalReturnNavApprox": 0.275835,
+    "reportedNavTotalReturnPct": null,
+    "source": "0000950135-00-005227"
+   },
+   "2000-09-30": {
+    "navBegin": 128.39,
+    "distributionsPerUnit": 1.44,
+    "navEnd": 143.83,
+    "distributionYield": 0.011216,
+    "priceReturnNav": 0.120259,
+    "totalReturnNavApprox": 0.131474,
+    "reportedNavTotalReturnPct": null,
+    "source": "0000950135-00-005227"
+   },
+   "2001-09-30": {
+    "navBegin": 143.83,
+    "distributionsPerUnit": 1.44,
+    "navEnd": 104.33,
+    "distributionYield": 0.010012,
+    "priceReturnNav": -0.27463,
+    "totalReturnNavApprox": -0.264618,
+    "reportedNavTotalReturnPct": -26.6,
+    "source": "0000950135-05-006765"
+   },
+   "2002-09-30": {
+    "navBegin": 104.33,
+    "distributionsPerUnit": 1.46,
+    "navEnd": 81.78,
+    "distributionYield": 0.013994,
+    "priceReturnNav": -0.216141,
+    "totalReturnNavApprox": -0.202147,
+    "reportedNavTotalReturnPct": -20.46,
+    "source": "0000950135-05-006765"
+   },
+   "2003-09-30": {
+    "navBegin": 81.78,
+    "distributionsPerUnit": 1.55,
+    "navEnd": 99.87,
+    "distributionYield": 0.018953,
+    "priceReturnNav": 0.221203,
+    "totalReturnNavApprox": 0.240157,
+    "reportedNavTotalReturnPct": 24.13,
+    "source": "0000950135-05-006765"
+   },
+   "2004-09-30": {
+    "navBegin": 99.87,
+    "distributionsPerUnit": 1.79,
+    "navEnd": 111.78,
+    "distributionYield": 0.017923,
+    "priceReturnNav": 0.119255,
+    "totalReturnNavApprox": 0.137178,
+    "reportedNavTotalReturnPct": 13.62,
+    "source": "0000950135-05-006765"
+   },
+   "2005-09-30": {
+    "navBegin": 111.78,
+    "distributionsPerUnit": 2.4,
+    "navEnd": 122.85,
+    "distributionYield": 0.021471,
+    "priceReturnNav": 0.099034,
+    "totalReturnNavApprox": 0.120505,
+    "reportedNavTotalReturnPct": 12.11,
+    "source": "0000950135-05-006765"
+   },
+   "2006-09-30": {
+    "navBegin": 122.85,
+    "distributionsPerUnit": 2.33,
+    "navEnd": 133.53,
+    "distributionYield": 0.018966,
+    "priceReturnNav": 0.086935,
+    "totalReturnNavApprox": 0.105902,
+    "reportedNavTotalReturnPct": 10.64,
+    "source": "0000950123-10-109631"
+   },
+   "2007-09-30": {
+    "navBegin": 133.53,
+    "distributionsPerUnit": 2.72,
+    "navEnd": 152.48,
+    "distributionYield": 0.02037,
+    "priceReturnNav": 0.141916,
+    "totalReturnNavApprox": 0.162286,
+    "reportedNavTotalReturnPct": 16.31,
+    "source": "0000950123-10-109631"
+   },
+   "2008-09-30": {
+    "navBegin": 152.48,
+    "distributionsPerUnit": 2.78,
+    "navEnd": 116.52,
+    "distributionYield": 0.018232,
+    "priceReturnNav": -0.235834,
+    "totalReturnNavApprox": -0.217602,
+    "reportedNavTotalReturnPct": -21.84,
+    "source": "0000950123-10-109631"
+   },
+   "2009-09-30": {
+    "navBegin": 116.52,
+    "distributionsPerUnit": 2.31,
+    "navEnd": 105.73,
+    "distributionYield": 0.019825,
+    "priceReturnNav": -0.092602,
+    "totalReturnNavApprox": -0.072777,
+    "reportedNavTotalReturnPct": -6.9,
+    "source": "0000950123-10-109631"
+   },
+   "2010-09-30": {
+    "navBegin": 105.73,
+    "distributionsPerUnit": 2.2,
+    "navEnd": 114.13,
+    "distributionYield": 0.020808,
+    "priceReturnNav": 0.079448,
+    "totalReturnNavApprox": 0.100255,
+    "reportedNavTotalReturnPct": 10.08,
+    "source": "0000950123-10-109631"
+   },
+   "2011-09-30": {
+    "navBegin": 114.13,
+    "distributionsPerUnit": 2.46,
+    "navEnd": 113.12,
+    "distributionYield": 0.021554,
+    "priceReturnNav": -0.00885,
+    "totalReturnNavApprox": 0.012705,
+    "reportedNavTotalReturnPct": 1.01,
+    "source": "0001193125-15-390230"
+   },
+   "2012-09-30": {
+    "navBegin": 113.12,
+    "distributionsPerUnit": 2.85,
+    "navEnd": 144,
+    "distributionYield": 0.025194,
+    "priceReturnNav": 0.272984,
+    "totalReturnNavApprox": 0.298179,
+    "reportedNavTotalReturnPct": 29.96,
+    "source": "0001193125-15-390230"
+   },
+   "2013-09-30": {
+    "navBegin": 144,
+    "distributionsPerUnit": 3.39,
+    "navEnd": 167.96,
+    "distributionYield": 0.023542,
+    "priceReturnNav": 0.166389,
+    "totalReturnNavApprox": 0.189931,
+    "reportedNavTotalReturnPct": 19.09,
+    "source": "0001193125-15-390230"
+   },
+   "2014-09-30": {
+    "navBegin": 167.96,
+    "distributionsPerUnit": 3.68,
+    "navEnd": 196.98,
+    "distributionYield": 0.02191,
+    "priceReturnNav": 0.172779,
+    "totalReturnNavApprox": 0.194689,
+    "reportedNavTotalReturnPct": 19.57,
+    "source": "0001193125-15-390230"
+   },
+   "2015-09-30": {
+    "navBegin": 196.98,
+    "distributionsPerUnit": 4.13,
+    "navEnd": 191.77,
+    "distributionYield": 0.020967,
+    "priceReturnNav": -0.026449,
+    "totalReturnNavApprox": -0.005483,
+    "reportedNavTotalReturnPct": -0.64,
+    "source": "0001193125-15-390230"
+   },
+   "2016-09-30": {
+    "navBegin": 191.77,
+    "distributionsPerUnit": 4.42,
+    "navEnd": 216.4,
+    "distributionYield": 0.023048,
+    "priceReturnNav": 0.128435,
+    "totalReturnNavApprox": 0.151484,
+    "reportedNavTotalReturnPct": 15.3,
+    "source": "0001193125-20-305082"
+   },
+   "2017-09-30": {
+    "navBegin": 216.4,
+    "distributionsPerUnit": 4.78,
+    "navEnd": 251.3,
+    "distributionYield": 0.022089,
+    "priceReturnNav": 0.161275,
+    "totalReturnNavApprox": 0.183364,
+    "reportedNavTotalReturnPct": 18.44,
+    "source": "0001193125-20-305082"
+   },
+   "2018-09-30": {
+    "navBegin": 251.3,
+    "distributionsPerUnit": 5.02,
+    "navEnd": 290.6,
+    "distributionYield": 0.019976,
+    "priceReturnNav": 0.156387,
+    "totalReturnNavApprox": 0.176363,
+    "reportedNavTotalReturnPct": 17.72,
+    "source": "0001193125-20-305082"
+   },
+   "2019-09-30": {
+    "navBegin": 290.6,
+    "distributionsPerUnit": 5.48,
+    "navEnd": 296.82,
+    "distributionYield": 0.018858,
+    "priceReturnNav": 0.021404,
+    "totalReturnNavApprox": 0.040262,
+    "reportedNavTotalReturnPct": 4.11,
+    "source": "0001193125-20-305082"
+   },
+   "2020-09-30": {
+    "navBegin": 296.82,
+    "distributionsPerUnit": 5.68,
+    "navEnd": 335.21,
+    "distributionYield": 0.019136,
+    "priceReturnNav": 0.129338,
+    "totalReturnNavApprox": 0.148474,
+    "reportedNavTotalReturnPct": 14.98,
+    "source": "0001193125-20-305082"
+   },
+   "2021-09-30": {
+    "navBegin": 335.21,
+    "distributionsPerUnit": 5.66,
+    "navEnd": 429.22,
+    "distributionYield": 0.016885,
+    "priceReturnNav": 0.280451,
+    "totalReturnNavApprox": 0.297336,
+    "reportedNavTotalReturnPct": 29.79,
+    "source": "0001193125-25-297563"
+   },
+   "2022-09-30": {
+    "navBegin": 429.22,
+    "distributionsPerUnit": 6.18,
+    "navEnd": 357.29,
+    "distributionYield": 0.014398,
+    "priceReturnNav": -0.167583,
+    "totalReturnNavApprox": -0.153185,
+    "reportedNavTotalReturnPct": -15.53,
+    "source": "0001193125-25-297563"
+   },
+   "2023-09-30": {
+    "navBegin": 357.29,
+    "distributionsPerUnit": 6.51,
+    "navEnd": 427.31,
+    "distributionYield": 0.01822,
+    "priceReturnNav": 0.195975,
+    "totalReturnNavApprox": 0.214196,
+    "reportedNavTotalReturnPct": 21.45,
+    "source": "0001193125-25-297563"
+   },
+   "2024-09-30": {
+    "navBegin": 427.31,
+    "distributionsPerUnit": 7.01,
+    "navEnd": 574.05,
+    "distributionYield": 0.016405,
+    "priceReturnNav": 0.343404,
+    "totalReturnNavApprox": 0.359809,
+    "reportedNavTotalReturnPct": 36.15,
+    "source": "0001193125-25-297563"
+   },
+   "2025-09-30": {
+    "navBegin": 574.05,
+    "distributionsPerUnit": 7.25,
+    "navEnd": 666.31,
+    "distributionYield": 0.01263,
+    "priceReturnNav": 0.160718,
+    "totalReturnNavApprox": 0.173347,
+    "reportedNavTotalReturnPct": 17.46,
+    "source": "0001193125-25-297563"
+   }
+  },
+  "summaryFY2000toFY2025": {
+   "fiscalYears": [
+    "2000-09-30",
+    "2025-09-30"
+   ],
+   "years": 26,
+   "cagrPriceNav": 0.06538255700781281,
+   "cagrTotalNavApprox": 0.08405703980956836,
+   "meanDistributionYield": 0.018714692514164362,
+   "note": "Approximate TR = (NAV end + distributions)/NAV begin - 1 (distributions not reinvested within the year; equalization ignored). Reported NAV total return listed where parsed for comparison. NAV is not the exchange price; SPY trades at a negligible premium/discount."
+  },
+  "fundedComparison": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "from": "2000-01-07",
+    "to": "2026-04-02",
+    "years": 26.234086,
+    "strategyCagrPriceReturn": 0.077029,
+    "spyCagrPriceReturn": 0.059004,
+    "spyMeanDistributionYield": 0.018674,
+    "spyCagrTotalReturnEstimate": 0.07878,
+    "excessCagrPriceVsPrice": 0.018024,
+    "excessCagrPriceVsSpyTotalEstimate": -0.001751,
+    "signalTitleYield2010": 0.01526792861444428,
+    "excessCagrBothTotalEstimate": 0.014617,
+    "note": "ESTIMATE: SPY TR CAGR ~ (1+PR CAGR)(1+mean distribution yield of the covered fiscal years)-1; the strategy itself is price return (its own dividends of ~1.3-1.5 % p.a. 2010+ are missing on the strategy side as well)."
+   },
+   {
+    "rule": "TREND_UP",
+    "from": "2000-01-07",
+    "to": "2026-04-02",
+    "years": 26.234086,
+    "strategyCagrPriceReturn": 0.11078,
+    "spyCagrPriceReturn": 0.059004,
+    "spyMeanDistributionYield": 0.018674,
+    "spyCagrTotalReturnEstimate": 0.07878,
+    "excessCagrPriceVsPrice": 0.051776,
+    "excessCagrPriceVsSpyTotalEstimate": 0.032,
+    "signalTitleYield2010": 0.01543840294915783,
+    "excessCagrBothTotalEstimate": 0.04854,
+    "note": "ESTIMATE: SPY TR CAGR ~ (1+PR CAGR)(1+mean distribution yield of the covered fiscal years)-1; the strategy itself is price return (its own dividends of ~1.3-1.5 % p.a. 2010+ are missing on the strategy side as well)."
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "from": "2000-01-07",
+    "to": "2026-04-02",
+    "years": 26.234086,
+    "strategyCagrPriceReturn": 0.164244,
+    "spyCagrPriceReturn": 0.059004,
+    "spyMeanDistributionYield": 0.018674,
+    "spyCagrTotalReturnEstimate": 0.07878,
+    "excessCagrPriceVsPrice": 0.10524,
+    "excessCagrPriceVsSpyTotalEstimate": 0.085464,
+    "signalTitleYield2010": 0.013014990566814415,
+    "excessCagrBothTotalEstimate": 0.099581,
+    "note": "ESTIMATE: SPY TR CAGR ~ (1+PR CAGR)(1+mean distribution yield of the covered fiscal years)-1; the strategy itself is price return (its own dividends of ~1.3-1.5 % p.a. 2010+ are missing on the strategy side as well)."
+   }
+  ]
+ },
+ "signalTitleDividends": {
+  "script": "scripts/quant/v11/decomposition/dividends_signal.py",
+  "definition": "yield(issuer, t) = PaymentsOfDividendsCommonStock (fallback PaymentsOfDividends), the latest annual value (10-K, duration 330-400 days) filed BEFORE t with period end within 550 days of t, divided by the PIT market cap of the listing at the latest V10 factor-panel rank date <= t. An issuer with a visible 10-K (any us-gaap fact, annual, filed before t, end within 550 days) but without a dividend fact counts as yield 0; otherwise unknown (excluded, counted). Issuer level (ignores multiple share classes and special dividends) - order of magnitude only.",
+  "populationMeanYield2010": 0.014387047126258616,
+  "byRule": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "signalTitleYield2010": 0.015268,
+    "populationYieldSameDates": 0.01472,
+    "spyDistributionYield2010to2025": 0.019599,
+    "eventsWithYield": 30952,
+    "eventsUnknownYield": 17383,
+    "totalReturnCorrectionOfSpyExcessPerYearPp": -0.43,
+    "totalReturnCorrectionOfPopulationExcessPerYearPp": 0.05,
+    "per13WeeksPp": -0.11,
+    "per52WeeksPp": -0.43
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "signalTitleYield2010": 0.01441,
+    "populationYieldSameDates": 0.014447,
+    "spyDistributionYield2010to2025": 0.019599,
+    "eventsWithYield": 30997,
+    "eventsUnknownYield": 17256,
+    "totalReturnCorrectionOfSpyExcessPerYearPp": -0.52,
+    "totalReturnCorrectionOfPopulationExcessPerYearPp": 0,
+    "per13WeeksPp": -0.13,
+    "per52WeeksPp": -0.52
+   },
+   {
+    "rule": "TREND_UP",
+    "signalTitleYield2010": 0.015438,
+    "populationYieldSameDates": 0.014829,
+    "spyDistributionYield2010to2025": 0.019599,
+    "eventsWithYield": 30126,
+    "eventsUnknownYield": 16896,
+    "totalReturnCorrectionOfSpyExcessPerYearPp": -0.42,
+    "totalReturnCorrectionOfPopulationExcessPerYearPp": 0.06,
+    "per13WeeksPp": -0.1,
+    "per52WeeksPp": -0.42
+   },
+   {
+    "rule": "TREND_DOWN",
+    "signalTitleYield2010": 0.013909,
+    "populationYieldSameDates": 0.014389,
+    "spyDistributionYield2010to2025": 0.019599,
+    "eventsWithYield": 30321,
+    "eventsUnknownYield": 16699,
+    "totalReturnCorrectionOfSpyExcessPerYearPp": -0.57,
+    "totalReturnCorrectionOfPopulationExcessPerYearPp": -0.05,
+    "per13WeeksPp": -0.14,
+    "per52WeeksPp": -0.57
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "signalTitleYield2010": 0.013015,
+    "populationYieldSameDates": 0.014493,
+    "spyDistributionYield2010to2025": 0.019599,
+    "eventsWithYield": 20320,
+    "eventsUnknownYield": 10755,
+    "totalReturnCorrectionOfSpyExcessPerYearPp": -0.66,
+    "totalReturnCorrectionOfPopulationExcessPerYearPp": -0.15,
+    "per13WeeksPp": -0.16,
+    "per52WeeksPp": -0.66
+   }
+  ],
+  "reading": "Price-return comparisons omit ~1.9 % p.a. SPY distributions but only ~1.3-1.5 % p.a. dividends of the signal titles: the PRICE vs PRICE comparison FLATTERS the strategies vs SPY by about 0.4-0.6 Pp p.a. (2010+, order of magnitude; 2000-2009 not measured)."
+ }
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "v13-largecap-protocol-amendment-1.0.1",
+  "amends": "protocol-1.0.0.json (sha256 3710f99d5bb10ff95538fd8bdde73e8dc805888589d0a386d958a7465780ef28)",
+  "status": "REGISTERED_AFTER_DOCUMENT_FORMAT_SIGHT_BEFORE_OUTCOMES",
+  "registeredAt": "2026-10-29",
+  "timing": "Written after the document set of protocol 1.0.0 was fetched (580 network requests) and after a format survey of a few documents per issuer that was needed to build the parsers, but BEFORE any band test, run or interval was computed for any listing. The git commit that adds this file precedes the first run of evaluate.cjs. Results are computed and published under both 1.0.0 (registered rules, parsers as frozen with this commit) and 1.0.1; each result names its version.",
+  "changes": [
+    {
+      "id": "A1",
+      "rule": "Format C quarterly tables: quarters are columns (header row with the four quarter labels, e.g. 'Fourth Quarter Third Quarter Second Quarter First Quarter'), each year row carries four 'high - low' pairs in header order; the year comes from the row label ('Fiscal 2001 price range ...', '2012 price range per share'), from a label row directly above, or from the nearest year row above.",
+      "reason": "Protocol 1.0.0 only described quarter rows. Apple reports its price range in this transposed layout in every 10-K 1994-2017. Under 1.0.0 these tables are not parsed (Apple then has no A anchors)."
+    },
+    {
+      "id": "A2",
+      "rule": "The fiscal year end month of a fiscal year label Y is the month of the period of report of the annual filing whose period of report lies in calendar year Y (latest such filing); only if no such filing exists the month of the reporting document's own period of report is used (1.0.0 rule).",
+      "reason": "Morgan Stanley changed its fiscal year end from November 30 to December 31 (10-K for 2009 reports 'Fiscal 2008' quarters ending in November). Under 1.0.0 these quarters would be shifted by one month."
+    },
+    {
+      "id": "C1",
+      "rule": "Clarification (implementation of 1.0.0 'year row'): year rows also include 'Fiscal Year Ended September 30, 2005' and 'Year Ended 9/30/00'. A quarter table without an explicit year label (header years or year rows) is not used.",
+      "reason": "Seen in AmerisourceBergen 10-Ks. A fallback to the document's fiscal year would assign the prior-year block to the current year."
+    },
+    {
+      "id": "C2",
+      "rule": "Clarification: identity statements (symbol, exchange, change) are evaluated per filing (accession) over all its fetched documents (main document and EX-13); the cover 'Trading Symbol(s)' pattern allows punctuation (e.g. '$.01 par value') within 300 characters.",
+      "reason": "U.S. Bancorp states symbol and exchange in the EX-13 annual report, not in the 10-K wrapper; '$.01' contains a period that the first pattern excluded."
+    },
+    {
+      "id": "C3",
+      "rule": "Clarification of the B parser: a period cell must contain only the period (after removing month names, numbers, 'Month #n' and connector words at most one letter may remain); HTML rows are read only from the header's own table; 'Month D to Month D' without a year takes the year from the period of report; label rows following a period row belong to that period until a Total row.",
+      "reason": "Labels like 'April 2013 ASR' are not periods; exhibit lists after a table are not table rows."
+    },
+    {
+      "id": "C4",
+      "rule": "Clarification: the filing index is read as '<accession>-index.htm' (same filing index as index.json, which lacks the document type needed to find EX-13).",
+      "reason": "implementation"
+    }
+  ],
+  "unchanged": "All thresholds (tolerances 1 % / 10 %, buffer 10 days, gap 366 days, event window 120 days, failure rules, 104 bars), the identity rule (symbol AND exchange in the filing, 400-day bracketing, change anchor = both symbols within 400 characters with a change word), the unit conversion and the interval selection.",
+  "surveyDisclosure": [
+    "Format survey documents (text only, no band test): Apple 10-K 1994-2019 and 10-Q 2005-2023, Abbott 10-K 1995-2017 and 10-Q 2006/2013/2020, Morgan Stanley 10-K 1998-2010 and 10-Q 2005-2022, U.S. Bancorp 10-K 1995-2017, AmerisourceBergen 10-K 2001/2005, Healthpeak 10-K 2005/2014 and the 8-Ks fetched for the PEAK->DOC transition.",
+    "Seen during the survey: older Abbott (before 2019), HCP (before 2019) and Morgan Stanley (before 2006) filings do not state a trading symbol; under the unchanged identity rule their price tables cannot count before the first symbol-naming filing minus 400 days.",
+    "Seen: Abbott 10-Q rows of 2006 with average prices of option-exercise surrender shares; the B rules were not changed.",
+    "Seen: the Healthpeak 8-K of 2024-02-21 states 'expected to begin trading under the ticker symbol \"DOC\"' while its cover names PEAK further away than 400 characters; under the unchanged change-anchor rule this is not a change anchor. Not changed."
+  ],
+  "knownParserGaps": [
+    "Values split over two text lines (Apple 10-K filed 1995-12-19: highs and lows on separate lines) are not parsed.",
+    "Merged multi-line HTML cells with several programmes in one cell (Morgan Stanley 10-Q 2005) are not parsed as separate rows."
+  ]
+}

@@ -7,8 +7,8 @@
       "name": "AMERICAN ELECTRIC POWER CO INC",
       "sic": "4911",
       "rawFacts": 35070,
-      "mappedFacts": 7580,
-      "unmappedFacts": 27429,
+      "mappedFacts": 7378,
+      "unmappedFacts": 27597,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -126,35 +126,36 @@
         "resolvedValues": 777
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 28415,
+        "rules_version": "1.1.0",
+        "total": 28505,
         "by_severity": {
-          "INFO": 27429,
-          "WARNING": 986
+          "INFO": 27597,
+          "WARNING": 908
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 923,
+          "CONCEPT_DISAGREEMENT": 847,
           "EXTREME_VALUE": 3,
-          "RESTATEMENT_CONFLICT": 57,
+          "RESTATEMENT_CONFLICT": 55,
           "UNIT_MISMATCH": 3,
-          "UNKNOWN_CONCEPT": 27429
+          "UNKNOWN_CONCEPT": 27597
         }
       },
       "latestFiling": {
-        "accession": "0000004904-26-000059",
-        "filing_date": "2026-07-30",
+        "accession": "0000004904-26-000072",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-10-28T14:17:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "eaa8020a3cdc4131ef3acb06d99f37eef590f30e6f73e0b050d100725ccd2aff",

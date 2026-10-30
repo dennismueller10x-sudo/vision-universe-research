@@ -1,0 +1,151 @@
+{
+ "schemaVersion": "v12-mcap-review-correction-1.0.0",
+ "strand": "MCAP",
+ "kind": "CORRECTION_AFTER_INDEPENDENT_REVIEW",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "inputs": {
+  "sec-sample-validation.json": "e2fd1591747c4ea6ee5695fc379b5df7f4b76fef3fba426188860aba2e84cb87",
+  "sec-adjudication-validation.json": "ac85e3d14ffeefbd527a1fb34b80117dacdcf92460630152396810c3d4c62f9e",
+  "sec-sample-development.json": "0c97f221e513705583ceae8871095eac5c17d8046b1f973d298f3dd4add31e84",
+  "sec-sample-development-2.json": "b97998a1bad907d72eddaa99da7c056db932e228a4c9003dec49d3b75f3d6d61",
+  "rule-1.0.8.json": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d",
+  "impact-1.0.0.json": "657a9d5ad6e59d5265a146b4239baa39aae02a1cf033e06ee5936d39c829e2b9"
+ },
+ "corrections": [
+  {
+   "finding": "MAJOR 1",
+   "subject": "validation without overlap with the development samples",
+   "result": {
+    "definition": "Validation sample of rule 1.0.7 (56 observations, 34 sampled corrections) without overlap with the development samples: (a) observation level - drop the 6 named cases (inspected before rule 1.0.0 and present in every sample) and every accession that is also in sec-sample-development.json or sec-sample-development-2.json; (b) issuer level (stricter) - additionally drop every issuer (securityId) that appears in a development sample. Unconfirmed counts as not confirmed.",
+    "all": {
+     "sampledCorrections_1_0_7": 34,
+     "correct": 31,
+     "wrong": 2,
+     "unconfirmed": 1,
+     "stillCorrected_1_0_8": 30,
+     "stillCorrectedCorrect": 29,
+     "stillCorrectedWrong": 0,
+     "stillCorrectedUnconfirmed": 1,
+     "wilson_1_0_7_correctOfSampled": {
+      "k": 31,
+      "n": 34,
+      "share": 0.9118,
+      "lower95": 0.7704,
+      "upper95": 0.9695
+     },
+     "wilson_1_0_8_correctOfStillCorrected": {
+      "k": 29,
+      "n": 30,
+      "share": 0.9667,
+      "lower95": 0.8333,
+      "upper95": 0.9941
+     }
+    },
+    "observationLevelFresh": {
+     "sampledCorrections_1_0_7": 23,
+     "correct": 20,
+     "wrong": 2,
+     "unconfirmed": 1,
+     "stillCorrected_1_0_8": 19,
+     "stillCorrectedCorrect": 18,
+     "stillCorrectedWrong": 0,
+     "stillCorrectedUnconfirmed": 1,
+     "wilson_1_0_7_correctOfSampled": {
+      "k": 20,
+      "n": 23,
+      "share": 0.8696,
+      "lower95": 0.6787,
+      "upper95": 0.9546
+     },
+     "wilson_1_0_8_correctOfStillCorrected": {
+      "k": 18,
+      "n": 19,
+      "share": 0.9474,
+      "lower95": 0.7536,
+      "upper95": 0.9906
+     }
+    },
+    "issuerLevelFresh": {
+     "sampledCorrections_1_0_7": 19,
+     "correct": 16,
+     "wrong": 2,
+     "unconfirmed": 1,
+     "stillCorrected_1_0_8": 15,
+     "stillCorrectedCorrect": 14,
+     "stillCorrectedWrong": 0,
+     "stillCorrectedUnconfirmed": 1,
+     "wilson_1_0_7_correctOfSampled": {
+      "k": 16,
+      "n": 19,
+      "share": 0.8421,
+      "lower95": 0.6243,
+      "upper95": 0.9448
+     },
+     "wilson_1_0_8_correctOfStillCorrected": {
+      "k": 14,
+      "n": 15,
+      "share": 0.9333,
+      "lower95": 0.7018,
+      "upper95": 0.9881
+     }
+    },
+    "reading": "Only the observation-level fresh subset is an out-of-sample check of rule 1.0.7; for 1.0.8 (decided after this sample, exclusions only) the still-corrected share is in-sample. 18 of 19 fresh corrections that 1.0.8 keeps are confirmed (the 19th is unconfirmed, none wrong); the Wilson lower bound is the honest summary, not the point share."
+   }
+  },
+  {
+   "finding": "MAJOR 1",
+   "subject": "wrong statement in rule-1.0.8.json (amendments[1.0.8].validation)",
+   "wrong": "For 1.0.8 the sampled corrections that remain are 32/32 confirmed",
+   "correct": "Of the 34 corrections sampled from register 1.0.7, 30 remain corrected under 1.0.8: 29 confirmed, 1 unconfirmed (LOCO 10-Q 2022), 0 wrong (sec-adjudication-validation.json summary.underRule1_0_8); in-sample. The rule file is frozen (sha256 sidecar) and is not edited; this note supersedes the sentence.",
+   "check": {
+    "stillCorrected": 30,
+    "stillCorrectedAndCorrect": 29
+   }
+  },
+  {
+   "finding": "m3",
+   "subject": "file names cited in the rule files that do not exist under that name",
+   "map": [
+    {
+     "cited": "docs/quant-recovery/v12/mcap/sec-sample-1.0.0.json (rule-1.0.6/1.0.7/1.0.8, first SEC sample, tag development, register 1.0.5)",
+     "file": "docs/quant-recovery/v12/mcap/sec-sample-development.json"
+    },
+    {
+     "cited": "docs/quant-recovery/v12/mcap/sec-sample-final.json (rule-1.0.7/1.0.8, second sample, tag final, register 1.0.6)",
+     "file": "docs/quant-recovery/v12/mcap/sec-sample-development-2.json"
+    },
+    {
+     "cited": "panel.jsonl.gz (README reproduction)",
+     "file": "private, <scratchpad>/v12-private/mcap/{before,after}/panel.jsonl.gz and <scratchpad>/v10-private/factor/panel.jsonl.gz (sha256 in impact-1.0.0.json inputs) - not in the repository"
+    }
+   ]
+  },
+  {
+   "finding": "m3",
+   "subject": "label rowsValueScoreChanged in impact-1.0.0.json",
+   "published": {
+    "rowsValueScoreChanged": 222316
+   },
+   "correct": "The counter counts every row whose value score differs by any amount. The value score is a cross-sectional percentile (scale in valueScoreBreakdown.scoreScale): removing or correcting a few market caps shifts the ranks of all rows of the date, so every row with a value score differs (identical to availability.value.before). It is not the number of rows changed by the correction; see valueScoreBreakdown.",
+   "valueScoreBreakdown": {
+    "rowsCompared": 528969,
+    "withValueScoreBefore": 222316,
+    "becameUnavailable": 755,
+    "becameAvailable": 0,
+    "scoreDiffers": 221561,
+    "absDiffGt1Point": 689,
+    "absDiffGt5Points": 559,
+    "absDiffGt10Points": 412,
+    "marketCapChangedRowsWithScoreChange": 893,
+    "marketCapUnchangedRowsWithScoreChange": 220668,
+    "scoreScale": [
+     0.8996,
+     99.1004
+    ]
+   }
+  }
+ ],
+ "unchanged": "Register 1.0.8, rule files 1.0.0-1.0.8, impact-1.0.0.json and every study result stay as published."
+}

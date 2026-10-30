@@ -16,21 +16,32 @@
 <p class="ka-eyebrow">Konto</p>
 <h1 class="ka-title">Tarife</h1>
 <p class="ka-lead">Zwei Tarife, derselbe Funktionsumfang. Free ist kostenlos und braucht keine Zahlungsdaten. Mit Pro unterstützt du Vision Universe zum Einführungspreis.</p>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/watchlist/">Watchlist</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a></nav>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a><a class="ka-nav-out" href="/mein-dashboard/">Mein Dashboard</a></nav>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-grid ka-grid--2" id="ka-plans">
 <article class="ka-card ka-plan" data-plan="free" data-current="false"><h2>Free</h2><p class="ka-price">0 €</p><p class="ka-hint">Kostenlos · ohne Zahlungsdaten · ohne Laufzeit</p><ul class="ka-features"><li>Ein Konto für alle Vision-Universe-Welten</li><li>Persönliche Watchlist mit bis zu 500 Titeln</li><li>Alle bereits freigegebenen Funktionen</li></ul><div class="ka-actions" id="ka-action-free"><a class="ka-btn ka-btn--block" id="ka-choose-free" href="/konto/registrieren/">Kostenlos registrieren</a></div></article>
 <article class="ka-card ka-plan" data-plan="pro" data-current="false"><h2>Pro</h2><p class="ka-price"><span data-pro-price>1,00 €</span><small> / Monat</small></p><p class="ka-hint">inkl. MwSt. · verlängert sich monatlich · jederzeit zum Ende des bezahlten Monats kündbar</p><ul class="ka-features"><li>Ein Konto für alle Vision-Universe-Welten</li><li>Persönliche Watchlist mit bis zu 500 Titeln</li><li>Alle bereits freigegebenen Funktionen</li></ul><div class="ka-actions" id="ka-action-pro"><button class="ka-btn ka-btn--block" type="button" id="ka-choose-pro">Pro auswählen</button></div></article>
 </div>
 <p class="ka-muted">Free und Pro enthalten derzeit dieselben Funktionen. Der Quant-Gesamtscore und unveröffentlichte Supertrader-Signale sind in keinem Tarif enthalten.</p>
-<section class="ka-card ka-form" id="ka-confirm" hidden aria-labelledby="ka-confirm-title">
+<section class="ka-card ka-form" id="ka-confirm" hidden aria-labelledby="ka-confirm-title" data-state="loading">
 <h2 id="ka-confirm-title" tabindex="-1">Pro abonnieren</h2>
 <dl class="ka-kv"><dt>Tarif</dt><dd>Vision Universe Pro</dd><dt>Preis</dt><dd><span data-pro-price>1,00 €</span> pro Monat inkl. MwSt.</dd><dt>Laufzeit</dt><dd>1 Monat, verlängert sich automatisch um jeweils 1 Monat</dd><dt>Kündigung</dt><dd>jederzeit zum Ende des bezahlten Monats unter „Abonnement“ oder „Verträge hier kündigen“; danach gilt automatisch Free</dd><dt>Umfang</dt><dd>derzeit derselbe wie Free</dd></dl>
-<label class="ka-check"><input id="ka-confirm-terms" type="checkbox"><span>Ich bestelle Vision Universe Pro zahlungspflichtig für <span data-pro-price>1,00 €</span> pro Monat bis zur Kündigung und verlange, dass der Zugang sofort beginnt. Mir ist bekannt, dass ich bei einem Widerruf innerhalb von 14 Tagen den Preis für die bis dahin bereitgestellte Zeit anteilig zahle. Es gelten die <a class="ka-link" href="https://www.visionuniverse.de/policies/terms-of-service">Nutzungsbedingungen</a> und die <a class="ka-link" href="https://www.visionuniverse.de/policies/refund-policy">Widerrufsbelehrung</a>.</span></label>
-<button class="ka-btn ka-btn--block" type="button" id="ka-checkout" disabled>Weiter zur Zahlung bei Stripe</button>
-<p class="ka-hint">Die Zahlung schließt du auf der Seite von Stripe ab – je nach Verfügbarkeit mit Karte, Apple Pay, Google Pay, PayPal oder SEPA-Lastschrift; Zahlungsdaten erreichen Vision Universe nie. Brichst du dort ab, wird nichts berechnet und dein Konto bleibt Free.</p>
+<p class="ka-hint" id="ka-confirm-loading" role="status">Buchbarkeit wird geprüft …</p>
+<div class="ka-form" id="ka-confirm-ready" hidden>
+<label class="ka-check ka-check--order" for="ka-confirm-terms"><input id="ka-confirm-terms" name="ka-confirm-terms" type="checkbox"><span>Ich bestelle Vision Universe Pro zahlungspflichtig für <span data-pro-price>1,00 €</span> pro Monat bis zur Kündigung und verlange, dass der Zugang sofort beginnt. Mir ist bekannt, dass ich bei einem Widerruf innerhalb von 14 Tagen den Preis für die bis dahin bereitgestellte Zeit anteilig zahle.</span></label>
+<p class="ka-hint ka-legal" id="ka-confirm-legal">Es gelten die <a class="ka-link" data-legal="terms" href="https://konto.visionuniverse.de/rechtliches/agb" target="_blank" rel="noopener">Nutzungs- und Vertragsbedingungen</a> und die <a class="ka-link" data-legal="withdrawal" href="https://konto.visionuniverse.de/rechtliches/widerrufsbelehrung" target="_blank" rel="noopener">Widerrufsbelehrung</a> (<a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/widerrufsformular" target="_blank" rel="noopener">Muster-Widerrufsformular</a>).</p>
+<button class="ka-btn ka-btn--block" type="button" id="ka-checkout" disabled aria-describedby="ka-checkout-why">Weiter zur Zahlung bei Stripe</button>
+<p class="ka-hint" id="ka-checkout-why">Zuerst die Bestellung oben bestätigen.</p>
+<p class="ka-hint">Verbindlich bestellst du erst auf der Zahlungsseite von Stripe mit der zahlungspflichtigen Schaltfläche „Abonnieren“.</p>
+<p class="ka-hint">Die Zahlung schließt du auf der Seite von Stripe ab – mit den Zahlungsarten, die Stripe für dein Gerät anbietet (z. B. Karte, Apple Pay, Google Pay, PayPal oder SEPA-Lastschrift); Zahlungsdaten erreichen Vision Universe nie. Brichst du dort ab, wird nichts berechnet und dein Konto bleibt Free.</p>
+</div>
+<div class="ka-blocked" id="ka-confirm-blocked" hidden role="status">
+<p class="ka-blocked-title" id="ka-blocked-title">Pro ist für dein Konto noch nicht buchbar</p>
+<p class="ka-hint" id="ka-blocked-text">Pro befindet sich in einer internen Testphase und kann nur von freigeschalteten Testkonten abgeschlossen werden. Dein kostenloses Konto ist aktiv – mit allen freigegebenen Funktionen. Es wurde nichts bestellt und nichts berechnet.</p>
+<div class="ka-actions"><button class="ka-btn" type="button" id="ka-continue-free">Mit Free weiter</button></div>
+</div>
 </section>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>
