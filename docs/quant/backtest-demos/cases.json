@@ -1,0 +1,176 @@
+{
+ "schemaVersion": "backtest-demo-cases-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "cases": [
+  {
+   "id": "replay-nvda-winner-splits",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "privateData": null,
+   "purpose": "Gleiche-Aktie-Wiederholung einer festen Regel (Wochenschluss höchstens 5 % unter dem 52-Wochen-Hoch) auf NVDA 2010–2024; Fenster enthält die Splits 2021-07-20 (4:1) und 2024-06-10 (10:1).",
+   "replaces": "AAPL 2020 (4:1) ist nicht zulässig: der Research-Loader verweigert ref_AAPL mit CORPORATE_ACTION_UNRESOLVED (2000-09-29). Ersatz: NVDA (zwei belegte Splits im Fenster).",
+   "spec": "specs/replay-nvda-winner-splits.json"
+  },
+  {
+   "id": "replay-intc-loser",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_LOSER"
+   ],
+   "privateData": null,
+   "purpose": "Dieselbe Regel auf einem starken Verlierer: INTC 2019–2025 (Kurs etwa halbiert).",
+   "spec": "specs/replay-intc-loser.json"
+  },
+  {
+   "id": "ledger-smci-winner-split",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "privateData": null,
+   "purpose": "Realer Wochen-Ledger (eine finanzierte Position, NEW_52W_HIGH, 26 Wochen) auf SMCI, 10 Jahre bis 2025-12-31; enthält den 10:1-Split 2024-10-01.",
+   "spec": "specs/ledger-smci-winner-split.json"
+  },
+  {
+   "id": "pattern-2015-sideways",
+   "kind": "PATTERN_EVIDENCE",
+   "scenarios": [
+    "SIDEWAYS"
+   ],
+   "privateData": null,
+   "purpose": "Musterstudie (Wochenschluss ≥ 20 % unter dem bisherigen Hoch) über 30 Large Caps im Seitwärtsjahr 2015 (SPY etwa ±0 %), 13 Wochen Horizont, gleichzeitige Kontrollen.",
+   "spec": "specs/pattern-2015-sideways.json"
+  },
+  {
+   "id": "signal-2008-crash",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "privateData": null,
+   "purpose": "Alle fünf Signalregeln auf 30 Large Caps, Signale 2007-10 bis 2009-03 (Finanzkrise), 26 Wochen; finanzierte Variante TREND_UP (max. 5 Positionen) über research-portfolio.",
+   "spec": "specs/signal-2008-crash.json"
+  },
+  {
+   "id": "signal-2009-recovery",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "purpose": "Signalregeln in der Erholung 2009-03 bis 2010-12 (30 Large Caps), mit Parameter-Sensitivität (Horizont 13/26/52, Kosten 5/25 Bp).",
+   "spec": "specs/signal-2009-recovery.json"
+  },
+  {
+   "id": "signal-2020-covid",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "purpose": "Corona-Crash und Erholung: Signale 2020-01 bis 2020-12, 30 Large Caps, 13 Wochen; finanzierte Variante NEW_52W_HIGH.",
+   "spec": "specs/signal-2020-covid.json"
+  },
+  {
+   "id": "signal-2022-bear",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "privateData": null,
+   "purpose": "Bärenmarkt 2022: Signale 2022-01 bis 2022-12, 30 Large Caps, 26 Wochen.",
+   "spec": "specs/signal-2022-bear.json"
+  },
+  {
+   "id": "setup-reconstruction-2016-2024",
+   "kind": "SETUP_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "privateData": null,
+   "purpose": "Setup-Backtest auf rekonstruierten Zuständen (setup-replay-v1, alle Replay-Titel im V10-Frame), SETUP_NEW/SETUP_CONFIRMED, Einstieg nächster Wochenschluss, 26 Wochen; Setup-OOS-Status aus dem Zertifizierungspfad.",
+   "spec": "specs/setup-reconstruction-2016-2024.json"
+  },
+  {
+   "id": "strategy-2019-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "privateData": null,
+   "purpose": "Gleichgewichtete Strategie aus 10 Large Caps, Rebalancing alle 4 Wochen, 2019 (SPY +29 %); Monte Carlo (Blockbootstrap), Regime, Kostensensitivität.",
+   "spec": "specs/strategy-2019-bull.json"
+  },
+  {
+   "id": "strategy-2013-2014-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "privateData": null,
+   "purpose": "Gleichgewichtete Strategie aus 30 Large Caps, monatliches Rebalancing, 2013–2014.",
+   "spec": "specs/strategy-2013-2014-bull.json"
+  },
+  {
+   "id": "strategy-dividends-tr",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "DIVIDENDS",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "purpose": "Gesamtrendite mit Dividenden aus dem TR-Register (MSFT, WMT, IBM gleichgewichtet, Kauf und Halten 2016–2020, enthält den Corona-Crash), Vergleich mit derselben Strategie ohne Dividenden; Ereignisstudie Dividendenmeldung. Kein periodisches Rebalancing: der Ledger verweigert Entscheidungen vor später veröffentlichten Dividendeninformationen (DECISION_BEFORE_EVENT_INFORMATION, z. B. WMT 2017-03-10), also korrektes PIT-Verhalten.",
+   "spec": "specs/strategy-dividends-tr.json"
+  },
+  {
+   "id": "strategy-profile-prepared",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "STATE_B"
+   ],
+   "privateData": null,
+   "purpose": "Profil-Strategie (buildProfileTargets): Engine bereit, PIT-Faktor-Snapshots und beobachtete Provenienz fehlen → Zustand B mit genauen fehlenden Eingaben.",
+   "spec": "specs/strategy-profile-prepared.json"
+  },
+  {
+   "id": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": "factorPanel",
+   "purpose": "Faktor-Ranking (Momentum, 5 Buckets, 13 Wochen) auf dem privaten V10-PIT-Panel, Rangtage 2019–2020, gesamter V10-Primary-Frame. Ohne Panel: Zustand B mit fehlender Eingabe.",
+   "spec": "specs/factor-momentum-v10-panel.json"
+  },
+  {
+   "id": "delisted-xco-bankruptcy",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "DELISTED"
+   ],
+   "privateData": "delistedSeries",
+   "purpose": "Delisteter Titel (EXCO Resources, Insolvenz, letzter Handel 2017-12-22) aus der privaten, hash-gebundenen V13-Reihe: Regel-Wiederholung, Ereignisse nach dem letzten Handelstag werden zensiert.",
+   "spec": "specs/delisted-xco-bankruptcy.json"
+  },
+  {
+   "id": "acquisition-agn",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "ACQUISITION"
+   ],
+   "privateData": "delistedSeries",
+   "purpose": "Übernommener Titel (Allergan, Übernahme abgeschlossen, letzter Handel 2020-05-08) aus der privaten V13-Reihe: Signalregeln 2015–2020, offene Ergebnisse nach dem letzten Handel zensiert, Abfindungsszenarien nur dokumentiert.",
+   "spec": "specs/acquisition-agn.json"
+  }
+ ]
+}

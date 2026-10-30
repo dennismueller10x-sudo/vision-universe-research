@@ -6,22 +6,22 @@
       "cik": "0001061630",
       "name": "BLACKSTONE MORTGAGE TRUST, INC.",
       "sic": "6798",
-      "rawFacts": 17669,
-      "mappedFacts": 5131,
-      "unmappedFacts": 12270,
+      "rawFacts": 18139,
+      "mappedFacts": 5235,
+      "unmappedFacts": 12730,
       "calendarYears": 17,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "impairment_of_real_estate": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2011-12-31",
           "historyYears": 2.0
@@ -61,9 +61,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 68,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -75,7 +75,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -102,14 +102,14 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -130,14 +130,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -160,47 +160,48 @@
         }
       },
       "quality": {
-        "HIGH": 388,
+        "HIGH": 393,
         "MEDIUM": 46
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 434,
-        "resolvedValues": 434
+        "datableValues": 439,
+        "resolvedValues": 439
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12808,
+        "rules_version": "1.1.0",
+        "total": 13264,
         "by_severity": {
-          "INFO": 12270,
-          "WARNING": 538
+          "INFO": 12730,
+          "WARNING": 534
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 418,
+          "CONCEPT_DISAGREEMENT": 414,
           "PERIOD_MISMATCH": 24,
           "RESTATEMENT_CONFLICT": 95,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12270
+          "UNKNOWN_CONCEPT": 12730
         }
       },
       "latestFiling": {
-        "accession": "0001061630-26-000069",
-        "filing_date": "2026-07-30",
+        "accession": "0001061630-26-000097",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 114
+        "periodic_filings": 115,
+        "acceptance_datetime": "2026-10-29T10:47:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d17260eb14b7b72dbd29f61655e1bc117af92762ce03c03abe53a89399203136",
+      "sourceDigest": "1777f4f85f84357e7429697a72fc4249504865c28739a6fc29bc98cb81f1c1b5",
       "issuerId": "iss_cik_0001061630"
     },
     {

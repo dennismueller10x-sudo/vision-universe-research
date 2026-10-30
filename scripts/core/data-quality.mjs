@@ -138,7 +138,7 @@ if (twArt && twArt.cols) {
   }
   rules.push(DQ.technicalCloseParity(twPairs));
   const SIG = "quant/data/product/technical-signals-v1";
-  const matTickers = [], mtfVersions = new Set(), frozenByTicker = {};
+  const matTickers = [], mtfVersions = new Set(), frozenByTicker = {}, wickByTicker = {}, fresh = new Map(c.s.map((t, i) => [t, c.fresh[i] === true]));
   for (const f of dir(SIG, /^[A-Z0-9_-]{2}\.json\.gz$/)) {
     try {
       const inst = JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {};
@@ -147,6 +147,12 @@ if (twArt && twArt.cols) {
       for (const [tk, v] of Object.entries(inst)) {
         const b = v && v.bars, tail = b && b.timestamps ? Staleness.tailRun(b.timestamps.map((d, i) => [d, b.close[i]])) : null;
         frozenByTicker[tk] = tail && tail.run >= Staleness.DEFAULTS.dailyMinRun ? tail.since : null;
+        /* DQ-TW-8: tiefstes Tagestief der letzten 252 Bars unter der Haelfte von min(Eroeffnung, Schluss) */
+        if (b && b.low && fresh.get(tk)) {
+          let j = Math.max(0, b.low.length - 252);
+          for (let m = j; m < b.low.length; m++) if (b.low[m] < b.low[j]) j = m;
+          if (b.low[j] < 0.5 * Math.min(b.open[j], b.close[j])) wickByTicker[tk] = { date: String(b.timestamps[j]).slice(0, 10), low: b.low[j], open: b.open[j], close: b.close[j] };
+        }
       }
     } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
   }
@@ -159,6 +165,15 @@ if (twArt && twArt.cols) {
   rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
   const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));
   rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"))));
+  /* DQ-TW-8: vollstaendige Treffer der Vorlagen, die distLow52w pruefen (technical/engine/templates.js, AP8) */
+  const tplPath = join(REPO_ROOT, "technical", "engine", "templates.js"), fullHits = [];
+  if (existsSync(tplPath)) {
+    const TPL = require(tplPath), ds = TQ.createDataset(twArt);
+    for (const t of TPL.list().filter((x) => JSON.stringify(x.criteria).indexOf('"distLow52w"') >= 0)) {
+      for (const h of TPL.evaluate(ds, t).full) fullHits.push({ template: t.id, ticker: c.s[h.i] });
+    }
+  }
+  rules.push(DQ.technicalTemplateWickLows(fullHits, wickByTicker));
 }
 
 }
