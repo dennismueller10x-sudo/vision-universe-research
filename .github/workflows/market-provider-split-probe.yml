@@ -1,0 +1,38 @@
+# Gezielte Anbieterabfrage zu einer vermuteten Kapitalmassnahme (nur lesend, eine Anfrage).
+# Owner-Freigabe 30.10.2026 fuer GIBO (Share Consolidation 25:1, SEC 6-K 0001493152-26-030060).
+# Ausloesung nur per Push auf claude/** mit [provider-split-probe] in der Commit-Nachricht.
+# Schreibt nichts ins Repository und nicht in die Historienablage; Ergebnis als Artefakt.
+name: Marktdaten - Anbieterprobe Kapitalmassnahme
+
+on:
+  push:
+    branches: ['claude/**']
+    paths:
+      - '.github/workflows/market-provider-split-probe.yml'
+      - 'scripts/market/probe-provider-split.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    if: contains(github.event.head_commit.message, '[provider-split-probe]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/market/probe-provider-split.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tiingo GIBO 15.06.-10.07.2026 (eine Anfrage)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-provider-split.mjs GIBO 2026-06-15 2026-07-10 probe-gibo.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: provider-split-probe-gibo
+          path: probe-gibo.json
+          retention-days: 14
