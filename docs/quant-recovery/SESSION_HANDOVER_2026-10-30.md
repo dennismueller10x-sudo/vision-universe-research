@@ -4,7 +4,11 @@ Version 1.1.0 dieser Übergabe (30.10.2026; 1.0.0 kam mit #1140). Sie ersetzt ke
 
 **Status der Übergabe:** Alles ist dokumentiert.
 
-**Archiv: NICHT dauerhaft gesichert.** Das Archiv ist nur lokal restore-geprüft (8/8 Teile hash-identisch). Upload nach R2, Integritätsprüfung und Restore aus R2 stehen aus. Blockiert ist das durch die Netzwerkfreigabe für `*.r2.cloudflarestorage.com` und das fehlende Secret `V13_ARCHIVE_PRIVATE_KEY` (Abschnitt 4.3). Bis zum Upload gibt es das Archiv nur im Container der Sitzung, die es gebaut hat. Der Wiederherstellungsweg ohne Archiv steht in 4.4.
+**Archiv: in R2 gesichert, Integrität geprüft, Restore aus R2 erfolgreich (30.10.2026).** Archiv 1.2.0 liegt mit 8 Teilen im bestehenden privaten R2-Eimer:
+- Workflow-Verify: 8/8 Objekte OK.
+- Restore aus R2: 8/8 Teile und 11.616 Dateien hash-identisch.
+
+**Offen:** Das Secret `V13_ARCHIVE_PRIVATE_KEY` fehlt noch. Damit fehlt auch der Restore auf dem Runner, also der Nachweis, dass die Wiederherstellung ohne diese Sitzung gelingt. Ohne den privaten Archivschlüssel ist das Archiv nicht lesbar; er liegt bisher nur in dieser Sitzung und beim Owner (Abschnitt 4).
 
 ## 1. Stand `main` und PRs
 
@@ -92,44 +96,24 @@ Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](v1
 | Schritt | Ergebnis | Nachweis |
 |---|---|---|
 | Bau | ausgeführt 30.10.2026 | Manifest im Repo |
-| lokale Restore-Probe | **8/8 Teile, 11.616 Dateien hash-identisch** (Chiffre, Klartext, Datei-Inventar); Faktorpanel bytegleich; Loader lädt 1.675/1.675 QUALIFIED hashgebunden | `restore-archive.sh`, nur lokal |
-| R2-Lesezugriff und Kapazität | Eimer 4,78 GB; mit Archiv 6,28 GB, unter der Nullkostengrenze von 8 GB | Run 40943780307 `[v13-archive:usage]` |
-| Upload nach R2 | **nicht ausgeführt** | – |
-| Secret `V13_ARCHIVE_PRIVATE_KEY` | **fehlt** | Run 41011143637 `[v13-archive:keycheck]` → `SECRET_MISSING` |
-| unabhängige Restore-Probe auf dem Runner | **nicht möglich** (setzt Upload und Secret voraus) | – |
+| lokale Restore-Probe | 8/8 Teile, 11.616 Dateien hash-identisch; Faktorpanel bytegleich; Loader lädt 1.675/1.675 QUALIFIED hashgebunden | `restore-archive.sh` |
+| Kapazität | Eimer 4.775.926.662 B; mit Archiv unter 8 GB; Präfix vor dem Upload leer | Run 41068077861 |
+| **Upload nach R2** | **erfolgt**: 8 Teile plus Manifest, `research-snapshots/quant-v13/archive-1.2.0/`, jede Datei mit SHA-256 geprüft | Run 41068077861 (`put`) + `transfer.sh put` |
+| **Integritätskontrolle in R2** | 8/8 Objekte OK gegen `manifest-1.2.0.json` | Run 41069005168 (`verify`) |
+| **Restore aus R2** | alle Teile frisch aus R2 geladen und entschlüsselt: 8/8 Teile, 11.616 Dateien hash-identisch; Manifest aus R2 bytegleich mit dem Repo | Run 41069696417 (`get`) + `transfer.sh get` + `restore-archive.sh` |
+| Secret `V13_ARCHIVE_PRIVATE_KEY` | **fehlt** | Run 41069436826 (`restore`) → `SECRET_MISSING` |
+| Restore auf dem Runner | **offen** (setzt das Secret voraus) | – |
 
-**Eine dauerhafte Sicherung ist damit NICHT erreicht.** Erst Upload, `[v13-archive:verify]` und `[v13-archive:restore]` mit grünem Ergebnis gelten als Abschluss.
+Ursache der früheren Meldung „R2 nicht erreichbar“: Der Test lief gegen einen Platzhalter-Host (`probe.r2.cloudflarestorage.com`), dem Cloudflare TLS verweigert. Der echte Kontenendpunkt war die ganze Zeit erreichbar, die Netzwerkstufe der Umgebung steht auf „Vollständig“.
 
-### 4.3 Blocker, Transferweg und Owner-Schritte
+### 4.3 Verbleibender Owner-Schritt
 
-**Stand 30.10.2026, 09:40 UTC:** Der Upload ist nicht erfolgt. Die Sitzungsumgebung erreicht den R2-Host nicht: `curl` auf `*.r2.cloudflarestorage.com` liefert 000. Weitere Uploadversuche sind wirkungslos, bis die Netzwerkfreigabe besteht.
+1. GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*:
+   - Name: `V13_ARCHIVE_PRIVATE_KEY`;
+   - Wert: der vollständige Inhalt der Datei `archive-priv.pem`, die der Owner aus der bauenden Sitzung erhalten hat; zusätzlich offline aufbewahren, nie in Chat, Git oder Logs.
+2. Danach genügt ein leerer Commit mit der Marke `[v13-archive:restore]` auf einem `claude/**`-Branch, aus jeder Sitzung. Der Runner lädt alle 8 Teile aus R2, prüft den Schlüssel gegen das Manifest und alle Hashes. Damit ist die Wiederherstellung unabhängig von der bauenden Sitzung nachgewiesen.
 
-**Transferweg** (vorhanden und geprüft, ohne öffentliche Ablage der Daten):
-
-| Schritt | Wer | Was | Geprüft |
-|---|---|---|---|
-| 1 | Workflow `quant-v13-archive.yml` auf einem `claude/**`-Branch, Marke `[v13-archive:put]` | Liest R2 nur mit den bestehenden Secrets `VU_HISTORY_S3_*`, prüft Nullkostengrenze und freien Präfix, erzeugt 3 h gültige PUT-URLs für die 8 Objekte und das Manifest. Die URLs sind mit `archive-pub.pem` verschlüsselt (AES-256 + RSA-OAEP) und liegen als Artefakt mit 1 Tag Aufbewahrung vor. | `usage` lief (Run 40943780307) |
-| 2 | Sitzung | Artefakt über `gh api` laden. Das Artefakt enthält nur verschlüsselte URLs. | Download aus dem Container funktioniert (30.10.) |
-| 3 | Sitzung | `transfer.sh put`: entschlüsselt die URLs nur im Speicher und lädt die 8 verschlüsselten Teile plus Manifest direkt nach R2. Jede Datei wird gegen SHA-256 geprüft. | **blockiert**: Container → `*.r2.cloudflarestorage.com` |
-| 4 | Workflow, Marke `[v13-archive:verify]` | jedes Objekt aus R2 lesen, SHA-256 gegen das Manifest | – |
-| 5 | Workflow, Marke `[v13-archive:restore]` | unabhängiger Restore auf dem Runner: aus R2 laden, mit `V13_ARCHIVE_PRIVATE_KEY` entschlüsseln, Chiffre-, Klartext- und Dateihashes aller 8 Teile prüfen | braucht das Secret |
-
-Das Archiv 1.2.0 hat **8** verschlüsselte Teile (die 7 aus 1.1.0, neu verschlüsselt, plus `v10-factor-panel`). Die Teile aus 1.1.0 existieren nicht mehr.
-
-**Owner-Schritte (nur UI, einmalig):**
-1. **Netzwerkfreigabe:** claude.ai/code → diese Sitzung → Umgebungsmenü in der Titelleiste → *Edit* → *Network access*.
-   - Unter *Allowed domains* `*.r2.cloudflarestorage.com` eintragen; *Allow package managers* angehakt lassen.
-   - Alternativ eine breitere Zugriffsstufe wählen.
-   - Anleitung: https://code.claude.com/docs/en/cloud-environments#network-access
-2. **Secret** (nur für Schritt 5): GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*.
-   - Name: `V13_ARCHIVE_PRIVATE_KEY`.
-   - Wert: vollständiger PEM-Inhalt der Datei `archive-priv.pem`, die der Owner aus dieser Sitzung bekommen hat.
-   - Zusätzlich offline aufbewahren. Nie in Chat, Git oder Logs.
-3. **In dieser Sitzung** „R2 frei“ schreiben. Die Sitzung führt dann Schritte 1–5 aus, trägt das Ergebnis in README und Übergabe ein und meldet es.
-
-**Wichtig:** Die verschlüsselten Teile liegen nur im Container **dieser** Sitzung, unter `scratchpad/archive-out/` (Hashes in 4.1, zuletzt am 30.10. um 09:10 UTC geprüft, 8/8 gleich). Eine neue Sitzung hat einen neuen Container ohne diese Dateien. Der Upload muss deshalb in dieser Sitzung laufen, bevor sie archiviert oder wegen Inaktivität abgebaut wird. Wird sie vorher archiviert, bleibt nur der Wiederherstellungsweg in 4.4.
-
-Wirkt die Netzwerkfreigabe nicht in der laufenden Sitzung, bleibt ein Neubau des Archivs in einer neuen Sitzung (4.4, mit neuem Abruf). Er wird gegen die Registerhashes geprüft.
+Wiederherstellung künftig, aus jeder Sitzung: Marke `[v13-archive:get]`, Artefakt per `gh api` laden, `transfer.sh get`, `restore-archive.sh`. Dafür ist der private Archivschlüssel nötig.
 
 ### 4.4 Reproduzierbarer Wiederherstellungsweg ohne Archiv
 
@@ -226,7 +210,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
 ## 7. Nächste Prioritäten
 
-1. **Archiv:** Owner-Schritte 4.3, dann Upload, Verify und Runner-Restore. Erst danach gilt die Sicherung als abgeschlossen.
+1. **Archiv:** Upload, Verify und Restore aus R2 sind erledigt (30.10.). Offen ist nur das Secret `V13_ARCHIVE_PRIVATE_KEY` und danach `[v13-archive:restore]` auf dem Runner (4.3).
 2. **#1133:** erledigt (gemergt `5e9d2b9d5a`); #1138 steht auf `main`.
 3. **Security Master:** Owner-Freigabe der Liste #1143, Erzeuger-PR für identische canonical_id (OKE + 7), Probelauf, dann `commit=true`; #1119 erst nach Abschlussfreigabe. #1136 nicht zusammen mit #1143 integrieren.
 4. Owner-Entscheidungen aus 6.3, sobald gewünscht. Keine Normänderung ohne Freigabe.

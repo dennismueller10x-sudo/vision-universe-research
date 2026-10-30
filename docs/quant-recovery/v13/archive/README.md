@@ -53,18 +53,17 @@ Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird n
 5. **Wiederherstellung:** Marke `[v13-archive:get]`, dann `transfer.sh get …` und `restore-archive.sh`.
    - In künftigen Actions-Workflows: direkt über den S3-Treiber (`scripts/market/storage/s3-driver.mjs`) lesen und mit dem Secret `V13_ARCHIVE_PRIVATE_KEY` entschlüsseln.
 
-## Stand (29.10.2026)
+## Stand (30.10.2026)
 
-| Schritt | Ergebnis |
-|---|---|
-| Bau und lokale Wiederherstellung | ausgeführt (1.2.0): 8/8 Teile und 11.616 Dateien hash-identisch; Reihen laden hashgebunden |
-| R2-Lesezugriff und Kapazität (Run 40943780307, `[v13-archive:usage]`) | Eimer 95.170 Objekte, 4.775.085.305 B; mit Archiv 1.2.0 (1,50 GB) 6,28 GB, unter der Schranke von 8 GB; Präfix leer |
-| Upload | **nicht ausgeführt**: Die Sitzungsumgebung erreicht `*.r2.cloudflarestorage.com` nicht (Netzwerkrichtlinie). Nötig ist die Freigabe dieses Hosts in den Netzwerkeinstellungen der Umgebung; danach `[v13-archive:put]` → `transfer.sh put` → `[v13-archive:verify]` → `[v13-archive:get]` → `restore-archive.sh` |
-| Ablage des privaten Archivschlüssels | Owner-Schritt (Secret `V13_ARCHIVE_PRIVATE_KEY` und offline) |
+| Schritt | Ergebnis | Nachweis |
+|---|---|---|
+| Bau und lokale Wiederherstellung | 8/8 Teile, 11.616 Dateien hash-identisch | `restore-archive.sh` |
+| Kapazität | Eimer 4.775.926.662 B; mit Archiv 1,50 GB unter der Nullkostenschranke von 8 GB; Präfix vor dem Upload leer | Run 41068077861 |
+| **Upload** | **erfolgt** am 30.10.2026: 8 Teile plus `manifest.json` unter `research-snapshots/quant-v13/archive-1.2.0/`, jede Datei mit SHA-256 geprüft | `transfer.sh put` mit verschlüsselten URLs aus Run 41068077861 (`[v13-archive:put]`) |
+| **Integritätskontrolle in R2** | 8/8 Objekte `OK` gegen `manifest-1.2.0.json` (Bytes und SHA-256); `manifest.json` vorhanden | Run 41069005168 (`[v13-archive:verify]`) |
+| **Restore aus R2** | alle 8 Teile frisch aus R2 geladen (nicht die lokale Kopie) und entschlüsselt: 8/8 Teile, 11.616 Dateien hash-identisch (Chiffre, Klartext, Datei-Inventar). Das Manifest aus R2 ist bytegleich mit `manifest-1.2.0.json` | verschlüsselte GET-URLs aus Run 41069696417 (`[v13-archive:get]`), `transfer.sh get`, `restore-archive.sh` |
+| Restore auf dem Runner | **offen**: Secret `V13_ARCHIVE_PRIVATE_KEY` fehlt | Run 41069436826 (`[v13-archive:restore]`) → `SECRET_MISSING` |
 
-Bis zum Upload liegt das Archiv nur in der temporären Sitzung. Bei Verlust lässt es sich größtenteils neu erzeugen:
-- Tiingo-Abruf über `claude/v13-delisted-fetch-4ho3rd`, 8.620 Anfragen;
-- SEC-Dokumente über die Abrufskripte;
-- Studien neu rechnen.
+Hinweis: Die frühere Meldung „Host nicht erreichbar“ beruhte auf einem Test gegen einen Platzhalter-Host (`probe.r2.cloudflarestorage.com`). Cloudflare lehnt TLS für unbekannte Konten-Subdomains ab. Der echte Kontenendpunkt war erreichbar.
 
-Die Register binden jede Reihe per SHA-256, sodass ein Neubau prüfbar ist.
+**Lesbarkeit hängt am privaten Archivschlüssel.** Er liegt bisher nur in der bauenden Sitzung und beim Owner (als Datei übergeben). Erst mit dem Secret `V13_ARCHIVE_PRIVATE_KEY` und dem grünen Runner-Restore ist die Wiederherstellung unabhängig von dieser Sitzung nachgewiesen.
