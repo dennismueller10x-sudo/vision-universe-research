@@ -118,15 +118,25 @@ class H(BaseHTTPRequestHandler):
         self.send(404, {})
 
 
+DELETED_KEYS = []
+
+
 def do_post(self):
     body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
     if self.path == "/b2/b2api/v3/b2_list_buckets":
         locked = body.get("bucketName") != "unlocked-test"
         return self.send(200, {"buckets": [{"bucketId": "b1", "bucketName": body.get("bucketName"),
                                             "fileLockConfiguration": {"value": {"isFileLockEnabled": locked}}}]})
-    if self.path == "/b2/b2api/v3/b2_create_key":
+    if self.path == "/b2/b2api/v4/b2_create_key":
+        # Name "unbound-*": simuliert eine Antwort ohne Bucket-Bindung (Skript muss den Schluessel loeschen)
+        bound = [] if body["keyName"].startswith("unbound") else body.get("bucketIds", [])
         return self.send(200, {"keyName": body["keyName"], "applicationKeyId": "synthetic-key-id",
-                               "applicationKey": "synthetic-app-key", "capabilities": body["capabilities"]})
+                               "applicationKey": "synthetic-app-key", "capabilities": body["capabilities"], "bucketIds": bound})
+    if self.path == "/b2/b2api/v4/b2_delete_key":
+        DELETED_KEYS.append(body.get("applicationKeyId"))
+        return self.send(200, {"applicationKeyId": body.get("applicationKeyId")})
+    if self.path == "/b2/deleted-keys":
+        return self.send(200, {"deleted": DELETED_KEYS})
     self.send(404, {})
 
 

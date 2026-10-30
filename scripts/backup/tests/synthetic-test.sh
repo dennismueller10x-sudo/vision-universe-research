@@ -235,6 +235,9 @@ B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MAS
 check "T38 Loeschschluessel fuer Nicht-Test-Bucket verweigert" test "$rc" -ne 0
 B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MASTER_KEY=k "$PY" "$ROOT/bin/vu-b2-make-key.py" --bucket unlocked-test --role writer --name x >/dev/null 2>&1; rc=$?
 check "T39 Schreibschluessel nur fuer Bucket mit Object Lock" test "$rc" -ne 0
+B2_AUTH_URL="http://127.0.0.1:$API_PORT/b2auth/master" B2_MASTER_KEY_ID=m B2_MASTER_KEY=k "$PY" "$ROOT/bin/vu-b2-make-key.py" --bucket vu-backup-test --role writer --name unbound-x > "$T/mk-unbound.out" 2>&1; rc=$?
+check "T43 Schluessel ohne Bucket-Bindung: sofort geloescht, nichts ausgegeben" bash -c "[ $rc -ne 0 ] && ! grep -q synthetic-app-key '$T/mk-unbound.out' && curl -fs -X POST -d '{}' http://127.0.0.1:$API_PORT/b2/deleted-keys | grep -q synthetic-key-id"
+check "T44 Schluessel-Anlage ueber API v4 mit bucketIds: Schluessel bleibt nur bei genau einem Bucket bestehen" python3 -c 'import json,sys; t=open(sys.argv[1]).read(); d=json.loads(t[:t.rindex("}")+1]); sys.exit(0 if d.get("applicationKey") and d["bucket"]=="vu-backup-test" else 1)' "$T/mk-writer.json"
 
 # ---------------------------------------------------------------- Redaktion
 out=$(VU_SECRET_VARS="MYSECRET" MYSECRET="super-secret-value" bash -c 'echo "url https://u:pw@host token super-secret-value Authorization: Bearer abcdef ghp_abcdefghijklmnop1234" | python3 '"$ROOT"'/lib/redact.py')

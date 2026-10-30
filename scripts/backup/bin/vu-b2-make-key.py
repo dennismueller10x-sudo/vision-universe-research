@@ -70,10 +70,16 @@ def main():
     bucket = buckets[0]
     if a.role in ("writer", "anchor") and not (bucket.get("fileLockConfiguration", {}).get("value") or {}).get("isFileLockEnabled"):
         sys.exit("Object Lock ist fuer diesen Bucket nicht aktiviert - erst aktivieren")
-    body = {"accountId": auth["accountId"], "capabilities": ROLES[a.role], "keyName": a.name, "bucketId": bucket["bucketId"]}
+    # API v4: Bucket-Bindung ueber "bucketIds" (v3 hatte "bucketId"; in v4 entfernt)
+    body = {"accountId": auth["accountId"], "capabilities": ROLES[a.role], "keyName": a.name, "bucketIds": [bucket["bucketId"]]}
     if a.days:
         body["validDurationInSeconds"] = min(a.days, 999) * 86400
-    created = call(f"{api}/b2api/v3/b2_create_key", token, body)
+    created = call(f"{api}/b2api/v4/b2_create_key", token, body)
+    # Fail closed: stimmt der angelegte Schluessel nicht genau (Rechte, ein Bucket), sofort wieder loeschen
+    bound = created.get("bucketIds") or ([created["bucketId"]] if created.get("bucketId") else [])
+    if sorted(created.get("capabilities") or []) != sorted(ROLES[a.role]) or bound != [bucket["bucketId"]]:
+        call(f"{api}/b2api/v4/b2_delete_key", token, {"applicationKeyId": created["applicationKeyId"]})
+        sys.exit("Angelegter Schluessel weicht ab (Rechte oder Bucket-Bindung) und wurde sofort wieder geloescht. Nichts uebernehmen.")
     out = {"keyName": created["keyName"], "keyID": created["applicationKeyId"], "applicationKey": created["applicationKey"],
            "capabilities": created["capabilities"], "bucket": a.bucket}
     if a.out:
