@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.11.0";
+  var QUERY_VERSION = "technical-query-1.12.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -78,6 +78,8 @@
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
     { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
+    /* AP8 L3 (seit 1.12.0): Abstand zum 52-Wochen-Tief, nur Tag, docs/technical/SCREENER_FIELDS_AP8_L3.md */
+    { id: "distLow52w", group: "Hochs", kind: "pct", tfs: D, label: "Abstand über dem 52-Wochen-Tief (Tagestief)" },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
