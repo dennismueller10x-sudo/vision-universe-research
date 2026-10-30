@@ -472,7 +472,7 @@
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen" || x.field === "formationConfirmedUp" || x.field === "formationConfirmedDown") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 

@@ -242,6 +242,12 @@
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
       return slot({ formations: types, confirmed: kind === "bestaetigt", text: m });
     });
+    /* "bestaetigt-auf:TYP" / "bestaetigt-ab:TYP" = bestaetigt mit Ausbruch nach oben bzw. unten (seit 1.9.0, AP8 L5) */
+    text = text.replace(/\bbestaetigt-(auf|ab):([a-z_,]+)/g, function (m, dir, list) {
+      var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
+      if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
+      return slot({ filters: [{ field: dir === "auf" ? "formationConfirmedUp" : "formationConfirmedDown", op: "in", value: types }], text: m });
+    });
     /* "offen:TYP,TYP" = Formation erkannt, noch ohne Ausbruch (formationOpen) */
     text = text.replace(/\boffen:([a-z_,]+)/g, function (m, list) {
       var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
@@ -365,6 +371,8 @@
         if (f.kind === "bool") return (x.value ? "" : "nicht ") + pre + x.field;
         if (x.field === "formationActive") return (x.op === "nin" ? "nicht-formation:" : "formation:") + x.value.join(",");
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
+        if (x.field === "formationConfirmedUp") return "bestaetigt-auf:" + x.value.join(",");
+        if (x.field === "formationConfirmedDown") return "bestaetigt-ab:" + x.value.join(",");
         if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
         if (x.field === "candleBullish" || x.field === "candleBearish" || x.field === "candleNeutral")
