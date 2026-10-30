@@ -132,6 +132,8 @@ export function build(options = {}) {
     if (r.frozenSince) Row.markFrozen(r, r.frozenSince, analytic);
     else if (!r.fresh) Row.markStale(r);
   });
+  /* RS-Rang (AP8 L4): Querschnitt ueber aktuelle Titel mit gueltigem rs6m, nach der Frische-Markierung. */
+  Row.rankRs(rows);
   rows.sort((a, b) => (a.s < b.s ? -1 : a.s > b.s ? 1 : 0));
 
   /* Quelle der Wochen-/Monatswerte nur als Zaehlung in meta, nicht als Spalte. */

@@ -164,9 +164,9 @@
       "cik": "0001743881",
       "name": "BridgeBio Pharma, Inc.",
       "sic": "2834",
-      "rawFacts": 10228,
-      "mappedFacts": 2646,
-      "unmappedFacts": 7523,
+      "rawFacts": 10668,
+      "mappedFacts": 2762,
+      "unmappedFacts": 7900,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -176,28 +176,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 36,
+      "quarterlyPeriods": 37,
       "firstPeriodEnd": "2016-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0,
@@ -210,28 +210,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -245,14 +245,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -275,46 +275,47 @@
         }
       },
       "quality": {
-        "HIGH": 254,
-        "MEDIUM": 48
+        "HIGH": 261,
+        "MEDIUM": 49
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 302,
-        "resolvedValues": 302
+        "datableValues": 310,
+        "resolvedValues": 310
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7961,
+        "rules_version": "1.1.0",
+        "total": 8274,
         "by_severity": {
-          "INFO": 7523,
-          "WARNING": 438
+          "INFO": 7900,
+          "WARNING": 374
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 403,
+          "CONCEPT_DISAGREEMENT": 339,
           "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 7523
+          "UNKNOWN_CONCEPT": 7900
         }
       },
       "latestFiling": {
-        "accession": "0001743881-26-000027",
-        "filing_date": "2026-08-10",
+        "accession": "0001743881-26-000034",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 29
+        "periodic_filings": 30,
+        "acceptance_datetime": "2026-10-29T20:52:05.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a4e8ee3ce540d22cab707568ed6770466c2cebf6254ff0623587c302a06e535d",
+      "sourceDigest": "af41810043c00c946369fcdc7136e49178a311e3033799253aa0025330eee9c8",
       "issuerId": "iss_cik_0001743881"
     }
   ]

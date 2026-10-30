@@ -1,0 +1,1304 @@
+{
+ "schemaVersion": "backtest-runner-result-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "kind": "SETUP_BACKTEST",
+ "state": "RESEARCH_EXECUTED",
+ "specHash": "56186f5660e80893a990807baf35ef54cc099e8d9d91e9295792a513eb4532e7",
+ "spec": {
+  "schemaVersion": "backtest-runner-spec-1.0.0",
+  "version": "1.0.0",
+  "registeredAt": "2026-10-29T00:00:00Z",
+  "asOf": "2025-12-31",
+  "costs": {
+   "feeBps": 5,
+   "slippageBps": 5
+  },
+  "benchmark": "SPY",
+  "id": "setup-reconstruction-2016-2024",
+  "description": "Setup events on reconstructed weekly states (setup-replay-v1), 26-week time exit",
+  "kind": "SETUP_BACKTEST",
+  "window": {
+   "from": "2016-01-01",
+   "to": "2024-12-31"
+  },
+  "population": {
+   "profile": "V10_PRIMARY",
+   "securityIds": [
+    "ref_AAPL",
+    "ref_ABM",
+    "ref_ACLO",
+    "ref_ACMR",
+    "ref_ADT",
+    "ref_ADUR",
+    "ref_AEE",
+    "ref_AGNCO",
+    "ref_AIFF",
+    "ref_ALTO",
+    "ref_AMC",
+    "ref_AMX",
+    "ref_AQST",
+    "ref_ARD",
+    "ref_ATGL",
+    "ref_AVAH",
+    "ref_AXGN",
+    "ref_BDC",
+    "ref_BE",
+    "ref_BFAM",
+    "ref_BGICF",
+    "ref_BOX",
+    "ref_BTDR",
+    "ref_BTOG",
+    "ref_BVS",
+    "ref_CASS",
+    "ref_CB",
+    "ref_CBZ",
+    "ref_CFB",
+    "ref_CHGG",
+    "ref_CHPT",
+    "ref_CIFR",
+    "ref_CIG",
+    "ref_CMCL",
+    "ref_CMTG",
+    "ref_COTY",
+    "ref_CPF",
+    "ref_CRH",
+    "ref_CVBF",
+    "ref_CVI",
+    "ref_CXT",
+    "ref_CYTK",
+    "ref_DEFT",
+    "ref_DIN",
+    "ref_DLX",
+    "ref_DUOL",
+    "ref_DXLG",
+    "ref_EAF",
+    "ref_EDUC",
+    "ref_EJH",
+    "ref_EPSM",
+    "ref_ESOA",
+    "ref_ETOR",
+    "ref_EVRG",
+    "ref_FA",
+    "ref_FBGL",
+    "ref_FBIO",
+    "ref_FCBC",
+    "ref_FDSB",
+    "ref_FEXD",
+    "ref_FORM",
+    "ref_FRPH",
+    "ref_FTEK",
+    "ref_GDYN",
+    "ref_GEN",
+    "ref_GNL_P_A",
+    "ref_GNT_P_A",
+    "ref_GUT_P_C",
+    "ref_HBM",
+    "ref_HESM",
+    "ref_HSIC",
+    "ref_HUYA",
+    "ref_INDO",
+    "ref_ING",
+    "ref_ITIC",
+    "ref_IVDA",
+    "ref_JFU",
+    "ref_JOB",
+    "ref_JPM",
+    "ref_JPM_P_L",
+    "ref_KG",
+    "ref_KGS",
+    "ref_KNSL",
+    "ref_KOD",
+    "ref_LB",
+    "ref_LEG",
+    "ref_LEGH",
+    "ref_LGHL",
+    "ref_LND",
+    "ref_LQDT",
+    "ref_LVWR",
+    "ref_MAIN",
+    "ref_MENS",
+    "ref_MITN",
+    "ref_MITQ",
+    "ref_MKC_V",
+    "ref_MOV",
+    "ref_MSFT",
+    "ref_MTN",
+    "ref_MU",
+    "ref_MYND",
+    "ref_NIXX",
+    "ref_NTCT",
+    "ref_NVDA",
+    "ref_OCGN",
+    "ref_OMEX",
+    "ref_OZON",
+    "ref_PAR",
+    "ref_PBHC",
+    "ref_PHUN",
+    "ref_PIPR",
+    "ref_PLG",
+    "ref_POWI",
+    "ref_PSA_P_N",
+    "ref_PSA_P_O",
+    "ref_PWP",
+    "ref_PYT",
+    "ref_RAPP",
+    "ref_RC_P_E",
+    "ref_REZI",
+    "ref_RGTI",
+    "ref_RLMD",
+    "ref_RYAAY",
+    "ref_SAGT",
+    "ref_SBAC",
+    "ref_SGMT",
+    "ref_SIGI",
+    "ref_SM",
+    "ref_SNES",
+    "ref_SNOW",
+    "ref_STLN",
+    "ref_STT_P_G",
+    "ref_SWX",
+    "ref_TALO",
+    "ref_TENB",
+    "ref_TKR",
+    "ref_TNL",
+    "ref_TOUR",
+    "ref_TRN",
+    "ref_TRS",
+    "ref_TRT",
+    "ref_TW",
+    "ref_TWLO",
+    "ref_UFCS",
+    "ref_UFPI",
+    "ref_VABK",
+    "ref_VEEE",
+    "ref_VEON",
+    "ref_VHC",
+    "ref_VIVO",
+    "ref_VMI",
+    "ref_VNCE",
+    "ref_VRTS",
+    "ref_WBX",
+    "ref_WOOF",
+    "ref_WWR",
+    "ref_XAIR",
+    "ref_XOM",
+    "ref_XTLB",
+    "ref_YRD"
+   ]
+  },
+  "engine": {
+   "horizonBars": 26
+  },
+  "methods": {
+   "WALK_FORWARD": {
+    "trainSize": 104,
+    "validationSize": 52,
+    "testSize": 104
+   }
+  }
+ },
+ "inputHashes": {
+  "code": {
+   "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+   "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+   "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+   "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+   "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+   "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+   "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+   "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+   "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+   "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+   "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+   "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+   "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+   "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+   "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+   "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+   "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+   "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+   "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+   "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+  },
+  "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+  "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+  "population": {
+   "profile": "V10_PRIMARY",
+   "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+   "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+   "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+   "calendarLength": 1922,
+   "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+   "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registers": {
+    "identityEvidence": {
+     "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+     "v12RegistryHash": null,
+     "v13RegistryHash": null,
+     "v13StrictRegistryHash": null
+    },
+    "corporateActionEvidence": {
+     "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+     "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    "listingLifecycleEvidence": null,
+    "delistedRegister": null,
+    "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+    "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+   },
+   "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+  },
+  "listings": {
+   "count": 111,
+   "root": "f244f647e0cc87f7df71e76dc04b6d69303d304ecbdf705e740f5f657a2b420f",
+   "rule": "sha256(canonical map securityId -> {listingId, sourceBytesHash|registerPointsSha256, first, last, bars})"
+  },
+  "private": {
+   "setupReplay": {
+    "ref_ABM": "2365715425388a43e44a3e05714cfd21d78e3c5444ca8664c0f191590b32bec1",
+    "ref_ACLO": "7491ccf1c9df1a45ec1e20d3a85ce9e774c68bf6368f727c546c70a7fac19b5e",
+    "ref_ACMR": "eebdcf1618e5fb07de0bffe4debc9c2fe6ebfa1e609cb59193f6862fe4a63cab",
+    "ref_ADUR": "3166e567a6eba78f8c36af663e80bfc16faf65e96428cc7dff8f652fbbb9d2e3",
+    "ref_AEE": "0e9867ff21d716ee134dc9a26f59f80f56965b8d2e9337be18c678b57ef744ad",
+    "ref_AGNCO": "da48ed957b0ff13ec86c3bb303295ffe65037bd8f691f3d1d0eac097f4dc42a6",
+    "ref_ALTO": "eac28af2f60c96a8c033d9bc5d6f695048065cd8181d31c4c3b6cdda788df6b3",
+    "ref_AMX": "9e09cb96e35a3ea044ef7fb66a0cec6b6d84691683b32a849cebff1b5bfd0a2b",
+    "ref_AQST": "7b8bcc22ac25932493305360fdf507f34117d969efccdfb7468bd311f4470f23",
+    "ref_ATGL": "b594b98708901074ca251012eeb8695a3a3ca9c3b735e0a1f90a40bb3670de94",
+    "ref_AVAH": "9031ef587eb074b2e8aa8315002af57f58cae2c886cc2beac895e3aec50a2d97",
+    "ref_BDC": "0f60d245c0928de9d5d532edf94222ceadf2d6c0512364ce37911e83c530b302",
+    "ref_BE": "fbba0f5b725cae90c03f822ea2c9e8e5a05c64fd832a4a8c096e2de84b05100a",
+    "ref_BFAM": "69df3300f7b1e0dd3d4305802ccfd64d74ce5fa29175b5f88caff2640f2a7242",
+    "ref_BOX": "1268895b6d05a845b79f9bb88bd174d3a31f7b7b4c7c60ff96c2ea33208fdf62",
+    "ref_BVS": "126adabe66c3d2a17ad9a5f3645d631ec3dba70a64b570bc4e3addf57534f340",
+    "ref_CASS": "17c8e6239c7058cb69929830cd2881e2e7f478523aa664abfb5fa2a640ba94e4",
+    "ref_CB": "6e5fe5f13c23f4229fdcd3705bc3ad27068a494adce063b5e1176ab852d1d85a",
+    "ref_CBZ": "c839b13681bcfe553d8f9168e190866a879d1093e0531b24c54fc0b4d35dfe58",
+    "ref_CHGG": "fb5b062a930e32038bb8d303970c8507a7ca9eaa291a630631affbb4bdb5f21b",
+    "ref_CHPT": "cd678a182eeb9ab6bdf2758fa0f9c8e0ec1047b41fce43cbdb6bf24e73bc14c5",
+    "ref_CIFR": "4cfbf74233fe253467d64d1ca601e3cc25b914a6aae00a1e357baaa452c55157",
+    "ref_CIG": "41d01c7d15989e088b6a50a490a5b77ec96bc228c3b2be581937fb5431693532",
+    "ref_CMCL": "d17700ee043e5b7ae66c7d5d7f1024800f78235337cda88edb9df58c872e8765",
+    "ref_CMTG": "4ce1986e9eae96a4fcf7a072391c35560a454d9297f51e630b9684e1198184d3",
+    "ref_COTY": "592f3b48af6d309ea5de9389c7058083b99fb9e6d5d8912b64d6634396e20a6e",
+    "ref_CPF": "becb9b9e91b5b537c4151ba63a16cd566359c4c2da53e2f58ba04410aa88af67",
+    "ref_CRH": "0aa113b99ee5394951461f95cc38f88288d8d2b964e73008da246764245ed72b",
+    "ref_CVBF": "e6c49977eb46f94e44fd8320a4ff64d856d712258a85581761b4726c921a5079",
+    "ref_CVI": "d49caa157a68a76f03eef7d17b42f611fa14673e18217bafacf296e419df40f1",
+    "ref_CXT": "5c953379799eac422d0508b361700d5869306a86880c896d04aaf4cdded2766f",
+    "ref_CYTK": "29410f9b4dc499c1c734c780d64efbbdba13952db56eb48b3603ebbde3b228ea",
+    "ref_DLX": "f1e1ff2b75529a91bbfbbd7ef21c538b19cdfa58812fa93ec96de55e06ef147e",
+    "ref_DUOL": "146e0d211b748f144aa92468d5122b231481c9bf347a00a12fb79ff44a623f76",
+    "ref_DXLG": "073d198c53b5c43cd32c0c9607c38a46fe501620925c0464450ec0b5da5ff16e",
+    "ref_EAF": "c6e6b22d28504c90eb734654b0d5bc698c1efc1db953bce5791922fc9709a699",
+    "ref_EDUC": "fd56eca31f48bb84cf306fc0e566833abe6855849e77f4eb54d0b00c4780366a",
+    "ref_EJH": "a1df1f8f1142b2b98807b542256b232eedad81f0e47b81323c1149b4a49dba85",
+    "ref_EVRG": "2eb084c927559be25fc9416cab903b14cf0ecf00fa0e0b129e467fe0819b361a",
+    "ref_FA": "05f4f4075ddac3d0400a14d782dbe0b2590372c36b93098a045f933410bb3b93",
+    "ref_FBIO": "c5fc0ef4d6c270ec9c4987080c64a31524c87df865f127a182aa2e9149e40de7",
+    "ref_FCBC": "25d279664163e06f725d502b87c05d18b56ce9b640f3eea16b8d306dd25c3876",
+    "ref_FDSB": "0935b8555e38d3fab3d736ba97a588420a7a45d8edf6d818eae5ac75560a1c65",
+    "ref_FORM": "15f7b13850c105e300c08de97f15e77002be60cd526751aba4f92cacd9df28d4",
+    "ref_FRPH": "58bdb30e426e95216d8991df3a99d9b2a088fd65f23aea00bef37a1101f1986d",
+    "ref_FTEK": "ed9c2cb875ced7488d4c199defc4f0de964401bd1103404f497f2b0b38d9e380",
+    "ref_GEN": "c4a3c6b7d0f767d0363d5cd4df0066e7f38fcffbd9bfbfb7cc203deb90d4f396",
+    "ref_HBM": "c17f4a6c5e295a13b8092e83fc3504bb684de5f417aabf467566cef923766aec",
+    "ref_HESM": "4360d4dd151ec66b0af44354245434d4587d2bbff21efc0c5fe32e19ba48be8a",
+    "ref_HSIC": "d31dea031f342428041e4c738e5af0a54b938c8aafbd08bc5f3e77ecdaa4ad09",
+    "ref_HUYA": "0f91cc1d11d38749365e3f67cb0b78d1c1fdd27baf7d1792a911a77e6491e41b",
+    "ref_INDO": "1f74a39b526475c3f7383861bb347ebdefdcf17001a17ed8b5a7278319d02dfb",
+    "ref_ING": "fa5b6ed11548b3d5e7e653f8fc26fb413aff6e2a8efdfd932ad52540b8b5ce15",
+    "ref_ITIC": "8461889859d9ec7fb042bf639cd2be96ddeb46dd4eeef70e13568d03d74912aa",
+    "ref_JFU": "f31bc59a311a2151ac60c3e4db2ba77a196d67764426305f31099a74f4b1eddd",
+    "ref_JPM": "a81478cb9bc2e1fb82b68993ab68aa31fcbbc0bcd2ada939757efd6b4302033f",
+    "ref_KGS": "ef9111b2dcb9a2b5728195ed19d798489aa6304ccd6f458ec73d5c1d13fb62c3",
+    "ref_KNSL": "6d2a94d031cc1b5fe4950b04f917864422482fe061c39f6499d94dd7412b630d",
+    "ref_LB": "fe4815bfe3eb4e56deaf26d5e8b0aa0dca7bc3395a0c463f42882cce7fd339ff",
+    "ref_LEGH": "1e858e46d3af226eb93fb5a552d72af09a897d90a05c0db2224f50eb2d868d7a",
+    "ref_LND": "b54b1dc7dab76eac571da3787fd51c12e817d5063c14e5a8ad256bc3a394aa2d",
+    "ref_LQDT": "a172d7c7e6117d3887d75a7b9e43d5399e4a70c7cd598824d1ff35d3423dad98",
+    "ref_LVWR": "552e59455a9f531c0741347d5990e06d2c9cc72a0fe1825fd50813ee42f51c99",
+    "ref_MAIN": "470aa4829ddd53a8ab506134a3f139df0069cf633b7fa3716afb296c849261f3",
+    "ref_MITQ": "e2faf35e97f22d98551c4da0af4fee32403973d307cb6499166d29f75c4338b2",
+    "ref_MKC_V": "14a079bbb06d217ae15e520a5739e0f78f63d755daed35552860b76670b56d90",
+    "ref_MOV": "a7e286cfb798729e56342a8384bab087581c4a76c0340584cc211e64be1f30d1",
+    "ref_MSFT": "dd836827b8f85fab540caa518b62049772847e3b69bcafea7f2c65b1a4fdd127",
+    "ref_MTN": "a37f2ae29b49baad262973623a6f4bc608b111cac19961979125a1e7b489e91a",
+    "ref_MU": "a031da0f42f5ed3516ac1d4fca2eb33816bb8ef4e5b314f8124cb0ce111fcdbf",
+    "ref_MYND": "2048df3ae2decc40cb4718db5bed8442f81e6eaf9251359395fed11dff60d021",
+    "ref_NTCT": "c845ad2729eb25cee10493b4daf1a42efa39a4627100559be0bd1f146333fdd3",
+    "ref_NVDA": "093bd794277c61f481b0d493f88c61ee4379d5173daf73efd0c28f86f74e5b52",
+    "ref_PAR": "a9e9188b57f65acb226778b1e030bc6cb32db24d42411cd456a53a7d409c4310",
+    "ref_PBHC": "79c0401a90640815b5dfd61b1ce82e7d1069cb410e50fa034e4af42c3729bf9e",
+    "ref_PIPR": "eba32e2a2e037649c96a6ef409bda0c05be641eaa3e4c5e48b947f924e6b97e3",
+    "ref_PLG": "db0f8876af34a3f1d9a7a0cb456c3d3192f84044de34ea17915dbb5ccac901d7",
+    "ref_POWI": "d78a60476435b626cbbbbfc44a80d173243ec433001f161de86d89d9e5409a3c",
+    "ref_PWP": "8a3ed2558abe98f30ee58ddad94c017f1bd1ef8eb67073d3334509da2eeba606",
+    "ref_PYT": "1445b6c1163303090d7e2a15aefc939f6acef98d9c6a5f9b380cde716c881fbc",
+    "ref_RAPP": "0cffcf4da23b258c14635a638e6a005ea2997635024af667a1735bf63328396c",
+    "ref_REZI": "f2cbb7ca13eddf3d67a4098fa4bb5d8ad208b88528202a940f5df4f6c9557ee0",
+    "ref_RGTI": "2d8cee242a113895f352e07ea255078a25f42acf29db9f2aa1a28e35924064e0",
+    "ref_RLMD": "87b6f6cd8ccb02f5c5aaf06774738e295fba6bcdbfe552604694146a4199ef7c",
+    "ref_RYAAY": "c10166c4b5602900c76a6c732f4b46fb3dbd0815f57b2f14d32d418a0056b842",
+    "ref_SBAC": "32652a6714f8abd84f441b3190fbd3fbfdfb453d9db3b9b13a4f510cda2f331e",
+    "ref_SGMT": "64e58d9d12ad411b6902853403c57b05d1caa5de0713f4e3fa46b61372619972",
+    "ref_SIGI": "6127fbe03740d5959cb0b7edf7dfc7aece1f28d1be54f4b8fda4e3b123732b24",
+    "ref_SM": "0a8b6dcfee95bb76f17be2707098a01ceff64b733adbdfa2423b65a857afe6b3",
+    "ref_SNES": "51d415d18ee454f6583959b69d206aee7cf027a725416ec59bf174e135875a7d",
+    "ref_STLN": "e9696f20a7cd9d75ceb678438bddfdf0bda1c4adfefca4aaf72570af52c17118",
+    "ref_SWX": "774d3c8de25fee6c15fd1c4c8b0de5466d6fb17c18ee49e29bcfd6289c60a2f0",
+    "ref_TALO": "db54265f124523dfe7e78f2289dc172781dc0a137ed1d0b9f6654eb081c77ee7",
+    "ref_TENB": "dc37c08997d8881adfdc58d19cc645ecf5a1ce57a0200f463d26fa43ebd6d243",
+    "ref_TKR": "88d61316130b448b579387df72444973ef73757914256edb6fb687777b62ca7a",
+    "ref_TNL": "381b91ef962a03b3c1f4b3f539cb88e7a67b96fa1bc1871d1ab73a19569ea738",
+    "ref_TOUR": "9ecda1b924a4207cd6b1ebb3ee62b122aa9f220ccb64f7e04adabf528c6f30ed",
+    "ref_TRN": "3debb7fb538076a139c482f405e3e32f19b5dea3fbbfeb0321cd82584a2778f2",
+    "ref_TRS": "cd30ab7388e56ca98c7cd1b29cc5983d5ceae93b2c59125ba6b4fdc43d8c9244",
+    "ref_TRT": "a5ea295f208526b5c96405d3c24e12fdcfe88f78d7f88dc70f81761e6f0e412a",
+    "ref_TWLO": "9aa8592934f9b41915ba2256d060da5997317005607ed4944e9dfcc6013ad20c",
+    "ref_UFCS": "0004d3b2d17698581297671f1bfc6f4053bba1160861e57630df6905b46ed552",
+    "ref_UFPI": "dd6cc47bff101652fa12b986c2b519f1464edc54fd43b2358b73609a1df31d44",
+    "ref_VEEE": "05fb364d6b45b522151ea82e8ba735e5fe4384cf578bee3faa78524825743e59",
+    "ref_VMI": "297e25ec1bb2738c9f6630cc3d7924ba8b15ee43677b31e94929fb818dc2672a",
+    "ref_VNCE": "c3a9cb045cb8aca4efefd54de800aba4b190d13e9348a0eb9178c129c222e364",
+    "ref_VRTS": "8bee9bb995fd9cbdc56681455d7ae1fc92505a06d2891b3ed5fd22e6b24aedb3",
+    "ref_WBX": "011389c0b37eb5be0175700ace72be8ade8c1569ef801777efc556af60b289d3",
+    "ref_WWR": "c88b2b7c3ca9dcb32f52043698f3de57d6865ceb992868588c8c721181a34b95",
+    "ref_XOM": "04bc9a287ce40a253fed528195c9636c5995999ad024b907bc836a602d9b380e",
+    "ref_YRD": "245a2467cdf17ff81fbfeba9f50dd69da7755af546db22de1e790d0abb7fadc2"
+   }
+  }
+ },
+ "inputHash": "e98faf1ca89f0b78c641d6fb1096b6b63933138a3c2c243737d765840cff9a8e",
+ "kindPath": {
+  "kind": "SETUP_BACKTEST",
+  "engine": "research-studies.runSetupStudy (reconstructed states: setup-replay-v1 + run-setup-reconstruction.eventStream)",
+  "adapter": "fromResearchStudy",
+  "population": "V10_PRIMARY"
+ },
+ "envelope": {
+  "schemaVersion": "backtest-result-2.0.0",
+  "identity": {
+   "kind": "SETUP_BACKTEST",
+   "scope": "POPULATION",
+   "listingId": null,
+   "listingHash": null,
+   "populationId": "runner:V10_PRIMARY:56186f5660e80893",
+   "populationHash": "1b790e21012b283e43233b1be69ff635a934c07719bb1184030d4f278e6482b8",
+   "source": {
+    "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
+    "schemaVersion": "research-studies-1.1.0",
+    "engineVersion": null,
+    "artifact": null,
+    "resultHash": "411f7f57dd04187f539404119a0a32ad8d35ab8d9efd08a0b932426d3bd18545"
+   }
+  },
+  "period": {
+   "from": "2016-01-08",
+   "to": "2025-07-03",
+   "asOf": "2025-12-31",
+   "grain": "WEEKLY"
+  },
+  "spec": {
+   "id": "setup-reconstruction-2016-2024",
+   "version": "1.0.0",
+   "description": "Setup events on reconstructed weekly states (setup-replay-v1), 26-week time exit",
+   "parameters": {
+    "runner": "backtest-runner-1.0.0",
+    "runnerSpecSchema": "backtest-runner-spec-1.0.0",
+    "runnerSpec": {
+     "schemaVersion": "backtest-runner-spec-1.0.0",
+     "version": "1.0.0",
+     "registeredAt": "2026-10-29T00:00:00Z",
+     "asOf": "2025-12-31",
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "benchmark": "SPY",
+     "id": "setup-reconstruction-2016-2024",
+     "description": "Setup events on reconstructed weekly states (setup-replay-v1), 26-week time exit",
+     "kind": "SETUP_BACKTEST",
+     "window": {
+      "from": "2016-01-01",
+      "to": "2024-12-31"
+     },
+     "population": {
+      "profile": "V10_PRIMARY",
+      "securityIds": [
+       "ref_AAPL",
+       "ref_ABM",
+       "ref_ACLO",
+       "ref_ACMR",
+       "ref_ADT",
+       "ref_ADUR",
+       "ref_AEE",
+       "ref_AGNCO",
+       "ref_AIFF",
+       "ref_ALTO",
+       "ref_AMC",
+       "ref_AMX",
+       "ref_AQST",
+       "ref_ARD",
+       "ref_ATGL",
+       "ref_AVAH",
+       "ref_AXGN",
+       "ref_BDC",
+       "ref_BE",
+       "ref_BFAM",
+       "ref_BGICF",
+       "ref_BOX",
+       "ref_BTDR",
+       "ref_BTOG",
+       "ref_BVS",
+       "ref_CASS",
+       "ref_CB",
+       "ref_CBZ",
+       "ref_CFB",
+       "ref_CHGG",
+       "ref_CHPT",
+       "ref_CIFR",
+       "ref_CIG",
+       "ref_CMCL",
+       "ref_CMTG",
+       "ref_COTY",
+       "ref_CPF",
+       "ref_CRH",
+       "ref_CVBF",
+       "ref_CVI",
+       "ref_CXT",
+       "ref_CYTK",
+       "ref_DEFT",
+       "ref_DIN",
+       "ref_DLX",
+       "ref_DUOL",
+       "ref_DXLG",
+       "ref_EAF",
+       "ref_EDUC",
+       "ref_EJH",
+       "ref_EPSM",
+       "ref_ESOA",
+       "ref_ETOR",
+       "ref_EVRG",
+       "ref_FA",
+       "ref_FBGL",
+       "ref_FBIO",
+       "ref_FCBC",
+       "ref_FDSB",
+       "ref_FEXD",
+       "ref_FORM",
+       "ref_FRPH",
+       "ref_FTEK",
+       "ref_GDYN",
+       "ref_GEN",
+       "ref_GNL_P_A",
+       "ref_GNT_P_A",
+       "ref_GUT_P_C",
+       "ref_HBM",
+       "ref_HESM",
+       "ref_HSIC",
+       "ref_HUYA",
+       "ref_INDO",
+       "ref_ING",
+       "ref_ITIC",
+       "ref_IVDA",
+       "ref_JFU",
+       "ref_JOB",
+       "ref_JPM",
+       "ref_JPM_P_L",
+       "ref_KG",
+       "ref_KGS",
+       "ref_KNSL",
+       "ref_KOD",
+       "ref_LB",
+       "ref_LEG",
+       "ref_LEGH",
+       "ref_LGHL",
+       "ref_LND",
+       "ref_LQDT",
+       "ref_LVWR",
+       "ref_MAIN",
+       "ref_MENS",
+       "ref_MITN",
+       "ref_MITQ",
+       "ref_MKC_V",
+       "ref_MOV",
+       "ref_MSFT",
+       "ref_MTN",
+       "ref_MU",
+       "ref_MYND",
+       "ref_NIXX",
+       "ref_NTCT",
+       "ref_NVDA",
+       "ref_OCGN",
+       "ref_OMEX",
+       "ref_OZON",
+       "ref_PAR",
+       "ref_PBHC",
+       "ref_PHUN",
+       "ref_PIPR",
+       "ref_PLG",
+       "ref_POWI",
+       "ref_PSA_P_N",
+       "ref_PSA_P_O",
+       "ref_PWP",
+       "ref_PYT",
+       "ref_RAPP",
+       "ref_RC_P_E",
+       "ref_REZI",
+       "ref_RGTI",
+       "ref_RLMD",
+       "ref_RYAAY",
+       "ref_SAGT",
+       "ref_SBAC",
+       "ref_SGMT",
+       "ref_SIGI",
+       "ref_SM",
+       "ref_SNES",
+       "ref_SNOW",
+       "ref_STLN",
+       "ref_STT_P_G",
+       "ref_SWX",
+       "ref_TALO",
+       "ref_TENB",
+       "ref_TKR",
+       "ref_TNL",
+       "ref_TOUR",
+       "ref_TRN",
+       "ref_TRS",
+       "ref_TRT",
+       "ref_TW",
+       "ref_TWLO",
+       "ref_UFCS",
+       "ref_UFPI",
+       "ref_VABK",
+       "ref_VEEE",
+       "ref_VEON",
+       "ref_VHC",
+       "ref_VIVO",
+       "ref_VMI",
+       "ref_VNCE",
+       "ref_VRTS",
+       "ref_WBX",
+       "ref_WOOF",
+       "ref_WWR",
+       "ref_XAIR",
+       "ref_XOM",
+       "ref_XTLB",
+       "ref_YRD"
+      ]
+     },
+     "engine": {
+      "horizonBars": 26
+     },
+     "methods": {
+      "WALK_FORWARD": {
+       "trainSize": 104,
+       "validationSize": 52,
+       "testSize": 104
+      }
+     }
+    },
+    "runnerSpecHash": "56186f5660e80893a990807baf35ef54cc099e8d9d91e9295792a513eb4532e7",
+    "inputHashes": {
+     "code": {
+      "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+      "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+      "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+      "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+      "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+      "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+      "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+      "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+      "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+      "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+      "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+      "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+      "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+      "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+      "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+      "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+      "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+      "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+      "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+     },
+     "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+     "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+     "population": {
+      "profile": "V10_PRIMARY",
+      "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+      "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+      "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+      "calendarLength": 1922,
+      "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+      "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "registers": {
+       "identityEvidence": {
+        "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+        "v12RegistryHash": null,
+        "v13RegistryHash": null,
+        "v13StrictRegistryHash": null
+       },
+       "corporateActionEvidence": {
+        "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+        "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+       },
+       "listingLifecycleEvidence": null,
+       "delistedRegister": null,
+       "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+       "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+      },
+      "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+     },
+     "listings": {
+      "count": 111,
+      "root": "f244f647e0cc87f7df71e76dc04b6d69303d304ecbdf705e740f5f657a2b420f",
+      "rule": "sha256(canonical map securityId -> {listingId, sourceBytesHash|registerPointsSha256, first, last, bars})"
+     },
+     "private": {
+      "setupReplay": {
+       "ref_ABM": "2365715425388a43e44a3e05714cfd21d78e3c5444ca8664c0f191590b32bec1",
+       "ref_ACLO": "7491ccf1c9df1a45ec1e20d3a85ce9e774c68bf6368f727c546c70a7fac19b5e",
+       "ref_ACMR": "eebdcf1618e5fb07de0bffe4debc9c2fe6ebfa1e609cb59193f6862fe4a63cab",
+       "ref_ADUR": "3166e567a6eba78f8c36af663e80bfc16faf65e96428cc7dff8f652fbbb9d2e3",
+       "ref_AEE": "0e9867ff21d716ee134dc9a26f59f80f56965b8d2e9337be18c678b57ef744ad",
+       "ref_AGNCO": "da48ed957b0ff13ec86c3bb303295ffe65037bd8f691f3d1d0eac097f4dc42a6",
+       "ref_ALTO": "eac28af2f60c96a8c033d9bc5d6f695048065cd8181d31c4c3b6cdda788df6b3",
+       "ref_AMX": "9e09cb96e35a3ea044ef7fb66a0cec6b6d84691683b32a849cebff1b5bfd0a2b",
+       "ref_AQST": "7b8bcc22ac25932493305360fdf507f34117d969efccdfb7468bd311f4470f23",
+       "ref_ATGL": "b594b98708901074ca251012eeb8695a3a3ca9c3b735e0a1f90a40bb3670de94",
+       "ref_AVAH": "9031ef587eb074b2e8aa8315002af57f58cae2c886cc2beac895e3aec50a2d97",
+       "ref_BDC": "0f60d245c0928de9d5d532edf94222ceadf2d6c0512364ce37911e83c530b302",
+       "ref_BE": "fbba0f5b725cae90c03f822ea2c9e8e5a05c64fd832a4a8c096e2de84b05100a",
+       "ref_BFAM": "69df3300f7b1e0dd3d4305802ccfd64d74ce5fa29175b5f88caff2640f2a7242",
+       "ref_BOX": "1268895b6d05a845b79f9bb88bd174d3a31f7b7b4c7c60ff96c2ea33208fdf62",
+       "ref_BVS": "126adabe66c3d2a17ad9a5f3645d631ec3dba70a64b570bc4e3addf57534f340",
+       "ref_CASS": "17c8e6239c7058cb69929830cd2881e2e7f478523aa664abfb5fa2a640ba94e4",
+       "ref_CB": "6e5fe5f13c23f4229fdcd3705bc3ad27068a494adce063b5e1176ab852d1d85a",
+       "ref_CBZ": "c839b13681bcfe553d8f9168e190866a879d1093e0531b24c54fc0b4d35dfe58",
+       "ref_CHGG": "fb5b062a930e32038bb8d303970c8507a7ca9eaa291a630631affbb4bdb5f21b",
+       "ref_CHPT": "cd678a182eeb9ab6bdf2758fa0f9c8e0ec1047b41fce43cbdb6bf24e73bc14c5",
+       "ref_CIFR": "4cfbf74233fe253467d64d1ca601e3cc25b914a6aae00a1e357baaa452c55157",
+       "ref_CIG": "41d01c7d15989e088b6a50a490a5b77ec96bc228c3b2be581937fb5431693532",
+       "ref_CMCL": "d17700ee043e5b7ae66c7d5d7f1024800f78235337cda88edb9df58c872e8765",
+       "ref_CMTG": "4ce1986e9eae96a4fcf7a072391c35560a454d9297f51e630b9684e1198184d3",
+       "ref_COTY": "592f3b48af6d309ea5de9389c7058083b99fb9e6d5d8912b64d6634396e20a6e",
+       "ref_CPF": "becb9b9e91b5b537c4151ba63a16cd566359c4c2da53e2f58ba04410aa88af67",
+       "ref_CRH": "0aa113b99ee5394951461f95cc38f88288d8d2b964e73008da246764245ed72b",
+       "ref_CVBF": "e6c49977eb46f94e44fd8320a4ff64d856d712258a85581761b4726c921a5079",
+       "ref_CVI": "d49caa157a68a76f03eef7d17b42f611fa14673e18217bafacf296e419df40f1",
+       "ref_CXT": "5c953379799eac422d0508b361700d5869306a86880c896d04aaf4cdded2766f",
+       "ref_CYTK": "29410f9b4dc499c1c734c780d64efbbdba13952db56eb48b3603ebbde3b228ea",
+       "ref_DLX": "f1e1ff2b75529a91bbfbbd7ef21c538b19cdfa58812fa93ec96de55e06ef147e",
+       "ref_DUOL": "146e0d211b748f144aa92468d5122b231481c9bf347a00a12fb79ff44a623f76",
+       "ref_DXLG": "073d198c53b5c43cd32c0c9607c38a46fe501620925c0464450ec0b5da5ff16e",
+       "ref_EAF": "c6e6b22d28504c90eb734654b0d5bc698c1efc1db953bce5791922fc9709a699",
+       "ref_EDUC": "fd56eca31f48bb84cf306fc0e566833abe6855849e77f4eb54d0b00c4780366a",
+       "ref_EJH": "a1df1f8f1142b2b98807b542256b232eedad81f0e47b81323c1149b4a49dba85",
+       "ref_EVRG": "2eb084c927559be25fc9416cab903b14cf0ecf00fa0e0b129e467fe0819b361a",
+       "ref_FA": "05f4f4075ddac3d0400a14d782dbe0b2590372c36b93098a045f933410bb3b93",
+       "ref_FBIO": "c5fc0ef4d6c270ec9c4987080c64a31524c87df865f127a182aa2e9149e40de7",
+       "ref_FCBC": "25d279664163e06f725d502b87c05d18b56ce9b640f3eea16b8d306dd25c3876",
+       "ref_FDSB": "0935b8555e38d3fab3d736ba97a588420a7a45d8edf6d818eae5ac75560a1c65",
+       "ref_FORM": "15f7b13850c105e300c08de97f15e77002be60cd526751aba4f92cacd9df28d4",
+       "ref_FRPH": "58bdb30e426e95216d8991df3a99d9b2a088fd65f23aea00bef37a1101f1986d",
+       "ref_FTEK": "ed9c2cb875ced7488d4c199defc4f0de964401bd1103404f497f2b0b38d9e380",
+       "ref_GEN": "c4a3c6b7d0f767d0363d5cd4df0066e7f38fcffbd9bfbfb7cc203deb90d4f396",
+       "ref_HBM": "c17f4a6c5e295a13b8092e83fc3504bb684de5f417aabf467566cef923766aec",
+       "ref_HESM": "4360d4dd151ec66b0af44354245434d4587d2bbff21efc0c5fe32e19ba48be8a",
+       "ref_HSIC": "d31dea031f342428041e4c738e5af0a54b938c8aafbd08bc5f3e77ecdaa4ad09",
+       "ref_HUYA": "0f91cc1d11d38749365e3f67cb0b78d1c1fdd27baf7d1792a911a77e6491e41b",
+       "ref_INDO": "1f74a39b526475c3f7383861bb347ebdefdcf17001a17ed8b5a7278319d02dfb",
+       "ref_ING": "fa5b6ed11548b3d5e7e653f8fc26fb413aff6e2a8efdfd932ad52540b8b5ce15",
+       "ref_ITIC": "8461889859d9ec7fb042bf639cd2be96ddeb46dd4eeef70e13568d03d74912aa",
+       "ref_JFU": "f31bc59a311a2151ac60c3e4db2ba77a196d67764426305f31099a74f4b1eddd",
+       "ref_JPM": "a81478cb9bc2e1fb82b68993ab68aa31fcbbc0bcd2ada939757efd6b4302033f",
+       "ref_KGS": "ef9111b2dcb9a2b5728195ed19d798489aa6304ccd6f458ec73d5c1d13fb62c3",
+       "ref_KNSL": "6d2a94d031cc1b5fe4950b04f917864422482fe061c39f6499d94dd7412b630d",
+       "ref_LB": "fe4815bfe3eb4e56deaf26d5e8b0aa0dca7bc3395a0c463f42882cce7fd339ff",
+       "ref_LEGH": "1e858e46d3af226eb93fb5a552d72af09a897d90a05c0db2224f50eb2d868d7a",
+       "ref_LND": "b54b1dc7dab76eac571da3787fd51c12e817d5063c14e5a8ad256bc3a394aa2d",
+       "ref_LQDT": "a172d7c7e6117d3887d75a7b9e43d5399e4a70c7cd598824d1ff35d3423dad98",
+       "ref_LVWR": "552e59455a9f531c0741347d5990e06d2c9cc72a0fe1825fd50813ee42f51c99",
+       "ref_MAIN": "470aa4829ddd53a8ab506134a3f139df0069cf633b7fa3716afb296c849261f3",
+       "ref_MITQ": "e2faf35e97f22d98551c4da0af4fee32403973d307cb6499166d29f75c4338b2",
+       "ref_MKC_V": "14a079bbb06d217ae15e520a5739e0f78f63d755daed35552860b76670b56d90",
+       "ref_MOV": "a7e286cfb798729e56342a8384bab087581c4a76c0340584cc211e64be1f30d1",
+       "ref_MSFT": "dd836827b8f85fab540caa518b62049772847e3b69bcafea7f2c65b1a4fdd127",
+       "ref_MTN": "a37f2ae29b49baad262973623a6f4bc608b111cac19961979125a1e7b489e91a",
+       "ref_MU": "a031da0f42f5ed3516ac1d4fca2eb33816bb8ef4e5b314f8124cb0ce111fcdbf",
+       "ref_MYND": "2048df3ae2decc40cb4718db5bed8442f81e6eaf9251359395fed11dff60d021",
+       "ref_NTCT": "c845ad2729eb25cee10493b4daf1a42efa39a4627100559be0bd1f146333fdd3",
+       "ref_NVDA": "093bd794277c61f481b0d493f88c61ee4379d5173daf73efd0c28f86f74e5b52",
+       "ref_PAR": "a9e9188b57f65acb226778b1e030bc6cb32db24d42411cd456a53a7d409c4310",
+       "ref_PBHC": "79c0401a90640815b5dfd61b1ce82e7d1069cb410e50fa034e4af42c3729bf9e",
+       "ref_PIPR": "eba32e2a2e037649c96a6ef409bda0c05be641eaa3e4c5e48b947f924e6b97e3",
+       "ref_PLG": "db0f8876af34a3f1d9a7a0cb456c3d3192f84044de34ea17915dbb5ccac901d7",
+       "ref_POWI": "d78a60476435b626cbbbbfc44a80d173243ec433001f161de86d89d9e5409a3c",
+       "ref_PWP": "8a3ed2558abe98f30ee58ddad94c017f1bd1ef8eb67073d3334509da2eeba606",
+       "ref_PYT": "1445b6c1163303090d7e2a15aefc939f6acef98d9c6a5f9b380cde716c881fbc",
+       "ref_RAPP": "0cffcf4da23b258c14635a638e6a005ea2997635024af667a1735bf63328396c",
+       "ref_REZI": "f2cbb7ca13eddf3d67a4098fa4bb5d8ad208b88528202a940f5df4f6c9557ee0",
+       "ref_RGTI": "2d8cee242a113895f352e07ea255078a25f42acf29db9f2aa1a28e35924064e0",
+       "ref_RLMD": "87b6f6cd8ccb02f5c5aaf06774738e295fba6bcdbfe552604694146a4199ef7c",
+       "ref_RYAAY": "c10166c4b5602900c76a6c732f4b46fb3dbd0815f57b2f14d32d418a0056b842",
+       "ref_SBAC": "32652a6714f8abd84f441b3190fbd3fbfdfb453d9db3b9b13a4f510cda2f331e",
+       "ref_SGMT": "64e58d9d12ad411b6902853403c57b05d1caa5de0713f4e3fa46b61372619972",
+       "ref_SIGI": "6127fbe03740d5959cb0b7edf7dfc7aece1f28d1be54f4b8fda4e3b123732b24",
+       "ref_SM": "0a8b6dcfee95bb76f17be2707098a01ceff64b733adbdfa2423b65a857afe6b3",
+       "ref_SNES": "51d415d18ee454f6583959b69d206aee7cf027a725416ec59bf174e135875a7d",
+       "ref_STLN": "e9696f20a7cd9d75ceb678438bddfdf0bda1c4adfefca4aaf72570af52c17118",
+       "ref_SWX": "774d3c8de25fee6c15fd1c4c8b0de5466d6fb17c18ee49e29bcfd6289c60a2f0",
+       "ref_TALO": "db54265f124523dfe7e78f2289dc172781dc0a137ed1d0b9f6654eb081c77ee7",
+       "ref_TENB": "dc37c08997d8881adfdc58d19cc645ecf5a1ce57a0200f463d26fa43ebd6d243",
+       "ref_TKR": "88d61316130b448b579387df72444973ef73757914256edb6fb687777b62ca7a",
+       "ref_TNL": "381b91ef962a03b3c1f4b3f539cb88e7a67b96fa1bc1871d1ab73a19569ea738",
+       "ref_TOUR": "9ecda1b924a4207cd6b1ebb3ee62b122aa9f220ccb64f7e04adabf528c6f30ed",
+       "ref_TRN": "3debb7fb538076a139c482f405e3e32f19b5dea3fbbfeb0321cd82584a2778f2",
+       "ref_TRS": "cd30ab7388e56ca98c7cd1b29cc5983d5ceae93b2c59125ba6b4fdc43d8c9244",
+       "ref_TRT": "a5ea295f208526b5c96405d3c24e12fdcfe88f78d7f88dc70f81761e6f0e412a",
+       "ref_TWLO": "9aa8592934f9b41915ba2256d060da5997317005607ed4944e9dfcc6013ad20c",
+       "ref_UFCS": "0004d3b2d17698581297671f1bfc6f4053bba1160861e57630df6905b46ed552",
+       "ref_UFPI": "dd6cc47bff101652fa12b986c2b519f1464edc54fd43b2358b73609a1df31d44",
+       "ref_VEEE": "05fb364d6b45b522151ea82e8ba735e5fe4384cf578bee3faa78524825743e59",
+       "ref_VMI": "297e25ec1bb2738c9f6630cc3d7924ba8b15ee43677b31e94929fb818dc2672a",
+       "ref_VNCE": "c3a9cb045cb8aca4efefd54de800aba4b190d13e9348a0eb9178c129c222e364",
+       "ref_VRTS": "8bee9bb995fd9cbdc56681455d7ae1fc92505a06d2891b3ed5fd22e6b24aedb3",
+       "ref_WBX": "011389c0b37eb5be0175700ace72be8ade8c1569ef801777efc556af60b289d3",
+       "ref_WWR": "c88b2b7c3ca9dcb32f52043698f3de57d6865ceb992868588c8c721181a34b95",
+       "ref_XOM": "04bc9a287ce40a253fed528195c9636c5995999ad024b907bc836a602d9b380e",
+       "ref_YRD": "245a2467cdf17ff81fbfeba9f50dd69da7755af546db22de1e790d0abb7fadc2"
+      }
+     }
+    },
+    "inputHash": "e98faf1ca89f0b78c641d6fb1096b6b63933138a3c2c243737d765840cff9a8e",
+    "kindPath": {
+     "kind": "SETUP_BACKTEST",
+     "engine": "research-studies.runSetupStudy (reconstructed states: setup-replay-v1 + run-setup-reconstruction.eventStream)",
+     "adapter": "fromResearchStudy",
+     "population": "V10_PRIMARY"
+    },
+    "adapterSpec": {
+     "id": "registration:11fb56de09c3f844",
+     "version": null,
+     "description": "researchStudyKind:SETUP_BACKTEST",
+     "parameters": {
+      "registrationHash": "11fb56de09c3f844448d65a43d31693a29c0a206094c10f68b756747f5c0cc08",
+      "analysisMode": "EXPLORATORY",
+      "sourceMode": "HISTORICAL_SIMULATION",
+      "pattern": null,
+      "ruleHash": null,
+      "factorId": null,
+      "rules": null,
+      "entryStates": [
+       "SETUP_NEW",
+       "SETUP_CONFIRMED"
+      ],
+      "costs": {
+       "basis": "PER_SIDE_NOTIONAL",
+       "feeBps": 5,
+       "slippageBps": 5
+      }
+     },
+     "specHash": "e22906fa228bba71f546e2deba0a3526f8f86d0dffb0aae21e4f22c2df1cc567"
+    }
+   },
+   "specHash": "c9295b0b8e692ee12f670499a08bb83332ccd11b1d2f326691b23b974fab1612"
+  },
+  "events": {
+   "form": "EVENTS",
+   "occurrences": 2750,
+   "completed": 2750,
+   "immature": 0,
+   "censored": 0,
+   "ineligible": 0,
+   "titles": 103,
+   "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+   "exit": "FIXED_HORIZON"
+  },
+  "portfolio": null,
+  "metrics": {
+   "basis": "PER_EVENT",
+   "totalReturn": null,
+   "cagr": null,
+   "annualReturns": null,
+   "volatility": null,
+   "maxDrawdown": -0.1795696047702775,
+   "hitRate": 0.536,
+   "trades": 2750,
+   "turnover": null,
+   "costs": {
+    "model": "PER_SIDE_NOTIONAL",
+    "feeBpsPerSide": 5,
+    "slippageBpsPerSide": 5,
+    "paid": null
+   },
+   "cashShare": null,
+   "benchmark": {
+    "id": "SUPPLIED_RESEARCH_BENCHMARK",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0
+   },
+   "excess": {
+    "meanExcess": -0.009735665121259543,
+    "n": 2750
+   },
+   "perEvent": {
+    "horizon": "REGISTERED_HORIZON",
+    "label": null,
+    "n": 2750,
+    "median": 0.015429713286445379,
+    "mean": 0.048714623801155175,
+    "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+   }
+  },
+  "uncertainty": {
+   "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+   "interval": [
+    0.021596370376233485,
+    0.07583287722607687
+   ],
+   "level": 0.95,
+   "p": null,
+   "family": null
+  },
+  "dataQuality": {
+   "coverage": {
+    "numerator": 2750,
+    "denominator": 2750,
+    "share": 1,
+    "contract": null
+   },
+   "censored": 0,
+   "terminal": {
+    "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+   },
+   "corporateActions": {
+    "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+    "listings": {
+     "count": 111,
+     "quality": {
+      "CLEAN": 98,
+      "RESOLVED": 13
+     },
+     "withSplitsInWindow": 22
+    }
+   },
+   "totalReturnBasis": "PRICE_RETURN",
+   "survivorship": {
+    "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "control": "population profile V10_PRIMARY (dce532a2533c2907)"
+   },
+   "warnings": [
+    "ESTIMATED_NOT_CERTIFIED",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "DIVIDENDS_EXCLUDED",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ]
+  },
+  "methods": [
+   {
+    "method": "MONTE_CARLO",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "WALK_FORWARD",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-validation-1.0.0",
+     "mode": "ROLLING",
+     "sizes": {
+      "train": 104,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "embargoDays": 0,
+     "folds": 3,
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 1528,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 895
+     },
+     "partitionHash": "f1a7d214aa9cffb9274384725b69eda38371d2239cc1438662f9af7ef72208d0",
+     "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+    }
+   },
+   {
+    "method": "OUT_OF_SAMPLE",
+    "state": "NOT_RUN",
+    "result": {
+     "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE",
+     "certificationPathSetupOos": {
+      "evaluator": "setup-oos-1.0.0",
+      "status": "FAIL",
+      "reasonCode": "OOS_NOT_MEASURABLE_YET",
+      "completed": 0,
+      "minPerSegment": 30,
+      "source": "quant/data/product/setup-outcomes-v1.json (published states)"
+     }
+    }
+   },
+   {
+    "method": "MARKET_REGIME",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PARAMETER_SENSITIVITY",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "EVENT_DRIVEN",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PORTFOLIO_REBALANCING",
+    "state": "NOT_APPLICABLE",
+    "result": null
+   }
+  ],
+  "limitations": [
+   "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+   "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+   "EX_POST_PRICE_REVISIONS",
+   "NO_INDEPENDENT_CONFIRMATION",
+   "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+   "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+   "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+   "CERTIFICATION_BLOCKER:historyDates:SETUP_HISTORY_TOO_SHORT",
+   "CERTIFICATION_BLOCKER:historySpan:SETUP_HISTORY_SPAN_TOO_SHORT",
+   "CERTIFICATION_BLOCKER:completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW",
+   "CERTIFICATION_BLOCKER:titles:TOO_FEW_TITLES",
+   "CERTIFICATION_BLOCKER:independence:EVENTS_CLUSTERED_IN_TIME",
+   "CERTIFICATION_BLOCKER:returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN",
+   "CERTIFICATION_BLOCKER:entryVariant:VARIANTS_NOT_MEASURABLE_YET",
+   "CERTIFICATION_BLOCKER:oos:OOS_NOT_MEASURABLE_YET",
+   "CERTIFICATION_READINESS:NOT_READY",
+   "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+   "RUNNER_COMPOSED_EXISTING_ENGINES",
+   "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+   "EVIDENCE_KIND_RECONSTRUCTION_NOT_PUBLISHED_STATE_EVIDENCE",
+   "RECONSTRUCTED_SETUP_STATES_CANNOT_SATISFY_PUBLISHED_ONLY_GATE"
+  ],
+  "status": {
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "certificationScope": "KIND",
+   "certificationRuleId": null,
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SETUP_BACKTEST@2026-10-29",
+   "productionApproved": false,
+   "evidenceKind": "TESTED"
+  },
+  "envelopeHash": "89dc725f05ed05f1253ec35cffb5cdd08af3944ce334b9f117a8c4b5eb938e5d"
+ },
+ "envelopeHash": "89dc725f05ed05f1253ec35cffb5cdd08af3944ce334b9f117a8c4b5eb938e5d",
+ "population": {
+  "profile": "V10_PRIMARY",
+  "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+  "frameSize": 4285,
+  "calendar": {
+   "first": "1990-01-05",
+   "last": "2025-12-26",
+   "length": 1878
+  },
+  "listings": {
+   "count": 111,
+   "idsHash": "9c55a73c254155580c71bda8c80ee47044998e791809201127497c0b74684a62",
+   "corporateActionQuality": {
+    "CLEAN": 98,
+    "RESOLVED": 13
+   },
+   "withSplitsInWindow": 22,
+   "withLifecycle": 0
+  },
+  "excluded": [
+   {
+    "securityId": "ref_AAPL",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_ADT",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_AIFF",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_AMC",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_ARD",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_AXGN",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_BGICF",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_BTDR",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_BTOG",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_CFB",
+    "ticker": null,
+    "reason": "MISSING_WEEKS"
+   },
+   {
+    "securityId": "ref_DEFT",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_DIN",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_EPSM",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_ESOA",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_ETOR",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_FBGL",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_FEXD",
+    "ticker": null,
+    "reason": "INSUFFICIENT_HISTORY"
+   },
+   {
+    "securityId": "ref_GDYN",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_GNL_P_A",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_GNT_P_A",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_GUT_P_C",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_IVDA",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_JOB",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_JPM_P_L",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_KG",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_KOD",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_LEG",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_LGHL",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_MENS",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_MITN",
+    "ticker": null,
+    "reason": "SERIES_FILE_MISSING"
+   },
+   {
+    "securityId": "ref_NIXX",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_OCGN",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_OMEX",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_OZON",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_PHUN",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_PSA_P_N",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_PSA_P_O",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_RC_P_E",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_SAGT",
+    "ticker": null,
+    "reason": "LISTING_STARTS_AFTER_WINDOW"
+   },
+   {
+    "securityId": "ref_SNOW",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_STT_P_G",
+    "ticker": null,
+    "reason": "INELIGIBLE_EQUITY_LISTING"
+   },
+   {
+    "securityId": "ref_TW",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_VABK",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_VEON",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_VHC",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   },
+   {
+    "securityId": "ref_VIVO",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_WOOF",
+    "ticker": null,
+    "reason": "AMBIGUOUS_LISTING_IDENTITY"
+   },
+   {
+    "securityId": "ref_XAIR",
+    "ticker": null,
+    "reason": "NOT_IN_POPULATION_FRAME"
+   },
+   {
+    "securityId": "ref_XTLB",
+    "ticker": null,
+    "reason": "CORPORATE_ACTION_UNRESOLVED"
+   }
+  ],
+  "warnings": [
+   "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+   "DELISTED_SERIES_NOT_INCLUDED",
+   "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+   "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+   "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS"
+  ]
+ },
+ "extras": {
+  "engineResultHash": "c0f79f7bc115574062078a0fa243e3650630d9876786faa1fc6e3e0cf4ff4771",
+  "engineEvents": 5349,
+  "windowEvents": 2750
+ },
+ "pit": {
+  "asOf": "2025-12-31",
+  "latestInputBar": "2025-12-26",
+  "inputsAfterAsOf": 0,
+  "entryNotAfterSignal": 0,
+  "exitAfterAsOf": 0,
+  "signalsAfterWindow": 0
+ },
+ "qa": null,
+ "resultHash": "cdfe412a562fb1a7921fe99af96cd0caebfba2f06dafe219a333297e50ee71cf"
+}
