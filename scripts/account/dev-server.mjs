@@ -104,6 +104,14 @@ async function devRoute(req, res, url) {
     res.writeHead(200, {'Content-Type': 'application/json'});
     return res.end(JSON.stringify({granted: n}));
   }
+  if (parts[1] === 'pricing-admin' && req.method === 'POST') {
+    // Rolle pricing_admin (Tarifverwaltung) wie der Betrieb: nur ueber den Service, nie aus dem Browser. Nur Simulation.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'pricing_admin' from auth.users
+      where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({granted: n}));
+  }
   if (parts[1] === 'checkout' && parts[2] && parts[3] === 'sepa' && req.method === 'POST') {
     const session = sim.sessions.get(parts[2]);
     if (!session || session.status !== 'open') return redirect(res, session ? session.cancel_url : '/__dev/');

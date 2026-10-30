@@ -82,6 +82,12 @@ await page.waitForSelector('#ka-register-done:not([hidden])');
 await page.goto(`${base}/__dev/mail`);
 await page.click('a.btn');
 await page.waitForURL(/\/konto\/\?status=verified/);
+/* Der Merker "angemeldet" entsteht erst mit der Antwort auf /v1/session (konto/account-api.js#remember). Auf einem kalten
+   Server kam die Aktienseite sonst vorher, der Knopf blieb rein lokal ("account: undefined", nur der erste Lauf in CI). */
+for (let i = 0; i < 100; i++) {
+  if (await page.evaluate(() => localStorage.getItem('vu-account-session-v1')).catch(() => null) === '1') break;
+  await page.waitForTimeout(100);
+}
 
 btn = await stock('AAPL');
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: nur lokaler Eintrag AAPL bleibt sichtbar');

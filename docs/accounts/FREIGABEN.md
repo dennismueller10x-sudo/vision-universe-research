@@ -1,6 +1,6 @@
 # Freigaben – was automatisch läuft, was der Owner freigibt
 
-Stand 29.10.2026, verbindlich. Ziel: Normale Entwicklung braucht **keine** GitHub-Freigabe. Eine ausdrückliche
+Stand 30.10.2026, verbindlich. Ziel: Normale Entwicklung braucht **keine** GitHub-Freigabe. Eine ausdrückliche
 Owner-Freigabe bleibt nur für Geld, Preise, Secrets und Datenverlust. Eine einzige zusätzliche Umgebung (`account-auto`)
 ist nötig – Begründung unten.
 
@@ -16,7 +16,8 @@ ist nötig – Begründung unten.
 | Datenbank-Sicherung (verschlüsselt) | `account-backup.yml` | täglich | **keine** |
 | **Zahlungen öffnen oder Schutz entfernen**: Checkout erweitern (`off`→`testers`→`public`), Live-Abrechnung **ein**, Kündigungsautomatik **ein**, Stripe Tax **aus** | `account-production-auto.yml` → `zahlungsfreigabe` | nur bei genau so einer Änderung gegenüber dem laufenden Worker | **Owner** (`account-production`) |
 | Einschränken oder geprüften Schutz hinzufügen: Checkout zurück (`public`→`testers`→`off`), Live-Abrechnung aus, Kündigungsautomatik aus, **Stripe Tax ein**, Rechtsfassung bestätigen (allein ohne Zahlungswirkung) | `account-production-auto.yml` → `worker` | Merge nach `main` | **keine** |
-| **Stripe-Produkte, Preise, Portal, Webhook, Steuersatz** | `account-production-stripe.yml` | von Hand | **Owner** (`account-production`, `account-dev`) |
+| **Preis ändern** (neue Abschlüsse; bestehende Abos behalten ihren Preis) | keiner – Tarifverwaltung `/konto/admin/tarife/` ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) | Betreiber mit Rolle `pricing_admin` | **ausdrückliche Bestätigung in der Oberfläche** (Vorschau, Passwort, Haken), keine GitHub-Freigabe |
+| **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account-production-stripe.yml` | von Hand | **Owner** (`account-production`, `account-dev`) |
 | **Secrets** setzen/erneuern (Supabase, Stripe, Brevo) | `account-production-deploy.yml` | von Hand | **Owner** (`account-dev`, `account-production`) |
 | **Destruktive Migration** (DROP, TRUNCATE, Kundendaten ändern, RLS aus, Rollen, Preise) | `account-db-approved.yml` (Eingabe `DESTRUKTIV`) | von Hand | **Owner** (`account-dev`) |
 | **Kündigungen ausführen**, Supabase Auth | `account-cancellations.yml`, `account-production-auth.yml` | von Hand | **Owner** (`account-dev`) |
