@@ -130,3 +130,29 @@ Lehren (Beobachtung, keine Messung):
 1. „Der gefährlichste Abend" (Fed + Big Tech, offene Schleife im Hook) holt die meisten Aufrufe des Kanals. Zahlen folgen vom Owner.
 2. Kommentar „Warum nennst du die Aktie nicht beim Namen?" unter dem Alphabet-Reel: Bei Firmen mit zwei Namen beide im Hook nennen („Google-Mutter Alphabet") und das Kürzel einblenden.
 3. Format F7 „Aktie plus App-Analyse" (Teladoc) vom Owner als Serienformat gewählt. Messung steht aus: Aufrufe, Wiedergabezeit und Kommentare gegen die Fed- und Alphabet-Reels vergleichen.
+
+## 10. Erste Messung eigener Kanal (Meta-API, 30.10.2026)
+
+Quelle: Workflow `Social Instagram Check` (backup=true), Branch `backup/instagram-20261030-1709`. 20 Beiträge, 131 Follower. Die Meta-API liefert für Reels `reach`, Likes, Kommentare, Saves, Shares, `ig_reels_avg_watch_time`; `views`, `follows` und `profile_visits` kamen für Reels nicht zurück.
+
+| Reel | Länge | Ø Wiedergabe | Anteil | Reichweite | Kommentare | Shares/Saves |
+|---|---|---|---|---|---|---|
+| Fed „gefährlichster Abend" | 54 s | 18,6 s | 34 % | **988** | 0 | 3/0 |
+| Porsche | 44 s | 10,7 s | 24 % | 180 | 0 | 0/0 |
+| Alphabet „Kleingedrucktes" | 62 s | 13,9 s | 22 % | 192 | 6 | 0/0 |
+| Amazon | 75 s | 16,1 s | 21 % | 222 | 0 | 1/2 |
+| Tesla/Waymo („Kommentiere AKTIE") | 29 s | 4,9 s | 17 % | 180 | 8 | 0/0 |
+| Welt-ETF | 46 s | 5,8 s | 13 % | 125 | 0 | 0/0 |
+| Teladoc | 59 s | 6,5 s | 11 % | 175 | 2 | 0/0 |
+| Mercedes | 62 s | 6,2 s | 10 % | 133 | 0 | 0/0 |
+| KI-Jobs (4 h alt) | 65 s | 5,3 s | 8 % | 124 | 0 | 0/0 |
+| Dividend Leaders | 47 s | 2,4 s | 5 % | 182 | 4 | 1/0 |
+
+Befunde:
+1. Fast alle Reels bleiben bei 100 bis 220 Reichweite: Das ist die Testgruppe, die Instagram jedem Reel gibt. Nur das Fed-Reel kam darüber hinaus, und es hat die höchste Haltequote (34 %).
+2. Die Zuschauer gehen meist nach 2 bis 6 Sekunden. Das Problem liegt im ersten Bild und in den ersten drei Sekunden, nicht im Inhalt danach.
+3. Die Reels sind für einen Kanal mit 131 Followern zu lang (45 bis 75 s). Bei 5 s Wiedergabe sieht kaum jemand die zweite Hook oder den App-Hinweis.
+4. Shares und Saves sind fast null. Nichts im Reel lädt zum Weiterschicken ein.
+5. Kommentar-Aufrufe („Kommentiere AKTIE", „Boden oder Falle") bringen Kommentare (bis 8), aber ohne Haltequote keine Reichweite.
+
+Nächster Test (Hypothesen, nicht bewiesen): 20 bis 30 s, erstes Bild ohne Logo- und Kickerzeile, Bewegung und eine Zahl ab Bild 1, offene Schleife wie beim Fed-Reel, Serie mit Teil 1/2, Teilen-Anlass („Schick das jemandem, der …"). Messung nach 48 h: Haltequote über 30 % ist das Ziel.
