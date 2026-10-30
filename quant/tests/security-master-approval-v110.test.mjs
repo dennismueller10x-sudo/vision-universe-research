@@ -2,9 +2,16 @@
 // für alle G6/G7/G9-Arten, gleiche Bindung wie 1.0.0, Grenzen unverändert; 1.0.0 verhält sich byte-gleich.
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync, mkdtempSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import { evaluateRefresh, DEFAULT_THRESHOLDS, APPROVED_CHANGES_SCHEMA, APPROVED_CHANGES_SCHEMA_V11 } from "../../scripts/market/security-master-refresh-gate.mjs";
+import { buildApprovalList, classifyCanonical, secCheck, indexSec, listsMarkdown } from "../../scripts/market/build-security-master-approval-list.mjs";
 
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SHA = "a".repeat(64);
 const row = (id, over = {}) => ({ ticker: id, canonical_id: `tiingo:NYSE:${id}:2000-01-01`, exchange: "NYSE", instrument_type: "EQUITY_COMMON", active_status: "ACTIVE", start_date: "2000-01-01", end_date: "2026-10-27", eligible_us_equity: true, baseline_member: true, baseline_security_id: `ref_${id}`, ...over });
 const master = (rows, over = {}) => ({ version: "us-security-master-1.3.0", generatedAt: "2026-10-28T00:00:00Z", today: "2026-10-28", rowsDelivered: rows.length, rows, ...over });
@@ -144,4 +151,92 @@ test("SMA-4 · 1.1.0 Bindung und Form: Versionsfreigabe, Versionen, Stamm-SHA, a
   // Wiederverwendung im nächsten Lauf (Stamm schon 1.3.0): G8
   const y = bigCase(); y.x.prevMaster.version = "us-security-master-1.3.0";
   assert.ok(run(y.x, { approvedChanges: y.ok }).failures.some((f) => /G8 Sonderfreigabe gilt für/.test(f)));
+});
+
+// ── Builder ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+const SEC = { fields: ["cik", "name", "ticker", "exchange"], data: [[1, "Reuse Holdings", "REU", "NYSE"], [2, "Otc Corp", "OTCX", "OTC"], [3, "Still Listed Inc", "STL", "NYSE"], [4, "Name Added Corp", "NAD", "NYSE"]] };
+test("SMA-5 · Builder: Klassen, SEC-Abgleich, nur Freigabefähiges in der Datei; Gate erkennt die Datei exakt an", () => {
+  const sec = indexSec(SEC);
+  assert.equal(secCheck({ active_status: "ACTIVE", exchange: "NYSE MKT" }, "REU", sec).status, "CONFIRMS");
+  assert.equal(secCheck(null, "STL", sec).status, "CONTRADICTS");
+  assert.equal(secCheck({ active_status: "ACTIVE", exchange: "OTCMKTS" }, "OTCX", sec).status, "CONSISTENT");
+  const today = "2026-10-28";
+  const P = (t, o) => [row(t, o)];
+  // Ticker-Wiederverwendung: alte Zeile bleibt (inaktiv), neue beginnt später → freigabefähig (SEC bestätigt die aktive Stammaktie)
+  const reuse = classifyCanonical(P("REU"), [row("REU", { active_status: "INACTIVE", end_date: "2015-01-01" }), row("REU", { canonical_id: "tiingo:NYSE:REU:2025-01-01", start_date: "2025-01-01" })], { today, secBy: sec });
+  assert.equal(reuse.class, "TICKER_REUSE_NEW_LISTING"); assert.equal(reuse.approvable, true);
+  // zwei aktive Zeilen → nicht freigabefähig
+  const two = classifyCanonical(P("REU"), [row("REU"), row("REU", { canonical_id: "tiingo:NYSE:REU:2026-10-20", start_date: "2026-10-20" })], { today, secBy: sec });
+  assert.equal(two.class, "TWO_ACTIVE_LISTINGS"); assert.equal(two.approvable, false);
+  // Altzeile entfallen, neue Zeile jung → nicht freigabefähig
+  const rs = classifyCanonical(P("XYZ"), [row("XYZ", { canonical_id: "tiingo:NYSE:XYZ:2026-10-01", start_date: "2026-10-01" })], { today, secBy: sec });
+  assert.equal(rs.class, "PROVIDER_HISTORY_RESTARTED"); assert.equal(rs.approvable, false);
+  // Rückzug in den Freiverkehr, SEC sagt OTC → freigabefähig
+  const otc = classifyCanonical(P("OTCX"), [row("OTCX", { exchange: "OTCMKTS", canonical_id: "tiingo:OTCMKTS:OTCX:2000-01-01", eligible_us_equity: false })], { today, secBy: sec });
+  assert.equal(otc.class, "MOVED_TO_OTC"); assert.equal(otc.approvable, true);
+
+  // vollständiger Lauf: Deaktivierung mit SEC-Widerspruch (STL) bleibt draußen, die übrigen stehen in der Datei
+  const ids = ["REU", "OTCX", "STL", "GON", "NAD"];
+  const prev = master(ids.map((i) => row(i)), { version: "us-security-master-1.1.0", generatedAt: "2026-09-11T00:00:00Z" });
+  const next = master([
+    row("REU", { active_status: "INACTIVE", end_date: "2015-01-01", eligible_us_equity: false }), row("REU", { canonical_id: "tiingo:NYSE:REU:2025-01-01", start_date: "2025-01-01" }),
+    row("OTCX", { exchange: "OTCMKTS", canonical_id: "tiingo:OTCMKTS:OTCX:2000-01-01", eligible_us_equity: false }),
+    row("STL", { active_status: "INACTIVE", end_date: "2026-09-01", eligible_us_equity: false }),
+    row("GON", { active_status: "INACTIVE", end_date: "2026-09-01", eligible_us_equity: false }),
+    row("NAD"),
+  ]);
+  const nm = (f) => ({ rows: ids.map((i) => ({ securityId: `ref_${i}`, ticker: i, inProductUniverse: false, companyName: f(i), nameSource: f(i) ? "SEC_COMPANY_TICKERS" : null, cik: i === "NAD" && f(i) ? "0000000004" : null, candidates: {} })) });
+  const prevBytes = Buffer.from(JSON.stringify(prev));
+  const { approval, classification } = buildApprovalList({ prevBytes, prev, next, prevNames: nm(() => null), nextNames: nm((i) => (i === "NAD" ? "Name Added Corp" : null)), sec: SEC, secAsOf: "2026-10-30", runId: "1" });
+  assert.equal(approval.schema, APPROVED_CHANGES_SCHEMA_V11);
+  assert.equal(approval.prevMasterSha256, createHash("sha256").update(prevBytes).digest("hex"));
+  assert.deepEqual(approval.deactivations.map((d) => d.securityId), ["ref_GON"]);
+  assert.deepEqual(classification.items.deactivations.filter((d) => !d.approvable).map((d) => d.securityId), ["ref_STL"]);
+  assert.deepEqual(approval.canonicalIdChanges.map((d) => d.securityId).sort(), ["ref_OTCX", "ref_REU"]);
+  assert.deepEqual(approval.nameChanges.map((d) => [d.securityId, d.from, d.to]), [["ref_NAD", null, "Name Added Corp"]]);
+  // Eignungswechsel: GON (Deaktivierung) und OTCX (canonical) freigabefähig, STL nicht; REU bleibt über das neue Listing geeignet
+  assert.deepEqual(approval.eligibilityFlips.map((d) => d.securityId).sort(), ["ref_GON", "ref_OTCX"]);
+  for (const k of ["eligibilityFlips", "deactivations", "canonicalIdChanges", "nameChanges"]) for (const e of approval[k]) assert.ok(e.evidence.source && e.evidence.ref, `${k} ${e.securityId} ohne Beleg`);
+  assert.ok(listsMarkdown(classification).includes("ref_STL"));
+  // Gate: die Datei nimmt genau die freigabefähigen aus, der Rest zählt
+  const r = evaluateRefresh({ prevMaster: prev, nextMaster: next, prevSummary: summary(5), nextSummary: summary(5), nextReconciliation: recon(), prevNames: nm(() => null), nextNames: nm((i) => (i === "NAD" ? "Name Added Corp" : null)) },
+    { today: "2026-10-28", allowVersionChange: true, approvedChanges: approval, prevMasterSha256: approval.prevMasterSha256 });
+  assert.equal(r.pass, true, r.failures.join("|"));
+  assert.deepEqual(r.report.approval.counted, { instrumentTypeChanges: 0, eligibilityFlips: 1, deactivations: 1, canonicalIdChanges: 0, tickerChanges: 0, newDuplicateCanonicalIds: 0, nameChanges: 0 });
+});
+
+test("SMA-6 · Builder-CLI schreibt nur nach --out (Prüfdaten im Temp-Verzeichnis) und bricht bei unpassendem Gate-Bericht ab", () => {
+  const d = mkdtempSync(join(tmpdir(), "sma-"));
+  try {
+    for (const s of ["prev", "next"]) mkdirSync(join(d, s));
+    const prev = master([row("AAA"), row("BBB")], { version: "us-security-master-1.1.0" }), next = master([row("AAA"), row("BBB", { active_status: "INACTIVE", end_date: "2026-09-01", eligible_us_equity: false })]);
+    writeFileSync(join(d, "prev", "us-security-master.json"), JSON.stringify(prev)); writeFileSync(join(d, "next", "us-security-master.json"), JSON.stringify(next));
+    const cli = (extra) => spawnSync(process.execPath, [join(ROOT, "scripts/market/build-security-master-approval-list.mjs"), "--prev", join(d, "prev"), "--next", join(d, "next"), "--out", join(d, "a.json"), ...extra], { encoding: "utf8" });
+    const ok = cli([]); assert.equal(ok.status, 0, ok.stderr);
+    const a = JSON.parse(readFileSync(join(d, "a.json"), "utf8"));
+    assert.deepEqual(a.deactivations.map((x) => x.securityId), ["ref_BBB"]);
+    writeFileSync(join(d, "gate.json"), JSON.stringify({ report: { counts: { deactivations: 7 } } }));
+    const bad = cli(["--gate-report", join(d, "gate.json")]); assert.notEqual(bad.status, 0); assert.match(bad.stderr, /Gate-Bericht passt nicht/);
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+test("SMA-7 · Vorgeschlagene Freigabedatei v130-approved-changes-1.1.0.json: gebunden wie 1.0.0, enthält 1.0.0 vollständig, nur freigabefähige Klassen, jeder Eintrag belegt", () => {
+  const a = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-approved-changes-1.1.0.json"), "utf8"));
+  const base = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-approved-changes.json"), "utf8"));
+  assert.equal(a.schema, APPROVED_CHANGES_SCHEMA_V11);
+  assert.deepEqual([a.fromVersion, a.toVersion, a.prevMasterSha256], [base.fromVersion, base.toVersion, base.prevMasterSha256]);
+  const key = (x) => `${x.securityId}|${x.from}|${x.to}`;
+  for (const k of ["instrumentTypeChanges", "eligibilityFlips"]) { const s = new Set(a[k].map(key)); for (const x of base[k]) assert.ok(s.has(key(x)), `${k} ${key(x)} aus 1.0.0 fehlt`); }
+  const forbidden = /TWO_ACTIVE|PROVIDER_HISTORY_RESTARTED|UNCLEAR|UNEXPLAINED|ISSUER_CIK_CHANGED|NAME_REMOVED|PROVIDER_DUPLICATE_ROW$/;
+  for (const k of ["instrumentTypeChanges", "eligibilityFlips", "deactivations", "canonicalIdChanges", "tickerChanges", "newDuplicateCanonicalIds", "nameChanges"]) {
+    assert.ok(Array.isArray(a[k]), k);
+    assert.equal(a[k].length, a.counts[k].approved, `${k}: Zählung im Kopf = Liste`);
+    for (const e of a[k]) { assert.ok(e.evidence && e.evidence.source.trim() && e.evidence.ref.trim(), `${k} ${e.securityId} ohne Beleg`); assert.doesNotMatch(String(e.class), forbidden, `${k} ${e.securityId}`); }
+  }
+  assert.deepEqual(a.newDuplicateCanonicalIds, [], "doppelte canonical_id (OKE) ist nicht freigegeben");
+  assert.deepEqual(a.tickerChanges, []);
+  // gilt nur für den committeten Ausgangsstamm
+  const sha = createHash("sha256").update(readFileSync(join(ROOT, "quant/data/market/security-master/us-security-master.json"))).digest("hex");
+  if (sha !== a.prevMasterSha256) return; // Stamm seit der Liste geändert: dann gilt sie ohnehin nicht mehr (G8)
+  assert.equal(a.sourceRun.runId, "40942100928");
 });
