@@ -29,7 +29,7 @@ on:
         type: boolean
         default: false
       approved_changes:
-        description: 'Einmalige G7-Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
+        description: 'Einmalige Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes-1.1.0.json, enthaelt 1.0.0; nur mit allow_version_change)'
         type: boolean
         default: false
 
@@ -96,7 +96,7 @@ jobs:
           heute="$(date -u +%F)"
           extra=()
           if [ "$IN_ALLOW_VERSION" = "true" ]; then extra=(--allow-version-change); fi
-          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes.json); fi
+          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes-1.1.0.json); fi
           node scripts/market/security-master-refresh-gate.mjs --prev "$PREV" --next "$NEXT" \
             --prev-names "$PREV/company-names.json" --next-names quant/data/market/security-master/company-names.json \
             --today "$heute" --out "$REPORT" "${extra[@]}"
