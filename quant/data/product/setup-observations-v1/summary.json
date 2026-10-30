@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-29T03:48:19.000Z",
- "asOf": "2026-10-28",
+ "generatedAt": "2026-10-30T06:19:35.000Z",
+ "asOf": "2026-10-29",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5659,
- "observed": 5659,
+ "universe": 5661,
+ "observed": 5661,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4437,
-  "WATCH": 682,
-  "SETUP_FORMING": 515,
-  "CONFIRMED": 25,
+  "NO_SETUP": 4420,
+  "WATCH": 656,
+  "SETUP_FORMING": 559,
+  "CONFIRMED": 26,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 515,
-  "setup.none.fallback": 4437,
-  "setup.watch.bullish-trend": 402,
-  "setup.watch.confirmed-structure-near-high": 280,
-  "setup.confirmed.structure-trend-volume": 25
+  "setup.forming.complete-setup-awaiting-trigger": 559,
+  "setup.none.fallback": 4420,
+  "setup.watch.bullish-trend": 380,
+  "setup.watch.confirmed-structure-near-high": 276,
+  "setup.confirmed.structure-trend-volume": 26
  },
  "pathTier": {
   "states": [
@@ -381,14 +381,15 @@
    "2026-10-22",
    "2026-10-23",
    "2026-10-26",
-   "2026-10-28"
+   "2026-10-28",
+   "2026-10-29"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5659
+   "instruments": 5661
   }
  },
  "shards": [
@@ -1031,7 +1032,7 @@
  "observationDrift": null,
  "staleBundles": {
   "count": 85,
-  "cutoff": "2026-10-28",
+  "cutoff": "2026-10-29",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
