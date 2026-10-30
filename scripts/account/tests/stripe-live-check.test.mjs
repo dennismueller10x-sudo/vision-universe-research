@@ -9,11 +9,21 @@ const API = 'https://konto.visionuniverse.de';
 const json = (status, body) => new Response(JSON.stringify(body), {status, headers: {'Content-Type': 'application/json'}});
 const PM = (available, value = 'off') => ({available, display_preference: {preference: value, value}});
 
-function fakeStripe({paypal = PM(true, 'on'), sessionTypes = ['card', 'link', 'paypal'], accountStatus = 200, sessionStatus = 200} = {}) {
+function fakeStripe({paypal = PM(true, 'on'), sessionTypes = ['card', 'link', 'paypal'], accountStatus = 200, sessionStatus = 200, tax = null} = {}) {
   const calls = [];
-  const fetchImpl = async (url, {method = 'GET'} = {}) => {
+  const fetchImpl = async (url, {method = 'GET', body} = {}) => {
     const p = new URL(url).pathname;
     calls.push(`${method} ${p}`);
+    if (tax && p === '/v1/tax/settings') return json(200, {status: 'active', defaults: {tax_code: 'txcd_10000000', tax_behavior: 'inclusive'},
+      head_office: {address: {country: 'DE'}}, livemode: true});
+    if (tax && p === '/v1/products/vu_pro') return json(200, {id: 'vu_pro', tax_code: null, livemode: true});
+    if (tax && method === 'POST' && p === '/v1/tax/calculations') {
+      const country = new URLSearchParams(body).get('customer_details[address][country]');
+      const r = tax[country] || {pct: 0, reason: 'not_collecting'};
+      const t = Math.round(100 - 100 / (1 + r.pct / 100));
+      return json(200, {amount_total: 100, tax_amount_inclusive: t, livemode: true,
+        tax_breakdown: [{tax_rate_details: {percentage_decimal: String(r.pct)}, taxability_reason: r.reason}]});
+    }
     if (p === '/v1/prices') return json(200, {data: [{id: 'price_live1', unit_amount: 100, currency: 'eur', recurring: {interval: 'month'}, livemode: true}]});
     if (p === '/v1/payment_method_configurations') return json(200, {data: [{id: 'pmc_1', is_default: true, active: true, livemode: true,
       card: PM(true, 'on'), apple_pay: PM(true, 'on'), google_pay: PM(true, 'on'), paypal, sepa_debit: PM(false), klarna: PM(true, 'on'), link: PM(true, 'on')}]});
@@ -75,4 +85,18 @@ test('PayPal ausgeschaltet; fehlende Leserechte sind Hinweise, kein Abbruch', as
 test('lehnt Test- und Standard-Schluessel ab', async () => {
   await assert.rejects(checkStripeLive({key: ['sk', 'test', 'x'].join('_'), approved: 'true', apiOrigin: API, fetchImpl: fakeStripe().fetchImpl}), /Testschluessel/);
   await assert.rejects(checkStripeLive({key: LIVE_KEY, approved: 'false', apiOrigin: API, fetchImpl: fakeStripe().fetchImpl}), /APPROVED/);
+});
+
+test('Stripe Tax: Probe rechnet 1,00 EUR brutto, DE-Privatkunde 0,16 EUR USt; Drittland ohne Annahme', async () => {
+  const s = fakeStripe({tax: {DE: {pct: 19, reason: 'standard_rated'}, AT: {pct: 19, reason: 'standard_rated'}}});
+  const {r, lines} = await run(s, {probeCheckout: true});
+  assert.equal(r.tax.stripeTax, 'active');
+  assert.deepEqual(r.tax.calculations.find(c => c.country === 'DE'), {country: 'DE', ok: true, total: 100, tax: 16, rate: '19', reason: 'standard_rated', error: null});
+  assert.equal(r.tax.germanConsumerOk, true);
+  assert.equal(r.tax.calculations.find(c => c.country === 'US').reason, 'not_collecting');
+  assert.ok(lines.some(l => l.includes('Steuerprobe DE: Endpreis 1.00 EUR, darin USt 0.16 EUR')));
+  // Ohne --probe-checkout keine Berechnung (nur lesen).
+  const plain = fakeStripe({tax: {}});
+  await run(plain);
+  assert.ok(plain.calls.every(c => c.startsWith('GET ')));
 });

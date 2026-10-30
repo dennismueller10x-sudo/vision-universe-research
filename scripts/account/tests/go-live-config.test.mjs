@@ -25,7 +25,7 @@ const read = (root, f) => readFileSync(join(root, f), 'utf8');
 test('Entwuerfe mit offenen Stellen: keine Freigabe, keine Datei geaendert', () => {
   const root = copy();
   const before = read(root, 'workers/vu-account/wrangler.toml');
-  assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'txr_1', checkout: 'public'}), /OFFEN/);
+  assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'automatic', checkout: 'public'}), /OFFEN/);
   assert.throws(() => goLiveConfig({root, checkout: 'public'}), /Nicht zulaessig/);
   assert.equal(read(root, 'workers/vu-account/wrangler.toml'), before);
 });
@@ -33,11 +33,11 @@ test('Entwuerfe mit offenen Stellen: keine Freigabe, keine Datei geaendert', () 
 test('nach der Abnahme: Texte freigegeben, Fassung bestaetigt, Steuer, oeffentlich, Brevo – in einem Schritt', () => {
   const root = copy({clean: true});
   assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', checkout: 'public'}), /STRIPE_TAX_MODE/, 'ohne USt-Ausweis nicht oeffentlich');
-  const r = goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'txr_abc', checkout: 'public', brevoSync: 'true', newsletter: 'true'});
+  const r = goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'automatic', checkout: 'public', brevoSync: 'true', newsletter: 'true'});
   assert.equal(r.changes.length, 5);
   assert.match(read(root, 'workers/vu-account/src/legal/texts.mjs'), /LEGAL_STATUS = 'freigegeben'/);
   const toml = read(root, 'workers/vu-account/wrangler.toml');
-  for (const line of ['VU_LEGAL_APPROVED = "vu-recht-2026-11-10-1"', 'STRIPE_TAX_MODE = "txr_abc"', 'VU_CHECKOUT_ACCESS = "public"',
+  for (const line of ['VU_LEGAL_APPROVED = "vu-recht-2026-11-10-1"', 'STRIPE_TAX_MODE = "automatic"', 'VU_CHECKOUT_ACCESS = "public"',
     'VU_BREVO_SYNC = "true"', 'VU_NEWSLETTER = "true"']) assert.ok(toml.includes(line), line);
   const dev = toml.slice(0, toml.indexOf('[env.production]'));
   assert.ok(dev.includes('VU_LEGAL_APPROVED = ""') && !dev.includes('VU_CHECKOUT_ACCESS = "public"'), 'Entwicklungsabschnitt unveraendert');

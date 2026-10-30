@@ -72,7 +72,7 @@ VU_CANCELLATION_AUTO_PROCESS = "false"
 VU_OPS_ALERT_EMAIL = ""
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"
-# Steuer im Checkout (docs/accounts/STEUER.md): none | automatic (Stripe Tax) | txr_… (fester Satz).
+# Steuer im Checkout (docs/accounts/STEUER.md): none | automatic (Stripe Tax).
 # Der Preis ist inkl. USt (tax_behavior inclusive); "none" weist keine Steuer gesondert aus.
 STRIPE_TAX_MODE = "none"
 # Rechtstexte: Fassung, die der Owner freigegeben hat (src/legal/texts.mjs LEGAL_VERSION, Status

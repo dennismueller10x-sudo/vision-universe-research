@@ -18,7 +18,7 @@ test('jede zahlungsrelevante Aenderung wird erkannt', () => {
   const live = liveState(healthToday, {mode: 'live'});
   const keys = extra => sensitiveChanges(desiredState({...vars, ...extra}), live).map(c => c.key);
   assert.deepEqual(keys({VU_CHECKOUT_ACCESS: 'off'}), ['checkout']);
-  assert.deepEqual(keys({STRIPE_TAX_MODE: 'txr_abc'}), ['tax']);
+  assert.deepEqual(keys({STRIPE_TAX_MODE: 'automatic'}), ['tax']);
   assert.deepEqual(keys({STRIPE_LIVE_MODE_APPROVED: 'false'}), ['liveApproved']);
   assert.deepEqual(keys({VU_CANCELLATION_AUTO_PROCESS: 'true'}), ['autoProcess']);
   // "public" mit Entwurfstexten bleibt wirksam "testers" - keine Aenderung am laufenden Verhalten.
@@ -31,6 +31,6 @@ test('nicht zahlungsrelevant: Brevo, Newsletter, Listen, Code', () => {
 });
 
 test('neuer Worker meldet tax und liveApproved selbst', () => {
-  const live = liveState({...healthToday, tax: 'txr_abc', liveApproved: true}, {mode: 'live'});
+  const live = liveState({...healthToday, tax: 'automatic', liveApproved: true}, {mode: 'live'});
   assert.deepEqual(sensitiveChanges(desiredState(vars), live).map(c => c.key), ['tax']);
 });

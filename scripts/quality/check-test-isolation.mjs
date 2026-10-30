@@ -30,6 +30,10 @@ import { execFileSync } from "node:child_process";
 // ihr Diff ist dann viele Megabyte gross. Der Standardpuffer von execFileSync (1 MB) brach dort mit
 // ENOBUFS ab (sec-consumer-fundamentals.yml, Lauf 40294140924).
 const GIT_PUFFER = 1 << 30;
+// Verglichen wird der Abdruck (SHA-256 und Laenge) der rohen Bytes, nicht der Diff als Zeichenkette: ab etwa
+// 512 MB Diff scheiterte `toString()` mit ERR_STRING_TOO_LONG (sec-consumer-fundamentals.yml, Laeufe
+// 40570986935 und 40758243298). Ein Diff ueber GIT_PUFFER bleibt ein lauter Fehler (ENOBUFS), nie ein stilles OK.
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -85,8 +89,9 @@ function abdruck() {
      ueberhaupt nicht in diese Baeume schreiben - und genau das ist
      der Grund, warum diese Pruefung existiert und nicht die einzige
      Verteidigung ist. */
-  const inhalt = execFileSync("git",
-    ["diff", "--no-color", "--", ...GESCHUETZTE_BAEUME], { cwd: ROOT, maxBuffer: GIT_PUFFER }).toString();
+  const roh = execFileSync("git",
+    ["diff", "--no-color", "--", ...GESCHUETZTE_BAEUME], { cwd: ROOT, maxBuffer: GIT_PUFFER });
+  const inhalt = { sha256: createHash("sha256").update(roh).digest("hex"), bytes: roh.length };
   return { map, inhalt };
 }
 
@@ -112,11 +117,11 @@ export function pruefe(suite) {
      `git status` eine neue Datei meldet: dann wurde in einer bereits
      geaenderten Datei ein zweites Mal geschrieben. Das ist ein eigener
      Befund und keine Wiederholung des ersten. */
-  const inhaltGeaendert = vorher.inhalt !== nachher.inhalt;
+  const inhaltGeaendert = vorher.inhalt.sha256 !== nachher.inhalt.sha256 || vorher.inhalt.bytes !== nachher.inhalt.bytes;
   if (inhaltGeaendert && !neu.length) {
     neu.push({ pfad: "(Inhalt eines geschuetzten Baumes)",
-      vor: vorher.inhalt.length + " Zeichen Diff",
-      nach: nachher.inhalt.length + " Zeichen Diff" });
+      vor: vorher.inhalt.bytes + " Bytes Diff",
+      nach: nachher.inhalt.bytes + " Bytes Diff" });
   }
 
   return {
