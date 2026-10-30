@@ -35,6 +35,21 @@ Vor jedem Checkout mit `automatic` prüft der Worker bei Stripe: Preis `inclusiv
 kein Checkout (`503 TAX_CONFIG_INVALID`, nichts berechnet). `/v1/health` zeigt `tax` (Schalter) und `stripeTax`
 (`ok`, `STRIPE_TAX_PENDING`, `STRIPE_TAX_UNREADABLE` …) – auch schon vor dem Einschalten.
 
+## Befund 30.10.2026 (Lauf „Konten — Stripe Live prüfen“ #4, Probe-Berechnungen ohne Buchung)
+
+| Kundenland | Endpreis | darin USt | Grund laut Stripe |
+|---|---|---|---|
+| DE | 1,00 € | 0,16 € (19 %) | standard_rated |
+| AT | 1,00 € | 0,16 € (19 %, deutsche USt) | standard_rated |
+| FR | 1,00 € | 0,16 € (19 %, deutsche USt) | standard_rated |
+| CH | 1,00 € | 0,00 € | not_collecting (keine Registrierung) |
+| US | 1,00 € | 0,00 € | not_collecting (keine Registrierung) |
+
+Stripe Tax `active`, Registrierung `DE:standard`, Steuerkategorie Standard `txcd_10000000` (General – Electronically
+Supplied Services), Produkt ohne eigene Kategorie, Preis `inclusive`. EU-Ausland wird mit deutscher USt berechnet (nur
+deutsche Registrierung, Lieferschwelle) – Bestätigung und Überwachung der 10.000-€-Schwelle durch den Steuerberater.
+Seit diesem Befund `STRIPE_TAX_MODE = "automatic"`.
+
 ## Prüfung
 
 `scripts/account/stripe-live-check.mjs --probe-checkout` liest Stripe-Tax-Status, Registrierungen, Steuerkategorie

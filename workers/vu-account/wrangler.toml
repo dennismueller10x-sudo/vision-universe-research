@@ -149,7 +149,8 @@ VU_OPS_ALERT_EMAIL = ""
 STRIPE_LIVE_MODE_APPROVED = "true"
 VU_CHECKOUT_ACCESS = "testers"
 # Siehe [vars]. Oeffentlicher Checkout zusaetzlich nur mit freigegebenen Rechtstexten (VU_LEGAL_APPROVED).
-STRIPE_TAX_MODE = "none"
+# Stripe Tax aktiv seit 30.10.2026 (Registrierung DE; Probe: DE 1,00 EUR brutto = 0,16 EUR USt). docs/accounts/STEUER.md
+STRIPE_TAX_MODE = "automatic"
 VU_LEGAL_APPROVED = ""
 # Brevo aus bis zur Abnahme. Listen angelegt 29.10.2026 (Lauf "Produktivstart einspielen" #1): 11 Nutzer, 12 Free,
 # 13 Pro; 4 = bestehende Newsletter-Liste der Landingpage (DOI).
