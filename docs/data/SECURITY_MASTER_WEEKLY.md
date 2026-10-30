@@ -2,6 +2,12 @@
 
 Stand 28.10.2026. Owner-Entscheidung vom selben Tag: regelmäßige, kontrollierte Aktualisierung des Security Masters und der Firmennamen. Zielrhythmus wöchentlich, nach der Aktualisierung von Stammdaten und Universum. Dieses Dokument gehört zum Draft-PR mit `.github/workflows/security-master-weekly.yml`. Ein Zeitplan ist **nicht** aktiv, und es wird **keine** Repository-Variable gesetzt.
 
+> **Stand 30.10.2026 (Owner-Entscheidung, Supertrader 9):**
+> - **Der einzige Freigabeweg im Gate ist #1143**, mit der quellengebundenen Liste `docs/data/security-master/v130-approved-changes-1.1.0.json`. Sie enthält die 138 Typ- und 138 Eignungswechsel aus 1.0.0 vollständig. ONEOK bekommt keine Ausnahme.
+> - Die Zählung unten (138 / 138 / 127, „133“ widerlegt) bleibt der Nachweis des Klassifiziererwechsels.
+> - Bau und Vergleich der neuen Backtest-Generation laufen nur mit der verpflichtenden Identitätssperre und `--prev-master` (#1159, `docs/data/SECURITY_MASTER_IDENTITY_BLOCKLIST.md`). Die Befehle für `build-post-switch` und `compare` in diesem Dokument sind dadurch überholt.
+
+
 Ergänzt am 29.10.2026 (Workstream D2):
 - Reproduktion und Zählabgleich 138 / 127 / 133 (P1);
 - Freeze der historischen Quant-Ergebnisse und Pfad für eine neue Generation (P2);
