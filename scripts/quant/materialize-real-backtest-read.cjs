@@ -3,13 +3,18 @@
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const A=require('../../quant/engines/weekly-real-adapter.cjs'),B=require('../../quant/engines/weekly-benchmark.cjs');
 const C=require('../../quant/api/real-backtest-contract.js'),Q=require('../../quant/engines/real-backtest-quality.cjs');
+const H=require('../../quant/engines/security-master-content-hash.js');
 const {run}=require('./run-real-weekly-backtest.cjs');
 const atomic=(p,o)=>{fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p+'.tmp',JSON.stringify(o)+'\n');fs.renameSync(p+'.tmp',p);};
 function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=null,maxNew=null}={}){
  if(!output)throw Error('OUTPUT_REQUIRED');output=path.resolve(output);root=path.resolve(root);
  if(!path.relative(root,output).startsWith('..'+path.sep))throw Error('OUTPUT_MUST_BE_PRIVATE_OUTSIDE_REPOSITORY');
  if(maxNew!==null&&(!Number.isInteger(maxNew)||maxNew<0))throw Error('INVALID_BATCH_BOUND');
- const started=performance.now(),loader=A.createLoader(root),master=JSON.parse(fs.readFileSync(path.join(root,'quant/data/market/security-master/us-security-master.json'))),byId=new Map();
+ const started=performance.now(),loader=A.createLoader(root),masterBytes=fs.readFileSync(path.join(root,'quant/data/market/security-master/us-security-master.json'),'utf8'),master=JSON.parse(masterBytes),byId=new Map();
+ if(A.hash(masterBytes)!==loader.masterHash)throw Error('INPUT_CHANGED_DURING_MATERIALIZATION');
+ // Zusätzlicher Inhalts-Fingerabdruck nur für die Aktualitätsprüfung; calculationKey, masterHash und Herkunft bleiben an die Bytes gebunden.
+ // Nicht berechenbar (fail closed): Felder fehlen, die Freshness gilt dann wie bisher nach Bytes.
+ let masterContentHash=null;try{masterContentHash=H.contentHash(master);}catch{}
  for(const r of master.rows){const k=r.baseline_security_id;if(!byId.has(k))byId.set(k,[]);byId.get(k).push(r);}
  const directory=path.join(root,'quant/data/market/discover-series-long');
  const files=ids?Array.from(new Set(ids)).sort().map(id=>{if(!C.safeId(id))throw Error('INVALID_SECURITY_ID');return id+'.json';}):fs.readdirSync(directory).filter(p=>/^ref_[A-Za-z0-9_.-]+\.json$/.test(p)).sort();
@@ -20,7 +25,7 @@ function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=nu
  for(const file of fs.readdirSync(productDirectory).filter(p=>p.endsWith('.json')).sort()){const bytes=fs.readFileSync(path.join(productDirectory,file),'utf8');productShardHashes[file]=A.hash(bytes);for(const i of JSON.parse(bytes).instruments||[]){if(!productRows.has(i.masterMemberId))productRows.set(i.masterMemberId,[]);productRows.get(i.masterMemberId).push(i);}}
  const sources=files.map(f=>({securityId:f.slice(0,-5),sourceHash:A.hash(fs.readFileSync(path.join(directory,f),'utf8'))}));
  const benchmarkInputs=Object.fromEntries([B.SOURCE,'quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json'].map(p=>[p,fs.existsSync(path.join(root,p))?A.hash(fs.readFileSync(path.join(root,p),'utf8')):'MISSING']));
- const snapshot={calculationRuntime:A.calculationRuntime(),benchmarkInputs,productShardHashes,schemaVersion:C.VERSION,masterHash:loader.masterHash,model,codes:Object.fromEntries(codes.map(p=>[p,A.hash(fs.readFileSync(path.join(root,p),'utf8'))])),benchmark:benchmark.provenance||benchmark,sources};
+ const snapshot={calculationRuntime:A.calculationRuntime(),benchmarkInputs,productShardHashes,schemaVersion:C.VERSION,masterHash:loader.masterHash,model,codes:Object.fromEntries(codes.map(p=>[p,A.hash(fs.readFileSync(path.join(root,p),'utf8'))])),benchmark:benchmark.provenance||benchmark,sources,...(masterContentHash?{masterContentHash,masterContentAlgorithm:H.ALGORITHM}:{})};
  const generation=A.hash(snapshot),base=path.join(output,generation);fs.mkdirSync(base,{recursive:true});
  const snapshotPath=path.join(base,'snapshot.json');let computedAt=new Date().toISOString();
  if(fs.existsSync(snapshotPath)){const old=JSON.parse(fs.readFileSync(snapshotPath));if(old.generation!==generation||A.hash(old.input)!==generation)throw Error('SNAPSHOT_CORRUPT');computedAt=old.computedAt;}
