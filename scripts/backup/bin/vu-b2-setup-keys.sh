@@ -5,7 +5,8 @@
 #   bin/vu-b2-setup-keys.sh <bucket>
 #
 # Ablauf:
-#   1. Master-Key verdeckt einlesen (read -s, kein Echo, keine History)
+#   1. Master-Key verdeckt von /dev/tty lesen (kein Echo, keine History), Format pruefen, bei Backblaze
+#      als Master bestaetigen; vorhandene vu-backup-* Schluessel -> Abbruch ohne Aenderung
 #   2. Bucket pruefen (nur lesen): privat, SSE, Object Lock Compliance, EU Central
 #   3. vu-backup-writer (365 Tage), vu-backup-anchor, vu-backup-reader anlegen
 #      (vu-b2-make-key.py, fail closed); Werte nur im RAM (/dev/shm, Rechte 600)
@@ -23,14 +24,60 @@ BUCKET="${1:?Bucketname angeben}"
 umask 077
 D=$(mktemp -d /dev/shm/vu-keys.XXXXXX 2>/dev/null || mktemp -d)
 REPORT=()
-wipe_screen() { [ -n "${VU_TEST_NO_CLEAR:-}" ] || printf '\033[2J\033[3J\033[H'; }
+STAGE=input   # input | created
+# Ein- und Ausgabe fuer Fragen: direkt das Terminal (/dev/tty). Nur Tests lesen von stdin (VU_TEST_STDIN=1).
+if [ -n "${VU_TEST_STDIN:-}" ]; then IN=/dev/stdin; exec 3>&2
+elif { : </dev/tty; } 2>/dev/null; then IN=/dev/tty; exec 3>/dev/tty
+else echo "ABBRUCH: kein Terminal. Bitte direkt in der Cloud Shell starten (nicht ueber eine Pipe)."; exit 1; fi
+say() { printf '%s' "$*" >&3; }
+wipe_screen() { [ -n "${VU_TEST_NO_CLEAR:-}" ] || printf '\033[2J\033[3J\033[H' >&3; }
 cleanup() {
+  [ "$IN" = /dev/tty ] && stty echo < /dev/tty 2>/dev/null
   find "$D" -type f -exec shred -u {} + 2>/dev/null; rm -rf "$D"
   unset B2_MASTER_KEY B2_MASTER_KEY_ID
 }
 trap cleanup EXIT
-fail() { echo; echo "ABBRUCH: $*"; echo "Bereits angelegte Schluessel (falls genannt) in Backblaze unter Application Keys loeschen und neu beginnen."; exit 1; }
-pause() { local _; read -r -p "$1" _ </dev/tty 2>/dev/null || read -r _; }
+trap 'echo; echo "Abgebrochen (Strg-C)."; exit 130' INT
+fail() {
+  echo; echo "ABBRUCH: $*"
+  if [ "$STAGE" = created ]; then echo "In Backblaze unter Application Keys pruefen, ob vu-backup-* Schluessel angelegt wurden, diese loeschen und neu beginnen."
+  else echo "Es wurde kein Schluessel angelegt und nichts veraendert."; fi
+  exit 1
+}
+# Tastatur-Puffer leeren: z. B. ein Zeilenumbruch, der beim Einfuegen des Startbefehls mitkam
+drain() { [ "$IN" = /dev/tty ] || return 0; local _; while IFS= read -r -s -t 0.3 -n 4096 _ < "$IN"; do :; done; }
+pause() { local _; drain; say "$1"; IFS= read -r _ < "$IN"; }
+# Eingefuegten Text bereinigen: Klammer-Einfuegecodes, CR, Leerraum am Rand
+clean() { local v="$1"; v="${v//$'\e[200~'/}"; v="${v//$'\e[201~'/}"; v="${v//$'\r'/}"
+  v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"; printf '%s' "$v"; }
+
+# ask_secret VAR "Frage" id|key : verdeckt lesen, pruefen, nur Laenge bestaetigen. 3 Versuche.
+ask_secret() {
+  local var="$1" label="$2" kind="$3" v n
+  for n in 1 2 3; do
+    drain
+    say "  $label (unsichtbar; einfuegen, dann Enter): "
+    IFS= read -r -s v < "$IN"; say $'\n'
+    v=$(clean "$v")
+    if [ -z "$v" ]; then say "    nichts angekommen. Bitte erneut einfuegen."$'\n'; continue; fi
+    if [[ "$v" =~ [[:space:]] ]]; then say "    enthaelt Leerzeichen oder Zeilenumbruch. Nur den Wert kopieren."$'\n'; v=""; continue; fi
+    case "$kind" in
+      id)
+        if [[ "$v" =~ ^[0-9a-f]{12}$ ]]; then :
+        elif [[ "$v" =~ ^[0-9a-f]{25}$ ]]; then say "    das ist die keyID eines normalen Schluessels, nicht des Master-Keys (12 Zeichen)."$'\n'; v=""; continue
+        elif [[ "$v" =~ ^K ]]; then say "    sieht aus wie der applicationKey. Zuerst die keyID (12 Zeichen) einfuegen."$'\n'; v=""; continue
+        elif [[ "$v" =~ ^[0-9a-f]{8,40}$ ]]; then say "    Hinweis: ${#v} Zeichen (Master-keyIDs haben meist 12). Backblaze prueft gleich."$'\n'
+        else say "    unerwartetes Format (erwartet: keyID aus 0-9 und a-f, meist 12 Zeichen)."$'\n'; v=""; continue; fi ;;
+      key)
+        if [[ "$v" =~ ^[A-Za-z0-9+/=_-]{20,80}$ ]] && [ "$v" != "$B2_MASTER_KEY_ID" ]; then :
+        else say "    unerwartetes Format (erwartet: der applicationKey, eine Zeile ohne Leerzeichen)."$'\n'; v=""; continue; fi ;;
+    esac
+    say "    erhalten: ${#v} Zeichen"$'\n'
+    printf -v "$var" '%s' "$v"; v=""
+    return 0
+  done
+  return 1
+}
 
 # Schluessel aus der RAM-Datei pruefen, ohne den Wert in Argumente oder Umgebung der Shell zu legen
 key_check() {  # rolle
@@ -45,10 +92,26 @@ sys.exit(subprocess.call([sys.executable, sys.argv[2], sys.argv[3]], env=env))' 
 
 echo "== Vision Universe: Backblaze-Schluessel fuer $BUCKET"
 echo "Master-Key aus Backblaze (Application Keys -> Generate New Master Application Key)."
-read -rsp "  Master keyID (unsichtbar): " B2_MASTER_KEY_ID </dev/tty 2>/dev/null || read -rs B2_MASTER_KEY_ID; echo
-read -rsp "  Master applicationKey (unsichtbar): " B2_MASTER_KEY </dev/tty 2>/dev/null || read -rs B2_MASTER_KEY; echo
-[ -n "$B2_MASTER_KEY_ID" ] && [ -n "$B2_MASTER_KEY" ] || fail "Master-Key leer"
-export B2_MASTER_KEY_ID B2_MASTER_KEY
+echo "Die Eingabe bleibt unsichtbar. Nach dem Einfuegen erscheint 'erhalten: N Zeichen'."
+ok=false
+for attempt in 1 2; do
+  B2_MASTER_KEY_ID="" B2_MASTER_KEY=""
+  ask_secret B2_MASTER_KEY_ID "Master keyID" id || fail "keine gueltige keyID erhalten"
+  ask_secret B2_MASTER_KEY "Master applicationKey" key || fail "keinen gueltigen applicationKey erhalten"
+  export B2_MASTER_KEY_ID B2_MASTER_KEY
+  # Erst Backblaze fragen: ist es wirklich der Master-Key? Gibt es schon vu-backup-* Schluessel? (nur lesen)
+  if out=$(python3 "$HERE/vu-b2-make-key.py" --bucket "$BUCKET" --check-master 2>&1); then ok=true; break; fi
+  case "$out" in
+    *'"master": true'*) fail "es gibt bereits Schluessel mit diesen Namen: $(echo "$out" | python3 -c 'import json,sys; print(", ".join(json.load(sys.stdin)["existingVuBackupKeys"]))' 2>/dev/null). Bestehende Schluessel werden nicht veraendert. In Backblaze pruefen und bei Bedarf selbst loeschen." ;;
+    *'"master": false'*) echo "  Backblaze kennt den Schluessel, aber es ist NICHT der Master-Key (kein Recht, Schluessel anzulegen)." ;;
+    *401*) echo "  Backblaze lehnt den Schluessel ab (falsch, vertauscht oder schon durch einen neueren ersetzt)." ;;
+    *) echo "  Pruefung bei Backblaze fehlgeschlagen: $(echo "$out" | tail -1 | cut -c1-120)" ;;
+  esac
+  unset B2_MASTER_KEY B2_MASTER_KEY_ID
+  [ "$attempt" = 1 ] && echo "  Noch ein Versuch."
+done
+[ "$ok" = true ] || fail "Master-Key nicht bestaetigt"
+echo "  Master-Key von Backblaze bestaetigt; keine vorhandenen vu-backup-Schluessel."
 
 echo; echo "== 1/5 Bucket pruefen (nur lesen)"
 python3 "$HERE/vu-b2-make-key.py" --bucket "$BUCKET" --inspect > "$D/bucket.json" 2>&1 || { cat "$D/bucket.json"; fail "Bucket nicht wie vorgesehen eingerichtet"; }
@@ -57,6 +120,7 @@ REPORT+=("Bucket: $(python3 -c 'import json,sys; d=json.load(open(sys.argv[1]));
 
 echo; echo "== 2/5 Schluessel anlegen"
 created=()
+STAGE=created   # ab hier kann ein Schluessel existieren
 for spec in "writer vu-backup-writer 365" "anchor vu-backup-anchor 0" "reader vu-backup-reader 0"; do
   read -r role name days <<< "$spec"
   python3 "$HERE/vu-b2-make-key.py" --bucket "$BUCKET" --role "$role" --name "$name" --days "$days" --out "$D/$role.json" > "$D/mk.log" 2>&1 \

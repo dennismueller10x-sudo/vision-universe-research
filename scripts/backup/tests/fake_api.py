@@ -62,14 +62,16 @@ class H(BaseHTTPRequestHandler):
             if user in KEYS:
                 return self.send(200, {"apiInfo": {"storageApi": {"allowed": {"capabilities": KEYS[user]["caps"],
                                                                               "buckets": [{"id": b} for b in KEYS[user]["buckets"]]}}}})
-            if user == "m" and not STATE["rotated"]:
+            if user == STATE["master"] and not STATE["rotated"]:
                 return self.send(200, {"accountId": "acc", "authorizationToken": "tok",
-                                       "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2",
+                                       "apiInfo": {"storageApi": {"allowed": {"capabilities": ["listKeys", "writeKeys", "deleteKeys", "listBuckets", "listFiles", "readFiles", "writeFiles", "deleteFiles"], "buckets": None},
+                                                                  "apiUrl": f"http://{self.headers['Host']}/b2",
                                                                   "s3ApiUrl": "https://s3.eu-central-003.backblazeb2.com"}}})
             return self.send(401, {"code": "unauthorized"})
         if p == "/b2auth/master":
             return self.send(200, {"accountId": "acc", "authorizationToken": "tok",
-                                   "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2",
+                                   "apiInfo": {"storageApi": {"allowed": {"capabilities": ["listKeys", "writeKeys", "deleteKeys", "listBuckets", "listFiles", "readFiles", "writeFiles", "deleteFiles"], "buckets": None},
+                                                              "apiUrl": f"http://{self.headers['Host']}/b2",
                                                               "s3ApiUrl": "https://s3.eu-central-003.backblazeb2.com"}}})
         if p.startswith("/b2auth/"):
             role = p.split("/")[2]
@@ -133,7 +135,7 @@ class H(BaseHTTPRequestHandler):
 
 DELETED_KEYS = []
 KEYS = {}
-STATE = {"rotated": False}
+STATE = {"rotated": False, "master": "0123456789ab", "preexisting": []}
 
 
 def do_post(self):
@@ -151,12 +153,23 @@ def do_post(self):
         # Name "unbound-*": simuliert eine Antwort ohne Bucket-Bindung (Skript muss den Schluessel loeschen)
         bound = [] if body["keyName"].startswith("unbound") else body.get("bucketIds", [])
         kid = "synthetic-key-id" if body["keyName"].startswith(("unbound", "t-", "x")) else f"kid-{body['keyName']}"
-        KEYS[kid] = {"caps": body["capabilities"], "buckets": bound}
+        KEYS[kid] = {"caps": body["capabilities"], "buckets": bound, "name": body["keyName"]}
         return self.send(200, {"keyName": body["keyName"], "applicationKeyId": kid,
                                "applicationKey": "synthetic-app-key", "capabilities": body["capabilities"], "bucketIds": bound})
     if self.path == "/b2/b2api/v4/b2_delete_key":
         DELETED_KEYS.append(body.get("applicationKeyId"))
         return self.send(200, {"applicationKeyId": body.get("applicationKeyId")})
+    if self.path == "/b2/b2api/v3/b2_list_keys":
+        return self.send(200, {"keys": [{"keyName": k["name"], "applicationKeyId": kid} for kid, k in KEYS.items()]
+                               + [{"keyName": n, "applicationKeyId": "pre-" + n} for n in STATE["preexisting"]],
+                               "nextApplicationKeyId": None})
+    if self.path == "/b2/preexisting":
+        STATE["preexisting"].append(body["keyName"])
+        return self.send(200, {})
+    if self.path == "/b2/reset":
+        STATE["rotated"] = False
+        KEYS.clear()
+        return self.send(200, {})
     if self.path == "/b2/rotate-master":
         STATE["rotated"] = True
         return self.send(200, {})

@@ -71,7 +71,9 @@ Bucket: `vu-backup-production-2026` (privat, SSE-B2, Object Lock **Compliance 30
 git clone -q --depth 1 -b claude/vu-backup-tooling https://github.com/dennismueller10x-sudo/vision-universe-research.git ~/vu && ~/vu/scripts/backup/bin/vu-b2-setup-keys.sh vu-backup-production-2026
 ```
 
-Das Skript fragt den Master-Key verdeckt ab und führt durch Anlage, Rechteprüfung, Übernahme und Master-Key-Rotation. Ziel der Schlüssel:
+Das Skript fragt den Master-Key verdeckt ab und führt durch Anlage, Rechteprüfung, Übernahme und Master-Key-Rotation.
+
+Eingabe: Bei „Master keyID (unsichtbar …)“ den Wert einfügen und Enter drücken. Es erscheint nichts, nur danach „erhalten: N Zeichen“. Dann dasselbe für den applicationKey. Backblaze bestätigt den Master-Key, bevor irgendein Schlüssel angelegt wird. Gibt es schon `vu-backup-*`-Schlüssel, bricht das Skript ohne Änderung ab. Ziel der Schlüssel:
 - Writer: Passwortmanager und GitHub
 - Anker und Leser: nur Passwortmanager
 - neuer Master-Key: nur Passwortmanager

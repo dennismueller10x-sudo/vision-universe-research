@@ -49,6 +49,26 @@ def call(url, headers, body=None):
         sys.exit(f"B2-API {err.code} {detail}")
 
 
+def check_master(auth, api, token):
+    """Master-Key? (writeKeys + listKeys, keine Bucket-Bindung). Nennt vorhandene vu-backup-*-Schluessel (nur Namen)."""
+    allowed = auth["apiInfo"]["storageApi"].get("allowed") or {}
+    caps = set(allowed.get("capabilities") or [])
+    is_master = {"writeKeys", "listKeys", "deleteKeys"} <= caps and not allowed.get("buckets") and not allowed.get("bucketId")
+    names, start = [], None
+    if is_master:
+        while True:
+            body = {"accountId": auth["accountId"], "maxKeyCount": 1000}
+            if start:
+                body["startApplicationKeyId"] = start
+            page = call(f"{api}/b2api/v3/b2_list_keys", token, body)
+            names += [k["keyName"] for k in page.get("keys", []) if k.get("keyName", "").startswith("vu-backup-")]
+            start = page.get("nextApplicationKeyId")
+            if not start:
+                break
+    print(json.dumps({"master": is_master, "existingVuBackupKeys": sorted(names)}))
+    return 0 if is_master and not names else 1
+
+
 def bucket_facts(bucket, auth):
     """Einrichtung des Buckets (nur lesen): privat, Verschluesselung, Object Lock Compliance, Lifecycle."""
     lock = (bucket.get("fileLockConfiguration") or {}).get("value") or {}
@@ -82,12 +102,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bucket", required=True)
     ap.add_argument("--inspect", action="store_true", help="nur Bucket pruefen und S3-Endpunkt zeigen, nichts anlegen")
+    ap.add_argument("--check-master", action="store_true",
+                    help="nur pruefen: ist es der Master-Key (writeKeys, ohne Bucket-Bindung)? vorhandene vu-backup-* Schluessel nennen")
     ap.add_argument("--role", choices=sorted(ROLES))
     ap.add_argument("--name")
     ap.add_argument("--days", type=int, default=0, help="Ablauf in Tagen (0 = kein Ablauf, max. 999)")
     ap.add_argument("--out", help="Datei (Rechte 600) statt Terminal")
     a = ap.parse_args()
-    if not a.inspect and (not a.role or not a.name):
+    if not (a.inspect or a.check_master) and (not a.role or not a.name):
         sys.exit("--role und --name angeben (oder --inspect)")
     if a.role == "test-deleter" and "test" not in a.bucket:
         sys.exit("test-deleter nur fuer Test-Buckets (Name enthaelt 'test')")
@@ -97,6 +119,8 @@ def main():
     auth = call(AUTH_URL, {"Authorization": "Basic " + base64.b64encode(f"{kid}:{key}".encode()).decode()})
     api = auth["apiInfo"]["storageApi"]["apiUrl"]
     token = {"Authorization": auth["authorizationToken"]}
+    if a.check_master:
+        return check_master(auth, api, token)
     buckets = call(f"{api}/b2api/v3/b2_list_buckets", token, {"accountId": auth["accountId"], "bucketName": a.bucket})["buckets"]
     if len(buckets) != 1:
         sys.exit(f"Bucket {a.bucket} nicht gefunden")
