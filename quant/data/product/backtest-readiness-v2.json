@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-29T04:02:06.855Z",
+ "generatedAt": "2026-10-30T06:42:11.418Z",
  "signalStudy": {
   "asOf": "2026-10-30",
-  "generatedAt": "2026-10-29T04:00:04.507Z",
+  "generatedAt": "2026-10-30T06:39:15.789Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -49,31 +49,31 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 22,
+   "count": 23,
    "from": "2026-09-10",
-   "to": "2026-10-28",
-   "spanDays": 48,
+   "to": "2026-10-29",
+   "spanDays": 49,
    "replay": {
-    "titles": 157,
-    "observations": 125770,
+    "titles": 158,
+    "observations": 125771,
     "from": "1991-03-08"
    }
   },
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 22,
+   "count": 23,
    "from": "2026-09-23",
-   "to": "2026-10-28",
-   "spanDays": 35
+   "to": "2026-10-29",
+   "spanDays": 36
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 22,
-   "from": "2026-10-26",
-   "to": "2026-10-28",
-   "spanDays": 2
+   "count": 23,
+   "from": "2026-10-28",
+   "to": "2026-10-29",
+   "spanDays": 1
   },
   {
    "id": "membershipSnapshots",
@@ -112,7 +112,7 @@
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-10-30",
-    "generatedAt": "2026-10-29T04:00:04.507Z"
+    "generatedAt": "2026-10-30T06:39:15.789Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 22,
+   "count": 23,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -140,7 +140,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 163,
    "robust": 96,
-   "matchSnapshots": 10
+   "matchSnapshots": 11
   },
   {
    "id": "technicalStates",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 22,
+   "publishedSnapshots": 23,
    "reconstructible": {
     "titles": 5
    }
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "3327 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "3478 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "22 Faktor-Snapshots seit 2026-09-23",
+     "value": "23 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -457,7 +457,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "22 Snapshots über 35 Tage",
+     "value": "23 Snapshots über 36 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
