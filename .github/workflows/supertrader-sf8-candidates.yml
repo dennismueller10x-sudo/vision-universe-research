@@ -1,14 +1,19 @@
-name: Supertrader 8 Research-Kandidaten (deaktiviert)
+name: Supertrader 8 Research-Kandidaten (Tageslauf)
 
 # Tageslauf der quellentreuen Research-Kandidaten (Supertrader 8.0, 13 Strategien C01-C13).
 #
-# STANDARDMAESSIG AUS (Owner-Entscheidung O-2, 2026-10-26):
-#   * kein Zeitplan; nur workflow_dispatch;
-#   * der Job laeuft nur, wenn die Repository-Variable SF8_CANDIDATES_ENABLED genau 'true' ist;
-#   * ein Commit nach supertrader/data/sf-candidates nur zusaetzlich mit der Eingabe commit=true.
-# Aktivierung erst nach ausdruecklicher Freigabe UND wenn der Consumer-Blocker aus Quant/Quality (SEC-Consumer-
-# Pipeline) nachweislich stabil ist. Voraussetzungen: docs/SUPERTRADER_8_PRODUCT_INTEGRATION.md, Abschnitt
-# "Tageslauf".
+# ZWEI WEGE, EIN WORKFLOW (keine zweite Pipeline):
+#   * manuell (workflow_dispatch, mode=manual): wie bei der ersten Veroeffentlichung. Commit nur mit commit=true UND
+#     dem freigegebenen Fingerabdruck expected_sha256 (docs/SUPERTRADER_8_FIRST_RELEASE.md).
+#   * automatisch (mode=auto: Anstoss am Ende von supertrader-signals.yml nach der Nachtkette, Rueckfall-Zeitplan):
+#     Commit ohne Mensch nur, wenn der Veroeffentlichungsvertrag sf8-auto-publication-1.0.0 erfuellt ist
+#     (scripts/supertrader/source-faithful/product/publication-contract.mjs, docs/SUPERTRADER_9_DAILY_OPERATIONS.md):
+#     reproduzierbar (zwei Laeufe, gleicher Fingerabdruck), DQ-SF8-1..8 PASS, Forschungsstatus unveraendert,
+#     dieselben Fachmodelle, neuere Sitzung, plausible Mengen, freigegebene Registry. Sonst kein Commit, roter Lauf,
+#     Alarm-Issue; der veroeffentlichte Stand bleibt stehen.
+#
+# SCHALTER (Owner): SF8_CANDIDATES_ENABLED schaltet den Workflow ueberhaupt ein. SF8_AUTO_PUBLISH schaltet den
+# automatischen Weg ein (Zeitplan und Anstoss); ohne ihn laeuft der Zeitplan leer (Job uebersprungen).
 #
 # Liest nur bereits committete Artefakte (Tagesbalken technical-signals-v1, Wochenreihen, Stammdaten, SEC-SIC,
 # Kalender). Kein Anbieterabruf, keine Secrets, keine Kosten. Alle 13 Strategien bleiben LIVE_NOT_APPROVED;
@@ -17,14 +22,25 @@ name: Supertrader 8 Research-Kandidaten (deaktiviert)
 #
 # Commit-Protokoll ADR-005: Spitze des Branches auschecken, push-with-retry.sh, Concurrency je Branch.
 on:
+  # Rueckfall, falls der Anstoss nach der Nachtkette ausbleibt (Nachtkette endet ~04:10 UTC, Zeitplaene kommen
+  # bis zu 7 h spaet). Di-Sa fuer die Sitzungen Mo-Fr. Ein Lauf auf eine schon veroeffentlichte Sitzung committet nichts.
+  schedule:
+    - cron: '43 11 * * 2-6'
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'manual = Commit nur mit commit=true und expected_sha256; auto = Veroeffentlichungsvertrag (nur main)'
+        type: choice
+        options:
+          - manual
+          - auto
+        default: manual
       commit:
-        description: 'Ergebnis nach supertrader/data/sf-candidates committen (sonst nur CI-Artefakt)'
+        description: 'nur mode=manual: Ergebnis nach supertrader/data/sf-candidates committen (sonst nur CI-Artefakt)'
         type: boolean
         default: false
       expected_sha256:
-        description: 'Fingerabdruck des geprueften oeffentlichen Stands (aus einem Lauf ohne Commit); Pflicht fuer commit=true'
+        description: 'nur mode=manual: Fingerabdruck des geprueften oeffentlichen Stands (aus einem Lauf ohne Commit); Pflicht fuer commit=true'
         type: string
         default: ''
 
@@ -37,9 +53,12 @@ concurrency:
 
 jobs:
   candidates:
-    if: vars.SF8_CANDIDATES_ENABLED == 'true'
+    if: vars.SF8_CANDIDATES_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || vars.SF8_AUTO_PUBLISH == 'true')
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
+    outputs:
+      auto: ${{ steps.mode.outputs.auto }}
+      decision: ${{ steps.contract.outputs.decision }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,6 +66,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Weg bestimmen (automatisch nur auf main, nur mit SF8_AUTO_PUBLISH)
+        id: mode
+        env:
+          EVENT: ${{ github.event_name }}
+          IN_MODE: ${{ inputs.mode }}
+          AUTO_SWITCH: ${{ vars.SF8_AUTO_PUBLISH }}
+        run: |
+          set -euo pipefail
+          auto=false
+          if [ "$EVENT" = "schedule" ] || [ "$IN_MODE" = "auto" ]; then
+            if [ "$GITHUB_REF" != "refs/heads/main" ]; then echo "::error::automatischer Weg nur auf main"; exit 1; fi
+            if [ "$AUTO_SWITCH" != "true" ]; then echo "::error::automatischer Weg nur mit SF8_AUTO_PUBLISH=true"; exit 1; fi
+            auto=true
+          fi
+          echo "auto=${auto}" >> "$GITHUB_OUTPUT"
+          echo "Weg: $([ "$auto" = true ] && echo automatisch || echo manuell)"
 
       - name: Produkt- und Vertragstests (rot = kein neuer Stand)
         run: node --test "scripts/supertrader/tests/sf-*.test.mjs"
@@ -118,7 +154,46 @@ jobs:
           echo "fp=${fp}" >> "$GITHUB_OUTPUT"
           { echo "### SF8 oeffentlicher Stand ${stand}"; echo; echo "Fingerabdruck \`${fp}\`"; } >> "$GITHUB_STEP_SUMMARY"
 
+      # Vertrag C1: derselbe Lauf noch einmal in ein zweites Verzeichnis, gleiche Eingaben, gleicher Fingerabdruck.
+      - name: Zweiter, unabhaengiger Lauf (nur automatisch; Reproduzierbarkeit)
+        if: steps.mode.outputs.auto == 'true'
+        id: rebuild
+        env:
+          OUT2: ${{ runner.temp }}/sf8-candidates-2
+          PUB2: ${{ runner.temp }}/sf8-public-2
+        run: |
+          set -euo pipefail
+          heute="$(date -u +%F)"
+          prev=()
+          if [ -f supertrader/data/sf-candidates/index.json ]; then prev=(--previous supertrader/data/sf-candidates); fi
+          node --max-old-space-size=4096 scripts/supertrader/source-faithful/product/build-candidates.mjs \
+            --out "$OUT2" --stats "$RUNNER_TEMP/sf8-stats-2.json" --require-current "$heute" "${prev[@]}"
+          rm -rf "$PUB2"; mkdir -p "$PUB2"
+          cp "$OUT2/summary.json" "$OUT2/index.json" "$PUB2/"
+          cp -r "$OUT2/strategy" "$OUT2/ticker" "$PUB2/"
+          fp2=$(cd "$PUB2" && LC_ALL=C find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)
+          echo "fp=${fp2}" >> "$GITHUB_OUTPUT"
+
+      - name: Veroeffentlichungsvertrag (nur automatisch; BLOCKED = kein Commit, roter Lauf)
+        if: steps.mode.outputs.auto == 'true'
+        id: contract
+        env:
+          PUB: ${{ runner.temp }}/sf8-public
+          REPORT: ${{ runner.temp }}/sf8-dq.json
+          RECORD: ${{ runner.temp }}/sf8-publication.json
+          FP: ${{ steps.fp.outputs.fp }}
+          FP2: ${{ steps.rebuild.outputs.fp }}
+        run: |
+          set -euo pipefail
+          registry=false
+          if node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && (!d.activation || d.activation.state==="ACTIVATING") ? 0 : 1)'; then registry=true; fi
+          node scripts/supertrader/source-faithful/product/publication-contract.mjs --next "$PUB" --prev supertrader/data/sf-candidates \
+            --fingerprint "$FP" --rebuild-fingerprint "$FP2" --dq "$REPORT" --registry-ok "$registry" \
+            --code-commit "$GITHUB_SHA" --run "$GITHUB_RUN_ID" --out "$RECORD"
+          node -e 'const r=require(process.env.RECORD);console.log("### Veroeffentlichungsvertrag "+r.contract+": "+r.decision+"\n\nStand "+r.asOf+" (veroeffentlicht "+r.previousAsOf+"), Eingaben `"+r.inputsSha256+"`"+(r.failures.length?"\n\n- "+r.failures.join("\n- "):""))' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Vollstaendiges Ergebnis als CI-Artefakt (inklusive Vertragsdatensaetze)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sf8-candidates-${{ github.run_id }}
@@ -126,10 +201,11 @@ jobs:
             ${{ runner.temp }}/sf8-candidates
             ${{ runner.temp }}/sf8-stats.json
             ${{ runner.temp }}/sf8-dq.json
+            ${{ runner.temp }}/sf8-publication.json
           retention-days: 14
 
       - name: Commit (nur supertrader/data/sf-candidates, ohne records/)
-        if: inputs.commit == true
+        if: inputs.commit == true && steps.mode.outputs.auto != 'true'
         env:
           PUB: ${{ runner.temp }}/sf8-public
           PUSH_OWNED_PATHS: supertrader/data/sf-candidates/
@@ -161,3 +237,52 @@ jobs:
           stand=$(node -e 'const s=require("./supertrader/data/sf-candidates/summary.json");console.log(s.asOf)')
           git commit -q -m "Supertrader 8: Research-Kandidaten (Stand ${stand}, nicht freigeschaltet)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      # Automatischer Weg: genau das zweifach gepruefte Verzeichnis, ein Commit (atomar), Nachweis als Trailer.
+      - name: Commit nach Vertrag (nur automatisch, nur PUBLISH)
+        if: steps.mode.outputs.auto == 'true' && steps.contract.outputs.decision == 'PUBLISH'
+        env:
+          PUB: ${{ runner.temp }}/sf8-public
+          RECORD: ${{ runner.temp }}/sf8-publication.json
+          PUSH_OWNED_PATHS: supertrader/data/sf-candidates/
+        run: |
+          set -euo pipefail
+          ziel=supertrader/data/sf-candidates
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then echo "::error::automatischer Commit nur auf main"; exit 1; fi
+          rm -rf "$ziel"
+          mkdir -p "$ziel"
+          cp -r "$PUB/." "$ziel/"
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A "$ziel"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          nachricht=$(node -e 'const r=require(process.env.RECORD);console.log("Supertrader 8: Research-Kandidaten (Stand "+r.asOf+", automatisch, nicht freigeschaltet)\n\nSF8-Contract: "+r.contract+"\nSF8-Fingerprint: "+r.fingerprint+"\nSF8-Inputs-SHA256: "+r.inputsSha256+"\nSF8-Previous-AsOf: "+r.previousAsOf+"\nSF8-Code-Commit: "+r.codeCommit+"\nSF8-Run: "+r.run)')
+          git commit -q -m "$nachricht"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Ein roter automatischer Lauf bleibt nicht unbemerkt (wie market-data-refresh.yml): Issue mit Label pipeline-alarm,
+  # ein gruener automatischer Lauf schliesst es. Der Bote veraendert den Befund nicht.
+  alarm:
+    needs: candidates
+    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALARM_SOURCE: supertrader-sf8-candidates
+          ALARM_TITLE: Supertrader-Tageslauf ohne neuen Stand
+          RESULT_CANDIDATES: ${{ needs.candidates.result }}
+        run: node scripts/ci/pipeline-alarm.mjs
