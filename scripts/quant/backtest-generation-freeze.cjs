@@ -6,8 +6,8 @@
    node scripts/quant/backtest-generation-freeze.cjs repo-manifest --out <datei> [--source-commit <sha>]
    node scripts/quant/backtest-generation-freeze.cjs freeze --generations <privat> --out <datei>
    node scripts/quant/backtest-generation-freeze.cjs verify --generations <privat> --manifest <datei>
-   node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-alt> --manifest <datei> --output <privat-neu> [--ids a,b]
-   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei>] --out <datei>
+   node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-alt> --manifest <datei> --output <privat-neu> --blocklist <identity-blocklist.json> [--ids a,b]
+   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei> ...] --blocklist <datei> --out <datei>
 
    masterHash bleibt, was er ist (SHA-256 der ganzen Stammdatei, quant/engines/weekly-real-adapter.cjs); dieses Skript
    liest ihn nur aus den Snapshots und ändert keinen Hash-Vertrag. Der Inhalts-Fingerabdruck-Entwurf wird nicht geladen. */
@@ -24,10 +24,11 @@ const inside=(parent,child)=>{const r=path.relative(parent,child);return r===''|
 // Echter Pfad auch für noch nicht angelegte Ziele: Symlinks im vorhandenen Teil werden aufgelöst (Review #1100).
 const real=p=>{let q=path.resolve(p),rest=[];while(!fs.existsSync(q)){rest.unshift(path.basename(q));const up=path.dirname(q);if(up===q)break;q=up;}return path.join(fs.realpathSync(q),...rest);};
 
-/* Eingefrorene, committete Quant-Evidenz: abgeschlossene Generationen V5.1–V9 samt Folgearbeit und Methodik-Entwurf.
-   V10 ist eine offene Übergabe und bleibt bewusst außen vor. */
-const FROZEN_DIRS=['docs/quant-recovery/methodology-v1','docs/quant-recovery/v51','docs/quant-recovery/v6','docs/quant-recovery/v6-securement','docs/quant-recovery/v6-securement-final','docs/quant-recovery/v7','docs/quant-recovery/v7-securement','docs/quant-recovery/v8','docs/quant-recovery/v9','docs/quant-recovery/v9-followups'];
-const FROZEN_DOC=/^docs\/quant-recovery\/BACKTEST_V(51|6|7|8|9)(_[A-Z_]+)?\.md$/;
+/* Eingefrorene, committete Quant-Evidenz: abgeschlossene Generationen V5.1–V9 samt Folgearbeit und Methodik-Entwurf,
+   seit der Übergabe V13 (Merge #1132, 30.10.2026) auch V10–V13c mit ihren Berichten. */
+const FROZEN_DIRS=['docs/quant-recovery/methodology-v1','docs/quant-recovery/v51','docs/quant-recovery/v6','docs/quant-recovery/v6-securement','docs/quant-recovery/v6-securement-final','docs/quant-recovery/v7','docs/quant-recovery/v7-securement','docs/quant-recovery/v8','docs/quant-recovery/v9','docs/quant-recovery/v9-followups',
+ 'docs/quant-recovery/v10','docs/quant-recovery/v11','docs/quant-recovery/v12','docs/quant-recovery/v13','docs/quant-recovery/v13b','docs/quant-recovery/v13c'];
+const FROZEN_DOC=/^docs\/quant-recovery\/(BACKTEST_V(51|6|7|8|9|10)(_[A-Z_]+)?|ALPHA_DISCOVERY_V11|DATA_QUALITY_V1[23]_[A-Z]+|HANDOVER_V13)\.md$/;
 /* Committete Ausgaben, die vom Stamm abhängen und beim Wechsel NICHT still neu entstehen: jede bekommt einen eigenen
    Erzeuger-PR mit Vorher/Nachher. Ihre Bytes stehen in der Git-Historie; sie werden hier nicht festgenagelt, weil ihre
    Erzeuger sie mit den Datenläufen fortschreiben. */
@@ -42,9 +43,13 @@ const DEPENDENTS=[
  {path:'server/quant-backtest-freshness.cjs, server/quant-backtest-reader.cjs',producer:'Code',reads:'masterHash aus dem Snapshot',expected:'SECURITY_MASTER als geänderte Abhängigkeit',handling:'UNVERAENDERT'},
 ];
 
+/* Betriebsunterlagen, keine Ergebnisse: die Anleitung des verschlüsselten Archivs wird mit jedem Archivstand
+   fortgeschrieben und bindet ihre Teile selbst per SHA-256 (manifest-<version>.json). */
+const NOT_FROZEN=new Set(['docs/quant-recovery/v13/archive']);
 function walk(base,rel=''){
  const out=[];for(const e of fs.readdirSync(path.join(base,rel),{withFileTypes:true}).sort((a,b)=>a.name<b.name?-1:1)){
   const p=rel?rel+'/'+e.name:e.name;if(e.isSymbolicLink())throw Error('SYMLINK_NOT_ALLOWED:'+p);
+  if(e.isDirectory()&&NOT_FROZEN.has(p))continue;
   if(e.isDirectory())out.push(...walk(base,p));else if(e.isFile()&&!TRANSIENT.has(e.name))out.push(p);
  }
  return out;
@@ -89,7 +94,7 @@ function verify({generations,manifest}){
 }
 
 /** Neue Generation nach dem Wechsel: nur in eine NEUE private Wurzel; die eingefrorene bleibt bytegleich (vorher und nachher geprüft). */
-function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,expectMasterVersion=TARGET_MASTER_VERSION,materializeFn=null}={}){
+function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=null,expectMasterVersion=TARGET_MASTER_VERSION,materializeFn=null}={}){
  if(!frozen||!output||!manifest)throw Error('FROZEN_MANIFEST_AND_OUTPUT_REQUIRED');
  const old=real(frozen),next=real(output);
  if(inside(old,next)||inside(next,old))throw Error('POST_SWITCH_OUTPUT_MUST_BE_SEPARATE_ROOT');
@@ -101,22 +106,44 @@ function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,expectMaster
  if(A.hash(masterBytes)===manifest.release.masterHash)throw Error('MASTER_UNCHANGED_NO_NEW_GENERATION');
  if(fs.existsSync(next)&&manifest.generations.some(g=>fs.existsSync(path.join(next,g))))throw Error('FROZEN_GENERATION_IN_OUTPUT');
  // gleicher Umfang wie die eingefrorene Generation, damit der Vergleich Titel für Titel geht
- const scope=ids||JSON.parse(fs.readFileSync(path.join(old,manifest.release.generation,'snapshot.json'))).input.sources.map(s=>s.securityId);
+ // Pflicht (Review #1136): ohne eine an genau diesen Wechsel gebundene Sperrliste keine neue Generation
+ if(!blocklist||!Array.isArray(blocklist.ids))throw Error('BLOCKLIST_REQUIRED');
+ if(blocklist.prevMasterSha256!==manifest.release.masterHash)throw Error('BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER');
+ if(blocklist.nextMasterSha256!==A.hash(masterBytes))throw Error('BLOCKLIST_NOT_FROM_COMMITTED_MASTER');
+ const full=ids||JSON.parse(fs.readFileSync(path.join(old,manifest.release.generation,'snapshot.json'))).input.sources.map(s=>s.securityId);
+ // Identitätssperre (Owner 30.10.2026): gesperrte IDs ohne belastbare kanonische Zuordnung gehen nie in die neue Generation
+ const blocked=new Set(blocklist.ids),scope=full.filter(id=>!blocked.has(id));
  const run=materializeFn||require('./materialize-real-backtest-read.cjs').materialize;
  const report=run({root,output:next,ids:scope});
  if(manifest.generations.includes(report.generation))throw Error('GENERATION_COLLISION');
  const after=verify({generations:old,manifest});if(after.state!=='INTACT')throw Error('FROZEN_GENERATION_CHANGED_DURING_BUILD');
  const lineage={schema:LINEAGE_SCHEMA,predecessor:{generation:manifest.release.generation,masterHash:manifest.release.masterHash,freezeFilesSha256:manifest.filesSha256},
   successor:{generation:report.generation,state:report.state,masterHash:A.hash(masterBytes),masterVersion:master.version,expected:report.expected},
-  frozenRootVerified:{before:before.state,after:after.state},publiclyActivated:false,readerSwitch:'OWNER_STEP_NOT_PERFORMED'};
+  frozenRootVerified:{before:before.state,after:after.state},publiclyActivated:false,readerSwitch:'OWNER_STEP_NOT_PERFORMED',
+  identityBlocklist:{sha256:blocklist.sha256,count:blocked.size,excludedFromScope:full.filter(id=>blocked.has(id))}};
  fs.writeFileSync(path.join(next,'lineage.json.tmp'),JSON.stringify(lineage,null,1)+'\n');fs.renameSync(path.join(next,'lineage.json.tmp'),path.join(next,'lineage.json'));
  return lineage;
 }
 
+/** Identitätssperrliste aus security-master-drift-evidence.mjs (identity-blocklist.json); jeder Formfehler bricht ab. */
+const BLOCKLIST_SCHEMA='security-master-identity-blocklist-1.0.0';
+function loadBlocklist(file){
+ const b=fs.readFileSync(file),j=JSON.parse(b);
+ if(j.schema!==BLOCKLIST_SCHEMA||!Array.isArray(j.entries)||!j.entries.length)throw Error('BLOCKLIST_INVALID');
+ const ids=j.entries.map(e=>e&&e.securityId);if(ids.some(x=>typeof x!=='string'||!x)||new Set(ids).size!==ids.length||j.entries.some(e=>typeof e.reason!=='string'))throw Error('BLOCKLIST_INVALID');
+ if(!/^[0-9a-f]{64}$/.test(String(j.prevMasterSha256))||!/^[0-9a-f]{64}$/.test(String(j.nextMasterSha256)))throw Error('BLOCKLIST_INVALID');
+ return {ids,sha256:sha(b),prevMasterSha256:j.prevMasterSha256,nextMasterSha256:j.nextMasterSha256};
+}
+
 /** Vergleich Titel für Titel; Abweichung außerhalb der freigegebenen IDs = UNEXPECTED_CHANGES. */
-function compare({frozen,output,approvedIds=[]}){
+function compare({frozen,output,approvedIds=[],blocklist=null}){
+ // Pflicht: dieselbe Sperrliste, mit der die neue Generation gebaut wurde (lineage.json)
+ if(!blocklist||!Array.isArray(blocklist.ids))throw Error('BLOCKLIST_REQUIRED');
+ const lin=path.join(path.resolve(output),'lineage.json');
+ if(!fs.existsSync(lin)||JSON.parse(fs.readFileSync(lin)).identityBlocklist?.sha256!==blocklist.sha256)throw Error('BLOCKLIST_NOT_USED_FOR_BUILD');
+ const blockedIds=blocklist.ids;
  const load=(base)=>{const r=JSON.parse(fs.readFileSync(path.join(base,'release.json')));return {generation:r.generation,dir:path.join(base,r.generation,'listings')};};
- const a=load(path.resolve(frozen)),b=load(path.resolve(output)),approved=new Set(approvedIds);
+ const a=load(path.resolve(frozen)),b=load(path.resolve(output)),approved=new Set(approvedIds),blocked=new Set(blockedIds);
  const read=(dir,id)=>{const f=path.join(dir,id,'summary.json');return fs.existsSync(f)?JSON.parse(fs.readFileSync(f)):null;};
  const finance=s=>Object.fromEntries(Object.entries(s.periods||{}).map(([k,p])=>[k,{from:p.from,to:p.to,metrics:p.metrics,endCapital:p.endCapital,openPositions:p.openPositions,buyAndHold:p.buyAndHold}]));
  const classes={},rows=[];
@@ -126,8 +153,13 @@ function compare({frozen,output,approvedIds=[]}){
   else if(x.state==='BLOCKED'&&y.state==='BLOCKED')c=JSON.stringify(x.quality.exclusionReasons)===JSON.stringify(y.quality.exclusionReasons)?'SAME_BLOCKED':'CHANGED_BLOCK_REASON';
   else if(y.state==='BLOCKED')c='NEWLY_BLOCKED';else if(x.state==='BLOCKED')c='NEWLY_AVAILABLE';
   else c=JSON.stringify(finance(x))===JSON.stringify(finance(y))?'SAME_FINANCIALS':'CHANGED_FINANCIALS';
-  classes[c]=(classes[c]||0)+1;if(!c.startsWith('SAME'))rows.push({securityId:id,class:c,approved:approved.has(id),reasons:y?.quality?.exclusionReasons||null});
+  // eine gesperrte ID darf nur fehlen; jede andere Abweichung braucht weiter eine Freigabe
+  const ok=c==='MISSING_IN_NEW'?blocked.has(id):approved.has(id)&&!blocked.has(id);
+  if(blocked.has(id)&&c!=='MISSING_IN_NEW')c='BLOCKLISTED_BUT_PRESENT';
+  classes[c]=(classes[c]||0)+1;if(!c.startsWith('SAME')||blocked.has(id))rows.push({securityId:id,class:c,approved:ok,reasons:y?.quality?.exclusionReasons||null});
  }
+ // IDs nur in der neuen Generation: nie still (gesperrt = gebaut trotz Sperre, sonst neu im Umfang)
+ for(const id of fs.existsSync(b.dir)?fs.readdirSync(b.dir).sort():[])if(!fs.existsSync(path.join(a.dir,id))){const c=blocked.has(id)?'BLOCKLISTED_BUT_PRESENT':'NEW_IN_NEW';classes[c]=(classes[c]||0)+1;rows.push({securityId:id,class:c,approved:false,reasons:null});}
  const unexpected=rows.filter(r=>!r.approved);
  return {schema:COMPARE_SCHEMA,predecessor:a.generation,successor:b.generation,classes,changed:rows,unexpected,state:unexpected.length?'UNEXPECTED_CHANGES':'ONLY_APPROVED_CHANGES'};
 }
@@ -136,14 +168,20 @@ if(require.main===module){
  const [cmd,...args]=process.argv.slice(2),get=k=>args.includes(k)?args[args.indexOf(k)+1]:null;
  const write=(file,o)=>{const p=path.resolve(file);if(['quant/data','discover/data','supertrader/data','social/data'].some(d=>inside(path.join(ROOT,d),p)))throw Error('OUT_IN_GENERATED_DATA_PATH');fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(o,null,1)+'\n');};
  const json=f=>JSON.parse(fs.readFileSync(f,'utf8'));
+ // Schalter mit Wert: fehlt der Wert oder folgt ein weiterer Schalter, Abbruch statt stiller Standard
+ const need=k=>{const v=get(k);if(!v||v.startsWith('--'))throw Error('BLOCKLIST_REQUIRED');return v;};
  try{
   if(cmd==='repo-manifest'){if(!get('--out'))throw Error('OUT_REQUIRED');const m=repoManifest({sourceCommit:get('--source-commit')});write(get('--out'),m);console.log(`[freeze] ${m.frozen.count} Dateien, filesSha256 ${m.frozen.filesSha256}`);}
   else if(cmd==='verify-repo'){const r=verifyRepo(json(get('--manifest')));console.log(JSON.stringify(r));if(r.state!=='INTACT')process.exitCode=1;}
   else if(cmd==='freeze'){if(!get('--out'))throw Error('OUT_REQUIRED');const m=freeze({generations:get('--generations')});write(get('--out'),m);console.log(`[freeze] ${m.count} Dateien, Generation ${m.release.generation}, filesSha256 ${m.filesSha256}`);}
   else if(cmd==='verify'){const r=verify({generations:get('--generations'),manifest:json(get('--manifest'))});console.log(JSON.stringify(r));if(r.state!=='INTACT')process.exitCode=1;}
-  else if(cmd==='build-post-switch'){console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest:json(get('--manifest')),output:get('--output'),ids:get('--ids')?.split(',')||null})));}
-  else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');const ap=get('--approved')?json(get('--approved')):null;const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:ap?ap.instrumentTypeChanges.map(x=>x.securityId):[]});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
+  else if(cmd==='build-post-switch'){console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest:json(get('--manifest')),output:get('--output'),ids:get('--ids')?.split(',')||null,blocklist:loadBlocklist(need('--blocklist'))})));}
+  else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');// mehrere --approved zulässig
+  const files=args.flatMap((a,i)=>a==='--approved'?[args[i+1]]:[]);if(files.some(f=>!f||f.startsWith('--')))throw Error('APPROVED_FILE_REQUIRED');
+  // Freigabelisten 1.0.0 und 1.1.0 (#1143): jede dort genannte securityId gilt als erwartete Änderung
+  const ids=files.map(json).flatMap(ap=>['instrumentTypeChanges','eligibilityFlips','canonicalIdChanges','deactivations','tickerChanges','nameChanges'].flatMap(k=>(ap[k]||[]).map(x=>x.securityId)));
+  const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:[...new Set(ids)],blocklist:loadBlocklist(need('--blocklist'))});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
   else throw Error('UNKNOWN_COMMAND');
  }catch(e){console.error(e.message);process.exitCode=2;}
 }
-module.exports={repoManifest,verifyRepo,freeze,verify,buildPostSwitch,compare,FROZEN_DIRS,TARGET_MASTER_VERSION};
+module.exports={NOT_FROZEN,repoManifest,verifyRepo,freeze,verify,buildPostSwitch,compare,loadBlocklist,BLOCKLIST_SCHEMA,FROZEN_DIRS,TARGET_MASTER_VERSION};

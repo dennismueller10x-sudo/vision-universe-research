@@ -152,3 +152,30 @@ jobs:
               echo 'Kein Gate-Bericht (Abbruch vor dem Gate).'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Ein blockierter oder roter Lauf bleibt nicht unbemerkt (V1-Befund 30.10.: Lauf 40942100928 rot ohne Alarm):
+  # Issue mit Label pipeline-alarm ueber den bestehenden Boten, ein gruener Lauf schliesst es. Keine Secrets.
+  alarm:
+    needs: refresh
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALARM_SOURCE: security-master-weekly
+          ALARM_TITLE: Security Master ohne neuen Stand
+          RESULT_REFRESH: ${{ needs.refresh.result }}
+        run: node scripts/ci/pipeline-alarm.mjs
