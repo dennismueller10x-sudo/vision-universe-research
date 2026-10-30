@@ -49,9 +49,9 @@ Eine Art erreicht C nur über das Zertifizierungsartefakt (`scripts/quant/build-
 | Nr. | Paket | Wirkung | Akzeptanz |
 |---|---|---|---|
 | P0.1 | Anzeigefehler Parität in `measure-backtest-signal-intelligence.mjs` (zeigte `checked/checked` statt `(checked−mismatches)/checked`) | Messwert ist auch bei Abweichungen korrekt | **erledigt in diesem PR**; heute `3478/3478`, Ausgabe unverändert |
-| P0.2 | Test: JSON-Schema `docs/quant/backtest-result-v2.schema.json` stimmt mit `validate()` überein (Enums, Pflichtfelder) | verhindert eine stille Abweichung im Vertrag | Test schlägt bei jeder Enum-Abweichung fehl |
-| P0.3 | Test: Runner-Pfad gegen das **committete** Zertifizierungsartefakt (`certificationViolations` = 0, keine Art C) | Runner und Artefakt können nicht auseinanderlaufen | Test liest nur, schreibt nichts |
-| P0.4 | Veraltungswächter für die 16 Demofälle: Ergebnis-Hashes gegen `CODE_FILES` des Runners | Demos veralten nicht unbemerkt | roter Test mit Hinweis „Demos neu bauen (`build-backtest-demos.cjs --out`)“ |
+| P0.2 | Test: JSON-Schema `docs/quant/backtest-result-v2.schema.json` stimmt mit `validate()` überein (Enums, Pflichtfelder) | verhindert eine stille Abweichung im Vertrag | **besteht bereits** (`backtest-result-contract.test.mjs`, Test „schema document and contract engine agree“) |
+| P0.3 | Test: Runner-Pfad gegen das **committete** Zertifizierungsartefakt (`certificationViolations` = 0, keine Art C) | Runner und Artefakt können nicht auseinanderlaufen | **besteht bereits** (`backtest-certification.test.mjs` prüft das committete Artefakt; der Runner bricht bei Verstößen mit `CERTIFICATION_ARTIFACT_VIOLATES_ITS_CONTRACT` ab) |
+| P0.4 | Veraltungswächter für die 16 Demofälle: Ergebnis-Hashes gegen `CODE_FILES` des Runners | Demos veralten nicht unbemerkt | **#1171**: Wächter `check-backtest-demo-freshness.cjs`. Befund: Alle 16 Demos zeichnen `research-delisted-series.cjs` im Stand `45d7a67c9e` auf, `main` hat `8315b0c82b`. Neubau mit privaten Daten nötig, danach `--strict` in CI |
 | P0.5 | `run-backtest.cjs`: `--help` und Prüfung der eigenen Ausgabe gegen den Vertrag | Bedienbarkeit, fail closed | Ausgabe nur nach `--out` |
 | P0.6 | Opt-in-CI-Job (workflow_dispatch, `permissions: contents: read`) für `BACKTEST_RUNNER_FULL=1` | Echtdaten-Tests laufen regelmäßig, nicht nur lokal | kein Commit, nur Bericht |
 | P0.7 | Reproduzierbarkeit über Laufzeiten: Kennzahlen-Hash ohne Node-Binär-Hash zusätzlich ausweisen | Determinismus in CI prüfbar | zwei Node-Versionen liefern denselben Kennzahlen-Hash |
@@ -120,4 +120,5 @@ Keine Art wird vor dem Erfüllen ihrer bestehenden Gates zertifiziert. Ein negat
 ## 5. Wiederaufnahmepunkt
 
 - Einstieg: dieses Dokument, dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
-- Nächstes autonomes Paket: P0.2 und P0.3 (nur Tests).
+- Nächste autonome Pakete: P0.5 (`run-backtest.cjs --help` und Ausgabeprüfung), P0.6 (Opt-in-CI-Job), P0.7 (Kennzahlen-Hash).
+- Mit Owner-Schlüssel: Demos neu bauen (P0.4), dann `--strict`.
