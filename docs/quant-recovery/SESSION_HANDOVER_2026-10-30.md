@@ -17,7 +17,7 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1132 | V13 Abschluss II (V13c-Studie, Archivwerkzeuge, R2-Workflow) | gemergt `adbc2f0444` |
 | #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | offen, Merge genehmigt (nach #1132). **Blockiert:** `core` rot wie auf `main` (siehe 6.1). Kein Merge vor grünem `core` |
 | #1138 | interne Backtest-Vorschau (Draft, auf #1133) | Draft; standardmäßig aus, nicht verdrahtet |
-| SM-Freigabeliste | quellengebundene exakte Freigabeliste 1.1.0→1.3.0 (Draft, Branch `claude/sm130-approval-list-4ho3rd`) | in Arbeit bzw. Draft; siehe 6.2 |
+| #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft. Simulation: 1.085/1.144 Änderungen freigabefähig, Rest unter den unveränderten Grenzen außer G6 OKE → BLOCKED bis Owner-Entscheidung a/b/c |
 | #1140 | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
 
 PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachholdrift, Freigabeschema 1.1.0), #1137 (Supertrader 9, automatischer SF8-Tageslauf). Beide sind offen.
@@ -167,7 +167,8 @@ Teststand:
   | G9 | 592 Namen |
 
   Die Grenzen bleiben unverändert (G6/G7/G9 werden nicht pauschal erhöht).
-- **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR, Branch `claude/sm130-approval-list-4ho3rd`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
+- **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR #1143, Branch `claude/sm130-approval-list-4ho3rd`; Prüfdokument `docs/data/security-master/V130_APPROVAL_LIST_REVIEW.md`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
+- **Befund der Liste:** canonical_id 60/83 freigabefähig (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.; nicht: 15 Altzeile weg, 4 doppelt aktiv, CAM, TRT/TRUE/APAD); Deaktivierungen 84/100 (nicht: EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft); Eignung: die 82 zusätzlichen sind nur Folgen; Namen 591/592 (573 neu aus der SEC, 18 Umfirmierungen; nicht: XRPN). Owner-Entscheidung OKE: a) Korrektur im Erzeuger (empfohlen), b) `--accept-duplicate`, c) abwarten.
 - **Überschneidung:** #1136 (andere Sitzung) führt ebenfalls ein Freigabeschema 1.1.0 ein. Vor einem Merge ist ein Schema zu wählen.
 - **Reihenfolge:**
   1. Review der Liste;
@@ -194,7 +195,7 @@ Teststand:
 2. Archiv: `docs/quant-recovery/v13/archive/README.md`; Werkzeuge `scripts/quant/v13/archive/` (`build-archive.sh`, `restore-archive.sh`, `presign.mjs`, `transfer.sh`, `r2-restore.mjs`); Workflow `.github/workflows/quant-v13-archive.yml` (Marken usage, put, get, verify, keycheck, restore; nur auf `claude/**`).
 3. Backtests: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`, `BACKTEST_RUNNER.md`, `BACKTEST_RESULT_CONTRACT_V2.md`, `BACKTEST_PREVIEW.md`; Code `scripts/quant/research/backtest-runner.cjs`, `run-backtest.cjs`, `quant/api/backtest-research-adapter.js`, `quant/api/backtest-preview-service.cjs`.
 4. Research-Befunde: `docs/quant-recovery/HANDOVER_V13.md`, `docs/quant-recovery/v13c/`.
-5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, Freigabelisten-PR, #1136.
+5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1136.
 6. Tests: siehe `CLAUDE.md`, Abschnitt Tests. Gezielt:
    ```bash
    node --test quant/tests/backtest-*.test.mjs quant/tests/v13-archive.test.mjs quant/tests/secrets.test.mjs
