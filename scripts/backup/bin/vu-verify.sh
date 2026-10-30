@@ -24,14 +24,22 @@ if [ "$level" = chain ]; then
     have=$(restic snapshots --json --host "$VU_HOST" --tag "src:$src" | python3 -c 'import json,sys; print(" ".join(s["short_id"] for s in json.load(sys.stdin) or []))' \
       | tr ' ' '\n' | while read -r id; do [ -n "$id" ] && restic ls --json "$id" "$VU_WORK/gitb/$name" 2>/dev/null; done | python3 -c '
 import json, sys
-seen = {}
+seen, parts = {}, {}
 for line in sys.stdin:
     try:
         n = json.loads(line)
     except ValueError:
         continue
-    if n.get("type") == "file" and n.get("name", "").endswith(".bundle"):
-        seen[n["name"]] = n.get("size")
+    name = n.get("name", "")
+    if n.get("type") != "file":
+        continue
+    if name.endswith(".bundle"):
+        seen[name] = n.get("size")
+    elif name.endswith((".bundle.head", ".bundle.pack")):   # geteiltes Voll-Bundle: beide Teile noetig
+        parts.setdefault(name[:-5], set()).add(name[-4:])
+for base, p in parts.items():
+    if p == {"head", "pack"}:
+        seen[base] = None
 print(json.dumps(seen))')
     missing=$(printf '%s\n' "$chain" | python3 -c 'import json,sys; seen=json.loads(sys.argv[1]); m=[l.split()[1] for l in sys.stdin if l.strip() and l.split()[1] not in seen]; print(" ".join(m))' "$have")
     count=$(printf '%s\n' "$chain" | grep -c . || true)

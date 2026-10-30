@@ -1,0 +1,122 @@
+# Ablage im privaten Backup-Repo: .github/workflows/vu-git-probe.yml
+# Speicherprobe der Git-Sicherung in Originalgroesse, NUR LESEND und OHNE Upload:
+#   1. echter Mirror-Klon des (oeffentlichen) Repos, Voll-Bundle wie im Ernstfall (vu-backup.sh)
+#   2. restic im Trockenlauf gegen ein lokales Wegwerf-Repository: liest alles, schreibt nichts
+#   3. Wiederherstellung aus dem Sicherungsverzeichnis (gitb_assemble), fsck, Refs, Arbeitskopie
+#   4. Wachstum der letzten 30/90 Tage aus der Historie
+# Ein Hintergrund-Messer schreibt alle 5 s die Plattenbelegung mit; Ergebnis in der Zusammenfassung.
+name: VU Git-Speicherprobe
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'Zu messendes Repository (https-URL)'
+        required: true
+        default: https://github.com/dennismueller10x-sudo/vision-universe-research
+permissions:
+  contents: read
+concurrency:
+  group: vu-git-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      REPO_URL: ${{ inputs.repo_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Platz schaffen, Arbeitsverzeichnis waehlen
+        run: |
+          set -euo pipefail
+          [[ "$REPO_URL" =~ ^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || { echo "ungueltige URL"; exit 1; }
+          scripts/backup/runner/github-actions/free-disk.sh | tee -a "$GITHUB_STEP_SUMMARY"
+      - run: scripts/backup/runner/github-actions/setup-tools.sh restic py
+      - name: Sicherung im Trockenlauf (kein Upload)
+        run: |
+          set -uo pipefail
+          export RESTIC_REPOSITORY="$RUNNER_TEMP/probe-repo" RESTIC_PASSWORD="$(head -c 24 /dev/urandom | base64)"
+          export VU_SOURCES=git VU_GIT_MODE=bundle VU_GIT_REPOS="research=$REPO_URL" VU_RESTIC_DRY_RUN=true VU_GIT_KEEP_DIR=true
+          export VU_STATUS_DIR="$RUNNER_TEMP/status" VU_DISK_TRACE="$RUNNER_TEMP/trace.txt" VU_CHECK_SUBSET=1%
+          restic init >/dev/null
+          base=$(df -Pk "$VU_WORK" | awk 'NR==2 {print $3}'); echo "$base" > "$RUNNER_TEMP/base_kb"
+          ( while sleep 5; do df -Pk "$VU_WORK" | awk 'NR==2 {print $3}'; done ) > "$RUNNER_TEMP/samples.txt" &
+          echo $! > "$RUNNER_TEMP/sampler.pid"
+          start=$(date +%s)
+          scripts/backup/bin/vu-backup.sh > "$RUNNER_TEMP/run.md"; rc=$?
+          echo "BACKUP_SECS=$(( $(date +%s) - start ))" >> "$GITHUB_ENV"
+          cat "$RUNNER_TEMP/run.md"; cat "$RUNNER_TEMP/trace.txt"
+          exit "$rc"
+      - name: Wiederherstellung aus dem Sicherungsverzeichnis
+        run: |
+          set -euo pipefail
+          export VU_BACKUP_ROOT="$PWD/scripts/backup" VU_DISK_TRACE="$RUNNER_TEMP/trace.txt"
+          source scripts/backup/lib/common.sh
+          d="$VU_WORK/gitb/research" m="$VU_WORK/restore/research.git"
+          cp "$d/refs.txt" "$RUNNER_TEMP/refs.txt"
+          start=$(date +%s)
+          gitb_assemble "$d" "$m"
+          vu_disk_trace "restore:assembled"
+          git -C "$m" fsck --connectivity-only --no-progress
+          want=$(sort "$RUNNER_TEMP/refs.txt" | sha256sum | cut -c1-16)
+          have=$(git -C "$m" for-each-ref --format='%(objectname) %(refname)' | sort | sha256sum | cut -c1-16)
+          [ "$want" = "$have" ] || { echo "Refs weichen ab"; exit 1; }
+          git clone --quiet "$m" "$VU_WORK/restore/checkout"
+          vu_disk_trace "restore:checkout"
+          echo "RESTORE_SECS=$(( $(date +%s) - start ))" >> "$GITHUB_ENV"
+          echo "RESTORE_REFS=$(wc -l < "$RUNNER_TEMP/refs.txt")" >> "$GITHUB_ENV"
+          # Wachstum: Objekte, die in den letzten N Tagen dazukamen (Plattengroesse im Pack)
+          for days in 30 90; do
+            git -C "$m" for-each-ref --format='%(refname)' | while read -r r; do git -C "$m" rev-list -1 --before="$days days ago" "$r" 2>/dev/null; done | sort -u > "$RUNNER_TEMP/old-tips"
+            kb=$(sed "s/^/^/" "$RUNNER_TEMP/old-tips" | git -C "$m" rev-list --objects --all --stdin | cut -d' ' -f1 \
+              | git -C "$m" cat-file --batch-check='%(objectsize:disk)' | awk '{s+=$1} END {print int(s/1024)}')
+            echo "GROWTH_${days}_KB=$kb" >> "$GITHUB_ENV"
+          done
+          cat "$RUNNER_TEMP/trace.txt"
+      - name: Ergebnis
+        if: always()
+        run: |
+          set -uo pipefail
+          kill "$(cat "$RUNNER_TEMP/sampler.pid")" 2>/dev/null || true
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json, os
+          t = os.environ["RUNNER_TEMP"]; e = os.environ.get
+          base = int(open(f"{t}/base_kb").read())
+          samples = [int(x) for x in open(f"{t}/samples.txt").read().split() if x.isdigit()]
+          trace = [l.split() for l in open(f"{t}/trace.txt")]
+          free = {r[1]: int(r[3].split("=")[1]) for r in trace}
+          used = {r[1]: int(r[2].split("=")[1]) for r in trace}
+          st = json.load(open(f"{t}/status/gitb-research.json"))
+          m = st.get("manifest", {})
+          gb = lambda kb: f"{kb / 1048576:.1f} GB"
+          mirror = m.get("bytes", 0) // 1024
+          peak_backup = max([used.get(k, 0) for k in used if k.startswith("gitb-")] + [0])
+          peak_all = max(samples + [base]) - base
+          free_start = free.get("gitb-research:start", 0)
+          free_min = min(v for k, v in free.items())
+          g30, g90 = int(e("GROWTH_30_KB", 0)), int(e("GROWTH_90_KB", 0))
+          per_month = max(g30, g90 / 3)
+          headroom = free_start - peak_backup
+          months = headroom / per_month if per_month else float("inf")
+          rows = [
+              ("Status der Sicherung", f"{st.get('status')}: {st.get('message', '')}"),
+              ("Bundle-Format", m.get("bundleLayout")),
+              ("Mirror", gb(mirror)),
+              ("Spitzenbelegung Sicherung (Arbeitsverzeichnis)", gb(peak_backup)),
+              ("Spitzenbelegung gesamt inkl. Wiederherstellung (Messer, 5 s)", gb(peak_all)),
+              ("Bisheriges Verfahren (Mirror + Voll-Bundle), rechnerisch", gb(2 * mirror)),
+              ("Ersparnis", f"{gb(2 * mirror - peak_backup)} ({(1 - peak_backup / (2 * mirror)) * 100:.0f} %)" if mirror else "-"),
+              ("frei vor dem Klon", gb(free_start)),
+              ("kleinster freier Platz waehrend der Probe", gb(free_min)),
+              ("Spielraum Sicherung (frei vor Klon - Spitze)", gb(headroom)),
+              ("Wachstum 30 Tage / 90 Tage", f"{gb(g30)} / {gb(g90)}"),
+              ("reicht bei diesem Wachstum noch etwa", f"{months:.0f} Monate (bis Spielraum 0)" if per_month else "unbegrenzt"),
+              ("Dauer Sicherung (Klon + Pruefung + restic lesen)", f"{int(e('BACKUP_SECS', 0)) // 60} min"),
+              ("Dauer Wiederherstellung (index-pack + fsck + Arbeitskopie)", f"{int(e('RESTORE_SECS', 0)) // 60} min"),
+              ("Refs wiederhergestellt", e("RESTORE_REFS", "-")),
+          ]
+          print("## Git-Speicherprobe (nur lesend, kein Upload)\n\n| Messung | Wert |\n|---|---|")
+          for k, v in rows:
+              print(f"| {k} | {v} |")
+          PY

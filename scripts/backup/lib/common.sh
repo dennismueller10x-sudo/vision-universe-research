@@ -60,6 +60,8 @@ restic_backup_source() {
   local source="$1"; shift
   local extra=() t
   for t in ${VU_SNAPSHOT_EXTRA_TAGS:-}; do extra+=(--tag "$t"); done
+  # VU_RESTIC_DRY_RUN=true: alles lesen und zaehlen, nichts schreiben (Runner-Probe ohne Upload)
+  [ "${VU_RESTIC_DRY_RUN:-false}" = true ] && extra+=(--dry-run)
   restic backup --json --host "$VU_HOST" --tag vu --tag "src:$source" ${VU_RUN_TAG:+--tag "run:$VU_RUN_TAG"} "${extra[@]}" "$@" \
     2> >(redact >&2) | python3 -c '
 import json, sys
@@ -96,3 +98,4 @@ compare_with_previous() {
 drift_has_findings() {
   python3 -c 'import json,sys; print("yes" if json.loads(sys.argv[1]).get("drops") else "no")' "$1"
 }
+source "$VU_BACKUP_ROOT/lib/gitb.sh"

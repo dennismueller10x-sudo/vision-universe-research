@@ -50,3 +50,30 @@ Aktion `drill` im Backup-Repository. Sie liest jede Quelle in ein leeres Verzeic
 Sie hat keine Zugangsdaten zu Produktionssystemen, nur zum Backup-Bucket. Ergebnis: `drill-report.txt` in der Laufzusammenfassung.
 
 Einmal im Quartal zusätzlich: die Datenbank in ein **leeres** Supabase-Testprojekt einspielen und den Mirror in ein Wegwerf-Repository pushen. Beides nur in Testzielen.
+
+## Git-Bundle-Kette von Hand (ohne diese Werkzeuge)
+
+Ein Stand `gitb-<name>` besteht aus `chain.txt` (Prüfsumme und Name je Bundle, in Reihenfolge), `refs.txt` (alle Refs dieses Stands) und den Bundles. Das erste Bundle einer Kette (Voll-Bundle) liegt geteilt vor:
+
+- `<zeit>-full-<sha>.bundle.head`: Bundle-Kopf mit Refs
+- `<zeit>-full-<sha>.bundle.pack`: das unveränderte Pack des Mirrors
+
+`cat X.bundle.head X.bundle.pack` ergibt genau das Bundle `X.bundle`. Die Prüfsumme in `chain.txt` gilt für dieses zusammengesetzte Bundle. Spätere Bundles sind gewöhnliche inkrementelle Bundles.
+
+```bash
+# alle Snapshots der Quelle bis zum gewünschten Stand zurücklesen (restic restore <id> --target st)
+cd st/<VU_WORK>/gitb/<name>
+while read -r sum f; do
+  if [ -f "$f" ]; then echo "$sum  $f" | sha256sum -c -
+  else [ "$(cat "$f.head" "$f.pack" | sha256sum | cut -c1-64)" = "$sum" ] && echo "$f: OK"; fi
+done < chain.txt
+git init --bare /ziel/name.git
+while read -r sum f; do
+  if [ -f "$f" ]; then git -C /ziel/name.git bundle unbundle "$PWD/$f"
+  else cat "$f.head" "$f.pack" > /tmp/full.bundle && git -C /ziel/name.git bundle unbundle /tmp/full.bundle && rm /tmp/full.bundle; fi
+done < chain.txt
+awk '{print "create " $2 " " $1}' refs.txt | git -C /ziel/name.git update-ref --stdin
+git -C /ziel/name.git fsck
+```
+
+Der Weg von Hand braucht kurz den doppelten Platz des Packs. `vu-restore.sh get` verschiebt das Pack stattdessen und braucht ihn nur einmal.

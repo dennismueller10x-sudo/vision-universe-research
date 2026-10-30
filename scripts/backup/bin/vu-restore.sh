@@ -51,17 +51,32 @@ for s in snaps:
         print(" ".join(out)); break
 ' "$snap")
   [ -n "$ids" ] || { log "Snapshot $snap nicht in der Kette von $src"; return 1; }
-  for id in $ids; do
-    restic restore "$id" --target "$stage" 2> >(redact >&2) >/dev/null || return 1
+  local d="$stage$VU_WORK/gitb/$name" m="$target$VU_WORK/git/$name.git" last
+  # Ziel-Stand zuerst (chain.txt, refs.txt), dann aus frueheren Snapshots nur die Bundles, die in
+  # dieser chain.txt stehen. Eine aeltere, abgeloeste Kette wird nicht zurueckgelesen (Platz).
+  last=${ids##* }
+  restic restore "$last" --target "$stage" 2> >(redact >&2) >/dev/null || return 1
+  [ -s "$d/chain.txt" ] || { log "chain.txt fehlt im Stand $last"; return 1; }
+  for id in $(echo "$ids" | tr ' ' '\n' | sed '$d' | tac); do
+    local inc=()
+    while read -r f; do [ -n "$f" ] && inc+=(--include "$VU_WORK/gitb/$name/$f"); done < <(restic ls --json "$id" "$VU_WORK/gitb/$name" 2>/dev/null | python3 -c '
+import json, os, sys
+need = {l.split()[1] for l in open(sys.argv[1]) if l.strip()}
+have = set(os.listdir(sys.argv[2]))
+for line in sys.stdin:
+    try:
+        n = json.loads(line)
+    except ValueError:
+        continue
+    f = n.get("name", "")
+    base = f[:-5] if f.endswith((".head", ".pack")) else f
+    if n.get("type") == "file" and base in need and f not in have:
+        print(f)' "$d/chain.txt" "$d")
+    [ "${#inc[@]}" -gt 0 ] || continue
+    restic restore "$id" --target "$stage" "${inc[@]}" 2> >(redact >&2) >/dev/null || return 1
   done
-  local d="$stage$VU_WORK/gitb/$name" m="$target$VU_WORK/git/$name.git"
-  (cd "$d" && sha256sum --quiet -c chain.txt) >/dev/null 2>&1 || { log "Pruefsummen der Bundle-Kette stimmen nicht"; return 1; }
-  git init --quiet --bare "$m" || return 1
-  while read -r _ f; do
-    git -C "$m" bundle unbundle "$d/$f" >/dev/null 2>&1 || { log "Bundle $f laesst sich nicht einspielen"; return 1; }
-  done < "$d/chain.txt"
-  awk '{print "create " $2 " " $1}' "$d/refs.txt" | git -C "$m" update-ref --stdin || return 1
-  git -C "$m" show-ref --verify --quiet refs/heads/main && git -C "$m" symbolic-ref HEAD refs/heads/main
+  # Pruefsummen gegen chain.txt, dann Bundles in Reihenfolge; das Voll-Pack wird verschoben, nicht kopiert
+  gitb_assemble "$d" "$m" || { log "Bundle-Kette von $src nicht wiederherstellbar"; return 1; }
   mkdir -p "$target$VU_WORK/manifests"
   cp "$d/refs.txt" "$target$VU_WORK/manifests/$src.refs"
   rm -rf "$stage"
@@ -128,6 +143,9 @@ case "$cmd" in
       else
         echo "$src FEHLER Zuruecklesen" | tee -a "$report"; rc=1
       fi
+      vu_disk_trace "drill:$src"
+      # Platz: geprueftes Ergebnis gleich wieder entfernen (VU_DRILL_KEEP=true behaelt es)
+      [ "${VU_DRILL_KEEP:-false}" = true ] || rm -rf "$d"
     done
     [ -n "$sources" ] || { echo "keine Snapshots" | tee -a "$report"; rc=1; }
     log "Bericht: $report"; exit "$rc" ;;

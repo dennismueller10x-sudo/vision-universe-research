@@ -108,7 +108,7 @@ VU_GIT_MODE=incremental "$ROOT/bin/vu-backup.sh" --only git > "$T/run-inc.md" 2>
 check "T41 Modus incremental (Mirror) bleibt nutzbar" grep -q '| git-demo | OK' "$T/run-inc.md"
 
 # ---------------------------------------------------------------- Restore-Probe
-"$ROOT/bin/vu-restore.sh" drill "$T/drill" > "$T/drill.out" 2>&1; rc=$?
+VU_DRILL_KEEP=true "$ROOT/bin/vu-restore.sh" drill "$T/drill" > "$T/drill.out" 2>&1; rc=$?
 check "T09 Restore-Probe aller Quellen gruen" test "$rc" -eq 0
 check "T10 Restore-Probe baut die Bundle-Kette und prueft Refs gegen Manifest" grep -q 'gitb-demo OK' "$T/drill/drill-report.txt"
 check "T11 Restore-Probe prueft R2-Pruefsummen" grep -q 'r2-snapshots OK' "$T/drill/drill-report.txt"
@@ -196,7 +196,7 @@ VU_S3_BUCKET=vu-backup-test VU_S3_PREFIX=restic/ "$PY" "$ROOT/bin/vu-pit-recover
 check "T28 Point-in-Time-Wiederherstellung in neues Verzeichnis" test -f "$T/recovered/config"
 RESTIC_REPOSITORY="$T/recovered" restic unlock --remove-all >/dev/null 2>&1
 check "T29 wiederhergestelltes Repository vollstaendig lesbar (check --read-data)" bash -c "RESTIC_REPOSITORY='$T/recovered' restic check --read-data > '$T/t29.log' 2>&1"
-RESTIC_REPOSITORY="$T/recovered" "$ROOT/bin/vu-restore.sh" drill "$T/drill2" > /dev/null 2>&1
+VU_DRILL_KEEP=true RESTIC_REPOSITORY="$T/recovered" "$ROOT/bin/vu-restore.sh" drill "$T/drill2" > /dev/null 2>&1
 check "T30 Restore-Probe aus wiederhergestelltem Repository gruen" test $? -eq 0
 
 # ---------------------------------------------------------------- Legal Hold (Anker)
