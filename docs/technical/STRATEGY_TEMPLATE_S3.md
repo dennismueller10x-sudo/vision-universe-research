@@ -33,37 +33,58 @@
 - Beide Wege liefern dieselben Titel (Test).
 - Mit L5 ist die Vorlage im Screener-Baukasten vollständig anpassbar.
 
-## 3. Ergebnis auf dem Probestand (S1 + L1–L5 zusammengeführt, Stichtag 28.10.2026)
+## 3. Ergebnis im Produktionsstand (L1–L5 und S1 auf `main`, Erzeuger, Stichtag 29.10.2026)
+
+Datensatz: automatischer Lauf vom 30.10. (`b65def8`), danach mit L1–L5 je PR mit dem Erzeuger neu gebaut; 5.661 Titel, davon 5.349 mit aktuellem Kurs. Die bisherigen 150 Spalten sind dabei byte-gleich geblieben.
 
 | | Titel |
 |---|---|
-| alle 8 Kriterien erfüllt | 639 |
-| fast erfüllt (genau eines fehlt) | 446 |
-| unvollständig | 1 |
+| alle 8 Kriterien erfüllt | 685 |
+| fast erfüllt (genau eines fehlt) | 440 |
+| unvollständig (nichts verfehlt, RS-Rang unbekannt) | 1 (ASND) |
 
 Fehlendes Kriterium bei „fast erfüllt“:
 
 | Kriterium | Titel |
 |---|---|
-| Kurs über SMA 50 | 215 |
-| RS-Rang | 55 |
-| 30 % über dem Tief | 44 |
-| SMA 150 über SMA 200 | 43 |
+| Kurs über SMA 50 | 188 |
+| RS-Rang | 56 |
+| SMA 150 über SMA 200 | 52 |
+| 30 % über dem Tief | 50 |
+| SMA 50 über SMA 150/200 | 34 |
 | 25 % unter dem Hoch | 33 |
-| SMA 200 steigt | 29 |
-| SMA 50 über SMA 150/200 | 27 |
+| SMA 200 steigt | 27 |
 
-Erfüllt je Kriterium (5.347 aktuelle Titel):
+Erfüllt je Kriterium (5.349 aktuelle Titel):
 
 | # | Kriterium | erfüllt |
 |---|---|---|
-| 1 | Kurs über SMA 150 und SMA 200 | 1.801 |
-| 2 | SMA 150 über SMA 200 | 2.498 |
-| 3 | SMA 200 steigt | 2.265 |
-| 4 | SMA 50 über SMA 150 und SMA 200 | 1.985 |
-| 5 | Kurs über SMA 50 | 1.842 |
-| 6 | 30 % über dem Tief | 2.406 |
-| 7 | 25 % unter dem Hoch | 2.524 |
-| 8 | RS-Rang ≥ 70 | 1.602 (unbekannt bei 15) |
+| 1 | Kurs über SMA 150 und SMA 200 | 1.892 |
+| 2 | SMA 150 über SMA 200 | 2.513 |
+| 3 | SMA 200 steigt | 2.282 |
+| 4 | SMA 50 über SMA 150 und SMA 200 | 1.965 |
+| 5 | Kurs über SMA 50 | 2.037 |
+| 6 | 30 % über dem Tief | 2.453 |
+| 7 | 25 % unter dem Hoch | 2.564 |
+| 8 | RS-Rang ≥ 70 | 1.603 (unbekannt bei 14) |
 
-**Hinweis zur Sortierung:** Ganz oben stehen Titel mit sehr großen Kurssprüngen im Jahr (RS-Rang nahe 100). Ein Teil davon kann auf Datenqualität beruhen (SCREENER_FIELDS_AP8_L3.md §2). Die Checkliste und das Chart Studio machen das je Titel prüfbar.
+## 4. Prüfung an realen Aktien
+
+- **Unabhängige Nachrechnung:** Für alle 1.126 Titel (erfüllt, fast erfüllt, unvollständig) wurden die acht Kriterien ohne die Engines aus den Tagesbars nachgerechnet:
+  - einfache Durchschnitte über die Schlusskurse;
+  - 52-Wochen-Tief und -Hoch über 252 Tagesbars;
+  - RS-Rang als Perzentil von `rs6m` über die aktuellen Titel.
+  - Ergebnis: **0 Abweichungen**.
+- **Chart Studio:** Die Checkliste (`templates.js#checklist`) liefert für jeden dieser Titel dieselben Zustände wie die Liste. Geprüft in der Ansicht für MRNA (erfüllt), NVDA (fast erfüllt, Kurs unter SMA 50) und ASND (unvollständig, RS-Rang unbekannt), iPhone-Breite 390 px, ohne seitliches Scrollen.
+- **Unbekannte Werte:** Sie gelten nie als erfüllt oder nicht erfüllt. ASND erscheint deshalb nicht unter „fast erfüllt“, sondern unter „unvollständig“.
+
+## 5. Datenqualität: Lunten-Tiefs (Owner-Auflage zu L3)
+
+- **DQ-TW-8** (#1155) prüft bei jedem Lauf für alle aktuellen Titel, ob das 52-Wochen-Tagestief eine Lunte ist (unter der Hälfte von min(Eröffnung, Schluss)).
+  - Gemeldet wird jeder vollständige Treffer einer Vorlage mit `distLow52w`, der darauf beruht.
+  - Die Regel kennzeichnet nur: keine Kurskorrektur, keine Ausschlussregel.
+- **Stand 29.10.:**
+  - 6 Titel mit Lunten-Tief: AREB, DRCT, IGC, JL, MBRX, STFS.
+  - Keiner erfüllt mehr als 3 der 8 Kriterien.
+  - DQ-TW-8 PASS mit 685 geprüften Treffern.
+- **Hinweis zur Sortierung:** Ganz oben stehen Titel mit sehr großen Kurssprüngen im Jahr (RS-Rang nahe 100). Die Checkliste und das Chart Studio machen jeden Treffer prüfbar.
