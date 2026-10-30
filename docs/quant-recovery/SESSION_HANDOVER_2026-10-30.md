@@ -18,7 +18,7 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | offen, Merge genehmigt (nach #1132). **Blockiert:** `core` rot wie auf `main` (siehe 6.1). Kein Merge vor grünem `core` |
 | #1138 | interne Backtest-Vorschau (Draft, auf #1133) | Draft; standardmäßig aus, nicht verdrahtet |
 | SM-Freigabeliste | quellengebundene exakte Freigabeliste 1.1.0→1.3.0 (Draft, Branch `claude/sm130-approval-list-4ho3rd`) | in Arbeit bzw. Draft; siehe 6.2 |
-| dieser PR | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
+| #1140 | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
 
 PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachholdrift, Freigabeschema 1.1.0), #1137 (Supertrader 9, automatischer SF8-Tageslauf). Beide sind offen.
 
