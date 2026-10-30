@@ -7,14 +7,92 @@ Erzeugt von `scripts/market/security-master-drift-evidence.mjs` (security-master
 | Freigaben | Ergebnis | Blockiert durch |
 | --- | --- | --- |
 | nur v130 | BLOCKED | G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01); G7 85 canonical_id-Wechsel (Grenze 25); G7 104 aktiv → inaktiv (Delistings) (Grenze 50); G7 85 Eignungswechsel (Grenze 50, ohne die freigegebenen); G9 592 Namenswechsel (Grenze 200) |
-| v130 + Nachholdrift (diese Datei) | BLOCKED | G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01); G7 35 canonical_id-Wechsel (Grenze 25, ohne die freigegebenen) |
+| v130 + Nachholdrift (diese Datei) | PASS | – |
 | v130 + Nachholdrift mit Tickerwiederverwendung und Doppelungen | PASS | – |
 
 Identitätsbefunde (in keiner Freigabe, zählen gegen die Grenzen): ref_ACTS, ref_BREW, ref_EDVA, ref_ENTL, ref_FTPA, ref_GNMX, ref_INVN, ref_NMBL, ref_NYNY, ref_PCLN, ref_TRIL, ref_USX, ref_WR, ref_WX
 
-Tickerwiederverwendung (35; nicht in dieser Freigabe, nur mit --include-ticker-reuse): ref_AAAP, ref_ABI, ref_AEC, ref_ALPS, ref_AMBR, ref_ANV, ref_ARTC, ref_ATCX, ref_BCAR, ref_BLUW, ref_BPAC, ref_CAM, ref_CCXI, ref_CHOW, ref_DDC, ref_DINE, ref_EFTY, ref_GIW, ref_INCR, ref_JCSE, ref_KG, ref_LEGO, ref_LMNX, ref_LQ, ref_MRLN, ref_MRT, ref_NAVI, ref_PCS, ref_PS, ref_PTNT, ref_SUNS, ref_VAL, ref_VOLT, ref_XRPN, ref_XRPNW
+Tickerwiederverwendung (35; in dieser Freigabe): ref_AAAP, ref_ABI, ref_AEC, ref_ALPS, ref_AMBR, ref_ANV, ref_ARTC, ref_ATCX, ref_BCAR, ref_BLUW, ref_BPAC, ref_CAM, ref_CCXI, ref_CHOW, ref_DDC, ref_DINE, ref_EFTY, ref_GIW, ref_INCR, ref_JCSE, ref_KG, ref_LEGO, ref_LMNX, ref_LQ, ref_MRLN, ref_MRT, ref_NAVI, ref_PCS, ref_PS, ref_PTNT, ref_SUNS, ref_VAL, ref_VOLT, ref_XRPN, ref_XRPNW
 
-Doppelungen: nicht in dieser Freigabe, nur mit --include-duplicates
+Doppelungen: in dieser Freigabe
+
+## Backtest-Identitätssperre (71)
+
+Diese IDs gehen in keine neue Backtest-Generation (`identity-blocklist.json`, `backtest-generation-freeze.cjs --blocklist`).
+
+| securityId | Grund |
+| --- | --- |
+| ref_AAAP | TICKER_REUSE_NEW_LISTING |
+| ref_ABI | TICKER_REUSE_NEW_LISTING |
+| ref_ACTS | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_ADIL | START_DATE_CHANGED |
+| ref_AEC | TICKER_REUSE_NEW_LISTING |
+| ref_ALPS | TICKER_REUSE_NEW_LISTING |
+| ref_AMBR | TICKER_REUSE_NEW_LISTING |
+| ref_ANV | TICKER_REUSE_NEW_LISTING |
+| ref_ARTC | TICKER_REUSE_NEW_LISTING |
+| ref_ATCX | TICKER_REUSE_NEW_LISTING |
+| ref_BCAR | TICKER_REUSE_NEW_LISTING |
+| ref_BLUW | TICKER_REUSE_NEW_LISTING |
+| ref_BPAC | TICKER_REUSE_NEW_LISTING |
+| ref_BREW | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_CAM | TICKER_REUSE_ETF |
+| ref_CCXI | TICKER_REUSE_NEW_LISTING |
+| ref_CHOW | TICKER_REUSE_NEW_LISTING |
+| ref_DDC | TICKER_REUSE_NEW_LISTING |
+| ref_DINE | TICKER_REUSE_NEW_LISTING |
+| ref_EDVA | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_EFTY | TICKER_REUSE_NEW_LISTING |
+| ref_ELE | START_DATE_CHANGED |
+| ref_ENTL | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_FGNX | START_DATE_CHANGED |
+| ref_FGNXP | START_DATE_CHANGED |
+| ref_FTPA | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_GIW | TICKER_REUSE_NEW_LISTING |
+| ref_GNMX | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_INCR | TICKER_REUSE_NEW_LISTING |
+| ref_INVN | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_JCSE | TICKER_REUSE_NEW_LISTING |
+| ref_KG | TICKER_REUSE_NEW_LISTING |
+| ref_LEGO | TICKER_REUSE_NEW_LISTING |
+| ref_LESL | START_DATE_CHANGED |
+| ref_LMNX | TICKER_REUSE_NEW_LISTING |
+| ref_LQ | TICKER_REUSE_NEW_LISTING |
+| ref_LRHC | START_DATE_CHANGED |
+| ref_MDCX | START_DATE_CHANGED |
+| ref_MRLN | TICKER_REUSE_NEW_LISTING |
+| ref_MRT | TICKER_REUSE_NEW_LISTING |
+| ref_NAVI | TICKER_REUSE_NEW_LISTING |
+| ref_NMBL | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_NVNI | START_DATE_CHANGED |
+| ref_NVNIW | START_DATE_CHANGED |
+| ref_NYNY | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_OGC | START_DATE_CHANGED |
+| ref_OKE | PROVIDER_DUPLICATE_ROW |
+| ref_PCLN | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_PCS | TICKER_REUSE_NEW_LISTING |
+| ref_PS | TICKER_REUSE_NEW_LISTING |
+| ref_PTNT | TICKER_REUSE_NEW_LISTING |
+| ref_QNCX | START_DATE_CHANGED |
+| ref_RCAT | START_DATE_CHANGED |
+| ref_RITR | START_DATE_CHANGED |
+| ref_SBXD | START_DATE_CHANGED |
+| ref_SPKL | START_DATE_CHANGED |
+| ref_SPKLU | START_DATE_CHANGED |
+| ref_SPKLW | START_DATE_CHANGED |
+| ref_SUNS | TICKER_REUSE_NEW_LISTING |
+| ref_TETE | START_DATE_CHANGED |
+| ref_TETEW | START_DATE_CHANGED |
+| ref_TRIL | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_TRUE | START_DATE_CHANGED |
+| ref_USX | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_VAL | TICKER_REUSE_NEW_LISTING |
+| ref_VOLT | TICKER_REUSE_NEW_LISTING |
+| ref_VTAK | START_DATE_CHANGED |
+| ref_WR | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_WX | SERIES_CONTINUES_AFTER_PROVIDER_END |
+| ref_XRPN | TICKER_REUSE_NEW_LISTING |
+| ref_XRPNW | TICKER_REUSE_NEW_LISTING |
 
 ## Zählung je Klasse
 

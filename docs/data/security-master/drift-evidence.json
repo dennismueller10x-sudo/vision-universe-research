@@ -98,8 +98,8 @@
   "ref_XRPN",
   "ref_XRPNW"
  ],
- "includeTickerReuse": false,
- "includeDuplicates": false,
+ "includeTickerReuse": true,
+ "includeDuplicates": true,
  "lists": {
   "canonicalIdChanges": [
    {
@@ -6695,12 +6695,9 @@
   },
   {
    "label": "v130 + Nachholdrift (diese Datei)",
-   "pass": false,
-   "decision": "BLOCKED",
-   "failures": [
-    "G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01)",
-    "G7 35 canonical_id-Wechsel (Grenze 25, ohne die freigegebenen)"
-   ]
+   "pass": true,
+   "decision": "COMMIT",
+   "failures": []
   },
   {
    "label": "v130 + Nachholdrift mit Tickerwiederverwendung und Doppelungen",

@@ -259,15 +259,36 @@ Nachweis committet unter `docs/data/security-master/`:
 
 Tests: SMW-12 (Gate), SMW-13 (Klassen), SMW-14 (committete Datei).
 
+### Owner-Entscheidungen vom 30.10.2026 und ihre Umsetzung
+
+| Entscheidung (Owner) | umgesetzt | Wirkung im Stamm | Wirkung in Backtests |
+|---|---|---|---|
+| 35 wiederverwendete Ticker nur als ausdrücklich mehrdeutige Identitätsfälle, keine Zusammenführung über das Symbol, ohne kanonische Zuordnung nicht backtestfähig | `--include-ticker-reuse`: Der Stamm übernimmt die zweite Zeile bzw. den ETF-Typ. Jede ID steht in `identity-blocklist.json` (`TICKER_REUSE_*`) | mehrdeutig (zwei Zeilen) oder kein Stammwert → **nicht backtestfähig** (0 von 35) | gesperrt |
+| ONEOK-Doppelung konservativ zurückhalten, nicht als backtestfähige Identität | `--include-duplicates`: Der Stamm übernimmt die Doppelung als **bekannte, ungelöste** Doppelung. `ref_OKE` steht in der Sperrliste (`PROVIDER_DUPLICATE_ROW`) | zwei Zeilen → **nicht backtestfähig** (vorher backtestfähig) | gesperrt |
+| 14 Fälle mit weiterlaufender Reihe bleiben eigene Identitätsblocker | in keiner Freigabe, zählen gegen die Grenzen (14 ≤ 50); Sperrliste `SERIES_CONTINUES_AFTER_PROVIDER_END` | inaktiv | gesperrt |
+| (Prüfung ergab) keine Zusammenführung über ein gleiches Symbol | 21 IDs mit geändertem Startdatum (`START_DATE_CHANGED`) zusätzlich gesperrt | 13 davon blieben sonst backtestfähig, mit einem anderen Listing unter derselben `securityId` (z. B. `ref_LESL` 2020-10-29 → 2026-10-05, `ref_TRUE` 2000 → 2014). Das Gate kann sie nicht aufhalten (unter der Grenze 25) | **nur die Sperrliste verhindert das**: Sie fehlen in der neuen Generation |
+
+**Was die Sperrliste ist.** `docs/data/security-master/identity-blocklist.json` (Schema `security-master-identity-blocklist-1.0.0`) erzeugt dasselbe Werkzeug: 71 IDs, an denselben Ausgangsstamm gebunden. `backtest-generation-freeze.cjs build-post-switch --blocklist` nimmt diese IDs aus dem Umfang der neuen Generation; `lineage.json` nennt sie. `compare --blocklist` verlangt, dass jede gesperrte ID **fehlt**. Ist sie trotzdem gebaut (`BLOCKLISTED_BUT_PRESENT`), oder fehlt eine ID ohne Sperre, ist das Ergebnis `UNEXPECTED_CHANGES`; eine Freigabe ersetzt die Sperre nicht (SMF-6). Der Stamm selbst bleibt beim Identitätsmodell ADR-001 (`securityId` = Ticker); an Live-Daten (Discover, Supertrader) ändert die Sperre nichts.
+
+**Geprüft an Probelauf und Sperrliste (30.10.):**
+
+| | Anzahl |
+|---|---|
+| backtestfähige IDs vorher (1.1.0) | 6.397 |
+| nach Wechsel und Drift (Stamm) | 6.163 (−234: 127 aus v130, der Rest Delistings, mehrdeutige Listings, OTC) |
+| davon gesperrt | 13 (geändertes Startdatum) |
+| **in der neuen Generation** | **6.150** |
+| neu backtestfähig | **0** |
+| backtestfähig mit anderer `canonical_id`, nicht gesperrt | 9, alle **nur Börsenname** bei gleichem Startdatum (z. B. AMEX → NYSE MKT, NYSE → NASDAQ) |
+
 | Freigaben im Probelauf 30.10. | Gate |
 |---|---|
 | v130 | BLOCKED (G6, G7 ×3, G9) |
-| v130 + Nachholdrift (committete Datei) | BLOCKED: G6 OKE und G7 35 `canonical_id` (die Tickerwiederverwendung, Grenze 25) |
-| v130 + Nachholdrift mit `--include-ticker-reuse --include-duplicates` | PASS, Entscheidung COMMIT |
+| v130 + Nachholdrift (committete Datei, nach den Owner-Entscheidungen) | **PASS**, Entscheidung COMMIT |
 
-Beide Zusätze sind eigene Owner-Entscheidungen. Nach der Entscheidung wird die Datei mit dem Werkzeug neu erzeugt; sie wird nie von Hand geändert.
+Die committete Freigabe entsteht mit `--include-ticker-reuse --include-duplicates`; sie wird nie von Hand geändert. Diese beiden Schalter übernehmen nur Zustände, die **weniger** backtestfähig machen. Eine Zusammenführung kann durch sie nicht entstehen: Keine der 35 IDs und nicht ONEOK ist danach backtestfähig.
 
-**OKE ist eine eigene Entscheidung.** Mit der Freigabe der Doppelung hat ONEOK zwei Zeilen und gilt nicht mehr als backtestfähig (genau eine Zeile verlangt). Discover bleibt unverändert, weil `eligibility.json` nicht neu gebaut wird (P4). Ohne Freigabe bleibt der ganze Stamm blockiert, bis der Anbieter die Zeile entfernt. Ab dem 11.11. bleibt dann auch der Supertrader-Tageslauf stehen (Eingangsprüfung STALE). Eine Bereinigung exakt gleicher Anbieterzeilen in der Engine wäre eine fachliche Änderung des Stamms: eigener PR mit Versionswechsel, nicht vorbereitet.
+Eine Bereinigung der ONEOK-Doppelung (exakt gleiche Anbieterzeilen) wäre eine fachliche Änderung des Stamms. Dafür braucht es einen eigenen PR mit Versionswechsel; er ist nicht vorbereitet. Bis dahin bleibt ONEOK gesperrt.
 
 **Erneuern:** Die Drift wächst täglich. Vor dem Lauf misst derselbe Probelauf neu:
 
@@ -277,7 +298,7 @@ for f in us-security-master.json summary.json reconciliation.json company-names.
 node scripts/market/build-us-security-master.mjs --require-provider --today <T> --stamp <T>T00:00:00Z --out W/next --work-dir W/work
 node scripts/market/universe-source.mjs && node scripts/market/build-company-names.mjs --sec   # schreibt Namen ins Repo: danach kopieren und git checkout -- quant/data
 node scripts/market/security-master-drift-evidence.mjs --prev W/prev --next W/next --prev-names W/prev/company-names.json \
-  --next-names W/next-company-names.json --measured-on <T> --out docs/data/security-master [--include-ticker-reuse] [--include-duplicates]
+  --next-names W/next-company-names.json --measured-on <T> --out docs/data/security-master --include-ticker-reuse --include-duplicates
 ```
 
 Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Messung und Lauf zählt gegen die normalen Grenzen und blockiert nur, wenn sie diese überschreitet.
@@ -285,7 +306,7 @@ Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Me
 **Quant:**
 - Delistings und mehrdeutige Listings nehmen weitere IDs aus der Menge der backtestfähigen Titel. Am 30.10. sind es neben den 127 aus v130 bis zu 104 Delistings und 34 neu mehrdeutige.
 - `backtest-generation-freeze.cjs compare` nimmt dafür mehrere `--approved` an. `ONLY_APPROVED_CHANGES` heißt dann: Geändert haben sich nur IDs aus einer der beiden Freigaben.
-- Die erwarteten Zählungen „6.397 → 6.270“ und „191 → 180“ gelten nur für den Wechsel allein. Die tatsächlichen Werte liefert der Lauf (`compare`, Survivorship-Erzeuger).
+- Die Zählungen „6.397 → 6.270“ und „191 → 180“ gelten nur für den Wechsel allein. Mit Drift und Sperrliste sind es am 30.10. 6.150 IDs. Die tatsächlichen Werte liefert der Lauf (`compare --approved v130 --approved drift --blocklist identity-blocklist.json`, Survivorship-Erzeuger).
 
 **Verhältnis zu #1119** (SEC-belegte Delistings, 132 Zeilen):
 - #1119 ändert die Engine und bekommt eine eigene G7-Freigabe.
@@ -297,7 +318,7 @@ Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Me
 Seit dem Merge von #1132 (30.10.) sind V10–V13c auf `main`. `backtest-generation-freeze.cjs repo-manifest` friert jetzt alles unter `docs/quant-recovery/` ein:
 - 550 Dateien;
 - `filesSha256` `12bdbbe1…`;
-- Quelle `main` `adbc2f04`.
+- Quelle `main` `adbc2f04`; `verify-repo` am 30.10. auf `main` nach #1098, #1133 und #1155: INTACT (0 geändert, 0 fehlend).
 
 SMF-1 prüft zusätzlich, dass in den eingefrorenen Generationsverzeichnissen keine Datei außerhalb des Manifests liegt. Neue Generationen in neuen Verzeichnissen bleiben möglich; eine Änderung oder Ergänzung einer eingefrorenen Generation ist rot.
 
@@ -353,14 +374,13 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
 [ ] Nachholdrift drift-lists.md geprüft (Messung ____): Delistings ___, canonical_id ___, Eignung ___, Typ ___, Namen ___
        14 Identitätsbefunde (nicht freigegeben, zählen gegen die Grenzen) zur Kenntnis: ja / nein
        4 Namen SEC → Tiingo-Metadaten und 1 kuratiert → SEC (nicht freigegeben, P5) zur Kenntnis: ja / nein
-[ ] Tickerwiederverwendung (35 IDs, drift-lists.md) als mehrdeutig übernehmen: ja (--include-ticker-reuse) / nein (Lauf bleibt blockiert)
-       Identitätsprüfung der Produktreihen dieser IDs als eigener Discover-/Identitäts-PR: beauftragt ja / nein
-[ ] OKE-Doppelung tiingo:NYSE:OKE:1985-07-01 freigeben (ONEOK danach nicht backtestfähig): ja (--include-duplicates) / nein (Lauf bleibt blockiert)
+[x] Tickerwiederverwendung: 35 IDs nur als mehrdeutig, gesperrt (Owner 30.10.)   [x] ONEOK gesperrt, nicht backtestfähig (Owner 30.10.)
+[ ] identity-blocklist.json geprüft (71 IDs; 13 sonst backtestfähige mit geändertem Startdatum): ja / nein
 [ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true approved_drift=true: Lauf ______
        Gate PASS, report.approval.applied ____, sonst keine Wechsel über den Grenzen: ____
 [ ] Lauf 2  dieselben Eingaben, commit=true: Lauf ______ (Datenveröffentlichung, nicht umkehrbar außer per Revert)
-[ ] P2 build-post-switch: neue Wurzel ____, Generation ____, lineage.json frozenRootVerified INTACT/INTACT
-[ ] P2 compare --approved v130 --approved drift: ONLY_APPROVED_CHANGES, unexpected 0, NEWLY_BLOCKED ____: ____
+[ ] P2 build-post-switch --blocklist identity-blocklist.json: neue Wurzel ____, Generation ____, lineage.json frozenRootVerified INTACT/INTACT, identityBlocklist.count ____
+[ ] P2 compare --approved v130 --approved drift --blocklist identity-blocklist.json: ONLY_APPROVED_CHANGES, unexpected 0, NEWLY_BLOCKED ____, MISSING_IN_NEW (gesperrt) ____: ____
 [ ] Leser auf neue Wurzel umgestellt (eigene Freigabe): ja / nein / später
 [ ] Survivorship-PR #____ (191 → 180)    [ ] Emerging-Leaders-PR #____
 [ ] P4 eligibility.json unverändert    [ ] P5 nur SEC/kuratierte Namen

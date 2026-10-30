@@ -92,3 +92,24 @@ test('SMF-5 · nach dem Wechsel: neue Generation in neuer Wurzel, alte bytegleic
  fs.cpSync(join(oldRoot,old.generation),join(newRoot+'-copy',old.generation),{recursive:true});
  assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-copy'}),/FROZEN_GENERATION_IN_OUTPUT/);
 });
+
+test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, der Vergleich verlangt genau das, Formfehler brechen ab',()=>{
+ const STOP='ref_MSFT',bl=join(folder,'identity-blocklist.json');
+ fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}]}));
+ const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bl',blocklist:F.loadBlocklist(bl)});
+ assert.deepEqual(lineage.identityBlocklist.excludedFromScope,[STOP]);assert.equal(lineage.identityBlocklist.count,1);assert.match(lineage.identityBlocklist.sha256,/^[0-9a-f]{64}$/);
+ assert.equal(fs.existsSync(join(newRoot+'-bl',lineage.successor.generation,'listings',STOP)),false,'gesperrte ID nicht gebaut');
+ assert.equal(F.verify({generations:oldRoot,manifest}).state,'INTACT');
+ const approved=JSON.parse(fs.readFileSync(join(root,'docs/data/security-master/v130-approved-changes.json'),'utf8')).instrumentTypeChanges.map(x=>x.securityId);
+ const ok=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved,blockedIds:[STOP]});
+ assert.equal(ok.state,'ONLY_APPROVED_CHANGES',JSON.stringify(ok.unexpected));assert.deepEqual(ok.changed.find(x=>x.securityId===STOP),{securityId:STOP,class:'MISSING_IN_NEW',approved:true,reasons:null});
+ // ohne Sperrliste ist das Fehlen unerwartet; eine Freigabe ersetzt die Sperre nicht
+ assert.equal(F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved}).state,'UNEXPECTED_CHANGES');
+ assert.equal(F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:[...approved,STOP]}).state,'UNEXPECTED_CHANGES');
+ // gesperrt, aber gebaut (Neubau ohne Sperrliste) = unerwartet, auch wenn die ID freigegeben wäre
+ const present=F.compare({frozen:oldRoot,output:newRoot,approvedIds:[...approved,STOP],blockedIds:[STOP]});
+ assert.equal(present.state,'UNEXPECTED_CHANGES');assert.equal(present.unexpected.find(x=>x.securityId===STOP).class,'BLOCKLISTED_BUT_PRESENT');
+ for(const bad of [{},{schema:F.BLOCKLIST_SCHEMA,entries:[]},{schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:STOP,reason:'x'},{securityId:STOP,reason:'y'}]},{schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:'',reason:'x'}]},{schema:'x',entries:[{securityId:STOP,reason:'x'}]}]){
+  fs.writeFileSync(bl,JSON.stringify(bad));assert.throws(()=>F.loadBlocklist(bl),/BLOCKLIST_INVALID/);
+ }
+});

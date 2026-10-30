@@ -351,6 +351,11 @@ test("SMW-13 · Drift-Nachweis: Klassen, Identitätsbefund ohne Freigabe, Doppel
   const y = driftCase(); y.x.nextMaster.rows.push(row("C00", { canonical_id: "tiingo:NASDAQ:C00:2026-06-23", active_status: "INACTIVE", eligible_us_equity: false }));
   const mkY = (includeTickerReuse) => buildDriftEvidence({ prevMaster: y.x.prevMaster, nextMaster: y.x.nextMaster, prevNames: y.x.prevNames, nextNames: y.x.nextNames, v130: y.ok, seriesEnd: () => null, measuredOn: "2026-10-30", prevMasterSha256: SHA, nextMasterSha256: "d".repeat(64), includeTickerReuse });
   assert.deepEqual(mkY(false).evidence.tickerReuse, ["ref_C00"]);
+  // Backtest-Identitätssperre: Identitätsbefund, Tickerwiederverwendung, Doppelung; reine Börsenumbenennung nicht
+  const reasons = Object.fromEntries(mkY(true).blocklist.entries.map((e) => [e.securityId, e.reason]));
+  assert.equal(reasons.ref_C00, "TICKER_REUSE_NEW_LISTING"); assert.equal(reasons.ref_AAA, "PROVIDER_DUPLICATE_ROW"); assert.equal(reasons.ref_C01, undefined, "nur Börsenname");
+  assert.equal(mk(false).blocklist.entries.find((e) => e.securityId === "ref_D00").reason, "SERIES_CONTINUES_AFTER_PROVIDER_END");
+  assert.equal(mkY(true).blocklist.schema, "security-master-identity-blocklist-1.0.0");
   assert.ok(!mkY(false).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00")); assert.ok(mkY(true).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00"));
   assert.ok(approved.eligibilityFlips.every((e) => e.from === true && e.to === false)); assert.ok(!approved.eligibilityFlips.some((e) => /^ref_P/.test(e.securityId)), "v130-Wechsel nicht doppelt");
   assert.deepEqual(approved.newDuplicateCanonicalIds, []); assert.deepEqual(mk(true).approved.newDuplicateCanonicalIds, ["tiingo:NYSE:AAA:2000-01-01"]);
@@ -382,6 +387,13 @@ test("SMW-14 · Committete Nachholfreigabe: an den committeten Stamm gebunden, n
   if (!ev.includeTickerReuse) for (const k of ["canonicalIdChanges", "instrumentTypeChanges", "eligibilityFlips"]) assert.ok(d[k].every((x) => !reuse.has(x.securityId)), `${k} ohne Tickerwiederverwendung`);
   const src = new Map(ev.lists.nameChanges.map((n) => [n.securityId, n]));
   assert.ok(d.nameChanges.every((n) => src.get(n.securityId)?.source === "SEC_COMPANY_TICKERS" && !review.has(n.securityId)), "Namen nur aus SEC, ohne Identitätsbefund (P5)");
+  // Identitätssperre (Owner 30.10.): jede Klasse ohne belastbare kanonische Zuordnung steht darin, an denselben Stamm gebunden
+  const bl = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/identity-blocklist.json"), "utf8"));
+  const blocked = new Set(bl.entries.map((e) => e.securityId));
+  assert.equal(bl.schema, "security-master-identity-blocklist-1.0.0"); assert.equal(bl.prevMasterSha256, d.prevMasterSha256); assert.equal(blocked.size, bl.entries.length);
+  for (const id of [...ev.identityReview, ...ev.tickerReuse]) assert.ok(blocked.has(id), id);
+  for (const x of ev.lists.canonicalIdChanges) if (/START_DATE/.test(x.class)) assert.ok(blocked.has(x.securityId), x.securityId);
+  for (const x of ev.lists.newDuplicateCanonicalIds) for (const r of x.rows) assert.ok(blocked.has(r.securityId), r.securityId);
   const v130 = new Set(v.eligibilityFlips.map((x) => x.securityId));
   assert.ok(d.eligibilityFlips.every((x) => !v130.has(x.securityId)), "keine Doppelung mit v130");
   const wf = code();

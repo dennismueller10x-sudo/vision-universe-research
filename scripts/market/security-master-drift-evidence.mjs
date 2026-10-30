@@ -17,6 +17,8 @@
  *   drift-approved-changes.json   Freigabedatei für das Gate (--approved-changes, zusätzlich zur v130-Datei)
  *   drift-evidence.json           alle Wechsel mit Klasse, Begründung und erwartetem Gate-Ergebnis
  *   drift-lists.md                dieselben Listen zum Lesen
+ *   identity-blocklist.json       Backtest-Identitätssperre (Identitätsbefunde, Tickerwiederverwendung, geänderte
+ *                                 Startdaten, Anbieter-Doppelungen); gilt immer, auch für übernommene Wechsel
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -103,6 +105,20 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
     newDuplicateCanonicalIds: includeDuplicates ? newDuplicateCanonicalIds.map((d) => d.canonicalId) : [],
   };
   const count = (xs) => xs.reduce((m, x) => ((m[x.class] = (m[x.class] || 0) + 1), m), {});
+  // Identitätssperre für Backtests (Owner 30.10.2026): ohne belastbare kanonische Zuordnung nie backtestfähig, keine
+  // Zusammenführung über das gleiche Symbol. Gilt unabhängig davon, ob der Stamm den Wechsel übernimmt.
+  const block = new Map(), add = (id, reason) => { if (id && !block.has(id)) block.set(id, reason); };
+  for (const d of deactivations) if (reviewIds.has(d.securityId)) add(d.securityId, d.class);
+  for (const x of canonicalIdChanges) if (x.class === "NEW_LISTING_SAME_TICKER") add(x.securityId, "TICKER_REUSE_NEW_LISTING");
+  for (const x of instrumentTypeChanges) if (x.class === "ETF_LISTING_SAME_TICKER") add(x.securityId, "TICKER_REUSE_ETF");
+  for (const x of canonicalIdChanges) if (x.class === "START_DATE_REVISION" || x.class === "EXCHANGE_AND_START_DATE") add(x.securityId, "START_DATE_CHANGED");
+  for (const d of newDuplicateCanonicalIds) for (const r of d.rows) add(r.securityId, "PROVIDER_DUPLICATE_ROW");
+  const blocklist = {
+    schema: "security-master-identity-blocklist-1.0.0",
+    purpose: "Backtest-Identitätssperre: diese securityIds gehen in keine neue Backtest-Generation (backtest-generation-freeze.cjs --blocklist)",
+    measuredOn, prevMasterSha256, probeMasterSha256: nextMasterSha256,
+    entries: [...block].sort(([a], [b]) => (a < b ? -1 : 1)).map(([securityId, reason]) => ({ securityId, reason })),
+  };
   return {
     evidence: {
       version: DRIFT_EVIDENCE_VERSION, measuredOn,
@@ -116,11 +132,11 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
       identityReview: [...reviewIds].sort(), tickerReuse: [...reuseIds].sort(), includeTickerReuse, includeDuplicates,
       lists: { canonicalIdChanges, deactivations, eligibilityFlips, instrumentTypeChanges, nameChanges, newDuplicateCanonicalIds, reactivations, tickerChanges, lostIds, newIds },
     },
-    approved,
+    approved, blocklist,
   };
 }
 
-export function driftListsMarkdown(ev, gate) {
+export function driftListsMarkdown(ev, gate, blocklist = null) {
   const L = ev.lists, row = (...c) => `| ${c.map((x) => String(x ?? "–").replace(/\|/g, " / ")).join(" | ")} |`;
   const out = [
     `# Security Master – Nachholdrift seit ${String(ev.prev.generatedAt).slice(0, 10)} (gemessen ${ev.measuredOn})`, "",
@@ -131,6 +147,7 @@ export function driftListsMarkdown(ev, gate) {
     `Identitätsbefunde (in keiner Freigabe, zählen gegen die Grenzen): ${ev.identityReview.length ? ev.identityReview.join(", ") : "keine"}`, "",
     `Tickerwiederverwendung (${ev.tickerReuse.length}; ${ev.includeTickerReuse ? "in dieser Freigabe" : "nicht in dieser Freigabe, nur mit --include-ticker-reuse"}): ${ev.tickerReuse.join(", ") || "keine"}`, "",
     `Doppelungen: ${ev.includeDuplicates ? "in dieser Freigabe" : "nicht in dieser Freigabe, nur mit --include-duplicates"}`, "",
+    ...(blocklist ? [`## Backtest-Identitätssperre (${blocklist.entries.length})`, "", "Diese IDs gehen in keine neue Backtest-Generation (`identity-blocklist.json`, `backtest-generation-freeze.cjs --blocklist`).", "", row("securityId", "Grund"), row("---", "---"), ...blocklist.entries.map((e) => row(e.securityId, e.reason)), ""] : []),
     "## Zählung je Klasse", "", "```json", JSON.stringify(ev.counts, null, 2), "```", "",
     `## Delistings (${L.deactivations.length})`, "", row("securityId", "Ticker", "Anbieter-Ende", "Ende eigene Reihe", "Klasse"), row("---", "---", "---", "---", "---"),
     ...L.deactivations.map((d) => row(d.securityId, d.ticker, d.providerEndDate, d.seriesEnd, d.class)), "",
@@ -160,7 +177,7 @@ function main() {
   const v130Path = arg("--v130") || join(ROOT, "docs/data/security-master/v130-approved-changes.json");
   const prevBytes = readFileSync(join(arg("--prev"), "us-security-master.json")), nextBytes = readFileSync(join(arg("--next"), "us-security-master.json"));
   const v130 = readJson(v130Path);
-  const { evidence, approved } = buildDriftEvidence({
+  const { evidence, approved, blocklist } = buildDriftEvidence({
     prevMaster: JSON.parse(prevBytes), nextMaster: JSON.parse(nextBytes), prevNames: readJson(arg("--prev-names")), nextNames: readJson(arg("--next-names")),
     v130, seriesEnd: (id) => seriesEnd(seriesDir, id), measuredOn: arg("--measured-on"), prevMasterSha256: sha(prevBytes), nextMasterSha256: sha(nextBytes),
     includeDuplicates: argv.includes("--include-duplicates"), includeTickerReuse: argv.includes("--include-ticker-reuse"),
@@ -182,7 +199,8 @@ function main() {
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "drift-approved-changes.json"), JSON.stringify(approved, null, 1) + "\n");
   writeFileSync(join(out, "drift-evidence.json"), JSON.stringify(evidence, null, 1) + "\n");
-  writeFileSync(join(out, "drift-lists.md"), driftListsMarkdown(evidence, gate) + "\n");
+  writeFileSync(join(out, "drift-lists.md"), driftListsMarkdown(evidence, gate, blocklist) + "\n");
+  writeFileSync(join(out, "identity-blocklist.json"), JSON.stringify(blocklist, null, 1) + "\n");
   for (const g of gate) console.log(`[drift-evidence] ${g.label}: ${g.pass ? "PASS" : "BLOCKED"} ${g.failures.join(" | ")}`);
   console.log(`[drift-evidence] Identitätsbefunde: ${evidence.identityReview.length}; Freigabe: ${Object.entries(approved).filter(([, v]) => Array.isArray(v)).map(([k, v]) => `${k} ${v.length}`).join(", ")}`);
 }
