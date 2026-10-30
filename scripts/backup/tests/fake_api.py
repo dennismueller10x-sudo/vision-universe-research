@@ -55,9 +55,22 @@ class H(BaseHTTPRequestHandler):
         u = urllib.parse.urlsplit(self.path)
         q = urllib.parse.parse_qs(u.query)
         p = u.path
+        if p == "/b2auth/key":
+            # echte Schluesselpruefung nachbilden: Basic-Auth -> angelegter Schluessel oder (alter) Master
+            import base64
+            user = base64.b64decode(self.headers.get("Authorization", "Basic ").split(" ", 1)[1] or b"").decode().split(":")[0]
+            if user in KEYS:
+                return self.send(200, {"apiInfo": {"storageApi": {"allowed": {"capabilities": KEYS[user]["caps"],
+                                                                              "buckets": [{"id": b} for b in KEYS[user]["buckets"]]}}}})
+            if user == "m" and not STATE["rotated"]:
+                return self.send(200, {"accountId": "acc", "authorizationToken": "tok",
+                                       "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2",
+                                                                  "s3ApiUrl": "https://s3.eu-central-003.backblazeb2.com"}}})
+            return self.send(401, {"code": "unauthorized"})
         if p == "/b2auth/master":
             return self.send(200, {"accountId": "acc", "authorizationToken": "tok",
-                                   "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2"}}})
+                                   "apiInfo": {"storageApi": {"apiUrl": f"http://{self.headers['Host']}/b2",
+                                                              "s3ApiUrl": "https://s3.eu-central-003.backblazeb2.com"}}})
         if p.startswith("/b2auth/"):
             role = p.split("/")[2]
             buckets = [] if role == "unrestricted" else [{"id": "b1", "name": "vu-backup"}]
@@ -119,22 +132,34 @@ class H(BaseHTTPRequestHandler):
 
 
 DELETED_KEYS = []
+KEYS = {}
+STATE = {"rotated": False}
 
 
 def do_post(self):
     body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
     if self.path == "/b2/b2api/v3/b2_list_buckets":
-        locked = body.get("bucketName") != "unlocked-test"
-        return self.send(200, {"buckets": [{"bucketId": "b1", "bucketName": body.get("bucketName"),
-                                            "fileLockConfiguration": {"value": {"isFileLockEnabled": locked}}}]})
+        name = body.get("bucketName")
+        locked = name != "unlocked-test"
+        return self.send(200, {"buckets": [{
+            "bucketId": "b1", "bucketName": name, "bucketType": "allPublic" if name == "public-test" else "allPrivate",
+            "defaultServerSideEncryption": {"value": {"mode": "SSE-B2", "algorithm": "AES256"}},
+            "fileLockConfiguration": {"value": {"isFileLockEnabled": locked,
+                                                "defaultRetention": {"mode": "compliance", "period": {"duration": 30, "unit": "days"}} if locked else {}}},
+            "lifecycleRules": []}]})
     if self.path == "/b2/b2api/v4/b2_create_key":
         # Name "unbound-*": simuliert eine Antwort ohne Bucket-Bindung (Skript muss den Schluessel loeschen)
         bound = [] if body["keyName"].startswith("unbound") else body.get("bucketIds", [])
-        return self.send(200, {"keyName": body["keyName"], "applicationKeyId": "synthetic-key-id",
+        kid = "synthetic-key-id" if body["keyName"].startswith(("unbound", "t-", "x")) else f"kid-{body['keyName']}"
+        KEYS[kid] = {"caps": body["capabilities"], "buckets": bound}
+        return self.send(200, {"keyName": body["keyName"], "applicationKeyId": kid,
                                "applicationKey": "synthetic-app-key", "capabilities": body["capabilities"], "bucketIds": bound})
     if self.path == "/b2/b2api/v4/b2_delete_key":
         DELETED_KEYS.append(body.get("applicationKeyId"))
         return self.send(200, {"applicationKeyId": body.get("applicationKeyId")})
+    if self.path == "/b2/rotate-master":
+        STATE["rotated"] = True
+        return self.send(200, {})
     if self.path == "/b2/deleted-keys":
         return self.send(200, {"deleted": DELETED_KEYS})
     self.send(404, {})

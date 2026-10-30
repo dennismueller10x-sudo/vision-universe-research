@@ -32,6 +32,9 @@ jobs:
       - name: Git-Bundle-Kette (G01-G19, Speicher, Hardlink, Fehlerfaelle)
         working-directory: scripts/backup
         run: timeout 1200 tests/git-bundle-test.sh
+      - name: Einrichtung der B2-Schluessel (S01-S08, Emulator)
+        working-directory: scripts/backup
+        run: timeout 300 tests/b2-setup-keys-test.sh
       - name: Konten-DB-Export und Restore-Probe (D01-D13, Postgres 17)
         working-directory: scripts/backup
         run: PGBIN=/usr/lib/postgresql/17/bin VU_TEST_PYTHON="$RUNNER_TEMP/venv/bin/python" timeout 900 tests/db-export-test.sh

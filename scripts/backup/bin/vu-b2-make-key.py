@@ -8,6 +8,7 @@ fuer diesen einen Aufruf.
 
   B2_MASTER_KEY_ID=... B2_MASTER_KEY=... \\
     python3 vu-b2-make-key.py --bucket <name> --role writer --name vu-backup-writer [--days 365]
+  ... vu-b2-make-key.py --bucket <name> --inspect     nur pruefen: privat, SSE, Object Lock, Endpunkt
 
 Rollen:
   writer        listBuckets listFiles readFiles writeFiles
@@ -48,14 +49,46 @@ def call(url, headers, body=None):
         sys.exit(f"B2-API {err.code} {detail}")
 
 
+def bucket_facts(bucket, auth):
+    """Einrichtung des Buckets (nur lesen): privat, Verschluesselung, Object Lock Compliance, Lifecycle."""
+    lock = (bucket.get("fileLockConfiguration") or {}).get("value") or {}
+    ret = (lock.get("defaultRetention") or {})
+    period = ret.get("period") or {}
+    sse = ((bucket.get("defaultServerSideEncryption") or {}).get("value") or {}).get("mode")
+    facts = {
+        "bucket": bucket.get("bucketName"),
+        "s3Endpoint": (auth.get("apiInfo") or {}).get("storageApi", {}).get("s3ApiUrl"),
+        "private": bucket.get("bucketType") == "allPrivate",
+        "encryption": sse,
+        "objectLock": bool(lock.get("isFileLockEnabled")),
+        "defaultRetention": f"{ret.get('mode')} {period.get('duration')} {period.get('unit')}" if ret.get("mode") else None,
+        "lifecycleRules": bucket.get("lifecycleRules") or [],
+        "problems": [],
+    }
+    if not facts["private"]:
+        facts["problems"].append("Bucket ist nicht privat")
+    if not sse:
+        facts["problems"].append("keine serverseitige Verschluesselung")
+    if not facts["objectLock"]:
+        facts["problems"].append("Object Lock nicht aktiviert")
+    elif (ret.get("mode") or "").lower() != "compliance":
+        facts["problems"].append("Standard-Sperre ist nicht Compliance")
+    if facts["s3Endpoint"] and "eu-central" not in facts["s3Endpoint"]:
+        facts["problems"].append("Konto liegt nicht in EU Central")
+    return facts
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bucket", required=True)
-    ap.add_argument("--role", required=True, choices=sorted(ROLES))
-    ap.add_argument("--name", required=True)
+    ap.add_argument("--inspect", action="store_true", help="nur Bucket pruefen und S3-Endpunkt zeigen, nichts anlegen")
+    ap.add_argument("--role", choices=sorted(ROLES))
+    ap.add_argument("--name")
     ap.add_argument("--days", type=int, default=0, help="Ablauf in Tagen (0 = kein Ablauf, max. 999)")
     ap.add_argument("--out", help="Datei (Rechte 600) statt Terminal")
     a = ap.parse_args()
+    if not a.inspect and (not a.role or not a.name):
+        sys.exit("--role und --name angeben (oder --inspect)")
     if a.role == "test-deleter" and "test" not in a.bucket:
         sys.exit("test-deleter nur fuer Test-Buckets (Name enthaelt 'test')")
     kid, key = os.environ.get("B2_MASTER_KEY_ID"), os.environ.get("B2_MASTER_KEY")
@@ -68,8 +101,12 @@ def main():
     if len(buckets) != 1:
         sys.exit(f"Bucket {a.bucket} nicht gefunden")
     bucket = buckets[0]
-    if a.role in ("writer", "anchor") and not (bucket.get("fileLockConfiguration", {}).get("value") or {}).get("isFileLockEnabled"):
-        sys.exit("Object Lock ist fuer diesen Bucket nicht aktiviert - erst aktivieren")
+    facts = bucket_facts(bucket, auth)
+    if a.inspect:
+        print(json.dumps(facts, indent=1))
+        return 0 if not facts["problems"] else 1
+    if a.role in ("writer", "anchor") and facts["problems"]:
+        sys.exit("Bucket nicht wie vorgesehen eingerichtet: " + "; ".join(facts["problems"]))
     # API v4: Bucket-Bindung ueber "bucketIds" (v3 hatte "bucketId"; in v4 entfernt)
     body = {"accountId": auth["accountId"], "capabilities": ROLES[a.role], "keyName": a.name, "bucketIds": [bucket["bucketId"]]}
     if a.days:
@@ -78,7 +115,11 @@ def main():
     # Fail closed: stimmt der angelegte Schluessel nicht genau (Rechte, ein Bucket), sofort wieder loeschen
     bound = created.get("bucketIds") or ([created["bucketId"]] if created.get("bucketId") else [])
     if sorted(created.get("capabilities") or []) != sorted(ROLES[a.role]) or bound != [bucket["bucketId"]]:
-        call(f"{api}/b2api/v4/b2_delete_key", token, {"applicationKeyId": created["applicationKeyId"]})
+        try:
+            call(f"{api}/b2api/v4/b2_delete_key", token, {"applicationKeyId": created["applicationKeyId"]})
+        except SystemExit:
+            sys.exit(f"Angelegter Schluessel weicht ab und konnte NICHT geloescht werden: in Backblaze unter "
+                     f"Application Keys den Schluessel '{created.get('keyName')}' von Hand loeschen.")
         sys.exit("Angelegter Schluessel weicht ab (Rechte oder Bucket-Bindung) und wurde sofort wieder geloescht. Nichts uebernehmen.")
     out = {"keyName": created["keyName"], "keyID": created["applicationKeyId"], "applicationKey": created["applicationKey"],
            "capabilities": created["capabilities"], "bucket": a.bucket}

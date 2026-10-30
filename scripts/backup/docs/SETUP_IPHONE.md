@@ -63,21 +63,26 @@ Ab hier nichts Echtes, bevor ich A4.1 als grün bestätigt habe.
 
 > **Vorher entscheiden:** Die erste Git-Sicherung ist 17,2 GB groß (Messung 30.10.2026). Ohne Zahlungsart erlaubt B2 nur 10 GB, die Git-Sicherung würde scheitern. Mit Zahlungsart: rund 0,15 USD im ersten Monat, nach einem Jahr 0,55–1,15 USD im Monat ([GIT_STORAGE.md](GIT_STORAGE.md)). Ohne diese Freigabe passen nur Datenbank, R2-Stufe 1 (≤ 3 GB), KV und Konfiguration in den freien Rahmen. Dafür `VU_SOURCES` ohne `git` setzen und `VU_R2_PREFIXES_TIER2` leer lassen. Die Stufe 2 (sonntags, rund 8 GB) passt ebenfalls nicht hinein.
 
-Bucket wie A1, aber Name `vu-backup-` + 6 Zeichen, Object Lock **Compliance 30 Tage**, Lifecycle „Days till delete“ **400**.
+Bucket: `vu-backup-production-2026` (privat, SSE-B2, Object Lock **Compliance 30 Tage**). Lifecycle vorerst **Keep all versions**, siehe [GIT_STORAGE.md](GIT_STORAGE.md).
 
-In der Cloud Shell:
+**Schlüssel:** In Backblaze einen Master-Key erzeugen, dann in der Cloud Shell:
 
 ```bash
-P=vu-backup-xxxxxx
-python3 bin/vu-b2-make-key.py --bucket $P --role writer --name vu-backup-writer --days 365   # -> GitHub
-python3 bin/vu-b2-make-key.py --bucket $P --role anchor --name vu-backup-anchor             # -> nur Passwortmanager
-python3 bin/vu-b2-make-key.py --bucket $P --role reader --name vu-backup-reader             # -> nur Passwortmanager
-unset B2_MASTER_KEY B2_MASTER_KEY_ID
-umask 077; age-keygen -o /tmp/k.txt 2>/dev/null; age-keygen -y /tmp/k.txt; cat /tmp/k.txt; shred -u /tmp/k.txt
+git clone -q --depth 1 -b claude/vu-backup-tooling https://github.com/dennismueller10x-sudo/vision-universe-research.git ~/vu && ~/vu/scripts/backup/bin/vu-b2-setup-keys.sh vu-backup-production-2026
+```
+
+Das Skript fragt den Master-Key verdeckt ab und führt durch Anlage, Rechteprüfung, Übernahme und Master-Key-Rotation. Ziel der Schlüssel:
+- Writer: Passwortmanager und GitHub
+- Anker und Leser: nur Passwortmanager
+- neuer Master-Key: nur Passwortmanager
+
+**age-Schlüssel und restic-Passwort:**
+
+```bash
+umask 077; age-keygen -o /dev/shm/k.txt 2>/dev/null; age-keygen -y /dev/shm/k.txt; cat /dev/shm/k.txt; shred -u /dev/shm/k.txt
 python3 -c 'import secrets; print(secrets.token_urlsafe(32))'     # restic-Passwort
 ```
 
-- Danach in Backblaze den **Master-Key neu erzeugen**. Damit ist der benutzte ungültig. Den neuen nicht notieren.
 - Privater age-Schlüssel (`AGE-SECRET-KEY-…`) und restic-Passwort: Passwortmanager **und** Papier.
 
 Falls `age-keygen` fehlt: `sudo apt-get install -y -qq age`.
