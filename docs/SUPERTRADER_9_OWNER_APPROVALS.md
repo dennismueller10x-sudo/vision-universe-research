@@ -243,3 +243,13 @@ Damit keine Daten verloren gehen, braucht es nur noch den Owner:
 2. **`V13_ARCHIVE_PRIVATE_KEY` nicht überschreiben oder löschen, keinen neuen Schlüssel erzeugen.** Ein neuer Schlüssel macht die vorhandenen Teile unlesbar.
 3. Optional: #1158 mergen (nur Doku, CI grün). Für die Wiederherstellung nicht nötig.
 4. Kontrolle jederzeit ohne Datenbewegung: ein Commit mit der Marke `[v13-archive:keycheck]`.
+
+## 13. 30.10.2026, ~19:50 UTC: Tagesbetrieb integriert, Variable bleibt aus
+
+- **#1137** gemergt als `93884b3`. Head `fa792e8`, alle Checks grün. Auf `main` sind die Supertrader Quality Gates 41115761826 grün.
+- **#1146** gemergt als `f2c2ce8`. Head `8954865`, nach #1137 auf `main` gebracht. Core und FX grün, die zuvor erwarteten 2 Fehler sind behoben. Auf `main` ist Core 41116970987 grün.
+- Lokal auf `main` f2c2ce8: Core 300/0, Supertrader 950/0. Registry `supertrader-sf8-candidates` ohne `activation`. `data-quality` ohne ERROR, DQ-SF8-1..8 PASS. Testisolation sauber.
+- **Automatischer Weg lokal nachgespielt (ohne Commit):** zwei Läufe mit gleichem Fingerabdruck `defb6d63…` (C1), DQ-SF8-1..8 PASS, Registry OK (C7), Vertrag `SKIP_SAME_SESSION` (Stand 29.10. schon veröffentlicht) ohne Verstoß.
+- **`SF8_AUTO_PUBLISH` bleibt ungesetzt** (Owner-Vorgabe). Setzen erst, wenn diese Bedingungen belegt sind:
+  - **Security Master gültig:** Lauf `commit=true` mit PASS, danach `system-health` „Security Master“ und „US-Wertpapierstamm“ nicht STALE/DEGRADED (S6).
+  - **V1:** S1 5/5, S2, S4 und S5 mit echten Läufen, S7 (`data-quality` ohne ERROR, DQ-PX-2 ≤ 93).
