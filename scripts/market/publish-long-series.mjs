@@ -37,6 +37,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 import { splitAdjustedCloses } from "./publish-discover-series.mjs";
 import { benchmarkSpec } from "./benchmark-reference.mjs";
 import { applySupplements, supplementedEntries } from "./lib/split-evidence-supplements.mjs";
+import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
 const DEFAULT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -138,7 +139,11 @@ async function einer(s) {
      (ADR-002), der Beleg unveraendert corporate-action-evidence.js; ohne Eintrag ist `aktuell` dasselbe Array. */
   const belegt = applySupplements(SC.currentListingSegment(reihe.bars).bars, s.securityId);
   for (const e of belegt.items) if (e.status !== "APPLIED") console.warn(`::warning::${s.ticker}: Split-Ergaenzung ${e.id} nicht angewandt (${e.reason})`);
-  const aktuell = belegt.bars;
+  /* Belegte Kapitalmassnahmen mit Status PIPELINE (quant/config/corporate-action-confirmations.json): gleiche Kopie mit
+     splitFactor am Sprungtag, Schutz gegen doppelte Bereinigung in der Bibliothek; ohne Eintrag dasselbe Array. */
+  const bestaetigt = applyConfirmations(belegt.bars, s.securityId);
+  for (const e of bestaetigt.items) if (e.status !== "APPLIED") console.warn(`::warning::${s.ticker}: bestaetigte Kapitalmassnahme ${e.id} nicht angewandt (${e.reason})`);
+  const aktuell = bestaetigt.bars;
   const closes = splitAdjustedCloses(aktuell).filter((b) => Number.isFinite(b.close) && b.close > 0);
   const weekly = Sampling.weeklyPoints(closes.map((b) => [b.date, b.close]));
   if (weekly.length < MIN_WEEKS) { bilanz.tooShort++; return; }
@@ -166,6 +171,9 @@ async function einer(s) {
      Ohne angewandte Ergaenzung kein Feld - das Dokument bleibt bytegleich. */
   const supplemented = supplementedEntries(belegt.items);
   if (supplemented.length && doc.corporateActions) doc.corporateActions.supplemented = supplemented;
+  const confirmedApplied = bestaetigt.items.filter((x) => x.status === "APPLIED")
+    .map((x) => ({ date: x.date, factor: x.splitFactor, id: x.id, accession: x.accession, source: "SEC_FILING_CONFIRMATION" }));
+  if (confirmedApplied.length && doc.corporateActions) doc.corporateActions.confirmed = confirmedApplied;
   const f = join(OUT_DIR, s.securityId + ".json");
   const text = JSON.stringify(doc);
   geschrieben.add(s.securityId + ".json");

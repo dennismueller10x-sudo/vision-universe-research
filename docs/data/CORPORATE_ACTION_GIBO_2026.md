@@ -32,7 +32,7 @@
   - Sie sind als „SPLIT_ADJUSTED“ ausgewiesen.
   - DQ-PX-3 meldet die Reihe (`ref_GIBO 2026-06-30: 1.25 -> 22.7`).
 
-## 3. Warum keine Bereinigung an der Quelle in diesem Schritt
+## 3. Warum der bestehende Ergänzungsweg nicht reichte (Stand #1177)
 
 1. **Der Anbieter führt den Faktor nicht.** Ein erneuter Abruf ändert nichts.
 2. **Der bestehende Weg der Marktdaten-Domäne passt nicht.** Gemeint ist `quant/config/split-evidence-supplements.json` mit `scripts/market/lib/split-evidence-supplements.mjs`.
@@ -48,9 +48,29 @@
    - keine Kursänderung.
    - Die Kennzeichnung in Technical (Option B) liest diese Datei, um „bestätigter Fehler“ von „Verdacht“ zu unterscheiden.
 
-## 4. Auswirkungen einer korrekten Bereinigung
+## 3a. Bereinigung in der Marktdaten-Pipeline (Completion 2.0, B2)
 
-Was-wäre-wenn auf den Bars vom Stichtag 29.10.: Kurse vor dem 30.06. × 25 in neue Einheiten. Nicht angewendet.
+Auftrag 2.0: „Falls bestätigt, die Korrektur ausschließlich in der zuständigen Marktdaten-Pipeline vornehmen.“ Bestätigt ist der Fall durch §1 und §2.
+
+- **Register:** Eintrag `GIBO-2026-06-29-CONSOLIDATION-25` mit `correction.status = PIPELINE` (Schema unverändert 1.0.0, Version 2). `UNCORRECTED` bleibt für Fälle, die nur belegt und nicht bereinigt werden.
+- **Bibliothek:** `scripts/market/lib/corporate-action-confirmations.mjs#applyConfirmations(bars, securityId)` liefert eine Kopie der Rohbalken mit `splitFactor` am Sprungtag.
+  - Kurse und Volumen bleiben die des Anbieters.
+  - Die Ablage (R2) wird nicht verändert.
+  - Bereinigt wird unverändert über `return-series.js#splitFactors` bzw. `canonical-bars.js` (ADR-002).
+- **Sprungtag:** der Balken mit dem kleinsten Rest |ln(Rohsprung × Faktor)| in [Wirksamkeitstag − 1, + 5 Sitzungen]. Bei GIBO ist das der **30.06.**, nicht der Altwert vom 29.06.
+- **Angeschlossen** sind alle drei Leser derselben Ablage, damit nichts auseinanderläuft (eine Preiswahrheit):
+  - Technical-Materialisierung (`scripts/technical/materialize-product-intelligence.mjs`, `validatedInput`);
+  - Discover-Tagesreihe (`publish-discover-series.mjs`);
+  - Wochenreihe (`publish-long-series.mjs`, Herkunft in `corporateActions.confirmed`).
+- **Wirksam** wird die Bereinigung mit den nächsten regulären Läufen. Es gibt keinen manuellen Produktionslauf, und generierte Dateien werden nicht von Hand geändert.
+- **Nachweis am echten Datenstand:** Rohbalken aus dem veröffentlichten Bündel, Pfad wie in der Materialisierung (Skript im PR beschrieben):
+  - `APPLIED` am 2026-06-30, Rohsprung ×18,16, Restbewegung ×0,7264 (−27 %, die echte Tagesbewegung).
+  - Die kanonische Reihe ist gültig. Schluss 26.06. = 31,25 (1,25 × 25), 30.06. = 22,70.
+  - Der größte Tagesfaktor der bereinigten Reihe ist 1,38; vorher war es ×18,16.
+
+## 4. Auswirkungen der Bereinigung
+
+Berechnet auf den Bars vom Stichtag 29.10.: Kurse vor dem 30.06. × 25 in neue Einheiten. Das ist dieselbe Geometrie, die `applyConfirmations` erzeugt (§3a). Wirksam wird es nach dem nächsten Materialisierungs- und Technical-Lauf.
 
 | | heute (unbereinigt) | korrekt bereinigt |
 |---|---|---|
@@ -77,9 +97,15 @@ Die Trefferliste hätte 684 statt 685 Titel; Platz 1 wäre MRNA.
   - Konsolidierungsfaktor < 1;
   - Wirksamkeitstag Werktag;
   - dokumentierte Anbieterprobe;
-  - Status `UNCORRECTED`.
+  - Status `UNCORRECTED` oder `PIPELINE` mit Begründung.
   - Ungültige Datei: Abbruch (`CORPORATE_ACTION_CONFIRMATIONS_INVALID`).
-- **Die Datei korrigiert nichts.** Eine doppelte Bereinigung über sie ist ausgeschlossen. Bereinigt wird später nur über einen Weg, nach dem der Eintrag entfernt wird.
+- **Schutz in `applyConfirmations`:** Greift eine Bedingung, bleibt der Eintrag `SKIPPED` mit Grund. Die Wochenreihe meldet ihn als `::warning::`.
+  - `PROVIDER_SPLIT_NEARBY`: Der Anbieter führt innerhalb von 5 Sitzungen selbst einen Split (er hat nachgezogen). Es wird nicht doppelt bereinigt.
+  - `NO_RAW_JUMP`: Kein auffälliger Rohsprung in Richtung des Faktors (Faktor außerhalb 0,2–5 oder Split-Signatur), d. h. die Reihe ist schon bereinigt, etwa wenn der Anbieter die Historie rückwirkend umgerechnet hat.
+  - `RESIDUAL_JUMP`: Nach dem Faktor bliebe ein auffälliger Sprung oder mehr als die Hälfte des Rohsprungs; der Faktor passt nicht zur Reihe.
+  - `NO_BAR_AFTER_EFFECTIVE_DATE`: Kein Balken am oder nach dem Wirksamkeitstag.
+  - Alle vier sind getestet (`quant/tests/corporate-action-confirmations.test.mjs`).
+- **Folge für die Kennzeichnung (Option B, #1180):** Nach der Bereinigung springt die GIBO-Reihe nicht mehr, die Kennzeichnung „Datenfehler bestätigt“ entfällt von selbst. „Bestätigt“ bleibt für Einträge, die nur belegt sind oder deren Bereinigung ein Schutz verweigert.
 - **Bestehende Schutzprüfungen der Ergänzungen bleiben unverändert:** `PROVIDER_SPLIT_NEARBY` und `NO_RAW_JUMP`.
 
 ## 6. Datenqualitätsregeln
@@ -88,5 +114,6 @@ Die Trefferliste hätte 684 statt 685 Titel; Platz 1 wäre MRNA.
 - **DQ-TW-1..8 PASS:**
   - DQ-TW-8 betrifft Lunten-Tiefs; der GIBO-Fall ist ein Schlusssprung.
 - **Tests:**
-  - `quant/tests/corporate-action-confirmations.test.mjs` 2/2;
+  - `quant/tests/corporate-action-confirmations.test.mjs` 5/5 (Bereinigung und Schutzregeln);
+- **Nach dem nächsten Lauf erwartet:** DQ-PX-3 meldet GIBO nicht mehr, da die Discover-Reihe bereinigt ist;
   - `quant/tests/split-evidence-supplements.test.mjs` 9/9, unverändert.
