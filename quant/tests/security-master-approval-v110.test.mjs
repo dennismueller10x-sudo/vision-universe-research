@@ -242,5 +242,5 @@ test("SMA-7 · Vorgeschlagene Freigabedatei v130-approved-changes-1.1.0.json: ge
   // gilt nur für den committeten Ausgangsstamm
   const sha = createHash("sha256").update(readFileSync(join(ROOT, "quant/data/market/security-master/us-security-master.json"))).digest("hex");
   if (sha !== a.prevMasterSha256) return; // Stamm seit der Liste geändert: dann gilt sie ohnehin nicht mehr (G8)
-  assert.equal(a.sourceRun.runId, "40942100928");
+  assert.equal(a.sourceRun.runId, "41086438209");
 });
