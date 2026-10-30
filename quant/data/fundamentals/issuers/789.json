@@ -424,9 +424,9 @@
       "cik": "0001137789",
       "name": "Seagate Technology Holdings plc",
       "sic": "3572",
-      "rawFacts": 24793,
-      "mappedFacts": 7504,
-      "unmappedFacts": 17888,
+      "rawFacts": 25013,
+      "mappedFacts": 7594,
+      "unmappedFacts": 18053,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -436,30 +436,30 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 70,
+      "quarterlyPeriods": 71,
       "firstPeriodEnd": "2008-06-27",
-      "lastPeriodEnd": "2026-07-03",
+      "lastPeriodEnd": "2026-10-02",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0,
           "derivedFrom": [
             [
@@ -470,58 +470,58 @@
         },
         "long_term_debt": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2010-07-02",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "short_term_debt": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2010-07-02",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 16.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2009-07-03",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-07-02",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 16.0
         },
         "total_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-07-02",
-          "lastAvailablePeriod": "2025-06-27",
+          "lastAvailablePeriod": "2026-07-03",
           "historyYears": 16.0,
           "derivedFrom": [
             [
@@ -535,48 +535,50 @@
         }
       },
       "quality": {
-        "HIGH": 772,
+        "HIGH": 782,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 778,
-        "resolvedValues": 778
+        "datableValues": 788,
+        "resolvedValues": 788
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 18083,
+        "rules_version": "1.1.0",
+        "total": 18250,
         "by_severity": {
-          "INFO": 17888,
-          "WARNING": 195
+          "INFO": 18053,
+          "WARNING": 197
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 167,
+          "CONCEPT_DISAGREEMENT": 168,
           "EXTREME_VALUE": 1,
           "FISCAL_PERIOD_CONFLICT": 15,
+          "IMPLAUSIBLE_FILING_FY": 1,
           "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 17888
+          "UNKNOWN_CONCEPT": 18053
         }
       },
       "latestFiling": {
-        "accession": "0001137789-26-000159",
-        "filing_date": "2026-08-04",
-        "form": "10-K",
-        "periodic_filings": 100
+        "accession": "0001137789-26-000309",
+        "filing_date": "2026-10-29",
+        "form": "10-Q",
+        "periodic_filings": 101,
+        "acceptance_datetime": "2026-10-29T20:11:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "74a8fc50965c8d6c6ae867f776b8bbc6305508f189d1d5f084a31f3afd20e0da",
+      "sourceDigest": "7eac2a6dc1a9d07b1e86213de112de128cd17051be4fa256368d8ffd0132dcff",
       "issuerId": "iss_cik_0001137789"
     },
     {
