@@ -177,3 +177,23 @@ Freigegeben: ____________  Datum: __________
 3. Neuer Probelauf `commit=false` → PASS → am selben Tag `commit=true`. Das ist eine Owner-Freigabe; Frist ist das Laufdatum 10.11.
 4. Sperrliste aus dem committeten Stamm, dann `build-post-switch --blocklist` und `compare --approved … --blocklist …`. Den Leser umstellen nur mit eigener Freigabe.
 5. Erst danach #1119.
+
+## 11. Nachtrag 30.10.2026, ~15:30 UTC: Integration nach Owner-Auftrag A
+
+| PR | Merge-Commit | Geprüfter Head | CI auf dem Head | Nach dem Merge auf `main` |
+|---|---|---|---|---|
+| #1100 Freeze-Werkzeug | `b8efea8` | main eingemischt | grün | Quant 3.679/0 |
+| #1101 Nachweis 138/138/127 | `7276a7a` | `825fd10` | Quant CI, Core ×2, contract, package, validate grün | Quant 3.686/0, Core 300/0 |
+| #1159 Identitätssperre, Freeze, Alarm | `8f12165` | `ff61e2d` | Quant CI, Core, SEC CI, FX, CI Config, Pages grün | Freeze `verify-repo` INTACT, Security-Master-Tests 30/0, Quant 3.694/0, Core 300/0, Testisolation sauber |
+
+- **Freeze:** 550 Dateien. Alle 241 Dateien aus #1100 und **alle 546 aus #1136 sind hash-gleich enthalten**. Ausgenommen sind nur zwei Betriebsunterlagen, jede einzeln benannt (`frozen.notFrozen`): `docs/quant-recovery/v13/archive/README.md` und laufende `SESSION_HANDOVER_JJJJ-MM-TT.md`. Die Archiv-Manifeste 1.0.0–1.2.0 und `archive-pub.pem` sind eingefroren. Eine Fortschreibung der Archivunterlagen hebt den Schutz der Ergebnisse also nicht auf.
+- **#1136 geschlossen**, mit Datei-für-Datei-Abgleich im PR. Der zweite Freigabeweg (Nachhol-Drift im Gate) wurde bewusst nicht übernommen. Die Gate-Freigabe läuft allein über #1143.
+- **V13-Archiv 1.2.0: gesichert und unabhängig wiederhergestellt.** Belegt sind `put` 41068077861, `verify` 41069005168 (8/8 gegen `manifest-1.2.0.json`), `get` 41069696417 und **Runner-Restore 41073334070** (Secret gesetzt, `keycheck` OK, 8/8 Teile OK, 11.616 Dateien; selbst im Log geprüft). Offen bleibt nur ein Owner-Schritt, den ich nicht prüfen kann: die Offline-Kopie von `archive-priv.pem`.
+- **ONEOK (#1163, Draft):** Register mit SEC-Beleg, fail closed. OKE und TEL sind aufgelöst (8-K12B nach 12g-3(a), 1:1, Reihe durchgehend). FUN, HUT, BAM, CCSI, NYXH und UHAL-B bleiben offen. Die Version bleibt 1.3.0 (Bindung an #1143). CI grün. Nicht gemergt, kein Lauf.
+- **Tageslauf:** Die Research-Kandidaten auf `main` stehen auf 29.10. (`204a517`), die Signale auf 29.10. (`0271f7b`). Der Handelstag 30.10. kommt mit der Nachtkette. #1137 und #1146 sind vorbereitet, nicht gemergt.
+
+### Security Master vor dem Laufdatum 10.11.: Was noch fehlt
+
+1. Merge von #1143 (Freigabeliste 1.1.0) und #1163 (Doppelzeilen). Danach die Freigabeliste aus #1143 neu erzeugen, weil sich mit OKE/TEL die Zählung ändert. Dann G1–G10 unverändert prüfen.
+2. Probelauf `commit=false` → PASS → am selben Tag `commit=true`. **Owner-Freigabe.**
+3. Sperrliste aus dem committeten Stamm, `build-post-switch --blocklist --prev-master`, `compare --approved --blocklist`. Den Leser umstellen nur mit abschließender Freigabevorlage.
