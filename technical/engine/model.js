@@ -15,6 +15,7 @@
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
+  var SPARK_PATH = "/technical/data/spark-v1.json";
   /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
   var INDEX_PATH = "/technical/data/index-v1.json";
   /* 1.1.0: zusaetzlich templates = {id: [erfuellt, fast erfuellt, unvollstaendig]} (Startseite, Vorlagen-Auswahl). */
@@ -523,7 +524,7 @@
   }
 
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, SPARK_PATH: SPARK_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
     SIGNAL_EVIDENCE_PATH: SIGNAL_EVIDENCE_PATH, READING_TEXT: READING_TEXT, READING_SHORT: READING_SHORT, signalEvidenceText: signalEvidenceText, signalEvidenceSummary: signalEvidenceSummary, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
