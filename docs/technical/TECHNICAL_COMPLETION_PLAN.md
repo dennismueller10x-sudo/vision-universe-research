@@ -127,8 +127,8 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 |---|---|---|---|
 | K1 Auffällige Kurssprünge generisch gekennzeichnet; Verdacht und bestätigter Fehler getrennt; in Screener, Vorlagen und Chart Studio | ✔ | #1180 (screen-row 1.13.0, `price-jumps.js`): 181 Kennzeichnungen, 1 bestätigt (GIBO). Keine tickerbezogene Regel. | P0 |
 | K2 Bestätigter Datenfehler (GIBO 25:1) ausschließlich in der Marktdaten-Pipeline bereinigt, mit Schutz gegen Doppelbereinigung | ◐ | #1177 (Beleg) und #1181 (Bereinigung, Status PIPELINE). Wirksam ab dem nächsten regulären Lauf; der Nachweis ist für den 31.10. geplant (CORPORATE_ACTION_GIBO_2026.md). | P0 |
-| K3 Mobile Performance weiter verbessert ohne Architekturumbau | ◐ | #1184: `spark` als eigene Datei, Screener-Datensatz −21,5 %, erste Vorlage mobil 4,78 → 3,00 s (lokal gemessen). Ist offen, bis gemergt und live gemessen. | P1 |
-| K4 Historische Tests der Vorlagen (S4) mit bestehender Backtest-Maschine, ehrlich eingestuft | ◐ | `scripts/technical/s4/template-study.mjs` über `runEventStudy`, `holm`, `buildWalkForward`, `classifyRegimes`. Status RESEARCH_LIMITED, nicht zertifiziert (S4_TEMPLATE_STUDY.md). Formations-Vorlagen sind mangels Tages-OHLC-Historie nicht testbar. | P1 |
+| K3 Mobile Performance weiter verbessert ohne Architekturumbau | ◐ | #1184 gemergt: `spark` als eigene Datei, Screener-Datensatz −21,5 %, erste Vorlage mobil 4,78 → 3,00 s (lokal gemessen). Live-Messung nach Deploy offen. | P1 |
+| K4 Historische Tests der Vorlagen (S4) mit bestehender Backtest-Maschine, ehrlich eingestuft | ◐ | `scripts/technical/s4/template-study.mjs` über `runEventStudy`, `holm`, `buildWalkForward`, `classifyRegimes`. Status RESEARCH_LIMITED, nicht zertifiziert (S4_TEMPLATE_STUDY.md): ab 2016 kein Überschuss ggü. SPY, Walk-Forward ≈ 0. Formations-Vorlagen sind mangels Tages-OHLC-Historie nicht testbar. | P1 |
 | K5 Wochenkerzen und -formationen | ◐ | siehe D5, E4 | P2 |
 | K6 KI-Suche vorbereitet, standardmäßig aus | ✔ (vorbereitet) | siehe F5 | P2 |
 
@@ -171,8 +171,8 @@ Wer die Arbeit fortsetzt, beginnt hier:
 3. Jede abgeschlossene Prüfung mit Datum, Commit und Ergebnis im Verlauf von TECHNICAL_WORLD_PROGRESS.md festhalten.
 
 **Stand 30.10.2026, 23 Uhr UTC (Completion 2.0):** Plan, Stand und Übergabe stehen in [TECHNICAL_COMPLETION_2_0.md](TECHNICAL_COMPLETION_2_0.md).
-- Gemergt: #1177, #1180, #1181, #1182, #1183.
-- Offen: #1184 (B4) und der S4-PR.
+- Gemergt: #1177, #1180, #1181, #1182, #1183, #1184.
+- Offen: der S4-PR (Bericht S4_TEMPLATE_STUDY.md).
 - Nachweise am 31.10.: Nachtlauf #1168 und GIBO-Bereinigung (Kontrolltermine 08:30 und 12:45 UTC).
 
 **Stand 30.10.2026, 16 Uhr UTC:**

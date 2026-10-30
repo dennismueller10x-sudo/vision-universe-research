@@ -49,8 +49,8 @@ Konsequenz:
 | 2 | B2 GIBO in der Marktdaten-Pipeline | #1177 | Bereinigung nur in der Pipeline, Schutz gegen Doppelbereinigung, Vorher/Nachher, keine Handänderung | ✔ gemergt #1181, Wirkung nach Nachtlauf |
 | 3 | E KI-Suche vorbereitet | – | nur validierte Felder, Mehrdeutigkeit sichtbar, Rückfall, Kostengrenze, aus | ✔ #1182 |
 | 4 | D Wochenkerzen und -formationen | – | echte OHLC, kausal, gleiche Definition in Screener und Chart, Lizenz geprüft | ✔ #1183 (kurzfristig), lange Historie zurückgehalten |
-| 5 | B4 Mobile Performance | 4 (gleiche Dateien) | messbar schneller, keine Architekturänderung | PR #1184 |
-| 6 | C S4 historische Tests | – | bestehende Engine, PIT, OOS, Holm, Phasen, Kosten, ehrliche Einstufung | PR (dieses Paket) |
+| 5 | B4 Mobile Performance | 4 (gleiche Dateien) | messbar schneller, keine Architekturänderung | ✔ #1184 |
+| 6 | C S4 historische Tests | – | bestehende Engine, PIT, OOS, Holm, Phasen, Kosten, ehrliche Einstufung | ✔ gerechnet, Bericht S4_TEMPLATE_STUDY.md (PR dieses Pakets) |
 | 7 | B1 Nachweis Nachtlauf und GIBO | Nachtlauf 31.10. | workflow_run, keine Doppelveröffentlichung, DQ grün, GIBO bereinigt | Kontrolltermine 31.10. 08:30 und 12:45 UTC |
 | 8 | H Bericht und Übergabe | 1–7 | dieses Dokument | ✔ |
 
@@ -93,6 +93,7 @@ Konsequenz:
 Siehe [S4_TEMPLATE_STUDY.md](S4_TEMPLATE_STUDY.md): Architektur, Ergebnis je Vorlage und Horizont, Einstufung der statistischen Belastbarkeit, Grenzen.
 
 **Einstufung insgesamt: `RESEARCH_LIMITED`, nicht zertifiziert, keine Renditewerbung.**
+- Ergebnis (4.199 Titel, 1990–2026, Holm über 20 Tests): Die Gesamtwerte sind nach Holm meist signifikant, aber **ab 2016 (Prüfteil) liegt der Überschuss gegenüber dem SPY bei allen fünf Vorlagen bei null oder darunter**; im Walk-Forward ist der Mittelwert ≈ 0 (4–6 von 10 Faltungen positiv). Ein Vorteil zeigt sich nur in volatilen Phasen. Robusteste Vorlage: etablierter Aufwärtstrend (13 W, Prüfteil +0,10 %, Walk-Forward +0,39 %) – auch sie nicht belastbar.
 - Testbar mit den vorhandenen Daten (Wochenschlüsse seit 1990) sind 5 der 13 Vorlagen als Wochen-Näherung.
 - Die Formations-, Ausbruchs- und ADX-Vorlagen brauchen eine Tages-OHLC-Historie. Die liegt nur in der privaten R2-Ablage, und es gibt keine Delisting-Kohorte.
 
