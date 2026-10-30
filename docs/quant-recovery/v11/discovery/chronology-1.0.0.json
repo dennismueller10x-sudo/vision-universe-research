@@ -1,0 +1,36 @@
+{
+ "schemaVersion": "v11-discovery-chronology-1.0.0",
+ "purpose": "Hash-bound record of the R2/R3 freeze order taken from full git history, so that shallow CI checkouts can verify that frozen and result files are unchanged; the commit order itself is verified against git only where full history is available.",
+ "records": [
+  {
+   "file": "registration-1.0.0.json",
+   "firstCommit": "7f0d20e9e1dcbc76017ea881e60f49778db238d6",
+   "firstCommitTime": "2026-10-28T17:13:20+00:00",
+   "sha256": "a6290ef147305b9d2633d0d9520a0d342de0c7c6e31f5d1cdd49ba59e2f485d7"
+  },
+  {
+   "file": "candidates-frozen-1.0.0.json",
+   "firstCommit": "05ca5f85ed34099542a44e36b9838bdd60e77e79",
+   "firstCommitTime": "2026-10-28T17:47:36+00:00",
+   "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70"
+  },
+  {
+   "file": "validation-results-1.0.0.json",
+   "firstCommit": "7a91051b6f765ae97696cec616309a00bc1b79aa",
+   "firstCommitTime": "2026-10-28T17:50:45+00:00",
+   "sha256": "746a9f2abe86b110fe1f7b6da897754cccb00d331c26b3935a03010c229a34cf"
+  },
+  {
+   "file": "final-hypotheses-frozen-1.0.0.json",
+   "firstCommit": "7b10e91177dcd459db264b71552017706f8985af",
+   "firstCommitTime": "2026-10-28T17:55:56+00:00",
+   "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154"
+  },
+  {
+   "file": "test-results-1.0.0.json",
+   "firstCommit": "245b852e339abe46346f3129d23995483c2af98e",
+   "firstCommitTime": "2026-10-28T17:57:06+00:00",
+   "sha256": "c3a09726de40273c3ecd1157f3d8b7eaac3a173e5373851846e55cc43eecb05b"
+  }
+ ]
+}

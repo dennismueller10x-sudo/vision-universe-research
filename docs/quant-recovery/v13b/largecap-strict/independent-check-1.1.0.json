@@ -1,0 +1,488 @@
+{
+ "schemaVersion": "v13b-largecap-strict-independent-check-1.1.0",
+ "implementation": "python3 -I stdlib, own band tests, runs, strict clipping and raw-text parsing",
+ "cases101Sha256": "f15feb58cc0f63570487c906876a1784c26bf93dd337b3eceebe0154a9b7f2cd",
+ "cases110Sha256": "47afd393b84ef32032afb06361068480a6a31b19599dfaabffac239895aa09e5",
+ "amendment110Sha256": "a90fa885b646f3fc3bdf9a39b316f56e016dfa7a1706428282b76e6db4fed823",
+ "codeSha256": "e51417abd1a9636c679ba139c9fb9bfee06144eb2f572104f6b7a1c8e3643814",
+ "perListing": {
+  "ref_AAPL": {
+   "bandAgree": 332,
+   "periods": 332,
+   "runsAgree": true,
+   "v101": [
+    "2012-10-05",
+    "2025-09-26",
+    678
+   ],
+   "own110": [
+    "2012-11-09",
+    "2025-09-26",
+    673
+   ],
+   "strictStart": "2012-11-04",
+   "strictEnd": "2025-09-27",
+   "clipStart": [
+    149
+   ],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "clipStart",
+     "index": 149,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312513022339/d453687d10q.htm",
+     "accession": "0001193125-13-022339",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2012-09-30",
+      "2012-11-03"
+     ],
+     "rawPrice": 8050.0,
+     "ok": true
+    },
+    {
+     "role": "startEvidence",
+     "index": 150,
+     "type": "A",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312513416534/d590790d10k.htm",
+     "accession": "0001193125-13-416534",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawNumbersFound": true,
+     "ownQuarter": [
+      "2012-10-01",
+      "2012-12-31"
+     ],
+     "fyeMonth": 9,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 331,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+     "accession": "0000320193-25-000079",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2025-08-31",
+      "2025-09-27"
+     ],
+     "rawPrice": 238.56,
+     "ok": true
+    }
+   ]
+  },
+  "ref_ABT": {
+   "bandAgree": 24,
+   "periods": 24,
+   "runsAgree": true,
+   "v101": [
+    "2022-08-05",
+    "2026-06-26",
+    204
+   ],
+   "own110": [
+    "2022-08-05",
+    "2026-06-26",
+    204
+   ],
+   "strictStart": "2022-08-01",
+   "strictEnd": "2026-06-30",
+   "clipStart": [],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "startEvidence",
+     "index": 5,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828022027550/abt-20220930.htm",
+     "accession": "0001628280-22-027550",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2022-08-01",
+      "2022-08-31"
+     ],
+     "rawPrice": 102.567,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 23,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+     "accession": "0001628280-26-050134",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2026-06-01",
+      "2026-06-30"
+     ],
+     "rawPrice": 91.743,
+     "ok": true
+    }
+   ]
+  },
+  "ref_MS": {
+   "bandAgree": 472,
+   "periods": 472,
+   "runsAgree": true,
+   "v101": [
+    "2008-09-05",
+    "2026-06-26",
+    930
+   ],
+   "own110": [
+    "2008-11-07",
+    "2026-06-26",
+    921
+   ],
+   "strictStart": "2008-11-01",
+   "strictEnd": "2026-06-30",
+   "clipStart": [
+    85,
+    88
+   ],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "clipStart",
+     "index": 85,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+     "accession": "0001193125-09-013429",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2008-09-01",
+      "2008-09-30"
+     ],
+     "rawPrice": 20.01,
+     "ok": true
+    },
+    {
+     "role": "clipStart",
+     "index": 88,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+     "accession": "0001193125-09-013429",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2008-10-01",
+      "2008-10-31"
+     ],
+     "rawPrice": 36.13,
+     "ok": true
+    },
+    {
+     "role": "startEvidence",
+     "index": 91,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+     "accession": "0001193125-09-013429",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2008-11-01",
+      "2008-11-30"
+     ],
+     "rawPrice": 14.44,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 471,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+     "accession": "0000895421-26-000212",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2026-06-01",
+      "2026-06-30"
+     ],
+     "rawPrice": 214.98,
+     "ok": true
+    }
+   ]
+  },
+  "ref_USB": {
+   "bandAgree": 334,
+   "periods": 334,
+   "runsAgree": true,
+   "v101": [
+    "2001-04-06",
+    "2026-06-26",
+    1317
+   ],
+   "own110": [
+    "2001-04-12",
+    "2026-06-26",
+    1316
+   ],
+   "strictStart": "2001-04-11",
+   "strictEnd": "2026-06-30",
+   "clipStart": [
+    36,
+    37
+   ],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "clipStart",
+     "index": 36,
+     "type": "A",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013702000971/0000950137-02-000971.txt",
+     "accession": "0000950137-02-000971",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawNumbersFound": true,
+     "ownQuarter": [
+      "2001-01-01",
+      "2001-03-31"
+     ],
+     "fyeMonth": 12,
+     "ok": true
+    },
+    {
+     "role": "clipStart",
+     "index": 37,
+     "type": "A",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013403003243/0000950134-03-003243.txt",
+     "accession": "0000950134-03-003243",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawNumbersFound": true,
+     "ownQuarter": [
+      "2001-01-01",
+      "2001-03-31"
+     ],
+     "fyeMonth": 12,
+     "ok": true
+    },
+    {
+     "role": "startEvidence",
+     "index": 38,
+     "type": "A",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000095013702000971/0000950137-02-000971.txt",
+     "accession": "0000950137-02-000971",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawNumbersFound": true,
+     "ownQuarter": [
+      "2001-04-01",
+      "2001-06-30"
+     ],
+     "fyeMonth": 12,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 333,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+     "accession": "0000036104-26-000044",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2026-06-01",
+      "2026-06-30"
+     ],
+     "rawPrice": 54.62,
+     "ok": true
+    }
+   ]
+  },
+  "ref_DD": {
+   "bandAgree": 43,
+   "periods": 43,
+   "runsAgree": true,
+   "v101": [
+    "2017-11-03",
+    "2024-01-26",
+    326
+   ],
+   "own110": [
+    "2017-11-03",
+    "2024-01-26",
+    326
+   ],
+   "strictStart": "2017-11-01",
+   "strictEnd": "2024-01-31",
+   "clipStart": [],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "startEvidence",
+     "index": 0,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670018000009/a2017dwdp10-k.htm",
+     "accession": "0001666700-18-000009",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2017-11-01",
+      "2017-11-30"
+     ],
+     "rawPrice": 70.29,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 39,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670024000013/dd-20240331.htm",
+     "accession": "0001666700-24-000013",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2024-01-01",
+      "2024-01-31"
+     ],
+     "rawPrice": 67.1,
+     "ok": true
+    }
+   ]
+  },
+  "ref_COR": {
+   "bandAgree": 383,
+   "periods": 383,
+   "runsAgree": true,
+   "v101": [
+    "2016-07-01",
+    "2026-06-26",
+    522
+   ],
+   "own110": [
+    "2016-09-02",
+    "2026-06-26",
+    513
+   ],
+   "strictStart": "2016-09-01",
+   "strictEnd": "2026-06-30",
+   "clipStart": [
+    259
+   ],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "clipStart",
+     "index": 259,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085916000022/abc10-kxseptember302016.htm",
+     "accession": "0001140859-16-000022",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2016-08-01",
+      "2016-08-31"
+     ],
+     "rawPrice": 60.38,
+     "ok": true
+    },
+    {
+     "role": "startEvidence",
+     "index": 262,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085916000022/abc10-kxseptember302016.htm",
+     "accession": "0001140859-16-000022",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2016-09-01",
+      "2016-09-30"
+     ],
+     "rawPrice": 86.18,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 382,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+     "accession": "0001140859-26-000034",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2026-06-01",
+      "2026-06-30"
+     ],
+     "rawPrice": 277.19,
+     "ok": true
+    }
+   ]
+  },
+  "ref_DOC": {
+   "bandAgree": 7,
+   "periods": 7,
+   "runsAgree": true,
+   "v101": [
+    "2024-03-01",
+    "2026-04-24",
+    113
+   ],
+   "own110": [
+    "2024-03-01",
+    "2026-04-24",
+    113
+   ],
+   "strictStart": "2024-03-01",
+   "strictEnd": "2026-04-30",
+   "clipStart": [],
+   "clipEnd": [],
+   "bandConfirmedMovesInside": [],
+   "match": true,
+   "rawBoundaryPeriods": [
+    {
+     "role": "startEvidence",
+     "index": 0,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828024018706/peak-20240331.htm",
+     "accession": "0001628280-24-018706",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2024-03-01",
+      "2024-03-31"
+     ],
+     "rawPrice": 17.11,
+     "ok": true
+    },
+    {
+     "role": "endEvidence",
+     "index": 6,
+     "type": "B",
+     "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+     "accession": "0001628280-26-053373",
+     "sha256Match": true,
+     "quoteFound": true,
+     "rawPeriod": [
+      "2026-04-01",
+      "2026-04-30"
+     ],
+     "rawPrice": 16.81,
+     "ok": true
+    }
+   ]
+  }
+ },
+ "problems": [],
+ "problemCount": 0,
+ "verdict": "PASS"
+}

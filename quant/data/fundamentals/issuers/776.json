@@ -478,15 +478,15 @@
       "cik": "0001571776",
       "name": "Cherry Hill Mortgage Investment Corp",
       "sic": "6798",
-      "rawFacts": 18193,
-      "mappedFacts": 5154,
-      "unmappedFacts": 12843,
-      "calendarYears": 14,
+      "rawFacts": 18618,
+      "mappedFacts": 5255,
+      "unmappedFacts": 13280,
+      "calendarYears": 13,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -534,11 +534,11 @@
         "CHMI-PA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 13,
-      "quarterlyPeriods": 55,
+      "annualPeriods": 14,
+      "quarterlyPeriods": 56,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 12.0,
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -549,7 +549,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -569,21 +569,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -603,18 +603,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_assets": {
-          "annualPeriods": 13,
-          "quarterlyPeriods": 52,
-          "firstAvailablePeriod": "2013-12-31",
+          "annualPeriods": 14,
+          "quarterlyPeriods": 54,
+          "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 12.0
+          "historyYears": 13.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -634,52 +634,54 @@
         }
       },
       "quality": {
-        "HIGH": 343,
-        "MEDIUM": 55
+        "HIGH": 355,
+        "MEDIUM": 53
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 398,
-        "resolvedValues": 398
+        "datableValues": 408,
+        "resolvedValues": 408
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13586,
+        "rules_version": "1.1.0",
+        "total": 14022,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 12843,
-          "WARNING": 742
+          "INFO": 13280,
+          "WARNING": 741
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 579,
+          "CONCEPT_DISAGREEMENT": 590,
           "EXTREME_VALUE": 2,
-          "FISCAL_PERIOD_CONFLICT": 4,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "PERIOD_MISMATCH": 7,
-          "RESTATEMENT_CONFLICT": 128,
+          "RESTATEMENT_CONFLICT": 115,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 12843
+          "UNKNOWN_CONCEPT": 13280,
+          "UNPLACEABLE_PERIOD": 4
         }
       },
       "latestFiling": {
-        "accession": "0001140361-26-032050",
-        "filing_date": "2026-08-10",
+        "accession": "0001140361-26-041174",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 53
+        "periodic_filings": 54,
+        "acceptance_datetime": "2026-10-29T20:31:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "604a12c488298e0dfc1e00354385adac5885fccd62a1cb4c114ab525afce0b67",
+      "sourceDigest": "7c4bfca3e57254cc785be9b468b7c1e1c0c5d7394cc272e5c19277186ab25477",
       "issuerId": "iss_cik_0001571776"
     },
     {

@@ -1,0 +1,198 @@
+name: Konten — Produktion automatisch (Migrationen, Worker)
+# Regulaere Produktionsschritte OHNE manuelle Freigabe (docs/accounts/FREIGABEN.md). Laeuft nach jedem Push nach
+# main, der Migrationen, den Worker oder diese Automatik aendert:
+#   pruefen          Tests, Produktionskonfiguration, Worker-Bundle; Schutz der Umgebung account-auto;
+#                    Abgleich der zahlungsrelevanten Schalter mit dem LAUFENDEN Worker (scripts/account/release-guard.mjs)
+#   zahlungsfreigabe nur wenn sich ein zahlungsrelevanter Schalter aendert (Checkout-Zugang, Rechtsfreigabe,
+#                    Umsatzsteuer, Live-Abrechnung, Kuendigungsautomatik): Owner-Freigabe in account-production
+#   migrationen      neue, NICHT destruktive Migrationen in einer Transaktion mit Integritaetsprobe
+#                    (scripts/account/migrate-production.mjs); destruktiv -> Abbruch, nur ueber
+#                    "Konten — Datenbank mit Freigabe"
+#   worker           Code und oeffentliche Konfiguration (wrangler deploy); setzt KEINE Secrets
+#   gesundheit       /v1/health entspricht der Konfiguration
+# Umgebung account-auto: keine Required reviewers, Deployment branches nur main, Secrets nur
+# VU_ACCOUNT_SUPABASE_DB_URL und VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY. Fehlen sie, wird nichts ausgerollt (Hinweis).
+# Freigabepflichtig bleiben: Secrets (account-production-deploy.yml), Stripe-Produkte und -Preise
+# (account-production-stripe.yml), destruktive Datenbankoperationen (account-db-approved.yml) und jede
+# zahlungsrelevante Schalterstellung (Job zahlungsfreigabe).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/migrate-production.mjs'
+      - 'scripts/account/release-guard.mjs'
+      - 'scripts/account/check-public-checkout.mjs'
+      - 'scripts/account/check-auto-env.mjs'
+      - '.github/workflows/account-production-auto.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-production-auto-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  WRANGLER: wrangler@4.147.0
+  PROJECT_REF: qiytbnpoqvldsatpfkeh
+  API_ORIGIN: https://konto.visionuniverse.de
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      payment_changed: ${{ steps.zahlung.outputs.changed }}
+      env_ready: ${{ steps.umgebung.outputs.ready }}
+    steps:
+      - name: Nur von main
+        env:
+          REF: ${{ github.ref }}
+        run: '[ "$REF" = refs/heads/main ] || { echo "::error::Produktion nur von main ($REF)"; exit 1; }'
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Umgebung account-auto nur fuer main (fail closed; fehlt sie, wird nichts ausgerollt)
+        id: umgebung
+        env: {GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}'}
+        run: node scripts/account/check-auto-env.mjs
+      - name: Tests ohne Datenbank
+        run: |
+          node --test workers/vu-account/tests/unit.test.mjs workers/vu-account/tests/flows.test.mjs \
+            scripts/account/tests/migrate-production.test.mjs scripts/account/tests/release-guard.test.mjs \
+            scripts/account/tests/check-public-checkout.test.mjs scripts/account/tests/workflow-environments.test.mjs \
+            scripts/account/tests/check-auto-env.test.mjs
+      - name: Produktionskonfiguration pruefen
+        working-directory: workers/vu-account
+        run: |
+          set -euo pipefail
+          prod=$(awk '/^\[env\.production\.vars\]/{p=1;next} /^\[/{p=0} p' wrangler.toml)
+          grep -qE '^VU_CANCELLATION_AUTO_PROCESS = "false"$' <<<"$prod" || { echo "::error::Produktion: VU_CANCELLATION_AUTO_PROCESS muss \"false\" sein"; exit 1; }
+          grep -qE "^SUPABASE_URL = \"https://$PROJECT_REF\.supabase\.co\"$" <<<"$prod" || { echo "::error::Produktion: SUPABASE_URL zeigt nicht auf $PROJECT_REF"; exit 1; }
+          grep -qE "^VU_ACCOUNT_API_ORIGIN = \"$API_ORIGIN\"$" <<<"$prod" || { echo "::error::Produktion: VU_ACCOUNT_API_ORIGIN ist nicht $API_ORIGIN"; exit 1; }
+          grep -qE '^VU_REGISTRATION_ALLOWLIST = ""$' <<<"$prod" || { echo "::error::Produktion: keine Registrierungs-Positivliste (oeffentliche Registrierung)"; exit 1; }
+          grep -q 'account.visionuniverse.de' <<<"$(awk '/^\[env\.production\]/{p=1} p' wrangler.toml | grep -v '^#')" && { echo "::error::account.visionuniverse.de gehoert Shopify"; exit 1; } || true
+          for k in VU_BREVO_SYNC VU_NEWSLETTER; do grep -qE "^$k = \"(true|false)\"$" <<<"$prod" || { echo "::error::Produktion: $k muss \"true\" oder \"false\" sein"; exit 1; }; done
+          node ../../scripts/account/check-public-checkout.mjs --toml=wrangler.toml
+          npx --yes "$WRANGLER" deploy --dry-run --env production --outdir "$RUNNER_TEMP/bundle" > /dev/null
+      - name: Zahlungsrelevante Schalter gegenueber dem laufenden Worker?
+        id: zahlung
+        run: node scripts/account/release-guard.mjs --toml=workers/vu-account/wrangler.toml --api="$API_ORIGIN"
+
+  zahlungsfreigabe:
+    needs: pruefen
+    if: needs.pruefen.outputs.payment_changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: account-production
+    steps:
+      - name: Owner-Freigabe dieses Laufs pruefen (fail closed)
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', REF: '${{ github.ref }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        run: |
+          set -euo pipefail
+          [ "$REF" = refs/heads/main ] || { echo "::error::Nur von main"; exit 1; }
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+
+  migrationen:
+    needs: pruefen
+    if: needs.pruefen.outputs.env_ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: account-auto
+    outputs:
+      ready: ${{ steps.migrate.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Nicht destruktive Migrationen einspielen (eine Transaktion, Integritaetsprobe)
+        id: migrate
+        env:
+          DB_URL: ${{ secrets.VU_ACCOUNT_SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DB_URL" ]; then
+            echo "::warning::account-auto ohne VU_ACCOUNT_SUPABASE_DB_URL - nichts eingespielt, nichts ausgerollt (docs/accounts/FREIGABEN.md)"
+            echo "ready=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          [[ "$DB_URL" == postgresql://* && "$DB_URL" == *"$PROJECT_REF"* ]] \
+            || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL gehoert nicht zu $PROJECT_REF"; exit 1; }
+          status=0; node scripts/account/migrate-production.mjs || status=$?
+          if [ "$status" = 3 ]; then
+            echo "::error::Destruktive Migration erkannt - nichts eingespielt. Nur ueber 'Konten — Datenbank mit Freigabe' (Owner-Freigabe)."
+          fi
+          [ "$status" = 0 ] && echo "ready=true" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+  worker:
+    needs: [pruefen, zahlungsfreigabe, migrationen]
+    if: >-
+      always() && needs.pruefen.result == 'success' && needs.migrationen.result == 'success' && needs.migrationen.outputs.ready == 'true'
+      && (needs.zahlungsfreigabe.result == 'success' || (needs.zahlungsfreigabe.result == 'skipped' && needs.pruefen.outputs.payment_changed == 'false'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: account-auto
+    steps:
+      - name: Zahlungsrelevant -> Owner-Freigabe dieses Laufs erneut pruefen (fail closed)
+        if: needs.pruefen.outputs.payment_changed != 'false'
+        env: {GH_TOKEN: '${{ github.token }}', RUN_ID: '${{ github.run_id }}', REPO: '${{ github.repository }}', APPROVER: dennismueller10x-sudo, ENV_NAME: account-production}
+        run: |
+          set -euo pipefail
+          json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/approvals")
+          ok=$(jq --arg u "$APPROVER" --arg e "$ENV_NAME" '[.[] | select(.state=="approved" and .user.login==$u and any(.environments[]; .name==$e))] | length' <<<"$json")
+          [ "$ok" -ge 1 ] || { echo "::error::Keine Freigabe durch $APPROVER fuer $ENV_NAME"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ausrollen (Code, oeffentliche Werte; Secrets bleiben unveraendert)
+        working-directory: workers/vu-account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PUB: ${{ secrets.VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY }}
+          OPS_ALERT_EMAIL: ${{ vars.VU_ACCOUNT_OPS_ALERT_EMAIL }}
+        run: |
+          set -euo pipefail
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+          [[ "$PUB" == sb_publishable_* ]] || { echo "::error::VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY fehlt in account-auto oder ist kein sb_publishable_"; exit 1; }
+          extra=(--var "SUPABASE_PUBLISHABLE_KEY:$PUB" --var "VU_CANCELLATION_AUTO_PROCESS:false")
+          if [ -n "$OPS_ALERT_EMAIL" ]; then
+            [[ "$OPS_ALERT_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "::error::VU_ACCOUNT_OPS_ALERT_EMAIL ist keine Adresse"; exit 1; }
+            extra+=(--var "VU_OPS_ALERT_EMAIL:$OPS_ALERT_EMAIL")
+          fi
+          npx --yes "$WRANGLER" deploy --env production "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g; s/sb_publishable_[A-Za-z0-9_-]+/<oeffentlich>/g'
+
+  gesundheit:
+    needs: worker
+    if: always() && needs.worker.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: /v1/health entspricht der Konfiguration
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do code=$(curl -s -o h.json -w '%{http_code}' "$API_ORIGIN/v1/health" || true); [ "$code" = 200 ] && break; sleep 10; done
+          [ "$code" = 200 ] || { echo "::error::$API_ORIGIN/v1/health antwortet $code"; exit 1; }
+          jq -c '{state, accounts, mail, autoProcess, checkout, legalApproved, tax, newsletter, newsletterTemplate, contactSync, cancellations}' h.json
+          [ "$(jq -r .accounts h.json)" = true ] || { echo "::error::Supabase nicht angeschlossen"; exit 1; }
+          [ "$(jq -r .autoProcess h.json)" = false ] || { echo "::error::autoProcess ist nicht false"; exit 1; }
+          # Nach dem Ausrollen darf zwischen Konfiguration und laufendem Worker nichts Zahlungsrelevantes abweichen.
+          GITHUB_OUTPUT= node scripts/account/release-guard.mjs --toml=workers/vu-account/wrangler.toml --api="$API_ORIGIN" | tee g.txt
+          grep -q 'Keine zahlungsrelevante Aenderung' g.txt || { echo "::error::Laufender Worker weicht von der Konfiguration ab"; exit 1; }

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "v10-population-protocol-1.0.0",
+  "status": "REGISTERED_BEFORE_EVIDENCE",
+  "registeredAt": "2026-10-28",
+  "base": "main a1a0dd972a",
+  "productionApproved": false,
+  "certificationStatus": "NOT_CERTIFIED",
+  "evidenceKind": "SOURCE_EVIDENCE",
+  "declaration": "Dieses Protokoll wird committet, bevor ein einziger Fall gegen Originalquellen geprueft wird. Es entscheidet nur aus Quellen (SEC) und Kurs-Gleichheit am selben Tag, nie aus Renditen, Signalen oder Studienergebnissen. Spaetere Regelaenderungen erhalten eine neue Version und werden mit Begruendung im Ergebnis offengelegt.",
+  "priorKnowledge": "V9 hat fuer die 132 Faelle Cover-/Volltext-Tickerbelege und Intervalle vorgeschlagen (docs/quant-recovery/v9/identity/ambiguous-resolution.json), aber fuer diese 132 keine Same-Day-Preisbelege gesammelt. V9 hat Stale-Tails nur gezaehlt (ca-stale-tail-finding.json) und 12 Terminal-Dossiers gebaut (v9/portfolio/terminal-evidence.json). Renditen dieser Titel wurden in V7-V9 in Studien gesehen; dieses Protokoll verwendet keine.",
+  "inputs": {
+    "ambiguousResolution": { "path": "docs/quant-recovery/v9/identity/ambiguous-resolution.json", "sha256": "f35115b321d7e374b6d7e9c5e9a1e82398789220861385b300ac9e62ab0a9820" },
+    "dossiers": { "path": "docs/quant-recovery/v9/identity/dossiers-7.json", "sha256": "4190d1c1a31e7c4c2d351f291a886c43902d09f40d251dc20826ac2c86aa339d" },
+    "identityRegistryBefore": { "path": "quant/engines/research-identity-evidence.cjs", "sha256": "bb4d674b851b62c4e92ec39789db5d2d4f62dd01bd15613a85dd4288af9951d9" },
+    "securityMaster": { "path": "quant/data/market/security-master/us-security-master.json", "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332" },
+    "b1CaseList": { "rule": "rows with state RESOLVED_SINGLE_COMMON_LISTING", "count": 132, "idsSha256": "3c10a7a0f6717de0cda4c05fe7b202720ec458b234ace178c97517a4e87e4be8", "idsHashConvention": "sha256(JSON.stringify(sorted securityIds))" }
+  },
+  "sourcesAllowed": [
+    "data.sec.gov/submissions/CIK##########.json (+ paginated files) of the bound CIK",
+    "www.sec.gov/Archives/edgar/data/<cik>/... documents filed by the bound CIK (8-A, 10-K, 10-Q, 20-F, 40-F, DEF 14A, 424B*, S-1/S-3/S-4/S-8, 8-K, 25, 25-NSE, 15-*, DEFM14A)",
+    "www.sec.gov/files/company_tickers_exchange.json (current mapping only)",
+    "submissions.zip (SEC bulk) only for CIK discovery and B3 order-of-magnitude reference, never for acceptanceDateTime",
+    "EDGAR full-text search (efts) only to locate documents; the located document itself is the evidence"
+  ],
+  "sourcesForbidden": ["provider metadata (Tiingo master rows, names) as evidence", "renditen/signals", "third-party websites", "interpolation"],
+  "fairAccess": "scripts/quant/sec/http_client.py, User-Agent 'VisionUniverseResearch info@visionuniverse.de', RateLimiter <= 2 req/s, raw bodies only in the private scratchpad cache; the repo holds url, accession, sha256 and quotes <= 300 chars",
+
+  "B1_identity": {
+    "scope": "the 132 V9 RESOLVED_SINGLE_COMMON_LISTING ids. The 29 RESOLVED_NOT_COMMON and 19 UNRESOLVED stay excluded with their V9 reason (not re-opened). The five V9 dossier bindings (BGC, COHR, DCOM, SGI, TRAK) are reference cases and stay byte-identical in the registry.",
+    "evidenceLevels": {
+      "SEC_SAME_DAY_PRICE_AND_COVER": "qualifies: all rules Q-CIK, Q-CLS, Q-VEN, Q-CUR, Q-PX, Q-INT pass",
+      "COVER_PAGE_ONLY": "never for studies (TRAK rule): Q-PX not met; excluded with reason NO_SAME_DAY_PRICE_EVIDENCE",
+      "HOLD": "any conflict rule fires; excluded with its reason"
+    },
+    "rules": {
+      "Q-CIK": "The bound CIK (V9) is re-confirmed from a freshly fetched SEC document: the latest inline-XBRL cover (10-K/10-Q/20-F/40-F/8-K) of that CIK carries dei:TradingSymbol equal to the ticker (normalised: case, '.', '-', ' ' removed). Failing: CIK_NOT_CONFIRMED.",
+      "Q-CLS": "dei:Security12bTitle of that symbol row classifies as COMMON (common stock / common shares / ordinary shares / class X common / shares of beneficial interest) on BOTH the first and the latest cover used. ADS, preferred, depositary, units, warrants, rights, notes: CLASS_NOT_COMMON. Class kind differing between first and latest cover: CLASS_CHANGE.",
+      "Q-VEN": "dei:SecurityExchangeName of that row maps to XNYS (NYSE), XNAS (Nasdaq *), XASE (NYSE American / NYSE MKT / AMEX) and equals the MIC of the selected master row exchange (NYSE->XNYS, NASDAQ->XNAS, NYSE MKT/AMEX/NYSE AMERICAN->XASE). Otherwise EXCHANGE_MISMATCH. A venue transfer inside the interval (8-A12B for a new exchange plus Form 25 for the old one) requires a MATCH price anchor on both sides, otherwise validFrom moves to the first bar on/after the transfer filing date.",
+      "Q-CUR": "latest cover filingDate >= series asOf - 400 days (same window as the loader's cover expiry), and no Form 25, 25-NSE, 15-12B, 15-12G or 15-15D of the CIK filed after that cover. Otherwise COVER_NOT_CURRENT or DELISTING_FORM_AFTER_LAST_COVER (then the id is handed to B2, not bound open-ended).",
+      "Q-PX": {
+        "statement": "a sentence in an SEC document filed by the bound CIK stating the closing price / last reported sale price of the company's common stock (or of the class/ticker) on an explicit calendar date D, with a per-share dollar amount P (2-4 decimals). Rejected: amounts followed by million/billion/thousand, and sentences about exercise, conversion, offering, tender, purchase, strike, 'would', 'implied', 'average', 'high', 'low', 'range', 'VWAP'.",
+        "multiClass": "if the cover of that filing lists more than one COMMON symbol, the statement counts only if its quote names the ticker or the class title of the bound symbol (else MULTI_CLASS_UNATTRIBUTED, not counted)",
+        "sameDay": "weekly bar dated D, or D is a Saturday/Sunday and the bar is the last bar of the same ISO week before D; or the daily discover-series bar dated D when D lies inside the daily series AND the daily close on the weekly bar date of that ISO week equals the weekly close exactly",
+        "adjustment": "P is divided by the product of the series' own provider split factors dated after D (return-series.js#splitFactors convention, identical to V9 series_lib.later_split_product)",
+        "match": "|seriesClose / (P / laterSplitProduct) - 1| <= 0.02 -> MATCH; > 0.02 on a same-day bar -> MISMATCH_SAME_DAY",
+        "requirement": "at least one MATCH with D inside the final interval; any MISMATCH_SAME_DAY inside the final interval -> HOLD SOURCE_PRICE_CONFLICT",
+        "documentsSearched": "per case, filings of the bound CIK inside [V9 validFrom - 30 days, asOf]: every 10-K/10-K405/20-F/40-F (annual cover: aggregate market value by reference to the closing price on date D), every DEF 14A, 424B1-424B7, S-1, S-3, S-4, S-8 and 8-K with Item 2.01/8.01 up to a budget of 40 documents per case, newest first; documents read as prefixes (annual 3 MiB, others 2 MiB); prefix sha256 recorded with bytesRead"
+      },
+      "Q-INT": {
+        "validFrom": "start S0 = V9 validFrom after re-verifying the V9 start document (sha256 and ticker statement). Then S1 = S0 unless the earliest MATCH anchor lies more than 730 days after S0, in which case S1 = first weekly bar on/after (earliest MATCH date - 730 days). Then every other master row of the same baseline id whose [start_date, end_date] overlaps [S1, asOf] by more than 31 days moves the start to the first bar after that row's end_date (concatenation guard). Then any weekly |z| > 4 (52-week trailing log-return sd, V9 series_lib.discontinuity) within 14 days of another master row's start_date/end_date or of a venue-transfer filing inside the interval moves the start to the bar after the break. After every move at least one MATCH must remain inside the interval, else NO_SAME_DAY_PRICE_EVIDENCE.",
+        "validTo": "null (open) when Q-CUR passes; the loader's 400-day cover expiry applies",
+        "anchorGaps": "reported (maxGapDays between consecutive MATCH anchors and from last anchor to the latest cover); not a cut rule by itself",
+        "historyGuard": "sha256(JSON.stringify(points with validFrom <= date <= series to)) recorded per record (weekly-real-adapter hash())"
+      },
+      "classChangeAndInstruments": "ADS, units, warrants, rights, preferred never bind (CLASS_NOT_COMMON). Foreign private issuers (20-F/40-F) with COMMON/ordinary shares on a US exchange may bind and are flagged FOREIGN_PRIVATE_ISSUER for B3.",
+      "registry": "qualified cases become records of the versioned extension research-identity-evidence-1.1.0 (masterRowAction SELECT_EXISTING_ROW, selectedCanonicalId, masterRowSet = exact sorted canonical ids of all master rows of the baseline id) in quant/engines/research-identity-evidence.cjs; the loader checks fail closed: master row set unchanged, selected row present and not shared, history guard, cover age <= 400 days, interval slice, then unchanged validate() on the selected master row. Applied only with the explicit loader option identityEvidenceProtocolV10 (requires identityEvidence), because the owner decision of 2026-10-28 binds identityEvidence:true to the five dossier records."
+    },
+    "independentCheck": "python3 -I, stdlib only, separate code: re-hash every cited body from the private cache, re-extract price statements with its own parser, recompute laterSplitProduct, same-day bar and MATCH, the interval rules and the decision per case; report agreement per case"
+  },
+
+  "B2_listingLifecycle": {
+    "frozenTail": "weekly series ends with a run of >= 4 exactly identical closes (core/listing-staleness.js weeklyMinRun = 4, DQ-PX-7). Daily discover-series run >= 5 (DQ-PX-6) is categorised as well but the loader acts on weekly series only.",
+    "categories": {
+      "MERGER_TERMINAL_CONSIDERATION": "8-K Item 2.01 (or DEFM14A/S-4/424B3 of the target) quotes the per-share consideration (cash, acquirer shares, or both) and a completion/effective date",
+      "DELISTED_FORM25": "Form 25 / 25-NSE (or 8-K Item 3.01) with an identifiable date, no merger consideration",
+      "DEREGISTERED_FORM15": "Form 15-12B/12G/15D, no Form 25 found",
+      "TICKER_REUSE": "the ticker is used by a different CIK/issuer after the frozen run start, or series and SEC issuer disagree",
+      "MASTER_CONFLICT": "security master and SEC evidence contradict (master ACTIVE while Form 25 effective, or master INACTIVE while issuer files current covers)",
+      "STILL_LISTED_PROVIDER_STALE": "issuer files periodic reports in the last 120 days and its current cover lists the ticker on a US exchange; no delisting form",
+      "NOT_OPERATING_COMMON": "preferred, depositary, unit, warrant, right, ETF/fund or note series (categorised, not researched further)",
+      "UNRESOLVED": "no CIK or no qualifying evidence"
+    },
+    "lastTradeDate": "derived from a quoted SEC sentence only: 'suspend(ed) trading ... prior to the opening of trading on D' / 'ceased trading ... prior to market open on D' -> previous NYSE trading weekday (US exchange holidays applied) ; 'last day of trading ... D' / 'at the close of trading on D' -> D. Repeated closes are not trades. Consistency gate: the weekly bar of the ISO week of lastTradeDate (or the last bar before it) must carry the frozen close or the series must change for the last time on/before lastTradeDate; every bar after lastTradeDate must equal the frozen close exactly. Otherwise LIFECYCLE_SOURCE_CONFLICT (unresolved).",
+    "terminal": "kind CASH_MERGER (cashPerShare), STOCK_MERGER (stockRatio + acquirerTicker), CASH_AND_STOCK (both fixed amounts), DELISTED_NO_CONSIDERATION (Form 25/15 without merger consideration; studies censor), UNKNOWN (merger with elections/proration/CVR or amount not quotable). paymentDate only when a document states the payment date, else null (V9: payment receipt NOT_STATED).",
+    "loaderOption": "listingLifecycleEvidence: true (default off; without it outputs are byte-identical). Weekly series with a frozen tail and a matching record are cut to points dated <= lastTradeDate (history guard over the kept points, frozen close checked on every removed bar) and carry listingLifecycle; frozen series without record -> FROZEN_TAIL_UNRESOLVED; record present but series moves after lastTradeDate -> LISTING_LIFECYCLE_CONFLICT. Non-frozen series without record are returned exactly as without the option. An INACTIVE master row passes the INACTIVE gate only when a record with terminal.kind != UNKNOWN covers it (terminal value verified).",
+    "producerFinding": "a defect in the master producer (ACTIVE despite Form 25/15 and frozen tail) is documented as a patch proposal (diff file) in docs/quant-recovery/v10/population/, never applied to producer code"
+  },
+
+  "B3_population": {
+    "frame": "loader configuration {identityEvidence:true, identityEvidenceProtocolV10:true, corporateActionEvidence:true, listingLifecycleEvidence:true}; QUALIFIED ids whose bound/master listing exchange is NYSE, NASDAQ or NYSE MKT/AMEX and class EQUITY_COMMON",
+    "perYear": "ISO years 2000-2026: listing counted in year y when the qualified weekly series has >= 1 bar in ISO year y; laterDelisted = id has a listing-lifecycle record with source-verified delisting/terminal; survivors = rest",
+    "externalReference": "submissions.zip: per calendar year count of distinct CIKs filing 10-K or 10-K405 (all registrants, includes OTC) and the subset with any 8-A12B filing on/before that year (exchange registration proxy) and no Form 25/15-12B before it; order of magnitude only, not a membership list",
+    "coverage": "coverageRatio(y) = qualifiedCount(y) / referenceExchangeCount(y); survivorship share = survivors(y) / qualifiedCount(y)",
+    "output": "machine-readable population file: rule, loader options, sorted ids, sha256 of the id list and of the rule, counts per exclusion reason, per-year table",
+    "scopeStatement": "the qualifiable population is today's provider universe (survivor-biased by construction: only tickers in the current baseline); delisted listings are present only where the provider kept a frozen series; it is not the historical market population"
+  }
+}

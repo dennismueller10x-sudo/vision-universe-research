@@ -1,0 +1,62 @@
+{
+ "schemaVersion": "v12-indexpop-price-plausibility-1.2.0",
+ "rulesVersion": "1.2.0",
+ "rulesFile": "docs/quant-recovery/v12/indexpop/rules-1.2.0.json",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "method": "Members mapped (T1/T2) at a holding date that is itself the date of a weekly bar: |value/shares / (close x split factors after the bar) - 1|. The mapping used a 5 % bracket tolerance, so this distribution is truncated at about 5 %; it measures agreement of fund valuation with the provider close, not identity.",
+ "all": {
+  "n": 44349,
+  "median": 1.1102230246251565e-16,
+  "p90": 0.000007304471203006813,
+  "p99": 0.0006335771024805759,
+  "max": 0.8702614192112157,
+  "shareAbove1pct": 0.000924485332251009,
+  "shareAbove0_1pct": 0.00572729937540869
+ },
+ "byEra": {
+  "REPORT_ERA": {
+   "n": 16213,
+   "median": 1.3735668857872696e-7,
+   "p90": 0.0001412349876419583,
+   "p99": 0.0013336511687597197,
+   "max": 0.8702614192112157,
+   "shareAbove1pct": 0.0015419724912107567,
+   "shareAbove0_1pct": 0.01363103682230309
+  },
+  "NPORT_ERA": {
+   "n": 28136,
+   "median": 0,
+   "p90": 2.220446049250313e-16,
+   "p99": 0.0001736714136852946,
+   "max": 0.21840354767184034,
+   "shareAbove1pct": 0.0005686664771111743,
+   "shareAbove0_1pct": 0.001172874609041797
+  }
+ },
+ "splitConsistency": {
+  "method": "Positions whose key maps to exactly one listing elsewhere but are NOT mapped at this date, on exact bar dates: ratio within 2 % of a common split ratio k or 1/k (k in 2,3,4,5,10,1.5,20,7,8) indicates a split not reflected in the provider factors or a different share basis.",
+  "count": 3,
+  "samples": [
+   {
+    "fund": "IWB",
+    "date": "2006-06-30",
+    "securityId": "ref_FNF",
+    "ratio": 1.98
+   },
+   {
+    "fund": "IWV",
+    "date": "2006-06-30",
+    "securityId": "ref_FNF",
+    "ratio": 1.98
+   },
+   {
+    "fund": "SPY",
+    "date": "2011-09-30",
+    "securityId": "ref_MCO",
+    "ratio": 2.0118
+   }
+  ]
+ }
+}

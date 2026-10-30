@@ -374,6 +374,36 @@
    * Sonst bleibt das Jahr leer, mit Grund. */
   var PE_TOLERANCE = 0.10, PE_PRICE_DAYS = 10, SHARE_TOLERANCE = 0.10;
   function splitsAfter(splits, date) { return splits.reduce(function (a, s) { return s[0] > date ? a * s[1] : a; }, 1); }
+  /* SPIN-OFF IST KEIN AKTIENSPLIT (quant/config/spinoff-evidence-1.0.0.json, SEC-8-K je Eintrag). Der Kursanbieter fuehrt
+   * Spin-offs als splitFactor (GE 1,281 GE HealthCare 2023, 1,253 GE Vernova 2024; IBM 1,046 Kyndryl ...). Fuer den KURS ist
+   * das eine legitime Bereinigung und bleibt in der Reihe (return-series.js#splitFactors, ADR-002). Fuer AKTIENZAHL und
+   * Gewinn je Aktie nicht: die Aktienzahl aendert sich nicht, und eine spaetere Meldung rechnet sie nicht zurueck. Die
+   * Regel "nur Splits NACH dem Meldedatum herausrechnen" unterstellte das aber - wurde ein Wert erst nach dem Spin-off
+   * (Vergleichsspalte des Folgejahres) gemeldet, stand ein um den Faktor bereinigter Kurs neben einer unbereinigten
+   * Aktienzahl: GE GJ 2023 Boersenwert 121 statt 152 Mrd $. Deshalb: belegte Spin-off-Faktoren bereinigen Aktienzahl und
+   * Gewinn je Aktie nie; der Kurs wird fuer die Bewertung um die Spin-off-Faktoren NACH seinem Datum auf die Basis der
+   * Aktienzahl zurueckgefuehrt. Nur belegte Eintraege (Wertpapier, Ex-Tag, Faktor +-0,0005) - sonst unveraendert.
+   * Die Liste ist eine Abschrift der Konfigurationsdatei (gleiche Reihenfolge); ein Test haelt beide gleich. */
+  var SPINOFF_EVIDENCE_VERSION = 'spinoff-evidence-1.0.0';
+  var SPINOFF_FACTORS = [
+    ['ref_GE', '2023-01-04', 1.281],
+    ['ref_GE', '2024-04-02', 1.253],
+    ['ref_IBM', '2021-11-04', 1.046],
+    ['ref_ALV', '2018-07-02', 1.388],
+    ['ref_T', '2022-04-11', 1.324],
+    ['ref_EXC', '2022-02-02', 1.402],
+    ['ref_FTV', '2020-10-09', 1.195],
+    ['ref_WDC', '2025-02-24', 1.323]
+  ];
+  function isSpinoff(securityId, s) {
+    return SPINOFF_FACTORS.some(function (e) { return e[0] === securityId && e[1] === s[0] && Math.abs(e[2] - s[1]) <= 0.0005; });
+  }
+  /* Teilt die Anbieterfaktoren: shareSplits bereinigen Aktienzahl/EPS, spinoffs nur den Kurs. */
+  function splitBasis(long, splits) {
+    var id = long && long.securityId, share = [], spin = [];
+    splits.forEach(function (s) { (isSpinoff(id, s) ? spin : share).push(s); });
+    return { share: share, spinoffs: spin };
+  }
   function daysBetween(a, b) { return (Date.parse(b) - Date.parse(a)) / 864e5; }
   function splitEvidence(long) {
     var ca = long && long.corporateActions;
@@ -399,12 +429,14 @@
     var splits = splitEvidence(long);
     if (!splits) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
     out.splits = splits;
-    var adjShares = function (fy) { var r = annualRow(b, 'diluted_weighted_average_shares', fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
+    var basis = splitBasis(long, splits), shareSplits = basis.share;
+    out.spinoffs = basis.spinoffs;
+    var adjShares = function (fy) { var r = annualRow(b, 'diluted_weighted_average_shares', fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(shareSplits, r.filed) : null; };
     var jump = function (a, c) { if (!isNum(a) || !isNum(c)) return false; var f = c / a; return f >= 1.8 || f <= 0.55; };
     out.rows = b.base.eps_diluted.annual.map(function (e) {
       var r = { fy: e.fy, key: e.fy, label: 'GJ ' + e.fy, short: String(e.fy), end: e.end, epsReported: e.v, filed: e.filed, accn: e.accn, v: null, reason: null, pubDate: publishedOf(b, e.fy) };
       if (!e.filed || !e.end) { r.reason = 'NO_CHECK'; return r; }
-      r.factor = splitsAfter(splits, e.filed); r.eps = e.v / r.factor;
+      r.factor = splitsAfter(shareSplits, e.filed); r.eps = e.v / r.factor;
       var ni = annualRow(b, 'net_income', e.fy), sh = adjShares(e.fy);
       if (!ni || !isNum(sh)) { r.reason = 'NO_CHECK'; return r; }
       r.check = ni.v / sh;
@@ -413,7 +445,7 @@
       if (!r.pubDate) { r.reason = 'NO_PUBLICATION_DATE'; return r; }
       var pt = closeAfter(long, r.pubDate);
       if (!pt) { r.reason = 'NO_PRICE'; return r; }
-      r.price = pt[1]; r.priceDate = pt[0];
+      r.spinoffFactor = splitsAfter(basis.spinoffs, pt[0]); r.price = pt[1] * r.spinoffFactor; r.priceDate = pt[0];
       if (!(r.eps > 0)) { r.reason = 'LOSS_FY'; return r; }
       r.v = r.price / r.eps; return r;
     });
@@ -450,7 +482,9 @@
     var splits = splitEvidence(long);
     if (!splits) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
     out.splits = splits;
-    var adj = function (m, fy) { var r = annualRow(b, m, fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
+    var basis = splitBasis(long, splits), shareSplits = basis.share;
+    out.spinoffs = basis.spinoffs;
+    var adj = function (m, fy) { var r = annualRow(b, m, fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(shareSplits, r.filed) : null; };
     var jump = function (a, c) { if (!isNum(a) || !isNum(c)) return false; var f = c / a; return f >= 1.8 || f <= 0.55; };
     var pe = historicalPe(b, long), peBy = {}; pe.rows.forEach(function (r) { peBy[r.fy] = r; });
     out.years = b.years.map(function (fy) {
@@ -462,7 +496,7 @@
       x.src = annualRow(b, 'revenue', fy) || so || null;
       if (!info.end) { x.reason = 'NO_CHECK'; return x; }
       var pt = x.pubDate ? closeAfter(long, x.pubDate) : null;
-      if (pt) { x.price = pt[1]; x.priceDate = pt[0]; }
+      if (pt) { x.spinoffFactor = splitsAfter(basis.spinoffs, pt[0]); x.price = pt[1] * x.spinoffFactor; x.priceDate = pt[0]; }
       var s = adj('shares_outstanding', fy), d = adj('diluted_weighted_average_shares', fy);
       if (!isNum(s)) x.reason = 'NO_SHARES';
       else if (!isNum(d)) x.reason = 'NO_CHECK';
@@ -470,7 +504,7 @@
       else if (jump(adj('shares_outstanding', fy - 1), s) || jump(s, adj('shares_outstanding', fy + 1))) x.reason = 'SHARE_BASIS_JUMP';
       else if (!x.pubDate) x.reason = 'NO_PUBLICATION_DATE';
       else if (!pt) x.reason = 'NO_PRICE';
-      if (isNum(s)) { x.shares = s; x.sharesReported = so.v; x.sharesFactor = splitsAfter(splits, so.filed); }
+      if (isNum(s)) { x.shares = s; x.sharesReported = so.v; x.sharesFactor = splitsAfter(shareSplits, so.filed); }
       if (x.reason) return x;
       x.mcap = x.price * s;
       x.ev = isNum(x.debt) && isNum(x.cash) ? x.mcap + x.debt - x.cash : null;
@@ -745,7 +779,7 @@
   var api = { VERSION: VERSION, CATS: CATS, METRICS: M, BY_ID: BY_ID, FORMULA: FORMULA, RANKINGS: RANKINGS, SIZES: SIZES, HISTORY_BASE: HISTORY_BASE, UNIVERSE_PATH: UNIVERSE_PATH, ANALYST_PATH: ANALYST_PATH,
     fromHistory: fromHistory, historicalPe: historicalPe, historicalValuation: historicalValuation, attachValuation: attachValuation, stepChange: stepChange, changeOf: changeOf, positionText: positionText, PEER_MODES: PEER_MODES,
     INDUSTRY_METRICS: INDUSTRY_METRICS, INDUSTRY_SCHEMA: INDUSTRY_SCHEMA, industryPath: industryPath, industrySeries: industrySeries,
-    PEERS_PATH: PEERS_PATH, PEERS_SCHEMA: PEERS_SCHEMA, PEER_MIN: PEER_MIN, peerIndex: peerIndex, defaultGroup: defaultGroup, closeAfter: closeAfter, HIST_VAL: HIST_VAL, SHARE_TOLERANCE: SHARE_TOLERANCE, catalogCounts: catalogCounts, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps,
+    PEERS_PATH: PEERS_PATH, PEERS_SCHEMA: PEERS_SCHEMA, PEER_MIN: PEER_MIN, peerIndex: peerIndex, defaultGroup: defaultGroup, closeAfter: closeAfter, HIST_VAL: HIST_VAL, SHARE_TOLERANCE: SHARE_TOLERANCE, catalogCounts: catalogCounts, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps, SPINOFF_FACTORS: SPINOFF_FACTORS, SPINOFF_EVIDENCE_VERSION: SPINOFF_EVIDENCE_VERSION, splitBasis: splitBasis,
     universe: universe, peerGroup: peerGroup, position: position, median: median, ranking: ranking, industries: industries, analysts: analysts,
     money: money, fmt: fmt, changeText: changeText, reason: reason, fiscalYearEnd: fiscalYearEnd, historyPath: historyPath, seriesPath: seriesPath, longSeriesPath: longSeriesPath, isNum: isNum };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

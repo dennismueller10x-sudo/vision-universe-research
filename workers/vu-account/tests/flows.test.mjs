@@ -953,12 +953,56 @@ test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfass
   assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
 });
 
+test('Umsatzsteuer: Stripe Tax automatisch, Bruttopreis bleibt, kein zweiter Steuermechanismus; ohne aktives Stripe Tax kein Checkout', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const b = await signedIn(env, 'tina.steuer@example.test');
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const health = async () => (await env.app.handle(new Request(env.api + '/v1/health'))).json();
+  assert.deepEqual([(await health()).tax, (await health()).stripeTax], ['automatic', 'ok']);
+  const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(ok.status, 200);
+  const session = env.stripe.sim.sessions.get(ok.data.url.split('/').pop());
+  assert.deepEqual(session.automatic_tax, {enabled: 'true'}, 'Stripe Tax berechnet');
+  assert.equal(session.subscription_data.default_tax_rates, undefined, 'kein fester Steuersatz daneben');
+  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Bruttopreis unveraendert');
+
+  // Stripe Tax im Dashboard pausiert: kein Checkout, nichts berechnet.
+  env.stripe.sim.setTaxSettings({status: 'pending'});
+  resetTaxCache();
+  const before = env.stripe.sim.sessions.size;
+  const refused = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([refused.status, refused.data.state], [503, 'TAX_CONFIG_INVALID']);
+  assert.equal(env.stripe.sim.sessions.size, before, 'keine neue Checkout-Sitzung');
+  resetTaxCache();
+  assert.equal((await health()).stripeTax, 'STRIPE_TAX_PENDING');
+});
+
+test('Umsatzsteuer: ein Preis ohne "inclusive" wird mit Stripe Tax nicht verkauft (kein Aufschlag)', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const b = await signedIn(env, 'tom.exklusiv@example.test');
+  const [row] = await env.pg.json(`select json_agg(provider_price_id) from public.plan_prices where id = 'pro_month'`);
+  env.stripe.sim.overridePrice(row, {tax_behavior: 'exclusive'});
+  const r = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([r.status, r.data.state], [503, 'TAX_CONFIG_INVALID']);
+});
+
 test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {
   const lists = {VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'};
   const env = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', ...lists}});
   t.after(() => env.close());
   const cron = () => env.app.scheduled();
   const status = async email => env.pg.json(`select to_json(status) from billing.marketing_consents where email = '${email}' order by requested_at desc limit 1`);
+
+  await t.test('Status zeigt, ob die DOI-Vorlage nutzbar ist (Pruefung ohne eigenen Workflow)', async () => {
+    const h = await env.app.handle(new Request(env.api + '/v1/health'));
+    const data = await h.json();
+    assert.deepEqual([data.newsletter, data.newsletterTemplate, data.contactSync], [true, 'ok', true]);
+  });
 
   await t.test('Registrierung ohne Haken: kein Newsletter, kein DOI', async () => {
     const b = await signedIn(env, 'ohne.haken@example.test');

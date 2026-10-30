@@ -1,0 +1,971 @@
+{
+ "studyId": "V12-REQUAL-P5D",
+ "registrationSha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "inputs": {
+  "p5a-population-1.0.0.json": "9ef2b40bc1548c721d70df94b6971c06882455485acc9778b0137c8d03f136a0",
+  "p5b-signals-1.0.0.json": "318ab5e00fd73e232ad72fa70c03047300ecf48e3ca28dc18efeaac0ee52f6a8",
+  "p5c-factor-1.0.0.json": "b2630efd3f52d9445d9e7d841807b8a66c06461277120af46d1d2e6f3e6d7d70",
+  "p6-strategies-1.0.0.json": "842e9e8aaf54bb9d5e54ef5d1436e985cc826b72770156a022c68deee00b8e24"
+ },
+ "population": {
+  "question": "How much of the V10/V11 \"excess over SPY\" is the population?",
+  "cagr": {
+   "ZERO": {
+    "SPY": 0.123901,
+    "SPY_TR": 0.144015,
+    "SPY_W": 0.123013,
+    "EW_ALL": 0.105976,
+    "CW_ALL": 0.119957,
+    "EW_WITH_H": 0.11314,
+    "EW_WITHOUT_H": 0.084988,
+    "EW_WITH_S": 0.114259,
+    "EW_FRAME": 0.112328,
+    "EW_FRAME_WREB": 0.126681
+   },
+   "LOWER": {
+    "SPY": 0.123901,
+    "SPY_TR": 0.144015,
+    "SPY_W": 0.123013,
+    "EW_ALL": 0.072986,
+    "CW_ALL": 0.104647,
+    "EW_WITH_H": 0.112781,
+    "EW_WITHOUT_H": -0.061269,
+    "EW_WITH_S": 0.114259,
+    "EW_FRAME": 0.111051,
+    "EW_FRAME_WREB": 0.126681
+   }
+  },
+  "additiveTermsAnnualizedPp": {
+   "ZERO": {
+    "universe": 0.527048,
+    "measurement": 0.072083,
+    "survivorshipInIndex": 0.668276,
+    "equalWeightInIndex": -1.431521,
+    "benchmarkTrMinusPrice": 1.86794,
+    "rebalancingWeekly": 1.418755,
+    "dateAlignmentSpy": -0.074417,
+    "frameMinusSpy": -0.164115,
+    "frameWrebMinusSpyW": 1.329057
+   },
+   "LOWER": {
+    "universe": 0.408224,
+    "measurement": 0.106088,
+    "survivorshipInIndex": 3.762547,
+    "equalWeightInIndex": -4.559797,
+    "benchmarkTrMinusPrice": 1.86794,
+    "rebalancingWeekly": 1.537579,
+    "dateAlignmentSpy": -0.074417,
+    "frameMinusSpy": -0.282939,
+    "frameWrebMinusSpyW": 1.329057
+   }
+  },
+  "bySubspanPp": {
+   "semiannual_2009_2019": {
+    "ZERO": {
+     "survivorshipInIndex": 1.044373,
+     "equalWeightInIndex": 0.004181,
+     "universe": 0.348868
+    },
+    "LOWER": {
+     "survivorshipInIndex": 5.338591,
+     "equalWeightInIndex": -4.3136,
+     "universe": 0.348868
+    }
+   },
+   "quarterly_2019_2026": {
+    "ZERO": {
+     "survivorshipInIndex": 0.111072,
+     "equalWeightInIndex": -3.558572,
+     "universe": 0.791029
+    },
+    "LOWER": {
+     "survivorshipInIndex": 1.427572,
+     "equalWeightInIndex": -4.924548,
+     "universe": 0.496162
+    }
+   }
+  },
+  "text": "Period buy-and-hold 2009-09 -> 2026-06, price return on both sides. The equal-weighted survivor frame does not beat SPY in this window; its gap to SPY splits into (i) survivor titles outside the index (+), (ii) measurement weekly series vs holdings (~0), (iii) survivorship inside the index: members with our series beat all members (+, much larger under LOWER), (iv) equal weighting inside the index (-, mega-cap dominance after 2019). The V11 population term (+0.87 to +1.10 pp per 13 W, 2000-2025) came from 2000-2012 and does not exist on the qualified population."
+ },
+ "selection": {
+  "signalBridge": [
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.4803,
+     -0.424,
+     -0.5802,
+     -0.5802
+    ],
+    "populationMinusSpyPp": [
+     1.0875,
+     0.038,
+     -0.2607,
+     -0.4742
+    ],
+    "signalMinusPopulationPp": [
+     -0.2984,
+     -0.1531,
+     -0.0114,
+     0.202
+    ],
+    "costPp": [
+     0.3088,
+     0.3088,
+     0.3081,
+     0.3081
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2126,
+     "signalMinusPopulationAllPp": 0.9404
+    }
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.6353,
+     0.0059,
+     -0.2098,
+     -0.2098
+    ],
+    "populationMinusSpyPp": [
+     0.9705,
+     0.1407,
+     -0.1774,
+     -0.3641
+    ],
+    "signalMinusPopulationPp": [
+     -0.0252,
+     0.176,
+     0.2785,
+     0.4652
+    ],
+    "costPp": [
+     0.31,
+     0.3108,
+     0.311,
+     0.311
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.0922,
+     "signalMinusPopulationAllPp": 1.1934
+    }
+   },
+   {
+    "rule": "TREND_UP",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.2026,
+     -0.6391,
+     -0.7959,
+     -0.7959
+    ],
+    "populationMinusSpyPp": [
+     1.0989,
+     0.0228,
+     -0.3326,
+     -0.5134
+    ],
+    "signalMinusPopulationPp": [
+     -0.5886,
+     -0.3542,
+     -0.1557,
+     0.025
+    ],
+    "costPp": [
+     0.3077,
+     0.3076,
+     0.3075,
+     0.3075
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2648,
+     "signalMinusPopulationAllPp": 0.7764
+    }
+   },
+   {
+    "rule": "TREND_DOWN",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     0.0242,
+     -0.574,
+     -0.4899,
+     -0.4899
+    ],
+    "populationMinusSpyPp": [
+     0.7003,
+     -0.1318,
+     -0.265,
+     -0.4448
+    ],
+    "signalMinusPopulationPp": [
+     -0.3677,
+     -0.1331,
+     0.0848,
+     0.2646
+    ],
+    "costPp": [
+     0.3083,
+     0.3091,
+     0.3098,
+     0.3098
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.1663,
+     "signalMinusPopulationAllPp": 0.9861
+    }
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "h": 13,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     1.0728,
+     -0.1267,
+     -0.6621,
+     -0.6621
+    ],
+    "populationMinusSpyPp": [
+     0.8743,
+     -0.2034,
+     -0.3547,
+     -0.5187
+    ],
+    "signalMinusPopulationPp": [
+     0.5082,
+     0.3852,
+     -0.0013,
+     0.1627
+    ],
+    "costPp": [
+     0.3097,
+     0.3085,
+     0.3061,
+     0.3061
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -1.2824,
+     "signalMinusPopulationAllPp": 0.9264
+    }
+   },
+   {
+    "rule": "MOMENTUM_IMPROVED",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.7898,
+     -0.6094,
+     -2.1451,
+     -2.1451
+    ],
+    "populationMinusSpyPp": [
+     4.6586,
+     -0.1161,
+     -1.4354,
+     -2.3017
+    ],
+    "signalMinusPopulationPp": [
+     -0.5266,
+     -0.1538,
+     -0.3748,
+     0.4915
+    ],
+    "costPp": [
+     0.3422,
+     0.3394,
+     0.3349,
+     0.3349
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.2683,
+     "signalMinusPopulationAllPp": 3.4581
+    }
+   },
+   {
+    "rule": "MOMENTUM_DETERIORATED",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.3909,
+     -0.0056,
+     -1.862,
+     -1.862
+    ],
+    "populationMinusSpyPp": [
+     4.8405,
+     0.7354,
+     -1.187,
+     -1.952
+    ],
+    "signalMinusPopulationPp": [
+     -1.1086,
+     -0.3991,
+     -0.3381,
+     0.4269
+    ],
+    "costPp": [
+     0.341,
+     0.3419,
+     0.3369,
+     0.3369
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -4.885,
+     "signalMinusPopulationAllPp": 3.3599
+    }
+   },
+   {
+    "rule": "TREND_UP",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.5314,
+     -0.6055,
+     -2.3275,
+     -2.3275
+    ],
+    "populationMinusSpyPp": [
+     4.59,
+     -0.0946,
+     -1.4225,
+     -2.1608
+    ],
+    "signalMinusPopulationPp": [
+     -0.717,
+     -0.1705,
+     -0.5697,
+     0.1686
+    ],
+    "costPp": [
+     0.3416,
+     0.3403,
+     0.3353,
+     0.3353
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.1851,
+     "signalMinusPopulationAllPp": 3.1929
+    }
+   },
+   {
+    "rule": "TREND_DOWN",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     2.2187,
+     -1.0482,
+     -1.8612,
+     -1.8612
+    ],
+    "populationMinusSpyPp": [
+     4.3588,
+     0.3724,
+     -1.0993,
+     -1.8313
+    ],
+    "signalMinusPopulationPp": [
+     -1.8027,
+     -1.0817,
+     -0.4249,
+     0.3071
+    ],
+    "costPp": [
+     0.3374,
+     0.3389,
+     0.337,
+     0.337
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -4.732,
+     "signalMinusPopulationAllPp": 3.2078
+    }
+   },
+   {
+    "rule": "NEW_52W_HIGH",
+    "h": 52,
+    "columns": [
+     "V11_2000_2025",
+     "FRAME_2009_2025",
+     "SP500_WITH_SERIES",
+     "SP500_ALL_ESTIMATE_ZERO"
+    ],
+    "spyExcessNetPp": [
+     3.3871,
+     -0.5474,
+     -1.3405,
+     -1.3405
+    ],
+    "populationMinusSpyPp": [
+     3.2341,
+     -0.7735,
+     -1.3322,
+     -2.0031
+    ],
+    "signalMinusPopulationPp": [
+     0.491,
+     0.5624,
+     0.3235,
+     0.9943
+    ],
+    "costPp": [
+     0.338,
+     0.3363,
+     0.3317,
+     0.3317
+    ],
+    "lowerBound": {
+     "populationAllMinusSpyPp": -5.0774,
+     "signalMinusPopulationAllPp": 4.0686
+    }
+   }
+  ],
+  "factorBridge": {
+   "quality": {
+    "v10Published13W": 0.028341,
+    "v10Published26W": 0.034806,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.035159,
+     "icNwP": 0.001774,
+     "q5MinusQ1Pp": -0.7169,
+     "q5MinusSpyPp": 0.3582
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.035159,
+     "icNwP": 0.001774,
+     "q5MinusQ1Pp": -0.7169,
+     "q5MinusSpyPp": 0.3582
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.013307,
+     "icNwP": 0.412682,
+     "q5MinusQ1Pp": 0.1596,
+     "q5MinusSpyPp": -0.0222
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.0142,
+     "icNwP": 0.375983,
+     "q5MinusQ1Pp": 0.0594,
+     "q5MinusSpyPp": -0.0963
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.014212,
+     "icNwP": 0.375539,
+     "q5MinusQ1Pp": 0.0471,
+     "q5MinusSpyPp": -0.1151
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.017899,
+     "icNwP": 0.27979,
+     "q5MinusQ1Pp": 0.8468,
+     "q5MinusSpyPp": 0.2771
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.018704,
+     "icNwP": 0.251304,
+     "q5MinusQ1Pp": 0.7539,
+     "q5MinusSpyPp": 0.2227
+    }
+   },
+   "growth": {
+    "v10Published13W": 0.011843,
+    "v10Published26W": 0.014203,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.008921,
+     "icNwP": 0.55447,
+     "q5MinusQ1Pp": 0.2591,
+     "q5MinusSpyPp": 0.7236
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.008921,
+     "icNwP": 0.55447,
+     "q5MinusQ1Pp": 0.2591,
+     "q5MinusSpyPp": 0.7236
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.023518,
+     "icNwP": 0.286401,
+     "q5MinusQ1Pp": 0.9769,
+     "q5MinusSpyPp": 0.1191
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.022426,
+     "icNwP": 0.28999,
+     "q5MinusQ1Pp": 0.9418,
+     "q5MinusSpyPp": 0.0431
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.022407,
+     "icNwP": 0.291258,
+     "q5MinusQ1Pp": 0.9273,
+     "q5MinusSpyPp": 0.0159
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.023076,
+     "icNwP": 0.288461,
+     "q5MinusQ1Pp": 0.9332,
+     "q5MinusSpyPp": 0.0264
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.021827,
+     "icNwP": 0.296323,
+     "q5MinusQ1Pp": 0.9028,
+     "q5MinusSpyPp": -0.0435
+    }
+   },
+   "value": {
+    "v10Published13W": 0.03434,
+    "v10Published26W": 0.039462,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.055116,
+     "icNwP": 0.006016,
+     "q5MinusQ1Pp": -2.2981,
+     "q5MinusSpyPp": 0.2633
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.053542,
+     "icNwP": 0.00784,
+     "q5MinusQ1Pp": -2.4296,
+     "q5MinusSpyPp": 0.2677
+    },
+    "S3_SP_SERIES": {
+     "meanIC": -0.011929,
+     "icNwP": 0.548568,
+     "q5MinusQ1Pp": -1.3597,
+     "q5MinusSpyPp": -1.0062
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": -0.01128,
+     "icNwP": 0.558159,
+     "q5MinusQ1Pp": -1.34,
+     "q5MinusSpyPp": -0.9756
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": -0.011256,
+     "icNwP": 0.560089,
+     "q5MinusQ1Pp": -1.333,
+     "q5MinusSpyPp": -0.9756
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": -0.005237,
+     "icNwP": 0.794577,
+     "q5MinusQ1Pp": -0.6891,
+     "q5MinusSpyPp": -0.7516
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": -0.004391,
+     "icNwP": 0.822746,
+     "q5MinusQ1Pp": -0.6835,
+     "q5MinusSpyPp": -0.7335
+    }
+   },
+   "profitability": {
+    "v10Published13W": 0.044314,
+    "v10Published26W": 0.050819,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.050919,
+     "icNwP": 0.011298,
+     "q5MinusQ1Pp": -1.3361,
+     "q5MinusSpyPp": 0.4515
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.050919,
+     "icNwP": 0.011298,
+     "q5MinusQ1Pp": -1.3361,
+     "q5MinusSpyPp": 0.4515
+    },
+    "S3_SP_SERIES": null,
+    "S4_SP_HOLDINGS_ZERO": null,
+    "S4_SP_HOLDINGS_LOWER": null,
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.024712,
+     "icNwP": 0.354321,
+     "q5MinusQ1Pp": 1.0139,
+     "q5MinusSpyPp": 0.7948
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.027442,
+     "icNwP": 0.28123,
+     "q5MinusQ1Pp": 1.0179,
+     "q5MinusSpyPp": 0.8045
+    }
+   },
+   "momentum": {
+    "v10Published13W": 0.045271,
+    "v10Published26W": 0.063221,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.050623,
+     "icNwP": 0.001796,
+     "q5MinusQ1Pp": 0.9493,
+     "q5MinusSpyPp": 0.8898
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.050623,
+     "icNwP": 0.001796,
+     "q5MinusQ1Pp": 0.9493,
+     "q5MinusSpyPp": 0.8898
+    },
+    "S3_SP_SERIES": {
+     "meanIC": 0.009335,
+     "icNwP": 0.699547,
+     "q5MinusQ1Pp": 0.3298,
+     "q5MinusSpyPp": -0.1824
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": 0.008399,
+     "icNwP": 0.719429,
+     "q5MinusQ1Pp": 0.3564,
+     "q5MinusSpyPp": -0.161
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": 0.008271,
+     "icNwP": 0.723382,
+     "q5MinusQ1Pp": 0.3469,
+     "q5MinusSpyPp": -0.184
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.008252,
+     "icNwP": 0.734455,
+     "q5MinusQ1Pp": 0.141,
+     "q5MinusSpyPp": -0.2589
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.007237,
+     "icNwP": 0.758645,
+     "q5MinusQ1Pp": 0.1712,
+     "q5MinusSpyPp": -0.2367
+    }
+   },
+   "risk": {
+    "v10Published13W": 0.059437,
+    "v10Published26W": 0.074484,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.0758,
+     "icNwP": 0.017105,
+     "q5MinusQ1Pp": -2.5723,
+     "q5MinusSpyPp": -1.2685
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.0758,
+     "icNwP": 0.017105,
+     "q5MinusQ1Pp": -2.5723,
+     "q5MinusSpyPp": -1.2685
+    },
+    "S3_SP_SERIES": {
+     "meanIC": -0.00395,
+     "icNwP": 0.915093,
+     "q5MinusQ1Pp": -1.2404,
+     "q5MinusSpyPp": -0.5738
+    },
+    "S4_SP_HOLDINGS_ZERO": {
+     "meanIC": -0.007759,
+     "icNwP": 0.83157,
+     "q5MinusQ1Pp": -1.3528,
+     "q5MinusSpyPp": -0.6138
+    },
+    "S4_SP_HOLDINGS_LOWER": {
+     "meanIC": -0.007463,
+     "icNwP": 0.837647,
+     "q5MinusQ1Pp": -1.3474,
+     "q5MinusSpyPp": -0.6189
+    },
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": -0.003958,
+     "icNwP": 0.915312,
+     "q5MinusQ1Pp": -1.1679,
+     "q5MinusSpyPp": -0.5213
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": -0.007769,
+     "icNwP": 0.83205,
+     "q5MinusQ1Pp": -1.281,
+     "q5MinusSpyPp": -0.5627
+    }
+   },
+   "composite": {
+    "v10Published13W": 0.04841,
+    "v10Published26W": 0.065691,
+    "S1_FRAME_BEFORE": {
+     "meanIC": 0.056228,
+     "icNwP": 0.016604,
+     "q5MinusQ1Pp": -1.3378,
+     "q5MinusSpyPp": 0.8699
+    },
+    "S2_FRAME_AFTER": {
+     "meanIC": 0.054691,
+     "icNwP": 0.019449,
+     "q5MinusQ1Pp": -1.249,
+     "q5MinusSpyPp": 0.8705
+    },
+    "S3_SP_SERIES": null,
+    "S4_SP_HOLDINGS_ZERO": null,
+    "S4_SP_HOLDINGS_LOWER": null,
+    "D1_SP_SERIES_FULLFRAME_SCORES": {
+     "meanIC": 0.042148,
+     "icNwP": 0.109037,
+     "q5MinusQ1Pp": 1.4432,
+     "q5MinusSpyPp": 0.8298
+    },
+    "D2_SP_HOLDINGS_FULLFRAME_ZERO": {
+     "meanIC": 0.040661,
+     "icNwP": 0.114821,
+     "q5MinusQ1Pp": 1.2973,
+     "q5MinusSpyPp": 0.7322
+    }
+   }
+  },
+  "text": "Selection = signal minus the same-week population (P5b), rank IC/quintiles inside the scored population (P5c), strategy minus the equal-weighted selectable universe (P6). On the S&P population the factor ICs that are clearly positive on the survivor frame shrink to about zero; the change happens between S2 (frame) and S3 (S&P members), not through the market-cap correction (S1 -> S2) nor through the exits (S3 -> S4)."
+ },
+ "costs": {
+  "p5bPerEventPp": [
+   [
+    "MOMENTUM_IMPROVED",
+    13,
+    0.3081
+   ],
+   [
+    "MOMENTUM_DETERIORATED",
+    13,
+    0.311
+   ],
+   [
+    "TREND_UP",
+    13,
+    0.3075
+   ],
+   [
+    "TREND_DOWN",
+    13,
+    0.3098
+   ],
+   [
+    "NEW_52W_HIGH",
+    13,
+    0.3061
+   ],
+   [
+    "MOMENTUM_IMPROVED",
+    52,
+    0.3349
+   ],
+   [
+    "MOMENTUM_DETERIORATED",
+    52,
+    0.3369
+   ],
+   [
+    "TREND_UP",
+    52,
+    0.3353
+   ],
+   [
+    "TREND_DOWN",
+    52,
+    0.337
+   ],
+   [
+    "NEW_52W_HIGH",
+    52,
+    0.3317
+   ]
+  ],
+  "p6CostDragPpPerYear": {
+   "S1_EW_SP500": [
+    0.061067,
+    0.203558
+   ],
+   "S2_MOM_Q5_FILTER": [
+    0.436752,
+    1.455839
+   ],
+   "S3_QP_Q5": [
+    0.202741,
+    0.675804
+   ],
+   "S4_MOMQP_TOP30_VOLTGT": [
+    0.314862,
+    1.04954
+   ],
+   "S5_LOWVOL_Q1": [
+    0.209998,
+    0.699993
+   ],
+   "S6_EW_BUFFER_FILTER": [
+    0.082578,
+    0.27526
+   ]
+  },
+  "text": "Costs are mechanical: 10+5 bps per side per event (P5b); in P6 they scale with turnover (EW 0.2x, momentum 1.5x one-sided per year)."
+ },
+ "benchmark": {
+  "spyTrMinusPriceCagrPp": 2.0114,
+  "spyTrVsNportNote": "quarterly SPY TR reference vs N-PORT fund total return 2019-09+: see p5a periods counts.nportTotalReturn",
+  "text": "Every comparison is price vs price. SPY total return exceeds the SPY price return by about 2 pp per year; a strategy whose members pay similar dividends would gain about as much, which is why the price-vs-TR comparison (vsSpyTrReference) is mixed basis and only shows the size of the definition term."
+ },
+ "totalReturn": {
+  "state": "NOT_AVAILABLE_FOR_STRATEGY_SIDE",
+  "text": "Holdings returns are price returns (Wert/Stueck); member dividends are not in the population. No total-return statement about strategies is possible; the SPY TR reference bounds the definition effect."
+ },
+ "portfolioConstruction": {
+  "weeklyRebalancingPp": 1.418755,
+  "equalVsCapWeightInIndexPp": -1.431521,
+  "text": "The V11 equal-weighted index was rebalanced weekly; period buy-and-hold of the same frame earns about 1.4 pp per year less (rebalancing bonus in a high-dispersion universe). Equal versus cap weighting inside the index is the largest single term after 2019."
+ },
+ "strategies": {
+  "S1_EW_SP500": {
+   "cagr": 0.094837,
+   "vsSpyPp": -1.8328,
+   "vsSpyStressPp": -1.9888,
+   "vsSpyLowerPp": -5.0428,
+   "vsSpyCommonSpanPp": -2.1559,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": -0.8024,
+    "costDragPp": 0.061067,
+    "avgEquity": 1,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.192563,
+   "bootP": 0.1773
+  },
+  "S2_MOM_Q5_FILTER": {
+   "cagr": 0.063817,
+   "vsSpyPp": -4.9348,
+   "vsSpyStressPp": -6.0174,
+   "vsSpyLowerPp": -4.9986,
+   "vsSpyCommonSpanPp": -4.8082,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": -3.9044,
+    "costDragPp": 0.436752,
+    "avgEquity": 0.844444,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.076542,
+   "bootP": 0.061
+  },
+  "S3_QP_Q5": {
+   "cagr": 0.11551,
+   "vsSpyPp": 0.2345,
+   "vsSpyStressPp": -0.293,
+   "vsSpyLowerPp": 0.2345,
+   "vsSpyCommonSpanPp": -0.0162,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": 1.2649,
+    "costDragPp": 0.202741,
+    "avgEquity": 0.933333,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.897842,
+   "bootP": 0.8899
+  },
+  "S4_MOMQP_TOP30_VOLTGT": {
+   "cagr": 0.095871,
+   "vsSpyPp": -1.7294,
+   "vsSpyStressPp": -2.5339,
+   "vsSpyLowerPp": -1.776,
+   "vsSpyCommonSpanPp": -2.2056,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": -0.699,
+    "costDragPp": 0.314862,
+    "avgEquity": 0.747733,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.38452,
+   "bootP": 0.3871
+  },
+  "S5_LOWVOL_Q1": {
+   "cagr": 0.091649,
+   "vsSpyPp": -2.1516,
+   "vsSpyStressPp": -2.6862,
+   "vsSpyLowerPp": -2.1674,
+   "vsSpyCommonSpanPp": -3.4456,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": -1.1212,
+    "costDragPp": 0.209998,
+    "avgEquity": 1,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.346513,
+   "bootP": 0.3246
+  },
+  "S6_EW_BUFFER_FILTER": {
+   "cagr": 0.071033,
+   "vsSpyPp": -4.2132,
+   "vsSpyStressPp": -4.4197,
+   "vsSpyLowerPp": -6.8703,
+   "vsSpyCommonSpanPp": -4.8375,
+   "decomposition": {
+    "benchmarkEwVsSpyPp": -1.8328,
+    "universeSelectableVsEwPp": 0.8024,
+    "selectionVsSelectablePp": -3.1828,
+    "costDragPp": 0.082578,
+    "avgEquity": 0.83,
+    "spyTrMinusPricePp": 2.0008
+   },
+   "nwP": 0.009319,
+   "bootP": 0.004
+  }
+ }
+}

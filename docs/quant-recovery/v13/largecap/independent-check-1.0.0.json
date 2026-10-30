@@ -1,0 +1,332 @@
+{
+ "schemaVersion": "v13-largecap-independent-check-1.0.0",
+ "implementation": "python3 -I stdlib, separate parser and rules",
+ "cases": "docs/quant-recovery/v13/largecap/cases-1.0.0.json",
+ "casesSha256": "f15feb58cc0f63570487c906876a1784c26bf93dd337b3eceebe0154a9b7f2cd",
+ "codeSha256": "03639c9000003cbdb7e8ac7333646ac1e1ea8c0b1a555b2db4cbe0b32d0eae6e",
+ "checks": {
+  "A_rehash": {
+   "documents": 362,
+   "ok": true
+  }
+ },
+ "perListing": {
+  "ref_AAPL": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0001193125-13-168288",
+     "filingDate": "2013-04-24",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000320193-26-000006",
+     "filingDate": "2026-01-30",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 332,
+   "quotesFound": 332,
+   "identityStatusAgree": 276,
+   "aMappingAgree": 184,
+   "bNumberAgree": 148,
+   "bandAgree": 332,
+   "ownInterval": [
+    "2012-10-05",
+    "2025-09-26",
+    678
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_ABT": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0001628280-23-035957",
+     "filingDate": "2023-11-01",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-24-020011",
+     "filingDate": "2024-05-02",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-24-033740",
+     "filingDate": "2024-07-31",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-25-021090",
+     "filingDate": "2025-04-30",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-25-036720",
+     "filingDate": "2025-07-30",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-26-028357",
+     "filingDate": "2026-04-29",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 24,
+   "quotesFound": 24,
+   "identityStatusAgree": 24,
+   "aMappingAgree": 0,
+   "bNumberAgree": 24,
+   "bandAgree": 24,
+   "ownInterval": [
+    "2022-08-05",
+    "2026-06-26",
+    204
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_MS": {
+   "unusedTablesInsideInterval": [],
+   "periods": 472,
+   "quotesFound": 472,
+   "identityStatusAgree": 472,
+   "aMappingAgree": 104,
+   "bNumberAgree": 368,
+   "bandAgree": 472,
+   "ownInterval": [
+    "2008-09-05",
+    "2026-06-26",
+    930
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_USB": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0000950134-04-002667",
+     "filingDate": "2004-02-27",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950134-05-003890",
+     "filingDate": "2005-02-28",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950134-05-003890",
+     "filingDate": "2005-02-28",
+     "table": "A_QUARTERLY"
+    },
+    {
+     "accession": "0000950134-06-004429",
+     "filingDate": "2006-03-07",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950124-07-001116",
+     "filingDate": "2007-02-26",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950124-08-000806",
+     "filingDate": "2008-02-25",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950152-09-002057",
+     "filingDate": "2009-03-02",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950123-10-018123",
+     "filingDate": "2010-02-26",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0000950123-11-019888",
+     "filingDate": "2011-02-28",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001193125-12-212780",
+     "filingDate": "2012-05-07",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 334,
+   "quotesFound": 334,
+   "identityStatusAgree": 313,
+   "aMappingAgree": 160,
+   "bNumberAgree": 174,
+   "bandAgree": 334,
+   "ownInterval": [
+    "2001-04-06",
+    "2026-06-26",
+    1317
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_DD": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0001666700-17-000026",
+     "filingDate": "2017-11-06",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001666700-20-000042",
+     "filingDate": "2020-07-31",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 43,
+   "quotesFound": 43,
+   "identityStatusAgree": 43,
+   "aMappingAgree": 0,
+   "bNumberAgree": 43,
+   "bandAgree": 43,
+   "ownInterval": [
+    "2017-11-03",
+    "2024-01-26",
+    326
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_COR": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0001140859-21-000045",
+     "filingDate": "2021-08-04",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 383,
+   "quotesFound": 383,
+   "identityStatusAgree": 383,
+   "aMappingAgree": 112,
+   "bNumberAgree": 271,
+   "bandAgree": 383,
+   "ownInterval": [
+    "2016-07-01",
+    "2026-06-26",
+    522
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  },
+  "ref_DOC": {
+   "unusedTablesInsideInterval": [
+    {
+     "accession": "0001628280-25-003748",
+     "filingDate": "2025-02-04",
+     "table": "B_REPURCHASE"
+    },
+    {
+     "accession": "0001628280-25-046273",
+     "filingDate": "2025-10-24",
+     "table": "B_REPURCHASE"
+    }
+   ],
+   "periods": 7,
+   "quotesFound": 7,
+   "identityStatusAgree": 7,
+   "aMappingAgree": 0,
+   "bNumberAgree": 7,
+   "bandAgree": 7,
+   "ownInterval": [
+    "2024-03-01",
+    "2026-04-24",
+    113
+   ],
+   "intervalMatch": true,
+   "historyGuardMatch": true
+  }
+ },
+ "problems": [
+  "IDENTITY_RANGE ref_AAPL ['1994-12-13']..['2026-07-31'] vs 1994-12-13..2025-10-31",
+  "IDENTITY_STATUS ref_AAPL 0000320193-19-000076 2019-03-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-19-000076 2019-05-05 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-19-000076 2019-06-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000010 2019-09-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000010 2019-11-03 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000010 2019-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000052 2019-12-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000052 2020-02-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000052 2020-03-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000062 2020-05-03 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-20-000062 2020-05-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000010 2020-09-27 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000010 2020-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000010 2020-11-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000056 2020-12-27 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000056 2021-01-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000056 2021-02-28 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000065 2021-03-28 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000065 2021-05-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-21-000065 2021-05-30 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000007 2021-09-26 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000007 2021-10-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000007 2021-11-28 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000059 2021-12-26 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000059 2022-01-30 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000059 2022-02-27 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000070 2022-03-27 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000070 2022-05-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-22-000070 2022-05-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000006 2022-09-25 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000006 2022-10-30 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000006 2022-11-27 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000064 2023-01-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000064 2023-02-05 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000064 2023-03-05 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000077 2023-04-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000077 2023-05-07 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-23-000077 2023-06-04 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000006 2023-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000006 2023-11-05 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000006 2023-12-03 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000069 2023-12-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000069 2024-02-04 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000069 2024-03-03 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000081 2024-03-31 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000081 2024-05-05 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-24-000081 2024-06-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000008 2024-09-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000008 2024-11-03 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000008 2024-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000057 2024-12-29 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000057 2025-02-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000057 2025-03-02 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000073 2025-03-30 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000073 2025-05-04 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_AAPL 0000320193-25-000073 2025-06-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-20-043622 2019-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-20-043622 2019-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-20-043622 2019-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-21-052547 2020-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-21-052547 2020-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-21-052547 2020-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-22-048709 2021-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-22-048709 2021-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-22-048709 2021-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-23-050691 2022-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-23-050691 2022-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0001193125-23-050691 2022-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-24-000018 2023-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-24-000018 2023-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-24-000018 2023-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-25-000016 2024-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-25-000016 2024-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-25-000016 2024-12-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-26-000011 2025-10-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-26-000011 2025-11-01 own=OWN cases=BRACKETED",
+  "IDENTITY_STATUS ref_USB 0000036104-26-000011 2025-12-01 own=OWN cases=BRACKETED"
+ ],
+ "problemCount": 78,
+ "conservativeIdentityFindings": 78,
+ "otherFindings": 0,
+ "verdict": "PASS_WITH_CONSERVATIVE_IDENTITY_FINDINGS"
+}

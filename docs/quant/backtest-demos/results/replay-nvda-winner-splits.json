@@ -1,0 +1,767 @@
+{
+ "schemaVersion": "backtest-runner-result-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "kind": "SAME_STOCK_REPLAY",
+ "state": "RESEARCH_EXECUTED",
+ "specHash": "47c1d6611a041b90ea5a5ea54f24de859d18b9626dc32b4d07e2ee572a0e2f79",
+ "spec": {
+  "schemaVersion": "backtest-runner-spec-1.0.0",
+  "version": "1.0.0",
+  "registeredAt": "2026-10-29T00:00:00Z",
+  "asOf": "2025-12-31",
+  "costs": {
+   "feeBps": 5,
+   "slippageBps": 5
+  },
+  "benchmark": "SPY",
+  "id": "replay-nvda-winner-splits",
+  "description": "Fixed near-high rule replayed on one listing (NVDA), weekly closes, 26-week horizon",
+  "kind": "SAME_STOCK_REPLAY",
+  "window": {
+   "from": "2010-01-01",
+   "to": "2024-12-31"
+  },
+  "population": {
+   "profile": "V10_PRIMARY",
+   "tickers": [
+    "NVDA"
+   ]
+  },
+  "engine": {
+   "variant": "RULE_EVENTS",
+   "pattern": {
+    "id": "NEAR_52W_HIGH_5PCT",
+    "version": "1.0.0",
+    "terms": [
+     {
+      "feature": "distanceTo52wHigh",
+      "operator": "gte",
+      "value": -0.05
+     }
+    ]
+   },
+   "cooldownBars": 13,
+   "horizonBars": 26
+  },
+  "methods": {
+   "MONTE_CARLO": {
+    "simulations": 2000,
+    "horizon": 10,
+    "seed": 20261029
+   },
+   "WALK_FORWARD": {
+    "trainSize": 156,
+    "validationSize": 52,
+    "testSize": 104
+   },
+   "MARKET_REGIME": {},
+   "PARAMETER_SENSITIVITY": {
+    "dimensions": {
+     "holdingPeriods": [
+      13,
+      26,
+      52
+     ]
+    },
+    "blockLength": 26
+   }
+  }
+ },
+ "inputHashes": {
+  "code": {
+   "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+   "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+   "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+   "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+   "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+   "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+   "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+   "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+   "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+   "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+   "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+   "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+   "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+   "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+   "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+   "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+   "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+   "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+   "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+   "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+  },
+  "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+  "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+  "population": {
+   "profile": "V10_PRIMARY",
+   "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+   "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+   "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+   "calendarLength": 1922,
+   "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+   "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registers": {
+    "identityEvidence": {
+     "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+     "v12RegistryHash": null,
+     "v13RegistryHash": null,
+     "v13StrictRegistryHash": null
+    },
+    "corporateActionEvidence": {
+     "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+     "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    "listingLifecycleEvidence": null,
+    "delistedRegister": null,
+    "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+    "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+   },
+   "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+  },
+  "listings": {
+   "ref_NVDA": {
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+    "registerPointsSha256": null,
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "bars": 1406
+   }
+  },
+  "private": {}
+ },
+ "inputHash": "c766621157320bd05bc46f4d4ddbbc7ea32f0f1ee2ee044685592c00a935e202",
+ "kindPath": {
+  "kind": "SAME_STOCK_REPLAY",
+  "engine": "research-studies.runReplayValidation",
+  "adapter": "fromResearchStudy",
+  "population": "V10_PRIMARY"
+ },
+ "envelope": {
+  "schemaVersion": "backtest-result-2.0.0",
+  "identity": {
+   "kind": "SAME_STOCK_REPLAY",
+   "scope": "SINGLE_LISTING",
+   "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+   "listingHash": "2dd5c8f74249de203ae6662bc53ffa43f4b5121dc79dd656bee76d3017c8aa0b",
+   "populationId": null,
+   "populationHash": null,
+   "source": {
+    "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
+    "schemaVersion": "research-studies-1.1.0",
+    "engineVersion": null,
+    "artifact": null,
+    "resultHash": "8f316b22e362b44ace6e8697f193408f65cc0a35af948042e7e36470edea7b9f"
+   }
+  },
+  "period": {
+   "from": "2011-01-07",
+   "to": "2025-05-30",
+   "asOf": "2025-12-31",
+   "grain": "WEEKLY"
+  },
+  "spec": {
+   "id": "replay-nvda-winner-splits",
+   "version": "1.0.0",
+   "description": "Fixed near-high rule replayed on one listing (NVDA), weekly closes, 26-week horizon",
+   "parameters": {
+    "runner": "backtest-runner-1.0.0",
+    "runnerSpecSchema": "backtest-runner-spec-1.0.0",
+    "runnerSpec": {
+     "schemaVersion": "backtest-runner-spec-1.0.0",
+     "version": "1.0.0",
+     "registeredAt": "2026-10-29T00:00:00Z",
+     "asOf": "2025-12-31",
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "benchmark": "SPY",
+     "id": "replay-nvda-winner-splits",
+     "description": "Fixed near-high rule replayed on one listing (NVDA), weekly closes, 26-week horizon",
+     "kind": "SAME_STOCK_REPLAY",
+     "window": {
+      "from": "2010-01-01",
+      "to": "2024-12-31"
+     },
+     "population": {
+      "profile": "V10_PRIMARY",
+      "tickers": [
+       "NVDA"
+      ]
+     },
+     "engine": {
+      "variant": "RULE_EVENTS",
+      "pattern": {
+       "id": "NEAR_52W_HIGH_5PCT",
+       "version": "1.0.0",
+       "terms": [
+        {
+         "feature": "distanceTo52wHigh",
+         "operator": "gte",
+         "value": -0.05
+        }
+       ]
+      },
+      "cooldownBars": 13,
+      "horizonBars": 26
+     },
+     "methods": {
+      "MONTE_CARLO": {
+       "simulations": 2000,
+       "horizon": 10,
+       "seed": 20261029
+      },
+      "WALK_FORWARD": {
+       "trainSize": 156,
+       "validationSize": 52,
+       "testSize": 104
+      },
+      "MARKET_REGIME": {},
+      "PARAMETER_SENSITIVITY": {
+       "dimensions": {
+        "holdingPeriods": [
+         13,
+         26,
+         52
+        ]
+       },
+       "blockLength": 26
+      }
+     }
+    },
+    "runnerSpecHash": "47c1d6611a041b90ea5a5ea54f24de859d18b9626dc32b4d07e2ee572a0e2f79",
+    "inputHashes": {
+     "code": {
+      "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+      "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+      "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+      "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+      "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+      "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+      "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+      "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+      "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+      "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+      "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+      "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+      "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+      "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+      "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+      "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+      "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+      "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+      "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+     },
+     "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+     "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+     "population": {
+      "profile": "V10_PRIMARY",
+      "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+      "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+      "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+      "calendarLength": 1922,
+      "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+      "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "registers": {
+       "identityEvidence": {
+        "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+        "v12RegistryHash": null,
+        "v13RegistryHash": null,
+        "v13StrictRegistryHash": null
+       },
+       "corporateActionEvidence": {
+        "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+        "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+       },
+       "listingLifecycleEvidence": null,
+       "delistedRegister": null,
+       "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+       "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+      },
+      "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+     },
+     "listings": {
+      "ref_NVDA": {
+       "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+       "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+       "registerPointsSha256": null,
+       "first": "1999-01-22",
+       "last": "2025-12-26",
+       "bars": 1406
+      }
+     },
+     "private": {}
+    },
+    "inputHash": "c766621157320bd05bc46f4d4ddbbc7ea32f0f1ee2ee044685592c00a935e202",
+    "kindPath": {
+     "kind": "SAME_STOCK_REPLAY",
+     "engine": "research-studies.runReplayValidation",
+     "adapter": "fromResearchStudy",
+     "population": "V10_PRIMARY"
+    },
+    "adapterSpec": {
+     "id": "registration:5ad4099c18002135",
+     "version": null,
+     "description": "researchStudyKind:SAME_STOCK_REPLAY_RULE",
+     "parameters": {
+      "registrationHash": "5ad4099c180021359a0a608f301684e184145990fd924303876acc63e278400f",
+      "analysisMode": "EXPLORATORY",
+      "sourceMode": "HISTORICAL_SIMULATION",
+      "pattern": {
+       "id": "NEAR_52W_HIGH_5PCT",
+       "version": "1.0.0",
+       "terms": [
+        {
+         "feature": "distanceTo52wHigh",
+         "operator": "gte",
+         "value": -0.05
+        }
+       ]
+      },
+      "ruleHash": "eec42c1ae05ec2ba30e3e4811448312ad82e18a4c04416351032f3fe23771336",
+      "factorId": null,
+      "rules": null,
+      "entryStates": null,
+      "costs": {
+       "basis": "PER_SIDE_NOTIONAL",
+       "feeBps": 5,
+       "slippageBps": 5
+      }
+     },
+     "specHash": "fa43586e33eb09df1a84cd8657654ab6e9208c920f1e008aed5ac1c65fb9e33a"
+    }
+   },
+   "specHash": "ffac59375399fdb72be8e1530142fe057a2152bf6540b4a8a9d20fbdf31b46ac"
+  },
+  "events": {
+   "form": "EVENTS",
+   "occurrences": 37,
+   "completed": 37,
+   "immature": 0,
+   "censored": 0,
+   "ineligible": 0,
+   "titles": 1,
+   "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+   "exit": "FIXED_HORIZON"
+  },
+  "portfolio": null,
+  "metrics": {
+   "basis": "PER_EVENT",
+   "totalReturn": null,
+   "cagr": null,
+   "annualReturns": null,
+   "volatility": null,
+   "maxDrawdown": -0.16433566433566427,
+   "hitRate": 0.8648648648648649,
+   "trades": 37,
+   "turnover": null,
+   "costs": {
+    "model": "PER_SIDE_NOTIONAL",
+    "feeBpsPerSide": 5,
+    "slippageBpsPerSide": 5,
+    "paid": null
+   },
+   "cashShare": null,
+   "benchmark": {
+    "id": "SUPPLIED_RESEARCH_BENCHMARK",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0
+   },
+   "excess": {
+    "meanExcess": 0.23297626649307698,
+    "n": 37
+   },
+   "perEvent": {
+    "horizon": "REGISTERED_HORIZON",
+    "label": null,
+    "n": 37,
+    "median": 0.18897768897768907,
+    "mean": 0.2892278844355524,
+    "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+   }
+  },
+  "uncertainty": {
+   "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+   "interval": null,
+   "level": null,
+   "p": null,
+   "family": null
+  },
+  "dataQuality": {
+   "coverage": {
+    "numerator": 37,
+    "denominator": 37,
+    "share": 1,
+    "contract": null
+   },
+   "censored": 0,
+   "terminal": {
+    "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+   },
+   "corporateActions": {
+    "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+    "listings": [
+     {
+      "securityId": "ref_NVDA",
+      "quality": "RESOLVED",
+      "splitsInWindow": [
+       [
+        "2021-07-20",
+        4
+       ],
+       [
+        "2024-06-10",
+        10
+       ]
+      ]
+     }
+    ]
+   },
+   "totalReturnBasis": "PRICE_RETURN",
+   "survivorship": {
+    "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "control": "population profile V10_PRIMARY (dce532a2533c2907)"
+   },
+   "warnings": [
+    "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "DIVIDENDS_EXCLUDED",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ]
+  },
+  "methods": [
+   {
+    "method": "MONTE_CARLO",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-monte-carlo-1.0.0",
+     "model": "TRADE_IID",
+     "simulations": 2000,
+     "horizon": 10,
+     "seed": 20261029,
+     "blockLength": null,
+     "sourceObservations": 20,
+     "totalReturn": {
+      "p5": 0.39619295578015196,
+      "p50": 7.890615888814502,
+      "p95": 44.27926605379634
+     },
+     "maxDrawdown": {
+      "p5": -0.6441075223565831,
+      "p50": -0.3912480481395437,
+      "p95": 0
+     },
+     "inputHash": "a686fcee4c65fde8003c18ec06f74a0aebe0528a373e601402e06d77a60cc5f0",
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+    }
+   },
+   {
+    "method": "WALK_FORWARD",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-validation-1.0.0",
+     "mode": "ROLLING",
+     "sizes": {
+      "train": 156,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "embargoDays": 0,
+     "folds": 5,
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
+     },
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+     "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+    }
+   },
+   {
+    "method": "OUT_OF_SAMPLE",
+    "state": "EXECUTED",
+    "result": {
+     "endpoint": "netReturn",
+     "n": 29,
+     "mean": 0.3265475035407173,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2014-01-03",
+        "2015-12-24"
+       ],
+       "train": 1,
+       "validation": 0,
+       "n": 7,
+       "mean": 0.1306421293660916
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2015-12-31",
+        "2017-12-22"
+       ],
+       "train": 0,
+       "validation": 0,
+       "n": 7,
+       "mean": 0.6189034809400012
+      },
+      {
+       "fold": 2,
+       "test": [
+        "2017-12-29",
+        "2019-12-20"
+       ],
+       "train": 5,
+       "validation": 0,
+       "n": 4,
+       "mean": -0.025763187319357783
+      },
+      {
+       "fold": 3,
+       "test": [
+        "2019-12-27",
+        "2021-12-17"
+       ],
+       "train": 8,
+       "validation": 0,
+       "n": 8,
+       "mean": 0.3403630413449361
+      },
+      {
+       "fold": 4,
+       "test": [
+        "2021-12-23",
+        "2023-12-15"
+       ],
+       "train": 3,
+       "validation": 2,
+       "n": 3,
+       "mean": 0.5344022496853648
+      }
+     ],
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922",
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT"
+    }
+   },
+   {
+    "method": "MARKET_REGIME",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-studies.classifyRegimes+analyzeRegimes",
+     "mode": "PIT_AVAILABLE",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "regimeResultHash": "d272cdf3304233cfe4c61e74d7994bfb202797e2cc9ac57918e928d8adfbbf25",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 2,
+       "mean": 0.4953033547391571,
+       "median": 0.4953033547391571,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 1,
+       "mean": 0.3663919972644807,
+       "median": 0.3663919972644807,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 2,
+       "mean": 0.32632411859248606,
+       "median": 0.326324118592486,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 32,
+       "mean": 0.2716182743808648,
+       "median": 0.17301532584022872,
+       "interval95": null
+      }
+     ],
+     "unmatched": 0,
+     "resultHash": "92df8e8f2d84c2a7cd70d5d1fa00b2b21552ea6b455def87bc6adabadf960544"
+    }
+   },
+   {
+    "method": "PARAMETER_SENSITIVITY",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-validation.runSensitivity (recorded grid, run-research evaluator)",
+     "grid": [
+      {
+       "parameters": {
+        "holdingPeriods": 13
+       },
+       "n": 37,
+       "estimate": 0.14483716674112956,
+       "ci": [
+        0.0715026531827212,
+        0.21376603155656146
+       ],
+       "pValue": 0.001,
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 26
+       },
+       "n": 37,
+       "estimate": 0.2892278844355524,
+       "ci": [
+        0.14158642209036776,
+        0.43092978495716555
+       ],
+       "pValue": 0.001,
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 52
+       },
+       "n": 37,
+       "estimate": 0.7176501863970329,
+       "ci": [
+        0.3654241050711744,
+        1.0284338530651915
+       ],
+       "pValue": 0.001,
+       "adjustedPValue": 0.003
+      }
+     ],
+     "baseline": {
+      "holdingPeriods": 26
+     },
+     "neighborhood": {
+      "count": 2,
+      "sameDirection": true,
+      "minEstimate": 0.14483716674112956,
+      "maxEstimate": 0.7176501863970329
+     },
+     "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
+     "registrationHash": "6313e81e7fb9f55db8db23614c49cce7030258c5063e5fd0501181e4809ef1fc",
+     "resultHash": "84a5e9b4d73ee81c9f085eb61bc00270f2a8d55673f4e92199091646f9476871",
+     "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
+    }
+   },
+   {
+    "method": "EVENT_DRIVEN",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PORTFOLIO_REBALANCING",
+    "state": "NOT_APPLICABLE",
+    "result": null
+   }
+  ],
+  "limitations": [
+   "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+   "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+   "EX_POST_PRICE_REVISIONS",
+   "NO_INDEPENDENT_CONFIRMATION",
+   "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+   "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+   "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+   "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+   "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+   "CERTIFICATION_READINESS:NOT_READY",
+   "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+   "RUNNER_COMPOSED_EXISTING_ENGINES",
+   "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+   "SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE"
+  ],
+  "status": {
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "certificationScope": "KIND",
+   "certificationRuleId": null,
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-29",
+   "productionApproved": false,
+   "evidenceKind": "OBSERVED"
+  },
+  "envelopeHash": "0fc955799522b9d80bec5ade7c8fd4375ff09f4ed925eb9c4c793fd41c90c6df"
+ },
+ "envelopeHash": "0fc955799522b9d80bec5ade7c8fd4375ff09f4ed925eb9c4c793fd41c90c6df",
+ "population": {
+  "profile": "V10_PRIMARY",
+  "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+  "frameSize": 4285,
+  "calendar": {
+   "first": "1990-01-05",
+   "last": "2025-12-26",
+   "length": 1878
+  },
+  "listings": [
+   {
+    "securityId": "ref_NVDA",
+    "ticker": "NVDA",
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "corporateActionQuality": "RESOLVED",
+    "splitsInWindow": [
+     [
+      "2021-07-20",
+      4
+     ],
+     [
+      "2024-06-10",
+      10
+     ]
+    ],
+    "lifecycle": null
+   }
+  ],
+  "excluded": [],
+  "warnings": [
+   "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+   "DELISTED_SERIES_NOT_INCLUDED",
+   "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+   "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+   "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS"
+  ]
+ },
+ "extras": {
+  "engineResultHash": "7306b50511236c9d7d0cab61a28167dc5e89e19958a01175d193c839df8e65d5",
+  "engineEvents": 57,
+  "windowEvents": 37
+ },
+ "pit": {
+  "asOf": "2025-12-31",
+  "latestInputBar": "2025-12-26",
+  "inputsAfterAsOf": 0,
+  "entryNotAfterSignal": 0,
+  "exitAfterAsOf": 0,
+  "signalsAfterWindow": 0
+ },
+ "qa": null,
+ "resultHash": "fa0661835a708dee56b4a3bc7b3859b9fd4162867ebafdfa9e9ffffc30889c44"
+}

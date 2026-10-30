@@ -1,0 +1,21 @@
+{
+ "schemaVersion": "v13-delisted-qualification-protocol-1.0.0",
+ "registeredBefore": "Committed before any fetched series was decrypted or inspected (smoke batch 5 still running in Actions at commit time).",
+ "scope": "Daily histories fetched by scripts/quant/v13/delisted/fetch.mjs (branch claude/v13-delisted-fetch-4ho3rd, request-1.0.0.json: 4,278 unique tickers from V12 LISTREF fetch-candidates 1.0.2 = 4,322 ended reference chains) plus 10 control tickers.",
+ "unit": "ended reference chain (V12 LISTREF, private reference-listings), matched to at most one delivered series",
+ "rules": {
+  "R1_identity": "Chain must carry a CIK link of grade HIGH_CURRENT_MAP, HIGH_V10_REGISTER, MEDIUM_FTS_CONFIRMED or MEDIUM_FTS_DISCOVERED. Delivered series must belong to that chain: provider meta startDate within 7 calendar days of chain startDate (or first bar within 7 days of max(chainStart, 1990-01-02)), last bar not later than chain providerEnd + 7 days. A delivered series whose first bar is after the chain end is NEWER_LISTING_ONLY (reused ticker) and excluded. Several chains on one ticker: only the chain whose dates match qualifies.",
+  "R2_coverage": "Converted to ISO weeks (last close of each observed week). At least 55 weekly bars; no missing ISO week between first and last bar (same standard as the product loader, MISSING_WEEKS). Series with gaps: cut at the first gap only if the remaining head has >= 55 weeks and the cut is reported (GAP_CUT); otherwise EXCLUDED_GAPS.",
+  "R3_delisting": "End is SOURCED if a SEC delisting event (V12 delisting register: 25-NSE/15-12B, same CIK) has eventDate in [lastBar - 45d, lastBar + 120d], or the chain endSource is DERIVED_FROM_SEC_DELISTING_FORM. Otherwise CENSORED_END: kept only as PRICE_ONLY, never in a qualified population.",
+  "R4_corporate_actions": "Every daily close-to-close ratio that is split-sized (quant/engines/corporate-action-evidence.js splitSized) must coincide (same or next trading day) with a provider splitFactor != 1 of matching size (tolerance as splitSized); else CA_UNRESOLVED and excluded. Split adjustment = cumulative product of later splitFactors (own derivation from raw close, cross-checked against provider adjClose excluding dividend steps; mismatch > 1% on any split day -> CA_MISMATCH, excluded). Dividends (divCash) kept for a total-return variant; known spin-off dates (V12 spinoff-sources) never treated as splits.",
+  "R5_price_sanity": "close > 0 and finite on all bars; daily |log return| > ln(10) without CA -> PRICE_OUTLIER, excluded.",
+  "R6_terminal_value": "Terminal = last close on the last bar. Reason from V12 delisting-reasons (8-K items): 2.01 completed acquisition -> MERGER (last close, consideration not verified -> sensitivity bands 0%/+/-10%), 1.03 bankruptcy or no reason with last close < 1 USD -> DISTRESS (scenarios: last close, -30%, -100%), else UNKNOWN (last close, scenarios -30%/-100%). Terminal scenarios are reported, never optimized.",
+  "R7_controls": "For the 10 control tickers the fetched split-adjusted weekly closes must equal our held quant/data/market/discover-series-long series within 0.5% on >= 99% of common weeks; otherwise the whole fetch is flagged SOURCE_MISMATCH and nothing qualifies."
+ },
+ "statuses": ["QUALIFIED", "PRICE_ONLY_CENSORED_END", "EXCLUDED_NO_CIK_LINK", "EXCLUDED_IDENTITY", "NEWER_LISTING_ONLY", "EXCLUDED_GAPS", "CA_UNRESOLVED", "CA_MISMATCH", "PRICE_OUTLIER", "EXCLUDED_SHORT", "NOT_DELIVERED"],
+ "coverageReport": "Coverage per year (a) against the provider reference (V12 LISTREF reference chains, survivorship-biased before 2013) and (b) against the independent SEC reference (V12 delisting register events per year, 25-NSE/15-12B, operating issuers) and the V12 PIT-S&P-500 population (SEC fund holdings), before and after adding QUALIFIED series.",
+ "publicArtifacts": "Only derived facts: per-chain status, counts, hashes of encrypted inputs, CIK, ticker as identifier, coverage tables. No prices, no provider row metadata (dates are coarsened to years in public files).",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

@@ -1,0 +1,5998 @@
+{
+ "schemaVersion": "v12-spxpop-validation-1.1.1",
+ "ruleVersion": "1.1.1",
+ "evidenceKind": "RECONSTRUCTION",
+ "splitVsProvider": {
+  "pairs": 230214,
+  "agreeNone": 225038,
+  "agreeSplit": 1258,
+  "ourSplitProviderNone": 615,
+  "providerSplitOurNone": 221,
+  "bothDifferent": 124,
+  "ambiguousProviderNone": 554,
+  "ambiguousProviderSplit": 127,
+  "providerNonSplitFactorOurNone": 480,
+  "providerNonSplitFactorOurSplit": 14,
+  "providerNonSplitFactorOurAmbiguous": 7,
+  "cases": [
+   {
+    "fund": "QQQ",
+    "t0": "2022-09-30",
+    "t1": "2022-12-31",
+    "securityId": "ref_TSLA",
+    "name": "Tesla, Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.3004,
+    "priceRatio": 0.4644,
+    "weightPct": 4.9384
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_MSFT",
+    "name": "Microsoft Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0253,
+    "priceRatio": 0.8228,
+    "weightPct": 3.345
+   },
+   {
+    "fund": "IWB",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_AAPL",
+    "name": "Apple Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 7.000007,
+    "ourClass": "SPLIT",
+    "ourFactor": 6,
+    "q": 6.433,
+    "priceRatio": 0.1656,
+    "weightPct": 2.7725
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_AAPL",
+    "name": "Apple Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 7.000007,
+    "ourClass": "SPLIT",
+    "ourFactor": 6,
+    "q": 6.4468,
+    "priceRatio": 0.1656,
+    "weightPct": 2.5492
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_MSFT",
+    "name": "Microsoft Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0097,
+    "priceRatio": 0.8318,
+    "weightPct": 2.1609
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_CSCO",
+    "name": "Cisco Systems, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.1796,
+    "priceRatio": 0.8058,
+    "weightPct": 2.113
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_AAPL",
+    "name": "Apple Computer, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.1273,
+    "priceRatio": 1.3835,
+    "weightPct": 1.8239
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_INTC",
+    "name": "Intel Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9273,
+    "priceRatio": 0.8666,
+    "weightPct": 1.7769
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2012-09-30",
+    "t1": "2013-09-30",
+    "securityId": "ref_GILD",
+    "name": "Gilead Sciences, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0206,
+    "priceRatio": 0.9474,
+    "weightPct": 1.5819
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_GEN",
+    "name": "Symantec Corporation",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 4,
+    "q": 3.7807,
+    "priceRatio": 0.4129,
+    "weightPct": 1.5729
+   },
+   {
+    "fund": "SPY",
+    "t0": "2008-09-30",
+    "t1": "2009-09-30",
+    "securityId": "ref_BAC",
+    "name": "Bank of America Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 1.8903,
+    "priceRatio": 0.4834,
+    "weightPct": 1.5685
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_WMT",
+    "name": "Wal-Mart Stores, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.951,
+    "priceRatio": 0.8707,
+    "weightPct": 1.5014
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_IBM",
+    "name": "International Business Machines Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.8972,
+    "priceRatio": 0.9482,
+    "weightPct": 1.4731
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_C",
+    "name": "Citigroup, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.333333,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.3337,
+    "priceRatio": 1.2287,
+    "weightPct": 1.4051
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2006-09-30",
+    "t1": "2007-09-30",
+    "securityId": "ref_BB",
+    "name": "Research In Motion, Ltd.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 3.000003,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 3.0076,
+    "priceRatio": 0.96,
+    "weightPct": 1.3693
+   },
+   {
+    "fund": "SPY",
+    "t0": "2012-03-31",
+    "t1": "2012-09-30",
+    "securityId": "ref_KO",
+    "name": "The Coca-Cola Co.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.7277,
+    "priceRatio": 0.5125,
+    "weightPct": 1.317
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_AIG",
+    "name": "American International Group, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.4985,
+    "priceRatio": 1.1006,
+    "weightPct": 1.2724
+   },
+   {
+    "fund": "SPY",
+    "t0": "2003-09-30",
+    "t1": "2004-09-30",
+    "securityId": "ref_BAC",
+    "name": "Bank of America Corp.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 2.5,
+    "q": 2.698,
+    "priceRatio": 0.5552,
+    "weightPct": 1.2673
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2014-09-30",
+    "t1": "2015-09-30",
+    "securityId": "ref_SBUX",
+    "name": "Starbucks Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9914,
+    "priceRatio": 0.7532,
+    "weightPct": 1.2581
+   },
+   {
+    "fund": "SPY",
+    "t0": "2008-09-30",
+    "t1": "2009-09-30",
+    "securityId": "ref_WFC",
+    "name": "Wells Fargo & Co.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.4066,
+    "priceRatio": 0.7509,
+    "weightPct": 1.2204
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_CSCO",
+    "name": "Cisco Systems, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0491,
+    "priceRatio": 1.1092,
+    "weightPct": 1.184
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "securityId": "ref_AMD",
+    "name": "Advanced Micro Devices, Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3476,
+    "priceRatio": 0.7598,
+    "weightPct": 1.1525
+   },
+   {
+    "fund": "SPY",
+    "t0": "1995-12-31",
+    "t1": "1996-12-31",
+    "securityId": "ref_MSFT",
+    "name": "Microsoft Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9937,
+    "priceRatio": 0.9416,
+    "weightPct": 1.1333
+   },
+   {
+    "fund": "SPY",
+    "t0": "2000-09-30",
+    "t1": "2001-09-30",
+    "securityId": "ref_JNJ",
+    "name": "Johnson & Johnson",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.1189,
+    "priceRatio": 0.5898,
+    "weightPct": 1.0368
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "securityId": "ref_PCAR",
+    "name": "PACCAR, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 1.499999,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.4468,
+    "priceRatio": 0.8399,
+    "weightPct": 1.0058
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_AIG",
+    "name": "American International Group, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.4417,
+    "priceRatio": 1.1291,
+    "weightPct": 0.9956
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_VZ",
+    "name": "Bell Atlantic Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.7587,
+    "priceRatio": 0.7196,
+    "weightPct": 0.9874
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_HD",
+    "name": "Home Depot, Inc. (The)",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 1.5,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.5598,
+    "priceRatio": 0.7732,
+    "weightPct": 0.9656
+   },
+   {
+    "fund": "IWB",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "securityId": "ref_BAC",
+    "name": "Bank of America Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3854,
+    "priceRatio": 0.5899,
+    "weightPct": 0.8433
+   },
+   {
+    "fund": "SPY",
+    "t0": "2003-09-30",
+    "t1": "2004-09-30",
+    "securityId": "ref_CVX",
+    "name": "ChevronTexaco Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9754,
+    "priceRatio": 0.7507,
+    "weightPct": 0.8299
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "securityId": "ref_INTU",
+    "name": "Intuit, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.8867,
+    "priceRatio": 0.7161,
+    "weightPct": 0.7888
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "securityId": "ref_BAC",
+    "name": "Bank of America Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3884,
+    "priceRatio": 0.5899,
+    "weightPct": 0.7793
+   },
+   {
+    "fund": "IWB",
+    "t0": "2010-12-31",
+    "t1": "2011-06-30",
+    "securityId": "ref_C",
+    "name": "Citigroup Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.1,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.125,
+    "q": 0.1367,
+    "priceRatio": 8.8034,
+    "weightPct": 0.7677
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_T",
+    "name": "SBC Communications, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9663,
+    "priceRatio": 0.724,
+    "weightPct": 0.7631
+   },
+   {
+    "fund": "IWV",
+    "t0": "2010-12-31",
+    "t1": "2011-06-30",
+    "securityId": "ref_C",
+    "name": "Citigroup Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.1,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.125,
+    "q": 0.1358,
+    "priceRatio": 8.8034,
+    "weightPct": 0.7038
+   },
+   {
+    "fund": "SPY",
+    "t0": "2000-09-30",
+    "t1": "2001-09-30",
+    "securityId": "ref_GLW",
+    "name": "Corning, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 3,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 3.0962,
+    "priceRatio": 0.0297,
+    "weightPct": 0.6926
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_BA",
+    "name": "Boeing Co",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 3,
+    "q": 2.7478,
+    "priceRatio": 0.5118,
+    "weightPct": 0.6728
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_CSCO",
+    "name": "Cisco Systems, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.2851,
+    "priceRatio": 0.846,
+    "weightPct": 0.6614
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_BAC",
+    "name": "NationsBank Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3008,
+    "priceRatio": 0.8646,
+    "weightPct": 0.607
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_C",
+    "name": "Travelers, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 1.5,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.7514,
+    "priceRatio": 0.5495,
+    "weightPct": 0.5958
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_EBAY",
+    "name": "eBay, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6873,
+    "priceRatio": 0.4481,
+    "weightPct": 0.5824
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_F",
+    "name": "Ford Motor Co.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.5551,
+    "priceRatio": 0.5044,
+    "weightPct": 0.575
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_COP",
+    "name": "Conoco Phillips, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0665,
+    "priceRatio": 0.8438,
+    "weightPct": 0.5443
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_C",
+    "name": "Travelers, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.873,
+    "priceRatio": 1.1733,
+    "weightPct": 0.5308
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "securityId": "ref_GRMN",
+    "name": "Garmin, Ltd.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0013,
+    "priceRatio": 0.7192,
+    "weightPct": 0.523
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_HD",
+    "name": "Home Depot, Inc. (The)",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9572,
+    "priceRatio": 0.7578,
+    "weightPct": 0.5181
+   },
+   {
+    "fund": "IWB",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_MA",
+    "name": "MasterCard Inc. Class A",
+    "kind": "bothDifferent",
+    "providerFactor": 10,
+    "ourClass": "SPLIT",
+    "ourFactor": 8,
+    "q": 8.6162,
+    "priceRatio": 0.0879,
+    "weightPct": 0.5139
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_MSI",
+    "name": "Motorola, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 3,
+    "ourClass": "SPLIT",
+    "ourFactor": 4,
+    "q": 3.5849,
+    "priceRatio": 0.321,
+    "weightPct": 0.5019
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_BAC",
+    "name": "NationsBank Corp",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 2.5,
+    "q": 2.4709,
+    "priceRatio": 0.633,
+    "weightPct": 0.4972
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_MS",
+    "name": "Morgan Stanley, Dean Witter, Discover and Co.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9639,
+    "priceRatio": 1.0252,
+    "weightPct": 0.4838
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_UNH",
+    "name": "UnitedHealth Group, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9158,
+    "priceRatio": 0.7621,
+    "weightPct": 0.4741
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_MA",
+    "name": "MasterCard Inc. Class A",
+    "kind": "bothDifferent",
+    "providerFactor": 10,
+    "ourClass": "SPLIT",
+    "ourFactor": 8,
+    "q": 8.6305,
+    "priceRatio": 0.0879,
+    "weightPct": 0.4727
+   },
+   {
+    "fund": "SPY",
+    "t0": "2006-09-30",
+    "t1": "2007-09-30",
+    "securityId": "ref_JCI",
+    "name": "Tyco International Ltd.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 0.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 0.2469,
+    "priceRatio": 1.5841,
+    "weightPct": 0.4716
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "securityId": "ref_EXPD",
+    "name": "Expeditors International of Washington, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9901,
+    "priceRatio": 0.7851,
+    "weightPct": 0.4583
+   },
+   {
+    "fund": "SPY",
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "securityId": "ref_SLB",
+    "name": "Schlumberger Ltd.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0195,
+    "priceRatio": 0.7351,
+    "weightPct": 0.4488
+   },
+   {
+    "fund": "SPY",
+    "t0": "1995-12-31",
+    "t1": "1996-12-31",
+    "securityId": "ref_CSCO",
+    "name": "Cisco Systems Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.3435,
+    "priceRatio": 0.8526,
+    "weightPct": 0.4429
+   },
+   {
+    "fund": "IWB",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_JCI",
+    "name": "Tyco International Ltd.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 0.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 0.2506,
+    "priceRatio": 1.1734,
+    "weightPct": 0.4344
+   },
+   {
+    "fund": "SPY",
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "securityId": "ref_AMD",
+    "name": "Advanced Micro Devices Inc",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3542,
+    "priceRatio": 0.7598,
+    "weightPct": 0.4313
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_SLB",
+    "name": "Schlumberger Ltd",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9958,
+    "priceRatio": 0.8429,
+    "weightPct": 0.431
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_HD",
+    "name": "Home Depot, Inc. (The)",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 1.5,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.4989,
+    "priceRatio": 1.0399,
+    "weightPct": 0.4258
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "securityId": "ref_FLEX",
+    "name": "Flextronics International Ltd.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3935,
+    "priceRatio": 0.6333,
+    "weightPct": 0.4209
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_JCI",
+    "name": "Tyco International Ltd.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 0.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 0.2549,
+    "priceRatio": 1.1734,
+    "weightPct": 0.3971
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_AMGN",
+    "name": "Amgen, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0126,
+    "priceRatio": 0.8568,
+    "weightPct": 0.3944
+   },
+   {
+    "fund": "SPY",
+    "t0": "2012-09-30",
+    "t1": "2013-03-31",
+    "securityId": "ref_GILD",
+    "name": "Gilead Sciences, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0179,
+    "priceRatio": 0.7377,
+    "weightPct": 0.3896
+   },
+   {
+    "fund": "IWB",
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "securityId": "ref_AMD",
+    "name": "Advanced Micro Devices Inc",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3533,
+    "priceRatio": 0.7598,
+    "weightPct": 0.3883
+   },
+   {
+    "fund": "IWV",
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "securityId": "ref_AMD",
+    "name": "Advanced Micro Devices Inc",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3542,
+    "priceRatio": 0.7598,
+    "weightPct": 0.3644
+   },
+   {
+    "fund": "SPY",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "securityId": "ref_RTX",
+    "name": "United Technologies Corp",
+    "kind": "providerNonSplitFactorOurSplit",
+    "providerFactor": 1.589,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.8169,
+    "priceRatio": 0.6532,
+    "weightPct": 0.3577
+   },
+   {
+    "fund": "SPY",
+    "t0": "2003-09-30",
+    "t1": "2004-09-30",
+    "securityId": "ref_QCOM",
+    "name": "QUALCOMM, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.034,
+    "priceRatio": 0.9376,
+    "weightPct": 0.3569
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_MDT",
+    "name": "Medtronic, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 2.5,
+    "q": 2.4774,
+    "priceRatio": 0.6134,
+    "weightPct": 0.3307
+   },
+   {
+    "fund": "IWB",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "securityId": "ref_RTX",
+    "name": "United Technologies Corp",
+    "kind": "providerNonSplitFactorOurSplit",
+    "providerFactor": 1.589,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.7581,
+    "priceRatio": 0.6532,
+    "weightPct": 0.3264
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_USB",
+    "name": "U.S. Bancorp",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 3,
+    "ourClass": "NONE",
+    "ourFactor": 1,
+    "q": 0.954,
+    "priceRatio": 0.8489,
+    "weightPct": 0.3241
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "securityId": "ref_SIRI",
+    "name": "Sirius Satellite Radio Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 2.2016,
+    "priceRatio": 0.1633,
+    "weightPct": 0.3147
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_HON",
+    "name": "Allied Signal, Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.4514,
+    "priceRatio": 0.5944,
+    "weightPct": 0.3135
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "securityId": "ref_RTX",
+    "name": "United Technologies Corp",
+    "kind": "providerNonSplitFactorOurSplit",
+    "providerFactor": 1.589,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.7452,
+    "priceRatio": 0.6532,
+    "weightPct": 0.3075
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_QCOM",
+    "name": "QUALCOMM, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 4,
+    "ourClass": "SPLIT",
+    "ourFactor": 5,
+    "q": 4.6128,
+    "priceRatio": 0.3766,
+    "weightPct": 0.2884
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_AMAT",
+    "name": "Applied Materials, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.1554,
+    "priceRatio": 0.7635,
+    "weightPct": 0.2762
+   },
+   {
+    "fund": "SPY",
+    "t0": "2011-09-30",
+    "t1": "2012-03-31",
+    "securityId": "ref_EXC",
+    "name": "Exelon Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.3059,
+    "priceRatio": 0.9202,
+    "weightPct": 0.2733
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2011-09-30",
+    "t1": "2012-09-30",
+    "securityId": "ref_EXPE",
+    "name": "Expedia, Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.5,
+    "q": 0.5001,
+    "priceRatio": 2.2462,
+    "weightPct": 0.272
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_CAT",
+    "name": "Caterpillar, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0063,
+    "priceRatio": 0.7303,
+    "weightPct": 0.2643
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_SCHW",
+    "name": "Schwab (Charles) Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.6619,
+    "priceRatio": 1.0538,
+    "weightPct": 0.2622
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_TXN",
+    "name": "Texas Instruments, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9499,
+    "priceRatio": 1.5592,
+    "weightPct": 0.2556
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_GAP",
+    "name": "Gap, Inc. (The)",
+    "kind": "bothDifferent",
+    "providerFactor": 2.25,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 2.1714,
+    "priceRatio": 0.6066,
+    "weightPct": 0.2529
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_AMGN",
+    "name": "Amgen, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2,
+    "priceRatio": 1.0786,
+    "weightPct": 0.2329
+   },
+   {
+    "fund": "IWB",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "securityId": "ref_UNP",
+    "name": "Union Pacific Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9341,
+    "priceRatio": 0.601,
+    "weightPct": 0.2295
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_NVDA",
+    "name": "NVIDIA Corporation",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.5,
+    "q": 0.4675,
+    "priceRatio": 4.416,
+    "weightPct": 0.2273
+   },
+   {
+    "fund": "SPY",
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "securityId": "ref_UNP",
+    "name": "Union Pacific Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9241,
+    "priceRatio": 0.6294,
+    "weightPct": 0.2254
+   },
+   {
+    "fund": "IWB",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "securityId": "ref_EXC",
+    "name": "Exelon Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.2926,
+    "priceRatio": 0.8674,
+    "weightPct": 0.2226
+   },
+   {
+    "fund": "IWB",
+    "t0": "2012-06-30",
+    "t1": "2012-12-31",
+    "securityId": "ref_DUK",
+    "name": "Duke Energy Corp.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.333333,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.5,
+    "q": 0.5274,
+    "priceRatio": 2.7667,
+    "weightPct": 0.222
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "securityId": "ref_HEI",
+    "name": "HEICO Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.2491,
+    "priceRatio": 0.6758,
+    "weightPct": 0.2207
+   },
+   {
+    "fund": "SPY",
+    "t0": "2012-03-31",
+    "t1": "2012-09-30",
+    "securityId": "ref_DUK",
+    "name": "Duke Energy Corp.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.333333,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.5,
+    "q": 0.535,
+    "priceRatio": 3.0842,
+    "weightPct": 0.2195
+   },
+   {
+    "fund": "SPY",
+    "t0": "1995-12-31",
+    "t1": "1996-12-31",
+    "securityId": "ref_NKE",
+    "name": "Nike Inc., Class B",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.9716,
+    "priceRatio": 0.8582,
+    "weightPct": 0.2184
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_HWM",
+    "name": "Alcoa, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 2.5,
+    "q": 2.3615,
+    "priceRatio": 0.4079,
+    "weightPct": 0.2159
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_RTX",
+    "name": "United Technologies Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.1006,
+    "priceRatio": 0.776,
+    "weightPct": 0.2125
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "securityId": "ref_UNP",
+    "name": "Union Pacific Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9449,
+    "priceRatio": 0.601,
+    "weightPct": 0.2111
+   },
+   {
+    "fund": "SPY",
+    "t0": "2018-09-30",
+    "t1": "2019-03-31",
+    "securityId": "ref_CI",
+    "name": "Cigna Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.5759,
+    "priceRatio": 0.7722,
+    "weightPct": 0.2065
+   },
+   {
+    "fund": "IWV",
+    "t0": "2012-06-30",
+    "t1": "2012-12-31",
+    "securityId": "ref_DUK",
+    "name": "Duke Energy Corp.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.333333,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.5,
+    "q": 0.526,
+    "priceRatio": 2.7667,
+    "weightPct": 0.2052
+   },
+   {
+    "fund": "SPY",
+    "t0": "2001-09-30",
+    "t1": "2002-09-30",
+    "securityId": "ref_THC",
+    "name": "Tenet Healthcare Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.4965,
+    "priceRatio": 0.8298,
+    "weightPct": 0.2046
+   },
+   {
+    "fund": "IWB",
+    "t0": "2006-06-30",
+    "t1": "2006-12-31",
+    "securityId": "ref_COF",
+    "name": "Capital One Financial Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3447,
+    "priceRatio": 0.899,
+    "weightPct": 0.2011
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2011-09-30",
+    "t1": "2012-09-30",
+    "securityId": "ref_LRCX",
+    "name": "Lam Research Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.4892,
+    "priceRatio": 0.8369,
+    "weightPct": 0.1997
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "securityId": "ref_EBAY",
+    "name": "ebay Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.2544,
+    "priceRatio": 1.0133,
+    "weightPct": 0.1978
+   },
+   {
+    "fund": "SPY",
+    "t0": "2006-09-30",
+    "t1": "2007-09-30",
+    "securityId": "ref_COF",
+    "name": "Capital One Financial Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.3699,
+    "priceRatio": 0.8445,
+    "weightPct": 0.1972
+   },
+   {
+    "fund": "IWB",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_D",
+    "name": "Dominion Resources Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6665,
+    "priceRatio": 0.5498,
+    "weightPct": 0.196
+   },
+   {
+    "fund": "SPY",
+    "t0": "2000-09-30",
+    "t1": "2001-09-30",
+    "securityId": "ref_CAH",
+    "name": "Cardinal Health, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.5835,
+    "priceRatio": 0.8386,
+    "weightPct": 0.1933
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-06-30",
+    "t1": "2011-12-31",
+    "securityId": "ref_CLH",
+    "name": "Clean Harbors Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0028,
+    "priceRatio": 0.6172,
+    "weightPct": 0.1928
+   },
+   {
+    "fund": "SPY",
+    "t0": "2010-09-30",
+    "t1": "2011-03-31",
+    "securityId": "ref_MSI",
+    "name": "Motorola, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.142857,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.16666666666666666,
+    "q": 0.145,
+    "priceRatio": 5.2392,
+    "weightPct": 0.1918
+   },
+   {
+    "fund": "SPY",
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "securityId": "ref_NOV",
+    "name": "National-Oilwell Varco, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 2.5,
+    "q": 2.4006,
+    "priceRatio": 0.3476,
+    "weightPct": 0.1896
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-06-30",
+    "t1": "2013-12-31",
+    "securityId": "ref_HEI",
+    "name": "HEICO Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.249,
+    "priceRatio": 1.1505,
+    "weightPct": 0.1892
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_MS",
+    "name": "Dean Witter Discover & Co",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 3.537,
+    "priceRatio": 0.816,
+    "weightPct": 0.1885
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "securityId": "ref_TWST",
+    "name": "Twist Bioscience Corp",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.411,
+    "priceRatio": 0.8766,
+    "weightPct": 0.1869
+   },
+   {
+    "fund": "SPY",
+    "t0": "2000-09-30",
+    "t1": "2001-09-30",
+    "securityId": "ref_BAX",
+    "name": "Baxter International, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.971,
+    "priceRatio": 0.6897,
+    "weightPct": 0.1844
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_GAP",
+    "name": "Gap, Inc. (The)",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.4062,
+    "priceRatio": 1.0537,
+    "weightPct": 0.1843
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "securityId": "ref_NOC",
+    "name": "Northrop Grumman Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6112,
+    "priceRatio": 0.6951,
+    "weightPct": 0.184
+   },
+   {
+    "fund": "IWV",
+    "t0": "2006-06-30",
+    "t1": "2006-12-31",
+    "securityId": "ref_COF",
+    "name": "Capital One Financial Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3471,
+    "priceRatio": 0.899,
+    "weightPct": 0.183
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_HAL",
+    "name": "Halliburton Co.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.7035,
+    "priceRatio": 0.5493,
+    "weightPct": 0.1802
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_D",
+    "name": "Dominion Resources Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6973,
+    "priceRatio": 0.5498,
+    "weightPct": 0.1792
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "securityId": "ref_COMP",
+    "name": "Compass, Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.3049,
+    "priceRatio": 0.6916,
+    "weightPct": 0.179
+   },
+   {
+    "fund": "IWB",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_DE",
+    "name": "Deere & Co.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.002,
+    "priceRatio": 0.7712,
+    "weightPct": 0.1776
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_GNRC",
+    "name": "Generac Holdings Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3043,
+    "priceRatio": 0.8605,
+    "weightPct": 0.1753
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_CAR",
+    "name": "Cuc International, Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 1.9729,
+    "priceRatio": 0.375,
+    "weightPct": 0.1743
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_BBY",
+    "name": "Best Buy Co., Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.2538,
+    "priceRatio": 0.8025,
+    "weightPct": 0.1683
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_CAH",
+    "name": "Cardinal Health, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 1.5,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 2.0336,
+    "priceRatio": 0.5278,
+    "weightPct": 0.1676
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_PBI",
+    "name": "Pitney Bowes, Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.815,
+    "priceRatio": 0.6319,
+    "weightPct": 0.1662
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_DVN",
+    "name": "Devon Energy Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.8968,
+    "priceRatio": 0.9666,
+    "weightPct": 0.1651
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_GEN",
+    "name": "Symantec Corp.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 4,
+    "q": 3.8853,
+    "priceRatio": 0.4129,
+    "weightPct": 0.1651
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "securityId": "ref_JBLU",
+    "name": "JetBlue Airways Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.3193,
+    "priceRatio": 0.6014,
+    "weightPct": 0.1645
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "securityId": "ref_DE",
+    "name": "Deere & Co.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.0401,
+    "priceRatio": 0.7712,
+    "weightPct": 0.1624
+   },
+   {
+    "fund": "IWM",
+    "t0": "2016-12-31",
+    "t1": "2017-06-30",
+    "securityId": "ref_UBSI",
+    "name": "United Bankshares Inc./WV",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.4827,
+    "priceRatio": 0.8476,
+    "weightPct": 0.1619
+   },
+   {
+    "fund": "IWB",
+    "t0": "2010-12-31",
+    "t1": "2011-06-30",
+    "securityId": "ref_MSI",
+    "name": "Motorola Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.142857,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.125,
+    "q": 0.1288,
+    "priceRatio": 5.0761,
+    "weightPct": 0.1617
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "securityId": "ref_SNEX",
+    "name": "StoneX Group, Inc.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 1.5,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.4936,
+    "priceRatio": 0.8478,
+    "weightPct": 0.1613
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_KR",
+    "name": "Kroger Co.",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 3,
+    "q": 3.1265,
+    "priceRatio": 0.4412,
+    "weightPct": 0.1603
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_GLW",
+    "name": "Corning, Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.2003,
+    "priceRatio": 4.3318,
+    "weightPct": 0.1592
+   },
+   {
+    "fund": "IWM",
+    "t0": "2015-12-31",
+    "t1": "2016-06-30",
+    "securityId": "ref_RH",
+    "name": "Restoration Hardware Holdings Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.1525,
+    "priceRatio": 0.361,
+    "weightPct": 0.1575
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "securityId": "ref_FITB",
+    "name": "Fifth Third Bancorp",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.7219,
+    "priceRatio": 0.8855,
+    "weightPct": 0.1559
+   },
+   {
+    "fund": "SPY",
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "securityId": "ref_SLM",
+    "name": "SLM Corp.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.1616,
+    "priceRatio": 0.2484,
+    "weightPct": 0.1498
+   },
+   {
+    "fund": "SPY",
+    "t0": "1995-12-31",
+    "t1": "1996-12-31",
+    "securityId": "ref_MAT",
+    "name": "Mattel, Inc",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.25,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.2189,
+    "priceRatio": 0.9024,
+    "weightPct": 0.1495
+   },
+   {
+    "fund": "IWV",
+    "t0": "2010-12-31",
+    "t1": "2011-06-30",
+    "securityId": "ref_MSI",
+    "name": "Motorola Inc.",
+    "kind": "bothDifferent",
+    "providerFactor": 0.142857,
+    "ourClass": "SPLIT",
+    "ourFactor": 0.125,
+    "q": 0.1282,
+    "priceRatio": 5.0761,
+    "weightPct": 0.148
+   },
+   {
+    "fund": "SPY",
+    "t0": "2018-09-30",
+    "t1": "2019-03-31",
+    "securityId": "ref_MPC",
+    "name": "Marathon Petroleum Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.5,
+    "q": 1.5099,
+    "priceRatio": 0.7484,
+    "weightPct": 0.1467
+   },
+   {
+    "fund": "IWM",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "securityId": "ref_NEOG",
+    "name": "Neogen Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.333333,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.3377,
+    "priceRatio": 0.9754,
+    "weightPct": 0.1453
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_AAPL",
+    "name": "Apple Computer, Inc.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 2,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.171,
+    "priceRatio": 1.3835,
+    "weightPct": 0.1446
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "securityId": "ref_GWRE",
+    "name": "Guidewire Software Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.3596,
+    "priceRatio": 0.8286,
+    "weightPct": 0.1438
+   },
+   {
+    "fund": "IWM",
+    "t0": "2016-12-31",
+    "t1": "2017-06-30",
+    "securityId": "ref_GEO",
+    "name": "GEO Group Inc. (The)",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 1.5,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.6048,
+    "priceRatio": 0.823,
+    "weightPct": 0.1422
+   },
+   {
+    "fund": "SPY",
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "securityId": "ref_FITB",
+    "name": "Fifth Third Bancorp",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 1.5,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 1.5903,
+    "priceRatio": 0.8795,
+    "weightPct": 0.1412
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-06-30",
+    "t1": "2013-12-31",
+    "securityId": "ref_CGNX",
+    "name": "Cognex Corp.",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 1.9994,
+    "priceRatio": 0.8443,
+    "weightPct": 0.1391
+   },
+   {
+    "fund": "SPY",
+    "t0": "2006-09-30",
+    "t1": "2007-09-30",
+    "securityId": "ref_RF",
+    "name": "Regions Financial Corp.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6131,
+    "priceRatio": 0.8013,
+    "weightPct": 0.1384
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "securityId": "ref_SSB",
+    "name": "South State Corp",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 2,
+    "q": 2.0582,
+    "priceRatio": 0.8115,
+    "weightPct": 0.1357
+   },
+   {
+    "fund": "IWB",
+    "t0": "2006-12-31",
+    "t1": "2007-06-30",
+    "securityId": "ref_NKE",
+    "name": "Nike Inc. Class B",
+    "kind": "bothDifferent",
+    "providerFactor": 2,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.8251,
+    "priceRatio": 0.5886,
+    "weightPct": 0.1351
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "securityId": "ref_BEN",
+    "name": "Franklin Resources, Inc.",
+    "kind": "ambiguousProviderNone",
+    "providerFactor": 1,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 0.5729,
+    "priceRatio": 1.5057,
+    "weightPct": 0.1344
+   },
+   {
+    "fund": "SPY",
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "securityId": "ref_HAL",
+    "name": "Halliburton Co",
+    "kind": "ambiguousProviderSplit",
+    "providerFactor": 2,
+    "ourClass": "AMBIGUOUS_CA",
+    "ourFactor": null,
+    "q": 2.0076,
+    "priceRatio": 0.8631,
+    "weightPct": 0.1333
+   },
+   {
+    "fund": "IWM",
+    "t0": "2016-06-30",
+    "t1": "2016-12-31",
+    "securityId": "ref_CUZ",
+    "name": "Cousins Properties Inc.",
+    "kind": "ourSplitProviderNone",
+    "providerFactor": 1,
+    "ourClass": "SPLIT",
+    "ourFactor": 1.6666666666666667,
+    "q": 1.6298,
+    "priceRatio": 0.8183,
+    "weightPct": 0.1324
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "securityId": "ref_SCHW",
+    "name": "Schwab (Charles) Corp.",
+    "kind": "providerSplitOurNone",
+    "providerFactor": 3,
+    "ourClass": "SHARE_CHANGE",
+    "ourFactor": 1,
+    "q": 2.9609,
+    "priceRatio": 0.8556,
+    "weightPct": 0.1318
+   }
+  ],
+  "byFund": {
+   "IWB": {
+    "agreeNone": 40577,
+    "agreeSplit": 242,
+    "providerNonSplitFactorOurNone": 103,
+    "ambiguousProviderSplit": 17,
+    "ambiguousProviderNone": 56,
+    "providerSplitOurNone": 23,
+    "bothDifferent": 15,
+    "ourSplitProviderNone": 46,
+    "providerNonSplitFactorOurSplit": 3,
+    "providerNonSplitFactorOurAmbiguous": 3
+   },
+   "IWM": {
+    "agreeNone": 61397,
+    "agreeSplit": 223,
+    "providerSplitOurNone": 46,
+    "bothDifferent": 33,
+    "providerNonSplitFactorOurNone": 115,
+    "ambiguousProviderSplit": 35,
+    "ambiguousProviderNone": 238,
+    "ourSplitProviderNone": 283,
+    "providerNonSplitFactorOurSplit": 3,
+    "providerNonSplitFactorOurAmbiguous": 1
+   },
+   "IWV": {
+    "agreeNone": 97134,
+    "agreeSplit": 461,
+    "providerSplitOurNone": 77,
+    "bothDifferent": 45,
+    "providerNonSplitFactorOurNone": 213,
+    "ambiguousProviderNone": 240,
+    "ambiguousProviderSplit": 46,
+    "ourSplitProviderNone": 259,
+    "providerNonSplitFactorOurSplit": 6,
+    "providerNonSplitFactorOurAmbiguous": 3
+   },
+   "QQQ": {
+    "agreeNone": 3305,
+    "agreeSplit": 53,
+    "providerSplitOurNone": 5,
+    "bothDifferent": 1,
+    "ourSplitProviderNone": 5,
+    "ambiguousProviderSplit": 3,
+    "ambiguousProviderNone": 2,
+    "providerNonSplitFactorOurNone": 9
+   },
+   "SPY": {
+    "agreeNone": 22625,
+    "agreeSplit": 279,
+    "providerSplitOurNone": 70,
+    "ambiguousProviderNone": 18,
+    "ambiguousProviderSplit": 26,
+    "bothDifferent": 30,
+    "ourSplitProviderNone": 22,
+    "providerNonSplitFactorOurNone": 40,
+    "providerNonSplitFactorOurSplit": 2
+   }
+  },
+  "byPeriodLength": {
+   "halfYear": {
+    "pairs": 80494,
+    "agree": 79476,
+    "providerNonSplit": 229,
+    "disagreeOrAmbiguous": 789,
+    "weightPairs": 69.25495240323978,
+    "weightDisagreeOrAmbiguous": 0.3406473732239312
+   },
+   "longer": {
+    "pairs": 7648,
+    "agree": 7406,
+    "providerNonSplit": 24,
+    "disagreeOrAmbiguous": 218,
+    "weightPairs": 22.228359957976963,
+    "weightDisagreeOrAmbiguous": 0.6334869085151735
+   },
+   "quarter": {
+    "pairs": 140296,
+    "agree": 139414,
+    "providerNonSplit": 248,
+    "disagreeOrAmbiguous": 634,
+    "weightPairs": 127.01309497538129,
+    "weightDisagreeOrAmbiguous": 0.15573709245833955
+   }
+  },
+  "casesTotal": 1662
+ },
+ "returnVsSeries": {
+  "method": "linked members whose t0 and t1 keys map to the same securityId: holdings return s*p1/p0-1 minus series return (adjusted weekly close on/before t1 / on/before t0); exactDates = both holdings dates are weekly bar dates",
+  "exactDates": {
+   "n": 9677,
+   "medianPp": 0,
+   "p90Pp": 0,
+   "p99Pp": 0.0294,
+   "maxPp": 186.432,
+   "shareOver1pp": 0.0032,
+   "shareOver5pp": 0.00248
+  },
+  "weekly": {
+   "n": 227748,
+   "medianPp": 1.2569,
+   "p90Pp": 6.4148,
+   "p99Pp": 21.0053,
+   "maxPp": 524.867,
+   "shareOver1pp": 0.5442,
+   "shareOver5pp": 0.14933
+  }
+ },
+ "crossFund": {
+  "IWB~IWV:REPORT": {
+   "periods": 27,
+   "n": 25683,
+   "nAgree": 25662,
+   "commonW": 0.9834,
+   "agreeWMean": 0.99976
+  },
+  "IWB~IWV:NPORT": {
+   "periods": 25,
+   "n": 24803,
+   "nAgree": 24773,
+   "commonW": 0.9971,
+   "agreeWMean": 0.99989
+  },
+  "IWM~IWV:REPORT": {
+   "periods": 27,
+   "n": 48702,
+   "nAgree": 48212,
+   "commonW": 0.914,
+   "agreeWMean": 0.99448
+  },
+  "IWM~IWV:NPORT": {
+   "periods": 25,
+   "n": 40680,
+   "nAgree": 40479,
+   "commonW": 0.9419,
+   "agreeWMean": 0.99766
+  },
+  "IWV~IWB+IWM:REPORT": {
+   "periods": 27,
+   "n": 74385,
+   "nAgree": 73874,
+   "commonW": 0.9779,
+   "agreeWMean": 0.99939
+  },
+  "IWV~IWB+IWM:NPORT": {
+   "periods": 25,
+   "n": 65478,
+   "nAgree": 65251,
+   "commonW": 0.9949,
+   "agreeWMean": 0.99977
+  },
+  "QQQ~IWV+IWB+IWM+SPY:REPORT": {
+   "periods": 5,
+   "n": 247,
+   "nAgree": 245,
+   "commonW": 0.7356,
+   "agreeWMean": 0.98906
+  },
+  "QQQ~IWV+IWB+IWM+SPY:NPORT": {
+   "periods": 27,
+   "n": 2478,
+   "nAgree": 2477,
+   "commonW": 0.9704,
+   "agreeWMean": 0.99812
+  },
+  "SPY~IWV+IWB+IWM+QQQ:REPORT": {
+   "periods": 5,
+   "n": 247,
+   "nAgree": 245,
+   "commonW": 0.129,
+   "agreeWMean": 0.99109
+  },
+  "SPY~IWV+IWB+IWM+QQQ:NPORT": {
+   "periods": 27,
+   "n": 13399,
+   "nAgree": 13395,
+   "commonW": 0.9956,
+   "agreeWMean": 0.99994
+  }
+ },
+ "totals": {
+  "statusCounts": {
+   "OBS_CHAIN": 335158,
+   "OBS_SERIES": 2648,
+   "BOUNDED_EXIT": 11045,
+   "OBS_CROSSFUND": 2067,
+   "BOUNDED_AMBIGUOUS_CA": 1443,
+   "BOUNDED_EXIT_SERIES_DELISTED": 25,
+   "EST_SERIES_END": 30,
+   "EST_CASH": 4
+  },
+  "splitClasses": {
+   "NONE": 310458,
+   "SHARE_CHANGE": 21174,
+   "SPLIT": 3526,
+   "AMBIGUOUS_CA": 1443
+  },
+  "tiers": {
+   "C2_NAME": 168081,
+   "C3_CIK": 2026,
+   "C4_FUZZY": 341,
+   "C1_CUSIP": 166118,
+   "C2_NAME_DUP": 35
+  },
+  "possibleIdentityBreaks": 551,
+  "identityBreaksMerger": 13,
+  "exits": 15819,
+  "entries": 15457
+ },
+ "identityBreaks": {
+  "rule": "rules-1.1.1 identityChain.identityBreak",
+  "cases": [
+   {
+    "fund": "IWB",
+    "t0": "2015-12-31",
+    "t1": "2016-06-30",
+    "nameT0": "Broadcom Corp. Class A",
+    "nameT1": "Broadcom Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "SHARE_CHANGE",
+    "q": 0.693679,
+    "priceRatio": 2.687651,
+    "returnHypotheses": [
+     1.687651
+    ],
+    "indexPrelim": 0.025223,
+    "excessLog": 0.963757,
+    "weightPct": 0.1565,
+    "qualification": "QUALIFIED_INTERNAL",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "nameT0": "PXRE Group Ltd.",
+    "nameT1": "Argo Group International Holdings Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.518314,
+    "priceRatio": 9.079741,
+    "returnHypotheses": [
+     3.539871,
+     8.079741
+    ],
+    "indexPrelim": -0.082281,
+    "excessLog": 1.598763,
+    "weightPct": 0.0176,
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "nameT0": "BPZ Energy Inc.",
+    "nameT1": "BPZ Resources Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "SHARE_CHANGE",
+    "q": 1.240465,
+    "priceRatio": 2.003584,
+    "returnHypotheses": [
+     1.003584
+    ],
+    "indexPrelim": -0.082281,
+    "excessLog": 0.780802,
+    "weightPct": 0.0156,
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Arsanis Inc.",
+    "nameT1": "X4 Pharmaceuticals Inc",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.441989,
+    "priceRatio": 5.478446,
+    "returnHypotheses": [
+     4.478446,
+     12.696114
+    ],
+    "indexPrelim": 0.123203,
+    "excessLog": 1.584637,
+    "weightPct": 0.0006,
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-09-30",
+    "t1": "2023-12-31",
+    "nameT0": "Cano Health, Inc.",
+    "nameT1": "Cano Health, Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.014906,
+    "priceRatio": 23.146688,
+    "returnHypotheses": [
+     22.146688,
+     22.146688
+    ],
+    "indexPrelim": 0.128494,
+    "excessLog": 3.020968,
+    "weightPct": 0.0027,
+    "qualification": "QUALIFIED",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "System1, Inc.",
+    "nameT1": "System1, Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.010211,
+    "priceRatio": 14.503016,
+    "returnHypotheses": [
+     13.503016,
+     13.503016
+    ],
+    "indexPrelim": 0.071357,
+    "excessLog": 2.60543,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Aerovate Therapeutics, Inc.",
+    "nameT1": "Jade Biosciences, Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.396642,
+    "priceRatio": 3.98008,
+    "returnHypotheses": [
+     2.98008,
+     4.97012
+    ],
+    "indexPrelim": 0.071357,
+    "excessLog": 1.312376,
+    "weightPct": 0.0018,
+    "qualification": "QUALIFIED",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "nameT0": "PXRE Group Ltd.",
+    "nameT1": "Argo Group International Holdings Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.500089,
+    "priceRatio": 9.07976,
+    "returnHypotheses": [
+     3.53988,
+     8.07976
+    ],
+    "indexPrelim": -0.031203,
+    "excessLog": 1.544601,
+    "weightPct": 0.0017,
+    "qualification": "QUALIFIED_INTERNAL",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-06-30",
+    "t1": "2007-12-31",
+    "nameT0": "BPZ Energy Inc.",
+    "nameT1": "BPZ Resources Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "SHARE_CHANGE",
+    "q": 1.246995,
+    "priceRatio": 2.003595,
+    "returnHypotheses": [
+     1.003595
+    ],
+    "indexPrelim": -0.031203,
+    "excessLog": 0.726644,
+    "weightPct": 0.0015,
+    "qualification": "QUALIFIED_INTERNAL",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2015-12-31",
+    "t1": "2016-06-30",
+    "nameT0": "Broadcom Corp. Class A",
+    "nameT1": "Broadcom Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "SHARE_CHANGE",
+    "q": 0.704421,
+    "priceRatio": 2.687651,
+    "returnHypotheses": [
+     1.687651
+    ],
+    "indexPrelim": 0.022643,
+    "excessLog": 0.966277,
+    "weightPct": 0.1449,
+    "qualification": "QUALIFIED_INTERNAL",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-06-30",
+    "t1": "2018-12-31",
+    "nameT0": "WMIH Corp.",
+    "nameT1": "Mr Cooper Group Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.374504,
+    "priceRatio": 8.709007,
+    "returnHypotheses": [
+     2.483603,
+     7.709007
+    ],
+    "indexPrelim": -0.092239,
+    "excessLog": 1.344841,
+    "weightPct": 0.0009,
+    "qualification": "QUALIFIED_INTERNAL",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "QQQ",
+    "t0": "2015-09-30",
+    "t1": "2016-09-30",
+    "nameT0": "Broadcom Corp., Class A",
+    "nameT1": "Broadcom Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.715424,
+    "priceRatio": 3.354462,
+    "returnHypotheses": [
+     2.354462,
+     2.354462
+    ],
+    "indexPrelim": 0.162468,
+    "excessLog": 1.059746,
+    "weightPct": 0.6022,
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2015-09-30",
+    "t1": "2016-03-31",
+    "nameT0": "Broadcom Corp. (Class A)",
+    "nameT1": "Broadcom, Ltd.",
+    "tier": "C3_CIK",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.669255,
+    "priceRatio": 3.004083,
+    "returnHypotheses": [
+     2.004083,
+     2.004083
+    ],
+    "indexPrelim": 0.071966,
+    "excessLog": 1.030478,
+    "weightPct": 0.1701,
+    "qualification": "QUALIFIED",
+    "nowStatus": "BOUNDED_EXIT",
+    "nowFate": "IDENTITY_BREAK"
+   }
+  ],
+  "remainingOver100pct": [
+   {
+    "fund": "IWB",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "AMR Corp.",
+    "nameT1": "AMR Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.174794,
+    "returnHypotheses": [
+     1.083985,
+     1.083985
+    ],
+    "excessLog": 1.095182,
+    "weightPct": 0.0094,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "Delta Air Lines Inc.",
+    "nameT1": "Delta Air Lines Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.057699,
+    "returnHypotheses": [
+     1.010526,
+     3.021052
+    ],
+    "excessLog": 1.059296,
+    "weightPct": 0.0129,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Walter Industries Inc.",
+    "nameT1": "Walter Energy Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.969219,
+    "returnHypotheses": [
+     1.069673
+    ],
+    "excessLog": 0.701765,
+    "weightPct": 0.0108,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Liberty Media Corp. - Liberty Capital Group Series A",
+    "nameT1": "Liberty Media Corp. - Liberty Capital Group Series A",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.844753,
+    "returnHypotheses": [
+     1.878981,
+     1.878981
+    ],
+    "excessLog": 1.03181,
+    "weightPct": 0.005,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2012-12-31",
+    "t1": "2013-06-30",
+    "nameT0": "Tesla Motors Inc.",
+    "nameT1": "Tesla Motors Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.178272,
+    "returnHypotheses": [
+     2.171833,
+     2.171833
+    ],
+    "excessLog": 1.043066,
+    "weightPct": 0.0165,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Switch Inc., Class A",
+    "nameT1": "Switch Inc",
+    "tier": "C4_FUZZY",
+    "splitClass": "SHARE_CHANGE",
+    "q": 1.678887,
+    "returnHypotheses": [
+     1.231429
+    ],
+    "excessLog": 0.628951,
+    "weightPct": 0.001,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2024-06-30",
+    "t1": "2024-09-30",
+    "nameT0": "SIRIUS XM HOLDINGS INC.",
+    "nameT1": "SIRIUS XM HOLDINGS INC.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.400706,
+    "returnHypotheses": [
+     2.342756,
+     7.35689
+    ],
+    "excessLog": 1.151298,
+    "weightPct": 0.0036,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWB",
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "nameT0": "Astera Labs, Inc",
+    "nameT1": "Astera Labs, Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.208498,
+    "returnHypotheses": [
+     3.407117,
+     3.407117
+    ],
+    "excessLog": 1.347243,
+    "weightPct": 0.023,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2005-12-31",
+    "t1": "2006-06-30",
+    "nameT0": "Zoltek Companies Inc.",
+    "nameT1": "Zoltek Companies Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.27778,
+    "returnHypotheses": [
+     2.40433,
+     2.40433
+    ],
+    "excessLog": 1.180636,
+    "weightPct": 0.0078,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "nameT0": "BPZ Resources Inc.",
+    "nameT1": "BPZ Resources Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.150627,
+    "returnHypotheses": [
+     1.629696,
+     1.629696
+    ],
+    "excessLog": 1.101166,
+    "weightPct": 0.0451,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "nameT0": "EXCO Resources Inc.",
+    "nameT1": "EXCO Resources Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.198731,
+    "returnHypotheses": [
+     1.384367,
+     1.384367
+    ],
+    "excessLog": 1.003232,
+    "weightPct": 0.0744,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "US Airways Group Inc.",
+    "nameT1": "US Airways Group Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.234109,
+    "returnHypotheses": [
+     2.092001,
+     2.092001
+    ],
+    "excessLog": 1.450111,
+    "weightPct": 0.022,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "W Holding Co. Inc.",
+    "nameT1": "W Holding Co. Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.016756,
+    "returnHypotheses": [
+     11.874991,
+     11.874991
+    ],
+    "excessLog": 2.876579,
+    "weightPct": 0.0086,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "AgFeed Industries Inc.",
+    "nameT1": "AgFeed Industries Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.358907,
+    "returnHypotheses": [
+     2.683231,
+     4.524847
+    ],
+    "excessLog": 1.287376,
+    "weightPct": 0.0043,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Providence Service Corp. (The)",
+    "nameT1": "Providence Service Corp. (The)",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.84928,
+    "returnHypotheses": [
+     6.551713,
+     6.551713
+    ],
+    "excessLog": 2.00536,
+    "weightPct": 0.0024,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Palm Inc.",
+    "nameT1": "Palm Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.27421,
+    "returnHypotheses": [
+     4.397394,
+     4.397394
+    ],
+    "excessLog": 1.669501,
+    "weightPct": 0.0441,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "STEC Inc.",
+    "nameT1": "STEC Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.800995,
+    "returnHypotheses": [
+     4.443662,
+     4.443662
+    ],
+    "excessLog": 1.678037,
+    "weightPct": 0.0174,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "EnerNOC Inc.",
+    "nameT1": "EnerNOC Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.209557,
+    "returnHypotheses": [
+     1.912635,
+     1.912635
+    ],
+    "excessLog": 1.052643,
+    "weightPct": 0.0097,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Evergreen Energy Inc.",
+    "nameT1": "Evergreen Energy Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.538984,
+    "returnHypotheses": [
+     2.379311,
+     4.068966
+    ],
+    "excessLog": 1.201257,
+    "weightPct": 0.0033,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Boise Inc.",
+    "nameT1": "Boise Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.800986,
+    "returnHypotheses": [
+     2.999997,
+     2.999997
+    ],
+    "excessLog": 1.369879,
+    "weightPct": 0.002,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "MCG Capital Corp.",
+    "nameT1": "MCG Capital Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.867454,
+    "returnHypotheses": [
+     2.422537,
+     2.422537
+    ],
+    "excessLog": 1.213967,
+    "weightPct": 0.0071,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Venoco Inc.",
+    "nameT1": "Venoco Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.859611,
+    "returnHypotheses": [
+     1.830258,
+     1.830258
+    ],
+    "excessLog": 1.023953,
+    "weightPct": 0.0075,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Geokinetics Inc.",
+    "nameT1": "Geokinetics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.219199,
+    "returnHypotheses": [
+     4.526309,
+     4.526309
+    ],
+    "excessLog": 1.693105,
+    "weightPct": 0.0016,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "DuPont Fabros Technology Inc.",
+    "nameT1": "DuPont Fabros Technology Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.210881,
+    "returnHypotheses": [
+     3.55073,
+     8.101461
+    ],
+    "excessLog": 1.498873,
+    "weightPct": 0.0033,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Borders Group Inc.",
+    "nameT1": "Borders Group Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.805672,
+    "returnHypotheses": [
+     8.199995,
+     8.199995
+    ],
+    "excessLog": 2.202788,
+    "weightPct": 0.0032,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Entropic Communications Inc.",
+    "nameT1": "Entropic Communications Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 5.791929,
+    "returnHypotheses": [
+     3.5,
+     26
+    ],
+    "excessLog": 1.487662,
+    "weightPct": 0.0006,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Virgin Mobile USA Inc. Class A",
+    "nameT1": "Virgin Mobile USA Inc. Class A",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.250177,
+    "returnHypotheses": [
+     3.785713,
+     3.785713
+    ],
+    "excessLog": 1.54922,
+    "weightPct": 0.0034,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "UAL Corp.",
+    "nameT1": "UAL Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.16,
+    "returnHypotheses": [
+     3.047022,
+     3.047022
+    ],
+    "excessLog": 1.210524,
+    "weightPct": 0.0613,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "Dana Holding Corp.",
+    "nameT1": "Dana Holding Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.394215,
+    "returnHypotheses": [
+     7.468749,
+     11.703124
+    ],
+    "excessLog": 1.948926,
+    "weightPct": 0.0171,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "Human Genome Sciences Inc.",
+    "nameT1": "Human Genome Sciences Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.345673,
+    "returnHypotheses": [
+     9.6993,
+     15.048949
+    ],
+    "excessLog": 2.182721,
+    "weightPct": 0.0518,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "Brigham Exploration Co.",
+    "nameT1": "Brigham Exploration Co.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.193582,
+    "returnHypotheses": [
+     2.882522,
+     2.882522
+    ],
+    "excessLog": 1.169028,
+    "weightPct": 0.0386,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2009-12-31",
+    "t1": "2010-06-30",
+    "nameT0": "Flagstar Bancorp Inc.",
+    "nameT1": "Flagstar Bancorp Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.674037,
+    "returnHypotheses": [
+     4.233336,
+     4.233336
+    ],
+    "excessLog": 1.671855,
+    "weightPct": 0.0044,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Arena Pharmaceuticals Inc.",
+    "nameT1": "Arena Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.346068,
+    "returnHypotheses": [
+     4.336898,
+     7.005347
+    ],
+    "excessLog": 1.607777,
+    "weightPct": 0.0245,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Orexigen Therapeutics Inc.",
+    "nameT1": "Orexigen Therapeutics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.88358,
+    "returnHypotheses": [
+     2.440994,
+     5.881988
+    ],
+    "excessLog": 1.168893,
+    "weightPct": 0.0046,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Pharmacyclics Inc.",
+    "nameT1": "Pharmacyclics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.17416,
+    "returnHypotheses": [
+     2.684885,
+     2.684885
+    ],
+    "excessLog": 1.237372,
+    "weightPct": 0.0614,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Avatar Holdings Inc.",
+    "nameT1": "AV Homes Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.095991,
+    "returnHypotheses": [
+     1.03064
+    ],
+    "excessLog": 0.641484,
+    "weightPct": 0.0058,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Ellie Mae Inc.",
+    "nameT1": "Ellie Mae Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.573196,
+    "returnHypotheses": [
+     2.18584,
+     6.9646
+    ],
+    "excessLog": 1.091849,
+    "weightPct": 0.0043,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2012-12-31",
+    "t1": "2013-06-30",
+    "nameT0": "Nexstar Broadcasting Group Inc.",
+    "nameT1": "Nexstar Broadcasting Group Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.554895,
+    "returnHypotheses": [
+     2.348441,
+     7.371102
+    ],
+    "excessLog": 1.075725,
+    "weightPct": 0.01,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "Idenix Pharmaceuticals Inc.",
+    "nameT1": "Idenix Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.15205,
+    "returnHypotheses": [
+     3.0301,
+     3.0301
+    ],
+    "excessLog": 1.383842,
+    "weightPct": 0.0358,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "Pernix Therapeutics Holdings",
+    "nameT1": "Pernix Therapeutics Holdings Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.864723,
+    "returnHypotheses": [
+     2.56349,
+     6.126981
+    ],
+    "excessLog": 1.260792,
+    "weightPct": 0.0026,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2014-06-30",
+    "t1": "2014-12-31",
+    "nameT0": "Receptos Inc.",
+    "nameT1": "Receptos Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.419894,
+    "returnHypotheses": [
+     1.875821,
+     3.313732
+    ],
+    "excessLog": 1.052945,
+    "weightPct": 0.0375,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2014-06-30",
+    "t1": "2014-12-31",
+    "nameT0": "Tetraphase Pharmaceuticals Inc.",
+    "nameT1": "Tetraphase Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.185852,
+    "returnHypotheses": [
+     1.943662,
+     1.943662
+    ],
+    "excessLog": 1.076261,
+    "weightPct": 0.0169,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2014-06-30",
+    "t1": "2014-12-31",
+    "nameT0": "AVANIR Pharmaceuticals Inc. Class A",
+    "nameT1": "AVANIR Pharmaceuticals Inc. Class A",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.202089,
+    "returnHypotheses": [
+     2.005319,
+     2.005319
+    ],
+    "excessLog": 1.09699,
+    "weightPct": 0.0515,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2016-12-31",
+    "t1": "2017-06-30",
+    "nameT0": "Sangamo BioSciences Inc.",
+    "nameT1": "Sangamo Therapeutics Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.949735,
+    "returnHypotheses": [
+     1.885246
+    ],
+    "excessLog": 1.034643,
+    "weightPct": 0.0113,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2016-12-31",
+    "t1": "2017-06-30",
+    "nameT0": "Straight Path Communications Inc. Class B",
+    "nameT1": "Straight Path Communications Inc. Class B",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.860982,
+    "returnHypotheses": [
+     4.297847,
+     4.297847
+    ],
+    "excessLog": 1.642333,
+    "weightPct": 0.0176,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2017-06-30",
+    "t1": "2017-12-31",
+    "nameT0": "AnaptysBio Inc.",
+    "nameT1": "AnaptysBio Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 3.058809,
+    "returnHypotheses": [
+     3.208943,
+     11.626828
+    ],
+    "excessLog": 1.363048,
+    "weightPct": 0.0072,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "nameT0": "Madrigal Pharmaceuticals Inc.",
+    "nameT1": "Madrigal Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.391651,
+    "returnHypotheses": [
+     2.047064,
+     3.570596
+    ],
+    "excessLog": 1.066726,
+    "weightPct": 0.018,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "nameT0": "McDermott International Inc.",
+    "nameT1": "McDermott International Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.626257,
+    "returnHypotheses": [
+     1.986322,
+     1.986322
+    ],
+    "excessLog": 1.04659,
+    "weightPct": 0.0886,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "nameT0": "Genesis Healthcare Inc.",
+    "nameT1": "Genesis Healthcare Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.507349,
+    "returnHypotheses": [
+     2.001705,
+     3.502558
+    ],
+    "excessLog": 1.051728,
+    "weightPct": 0.0013,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Government Properties Income Trust",
+    "nameT1": "Office Properties Income Trust",
+    "tier": "C3_CIK",
+    "splitClass": "SPLIT",
+    "q": 0.480513,
+    "returnHypotheses": [
+     1.229985
+    ],
+    "excessLog": 0.685811,
+    "weightPct": 0.0371,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Shake Shack Inc., Class A",
+    "nameT1": "Shake Shack Inc",
+    "tier": "C3_CIK",
+    "splitClass": "SHARE_CHANGE",
+    "q": 1.158429,
+    "returnHypotheses": [
+     1.15852
+    ],
+    "excessLog": 0.653238,
+    "weightPct": 0.0623,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Cardlytics Inc.",
+    "nameT1": "Cardlytics Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.313544,
+    "returnHypotheses": [
+     2.095105,
+     6.737764
+    ],
+    "excessLog": 1.013637,
+    "weightPct": 0.0035,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Dova Pharmaceuticals Inc.",
+    "nameT1": "Dova Pharmaceuticals Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.678537,
+    "returnHypotheses": [
+     2.687336,
+     2.687336
+    ],
+    "excessLog": 1.18872,
+    "weightPct": 0.005,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Sonic Automotive Inc., Class A",
+    "nameT1": "Sonic Automotive Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.97359,
+    "returnHypotheses": [
+     1.282703
+    ],
+    "excessLog": 0.709176,
+    "weightPct": 0.0188,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "nameT0": "Synthorx Inc",
+    "nameT1": "Synthorx Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.350162,
+    "returnHypotheses": [
+     3.295636,
+     5.443454
+    ],
+    "excessLog": 1.368885,
+    "weightPct": 0.006,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "nameT0": "Forty Seven Inc",
+    "nameT1": "Forty Seven Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.33879,
+    "returnHypotheses": [
+     5.132399,
+     8.198598
+    ],
+    "excessLog": 1.724871,
+    "weightPct": 0.0056,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2019-12-31",
+    "t1": "2020-03-31",
+    "nameT0": "Waitr Holdings Inc",
+    "nameT1": "Waitr Holdings Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.211443,
+    "returnHypotheses": [
+     2.819876,
+     2.819876
+    ],
+    "excessLog": 1.708189,
+    "weightPct": 0.0008,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Inovio Pharmaceuticals Inc",
+    "nameT1": "Inovio Pharmaceuticals Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.489243,
+    "returnHypotheses": [
+     2.622312,
+     4.433468
+    ],
+    "excessLog": 1.081785,
+    "weightPct": 0.0488,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "GenMark Diagnostics Inc",
+    "nameT1": "GenMark Diagnostics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.198375,
+    "returnHypotheses": [
+     2.570388,
+     2.570388
+    ],
+    "excessLog": 1.067347,
+    "weightPct": 0.0158,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Laredo Petroleum Inc",
+    "nameT1": "Laredo Petroleum Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000645,
+    "returnHypotheses": [
+     35.492891,
+     35.492891
+    ],
+    "excessLog": 3.39179,
+    "weightPct": 0.0049,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Novavax Inc",
+    "nameT1": "Novavax Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.786042,
+    "returnHypotheses": [
+     5.137703,
+     9.229504
+    ],
+    "excessLog": 1.609123,
+    "weightPct": 0.0301,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "American Outdoor Brands Corp",
+    "nameT1": "Smith & Wesson Brands Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.992186,
+    "returnHypotheses": [
+     1.592771
+    ],
+    "excessLog": 0.7474,
+    "weightPct": 0.031,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Sorrento Therapeutics Inc",
+    "nameT1": "Sorrento Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.297642,
+    "returnHypotheses": [
+     2.413043,
+     4.119565
+    ],
+    "excessLog": 1.022277,
+    "weightPct": 0.0168,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Valhi Inc",
+    "nameT1": "Valhi Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.001097,
+    "returnHypotheses": [
+     9.174757,
+     9.174757
+    ],
+    "excessLog": 2.114583,
+    "weightPct": 0.0022,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "FTS International Inc",
+    "nameT1": "FTS International Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000687,
+    "returnHypotheses": [
+     29.941704,
+     29.941704
+    ],
+    "excessLog": 3.226778,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Mersana Therapeutics Inc",
+    "nameT1": "Mersana Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.280185,
+    "returnHypotheses": [
+     3.013722,
+     3.013722
+    ],
+    "excessLog": 1.184392,
+    "weightPct": 0.0142,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Catasys Inc",
+    "nameT1": "Ontrak Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.017961,
+    "returnHypotheses": [
+     1.425222
+    ],
+    "excessLog": 0.847427,
+    "weightPct": 0.0113,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Whiting Petroleum Corp",
+    "nameT1": "Whiting Petroleum Corp",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.013175,
+    "returnHypotheses": [
+     14.300885,
+     14.300885
+    ],
+    "excessLog": 2.689415,
+    "weightPct": 0.0055,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Seres Therapeutics Inc",
+    "nameT1": "Seres Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.243447,
+    "returnHypotheses": [
+     4.947479,
+     4.947479
+    ],
+    "excessLog": 1.744472,
+    "weightPct": 0.0114,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "nameT0": "Arvinas Inc",
+    "nameT1": "Arvinas Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.171254,
+    "returnHypotheses": [
+     2.597205,
+     2.597205
+    ],
+    "excessLog": 1.012581,
+    "weightPct": 0.0367,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "nameT0": "FuelCell Energy Inc",
+    "nameT1": "FuelCell Energy Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.313879,
+    "returnHypotheses": [
+     4.219626,
+     6.829439
+    ],
+    "excessLog": 1.38485,
+    "weightPct": 0.0246,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "Express Inc",
+    "nameT1": "Express Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.255572,
+    "returnHypotheses": [
+     3.417582,
+     3.417582
+    ],
+    "excessLog": 1.367345,
+    "weightPct": 0.0018,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "AMC ENTERTAINMENT HOLDINGS INC",
+    "nameT1": "AMC ENTERTAINMENT HOLDINGS INC",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 4.971483,
+    "returnHypotheses": [
+     3.816038,
+     23.080189
+    ],
+    "excessLog": 1.453704,
+    "weightPct": 0.0064,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "ExOne Co/The",
+    "nameT1": "ExOne Co/The",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.274944,
+    "returnHypotheses": [
+     2.304531,
+     2.304531
+    ],
+    "excessLog": 1.077047,
+    "weightPct": 0.0042,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "Pandion Therapeutics Inc",
+    "nameT1": "Pandion Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.671581,
+    "returnHypotheses": [
+     3.043771,
+     5.739618
+    ],
+    "excessLog": 1.27893,
+    "weightPct": 0.0044,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2021-06-30",
+    "t1": "2021-09-30",
+    "nameT0": "Fulcrum Therapeutics Inc",
+    "nameT1": "Fulcrum Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.194559,
+    "returnHypotheses": [
+     1.691794,
+     1.691794
+    ],
+    "excessLog": 1.034092,
+    "weightPct": 0.0076,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "nameT0": "TherapeuticsMD Inc",
+    "nameT1": "TherapeuticsMD Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0,
+    "returnHypotheses": [
+     25.184211,
+     25.184211
+    ],
+    "excessLog": 3.441308,
+    "weightPct": 0.0053,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "nameT0": "Tonix Pharmaceuticals Holding Corp",
+    "nameT1": "Tonix Pharmaceuticals Holding Corp",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0,
+    "returnHypotheses": [
+     5.855699,
+     5.855699
+    ],
+    "excessLog": 2.101232,
+    "weightPct": 0.0045,
+    "qualification": "NOT_QUALIFIED_ERROR"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "Offerpad Solutions, Inc.",
+    "nameT1": "Offerpad Solutions, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000001,
+    "returnHypotheses": [
+     23.596996,
+     23.596996
+    ],
+    "excessLog": 3.163297,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "ATI Physical Therapy, Inc.",
+    "nameT1": "ATI Physical Therapy, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0,
+    "returnHypotheses": [
+     34.995279,
+     34.995279
+    ],
+    "excessLog": 3.54406,
+    "weightPct": 0.0011,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "Local Bounti Corp.",
+    "nameT1": "Local Bounti Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000001,
+    "returnHypotheses": [
+     2.41237,
+     2.41237
+    ],
+    "excessLog": 1.18808,
+    "weightPct": 0.0026,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "Bird Global, Inc.",
+    "nameT1": "Bird Global, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000045,
+    "returnHypotheses": [
+     6.216865,
+     6.216865
+    ],
+    "excessLog": 1.937093,
+    "weightPct": 0,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "VistaGen Therapeutics, Inc.",
+    "nameT1": "Vistagen Therapeutics, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0,
+    "returnHypotheses": [
+     13.995991,
+     13.995991
+    ],
+    "excessLog": 2.668455,
+    "weightPct": 0.0011,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-06-30",
+    "t1": "2023-09-30",
+    "nameT0": "PolyMet Mining Corp.",
+    "nameT1": "PolyMet Mining Corp.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.831946,
+    "returnHypotheses": [
+     1.632911,
+     1.632911
+    ],
+    "excessLog": 1.026898,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-09-30",
+    "t1": "2023-12-31",
+    "nameT0": "ALX Oncology Holdings, Inc.",
+    "nameT1": "ALX Oncology Holdings, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.2103,
+    "returnHypotheses": [
+     2.102083,
+     2.102083
+    ],
+    "excessLog": 1.01119,
+    "weightPct": 0.0048,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2023-12-31",
+    "t1": "2024-03-31",
+    "nameT0": "Longboard Pharmaceuticals, Inc.",
+    "nameT1": "Longboard Pharmaceuticals, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.63024,
+    "returnHypotheses": [
+     2.58209,
+     4.970149
+    ],
+    "excessLog": 1.234126,
+    "weightPct": 0.0036,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "nameT0": "Rigetti Computing, Inc.",
+    "nameT1": "Rigetti Computing, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.161057,
+    "returnHypotheses": [
+     18.486656,
+     18.486656
+    ],
+    "excessLog": 2.975011,
+    "weightPct": 0.004,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2024-12-31",
+    "t1": "2025-03-31",
+    "nameT0": "CervoMed, Inc.",
+    "nameT1": "CervoMed, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.218847,
+    "returnHypotheses": [
+     2.910256,
+     2.910256
+    ],
+    "excessLog": 1.46598,
+    "weightPct": 0.0004,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Tango Therapeutics, Inc.",
+    "nameT1": "Tango Therapeutics, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.464338,
+    "returnHypotheses": [
+     2.737226,
+     4.605839
+    ],
+    "excessLog": 1.249417,
+    "weightPct": 0.0027,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Lyra Therapeutics, Inc.",
+    "nameT1": "Lyra Therapeutics, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.004946,
+    "returnHypotheses": [
+     69.942202,
+     69.942202
+    ],
+    "excessLog": 4.192939,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "MarketWise, Inc.",
+    "nameT1": "MarketWise, Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "SPLIT",
+    "q": 0.049959,
+    "returnHypotheses": [
+     1.00466
+    ],
+    "excessLog": 0.626548,
+    "weightPct": 0.0009,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Dave, Inc.",
+    "nameT1": "Dave, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.157286,
+    "returnHypotheses": [
+     2.247157,
+     2.247157
+    ],
+    "excessLog": 1.108854,
+    "weightPct": 0.0275,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Nektar Therapeutics",
+    "nameT1": "Nektar Therapeutics",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.016412,
+    "returnHypotheses": [
+     37,
+     37
+    ],
+    "excessLog": 3.56866,
+    "weightPct": 0.0053,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Aeva Technologies, Inc.",
+    "nameT1": "Aeva Technologies, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.343029,
+    "returnHypotheses": [
+     4.398571,
+     7.097857
+    ],
+    "excessLog": 1.617208,
+    "weightPct": 0.0065,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Stem, Inc.",
+    "nameT1": "Stem, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.012338,
+    "returnHypotheses": [
+     16.784756,
+     16.784756
+    ],
+    "excessLog": 2.809415,
+    "weightPct": 0.0022,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-06-30",
+    "t1": "2025-09-30",
+    "nameT0": "Mercurity Fintech Holding, Inc.",
+    "nameT1": "Mercurity Fintech Holding, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.278441,
+    "returnHypotheses": [
+     5.384416,
+     5.384416
+    ],
+    "excessLog": 1.749431,
+    "weightPct": 0.0037,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-06-30",
+    "t1": "2025-09-30",
+    "nameT0": "Better Home & Finance Holding Co.",
+    "nameT1": "Better Home & Finance Holding Co.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.20912,
+    "returnHypotheses": [
+     3.531073,
+     3.531073
+    ],
+    "excessLog": 1.40653,
+    "weightPct": 0.002,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "nameT0": "Praxis Precision Medicines, Inc.",
+    "nameT1": "Praxis Precision Medicines, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.247992,
+    "returnHypotheses": [
+     4.561132,
+     4.561132
+    ],
+    "excessLog": 1.700709,
+    "weightPct": 0.0336,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "nameT0": "T1 Energy, Inc.",
+    "nameT1": "T1 Energy, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.153832,
+    "returnHypotheses": [
+     2.06422,
+     2.06422
+    ],
+    "excessLog": 1.104701,
+    "weightPct": 0.0088,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWM",
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "nameT0": "Terns Pharmaceuticals, Inc.",
+    "nameT1": "Terns Pharmaceuticals, Inc.",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.178344,
+    "returnHypotheses": [
+     4.379494,
+     4.379494
+    ],
+    "excessLog": 1.667502,
+    "weightPct": 0.0192,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2005-12-31",
+    "t1": "2006-06-30",
+    "nameT0": "Zoltek Companies Inc.",
+    "nameT1": "Zoltek Companies Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.427732,
+    "returnHypotheses": [
+     2.404234,
+     4.106351
+    ],
+    "excessLog": 1.209016,
+    "weightPct": 0.0006,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2006-12-31",
+    "t1": "2007-06-30",
+    "nameT0": "First Solar Inc.",
+    "nameT1": "First Solar Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.469144,
+    "returnHypotheses": [
+     1.99631,
+     3.494465
+    ],
+    "excessLog": 1.049923,
+    "weightPct": 0.0043,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "nameT0": "EXCO Resources Inc.",
+    "nameT1": "EXCO Resources Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.249,
+    "returnHypotheses": [
+     1.384371,
+     1.384371
+    ],
+    "excessLog": 1.000829,
+    "weightPct": 0.0058,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "nameT0": "Petrohawk Energy Corp.",
+    "nameT1": "Petrohawk Energy Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.301357,
+    "returnHypotheses": [
+     1.675332,
+     3.012999
+    ],
+    "excessLog": 1.115967,
+    "weightPct": 0.0183,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2007-12-31",
+    "t1": "2008-06-30",
+    "nameT0": "Finish Line Inc. (The) Class A",
+    "nameT1": "Finish Line Inc. (The) Class A",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.180944,
+    "returnHypotheses": [
+     2.595127,
+     2.595127
+    ],
+    "excessLog": 1.411472,
+    "weightPct": 0.0006,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "AirTran Holdings Inc.",
+    "nameT1": "AirTran Holdings Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.85271,
+    "returnHypotheses": [
+     1.176453,
+     1.176453
+    ],
+    "excessLog": 1.136179,
+    "weightPct": 0.0019,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "Allegiant Travel Co.",
+    "nameT1": "Allegiant Travel Co.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.227421,
+    "returnHypotheses": [
+     1.61269,
+     1.61269
+    ],
+    "excessLog": 1.318863,
+    "weightPct": 0.0015,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "AMR Corp.",
+    "nameT1": "AMR Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.1835,
+    "returnHypotheses": [
+     1.083982,
+     1.083982
+    ],
+    "excessLog": 1.092763,
+    "weightPct": 0.0087,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "Delta Air Lines Inc.",
+    "nameT1": "Delta Air Lines Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.059048,
+    "returnHypotheses": [
+     1.010526,
+     3.021053
+    ],
+    "excessLog": 1.056879,
+    "weightPct": 0.0119,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "US Airways Group Inc.",
+    "nameT1": "US Airways Group Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.417955,
+    "returnHypotheses": [
+     2.092034,
+     3.63805
+    ],
+    "excessLog": 1.487312,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "UCBH Holdings Inc.",
+    "nameT1": "UCBH Holdings Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.164966,
+    "returnHypotheses": [
+     2.057756,
+     2.057756
+    ],
+    "excessLog": 1.476164,
+    "weightPct": 0.0016,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-06-30",
+    "t1": "2008-12-31",
+    "nameT0": "Emergent BioSolutions Inc.",
+    "nameT1": "Emergent BioSolutions Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.657746,
+    "returnHypotheses": [
+     1.629298,
+     5.573245
+    ],
+    "excessLog": 1.3252,
+    "weightPct": 0.0004,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Palm Inc.",
+    "nameT1": "Palm Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.378232,
+    "returnHypotheses": [
+     4.39741,
+     7.096114
+    ],
+    "excessLog": 1.657892,
+    "weightPct": 0.0032,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Evergreen Energy Inc.",
+    "nameT1": "Evergreen Energy Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.296831,
+    "returnHypotheses": [
+     2.379138,
+     7.447846
+    ],
+    "excessLog": 1.189594,
+    "weightPct": 0.0002,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Walter Industries Inc.",
+    "nameT1": "Walter Energy Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.999817,
+    "returnHypotheses": [
+     1.069674
+    ],
+    "excessLog": 0.699364,
+    "weightPct": 0.0101,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "DuPont Fabros Technology Inc.",
+    "nameT1": "DuPont Fabros Technology Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.170586,
+    "returnHypotheses": [
+     3.55045,
+     8.100901
+    ],
+    "excessLog": 1.487199,
+    "weightPct": 0.0002,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Entropic Communications Inc.",
+    "nameT1": "Entropic Communications Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 5.687628,
+    "returnHypotheses": [
+     3.500075,
+     26.000453
+    ],
+    "excessLog": 1.476067,
+    "weightPct": 0,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Aruba Networks Inc.",
+    "nameT1": "Aruba Networks Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.198583,
+    "returnHypotheses": [
+     2.427442,
+     2.427442
+    ],
+    "excessLog": 1.203787,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2008-12-31",
+    "t1": "2009-06-30",
+    "nameT0": "Virgin Mobile USA Inc. Class A",
+    "nameT1": "Virgin Mobile USA Inc. Class A",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.736782,
+    "returnHypotheses": [
+     3.786012,
+     6.976687
+    ],
+    "excessLog": 1.537671,
+    "weightPct": 0.0002,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "Dana Holding Corp.",
+    "nameT1": "Dana Holding Corp.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.450716,
+    "returnHypotheses": [
+     7.46876,
+     11.703141
+    ],
+    "excessLog": 1.940593,
+    "weightPct": 0.0013,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2009-06-30",
+    "t1": "2009-12-31",
+    "nameT0": "Human Genome Sciences Inc.",
+    "nameT1": "Human Genome Sciences Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.388568,
+    "returnHypotheses": [
+     9.699268,
+     15.048903
+    ],
+    "excessLog": 2.174384,
+    "weightPct": 0.0038,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2010-06-30",
+    "t1": "2010-12-31",
+    "nameT0": "Approach Resources Inc.",
+    "nameT1": "Approach Resources Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.310028,
+    "returnHypotheses": [
+     2.357581,
+     7.393953
+    ],
+    "excessLog": 1.007532,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Arena Pharmaceuticals Inc.",
+    "nameT1": "Arena Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.357702,
+    "returnHypotheses": [
+     4.336852,
+     7.005279
+    ],
+    "excessLog": 1.599714,
+    "weightPct": 0.0019,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Orexigen Therapeutics Inc.",
+    "nameT1": "Orexigen Therapeutics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.913905,
+    "returnHypotheses": [
+     2.440945,
+     5.88189
+    ],
+    "excessLog": 1.160824,
+    "weightPct": 0.0004,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Pharmacyclics Inc.",
+    "nameT1": "Pharmacyclics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.185317,
+    "returnHypotheses": [
+     2.684895,
+     2.684895
+    ],
+    "excessLog": 1.22932,
+    "weightPct": 0.0048,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Avatar Holdings Inc.",
+    "nameT1": "AV Homes Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.12259,
+    "returnHypotheses": [
+     1.030554
+    ],
+    "excessLog": 0.633386,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2011-12-31",
+    "t1": "2012-06-30",
+    "nameT0": "Ellie Mae Inc.",
+    "nameT1": "Ellie Mae Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.582734,
+    "returnHypotheses": [
+     2.18587,
+     6.964675
+    ],
+    "excessLog": 1.083803,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2012-12-31",
+    "t1": "2013-06-30",
+    "nameT0": "Tesla Motors Inc.",
+    "nameT1": "Tesla Motors Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.18052,
+    "returnHypotheses": [
+     2.171833,
+     2.171833
+    ],
+    "excessLog": 1.041931,
+    "weightPct": 0.0152,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2012-12-31",
+    "t1": "2013-06-30",
+    "nameT0": "Nexstar Broadcasting Group Inc.",
+    "nameT1": "Nexstar Broadcasting Group Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.721783,
+    "returnHypotheses": [
+     2.348463,
+     7.371158
+    ],
+    "excessLog": 1.096122,
+    "weightPct": 0.0007,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "Idenix Pharmaceuticals Inc.",
+    "nameT1": "Idenix Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.303046,
+    "returnHypotheses": [
+     3.030096,
+     5.045144
+    ],
+    "excessLog": 1.349982,
+    "weightPct": 0.0026,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "Intercept Pharmaceuticals Inc.",
+    "nameT1": "Intercept Pharmaceuticals Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.93524,
+    "returnHypotheses": [
+     2.465577,
+     5.931153
+    ],
+    "excessLog": 1.199071,
+    "weightPct": 0.0021,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "InterMune Inc.",
+    "nameT1": "InterMune Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.218642,
+    "returnHypotheses": [
+     1.997284,
+     1.997284
+    ],
+    "excessLog": 1.053898,
+    "weightPct": 0.0058,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2013-12-31",
+    "t1": "2014-06-30",
+    "nameT0": "Pernix Therapeutics Holdings",
+    "nameT1": "Pernix Therapeutics Holdings Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 3.823153,
+    "returnHypotheses": [
+     2.563769,
+     13.255075
+    ],
+    "excessLog": 1.22701,
+    "weightPct": 0.0001,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2014-06-30",
+    "t1": "2014-12-31",
+    "nameT0": "OvaScience Inc.",
+    "nameT1": "OvaScience Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.54853,
+    "returnHypotheses": [
+     3.822228,
+     6.233343
+    ],
+    "excessLog": 1.535361,
+    "weightPct": 0.0004,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2014-06-30",
+    "t1": "2014-12-31",
+    "nameT0": "Receptos Inc.",
+    "nameT1": "Receptos Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.444166,
+    "returnHypotheses": [
+     1.875814,
+     3.313721
+    ],
+    "excessLog": 1.018461,
+    "weightPct": 0.003,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2014-12-31",
+    "t1": "2015-06-30",
+    "nameT0": "Heron Therapeutics Inc.",
+    "nameT1": "Heron Therapeutics Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.463728,
+    "returnHypotheses": [
+     2.097418,
+     3.646128
+    ],
+    "excessLog": 1.127111,
+    "weightPct": 0.0009,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2015-12-31",
+    "t1": "2016-06-30",
+    "nameT0": "Cliffs Natural Resources Inc.",
+    "nameT1": "Cliffs Natural Resources Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.40116,
+    "returnHypotheses": [
+     2.588628,
+     4.382942
+    ],
+    "excessLog": 1.255379,
+    "weightPct": 0.0011,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2016-12-31",
+    "t1": "2017-06-30",
+    "nameT0": "Sangamo BioSciences Inc.",
+    "nameT1": "Sangamo Therapeutics Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.999927,
+    "returnHypotheses": [
+     1.885235
+    ],
+    "excessLog": 0.987569,
+    "weightPct": 0.0009,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2017-06-30",
+    "t1": "2017-12-31",
+    "nameT0": "AnaptysBio Inc.",
+    "nameT1": "AnaptysBio Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 3.607622,
+    "returnHypotheses": [
+     3.208915,
+     15.835659
+    ],
+    "excessLog": 1.34178,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2017-06-30",
+    "t1": "2017-12-31",
+    "nameT0": "Overstock.com Inc.",
+    "nameT1": "Overstock.com Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.583717,
+    "returnHypotheses": [
+     2.920244,
+     5.53374
+    ],
+    "excessLog": 1.270729,
+    "weightPct": 0.0007,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2017-06-30",
+    "t1": "2017-12-31",
+    "nameT0": "MyoKardia Inc.",
+    "nameT1": "MyoKardia Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.760427,
+    "returnHypotheses": [
+     2.21372,
+     2.21372
+    ],
+    "excessLog": 1.072004,
+    "weightPct": 0.0013,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "nameT0": "Intelsat SA",
+    "nameT1": "Intelsat SA",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.319655,
+    "returnHypotheses": [
+     3.914453,
+     11.286131
+    ],
+    "excessLog": 1.571565,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2017-12-31",
+    "t1": "2018-06-30",
+    "nameT0": "McDermott International Inc.",
+    "nameT1": "McDermott International Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.626462,
+    "returnHypotheses": [
+     1.98632,
+     1.98632
+    ],
+    "excessLog": 1.073427,
+    "weightPct": 0.0069,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Government Properties Income Trust",
+    "nameT1": "Office Properties Income Trust",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.925079,
+    "returnHypotheses": [
+     3.459989
+    ],
+    "excessLog": 1.325389,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Shake Shack Inc., Class A",
+    "nameT1": "Shake Shack Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.106431,
+    "returnHypotheses": [
+     1.158522
+    ],
+    "excessLog": 0.599666,
+    "weightPct": 0.0048,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Roku Inc.",
+    "nameT1": "Roku Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.004132,
+    "returnHypotheses": [
+     2.321146,
+     5.642291
+    ],
+    "excessLog": 1.030552,
+    "weightPct": 0.0053,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Switch Inc., Class A",
+    "nameT1": "Switch Inc",
+    "tier": "C4_FUZZY",
+    "splitClass": "SHARE_CHANGE",
+    "q": 1.666949,
+    "returnHypotheses": [
+     1.231429
+    ],
+    "excessLog": 0.632885,
+    "weightPct": 0.001,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2018-12-31",
+    "t1": "2019-09-30",
+    "nameT0": "Sonic Automotive Inc., Class A",
+    "nameT1": "Sonic Automotive Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.998752,
+    "returnHypotheses": [
+     1.282711
+    ],
+    "excessLog": 0.655607,
+    "weightPct": 0.0015,
+    "qualification": "QUALIFIED_INTERNAL"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "nameT0": "Synthorx Inc",
+    "nameT1": "Synthorx Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.662711,
+    "returnHypotheses": [
+     3.295636,
+     3.295636
+    ],
+    "excessLog": 1.376242,
+    "weightPct": 0.0008,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "nameT0": "Constellation Pharmaceuticals",
+    "nameT1": "Constellation Pharmaceuticals Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.63869,
+    "returnHypotheses": [
+     6.29257,
+     6.29257
+    ],
+    "excessLog": 1.905498,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "nameT0": "ChemoCentryx Inc",
+    "nameT1": "ChemoCentryx Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.791964,
+    "returnHypotheses": [
+     4.833333,
+     8.722222
+    ],
+    "excessLog": 1.682231,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2019-12-31",
+    "t1": "2020-03-31",
+    "nameT0": "Forty Seven Inc",
+    "nameT1": "Forty Seven Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.332771,
+    "returnHypotheses": [
+     1.423673,
+     2.635509
+    ],
+    "excessLog": 1.125755,
+    "weightPct": 0.0024,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2019-12-31",
+    "t1": "2020-03-31",
+    "nameT0": "Novavax Inc",
+    "nameT1": "Novavax Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.289747,
+    "returnHypotheses": [
+     2.41206,
+     7.530151
+    ],
+    "excessLog": 1.467787,
+    "weightPct": 0.0002,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Novavax Inc",
+    "nameT1": "Novavax Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.50775,
+    "returnHypotheses": [
+     5.137703,
+     8.206554
+    ],
+    "excessLog": 1.621827,
+    "weightPct": 0.0021,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "American Outdoor Brands Corp",
+    "nameT1": "Smith & Wesson Brands Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.001257,
+    "returnHypotheses": [
+     1.592771
+    ],
+    "excessLog": 0.760104,
+    "weightPct": 0.0018,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "FTS International Inc",
+    "nameT1": "FTS International Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000148,
+    "returnHypotheses": [
+     29.941723,
+     29.941723
+    ],
+    "excessLog": 3.239483,
+    "weightPct": 0,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Chesapeake Energy Corp",
+    "nameT1": "Chesapeake Energy Corp",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.005051,
+    "returnHypotheses": [
+     27.372902,
+     27.372902
+    ],
+    "excessLog": 3.152811,
+    "weightPct": 0.0009,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "GenMark Diagnostics Inc",
+    "nameT1": "GenMark Diagnostics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.534296,
+    "returnHypotheses": [
+     2.570388,
+     4.355583
+    ],
+    "excessLog": 1.080051,
+    "weightPct": 0.0007,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Inovio Pharmaceuticals Inc",
+    "nameT1": "Inovio Pharmaceuticals Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.46737,
+    "returnHypotheses": [
+     2.622312,
+     4.433468
+    ],
+    "excessLog": 1.094489,
+    "weightPct": 0.0029,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "nameT0": "Mersana Therapeutics Inc",
+    "nameT1": "Mersana Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.619107,
+    "returnHypotheses": [
+     3.013722,
+     3.013722
+    ],
+    "excessLog": 1.197096,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Vivint Solar Inc",
+    "nameT1": "Vivint Solar Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.825418,
+    "returnHypotheses": [
+     3.277778,
+     3.277778
+    ],
+    "excessLog": 1.383464,
+    "weightPct": 0.0018,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Seres Therapeutics Inc",
+    "nameT1": "Seres Therapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.690007,
+    "returnHypotheses": [
+     4.947479,
+     13.868697
+    ],
+    "excessLog": 1.712998,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Catasys Inc",
+    "nameT1": "Ontrak Inc",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.99955,
+    "returnHypotheses": [
+     1.425222
+    ],
+    "excessLog": 0.815953,
+    "weightPct": 0.0011,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "nameT0": "Whiting Petroleum Corp",
+    "nameT1": "Whiting Petroleum Corp",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.014226,
+    "returnHypotheses": [
+     14.300885,
+     14.300885
+    ],
+    "excessLog": 2.657941,
+    "weightPct": 0.0001,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "nameT0": "Silvergate Capital Corp",
+    "nameT1": "Silvergate Capital Corp",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.582582,
+    "returnHypotheses": [
+     4.160417,
+     4.160417
+    ],
+    "excessLog": 1.5106,
+    "weightPct": 0.001,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "nameT0": "FuelCell Energy Inc",
+    "nameT1": "FuelCell Energy Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.347199,
+    "returnHypotheses": [
+     4.219626,
+     6.829439
+    ],
+    "excessLog": 1.522008,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "nameT0": "Arvinas Inc",
+    "nameT1": "Arvinas Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.49359,
+    "returnHypotheses": [
+     2.597205,
+     4.395807
+    ],
+    "excessLog": 1.149739,
+    "weightPct": 0.0016,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "Amyris Inc",
+    "nameT1": "Amyris Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.120154,
+    "returnHypotheses": [
+     2.093117,
+     5.186234
+    ],
+    "excessLog": 1.072677,
+    "weightPct": 0.0008,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "Cassava Sciences Inc",
+    "nameT1": "Cassava Sciences Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.79895,
+    "returnHypotheses": [
+     5.590909,
+     5.590909
+    ],
+    "excessLog": 1.829189,
+    "weightPct": 0.0007,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "AMC ENTERTAINMENT HOLDINGS INC",
+    "nameT1": "AMC ENTERTAINMENT HOLDINGS INC",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 7.307866,
+    "returnHypotheses": [
+     3.816038,
+     32.712264
+    ],
+    "excessLog": 1.515449,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "nameT0": "GameStop Corp",
+    "nameT1": "GameStop Corp",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.156014,
+    "returnHypotheses": [
+     9.075372,
+     9.075372
+    ],
+    "excessLog": 2.253591,
+    "weightPct": 0.0025,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "nameT0": "TherapeuticsMD Inc",
+    "nameT1": "TherapeuticsMD Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000007,
+    "returnHypotheses": [
+     25.184211,
+     25.184211
+    ],
+    "excessLog": 3.442952,
+    "weightPct": 0.0004,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "nameT0": "Tonix Pharmaceuticals Holding Corp",
+    "nameT1": "Tonix Pharmaceuticals Holding Corp",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.000014,
+    "returnHypotheses": [
+     5.863596,
+     5.863596
+    ],
+    "excessLog": 2.104027,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2022-06-30",
+    "t1": "2022-09-30",
+    "nameT0": "Ventyx Biosciences Inc",
+    "nameT1": "Ventyx Biosciences Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.69482,
+    "returnHypotheses": [
+     1.854456,
+     1.854456
+    ],
+    "excessLog": 1.099811,
+    "weightPct": 0.0012,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2022-09-30",
+    "t1": "2022-12-30",
+    "nameT0": "Madrigal Pharmaceuticals Inc",
+    "nameT1": "Madrigal Pharmaceuticals Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.23023,
+    "returnHypotheses": [
+     3.466072,
+     3.466072
+    ],
+    "excessLog": 1.431972,
+    "weightPct": 0.0019,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "nameT0": "ImmunoGen Inc",
+    "nameT1": "ImmunoGen Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.152913,
+    "returnHypotheses": [
+     3.914062,
+     3.914062
+    ],
+    "excessLog": 1.514894,
+    "weightPct": 0.002,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2023-09-30",
+    "t1": "2023-12-31",
+    "nameT0": "Cano Health Inc",
+    "nameT1": "Cano Health Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.010176,
+    "returnHypotheses": [
+     22.146687,
+     22.146687
+    ],
+    "excessLog": 3.032661,
+    "weightPct": 0.0001,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2023-12-31",
+    "t1": "2024-03-31",
+    "nameT0": "Arcutis Biotherapeutics Inc",
+    "nameT1": "Arcutis Biotherapeutics Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.154781,
+    "returnHypotheses": [
+     2.068111,
+     5.136223
+    ],
+    "excessLog": 1.029532,
+    "weightPct": 0.0003,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2024-06-30",
+    "t1": "2024-09-30",
+    "nameT0": "Sirius XM Holdings Inc",
+    "nameT1": "Sirius XM Holdings Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.396253,
+    "returnHypotheses": [
+     2.342756,
+     7.35689
+    ],
+    "excessLog": 1.150706,
+    "weightPct": 0.0034,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "nameT0": "IonQ Inc",
+    "nameT1": "IonQ Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.155826,
+    "returnHypotheses": [
+     3.779176,
+     3.779176
+    ],
+    "excessLog": 1.5424,
+    "weightPct": 0.0027,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "nameT0": "Scholar Rock Holding Corp",
+    "nameT1": "Scholar Rock Holding Corp",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.756963,
+    "returnHypotheses": [
+     4.395755,
+     7.992926
+    ],
+    "excessLog": 1.663744,
+    "weightPct": 0.0007,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "nameT0": "Archer Aviation Inc",
+    "nameT1": "Archer Aviation Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.754656,
+    "returnHypotheses": [
+     2.217822,
+     2.217822
+    ],
+    "excessLog": 1.146836,
+    "weightPct": 0.0016,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Stem Inc",
+    "nameT1": "STEM INC",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.01249,
+    "returnHypotheses": [
+     16.784754,
+     16.784754
+    ],
+    "excessLog": 2.777811,
+    "weightPct": 0.0001,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "Rocket Lab USA Inc",
+    "nameT1": "Rocket Lab Corp",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.131722,
+    "returnHypotheses": [
+     1.000559
+    ],
+    "excessLog": 0.592897,
+    "weightPct": 0.0115,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "nameT0": "X4 Pharmaceuticals Inc",
+    "nameT1": "X4 Pharmaceuticals Inc",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.008363,
+    "returnHypotheses": [
+     7.037224,
+     7.037224
+    ],
+    "excessLog": 1.983554,
+    "weightPct": 0.0001,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "nameT0": "Terns Pharmaceuticals Inc",
+    "nameT1": "Terns Pharmaceuticals Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 2.072098,
+    "returnHypotheses": [
+     4.379494,
+     9.758988
+    ],
+    "excessLog": 1.660018,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "nameT0": "Praxis Precision Medicines Inc",
+    "nameT1": "Praxis Precision Medicines Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.338609,
+    "returnHypotheses": [
+     4.561132,
+     7.341698
+    ],
+    "excessLog": 1.693225,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "nameT0": "ImmunityBio Inc",
+    "nameT1": "ImmunityBio Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.641301,
+    "returnHypotheses": [
+     2.873737,
+     5.456229
+    ],
+    "excessLog": 1.398057,
+    "weightPct": 0.0005,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "nameT0": "Erasca Inc",
+    "nameT1": "Erasca Inc",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.681061,
+    "returnHypotheses": [
+     3.349462,
+     3.349462
+    ],
+    "excessLog": 1.51389,
+    "weightPct": 0.0014,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "nameT0": "Acm Research Inc",
+    "nameT1": "ACM RESEARCH INC",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.854223,
+    "returnHypotheses": [
+     2.224651,
+     2.224651
+    ],
+    "excessLog": 1.033752,
+    "weightPct": 0.0037,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "nameT0": "Astera Labs Inc",
+    "nameT1": "ASTERA LABS INC",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.214846,
+    "returnHypotheses": [
+     3.407117,
+     3.407117
+    ],
+    "excessLog": 1.346148,
+    "weightPct": 0.0219,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "IWV",
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "nameT0": "Maxlinear Inc",
+    "nameT1": "MAXLINEAR INC",
+    "tier": "C1_CUSIP",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.158503,
+    "returnHypotheses": [
+     6.362277,
+     6.362277
+    ],
+    "excessLog": 1.859297,
+    "weightPct": 0.0019,
+    "qualification": "QUALIFIED"
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "nameT0": "Adobe Systems, Inc.",
+    "nameT1": "Adobe Systems, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 0.845098,
+    "returnHypotheses": [
+     2.272072,
+     2.272072
+    ],
+    "excessLog": 1.056326,
+    "weightPct": 0.0304,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "nameT0": "Nextel Communications, Inc.",
+    "nameT1": "Nextel Communications, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.208494,
+    "returnHypotheses": [
+     2.359133,
+     2.359133
+    ],
+    "excessLog": 1.082586,
+    "weightPct": 0.067,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "nameT0": "Alza Corp.",
+    "nameT1": "Alza Corp., Class A",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.034474,
+    "returnHypotheses": [
+     1.020438
+    ],
+    "excessLog": 0.736788,
+    "weightPct": 0.0411,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "nameT0": "Corning, Inc.",
+    "nameT1": "Corning, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.200271,
+    "returnHypotheses": [
+     3.331814,
+     3.331814
+    ],
+    "excessLog": 1.49946,
+    "weightPct": 0.1592,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "nameT0": "Avaya, Inc.",
+    "nameT1": "Avaya, Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.220298,
+    "returnHypotheses": [
+     6.622377,
+     6.622377
+    ],
+    "excessLog": 1.831009,
+    "weightPct": 0.006,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "nameT0": "Corning Inc.",
+    "nameT1": "Corning Inc.",
+    "tier": "C2_NAME",
+    "splitClass": "AMBIGUOUS_CA",
+    "q": 1.402105,
+    "returnHypotheses": [
+     4.8875,
+     7.83125
+    ],
+    "excessLog": 1.572752,
+    "weightPct": 0.0202,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "nameT0": "TMP Worldwide, Inc.",
+    "nameT1": "Monster Worldwide Inc.",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 0.996328,
+    "returnHypotheses": [
+     1.797778
+    ],
+    "excessLog": 0.828746,
+    "weightPct": 0.0128,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "nameT0": "Williams Cos., Inc. (The)",
+    "nameT1": "Williams Companies Inc. (The)",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.000723,
+    "returnHypotheses": [
+     3.168141
+    ],
+    "excessLog": 1.227391,
+    "weightPct": 0.0155,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   },
+   {
+    "fund": "SPY",
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "nameT0": "Williams Companies Inc. (The)",
+    "nameT1": "Williams Cos., Inc. (The)",
+    "tier": "C3_CIK",
+    "splitClass": "NONE",
+    "q": 1.109905,
+    "returnHypotheses": [
+     1.070248
+    ],
+    "excessLog": 0.648003,
+    "weightPct": 0.0609,
+    "qualification": "NOT_QUALIFIED_COVERAGE"
+   }
+  ],
+  "note": "remainingOver100pct: links that stay chained although every return hypothesis is above +100 % and the link is ambiguous or without CUSIP/name identity; they keep CUSIP/name identity (C1/C2: same security, e.g. Corning 2003, Avaya 2003) or are not share-count discontinuities (NONE) - listed for review, not changed."
+ }
+}

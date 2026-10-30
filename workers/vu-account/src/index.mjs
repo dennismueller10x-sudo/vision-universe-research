@@ -36,11 +36,26 @@ async function health(ctx) {
     }
     cancellations = cancellationState.value;
   }
+  // Newsletter-Liste konfiguriert: ist die DOI-Vorlage bei Brevo nutzbar (auch vor dem Einschalten)? Ersetzt einen
+  // eigenen Pruef-Workflow; hoechstens ein Brevo-Abruf je 10 Minuten.
+  let newsletterTemplate;
+  if (ctx.cfg.brevo.lists.newsletter && ctx.brevo?.configured) {
+    if (ctx.now() - templateState.at > 600_000) {
+      let value;
+      try { await ctx.brevo.doiTemplateId(); value = 'ok'; } catch (e) { value = String(e.code || 'unknown').slice(0, 40); }
+      templateState = {at: ctx.now(), value};
+    }
+    newsletterTemplate = templateState.value;
+  }
   return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
     mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess,
-    checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved, newsletter: ctx.cfg.brevo.newsletter, contactSync: ctx.cfg.brevo.sync});
+    checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved,
+    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.mode,
+    // Stripe Tax im Konto aktiv? Auch vor dem Einschalten sichtbar (ersetzt einen Pruef-Workflow).
+    stripeTax: ctx.stripe && ctx.cfg.stripe.mode !== 'missing' ? await billing.stripeTaxState(ctx) : undefined, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
 }
-export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; };
+let templateState = {at: 0, value: 'unknown'};
+export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; billing.resetTaxCache(); };
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [

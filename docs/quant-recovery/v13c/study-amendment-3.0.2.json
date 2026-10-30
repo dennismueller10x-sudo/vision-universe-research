@@ -1,0 +1,15 @@
+{
+ "schemaVersion": "v13c-study-amendment-3.0.2",
+ "amends": { "file": "docs/quant-recovery/v13c/study-registration-3.0.0.json", "sha256": "bbe15b1920bcee83222b72547b336b608e60f474a84d8ea2c178c6f08ad14c1b", "after": "study-amendment-3.0.1.json (51698966d144d7bed805edda6c2fcaa492350577702642dace577bbc46ff10a1)" },
+ "registeredBefore": "Committed before the affected F1w' run is repeated. No F1w' outcome exists (the run wrote no file). The F1' and F1d' runs completed on the data snapshot of amendment 3.0.1; their outputs were not opened before this amendment.",
+ "deviations": {
+  "D2_runtime_failure_F1wp": {
+   "type": "RUNTIME_FAILURE (no rule, parameter, population or output changed)",
+   "event": "The F1w' run (started in parallel with F1' and F1d') was killed by the container memory limit (cgroup OOM kill, about 4.6 GB resident) during the V10 signal stage, after frame construction and the passed R2 check; it wrote no output file.",
+   "action": "F1w' is repeated alone with identical code, data snapshot and arguments. Nothing else is repeated."
+  }
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

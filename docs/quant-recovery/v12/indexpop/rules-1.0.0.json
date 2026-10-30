@@ -1,0 +1,42 @@
+{
+ "schemaVersion": "v12-indexpop-rules-1.0.0",
+ "ruleVersion": "1.0.0",
+ "fixedBefore": "Fixed after inspecting the format of two N-PORT documents (SPY 2026-06-30, IWV 2019-09-30) and the filing inventory, before any membership, mapping or coverage result was computed.",
+ "funds": {
+  "SPY": {"index": "SP500", "cik": 884394, "expectedPositions": [480, 520]},
+  "QQQ": {"index": "NDX", "cik": 1067839, "expectedPositions": [95, 110]},
+  "DIA": {"index": "DJIA", "cik": 1041130, "expectedPositions": [30, 31]},
+  "IWB": {"index": "R1000", "cik": 1100663, "series": "S000004347", "expectedPositions": [950, 1100]},
+  "IWM": {"index": "R2000", "cik": 1100663, "series": "S000004344", "expectedPositions": [1850, 2150]},
+  "IWV": {"index": "R3000", "cik": 1100663, "series": "S000004341", "expectedPositions": [2500, 3150]}
+ },
+ "member": "A position is an index member when it is common/preferred equity held long in shares: N-PORT assetCat EC, payoffProfile Long, units NS, valUSD > 0 (money-market/collateral STIV, derivatives DE, cash excluded). In report schedules (N-30D, N-30B-2, N-Q) every line of the common-stock section with a share count and a value.",
+ "validation": {
+  "NPORT": "VALID when (sum of member valUSD) / netAssets is within [0.98, 1.01] (an index fund holds its net assets in index equities; up to 2 % may be equitized cash via futures) AND the member count lies in expectedPositions. Otherwise the date is NOT_VALIDATED and counted, never used.",
+  "REPORT": "VALID when the parsed member values sum to the reported section total (Total Common Stocks / Total Investments in securities of the fund's schedule) within +-1 %, AND the member count lies in expectedPositions. When the document reports no section total the date is NOT_VALIDATED (TOTAL_NOT_FOUND).",
+  "duplicates": "One date per fund: the original filing; an amendment replaces it only if the original fails validation and the amendment passes."
+ },
+ "nameNormalization": "upper case; '&' -> ' AND '; drop text after '/' when it is '/THE' or a state suffix; remove punctuation; drop leading 'THE'; drop trailing legal-form tokens repeatedly (INC, INCORPORATED, CORP, CORPORATION, CO, COMPANY, LTD, LIMITED, PLC, LLC, LP, NV, SA, AG, SE; HOLDINGS and GROUP are kept), move share-class tokens (CLASS/CL + letter) into a separate class tag and drop filler tokens (COM, COMMON, STOCK, SHS, ORD, NEW, ADR); collapse spaces.",
+ "matching": {
+  "candidates": "Our listings: securityId with a weekly series in quant/data/market/discover-series-long; names from quant/data/market/security-master/company-names.json (companyName and the SEC_COMPANY_TICKERS / TIINGO candidate names); ticker -> securityId only via core/identity.js#securityIdForTicker (ADR-001).",
+  "priceCheck": "raw holding price p = value / shares at the holding date d; series close c = weekly close of the ISO week containing d (split-adjusted); split factor f = product of the series' provider split factors with date > d, computed with quant/engines/return-series.js#splitFactors (ADR-002); ratio r = p / (c * f). A candidate is PRICE_CONFIRMED for a position key when the median |r - 1| over all dates with a bar is <= 0.05 and at least one date has a bar.",
+  "tiers": {
+   "T1_CUSIP_NAME_EXACT": "N-PORT position key (CUSIP) whose normalized name or title equals the normalized name of exactly one PRICE_CONFIRMED candidate.",
+   "T2_NAME_UNIQUE": "no CUSIP (report schedules) or no exact name: exactly one candidate whose normalized name equals (report) or whose token-set similarity >= 0.9 is unique and which is PRICE_CONFIRMED.",
+   "T3_UNCERTAIN": "name candidates exist but none or more than one is PRICE_CONFIRMED, or the share class is ambiguous; NOT used.",
+   "UNMATCHED": "no candidate listing; counted as missing coverage."
+  },
+  "use": "Only T1 and T2 mappings enter the register's securityId field and the coverage."
+ },
+ "coverage": {
+  "loader": "createResearchLoader(root, {identityEvidence: true, corporateActionEvidence: true, listingLifecycleEvidence: true})",
+  "covered": "member mapped (T1/T2) to a securityId that the loader returns without error (QUALIFIED) and whose returned points contain a bar within 7 calendar days of the holding date (inside first..last bar).",
+  "measures": "per fund and date: share of members (count) and of member value (weight) covered",
+  "qualifiedSubpopulationThreshold": "a fund-date qualifies when coverage >= 95 % of members AND >= 99 % of weight; a period qualifies when every validated date in it qualifies"
+ },
+ "exits": "A member key (securityId when mapped T1/T2, else CUSIP, else normalized name) present at date t and absent at every later validated date of the same fund. Fate from SEC submissions of the issuer CIK (Form 25/25-NSE, 15-12B/15-12G/15-15D, 8-K item 2.01) within 400 days after the last holding date; STILL_REPORTING when 10-K/10-Q filings continue more than 400 days later.",
+ "quarterPrices": "For members without covered series: p = value / shares per date (raw, unadjusted, as reported). Plausibility measured on members with both: |r - 1| distribution per date, exact-week-end dates reported separately.",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

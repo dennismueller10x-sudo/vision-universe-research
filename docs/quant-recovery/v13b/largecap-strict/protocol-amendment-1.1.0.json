@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "v13-largecap-protocol-amendment-1.1.0",
+  "methodId": "SOURCE_PRICE_BAND_IDENTITY_INTERVAL",
+  "amends": [
+    "docs/quant-recovery/v13/largecap/protocol-1.0.0.json (sha256 3710f99d5bb10ff95538fd8bdde73e8dc805888589d0a386d958a7465780ef28)",
+    "docs/quant-recovery/v13/largecap/protocol-amendment-1.0.1.json (sha256 52a3ef0d18986bc246cdfdf2fbb4c9e30af4a682e5083f41c67b80d301e0e4aa)"
+  ],
+  "ruleId": "STRICT_INTERVAL_BOUNDARY",
+  "status": "REGISTERED_AFTER_1.0.1_OUTCOMES_BEFORE_1.1.0_EVALUATION_OWNER_APPROVED",
+  "registeredAt": "2026-10-29",
+  "base": "claude/vision-quant-v10-backtest-4ho3rd @ 7e38ec8e16",
+  "ownerApproval": "V13b decision 2 (2026-10-29): 'Die strengere historische Intervallgrenze [Morgan Stanley 2008] darf als neue versionierte Research-Regel umgesetzt werden, sofern sie durch urspruengliche Quellen belegbar ist. Ohne Nachweis bleibt der betroffene Zeitraum ausgeschlossen. Kein rueckwirkendes Umschreiben bereits eingefrorener Forschungsresultate.'",
+  "registration": "The git commit that adds this file (sha256 in protocol-amendment-1.1.0.sha256) precedes every evaluation under version 1.1.0. Results under 1.1.0 are written to docs/quant-recovery/v13b/largecap-strict/cases-1.1.0.json. docs/quant-recovery/v13/largecap/cases-1.0.0.json, cases-protocol-1.0.0.json, independent-check-1.0.0.json, quant/engines/research-largecap-price-anchors.cjs and the loader option identityEvidenceProtocolV13Largecap stay byte-identical; 1.0.1 results are never replaced. 1.1.0 results are a separate, opt-in version.",
+  "timing": "Written after the 1.0.1 results were published (V13). Known before writing: the 1.0.1 limit note on Morgan Stanley (interval starts 2008-09-05 with the passing fiscal quarter Sep-Nov 2008 although the repurchase rows of September and October 2008 failed; the week 2008-10-17 is loaded as RESOLVED_SOURCE_PRICE_BAND) and the anchor periods listed in cases-1.0.0.json around the seven interval starts (from which the effect at the start of AAPL and COR, whose runs also begin with a quarter overlapping a failing month, is visible). Not computed before this commit: any 1.1.0 interval, the end side of any interval, the effect on non-selected runs. Because this version is written after sight of 1.0.1 outcomes it is labelled accordingly; its permitted effect is restricted to a pure restriction (see monotonicity), so it cannot unlock anything that 1.0.1 left locked and cannot be used to raise a result.",
+  "rule": {
+    "statement": "An unlocked interval must not contain any day of a tested anchor period that FAILED its band test and is not a member of the accepted run itself. Failing evidence from an original source is never overridden by an overlapping passing period of another resolution (a passing quarter does not rehabilitate a failing month inside it, a passing month does not rehabilitate a failing quarter). Tolerated failing members of the accepted run (protocol 1.0.0 failure allowance) are unchanged.",
+    "generality": "Applies identically to all seven listings of protocol 1.0.0 (ref_AAPL, ref_ABT, ref_MS, ref_USB, ref_DD, ref_COR, ref_DOC), to both interval boundaries and to every anchor type. No listing, date or document is named in the rule.",
+    "membership": "Periods, band tests, breaks, runs, run acceptance and the selected run are computed exactly as in protocol 1.0.0 + amendment 1.0.1 (evaluate.cjs unchanged). Periods are sorted by end, then start (1.0.0). Run membership is the set of periods the 1.0.1 run formation put into the selected run. A non-member failing period sorted BEFORE the first member is 'preceding'; one sorted AFTER the last member is 'following'. A non-member failing period sorted between the first and the last member (possible only for periods dropped by the event split) makes the listing LOCKED under 1.1.0 (reason NON_MEMBER_FAILURE_INSIDE_RUN).",
+    "start": "S = the 1.0.1 interval start (after the identity bound). For every preceding failing period x with end(x) + buffer(x) >= S: S = max(S, end(x) + buffer(x) + 1 day). validFrom = first weekly bar dated >= S.",
+    "end": "E = the 1.0.1 interval end (after the identity bound). For every following failing period x with start(x) - buffer(x) <= E: E = min(E, start(x) - buffer(x) - 1 day). validTo = last weekly bar dated <= E.",
+    "buffer": "buffer(x) = 0 days for a B period (repurchase table row: its dates are printed in the source row, e.g. 'October 1, 2008 - October 31, 2008', or the row names one calendar month); buffer(x) = 10 days for an A period (fiscal quarter boundaries are month approximations for 52/53-week calendars; same buffer as protocol 1.0.0 A_QUARTERLY_RANGE.boundaryBufferDays).",
+    "evidencedStart": "The new start must be evidenced by an original source: S must lie inside a passing member period (start <= S <= end). Otherwise S moves to the start of the first passing member period that starts after S (the next provable boundary). Same for E (inside a passing member period, otherwise the end of the last passing member period that ends before E).",
+    "acceptance": "After clipping: validFrom <= validTo and at least 104 weekly bars (protocol 1.0.0), else the listing is LOCKED under 1.1.0 (reason STRICT_INTERVAL_TOO_SHORT).",
+    "monotonicity": "Only the run selected under 1.0.1 is clipped; there is no fallback to another run. Hence the 1.1.0 interval is always a sub-interval of the 1.0.1 interval or empty (locked). A listing locked under 1.0.1 stays locked.",
+    "eventsInside": "Split-sized moves are band-confirmed (RESOLVED_SOURCE_PRICE_BAND, PRICE_RETURN_ONLY) only if both weeks (prevWeek and week) lie inside the clipped interval; the bracketing test of protocol 1.0.0 (break rule 4) is unchanged. Moves outside the clipped interval are excluded with the history.",
+    "unchanged": "All thresholds and parsers (tolerances 1 % / 10 %, buffer 10 days, gap 366 days, event window 120 days, failure allowance 5 %, 104 bars), identity rule, unit conversion, documents and facts (facts-1.0.0.jsonl, same private file and sha256 as 1.0.1)."
+  },
+  "resolutionDecision": {
+    "decidedBeforeEvaluation": true,
+    "text": [
+      "1. The boundary is placed at the printed boundary of the failing period in the original SEC document (10-Q/10-K repurchase table rows carry day dates; quarterly high/low tables carry fiscal quarters). The finest original-source period that fails determines the excluded days; a coarser or finer passing period overlapping it does not shorten the exclusion.",
+      "2. No position inside a failing period is inferred from the weekly provider series, from daily data, from news or from third-party data; nothing is interpolated. A boundary that only a non-original source could place more finely stays at the printed period boundary.",
+      "3. A quarterly (A) boundary carries the 10-day buffer because the printed quarter is mapped to calendar months by approximation; a repurchase-row (B) boundary is exact (buffer 0).",
+      "4. The first unlocked week is the first weekly bar dated on or after the day after the excluded period (a weekly bar is the close of its last trading day; the first return used in research is measured from that close forward, so no excluded close enters a return).",
+      "5. If the new boundary is not inside a passing original-source period of the run, it moves to the next passing period's printed boundary (evidencedStart). The excluded days stay excluded; nothing is unlocked without a passing anchor."
+    ]
+  },
+  "justification": [
+    "Protocol 1.0.0 orders anchor periods by period end. When a long passing period (a fiscal quarter) ends after a short failing period (a month) inside it, the run that follows the break begins with the quarter, and the interval begins at the quarter start - inside the failing month. The failing month is contradicting evidence for its own days; the quarter's band (e.g. high/low over three months) is too wide to rehabilitate it. Excluding the failing period's days follows the 1.0.0 principle 'everything outside the confirmed interval stays excluded' at the finer resolution that the sources themselves provide.",
+    "Applying the same rule at the end boundary is the symmetric case (a following failing period that begins before the last passing period ends) and is decided here before any end-side computation.",
+    "Restriction-only (monotonicity) because this version is written after sight of 1.0.1 outcomes: a post-hoc rule may make the data set more conservative, never larger."
+  ],
+  "outputs": [
+    "docs/quant-recovery/v13b/largecap-strict/cases-1.1.0.json (evaluate-1.1.0.cjs)",
+    "docs/quant-recovery/v13b/largecap-strict/independent-check-1.1.0.json (python3 -I verify_strict.py, own implementation from raw sources and series)",
+    "quant/engines/research-largecap-price-anchors-1.1.0.cjs (schema research-largecap-price-anchors-1.1.0, generated)",
+    "loader option identityEvidenceProtocolV13LargecapStrict in a new list LOADER_OPTIONS_V13B (requires identityEvidenceProtocolV13Largecap; replaces the 1.0.1 records of the seven listings by the 1.1.0 records only when set)",
+    "docs/quant-recovery/v13b/largecap-strict/README.md, quant/tests/v13b-largecap-strict.test.mjs"
+  ],
+  "certificationStatus": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "evidenceKind": "SOURCE_EVIDENCE"
+}

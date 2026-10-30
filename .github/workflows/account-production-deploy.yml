@@ -1,7 +1,8 @@
 name: Konten — vu-account ausrollen (Produktion)
 # Rollt workers/vu-account als Worker "vu-account" unter
 # https://konto.visionuniverse.de aus (wrangler.toml [env.production]).
-# Nur von Hand (workflow_dispatch), nie bei Merge. Anleitung:
+# Nur von Hand (workflow_dispatch), nie bei Merge. Seit FREIGABEN.md nur noch zum Setzen/Erneuern von Secrets;
+# normales Ausrollen macht "Konten — Produktion automatisch". Anleitung:
 # docs/accounts/PRODUCTION.md.
 #
 # Die Zugangsdaten liegen in zwei GitHub-Umgebungen, weil GitHub Secrets nicht
@@ -59,7 +60,7 @@ jobs:
           grep -q 'account.visionuniverse.de' <<<"$(awk '/^\[env\.production\]/{p=1} p' wrangler.toml | grep -v '^#')" && { echo "::error::account.visionuniverse.de gehoert Shopify"; exit 1; } || true
           # Oeffentlicher Pro-Checkout nur mit freigegebenen Rechtstexten, bestaetigter Fassung, Live-Freigabe und USt-Ausweis.
           node ../../scripts/account/check-public-checkout.mjs --toml=wrangler.toml
-          grep -qE '^STRIPE_TAX_MODE = "(none|automatic|txr_[A-Za-z0-9]+)"$' <<<"$prod" || { echo "::error::Produktion: STRIPE_TAX_MODE muss none, automatic oder txr_… sein"; exit 1; }
+          grep -qE '^STRIPE_TAX_MODE = "(none|automatic)"$' <<<"$prod" || { echo "::error::Produktion: STRIPE_TAX_MODE muss none oder automatic sein"; exit 1; }
           for k in VU_BREVO_SYNC VU_NEWSLETTER; do grep -qE "^$k = \"(true|false)\"$" <<<"$prod" || { echo "::error::Produktion: $k muss \"true\" oder \"false\" sein"; exit 1; }; done
           for k in STRIPE_LIVE_MODE_APPROVED VU_CHECKOUT_ACCESS VU_REGISTRATION_ENABLED STRIPE_TAX_MODE VU_LEGAL_APPROVED VU_BREVO_SYNC VU_NEWSLETTER; do echo "$k = $(grep -E "^$k = " <<<"$prod" | cut -d'"' -f2)"; done
           npx --yes "$WRANGLER" deploy --dry-run --env production --outdir "$RUNNER_TEMP/bundle" > /dev/null

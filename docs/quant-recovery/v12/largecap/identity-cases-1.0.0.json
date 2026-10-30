@@ -1,0 +1,1047 @@
+{
+ "schemaVersion": "v12-largecap-identity-cases-1.0.0",
+ "protocol": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+ "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+ "v10ProtocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+ "generatedAt": "2026-10-29T08:37:09Z",
+ "codeSha256": {
+  "b1run.py": "c4b6834471ccbd6283176f9c0fdf7f57b14b309ab2ad7e53f16a36d8a3ea31cc",
+  "seclib.py": "49630599df9bb9a0cae5bb299c5e754af964b2da45dc56a4cf966dcc81b39b03",
+  "b1_identity.py": "bbe68824cc2a9abe559540cf1ddac1fd2ce15d066a33c51745d78f661c5747c8",
+  "v10lib.py": "291435f46d44e454baac1476ac2dde49ec7eb4e3d8d440fb4166fc94f6d5eee5"
+ },
+ "inputs": {
+  "masterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "caFactsSha256": "86cbc55c00eeabd1b68402d2081cbce8f064f1fcdb1aba815c23a100d00d2a4e"
+ },
+ "productionApproved": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "counts": {
+  "EXCLUDED": 4,
+  "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER": 2
+ },
+ "cases": [
+  {
+   "securityId": "ref_TEL",
+   "ticker": "TEL",
+   "cik": "0001385157",
+   "issuer": "TE Connectivity plc",
+   "selectedCanonicalId": "tiingo:NYSE:TEL:2007-06-14",
+   "v9": {
+    "validFrom": "2013-11-15",
+    "basis": "EARLIEST_FULLTEXT_TICKER_CONFIRMATION",
+    "subState": "CONCATENATION_RISK_TRUNCATED"
+   },
+   "series": {
+    "from": "2007-06-15",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1011,
+    "sourceSha256": "9adfe6b7840366d537b62a2c7cf5a9469c004a44a7666943aaa2b205e80d2724"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:TEL:2007-06-14",
+    "tiingo:NYSE:TEL:2007-06-14"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2007-06-14",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001385157.json",
+     "sha256": "a42c77313e34afb01b715d46678ca1c76f89175ecd5d096c9f8dc1dadf88aad8"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001385157-submissions-001.json",
+     "sha256": "1508efc26c4980bd7701de8df72bce4e57c03ca69812efbb3401da5b192d446c"
+    }
+   ],
+   "secName": "TE Connectivity plc",
+   "secTickers": [
+    "TEL"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001104659-26-086509",
+    "form": "10-Q",
+    "filingDate": "2026-07-24",
+    "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926086509/tel-20260626x10q.htm",
+    "sha256": "54b4c4d9d9dd3ac00ea999ef1ddc56b5769df2ee27c0e8d5f1cad9f018614325",
+    "sha256Normalized": "54b4c4d9d9dd3ac00ea999ef1ddc56b5769df2ee27c0e8d5f1cad9f018614325",
+    "bytesRead": 3145728,
+    "complete": false,
+    "row": {
+     "TradingSymbol": "TEL",
+     "Security12bTitle": "Ordinary Shares, Par Value $0.01",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "TEL"
+    ],
+    "mic": "XNYS",
+    "ageDays": 91
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001047469-13-010572",
+    "filingDate": "2013-11-15",
+    "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746913010572/a2217307z10-k.htm",
+    "sha256": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
+    "sha256Normalized": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
+    "v9Sha256": "d00dd90a5390e350298904409b216c1403c88fd30af061233f96f2cf08cf6072",
+    "bytesRead": 2097152,
+    "complete": false,
+    "detail": "SECURITIES Market Information Our common shares are listed and traded on the New York Stock Exchange (\"NYSE\") under the symbol \"TEL.\" The following table sets forth the high and low closing sales prices of our common shares as reported by the NYSE for the quarterly periods during"
+   },
+   "priceSearch": {
+    "candidates": 56,
+    "documentsRead": 56
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [
+    "2025-01-31"
+   ],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2013-11-15",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2014-09-26",
+     "sourceRawPrice": 58.8,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 58.8,
+     "bar": [
+      "2014-09-26",
+      58.8
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001047469-15-000223",
+     "form": "DEF 14A",
+     "filingDate": "2015-01-14",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746915000223/a2222642zdef14a.htm",
+     "sha256": "7071504e325a8f4c5d07759da8272ab2dac183d210bc9e91f3439a73968733f2",
+     "sha256Normalized": "7071504e325a8f4c5d07759da8272ab2dac183d210bc9e91f3439a73968733f2",
+     "bytesRead": 1251897,
+     "complete": true,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $58.80 per share on September 26, 2014. (5) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2015-09-25",
+     "sourceRawPrice": 58.42,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 58.42,
+     "bar": [
+      "2015-09-25",
+      58.42
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001047469-16-009665",
+     "form": "DEF 14A",
+     "filingDate": "2016-01-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746916009665/a2226962zdef14a.htm",
+     "sha256": "ddc846b2b25ea357f38ab60550395d9be50d1a45ccfb6426e703c8ab5e6fb893",
+     "sha256Normalized": "ddc846b2b25ea357f38ab60550395d9be50d1a45ccfb6426e703c8ab5e6fb893",
+     "bytesRead": 1233210,
+     "complete": true,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $58.42 per share on September 25, 2015. (5) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2016-09-30",
+     "sourceRawPrice": 64.38,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 64.38,
+     "bar": [
+      "2016-09-30",
+      64.38
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001047469-17-000232",
+     "form": "DEF 14A",
+     "filingDate": "2017-01-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746917000232/a2230650zdef14a.htm",
+     "sha256": "e0692ac11771c841141f5daeb6e687b1ceb2dcdb22e56e18e6e94beb4a4ed20b",
+     "sha256Normalized": "e0692ac11771c841141f5daeb6e687b1ceb2dcdb22e56e18e6e94beb4a4ed20b",
+     "bytesRead": 1517358,
+     "complete": true,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $64.38 per share on September 30, 2016. (5) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2017-09-29",
+     "sourceRawPrice": 83.06,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 83.06,
+     "bar": [
+      "2017-09-29",
+      83.06
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001047469-18-000264",
+     "form": "DEF 14A",
+     "filingDate": "2018-01-19",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746918000264/a2234248zdef14a.htm",
+     "sha256": "8ea0369e85ac75c682c97d03229d3892b8e9aa39c998fe98af0872797891cfb3",
+     "sha256Normalized": "8ea0369e85ac75c682c97d03229d3892b8e9aa39c998fe98af0872797891cfb3",
+     "bytesRead": 1377458,
+     "complete": true,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $83.06 per share on September 29, 2017. (5) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2018-09-28",
+     "sourceRawPrice": 87.93,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 87.93,
+     "bar": [
+      "2018-09-28",
+      87.93
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001047469-19-000165",
+     "form": "DEF 14A",
+     "filingDate": "2019-01-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000104746919000165/a2237522zdef14a.htm",
+     "sha256": "f283d595e06d9c51b0b59df8595b74b8b7546541c3ddb782e28e1676c3e512e4",
+     "sha256Normalized": "f283d595e06d9c51b0b59df8595b74b8b7546541c3ddb782e28e1676c3e512e4",
+     "bytesRead": 1176845,
+     "complete": true,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $87.93 per share on September 28, 2018. (4) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2020-09-25",
+     "sourceRawPrice": 95.37,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 95.37,
+     "bar": [
+      "2020-09-25",
+      95.37
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001558370-21-000192",
+     "form": "DEF 14A",
+     "filingDate": "2021-01-14",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837021000192/tmb-20210310xdef14a.htm",
+     "sha256": "d38b5a7eb770715aaf0272a09889b2a69ce269e5111485991f48b40d711c0142",
+     "sha256Normalized": "d38b5a7eb770715aaf0272a09889b2a69ce269e5111485991f48b40d711c0142",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $95.37 per share on September 25, 2020. (4) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2022-09-30",
+     "sourceRawPrice": 110.36,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 110.36,
+     "bar": [
+      "2022-09-30",
+      110.36
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001558370-23-000322",
+     "form": "DEF 14A",
+     "filingDate": "2023-01-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837023000322/tmb-20230315xdef14a.htm",
+     "sha256": "57f4d2cf470525468d0156560404340793ba62345bf1a4beee44cfd3fbb0a224",
+     "sha256Normalized": "57f4d2cf470525468d0156560404340793ba62345bf1a4beee44cfd3fbb0a224",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $110.36 per share on September 30, 2022. (4) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2023-09-29",
+     "sourceRawPrice": 123.53,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 123.53,
+     "bar": [
+      "2023-09-29",
+      123.53
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001558370-24-000315",
+     "form": "DEF 14A",
+     "filingDate": "2024-01-17",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837024000315/tel-20240313xdef14a.htm",
+     "sha256": "de9ac2d2f42b22c17dba97cc242507f72039f44c5cb2b6ed0cd59cc4eee7f3c0",
+     "sha256Normalized": "de9ac2d2f42b22c17dba97cc242507f72039f44c5cb2b6ed0cd59cc4eee7f3c0",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "Value represents the market value of TE Connectivity common shares based on the closing price of $123.53 per share on September 29, 2023. (4) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2024-09-27",
+     "sourceRawPrice": 151.22,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 151.22,
+     "bar": [
+      "2024-09-27",
+      151.22
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001558370-25-000262",
+     "form": "DEF 14A",
+     "filingDate": "2025-01-17",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000155837025000262/tel-20250312xdef14a.htm",
+     "sha256": "3a2488467dac338381043d6fc1805792343c214907e0f980d156e09c5ebbcc14",
+     "sha256Normalized": "3a2488467dac338381043d6fc1805792343c214907e0f980d156e09c5ebbcc14",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "d. (3) Value represents the market value of TE Connectivity shares based on the closing price of $151.22 per share on September 27, 2024. (4) Represents tar",
+     "attributed": true
+    },
+    {
+     "date": "2025-09-26",
+     "sourceRawPrice": 217.04,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 217.04,
+     "bar": [
+      "2025-09-26",
+      217.04
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001104659-26-003934",
+     "form": "DEF 14A",
+     "filingDate": "2026-01-15",
+     "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926003934/tel-20260311xdef14a.htm",
+     "sha256": "822c442b5d8b4b36e5c35a78abae51b45fd69233dbe22e2f54152f5371d243c4",
+     "sha256Normalized": "822c442b5d8b4b36e5c35a78abae51b45fd69233dbe22e2f54152f5371d243c4",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "d. (3) Value represents the market value of TE Connectivity shares based on the closing price of $217.04 per share on September 26, 2025. (4) Represents tar",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 1,
+   "anchorsBeforeInterval": [
+    {
+     "date": "2013-09-27",
+     "state": "MATCH",
+     "sourceRawPrice": 51.96,
+     "ratioSeriesToSource": 1.0,
+     "accession": "0001047469-14-000196",
+     "form": "DEF 14A"
+    }
+   ],
+   "historyGuard": {
+    "checkedFrom": "2013-11-15",
+    "checkedTo": "2026-10-23",
+    "bars": 676,
+    "pointsSha256": "83679a97cc1f1b04c600ea1475e56f1fe22e14440071c991e99315a90a66a25b"
+   },
+   "anchorGaps": {
+    "matchDates": 10,
+    "firstMatch": "2014-09-26",
+    "lastMatch": "2025-09-26",
+    "maxGapDays": 735
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 16,
+    "allCandidatesInWindow": 92
+   },
+   "selectedRowKey": {
+    "canonicalId": "tiingo:NYSE:TEL:2007-06-14",
+    "activeStatus": "ACTIVE",
+    "endDate": "2026-09-10"
+   },
+   "masterRowKeys": [
+    "tiingo:NYSE:TEL:2007-06-14|ACTIVE|2026-09-10",
+    "tiingo:NYSE:TEL:2007-06-14|INACTIVE|2024-09-27"
+   ],
+   "l5": {
+    "applied": true,
+    "moves": [
+     {
+      "rule": "L5_DUPLICATE_ROW_END_ANCHORED_BOTH_SIDES",
+      "row": "tiingo:NYSE:TEL:2007-06-14|INACTIVE|2024-09-27",
+      "before": "2024-09-27",
+      "after": "2025-09-26"
+     }
+    ]
+   },
+   "part": "IDENTITY"
+  },
+  {
+   "securityId": "ref_DD",
+   "ticker": "DD",
+   "cik": "0001666700",
+   "issuer": "DuPont de Nemours, Inc.",
+   "selectedCanonicalId": "tiingo:NYSE:DD:1962-01-02",
+   "v9": {
+    "validFrom": "2019-08-09",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "subState": "CONCATENATION_RISK_TRUNCATED"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "df6bc0d70ab3f1915d6e3f18ac483fdc5afd871ce595281d9666d8e665415df3"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:DD:1962-01-02",
+    "tiingo:NYSE:DD:2017-08-03"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1962-01-02",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001666700.json",
+     "sha256": "b6b53176bfccc3c155cfa1ff062fa5338882d9401f090b460d8c0cdcd7bd3814"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001666700-submissions-001.json",
+     "sha256": "ec8996a51779d4876ce319632f235032395cb641aba4816ee930dc426a9f7639"
+    }
+   ],
+   "secName": "DuPont de Nemours, Inc.",
+   "secTickers": [
+    "DD"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001666700-26-000053",
+    "form": "10-Q",
+    "filingDate": "2026-08-04",
+    "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670026000053/dd-20260630.htm",
+    "sha256": "c535463b4b568bf62b7cc24ab8f3465e8ad566eb3577f0dbefbbfd1b99d7a962",
+    "sha256Normalized": "ff33a71f9b11d46530faccbac862b4e00d77c0d278f9789f0cf7c2b051f594bd",
+    "bytesRead": 2084996,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "DD",
+     "Security12bTitle": "Common Stock, par value $0.01 per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "DD"
+    ],
+    "mic": "XNYS",
+    "ageDays": 80
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": false,
+    "accession": "0001666700-19-000065",
+    "filingDate": "2019-08-06",
+    "url": "https://www.sec.gov/Archives/edgar/data/1666700/000166670019000065/dupont2q1963019.htm",
+    "sha256": "48c94947d3d851bd5cc8c163325d694ef00a342f040837c37c3d079a502595e4",
+    "sha256Normalized": "90283f102cb506f41101993bff9f90419d3a6044cd3ce9e6ee9c8f0e3efe25e6",
+    "v9Sha256": "be735f75579f92f6a64ca4161e9c27782d888db44ddc867471e1e6115ebd4a76",
+    "bytesRead": 4008320,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "DD",
+     "Security12bTitle": "Common Stock, par value $0.01 per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 40,
+    "documentsRead": 40
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2019-08-09",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-08-09",
+    "checkedTo": "2026-10-23",
+    "bars": 377,
+    "pointsSha256": "d1bde24e4a60741cdb80b73c6b1236ee478a99391016d5ce2ef240e3d7bab56f"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 0,
+    "allCandidatesInWindow": 42
+   },
+   "part": "IDENTITY"
+  },
+  {
+   "securityId": "ref_DOW",
+   "ticker": "DOW",
+   "cik": "0001751788",
+   "issuer": "DOW INC.",
+   "selectedCanonicalId": "tiingo:NYSE:DOW:2019-03-20",
+   "v9": {
+    "validFrom": "2019-10-25",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "subState": "TRUNCATED_UNSOURCED_HISTORY"
+   },
+   "series": {
+    "from": "2019-03-22",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 397,
+    "sourceSha256": "f5617b7ab6e189079a82dc4884e0c7e6b91b83afb75871b98dc55317cb0f3a79"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:DOW:1972-06-01",
+    "tiingo:NYSE:DOW:2019-03-20"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2019-03-20",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001751788.json",
+     "sha256": "ebe61c48abe26e17ab1fae530cf3dc1f232918476f84d5adbe05c91cf1ba4dec"
+    }
+   ],
+   "secName": "DOW INC.",
+   "secTickers": [
+    "DOW"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001751788-26-000160",
+    "form": "10-Q",
+    "filingDate": "2026-10-23",
+    "url": "https://www.sec.gov/Archives/edgar/data/1751788/000175178826000160/dow-20260930.htm",
+    "sha256": "c703ec6a6531f1602315a457c5400acd65ef9d871fcba4762a27b18d11702b8a",
+    "sha256Normalized": "c703ec6a6531f1602315a457c5400acd65ef9d871fcba4762a27b18d11702b8a",
+    "bytesRead": 3145728,
+    "complete": false,
+    "row": {
+     "TradingSymbol": "DOW",
+     "Security12bTitle": "Common Stock, par value $0.01 per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "DOW"
+    ],
+    "mic": "XNYS",
+    "ageDays": 0
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": false,
+    "accession": "0001751788-19-000031",
+    "filingDate": "2019-10-25",
+    "url": "https://www.sec.gov/Archives/edgar/data/1751788/000175178819000031/dowinc-q3x9302019.htm",
+    "sha256": "db481033a9360eec23d1a52963aa21cbf0a6f82587de10032fb581e4869e32c4",
+    "sha256Normalized": "0e8e6ccddbfce8f6ee4dd6640f90da8bbe041a22bfc2238938a65f66336450cf",
+    "v9Sha256": "7fbfb9619e0497a30ba42e3f7ddc9c96c38df6d157a33aa6941d700dae254de5",
+    "bytesRead": 4616733,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "DOW",
+     "Security12bTitle": "Common Stock, par value $0.01 per share",
+     "SecurityExchangeName": "NYSE"
+    }
+   },
+   "priceSearch": {
+    "candidates": 43,
+    "documentsRead": 43
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "FIRST_ANCHOR_730D",
+     "to": "2024-07-12"
+    }
+   ],
+   "validFrom": "2024-07-12",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2026-07-09",
+     "sourceRawPrice": 28.5,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 28.5,
+     "bar": [
+      "2026-07-09",
+      28.5
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-26-300936",
+     "form": "424B5",
+     "filingDate": "2026-07-10",
+     "url": "https://www.sec.gov/Archives/edgar/data/1751788/000119312526300936/d154928d424b5.htm",
+     "sha256": "c5528e1b61ab05c1d92c7a9c14c4b3e8749fd13e753f04e109e9f701ddd1af61",
+     "sha256Normalized": "c5528e1b61ab05c1d92c7a9c14c4b3e8749fd13e753f04e109e9f701ddd1af61",
+     "bytesRead": 572601,
+     "complete": true,
+     "quote": "mmon Stock is listed on the New York Stock Exchange under the symbol “DOW.” The last reported closing price of our Common Stock on the New York Stock Exchange on July 9, 2026 was $28.50 per share. Investin",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2024-07-12",
+    "checkedTo": "2026-10-23",
+    "bars": 120,
+    "pointsSha256": "0222736c1ce894e35d285e178f9db0a5be404138b5951eb393b27fa1e5f88700"
+   },
+   "anchorGaps": {
+    "matchDates": 1,
+    "firstMatch": "2026-07-09",
+    "lastMatch": "2026-07-09",
+    "maxGapDays": 106
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 3,
+    "allCandidatesInWindow": 49
+   },
+   "part": "IDENTITY"
+  },
+  {
+   "securityId": "ref_COR",
+   "ticker": "COR",
+   "cik": "0001140859",
+   "issuer": "Cencora, Inc.",
+   "selectedCanonicalId": "tiingo:NYSE:COR:1995-04-04",
+   "v9": {
+    "validFrom": "2023-09-01",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "subState": "CONCATENATION_RISK_TRUNCATED"
+   },
+   "series": {
+    "from": "1995-04-07",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1647,
+    "sourceSha256": "8b167c9cf1dbec4dad283206d60a53d11a45b564cb58eb19cf7e2c5b700525ce"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:COR:1995-04-04",
+    "tiingo:NYSE:COR:2010-09-23"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1995-04-04",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001140859.json",
+     "sha256": "8306571bafa2afd7238d79266c28118f2225faff90e3bbb2cbe76333f56e7ad7"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001140859-submissions-001.json",
+     "sha256": "f8a7eafee1456fff523cc2d9213d871bd421c63a723d9d9d87743b58830beb4f"
+    }
+   ],
+   "secName": "Cencora, Inc.",
+   "secTickers": [
+    "COR"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001140859-26-000034",
+    "form": "10-Q",
+    "filingDate": "2026-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000034/cor-20260630.htm",
+    "sha256": "fe4ddda3b3b780481cb35529203ea0490393d13a6d71e9e86ae0d7ac407e06c8",
+    "sha256Normalized": "de01a69a9fa9d02d9d9caef5c4de91e2040a7958cfba6c18f7d3b40497d74d86",
+    "bytesRead": 1551188,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "COR",
+     "Security12bTitle": "Common stock, par value $0.01 per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "COR"
+    ],
+    "mic": "XNYS",
+    "ageDays": 79
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": false,
+    "accession": "0001104659-23-096698",
+    "filingDate": "2023-08-30",
+    "url": "https://www.sec.gov/Archives/edgar/data/1140859/000110465923096698/tm2324358d1_8k.htm",
+    "sha256": "24eaab8ac6ab6ab9d96921b658427d47dd43b8ed708e5c0d13b4e57357c827c6",
+    "sha256Normalized": "87aba717e7a0808699b57c6e8bccaea1933a5f645ceb45760ea6b71fe4ecb4cf",
+    "v9Sha256": "f00e04459500fa9e5f26dcb9af918e58f741013e21d1a690ed3d1b51a033a541",
+    "bytesRead": 29261,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "COR",
+     "Security12bTitle": "Common stock",
+     "SecurityExchangeName": "NYSE"
+    }
+   },
+   "priceSearch": {
+    "candidates": 36,
+    "documentsRead": 36
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2023-09-01",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2023-09-01",
+    "checkedTo": "2026-10-23",
+    "bars": 165,
+    "pointsSha256": "394659763cccd326cae82e72f353003eeb14fe1a8282ee9b733fbfeeb6e9eaad"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 36,
+    "added": 0,
+    "allCandidatesInWindow": 36
+   },
+   "part": "IDENTITY"
+  },
+  {
+   "securityId": "ref_DOC",
+   "ticker": "DOC",
+   "cik": "0000765880",
+   "issuer": "HEALTHPEAK PROPERTIES, INC.",
+   "selectedCanonicalId": "tiingo:NYSE:DOC:1987-11-05",
+   "v9": {
+    "validFrom": "2024-03-15",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "subState": "CONCATENATION_RISK_TRUNCATED"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "300e6e47af1c2b37ebb6bf6063bf60728227a0147672702bcff3f8859282bafc"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:DOC:1987-11-05",
+    "tiingo:NYSE:DOC:2013-07-19"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1987-11-05",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000765880.json",
+     "sha256": "06784a4bfb4451886cdce5cfd05ee7dd7f51c6857b33f5bf6bf8e946d7e28121"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000765880-submissions-001.json",
+     "sha256": "9d727b3331109a61f310194b251f9bf63c1ee36f1b6d559bad7698a558da0509"
+    }
+   ],
+   "secName": "HEALTHPEAK PROPERTIES, INC.",
+   "secTickers": [
+    "DOC"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001628280-26-053373",
+    "form": "10-Q",
+    "filingDate": "2026-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/765880/000162828026053373/peak-20260630.htm",
+    "sha256": "8ca51bd1cd03bdbd4970fcf5bb02a03ccd0bb92c13de8cd0e5ed613dbc905cb4",
+    "sha256Normalized": "59629cbdaa380240dcf63ecee6aa225021f957aa4294ac1c9fde3f9e32e862e6",
+    "bytesRead": 2783987,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "DOC",
+     "Security12bTitle": "Common Stock, $1.00 par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "DOC"
+    ],
+    "mic": "XNYS",
+    "ageDays": 79
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": false,
+    "accession": "0001104659-24-032999",
+    "filingDate": "2024-03-11",
+    "url": "https://www.sec.gov/Archives/edgar/data/765880/000110465924032999/tm248304d1_8k.htm",
+    "sha256": "9ee7092c36814ea7a67377ffeb6b76937dd9674659eab045d9f3c334e0f8426e",
+    "sha256Normalized": "324cb7545ec3649a3a35eece101cb6b7f2b36a24d4b001bec6b4a179381ec7bc",
+    "v9Sha256": "79f11c183dd261eff1d9dd8f780fe0b5e9c2190b607b17206badf6edda19e923",
+    "bytesRead": 32407,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "DOC",
+     "Security12bTitle": "Common stock, $1.00 par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 24,
+    "documentsRead": 24
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2024-03-15",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 2,
+   "anchorsBeforeInterval": [
+    {
+     "date": "2024-03-01",
+     "state": "MATCH",
+     "sourceRawPrice": 17.1,
+     "ratioSeriesToSource": 1.0,
+     "accession": "0001628280-26-005044",
+     "form": "10-K"
+    },
+    {
+     "date": "2024-03-01",
+     "state": "MATCH",
+     "sourceRawPrice": 17.1,
+     "ratioSeriesToSource": 1.0,
+     "accession": "0001628280-25-003748",
+     "form": "10-K"
+    }
+   ],
+   "historyGuard": {
+    "checkedFrom": "2024-03-15",
+    "checkedTo": "2026-10-23",
+    "bars": 137,
+    "pointsSha256": "b6dd81a93cda1f104087d93ac0fd79e56347e5f1e3586dd4ad4f2cef53fe1596"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 24,
+    "added": 0,
+    "allCandidatesInWindow": 24
+   },
+   "part": "IDENTITY"
+  },
+  {
+   "securityId": "ref_ECHO",
+   "ticker": "ECHO",
+   "cik": "0001415404",
+   "issuer": "EchoStar CORP",
+   "selectedCanonicalId": "tiingo:NASDAQ:ECHO:2008-01-02",
+   "v9": {
+    "validFrom": "2026-06-26",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER",
+    "subState": "CONCATENATION_RISK_TRUNCATED"
+   },
+   "series": {
+    "from": "2008-01-04",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 982,
+    "sourceSha256": "5d6d47bb2b668abdfe17e1e4234e3b3aa4b496d2684002c7e5e6ee8daf27c158"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:ECHO:2008-01-02",
+    "tiingo:NASDAQ:ECHO:2009-10-02"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2008-01-02",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001415404.json",
+     "sha256": "dbc4a489542635e15d6d899b7e01818ee59e225b04b5f29f1e58b453c7b8e056"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001415404-submissions-001.json",
+     "sha256": "19bbe964cd7540ce28358f7af1b0d5663357e991b20f8a914d86f312fca8bce0"
+    }
+   ],
+   "secName": "EchoStar CORP",
+   "secTickers": [
+    "ECHO"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001104659-26-089370",
+    "form": "10-Q",
+    "filingDate": "2026-08-03",
+    "url": "https://www.sec.gov/Archives/edgar/data/1415404/000110465926089370/sats-20260630x10q.htm",
+    "sha256": "8c7d35218550709becc23ef2b0c3a37d082d191e7c203c0f913493b3c8a1eddc",
+    "sha256Normalized": "8c7d35218550709becc23ef2b0c3a37d082d191e7c203c0f913493b3c8a1eddc",
+    "bytesRead": 3145728,
+    "complete": false,
+    "row": {
+     "TradingSymbol": "ECHO",
+     "Security12bTitle": "Class A common stock, $0.001 par value",
+     "SecurityExchangeName": "Nasdaq"
+    },
+    "commonSymbols": [
+     "ECHO"
+    ],
+    "mic": "XNAS",
+    "ageDays": 81
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": false,
+    "accession": "0001415404-26-000030",
+    "filingDate": "2026-06-25",
+    "url": "https://www.sec.gov/Archives/edgar/data/1415404/000141540426000030/sats-20260623x8k.htm",
+    "sha256": "1a2b1a36bd3a5cdd68b299f7daaa9ae3f8ce4b1f1501450d11217c8a333efdc5",
+    "sha256Normalized": "94b0d2fcc15d8a46be435b66b040222f18f0cda4948974e0f91727fd814a2ece",
+    "v9Sha256": "f3195f925dc99b5a422558b607d1705968cf9d6d80c2e1d795a5da7b7a70b59c",
+    "bytesRead": 61498,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "ECHO",
+     "Security12bTitle": "Class A common stock, $0.001 par value",
+     "SecurityExchangeName": "Nasdaq"
+    }
+   },
+   "priceSearch": {
+    "candidates": 6,
+    "documentsRead": 6
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2026-06-26",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2026-06-26",
+    "checkedTo": "2026-10-23",
+    "bars": 18,
+    "pointsSha256": "0783bbf7582b58e5148d32b3aa98cd938cdb62877c9b20a65f678619d72c7f35"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 6,
+    "added": 0,
+    "allCandidatesInWindow": 6
+   },
+   "part": "IDENTITY"
+  }
+ ]
+}
