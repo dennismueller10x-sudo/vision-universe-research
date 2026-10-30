@@ -199,6 +199,22 @@
     row.distSma200 = r(pct(c, f.sma200));
     row.distSma50 = r(pct(c, f.sma50));
     row.adx = r(f.adx, 2);
+    /* Seit 1.12.0 (AP8 L1, docs/technical/SCREENER_FIELDS_AP8_L1.md): SMA 150 aus den veroeffentlichten Tagesbars.
+       Die Vergleiche mit SMA 50/200 rechnen beide Seiten aus denselben Bars (eine Quelle je Feld); diese weichen bei
+       5.655 von 5.659 Titeln hoechstens 0,01 % von der Vollhistorie der Materialisierung ab. */
+    var smaB = function (p) { return t + 1 >= p ? lastAt(I.compute(b, "sma", { period: p }).values, t) : null; };
+    var s150 = smaB(150), s50b = smaB(50), s200b = smaB(200);
+    row.aboveSma150 = isNum(s150) ? c > s150 : null;
+    row.sma150AboveSma200 = isNum(s150) && isNum(s200b) ? s150 > s200b : null;
+    row.sma50AboveSma150 = isNum(s50b) && isNum(s150) ? s50b > s150 : null;
+    row.distSma150 = r(pct(c, s150));
+    /* Seit 1.12.0 (AP8 L2, docs/technical/SCREENER_FIELDS_AP8_L2.md): Richtung der SMA 200 ueber einen Monat
+       (21 Handelstage), aus den veroeffentlichten Tagesbars: SMA 200 heute gegen SMA 200 vor 21 Handelstagen.
+       Leer, wenn die Bars dafuer nicht reichen (221). */
+    var s200 = t + 1 >= 221 ? I.compute(b, "sma", { period: 200 }).values : null;
+    var s200t = s200 ? lastAt(s200, t) : null, s200m = s200 ? lastAt(s200, t - 21) : null;
+    row.sma200Rising = isNum(s200t) && isNum(s200m) ? s200t > s200m : null;
+    row.sma200Slope21 = r(pct(s200t, s200m));
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;
@@ -213,6 +229,9 @@
     row.distHigh52w = r(f.distanceTo52wHigh);
     /* Seit 1.11.0 (AP4): Gegenstueck zum Hoch, Tagestief <= 52-Wochen-Tief der Vollhistorie. */
     row.newLow52w = isNum(f.low52w) ? b.low[t] <= f.low52w : null;
+    /* Seit 1.12.0 (AP8 L3, docs/technical/SCREENER_FIELDS_AP8_L3.md): Abstand des Schlusskurses zum 52-Wochen-Tief
+       (tiefstes Tagestief der letzten 252 Handelstage, Vollhistorie der Materialisierung), Gegenstueck zu distHigh52w. */
+    row.distLow52w = r(f.distanceTo52wLow);
 
     /* ---- Tag: Momentum ---- */
     row.rsi14 = r(f.rsi14, 2);
@@ -376,7 +395,29 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen,
+  /**
+   * RS-Rang (seit 1.12.0, AP8 L4, docs/technical/SCREENER_FIELDS_AP8_L4.md): Perzentilrang von rs6m ueber das Universum.
+   *   Universum: Zeilen mit fresh === true und endlichem rs6m (aktuell und gueltig auswertbar); alle anderen: rsRank = null.
+   *   Richtung:  hoeheres rs6m = hoeherer Rang.
+   *   Rang:      100 * (B + (E - 1) / 2) / (N - 1); B = Zahl kleinerer Werte, E = Zahl gleicher Werte (inkl. eigener),
+   *              N = Groesse des Universums. Schwaechster Titel 0, staerkster 100, Gleichstaende in der Mitte; N = 1 -> 50.
+   *   Gerundet auf eine Nachkommastelle. Eine Kennzahl dieses Produkts, keine Bewertung eines Drittanbieters.
+   */
+  function rankRs(rows) {
+    var U = rows.filter(function (r) { return r.fresh === true && isNum(r.rs6m); });
+    rows.forEach(function (r) { r.rsRank = null; });
+    var v = U.map(function (r) { return r.rs6m; }).sort(function (a, b) { return a - b; }), N = v.length;
+    function lower(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] < x) lo = m + 1; else hi = m; } return lo; }
+    function upper(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] <= x) lo = m + 1; else hi = m; } return lo; }
+    U.forEach(function (r) {
+      var B = lower(r.rs6m), E = upper(r.rs6m) - B;
+      r.rsRank = N === 1 ? 50 : r1(100 * (B + (E - 1) / 2) / (N - 1));
+    });
+    return N;
+  }
+  function r1(v) { return Math.round(v * 10) / 10; }
+
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen, rankRs: rankRs,
               STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }

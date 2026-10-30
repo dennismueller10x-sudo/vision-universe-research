@@ -64,6 +64,14 @@
     { id: "aboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 200", "1W": "Kurs über 40-Wochen-Linie", "1M": "Kurs über 10-Monats-Linie" } },
     { id: "aboveSma50", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 50", "1W": "Kurs über 10-Wochen-Linie", "1M": "Kurs über 5-Monats-Linie" } },
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
+    /* AP8 L1 (seit 1.12.0): SMA 150 (Tagesbars), docs/technical/SCREENER_FIELDS_AP8_L1.md */
+    { id: "aboveSma150", group: "Trend", kind: "bool", tfs: D, label: "Kurs über SMA 150" },
+    { id: "sma150AboveSma200", group: "Trend", kind: "bool", tfs: D, label: "SMA 150 über SMA 200" },
+    { id: "sma50AboveSma150", group: "Trend", kind: "bool", tfs: D, label: "SMA 50 über SMA 150" },
+    { id: "distSma150", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur SMA 150" },
+    /* AP8 L2 (seit 1.12.0): Richtung der SMA 200 ueber 21 Handelstage, docs/technical/SCREENER_FIELDS_AP8_L2.md */
+    { id: "sma200Rising", group: "Trend", kind: "bool", tfs: D, label: "SMA 200 steigt (gegenüber vor einem Monat)" },
+    { id: "sma200Slope21", group: "Trend", kind: "pct", tfs: D, label: "Veränderung der SMA 200 über einen Monat" },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
@@ -78,6 +86,8 @@
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
     { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
+    /* AP8 L3 (seit 1.12.0): Abstand zum 52-Wochen-Tief, nur Tag, docs/technical/SCREENER_FIELDS_AP8_L3.md */
+    { id: "distLow52w", group: "Hochs", kind: "pct", tfs: D, label: "Abstand über dem 52-Wochen-Tief (Tagestief)" },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
@@ -105,6 +115,8 @@
     { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
+    /* AP8 L4 (seit 1.12.0): Perzentilrang von rs6m, docs/technical/SCREENER_FIELDS_AP8_L4.md */
+    { id: "rsRank", group: "Relative Stärke", kind: "num", tfs: D, label: "RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
     { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
     { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },

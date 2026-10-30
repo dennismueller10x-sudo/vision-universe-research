@@ -33,6 +33,7 @@
     RATE_LIMITED: 'Zu viele Versuche. Bitte warte einige Minuten.',
     ALREADY_SUBSCRIBED: 'Du hast bereits ein aktives Abonnement. Tarifwechsel und Laufzeit änderst du in der Abo-Verwaltung.',
     PRICE_NOT_AVAILABLE: 'Dieser Tarif ist gerade nicht buchbar.',
+    TAX_CONFIG_INVALID: 'Pro ist gerade nicht buchbar (Steuereinstellung wird geprüft). Es wurde nichts berechnet.',
     CHECKOUT_NOT_OPEN: 'Pro ist noch nicht buchbar. Bis dahin nutzt du alle Funktionen kostenlos mit Free.',
     CHECKOUT_CONFIRMATION_REQUIRED: 'Bitte bestätige Preis, Laufzeit und Kündigungsbedingungen.',
     NO_BILLING_ACCOUNT: 'Für dein Konto gibt es noch keine Zahlungsdaten.',
