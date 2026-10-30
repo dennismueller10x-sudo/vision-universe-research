@@ -1,14 +1,15 @@
 # Sitzungsübergabe Quant V10–V13 und Backtest-Engineering (Stand 30.10.2026)
 
-Version 1.1.0 dieser Übergabe (30.10.2026; 1.0.0 kam mit #1140). Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
+Version 1.2.0 dieser Übergabe (30.10.2026, nach dem grünen Runner-Restore; 1.0.0 kam mit #1140). Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
 
 **Status der Übergabe:** Alles ist dokumentiert.
 
-**Archiv: in R2 gesichert, Integrität geprüft, Restore aus R2 erfolgreich (30.10.2026).** Archiv 1.2.0 liegt mit 8 Teilen im bestehenden privaten R2-Eimer:
+**Archiv: dauerhaft gesichert und unabhängig wiederherstellbar (30.10.2026).** Archiv 1.2.0 liegt mit 8 Teilen im bestehenden privaten R2-Eimer:
 - Workflow-Verify: 8/8 Objekte OK.
 - Restore aus R2: 8/8 Teile und 11.616 Dateien hash-identisch.
+- Runner-Restore mit dem Secret `V13_ARCHIVE_PRIVATE_KEY`: Run 41073334070, `keycheck: OK`, 8/8 Teile `OK`, 11.616 Dateien.
 
-**Offen:** Das Secret `V13_ARCHIVE_PRIVATE_KEY` fehlt noch. Damit fehlt auch der Restore auf dem Runner, also der Nachweis, dass die Wiederherstellung ohne diese Sitzung gelingt. Ohne den privaten Archivschlüssel ist das Archiv nicht lesbar; er liegt bisher nur in dieser Sitzung und beim Owner (Abschnitt 4).
+Die Sicherung hängt nicht mehr an der bauenden Sitzung. Details in Abschnitt 4.
 
 ## 1. Stand `main` und PRs
 
@@ -101,19 +102,22 @@ Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](v1
 | **Upload nach R2** | **erfolgt**: 8 Teile plus Manifest, `research-snapshots/quant-v13/archive-1.2.0/`, jede Datei mit SHA-256 geprüft | Run 41068077861 (`put`) + `transfer.sh put` |
 | **Integritätskontrolle in R2** | 8/8 Objekte OK gegen `manifest-1.2.0.json` | Run 41069005168 (`verify`) |
 | **Restore aus R2** | alle Teile frisch aus R2 geladen und entschlüsselt: 8/8 Teile, 11.616 Dateien hash-identisch; Manifest aus R2 bytegleich mit dem Repo | Run 41069696417 (`get`) + `transfer.sh get` + `restore-archive.sh` |
-| Secret `V13_ARCHIVE_PRIVATE_KEY` | **fehlt** | Run 41069436826 (`restore`) → `SECRET_MISSING` |
-| Restore auf dem Runner | **offen** (setzt das Secret voraus) | – |
+| Secret `V13_ARCHIVE_PRIVATE_KEY` | **gesetzt** (30.10.); passt zum Manifest | Run 41073334070, `keycheck: OK` |
+| **Restore auf dem Runner** | **erfolgreich**: 8/8 Teile aus R2 geladen, entschlüsselt, alle Hashes geprüft; 11.616 Dateien. Log ohne Schlüssel, Endpunkt oder signierte URLs | Run 41073334070 (`restore`) |
 
 Ursache der früheren Meldung „R2 nicht erreichbar“: Der Test lief gegen einen Platzhalter-Host (`probe.r2.cloudflarestorage.com`), dem Cloudflare TLS verweigert. Der echte Kontenendpunkt war die ganze Zeit erreichbar, die Netzwerkstufe der Umgebung steht auf „Vollständig“.
 
-### 4.3 Verbleibender Owner-Schritt
+### 4.3 Nutzung in künftigen Sitzungen
 
-1. GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*:
-   - Name: `V13_ARCHIVE_PRIVATE_KEY`;
-   - Wert: der vollständige Inhalt der Datei `archive-priv.pem`, die der Owner aus der bauenden Sitzung erhalten hat; zusätzlich offline aufbewahren, nie in Chat, Git oder Logs.
-2. Danach genügt ein leerer Commit mit der Marke `[v13-archive:restore]` auf einem `claude/**`-Branch, aus jeder Sitzung. Der Runner lädt alle 8 Teile aus R2, prüft den Schlüssel gegen das Manifest und alle Hashes. Damit ist die Wiederherstellung unabhängig von der bauenden Sitzung nachgewiesen.
+- **Prüfen:** leerer Commit mit der Marke `[v13-archive:restore]` auf einem `claude/**`-Branch. Der Runner lädt alle Teile aus R2, prüft den Schlüssel (Secret `V13_ARCHIVE_PRIVATE_KEY`) und alle Hashes.
+- **Wiederherstellen in einer Sitzung:**
+  1. Marke `[v13-archive:get]` setzen.
+  2. Artefakt per `gh api repos/<repo>/actions/artifacts/<id>/zip` laden.
+  3. `scripts/quant/v13/archive/transfer.sh get <artefakt> <archive-priv.pem> <ziel>`.
+  4. `restore-archive.sh <manifest> <ziel> <archive-priv.pem> <out> [teil]`.
 
-Wiederherstellung künftig, aus jeder Sitzung: Marke `[v13-archive:get]`, Artefakt per `gh api` laden, `transfer.sh get`, `restore-archive.sh`. Dafür ist der private Archivschlüssel nötig.
+  Den privaten Schlüssel stellt der Owner aus seiner Offline-Kopie bereit. Er gehört nie in Git, Chat oder Logs.
+- **R2-Endpunkt:** Erreichbarkeit nur gegen den echten Kontenendpunkt testen (aus den vorsignierten URLs), nicht gegen einen Platzhalter-Host.
 
 ### 4.4 Reproduzierbarer Wiederherstellungsweg ohne Archiv
 
@@ -191,7 +195,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
   - `ref_OKE` läuft durchgehend.
   - Die Identität ist eindeutig, aber mit den bestehenden Mitteln **nicht regelkonform auflösbar**: Der Erzeuger führt beide Tiingo-Zeilen. Ein Zurückhalten im Gate wäre die abgelehnte Ausnahme unter anderem Namen.
   - Der Einzelfall bleibt ausgeschlossen. Der Lauf bleibt BLOCKED an G6 (Simulation: sonst alles unter den Grenzen, 0 ungenutzte Einträge).
-  - **Empfohlener nächster PR:** im Erzeuger `quant/engines/us-security-master.js` identische canonical_id zusammenführen (gleicher Ticker, gleiche Börse, gleicher Beginn, gleiche Gattung und Währung; das jüngste Ende gewinnt), mit Vorher/Nachher-Vergleich. Betroffen sind 8 securityIds: OKE, BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B.
+  - **Empfohlener nächster PR:** im Erzeuger `quant/engines/us-security-master.js` identische canonical_id zusammenführen (gleicher Ticker, gleiche Börse, gleicher Beginn, gleiche Gattung und Währung; das jüngste Ende gewinnt), mit Vorher/Nachher-Vergleich. Betroffen sind 8 securityIds: OKE, BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B. **Beauftragt** (Owner, 30.10.) in der Supertrader-9-Sitzung, Branch `claude/supertrader-9-data-certification-jnejw3-sm-duplicates`. Keinen zweiten PR dazu starten.
   - Näherung ohne die inaktive OKE-Zeile: Die unveränderte Liste ergibt PASS.
 - **Überschneidung #1136:** Beide PRs ändern Gate und Workflow, mit gleichem Schema-Namen und anderem Format. #1136 übernimmt OKE (`--include-duplicates`) und ist auf #1100/#1101 gestapelt, die nicht in `main` sind. Unabhängig davon wären nur die Freeze-Manifeste (#1100), die Belege aus #1101 und der Alarm-Job SMW-15 (Tabelle im Prüfdokument, Abschnitt 11).
 - **Teststand #1143** (Kopf `651732d462`): security-master 76/76, `core` 300/300, Isolation sauber.
@@ -210,7 +214,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
 ## 7. Nächste Prioritäten
 
-1. **Archiv:** Upload, Verify und Restore aus R2 sind erledigt (30.10.). Offen ist nur das Secret `V13_ARCHIVE_PRIVATE_KEY` und danach `[v13-archive:restore]` auf dem Runner (4.3).
+1. **Archiv:** erledigt (30.10.): Upload, Verify, Restore aus R2 und Restore auf dem Runner sind grün. Nichts mehr offen.
 2. **#1133:** erledigt (gemergt `5e9d2b9d5a`); #1138 steht auf `main`.
 3. **Security Master:** Owner-Freigabe der Liste #1143, Erzeuger-PR für identische canonical_id (OKE + 7), Probelauf, dann `commit=true`; #1119 erst nach Abschlussfreigabe. #1136 nicht zusammen mit #1143 integrieren.
 4. Owner-Entscheidungen aus 6.3, sobald gewünscht. Keine Normänderung ohne Freigabe.
