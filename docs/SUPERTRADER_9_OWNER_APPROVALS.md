@@ -197,3 +197,49 @@ Freigegeben: ____________  Datum: __________
 1. Merge von #1143 (Freigabeliste 1.1.0) und #1163 (Doppelzeilen). Danach die Freigabeliste aus #1143 neu erzeugen, weil sich mit OKE/TEL die Zählung ändert. Dann G1–G10 unverändert prüfen.
 2. Probelauf `commit=false` → PASS → am selben Tag `commit=true`. **Owner-Freigabe.**
 3. Sperrliste aus dem committeten Stamm, `build-post-switch --blocklist --prev-master`, `compare --approved --blocklist`. Den Leser umstellen nur mit abschließender Freigabevorlage.
+
+## 12. Stand 30.10.2026, ~16:30 UTC: Tageslauf, V1, Datenqualität, V13-Archiv
+
+Die alte Quant-Sitzung wird archiviert. Was eine neue Quant-Sitzung übernimmt: `docs/SUPERTRADER_9_QUANT_UEBERGABE_20261030.md`. Am Security Master hat diese Sitzung nichts begonnen.
+
+### 12.1 Täglicher Kandidatenlauf (#1137 → #1146), nicht gemergt
+
+| | #1137 (Supertrader) | #1146 (Core, nur `core/registry/domains.json`) |
+|---|---|---|
+| Head nach Einmischen von `main` 8f12165 | `fa792e8` | `a41da8c` |
+| Konflikte | keine | keine |
+| Lokal allein | Supertrader 950/0, Core 300/0, Gate A OK | Supertrader 943/**2**, Core 300/0 |
+| Lokal zusammen | Supertrader 950/0, Core 300/0 | |
+| CI | Core, CI Config, FX grün; Supertrader Quality Gates siehe PR | Core **rot** mit genau denselben 2 Tests |
+
+Die 2 roten Tests in #1146 allein sind die dokumentierte Reihenfolge, kein neuer Fehler: `SF2-LEGACY-ISOLATION` und `SF-PRODUCT-NO-RUN-INTEGRATION` (`SF8_DOMAIN_ACTIVATION_NOT_ALLOWED`). Erst der Registry-Guard aus #1137 lässt den Dauerbetrieb ohne `activation` zu. Auf `main` sind beide grün (943/0). Deshalb gilt: **#1137 → #1146 → Variable `SF8_AUTO_PUBLISH=true`** (`docs/SUPERTRADER_9_DAILY_OPERATIONS.md`). Jeder dieser Schritte ist eine Owner-Freigabe. Der Vertrag bleibt fail closed: Ein roter Lauf überschreibt keinen guten Stand, DQ-SF8-1..8 sind unverändert.
+
+### 12.2 V1-Stabilität S1–S7 (Kriterien unverändert, nur echte Läufe)
+
+| # | Stand | Beleg |
+|---|---|---|
+| S1 | **2 von 5** | 40803128385 (29.10.) und 40989532165 (30.10., Start 02:04, Ende 06:49) grün, beide `schedule`. Frühestens erfüllt mit dem Lauf am 04.11. |
+| S2 | offen, bisher ohne Eingriff | kein Heil-Dispatch seit 27.10. |
+| S3 | **erfüllt** | unverändert |
+| S4 | offen | Reparaturlauf `long-series` 30.10. (41044254369) grün. DQ-PX-4 heute PASS (ATYR, AXG, OMEX geheilt). Samstags-Volllauf 31.10. steht aus |
+| S5 | 1 von 2 | #1098 gemergt. Der nächste geplante Lauf ist Mo 02.11., 07:30 UTC, die Auswertung um 14:00 UTC ist vorgemerkt |
+| S6 | **nicht erfüllt** | Der Stamm ist vom 11.09. (rund 49 Tage alt). Hängt am Lauf über #1143 und #1163 (Quant-Übergabe). Frist ist das Laufdatum 10.11. |
+| S7 | **nicht erfüllt** | `data-quality` auf `main` 8f12165: **keine ERROR-Regel mehr** (DQ-PX-4, DQ-TW-3, DQ-SF8-8 PASS). DQ-PX-3 300 (Niveau 27.10.: 302) erfüllt. **DQ-PX-2 104 > 93** nicht erfüllt. `system-health`: SF8-Kandidaten und Supertrader gesund; Security Master STALE, US-Wertpapierstamm DEGRADED |
+
+Ergebnis: **V1 nicht erfüllt.** Frühester Termin ist der 04.11. (S1), aber nur mit erneuertem Stamm (S6, S7).
+
+### 12.3 Offene Datenqualität
+
+- **DQ-PX-2 (104 Kursreihen ohne letzte Sitzung):** 95 davon liegen 5 und mehr Sitzungen zurück, z. B. AVB, CRNX, DBRG und die DBRG-Vorzugsaktien. Die Regel sagt selbst: „Delistete oder ausgesetzte Titel bleiben hier stehen, bis das Universum sie entfernt.“ Dazu passt DQ-ID-4 mit 112 Widersprüchen zwischen Stamm und Tagesreihe. Ursache ist der veraltete Stamm vom 11.09., nicht der Tageslauf. Erwartung: Der Stammlauf über #1143 löst den größten Teil. Das ist zu prüfen und nicht vorweggenommen. Keine Toleranz geändert.
+- **DQ-PX-6/PX-7** (eingefrorene Kursenden 458/341), **DQ-SEC-1/2** (18/25): WARN. Kein V1-Kriterium, unverändert.
+- **DQ-SF8-1..8:** PASS. Nicht gelockert.
+
+### 12.4 V13-Archiv vor dem 05.11.2026
+
+**Gesichert und unabhängig wiederhergestellt.** Belegt sind `put` 41068077861, `verify` 41069005168 (8/8), `get` 41069696417 und Runner-Restore **41073334070** (`keycheck` OK, 8/8 Teile, 11.616 Dateien). Workflow, `transfer.sh`, `restore-archive.sh`, `manifest-1.2.0.json` und `archive-pub.pem` sind auf `main` bytegleich mit dem Stand dieses Restores (`5ffe147`) und eingefroren.
+
+Damit keine Daten verloren gehen, braucht es nur noch den Owner:
+1. **Offline-Kopie von `archive-priv.pem` sicherstellen, solange die alte Quant-Sitzung noch nicht archiviert ist.** Die Datei liegt im Scratchpad dieser Sitzung. Ein GitHub-Secret lässt sich nicht auslesen. Ohne Offline-Kopie hängt das ganze Archiv an `V13_ARCHIVE_PRIVATE_KEY`. Falls die Kopie schon im Passwortmanager liegt (so steht es in #1158), ist nichts weiter zu tun.
+2. **`V13_ARCHIVE_PRIVATE_KEY` nicht überschreiben oder löschen, keinen neuen Schlüssel erzeugen.** Ein neuer Schlüssel macht die vorhandenen Teile unlesbar.
+3. Optional: #1158 mergen (nur Doku, CI grün). Für die Wiederherstellung nicht nötig.
+4. Kontrolle jederzeit ohne Datenbewegung: ein Commit mit der Marke `[v13-archive:keycheck]`.
