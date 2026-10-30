@@ -14,7 +14,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart;
+  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart, TPL = global.VUTechnical.Templates;
   var doc = global.document;
 
   /* -------------------------------------------------------------- DOM */
@@ -83,7 +83,7 @@
   function loadIndex() {
     if (indexP) return indexP;
     var meta = fetchJSON(M.META_PATH).catch(function () { return null; });
-    indexP = Promise.all([fetchJSON(M.INDEX_PATH).then(function (x) { if (!x || x.schemaVersion !== M.INDEX_SCHEMA) throw new Error("INDEX_SCHEMA"); return x; })
+    indexP = Promise.all([fetchJSON(M.INDEX_PATH).then(function (x) { if (!x || !/^vu-technical-index-1\./.test(x.schemaVersion || "")) throw new Error("INDEX_SCHEMA"); return x; })
       .catch(function () { return loadScreener().then(function (D) { return M.homeIndex(D.artifact); }); }), meta]).then(function (r) {
       var ix = r[0], pos = {};
       ix.s.forEach(function (t, i) { pos[t] = i; });
@@ -181,6 +181,7 @@
       glyph("chevron", "tc-chev")
     ]);
   }
+  var MAIN_TABS = [["home", "#/", "Überblick"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
@@ -200,6 +201,15 @@
   /* ------------------------------------------------------------- Start */
   var PRESET_ICON = { breakout: "breakout", trend: "trend", triangles: "triangle", high52: "trophy", aboveSma200: "bars", high200w: "trophy", contraction: "contraction", bullflag: "flag" };
 
+  /* Startseite: neue Vorlagen (AP8); Fokus und Ranglisten bleiben, fuehren aber zur Vorlage mit Kriterien. */
+  var HOME_TEMPLATES = ["uptrendBasic", "triangleOpenUptrend", "triangleBreakoutUp"];
+  /** Zeile einer Vorlage mit Trefferzahl aus dem Index (ohne Vorlagen-Zaehlung: Zaehlung der Abfrage). */
+  function templateRow(id, ix) {
+    var t = TPL.get(id), tc = ix.templates && ix.templates[id];
+    var count = tc ? tc[0] : ix.presets && isNum(ix.presets[id]) ? ix.presets[id] : null;
+    var sub = t.summary + (tc && tc[1] ? " · " + tc[1].toLocaleString("de-DE") + " fast erfüllt" : "");
+    return rowCard(TPL.href(id), PRESET_ICON[id] || t.icon, t.title, sub, count, ix.count);
+  }
   function viewHome(main) {
     var hero = el("section", { class: "tc-hero vu-product-hero vu-hero-fidelity", "data-product": "technical", "aria-labelledby": "tc-hero-h" }, [
       el("div", { class: "vu-hero-scene", "aria-hidden": "true" }),
@@ -209,8 +219,8 @@
       el("p", { class: "vu-hero-description", text: "Automatische Chartanalyse, technische Indikatoren und Mustererkennung für US-Aktien – regelbasiert und nachvollziehbar." })
     ]);
     var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "tc-chips", role: "list" });
-    var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" });
-    put(main, [hero, searchSlot, chips, kpis, sectionHead("Setups im Fokus", "#/screener"), focus, sectionHead("Technische Ranglisten", "#/screener"), ranks, el("div", { class: "tc-foot-slot" })]);
+    var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" }), tpls = el("div", { class: "tc-list" });
+    put(main, [hero, searchSlot, chips, kpis, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
     hero.append(searchSlot, chips);
     loadIndex().then(function (X) {
       var ix = X.index;
@@ -224,7 +234,8 @@
         el("li", {}, [el("b", { class: "num", text: ix.focusUnion.toLocaleString("de-DE") }), el("span", { text: "Setups im Fokus" })]),
         el("li", {}, [el("b", { class: "num", text: asOf ? M.dateDe(asOf).slice(0, 6) : "–" }), el("span", { text: "Stand der Signale" })])
       ]);
-      function card(id) { var p = Q.PRESETS.filter(function (x) { return x.id === id; })[0]; return rowCard("#/screener?preset=" + id, PRESET_ICON[id], p.title, p.description, ix.presets[id] || 0, ix.count); }
+      function card(id) { return templateRow(id, ix); }
+      put(tpls, HOME_TEMPLATES.map(card));
       put(focus, M.FOCUS.map(card));
       put(ranks, M.RANKS.map(card));
       main.querySelector(".tc-foot-slot").replaceWith(disclaimer(X.meta));
@@ -343,13 +354,15 @@
     var st = M.stateFromParams(p);
     /* Suche in Worten: regelbasiert uebersetzt (query-text.js), gerechnet wird dieselbe validierte Abfrage. */
     var textQ = !preset && typeof p.q === "string" && p.q.trim() ? p.q.trim().slice(0, 300) : null;
+    /* Aus einer Vorlage uebernommen (AP8): Kriterien als Baukasten-Filter, damit sie sich anpassen lassen. */
+    var tplFrom = !preset && !textQ && p.vorlage && TPL.get(p.vorlage) ? TPL.toQuery(TPL.compose(p.vorlage, TPL.blocksFromParam(p.plus))) : null;
     var parsed = textQ && QT ? QT.parse(textQ) : null;
     var head = el("header", { class: "tc-head" }, [
       el("a", { class: "tc-back", href: "#/" }, [glyph("back"), "Technical"]),
       el("h1", { class: "tc-title", text: "Screener" }),
       el("p", { class: "tc-lead", text: "Setups, Indikatoren und Chartmuster regelbasiert filtern." })
     ]);
-    var tabBar = tabs([["home", "#/", "Überblick"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]], route.tab);
+    var tabBar = tabs(MAIN_TABS, route.tab);
     if (route.tab === "saved") return viewSaved(main, head, tabBar);
     var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
     put(main, [head, tabBar, body, results]);
@@ -366,12 +379,18 @@
 
     loadScreener().then(function (D) {
       var ds = D.ds, built = preset ? { query: Object.assign({ limit: 200 }, preset.query), dropped: [] }
-        : parsed ? { query: Object.assign({}, parsed.query, { limit: 200 }), dropped: [] } : M.queryFromState(st);
+        : parsed ? { query: Object.assign({}, parsed.query, { limit: 200 }), dropped: [] }
+        : tplFrom ? { query: Object.assign({}, tplFrom.query, { limit: 200 }), dropped: [] } : M.queryFromState(st);
       var res = Q.evaluate(ds, built.query);
       if (res.error) { put(body, stateBox("Ungültige Abfrage", res.errors.map(function (e) { return e.code; }).join(", "))); return; }
       var tf = built.query.timeframe;
-      var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed) : null];
-      if (parsed) {
+      var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : tplFrom ? M.builderFromQuery(tplFrom.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed || !!tplFrom) : null];
+      if (tplFrom) {
+        var tpl0 = TPL.get(p.vorlage);
+        controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Aus Vorlage „" + tpl0.title + "“" }), el("p", { text: Q.describe(built.query) }),
+          tplFrom.dropped.length ? el("p", { class: "tc-note is-warn", text: "Im Baukasten nicht wählbar und deshalb weggelassen: " + tplFrom.dropped.join(", ") + ". Die Trefferzahl kann deshalb von der Vorlage abweichen." }) : null,
+          el("a", { class: "tc-link", href: TPL.href(p.vorlage, TPL.blocksFromParam(p.plus)), text: "Zurück zur Vorlage" })]));
+      } else if (parsed) {
         controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Erkannt als" }), el("p", { text: Q.describe(built.query) || "Keine auswertbare Bedingung" }),
           el("a", { class: "tc-link", href: "#/screener", text: "Filter per Klick setzen" })]));
       } else if (preset) {
@@ -453,7 +472,7 @@
         el("form", { class: "tc-save-form", onsubmit: function (ev) {
           ev.preventDefault();
           var name = saveName.value.trim() || (preset ? preset.title : Q.describe(query)).slice(0, 60);
-          var r = M.saveScreen(store(), name, preset ? "preset=" + preset.id : textQ ? "q=" + encodeURIComponent(textQ) : M.paramsFromState(st));
+          var r = M.saveScreen(store(), name, preset ? "preset=" + preset.id : textQ ? "q=" + encodeURIComponent(textQ) : tplFrom ? TPL.paramsOf(p.vorlage, TPL.blocksFromParam(p.plus)) : M.paramsFromState(st));
           saveMsg.textContent = r.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
         } }, [saveName, el("button", { class: "tc-btn", type: "submit", text: "Speichern" }), saveMsg])
       ]);
@@ -489,21 +508,26 @@
       } }),
       el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Importieren", onclick: function () { fileIn.click(); } }), fileIn]);
     var rows = list.map(function (sv) {
-      var q = queryOfParams(sv.params), desc = Q.describe(q) || "–", count = el("b", { class: "num", text: "…" });
+      var sp = M.parseRoute("#/screener?" + sv.params).params || {}, svT = sp.vorlage && TPL.get(sp.vorlage) ? TPL.compose(sp.vorlage, TPL.blocksFromParam(sp.plus)) : null;
+      var q = svT ? null : queryOfParams(sv.params), desc = svT ? "Vorlage: " + svT.title + (svT.blocks.length ? " + " + svT.blocks.map(function (b) { return TPL.block(b).title; }).join(", ") : "") : Q.describe(q) || "–", count = el("b", { class: "num", text: "…" });
+      var svHref = svT ? TPL.href(svT.id, svT.blocks) : "#/screener?" + sv.params;
       var nameIn = el("input", { class: "tc-input tc-input-s", value: sv.name, maxlength: "60", "aria-label": "Name ändern" });
       var edit = el("form", { class: "tc-brow", hidden: true, onsubmit: function (ev) { ev.preventDefault(); M.updateScreen(store(), sv.id, { name: nameIn.value }); render(); } },
         [nameIn, el("button", { class: "tc-btn", type: "submit", text: "Übernehmen" })]);
-      loadScreener().then(function (D) { var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); count.textContent = r.error ? "–" : r.count.toLocaleString("de-DE"); }).catch(function () { count.textContent = "–"; });
+      loadScreener().then(function (D) {
+        if (svT) { count.textContent = TPL.evaluate(D.ds, svT).full.length.toLocaleString("de-DE"); return; }
+        var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); count.textContent = r.error ? "–" : r.count.toLocaleString("de-DE");
+      }).catch(function () { count.textContent = "–"; });
       return el("div", { class: "tc-saved" }, [
         el("div", { class: "tc-row" }, [el("span", { class: "tc-row-icon" }, glyph("save")),
-          el("a", { class: "tc-row-text", href: "#/screener?" + sv.params }, [el("b", { text: sv.name }), el("span", { text: desc })]),
+          el("a", { class: "tc-row-text", href: svHref }, [el("b", { text: sv.name }), el("span", { text: desc })]),
           el("span", { class: "tc-hit-score" }, [el("span", { text: "Treffer heute" }), count])]),
         el("div", { class: "tc-brow tc-saved-actions" }, [
           el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) +
             (sv.migrated ? " · angepasst: „" + sv.migrated.from + "“ heißt jetzt „" + sv.migrated.to + "“ (gleiche Bedeutung)" : "") }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Umbenennen", onclick: function () { edit.hidden = !edit.hidden; if (!edit.hidden) nameIn.focus(); } }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Link kopieren", onclick: function () {
-            var url = location.origin + location.pathname + "#/screener?" + sv.params;
+            var url = location.origin + location.pathname + svHref;
             (global.navigator && navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { status.textContent = "Link kopiert."; }, function () { status.textContent = url; });
           } }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); render(); } })]),
@@ -511,6 +535,183 @@
     });
     var body = list.length ? el("div", { class: "tc-list" }, rows) : stateBox("Noch keine Suchstrategie gespeichert", "Im Screener Filter wählen und „Suchstrategie speichern“ nutzen. Gespeichert wird nur in diesem Browser; über „Importieren“ lassen sich exportierte Strategien übernehmen.");
     put(main, [head, tabBar, tools, status, body]);
+  }
+
+  /* ------------------------------------------------- Strategie-Vorlagen */
+  /* AP8 S1 (docs/technical/STRATEGY_TEMPLATES_PLAN.md): Auswahl, Kriterien, Trendfilter, Treffer nach Erfuellung.
+     Gerechnet wird nur mit bestehenden Feldern (engine/templates.js); unbekannt zaehlt nie als erfuellt. */
+  var MARK = { PASS: ["✓", "erfüllt", "is-pass"], FAIL: ["✗", "nicht erfüllt", "is-fail"], UNKNOWN: ["?", "unbekannt", "is-unknown"] };
+  var SHOW = { voll: "full", fast: "near", offen: "incomplete" };
+  function templateHead(back, backText, eyebrow, title, lead) {
+    return el("header", { class: "tc-head" }, [
+      el("a", { class: "tc-back", href: back }, [glyph("back"), backText]),
+      eyebrow ? el("p", { class: "tc-eyebrow", text: eyebrow }) : null,
+      el("h1", { class: "tc-title", text: title }),
+      el("p", { class: "tc-lead", text: lead })
+    ]);
+  }
+  function viewTemplates(main, route) {
+    return route.id ? viewTemplate(main, route) : viewTemplateList(main);
+  }
+  function viewTemplateList(main) {
+    var head = templateHead("#/", "Technical", null, "Vorlagen", "Fertige Suchen mit erklärten Kriterien. Vorlage wählen, Treffer ansehen und im Chart prüfen.");
+    var body = el("div", { class: "tc-tpl-groups" });
+    put(main, [head, tabs(MAIN_TABS, "templates"), body]);
+    loadIndex().then(function (X) {
+      var ix = X.index;
+      put(body, TPL.GROUPS.map(function (g) {
+        return el("section", { class: "tc-tpl-group", "aria-label": g.title }, [sectionHead(g.title),
+          el("div", { class: "tc-list" }, TPL.list().filter(function (t) { return t.group === g.id; }).map(function (t) { return templateRow(t.id, ix); }))]);
+      }).concat([
+        el("p", { class: "tc-note", text: "In jeder Vorlage lassen sich Trendfilter (kurz-, mittel- und langfristig, Trendstärke) dazunehmen. Gezählt werden nur Aktien mit aktuellem Kurs." }),
+        disclaimer(X.meta)]));
+    }).catch(function () {
+      put(body, stateBox("Vorlagen derzeit nicht verfügbar", "Der Index der Startseite konnte nicht geladen werden."));
+    });
+  }
+  /** Kriterienliste einer Vorlage, je Kriterium Zahl der erfuellten Titel. */
+  function criteriaCard(t, res) {
+    var items = t.criteria.map(function (x, k) {
+      var fz = res && res.funnel[k];
+      return el("li", { class: "tc-crit" }, [
+        el("b", { text: x.label }),
+        x.from ? el("span", { class: "tc-mini", text: "Trendfilter" }) : null,
+        el("span", { class: "tc-crit-why", text: x.why }),
+        fz ? el("span", { class: "tc-crit-n num", text: "erfüllt bei " + fz.pass.toLocaleString("de-DE") + (fz.unknown ? " · unbekannt bei " + fz.unknown.toLocaleString("de-DE") : "") }) : null
+      ]);
+    });
+    return el("details", { class: "tc-filter tc-tpl-crit" }, [
+      el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: t.criteria.length + (t.criteria.length === 1 ? " Kriterium" : " Kriterien") }), glyph("chevron", "tc-chev tc-rot")]),
+      el("div", { class: "tc-filter-body" }, [el("ol", { class: "tc-crit-list" }, items),
+        t.note ? el("p", { class: "tc-note", text: t.note }) : null,
+        el("p", { class: "tc-note", text: "Voraussetzung: aktueller Kurs am Stichtag. " + TPL.LIMITS })])
+    ]);
+  }
+  /** Haken je Kriterium (✓ erfuellt, ✗ nicht erfuellt, ? unbekannt) mit ausgeschriebenem Text fuer Screenreader. */
+  function ticks(t, states) {
+    return el("ul", { class: "tc-ticks", "aria-label": "Kriterien" }, states.map(function (s, k) {
+      var m = MARK[s];
+      return el("li", { class: m[2], title: t.criteria[k].label + ": " + m[1] }, [el("span", { "aria-hidden": "true", text: m[0] }), el("span", { class: "tc-sr", text: t.criteria[k].label + ": " + m[1] })]);
+    }));
+  }
+  function viewTemplate(main, route) {
+    var base = TPL.get(route.id);
+    if (!base) { put(main, [templateHead("#/vorlagen", "Vorlagen", null, "Vorlage nicht gefunden", "Diese Vorlage gibt es nicht (mehr)."), tabs(MAIN_TABS, "templates")]); return; }
+    var p = route.params || {}, blocks = TPL.blocksFromParam(p.plus), showKey = SHOW[p.zeige] ? p.zeige : "voll";
+    var t = TPL.compose(base.id, blocks), group = TPL.GROUPS.filter(function (g) { return g.id === t.group; })[0];
+    var head = templateHead("#/vorlagen", "Vorlagen", group ? group.title.toUpperCase() : null, t.title, t.summary);
+    var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
+    put(main, [head, tabs(MAIN_TABS, "templates"), body, results]);
+    loadScreener().then(function (D) {
+      var ds = D.ds, res = TPL.evaluate(ds, t), nearOk = t.criteria.length >= TPL.NEAR_MIN;
+      var blockPills = el("div", { class: "tc-pills" }, TPL.BLOCKS.map(function (B) {
+        var on = blocks.indexOf(B.id) >= 0;
+        return el("button", { type: "button", class: "tc-pill" + (on ? " is-on" : ""), "aria-pressed": String(on), text: B.title, onclick: function () {
+          var next = on ? blocks.filter(function (x) { return x !== B.id; }) : blocks.concat([B.id]);
+          location.hash = TPL.href(base.id, next, showKey);
+        } });
+      }));
+      var trend = el("details", { class: "tc-filter", open: blocks.length ? true : null }, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("trend")), el("b", { text: "Trendfilter dazunehmen" + (blocks.length ? " (" + blocks.length + ")" : "") }), glyph("chevron", "tc-chev tc-rot")]),
+        el("div", { class: "tc-filter-body" }, [blockPills, el("p", { class: "tc-note", text: "Jeder gewählte Trendfilter kommt als zusätzliches Kriterium hinzu (alle müssen erfüllt sein)." })])]);
+      var seg = [["voll", "Erfüllt", res.full.length]];
+      if (nearOk) seg.push(["fast", "Fast erfüllt", res.near.length]);
+      if (res.incomplete.length || showKey === "offen") seg.push(["offen", "Unvollständig", res.incomplete.length]);
+      if (!seg.some(function (x) { return x[0] === showKey; })) showKey = "voll";
+      var segBar = el("div", { class: "tc-seg tc-tpl-seg", role: "tablist", "aria-label": "Treffer nach Erfüllung" }, seg.map(function (x) {
+        return el("a", { role: "tab", class: "tc-seg-b" + (showKey === x[0] ? " is-on" : ""), "aria-selected": String(showKey === x[0]), href: TPL.href(base.id, blocks, x[0]) }, [x[1] + " ", el("b", { class: "num", text: x[2].toLocaleString("de-DE") })]);
+      }));
+      put(body, [criteriaCard(t, res), trend]);
+      renderTemplateHits(D, t, res, showKey, blocks, segBar);
+    }).catch(function (e) {
+      put(body, stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden (" + String(e && e.message || e) + ")."));
+    });
+
+    function renderTemplateHits(D, t, res, showKey, blocks, segBar) {
+      var ds = D.ds, entries = res[SHOW[showKey]], shown = 0, PAGE = 40, list = el("div", { class: "tc-hits" });
+      var tq = TPL.toQuery(t), wanted = M.wantedFormations(tq.query), chartQ = "v=" + encodeURIComponent(t.id) + (blocks.length ? "&plus=" + blocks.join(",") : "");
+      var more = el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Weitere anzeigen", onclick: function () { page(); } });
+      function hit(e) {
+        var row = ds.row(e.i), pass = e.states.filter(function (s) { return s === "PASS"; }).length;
+        var miss = e.states.map(function (s, k) { return s === "FAIL" ? t.criteria[k].label : null; }).filter(Boolean);
+        var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
+        var flags = [];
+        if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
+        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
+          el("div", { class: "tc-hit-top" }, [
+            el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
+            el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
+            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
+            glyph("chevron", "tc-chev")
+          ]),
+          ticks(t, e.states),
+          miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,
+          unk.length ? el("p", { class: "tc-hit-text" }, [el("b", { text: "Unbekannt (unvollständig): " }), unk.join(", ")]) : null,
+          wanted.length || flags.length ? el("p", { class: "tc-hit-text" }, [wanted.length ? M.hitSentence(row, wanted) : ""].concat(flags)) : null
+        ]);
+      }
+      function page() { entries.slice(shown, shown + PAGE).forEach(function (e) { list.append(hit(e)); }); shown = Math.min(entries.length, shown + PAGE); more.hidden = shown >= entries.length; count.textContent = "Gezeigt: " + shown.toLocaleString("de-DE") + " von " + entries.length.toLocaleString("de-DE") + "."; }
+      var count = el("p", { class: "tc-note" });
+      var EMPTY = { voll: ["Keine Aktie erfüllt alle Kriterien", "Mit weniger Trendfiltern oder unter „Fast erfüllt“ finden sich Aktien, denen genau ein Kriterium fehlt."],
+        fast: ["Keine Aktie mit genau einem fehlenden Kriterium", "Alle übrigen Aktien verfehlen mindestens zwei Kriterien oder haben unbekannte Werte."],
+        offen: ["Keine unvollständigen Treffer", "Für alle eingeordneten Aktien sind alle Kriterien bekannt."] }[showKey];
+      var EXPLAIN = { voll: "Alle Kriterien erfüllt.", fast: "Genau ein Kriterium nicht erfüllt, alle anderen erfüllt. Sortiert nach dem fehlenden Kriterium.",
+        offen: "Kein Kriterium verfehlt, aber mindestens eines unbekannt (z. B. zu kurze Kurshistorie). Unbekannt zählt nicht als erfüllt." }[showKey];
+      var saveName = el("input", { class: "tc-input tc-input-s", type: "text", maxlength: "60", placeholder: "Name der Suchstrategie", "aria-label": "Name der Suchstrategie" });
+      var saveMsg = el("span", { class: "tc-note", role: "status" });
+      var save = el("details", { class: "tc-save" }, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("save")), el("span", {}, [el("b", { text: "Vorlage speichern" }), el("span", { text: "Mit den gewählten Trendfiltern in diesem Browser sichern." })]), glyph("chevron", "tc-chev")]),
+        el("form", { class: "tc-save-form", onsubmit: function (ev) {
+          ev.preventDefault();
+          var r = M.saveScreen(store(), saveName.value.trim() || (t.title + (blocks.length ? " + " + blocks.map(function (b) { return TPL.block(b).title; }).join(", ") : "")).slice(0, 60), TPL.paramsOf(base.id, blocks));
+          saveMsg.textContent = r.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
+        } }, [saveName, el("button", { class: "tc-btn", type: "submit", text: "Speichern" }), saveMsg])
+      ]);
+      var adapt = el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/screener?" + TPL.paramsOf(base.id, blocks), text: "Im Screener anpassen" }),
+        tq.dropped.length ? " (dort nicht wählbar und deshalb weggelassen: " + tq.dropped.join(", ") + ")" : null]);
+      put(results, [el("div", { class: "tc-sec-head" }, [el("h2", { text: "Treffer" })]), segBar, el("p", { class: "tc-note", text: EXPLAIN }),
+        entries.length ? list : stateBox(EMPTY[0], EMPTY[1]), count, more,
+        res.excluded ? el("p", { class: "tc-note", text: res.excluded.toLocaleString("de-DE") + " Aktien ohne aktuellen Kurs (hinter dem Stichtag oder eingefroren) sind nicht eingeordnet." }) : null,
+        save, adapt, disclaimer(D.meta)]);
+      page();
+    }
+  }
+  /** Chart Studio mit ?v=<Vorlage>: Checkliste dieses Titels; laedt den Screener-Datensatz nur fuer diese Leiste. */
+  function templatePanel(T, params) {
+    var base = TPL.get(params.v); if (!base) return null;
+    var blocks = TPL.blocksFromParam(params.plus), t = TPL.compose(base.id, blocks);
+    /* Zugeklappt: die Zusammenfassung nennt das Ergebnis, der Chart bleibt auf dem iPhone sichtbar. */
+    var box = el("details", { class: "tc-filter tc-tpl-panel" }, [el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: "Vorlage „" + t.title + "“ wird geprüft …" }), glyph("chevron", "tc-chev tc-rot")])]);
+    loadScreener().then(function (D) {
+      var ck = TPL.checklist(D.ds, t, T);
+      if (!ck) { put(box, [el("summary", {}, [el("b", { text: "Vorlage „" + t.title + "“: für " + T + " kein Eintrag im Screener" })])]); return; }
+      var STATUS = { FULL: "alle Kriterien erfüllt", NEAR: "fast erfüllt – ein Kriterium fehlt", INCOMPLETE: "unvollständig – " + ck.unknown + " unbekannt", NONE: ck.pass + " von " + ck.states.length + " erfüllt", EXCLUDED: "nicht eingeordnet – kein aktueller Kurs" };
+      var row = D.ds.row(ck.i);
+      put(box, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("span", {}, [el("b", { text: t.title }), el("span", { class: "tc-crit-why", text: STATUS[ck.status] })]), glyph("chevron", "tc-chev tc-rot")]),
+        el("div", { class: "tc-filter-body" }, [
+          el("ol", { class: "tc-crit-list" }, t.criteria.map(function (x, k) {
+            var m = MARK[ck.states[k]], f = x.filter, v = f.kind ? null : row[Q.columnKey(f.field, f.tf || "1D")];
+            var val = f.kind || v === null || v === undefined || Array.isArray(v) ? "" : " · " + valueText(f.field, v);
+            return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
+          })),
+          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
+      ]);
+    }).catch(function () { put(box, [el("summary", {}, [el("b", { text: "Vorlage konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
+    return box;
+  }
+  /** Schichten und Unterfenster, die die Kriterien einer Vorlage im Chart zeigen (model.js#FIELD_CHART). */
+  function templateLayers(params) {
+    var base = TPL.get(params.v); if (!base) return;
+    var t = TPL.compose(base.id, TPL.blocksFromParam(params.plus)), pane = null;
+    t.criteria.forEach(function (x) {
+      var fc = x.filter.field && M.FIELD_CHART[x.filter.field]; if (!fc) return;
+      if (fc[0] === "layer") studio.layers[fc[1]] = true;
+      if (fc[0] === "pane" && !pane) pane = fc[1];
+    });
+    if (pane) { Object.keys(PANES).forEach(function (k) { studio.layers[k] = false; }); studio.layers[pane] = true; }
   }
 
   /* ------------------------------------------------------- Chart Studio */
@@ -552,7 +753,9 @@
       if (SN && SCX) SN.mount(links, SCX.fromUs(T), "technical");
     } catch (e) { /* ungueltiges Kuerzel: kein Navigator */ }
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
-    put(main, [head, links, tabBar, body]);
+    var tplPanel = route.params && route.params.v ? templatePanel(T, route.params) : null;
+    if (tplPanel && route.tab !== "signals") templateLayers(route.params);
+    put(main, [head, links, tabBar, tplPanel, body]);
 
     Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence()]).then(function (r) {
       var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
@@ -862,7 +1065,7 @@
     var head = el("header", { class: "tc-head" }, [el("a", { class: "tc-back", href: "#/" }, [glyph("back"), "Technical"]), el("h1", { class: "tc-title", text: "Methodik" }),
       el("p", { class: "tc-lead", text: "Jeder Indikator und jede Formation mit Definition, Parametern und Regeln." })]);
     var slot = el("div", { class: "tc-method" }, [el("div", { class: "tc-skel", style: "height:200px" })]);
-    put(main, [head, tabs([["home", "#/", "Überblick"], ["build", "#/screener", "Screener"], ["method", "#/methodik", "Methodik"]], "method"), slot]);
+    put(main, [head, tabs(MAIN_TABS, "method"), slot]);
     loadEngines().then(function () {
       var VT = global.VUTechnical, fam = { TREND: "Trend", MOMENTUM: "Momentum", VOLATILITY: "Volatilität", VOLUME: "Volumen" };
       var ind = Object.keys(fam).map(function (k) {
@@ -951,6 +1154,7 @@
     else if (route.view === "screener") { doc.title = "Screener · Technical · Vision Universe®"; viewScreener(main, route); }
     else if (route.view === "chart") { doc.title = (route.ticker ? route.ticker + " · " : "") + "Chart Studio · Technical · Vision Universe®"; viewChart(main, route); }
     else if (route.view === "method") { doc.title = "Methodik · Technical · Vision Universe®"; viewMethod(main); }
+    else if (route.view === "templates") { var tt = route.id && TPL.get(route.id); doc.title = (tt ? tt.title + " · " : "") + "Vorlagen · Technical · Vision Universe®"; viewTemplates(main, route); }
     else put(main, stateBox("Seite nicht gefunden", "Diese Adresse kennt Technical nicht.", el("a", { class: "tc-link", href: "#/", text: "Zur Technical-Startseite" })));
     main.setAttribute("aria-busy", "false");
     var last = lastTicker();
@@ -958,7 +1162,7 @@
   }
   var lastView = null;
   function onHash() {
-    var r = M.parseRoute(location.hash), key = r.view + "|" + (r.ticker || "");
+    var r = M.parseRoute(location.hash), key = r.view + "|" + (r.ticker || "") + "|" + (r.id || "");
     render();
     if (key !== lastView) global.scrollTo(0, 0);
     lastView = key;
