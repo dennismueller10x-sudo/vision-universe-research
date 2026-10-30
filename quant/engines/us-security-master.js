@@ -564,6 +564,210 @@
            ":" + (entry.startDate || "NA");
   }
 
+  /* ------------------------------------ BELEGTE DOPPELZEILEN (Register)
+
+     Tiingo fuehrt nach einer Holding-Reorganisation oder einem
+     Sitzwechsel gelegentlich ZWEI Zeilen mit identischer canonical_id
+     (Boerse, Ticker, Beginn): die beendete Zeile der alten Aktie und die
+     laufende Zeile der Nachfolgeaktie, die den Beginn uebernommen hat
+     (ONEOK 2026: tiingo:NYSE:OKE:1985-07-01 bis 2026-09-14 und bis
+     heute). Die Zuordnung unten haengt dann beide Zeilen an die
+     securityId; die ID ist mehrdeutig und nicht backtestbar.
+
+     Abhilfe nur mit Beleg, nie ueber den Ticker allein: ein committetes,
+     quellengebundenes Register
+     (quant/config/security-master-duplicate-resolution.json). Ein Eintrag
+     traegt die exakte canonical_id, Gattung und Waehrung beider Zeilen,
+     das Enddatum der wegfallenden Zeile, den SEC-Beleg derselben
+     Emittentenlinie (Nachfolge-Emittent nach Rule 12g-3(a) mit 8-K12B
+     und 1:1-Umtausch, oder dieselbe CIK auf beiden Seiten) und die
+     Pruefung der eigenen Kursreihe ueber den Stichtag (keine Luecke ueber
+     wenige Sitzungen, kein Sprung in Split-Groesse).
+
+     Wirkung, nur wenn ALLES passt: genau zwei Anbieterzeilen mit dieser
+     canonical_id, gleiche Gattung (assetType, instrumentType) und
+     Waehrung wie im Register, eine endet exakt am registrierten
+     Enddatum, die andere spaeter, und der Bestandstitel des Tickers ist
+     die registrierte securityId. Dann bleibt genau die Zeile mit dem
+     spaetesten Enddatum (die laufende Nachfolgezeile); die wegfallende
+     Zeile und die Accession stehen an ihr (duplicate_resolution,
+     listing_status). Passt etwas nicht, bleibt alles wie ohne Register
+     und der Lauf meldet den Eintrag als nicht angewandt. Zeilen ohne
+     Eintrag beruehrt das Register nie. Ein unlesbares oder in sich
+     widerspruechliches Register bricht den Lauf ab (fail closed). */
+  var DUPLICATE_RESOLUTION_SCHEMA = "security-master-duplicate-resolution-1.0.0";
+  var DUPLICATE_RESOLUTION_LIMITS = {
+    /* Enddatum der Altzeile hoechstens so weit vom Wirksamkeitstag. */
+    maxEndDateDistanceDays: 7,
+    /* Groesste Luecke der eigenen Reihe im Pruefzeitraum. */
+    maxGapDays: { daily: 5, weekly: 8 },
+    /* Groesste Einzelbewegung; ab hier sieht eine Reihe aus wie ein
+       nicht bereinigter Split (3:2 = 33 %, 2:1 = 50 %). */
+    maxAbsMove: 0.25,
+    minPoints: 5,
+    /* 8-K12B hoechstens so viele Tage nach dem Wirksamkeitstag. */
+    maxFilingLagDays: 4
+  };
+  var DUPLICATE_RESOLUTION_RULES = ["12g-3(a)", "SAME_CIK"];
+  var DUPLICATE_RESOLUTION_KEYS = ["securityId", "ticker", "exchange", "startDate", "canonicalId",
+    "assetType", "instrumentType", "currency", "droppedEndDate", "event", "sec", "series", "reviewedAt"];
+  var CIK_RE = /^\d{10}$/;
+  var ACCESSION_RE = /^\d{10}-\d{2}-\d{6}$/;
+
+  function isIsoDay(v) {
+    return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+      !isNaN(Date.parse(v + "T00:00:00Z")) &&
+      new Date(Date.parse(v + "T00:00:00Z")).toISOString().slice(0, 10) === v;
+  }
+  function dayDistance(a, b) {
+    return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 864e5);
+  }
+  function nonEmpty(v) { return typeof v === "string" && v.trim().length > 0; }
+
+  /** Register -> Index je securityId. null/undefined -> null (kein
+   *  Register). Wirft bei jedem Formfehler. */
+  function indexDuplicateResolution(doc) {
+    if (doc === null || doc === undefined) return null;
+    function fail(msg) { throw new Error("DUPLICATE_RESOLUTION_INVALID: " + msg); }
+    if (!doc || typeof doc !== "object" || doc.schemaVersion !== DUPLICATE_RESOLUTION_SCHEMA) {
+      fail("schemaVersion " + DUPLICATE_RESOLUTION_SCHEMA + " erwartet");
+    }
+    if (!Array.isArray(doc.sources) || !doc.sources.length) fail("sources[] fehlt");
+    doc.sources.forEach(function (s, i) {
+      if (!s || !nonEmpty(s.id) || !nonEmpty(s.url)) fail("sources[" + i + "] braucht id und url");
+    });
+    if (!Array.isArray(doc.records)) fail("records[] fehlt");
+    var by = {}, seenCanonical = {};
+    doc.records.forEach(function (r, i) {
+      function bad(msg) { fail("records[" + i + "] " + msg); }
+      if (!r || typeof r !== "object" || Array.isArray(r)) bad("kein Objekt");
+      Object.keys(r).forEach(function (k) {
+        if (DUPLICATE_RESOLUTION_KEYS.indexOf(k) < 0) bad("unbekanntes Feld " + k);
+      });
+      DUPLICATE_RESOLUTION_KEYS.forEach(function (k) {
+        if (r[k] === undefined || r[k] === null) bad("Pflichtfeld " + k + " fehlt");
+      });
+      if (!nonEmpty(r.ticker) || r.ticker !== upper(r.ticker)) bad("ticker");
+      if (!nonEmpty(r.exchange) || r.exchange !== upper(r.exchange)) bad("exchange");
+      if (!/^ref_[A-Z0-9_]+$/.test(r.securityId)) bad("securityId " + r.securityId);
+      if (!isIsoDay(r.startDate) || !isIsoDay(r.droppedEndDate) || !isIsoDay(r.reviewedAt)) bad("Datum");
+      if (r.canonicalId !== canonicalId({ exchange: r.exchange, ticker: r.ticker, startDate: r.startDate })) {
+        bad("canonicalId " + r.canonicalId + " passt nicht zu Boerse/Ticker/Beginn");
+      }
+      if (!nonEmpty(r.assetType) || !nonEmpty(r.instrumentType) || CLASSES.indexOf(r.instrumentType) < 0) bad("Gattung");
+      if (!/^[A-Z]{3}$/.test(r.currency)) bad("currency");
+      if (r.droppedEndDate < r.startDate) bad("droppedEndDate vor startDate");
+      if (by[r.securityId]) bad("securityId " + r.securityId + " doppelt");
+      if (seenCanonical[r.canonicalId]) bad("canonicalId " + r.canonicalId + " doppelt");
+
+      var ev = r.event;
+      if (!ev || typeof ev !== "object" || !nonEmpty(ev.kind) || !isIsoDay(ev.effectiveDate)) bad("event");
+      if (Math.abs(dayDistance(ev.effectiveDate, r.droppedEndDate)) > DUPLICATE_RESOLUTION_LIMITS.maxEndDateDistanceDays) {
+        bad("droppedEndDate " + r.droppedEndDate + " liegt mehr als " +
+            DUPLICATE_RESOLUTION_LIMITS.maxEndDateDistanceDays + " Tage vom Ereignis " + ev.effectiveDate);
+      }
+
+      var sec = r.sec;
+      if (!sec || typeof sec !== "object") bad("sec");
+      if (!CIK_RE.test(sec.predecessorCik || "") || !CIK_RE.test(sec.successorCik || "")) bad("CIK");
+      if (DUPLICATE_RESOLUTION_RULES.indexOf(sec.rule) < 0) bad("sec.rule " + sec.rule);
+      if (sec.exchangeRatio !== "1:1") bad("sec.exchangeRatio " + sec.exchangeRatio + " (nur 1:1)");
+      if (sec.rule === "SAME_CIK" && sec.predecessorCik !== sec.successorCik) bad("SAME_CIK mit verschiedenen CIK");
+      if (!Array.isArray(sec.filings) || !sec.filings.length) bad("sec.filings[] fehlt");
+      var successorFiling = null;
+      sec.filings.forEach(function (f, j) {
+        if (!f || !nonEmpty(f.form) || !ACCESSION_RE.test(f.accession || "") || !isIsoDay(f.filingDate) ||
+            !CIK_RE.test(f.cik || "") || !nonEmpty(f.url)) {
+          bad("sec.filings[" + j + "] braucht form, accession, filingDate, cik, url");
+        }
+        if (f.form === "8-K12B") successorFiling = successorFiling || f;
+      });
+      if (sec.rule === "12g-3(a)") {
+        if (!successorFiling) bad("12g-3(a) ohne 8-K12B");
+        if (successorFiling.cik !== sec.successorCik) bad("8-K12B nicht von der Nachfolgerin");
+        var lag = dayDistance(ev.effectiveDate, successorFiling.filingDate);
+        if (lag < 0 || lag > DUPLICATE_RESOLUTION_LIMITS.maxFilingLagDays) bad("8-K12B passt nicht zum Ereignisdatum");
+        if (typeof successorFiling.quote !== "string" || successorFiling.quote.length < 20) bad("8-K12B ohne Zitat");
+      } else if (!sec.filings.some(function (f) {
+        return f.cik === sec.successorCik && typeof f.quote === "string" && f.quote.length >= 20;
+      })) {
+        bad("SAME_CIK ohne zitierte Meldung derselben CIK");
+      }
+
+      var s = r.series;
+      if (!s || typeof s !== "object" || !nonEmpty(s.file) || !/^[0-9a-f]{64}$/.test(s.sha256 || "")) bad("series");
+      if (s.securityId !== r.securityId) bad("series.securityId");
+      if (!Object.prototype.hasOwnProperty.call(DUPLICATE_RESOLUTION_LIMITS.maxGapDays, s.grain)) bad("series.grain");
+      if (!isIsoDay(s.windowFrom) || !isIsoDay(s.windowTo) ||
+          !(s.windowFrom <= ev.effectiveDate && ev.effectiveDate <= s.windowTo)) {
+        bad("series.window umschliesst das Ereignis nicht");
+      }
+      if (!(typeof s.points === "number" && s.points >= DUPLICATE_RESOLUTION_LIMITS.minPoints)) bad("series.points");
+      if (!(typeof s.maxGapDays === "number" && s.maxGapDays <= DUPLICATE_RESOLUTION_LIMITS.maxGapDays[s.grain])) {
+        bad("series: Luecke " + s.maxGapDays + " Tage");
+      }
+      if (!(typeof s.maxAbsMove === "number" && s.maxAbsMove < DUPLICATE_RESOLUTION_LIMITS.maxAbsMove)) {
+        bad("series: Sprung " + s.maxAbsMove + " (Split-Groesse)");
+      }
+
+      seenCanonical[r.canonicalId] = true;
+      by[r.securityId] = Object.freeze({
+        securityId: r.securityId, ticker: r.ticker, exchange: r.exchange, startDate: r.startDate,
+        canonicalId: r.canonicalId, assetType: r.assetType, instrumentType: r.instrumentType,
+        currency: r.currency, droppedEndDate: r.droppedEndDate, effectiveDate: ev.effectiveDate,
+        eventKind: ev.kind, rule: sec.rule,
+        accession: (successorFiling || sec.filings[0]).accession,
+        form: (successorFiling || sec.filings[0]).form
+      });
+    });
+    return by;
+  }
+
+  /** Wendet das Register auf die nach Ticker gruppierten, klassifizierten
+   *  Anbieterzeilen an (veraendert providerByTicker/tickerRowCount nur
+   *  bei vollstaendigem Treffer). -> {applied[], notApplied[]} */
+  function applyDuplicateResolution(index, providerByTicker, tickerRowCount, baselineByTicker) {
+    var applied = [], notApplied = [];
+    if (!index) return { applied: applied, notApplied: notApplied };
+    Object.keys(index).sort().forEach(function (id) {
+      var e = index[id];
+      function skip(reason) { notApplied.push({ securityId: id, canonicalId: e.canonicalId, reason: reason }); }
+      var base = baselineByTicker[e.ticker];
+      if (!base || base.length !== 1 || base[0].securityId !== id) return skip("BASELINE_SECURITY_ID_MISMATCH");
+      var group = providerByTicker[e.ticker] || [];
+      var same = group.filter(function (c) { return canonicalId(c) === e.canonicalId; });
+      if (same.length !== 2) return skip("PROVIDER_ROWS_WITH_CANONICAL_ID:" + same.length);
+      for (var k = 0; k < same.length; k++) {
+        var c = same[k];
+        if (c.assetType !== e.assetType) return skip("ASSET_TYPE_MISMATCH");
+        if (c.instrumentType !== e.instrumentType) return skip("INSTRUMENT_TYPE_MISMATCH");
+        if (c.currency !== e.currency) return skip("CURRENCY_MISMATCH");
+      }
+      var dropped = same.filter(function (c) { return c.endDate === e.droppedEndDate; });
+      if (dropped.length !== 1) return skip("DROPPED_END_DATE_NOT_FOUND");
+      var kept = same[0] === dropped[0] ? same[1] : same[0];
+      if (!isIsoDay(kept.endDate) || !(kept.endDate > e.droppedEndDate)) return skip("KEPT_ROW_NOT_LATEST");
+
+      group.splice(group.indexOf(dropped[0]), 1);
+      tickerRowCount[e.ticker] -= 1;
+      var droppedInfo = {
+        canonical_id: canonicalId(dropped[0]), start_date: dropped[0].startDate, end_date: dropped[0].endDate,
+        active_status: dropped[0].active === null ? "UNKNOWN" : dropped[0].active ? "ACTIVE" : "INACTIVE"
+      };
+      kept.duplicateResolution = {
+        schemaVersion: DUPLICATE_RESOLUTION_SCHEMA,
+        rule: e.rule, form: e.form, accession: e.accession,
+        event: e.eventKind, effectiveDate: e.effectiveDate,
+        dropped_row: droppedInfo
+      };
+      kept.activeBasis = kept.activeBasis + " (Doppelzeile " + droppedInfo.start_date + ".." +
+        droppedInfo.end_date + " belegt aufgeloest: " + e.form + " " + e.accession + ")";
+      applied.push({ securityId: id, canonicalId: e.canonicalId, keptEndDate: kept.endDate,
+                     droppedEndDate: droppedInfo.end_date, accession: e.accession });
+    });
+    return { applied: applied, notApplied: notApplied };
+  }
+
   /**
    * Baut den Wertpapierstamm und den Abgleich.
    *
@@ -577,7 +781,11 @@
    *   providerAvailable  false, wenn providerRows nicht erhoben werden
    *                 konnten. Trennt "der Anbieter fuehrt den Titel
    *                 nicht mehr" von "wir haben nicht nachgesehen".
-   * @returns {object} {rows, counts, duplicates, findings, invariants}
+   *   duplicateResolution  Optional: Register belegter Doppelzeilen
+   *                 (DUPLICATE_RESOLUTION_SCHEMA). Fehlt es, bleibt alles
+   *                 wie bisher; ist es fehlerhaft, wirft der Aufruf.
+   * @returns {object} {rows, counts, duplicates, findings, invariants
+   *                    [, duplicateResolution]}
    */
   function buildSecurityMaster(input) {
     input = input || {};
@@ -638,6 +846,12 @@
       tickerRowCount[c.ticker] = (tickerRowCount[c.ticker] || 0) + 1;
     });
 
+    /* Belegte Doppelzeilen (Register oben): VOR der Bestandszuordnung,
+       damit die verbleibende Zeile ganz normal ueber Ticker UND
+       Handelsplatz zugeordnet wird. Ohne Register (null) kein Eingriff. */
+    var resolutionIndex = indexDuplicateResolution(input.duplicateResolution);
+    var resolution = applyDuplicateResolution(resolutionIndex, providerByTicker, tickerRowCount, baselineByTicker);
+
     tickerOrder.forEach(function (t) {
       var group = providerByTicker[t];
       var baseEntries = baselineByTicker[t] || null;
@@ -660,6 +874,10 @@
            Bezug ganz fallen zu lassen hiesse, den Titel zu verlieren. */
         var isMatch = !!baseEntries && (ambiguous || i === matchIndex);
         var row = makeRow(c, isMatch ? baseEntries : null, "PROVIDER_SUPPORTED_TICKERS", stamp);
+        if (c.duplicateResolution) {
+          row.duplicate_resolution = c.duplicateResolution;
+          row.review_flags.push("PROVIDER_DUPLICATE_ROW_RESOLVED");
+        }
         row.baseline_match = !baseEntries ? "NOT_A_BASELINE_TICKER"
           : ambiguous ? "AMBIGUOUS"
           : isMatch ? "EXCHANGE_MATCH"
@@ -762,7 +980,7 @@
     var findings = collectFindings(rows, duplicates, providerAvailable);
     var invariants = assertNonDestructive(rows, baselineByTicker);
 
-    return {
+    var result = {
       version: VERSION,
       classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
       generatedFor: today,
@@ -773,6 +991,16 @@
       findings: findings,
       invariants: invariants
     };
+    /* Nur mit Register: ohne bleibt das Ergebnis Feld fuer Feld wie vorher. */
+    if (resolutionIndex !== null) {
+      result.duplicateResolution = {
+        schemaVersion: DUPLICATE_RESOLUTION_SCHEMA,
+        records: Object.keys(resolutionIndex).length,
+        applied: resolution.applied,
+        notApplied: resolution.notApplied
+      };
+    }
+    return result;
   }
 
   function overlaps(group) {
@@ -1186,6 +1414,10 @@
     decideProductEligibility: decideProductEligibility,
     classifySecurity: classifySecurity,
     buildSecurityMaster: buildSecurityMaster,
+    DUPLICATE_RESOLUTION_SCHEMA: DUPLICATE_RESOLUTION_SCHEMA,
+    DUPLICATE_RESOLUTION_LIMITS: DUPLICATE_RESOLUTION_LIMITS,
+    indexDuplicateResolution: indexDuplicateResolution,
+    canonicalId: canonicalId,
     /* Ausdruecklich exportiert, damit ein Test die Zusage selbst
        angreifen kann und nicht nur ihr Ergebnis: eine Wache, die nie
        ausgeloest hat, ist keine bewiesene Wache. */

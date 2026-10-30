@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "security-master-duplicate-resolution-1.0.0",
+  "consumer": "scripts/market/build-us-security-master.mjs -> scripts/market/lib/security-master-duplicate-resolution.mjs -> quant/engines/us-security-master.js#indexDuplicateResolution",
+  "doc": "docs/data/SECURITY_MASTER_DUPLICATE_RESOLUTION.md",
+  "effect": "Nur fuer die eingetragene securityId und canonical_id: von genau zwei Anbieterzeilen mit gleicher Gattung und Waehrung bleibt die mit dem spaetesten Enddatum; die Zeile mit droppedEndDate entfaellt und steht als dropped_row an der verbleibenden Zeile. Passt etwas nicht, bleibt alles wie ohne Register. Zeilen ohne Eintrag bleiben unberuehrt.",
+  "rule": {
+    "identity": "Identische canonical_id (Boerse, Ticker, Beginn) UND gleiche Gattung (assetType, instrumentType) UND Waehrung in beiden Zeilen; nie ueber den Ticker allein.",
+    "sec": "Dieselbe Emittentenlinie: Nachfolge-Emittent nach Rule 12g-3(a) mit 8-K12B (Accession, Datum, Zitat) und Umtausch 1:1, oder dieselbe CIK auf beiden Seiten mit zitierter Meldung. Zusammenschluss nach Rule 12g-3(c), Umtausch ungleich 1:1, Abspaltung, Boersenwechsel oder fehlender Beleg: kein Eintrag.",
+    "series": "Eigene Reihe (quant/data/market/discover-series, sonst discover-series-long) ueber +/-30 Tage um das Ereignis: mindestens 5 Punkte, groesste Luecke <= 5 Tage (taeglich) bzw. <= 8 Tage (woechentlich), groesste Einzelbewegung < 25 %.",
+    "endDate": "Enddatum der wegfallenden Zeile hoechstens 7 Tage vom Wirksamkeitstag."
+  },
+  "sources": [
+    {
+      "id": "tiingo-supported-tickers",
+      "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+      "fetchedAt": "2026-10-30T14:20:06Z",
+      "sha256": "a35b030e8a870f3a2b27074e4a538e21b77fe77189b2fa11b77331d17e64b3f3",
+      "note": "Offene Datei, nicht committet. 109.165 Zeilen."
+    },
+    {
+      "id": "sec-edgar",
+      "url": "https://data.sec.gov/submissions/ und https://www.sec.gov/Archives/edgar/data/",
+      "fetchedAt": "2026-10-30",
+      "userAgent": "VisionUniverseResearch info@visionuniverse.de",
+      "note": "Rohdaten nicht committet; Accessions und Zitate je Eintrag."
+    },
+    {
+      "id": "sec-company-tickers-exchange",
+      "url": "https://www.sec.gov/files/company_tickers_exchange.json",
+      "fetchedAt": "2026-10-30",
+      "sha256": "76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46"
+    }
+  ],
+  "records": [
+    {
+      "securityId": "ref_OKE",
+      "ticker": "OKE",
+      "exchange": "NYSE",
+      "startDate": "1985-07-01",
+      "canonicalId": "tiingo:NYSE:OKE:1985-07-01",
+      "assetType": "Stock",
+      "instrumentType": "EQUITY_COMMON",
+      "currency": "USD",
+      "droppedEndDate": "2026-09-14",
+      "event": {
+        "kind": "HOLDING_REORGANIZATION",
+        "effectiveDate": "2026-09-10",
+        "note": "Holding-Reorganisation nach OGCA 1081.G: Falcon TopCo, Inc. wird in ONEOK, Inc. umbenannt und ist Nachfolge-Emittent der Legacy ONEOK; neue CUSIP 30609A 109."
+      },
+      "sec": {
+        "predecessorCik": "0001039684",
+        "successorCik": "0001039684",
+        "rule": "12g-3(a)",
+        "exchangeRatio": "1:1",
+        "filings": [
+          {
+            "role": "SUCCESSOR_ISSUER",
+            "form": "8-K12B",
+            "accession": "0001193125-26-387972",
+            "filingDate": "2026-09-10",
+            "cik": "0001039684",
+            "url": "https://www.sec.gov/Archives/edgar/data/1039684/000119312526387972/d81803d8k12b.htm",
+            "quote": "Following the consummation of the Reorganization, ONEOK Common Stock continues to trade on the New York Stock Exchange (the “NYSE”) on an uninterrupted basis under the ticker symbol “OKE” with a new CUSIP number (30609A 109). As a result of the Reorganization, ONEOK became the successor issuer to Legacy ONEOK pursuant to Rule 12g-3(a)",
+            "ratioQuote": "each share of Legacy ONEOK’s common stock ... was automatically converted into one share of ONEOK common stock"
+          },
+          {
+            "role": "DELISTING_OLD_SHARE",
+            "form": "25-NSE",
+            "accession": "0000876661-26-000770",
+            "filingDate": "2026-09-18",
+            "cik": "0001039684",
+            "url": "https://www.sec.gov/Archives/edgar/data/1039684/000087666126000770/primary_doc.xml"
+          },
+          {
+            "role": "DEREGISTRATION_OLD_SHARE",
+            "form": "15-12G",
+            "accession": "0001193125-26-405508",
+            "filingDate": "2026-09-28",
+            "cik": "0001039684",
+            "url": "https://www.sec.gov/Archives/edgar/data/1039684/000119312526405508/d131369d1512g.htm"
+          }
+        ]
+      },
+      "series": {
+        "securityId": "ref_OKE",
+        "file": "quant/data/market/discover-series/ref_OKE.json",
+        "sha256": "9edfb9160a3d4808207e94dafd72ba78e1a4d55ff241135d4e3c9d92e26ce030",
+        "grain": "daily",
+        "windowFrom": "2026-08-11",
+        "windowTo": "2026-10-10",
+        "points": 43,
+        "maxGapDays": 4,
+        "maxAbsMove": 0.0349,
+        "around": "09-09 95.82 | 09-10 95.72 | 09-11 96.62 | 09-14 96.97 | 09-15 94.72"
+      },
+      "reviewedAt": "2026-10-30"
+    },
+    {
+      "securityId": "ref_TEL",
+      "ticker": "TEL",
+      "exchange": "NYSE",
+      "startDate": "2007-06-14",
+      "canonicalId": "tiingo:NYSE:TEL:2007-06-14",
+      "assetType": "Stock",
+      "instrumentType": "EQUITY_COMMON",
+      "currency": "USD",
+      "droppedEndDate": "2024-09-27",
+      "event": {
+        "kind": "REDOMICILIATION",
+        "effectiveDate": "2024-09-30",
+        "note": "Sitzwechsel Schweiz -> Irland: TE Connectivity Ltd. wird auf TE Connectivity plc verschmolzen; letzter Handelstag der Schweizer Aktie 2024-09-27 (Freitag), erster der irischen 2024-09-30 (Montag)."
+      },
+      "sec": {
+        "predecessorCik": "0001385157",
+        "successorCik": "0001385157",
+        "rule": "12g-3(a)",
+        "exchangeRatio": "1:1",
+        "filings": [
+          {
+            "role": "SUCCESSOR_ISSUER",
+            "form": "8-K12B",
+            "accession": "0001104659-24-103940",
+            "filingDate": "2024-09-30",
+            "cik": "0001385157",
+            "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465924103940/tm2424199d1_8k12b.htm",
+            "quote": "by operation of Rule 12g-3(a) promulgated under the Securities Exchange Act of 1934, as amended (the “Exchange Act”), Irish TEL is the successor issuer to Swiss TEL ... Irish TEL ordinary shares are listed on the New York Stock Exchange (the “NYSE”) and trade under the symbol “TEL,” the same symbol under which Swiss TEL’s common shares traded prior to the Effective Time.",
+            "ratioQuote": "each common share of Swiss TEL (par value CHF 0.57 per share) was exchanged for one ordinary share of Irish TEL (par value $0.01 per share)"
+          },
+          {
+            "role": "DELISTING_OLD_SHARE",
+            "form": "25-NSE",
+            "accession": "0000876661-24-000890",
+            "filingDate": "2024-09-30",
+            "cik": "0001385157",
+            "url": "https://www.sec.gov/Archives/edgar/data/1385157/000087666124000890/primary_doc.xml"
+          },
+          {
+            "role": "DEREGISTRATION_OLD_SHARE",
+            "form": "15-12G",
+            "accession": "0001104659-24-104309",
+            "filingDate": "2024-09-30",
+            "cik": "0001385157",
+            "url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465924104309/tm2424500d1_1512g.htm"
+          }
+        ]
+      },
+      "series": {
+        "securityId": "ref_TEL",
+        "file": "quant/data/market/discover-series-long/ref_TEL.json",
+        "sha256": "9adfe6b7840366d537b62a2c7cf5a9469c004a44a7666943aaa2b205e80d2724",
+        "grain": "weekly",
+        "windowFrom": "2024-08-31",
+        "windowTo": "2024-10-30",
+        "points": 8,
+        "maxGapDays": 7,
+        "maxAbsMove": 0.0382,
+        "around": "2024-09-20 148.11 | 2024-09-27 151.22 | 2024-10-04 145.45",
+        "note": "Die Tagesreihe beginnt 2025-10-03 und deckt 2024 nicht ab; deshalb die Wochenreihe."
+      },
+      "reviewedAt": "2026-10-30"
+    }
+  ]
+}
