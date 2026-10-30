@@ -1,8 +1,10 @@
 # Sitzungsübergabe Quant V10–V13 und Backtest-Engineering (Stand 30.10.2026)
 
-Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
+Version 1.1.0 dieser Übergabe (30.10.2026; 1.0.0 kam mit #1140). Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
 
-**Status der Übergabe:** Alles ist dokumentiert. Der Archivstand ist prüfbar beschrieben (Abschnitt 4): Das Archiv ist **lokal restore-geprüft**, die **dauerhafte Sicherung ist noch BLOCKIERT**. Bis zum Upload gibt es das Archiv nur im Container dieser Sitzung. Der Wiederherstellungsweg ohne Archiv steht in 4.4.
+**Status der Übergabe:** Alles ist dokumentiert.
+
+**Archiv: NICHT dauerhaft gesichert.** Das Archiv ist nur lokal restore-geprüft (8/8 Teile hash-identisch). Upload nach R2, Integritätsprüfung und Restore aus R2 stehen aus. Blockiert ist das durch die Netzwerkfreigabe für `*.r2.cloudflarestorage.com` und das fehlende Secret `V13_ARCHIVE_PRIVATE_KEY` (Abschnitt 4.3). Bis zum Upload gibt es das Archiv nur im Container der Sitzung, die es gebaut hat. Der Wiederherstellungsweg ohne Archiv steht in 4.4.
 
 ## 1. Stand `main` und PRs
 
@@ -17,10 +19,18 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1132 | V13 Abschluss II (V13c-Studie, Archivwerkzeuge, R2-Workflow) | gemergt `adbc2f0444` |
 | #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | **gemergt** `5e9d2b9d5a` (30.10.2026, nach Owner-Freigabe; vorher main, Checks, Reviews, Scope und Konflikte geprüft) |
 | #1138 | interne Backtest-Vorschau (Basis seit dem Merge von #1133: `main`) | Draft; standardmäßig aus, nicht verdrahtet |
-| #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft. Simulation: 1.085/1.144 Änderungen freigabefähig, Rest unter den unveränderten Grenzen außer G6 OKE → BLOCKED bis Owner-Entscheidung a/b/c |
+| #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft, vom Owner gegenüber #1136 bevorzugt. Simulation: 1.085/1.144 Änderungen freigabefähig, sonst alles unter den unveränderten Grenzen; BLOCKED nur an G6 OKE (keine Ausnahme; Erzeuger-PR nötig, siehe 6.2) |
 | #1140 | Archiv 1.2.0 (Manifest, Werkzeuge, Runner-Restore-Schritt), Entscheidungsvorlage, diese Übergabe | **gemergt** `99af26c091` (Owner-Freigabe 30.10.). Ersetzt **nicht** das Backup |
 
-PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachholdrift, Freigabeschema 1.1.0), #1137 (Supertrader 9, automatischer SF8-Tageslauf). Beide sind offen.
+PRs anderer Sitzungen, die diese Arbeit berühren:
+- #1136 (Security Master Nachholdrift, konkurrierendes Freigabeschema 1.1.0): von der Supertrader-9-Sitzung als **abgelöst** markiert („nicht mergen“), aber noch nicht geschlossen; das Schließen entscheidet der Owner. Nicht zusammen mit #1143 integrieren.
+- #1159 (Draft, gestapelt auf #1100): nur die von der Freigabe unabhängigen Teile.
+  - Backtest-Identitätssperre (Probelauf 72 IDs).
+  - `compare` liest die Freigabeliste 1.1.0 aus #1143.
+  - Freeze-Manifest ohne `docs/quant-recovery/v13/archive/`.
+  - Alarm-Job in `security-master-weekly.yml`.
+  - Kein Eingriff in Gate, Freigabe oder Workflow-Eingang. Überschneidung mit #1143 nur am Dateiende von `security-master-weekly.yml`.
+- #1137 (Supertrader 9, automatischer SF8-Tageslauf).
 
 ## 2. Erledigt (nicht wiederholen)
 
@@ -227,7 +237,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 2. Archiv: `docs/quant-recovery/v13/archive/README.md`; Werkzeuge `scripts/quant/v13/archive/` (`build-archive.sh`, `restore-archive.sh`, `presign.mjs`, `transfer.sh`, `r2-restore.mjs`); Workflow `.github/workflows/quant-v13-archive.yml` (Marken usage, put, get, verify, keycheck, restore; nur auf `claude/**`).
 3. Backtests: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`, `BACKTEST_RUNNER.md`, `BACKTEST_RESULT_CONTRACT_V2.md`, `BACKTEST_PREVIEW.md`; Code `scripts/quant/research/backtest-runner.cjs`, `run-backtest.cjs`, `quant/api/backtest-research-adapter.js`, `quant/api/backtest-preview-service.cjs`.
 4. Research-Befunde: `docs/quant-recovery/HANDOVER_V13.md`, `docs/quant-recovery/v13c/`.
-5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1136.
+5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1159 (#1136 abgelöst).
 6. Tests: siehe `CLAUDE.md`, Abschnitt Tests. Gezielt:
    ```bash
    node --test quant/tests/backtest-*.test.mjs quant/tests/v13-archive.test.mjs quant/tests/secrets.test.mjs
