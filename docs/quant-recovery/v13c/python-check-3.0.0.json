@@ -1,0 +1,76 @@
+{
+ "schemaVersion": "v13c-python-check-3.0.0",
+ "implementation": "independent stdlib Python: V13 verifier + V13b F1d frame imported by path, new register-1.1.0 binding and S3-prime checks",
+ "binding": {
+  "loaded": 1688,
+  "fromSeries110": 13
+ },
+ "v13VerifierPasses": {
+  "F1p_F1wp": {
+   "state": "PASS",
+   "checks": 11930,
+   "failures": 0,
+   "maxRelativeDifference": 0.0,
+   "seconds": 290.7,
+   "frames": {
+    "F1": {
+     "frameListings": 4724,
+     "delisted": {
+      "added": 395,
+      "nonModal": 1293,
+      "exchange": 0,
+      "relabelled": 0
+     }
+    },
+    "F1w": {
+     "frameListings": 5917,
+     "delisted": {
+      "added": 1588,
+      "nonModal": 100,
+      "exchange": 0,
+      "relabelled": 1193
+     }
+    }
+   },
+   "pValuesChecked": 240,
+   "firstFailures": []
+  },
+  "F1dp": {
+   "state": "PASS",
+   "checks": 10643,
+   "failures": 0,
+   "maxRelativeDifference": 0.0,
+   "seconds": 217.3,
+   "frames": {
+    "F1": {
+     "frameListings": 5917,
+     "delisted": {
+      "added": 1588,
+      "nonModal": 100,
+      "exchange": 0,
+      "truncated": 1193,
+      "tooShort": 0
+     }
+    }
+   },
+   "pValuesChecked": 120,
+   "firstFailures": []
+  }
+ },
+ "s3": {
+  "usable": 28,
+  "stepBReplacedChecked": 28,
+  "earlyStepA": 1,
+  "scenariosRecomputed": [
+   "ZERO",
+   "LOWER"
+  ],
+  "note": "FATE/UPPER step-B deltas not recomputed (they need the V12 takeover premium); covered by the identical replacement logic"
+ },
+ "checks": 48095,
+ "failures": 0,
+ "firstFailures": [],
+ "maxRelativeDifference": 0.0,
+ "seconds": 516.7,
+ "state": "PASS"
+}

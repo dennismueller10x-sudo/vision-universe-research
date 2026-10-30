@@ -160,3 +160,50 @@ Der Container ist flüchtig.
 | Strategie | Original-Membership fehlt | ~2028-08 |
 
 V13 verbessert die Datengrundlage (Delistings ab 2010, Large Caps, Korrekturen). Keine Zertifizierungsvoraussetzung ist dadurch erfüllt.
+
+## 10. Nachtrag: Abschluss II (29.10.2026, nach den Owner-Entscheidungen zu #1129, #1119, Historie, Studie, Archiv, Setup)
+
+### 10.1 Integration
+
+- **#1129** gemergt als `0e28622a35`. Vor dem Merge geprüft: main-Stand, CI grün (8 erfolgreich, 37 übersprungen), sauberer Diff (einzige Bestandsdatei `research-weekly-loader.cjs`, opt-in), Registrierungen vor den Auswertungen (sha256 stimmt).
+- **Folge-PR mit diesem Nachtrag:** V13c-Studie, Archiv-Werkzeuge, Workflow `quant-v13-archive.yml`.
+
+### 10.2 Security Master (Option A): Schritt 1 blockiert
+
+- **Probelauf 1.1.0 → 1.3.0** mit der freigegebenen Sonderfreigabe, `commit=false`: Run 40942100928, Ergebnis BLOCKED.
+  - Auslöser sind 48 Tage Anbieterbewegung, nicht die 132 Fälle aus #1119:
+    - G6: 1 neue doppelte canonical_id;
+    - G7: 83 canonical_id-Wechsel, 100 Deaktivierungen (davon 1 im SEC-Register), 82 Eignungswechsel außerhalb der Freigabe;
+    - G9: 592 Namenswechsel.
+  - Die Freigabedatei passt weiterhin zum Ausgangsstamm.
+- **Entscheidungsvorlage** im Kommentar zu #1119. Empfehlung: erweitertes Freigabeschema 1.1.0 mit belegten Listen, eigener Gate-PR.
+- **#1119 und der 1.3.0-Lauf bleiben zurückgehalten.** Gate, Workflow und Daten sind unverändert.
+
+### 10.3 GitHub-Historie
+
+Der Text des Support-Antrags ist fertig und liegt dem Owner vor (8 Commits, 2 Blobs, Begründung, Prüfnachweise). Main wurde nicht umgeschrieben.
+
+### 10.4 V13c-Studie (Registrierung 3.0.0, `docs/quant-recovery/v13c/`)
+
+- Die 13 neuen Reihen verschieben die Signalzellen um höchstens 0,028 PP. Holm: 7/60 (F1') bzw. 9/60 (F1w'/F1d'), keine Entscheidung ändert sich, weiterhin keine SPY-Zelle signifikant.
+- EW-Population 2000–2025: 13,80 % (F1').
+- PIT-S&P-500 im qualifizierten Zeitraum: 4 von 28 Endwerten liegen darin.
+  - Survivorship-Term FATE 0,73 → 0,71 PP, LOWER 3,48 → 3,43 PP.
+  - Die übrigen 24 wirken nur in den nicht qualifizierten Perioden vor 2009.
+- First Data 2006 und alle ungeklärten Endwerte bleiben ausgeschlossen.
+- Python-Prüfung: 48.095 Prüfungen, 0 Fehler.
+- **Datendrift:** Die Frame-Läufe nutzen den Datenstand der V13-Läufe (Nachtrag 3.0.1), weil `quant/data` auf main seitdem weitergelaufen ist; F0 hat dort 4.327 statt 4.329 Listings.
+
+### 10.5 Archiv (`docs/quant-recovery/v13/archive/`)
+
+- **Inhalt:** 7 verschlüsselte Teile, 11.615 Dateien, 1,38 GB. Enthalten sind Rohabrufe, Reihen, Large-Cap-Belege, Studieninputs V13/V13b/V13c und die V12-Listingreferenz.
+- **Lokale Wiederherstellung:** hash-identisch, Reihen laden hashgebunden.
+- **R2:** Lesezugriff und Kapazität geprüft (4,78 GB belegt, mit Archiv 6,15 GB, Schranke 8 GB). Upload **nicht ausgeführt**, weil die Sitzungsumgebung `*.r2.cloudflarestorage.com` nicht erreicht.
+- **Owner-Schritte:**
+  1. den Host in den Netzwerkeinstellungen der Umgebung freigeben;
+  2. den privaten Archivschlüssel als Secret `V13_ARCHIVE_PRIVATE_KEY` und offline ablegen.
+- Bis zum Upload liegen die Daten nur in der temporären Sitzung. Bei Verlust sind sie größtenteils neu erzeugbar.
+
+### 10.6 Setup
+
+Keine Änderung an Unabhängigkeitsschwelle oder OOS-Gate (Owner-Entscheidung 6).
