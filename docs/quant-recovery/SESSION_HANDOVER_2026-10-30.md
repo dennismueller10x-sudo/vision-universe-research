@@ -1,12 +1,19 @@
 # Sitzungsübergabe Quant V10–V13 und Backtest-Engineering (Stand 30.10.2026)
 
-Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
+Version 1.2.0 dieser Übergabe (30.10.2026, nach dem grünen Runner-Restore; 1.0.0 kam mit #1140). Sie ersetzt keine Fachdokumente, sondern sagt, wo was steht und was offen ist. Eine neue Sitzung braucht keinen Chatverlauf. Abgeschlossene Forschung (V10–V13c) wird **nicht** wiederholt; ihre Befunde sind negativ bzw. begrenzt und gelten unverändert.
 
-**Status der Übergabe:** Alles ist dokumentiert. Der Archivstand ist prüfbar beschrieben (Abschnitt 4): Das Archiv ist **lokal restore-geprüft**, die **dauerhafte Sicherung ist noch BLOCKIERT**. Bis zum Upload gibt es das Archiv nur im Container dieser Sitzung. Der Wiederherstellungsweg ohne Archiv steht in 4.4.
+**Status der Übergabe:** Alles ist dokumentiert.
+
+**Archiv: dauerhaft gesichert und unabhängig wiederherstellbar (30.10.2026).** Archiv 1.2.0 liegt mit 8 Teilen im bestehenden privaten R2-Eimer:
+- Workflow-Verify: 8/8 Objekte OK.
+- Restore aus R2: 8/8 Teile und 11.616 Dateien hash-identisch.
+- Runner-Restore mit dem Secret `V13_ARCHIVE_PRIVATE_KEY`: Run 41073334070, `keycheck: OK`, 8/8 Teile `OK`, 11.616 Dateien.
+
+Die Sicherung hängt nicht mehr an der bauenden Sitzung. Details in Abschnitt 4.
 
 ## 1. Stand `main` und PRs
 
-`main` enthält #1132 (`adbc2f0444`) und #1133 (`5e9d2b9d5a`), dazu automatische Datenläufe und PRs anderer Sitzungen.
+`main` enthält #1132 (`adbc2f0444`), #1133 (`5e9d2b9d5a`) und #1140 (`99af26c091`), dazu automatische Datenläufe und PRs anderer Sitzungen.
 
 | PR | Inhalt | Stand |
 |---|---|---|
@@ -17,10 +24,20 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1132 | V13 Abschluss II (V13c-Studie, Archivwerkzeuge, R2-Workflow) | gemergt `adbc2f0444` |
 | #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | **gemergt** `5e9d2b9d5a` (30.10.2026, nach Owner-Freigabe; vorher main, Checks, Reviews, Scope und Konflikte geprüft) |
 | #1138 | interne Backtest-Vorschau (Basis seit dem Merge von #1133: `main`) | Draft; standardmäßig aus, nicht verdrahtet |
-| #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft. Simulation: 1.085/1.144 Änderungen freigabefähig, Rest unter den unveränderten Grenzen außer G6 OKE → BLOCKED bis Owner-Entscheidung a/b/c |
-| #1140 | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
+| #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft, vom Owner gegenüber #1136 bevorzugt. Simulation: 1.085/1.144 Änderungen freigabefähig, sonst alles unter den unveränderten Grenzen; BLOCKED nur an G6 OKE (keine Ausnahme; Erzeuger-PR nötig, siehe 6.2) |
+| #1140 | Archiv 1.2.0 (Manifest, Werkzeuge, Runner-Restore-Schritt), Entscheidungsvorlage, diese Übergabe | **gemergt** `99af26c091` (Owner-Freigabe 30.10.). Ersetzt **nicht** das Backup |
 
-PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachholdrift, Freigabeschema 1.1.0), #1137 (Supertrader 9, automatischer SF8-Tageslauf). Beide sind offen.
+PRs anderer Sitzungen, die diese Arbeit berühren:
+- #1136: **geschlossen** (abgelöst durch #1143).
+- #1100, #1101 und #1159 sind gemergt (Sperrliste, Freeze, Alarm). Auf `main` laufen Quant 3.694/0 und Core 300/0, der Freeze ist INTACT (Stand 30.10., 15:35 UTC, laut Supertrader-9-Sitzung).
+- #1163 (Draft, Supertrader-9-Sitzung): Erzeuger-PR für identische canonical_id.
+- #1159 (Draft, gestapelt auf #1100): nur die von der Freigabe unabhängigen Teile.
+  - Backtest-Identitätssperre (Probelauf 72 IDs).
+  - `compare` liest die Freigabeliste 1.1.0 aus #1143.
+  - Freeze-Manifest ohne `docs/quant-recovery/v13/archive/`.
+  - Alarm-Job in `security-master-weekly.yml`.
+  - Kein Eingriff in Gate, Freigabe oder Workflow-Eingang. Überschneidung mit #1143 nur am Dateiende von `security-master-weekly.yml`.
+- #1137 (Supertrader 9, automatischer SF8-Tageslauf).
 
 ## 2. Erledigt (nicht wiederholen)
 
@@ -82,32 +99,27 @@ Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](v1
 | Schritt | Ergebnis | Nachweis |
 |---|---|---|
 | Bau | ausgeführt 30.10.2026 | Manifest im Repo |
-| lokale Restore-Probe | **8/8 Teile, 11.616 Dateien hash-identisch** (Chiffre, Klartext, Datei-Inventar); Faktorpanel bytegleich; Loader lädt 1.675/1.675 QUALIFIED hashgebunden | `restore-archive.sh`, nur lokal |
-| R2-Lesezugriff und Kapazität | Eimer 4,78 GB; mit Archiv 6,28 GB, unter der Nullkostengrenze von 8 GB | Run 40943780307 `[v13-archive:usage]` |
-| Upload nach R2 | **nicht ausgeführt** | – |
-| Secret `V13_ARCHIVE_PRIVATE_KEY` | **fehlt** | Run 41011143637 `[v13-archive:keycheck]` → `SECRET_MISSING` |
-| unabhängige Restore-Probe auf dem Runner | **nicht möglich** (setzt Upload und Secret voraus) | – |
+| lokale Restore-Probe | 8/8 Teile, 11.616 Dateien hash-identisch; Faktorpanel bytegleich; Loader lädt 1.675/1.675 QUALIFIED hashgebunden | `restore-archive.sh` |
+| Kapazität | Eimer 4.775.926.662 B; mit Archiv unter 8 GB; Präfix vor dem Upload leer | Run 41068077861 |
+| **Upload nach R2** | **erfolgt**: 8 Teile plus Manifest, `research-snapshots/quant-v13/archive-1.2.0/`, jede Datei mit SHA-256 geprüft | Run 41068077861 (`put`) + `transfer.sh put` |
+| **Integritätskontrolle in R2** | 8/8 Objekte OK gegen `manifest-1.2.0.json` | Run 41069005168 (`verify`) |
+| **Restore aus R2** | alle Teile frisch aus R2 geladen und entschlüsselt: 8/8 Teile, 11.616 Dateien hash-identisch; Manifest aus R2 bytegleich mit dem Repo | Run 41069696417 (`get`) + `transfer.sh get` + `restore-archive.sh` |
+| Secret `V13_ARCHIVE_PRIVATE_KEY` | **gesetzt** (30.10.); passt zum Manifest | Run 41073334070, `keycheck: OK` |
+| **Restore auf dem Runner** | **erfolgreich**: 8/8 Teile aus R2 geladen, entschlüsselt, alle Hashes geprüft; 11.616 Dateien. Log ohne Schlüssel, Endpunkt oder signierte URLs | Run 41073334070 (`restore`) |
 
-**Eine dauerhafte Sicherung ist damit NICHT erreicht.** Erst Upload, `[v13-archive:verify]` und `[v13-archive:restore]` mit grünem Ergebnis gelten als Abschluss.
+Ursache der früheren Meldung „R2 nicht erreichbar“: Der Test lief gegen einen Platzhalter-Host (`probe.r2.cloudflarestorage.com`), dem Cloudflare TLS verweigert. Der echte Kontenendpunkt war die ganze Zeit erreichbar, die Netzwerkstufe der Umgebung steht auf „Vollständig“.
 
-### 4.3 Blocker und Owner-Schritte (nur UI)
+### 4.3 Nutzung in künftigen Sitzungen
 
-Ursache: Die Sitzungsumgebung erreicht `*.r2.cloudflarestorage.com` nicht. Es gibt keinen anderen autorisierten privaten Weg vom Container zum Runner. Der einzige Kanal wäre öffentlicher GitHub-Speicher (Git, Artefakte, Releases), und den hat der Owner ausgeschlossen.
+- **Prüfen:** leerer Commit mit der Marke `[v13-archive:restore]` auf einem `claude/**`-Branch. Der Runner lädt alle Teile aus R2, prüft den Schlüssel (Secret `V13_ARCHIVE_PRIVATE_KEY`) und alle Hashes.
+- **Wiederherstellen in einer Sitzung:**
+  1. Marke `[v13-archive:get]` setzen.
+  2. Artefakt per `gh api repos/<repo>/actions/artifacts/<id>/zip` laden.
+  3. `scripts/quant/v13/archive/transfer.sh get <artefakt> <archive-priv.pem> <ziel>`.
+  4. `restore-archive.sh <manifest> <ziel> <archive-priv.pem> <out> [teil]`.
 
-1. **Netzwerk:** claude.ai/code → Umgebung dieser Sitzung (Menü im Sitzungstitel) → *Edit* → *Network access* → `*.r2.cloudflarestorage.com` zu den erlaubten Domains hinzufügen.
-2. **Secret:** GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*:
-   - Name: `V13_ARCHIVE_PRIVATE_KEY`;
-   - Wert: vollständiger PEM-Inhalt der Archivschlüsseldatei, die der Owner aus dieser Sitzung bekommen hat (`archive-priv.pem`).
-   
-   Zusätzlich offline aufbewahren.
-3. Danach dieser Sitzung (oder einer neuen, solange der Container besteht) schreiben: „R2 frei“. Ablauf:
-   1. `[v13-archive:keycheck]`;
-   2. `[v13-archive:put]`, dann `transfer.sh put`;
-   3. `[v13-archive:verify]`;
-   4. `[v13-archive:restore]` (unabhängig auf dem Runner);
-   5. Ergebnis in der README eintragen.
-
-**Wichtig:** Diese Schritte müssen geschehen, **bevor** der Container dieser Sitzung abgebaut wird. Das passiert beim Archivieren des Chats oder nach Inaktivität. Danach ist `archive-out/` verloren, und es bleibt nur 4.4.
+  Den privaten Schlüssel stellt der Owner aus seiner Offline-Kopie bereit. Er gehört nie in Git, Chat oder Logs.
+- **R2-Endpunkt:** Erreichbarkeit nur gegen den echten Kontenendpunkt testen (aus den vorsignierten URLs), nicht gegen einen Platzhalter-Host.
 
 ### 4.4 Reproduzierbarer Wiederherstellungsweg ohne Archiv
 
@@ -142,7 +154,7 @@ Teststand:
 |---|---|
 | `node --test quant/tests/backtest-*.test.mjs` | 103/103 |
 | `node --test "quant/tests/*.test.mjs"` (#1138, `cf328315a6`) | 3.654 bestanden, 0 fehlgeschlagen, 19 übersprungen |
-| security-master (#1143) | 76/76 |
+| security-master (#1143, `651732d462`) | 76/76; `core` 300/300 |
 | `v13-archive` und `secrets` | 11/11 |
 | `verify-backtest-preview.py` | 16 Fälle, 0 Befunde |
 | `core` auf `main` | 1 rot, DQ-SF8-8 (siehe 6.1) |
@@ -172,13 +184,30 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
   Die Grenzen bleiben unverändert (G6/G7/G9 werden nicht pauschal erhöht).
 - **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR #1143, Branch `claude/sm130-approval-list-4ho3rd`; Prüfdokument `docs/data/security-master/V130_APPROVAL_LIST_REVIEW.md`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
-- **Befund der Liste:** canonical_id 60/83 freigabefähig (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.; nicht: 15 Altzeile weg, 4 doppelt aktiv, CAM, TRT/TRUE/APAD); Deaktivierungen 84/100 (nicht: EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft); Eignung: die 82 zusätzlichen sind nur Folgen; Namen 591/592 (573 neu aus der SEC, 18 Umfirmierungen; nicht: XRPN). Owner-Entscheidung OKE: a) Korrektur im Erzeuger (empfohlen), b) `--accept-duplicate`, c) abwarten.
-- **Überschneidung:** #1136 (andere Sitzung) führt ebenfalls ein Freigabeschema 1.1.0 ein. Vor einem Merge ist ein Schema zu wählen.
+- **Befund der Liste:** 1.085 von 1.144 Änderungen sind freigabefähig.
+  - canonical_id: 60/83 (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.); nicht freigabefähig sind 15 verschwundene Altzeilen, 4 doppelt aktive Zeilen, CAM und TRT/TRUE/APAD.
+  - Deaktivierungen: 84/100; nicht freigabefähig sind EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft.
+  - Eignung: Die 82 zusätzlichen Wechsel folgen nur aus anderen Änderungen.
+  - Namen: 591/592 (573 neu aus der SEC, 18 Umfirmierungen); nicht freigabefähig ist XRPN.
+- **Owner-Entscheidung 30.10.:** #1143 wird gegenüber #1136 bevorzugt. Keine gleichzeitige Integration, keine Ausnahme-Freigabe für OKE.
+- **OKE untersucht** (Prüfdokument, Abschnitt 4, SEC-Quellen):
+  - ONEOK, Inc., CIK 1039684, NYSE.
+  - Holding-Reorganisation am 10.09.2026 (8-K12B). Nachfolge-Emittent nach Rule 12g-3(a), neue CUSIP, Handel ohne Unterbrechung unter OKE.
+  - Ticker-Wiederverwendung nur innerhalb von ONEOK (1997: CIK 74154 → 1039684).
+  - `ref_OKE` läuft durchgehend.
+  - Die Identität ist eindeutig, aber mit den bestehenden Mitteln **nicht regelkonform auflösbar**: Der Erzeuger führt beide Tiingo-Zeilen. Ein Zurückhalten im Gate wäre die abgelehnte Ausnahme unter anderem Namen.
+  - Der Einzelfall bleibt ausgeschlossen. Der Lauf bleibt BLOCKED an G6 (Simulation: sonst alles unter den Grenzen, 0 ungenutzte Einträge).
+  - **Empfohlener nächster PR:** im Erzeuger `quant/engines/us-security-master.js` identische canonical_id zusammenführen (gleicher Ticker, gleiche Börse, gleicher Beginn, gleiche Gattung und Währung; das jüngste Ende gewinnt), mit Vorher/Nachher-Vergleich. Betroffen sind 8 securityIds: OKE, BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B. **Beauftragt** (Owner, 30.10.) in der Supertrader-9-Sitzung, Branch `claude/supertrader-9-data-certification-jnejw3-sm-duplicates`. Keinen zweiten PR dazu starten.
+  - Die frühere Näherung „ohne die inaktive OKE-Zeile ergibt PASS“ gilt **nicht** für #1163. Sie entfernte nur die OKE-Zeile. #1163 führt alle 8 zusammen und ändert damit auch die canonical_id der 7 bisherigen Doppelungen; die Supertrader-9-Sitzung meldet G7 canonical 27 > 25. **Die Liste 1.1.0 muss nach #1163 neu erzeugt werden:** Probelauf `commit=false` mit dem #1163-Erzeuger, dann Builder, mit Belegen aus dem #1163-Register und unveränderten Grenzen (Kommentar in #1143).
+  - FUN bleibt in #1163 fail closed: Zusammenschluss nach 12g-3(c), kein 1:1-Nachfolger nach 12g-3(a).
+- **Überschneidung #1136:** Beide PRs ändern Gate und Workflow, mit gleichem Schema-Namen und anderem Format. #1136 übernimmt OKE (`--include-duplicates`) und ist auf #1100/#1101 gestapelt, die nicht in `main` sind. Unabhängig davon wären nur die Freeze-Manifeste (#1100), die Belege aus #1101 und der Alarm-Job SMW-15 (Tabelle im Prüfdokument, Abschnitt 11).
+- **Teststand #1143** (Kopf `651732d462`): security-master 76/76, `core` 300/300, Isolation sauber.
 - **Reihenfolge:**
-  1. Review der Liste;
-  2. eigene Owner-Freigabe;
-  3. regulärer 1.3.0-Lauf;
-  4. erst dann #1119.
+  1. #1163 reviewen und mergen.
+  2. Neuer Probelauf `commit=false`, dann die Liste mit dem Builder neu erzeugen.
+  3. Owner-Freigabe der neuen Liste; erwartet PASS.
+  4. `commit=true` am selben Tag.
+  5. Erst nach erfolgreicher Schutzprüfung und ausdrücklicher Abschlussfreigabe #1119 und die echte 1.3.0-Umstellung.
 
 ### 6.3 Owner-Entscheidungen ohne Frist
 
@@ -188,9 +217,9 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
 ## 7. Nächste Prioritäten
 
-1. **Archiv:** Owner-Schritte 4.3, dann Upload, Verify und Runner-Restore. Erst danach gilt die Sicherung als abgeschlossen.
+1. **Archiv:** erledigt (30.10.): Upload, Verify, Restore aus R2 und Restore auf dem Runner sind grün. Nichts mehr offen.
 2. **#1133:** erledigt (gemergt `5e9d2b9d5a`); #1138 steht auf `main`.
-3. **Security Master:** Review der Freigabeliste, mit #1136 abstimmen, Owner-Freigabe, 1.3.0-Lauf, dann #1119.
+3. **Security Master:** Owner-Freigabe der Liste #1143, Erzeuger-PR für identische canonical_id (OKE + 7), Probelauf, dann `commit=true`; #1119 erst nach Abschlussfreigabe. #1136 nicht zusammen mit #1143 integrieren.
 4. Owner-Entscheidungen aus 6.3, sobald gewünscht. Keine Normänderung ohne Freigabe.
 
 ## 8. Einstieg für eine neue Sitzung
@@ -199,7 +228,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 2. Archiv: `docs/quant-recovery/v13/archive/README.md`; Werkzeuge `scripts/quant/v13/archive/` (`build-archive.sh`, `restore-archive.sh`, `presign.mjs`, `transfer.sh`, `r2-restore.mjs`); Workflow `.github/workflows/quant-v13-archive.yml` (Marken usage, put, get, verify, keycheck, restore; nur auf `claude/**`).
 3. Backtests: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`, `BACKTEST_RUNNER.md`, `BACKTEST_RESULT_CONTRACT_V2.md`, `BACKTEST_PREVIEW.md`; Code `scripts/quant/research/backtest-runner.cjs`, `run-backtest.cjs`, `quant/api/backtest-research-adapter.js`, `quant/api/backtest-preview-service.cjs`.
 4. Research-Befunde: `docs/quant-recovery/HANDOVER_V13.md`, `docs/quant-recovery/v13c/`.
-5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1136.
+5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1159 (#1136 abgelöst).
 6. Tests: siehe `CLAUDE.md`, Abschnitt Tests. Gezielt:
    ```bash
    node --test quant/tests/backtest-*.test.mjs quant/tests/v13-archive.test.mjs quant/tests/secrets.test.mjs
