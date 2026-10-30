@@ -21,6 +21,87 @@ Grundlage ist die Completion-Matrix in [TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_
   - Ursachenklärung der beendeten Reihen per Anbieterabruf (A4).
   - Keiner dieser Punkte erzeugt falsche Signale; die Schutzmaßnahmen sind aktiv.
 
+## 1a. Product Readiness: Abschlussphase 30.10.2026
+
+### Live-Prüfung (nachgewiesen)
+
+- **Was geprüft wird:** Workflow `technical-live-qa.yml` mit Skript `scripts/technical/world/live-qa.mjs` gegen `research.visionuniverse.de`:
+  - iPhone-Breite 390 px, mobil, DPR 3;
+  - angemeldet über den bestehenden autorisierten Testzugang (Secret `RESEARCH_ACCESS_PASSWORD`, wie die Vorsorge- und Supertrader-Prüfungen); der Wert wird nie ausgegeben;
+  - das Zugangstor wird nur geprüft, nie verändert.
+- **Wann:** nach jeder Pages-Auslieferung und auf Zuruf.
+- **Lauf 41086988135** (16:08 UTC, vor #1170) und **Lauf 41090743880** (16:32 UTC, nach #1170):
+  - Zugangstor ohne Anmeldung sichtbar, App verdeckt;
+  - alle **13 Vorlagen** geöffnet;
+  - Zähler „Erfüllt / Fast erfüllt / Unvollständig“ = `index-v1.json` der Seite, bei allen 13;
+  - keine Konsolenfehler, keine fehlgeschlagenen Anfragen, kein seitliches Scrollen;
+  - Chart-Studio-Prüfleiste des ersten Treffers zeigt „alle Kriterien erfüllt“;
+  - Screenshots je Vorlage im Artefakt `technical-live-qa`.
+
+| Vorlage | Kriterien | Erfüllt | Fast | Unvollständig |
+|---|---|---|---|---|
+| Etablierter Aufwärtstrend | 8 | 685 | 440 | 1 |
+| Aufwärtstrend, vereinfacht | 5 | 920 | 608 | 1 |
+| Trendfolge | 4 | 521 | 1.014 | 0 |
+| Über SMA 200 | 1 | 2.068 | – | – |
+| Dreieck in Bildung | 1 | 362 | – | – |
+| Dreieck in Bildung, im Aufwärtstrend | 2 | 225 | – | – |
+| Dreieck mit Ausbruch nach oben | 1 | 169 | – | – |
+| Dreiecksformationen | 1 | 864 | – | – |
+| Bullische Flaggen und Wimpel | 1 | 57 | – | – |
+| Volatilitätskontraktion | 1 | 109 | – | – |
+| Breakout-Kandidaten | 1 | 749 | – | – |
+| 52-Wochen-Hochs | 1 | 153 | – | – |
+| 200-Wochen-Hochs | 1 | 152 | – | 670 (ohne 200-Wochen-Historie) |
+
+### Mobile Messwerte (Produktion, Profil „mobil-einfach“)
+
+- **Profil:** CPU ×4, 150 ms Latenz, 1,6 Mbit/s, 390 px.
+- **Messpunkt:** Gemessen wird bis zur sichtbaren Antwort.
+- **Nutzerpfad für „erste Vorlage“:** Liste lesen (3 s), dann antippen.
+
+| Schritt | vor #1170 | nach #1170 |
+|---|---|---|
+| Kaltstart bis Vorlagenliste | 2,1 s | 1,6 s |
+| Erste Vorlage mit Treffern (lädt den Screener-Datensatz) | 8,3 s | **5,0 s** |
+| Wechsel zwischen Vorlagen (Median / Max, 12 Wechsel) | 95 / 129 ms | 69 / 84 ms |
+| Screener aus einer Vorlage | 0,30 s | 0,20 s |
+| Abfrage-Engine im Browser (8 Kriterien, ganzes Universum) | 5 ms | 3 ms |
+| Chart Studio eines Titels | 2,9 s | 2,8 s |
+
+- **Engpass:** der Screener-Datensatz (gzip 1,5 MB, 160 Spalten).
+- **Behoben mit #1170:**
+  - Die Vorlagenliste lädt den Datensatz im Leerlauf vor (nicht bei „Datensparen“).
+  - Die Vorlage zeigt beim Laden einen Zustand statt einer leeren Seite.
+- **Weitere Verkürzung:** nur über einen kleineren Datensatz, z. B. eine Spaltengruppe für Vorlagen. Das ist eine Vertragsänderung mit eigenem PR.
+- **Grenze der Messung:** Die Messung ist eine Emulation im CI-Browser; ein echtes einfaches Mobilgerät wurde nicht gemessen.
+
+### Datenqualität der Spitzentreffer
+
+[DQ_TOP20_ESTABLISHED_UPTREND.md](DQ_TOP20_ESTABLISHED_UPTREND.md):
+- **GIBO (Platz 1):** wahrscheinlich ein unbereinigter Reverse-Split 1:20 am 30.06.
+  - RS-Rang 100 und der Treffer sind Artefakte; DQ-PX-3 meldet die Reihe.
+  - Im Produkt ist der Titel nicht gekennzeichnet.
+- **Sonst unauffällig:** Die übrigen 19 sind plausibel. Darunter sind echte Ereignistage (MRNA, REPL, SLN), zwei korrekt bereinigte Splits (ZCSH, BUUU) und Penny- bzw. illiquide Titel (ABLV, CYPH, USIO).
+- Keine Korrektur, keine Methodikänderung; drei Optionen liegen zur Entscheidung vor.
+
+### Betriebszeit
+
+- **#1168 (Workflow, wartet auf Freigabe):**
+  - technical-world startet nach dem erfolgreichen Marktdaten-Refresh (fertig 04:00–07:00 UTC) statt per Zeitplan.
+  - Der Zeitplan startet 5–6 h spät (10:25–11:27 UTC); das betrifft alle Zeitpläne des Repositorys.
+  - Der Zeitplan bleibt als Rückfall.
+- **Details:** [TECHNICAL_SCHEDULE.md](TECHNICAL_SCHEDULE.md) (im PR).
+- **Nachweis:** erst mit dem ersten Nachtlauf nach dem Merge.
+
+### Verbleibende Einschränkungen
+
+1. **GIBO** steht mit einem Datenfehler auf Platz 1 der Acht-Kriterien-Vorlage, bis die Quelle bereinigt oder eine Kennzeichnung freigegeben ist.
+2. **Erste Vorlage mobil:** 5 s auf dem emulierten einfachen Profil. Die Datensatzgröße ist der Grenzfaktor.
+3. **Datensatz erst gegen 11:20 UTC aktuell**, solange #1168 nicht gemergt ist.
+4. **Echte Geräte:** Die Live-Prüfung ist automatisiert (Chromium, emuliert). Eine Sichtprüfung auf einem echten iPhone (Safari) ist nicht belegt.
+5. **Zurückgestellt (Owner):** S4 (historische Auswertung), Wochenchart mit Kerzen (E4/D5), KI-Suche (F5).
+
 ## 2. Abgeschlossene Kernfunktionen
 
 | Bereich | Umfang in Produktion | Nachweis |
