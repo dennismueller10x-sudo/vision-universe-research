@@ -93,6 +93,12 @@ export async function checkout(ctx) {
     ctx.log('error', 'PRICE_MISMATCH', {price: key});
     throw new HttpError(409, 'PRICE_NOT_AVAILABLE');
   }
+  // Mit Steuerausweis darf der Bruttopreis nie steigen: Preis und Steuersatz muessen "inklusive" sein (fail closed).
+  const taxProblem = await taxProblemFor(ctx, stripePrice);
+  if (taxProblem) {
+    ctx.log('error', 'TAX_CONFIG_INVALID', {price: key, code: taxProblem});
+    throw new HttpError(503, 'TAX_CONFIG_INVALID');
+  }
   const customer = await ensureCustomer(ctx, user);
   const site = ctx.cfg.siteOrigin;
   const bucket = Math.floor(ctx.now() / 600_000); // Doppelklick -> dieselbe Sitzung
@@ -124,6 +130,32 @@ export function checkoutSubmitText(price) {
   return `Mit „Abonnieren“ bestellst du Vision Universe Pro zahlungspflichtig für ${amount} pro ${period} inkl. USt. `
     + `Das Abo verlängert sich monatlich und ist jederzeit zum Ende des bezahlten ${period}s kündbar. `
     + `Es gelten die Bedingungen (${LEGAL_BASE}/rechtliches/agb) und die Widerrufsbelehrung (${LEGAL_BASE}/rechtliches/widerrufsbelehrung).`;
+}
+
+// Warum die Steuerkonfiguration einen hoeheren als den angezeigten Bruttopreis ergeben koennte - oder null.
+// Steuersatz (txr_) wird hoechstens alle 10 Minuten bei Stripe gelesen.
+let taxRateCache = {id: null, at: 0, value: null};
+export async function taxRateState(ctx) {
+  const tax = ctx.cfg.stripe.tax;
+  if (tax.mode !== 'rate') return null;
+  if (taxRateCache.id !== tax.rate || ctx.now() - taxRateCache.at > 600_000) {
+    let value;
+    try {
+      const r = await ctx.stripe.retrieveTaxRate(tax.rate);
+      value = !r.active ? 'TAX_RATE_INACTIVE' : r.inclusive !== true ? 'TAX_RATE_NOT_INCLUSIVE'
+        : Boolean(r.livemode) !== (ctx.cfg.stripe.mode === 'live') ? 'TAX_RATE_LIVEMODE' : 'ok';
+    } catch (e) { value = 'TAX_RATE_UNREADABLE'; }
+    taxRateCache = {id: tax.rate, at: ctx.now(), value};
+  }
+  return taxRateCache.value;
+}
+export const resetTaxRateCache = () => { taxRateCache = {id: null, at: 0, value: null}; };
+async function taxProblemFor(ctx, stripePrice) {
+  const tax = ctx.cfg.stripe.tax;
+  if (tax.mode === 'none') return null;
+  if (stripePrice.tax_behavior !== 'inclusive') return 'PRICE_NOT_INCLUSIVE';
+  if (tax.mode === 'rate') { const s = await taxRateState(ctx); return s === 'ok' ? null : s; }
+  return null;
 }
 
 // Umsatzsteuer im Checkout: der Preis ist brutto (tax_behavior=inclusive); ein inklusiver Steuersatz bzw.
