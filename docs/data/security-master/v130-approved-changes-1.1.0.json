@@ -11,7 +11,17 @@
     "today": "2026-10-30",
     "secAsOf": "2026-10-30",
     "secSha256": "76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46",
-    "delistingRegister": "PR #1119 @4f16be7 quant/config/security-master-delisting-evidence.json"
+    "delistingRegister": "PR #1119 @4f16be7 quant/config/security-master-delisting-evidence.json",
+    "canonicalEvidence": {
+      "ref": "quant/config/security-master-canonical-change-evidence.json sha256 7f09edbf1f0610ef2fd89b0775a713936e9ba4e70fc0a50274e9f5aca2cf7f8d",
+      "records": 3,
+      "applied": [
+        "ref_GCTK",
+        "ref_LNAI",
+        "ref_SBXD"
+      ],
+      "notApplied": []
+    }
   },
   "instrumentTypeChanges": [
     {
@@ -2197,6 +2207,16 @@
       "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED"
     },
     {
+      "securityId": "ref_GCTK",
+      "from": true,
+      "to": false,
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1)",
+        "ref": "Folge von canonical_id (freigabefähig) | prev [NASDAQ:2013-04-25..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2013-04-25..2026-10-29 ACTIVE EQUITY_COMMON] | SEC: GCTK → CIK 0001506983 Glucotrack, Inc. (Nasdaq)"
+      },
+      "class": "CAUSED_BY:canonical_id=MOVED_TO_OTC_SEC_EVIDENCE"
+    },
+    {
       "securityId": "ref_GECCM",
       "from": true,
       "to": false,
@@ -2525,6 +2545,16 @@
         "ref": "Folge von canonical_id (freigabefähig) | prev [NASDAQ:2000-04-06..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-10-16..2026-10-29 ACTIVE ETF; NASDAQ:2000-04-06..2021-07-14 INACTIVE EQUITY_COMMON] | SEC: LMNX nicht gelistet"
       },
       "class": "CAUSED_BY:canonical_id=TICKER_REUSE_NEW_LISTING"
+    },
+    {
+      "securityId": "ref_LNAI",
+      "from": true,
+      "to": false,
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1)",
+        "ref": "Folge von canonical_id (freigabefähig) | prev [NASDAQ:2015-02-02..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2015-02-02..2026-10-29 ACTIVE EQUITY_COMMON] | SEC: LNAI → CIK 0001527728 Lunai Bioworks Inc. (Nasdaq)"
+      },
+      "class": "CAUSED_BY:canonical_id=MOVED_TO_OTC_SEC_EVIDENCE"
     },
     {
       "securityId": "ref_LQ",
@@ -3035,6 +3065,16 @@
         "ref": "Folge von Deaktivierung (freigabefähig) | prev [NYSE:2022-05-03..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2022-05-03..2026-09-29 INACTIVE EQUITY_COMMON] | SEC: SAT nicht gelistet"
       },
       "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED"
+    },
+    {
+      "securityId": "ref_SBXD",
+      "from": true,
+      "to": false,
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1)",
+        "ref": "Folge von canonical_id und Deaktivierung (freigabefähig) | prev [NYSE:2024-10-07..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [PINK:2026-09-28..2026-09-29 INACTIVE EQUITY_COMMON] | SEC: SBXD nicht gelistet"
+      },
+      "class": "CAUSED_BY:canonical_id=DELISTED_TO_OTC_SEC_EVIDENCE+Deaktivierung=WITH_CANONICAL_CHANGE:DELISTED_TO_OTC_SEC_EVIDENCE"
     },
     {
       "securityId": "ref_SCDL",
@@ -4259,6 +4299,16 @@
       "class": "PROVIDER_ENDDATE_RESTATED"
     },
     {
+      "securityId": "ref_SBXD",
+      "from": "ACTIVE",
+      "to": "INACTIVE",
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1)",
+        "ref": "prev [NYSE:2024-10-07..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [PINK:2026-09-28..2026-09-29 INACTIVE EQUITY_COMMON] | SEC: SBXD nicht gelistet"
+      },
+      "class": "WITH_CANONICAL_CHANGE:DELISTED_TO_OTC_SEC_EVIDENCE"
+    },
+    {
       "securityId": "ref_SCDL",
       "from": "ACTIVE",
       "to": "INACTIVE",
@@ -4601,6 +4651,16 @@
       "class": "MOVED_TO_OTC"
     },
     {
+      "securityId": "ref_GCTK",
+      "from": "tiingo:NASDAQ:GCTK:2013-04-25",
+      "to": "tiingo:OTCMKTS:GCTK:2013-04-25",
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1); SEC-Belegregister quant/config/security-master-canonical-change-evidence.json sha256 7f09edbf1f0610ef2fd89b0775a713936e9ba4e70fc0a50274e9f5aca2cf7f8d",
+        "ref": "gleiches Listing (Beginn 2013-04-25) von NASDAQ nach OTCMKTS verlegt (Börsenrückzug in den Freiverkehr); SEC-Beleg derselben CIK 0001506983: NASDAQ_DELISTING_SUSPENSION_TO_OTC wirksam 2026-10-30, 8-K 0001493152-26-049299 (2026-10-29, Item 3.01: „On October 28, 2026, the Company received written notice from the Panel that it had determined to delist the Company’s securities from Nasdaq because the Company’s closing bid price was $0.87 on October 14, 2026, and the Company therefore did not satisfy the terms of the exception. Trading in the Company’s common stock on Nasdaq will be suspended at the open of trading on October 30, 2026. [...] The Company expects and plans for its shares of common stock to be quoted by the OTC Markets Group, Inc. (“OTC”) upon being suspended from trading on Nasdaq“); weitere Meldungen: 8-K 0001493152-26-048981 (2026-10-28); die SEC-Tickerliste führt noch Nasdaq (Stand der Liste, vor dem Rückzug) | prev [NASDAQ:2013-04-25..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2013-04-25..2026-10-29 ACTIVE EQUITY_COMMON] | 8-K 0001493152-26-049299: https://www.sec.gov/Archives/edgar/data/1506983/000149315226049299/form8-k.htm ; 8-K 0001493152-26-048981: https://www.sec.gov/Archives/edgar/data/1506983/000149315226048981/form8-k.htm"
+      },
+      "class": "MOVED_TO_OTC_SEC_EVIDENCE"
+    },
+    {
       "securityId": "ref_GIW",
       "from": "tiingo:NASDAQ:GIW:2021-07-12",
       "to": "tiingo:NASDAQ:GIW:2021-07-12|tiingo:NASDAQ:GIW:2025-10-27|tiingo:NYSE:GIW:2002-08-06",
@@ -4699,6 +4759,16 @@
         "ref": "prev [NASDAQ:2000-04-06..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2025-10-16..2026-10-29 ACTIVE ETF; NASDAQ:2000-04-06..2021-07-14 INACTIVE EQUITY_COMMON] | SEC: LMNX nicht gelistet"
       },
       "class": "TICKER_REUSE_NEW_LISTING"
+    },
+    {
+      "securityId": "ref_LNAI",
+      "from": "tiingo:NASDAQ:LNAI:2015-02-02",
+      "to": "tiingo:OTCMKTS:LNAI:2015-02-02",
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1); SEC-Belegregister quant/config/security-master-canonical-change-evidence.json sha256 7f09edbf1f0610ef2fd89b0775a713936e9ba4e70fc0a50274e9f5aca2cf7f8d",
+        "ref": "gleiches Listing (Beginn 2015-02-02) von NASDAQ nach OTCMKTS verlegt (Börsenrückzug in den Freiverkehr); SEC-Beleg derselben CIK 0001527728: NASDAQ_DELISTING_SUSPENSION_TO_OTC wirksam 2026-10-30, 8-K 0001731122-26-001362 (2026-10-23, Item 3.01: „Unless the Company requests a hearing before a Nasdaq Hearings Panel by October 28, 2026, trading in the Common Stock on Nasdaq will be suspended at the opening of business on October 30, 2026. The Company does not intend to request a hearing. On October 22, 2026, the Company’s Board of Directors (the “Board”) approved the voluntary withdrawal of the Common Stock from listing on Nasdaq and from registration under Section 12(b) of the Securities Exchange Act of 1934“); die SEC-Tickerliste führt noch Nasdaq (Stand der Liste, vor dem Rückzug) | prev [NASDAQ:2015-02-02..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [OTCMKTS:2015-02-02..2026-10-29 ACTIVE EQUITY_COMMON] | 8-K 0001731122-26-001362: https://www.sec.gov/Archives/edgar/data/1527728/000173112226001362/e8019_8-k.htm"
+      },
+      "class": "MOVED_TO_OTC_SEC_EVIDENCE"
     },
     {
       "securityId": "ref_LQ",
@@ -4879,6 +4949,16 @@
         "ref": "prev [NASDAQ:2017-09-22..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2008-01-31..2026-10-29 ACTIVE EQUITY_COMMON geeignet] | SEC: RCAT → CIK 0000748268 Red Cat Holdings, Inc. (Nasdaq)"
       },
       "class": "START_DATE_RESTATED"
+    },
+    {
+      "securityId": "ref_SBXD",
+      "from": "tiingo:NYSE:SBXD:2024-10-07",
+      "to": "tiingo:PINK:SBXD:2026-09-28",
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Lauf 41086438209, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.1.0); sec company_tickers_exchange.json (2026-10-30, sha256 76b92fbacfc1); SEC-Belegregister quant/config/security-master-canonical-change-evidence.json sha256 7f09edbf1f0610ef2fd89b0775a713936e9ba4e70fc0a50274e9f5aca2cf7f8d",
+        "ref": "Altzeile (Beginn 2024-10-07) beim Anbieter entfallen, neue Zeile erst seit 2026-09-28: ob dasselbe Wertpapier fortgeführt wird (Reverse Split, Umfirmierung, CUSIP-Wechsel) oder ein anderer Emittent den Ticker übernommen hat, belegt die Anbieterliste nicht; SEC-Beleg derselben CIK 0002015947: NYSE_DELISTING_TO_OTC wirksam 2026-09-28, 8-K 0001104659-26-111044 (2026-09-25, Item 3.01: „On September 25, 2026, SilverBox Corp IV (the “Company”) received a written notice (the “Notice”) from the staff of NYSE Regulation (the “Staff”) of the New York Stock Exchange (“NYSE”) indicating that the Staff has determined to commence proceedings to delist the Company’s units (the “Units”), Class A ordinary shares and warrants from the NYSE.“); weitere Meldungen: 8-K 0001104659-26-111396 (2026-09-28), 25-NSE 0000876661-26-000824 (2026-10-13) | prev [NYSE:2024-10-07..2026-09-10 ACTIVE EQUITY_COMMON geeignet] → next [PINK:2026-09-28..2026-09-29 INACTIVE EQUITY_COMMON] | 8-K 0001104659-26-111044: https://www.sec.gov/Archives/edgar/data/2015947/000110465926111044/tm2626181d1_8k.htm ; 8-K 0001104659-26-111396: https://www.sec.gov/Archives/edgar/data/2015947/000110465926111396/tm2626499d1_8k.htm ; 25-NSE 0000876661-26-000824: https://www.sec.gov/Archives/edgar/data/2015947/000087666126000824/primary_doc.xml"
+      },
+      "class": "DELISTED_TO_OTC_SEC_EVIDENCE"
     },
     {
       "securityId": "ref_SNBR",
@@ -10923,18 +11003,18 @@
     },
     "eligibilityFlips": {
       "total": 225,
-      "approved": 205,
-      "notApproved": 20
+      "approved": 208,
+      "notApproved": 17
     },
     "deactivations": {
       "total": 104,
-      "approved": 86,
-      "notApproved": 18
+      "approved": 87,
+      "notApproved": 17
     },
     "canonicalIdChanges": {
       "total": 87,
-      "approved": 60,
-      "notApproved": 27
+      "approved": 63,
+      "notApproved": 24
     },
     "tickerChanges": {
       "total": 0,
