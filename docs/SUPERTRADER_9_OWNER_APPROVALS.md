@@ -210,7 +210,7 @@ Die alte Quant-Sitzung wird archiviert. Was eine neue Quant-Sitzung übernimmt: 
 | Konflikte | keine | keine |
 | Lokal allein | Supertrader 950/0, Core 300/0, Gate A OK | Supertrader 943/**2**, Core 300/0 |
 | Lokal zusammen | Supertrader 950/0, Core 300/0 | |
-| CI | Core, CI Config, FX grün; Supertrader Quality Gates siehe PR | Core **rot** mit genau denselben 2 Tests |
+| CI | **vollständig grün** (Core, CI Config, FX, Supertrader Quality Gates 41085275158) | Core **rot** mit genau denselben 2 Tests |
 
 Die 2 roten Tests in #1146 allein sind die dokumentierte Reihenfolge, kein neuer Fehler: `SF2-LEGACY-ISOLATION` und `SF-PRODUCT-NO-RUN-INTEGRATION` (`SF8_DOMAIN_ACTIVATION_NOT_ALLOWED`). Erst der Registry-Guard aus #1137 lässt den Dauerbetrieb ohne `activation` zu. Auf `main` sind beide grün (943/0). Deshalb gilt: **#1137 → #1146 → Variable `SF8_AUTO_PUBLISH=true`** (`docs/SUPERTRADER_9_DAILY_OPERATIONS.md`). Jeder dieser Schritte ist eine Owner-Freigabe. Der Vertrag bleibt fail closed: Ein roter Lauf überschreibt keinen guten Stand, DQ-SF8-1..8 sind unverändert.
 
