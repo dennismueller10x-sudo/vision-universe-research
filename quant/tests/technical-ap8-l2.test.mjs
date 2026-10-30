@@ -61,6 +61,8 @@ test("L2: Datensatz - Spalte = Rechnung auf den veroeffentlichten Bars, eingefro
     const inst = JSON.parse(gunzipSync(readFileSync(join(dir, file)))).instruments || {};
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
+      /* nur Titel, deren Zeile auf denselben Bars beruht (Datensatz und Materialisierung koennen einen Tag auseinander liegen) */
+      if (c.asOf[i] !== String(x.bars.timestamps[x.bars.timestamps.length - 1]).slice(0, 10)) continue;
       const b = x.bars, t = b.close.length - 1, s = I.compute(b, "sma", { period: 200 }).values;
       assert.equal(c.sma200Rising[i], t >= 220 ? s[t] > s[t - 21] : null, tk);
       checked++;
