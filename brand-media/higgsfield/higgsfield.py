@@ -23,6 +23,8 @@ APPROVAL_PHRASE = "APPROVE-ONE-PAID-GENERATION"
 WAN_APPROVAL_PHRASE = "APPROVE-WAN-3.0-ONE-GENERATION-NO-ESTIMATE"
 WAN_THREE_SHOTS_APPROVAL_PHRASE = "APPROVE-WAN-3.0-THREE-TEXT-TO-VIDEO-SHOTS"
 WAN_SINGLE_T2V_APPROVAL_PHRASE = "APPROVE-WAN-3.0-SINGLE-CONTINUOUS-T2V-NO-ESTIMATE"
+WAN_I2V_SHOT_APPROVAL_PHRASE = "APPROVE-WAN-3.0-I2V-SHOT-NO-ESTIMATE"
+WAN_I2V_SHOT_DURATION = (3, 15)
 
 
 class HiggsfieldError(RuntimeError):
@@ -266,6 +268,88 @@ def retrieve_completed_job(args):
     print(json.dumps({"request_id": args.request_id, "status": "completed", "video_file": str(video_path), "actual_cost": None}))
 
 
+def approved_wan_reference(model, path):
+    """Return the registry entry for a SHA-256-verified Wan production reference."""
+    candidate = Path(path)
+    if candidate.is_absolute() or ".." in candidate.parts or not candidate.is_file():
+        raise HiggsfieldError("Reference image file is missing")
+    entry = next((item for item in model.get("approved_production_references", [])
+                  if candidate.as_posix() == item["path"]), None)
+    if entry is None:
+        raise HiggsfieldError("Image-to-video accepts only a registered production reference")
+    digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
+    if digest != entry["sha256"]:
+        raise HiggsfieldError("Registered production reference checksum mismatch")
+    return {"asset_id": entry["asset_id"], "path": entry["path"], "sha256": digest}
+
+
+def produce_i2v_shot(args):
+    """Submit and retrieve exactly one approved Wan I2V shot from registered start (and optional end) frames."""
+    if args.model != "alibaba/wan-3.0" or args.operation != "image_to_video":
+        raise HiggsfieldError("Image-to-video shots are restricted to Wan 3.0 image-to-video")
+    low, high = WAN_I2V_SHOT_DURATION
+    if isinstance(args.duration, bool) or not isinstance(args.duration, int) or not low <= args.duration <= high:
+        raise HiggsfieldError(f"Image-to-video shots must last {low} to {high} seconds")
+    if (args.resolution, args.aspect_ratio, args.native_audio) != ("1080p", "9:16", "true"):
+        raise HiggsfieldError("Image-to-video shots require 1080p, 9:16, and native audio")
+    if args.approval != WAN_I2V_SHOT_APPROVAL_PHRASE:
+        raise HiggsfieldError("Explicit approval for exactly one Wan image-to-video shot is required")
+    if os.environ.get("GITHUB_RUN_ATTEMPT", "1") != "1":
+        raise HiggsfieldError("Image-to-video shots are single-attempt; workflow reruns are blocked")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not run_id:
+        raise HiggsfieldError("Image-to-video shots require a unique GitHub Actions run ID")
+
+    model = get_model(args.model)
+    endpoint = validate(model, "image_to_video", args.prompt, args.duration, "1080p", "9:16", args.reference)
+    start = approved_wan_reference(model, args.reference)
+    end = approved_wan_reference(model, args.end_reference) if args.end_reference else None
+    params = build_params(model, "image_to_video", args.prompt, args.duration, "1080p", "9:16", True)
+    client = Client(os.environ.get("HIGGSFIELD_API_KEY"))
+    params["image_url"] = client.upload_image(start["path"])
+    if end:
+        params["end_image_url"] = client.upload_image(end["path"])
+    out = Path(args.output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    manifest_path = out / "i2v-shot-manifest.json"
+    print(json.dumps({"approval_gate": "passed", "model_id": args.model, "operation": "image_to_video",
+                      "start_image": start["asset_id"], "end_image": end["asset_id"] if end else None,
+                      "price_estimate": "not_requested", "generation_submissions": 1,
+                      "submission_mode": "single_attempt_no_retry"}))
+    request_id = client.submit(endpoint, params, idempotency_key=f"vu-higgsfield-{run_id}-i2v-shot")
+    item = {"request_id": request_id, "model_id": args.model, "operation": "image_to_video",
+            "prompt": args.prompt, "parameters": {k: v for k, v in params.items() if not k.endswith("image_url")},
+            "reference_image": start, "end_reference_image": end,
+            "estimate": None, "actual_cost": None, "status": "submitted", "social_upload": False}
+
+    def write_manifest():
+        manifest_path.write_text(json.dumps(safe_metadata(item, secret=os.environ.get("HIGGSFIELD_API_KEY")), indent=2) + "\n", encoding="utf-8")
+
+    write_manifest()
+    print(json.dumps({"request_id": request_id, "status": "submitted", "generation_submissions": 1}))
+    result = None
+    for delay in (2, 3, 5, 8, 10, 15, 20, 30):
+        result = client.status(request_id)
+        if result["status"] in TERMINAL:
+            break
+        time.sleep(delay)
+    if not result or result["status"] not in TERMINAL:
+        item["status"] = result["status"] if result else "submitted"
+        write_manifest()
+        print(json.dumps({"request_id": request_id, "status": item["status"], "generation_submissions": 1}))
+        return
+    if result["status"] != "completed" or not isinstance(result.get("video"), dict) or not result["video"].get("url"):
+        item["status"] = result["status"]
+        write_manifest()
+        raise HiggsfieldError(f"Generation ended with status {result['status']}; no retry submitted")
+    video_path = out / f"{request_id}.mp4"
+    client.download(result["video"]["url"], video_path)
+    item.update({"status": "completed", "result_file": str(video_path), "hyperframes_ready": True})
+    write_manifest()
+    print(json.dumps({"request_id": request_id, "status": "completed", "video_file": str(video_path),
+                      "generation_submissions": 1, "actual_cost": None}))
+
+
 def build_params(model, operation, prompt, duration, resolution, aspect_ratio, native_audio):
     params = {"prompt": prompt, "duration": duration}
     # Seedance 2.5 image-to-video derives framing from image_url and rejects this field.
@@ -405,6 +489,8 @@ def run(args):
         return produce_three_text_shots(args)
     if args.action == "produce-single-t2v":
         return produce_single_text_video(args)
+    if args.action == "produce-i2v-shot":
+        return produce_i2v_shot(args)
     model = get_model(args.model)
     endpoint = validate(model, args.operation, args.prompt, args.duration, args.resolution, args.aspect_ratio, args.reference)
     if model["model_id"] == "alibaba/wan-3.0" and args.action == "generate":
@@ -482,7 +568,7 @@ def run(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--action", choices=("estimate", "generate", "produce", "produce-three", "produce-single-t2v", "status"), required=True)
+    parser.add_argument("--action", choices=("estimate", "generate", "produce", "produce-three", "produce-single-t2v", "produce-i2v-shot", "status"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--operation", choices=("text_to_video", "image_to_video", "reference_to_video"), required=True)
     parser.add_argument("--prompt", required=True)
@@ -491,6 +577,7 @@ def main(argv=None):
     parser.add_argument("--aspect-ratio", default="16:9")
     parser.add_argument("--native-audio", choices=("true", "false"), default="true")
     parser.add_argument("--reference", default="")
+    parser.add_argument("--end-reference", default="")
     parser.add_argument("--asset-id", default="")
     parser.add_argument("--budget-usd", default="")
     parser.add_argument("--approval", default="")
