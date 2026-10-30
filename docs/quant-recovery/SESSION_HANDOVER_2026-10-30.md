@@ -6,7 +6,7 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 
 ## 1. Stand `main` und PRs
 
-`main` enthält #1132 (`adbc2f0444`) und #1133 (`5e9d2b9d5a`), dazu automatische Datenläufe und PRs anderer Sitzungen.
+`main` enthält #1132 (`adbc2f0444`), #1133 (`5e9d2b9d5a`) und #1140 (`99af26c091`), dazu automatische Datenläufe und PRs anderer Sitzungen.
 
 | PR | Inhalt | Stand |
 |---|---|---|
@@ -18,7 +18,7 @@ Version 1.0.0 dieser Übergabe. Sie ersetzt keine Fachdokumente, sondern sagt, w
 | #1133 | Backtest-Engineering P2 (Vertrag v2, Population, Kennzahlen, Setup-OOS, Runner, 16 Demos) | **gemergt** `5e9d2b9d5a` (30.10.2026, nach Owner-Freigabe; vorher main, Checks, Reviews, Scope und Konflikte geprüft) |
 | #1138 | interne Backtest-Vorschau (Basis seit dem Merge von #1133: `main`) | Draft; standardmäßig aus, nicht verdrahtet |
 | #1143 | Security Master 1.1.0→1.3.0: exakte, quellengebundene Freigabeliste (Gate-Schema 1.1.0, Belege je Eintrag; Branch `claude/sm130-approval-list-4ho3rd`) | Draft. Simulation: 1.085/1.144 Änderungen freigabefähig, Rest unter den unveränderten Grenzen außer G6 OKE → BLOCKED bis Owner-Entscheidung a/b/c |
-| #1140 | Archiv 1.2.0, Runner-Restore-Schritt, Entscheidungsvorlage, diese Übergabe (Branch `claude/vision-quant-v10-backtest-4ho3rd`) | Draft |
+| #1140 | Archiv 1.2.0 (Manifest, Werkzeuge, Runner-Restore-Schritt), Entscheidungsvorlage, diese Übergabe | **gemergt** `99af26c091` (Owner-Freigabe 30.10.). Ersetzt **nicht** das Backup |
 
 PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachholdrift, Freigabeschema 1.1.0), #1137 (Supertrader 9, automatischer SF8-Tageslauf). Beide sind offen.
 
@@ -90,24 +90,36 @@ Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](v1
 
 **Eine dauerhafte Sicherung ist damit NICHT erreicht.** Erst Upload, `[v13-archive:verify]` und `[v13-archive:restore]` mit grünem Ergebnis gelten als Abschluss.
 
-### 4.3 Blocker und Owner-Schritte (nur UI)
+### 4.3 Blocker, Transferweg und Owner-Schritte
 
-Ursache: Die Sitzungsumgebung erreicht `*.r2.cloudflarestorage.com` nicht. Es gibt keinen anderen autorisierten privaten Weg vom Container zum Runner. Der einzige Kanal wäre öffentlicher GitHub-Speicher (Git, Artefakte, Releases), und den hat der Owner ausgeschlossen.
+**Stand 30.10.2026, 09:40 UTC:** Der Upload ist nicht erfolgt. Die Sitzungsumgebung erreicht den R2-Host nicht: `curl` auf `*.r2.cloudflarestorage.com` liefert 000. Weitere Uploadversuche sind wirkungslos, bis die Netzwerkfreigabe besteht.
 
-1. **Netzwerk:** claude.ai/code → Umgebung dieser Sitzung (Menü im Sitzungstitel) → *Edit* → *Network access* → `*.r2.cloudflarestorage.com` zu den erlaubten Domains hinzufügen.
-2. **Secret:** GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*:
-   - Name: `V13_ARCHIVE_PRIVATE_KEY`;
-   - Wert: vollständiger PEM-Inhalt der Archivschlüsseldatei, die der Owner aus dieser Sitzung bekommen hat (`archive-priv.pem`).
-   
-   Zusätzlich offline aufbewahren.
-3. Danach dieser Sitzung (oder einer neuen, solange der Container besteht) schreiben: „R2 frei“. Ablauf:
-   1. `[v13-archive:keycheck]`;
-   2. `[v13-archive:put]`, dann `transfer.sh put`;
-   3. `[v13-archive:verify]`;
-   4. `[v13-archive:restore]` (unabhängig auf dem Runner);
-   5. Ergebnis in der README eintragen.
+**Transferweg** (vorhanden und geprüft, ohne öffentliche Ablage der Daten):
 
-**Wichtig:** Diese Schritte müssen geschehen, **bevor** der Container dieser Sitzung abgebaut wird. Das passiert beim Archivieren des Chats oder nach Inaktivität. Danach ist `archive-out/` verloren, und es bleibt nur 4.4.
+| Schritt | Wer | Was | Geprüft |
+|---|---|---|---|
+| 1 | Workflow `quant-v13-archive.yml` auf einem `claude/**`-Branch, Marke `[v13-archive:put]` | Liest R2 nur mit den bestehenden Secrets `VU_HISTORY_S3_*`, prüft Nullkostengrenze und freien Präfix, erzeugt 3 h gültige PUT-URLs für die 8 Objekte und das Manifest. Die URLs sind mit `archive-pub.pem` verschlüsselt (AES-256 + RSA-OAEP) und liegen als Artefakt mit 1 Tag Aufbewahrung vor. | `usage` lief (Run 40943780307) |
+| 2 | Sitzung | Artefakt über `gh api` laden. Das Artefakt enthält nur verschlüsselte URLs. | Download aus dem Container funktioniert (30.10.) |
+| 3 | Sitzung | `transfer.sh put`: entschlüsselt die URLs nur im Speicher und lädt die 8 verschlüsselten Teile plus Manifest direkt nach R2. Jede Datei wird gegen SHA-256 geprüft. | **blockiert**: Container → `*.r2.cloudflarestorage.com` |
+| 4 | Workflow, Marke `[v13-archive:verify]` | jedes Objekt aus R2 lesen, SHA-256 gegen das Manifest | – |
+| 5 | Workflow, Marke `[v13-archive:restore]` | unabhängiger Restore auf dem Runner: aus R2 laden, mit `V13_ARCHIVE_PRIVATE_KEY` entschlüsseln, Chiffre-, Klartext- und Dateihashes aller 8 Teile prüfen | braucht das Secret |
+
+Das Archiv 1.2.0 hat **8** verschlüsselte Teile (die 7 aus 1.1.0, neu verschlüsselt, plus `v10-factor-panel`). Die Teile aus 1.1.0 existieren nicht mehr.
+
+**Owner-Schritte (nur UI, einmalig):**
+1. **Netzwerkfreigabe:** claude.ai/code → diese Sitzung → Umgebungsmenü in der Titelleiste → *Edit* → *Network access*.
+   - Unter *Allowed domains* `*.r2.cloudflarestorage.com` eintragen; *Allow package managers* angehakt lassen.
+   - Alternativ eine breitere Zugriffsstufe wählen.
+   - Anleitung: https://code.claude.com/docs/en/cloud-environments#network-access
+2. **Secret** (nur für Schritt 5): GitHub-Repo → *Settings* → *Secrets and variables* → *Actions* → *New repository secret*.
+   - Name: `V13_ARCHIVE_PRIVATE_KEY`.
+   - Wert: vollständiger PEM-Inhalt der Datei `archive-priv.pem`, die der Owner aus dieser Sitzung bekommen hat.
+   - Zusätzlich offline aufbewahren. Nie in Chat, Git oder Logs.
+3. **In dieser Sitzung** „R2 frei“ schreiben. Die Sitzung führt dann Schritte 1–5 aus, trägt das Ergebnis in README und Übergabe ein und meldet es.
+
+**Wichtig:** Die verschlüsselten Teile liegen nur im Container **dieser** Sitzung, unter `scratchpad/archive-out/` (Hashes in 4.1, zuletzt am 30.10. um 09:10 UTC geprüft, 8/8 gleich). Eine neue Sitzung hat einen neuen Container ohne diese Dateien. Der Upload muss deshalb in dieser Sitzung laufen, bevor sie archiviert oder wegen Inaktivität abgebaut wird. Wird sie vorher archiviert, bleibt nur der Wiederherstellungsweg in 4.4.
+
+Wirkt die Netzwerkfreigabe nicht in der laufenden Sitzung, bleibt ein Neubau des Archivs in einer neuen Sitzung (4.4, mit neuem Abruf). Er wird gegen die Registerhashes geprüft.
 
 ### 4.4 Reproduzierbarer Wiederherstellungsweg ohne Archiv
 
@@ -142,7 +154,7 @@ Teststand:
 |---|---|
 | `node --test quant/tests/backtest-*.test.mjs` | 103/103 |
 | `node --test "quant/tests/*.test.mjs"` (#1138, `cf328315a6`) | 3.654 bestanden, 0 fehlgeschlagen, 19 übersprungen |
-| security-master (#1143) | 76/76 |
+| security-master (#1143, `651732d462`) | 76/76; `core` 300/300 |
 | `v13-archive` und `secrets` | 11/11 |
 | `verify-backtest-preview.py` | 16 Fälle, 0 Befunde |
 | `core` auf `main` | 1 rot, DQ-SF8-8 (siehe 6.1) |
@@ -172,13 +184,29 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
   Die Grenzen bleiben unverändert (G6/G7/G9 werden nicht pauschal erhöht).
 - **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR #1143, Branch `claude/sm130-approval-list-4ho3rd`; Prüfdokument `docs/data/security-master/V130_APPROVAL_LIST_REVIEW.md`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
-- **Befund der Liste:** canonical_id 60/83 freigabefähig (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.; nicht: 15 Altzeile weg, 4 doppelt aktiv, CAM, TRT/TRUE/APAD); Deaktivierungen 84/100 (nicht: EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft); Eignung: die 82 zusätzlichen sind nur Folgen; Namen 591/592 (573 neu aus der SEC, 18 Umfirmierungen; nicht: XRPN). Owner-Entscheidung OKE: a) Korrektur im Erzeuger (empfohlen), b) `--accept-duplicate`, c) abwarten.
-- **Überschneidung:** #1136 (andere Sitzung) führt ebenfalls ein Freigabeschema 1.1.0 ein. Vor einem Merge ist ein Schema zu wählen.
+- **Befund der Liste:** 1.085 von 1.144 Änderungen sind freigabefähig.
+  - canonical_id: 60/83 (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.); nicht freigabefähig sind 15 verschwundene Altzeilen, 4 doppelt aktive Zeilen, CAM und TRT/TRUE/APAD.
+  - Deaktivierungen: 84/100; nicht freigabefähig sind EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft.
+  - Eignung: Die 82 zusätzlichen Wechsel folgen nur aus anderen Änderungen.
+  - Namen: 591/592 (573 neu aus der SEC, 18 Umfirmierungen); nicht freigabefähig ist XRPN.
+- **Owner-Entscheidung 30.10.:** #1143 wird gegenüber #1136 bevorzugt. Keine gleichzeitige Integration, keine Ausnahme-Freigabe für OKE.
+- **OKE untersucht** (Prüfdokument, Abschnitt 4, SEC-Quellen):
+  - ONEOK, Inc., CIK 1039684, NYSE.
+  - Holding-Reorganisation am 10.09.2026 (8-K12B). Nachfolge-Emittent nach Rule 12g-3(a), neue CUSIP, Handel ohne Unterbrechung unter OKE.
+  - Ticker-Wiederverwendung nur innerhalb von ONEOK (1997: CIK 74154 → 1039684).
+  - `ref_OKE` läuft durchgehend.
+  - Die Identität ist eindeutig, aber mit den bestehenden Mitteln **nicht regelkonform auflösbar**: Der Erzeuger führt beide Tiingo-Zeilen. Ein Zurückhalten im Gate wäre die abgelehnte Ausnahme unter anderem Namen.
+  - Der Einzelfall bleibt ausgeschlossen. Der Lauf bleibt BLOCKED an G6 (Simulation: sonst alles unter den Grenzen, 0 ungenutzte Einträge).
+  - **Empfohlener nächster PR:** im Erzeuger `quant/engines/us-security-master.js` identische canonical_id zusammenführen (gleicher Ticker, gleiche Börse, gleicher Beginn, gleiche Gattung und Währung; das jüngste Ende gewinnt), mit Vorher/Nachher-Vergleich. Betroffen sind 8 securityIds: OKE, BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B.
+  - Näherung ohne die inaktive OKE-Zeile: Die unveränderte Liste ergibt PASS.
+- **Überschneidung #1136:** Beide PRs ändern Gate und Workflow, mit gleichem Schema-Namen und anderem Format. #1136 übernimmt OKE (`--include-duplicates`) und ist auf #1100/#1101 gestapelt, die nicht in `main` sind. Unabhängig davon wären nur die Freeze-Manifeste (#1100), die Belege aus #1101 und der Alarm-Job SMW-15 (Tabelle im Prüfdokument, Abschnitt 11).
+- **Teststand #1143** (Kopf `651732d462`): security-master 76/76, `core` 300/300, Isolation sauber.
 - **Reihenfolge:**
-  1. Review der Liste;
-  2. eigene Owner-Freigabe;
-  3. regulärer 1.3.0-Lauf;
-  4. erst dann #1119.
+  1. Owner-Freigabe der Liste.
+  2. Erzeuger-PR für die Doppelungen.
+  3. Neuer Probelauf `commit=false` (Liste bei Drift mit dem Builder neu), erwartet PASS.
+  4. `commit=true` am selben Tag.
+  5. Erst nach erfolgreicher Schutzprüfung und ausdrücklicher Abschlussfreigabe #1119 und die echte 1.3.0-Umstellung.
 
 ### 6.3 Owner-Entscheidungen ohne Frist
 
@@ -190,7 +218,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
 1. **Archiv:** Owner-Schritte 4.3, dann Upload, Verify und Runner-Restore. Erst danach gilt die Sicherung als abgeschlossen.
 2. **#1133:** erledigt (gemergt `5e9d2b9d5a`); #1138 steht auf `main`.
-3. **Security Master:** Review der Freigabeliste, mit #1136 abstimmen, Owner-Freigabe, 1.3.0-Lauf, dann #1119.
+3. **Security Master:** Owner-Freigabe der Liste #1143, Erzeuger-PR für identische canonical_id (OKE + 7), Probelauf, dann `commit=true`; #1119 erst nach Abschlussfreigabe. #1136 nicht zusammen mit #1143 integrieren.
 4. Owner-Entscheidungen aus 6.3, sobald gewünscht. Keine Normänderung ohne Freigabe.
 
 ## 8. Einstieg für eine neue Sitzung
