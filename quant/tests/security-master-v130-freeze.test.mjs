@@ -75,41 +75,57 @@ test('SMF-5 · nach dem Wechsel: neue Generation in neuer Wurzel, alte bytegleic
  const oldPointer=fs.readFileSync(join(oldRoot,'release.json'));
  fs.writeFileSync(join(fixture,MASTER),JSON.stringify({...prev,version:next.version,rows:next.rows}));
  // ein Erzeuger, der in die eingefrorene Wurzel schreibt, wird nach dem Lauf erkannt
- assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bad',materializeFn:o=>{fs.writeFileSync(join(oldRoot,'release.json'),'{}');return {generation:'0'.repeat(64)};}}),/CHANGED_DURING_BUILD/);
+ // Sperrliste ist Pflicht und an alten und tatsächlich eingesetzten Stamm gebunden (Review #1136)
+ const none={ids:[],sha256:'e'.repeat(64),prevMasterSha256:manifest.release.masterHash,nextMasterSha256:sha(fs.readFileSync(join(fixture,MASTER),'utf8'))};
+ globalThis.__smfNone=none;
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-nobl'}),/BLOCKLIST_REQUIRED/);
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-nobl',blocklist:{...none,prevMasterSha256:'f'.repeat(64)}}),/BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER/);
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-nobl',blocklist:{...none,nextMasterSha256:'f'.repeat(64)}}),/BLOCKLIST_NOT_FROM_COMMITTED_MASTER/);
+ assert.equal(fs.existsSync(newRoot+'-nobl'),false,'ohne gültige Sperrliste wird nichts gebaut');
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bad',blocklist:none,materializeFn:o=>{fs.writeFileSync(join(oldRoot,'release.json'),'{}');return {generation:'0'.repeat(64)};}}),/CHANGED_DURING_BUILD/);
  fs.writeFileSync(join(oldRoot,'release.json'),oldPointer);
- const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot});
+ const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot,blocklist:none});
  assert.notEqual(lineage.successor.generation,old.generation);assert.equal(lineage.successor.masterVersion,'us-security-master-1.3.0');assert.equal(lineage.predecessor.generation,old.generation);
  assert.deepEqual(lineage.frozenRootVerified,{before:'INTACT',after:'INTACT'});assert.equal(lineage.publiclyActivated,false);assert.equal(lineage.readerSwitch,'OWNER_STEP_NOT_PERFORMED');
  assert.deepEqual(fs.readFileSync(join(oldRoot,'release.json')),oldPointer,'alter Zeiger unverändert');assert.equal(F.verify({generations:oldRoot,manifest}).state,'INTACT');
  const approved=JSON.parse(fs.readFileSync(join(root,'docs/data/security-master/v130-approved-changes.json'),'utf8')).instrumentTypeChanges.map(x=>x.securityId);
  assert.ok(approved.includes(LOST));
- const cmp=F.compare({frozen:oldRoot,output:newRoot,approvedIds:approved});
+ const cmp=F.compare({frozen:oldRoot,output:newRoot,approvedIds:approved,blocklist:none});
  assert.equal(cmp.state,'ONLY_APPROVED_CHANGES',JSON.stringify(cmp.unexpected));assert.deepEqual(cmp.changed.map(x=>x.securityId),[LOST]);assert.equal(cmp.changed[0].class,'NEWLY_BLOCKED');
  assert.equal(cmp.classes.SAME_FINANCIALS,3);
  // ohne Freigabeliste ist dieselbe Änderung unerwartet (fail closed)
- assert.equal(F.compare({frozen:oldRoot,output:newRoot}).state,'UNEXPECTED_CHANGES');
+ assert.equal(F.compare({frozen:oldRoot,output:newRoot,blocklist:none}).state,'UNEXPECTED_CHANGES');
+ assert.throws(()=>F.compare({frozen:oldRoot,output:newRoot,approvedIds:approved}),/BLOCKLIST_REQUIRED/);
+ assert.throws(()=>F.compare({frozen:oldRoot,output:newRoot,approvedIds:approved,blocklist:{...none,sha256:'d'.repeat(64)}}),/BLOCKLIST_NOT_USED_FOR_BUILD/);
  // zweiter Lauf in dieselbe neue Wurzel ist erlaubt (Wiederaufnahme), eine eingefrorene Generation darin nie
  fs.cpSync(join(oldRoot,old.generation),join(newRoot+'-copy',old.generation),{recursive:true});
- assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-copy'}),/FROZEN_GENERATION_IN_OUTPUT/);
+ assert.throws(()=>F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-copy',blocklist:none}),/FROZEN_GENERATION_IN_OUTPUT/);
 });
 
 test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, der Vergleich verlangt genau das, Formfehler brechen ab',()=>{
- const STOP='ref_MSFT',bl=join(folder,'identity-blocklist.json');
- fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}]}));
- const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bl',blocklist:F.loadBlocklist(bl)});
- assert.deepEqual(lineage.identityBlocklist.excludedFromScope,[STOP]);assert.equal(lineage.identityBlocklist.count,1);assert.match(lineage.identityBlocklist.sha256,/^[0-9a-f]{64}$/);
+ const STOP='ref_MSFT',bl=join(folder,'identity-blocklist.json'),none=globalThis.__smfNone;
+ const write=(o)=>fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,prevMasterSha256:none.prevMasterSha256,nextMasterSha256:none.nextMasterSha256,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}],...o}));
+ write({});const list=F.loadBlocklist(bl);
+ const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bl',blocklist:list});
+ assert.deepEqual(lineage.identityBlocklist.excludedFromScope,[STOP]);assert.equal(lineage.identityBlocklist.count,1);assert.equal(lineage.identityBlocklist.sha256,list.sha256);
  assert.equal(fs.existsSync(join(newRoot+'-bl',lineage.successor.generation,'listings',STOP)),false,'gesperrte ID nicht gebaut');
  assert.equal(F.verify({generations:oldRoot,manifest}).state,'INTACT');
  const approved=JSON.parse(fs.readFileSync(join(root,'docs/data/security-master/v130-approved-changes.json'),'utf8')).instrumentTypeChanges.map(x=>x.securityId);
- const ok=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved,blockedIds:[STOP]});
+ const ok=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved,blocklist:list});
  assert.equal(ok.state,'ONLY_APPROVED_CHANGES',JSON.stringify(ok.unexpected));assert.deepEqual(ok.changed.find(x=>x.securityId===STOP),{securityId:STOP,class:'MISSING_IN_NEW',approved:true,reasons:null});
- // ohne Sperrliste ist das Fehlen unerwartet; eine Freigabe ersetzt die Sperre nicht
- assert.equal(F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved}).state,'UNEXPECTED_CHANGES');
- assert.equal(F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:[...approved,STOP]}).state,'UNEXPECTED_CHANGES');
- // gesperrt, aber gebaut (Neubau ohne Sperrliste) = unerwartet, auch wenn die ID freigegeben wäre
- const present=F.compare({frozen:oldRoot,output:newRoot,approvedIds:[...approved,STOP],blockedIds:[STOP]});
- assert.equal(present.state,'UNEXPECTED_CHANGES');assert.equal(present.unexpected.find(x=>x.securityId===STOP).class,'BLOCKLISTED_BUT_PRESENT');
- for(const bad of [{},{schema:F.BLOCKLIST_SCHEMA,entries:[]},{schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:STOP,reason:'x'},{securityId:STOP,reason:'y'}]},{schema:F.BLOCKLIST_SCHEMA,entries:[{securityId:'',reason:'x'}]},{schema:'x',entries:[{securityId:STOP,reason:'x'}]}]){
-  fs.writeFileSync(bl,JSON.stringify(bad));assert.throws(()=>F.loadBlocklist(bl),/BLOCKLIST_INVALID/);
+ // eine andere Sperrliste als beim Bau gilt nicht; eine Freigabe ersetzt die Sperre nicht
+ assert.throws(()=>F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:approved,blocklist:none}),/BLOCKLIST_NOT_USED_FOR_BUILD/);
+ // gebaut ohne diese ID-Sperre (Generation mit leerer Liste) und verglichen gegen eine Liste mit ihr: nicht möglich ohne Bindung
+ assert.throws(()=>F.compare({frozen:oldRoot,output:newRoot,approvedIds:[...approved,STOP],blocklist:list}),/BLOCKLIST_NOT_USED_FOR_BUILD/);
+ // gesperrt, aber vorhanden (Generation nachträglich verändert) = unerwartet, auch mit Freigabe
+ const gen=lineage.successor.generation;fs.cpSync(join(newRoot,JSON.parse(fs.readFileSync(join(newRoot,'release.json'))).generation,'listings',STOP),join(newRoot+'-bl',gen,'listings',STOP),{recursive:true});
+ const present=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:[...approved,STOP],blocklist:list});
+ assert.equal(present.state,'UNEXPECTED_CHANGES');assert.equal(present.unexpected.find(x=>x.securityId===STOP).class,'BLOCKLISTED_BUT_PRESENT');assert.equal(present.classes.BLOCKLISTED_BUT_PRESENT,1);
+ // eine ID nur in der neuen Generation ist nie still
+ fs.rmSync(join(newRoot+'-bl',gen,'listings',STOP),{recursive:true});fs.cpSync(join(newRoot+'-bl',gen,'listings','ref_XOM'),join(newRoot+'-bl',gen,'listings','ref_ZZZZ'),{recursive:true});
+ const extra=F.compare({frozen:oldRoot,output:newRoot+'-bl',approvedIds:[...approved,'ref_ZZZZ'],blocklist:list});
+ assert.equal(extra.state,'UNEXPECTED_CHANGES');assert.equal(extra.unexpected.find(x=>x.securityId==='ref_ZZZZ').class,'NEW_IN_NEW');
+ for(const bad of [{schema:'x'},{entries:[]},{entries:[{securityId:STOP,reason:'x'},{securityId:STOP,reason:'y'}]},{entries:[{securityId:'',reason:'x'}]},{prevMasterSha256:'kurz'},{nextMasterSha256:undefined}]){
+  write(bad);assert.throws(()=>F.loadBlocklist(bl),/BLOCKLIST_INVALID/);
  }
 });

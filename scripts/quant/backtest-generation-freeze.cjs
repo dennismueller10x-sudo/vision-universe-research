@@ -6,8 +6,8 @@
    node scripts/quant/backtest-generation-freeze.cjs repo-manifest --out <datei> [--source-commit <sha>]
    node scripts/quant/backtest-generation-freeze.cjs freeze --generations <privat> --out <datei>
    node scripts/quant/backtest-generation-freeze.cjs verify --generations <privat> --manifest <datei>
-   node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-alt> --manifest <datei> --output <privat-neu> [--ids a,b] [--blocklist <identity-blocklist.json>]
-   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei> ...] [--blocklist <datei>] --out <datei>
+   node scripts/quant/backtest-generation-freeze.cjs build-post-switch --frozen <privat-alt> --manifest <datei> --output <privat-neu> --blocklist <identity-blocklist.json> [--ids a,b]
+   node scripts/quant/backtest-generation-freeze.cjs compare --frozen <privat-alt> --output <privat-neu> [--approved <datei> ...] --blocklist <datei> --out <datei>
 
    masterHash bleibt, was er ist (SHA-256 der ganzen Stammdatei, quant/engines/weekly-real-adapter.cjs); dieses Skript
    liest ihn nur aus den Snapshots und ändert keinen Hash-Vertrag. Der Inhalts-Fingerabdruck-Entwurf wird nicht geladen. */
@@ -102,9 +102,13 @@ function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=nu
  if(A.hash(masterBytes)===manifest.release.masterHash)throw Error('MASTER_UNCHANGED_NO_NEW_GENERATION');
  if(fs.existsSync(next)&&manifest.generations.some(g=>fs.existsSync(path.join(next,g))))throw Error('FROZEN_GENERATION_IN_OUTPUT');
  // gleicher Umfang wie die eingefrorene Generation, damit der Vergleich Titel für Titel geht
+ // Pflicht (Review #1136): ohne eine an genau diesen Wechsel gebundene Sperrliste keine neue Generation
+ if(!blocklist||!Array.isArray(blocklist.ids))throw Error('BLOCKLIST_REQUIRED');
+ if(blocklist.prevMasterSha256!==manifest.release.masterHash)throw Error('BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER');
+ if(blocklist.nextMasterSha256!==A.hash(masterBytes))throw Error('BLOCKLIST_NOT_FROM_COMMITTED_MASTER');
  const full=ids||JSON.parse(fs.readFileSync(path.join(old,manifest.release.generation,'snapshot.json'))).input.sources.map(s=>s.securityId);
  // Identitätssperre (Owner 30.10.2026): gesperrte IDs ohne belastbare kanonische Zuordnung gehen nie in die neue Generation
- const blocked=new Set(blocklist?blocklist.ids:[]),scope=full.filter(id=>!blocked.has(id));
+ const blocked=new Set(blocklist.ids),scope=full.filter(id=>!blocked.has(id));
  const run=materializeFn||require('./materialize-real-backtest-read.cjs').materialize;
  const report=run({root,output:next,ids:scope});
  if(manifest.generations.includes(report.generation))throw Error('GENERATION_COLLISION');
@@ -112,7 +116,7 @@ function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=nu
  const lineage={schema:LINEAGE_SCHEMA,predecessor:{generation:manifest.release.generation,masterHash:manifest.release.masterHash,freezeFilesSha256:manifest.filesSha256},
   successor:{generation:report.generation,state:report.state,masterHash:A.hash(masterBytes),masterVersion:master.version,expected:report.expected},
   frozenRootVerified:{before:before.state,after:after.state},publiclyActivated:false,readerSwitch:'OWNER_STEP_NOT_PERFORMED',
-  identityBlocklist:blocklist?{sha256:blocklist.sha256,count:blocked.size,excludedFromScope:full.filter(id=>blocked.has(id))}:null};
+  identityBlocklist:{sha256:blocklist.sha256,count:blocked.size,excludedFromScope:full.filter(id=>blocked.has(id))}};
  fs.writeFileSync(path.join(next,'lineage.json.tmp'),JSON.stringify(lineage,null,1)+'\n');fs.renameSync(path.join(next,'lineage.json.tmp'),path.join(next,'lineage.json'));
  return lineage;
 }
@@ -123,11 +127,17 @@ function loadBlocklist(file){
  const b=fs.readFileSync(file),j=JSON.parse(b);
  if(j.schema!==BLOCKLIST_SCHEMA||!Array.isArray(j.entries)||!j.entries.length)throw Error('BLOCKLIST_INVALID');
  const ids=j.entries.map(e=>e&&e.securityId);if(ids.some(x=>typeof x!=='string'||!x)||new Set(ids).size!==ids.length||j.entries.some(e=>typeof e.reason!=='string'))throw Error('BLOCKLIST_INVALID');
- return {ids,sha256:sha(b)};
+ if(!/^[0-9a-f]{64}$/.test(String(j.prevMasterSha256))||!/^[0-9a-f]{64}$/.test(String(j.nextMasterSha256)))throw Error('BLOCKLIST_INVALID');
+ return {ids,sha256:sha(b),prevMasterSha256:j.prevMasterSha256,nextMasterSha256:j.nextMasterSha256};
 }
 
 /** Vergleich Titel für Titel; Abweichung außerhalb der freigegebenen IDs = UNEXPECTED_CHANGES. */
-function compare({frozen,output,approvedIds=[],blockedIds=[]}){
+function compare({frozen,output,approvedIds=[],blocklist=null}){
+ // Pflicht: dieselbe Sperrliste, mit der die neue Generation gebaut wurde (lineage.json)
+ if(!blocklist||!Array.isArray(blocklist.ids))throw Error('BLOCKLIST_REQUIRED');
+ const lin=path.join(path.resolve(output),'lineage.json');
+ if(!fs.existsSync(lin)||JSON.parse(fs.readFileSync(lin)).identityBlocklist?.sha256!==blocklist.sha256)throw Error('BLOCKLIST_NOT_USED_FOR_BUILD');
+ const blockedIds=blocklist.ids;
  const load=(base)=>{const r=JSON.parse(fs.readFileSync(path.join(base,'release.json')));return {generation:r.generation,dir:path.join(base,r.generation,'listings')};};
  const a=load(path.resolve(frozen)),b=load(path.resolve(output)),approved=new Set(approvedIds),blocked=new Set(blockedIds);
  const read=(dir,id)=>{const f=path.join(dir,id,'summary.json');return fs.existsSync(f)?JSON.parse(fs.readFileSync(f)):null;};
@@ -141,9 +151,11 @@ function compare({frozen,output,approvedIds=[],blockedIds=[]}){
   else c=JSON.stringify(finance(x))===JSON.stringify(finance(y))?'SAME_FINANCIALS':'CHANGED_FINANCIALS';
   // eine gesperrte ID darf nur fehlen; jede andere Abweichung braucht weiter eine Freigabe
   const ok=c==='MISSING_IN_NEW'?blocked.has(id):approved.has(id)&&!blocked.has(id);
-  classes[c]=(classes[c]||0)+1;if(!c.startsWith('SAME')||blocked.has(id))rows.push({securityId:id,class:blocked.has(id)&&c!=='MISSING_IN_NEW'?'BLOCKLISTED_BUT_PRESENT':c,approved:ok,reasons:y?.quality?.exclusionReasons||null});
+  if(blocked.has(id)&&c!=='MISSING_IN_NEW')c='BLOCKLISTED_BUT_PRESENT';
+  classes[c]=(classes[c]||0)+1;if(!c.startsWith('SAME')||blocked.has(id))rows.push({securityId:id,class:c,approved:ok,reasons:y?.quality?.exclusionReasons||null});
  }
- for(const id of fs.existsSync(b.dir)?fs.readdirSync(b.dir).sort():[])if(blocked.has(id)&&!fs.existsSync(path.join(a.dir,id))){classes.BLOCKLISTED_BUT_PRESENT=(classes.BLOCKLISTED_BUT_PRESENT||0)+1;rows.push({securityId:id,class:'BLOCKLISTED_BUT_PRESENT',approved:false,reasons:null});}
+ // IDs nur in der neuen Generation: nie still (gesperrt = gebaut trotz Sperre, sonst neu im Umfang)
+ for(const id of fs.existsSync(b.dir)?fs.readdirSync(b.dir).sort():[])if(!fs.existsSync(path.join(a.dir,id))){const c=blocked.has(id)?'BLOCKLISTED_BUT_PRESENT':'NEW_IN_NEW';classes[c]=(classes[c]||0)+1;rows.push({securityId:id,class:c,approved:false,reasons:null});}
  const unexpected=rows.filter(r=>!r.approved);
  return {schema:COMPARE_SCHEMA,predecessor:a.generation,successor:b.generation,classes,changed:rows,unexpected,state:unexpected.length?'UNEXPECTED_CHANGES':'ONLY_APPROVED_CHANGES'};
 }
@@ -152,16 +164,18 @@ if(require.main===module){
  const [cmd,...args]=process.argv.slice(2),get=k=>args.includes(k)?args[args.indexOf(k)+1]:null;
  const write=(file,o)=>{const p=path.resolve(file);if(['quant/data','discover/data','supertrader/data','social/data'].some(d=>inside(path.join(ROOT,d),p)))throw Error('OUT_IN_GENERATED_DATA_PATH');fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(o,null,1)+'\n');};
  const json=f=>JSON.parse(fs.readFileSync(f,'utf8'));
+ // Schalter mit Wert: fehlt der Wert oder folgt ein weiterer Schalter, Abbruch statt stiller Standard
+ const need=k=>{const v=get(k);if(!v||v.startsWith('--'))throw Error('BLOCKLIST_REQUIRED');return v;};
  try{
   if(cmd==='repo-manifest'){if(!get('--out'))throw Error('OUT_REQUIRED');const m=repoManifest({sourceCommit:get('--source-commit')});write(get('--out'),m);console.log(`[freeze] ${m.frozen.count} Dateien, filesSha256 ${m.frozen.filesSha256}`);}
   else if(cmd==='verify-repo'){const r=verifyRepo(json(get('--manifest')));console.log(JSON.stringify(r));if(r.state!=='INTACT')process.exitCode=1;}
   else if(cmd==='freeze'){if(!get('--out'))throw Error('OUT_REQUIRED');const m=freeze({generations:get('--generations')});write(get('--out'),m);console.log(`[freeze] ${m.count} Dateien, Generation ${m.release.generation}, filesSha256 ${m.filesSha256}`);}
   else if(cmd==='verify'){const r=verify({generations:get('--generations'),manifest:json(get('--manifest'))});console.log(JSON.stringify(r));if(r.state!=='INTACT')process.exitCode=1;}
-  else if(cmd==='build-post-switch'){console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest:json(get('--manifest')),output:get('--output'),ids:get('--ids')?.split(',')||null,blocklist:get('--blocklist')?loadBlocklist(get('--blocklist')):null})));}
+  else if(cmd==='build-post-switch'){console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest:json(get('--manifest')),output:get('--output'),ids:get('--ids')?.split(',')||null,blocklist:loadBlocklist(need('--blocklist'))})));}
   else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');// mehrere --approved (Klassifiziererwechsel und Nachholdrift): jede in der Freigabe genannte securityId gilt als erwartet
   const files=args.flatMap((a,i)=>a==='--approved'?[args[i+1]]:[]);if(files.some(f=>!f||f.startsWith('--')))throw Error('APPROVED_FILE_REQUIRED');
   const ids=files.map(json).flatMap(ap=>['instrumentTypeChanges','eligibilityFlips','canonicalIdChanges','deactivations'].flatMap(k=>(ap[k]||[]).map(x=>x.securityId)));
-  const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:[...new Set(ids)],blockedIds:get('--blocklist')?loadBlocklist(get('--blocklist')).ids:[]});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
+  const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:[...new Set(ids)],blocklist:loadBlocklist(need('--blocklist'))});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
   else throw Error('UNKNOWN_COMMAND');
  }catch(e){console.error(e.message);process.exitCode=2;}
 }

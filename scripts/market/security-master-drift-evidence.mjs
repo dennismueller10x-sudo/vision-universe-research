@@ -112,11 +112,13 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
   for (const x of canonicalIdChanges) if (x.class === "NEW_LISTING_SAME_TICKER") add(x.securityId, "TICKER_REUSE_NEW_LISTING");
   for (const x of instrumentTypeChanges) if (x.class === "ETF_LISTING_SAME_TICKER") add(x.securityId, "TICKER_REUSE_ETF");
   for (const x of canonicalIdChanges) if (x.class === "START_DATE_REVISION" || x.class === "EXCHANGE_AND_START_DATE") add(x.securityId, "START_DATE_CHANGED");
+  // weniger Zeilen je ID: eine mehrdeutige ID würde eindeutig und mit einer Reihe über beide Listings backtestfähig
+  for (const x of canonicalIdChanges) if (x.class === "LISTING_DROPPED") add(x.securityId, "LISTING_DROPPED");
   for (const d of newDuplicateCanonicalIds) for (const r of d.rows) add(r.securityId, "PROVIDER_DUPLICATE_ROW");
   const blocklist = {
     schema: "security-master-identity-blocklist-1.0.0",
     purpose: "Backtest-Identitätssperre: diese securityIds gehen in keine neue Backtest-Generation (backtest-generation-freeze.cjs --blocklist)",
-    measuredOn, prevMasterSha256, probeMasterSha256: nextMasterSha256,
+    measuredOn, prevMasterSha256, nextMasterSha256,
     entries: [...block].sort(([a], [b]) => (a < b ? -1 : 1)).map(([securityId, reason]) => ({ securityId, reason })),
   };
   return {

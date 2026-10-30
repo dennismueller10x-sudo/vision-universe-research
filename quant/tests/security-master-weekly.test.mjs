@@ -355,7 +355,11 @@ test("SMW-13 · Drift-Nachweis: Klassen, Identitätsbefund ohne Freigabe, Doppel
   const reasons = Object.fromEntries(mkY(true).blocklist.entries.map((e) => [e.securityId, e.reason]));
   assert.equal(reasons.ref_C00, "TICKER_REUSE_NEW_LISTING"); assert.equal(reasons.ref_AAA, "PROVIDER_DUPLICATE_ROW"); assert.equal(reasons.ref_C01, undefined, "nur Börsenname");
   assert.equal(mk(false).blocklist.entries.find((e) => e.securityId === "ref_D00").reason, "SERIES_CONTINUES_AFTER_PROVIDER_END");
-  assert.equal(mkY(true).blocklist.schema, "security-master-identity-blocklist-1.0.0");
+  assert.equal(mkY(true).blocklist.schema, "security-master-identity-blocklist-1.0.0"); assert.equal(mkY(true).blocklist.nextMasterSha256, "d".repeat(64));
+  // eine entfallende Zeile macht eine mehrdeutige ID eindeutig: gesperrt (Review #1136)
+  const w = driftCase(); w.x.prevMaster.rows.push(row("C01", { canonical_id: "tiingo:NYSE:C01:2026-01-01", active_status: "INACTIVE", eligible_us_equity: false }));
+  const ew = buildDriftEvidence({ prevMaster: w.x.prevMaster, nextMaster: w.x.nextMaster, prevNames: w.x.prevNames, nextNames: w.x.nextNames, v130: w.ok, seriesEnd: () => null, measuredOn: "2026-10-30", prevMasterSha256: SHA, nextMasterSha256: "d".repeat(64) });
+  assert.equal(ew.blocklist.entries.find((e) => e.securityId === "ref_C01")?.reason, "LISTING_DROPPED");
   assert.ok(!mkY(false).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00")); assert.ok(mkY(true).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00"));
   assert.ok(approved.eligibilityFlips.every((e) => e.from === true && e.to === false)); assert.ok(!approved.eligibilityFlips.some((e) => /^ref_P/.test(e.securityId)), "v130-Wechsel nicht doppelt");
   assert.deepEqual(approved.newDuplicateCanonicalIds, []); assert.deepEqual(mk(true).approved.newDuplicateCanonicalIds, ["tiingo:NYSE:AAA:2000-01-01"]);

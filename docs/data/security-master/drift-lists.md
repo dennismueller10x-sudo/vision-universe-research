@@ -16,7 +16,7 @@ Tickerwiederverwendung (35; in dieser Freigabe): ref_AAAP, ref_ABI, ref_AEC, ref
 
 Doppelungen: in dieser Freigabe
 
-## Backtest-Identitätssperre (71)
+## Backtest-Identitätssperre (72)
 
 Diese IDs gehen in keine neue Backtest-Generation (`identity-blocklist.json`, `backtest-generation-freeze.cjs --blocklist`).
 
@@ -39,6 +39,7 @@ Diese IDs gehen in keine neue Backtest-Generation (`identity-blocklist.json`, `b
 | ref_CAM | TICKER_REUSE_ETF |
 | ref_CCXI | TICKER_REUSE_NEW_LISTING |
 | ref_CHOW | TICKER_REUSE_NEW_LISTING |
+| ref_DBRG_P_H | LISTING_DROPPED |
 | ref_DDC | TICKER_REUSE_NEW_LISTING |
 | ref_DINE | TICKER_REUSE_NEW_LISTING |
 | ref_EDVA | SERIES_CONTINUES_AFTER_PROVIDER_END |

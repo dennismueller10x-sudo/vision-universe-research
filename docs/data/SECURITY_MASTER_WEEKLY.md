@@ -268,7 +268,7 @@ Tests: SMW-12 (Gate), SMW-13 (Klassen), SMW-14 (committete Datei).
 | 14 Fälle mit weiterlaufender Reihe bleiben eigene Identitätsblocker | in keiner Freigabe, zählen gegen die Grenzen (14 ≤ 50); Sperrliste `SERIES_CONTINUES_AFTER_PROVIDER_END` | inaktiv | gesperrt |
 | (Prüfung ergab) keine Zusammenführung über ein gleiches Symbol | 21 IDs mit geändertem Startdatum (`START_DATE_CHANGED`) zusätzlich gesperrt | 13 davon blieben sonst backtestfähig, mit einem anderen Listing unter derselben `securityId` (z. B. `ref_LESL` 2020-10-29 → 2026-10-05, `ref_TRUE` 2000 → 2014). Das Gate kann sie nicht aufhalten (unter der Grenze 25) | **nur die Sperrliste verhindert das**: Sie fehlen in der neuen Generation |
 
-**Was die Sperrliste ist.** `docs/data/security-master/identity-blocklist.json` (Schema `security-master-identity-blocklist-1.0.0`) erzeugt dasselbe Werkzeug: 71 IDs, an denselben Ausgangsstamm gebunden. `backtest-generation-freeze.cjs build-post-switch --blocklist` nimmt diese IDs aus dem Umfang der neuen Generation; `lineage.json` nennt sie. `compare --blocklist` verlangt, dass jede gesperrte ID **fehlt**. Ist sie trotzdem gebaut (`BLOCKLISTED_BUT_PRESENT`), oder fehlt eine ID ohne Sperre, ist das Ergebnis `UNEXPECTED_CHANGES`; eine Freigabe ersetzt die Sperre nicht (SMF-6). Der Stamm selbst bleibt beim Identitätsmodell ADR-001 (`securityId` = Ticker); an Live-Daten (Discover, Supertrader) ändert die Sperre nichts.
+**Was die Sperrliste ist.** `docs/data/security-master/identity-blocklist.json` (Schema `security-master-identity-blocklist-1.0.0`) erzeugt dasselbe Werkzeug: 72 IDs (zusätzlich `LISTING_DROPPED`, z. B. `ref_DBRG_P_H`: Eine entfallende Zeile machte eine mehrdeutige ID sonst eindeutig). Sie ist an den alten Stamm (`prevMasterSha256`) und an den neuen Stamm (`nextMasterSha256`) gebunden. **Pflicht:** `build-post-switch` und `compare` brechen ohne Sperrliste ab (`BLOCKLIST_REQUIRED`). Sie brechen auch ab, wenn die Liste zu einem anderen alten Stamm gehört oder nicht aus dem tatsächlich committeten neuen Stamm erzeugt wurde (`BLOCKLIST_NOT_FROM_COMMITTED_MASTER`), oder wenn `compare` eine andere Liste bekommt als der Bau (`BLOCKLIST_NOT_USED_FOR_BUILD`). Die committete Liste aus dem Probelauf ist deshalb nur der Nachweis. **Nach Lauf 2** wird sie mit `--next` = committeter Stamm neu erzeugt und erst dann verwendet. Neu: Eine ID, die nur in der neuen Generation steht (`NEW_IN_NEW`), ist immer unerwartet. `backtest-generation-freeze.cjs build-post-switch --blocklist` nimmt diese IDs aus dem Umfang der neuen Generation; `lineage.json` nennt sie. `compare --blocklist` verlangt, dass jede gesperrte ID **fehlt**. Ist sie trotzdem gebaut (`BLOCKLISTED_BUT_PRESENT`), oder fehlt eine ID ohne Sperre, ist das Ergebnis `UNEXPECTED_CHANGES`; eine Freigabe ersetzt die Sperre nicht (SMF-6). Der Stamm selbst bleibt beim Identitätsmodell ADR-001 (`securityId` = Ticker); an Live-Daten (Discover, Supertrader) ändert die Sperre nichts.
 
 **Geprüft an Probelauf und Sperrliste (30.10.):**
 
@@ -276,7 +276,7 @@ Tests: SMW-12 (Gate), SMW-13 (Klassen), SMW-14 (committete Datei).
 |---|---|
 | backtestfähige IDs vorher (1.1.0) | 6.397 |
 | nach Wechsel und Drift (Stamm) | 6.163 (−234: 127 aus v130, der Rest Delistings, mehrdeutige Listings, OTC) |
-| davon gesperrt | 13 (geändertes Startdatum) |
+| davon gesperrt | 13 (geändertes Startdatum); `ref_DBRG_P_H` (LISTING_DROPPED) ist im Stamm nicht geeignet (PREFERRED) |
 | **in der neuen Generation** | **6.150** |
 | neu backtestfähig | **0** |
 | backtestfähig mit anderer `canonical_id`, nicht gesperrt | 9, alle **nur Börsenname** bei gleichem Startdatum (z. B. AMEX → NYSE MKT, NYSE → NASDAQ) |
@@ -375,10 +375,11 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
        14 Identitätsbefunde (nicht freigegeben, zählen gegen die Grenzen) zur Kenntnis: ja / nein
        4 Namen SEC → Tiingo-Metadaten und 1 kuratiert → SEC (nicht freigegeben, P5) zur Kenntnis: ja / nein
 [x] Tickerwiederverwendung: 35 IDs nur als mehrdeutig, gesperrt (Owner 30.10.)   [x] ONEOK gesperrt, nicht backtestfähig (Owner 30.10.)
-[ ] identity-blocklist.json geprüft (71 IDs; 13 sonst backtestfähige mit geändertem Startdatum): ja / nein
+[ ] identity-blocklist.json geprüft (72 IDs; 13 sonst backtestfähige mit geändertem Startdatum): ja / nein
 [ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true approved_drift=true: Lauf ______
        Gate PASS, report.approval.applied ____, sonst keine Wechsel über den Grenzen: ____
 [ ] Lauf 2  dieselben Eingaben, commit=true: Lauf ______ (Datenveröffentlichung, nicht umkehrbar außer per Revert)
+[ ] Sperrliste nach Lauf 2 aus dem committeten Stamm neu erzeugt (nextMasterSha256 = committeter Stamm): ____
 [ ] P2 build-post-switch --blocklist identity-blocklist.json: neue Wurzel ____, Generation ____, lineage.json frozenRootVerified INTACT/INTACT, identityBlocklist.count ____
 [ ] P2 compare --approved v130 --approved drift --blocklist identity-blocklist.json: ONLY_APPROVED_CHANGES, unexpected 0, NEWLY_BLOCKED ____, MISSING_IN_NEW (gesperrt) ____: ____
 [ ] Leser auf neue Wurzel umgestellt (eigene Freigabe): ja / nein / später

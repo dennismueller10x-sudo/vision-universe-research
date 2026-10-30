@@ -3,7 +3,7 @@
  "purpose": "Backtest-Identitätssperre: diese securityIds gehen in keine neue Backtest-Generation (backtest-generation-freeze.cjs --blocklist)",
  "measuredOn": "2026-10-30",
  "prevMasterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
- "probeMasterSha256": "335bf70bf57a515e21d9398a18ad9a40cd4019fc64211da9a5a3e2ca58518deb",
+ "nextMasterSha256": "335bf70bf57a515e21d9398a18ad9a40cd4019fc64211da9a5a3e2ca58518deb",
  "entries": [
   {
    "securityId": "ref_AAAP",
@@ -72,6 +72,10 @@
   {
    "securityId": "ref_CHOW",
    "reason": "TICKER_REUSE_NEW_LISTING"
+  },
+  {
+   "securityId": "ref_DBRG_P_H",
+   "reason": "LISTING_DROPPED"
   },
   {
    "securityId": "ref_DDC",
