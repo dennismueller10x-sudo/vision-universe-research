@@ -77,8 +77,7 @@ freigegebene Texte zusätzlich auf Tester. Der Umschalt-PR ändert deshalb nur T
    `LEGAL_VERSION` ohne „entwurf“ (z. B. `vu-recht-2026-11-10-1`), `LEGAL_STATUS = 'freigegeben'`. Das Entwurfsbanner entfällt
    dann automatisch.
 2. **Fassung bestätigen**: `VU_LEGAL_APPROVED = "<LEGAL_VERSION>"` in `[env.production.vars]`.
-3. **Umsatzsteuer ausweisen**: `STRIPE_TAX_MODE = "txr_…"` (Lauf „Konten — Stripe Live einrichten“ mit `tax_rate = true`)
-   oder `"automatic"` ([STEUER.md](STEUER.md)).
+3. **Umsatzsteuer ausweisen**: `STRIPE_TAX_MODE = "automatic"` (Stripe Tax, [STEUER.md](STEUER.md)).
 4. **Checkout öffnen**: `VU_CHECKOUT_ACCESS = "public"`.
 
 Alle vier Punkte in einem PR, den der Owner ausdrücklich freigibt; danach „Konten — vu-account ausrollen (Produktion)“ mit

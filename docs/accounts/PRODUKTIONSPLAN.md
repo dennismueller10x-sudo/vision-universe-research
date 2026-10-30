@@ -29,7 +29,7 @@ In `main`, aber noch nicht ausgerollt (kommt mit dem einen Abschluss-Deploy): DO
 |---|---|---|---|
 | R1 | Rechtliche Abnahme A1–A14 ([RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)) | Rechtsberatung | Entwürfe online lesen, Änderungen mitteilen |
 | R2 | Fehlende Angaben: USt-IdNr. (falls erteilt), Telefon oder anderer schneller Kontaktweg, Datenschutzbeauftragter ja/nein | Owner | mitteilen |
-| S1 | Umsatzsteuer-Ausweis: Steuersatz „USt. 19 %, inklusive, DE“ anlegen **oder** Stripe Tax aktivieren | Owner (Steuerberatung) | Stripe-Dashboard → Produktkatalog → Steuersätze → „Steuersatz erstellen“ (19 %, inklusive, Land DE, Typ USt) → `txr_…` mitteilen. Alternative: Workflow-Option `tax_rate` (kostet einen Lauf – nicht nötig) |
+| S1 | Umsatzsteuer: Stripe Tax Basic eingerichtet (30.10.2026, deutsche Registrierung); Länderfrage und Steuerkategorie bestätigt der Steuerberater | Owner (Steuerberatung) | [STEUER.md](STEUER.md); Einschalten per `STRIPE_TAX_MODE = "automatic"` |
 | S2 | Rechnungsangaben, Support-E-Mail/URL, Logo, Belegversand | Owner | Stripe-Dashboard, Liste in [STEUER.md](STEUER.md) |
 | S3 | Klarna für ein 1-€-Abo behalten? | Owner | Stripe-Dashboard → Zahlungsmethoden (optional) |
 | S4 | Webhook-Ereignisliste sichtbar bestätigen | Owner | Stripe-Dashboard → Entwickler → Webhooks → Endpunkt (1 Minute, statt Prüflauf) |
@@ -41,7 +41,7 @@ In `main`, aber noch nicht ausgerollt (kommt mit dem einen Abschluss-Deploy): DO
 1. **Antworten sammeln** (R1, R2, S1–S3, B1). Kein Lauf.
 2. **Ein Abschluss-PR** (Claude, nur CI, keine Freigabe):
    - offene Stellen in `workers/vu-account/src/legal/texts.mjs` nach Abnahme ersetzen, Impressum-Test anpassen;
-   - `node scripts/account/go-live-config.mjs --legal-version=vu-recht-JJJJ-MM-TT-1 --tax=txr_… --checkout=public
+   - `node scripts/account/go-live-config.mjs --legal-version=vu-recht-JJJJ-MM-TT-1 --tax=automatic --checkout=public
      --brevo-sync=true [--newsletter=true]` – setzt Fassung, Freigabe, Steuer, Checkout und Brevo in einem Schritt und
      prüft wie der Deploy-Workflow; verweigert, solange etwas fehlt;
    - alle Tests lokal und in der CI.
@@ -49,7 +49,7 @@ In `main`, aber noch nicht ausgerollt (kommt mit dem einen Abschluss-Deploy): DO
 4. **Ausrollen automatisch** nach dem Merge („Konten — Produktion automatisch“): Weil sich Checkout-Zugang, Rechtsfreigabe
    und Umsatzsteuer ändern, wartet genau **ein** Job auf deine Freigabe (`account-production`). Das ist die gewollte, letzte
    Freigabe für öffentliche Zahlungen. Voraussetzung: einmalige Einrichtung von `account-auto` ([FREIGABEN.md](FREIGABEN.md)).
-5. **Kontrolle lesend** (kein Lauf): `GET /v1/health` → `checkout: "public"`, `legalApproved: true`, `tax: "txr_…"`,
+5. **Kontrolle lesend** (kein Lauf): `GET /v1/health` → `checkout: "public"`, `legalApproved: true`, `tax: "automatic"`, `stripeTax: "ok"`,
    `newsletterTemplate: "ok"`, `contactSync: true`; `/preise/` ohne „interner Testpreis“; erste echte Bestellung im
    Stripe-Dashboard sichtbar.
 
