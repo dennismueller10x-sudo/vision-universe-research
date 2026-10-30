@@ -277,7 +277,9 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
   assert.deepEqual(SF8_ACTIVATION_STATES, ['PREPARED_DISABLED', 'ACTIVATING']);
   assert.deepEqual(sf8RegistryViolations(txt([other, { ...entry, activation: { state: 'ACTIVATING', decision: 'Owner-Freigabe' } }])), [], 'freigegeben für die erste Veröffentlichung');
   for (const state of ['ACTIVE', 'activating', 'ENABLED', '', null]) assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), String(state));
-  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), 'Dauerbetrieb ohne Feld braucht eine eigene Freigabe');
+  // Dauerbetrieb (V6 e): ohne Feld zulässig; ein vorhandenes, leeres oder unbekanntes Feld nicht
+  assert.deepEqual(sf8RegistryViolations(txt([other, { ...SF8_DOMAIN_PINNED, label: 'x' }])), [], 'Dauerbetrieb ohne activation');
+  for (const activation of [null, {}, { state: undefined }, 'ACTIVATING']) assert.ok(sf8RegistryViolations(txt([{ ...entry, activation }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), JSON.stringify(activation));
   assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: ['scripts/supertrader/source-faithful/product/x.mjs'] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
@@ -324,6 +326,7 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   const manual = at("if: inputs.commit == true && steps.mode.outputs.auto != 'true'"), auto = at("if: steps.mode.outputs.auto == 'true' && steps.contract.outputs.decision == 'PUBLISH'");
   assert.ok(dq > 0 && fpAt > dq && re > fpAt && ct > re && auto > ct && manual > fpAt, 'Reihenfolge DQ → Fingerabdruck → zweiter Lauf → Vertrag → Commit');
   assert.ok(dq < at('actions/upload-artifact'), 'DQ vor Upload');
+  assert.match(code, /registry=false\n\s+if node -e '[^\n]*"supertrader-sf8-candidates"[^\n]*d\.artifact==="\/supertrader\/data\/sf-candidates\/summary\.json" && !d\.activation \? 0 : 1\)'; then registry=true; fi/, 'automatisch nur im Dauerbetrieb (ohne activation), nie mit ACTIVATING');
   assert.match(code, /publication-contract\.mjs --next "\$PUB" --prev supertrader\/data\/sf-candidates[^\n]*\\\n\s+--fingerprint "\$FP" --rebuild-fingerprint "\$FP2" --dq "\$REPORT" --registry-ok "\$registry"/, 'Vertrag mit beiden Fingerabdrücken, DQ und Registry');
   assert.equal((code.match(/rm -rf "\$ziel"/g) || []).length, 2); assert.equal((code.match(/cp -r "\$PUB\/\." "\$ziel\/"/g) || []).length, 2, 'committet wird genau das geprüfte Ergebnis');
   const autoBlock = code.slice(auto, code.indexOf('\n  alarm:'));

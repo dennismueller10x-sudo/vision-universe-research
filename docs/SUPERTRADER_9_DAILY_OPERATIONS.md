@@ -45,20 +45,21 @@ Das vollständige Ergebnis bleibt 14 Tage als CI-Artefakt erhalten, auch bei Rot
 
 | | Prüfung | Grund |
 |---|---|---|
-| C1 | Zwei Läufe derselben Eingaben ergeben denselben Fingerabdruck | „reproduzierbar“ ist im Lauf belegt, nicht angenommen |
+| C1 | Zwei Läufe derselben Eingaben im selben Lauf ergeben denselben Fingerabdruck; `summary.inputs` trägt Eingaben-Fingerabdruck und Quelldateien | belegt die Deterministik des Codes. Eingaben, die vom Repository-Stand abweichen, findet er **nicht**: Beide Läufe lesen denselben Checkout, dieselbe Laufzeit und dasselbe `--previous` |
 | C2 | DQ-SF8-1..8 vollständig, je PASS mit `checked > 0` | doppelt zu Schritt 5, nachweisbar im Record |
 | C3 | `status` = LIVE_NOT_APPROVED / DIAGNOSTIC_NOT_CERTIFIED / LOCKED_FOR_ALL_13 / NONE, 0 `VALIDATED_TRADE_SIGNAL`, dieselben 13 Methoden, alle LIVE_NOT_APPROVED | Der Forschungsstatus kann sich nie automatisch ändern |
 | C4 | Schema, alle `versions` (samt `candidateContractSha256`) und die Engine-Version jeder Methode wie im veröffentlichten Stand | Nach einer Modelländerung (eigener PR mit Vorher/Nachher) ist die erste Veröffentlichung manuell |
 | C5 | neuer Stand nie älter; gleiche Sitzung = `SKIP_SAME_SESSION` (kein Commit, grün); ohne veröffentlichten Stand BLOCKED | Ein guter Stand wird nie durch einen älteren ersetzt; der Lauf ist idempotent |
 | C6 | Kandidaten 50–200 % des veröffentlichten Stands, Titel mit Daten mindestens 90 %, 0 verworfene Eingaben oder Datensätze | Datenbetrieb: ein halbierter Eingang ist ein Datenfehler, kein Marktbefund. Ein Verstoß ändert nichts, er verlangt den manuellen Weg |
-| C7 | Registry-Eintrag `supertrader-sf8-candidates` freigegeben (`ACTIVATING` oder ohne `activation`) | wie bisher V2/V6 |
+| C7 | Registry-Eintrag `supertrader-sf8-candidates` im **Dauerbetrieb**, also ohne `activation` | `ACTIVATING` ist laut Registry nur die erste Veröffentlichung und gilt nur für den manuellen Weg. Der Dauerbetrieb braucht den eigenen Core-PR (V6 e), der das Feld entfernt und die Texte zu Zeitplan und Freigabe korrigiert |
 
 **Nachweis je Veröffentlichung**, dauerhaft in Git als Trailer der Commit-Nachricht:
 
 ```
 SF8-Contract: sf8-auto-publication-1.0.0
 SF8-Fingerprint: <sha256 der öffentlichen Dateien>
-SF8-Inputs-SHA256: <sha256 der Eingabeliste aus summary.inputs.sourceFiles>
+SF8-Inputs-SHA256: <summary.inputs.inputsSha256, derselbe Wert wie in summary.json>
+SF8-Source-Files-SHA256: <sha256 der Liste summary.inputs.sourceFiles>
 SF8-Previous-AsOf: <ersetzter Stand>
 SF8-Code-Commit: <main-SHA des Laufs>
 SF8-Run: <Lauf-ID>
@@ -80,7 +81,7 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 
 - **Kein Bezug außerhalb von Gate A.** `market-data-refresh.yml` und `scripts/ci/supertrader-chain.mjs` bleiben unverändert. Angestoßen wird aus `supertrader-signals.yml`, das die Kette ohnehin startet.
 - **Kein `workflow_run`.** Dieser Auslöser hat auf `main` nachweislich nie gefeuert (Kommentar in `market-data-refresh.yml`, 29.09.2026).
-- **Keine Änderung an `core/registry/domains.json`.** Der Eintrag bleibt `ACTIVATING`; der Vertrag akzeptiert ihn. V6 (e) entfällt damit nicht, wird aber für den Betrieb nicht gebraucht: `activation` entfernen und ein fehlendes Artefakt als FAILED führen, je ein eigener PR. Die Registry-Texte („(Beta)“, „Owner-Freigabe AUSSTEHEND“) korrigiert ein eigener Core-PR.
+- **Keine Änderung an `core/registry/domains.json`.** Dieser PR ist der Supertrader-Teil von V6 (e) und (f): `registry-guard.mjs` lässt den Eintrag jetzt auch ohne `activation` zu (Dauerbetrieb). Das Feld selbst entfernt ein eigener Core-PR, der auch die Texte korrigiert („(Beta)“, „Owner-Freigabe AUSSTEHEND“, `schedule`). Erst danach besteht der automatische Weg C7; bis dahin endet jeder automatische Lauf mit BLOCKED.
 - Keine neue DQ-Regel, keine geänderte Grenze, kein neuer Anbieter, keine Secrets (der Alarm nutzt `github.token`).
 
 ## Inbetriebnahme (Owner)
@@ -89,8 +90,9 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 |---|---|---|
 | 1 | Merge dieses PR | V1 nach Owner-Entscheidung (siehe unten) |
 | 2 | Variable `SF8_CANDIDATES_ENABLED=true` (laut Ablauf der ersten Veröffentlichung nach Lauf B zurück auf `false`; Stand bitte prüfen) | – |
-| 3 | Ein manueller Lauf `mode=auto` auf `main` am Vormittag nach der Nachtkette; Vertrag und Commit im Log prüfen | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
-| 4 | Variable `SF8_AUTO_PUBLISH=true`: ab dann Anstoß nach der Nachtkette und Rückfall-Zeitplan | – |
+| 3 | Optional, als Probe vor 3a: ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
+| 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | dieser PR gemergt |
+| 4 | Variable `SF8_AUTO_PUBLISH=true`: ab dann Anstoß nach der Nachtkette und Rückfall-Zeitplan | 3a gemergt |
 | 5 | Zurücknehmen: `SF8_AUTO_PUBLISH=false` (nur noch manuell) oder `SF8_CANDIDATES_ENABLED=false` (gar nicht) | – |
 
 **V1 und dieser PR.** S7 lässt sich ohne Tageslauf nicht erfüllen (DQ-SF8-8, siehe oben). Ein „erst S1–S7, dann Tageslauf“ blockiert sich deshalb selbst. Zwei ehrliche Wege, beide Owner-Entscheidung:
@@ -98,6 +100,10 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 - **(b)** Bis dahin den Stand vom 28.10. zurücknehmen (Rückweg aus `SUPERTRADER_8_FIRST_RELEASE.md`). Dann ist S7 ohne Kandidaten messbar.
 
 Eine Lockerung von DQ-SF8-8 ist keiner der Wege.
+
+**Bekannte Folge auch im Dauerbetrieb:** Zwischen dem Refresh-Commit der Nachtkette (~03:40 UTC) und dem Kandidaten-Commit (~04:30 UTC, beim Rückfall-Zeitplan 11:43 UTC plus Verspätung) ist DQ-SF8-8 auf `main` rot. In diesem Fenster gilt das auch für den Zustandstest in `core/tests`, und jeder PR mit `core-ci` ist betroffen. S7 ist deshalb nach dem Kandidaten-Commit des Tages zu messen.
+
+Ohne veröffentlichten Stand (`prev.counts.candidates = 0` oder fehlend) bleibt der automatische Weg BLOCKED, bis ein manueller Lauf veröffentlicht.
 
 ## Prüfungen
 

@@ -22,7 +22,8 @@
  *   C5 Zeitachse          neuer Stand nie älter als der veröffentlichte; gleiche Sitzung = SKIP; nextSession > asOf
  *   C6 Plausibilität      Kandidaten 50–200 % des veröffentlichten Stands, Titel mit Daten mindestens 90 %,
  *                         keine verworfenen Eingaben oder Datensätze
- *   C7 Freigabe           Registry-Eintrag freigegeben (vom Workflow geprüft und übergeben)
+ *   C7 Freigabe           Registry-Eintrag im Dauerbetrieb, also ohne `activation` (vom Workflow geprüft und übergeben;
+ *                         ACTIVATING gilt nur für den manuellen Weg)
  *
  * Rein bis auf die CLI. Kein Netzzugriff. Schreibt nur --out.
  *   node publication-contract.mjs --next <dir> --prev <dir> --fingerprint <sha> --rebuild-fingerprint <sha>
@@ -42,8 +43,10 @@ const DQ_RULES = Array.from({ length: 8 }, (_, i) => `DQ-SF8-${i + 1}`);
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const SHA = /^[0-9a-f]{64}$/;
 
-/** Fingerabdruck der Eingaben: Liste der Quelldateien mit SHA-256 aus summary.inputs (vom Erzeuger geschrieben). */
-export const inputsSha256 = (summary) => createHash('sha256').update(JSON.stringify(summary?.inputs?.sourceFiles ?? null)).digest('hex');
+/** Fingerabdruck der Eingaben, wie ihn der Erzeuger in summary.inputs.inputsSha256 schreibt (je Titel die Eingaben). */
+export const inputsSha256 = (summary) => (SHA.test(String(summary?.inputs?.inputsSha256)) ? summary.inputs.inputsSha256 : null);
+/** Zusätzlich: SHA-256 der Liste der Quelldateien samt ihrer SHA-256 (summary.inputs.sourceFiles). */
+export const sourceFilesSha256 = (summary) => createHash('sha256').update(JSON.stringify(summary?.inputs?.sourceFiles ?? null)).digest('hex');
 
 /**
  * Rein. next/prev: summary.json des neuen bzw. veröffentlichten Stands (prev null = noch nichts veröffentlicht → BLOCKED,
@@ -73,7 +76,9 @@ export function evaluatePublication({ next, prev, fingerprint, rebuildFingerprin
   const nv = next.versions || {}, pv = prev.versions || {};
   for (const k of [...new Set([...Object.keys(nv), ...Object.keys(pv)])].sort()) if (nv[k] !== pv[k]) f.push(`C4 versions.${k} ${pv[k]} → ${nv[k]} (Modelländerung: erste Veröffentlichung manuell)`);
   const engines = (s) => JSON.stringify((s.strategies || []).map((x) => [x.candidateId, x.engine?.engineVersion ?? null]).sort());
+  for (const s of next.strategies || []) if (typeof s.engine?.engineVersion !== 'string' || !s.engine.engineVersion) f.push(`C4 ${s.candidateId} ohne Engine-Version`);
   if (engines(next) !== engines(prev)) f.push('C4 Engine-Versionen der Methoden weichen ab (Modelländerung: erste Veröffentlichung manuell)');
+  if (!inputsSha256(next) || !Array.isArray(next.inputs?.sourceFiles) || !next.inputs.sourceFiles.length) f.push('C1 Eingaben-Fingerabdruck oder Quelldateien fehlen in summary.inputs');
   // C5
   if (!ISO.test(String(next.asOf)) || !ISO.test(String(prev.asOf))) f.push(`C5 asOf ungültig (${prev.asOf} → ${next.asOf})`);
   else if (next.asOf < prev.asOf) f.push(`C5 neuer Stand ${next.asOf} älter als der veröffentlichte ${prev.asOf}`);
@@ -97,7 +102,7 @@ export function publicationRecord({ next, prev, fingerprint, decision, failures,
   return {
     contract: PUBLICATION_CONTRACT, decision, failures,
     asOf: next?.asOf ?? null, previousAsOf: prev?.asOf ?? null, fingerprint,
-    inputsSha256: next ? inputsSha256(next) : null, codeCommit, run,
+    inputsSha256: next ? inputsSha256(next) : null, sourceFilesSha256: next ? sourceFilesSha256(next) : null, codeCommit, run,
     counts: next?.counts ?? null, versions: next?.versions ?? null, status: next?.status ?? null,
   };
 }

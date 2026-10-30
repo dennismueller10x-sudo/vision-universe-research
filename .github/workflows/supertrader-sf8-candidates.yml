@@ -94,6 +94,7 @@ jobs:
         run: |
           set -euo pipefail
           heute="$(date -u +%F)"
+          echo "SF8_LAUFTAG=${heute}" >> "$GITHUB_ENV"
           prev=()
           if [ -f supertrader/data/sf-candidates/index.json ]; then prev=(--previous supertrader/data/sf-candidates); fi
           node --max-old-space-size=4096 scripts/supertrader/source-faithful/product/build-candidates.mjs \
@@ -163,7 +164,7 @@ jobs:
           PUB2: ${{ runner.temp }}/sf8-public-2
         run: |
           set -euo pipefail
-          heute="$(date -u +%F)"
+          heute="$SF8_LAUFTAG"
           prev=()
           if [ -f supertrader/data/sf-candidates/index.json ]; then prev=(--previous supertrader/data/sf-candidates); fi
           node --max-old-space-size=4096 scripts/supertrader/source-faithful/product/build-candidates.mjs \
@@ -185,8 +186,9 @@ jobs:
           FP2: ${{ steps.rebuild.outputs.fp }}
         run: |
           set -euo pipefail
+          # Dauerbetrieb nur ohne activation (V6 e, eigener Core-PR); ACTIVATING gilt nur fuer den manuellen Weg
           registry=false
-          if node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && (!d.activation || d.activation.state==="ACTIVATING") ? 0 : 1)'; then registry=true; fi
+          if node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && !d.activation ? 0 : 1)'; then registry=true; fi
           node scripts/supertrader/source-faithful/product/publication-contract.mjs --next "$PUB" --prev supertrader/data/sf-candidates \
             --fingerprint "$FP" --rebuild-fingerprint "$FP2" --dq "$REPORT" --registry-ok "$registry" \
             --code-commit "$GITHUB_SHA" --run "$GITHUB_RUN_ID" --out "$RECORD"
@@ -256,7 +258,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -A "$ziel"
           if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
-          nachricht=$(node -e 'const r=require(process.env.RECORD);console.log("Supertrader 8: Research-Kandidaten (Stand "+r.asOf+", automatisch, nicht freigeschaltet)\n\nSF8-Contract: "+r.contract+"\nSF8-Fingerprint: "+r.fingerprint+"\nSF8-Inputs-SHA256: "+r.inputsSha256+"\nSF8-Previous-AsOf: "+r.previousAsOf+"\nSF8-Code-Commit: "+r.codeCommit+"\nSF8-Run: "+r.run)')
+          nachricht=$(node -e 'const r=require(process.env.RECORD);console.log("Supertrader 8: Research-Kandidaten (Stand "+r.asOf+", automatisch, nicht freigeschaltet)\n\nSF8-Contract: "+r.contract+"\nSF8-Fingerprint: "+r.fingerprint+"\nSF8-Inputs-SHA256: "+r.inputsSha256+"\nSF8-Source-Files-SHA256: "+r.sourceFilesSha256+"\nSF8-Previous-AsOf: "+r.previousAsOf+"\nSF8-Code-Commit: "+r.codeCommit+"\nSF8-Run: "+r.run)')
           git commit -q -m "$nachricht"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 

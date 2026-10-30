@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { evaluatePublication, publicationRecord, inputsSha256, PUBLICATION_CONTRACT, PLAUSIBILITY, STATUS_INVARIANT } from '../source-faithful/product/publication-contract.mjs';
+import { evaluatePublication, publicationRecord, inputsSha256, sourceFilesSha256, PUBLICATION_CONTRACT, PLAUSIBILITY, STATUS_INVARIANT } from '../source-faithful/product/publication-contract.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const SUMMARY = path.join(ROOT, 'supertrader/data/sf-candidates/summary.json');
@@ -18,7 +18,7 @@ const synthetic = () => ({
   versions: { pipeline: 'p-1', detectors: 'd-1', candidateContractSha256: 'x' }, status: { ...STATUS_INVARIANT },
   counts: { candidates: 3225, byStage: { CHART_CANDIDATE: 2091, CONFIRMED_RESEARCH_SETUP: 1078, MODELED_TRADE_PLAN: 56 }, validatedTradeSignal: 0, rejectedRecords: 0 },
   dataQuality: { securities: 5099, rejectedInputs: 0 }, strategies: Array.from({ length: 13 }, (_, i) => strategy(i + 1)),
-  inputs: { sourceFiles: [{ file: 'a', sha256: 'b' }] },
+  inputs: { sourceFiles: [{ file: 'a', sha256: 'b' }], inputsSha256: 'c'.repeat(64) },
 });
 const base = () => (fs.existsSync(SUMMARY) ? JSON.parse(fs.readFileSync(SUMMARY, 'utf8')) : synthetic());
 const dq = (over = {}) => ({ rules: Array.from({ length: 8 }, (_, i) => ({ id: `DQ-SF8-${i + 1}`, status: 'PASS', checked: 10, failed: 0, ...(over[i + 1] || {}) })) });
@@ -59,6 +59,13 @@ test('SF9-PUB-4 · C4 gleiche Fachmodelle: jede Versionsänderung verlangt die m
   blockedBy({ next: nextOf(base(), (n) => { n.versions.neu = '1'; }) }, /^C4 versions\.neu/);
   blockedBy({ next: nextOf(base(), (n) => { n.strategies[0].engine.engineVersion = 'x'; }) }, /^C4 Engine-Versionen/);
   blockedBy({ next: nextOf(base(), (n) => { n.schema = 'supertrader-sf8-candidates-2.0.0'; }) }, /^C4 Schema/);
+  // fehlende Engine-Version in beiden Ständen ist kein „gleich“
+  const noEngine = (s) => { delete s.strategies[0].engine; };
+  const pe = base(); noEngine(pe);
+  const r = evaluatePublication({ next: nextOf(pe, noEngine), prev: pe, fingerprint: FP, rebuildFingerprint: FP, dq: dq(), registryOk: true });
+  assert.equal(r.decision, 'BLOCKED'); assert.ok(r.failures.some((x) => /^C4 C01 ohne Engine-Version/.test(x)), r.failures.join('|'));
+  blockedBy({ next: nextOf(base(), (n) => { n.inputs.inputsSha256 = 'x'; }) }, /^C1 Eingaben-Fingerabdruck/);
+  blockedBy({ next: nextOf(base(), (n) => { n.inputs.sourceFiles = []; }) }, /^C1 Eingaben-Fingerabdruck/);
 });
 
 test('SF9-PUB-5 · C5 Zeitachse: nie älter, kein Stand ohne Vorgänger, nextSession nach asOf', () => {
@@ -85,7 +92,8 @@ test('SF9-PUB-6 · C6 Plausibilität (Datenbetrieb, keine Fachregel) und C7 Regi
 test('SF9-PUB-7 · Nachweis und CLI: Eingaben-Fingerabdruck, Exit 5 bei BLOCKED, schreibt nur --out', () => {
   const prev = base(), next = nextOf(prev);
   const rec = publicationRecord({ next, prev, fingerprint: FP, decision: 'PUBLISH', failures: [], codeCommit: 'c0ffee', run: '1' });
-  assert.equal(rec.inputsSha256, inputsSha256(next)); assert.match(rec.inputsSha256, /^[0-9a-f]{64}$/);
+  assert.equal(rec.inputsSha256, next.inputs.inputsSha256, 'derselbe Wert wie in summary.json'); assert.match(rec.inputsSha256, /^[0-9a-f]{64}$/);
+  assert.equal(rec.sourceFilesSha256, sourceFilesSha256(next)); assert.equal(inputsSha256({ inputs: { inputsSha256: 'kurz' } }), null);
   assert.equal(rec.asOf, '2026-10-29'); assert.equal(rec.previousAsOf, prev.asOf); assert.equal(rec.contract, PUBLICATION_CONTRACT);
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sf9-pub-'));
   try {
