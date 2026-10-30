@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 165 Spalten.
+technical-screener-contract-1.2.0, 164 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -214,7 +214,6 @@ technical-screener-contract-1.1.0, 165 Spalten.
 | `sma50AboveSma200@1M` | bool | ja |  | 5- über 10-Monats-Linie |
 | `sma50AboveSma200@1W` | bool | ja |  | 10- über 40-Wochen-Linie |
 | `smaCrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
-| `spark` | spark | nein |  | letzte ≤ 60 Schlüsse, 0..99 normiert |
 | `stochK` | num | ja | 0 … 100 | Stochastik %K (14, 3) |
 | `stochK@1M` | num | ja | 0 … 100 | Stochastik %K (14, 3, Monat) |
 | `stochK@1W` | num | ja | 0 … 100 | Stochastik %K (14, 3, Woche) |

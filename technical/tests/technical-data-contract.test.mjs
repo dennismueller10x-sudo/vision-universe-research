@@ -60,6 +60,16 @@ test("jede Regel erkennt einen konstruierten Verstoss", () => {
   assert.ok(C.check(artifact, m).counts.META_COUNT, "meta.counts.fresh");
   const ix = JSON.parse(JSON.stringify(index)); ix.s = ix.s.concat(["ZZZZ_FEHLT"]); ix.count = ix.s.length;
   assert.ok(C.check(artifact, null, ix).counts.INDEX_UNKNOWN_TICKER, "Index-Kuerzel ohne Zeile");
+  /* spark-v1.json (Vertrag 1.2.0): gleiche Reihenfolge, gleicher Stichtag, Werte 0..99. */
+  const sp = JSON.parse(readFileSync(new URL("../data/spark-v1.json", import.meta.url), "utf8"));
+  assert.deepEqual(C.check(artifact, null, null, sp).errors, []);
+  assert.equal(artifact.cols.spark, undefined, "spark ist nicht mehr im Screener-Datensatz");
+  const sw = JSON.parse(JSON.stringify(sp)); [sw.s[0], sw.s[1]] = [sw.s[1], sw.s[0]];
+  assert.ok(C.check(artifact, null, null, sw).counts.SPARK_ORDER, "Reihenfolge");
+  const sv = JSON.parse(JSON.stringify(sp)); sv.spark[0] = [120];
+  assert.ok(C.check(artifact, null, null, sv).counts.RANGE, "Wert ausserhalb 0..99");
+  const sa = JSON.parse(JSON.stringify(sp)); sa.asOf = "2000-01-03";
+  assert.ok(C.check(artifact, null, null, sa).counts.SPARK_ASOF, "Stichtag");
 });
 
 test("Abfragekatalog und Spalten decken sich: jedes Feld je Zeitrahmen ist eine Vertragsspalte und umgekehrt", () => {

@@ -6,6 +6,7 @@
    Datenquellen (nur lesend):
      /technical/data/index-v1.json + meta.json         (Startseite, Chart Studio; Erzeuger build-screener.mjs)
      /technical/data/screener-v1.json                  (nur Screener, bei Bedarf)
+     /technical/data/spark-v1.json                     (Mini-Kursverlauf der Trefferkarten, nach dem ersten Bild)
      /quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz
                                                        (Tagesbars + Vollhistorien-Features)
      /quant/data/market/discover-series-long/<securityId>.json (Wochenschluesse)
@@ -92,6 +93,23 @@
       return dataset;
     }, function (e) { screenerP = null; delete cache[M.SCREENER_PATH]; throw e; });
     return screenerP;
+  }
+  /* Mini-Kursverlauf der Trefferkarten aus spark-v1.json (eigene Datei seit Vertrag 1.2.0): erst nach dem ersten Bild
+     geladen; bis dahin bleibt der reservierte Platz leer. Ohne Datei bleibt die Karte ohne Linie (kein Fehler). */
+  var sparkP = null, sparkMap = null;
+  function loadSpark() {
+    if (!sparkP) sparkP = fetchJSON(M.SPARK_PATH).then(function (d) {
+      sparkMap = {};
+      (d && d.s || []).forEach(function (t, i) { sparkMap[t] = d.spark[i]; });
+      return sparkMap;
+    }, function () { sparkP = null; return null; });
+    return sparkP;
+  }
+  function sparkSpan(row) {
+    var span = el("span", { class: "tc-hit-spark" });
+    if (sparkMap) span.innerHTML = Chart.sparkline(sparkMap[row.s] || []);
+    else loadSpark().then(function (m) { if (m) span.innerHTML = Chart.sparkline(m[row.s] || []); });
+    return span;
   }
   /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
      Treffer ihn brauchen. Nicht bei "Datensparen" (Save-Data); die Startseite bleibt beim schlanken Index. */
@@ -489,7 +507,7 @@
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
             el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            sparkSpan(row),
             el("span", { class: "tc-hit-score" }, right),
             glyph("chevron", "tc-chev")
           ]),
@@ -685,7 +703,7 @@
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
             el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            sparkSpan(row),
             el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
             glyph("chevron", "tc-chev")
           ]),
