@@ -1,0 +1,4124 @@
+{
+ "studyId": "V13C-S2-POPULATION",
+ "registrationSha256": "bbe15b1920bcee83222b72547b336b608e60f474a84d8ea2c178c6f08ad14c1b",
+ "amendmentSha256": "51698966d144d7bed805edda6c2fcaa492350577702642dace577bbc46ff10a1",
+ "amendments": {
+  "3.0.1": "51698966d144d7bed805edda6c2fcaa492350577702642dace577bbc46ff10a1",
+  "3.0.2": "528cf78059b93b0b68c44100248b38d9aca00a598562e2aff2666cd8e7d487b3"
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "evidenceLabel": "NON_CONFIRMATORY_EXTENSION_STUDY",
+ "confirmatory": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "cited": {
+  "V13_S1": {
+   "file": "docs/quant-recovery/v13/studies/s1-signal-1.0.0.json",
+   "sha256": "3f04bab7256092b10a2fbb5669d4acf067be9ee824a79da88c8d75afe4c7e430"
+  },
+  "V13_S2": {
+   "file": "docs/quant-recovery/v13/studies/s2-population-1.0.0.json",
+   "sha256": "38efcd1048e1826a6295021949e101212032b56a8a94e4dbdda778864855f10c"
+  },
+  "V13B": {
+   "file": "docs/quant-recovery/v13b/f1w/results-2.0.0.json",
+   "sha256": "b6999a87cb7f5106cd6bd7107b2b8221fe7799f07ae61c742e4e1f33064fbbbc"
+  }
+ },
+ "populations": {
+  "F1p": {
+   "listings": 4724,
+   "newChainsAdded": 5,
+   "counterpart": "F1"
+  },
+  "F1wp": {
+   "listings": 5917,
+   "newChainsAdded": 12,
+   "counterpart": "F1w"
+  },
+  "F1dp": {
+   "listings": 5917,
+   "newChainsAdded": 12,
+   "counterpart": "F1d"
+  }
+ },
+ "definitions": {
+  "buyAndHold": "V11 P_t: mean gross return entry t+1 -> exit t+1+h over all eligible completed observations of week t (V10 control eligibility), mean of weekly means per period; SPY price return same dates",
+  "weeklyRebalancedEW": "V11 ewIndex: mean weekly return of listings observed in consecutive calendar weeks (date >= listingStart), chained; CAGR vs SPY price CAGR same calendar dates",
+  "terminal": "scenario applied in the last held week (amendment 1.0.1 O5)"
+ },
+ "returnBasis": "PRICE_RETURN both sides (gross population, no costs; populationNet = V10 base cost per round trip, buy-and-hold only)",
+ "costs": {
+  "feeBps": 10,
+  "slippageBps": 5
+ },
+ "weighting": "equal weight",
+ "periods": [
+  "FULL 2000-01-01..2025-12-31",
+  "2000-01-01..2007-12-31",
+  "2008-01-01..2012-12-31",
+  "2013-01-01..2019-12-31",
+  "2020-01-01..2025-12-31"
+ ],
+ "byFrame": {
+  "F1p": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.091445,
+       "populationGross": 0.011001,
+       "populationNet": 0.007973,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005218
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.01307,
+       "populationNet": 0.010035,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012557
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.245211,
+       "populationGross": 0.010924,
+       "populationNet": 0.007895,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007601
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2480.364384,
+       "populationGross": 0.009012,
+       "populationNet": 0.005989,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000088
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3446.71885,
+       "populationGross": 0.01063,
+       "populationNet": 0.007603,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000357
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2342.253687,
+       "populationGross": 0.010995,
+       "populationNet": 0.007966,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005212
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.01307,
+       "populationNet": 0.010035,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012557
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.010916,
+       "populationNet": 0.007888,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007594
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.009,
+       "populationNet": 0.005978,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000099
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3449.364217,
+       "populationGross": 0.010622,
+       "populationNet": 0.007595,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000365
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2342.253687,
+       "populationGross": 0.010926,
+       "populationNet": 0.007898,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005144
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.01307,
+       "populationNet": 0.010035,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012557
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.010887,
+       "populationNet": 0.007859,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007565
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.008887,
+       "populationNet": 0.005865,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000212
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3449.364217,
+       "populationGross": 0.010481,
+       "populationNet": 0.007455,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000506
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2342.253687,
+       "populationGross": 0.01087,
+       "populationNet": 0.007842,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005087
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.01307,
+       "populationNet": 0.010035,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012557
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.010842,
+       "populationNet": 0.007814,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007519
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.008848,
+       "populationNet": 0.005826,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000252
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3449.364217,
+       "populationGross": 0.01032,
+       "populationNet": 0.007294,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000667
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2338.087021,
+       "populationGross": 0.034319,
+       "populationNet": 0.03122,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016271
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.041129,
+       "populationNet": 0.038011,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040712
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2017.582375,
+       "populationGross": 0.035359,
+       "populationNet": 0.032257,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022822
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2476.189041,
+       "populationGross": 0.023384,
+       "populationNet": 0.020318,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.002242
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3439.124601,
+       "populationGross": 0.037129,
+       "populationNet": 0.034022,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.000163
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.847345,
+       "populationGross": 0.034312,
+       "populationNet": 0.031214,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016265
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.041129,
+       "populationNet": 0.038011,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040712
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.035356,
+       "populationNet": 0.032254,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022819
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.023362,
+       "populationNet": 0.020296,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.002265
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3447.603834,
+       "populationGross": 0.037129,
+       "populationNet": 0.034022,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.000163
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.847345,
+       "populationGross": 0.034085,
+       "populationNet": 0.030987,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016038
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.041129,
+       "populationNet": 0.038011,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040712
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.035247,
+       "populationNet": 0.032146,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022711
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.02299,
+       "populationNet": 0.019925,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.002637
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3447.603834,
+       "populationGross": 0.03667,
+       "populationNet": 0.033564,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.000622
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.847345,
+       "populationGross": 0.033907,
+       "populationNet": 0.03081,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.01586
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.041129,
+       "populationNet": 0.038011,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040712
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.035076,
+       "populationNet": 0.031976,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.02254
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.02287,
+       "populationNet": 0.019806,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.002756
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3447.603834,
+       "populationGross": 0.03618,
+       "populationNet": 0.033076,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.001112
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2333.634218,
+       "populationGross": 0.070753,
+       "populationNet": 0.067545,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033351
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.086665,
+       "populationNet": 0.08341,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.08559
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2016.475096,
+       "populationGross": 0.075886,
+       "populationNet": 0.072663,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.045823
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2470.019178,
+       "populationGross": 0.04234,
+       "populationNet": 0.039217,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.006043
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3427.952077,
+       "populationGross": 0.078406,
+       "populationNet": 0.075176,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.000707
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.170354,
+       "populationGross": 0.070839,
+       "populationNet": 0.067632,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033437
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.086665,
+       "populationNet": 0.08341,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.08559
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.075943,
+       "populationNet": 0.07272,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.04588
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.042456,
+       "populationNet": 0.039333,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.005927
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3444.670927,
+       "populationGross": 0.078598,
+       "populationNet": 0.075367,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.000516
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.170354,
+       "populationGross": 0.070363,
+       "populationNet": 0.067157,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.032961
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.086665,
+       "populationNet": 0.08341,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.08559
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.075684,
+       "populationNet": 0.072462,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.045621
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.041677,
+       "populationNet": 0.038557,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.006706
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3444.670927,
+       "populationGross": 0.077659,
+       "populationNet": 0.074431,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.001455
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2341.170354,
+       "populationGross": 0.070022,
+       "populationNet": 0.066817,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.032621
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.086665,
+       "populationNet": 0.08341,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.08559
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.075292,
+       "populationNet": 0.072071,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.04523
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.041463,
+       "populationNet": 0.038344,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.006919
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3444.670927,
+       "populationGross": 0.076759,
+       "populationNet": 0.073533,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.002355
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2311.652561,
+       "populationGross": 0.147476,
+       "populationNet": 0.144039,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.068806
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.173675,
+       "populationNet": 0.17016,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.18046
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2014.095785,
+       "populationGross": 0.175947,
+       "populationNet": 0.172424,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.087628
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2457.441096,
+       "populationGross": 0.089542,
+       "populationNet": 0.086278,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.012644
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3380.095395,
+       "populationGross": 0.156656,
+       "populationNet": 0.153191,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002716
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2326.300668,
+       "populationGross": 0.14833,
+       "populationNet": 0.14489,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.069659
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.173675,
+       "populationNet": 0.17016,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.18046
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.176088,
+       "populationNet": 0.172565,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.087769
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.08986,
+       "populationNet": 0.086595,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.012326
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3411.453947,
+       "populationGross": 0.159933,
+       "populationNet": 0.156459,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": 0.000561
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2326.300668,
+       "populationGross": 0.147331,
+       "populationNet": 0.143894,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.068661
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.173675,
+       "populationNet": 0.17016,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.18046
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.1755,
+       "populationNet": 0.171979,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.087181
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.088233,
+       "populationNet": 0.084973,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.013953
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3411.453947,
+       "populationGross": 0.157966,
+       "populationNet": 0.154497,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.001406
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2326.300668,
+       "populationGross": 0.14681,
+       "populationNet": 0.143374,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.068139
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1591.371703,
+       "populationGross": 0.173675,
+       "populationNet": 0.17016,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.18046
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2018.521073,
+       "populationGross": 0.174686,
+       "populationNet": 0.171167,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.086367
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2482.216438,
+       "populationGross": 0.087954,
+       "populationNet": 0.084695,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.014232
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3411.453947,
+       "populationGross": 0.15669,
+       "populationNet": 0.153225,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002682
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 27.68569,
+      "cagr": 0.137973,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2466.6369
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.202413,
+      "cagr": 0.197306,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1661.103365
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.640663,
+      "cagr": 0.104464,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2075.088462
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.242684,
+      "cagr": 0.122747,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 2613.71978
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.844597,
+      "cagr": 0.10782,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 3696.038462
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 27.060658,
+      "cagr": 0.137008,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2466.6369
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.202413,
+      "cagr": 0.197306,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1661.103365
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.637651,
+      "cagr": 0.104057,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2075.088462
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.221119,
+      "cagr": 0.121193,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 2613.71978
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.825394,
+      "cagr": 0.105883,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 3696.038462
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 26.544136,
+      "cagr": 0.136195,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2466.6369
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.202413,
+      "cagr": 0.197306,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1661.103365
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.632934,
+      "cagr": 0.103418,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2075.088462
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.213431,
+      "cagr": 0.120636,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 2613.71978
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.802974,
+      "cagr": 0.103599,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 3696.038462
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "listings": 395,
+    "withTotalReturn": 395,
+    "priceMean": 3.264517,
+    "totalReturnMean": 4.44486,
+    "priceMedian": 0.088776,
+    "totalReturnMedian": 0.122984,
+    "lossShareBelowMinus50": 0.212658
+   }
+  },
+  "F1wp": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2720.361357,
+       "populationGross": 0.011019,
+       "populationNet": 0.007991,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005236
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2495.471264,
+       "populationGross": 0.010917,
+       "populationNet": 0.007889,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007595
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2986.29589,
+       "populationGross": 0.008754,
+       "populationNet": 0.005733,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000345
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3712.242812,
+       "populationGross": 0.010953,
+       "populationNet": 0.007925,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000034
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.851032,
+       "populationGross": 0.010996,
+       "populationNet": 0.007968,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005213
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.010909,
+       "populationNet": 0.007881,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007586
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.008716,
+       "populationNet": 0.005694,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000384
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3723.127796,
+       "populationGross": 0.010905,
+       "populationNet": 0.007877,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000082
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.851032,
+       "populationGross": 0.010782,
+       "populationNet": 0.007754,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.004999
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.010858,
+       "populationNet": 0.00783,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007535
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.008387,
+       "populationNet": 0.005366,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000713
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3723.127796,
+       "populationGross": 0.010403,
+       "populationNet": 0.007376,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000585
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.851032,
+       "populationGross": 0.010667,
+       "populationNet": 0.00764,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.004884
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.010796,
+       "populationNet": 0.007768,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007473
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.008361,
+       "populationNet": 0.005341,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000738
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3723.127796,
+       "populationGross": 0.009988,
+       "populationNet": 0.006962,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.001
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2709.894543,
+       "populationGross": 0.034375,
+       "populationNet": 0.031276,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016327
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2493.777778,
+       "populationGross": 0.035721,
+       "populationNet": 0.032619,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.023185
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2970.871233,
+       "populationGross": 0.022491,
+       "populationNet": 0.019428,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.003135
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3686.297125,
+       "populationGross": 0.038053,
+       "populationNet": 0.034944,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": 0.000761
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.44469,
+       "populationGross": 0.034371,
+       "populationNet": 0.031272,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016323
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.035719,
+       "populationNet": 0.032617,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.023183
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.022467,
+       "populationNet": 0.019404,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.003159
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.367412,
+       "populationGross": 0.038065,
+       "populationNet": 0.034956,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": 0.000774
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.44469,
+       "populationGross": 0.033663,
+       "populationNet": 0.030567,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.015616
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.035527,
+       "populationNet": 0.032425,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022991
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.021396,
+       "populationNet": 0.018336,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.004231
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.367412,
+       "populationGross": 0.03641,
+       "populationNet": 0.033306,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.000882
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.44469,
+       "populationGross": 0.033338,
+       "populationNet": 0.030243,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.015291
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.035302,
+       "populationNet": 0.032201,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022766
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.021406,
+       "populationNet": 0.018347,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.00422
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.367412,
+       "populationGross": 0.035177,
+       "populationNet": 0.032076,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.002115
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2694.729351,
+       "populationGross": 0.07061,
+       "populationNet": 0.067403,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033208
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2490.934866,
+       "populationGross": 0.076761,
+       "populationNet": 0.073536,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046699
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2948.361644,
+       "populationGross": 0.03994,
+       "populationNet": 0.036825,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.008443
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3649.217252,
+       "populationGross": 0.079515,
+       "populationNet": 0.076282,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": 0.000402
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.767699,
+       "populationGross": 0.071056,
+       "populationNet": 0.067847,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033654
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.076936,
+       "populationNet": 0.07371,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046873
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.040645,
+       "populationNet": 0.037528,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.007738
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3718.434505,
+       "populationGross": 0.080481,
+       "populationNet": 0.077244,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": 0.001367
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.767699,
+       "populationGross": 0.069572,
+       "populationNet": 0.066368,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.03217
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.076469,
+       "populationNet": 0.073244,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046406
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.038392,
+       "populationNet": 0.035282,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.009991
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3718.434505,
+       "populationGross": 0.07707,
+       "populationNet": 0.073843,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.002044
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.767699,
+       "populationGross": 0.069038,
+       "populationNet": 0.065836,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.031637
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.07597,
+       "populationNet": 0.072747,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.045907
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.038559,
+       "populationNet": 0.035448,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.009824
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3718.434505,
+       "populationGross": 0.07498,
+       "populationNet": 0.07176,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.004134
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2654.666667,
+       "populationGross": 0.146486,
+       "populationNet": 0.143052,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.067816
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2484.283525,
+       "populationGross": 0.176783,
+       "populationNet": 0.173258,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.088465
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2902.70411,
+       "populationGross": 0.083789,
+       "populationNet": 0.080542,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.018397
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3560.490132,
+       "populationGross": 0.156626,
+       "populationNet": 0.153161,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002746
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.970304,
+       "populationGross": 0.148808,
+       "populationNet": 0.145367,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.070138
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.177637,
+       "populationNet": 0.17411,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.089318
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.085944,
+       "populationNet": 0.082691,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.016242
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3691.177632,
+       "populationGross": 0.163594,
+       "populationNet": 0.160108,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": 0.004222
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.970304,
+       "populationGross": 0.145672,
+       "populationNet": 0.14224,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.067002
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.176443,
+       "populationNet": 0.172919,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.088125
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.081197,
+       "populationNet": 0.077958,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.020989
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3691.177632,
+       "populationGross": 0.156424,
+       "populationNet": 0.15296,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002948
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.970304,
+       "populationGross": 0.14515,
+       "populationNet": 0.141719,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.066479
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.137931,
+       "populationGross": 0.17536,
+       "populationNet": 0.171839,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.087042
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2993.164384,
+       "populationGross": 0.081911,
+       "populationNet": 0.07867,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.020275
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3691.177632,
+       "populationGross": 0.154182,
+       "populationNet": 0.150725,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.00519
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 27.448904,
+      "cagr": 0.13761,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2887.334317
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.616592,
+      "cagr": 0.101193,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.3
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.183363,
+      "cagr": 0.118441,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3168.458791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.889054,
+      "cagr": 0.112241,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4022.929487
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 25.572775,
+      "cagr": 0.134625,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2887.334317
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.611489,
+      "cagr": 0.100494,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.3
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.122628,
+      "cagr": 0.113927,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3168.458791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.821038,
+      "cagr": 0.105441,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4022.929487
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 24.58337,
+      "cagr": 0.132969,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2887.334317
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.605072,
+      "cagr": 0.099613,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.3
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.11692,
+      "cagr": 0.113497,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3168.458791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.764357,
+      "cagr": 0.09961,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4022.929487
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "listings": 1588,
+    "withTotalReturn": 1588,
+    "priceMean": 2.748477,
+    "totalReturnMean": 4.029931,
+    "priceMedian": 0.055094,
+    "totalReturnMedian": 0.091919,
+    "lossShareBelowMinus50": 0.246222
+   }
+  },
+  "F1dp": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2719.528761,
+       "populationGross": 0.011024,
+       "populationNet": 0.007996,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005242
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2495.363985,
+       "populationGross": 0.010917,
+       "populationNet": 0.007889,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007595
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2985.046575,
+       "populationGross": 0.008767,
+       "populationNet": 0.005745,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000333
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3710.182109,
+       "populationGross": 0.010961,
+       "populationNet": 0.007933,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000026
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.019174,
+       "populationGross": 0.011007,
+       "populationNet": 0.007979,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005225
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.01091,
+       "populationNet": 0.007881,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007587
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.008729,
+       "populationNet": 0.005708,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.00037
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.067093,
+       "populationGross": 0.010938,
+       "populationNet": 0.00791,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.00005
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.019174,
+       "populationGross": 0.010792,
+       "populationNet": 0.007764,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.005009
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.010858,
+       "populationNet": 0.00783,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007535
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.008401,
+       "populationNet": 0.00538,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000699
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.067093,
+       "populationGross": 0.010431,
+       "populationNet": 0.007404,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000557
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2724.019174,
+       "populationGross": 0.010677,
+       "populationNet": 0.007649,
+       "spy": 0.005783,
+       "populationGrossMinusSpy": 0.004894
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.013115,
+       "populationNet": 0.01008,
+       "spy": 0.000513,
+       "populationGrossMinusSpy": 0.012602
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.010797,
+       "populationNet": 0.007769,
+       "spy": 0.003323,
+       "populationGrossMinusSpy": 0.007474
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.008377,
+       "populationNet": 0.005356,
+       "spy": 0.009099,
+       "populationGrossMinusSpy": -0.000722
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3721.067093,
+       "populationGross": 0.010011,
+       "populationNet": 0.006985,
+       "spy": 0.010987,
+       "populationGrossMinusSpy": -0.000977
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2709.066372,
+       "populationGross": 0.034352,
+       "populationNet": 0.031254,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016305
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2493.655172,
+       "populationGross": 0.035713,
+       "populationNet": 0.032611,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.023177
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2969.616438,
+       "populationGross": 0.022464,
+       "populationNet": 0.019401,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.003163
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3684.27476,
+       "populationGross": 0.037995,
+       "populationNet": 0.034886,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": 0.000703
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.612832,
+       "populationGross": 0.034399,
+       "populationNet": 0.031301,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.016352
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.035721,
+       "populationNet": 0.032618,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.023185
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.022497,
+       "populationNet": 0.019434,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.003129
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3719.306709,
+       "populationGross": 0.038154,
+       "populationNet": 0.035044,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": 0.000862
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.612832,
+       "populationGross": 0.033684,
+       "populationNet": 0.030588,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.015637
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.035524,
+       "populationNet": 0.032423,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022988
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.021418,
+       "populationNet": 0.018358,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.004208
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3719.306709,
+       "populationGross": 0.036478,
+       "populationNet": 0.033373,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.000814
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2723.612832,
+       "populationGross": 0.033359,
+       "populationNet": 0.030264,
+       "spy": 0.018047,
+       "populationGrossMinusSpy": 0.015312
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.041172,
+       "populationNet": 0.038053,
+       "spy": 0.000418,
+       "populationGrossMinusSpy": 0.040755
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.035295,
+       "populationNet": 0.032194,
+       "spy": 0.012536,
+       "populationGrossMinusSpy": 0.022759
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.021433,
+       "populationNet": 0.018374,
+       "spy": 0.025626,
+       "populationGrossMinusSpy": -0.004193
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3719.306709,
+       "populationGross": 0.035244,
+       "populationNet": 0.032143,
+       "spy": 0.037292,
+       "populationGrossMinusSpy": -0.002048
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2693.907817,
+       "populationGross": 0.070557,
+       "populationNet": 0.06735,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033155
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2490.785441,
+       "populationGross": 0.076742,
+       "populationNet": 0.073516,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046679
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2947.09863,
+       "populationGross": 0.039862,
+       "populationNet": 0.036747,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.008521
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3647.255591,
+       "populationGross": 0.079393,
+       "populationNet": 0.07616,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": 0.000279
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2722.935841,
+       "populationGross": 0.07111,
+       "populationNet": 0.067901,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.033708
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.076939,
+       "populationNet": 0.073713,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046876
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.040695,
+       "populationNet": 0.037577,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.007688
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3716.373802,
+       "populationGross": 0.080654,
+       "populationNet": 0.077417,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": 0.00154
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2722.935841,
+       "populationGross": 0.069611,
+       "populationNet": 0.066407,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.032209
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.076465,
+       "populationNet": 0.073241,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.046403
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.038423,
+       "populationNet": 0.035312,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.00996
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3716.373802,
+       "populationGross": 0.077204,
+       "populationNet": 0.073978,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.001909
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1356,
+       "meanMembers": 2722.935841,
+       "populationGross": 0.06908,
+       "populationNet": 0.065878,
+       "spy": 0.037402,
+       "populationGrossMinusSpy": 0.031679
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.08692,
+       "populationNet": 0.083664,
+       "spy": 0.001075,
+       "populationGrossMinusSpy": 0.085845
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.075968,
+       "populationNet": 0.072745,
+       "spy": 0.030063,
+       "populationGrossMinusSpy": 0.045905
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.038593,
+       "populationNet": 0.035482,
+       "spy": 0.048383,
+       "populationGrossMinusSpy": -0.009789
+      },
+      "2020-2025": {
+       "weeks": 313,
+       "meanMembers": 3716.373802,
+       "populationGross": 0.075123,
+       "populationNet": 0.071903,
+       "spy": 0.079114,
+       "populationGrossMinusSpy": -0.00399
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2653.928731,
+       "populationGross": 0.146431,
+       "populationNet": 0.142997,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.067761
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2484.084291,
+       "populationGross": 0.17675,
+       "populationNet": 0.173225,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.088432
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2901.432877,
+       "populationGross": 0.083721,
+       "populationNet": 0.080474,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.018465
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3558.917763,
+       "populationGross": 0.156494,
+       "populationNet": 0.15303,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002878
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.142539,
+       "populationGross": 0.14893,
+       "populationNet": 0.145489,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.07026
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.177645,
+       "populationNet": 0.174117,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.089326
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.086039,
+       "populationNet": 0.082786,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.016146
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3689.098684,
+       "populationGross": 0.164016,
+       "populationNet": 0.160529,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": 0.004644
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.142539,
+       "populationGross": 0.145773,
+       "populationNet": 0.142341,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.067103
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.176436,
+       "populationNet": 0.172912,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.088117
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.081266,
+       "populationNet": 0.078027,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.02092
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3689.098684,
+       "populationGross": 0.156797,
+       "populationNet": 0.153332,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.002575
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "weeks": 1347,
+       "meanMembers": 2710.142539,
+       "populationGross": 0.145265,
+       "populationNet": 0.141835,
+       "spy": 0.07867,
+       "populationGrossMinusSpy": 0.066595
+      },
+      "2000-2007": {
+       "weeks": 417,
+       "meanMembers": 1883.841727,
+       "populationGross": 0.175009,
+       "populationNet": 0.171489,
+       "spy": -0.006785,
+       "populationGrossMinusSpy": 0.181794
+      },
+      "2008-2012": {
+       "weeks": 261,
+       "meanMembers": 2496.042146,
+       "populationGross": 0.175344,
+       "populationNet": 0.171823,
+       "spy": 0.088319,
+       "populationGrossMinusSpy": 0.087025
+      },
+      "2013-2019": {
+       "weeks": 365,
+       "meanMembers": 2991.909589,
+       "populationGross": 0.081983,
+       "populationNet": 0.078742,
+       "spy": 0.102186,
+       "populationGrossMinusSpy": -0.020202
+      },
+      "2020-2025": {
+       "weeks": 304,
+       "meanMembers": 3689.098684,
+       "populationGross": 0.154621,
+       "populationNet": 0.151162,
+       "spy": 0.159372,
+       "populationGrossMinusSpy": -0.004751
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 27.546622,
+      "cagr": 0.13776,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2886.504059
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.616558,
+      "cagr": 0.101188,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.207692
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.186497,
+      "cagr": 0.118671,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3167.208791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.892831,
+      "cagr": 0.112612,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4020.871795
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 25.64697,
+      "cagr": 0.134747,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2886.504059
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.611363,
+      "cagr": 0.100477,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.207692
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.125662,
+      "cagr": 0.114155,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3167.208791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.823682,
+      "cagr": 0.105709,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4020.871795
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "from": "2000-01-07",
+      "to": "2025-12-26",
+      "years": 25.968515,
+      "total": 24.642013,
+      "cagr": 0.133069,
+      "spyTotal": 3.736261,
+      "spyCagr": 0.061719,
+      "meanMembers": 2886.504059
+     },
+     "2000-2007": {
+      "from": "2000-01-07",
+      "to": "2007-12-28",
+      "years": 7.972621,
+      "total": 3.243495,
+      "cagr": 0.198767,
+      "spyTotal": 0.010635,
+      "spyCagr": 0.001328,
+      "meanMembers": 1979.725962
+     },
+     "2008-2012": {
+      "from": "2008-01-04",
+      "to": "2012-12-28",
+      "years": 4.982888,
+      "total": 0.605042,
+      "cagr": 0.099609,
+      "spyTotal": -0.009058,
+      "spyCagr": -0.001824,
+      "meanMembers": 2583.207692
+     },
+     "2013-2019": {
+      "from": "2013-01-04",
+      "to": "2019-12-27",
+      "years": 6.976044,
+      "total": 1.121096,
+      "cagr": 0.113811,
+      "spyTotal": 1.20578,
+      "spyCagr": 0.12008,
+      "meanMembers": 3167.208791
+     },
+     "2020-2025": {
+      "from": "2020-01-03",
+      "to": "2025-12-26",
+      "years": 5.979466,
+      "total": 0.765536,
+      "cagr": 0.099733,
+      "spyTotal": 1.141094,
+      "spyCagr": 0.135783,
+      "meanMembers": 4020.871795
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "listings": 1588,
+    "withTotalReturn": 1588,
+    "priceMean": 2.750588,
+    "totalReturnMean": 4.030097,
+    "priceMedian": 0.056853,
+    "totalReturnMedian": 0.093206,
+    "lossShareBelowMinus50": 0.240554
+   }
+  }
+ },
+ "deltaVsCounterpart": {
+  "F1p_minus_F1": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000014,
+       "populationNet": -0.000013,
+       "populationGrossMinusSpy": -0.000014
+      },
+      "2000-2007": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      },
+      "2008-2012": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.000009
+      },
+      "2013-2019": {
+       "populationGross": -0.000038,
+       "populationNet": -0.000039,
+       "populationGrossMinusSpy": -0.000039
+      },
+      "2020-2025": {
+       "populationGross": 0.000001,
+       "populationNet": 0.000001,
+       "populationGrossMinusSpy": 0.000001
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000015,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000015
+      },
+      "2000-2007": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      },
+      "2008-2012": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.000009
+      },
+      "2013-2019": {
+       "populationGross": -0.000046,
+       "populationNet": -0.000045,
+       "populationGrossMinusSpy": -0.000045
+      },
+      "2020-2025": {
+       "populationGross": 0.000001,
+       "populationNet": 0.000001,
+       "populationGrossMinusSpy": 0.000001
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000016,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000016
+      },
+      "2000-2007": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      },
+      "2008-2012": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.000009
+      },
+      "2013-2019": {
+       "populationGross": -0.000047,
+       "populationNet": -0.000047,
+       "populationGrossMinusSpy": -0.000046
+      },
+      "2020-2025": {
+       "populationGross": -0.000001,
+       "populationNet": 0,
+       "populationGrossMinusSpy": -0.000001
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000017,
+       "populationNet": -0.000017,
+       "populationGrossMinusSpy": -0.000017
+      },
+      "2000-2007": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      },
+      "2008-2012": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.000009
+      },
+      "2013-2019": {
+       "populationGross": -0.000048,
+       "populationNet": -0.000048,
+       "populationGrossMinusSpy": -0.000049
+      },
+      "2020-2025": {
+       "populationGross": -0.000003,
+       "populationNet": -0.000003,
+       "populationGrossMinusSpy": -0.000003
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.00004,
+       "populationNet": -0.000041,
+       "populationGrossMinusSpy": -0.000041
+      },
+      "2000-2007": {
+       "populationGross": -0.000012,
+       "populationNet": -0.000012,
+       "populationGrossMinusSpy": -0.000012
+      },
+      "2008-2012": {
+       "populationGross": -0.00006,
+       "populationNet": -0.000061,
+       "populationGrossMinusSpy": -0.000061
+      },
+      "2013-2019": {
+       "populationGross": -0.000094,
+       "populationNet": -0.000094,
+       "populationGrossMinusSpy": -0.000093
+      },
+      "2020-2025": {
+       "populationGross": 0.000001,
+       "populationNet": 0.000001,
+       "populationGrossMinusSpy": 0.000001
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000049,
+       "populationNet": -0.000048,
+       "populationGrossMinusSpy": -0.000049
+      },
+      "2000-2007": {
+       "populationGross": -0.000012,
+       "populationNet": -0.000012,
+       "populationGrossMinusSpy": -0.000012
+      },
+      "2008-2012": {
+       "populationGross": -0.00006,
+       "populationNet": -0.00006,
+       "populationGrossMinusSpy": -0.000061
+      },
+      "2013-2019": {
+       "populationGross": -0.000126,
+       "populationNet": -0.000126,
+       "populationGrossMinusSpy": -0.000126
+      },
+      "2020-2025": {
+       "populationGross": 0.000002,
+       "populationNet": 0.000001,
+       "populationGrossMinusSpy": 0.000001
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000051,
+       "populationNet": -0.000051,
+       "populationGrossMinusSpy": -0.000051
+      },
+      "2000-2007": {
+       "populationGross": -0.000012,
+       "populationNet": -0.000012,
+       "populationGrossMinusSpy": -0.000012
+      },
+      "2008-2012": {
+       "populationGross": -0.000061,
+       "populationNet": -0.00006,
+       "populationGrossMinusSpy": -0.00006
+      },
+      "2013-2019": {
+       "populationGross": -0.000128,
+       "populationNet": -0.000128,
+       "populationGrossMinusSpy": -0.000129
+      },
+      "2020-2025": {
+       "populationGross": -0.000003,
+       "populationNet": -0.000004,
+       "populationGrossMinusSpy": -0.000004
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000053,
+       "populationNet": -0.000053,
+       "populationGrossMinusSpy": -0.000053
+      },
+      "2000-2007": {
+       "populationGross": -0.000012,
+       "populationNet": -0.000012,
+       "populationGrossMinusSpy": -0.000012
+      },
+      "2008-2012": {
+       "populationGross": -0.00006,
+       "populationNet": -0.000059,
+       "populationGrossMinusSpy": -0.00006
+      },
+      "2013-2019": {
+       "populationGross": -0.000131,
+       "populationNet": -0.000131,
+       "populationGrossMinusSpy": -0.000131
+      },
+      "2020-2025": {
+       "populationGross": -0.000013,
+       "populationNet": -0.000013,
+       "populationGrossMinusSpy": -0.000013
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000075,
+       "populationNet": -0.000075,
+       "populationGrossMinusSpy": -0.000075
+      },
+      "2000-2007": {
+       "populationGross": -0.00004,
+       "populationNet": -0.00004,
+       "populationGrossMinusSpy": -0.00004
+      },
+      "2008-2012": {
+       "populationGross": -0.000137,
+       "populationNet": -0.000137,
+       "populationGrossMinusSpy": -0.000137
+      },
+      "2013-2019": {
+       "populationGross": -0.000134,
+       "populationNet": -0.000135,
+       "populationGrossMinusSpy": -0.000135
+      },
+      "2020-2025": {
+       "populationGross": 0,
+       "populationNet": 0,
+       "populationGrossMinusSpy": 0
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000095,
+       "populationNet": -0.000094,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2000-2007": {
+       "populationGross": -0.00004,
+       "populationNet": -0.00004,
+       "populationGrossMinusSpy": -0.00004
+      },
+      "2008-2012": {
+       "populationGross": -0.000137,
+       "populationNet": -0.000136,
+       "populationGrossMinusSpy": -0.000137
+      },
+      "2013-2019": {
+       "populationGross": -0.000206,
+       "populationNet": -0.000206,
+       "populationGrossMinusSpy": -0.000207
+      },
+      "2020-2025": {
+       "populationGross": -0.000002,
+       "populationNet": -0.000002,
+       "populationGrossMinusSpy": -0.000002
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000098,
+       "populationNet": -0.000097,
+       "populationGrossMinusSpy": -0.000098
+      },
+      "2000-2007": {
+       "populationGross": -0.00004,
+       "populationNet": -0.00004,
+       "populationGrossMinusSpy": -0.00004
+      },
+      "2008-2012": {
+       "populationGross": -0.000136,
+       "populationNet": -0.000136,
+       "populationGrossMinusSpy": -0.000136
+      },
+      "2013-2019": {
+       "populationGross": -0.000214,
+       "populationNet": -0.000213,
+       "populationGrossMinusSpy": -0.000214
+      },
+      "2020-2025": {
+       "populationGross": -0.000008,
+       "populationNet": -0.000008,
+       "populationGrossMinusSpy": -0.000008
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000103,
+       "populationNet": -0.000103,
+       "populationGrossMinusSpy": -0.000102
+      },
+      "2000-2007": {
+       "populationGross": -0.00004,
+       "populationNet": -0.00004,
+       "populationGrossMinusSpy": -0.00004
+      },
+      "2008-2012": {
+       "populationGross": -0.000136,
+       "populationNet": -0.000136,
+       "populationGrossMinusSpy": -0.000135
+      },
+      "2013-2019": {
+       "populationGross": -0.000224,
+       "populationNet": -0.000222,
+       "populationGrossMinusSpy": -0.000223
+      },
+      "2020-2025": {
+       "populationGross": -0.000018,
+       "populationNet": -0.000019,
+       "populationGrossMinusSpy": -0.000018
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000161,
+       "populationNet": -0.00016,
+       "populationGrossMinusSpy": -0.000161
+      },
+      "2000-2007": {
+       "populationGross": -0.000096,
+       "populationNet": -0.000095,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2008-2012": {
+       "populationGross": -0.000333,
+       "populationNet": -0.000333,
+       "populationGrossMinusSpy": -0.000333
+      },
+      "2013-2019": {
+       "populationGross": -0.000244,
+       "populationNet": -0.000244,
+       "populationGrossMinusSpy": -0.000244
+      },
+      "2020-2025": {
+       "populationGross": 0,
+       "populationNet": 0,
+       "populationGrossMinusSpy": 0
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000209,
+       "populationNet": -0.000209,
+       "populationGrossMinusSpy": -0.00021
+      },
+      "2000-2007": {
+       "populationGross": -0.000096,
+       "populationNet": -0.000095,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2008-2012": {
+       "populationGross": -0.000333,
+       "populationNet": -0.000332,
+       "populationGrossMinusSpy": -0.000333
+      },
+      "2013-2019": {
+       "populationGross": -0.000414,
+       "populationNet": -0.000413,
+       "populationGrossMinusSpy": -0.000414
+      },
+      "2020-2025": {
+       "populationGross": -0.000015,
+       "populationNet": -0.000014,
+       "populationGrossMinusSpy": -0.000015
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000216,
+       "populationNet": -0.000215,
+       "populationGrossMinusSpy": -0.000215
+      },
+      "2000-2007": {
+       "populationGross": -0.000096,
+       "populationNet": -0.000095,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2008-2012": {
+       "populationGross": -0.000332,
+       "populationNet": -0.000331,
+       "populationGrossMinusSpy": -0.000333
+      },
+      "2013-2019": {
+       "populationGross": -0.000432,
+       "populationNet": -0.000431,
+       "populationGrossMinusSpy": -0.000432
+      },
+      "2020-2025": {
+       "populationGross": -0.000021,
+       "populationNet": -0.000021,
+       "populationGrossMinusSpy": -0.000021
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000225,
+       "populationNet": -0.000225,
+       "populationGrossMinusSpy": -0.000225
+      },
+      "2000-2007": {
+       "populationGross": -0.000096,
+       "populationNet": -0.000095,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2008-2012": {
+       "populationGross": -0.000331,
+       "populationNet": -0.00033,
+       "populationGrossMinusSpy": -0.000331
+      },
+      "2013-2019": {
+       "populationGross": -0.000459,
+       "populationNet": -0.000457,
+       "populationGrossMinusSpy": -0.000459
+      },
+      "2020-2025": {
+       "populationGross": -0.000032,
+       "populationNet": -0.000032,
+       "populationGrossMinusSpy": -0.000032
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "cagr": -0.000266
+     },
+     "2000-2007": {
+      "cagr": -0.000222
+     },
+     "2008-2012": {
+      "cagr": -0.000155
+     },
+     "2013-2019": {
+      "cagr": -0.000671
+     },
+     "2020-2025": {
+      "cagr": 0.000025
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "cagr": -0.000275
+     },
+     "2000-2007": {
+      "cagr": -0.000222
+     },
+     "2008-2012": {
+      "cagr": -0.000155
+     },
+     "2013-2019": {
+      "cagr": -0.000683
+     },
+     "2020-2025": {
+      "cagr": 0.000001
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "cagr": -0.000288
+     },
+     "2000-2007": {
+      "cagr": -0.000222
+     },
+     "2008-2012": {
+      "cagr": -0.000154
+     },
+     "2013-2019": {
+      "cagr": -0.000707
+     },
+     "2020-2025": {
+      "cagr": -0.00003
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "priceMedian": -0.002133,
+    "totalReturnMedian": -0.004885
+   }
+  },
+  "F1wp_minus_F1w": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000023,
+       "populationNet": -0.000023,
+       "populationGrossMinusSpy": -0.000024
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000068,
+       "populationNet": -0.000067,
+       "populationGrossMinusSpy": -0.000068
+      },
+      "2020-2025": {
+       "populationGross": -0.000004,
+       "populationNet": -0.000004,
+       "populationGrossMinusSpy": -0.000004
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000078,
+       "populationNet": -0.000078,
+       "populationGrossMinusSpy": -0.000078
+      },
+      "2020-2025": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000027,
+       "populationNet": -0.000028,
+       "populationGrossMinusSpy": -0.000028
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000025,
+       "populationNet": -0.000025,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.00008,
+       "populationNet": -0.00008,
+       "populationGrossMinusSpy": -0.000081
+      },
+      "2020-2025": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.00001
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000031,
+       "populationNet": -0.00003,
+       "populationGrossMinusSpy": -0.000031
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000086,
+       "populationNet": -0.000085,
+       "populationGrossMinusSpy": -0.000085
+      },
+      "2020-2025": {
+       "populationGross": -0.000016,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000016
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000059,
+       "populationNet": -0.000059,
+       "populationGrossMinusSpy": -0.000059
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.000111,
+       "populationNet": -0.00011,
+       "populationGrossMinusSpy": -0.000111
+      },
+      "2013-2019": {
+       "populationGross": -0.000155,
+       "populationNet": -0.000155,
+       "populationGrossMinusSpy": -0.000155
+      },
+      "2020-2025": {
+       "populationGross": -0.000006,
+       "populationNet": -0.000006,
+       "populationGrossMinusSpy": -0.000006
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000075,
+       "populationNet": -0.000075,
+       "populationGrossMinusSpy": -0.000076
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.000111,
+       "populationNet": -0.00011,
+       "populationGrossMinusSpy": -0.000111
+      },
+      "2013-2019": {
+       "populationGross": -0.000207,
+       "populationNet": -0.000206,
+       "populationGrossMinusSpy": -0.000206
+      },
+      "2020-2025": {
+       "populationGross": -0.000017,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000016
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000079,
+       "populationNet": -0.000078,
+       "populationGrossMinusSpy": -0.000079
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.00011,
+       "populationNet": -0.00011,
+       "populationGrossMinusSpy": -0.00011
+      },
+      "2013-2019": {
+       "populationGross": -0.000211,
+       "populationNet": -0.00021,
+       "populationGrossMinusSpy": -0.000211
+      },
+      "2020-2025": {
+       "populationGross": -0.000027,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000027
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000085,
+       "populationNet": -0.000085,
+       "populationGrossMinusSpy": -0.000085
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.00011,
+       "populationNet": -0.000109,
+       "populationGrossMinusSpy": -0.000109
+      },
+      "2013-2019": {
+       "populationGross": -0.000217,
+       "populationNet": -0.000216,
+       "populationGrossMinusSpy": -0.000217
+      },
+      "2020-2025": {
+       "populationGross": -0.000048,
+       "populationNet": -0.000048,
+       "populationGrossMinusSpy": -0.000048
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000094,
+       "populationNet": -0.000094,
+       "populationGrossMinusSpy": -0.000095
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.000221,
+       "populationNet": -0.00022,
+       "populationGrossMinusSpy": -0.00022
+      },
+      "2013-2019": {
+       "populationGross": -0.000204,
+       "populationNet": -0.000203,
+       "populationGrossMinusSpy": -0.000204
+      },
+      "2020-2025": {
+       "populationGross": -0.000006,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000136,
+       "populationNet": -0.000136,
+       "populationGrossMinusSpy": -0.000136
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.000221,
+       "populationNet": -0.00022,
+       "populationGrossMinusSpy": -0.000221
+      },
+      "2013-2019": {
+       "populationGross": -0.000328,
+       "populationNet": -0.000327,
+       "populationGrossMinusSpy": -0.000328
+      },
+      "2020-2025": {
+       "populationGross": -0.00004,
+       "populationNet": -0.00004,
+       "populationGrossMinusSpy": -0.00004
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000142,
+       "populationNet": -0.000141,
+       "populationGrossMinusSpy": -0.000142
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.00022,
+       "populationNet": -0.000219,
+       "populationGrossMinusSpy": -0.00022
+      },
+      "2013-2019": {
+       "populationGross": -0.000336,
+       "populationNet": -0.000335,
+       "populationGrossMinusSpy": -0.000336
+      },
+      "2020-2025": {
+       "populationGross": -0.000054,
+       "populationNet": -0.000054,
+       "populationGrossMinusSpy": -0.000054
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000153,
+       "populationNet": -0.000152,
+       "populationGrossMinusSpy": -0.000152
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.000218,
+       "populationNet": -0.000217,
+       "populationGrossMinusSpy": -0.000218
+      },
+      "2013-2019": {
+       "populationGross": -0.000352,
+       "populationNet": -0.000351,
+       "populationGrossMinusSpy": -0.000352
+      },
+      "2020-2025": {
+       "populationGross": -0.000084,
+       "populationNet": -0.000083,
+       "populationGrossMinusSpy": -0.000084
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000166,
+       "populationNet": -0.000166,
+       "populationGrossMinusSpy": -0.000166
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000398,
+       "populationNet": -0.000397,
+       "populationGrossMinusSpy": -0.000398
+      },
+      "2013-2019": {
+       "populationGross": -0.000412,
+       "populationNet": -0.000411,
+       "populationGrossMinusSpy": -0.000412
+      },
+      "2020-2025": {
+       "populationGross": 0,
+       "populationNet": 0,
+       "populationGrossMinusSpy": 0
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000273,
+       "populationNet": -0.000272,
+       "populationGrossMinusSpy": -0.000273
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000399,
+       "populationNet": -0.000397,
+       "populationGrossMinusSpy": -0.000399
+      },
+      "2013-2019": {
+       "populationGross": -0.000738,
+       "populationNet": -0.000736,
+       "populationGrossMinusSpy": -0.000738
+      },
+      "2020-2025": {
+       "populationGross": -0.000082,
+       "populationNet": -0.000082,
+       "populationGrossMinusSpy": -0.000082
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.00028,
+       "populationNet": -0.00028,
+       "populationGrossMinusSpy": -0.00028
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000396,
+       "populationNet": -0.000395,
+       "populationGrossMinusSpy": -0.000396
+      },
+      "2013-2019": {
+       "populationGross": -0.000752,
+       "populationNet": -0.00075,
+       "populationGrossMinusSpy": -0.000753
+      },
+      "2020-2025": {
+       "populationGross": -0.000097,
+       "populationNet": -0.000096,
+       "populationGrossMinusSpy": -0.000097
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000296,
+       "populationNet": -0.000296,
+       "populationGrossMinusSpy": -0.000297
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000393,
+       "populationNet": -0.000392,
+       "populationGrossMinusSpy": -0.000393
+      },
+      "2013-2019": {
+       "populationGross": -0.000789,
+       "populationNet": -0.000787,
+       "populationGrossMinusSpy": -0.000789
+      },
+      "2020-2025": {
+       "populationGross": -0.000128,
+       "populationNet": -0.000127,
+       "populationGrossMinusSpy": -0.000128
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "cagr": -0.000496
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000443
+     },
+     "2013-2019": {
+      "cagr": -0.001255
+     },
+     "2020-2025": {
+      "cagr": -0.000134
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "cagr": -0.000518
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000441
+     },
+     "2013-2019": {
+      "cagr": -0.001288
+     },
+     "2020-2025": {
+      "cagr": -0.00019
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "cagr": -0.000559
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000438
+     },
+     "2013-2019": {
+      "cagr": -0.001369
+     },
+     "2020-2025": {
+      "cagr": -0.000275
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "priceMedian": -0.00262,
+    "totalReturnMedian": -0.003715
+   }
+  },
+  "F1dp_minus_F1d": {
+   "buyAndHold": {
+    "4": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000023,
+       "populationNet": -0.000022,
+       "populationGrossMinusSpy": -0.000022
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000027,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000065,
+       "populationNet": -0.000065,
+       "populationGrossMinusSpy": -0.000066
+      },
+      "2020-2025": {
+       "populationGross": -0.000003,
+       "populationNet": -0.000003,
+       "populationGrossMinusSpy": -0.000003
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000025
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000077,
+       "populationNet": -0.000076,
+       "populationGrossMinusSpy": -0.000077
+      },
+      "2020-2025": {
+       "populationGross": -0.000004,
+       "populationNet": -0.000004,
+       "populationGrossMinusSpy": -0.000005
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000027,
+       "populationNet": -0.000027,
+       "populationGrossMinusSpy": -0.000027
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000078,
+       "populationNet": -0.000079,
+       "populationGrossMinusSpy": -0.000079
+      },
+      "2020-2025": {
+       "populationGross": -0.000009,
+       "populationNet": -0.000009,
+       "populationGrossMinusSpy": -0.000009
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.00003,
+       "populationNet": -0.00003,
+       "populationGrossMinusSpy": -0.00003
+      },
+      "2000-2007": {
+       "populationGross": 0.000003,
+       "populationNet": 0.000003,
+       "populationGrossMinusSpy": 0.000003
+      },
+      "2008-2012": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      },
+      "2013-2019": {
+       "populationGross": -0.000083,
+       "populationNet": -0.000084,
+       "populationGrossMinusSpy": -0.000083
+      },
+      "2020-2025": {
+       "populationGross": -0.000016,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000016
+      }
+     }
+    },
+    "13": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000059,
+       "populationNet": -0.000058,
+       "populationGrossMinusSpy": -0.000058
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.000111,
+       "populationNet": -0.00011,
+       "populationGrossMinusSpy": -0.000111
+      },
+      "2013-2019": {
+       "populationGross": -0.000153,
+       "populationNet": -0.000152,
+       "populationGrossMinusSpy": -0.000153
+      },
+      "2020-2025": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000075,
+       "populationNet": -0.000074,
+       "populationGrossMinusSpy": -0.000075
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.000111,
+       "populationNet": -0.000111,
+       "populationGrossMinusSpy": -0.00011
+      },
+      "2013-2019": {
+       "populationGross": -0.000205,
+       "populationNet": -0.000204,
+       "populationGrossMinusSpy": -0.000204
+      },
+      "2020-2025": {
+       "populationGross": -0.000016,
+       "populationNet": -0.000016,
+       "populationGrossMinusSpy": -0.000016
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000078,
+       "populationNet": -0.000078,
+       "populationGrossMinusSpy": -0.000078
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.000111,
+       "populationNet": -0.000109,
+       "populationGrossMinusSpy": -0.00011
+      },
+      "2013-2019": {
+       "populationGross": -0.000209,
+       "populationNet": -0.000209,
+       "populationGrossMinusSpy": -0.000208
+      },
+      "2020-2025": {
+       "populationGross": -0.000026,
+       "populationNet": -0.000026,
+       "populationGrossMinusSpy": -0.000026
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000085,
+       "populationNet": -0.000084,
+       "populationGrossMinusSpy": -0.000085
+      },
+      "2000-2007": {
+       "populationGross": 0.000017,
+       "populationNet": 0.000017,
+       "populationGrossMinusSpy": 0.000018
+      },
+      "2008-2012": {
+       "populationGross": -0.00011,
+       "populationNet": -0.000109,
+       "populationGrossMinusSpy": -0.000109
+      },
+      "2013-2019": {
+       "populationGross": -0.000216,
+       "populationNet": -0.000214,
+       "populationGrossMinusSpy": -0.000215
+      },
+      "2020-2025": {
+       "populationGross": -0.000047,
+       "populationNet": -0.000047,
+       "populationGrossMinusSpy": -0.000047
+      }
+     }
+    },
+    "26": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000093,
+       "populationNet": -0.000093,
+       "populationGrossMinusSpy": -0.000093
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.00022,
+       "populationNet": -0.00022,
+       "populationGrossMinusSpy": -0.000221
+      },
+      "2013-2019": {
+       "populationGross": -0.000199,
+       "populationNet": -0.000199,
+       "populationGrossMinusSpy": -0.0002
+      },
+      "2020-2025": {
+       "populationGross": -0.000005,
+       "populationNet": -0.000005,
+       "populationGrossMinusSpy": -0.000005
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000135,
+       "populationNet": -0.000135,
+       "populationGrossMinusSpy": -0.000135
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.000221,
+       "populationNet": -0.00022,
+       "populationGrossMinusSpy": -0.000221
+      },
+      "2013-2019": {
+       "populationGross": -0.000325,
+       "populationNet": -0.000324,
+       "populationGrossMinusSpy": -0.000325
+      },
+      "2020-2025": {
+       "populationGross": -0.000038,
+       "populationNet": -0.000037,
+       "populationGrossMinusSpy": -0.000038
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.00014,
+       "populationNet": -0.000139,
+       "populationGrossMinusSpy": -0.00014
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.00022,
+       "populationNet": -0.000219,
+       "populationGrossMinusSpy": -0.000219
+      },
+      "2013-2019": {
+       "populationGross": -0.000333,
+       "populationNet": -0.000332,
+       "populationGrossMinusSpy": -0.000333
+      },
+      "2020-2025": {
+       "populationGross": -0.000052,
+       "populationNet": -0.000051,
+       "populationGrossMinusSpy": -0.000051
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000152,
+       "populationNet": -0.000151,
+       "populationGrossMinusSpy": -0.000151
+      },
+      "2000-2007": {
+       "populationGross": 0.000013,
+       "populationNet": 0.000013,
+       "populationGrossMinusSpy": 0.000013
+      },
+      "2008-2012": {
+       "populationGross": -0.000218,
+       "populationNet": -0.000217,
+       "populationGrossMinusSpy": -0.000218
+      },
+      "2013-2019": {
+       "populationGross": -0.000351,
+       "populationNet": -0.00035,
+       "populationGrossMinusSpy": -0.00035
+      },
+      "2020-2025": {
+       "populationGross": -0.000081,
+       "populationNet": -0.00008,
+       "populationGrossMinusSpy": -0.000081
+      }
+     }
+    },
+    "52": {
+     "V10_COMPLETED_ONLY": {
+      "FULL": {
+       "populationGross": -0.000165,
+       "populationNet": -0.000165,
+       "populationGrossMinusSpy": -0.000165
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000398,
+       "populationNet": -0.000397,
+       "populationGrossMinusSpy": -0.000398
+      },
+      "2013-2019": {
+       "populationGross": -0.000406,
+       "populationNet": -0.000406,
+       "populationGrossMinusSpy": -0.000407
+      },
+      "2020-2025": {
+       "populationGross": 0,
+       "populationNet": 0,
+       "populationGrossMinusSpy": 0
+      }
+     },
+     "TERMINAL_S0": {
+      "FULL": {
+       "populationGross": -0.000272,
+       "populationNet": -0.000271,
+       "populationGrossMinusSpy": -0.000272
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000399,
+       "populationNet": -0.000398,
+       "populationGrossMinusSpy": -0.000399
+      },
+      "2013-2019": {
+       "populationGross": -0.000735,
+       "populationNet": -0.000732,
+       "populationGrossMinusSpy": -0.000734
+      },
+      "2020-2025": {
+       "populationGross": -0.000079,
+       "populationNet": -0.000079,
+       "populationGrossMinusSpy": -0.000079
+      }
+     },
+     "TERMINAL_S1_MERGER_M10_OTHER_M30": {
+      "FULL": {
+       "populationGross": -0.000279,
+       "populationNet": -0.000278,
+       "populationGrossMinusSpy": -0.000279
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000395,
+       "populationNet": -0.000394,
+       "populationGrossMinusSpy": -0.000396
+      },
+      "2013-2019": {
+       "populationGross": -0.000749,
+       "populationNet": -0.000747,
+       "populationGrossMinusSpy": -0.00075
+      },
+      "2020-2025": {
+       "populationGross": -0.000093,
+       "populationNet": -0.000093,
+       "populationGrossMinusSpy": -0.000093
+      }
+     },
+     "TERMINAL_S2_MERGER_P10_OTHER_M100": {
+      "FULL": {
+       "populationGross": -0.000296,
+       "populationNet": -0.000294,
+       "populationGrossMinusSpy": -0.000295
+      },
+      "2000-2007": {
+       "populationGross": 0.000072,
+       "populationNet": 0.000071,
+       "populationGrossMinusSpy": 0.000072
+      },
+      "2008-2012": {
+       "populationGross": -0.000393,
+       "populationNet": -0.000392,
+       "populationGrossMinusSpy": -0.000393
+      },
+      "2013-2019": {
+       "populationGross": -0.000789,
+       "populationNet": -0.000786,
+       "populationGrossMinusSpy": -0.000788
+      },
+      "2020-2025": {
+       "populationGross": -0.000124,
+       "populationNet": -0.000124,
+       "populationGrossMinusSpy": -0.000124
+      }
+     }
+    }
+   },
+   "weeklyRebalancedEW": {
+    "S0_LAST_CLOSE": {
+     "FULL": {
+      "cagr": -0.000484
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000443
+     },
+     "2013-2019": {
+      "cagr": -0.001216
+     },
+     "2020-2025": {
+      "cagr": -0.000127
+     }
+    },
+    "S1_MERGER_M10_OTHER_M30": {
+     "FULL": {
+      "cagr": -0.000504
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000441
+     },
+     "2013-2019": {
+      "cagr": -0.001243
+     },
+     "2020-2025": {
+      "cagr": -0.000181
+     }
+    },
+    "S2_MERGER_P10_OTHER_M100": {
+     "FULL": {
+      "cagr": -0.000541
+     },
+     "2000-2007": {
+      "cagr": -0.000145
+     },
+     "2008-2012": {
+      "cagr": -0.000438
+     },
+     "2013-2019": {
+      "cagr": -0.001312
+     },
+     "2020-2025": {
+      "cagr": -0.000265
+     }
+    }
+   },
+   "delistedSubsetLifetime": {
+    "priceMedian": -0.001322,
+    "totalReturnMedian": -0.002741
+   }
+  }
+ },
+ "scope": "Descriptive population returns (no test registered for S2). Equal-weight weekly-rebalanced indices contain a rebalancing/bid-ask component (V11)."
+}
