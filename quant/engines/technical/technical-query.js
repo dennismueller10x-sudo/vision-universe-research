@@ -115,6 +115,8 @@
     { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
+    /* AP8 L4 (seit 1.12.0): Perzentilrang von rs6m, docs/technical/SCREENER_FIELDS_AP8_L4.md */
+    { id: "rsRank", group: "Relative Stärke", kind: "num", tfs: D, label: "RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
     { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
     { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
@@ -134,6 +136,9 @@
     { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    /* AP8 L5 (seit 1.12.0): bestaetigte Formationen nach Ausbruchsrichtung, docs/technical/SCREENER_FIELDS_AP8_L5.md */
+    { id: "formationConfirmedUp", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach oben", values: FORMATION_TYPES },
+    { id: "formationConfirmedDown", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach unten", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
     /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
        mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;

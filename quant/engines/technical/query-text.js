@@ -155,7 +155,7 @@
     ["choppiness( index)?( ?14)?|chop( ?14)?", "choppiness14"], ["historische volatilitaet|hist\\. volatilitaet|hv ?20", "histVol20"],
     ["ulcer( index)?", "ulcer14"], ["abstand zum chandelier(-?stop)?", "distChandelierLong"],
     ["abstand zur sma ?200|abstand zum 200er", "distSma200"], ["abstand zur sma ?150|abstand zum 150er", "distSma150"], ["steigung der sma ?200|veraenderung der sma ?200", "sma200Slope21"], ["abstand zur ema ?200", "distEma200"], ["abstand zum 52-?wochen-?hoch", "distHigh52w"], ["abstand (zum|ueber dem) 52-?wochen-?tief", "distLow52w"], ["abstand zum 200-?wochen-?hoch", "distHigh200w"],
-    ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
+    ["rs-?rang|rang der relativen staerke|relative[rn]? staerke-?rang", "rsRank"], ["relative staerke 3 ?m(onate)?|rs ?3m", "rs3m"], ["relative staerke( 6 ?m(onate)?)?|rs ?6m", "rs6m"],
     ["relative[mns]? volumen|rel\\. volumen|volumenfaktor", "relVol"], ["williams( ?%r)?|%r", "williamsR"], ["aroon(-?oszillator)?", "aroonOsc"],
     ["chaikin money flow|cmf( ?20)?", "cmf20"], ["money flow index|mfi( ?14)?", "mfi14"], ["stochastik( %k)?|%k", "stochK"],
     ["bollinger %b|%b", "bbPctB"], ["atr( ?%| in %| ?14)?", "atrPct"], ["rsi( ?14)?", "rsi14"], ["adx( ?14)?", "adx"], ["cci( ?20)?", "cci20"],
@@ -241,6 +241,12 @@
       var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
       return slot({ formations: types, confirmed: kind === "bestaetigt", text: m });
+    });
+    /* "bestaetigt-auf:TYP" / "bestaetigt-ab:TYP" = bestaetigt mit Ausbruch nach oben bzw. unten (seit 1.9.0, AP8 L5) */
+    text = text.replace(/\bbestaetigt-(auf|ab):([a-z_,]+)/g, function (m, dir, list) {
+      var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
+      if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
+      return slot({ filters: [{ field: dir === "auf" ? "formationConfirmedUp" : "formationConfirmedDown", op: "in", value: types }], text: m });
     });
     /* "offen:TYP,TYP" = Formation erkannt, noch ohne Ausbruch (formationOpen) */
     text = text.replace(/\boffen:([a-z_,]+)/g, function (m, list) {
@@ -365,6 +371,8 @@
         if (f.kind === "bool") return (x.value ? "" : "nicht ") + pre + x.field;
         if (x.field === "formationActive") return (x.op === "nin" ? "nicht-formation:" : "formation:") + x.value.join(",");
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
+        if (x.field === "formationConfirmedUp") return "bestaetigt-auf:" + x.value.join(",");
+        if (x.field === "formationConfirmedDown") return "bestaetigt-ab:" + x.value.join(",");
         if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
         if (x.field === "candleBullish" || x.field === "candleBearish" || x.field === "candleNeutral")

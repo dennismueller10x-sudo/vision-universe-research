@@ -349,7 +349,7 @@
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
     hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
     choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
-    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"], rsRank: ["pane", "rs"],
     relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
     cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
   };
@@ -472,7 +472,7 @@
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen" || x.field === "formationConfirmedUp" || x.field === "formationConfirmedDown") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 

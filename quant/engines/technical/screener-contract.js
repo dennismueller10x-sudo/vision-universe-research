@@ -27,7 +27,7 @@
 
   /* Wertebereiche der Abfragefelder (alle Zeitrahmen). Ohne Eintrag: endliche Zahl. pct = Anteil (0,05 = 5 %). */
   var RANGES = {
-    rsi14: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], choppiness14: [0, 100], connorsRsi: [0, 100],
+    rsi14: [0, 100], rsRank: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], choppiness14: [0, 100], connorsRsi: [0, 100],
     williamsR: [-100, 0], aroonOsc: [-100, 100], cmf20: [-1, 1], elderImpulse: [-1, 1],
     /* ATR % und relatives Volumen sind nach oben offen: Reverse-Split-Ketten (WHLR: Wochenschluss 402.408 -> 0,357 in
        70 Wochen, split-bereinigt) und Volumen-Median 0 ergeben echte, extreme Werte. */

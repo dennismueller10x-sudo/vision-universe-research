@@ -301,19 +301,24 @@
 
     /* ---- Formationen ---- */
     row.formationActive = []; row.formationConfirmed = []; row.formationOpen = []; row.formations = [];
+    /* Seit 1.12.0 (AP8 L5, docs/technical/SCREENER_FIELDS_AP8_L5.md): bestaetigte Formationen nach Ausbruchsrichtung.
+       Dieselben Formationen wie formationConfirmed, aufgeteilt nach breakout.direction (UP/DOWN); ohne Richtung in keiner. */
+    row.formationConfirmedUp = []; row.formationConfirmedDown = [];
     try {
       var series = input.series;
       var res = Fm.analyzeAt(Ctx.prepare(series), series.length - 1);
       res.formations.forEach(function (x) {
         if (x.state !== "INVALIDATED" && row.formationActive.indexOf(x.type) < 0) row.formationActive.push(x.type);
         if (x.state === "CONFIRMED" && row.formationConfirmed.indexOf(x.type) < 0) row.formationConfirmed.push(x.type);
+        var dirList = x.state === "CONFIRMED" && x.breakout ? { UP: row.formationConfirmedUp, DOWN: row.formationConfirmedDown }[x.breakout.direction] : null;
+        if (dirList && dirList.indexOf(x.type) < 0) dirList.push(x.type);
         if (x.state === "DETECTED" && row.formationOpen.indexOf(x.type) < 0) row.formationOpen.push(x.type);
         /* [Typ, Zustand, erkannt, Ausbruchstag, Ausbruchsrichtung, Kennzeichen]: Kennzeichen "B" = bei Erkennung bereits
            ausgebrochen, "V" = vorlaeufiger Kanal (4 Punkte), "O" = Richtung offen. */
         if (x.state !== "INVALIDATED") row.formations.push([x.type, x.state, x.detectedAt, x.breakout ? x.breakout.at : null, x.breakout ? x.breakout.direction : null,
           (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
-    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+    } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationConfirmedUp = null; row.formationConfirmedDown = null; row.formationError = String(e && e.message || e).slice(0, 80); }
 
     /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
     Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
@@ -390,7 +395,29 @@
     return row;
   }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen,
+  /**
+   * RS-Rang (seit 1.12.0, AP8 L4, docs/technical/SCREENER_FIELDS_AP8_L4.md): Perzentilrang von rs6m ueber das Universum.
+   *   Universum: Zeilen mit fresh === true und endlichem rs6m (aktuell und gueltig auswertbar); alle anderen: rsRank = null.
+   *   Richtung:  hoeheres rs6m = hoeherer Rang.
+   *   Rang:      100 * (B + (E - 1) / 2) / (N - 1); B = Zahl kleinerer Werte, E = Zahl gleicher Werte (inkl. eigener),
+   *              N = Groesse des Universums. Schwaechster Titel 0, staerkster 100, Gleichstaende in der Mitte; N = 1 -> 50.
+   *   Gerundet auf eine Nachkommastelle. Eine Kennzahl dieses Produkts, keine Bewertung eines Drittanbieters.
+   */
+  function rankRs(rows) {
+    var U = rows.filter(function (r) { return r.fresh === true && isNum(r.rs6m); });
+    rows.forEach(function (r) { r.rsRank = null; });
+    var v = U.map(function (r) { return r.rs6m; }).sort(function (a, b) { return a - b; }), N = v.length;
+    function lower(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] < x) lo = m + 1; else hi = m; } return lo; }
+    function upper(x) { var lo = 0, hi = N; while (lo < hi) { var m = (lo + hi) >> 1; if (v[m] <= x) lo = m + 1; else hi = m; } return lo; }
+    U.forEach(function (r) {
+      var B = lower(r.rs6m), E = upper(r.rs6m) - B;
+      r.rsRank = N === 1 ? 50 : r1(100 * (B + (E - 1) / 2) / (N - 1));
+    });
+    return N;
+  }
+  function r1(v) { return Math.round(v * 10) / 10; }
+
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen, rankRs: rankRs,
               STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }

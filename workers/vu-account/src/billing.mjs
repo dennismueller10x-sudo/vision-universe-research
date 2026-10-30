@@ -105,8 +105,7 @@ export async function checkout(ctx) {
   const session = await ctx.stripe.createCheckoutSession({
     mode: 'subscription', customer, client_reference_id: user.id,
     line_items: [{price: price.provider_price_id, quantity: 1}],
-    subscription_data: {metadata: {vu_user_id: user.id, vu_price_key: key},
-      ...(ctx.cfg.stripe.tax.mode === 'rate' ? {default_tax_rates: [ctx.cfg.stripe.tax.rate]} : {})},
+    subscription_data: {metadata: {vu_user_id: user.id, vu_price_key: key}},
     metadata: {vu_user_id: user.id, vu_price_key: key, vu_confirmation: CHECKOUT_CONFIRMATION_VERSION,
       vu_confirmed_at: new Date(ctx.now()).toISOString(), vu_legal_version: ctx.cfg.legal.version},
     success_url: `${site}${SITE_PATHS.subscription}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
@@ -132,38 +131,33 @@ export function checkoutSubmitText(price) {
     + `Es gelten die Bedingungen (${LEGAL_BASE}/rechtliches/agb) und die Widerrufsbelehrung (${LEGAL_BASE}/rechtliches/widerrufsbelehrung).`;
 }
 
-// Warum die Steuerkonfiguration einen hoeheren als den angezeigten Bruttopreis ergeben koennte - oder null.
-// Steuersatz (txr_) wird hoechstens alle 10 Minuten bei Stripe gelesen.
-let taxRateCache = {id: null, at: 0, value: null};
-export async function taxRateState(ctx) {
-  const tax = ctx.cfg.stripe.tax;
-  if (tax.mode !== 'rate') return null;
-  if (taxRateCache.id !== tax.rate || ctx.now() - taxRateCache.at > 600_000) {
+// Warum die Steuerkonfiguration einen anderen als den angezeigten Bruttopreis ergeben koennte - oder null.
+// Stripe Tax muss im Konto aktiv sein; gelesen hoechstens alle 10 Minuten.
+let taxCache = {at: 0, value: null};
+export async function stripeTaxState(ctx) {
+  if (ctx.now() - taxCache.at > 600_000 || !taxCache.value) {
     let value;
     try {
-      const r = await ctx.stripe.retrieveTaxRate(tax.rate);
-      value = !r.active ? 'TAX_RATE_INACTIVE' : r.inclusive !== true ? 'TAX_RATE_NOT_INCLUSIVE'
-        : Boolean(r.livemode) !== (ctx.cfg.stripe.mode === 'live') ? 'TAX_RATE_LIVEMODE' : 'ok';
-    } catch (e) { value = 'TAX_RATE_UNREADABLE'; }
-    taxRateCache = {id: tax.rate, at: ctx.now(), value};
+      const s = await ctx.stripe.retrieveTaxSettings();
+      value = s.status === 'active' ? 'ok' : `STRIPE_TAX_${String(s.status || 'unknown').toUpperCase()}`;
+    } catch { value = 'STRIPE_TAX_UNREADABLE'; }
+    taxCache = {at: ctx.now(), value};
   }
-  return taxRateCache.value;
+  return taxCache.value;
 }
-export const resetTaxRateCache = () => { taxRateCache = {id: null, at: 0, value: null}; };
+export const resetTaxCache = () => { taxCache = {at: 0, value: null}; };
 async function taxProblemFor(ctx, stripePrice) {
-  const tax = ctx.cfg.stripe.tax;
-  if (tax.mode === 'none') return null;
+  if (ctx.cfg.stripe.tax.mode !== 'automatic') return null;
   if (stripePrice.tax_behavior !== 'inclusive') return 'PRICE_NOT_INCLUSIVE';
-  if (tax.mode === 'rate') { const s = await taxRateState(ctx); return s === 'ok' ? null : s; }
-  return null;
+  const s = await stripeTaxState(ctx);
+  return s === 'ok' ? null : s;
 }
 
-// Umsatzsteuer im Checkout: der Preis ist brutto (tax_behavior=inclusive); ein inklusiver Steuersatz bzw.
-// Stripe Tax weisen die enthaltene Steuer auf der Rechnung aus, ohne den Betrag zu erhoehen.
+// Umsatzsteuer im Checkout: der Preis ist brutto (tax_behavior=inclusive). Stripe Tax rechnet die enthaltene Steuer
+// heraus und weist sie auf Rechnung und Beleg aus, ohne den Betrag zu erhoehen; das Abo uebernimmt automatic_tax fuer
+// jede Verlaengerung. Das Kundenland kommt aus der Rechnungsadresse (billing_address_collection, customer_update).
 export function checkoutTax(tax) {
-  if (tax?.mode === 'automatic') return {automatic_tax: {enabled: 'true'}};
-  // Steuersatz: wird ueber subscription_data.default_tax_rates gesetzt (siehe checkout).
-  return {};
+  return tax?.mode === 'automatic' ? {automatic_tax: {enabled: 'true'}} : {};
 }
 
 export async function portal(ctx) {
