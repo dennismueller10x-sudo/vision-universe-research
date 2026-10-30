@@ -22,7 +22,10 @@ test("Vorlagen: Definitionen gueltig, Freigabe-Umfang S1, keine Signal- oder Ren
   const ids = T.list().map((t) => t.id);
   for (const p of Q.PRESETS) assert.ok(ids.includes(p.id), "bestehende Vorlage fehlt: " + p.id);
   for (const id of ["uptrendBasic", "triangleOpen", "triangleOpenUptrend", "triangleBreakoutUp"]) assert.ok(ids.includes(id), id);
-  assert.equal(ids.length, Q.PRESETS.length + 4, "keine zusaetzlichen Vorlagen ausser V1a und V2");
+  // S3: "Etablierter Aufwaertstrend" nur, wenn die S2-Felder im Katalog stehen
+  const v1 = T.TEMPLATES.find((t) => t.id === "establishedUptrend");
+  assert.equal(ids.includes("establishedUptrend"), T.available(v1));
+  assert.equal(ids.length, Q.PRESETS.length + 4 + (T.available(v1) ? 1 : 0), "keine zusaetzlichen Vorlagen ausser V1, V1a und V2");
   assert.deepEqual(T.BLOCKS.map((b) => b.id), ["kurz", "mittel", "lang", "stark"]);
   assert.match(T.LIMITS, /kein Kauf- oder Verkaufssignal/);
   for (const t of T.list()) assert.ok(T.GROUPS.some((g) => g.id === t.group), t.id + ": Gruppe");
@@ -94,7 +97,14 @@ test("Vorlagen: Ausbruchsrichtung liest nur bestaetigte Dreiecke; nach oben und 
   assert.ok(nUp > 0 && nDown > 0 && nUp + nDown >= nConf);
   const r = T.evaluate(ds, T.get("triangleBreakoutUp"));
   for (const e of r.full) assert.ok(up(e.i) === true);
-  assert.equal(T.toQuery(T.get("triangleBreakoutUp")).dropped.length, 1, "Richtung ist im Baukasten nicht waehlbar und wird genannt");
+  // Ohne L5 nennt die Vorlage die Richtung als im Baukasten nicht waehlbar; mit L5 ist sie ein Abfragefeld
+  const hasL5 = !!Q.field("formationConfirmedUp");
+  assert.equal(T.toQuery(T.get("triangleBreakoutUp")).dropped.length, hasL5 ? 0 : 1);
+  if (hasL5 && ds.column("formationConfirmedUp")) {
+    const viaField = new Set(T.evaluate(ds, T.get("triangleBreakoutUp")).full.map((e) => e.i));
+    const viaColumn = new Set(T.evaluate(ds, { criteria: [{ filter: { kind: "formationDirection", types: TRI, direction: "UP" } }] }).full.map((e) => e.i));
+    assert.deepEqual([...viaField].sort(), [...viaColumn].sort(), "Abfragefeld = Richtung aus der Spalte formations");
+  }
 });
 
 test("Vorlagen: erfuellt = Abfrage-Engine mit denselben Filtern (ohne Richtungskriterium)", () => {
@@ -138,4 +148,24 @@ test("Vorlagen: Laufzeit - alle Vorlagen ueber das ganze Universum unter 250 ms 
   for (let k = 0; k < 5; k++) { const t0 = performance.now(); T.counts(ds); runs.push(performance.now() - t0); }
   runs.sort((a, b) => a - b);
   assert.ok(runs[2] < 250, "Median " + runs[2].toFixed(1) + " ms");
+});
+
+test("S3: Etablierter Aufwaertstrend - acht Kriterien, kombinierte Kriterien, erfuellt = Abfrage-Engine", () => {
+  const v1 = T.TEMPLATES.find((t) => t.id === "establishedUptrend");
+  assert.equal(v1.criteria.length, 8);
+  assert.doesNotMatch(JSON.stringify(v1), /Minervini|IBD|zertifiz|offiziell/i, "keine Namensnennung, keine offizielle Verbindung");
+  assert.deepEqual(v1.criteria.map((c) => c.filter.kind === "all" ? c.filter.filters.map((f) => f.field).join("+") : c.filter.field),
+    ["aboveSma150+aboveSma200", "sma150AboveSma200", "sma200Rising", "sma50AboveSma150+sma50AboveSma200", "aboveSma50", "distLow52w", "distHigh52w", "rsRank"]);
+  assert.deepEqual([v1.criteria[5].filter.op, v1.criteria[5].filter.value, v1.criteria[6].filter.value, v1.criteria[7].filter.value], ["gte", 0.3, -0.25, 70]);
+  if (!T.available(v1) || !ds.column("rsRank")) return; // vor S2
+  const t = T.get("establishedUptrend"), r = T.evaluate(ds, t), tq = T.toQuery(t);
+  assert.equal(tq.dropped.length, 0);
+  assert.equal(Q.evaluate(ds, Object.assign({}, tq.query, { limit: 1 })).count, r.full.length);
+});
+
+test("S3: kombiniertes Kriterium - eine Bedingung nicht erfuellt -> nicht erfuellt, sonst unbekannt -> unbekannt", () => {
+  const cols = { s: ["A", "B", "C", "D"], fresh: [true, true, true, true], aboveSma50: [true, false, null, null], aboveSma200: [true, true, true, false] };
+  const d = Q.createDataset({ cols });
+  const p = T.predicate(d, { kind: "all", filters: [{ field: "aboveSma50", op: "is", value: true }, { field: "aboveSma200", op: "is", value: true }] });
+  assert.deepEqual([p(0), p(1), p(2), p(3)], [true, false, null, false]);
 });
