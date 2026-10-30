@@ -230,7 +230,12 @@ await page.request.post(`${base}/__dev/pricing-admin?email=${encodeURIComponent(
 await page.reload();
 await page.waitForSelector('#ka-pricing-wrap:not([hidden])');
 check((await page.textContent('#pa-prices')).includes('stimmt überein, inkl. USt'), 'Tarifverwaltung: Stripe-Abgleich sichtbar');
-await page.fill('#pa-amount', '24,90');
+// Aktueller Preis + 1 EUR: die QA laeuft je Engine gegen dieselbe Datenbank, ein fester Betrag waere beim zweiten Mal unveraendert.
+const newPrice = await page.evaluate(() => {
+  const cents = Number(document.querySelector('#pa-price').selectedOptions[0].textContent.match(/([\d.]+),(\d{2})/).slice(1).join('').replace('.', '')) + 100;
+  return `${Math.floor(cents / 100)},${String(cents % 100).padStart(2, '0')}`;
+});
+await page.fill('#pa-amount', newPrice);
 await page.click('#pa-preview-form button[type=submit]');
 await page.waitForSelector('#pa-apply-form:not([hidden])');
 check((await page.textContent('#pa-summary')).includes('Bestehende Abos'), 'Tarifverwaltung: Zusammenfassung vor der Aenderung');
@@ -243,8 +248,9 @@ await page.check('#pa-confirm');
 await page.fill('#pa-password', password);
 await page.click('#pa-apply-form button[type=submit]');
 await page.waitForFunction(() => document.querySelector('#ka-status').getAttribute('data-kind') === 'ok');
-await page.waitForFunction(() => document.querySelector('#pa-log').textContent.includes('angewendet'));
-check((await page.textContent('#pa-prices')).includes('24,90'), 'Tarifverwaltung: neuer Preis aktiv, Protokoll');
+const shown = await page.waitForFunction(p => document.querySelector('#pa-prices').textContent.includes(p)
+  && document.querySelector('#pa-log').textContent.includes(p), newPrice, {timeout: 10000}).then(() => true, () => false);
+check(shown, 'Tarifverwaltung: neuer Preis aktiv, Protokoll');
 await shot(page, 'tarifverwaltung-geaendert');
 
 // Abmelden
