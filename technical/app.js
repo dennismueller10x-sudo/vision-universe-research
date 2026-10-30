@@ -694,7 +694,8 @@
         el("div", { class: "tc-filter-body" }, [
           el("ol", { class: "tc-crit-list" }, t.criteria.map(function (x, k) {
             var m = MARK[ck.states[k]], f = x.filter, v = f.kind ? null : row[Q.columnKey(f.field, f.tf || "1D")];
-            var val = f.kind || v === null || v === undefined || Array.isArray(v) ? "" : " · " + valueText(f.field, v);
+            /* Ja/Nein steht schon im Status ("erfüllt"/"nicht erfüllt"); gezeigt werden nur Zahlenwerte. */
+            var val = f.kind || v === null || v === undefined || Array.isArray(v) || typeof v === "boolean" ? "" : " · " + valueText(f.field, v);
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
           el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
