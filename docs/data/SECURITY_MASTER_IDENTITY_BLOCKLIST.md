@@ -97,5 +97,7 @@ Den Leser auf die neue Generation umzustellen ist ein eigener Schritt mit eigene
 | Test | prüft |
 |---|---|
 | SMB-1…4 | Klassen, fail closed, Bindung an beide Stämme, Nachweis des Probelaufs |
-| SMF-1…7 | Freeze und Sperre: Pflicht, Bindung, `BLOCKLISTED_BUT_PRESENT`, `NEW_IN_NEW`, Formfehler; SMF-7: nur nachrechenbare Listen |
+| SMF-1…8 | Freeze und Sperre: Pflicht, Bindung, `BLOCKLISTED_BUT_PRESENT`, `NEW_IN_NEW`, Formfehler. SMF-7: nur nachrechenbare Listen. SMF-8: `compare` über die CLI nur für Generationen, deren Sperrliste beim Bau nachgerechnet wurde (`lineage.identityBlocklist.reproduced`) |
+
+**Betrieb:** Die Sperrliste wird unmittelbar vor `build-post-switch` erzeugt. Das Nachrechnen liest die aktuellen Tagesreihen; ändern sie sich zwischendurch, bricht der Bau ab (fail closed). Der Alarm-Job meldet nur das Ergebnis des Laufs. Ein grüner Lauf mit `commit=false` schließt ein offenes Issue, auch wenn nichts übernommen wurde; maßgeblich bleibt der Gate-Bericht im CI-Artefakt.
 | SMA-1 | Alarm |

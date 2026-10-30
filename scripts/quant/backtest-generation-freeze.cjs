@@ -99,7 +99,7 @@ function verify({generations,manifest}){
 }
 
 /** Neue Generation nach dem Wechsel: nur in eine NEUE private Wurzel; die eingefrorene bleibt bytegleich (vorher und nachher geprüft). */
-function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=null,expectMasterVersion=TARGET_MASTER_VERSION,materializeFn=null}={}){
+function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=null,blocklistReproduced=false,expectMasterVersion=TARGET_MASTER_VERSION,materializeFn=null}={}){
  if(!frozen||!output||!manifest)throw Error('FROZEN_MANIFEST_AND_OUTPUT_REQUIRED');
  const old=real(frozen),next=real(output);
  if(inside(old,next)||inside(next,old))throw Error('POST_SWITCH_OUTPUT_MUST_BE_SEPARATE_ROOT');
@@ -125,7 +125,7 @@ function buildPostSwitch({root=ROOT,frozen,manifest,output,ids=null,blocklist=nu
  const lineage={schema:LINEAGE_SCHEMA,predecessor:{generation:manifest.release.generation,masterHash:manifest.release.masterHash,freezeFilesSha256:manifest.filesSha256},
   successor:{generation:report.generation,state:report.state,masterHash:A.hash(masterBytes),masterVersion:master.version,expected:report.expected},
   frozenRootVerified:{before:before.state,after:after.state},publiclyActivated:false,readerSwitch:'OWNER_STEP_NOT_PERFORMED',
-  identityBlocklist:{sha256:blocklist.sha256,count:blocked.size,excludedFromScope:full.filter(id=>blocked.has(id))}};
+  identityBlocklist:{sha256:blocklist.sha256,count:blocked.size,reproduced:blocklistReproduced===true,excludedFromScope:full.filter(id=>blocked.has(id))}};
  fs.writeFileSync(path.join(next,'lineage.json.tmp'),JSON.stringify(lineage,null,1)+'\n');fs.renameSync(path.join(next,'lineage.json.tmp'),path.join(next,'lineage.json'));
  return lineage;
 }
@@ -202,7 +202,7 @@ if(require.main===module){
    const manifest=json(get('--manifest')),blocklist=loadBlocklist(need('--blocklist'));
    const prevFile=need('--prev-master');if(sha(fs.readFileSync(prevFile,'utf8'))!==manifest.release.masterHash)throw Error('PREV_MASTER_NOT_FROZEN_MASTER');
    await reproduceBlocklist({blocklist,prevMasterFile:prevFile,nextMasterFile:path.join(ROOT,MASTER),seriesDir:get('--series-dir')||path.join(ROOT,'quant/data/market/discover-series')});
-   console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest,output:get('--output'),ids:get('--ids')?.split(',')||null,blocklist})));}
+   console.log(JSON.stringify(buildPostSwitch({frozen:get('--frozen'),manifest,output:get('--output'),ids:get('--ids')?.split(',')||null,blocklist,blocklistReproduced:true})));}
   else if(cmd==='compare'){if(!get('--out'))throw Error('OUT_REQUIRED');// mehrere --approved zulässig
   const files=args.flatMap((a,i)=>a==='--approved'?[args[i+1]]:[]);if(files.some(f=>!f||f.startsWith('--')))throw Error('APPROVED_FILE_REQUIRED');
   // Freigabelisten 1.0.0 und 1.1.0 (#1143): jede dort genannte securityId gilt als erwartete Änderung
@@ -210,6 +210,9 @@ if(require.main===module){
   // Freigabelisten nur mit bekanntem Schema und, wo vorhanden, an denselben alten Stamm gebunden (Review #1159)
   const lists=files.map(json);for(const ap of lists){if(!['security-master-approved-changes-1.0.0','security-master-approved-changes-1.1.0'].includes(ap.schema))throw Error('APPROVED_SCHEMA_UNKNOWN');if(ap.prevMasterSha256!==blocklist.prevMasterSha256)throw Error('APPROVED_FOR_OTHER_PREVIOUS_MASTER');}
   const ids=lists.flatMap(ap=>['instrumentTypeChanges','eligibilityFlips','canonicalIdChanges','deactivations','tickerChanges','nameChanges'].flatMap(k=>(ap[k]||[]).map(x=>x.securityId)));
+  // Produktionsweg: nur eine Generation, deren Sperrliste beim Bau aus den Stämmen nachgerechnet wurde (Review #1159 m1)
+  const lin=path.join(path.resolve(get('--output')),'lineage.json');
+  if(!fs.existsSync(lin)||JSON.parse(fs.readFileSync(lin)).identityBlocklist?.reproduced!==true)throw Error('BLOCKLIST_NOT_REPRODUCED_AT_BUILD');
   const r=compare({frozen:get('--frozen'),output:get('--output'),approvedIds:[...new Set(ids)],blocklist});write(get('--out'),r);console.log(JSON.stringify({state:r.state,classes:r.classes}));if(r.state!=='ONLY_APPROVED_CHANGES')process.exitCode=1;}
   else throw Error('UNKNOWN_COMMAND');
  }catch(e){console.error(e.message);process.exitCode=2;}})();

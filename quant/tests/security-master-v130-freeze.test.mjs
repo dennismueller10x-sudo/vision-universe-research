@@ -112,7 +112,7 @@ test('SMF-5 · nach dem Wechsel: neue Generation in neuer Wurzel, alte bytegleic
 test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, der Vergleich verlangt genau das, Formfehler brechen ab',()=>{
  const STOP='ref_MSFT',bl=join(folder,'identity-blocklist.json'),none=globalThis.__smfNone;
  const write=(o)=>fs.writeFileSync(bl,JSON.stringify({schema:F.BLOCKLIST_SCHEMA,generator:F.BLOCKLIST_GENERATOR,prevMasterSha256:none.prevMasterSha256,nextMasterSha256:none.nextMasterSha256,entries:[{securityId:STOP,reason:'START_DATE_CHANGED'}],...o}));
- write({});const list=F.loadBlocklist(bl);
+ write({});const list=F.loadBlocklist(bl);fs.copyFileSync(bl,bl+'.good');
  const lineage=F.buildPostSwitch({root:fixture,frozen:oldRoot,manifest,output:newRoot+'-bl',blocklist:list});
  assert.deepEqual(lineage.identityBlocklist.excludedFromScope,[STOP]);assert.equal(lineage.identityBlocklist.count,1);assert.equal(lineage.identityBlocklist.sha256,list.sha256);
  assert.equal(fs.existsSync(join(newRoot+'-bl',lineage.successor.generation,'listings',STOP)),false,'gesperrte ID nicht gebaut');
@@ -155,4 +155,14 @@ test('SMF-7 · Sperrliste nur, wenn sie sich aus den tatsächlichen Stämmen nac
  fs.writeFileSync(out,JSON.stringify(exp));
  await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args,prevMasterFile:nextFile}),/BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER/);
  await assert.rejects(F.reproduceBlocklist({blocklist:F.loadBlocklist(out),...args,nextMasterFile:prevFile}),/BLOCKLIST_FOR_OTHER_PREVIOUS_MASTER|BLOCKLIST_NOT_FROM_COMMITTED_MASTER/);
+});
+
+test('SMF-8 · CLI: compare nur für Generationen mit beim Bau nachgerechneter Sperrliste; build-post-switch ohne --prev-master bricht ab',()=>{
+ const cli=(...a)=>require('node:child_process').spawnSync(process.execPath,[join(root,'scripts/quant/backtest-generation-freeze.cjs'),...a],{encoding:'utf8'});
+ const bl=join(folder,'identity-blocklist.json.good'),gen=newRoot+'-bl';
+ assert.equal(JSON.parse(fs.readFileSync(join(gen,'lineage.json'))).identityBlocklist.reproduced,false,'API-Bau ohne Nachrechnen');
+ const c=cli('compare','--frozen',oldRoot,'--output',gen,'--blocklist',bl,'--out',join(folder,'cmp.json'));
+ assert.equal(c.status,2);assert.match(c.stderr,/BLOCKLIST_NOT_REPRODUCED_AT_BUILD/);
+ const b=cli('build-post-switch','--frozen',oldRoot,'--manifest',join(folder,'none.json'),'--output',newRoot+'-cli','--blocklist',bl);
+ assert.equal(b.status,2);assert.equal(fs.existsSync(newRoot+'-cli'),false);
 });
