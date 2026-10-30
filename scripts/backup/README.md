@@ -53,4 +53,4 @@ VU_TEST_PYTHON=/tmp/vu-venv/bin/python scripts/backup/tests/synthetic-test.sh
 
 Der Test braucht `restic`, `rclone`, `git` und `python3`. Er startet einen lokalen S3-Emulator mit Versionierung und Object Lock sowie einen API-Fake. Er stellt keine Verbindung zu echten Diensten her.
 
-Einrichtung: **[docs/SETUP_IPHONE.md](docs/SETUP_IPHONE.md)**, Secrets und Variablen: [docs/SECRETS.md](docs/SECRETS.md). Weitere Anleitungen: [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md), [docs/MOBILE.md](docs/MOBILE.md), [docs/RESTORE.md](docs/RESTORE.md), [docs/TESTPLAN.md](docs/TESTPLAN.md), [docs/B2_PHASE2_IPHONE.md](docs/B2_PHASE2_IPHONE.md), [docs/ACCOUNT_DB_BACKUP.md](docs/ACCOUNT_DB_BACKUP.md).
+Einrichtung: **[docs/SETUP_IPHONE.md](docs/SETUP_IPHONE.md)**, Secrets und Variablen: [docs/SECRETS.md](docs/SECRETS.md). Git-Speicher und Grenzen: [docs/GIT_STORAGE.md](docs/GIT_STORAGE.md). Weitere Anleitungen: [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md), [docs/MOBILE.md](docs/MOBILE.md), [docs/RESTORE.md](docs/RESTORE.md), [docs/TESTPLAN.md](docs/TESTPLAN.md), [docs/B2_PHASE2_IPHONE.md](docs/B2_PHASE2_IPHONE.md), [docs/ACCOUNT_DB_BACKUP.md](docs/ACCOUNT_DB_BACKUP.md).

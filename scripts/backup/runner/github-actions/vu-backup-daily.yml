@@ -84,6 +84,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     environment: backup
+    outputs:
+      space_warn: ${{ steps.run.outputs.space_warn }}
     env:
       RESTIC_REPOSITORY: ${{ secrets.RESTIC_REPOSITORY }}
       RESTIC_PASSWORD: ${{ secrets.RESTIC_PASSWORD }}
@@ -94,6 +96,7 @@ jobs:
       VU_SOURCES: ${{ vars.VU_SOURCES || 'git github-meta gh-artifacts r2 cf-kv cf-config brevo' }}
       VU_GIT_MODE: bundle
       VU_GIT_EXPECTED_GB: ${{ vars.VU_GIT_EXPECTED_GB || '20' }}   # nur Erstlauf; danach aus dem Manifest
+      VU_GIT_WARN_GB: ${{ vars.VU_GIT_WARN_GB || '16' }}           # Restplatz nach dem Klon darunter: Speicherwarnung per E-Mail
       VU_GIT_REPOS: ${{ vars.VU_GIT_REPOS }}
       VU_GITHUB_REPOS: ${{ vars.VU_GITHUB_REPOS }}
       VU_GITHUB_TOKEN: ${{ secrets.VU_GITHUB_READ_TOKEN }}
@@ -119,6 +122,7 @@ jobs:
       - name: Schluessel pruefen
         run: python3 scripts/backup/bin/vu-key-check.py writer
       - name: Ausfuehren
+        id: run
         env:
           A: ${{ needs.gate.outputs.action }}
         run: |
@@ -133,6 +137,10 @@ jobs:
             maintain-plan)  "$B/vu-maintain.sh" plan ;;
             maintain-apply) "$B/vu-maintain.sh" apply ;;
           esac
+          rc=$?
+          # Platzwarnung der Git-Sicherung an den Bericht weitergeben (E-Mail ueber den Healthcheck)
+          grep -qs 'Speicher knapp\|zu wenig Speicher' "${VU_STATUS_DIR:-$VU_WORK/status}"/gitb-*.json && echo "space_warn=true" >> "$GITHUB_OUTPUT"
+          exit "$rc"
       - name: Werkzeuge unabhaengig im Ziel ablegen (ohne Secrets, fuer Wiederherstellung ohne GitHub)
         if: needs.gate.outputs.action == 'backup' || needs.gate.outputs.action == 'backup-tier2'
         run: |
@@ -155,12 +163,13 @@ jobs:
           DB: ${{ needs.db.result }}
           FILES: ${{ needs.files.result }}
           A: ${{ needs.gate.outputs.action }}
+          SPACE_WARN: ${{ needs.files.outputs.space_warn }}
           HC: ${{ secrets.VU_HEALTHCHECK_URL }}
           VU_S3_ENDPOINT: ${{ vars.B2_ENDPOINT }}
           VU_S3_BUCKET: ${{ vars.B2_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.B2_WRITER_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_WRITER_KEY }}
-          REPO_SIZE_WARN_GB: ${{ vars.VU_REPO_SIZE_WARN_GB || '40' }}
+          REPO_SIZE_WARN_GB: ${{ vars.VU_REPO_SIZE_WARN_GB || '26' }}   # Runner-Grenze ~34 GB Mirror (Messung 30.10.2026)
           SRC_REPO: ${{ vars.VU_GITHUB_REPOS }}
         run: |
           set -uo pipefail
@@ -177,8 +186,11 @@ jobs:
           fi
           warn=""
           python3 -c "import sys; sys.exit(0 if '$size'=='?' or float('$size')<float('$REPO_SIZE_WARN_GB') else 1)" || warn=" (Repository groesser als ${REPO_SIZE_WARN_GB} GB: Runner-Platz pruefen)"
+          [ "${SPACE_WARN:-}" = true ] && warn="$warn (Git-Sicherung: Speicher knapp)"
           if [ -n "${HC:-}" ]; then
-            suffix=""; [ "$ok" = true ] || suffix="/fail"
-            printf 'VU Backup %s: DB=%s Dateien=%s%s\n' "$A" "$DB" "$FILES" "$warn" | curl -fsS -m 20 --retry 3 --data-binary @- "${HC}${suffix}" >/dev/null || echo "Healthcheck nicht erreichbar"
+            # Speicherwarnung meldet sich wie ein Fehler (E-Mail), obwohl die Sicherung gelungen ist:
+            # vor der Runner-Grenze muss der Ausweich-Runner vorbereitet werden (docs/GIT_STORAGE.md).
+            suffix=""; [ "$ok" = true ] && [ -z "$warn" ] || suffix="/fail"
+            printf 'VU Backup %s: DB=%s Dateien=%s%s\n' "$A" "$DB" "$FILES" "${warn:+ SPEICHERWARNUNG, Sicherung selbst $([ "$ok" = true ] && echo OK || echo FEHLER):$warn}" | curl -fsS -m 20 --retry 3 --data-binary @- "${HC}${suffix}" >/dev/null || echo "Healthcheck nicht erreichbar"
           fi
           [ "$ok" = true ]

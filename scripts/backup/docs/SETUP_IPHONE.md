@@ -61,6 +61,8 @@ Ab hier nichts Echtes, bevor ich A4.1 als grün bestätigt habe.
 
 ## B1. Produktions-Bucket und Schlüssel
 
+> **Vorher entscheiden:** Die erste Git-Sicherung ist 17,2 GB groß (Messung 30.10.2026). Ohne Zahlungsart erlaubt B2 nur 10 GB, die Git-Sicherung würde scheitern. Mit Zahlungsart: rund 0,15 USD im ersten Monat, nach einem Jahr 0,55–1,15 USD im Monat ([GIT_STORAGE.md](GIT_STORAGE.md)). Ohne diese Freigabe passen nur Datenbank, R2-Stufe 1 (≤ 3 GB), KV und Konfiguration in den freien Rahmen. Dafür `VU_SOURCES` ohne `git` setzen und `VU_R2_PREFIXES_TIER2` leer lassen. Die Stufe 2 (sonntags, rund 8 GB) passt ebenfalls nicht hinein.
+
 Bucket wie A1, aber Name `vu-backup-` + 6 Zeichen, Object Lock **Compliance 30 Tage**, Lifecycle „Days till delete“ **400**.
 
 In der Cloud Shell:

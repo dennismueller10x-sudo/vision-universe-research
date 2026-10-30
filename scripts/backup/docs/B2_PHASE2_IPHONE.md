@@ -12,7 +12,7 @@ Werte (Passwörter, Schlüssel) gehören nur in den Passwortmanager. Nicht in No
 3. **Region: EU Central** wählen. Die Region gilt für das ganze Konto und lässt sich nachträglich nicht ändern.
 4. E-Mail bestätigen.
 5. **Two-Factor Authentication** einschalten (My Settings → Security): Authenticator-App oder Passkey. Wiederherstellungscodes in den Passwortmanager.
-6. **Keine Zahlungsart hinterlegen.** Ohne Zahlungsart bleibt das Konto im kostenlosen Rahmen.
+6. **Für die Testphase keine Zahlungsart hinterlegen.** Ohne Zahlungsart bleibt das Konto im kostenlosen Rahmen (10 GB). Für die echte Git-Sicherung reicht das nicht (17,2 GB), siehe [GIT_STORAGE.md](GIT_STORAGE.md).
 
 ## B. Test-Bucket anlegen (3 min)
 
