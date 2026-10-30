@@ -27,13 +27,13 @@
 
   /* Wertebereiche der Abfragefelder (alle Zeitrahmen). Ohne Eintrag: endliche Zahl. pct = Anteil (0,05 = 5 %). */
   var RANGES = {
-    rsi14: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], choppiness14: [0, 100], connorsRsi: [0, 100],
+    rsi14: [0, 100], rsRank: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], choppiness14: [0, 100], connorsRsi: [0, 100],
     williamsR: [-100, 0], aroonOsc: [-100, 100], cmf20: [-1, 1], elderImpulse: [-1, 1],
     /* ATR % und relatives Volumen sind nach oben offen: Reverse-Split-Ketten (WHLR: Wochenschluss 402.408 -> 0,357 in
        70 Wochen, split-bereinigt) und Volumen-Median 0 ergeben echte, extreme Werte. */
     atrPct: [0, Infinity], relVol: [0, Infinity], ulcer14: [0, Infinity], histVol20: [0, Infinity], close: [0, Infinity],
-    distHigh52w: [-1, 0], distHigh200w: [-1, 0],
-    chg1d: [-1, Infinity], distSma200: [-1, Infinity], distSma50: [-1, Infinity], distEma200: [-1, Infinity], distChandelierLong: [-1, Infinity],
+    distHigh52w: [-1, 0], distHigh200w: [-1, 0], distLow52w: [0, Infinity],
+    chg1d: [-1, Infinity], distSma200: [-1, Infinity], distSma150: [-1, Infinity], sma200Slope21: [-1, Infinity], distSma50: [-1, Infinity], distEma200: [-1, Infinity], distChandelierLong: [-1, Infinity],
     roc21: [-1, Infinity], roc63: [-1, Infinity], roc126: [-1, Infinity], roc252: [-1, Infinity]
   };
   var INTEGER = { elderImpulse: 1, aroonOsc: 1 };

@@ -6,7 +6,7 @@
 // Zahlungsrelevant (nur mit ausdruecklicher Owner-Freigabe, docs/accounts/FREIGABEN.md):
 //   checkout      wer bezahlen darf (testers | off | public; wirksam erst mit freigegebenen Rechtstexten)
 //   legalApproved Rechtstexte freigegeben und in der Konfiguration bestaetigt
-//   tax           Umsatzsteuer im Checkout (none | automatic | txr_…)
+//   tax           Umsatzsteuer im Checkout (none | automatic)
 //   liveApproved  Stripe-Live-Abrechnung (STRIPE_LIVE_MODE_APPROVED)
 //   autoProcess   Kuendigungen automatisch ausfuehren
 // Verglichen wird die gewuenschte Konfiguration (wrangler.toml, dieselbe Auswertung wie im Worker: config.mjs) mit
@@ -24,7 +24,7 @@ export const SENSITIVE = ['checkout', 'legalApproved', 'tax', 'liveApproved', 'a
 // Wie der Produktions-Worker die Werte auswertet (Live-Schluessel vorausgesetzt; der echte Schluessel ist ein Secret).
 export function desiredState(vars) {
   const cfg = loadConfig({...vars, STRIPE_SECRET_KEY: 'rk_live_platzhalter'});
-  return {checkout: cfg.stripe.checkoutAccess, legalApproved: cfg.legal.approved, tax: cfg.stripe.tax.rate || cfg.stripe.tax.mode,
+  return {checkout: cfg.stripe.checkoutAccess, legalApproved: cfg.legal.approved, tax: cfg.stripe.tax.mode,
     liveApproved: cfg.stripe.liveApproved, autoProcess: cfg.cancellation.autoProcess};
 }
 

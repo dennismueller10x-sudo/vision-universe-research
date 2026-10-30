@@ -70,6 +70,7 @@ export function createStripeClient({secretKey, apiBase = 'https://api.stripe.com
     updateSubscription: (id, params, idempotencyKey) => request('POST', `/v1/subscriptions/${encodeURIComponent(id)}`, params, {idempotencyKey}),
     cancelSubscription: id => request('DELETE', `/v1/subscriptions/${encodeURIComponent(id)}`),
     retrievePrice: id => request('GET', `/v1/prices/${encodeURIComponent(id)}`),
+    retrieveTaxSettings: () => request('GET', '/v1/tax/settings'),
     retrieveInvoice: id => request('GET', `/v1/invoices/${encodeURIComponent(id)}`),
   };
 }

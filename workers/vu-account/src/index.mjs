@@ -50,10 +50,12 @@ async function health(ctx) {
   return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
     mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess,
     checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved,
-    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.rate || ctx.cfg.stripe.tax.mode, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
+    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.mode,
+    // Stripe Tax im Konto aktiv? Auch vor dem Einschalten sichtbar (ersetzt einen Pruef-Workflow).
+    stripeTax: ctx.stripe && ctx.cfg.stripe.mode !== 'missing' ? await billing.stripeTaxState(ctx) : undefined, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
 }
 let templateState = {at: 0, value: 'unknown'};
-export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; };
+export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; billing.resetTaxCache(); };
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
