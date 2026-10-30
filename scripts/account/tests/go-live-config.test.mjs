@@ -32,7 +32,7 @@ test('Entwuerfe mit offenen Stellen: keine Freigabe, keine Datei geaendert', () 
 
 test('nach der Abnahme: Texte freigegeben, Fassung bestaetigt, Steuer, oeffentlich, Brevo – in einem Schritt', () => {
   const root = copy({clean: true});
-  assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', checkout: 'public'}), /STRIPE_TAX_MODE/, 'ohne USt-Ausweis nicht oeffentlich');
+  assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'none', checkout: 'public', dryRun: true}), /STRIPE_TAX_MODE/, 'ohne USt-Ausweis nicht oeffentlich');
   const r = goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'automatic', checkout: 'public', brevoSync: 'true', newsletter: 'true'});
   assert.equal(r.changes.length, 5);
   assert.match(read(root, 'workers/vu-account/src/legal/texts.mjs'), /LEGAL_STATUS = 'freigegeben'/);

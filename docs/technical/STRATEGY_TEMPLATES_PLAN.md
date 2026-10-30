@@ -169,8 +169,10 @@ Auftrag: S1–S3 als zusammenhängendes Paket; S2 als getrennte Fachmodell-PRs z
 | Paket | Stand |
 |---|---|
 | S1 | umgesetzt (PR „Technical AP8 S1“): `technical/engine/templates.js`, Ansichten `#/vorlagen` und `#/vorlagen/<id>`, Kriterien-Checklisten (✓ / ✗ / ?), Trendfilter, Treffer nach „Erfüllt / Fast erfüllt / Unvollständig“, Speichern, „Im Screener anpassen“, Prüfleiste im Chart Studio (`?v=<Vorlage>`), Zählung im Index (`templates`, Schema 1.1.0) |
-| S2 | L1–L5 als getrennte Fachmodell-PRs zur Freigabe |
-| S3 | nach Freigabe von S2 |
+| S2 | L1–L5 vom Owner am 30.10. freigegeben und gemergt (#1144, #1145, #1147, #1149, #1150), je mit Neubau durch den Erzeuger; die bisherigen 150 Spalten blieben byte-gleich |
+| S3 | gemergt (#1151): „Etablierter Aufwärtstrend“ mit 8 Kriterien; Stand 29.10.: 685 erfüllt, 440 fast erfüllt, 1 unvollständig; Nachrechnung 1.126/1.126 ohne Abweichung (STRATEGY_TEMPLATE_S3.md) |
+| Datenqualität | DQ-TW-8 (#1155): kein vollständiger Vorlagen-Treffer auf einem Lunten-Tief (Owner-Auflage zu L3) |
+| S4 | historische Prüfung, eigene Freigabe nötig |
 
 ## (Archiv) Fragen an den Owner vom 29.10.
 

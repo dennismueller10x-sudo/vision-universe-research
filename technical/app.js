@@ -70,12 +70,22 @@
     return cache[path];
   }
   var dataset = null;
+  /* Ein gemeinsames Versprechen: Vorladen und Ansicht bauen den Datensatz nur einmal. Nach einem Fehler neuer Versuch. */
+  var screenerP = null;
   function loadScreener() {
     if (dataset) return Promise.resolve(dataset);
-    return Promise.all([fetchJSON(M.SCREENER_PATH), fetchJSON(M.META_PATH).catch(function () { return null; })]).then(function (r) {
+    if (!screenerP) screenerP = Promise.all([fetchJSON(M.SCREENER_PATH), fetchJSON(M.META_PATH).catch(function () { return null; })]).then(function (r) {
       dataset = { ds: Q.createDataset(r[0]), artifact: r[0], meta: r[1] };
       return dataset;
-    });
+    }, function (e) { screenerP = null; delete cache[M.SCREENER_PATH]; throw e; });
+    return screenerP;
+  }
+  /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
+     Treffer ihn brauchen. Nicht bei "Datensparen" (Save-Data); die Startseite bleibt beim schlanken Index. */
+  function prefetchScreener() {
+    if (dataset || (navigator.connection && navigator.connection.saveData)) return;
+    var go = function () { loadScreener().catch(function () {}); };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
   }
   /* Startseite und Chart Studio brauchen nur Kuerzel, Namen und Trefferzahlen: schlanker Index statt des vollen Datensatzes.
      Fehlt er (z. B. vor dem ersten Erzeugerlauf), wird er aus dem Datensatz nachgerechnet - dieselbe Funktion wie im Erzeuger. */
@@ -565,6 +575,7 @@
       }).concat([
         el("p", { class: "tc-note", text: "In jeder Vorlage lassen sich Trendfilter (kurz-, mittel- und langfristig, Trendstärke) dazunehmen. Gezählt werden nur Aktien mit aktuellem Kurs." }),
         disclaimer(X.meta)]));
+      prefetchScreener();
     }).catch(function () {
       put(body, stateBox("Vorlagen derzeit nicht verfügbar", "Der Index der Startseite konnte nicht geladen werden."));
     });
@@ -602,7 +613,10 @@
     var head = templateHead("#/vorlagen", "Vorlagen", group ? group.title.toUpperCase() : null, t.title, t.summary);
     var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
     put(main, [head, tabs(MAIN_TABS, "templates"), body, results]);
+    /* Beim ersten Oeffnen laedt der Screener-Datensatz (gzip rund 1,5 MB, mobil mehrere Sekunden): sichtbarer Zustand statt leerer Seite. */
+    if (!dataset) { results.setAttribute("aria-busy", "true"); put(results, [el("p", { class: "tc-note", text: "Treffer werden berechnet. Beim ersten Öffnen lädt der Screener-Datensatz für alle Aktien." }), el("div", { class: "tc-skel", style: "height:220px" })]); }
     loadScreener().then(function (D) {
+      results.removeAttribute("aria-busy");
       var ds = D.ds, res = TPL.evaluate(ds, t), nearOk = t.criteria.length >= TPL.NEAR_MIN;
       var blockPills = el("div", { class: "tc-pills" }, TPL.BLOCKS.map(function (B) {
         var on = blocks.indexOf(B.id) >= 0;

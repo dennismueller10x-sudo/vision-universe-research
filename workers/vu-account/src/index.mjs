@@ -18,6 +18,7 @@ import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
+import * as pricing from './pricing.mjs';
 import * as watchlist from './watchlist.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
@@ -86,6 +87,9 @@ const ROUTES = [
   ['POST', '/v1/billing/cancel', billing.cancel, {csrf: true}],
   ['POST', '/v1/billing/cancellation-request', billing.cancellationRequest, {csrf: true}],
   ['POST', '/v1/billing/webhook/stripe', billing.stripeWebhook, {webhook: true}],
+  ['GET', '/v1/admin/pricing', pricing.overview],
+  ['POST', '/v1/admin/pricing/preview', pricing.preview, {csrf: true}],
+  ['POST', '/v1/admin/pricing/apply', pricing.apply, {csrf: true}],
   ['POST', '/v1/billing/webhook/apple', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
 ];

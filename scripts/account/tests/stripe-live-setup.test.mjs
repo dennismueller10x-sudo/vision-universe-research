@@ -185,3 +185,15 @@ test('Zahlungsmethoden: Probelauf schaltet nichts ein', async () => {
   assert.equal(r.paymentMethods.find(m => m.key === 'sepa_debit').state, 'wird eingeschaltet');
   assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'off');
 });
+
+test('Preis aus der Tarifverwaltung: kein neuer Preis, keine Preiszeile', async () => {
+  const s = fakeStripe();
+  s.state.products.set('vu_pro', {id: 'vu_pro', name: 'Vision Universe Pro', description: LIVE_CATALOG[0].description, active: true, livemode: true});
+  s.state.prices.push({id: 'price_verwaltet', product: 'vu_pro', unit_amount: 490, currency: 'eur', tax_behavior: 'inclusive',
+    recurring: {interval: 'month', interval_count: 1}, lookup_key: 'vu_pro_month', active: true, livemode: true,
+    metadata: {vu_change_id: 'pc_' + 'a'.repeat(32)}});
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(s.state.prices.length, 1, 'nichts angelegt');
+  assert.equal(s.state.prices[0].unit_amount, 490);
+  assert.deepEqual(r.prices, [], 'keine Preiszeile');
+});

@@ -1,0 +1,69 @@
+# Technical Live-QA: Strategie-Vorlagen auf der VEROEFFENTLICHTEN Seite, iPhone-Breite, mobiles Leistungsprofil.
+# Ausloesung: workflow_dispatch (sobald die Datei auf main liegt), nach jeder Pages-Auslieferung, oder Push auf
+# claude/** mit [technical-live-qa] in der Commit-Nachricht. Schreibt nichts ins Repository; Bericht und
+# Screenshots als Artefakt. Zugang ueber das Secret RESEARCH_ACCESS_PASSWORD (wie vorsorge-live-smoke.yml);
+# der Wert wird nie ausgegeben. Das Zugangstor wird nur geprueft, nie veraendert.
+name: Technical Live-QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+  workflow_run:
+    workflows: ['Quant 2.0 Production Pages']
+    types: [completed]
+  push:
+    branches: ['claude/**']
+    paths:
+      - '.github/workflows/technical-live-qa.yml'
+      - 'scripts/technical/world/live-qa.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: technical-live-qa-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
+
+jobs:
+  live-qa:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[technical-live-qa]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/technical/world/live-qa.mjs
+            scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (Chromium)
+        run: |
+          npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
+          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
+      - name: Live-QA (390 px, CPU x4, 150 ms, 1,6 Mbit/s)
+        env:
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/technical/world/live-qa.mjs "$IN_SITE" technical-live-qa
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: test -f technical-live-qa/report.md && cat technical-live-qa/report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Bericht und Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-live-qa
+          path: technical-live-qa
+          retention-days: 14
