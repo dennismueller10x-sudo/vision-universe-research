@@ -1,0 +1,39 @@
+{
+  "job_id": "arrival-dirigenten-keyframes-2",
+  "purpose": "Startbild Saal-Totale für den durchgehenden Drohnenflug (THE ARRIVAL – Dirigenten, 30-s-Fassung). Raum aus dem freigegebenen Startbild kf-podium-2101. Nur interne Produktion.",
+  "images": [
+    {
+      "id": "kf-hall-start-2301",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "9:16",
+      "resolution": "2k",
+      "seed": 2301,
+      "negative_prompt": "text, logo, watermark, green carpet, green floor, tailcoat, bow tie, daylight, empty hall, cartoon, distorted architecture",
+      "references": [
+        "brand-media/werbetrailer/keyframes/kf-podium-2101.png"
+      ],
+      "prompt": "Keep exactly the same concert hall as in the reference image: the same warm wood-paneled walls, curved wooden balconies, dark atmosphere, the same single spotlight beam through haze, the same lighting and film look. New camera position: high up near the ceiling at the very back of the hall, looking down over the full, dark audience rows towards the brightly spotlit stage far away, where the seated symphony orchestra and the two conductors in brown suits appear small. Grand, majestic sense of scale, opening shot of a drone flight. Photorealistic 35mm film still, anamorphic lens, soft film grain, deep blacks, warm amber wood tones."
+    },
+    {
+      "id": "kf-hall-start-2302",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "9:16",
+      "resolution": "2k",
+      "seed": 2302,
+      "negative_prompt": "text, logo, watermark, green carpet, green floor, tailcoat, bow tie, daylight, empty hall, cartoon, distorted architecture",
+      "references": [
+        "brand-media/werbetrailer/keyframes/kf-podium-2101.png"
+      ],
+      "prompt": "Keep exactly the same concert hall as in the reference image: the same warm wood-paneled walls, curved wooden balconies, dark atmosphere, the same single spotlight beam through haze, the same lighting and film look. New camera position: high up near the ceiling at the very back of the hall, looking down over the full, dark audience rows towards the brightly spotlit stage far away, where the seated symphony orchestra and the two conductors in brown suits appear small. Grand, majestic sense of scale, opening shot of a drone flight. Photorealistic 35mm film still, anamorphic lens, soft film grain, deep blacks, warm amber wood tones."
+    },
+    {
+      "id": "kf-hall-start-t2i",
+      "model": "qwen-image-3",
+      "aspect_ratio": "9:16",
+      "resolution": "2k",
+      "seed": 2303,
+      "negative_prompt": "text, logo, watermark, green carpet, green floor, tailcoat, bow tie, daylight, empty hall, cartoon, distorted architecture",
+      "prompt": "Photorealistic 35mm film still, anamorphic lens: view from high up near the ceiling at the back of a dark, grand modern concert hall with warm wood-paneled walls and curved wooden balconies, looking down over a full audience in darkness towards a distant stage where a symphony orchestra sits and two conductors in brown oversized suits stand on a podium, lit by a single spotlight beam through haze. Deep blacks, warm amber tones, soft film grain, majestic scale, opening shot of a drone flight. No text, no logos."
+    }
+  ]
+}

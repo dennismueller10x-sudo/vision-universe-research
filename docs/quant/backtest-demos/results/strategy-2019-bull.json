@@ -1,0 +1,1314 @@
+{
+ "schemaVersion": "backtest-runner-result-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "kind": "STRATEGY_BACKTEST",
+ "state": "RESEARCH_EXECUTED",
+ "specHash": "e3a75290382a0298eb76afef75d606d57bf0edaa4a126bb791ad2824253f9bd9",
+ "spec": {
+  "schemaVersion": "backtest-runner-spec-1.0.0",
+  "version": "1.0.0",
+  "registeredAt": "2026-10-29T00:00:00Z",
+  "asOf": "2025-12-31",
+  "costs": {
+   "feeBps": 5,
+   "slippageBps": 5
+  },
+  "benchmark": "SPY",
+  "id": "strategy-2019-bull",
+  "description": "Equal-weight 10 large caps, rebalanced every 4 weekly sessions, 2019",
+  "kind": "STRATEGY_BACKTEST",
+  "window": {
+   "from": "2019-01-01",
+   "to": "2019-12-31"
+  },
+  "population": {
+   "profile": "V10_PRIMARY",
+   "tickers": [
+    "MSFT",
+    "JPM",
+    "KO",
+    "PG",
+    "XOM",
+    "NVDA",
+    "INTC",
+    "CSCO",
+    "ORCL",
+    "WMT"
+   ]
+  },
+  "engine": {
+   "variant": "FIXED_WEIGHTS",
+   "weights": "EQUAL",
+   "rebalance": {
+    "frequency": "sessions",
+    "everySessions": 4
+   },
+   "initialCapital": 100000
+  },
+  "methods": {
+   "MONTE_CARLO": {
+    "simulations": 2000,
+    "horizon": 52,
+    "blockLength": 8,
+    "seed": 20261029
+   },
+   "MARKET_REGIME": {},
+   "PARAMETER_SENSITIVITY": {
+    "dimensions": {
+     "feeBps": [
+      0,
+      5,
+      25
+     ],
+     "everySessions": [
+      1,
+      4,
+      13
+     ]
+    },
+    "blockLength": 8
+   }
+  }
+ },
+ "inputHashes": {
+  "code": {
+   "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+   "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+   "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+   "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+   "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+   "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+   "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+   "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+   "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+   "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+   "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+   "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+   "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+   "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+   "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+   "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+   "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+   "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+   "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+   "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+  },
+  "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+  "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+  "population": {
+   "profile": "V10_PRIMARY",
+   "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+   "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+   "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+   "calendarLength": 1922,
+   "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+   "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registers": {
+    "identityEvidence": {
+     "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+     "v12RegistryHash": null,
+     "v13RegistryHash": null,
+     "v13StrictRegistryHash": null
+    },
+    "corporateActionEvidence": {
+     "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+     "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    "listingLifecycleEvidence": null,
+    "delistedRegister": null,
+    "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+    "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+   },
+   "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+  },
+  "listings": {
+   "ref_MSFT": {
+    "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+    "sourceBytesHash": "6447c671f781fd58c36faaa2891a0072e7ce0f93e6e08a80db35008916ae2e1c",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_JPM": {
+    "listingId": "tiingo:NYSE:JPM:1983-12-30",
+    "sourceBytesHash": "48119a4150aed22230271e5c1284fb1f6dba0378ab3b192b01aed49d0e7d5934",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_KO": {
+    "listingId": "tiingo:NYSE:KO:1962-01-02",
+    "sourceBytesHash": "f3f45967605cd262439a1acc1b0b4394e46046bc0f06319dcbdaad73478ab101",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_PG": {
+    "listingId": "tiingo:NYSE:PG:1970-01-02",
+    "sourceBytesHash": "4c39fd7b2b977d25886831e94b8553964769f92d72203fb9c218944166a1636a",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_XOM": {
+    "listingId": "tiingo:NYSE:XOM:1970-01-02",
+    "sourceBytesHash": "03a4940f7c8b59685fcc263d7a0ec41a86f61993e59a1d2d81b01754ad7d4347",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_NVDA": {
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+    "registerPointsSha256": null,
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "bars": 1406
+   },
+   "ref_INTC": {
+    "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+    "sourceBytesHash": "806c702b88f5a4990ee283904bc69bf5576858ed740a8bc3e6fd25ebdced0ea2",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_CSCO": {
+    "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+    "sourceBytesHash": "b2c62a2e663521efc4dd95d44b786c81becbe00f2b0c851a6935fa6f16aca840",
+    "registerPointsSha256": null,
+    "first": "1990-03-30",
+    "last": "2025-12-26",
+    "bars": 1866
+   },
+   "ref_ORCL": {
+    "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+    "sourceBytesHash": "b87666e887afae96813f82d7f0b473e04edfb62d9eff242754e5285b8f9fc4a1",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_WMT": {
+    "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+    "sourceBytesHash": "f330ca7722b34cc8dc0513660cd04b2e45f37715c8c0d39c3cf90825b5c4861b",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   }
+  },
+  "private": {}
+ },
+ "inputHash": "d5f1ff02c5edd8a0d5889701a72d6ad4b671793184939d36fece9366c7993343",
+ "kindPath": {
+  "kind": "STRATEGY_BACKTEST",
+  "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,4)",
+  "adapter": "fromPortfolio",
+  "population": "V10_PRIMARY"
+ },
+ "envelope": {
+  "schemaVersion": "backtest-result-2.0.0",
+  "identity": {
+   "kind": "STRATEGY_BACKTEST",
+   "scope": "POPULATION",
+   "listingId": null,
+   "listingHash": null,
+   "populationId": "runner:V10_PRIMARY:e3a75290382a0298",
+   "populationHash": "23be001d74461f5b7074f22f2d086f6c4469e0e2998bf3de4b82279bff667c17",
+   "source": {
+    "adapter": "backtest-result-adapters-1.0.0#fromPortfolio",
+    "schemaVersion": "research-portfolio-1.2.0",
+    "engineVersion": null,
+    "artifact": null,
+    "resultHash": "c27bc81f22ff8beff74a08aeffb9943f2b596559e93f93198b7766354d238f38"
+   }
+  },
+  "period": {
+   "from": "2019-01-04",
+   "to": "2019-12-27",
+   "asOf": "2025-12-31",
+   "grain": "WEEKLY"
+  },
+  "spec": {
+   "id": "strategy-2019-bull",
+   "version": "1.0.0",
+   "description": "Equal-weight 10 large caps, rebalanced every 4 weekly sessions, 2019",
+   "parameters": {
+    "runner": "backtest-runner-1.0.0",
+    "runnerSpecSchema": "backtest-runner-spec-1.0.0",
+    "runnerSpec": {
+     "schemaVersion": "backtest-runner-spec-1.0.0",
+     "version": "1.0.0",
+     "registeredAt": "2026-10-29T00:00:00Z",
+     "asOf": "2025-12-31",
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "benchmark": "SPY",
+     "id": "strategy-2019-bull",
+     "description": "Equal-weight 10 large caps, rebalanced every 4 weekly sessions, 2019",
+     "kind": "STRATEGY_BACKTEST",
+     "window": {
+      "from": "2019-01-01",
+      "to": "2019-12-31"
+     },
+     "population": {
+      "profile": "V10_PRIMARY",
+      "tickers": [
+       "MSFT",
+       "JPM",
+       "KO",
+       "PG",
+       "XOM",
+       "NVDA",
+       "INTC",
+       "CSCO",
+       "ORCL",
+       "WMT"
+      ]
+     },
+     "engine": {
+      "variant": "FIXED_WEIGHTS",
+      "weights": "EQUAL",
+      "rebalance": {
+       "frequency": "sessions",
+       "everySessions": 4
+      },
+      "initialCapital": 100000
+     },
+     "methods": {
+      "MONTE_CARLO": {
+       "simulations": 2000,
+       "horizon": 52,
+       "blockLength": 8,
+       "seed": 20261029
+      },
+      "MARKET_REGIME": {},
+      "PARAMETER_SENSITIVITY": {
+       "dimensions": {
+        "feeBps": [
+         0,
+         5,
+         25
+        ],
+        "everySessions": [
+         1,
+         4,
+         13
+        ]
+       },
+       "blockLength": 8
+      }
+     }
+    },
+    "runnerSpecHash": "e3a75290382a0298eb76afef75d606d57bf0edaa4a126bb791ad2824253f9bd9",
+    "inputHashes": {
+     "code": {
+      "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+      "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+      "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+      "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+      "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+      "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+      "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+      "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+      "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+      "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+      "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+      "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+      "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+      "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+      "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+      "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+      "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+      "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+      "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+     },
+     "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
+     "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+     "population": {
+      "profile": "V10_PRIMARY",
+      "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+      "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+      "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+      "calendarLength": 1922,
+      "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+      "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "registers": {
+       "identityEvidence": {
+        "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+        "v12RegistryHash": null,
+        "v13RegistryHash": null,
+        "v13StrictRegistryHash": null
+       },
+       "corporateActionEvidence": {
+        "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+        "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+       },
+       "listingLifecycleEvidence": null,
+       "delistedRegister": null,
+       "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+       "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+      },
+      "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+     },
+     "listings": {
+      "ref_MSFT": {
+       "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+       "sourceBytesHash": "6447c671f781fd58c36faaa2891a0072e7ce0f93e6e08a80db35008916ae2e1c",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_JPM": {
+       "listingId": "tiingo:NYSE:JPM:1983-12-30",
+       "sourceBytesHash": "48119a4150aed22230271e5c1284fb1f6dba0378ab3b192b01aed49d0e7d5934",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_KO": {
+       "listingId": "tiingo:NYSE:KO:1962-01-02",
+       "sourceBytesHash": "f3f45967605cd262439a1acc1b0b4394e46046bc0f06319dcbdaad73478ab101",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_PG": {
+       "listingId": "tiingo:NYSE:PG:1970-01-02",
+       "sourceBytesHash": "4c39fd7b2b977d25886831e94b8553964769f92d72203fb9c218944166a1636a",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_XOM": {
+       "listingId": "tiingo:NYSE:XOM:1970-01-02",
+       "sourceBytesHash": "03a4940f7c8b59685fcc263d7a0ec41a86f61993e59a1d2d81b01754ad7d4347",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_NVDA": {
+       "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+       "sourceBytesHash": "bb9f8e718dbd806b4657f851a8c5980d02dec316fc9b7ed88383652bb30e268d",
+       "registerPointsSha256": null,
+       "first": "1999-01-22",
+       "last": "2025-12-26",
+       "bars": 1406
+      },
+      "ref_INTC": {
+       "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+       "sourceBytesHash": "806c702b88f5a4990ee283904bc69bf5576858ed740a8bc3e6fd25ebdced0ea2",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_CSCO": {
+       "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+       "sourceBytesHash": "b2c62a2e663521efc4dd95d44b786c81becbe00f2b0c851a6935fa6f16aca840",
+       "registerPointsSha256": null,
+       "first": "1990-03-30",
+       "last": "2025-12-26",
+       "bars": 1866
+      },
+      "ref_ORCL": {
+       "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+       "sourceBytesHash": "b87666e887afae96813f82d7f0b473e04edfb62d9eff242754e5285b8f9fc4a1",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_WMT": {
+       "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+       "sourceBytesHash": "f330ca7722b34cc8dc0513660cd04b2e45f37715c8c0d39c3cf90825b5c4861b",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      }
+     },
+     "private": {}
+    },
+    "inputHash": "d5f1ff02c5edd8a0d5889701a72d6ad4b671793184939d36fece9366c7993343",
+    "kindPath": {
+     "kind": "STRATEGY_BACKTEST",
+     "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,4)",
+     "adapter": "fromPortfolio",
+     "population": "V10_PRIMARY"
+    },
+    "adapterSpec": {
+     "id": "strategy-2019-bull",
+     "version": null,
+     "description": "research-portfolio runPortfolio ledger",
+     "parameters": {
+      "inputHash": "37518cc041a43026b2933964ff096946b0f395fd716489ccdd4e261991ed6e1f",
+      "mode": "HISTORICAL_PRICE_SIMULATION",
+      "returnBasis": "PRICE_RETURN",
+      "currency": "USD",
+      "conditionalPriceSimulation": true
+     },
+     "specHash": "05cc6bfea41d65d6148d1b1177901a6f9700282c2c1abab1d38a114b807ac8e9"
+    }
+   },
+   "specHash": "d89c2496f189baf4f8d95d7e89a2d8e2c1a51f9588b8a0311d586ceb8a780264"
+  },
+  "events": {
+   "form": "TRADES",
+   "occurrences": 130,
+   "completed": 130,
+   "immature": null,
+   "censored": null,
+   "ineligible": null,
+   "titles": 10,
+   "entry": "NEXT_SESSION_CLOSE_AFTER_DECISION",
+   "exit": "REBALANCE_OR_EVENT"
+  },
+  "portfolio": {
+   "dates": [
+    "2019-01-04",
+    "2019-01-11",
+    "2019-01-18",
+    "2019-01-25",
+    "2019-02-01",
+    "2019-02-08",
+    "2019-02-15",
+    "2019-02-22",
+    "2019-03-01",
+    "2019-03-08",
+    "2019-03-15",
+    "2019-03-22",
+    "2019-03-29",
+    "2019-04-05",
+    "2019-04-12",
+    "2019-04-18",
+    "2019-04-26",
+    "2019-05-03",
+    "2019-05-10",
+    "2019-05-17",
+    "2019-05-24",
+    "2019-05-31",
+    "2019-06-07",
+    "2019-06-14",
+    "2019-06-21",
+    "2019-06-28",
+    "2019-07-05",
+    "2019-07-12",
+    "2019-07-19",
+    "2019-07-26",
+    "2019-08-02",
+    "2019-08-09",
+    "2019-08-16",
+    "2019-08-23",
+    "2019-08-30",
+    "2019-09-06",
+    "2019-09-13",
+    "2019-09-20",
+    "2019-09-27",
+    "2019-10-04",
+    "2019-10-11",
+    "2019-10-18",
+    "2019-10-25",
+    "2019-11-01",
+    "2019-11-08",
+    "2019-11-15",
+    "2019-11-22",
+    "2019-11-29",
+    "2019-12-06",
+    "2019-12-13",
+    "2019-12-20",
+    "2019-12-27"
+   ],
+   "equity": [
+    100000,
+    99900.0999000999,
+    102494.20816797852,
+    102384.37631612839,
+    102782.82391738238,
+    103162.48834940196,
+    105893.59810603733,
+    106968.76814498886,
+    107204.44631961343,
+    105984.56092798762,
+    109852.7560946034,
+    109544.80565382147,
+    110897.71555340139,
+    113199.47198154913,
+    114711.36204860831,
+    115919.09887416149,
+    114883.73839604751,
+    114596.68422598785,
+    111307.40461105749,
+    110924.92256153599,
+    109059.97318152712,
+    105644.36227175267,
+    111385.51495290181,
+    111773.64997247161,
+    114774.84218493207,
+    115037.2436008013,
+    116824.57324685607,
+    119197.80870445116,
+    117747.64386949611,
+    119716.68659043653,
+    115031.5606968024,
+    112987.4774989906,
+    112593.62493314667,
+    110828.66846547925,
+    113761.5794973062,
+    117236.599723131,
+    119192.650217788,
+    117790.14061442079,
+    117778.92063533977,
+    117721.99259333452,
+    118365.00754052472,
+    117896.3673636308,
+    121355.04322130028,
+    121900.5041957287,
+    123447.2592754167,
+    122301.29490079766,
+    122794.01272302838,
+    123573.24142247648,
+    123448.89030332517,
+    125225.02449955221,
+    127228.15844335858,
+    127770.96914656281
+   ],
+   "cashShare": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "initialCapital": 100000,
+   "endCapital": 127770.96914656281
+  },
+  "metrics": {
+   "basis": "PORTFOLIO",
+   "totalReturn": 0.2777096914656281,
+   "cagr": 0.28496635469065645,
+   "annualReturns": [
+    {
+     "year": "2019",
+     "value": 0.2777096914656281,
+     "partial": false
+    }
+   ],
+   "volatility": 0.12687020280248812,
+   "maxDrawdown": -0.08863713315752031,
+   "hitRate": null,
+   "trades": 130,
+   "turnover": 0.7153239035034699,
+   "costs": {
+    "model": "PER_SIDE_NOTIONAL",
+    "paid": 148.9620299617555,
+    "fees": 74.48101498087775,
+    "slippage": 74.48101498087775
+   },
+   "cashShare": 0.019230769230769232,
+   "benchmark": {
+    "id": "SPY_PRICE_RETURN",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0,
+    "totalReturn": 0.27921074527516954,
+    "cagr": 0.28651083981551695,
+    "pathStatistics": {
+     "state": "SAME_DATES",
+     "label": null,
+     "totalReturn": 0.27921074527516954,
+     "cagr": 0.28651083981551695,
+     "annualizedVolatility": 0.10778263881184161,
+     "sharpe": 2.3876833736721794,
+     "maxDrawdown": -0.06380301329796279,
+     "excessTotalReturn": -0.0015010538095414638,
+     "excessCagr": -0.0015444851248604952,
+     "meanPeriodExcess": 0.000018244211034196157,
+     "trackingError": 0.06417614731136967,
+     "informationRatio": 0.0147827349182447,
+     "beta": 1.0131395785370627,
+     "correlation": 0.8621897986027048,
+     "periods": 51
+    }
+   },
+   "excess": {
+    "totalReturn": -0.0015010538095414638,
+    "cagr": -0.0015444851248604952,
+    "sharpeRiskFreeZero": 2.039427986973398,
+    "riskFreeAssumption": {
+     "annualRate": 0,
+     "label": "ASSUMPTION_ZERO_DEFAULT"
+    },
+    "metricsEngine": "backtest-metrics-1.0.0"
+   },
+   "perEvent": null
+  },
+  "uncertainty": null,
+  "dataQuality": {
+   "coverage": null,
+   "censored": null,
+   "terminal": {
+    "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+   },
+   "corporateActions": {
+    "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+    "listings": [
+     {
+      "securityId": "ref_MSFT",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_JPM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_KO",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_PG",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_XOM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_NVDA",
+      "quality": "RESOLVED",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_INTC",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_CSCO",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_ORCL",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_WMT",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     }
+    ]
+   },
+   "totalReturnBasis": "PRICE_RETURN",
+   "survivorship": {
+    "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "control": "population profile V10_PRIMARY (dce532a2533c2907)"
+   },
+   "warnings": [
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "DIVIDENDS_EXCLUDED",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ]
+  },
+  "methods": [
+   {
+    "method": "MONTE_CARLO",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-monte-carlo-1.0.0",
+     "model": "CIRCULAR_BLOCK",
+     "simulations": 2000,
+     "horizon": 52,
+     "seed": 20261029,
+     "blockLength": 8,
+     "sourceObservations": 51,
+     "totalReturn": {
+      "p5": 0.07019011257256345,
+      "p50": 0.29020052320163203,
+      "p95": 0.5160238215175815
+     },
+     "maxDrawdown": {
+      "p5": -0.1380026570806674,
+      "p50": -0.08042370707369623,
+      "p95": -0.03750638977623477
+     },
+     "inputHash": "9ff6973c644d22b2c9e40cdea3504d0fcead8622662b7a3ffb497237e9bdfcac",
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+    }
+   },
+   {
+    "method": "WALK_FORWARD",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "OUT_OF_SAMPLE",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "MARKET_REGIME",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-studies.classifyRegimes+analyzeRegimes",
+     "mode": "PIT_AVAILABLE",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "regimeResultHash": "d272cdf3304233cfe4c61e74d7994bfb202797e2cc9ac57918e928d8adfbbf25",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 11,
+       "mean": 0.008420704071363123,
+       "median": 0.003693850952419364,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 3,
+       "mean": 0.029150034897163907,
+       "median": 0.020755670364006384,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 37,
+       "mean": 0.001979847724856736,
+       "median": 0.0034846094641114433,
+       "interval95": null
+      }
+     ],
+     "unmatched": 0,
+     "resultHash": "703cf3106c05bc6a69ab70a6b9b9da9a57a38d0d1c1b5477922dd335aed361e5"
+    }
+   },
+   {
+    "method": "PARAMETER_SENSITIVITY",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-validation.runSensitivity (recorded grid, run-research evaluator)",
+     "grid": [
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": -0.000007962880215162987,
+       "ci": [
+        -0.0022561648352365684,
+        0.002170131732457526
+       ],
+       "pValue": 0.998,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": -0.000025851759888884323,
+       "ci": [
+        -0.0022839385057848473,
+        0.0021718798844302363
+       ],
+       "pValue": 0.988,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.00009731365768099438,
+       "ci": [
+        -0.0023931418710256666,
+        0.002145704756805406
+       ],
+       "pValue": 0.94,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": 0.00003224402431536607,
+       "ci": [
+        -0.002190879844999092,
+        0.0022055277377780493
+       ],
+       "pValue": 0.982,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": 0.000018244211034196157,
+       "ci": [
+        -0.002206014929757329,
+        0.0022108699703165856
+       ],
+       "pValue": 0.99,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.000037655992872529565,
+       "ci": [
+        -0.0022978416676842856,
+        0.0022303169846544435
+       ],
+       "pValue": 0.979,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": 0.000027629210721289694,
+       "ci": [
+        -0.0021098119141754494,
+        0.0021447839929787747
+       ],
+       "pValue": 0.988,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": 0.000015869693832105658,
+       "ci": [
+        -0.002130055512056481,
+        0.0021418984825666947
+       ],
+       "pValue": 0.993,
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.00003107237796618141,
+       "ci": [
+        -0.002209199338968706,
+        0.002146638764794186
+       ],
+       "pValue": 0.982,
+       "adjustedPValue": 1
+      }
+     ],
+     "baseline": {
+      "everySessions": 4,
+      "feeBps": 5
+     },
+     "neighborhood": {
+      "count": 4,
+      "sameDirection": false,
+      "minEstimate": -0.000037655992872529565,
+      "maxEstimate": 0.00003224402431536607
+     },
+     "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
+     "registrationHash": "7cc4b36736554840b44077fb2c037628dbb59892c7676794fe1bd95ee0858011",
+     "resultHash": "dc8c6289f39113f43c745fecd1e698245538e57a1cfcbe1a555a2d48479dc52a",
+     "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
+    }
+   },
+   {
+    "method": "EVENT_DRIVEN",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PORTFOLIO_REBALANCING",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-portfolio-1.2.0",
+     "rebalances": 13,
+     "skipped": 0,
+     "oneWayTurnoverSum": 0.7153239035034699,
+     "schedule": {
+      "frequency": "sessions",
+      "everySessions": 4
+     }
+    }
+   }
+  ],
+  "limitations": [
+   "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+   "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+   "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+   "FRACTIONAL_LONG_ONLY",
+   "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+   "NO_CASH_INTEREST_OR_TAX",
+   "NO_VOLUME_CAPACITY_MODEL",
+   "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+   "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT",
+   "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+   "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+   "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+   "CERTIFICATION_READINESS:NOT_READY",
+   "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+   "RUNNER_COMPOSED_EXISTING_ENGINES"
+  ],
+  "status": {
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "certificationScope": "KIND",
+   "certificationRuleId": null,
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-10-29",
+   "productionApproved": false,
+   "evidenceKind": "SIMULATED_LEDGER"
+  },
+  "envelopeHash": "8427777c96d3a7a3d111bc71bdc9c45018fb5ce7304ca66d0ab2cb0c73f96b22"
+ },
+ "envelopeHash": "8427777c96d3a7a3d111bc71bdc9c45018fb5ce7304ca66d0ab2cb0c73f96b22",
+ "population": {
+  "profile": "V10_PRIMARY",
+  "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+  "frameSize": 4285,
+  "calendar": {
+   "first": "1990-01-05",
+   "last": "2025-12-26",
+   "length": 1878
+  },
+  "listings": [
+   {
+    "securityId": "ref_MSFT",
+    "ticker": "MSFT",
+    "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_JPM",
+    "ticker": "JPM",
+    "listingId": "tiingo:NYSE:JPM:1983-12-30",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_KO",
+    "ticker": "KO",
+    "listingId": "tiingo:NYSE:KO:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_PG",
+    "ticker": "PG",
+    "listingId": "tiingo:NYSE:PG:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_XOM",
+    "ticker": "XOM",
+    "listingId": "tiingo:NYSE:XOM:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_NVDA",
+    "ticker": "NVDA",
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "corporateActionQuality": "RESOLVED",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_INTC",
+    "ticker": "INTC",
+    "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_CSCO",
+    "ticker": "CSCO",
+    "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+    "first": "1990-03-30",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_ORCL",
+    "ticker": "ORCL",
+    "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_WMT",
+    "ticker": "WMT",
+    "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   }
+  ],
+  "excluded": [],
+  "warnings": [
+   "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+   "DELISTED_SERIES_NOT_INCLUDED",
+   "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+   "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+   "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS"
+  ]
+ },
+ "extras": {
+  "metricsDetail": {
+   "schemaVersion": "backtest-metrics-1.0.0",
+   "certification": "NOT_CERTIFIED",
+   "productionApproved": false,
+   "assumptions": {
+    "periodsPerYear": 52,
+    "periodicityLabel": "WEEKLY",
+    "riskFree": {
+     "annualRate": 0,
+     "label": "ASSUMPTION_ZERO_DEFAULT"
+    },
+    "riskFreePerPeriod": 0,
+    "startPoint": "INITIAL_CAPITAL_AT_FIRST_ROW_DATE"
+   },
+   "period": {
+    "from": "2019-01-04",
+    "to": "2019-12-27",
+    "rows": 52,
+    "years": 0.9774127310061602
+   },
+   "returns": {
+    "initialCapital": 100000,
+    "endValue": 127770.96914656281,
+    "totalReturn": 0.2777096914656281,
+    "cagr": 0.28496635469065645,
+    "calendarYears": [
+     {
+      "year": 2019,
+      "from": "2019-01-04",
+      "to": "2019-12-27",
+      "startValue": 100000,
+      "endValue": 127770.96914656281,
+      "return": 0.2777096914656281,
+      "partial": false
+     }
+    ]
+   },
+   "risk": {
+    "periods": 51,
+    "meanPeriodReturn": 0.004967298339140888,
+    "annualizedVolatility": 0.12665292193947686,
+    "sharpe": 2.039427986973398,
+    "sharpeRiskFreeLabel": "ASSUMPTION_ZERO_DEFAULT",
+    "maxDrawdown": -0.08863713315752031,
+    "peakDate": "2019-04-18",
+    "troughDate": "2019-05-31",
+    "recoveryDate": "2019-07-05",
+    "peakToTroughPeriods": 6,
+    "peakToTroughDays": 43,
+    "durationPeriods": 11,
+    "durationDays": 78,
+    "recovered": true
+   },
+   "exposure": {
+    "averageCashShare": 0.019230769230769232,
+    "averageReceivablesShare": 0,
+    "rowsWithCash": 52
+   },
+   "costs": {
+    "fees": 74.48101498087775,
+    "slippage": 74.48101498087775,
+    "total": 148.9620299617555,
+    "shareOfInitialCapital": 0.0014896202996175548
+   },
+   "turnover": {
+    "oneWayTurnoverSum": 0.7153239035034699,
+    "annualizedOneWayTurnover": 0.7318544979121635,
+    "tradeDates": 13
+   },
+   "trades": {
+    "fills": 130,
+    "fillsByReason": {},
+    "reconstruction": "RECONSTRUCTED_FROM_POSITIONS",
+    "roundTrips": 0,
+    "closedEpisodes": 0,
+    "nonAttributableClosed": 0,
+    "openAtEnd": 10,
+    "hitRate": null,
+    "winners": 0,
+    "averageRoundTripReturn": null,
+    "averageHoldingPeriods": null,
+    "averageHoldingDays": null,
+    "totalRoundTripPnl": 0
+   },
+   "benchmark": {
+    "state": "SAME_DATES",
+    "label": null,
+    "totalReturn": 0.27921074527516954,
+    "cagr": 0.28651083981551695,
+    "annualizedVolatility": 0.10778263881184161,
+    "sharpe": 2.3876833736721794,
+    "maxDrawdown": -0.06380301329796279,
+    "calendarYears": [
+     {
+      "year": 2019,
+      "return": 0.27921074527516954
+     }
+    ],
+    "excessTotalReturn": -0.0015010538095414638,
+    "excessCagr": -0.0015444851248604952,
+    "meanPeriodExcess": 0.000018244211034196157,
+    "trackingError": 0.06417614731136967,
+    "informationRatio": 0.0147827349182447,
+    "beta": 1.0131395785370627,
+    "correlation": 0.8621897986027048,
+    "periods": 51
+   },
+   "warnings": [],
+   "limitations": [
+    "PERIOD_STATISTICS_ROW_TO_ROW_INITIAL_STUB_EXCLUDED",
+    "SAMPLE_STANDARD_DEVIATION_N_MINUS_1",
+    "TRADE_PNL_EXCLUDES_CASH_DISTRIBUTIONS_AND_TERMINAL_CONSIDERATION",
+    "RISK_FREE_RATE_IS_AN_ASSUMPTION",
+    "DESCRIPTIVE_NO_INFERENCE_NO_CERTIFICATION"
+   ],
+   "inputHash": "662a28939d04209b652462f3f3dda2e7faddda67989c76ecfd9e3005ffd41279",
+   "resultHash": "b6cec303168a151b4f710c2f8a6a94be657166dcb83f5fd4ac43c361d4dd2c82"
+  }
+ },
+ "pit": {
+  "asOf": "2025-12-31",
+  "latestInputBar": "2025-12-26",
+  "inputsAfterAsOf": 0
+ },
+ "qa": null,
+ "resultHash": "79e91034871ad519e650d259e23e270b2e6a3b730d880f7845bd09ec28f498c1"
+}
