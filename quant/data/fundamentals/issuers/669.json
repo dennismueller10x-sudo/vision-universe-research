@@ -261,10 +261,10 @@
       "cik": "0001443669",
       "name": "Proto Labs Inc",
       "sic": "3440",
-      "rawFacts": 18490,
-      "mappedFacts": 6344,
-      "unmappedFacts": 12651,
-      "calendarYears": 18,
+      "rawFacts": 18832,
+      "mappedFacts": 6445,
+      "unmappedFacts": 12996,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -273,28 +273,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 63,
+      "quarterlyPeriods": 64,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -314,21 +314,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -342,14 +342,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -372,46 +372,47 @@
         }
       },
       "quality": {
-        "HIGH": 546,
+        "HIGH": 555,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 552,
-        "resolvedValues": 552
+        "datableValues": 561,
+        "resolvedValues": 561
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12950,
+        "rules_version": "1.1.0",
+        "total": 13269,
         "by_severity": {
-          "INFO": 12651,
-          "WARNING": 299
+          "INFO": 12996,
+          "WARNING": 273
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 254,
-          "FISCAL_PERIOD_CONFLICT": 14,
-          "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 12651
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 12996,
+          "UNPLACEABLE_PERIOD": 11
         }
       },
       "latestFiling": {
-        "accession": "0001443669-26-000035",
-        "filing_date": "2026-07-31",
+        "accession": "0001443669-26-000046",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 59
+        "periodic_filings": 60,
+        "acceptance_datetime": "2026-10-29T18:31:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cba6c460fefe65ce0955fbffefff0e1ce859a5aa672b578dc4d0eb8edeafa891",
+      "sourceDigest": "0a9be4b73493b2f861d01c102a3606865987b68acdd93a2c5a222121d18136a1",
       "issuerId": "iss_cik_0001443669"
     },
     {

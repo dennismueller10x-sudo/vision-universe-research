@@ -953,6 +953,30 @@ test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfass
   assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
 });
 
+test('Umsatzsteuer: inklusiver Steuersatz am Abo, Bruttopreis bleibt; exklusiver Satz wird abgelehnt', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'txr_ust19'}});
+  t.after(() => env.close());
+  const b = await signedIn(env, 'tina.steuer@example.test');
+  const health = async () => (await env.app.handle(new Request(env.api + '/v1/health'))).json();
+  assert.deepEqual([(await health()).tax, (await health()).taxRate], ['txr_ust19', 'ok']);
+  const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(ok.status, 200);
+  const session = env.stripe.sim.sessions.get(ok.data.url.split('/').pop());
+  assert.deepEqual(session.subscription_data.default_tax_rates, ['txr_ust19'], 'Steuersatz am Abo');
+  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Preis unveraendert');
+
+  // Jemand stellt den Satz im Dashboard auf "zuzueglich": kein Checkout, der mehr kosten wuerde.
+  env.stripe.sim.setTaxRate('txr_ust19', {inclusive: false, active: true});
+  const {resetTaxRateCache} = await import('../src/billing.mjs');
+  resetTaxRateCache();
+  const before = env.stripe.sim.sessions.size;
+  const refused = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([refused.status, refused.data.state], [503, 'TAX_CONFIG_INVALID']);
+  assert.equal(env.stripe.sim.sessions.size, before, 'keine neue Checkout-Sitzung');
+  resetTaxRateCache();
+  assert.equal((await health()).taxRate, 'TAX_RATE_NOT_INCLUSIVE');
+});
+
 test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {
   const lists = {VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'};
   const env = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', ...lists}});

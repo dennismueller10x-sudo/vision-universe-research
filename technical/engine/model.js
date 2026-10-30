@@ -339,9 +339,11 @@
    */
   var FIELD_CHART = {
     aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveSma150: ["layer", "sma"], sma150AboveSma200: ["layer", "sma"], sma50AboveSma150: ["layer", "sma"], distSma150: ["layer", "sma"],
+    sma200Rising: ["layer", "sma"], sma200Slope21: ["layer", "sma"],
     aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
     adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
-    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], distLow52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
     rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
     roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
