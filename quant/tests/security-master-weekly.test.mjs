@@ -407,3 +407,11 @@ test("SMW-14 · Committete Nachholfreigabe: an den committeten Stamm gebunden, n
     assert.equal(ev.prev.sha256, d.prevMasterSha256, "Nachweis zum committeten Stamm");
   }
 });
+
+test("SMW-15 · Workflow: roter oder blockierter Lauf auf main meldet sich ueber pipeline-alarm, ohne Secrets", () => {
+  const c = code();
+  assert.match(c, /\n  alarm:\n\s+needs: refresh\n\s+if: always\(\) && github\.ref == 'refs\/heads\/main'\n/);
+  assert.match(c, /issues: write/); assert.match(c, /GITHUB_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(c, /ALARM_SOURCE: security-master-weekly[\s\S]*RESULT_REFRESH: \$\{\{ needs\.refresh\.result \}\}[\s\S]*node scripts\/ci\/pipeline-alarm\.mjs/);
+  assert.doesNotMatch(c, /secrets\./);
+});
