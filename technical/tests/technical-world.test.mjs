@@ -136,7 +136,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json", "spark-v1.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
