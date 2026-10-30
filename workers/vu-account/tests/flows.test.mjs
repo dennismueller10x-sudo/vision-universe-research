@@ -953,28 +953,42 @@ test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfass
   assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
 });
 
-test('Umsatzsteuer: inklusiver Steuersatz am Abo, Bruttopreis bleibt; exklusiver Satz wird abgelehnt', {skip}, async t => {
-  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'txr_ust19'}});
+test('Umsatzsteuer: Stripe Tax automatisch, Bruttopreis bleibt, kein zweiter Steuermechanismus; ohne aktives Stripe Tax kein Checkout', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
   t.after(() => env.close());
   const b = await signedIn(env, 'tina.steuer@example.test');
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
   const health = async () => (await env.app.handle(new Request(env.api + '/v1/health'))).json();
-  assert.deepEqual([(await health()).tax, (await health()).taxRate], ['txr_ust19', 'ok']);
+  assert.deepEqual([(await health()).tax, (await health()).stripeTax], ['automatic', 'ok']);
   const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
   assert.equal(ok.status, 200);
   const session = env.stripe.sim.sessions.get(ok.data.url.split('/').pop());
-  assert.deepEqual(session.subscription_data.default_tax_rates, ['txr_ust19'], 'Steuersatz am Abo');
-  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Preis unveraendert');
+  assert.deepEqual(session.automatic_tax, {enabled: 'true'}, 'Stripe Tax berechnet');
+  assert.equal(session.subscription_data.default_tax_rates, undefined, 'kein fester Steuersatz daneben');
+  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Bruttopreis unveraendert');
 
-  // Jemand stellt den Satz im Dashboard auf "zuzueglich": kein Checkout, der mehr kosten wuerde.
-  env.stripe.sim.setTaxRate('txr_ust19', {inclusive: false, active: true});
-  const {resetTaxRateCache} = await import('../src/billing.mjs');
-  resetTaxRateCache();
+  // Stripe Tax im Dashboard pausiert: kein Checkout, nichts berechnet.
+  env.stripe.sim.setTaxSettings({status: 'pending'});
+  resetTaxCache();
   const before = env.stripe.sim.sessions.size;
   const refused = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
   assert.deepEqual([refused.status, refused.data.state], [503, 'TAX_CONFIG_INVALID']);
   assert.equal(env.stripe.sim.sessions.size, before, 'keine neue Checkout-Sitzung');
-  resetTaxRateCache();
-  assert.equal((await health()).taxRate, 'TAX_RATE_NOT_INCLUSIVE');
+  resetTaxCache();
+  assert.equal((await health()).stripeTax, 'STRIPE_TAX_PENDING');
+});
+
+test('Umsatzsteuer: ein Preis ohne "inclusive" wird mit Stripe Tax nicht verkauft (kein Aufschlag)', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const b = await signedIn(env, 'tom.exklusiv@example.test');
+  const [row] = await env.pg.json(`select json_agg(provider_price_id) from public.plan_prices where id = 'pro_month'`);
+  env.stripe.sim.overridePrice(row, {tax_behavior: 'exclusive'});
+  const r = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([r.status, r.data.state], [503, 'TAX_CONFIG_INVALID']);
 });
 
 test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {

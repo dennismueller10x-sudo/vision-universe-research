@@ -185,17 +185,3 @@ test('Zahlungsmethoden: Probelauf schaltet nichts ein', async () => {
   assert.equal(r.paymentMethods.find(m => m.key === 'sepa_debit').state, 'wird eingeschaltet');
   assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'off');
 });
-
-test('Steuersatz nur auf Wunsch: 19 % DE inklusive, idempotent, sonst kein Aufruf', async () => {
-  const f = fakeStripe();
-  const base = {key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: f.fetchImpl, log: () => {}};
-  const plain = await setupStripeLive(base);
-  assert.equal(plain.taxRateId, null);
-  assert.ok(!f.state.calls.some(c => c.includes('/v1/tax_rates')), 'ohne --tax-rate kein Steuer-Aufruf');
-  const first = await setupStripeLive({...base, taxRate: true});
-  assert.match(first.taxRateId, /^txr_/);
-  assert.deepEqual([f.state.taxRates[0].percentage, f.state.taxRates[0].inclusive, f.state.taxRates[0].country], [19, true, 'DE']);
-  const again = await setupStripeLive({...base, taxRate: true});
-  assert.equal(again.taxRateId, first.taxRateId);
-  assert.equal(f.state.taxRates.length, 1);
-});
