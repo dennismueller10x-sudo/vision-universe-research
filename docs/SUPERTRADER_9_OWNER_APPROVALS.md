@@ -158,7 +158,7 @@ Freigegeben: ____________  Datum: __________
 |---|---|
 | A SEC-Consumer | **#1098 gemergt** (Merge-Commit `753de56`). Den Head habe ich vorher gegen `main` 7d20956 geprüft: 11/11, keine Schutzfunktion abgeschwächt. Der Nachweis für S5 kommt erst mit dem geplanten Lauf am Mo 02.11., 07:30 UTC; die Auswertung ist für 14:00 UTC vorgemerkt. Die Alarm-Lücke schließt Draft #1156 |
 | B V13-Archiv | **nicht gesichert.** Gültig ist Archiv **1.2.0** mit 8 Teilen, 1,50 GB (`manifest-1.2.0.json` in Draft #1140). Laut Quant-Sitzung stimmen alle 8 Teile mit dem Manifest überein, der private Schlüssel liegt vor, und die Restore-Probe für `v13-derived` war hash-identisch. Die Daten liegen aber **nur im Container dieser einen Sitzung**. Blocker: Die Umgebung erreicht `*.r2.cloudflarestorage.com` nicht (HTTP 000), und das Secret `V13_ARCHIVE_PRIVATE_KEY` fehlt (Lauf 41011143637) |
-| C Security Master | #1136 setzt die Owner-Entscheidungen um. Die Backtest-Identitätssperre umfasst **72 IDs**: 35 Tickerwiederverwendungen, ONEOK, 14 weiterlaufende Reihen, 21 geänderte Startdaten, 1 entfallendes Listing. Sie ist Pflicht, an den alten und den tatsächlich committeten Stamm gebunden und im Vergleich verbindlich. Im Probelauf: 6.397 → 6.150 backtestfähige IDs, **0 neu backtestfähig**, keine Zusammenführung über das Symbol; übrig sind nur 9 reine Börsennamen-Wechsel. Gate mit beiden Freigaben PASS. Freeze 546 Dateien inklusive V13c INTACT (Betriebsunterlagen `v13/archive/` ausgenommen). 138/138/127 sind bestätigt, 133 ist widerlegt. Review eingearbeitet. Quant 3.673 Tests, 0 Fehler |
+| C Security Master | **Gate-Freigabe über #1143** (Owner-Entscheidung 30.10.). ONEOK bleibt im Gate blockiert, bis ein Erzeuger-PR die identischen `canonical_id` zusammenführt. #1136 ist abgelöst, nicht mergen. Die unabhängigen Teile stehen in **#1159** (gestapelt auf #1100), dort Pflicht: die Backtest-Identitätssperre. Probelauf: **72 IDs**, darunter 34 Tickerwiederverwendungen, 22 geänderte Startdaten, 14 weiterlaufende Reihen, 1 entfallendes Listing und ONEOK. Wirkung: 6.397 → 6.150 backtestfähig, **0 neu backtestfähig**, keine Zusammenführung über das Symbol, übrig nur 9 reine Börsennamen-Wechsel. Dazu Freeze 546 Dateien inklusive V13c INTACT (Betriebsunterlagen `v13/archive/` ausgenommen) und der Alarm. 138/138/127 sind bestätigt, 133 ist widerlegt. Review eingearbeitet. Quant 3.674 Tests, 0 Fehler |
 | D Tageslauf | Der manuelle Lauf 41020409882 hat am 30.10. den Stand vom 29.10. veröffentlicht (204a517). DQ-SF8-8 ist auf `main` grün, Core 300/300. Probelauf des automatischen Wegs: zwei Erzeugungen gleich, DQ-SF8-1..8 PASS, Vertrag ohne #1146 BLOCKED (C7), mit #1146 SKIP_SAME_SESSION. #1137 und #1146 zusammen: 317/317 |
 | S7 | noch offen: DQ-PX-4 (ATYR, AXG, OMEX) und DQ-TW-3 (ATYR, OMEX). Zuständig ist der Reparaturlauf, nicht der Tageslauf |
 
@@ -169,3 +169,11 @@ Freigegeben: ____________  Datum: __________
 3. Die Sitzung führt dann `[v13-archive:keycheck]` → `[v13-archive:put]` mit `transfer.sh put` → `[v13-archive:verify]` → `[v13-archive:restore]` aus.
    - Erst `verify` mit allen 8 `cipherSha256` gilt als Sicherung.
    - **Wichtig:** Die Daten bestehen nur, solange dieser Container lebt. Eine neue Sitzung hat sie nicht.
+
+### Merge-Reihenfolge Security Master (Stand 30.10., nach der Owner-Entscheidung zu #1143)
+
+1. #1100 (Freeze-Werkzeug) → #1159 (Identitätssperre, Freeze V10–V13c, Alarm); daneben #1101 (Nachweis 138/138/127).
+2. #1143 (Freigabeliste 1.1.0) und der Erzeuger-PR für identische `canonical_id` (ONEOK und 7 weitere, noch nicht vorhanden).
+3. Neuer Probelauf `commit=false` → PASS → am selben Tag `commit=true`. Das ist eine Owner-Freigabe; Frist ist das Laufdatum 10.11.
+4. Sperrliste aus dem committeten Stamm, dann `build-post-switch --blocklist` und `compare --approved … --blocklist …`. Den Leser umstellen nur mit eigener Freigabe.
+5. Erst danach #1119.
