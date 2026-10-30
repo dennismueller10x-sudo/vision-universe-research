@@ -141,6 +141,8 @@ Teststand:
 | Prüfung | Ergebnis |
 |---|---|
 | `node --test quant/tests/backtest-*.test.mjs` | 103/103 |
+| `node --test "quant/tests/*.test.mjs"` (#1138, `cf328315a6`) | 3.654 bestanden, 0 fehlgeschlagen, 19 übersprungen |
+| security-master (#1143) | 76/76 |
 | `v13-archive` und `secrets` | 11/11 |
 | `verify-backtest-preview.py` | 16 Fälle, 0 Befunde |
 | `core` auf `main` | 1 rot, DQ-SF8-8 (siehe 6.1) |
