@@ -242,3 +242,21 @@ test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- u
   const cmp = compareMasters(prev, next);
   assert.equal(cmp.instrumentTypeChanges.length, 138); assert.ok(cmp.eligibilityFlips.every((f) => f.from === true && f.to === false));
 });
+
+test("SMW-11 · Zählabgleich 138 / 127 / 133 aus den committeten Eingaben reproduzierbar (Erzeugerausgabe = committete Datei)", async (t) => {
+  const { reclassify, countReconciliation } = await import("../../scripts/market/security-master-v130-evidence.mjs");
+  const bytes = readFileSync(join(ROOT, SM, "us-security-master.json")), prev = JSON.parse(bytes.toString("utf8"));
+  const committed = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-count-reconciliation.json"), "utf8"));
+  const { createHash } = await import("node:crypto");
+  if (committed.inputs.masterSha256 !== createHash("sha256").update(bytes).digest("hex")) return t.skip("Stamm seit dem Nachweis geändert (G8)");
+  const next = reclassify(prev, JSON.parse(readFileSync(join(ROOT, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8")).securities);
+  const rec = countReconciliation({ prevBytes: bytes, prev, next });
+  assert.deepEqual(rec, committed, "Abgleich = Erzeugerausgabe");
+  // je securityId (Gate): 138 Typ, 138 Eignung, dieselben IDs; je Zeile: 149 Typzeilen (11 inaktive Zweitzeilen), 138 Eignungszeilen
+  assert.equal(rec.perSecurityId.instrumentTypeChanges, 138); assert.equal(rec.perSecurityId.eligibilityFlips, 138); assert.equal(rec.perSecurityId.sameIdsForTypeAndEligibility, true);
+  assert.equal(rec.perRow.instrumentTypeRowChanges, 149); assert.equal(rec.perRow.eligibilityRowsTrueToFalse, 138); assert.equal(rec.perRow.eligibilityRowsFalseToTrue, 0); assert.equal(rec.perRow.unpairedRows, 0);
+  // zwei verschiedene 127: → PREFERRED (116 + 11 Zwei-Zeilen-IDs) und entfallend backtestfähig (116 PREFERRED + 11 TEST_SECURITY)
+  assert.equal(rec.twoDifferent127.equityCommonToPreferredIds, 127); assert.equal(rec.twoDifferent127.backtestableLost, 127); assert.equal(rec.twoDifferent127.overlap, 116);
+  // die frühere Angabe 133 ist aus keiner dieser Zählungen reproduzierbar; ihre eigene Herleitung ergibt 137
+  assert.equal(rec.claim133.reproducibleFromCommittedInputs, false); assert.equal(rec.claim133.derivationArithmetic, 137);
+});
