@@ -43,9 +43,13 @@ const DEPENDENTS=[
  {path:'server/quant-backtest-freshness.cjs, server/quant-backtest-reader.cjs',producer:'Code',reads:'masterHash aus dem Snapshot',expected:'SECURITY_MASTER als geänderte Abhängigkeit',handling:'UNVERAENDERT'},
 ];
 
+/* Betriebsunterlagen, keine Ergebnisse: die Anleitung des verschlüsselten Archivs wird mit jedem Archivstand
+   fortgeschrieben und bindet ihre Teile selbst per SHA-256 (manifest-<version>.json). */
+const NOT_FROZEN=new Set(['docs/quant-recovery/v13/archive']);
 function walk(base,rel=''){
  const out=[];for(const e of fs.readdirSync(path.join(base,rel),{withFileTypes:true}).sort((a,b)=>a.name<b.name?-1:1)){
   const p=rel?rel+'/'+e.name:e.name;if(e.isSymbolicLink())throw Error('SYMLINK_NOT_ALLOWED:'+p);
+  if(e.isDirectory()&&NOT_FROZEN.has(p))continue;
   if(e.isDirectory())out.push(...walk(base,p));else if(e.isFile()&&!TRANSIENT.has(e.name))out.push(p);
  }
  return out;
@@ -179,4 +183,4 @@ if(require.main===module){
   else throw Error('UNKNOWN_COMMAND');
  }catch(e){console.error(e.message);process.exitCode=2;}
 }
-module.exports={repoManifest,verifyRepo,freeze,verify,buildPostSwitch,compare,loadBlocklist,BLOCKLIST_SCHEMA,FROZEN_DIRS,TARGET_MASTER_VERSION};
+module.exports={NOT_FROZEN,repoManifest,verifyRepo,freeze,verify,buildPostSwitch,compare,loadBlocklist,BLOCKLIST_SCHEMA,FROZEN_DIRS,TARGET_MASTER_VERSION};

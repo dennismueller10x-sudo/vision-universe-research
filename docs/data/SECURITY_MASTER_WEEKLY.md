@@ -316,9 +316,11 @@ Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Me
 ### Eingefrorene Quant-Evidenz erweitert
 
 Seit dem Merge von #1132 (30.10.) sind V10–V13c auf `main`. `backtest-generation-freeze.cjs repo-manifest` friert jetzt alles unter `docs/quant-recovery/` ein:
-- 550 Dateien;
-- `filesSha256` `12bdbbe1…`;
-- Quelle `main` `adbc2f04`; `verify-repo` am 30.10. auf `main` nach #1098, #1133 und #1155: INTACT (0 geändert, 0 fehlend).
+- 546 Dateien;
+- `filesSha256` `3361172a…`;
+- Quelle `main` `8be4f879`; `verify-repo` INTACT.
+- Ausgenommen ist nur `docs/quant-recovery/v13/archive/`. Das sind Betriebsunterlagen des verschlüsselten Archivs (README, öffentlicher Schlüssel, Archiv-Manifeste), die mit jedem Archivstand fortgeschrieben werden und ihre Teile selbst per SHA-256 binden. #1140 hatte die README geändert, SMF-1 hat das erkannt.
+- Gegenüber dem Stand 550 / `12bdbbe1…` fehlen genau diese 4 Dateien. Keine Ergebnisdatei hat sich geändert, keine ist dazugekommen.
 
 SMF-1 prüft zusätzlich, dass in den eingefrorenen Generationsverzeichnissen keine Datei außerhalb des Manifests liegt. Neue Generationen in neuen Verzeichnissen bleiben möglich; eine Änderung oder Ergänzung einer eingefrorenen Generation ist rot.
 
@@ -368,7 +370,7 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
 [ ] Nachweis-PR #1101 gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #1100 gemergt (SMF-1…5)
 [ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
        138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
-[ ] P2 verify-repo INTACT (550 Dateien, filesSha256 12bdbbe1…): ____
+[ ] P2 verify-repo INTACT (546 Dateien, filesSha256 3361172a…): ____
 [ ] P2 privater freeze: Wurzel ____, Generation ____, filesSha256 ____, Archiv ____
 [ ] P3 Sonderfreigabe v130-approved-changes.json (prevMasterSha256 26c82617…) freigegeben: ja / nein
 [ ] Nachholdrift drift-lists.md geprüft (Messung ____): Delistings ___, canonical_id ___, Eignung ___, Typ ___, Namen ___
