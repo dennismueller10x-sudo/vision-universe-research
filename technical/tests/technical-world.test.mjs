@@ -39,8 +39,9 @@ test("Screener-Zustand: Adresse <-> Zustand <-> gueltige Abfrage", () => {
   /* Woche: Tagesfelder entfallen sichtbar statt still. */
   const w = M.queryFromState(M.stateFromParams({ tf: "1W", muster: "dreieck", trend: "sma200,rs", vol: "1" }));
   assert.ok(Q.validate(w.query).ok);
-  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200", "volAboveAvg"], "Wochenvolumen gibt es seit technical-query 1.5.0");
-  assert.equal(w.dropped.length, 2);
+  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["formationActive", "aboveSma200", "volAboveAvg"],
+    "Wochenvolumen gibt es seit technical-query 1.5.0, Wochenformationen seit 1.13.0");
+  assert.equal(w.dropped.length, 1, "nur die relative Staerke entfaellt in der Woche");
   assert.equal(M.stateFromParams({ rsi: "150" }).rsiMax, null, "RSI-Grenze ausserhalb 0..100 wird ignoriert");
 });
 
