@@ -186,8 +186,12 @@ test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in me
   const col = art.cols.suspectJumpAt;
   assert.equal(col.length, art.count);
   col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
-  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
-  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump);
+  // seit screen-row 1.13.0: Faktor und Stufe zu jedem Datum, sonst null
+  const f = art.cols.suspectJumpFactor, st = art.cols.suspectJumpStatus;
+  col.forEach((v, i) => assert.equal(v === null, f[i] === null && st[i] === null, art.cols.s[i]));
+  assert.equal(st.filter((x) => x === "CONFIRMED").length, meta.counts.suspectJumpConfirmed);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /jumpFlag\(row\)/);
 });
 
 test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {

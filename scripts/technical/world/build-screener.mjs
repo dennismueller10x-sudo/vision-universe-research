@@ -24,6 +24,7 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadIndex as loadCaConfirmations } from "../../market/lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -36,6 +37,8 @@ const Contract = require(join(root, "quant/engines/technical/screener-contract.j
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
 const Model = require(join(root, "technical/engine/model.js"));
+/* Belegte, nicht bereinigte Kapitalmassnahmen der Marktdaten-Domaene (Kennzeichnung "bestaetigt", screen-row 1.13.0). */
+const caConfirmations = loadCaConfirmations(root);
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -106,7 +109,7 @@ export function build(options = {}) {
           features: bundle && bundle.featuresAtCutoff || null,
           structure: bundle && bundle.structure && bundle.structure.state || null,
           weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, chartSeries: bundle && bundle.chartSeries || null,
-          benchmark, universeAsOf: options.universeAsOf || null
+          benchmark, universeAsOf: options.universeAsOf || null, caConfirmations: caConfirmations[securityId] || null
         });
         if (!bundle) row.noBundle = true;
         /* Eingefrorenes Kursende (core/listing-staleness.js, dieselbe Schwelle wie DQ-PX-6): erster Tag des
@@ -150,7 +153,8 @@ export function build(options = {}) {
     counts: { rows: rows.length, fresh: rows.filter((r) => r.fresh).length, stale: rows.filter((r) => !r.fresh).length,
       withVolume: rows.filter((r) => r.hasVolume).length, withWeekly: rows.filter((r) => r.weeks >= 40).length,
       with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length,
-      suspectJump60: rows.filter((r) => r.suspectJumpAt).length,
+      suspectJump: rows.filter((r) => r.suspectJumpAt).length,
+      suspectJumpConfirmed: rows.filter((r) => r.suspectJumpStatus === "CONFIRMED").length,
       weeklyMonthlyFromDailyHistory: mtfFromHistory },
     skipped, formations: formationCounts,
     sources: {

@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 160 Spalten.
+technical-screener-contract-1.1.0, 162 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -218,7 +218,9 @@ technical-screener-contract-1.1.0, 160 Spalten.
 | `stochK@1W` | num | ja | 0 … 100 | Stochastik %K (14, 3, Woche) |
 | `structure` | enum | ja | BULLISH, BEARISH, RANGE, MIXED, UNDETERMINED, NEUTRAL | Marktstruktur (Swings) |
 | `supertrendUp` | bool | ja |  | Supertrend (10, 3) aufwärts |
-| `suspectJumpAt` | date | ja |  | jüngster Kurssprung mit Datenverdacht (60 Bars) |
+| `suspectJumpAt` | date | ja |  | jüngster auffälliger Kurssprung (252 Bars, ab screen-row 1.13.0; davor 60) |
+| `suspectJumpFactor` | num | ja | 0 … ∞ | Schlussfaktor des Kurssprungs (Schluss / Vortagesschluss) (optional) |
+| `suspectJumpStatus` | enum | ja | SUSPECT, CONFIRMED | Stufe: Verdacht oder bestätigter Datenfehler (belegte, nicht bereinigte Kapitalmaßnahme) (optional) |
 | `ulcer14` | pct | ja | 0 … ∞ | Ulcer Index 14 (Rückschlagsrisiko) |
 | `volAboveAvg` | bool | ja |  | Volumen über Durchschnitt |
 | `volAboveAvg@1M` | bool | ja |  | Monatsvolumen über Durchschnitt |

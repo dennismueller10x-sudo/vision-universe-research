@@ -3,7 +3,7 @@
  "asOf": "2026-10-29",
  "generatedFrom": "2026-10-30T06:03:28.885Z",
  "versions": {
-  "row": "technical-screen-row-1.12.0",
+  "row": "technical-screen-row-1.13.0",
   "query": "technical-query-1.12.0",
   "indicators": "technical-indicators-1.6.0",
   "formations": "technical-formations-1.4.0"
@@ -16,7 +16,8 @@
   "withWeekly": 5654,
   "with200Weeks": 4743,
   "noBundle": 0,
-  "suspectJump60": 54,
+  "suspectJump": 181,
+  "suspectJumpConfirmed": 1,
   "weeklyMonthlyFromDailyHistory": 5661
  },
  "skipped": {},
@@ -81,5 +82,5 @@
   "index": "/technical/data/index-v1.json",
   "chart": "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz"
  },
- "runtimeSec": 49
+ "runtimeSec": 61
 }
