@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.11.0";
+  var QUERY_VERSION = "technical-query-1.12.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -64,6 +64,9 @@
     { id: "aboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 200", "1W": "Kurs über 40-Wochen-Linie", "1M": "Kurs über 10-Monats-Linie" } },
     { id: "aboveSma50", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 50", "1W": "Kurs über 10-Wochen-Linie", "1M": "Kurs über 5-Monats-Linie" } },
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
+    /* AP8 L2 (seit 1.12.0): Richtung der SMA 200 ueber 21 Handelstage, docs/technical/SCREENER_FIELDS_AP8_L2.md */
+    { id: "sma200Rising", group: "Trend", kind: "bool", tfs: D, label: "SMA 200 steigt (gegenüber vor einem Monat)" },
+    { id: "sma200Slope21", group: "Trend", kind: "pct", tfs: D, label: "Veränderung der SMA 200 über einen Monat" },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },

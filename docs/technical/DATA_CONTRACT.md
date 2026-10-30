@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 150 Spalten.
+technical-screener-contract-1.1.0, 152 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -198,6 +198,8 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `sma200CrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `sma200CrossWindow@1M` | int | ja | 1 … ∞ | Prüfraum in Monaten |
 | `sma200CrossWindow@1W` | int | ja | 1 … ∞ | Prüfraum in Wochen |
+| `sma200Rising` | bool | ja |  | SMA 200 steigt (gegenüber vor einem Monat) |
+| `sma200Slope21` | pct | ja | −1 … ∞ | Veränderung der SMA 200 über einen Monat |
 | `sma50AboveSma200` | bool | ja |  | SMA 50 über SMA 200 |
 | `sma50AboveSma200@1M` | bool | ja |  | 5- über 10-Monats-Linie |
 | `sma50AboveSma200@1W` | bool | ja |  | 10- über 40-Wochen-Linie |

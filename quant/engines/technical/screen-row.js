@@ -34,7 +34,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.11.0";
+  var ROW_VERSION = "technical-screen-row-1.12.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -199,6 +199,13 @@
     row.distSma200 = r(pct(c, f.sma200));
     row.distSma50 = r(pct(c, f.sma50));
     row.adx = r(f.adx, 2);
+    /* Seit 1.12.0 (AP8 L2, docs/technical/SCREENER_FIELDS_AP8_L2.md): Richtung der SMA 200 ueber einen Monat
+       (21 Handelstage), aus den veroeffentlichten Tagesbars: SMA 200 heute gegen SMA 200 vor 21 Handelstagen.
+       Leer, wenn die Bars dafuer nicht reichen (221). */
+    var s200 = t + 1 >= 221 ? I.compute(b, "sma", { period: 200 }).values : null;
+    var s200t = s200 ? lastAt(s200, t) : null, s200m = s200 ? lastAt(s200, t - 21) : null;
+    row.sma200Rising = isNum(s200t) && isNum(s200m) ? s200t > s200m : null;
+    row.sma200Slope21 = r(pct(s200t, s200m));
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;
