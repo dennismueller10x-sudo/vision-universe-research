@@ -149,13 +149,14 @@ const KINDS_BY_SCHEMA = {
 };
 const ALL_KINDS = KINDS_BY_SCHEMA[APPROVED_DRIFT_SCHEMA];
 const HEADER = ["schema", "purpose", "fromVersion", "toVersion", "prevMasterSha256", "measuredOn", "source", "note"];
-const nameKey = (x) => `${x.securityId}|${x.from === null ? "\u2205" : x.from}|${x.to === null ? "\u2205" : x.to}`;
-const pairKey = (x) => `${x.securityId}|${x.from}|${x.to}`;
+// eindeutige Schlüssel: Werte können selbst „|“ enthalten (mehrzeilige canonical_id, Namen); null bleibt null
+const pairKey = (x) => JSON.stringify([x.securityId, x.from, x.to]);
+const nameKey = pairKey;
 
 function validEntry(kind, x, schema) {
   if (kind === "newDuplicateCanonicalIds") return typeof x === "string" && x.length > 0;
   if (!x || typeof x.securityId !== "string" || !x.securityId) return false;
-  if (kind === "deactivations") return Object.keys(x).every((k) => k === "securityId" || k === "ticker");
+  if (kind === "deactivations") return Object.keys(x).length === 1;
   if (kind === "nameChanges") return (x.from === null || typeof x.from === "string") && typeof x.to === "string" && x.from !== x.to;
   const t = PAIR_KINDS[kind];
   if (typeof x.from !== t || typeof x.to !== t || x.from === x.to) return false;
@@ -172,6 +173,11 @@ const entryKey = (kind, x) => kind === "newDuplicateCanonicalIds" ? x : kind ===
  */
 function applyApproval(cmp, approvedList, ctx, fail) {
   const list = Array.isArray(approvedList) ? approvedList : [approvedList];
+  if (!list.length) { fail.push("G10 Sonderfreigabe: leere Liste"); return null; }
+  // Nachholdrift nur zusammen mit der Freigabe des Klassifiziererwechsels derselben Versionen
+  const v130 = list.filter((a) => a && a.schema === APPROVED_CHANGES_SCHEMA);
+  for (const a of list) if (a && a.schema === APPROVED_DRIFT_SCHEMA && !v130.some((b) => b.fromVersion === a.fromVersion && b.toVersion === a.toVersion && b.prevMasterSha256 === a.prevMasterSha256)) { fail.push("G8 Nachholfreigabe nur zusammen mit der Sonderfreigabe des Klassifiziererwechsels (gleiche Versionen und Ausgangsstamm)"); return null; }
+  if (v130.length > 1) { fail.push("G10 Sonderfreigabe: mehr als eine Datei mit Schema 1.0.0"); return null; }
   const allow = Object.fromEntries(ALL_KINDS.map((k) => [k, new Map()]));
   for (const [i, approved] of list.entries()) {
     const kinds = approved && KINDS_BY_SCHEMA[approved.schema];
@@ -207,7 +213,7 @@ function applyApproval(cmp, approvedList, ctx, fail) {
     cmp: out,
     keepName: (x) => !(present.includes("nameChanges") && hit("nameChanges", nameKey(x))),
     keepDuplicate: (k) => !(present.includes("newDuplicateCanonicalIds") && hit("newDuplicateCanonicalIds", k)),
-    applied: used, unused, files: list.map((a) => ({ schema: a.schema, purpose: a.purpose ?? null, measuredOn: a.measuredOn ?? null })),
+    applied: used, unused, files: list.map((a) => ({ schema: a.schema, purpose: a.purpose ?? null, measuredOn: a.measuredOn ?? null, fromVersion: a.fromVersion, toVersion: a.toVersion, prevMasterSha256: a.prevMasterSha256 })),
   };
 }
 

@@ -7,9 +7,14 @@ Erzeugt von `scripts/market/security-master-drift-evidence.mjs` (security-master
 | Freigaben | Ergebnis | Blockiert durch |
 | --- | --- | --- |
 | nur v130 | BLOCKED | G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01); G7 85 canonical_id-Wechsel (Grenze 25); G7 104 aktiv → inaktiv (Delistings) (Grenze 50); G7 85 Eignungswechsel (Grenze 50, ohne die freigegebenen); G9 592 Namenswechsel (Grenze 200) |
-| v130 + Nachholdrift | BLOCKED | G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01) |
+| v130 + Nachholdrift (diese Datei) | BLOCKED | G6 1 neue doppelte canonical_id (z. B. tiingo:NYSE:OKE:1985-07-01); G7 35 canonical_id-Wechsel (Grenze 25, ohne die freigegebenen) |
+| v130 + Nachholdrift mit Tickerwiederverwendung und Doppelungen | PASS | – |
 
 Identitätsbefunde (in keiner Freigabe, zählen gegen die Grenzen): ref_ACTS, ref_BREW, ref_EDVA, ref_ENTL, ref_FTPA, ref_GNMX, ref_INVN, ref_NMBL, ref_NYNY, ref_PCLN, ref_TRIL, ref_USX, ref_WR, ref_WX
+
+Tickerwiederverwendung (35; nicht in dieser Freigabe, nur mit --include-ticker-reuse): ref_AAAP, ref_ABI, ref_AEC, ref_ALPS, ref_AMBR, ref_ANV, ref_ARTC, ref_ATCX, ref_BCAR, ref_BLUW, ref_BPAC, ref_CAM, ref_CCXI, ref_CHOW, ref_DDC, ref_DINE, ref_EFTY, ref_GIW, ref_INCR, ref_JCSE, ref_KG, ref_LEGO, ref_LMNX, ref_LQ, ref_MRLN, ref_MRT, ref_NAVI, ref_PCS, ref_PS, ref_PTNT, ref_SUNS, ref_VAL, ref_VOLT, ref_XRPN, ref_XRPNW
+
+Doppelungen: nicht in dieser Freigabe, nur mit --include-duplicates
 
 ## Zählung je Klasse
 

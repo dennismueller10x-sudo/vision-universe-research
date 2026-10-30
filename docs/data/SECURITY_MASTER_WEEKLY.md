@@ -245,8 +245,11 @@ Reaktivierungen, Tickerwechsel, verlorene und neue IDs: 0.
 | Bindung wie v130 | dieselben Versionen 1.1.0 → 1.3.0, SHA-256 des Ausgangsstamms `26c82617…`, nur mit `allow_version_change`; im Workflow nur zusammen mit `approved_changes` (`approved_drift`) |
 | nur vorsichtige Richtung | Delistings, Eignung true → false, `canonical_id`-Wechsel, Typwechsel und Namen. Reaktivierung, neue Eignung, Tickerwechsel, neue oder verlorene IDs sind nicht freigebbar (G10) |
 | exakt | Paare (`securityId`, vorher, nachher) bzw. die `securityId` bei Delistings. Nicht genannte Wechsel, auch Drift nach dem 30.10., zählen gegen die unveränderten Grenzen 25 / 25 / 50 / 50 / 25 / 200 |
-| Identitätsbefunde nie in der Freigabe | die 14 Titel und ihre Eignungswechsel zählen gegen die Grenzen (14 ≤ 50) und werden ausgewiesen |
-| Namen nach P5 | freigegeben sind nur gefüllte Lücken aus SEC und SEC statt Tiingo (587). Nicht freigegeben, aber unter der Grenze: SEC → Tiingo-Metadaten (4) und kuratiert → SEC (1) |
+| exakt verschlüsselt | Schlüssel `JSON.stringify([securityId, vorher, nachher])`: Werte mit „|“ (mehrzeilige `canonical_id`) oder ein Name „∅“ können keinen anderen Wechsel decken |
+| nur mit v130 | eine Datei 1.1.0 gilt nur zusammen mit genau einer v130-Datei derselben Versionen und desselben Ausgangsstamms (im Gate, nicht nur im Workflow) |
+| Identitätsbefunde nie in der Freigabe | die 14 Titel (Reihe läuft nach dem Anbieter-Ende weiter oder ist unlesbar) zählen gegen die Grenzen (14 ≤ 50) und werden ausgewiesen; ohne Reihenverzeichnis bricht das Werkzeug ab |
+| Tickerwiederverwendung nur auf Wunsch | 35 IDs, unter denen der Anbieter ein neues Listing oder ein ETF mit demselben Ticker führt (34 neue Zeilen, dazu `ref_CAM`). Für den Stamm ist das vorsichtig: mehrdeutig heißt nicht geeignet. Es ist aber ein Identitätsthema, denn die Produktreihe einer alten `securityId` kann schon das neue Instrument zeigen (z. B. `ref_AAAP` ab 23.06.2026). Deshalb nur mit `--include-ticker-reuse` |
+| Namen nach P5 | freigegeben sind nur Namen mit Quelle SEC: gefüllte Lücken und SEC statt Tiingo (587). Nicht freigegeben, aber unter der Grenze: SEC → Tiingo-Metadaten (4) und kuratiert → SEC (1) |
 | Doppelung OKE | **nicht** in der committeten Datei. Ohne eigene Entscheidung blockiert G6 weiter |
 
 Nachweis committet unter `docs/data/security-master/`:
@@ -259,8 +262,10 @@ Tests: SMW-12 (Gate), SMW-13 (Klassen), SMW-14 (committete Datei).
 | Freigaben im Probelauf 30.10. | Gate |
 |---|---|
 | v130 | BLOCKED (G6, G7 ×3, G9) |
-| v130 + Nachholdrift | BLOCKED, nur noch G6 OKE |
-| v130 + Nachholdrift + OKE (`--include-duplicates`) | PASS, Entscheidung COMMIT |
+| v130 + Nachholdrift (committete Datei) | BLOCKED: G6 OKE und G7 35 `canonical_id` (die Tickerwiederverwendung, Grenze 25) |
+| v130 + Nachholdrift mit `--include-ticker-reuse --include-duplicates` | PASS, Entscheidung COMMIT |
+
+Beide Zusätze sind eigene Owner-Entscheidungen. Nach der Entscheidung wird die Datei mit dem Werkzeug neu erzeugt; sie wird nie von Hand geändert.
 
 **OKE ist eine eigene Entscheidung.** Mit der Freigabe der Doppelung hat ONEOK zwei Zeilen und gilt nicht mehr als backtestfähig (genau eine Zeile verlangt). Discover bleibt unverändert, weil `eligibility.json` nicht neu gebaut wird (P4). Ohne Freigabe bleibt der ganze Stamm blockiert, bis der Anbieter die Zeile entfernt. Ab dem 11.11. bleibt dann auch der Supertrader-Tageslauf stehen (Eingangsprüfung STALE). Eine Bereinigung exakt gleicher Anbieterzeilen in der Engine wäre eine fachliche Änderung des Stamms: eigener PR mit Versionswechsel, nicht vorbereitet.
 
@@ -272,7 +277,7 @@ for f in us-security-master.json summary.json reconciliation.json company-names.
 node scripts/market/build-us-security-master.mjs --require-provider --today <T> --stamp <T>T00:00:00Z --out W/next --work-dir W/work
 node scripts/market/universe-source.mjs && node scripts/market/build-company-names.mjs --sec   # schreibt Namen ins Repo: danach kopieren und git checkout -- quant/data
 node scripts/market/security-master-drift-evidence.mjs --prev W/prev --next W/next --prev-names W/prev/company-names.json \
-  --next-names W/next-company-names.json --measured-on <T> --out docs/data/security-master [--include-duplicates]
+  --next-names W/next-company-names.json --measured-on <T> --out docs/data/security-master [--include-ticker-reuse] [--include-duplicates]
 ```
 
 Als Erzeugerausgabe neu committen und dann laufen lassen. Neue Drift zwischen Messung und Lauf zählt gegen die normalen Grenzen und blockiert nur, wenn sie diese überschreitet.
@@ -294,7 +299,7 @@ Seit dem Merge von #1132 (30.10.) sind V10–V13c auf `main`. `backtest-generati
 - `filesSha256` `12bdbbe1…`;
 - Quelle `main` `adbc2f04`.
 
-SMF-1 prüft zusätzlich, dass keine Datei unter `docs/quant-recovery/` außerhalb des Manifests liegt. Eine neue Generation ist deshalb nur mit erneuertem Manifest möglich, und eine Änderung einer bestehenden Datei bleibt rot.
+SMF-1 prüft zusätzlich, dass in den eingefrorenen Generationsverzeichnissen keine Datei außerhalb des Manifests liegt. Neue Generationen in neuen Verzeichnissen bleiben möglich; eine Änderung oder Ergänzung einer eingefrorenen Generation ist rot.
 
 ## Freigabevorlage
 
@@ -348,6 +353,8 @@ Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Akt
 [ ] Nachholdrift drift-lists.md geprüft (Messung ____): Delistings ___, canonical_id ___, Eignung ___, Typ ___, Namen ___
        14 Identitätsbefunde (nicht freigegeben, zählen gegen die Grenzen) zur Kenntnis: ja / nein
        4 Namen SEC → Tiingo-Metadaten und 1 kuratiert → SEC (nicht freigegeben, P5) zur Kenntnis: ja / nein
+[ ] Tickerwiederverwendung (35 IDs, drift-lists.md) als mehrdeutig übernehmen: ja (--include-ticker-reuse) / nein (Lauf bleibt blockiert)
+       Identitätsprüfung der Produktreihen dieser IDs als eigener Discover-/Identitäts-PR: beauftragt ja / nein
 [ ] OKE-Doppelung tiingo:NYSE:OKE:1985-07-01 freigeben (ONEOK danach nicht backtestfähig): ja (--include-duplicates) / nein (Lauf bleibt blockiert)
 [ ] Lauf 1  workflow_dispatch commit=false allow_version_change=true approved_changes=true approved_drift=true: Lauf ______
        Gate PASS, report.approval.applied ____, sonst keine Wechsel über den Grenzen: ____

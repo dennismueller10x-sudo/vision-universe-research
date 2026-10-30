@@ -276,6 +276,7 @@ const driftCase = () => {
   x.prevMaster.rowsDelivered = x.prevMaster.rows.length; x.nextMaster.rowsDelivered = x.nextMaster.rows.length;
   const n = 33 + all.length; x.prevSummary = summary(n); x.nextSummary = summary(n);
   x.prevNames = names([...IDS.map((i) => [i, i + " Inc"]), ...nm.map((i) => [i, null])]); x.nextNames = names([...IDS.map((i) => [i, i + " Inc"]), ...nm.map((i) => [i, i + " Corp"])]);
+  for (const r of x.nextNames.rows) if (/^ref_N/.test(r.securityId)) r.nameSource = "SEC_COMPANY_TICKERS";
   const drift = { schema: APPROVED_DRIFT_SCHEMA, fromVersion: "us-security-master-1.1.0", toVersion: "us-security-master-1.3.0", prevMasterSha256: SHA, measuredOn: "2026-10-30",
     instrumentTypeChanges: [], eligibilityFlips: dl.map((i) => ({ securityId: `ref_${i}`, from: true, to: false })),
     canonicalIdChanges: cn.map((i) => ({ securityId: `ref_${i}`, from: `tiingo:NYSE:${i}:2000-01-01`, to: `tiingo:NASDAQ:${i}:2000-01-01` })),
@@ -295,8 +296,22 @@ test("SMW-12 · Nachholfreigabe 1.1.0: nur Wechsel in vorsichtiger Richtung, geb
   assert.equal(both.report.counts.deactivations, 60, "Bericht zählt weiter vollständig"); assert.equal(both.report.approval.files.length, 2);
   const fails = (approved, opts = o) => { const z = run(x, { ...opts, approvedChanges: approved }); assert.equal(z.pass, false); return z.failures.join("|"); };
   // jede Datei einzeln gebunden
-  assert.match(fails([ok, { ...drift, prevMasterSha256: "c".repeat(64) }]), /anderen Ausgangsstamm/);
-  assert.match(fails([ok, { ...drift, toVersion: "us-security-master-1.4.0" }]), /G8 Sonderfreigabe gilt für/);
+  assert.match(fails([ok, { ...drift, prevMasterSha256: "c".repeat(64) }]), /nur zusammen mit der Sonderfreigabe des Klassifiziererwechsels/);
+  assert.match(fails([ok, { ...drift, toVersion: "us-security-master-1.4.0" }]), /nur zusammen mit der Sonderfreigabe des Klassifiziererwechsels/);
+  // Nachholdrift allein, zwei v130-Dateien, leere Liste
+  assert.match(fails(drift), /G8 Nachholfreigabe nur zusammen/); assert.match(fails([drift]), /G8 Nachholfreigabe nur zusammen/);
+  assert.match(fails([ok, ok]), /mehr als eine Datei mit Schema 1\.0\.0/); assert.match(fails([]), /G10 Sonderfreigabe: leere Liste/);
+  // Schlüssel eindeutig: „A|B → A“ (Listing entfällt) deckt nicht „A → B|A“ (neues Listing); Name „∅“ ist nicht null
+  const z = driftCase();
+  for (const r of z.x.nextMaster.rows) if (/^C\d\d$/.test(r.ticker)) r.canonical_id = `tiingo:NYSE:${r.ticker}:2000-01-01`;
+  z.x.nextMaster.rows.push(...z.cn.map((i) => row(i, { canonical_id: `tiingo:NYSE:${i}:2026-01-01`, active_status: "INACTIVE", eligible_us_equity: false })));
+  const forged = { ...z.drift, canonicalIdChanges: z.cn.map((i) => ({ securityId: `ref_${i}`, from: `tiingo:NYSE:${i}:2000-01-01|tiingo:NYSE:${i}:2026-01-01`, to: `tiingo:NYSE:${i}:2000-01-01` })) };
+  const rz = run(z.x, { ...o, approvedChanges: [z.ok, forged] });
+  assert.equal(rz.pass, false); assert.ok(rz.failures.some((f) => /^G7 30 canonical_id-Wechsel/.test(f)), rz.failures.join("|"));
+  assert.equal(rz.report.approval.applied.canonicalIdChanges, 0);
+  const nul = { ...drift, nameChanges: drift.nameChanges.map((n) => ({ ...n, from: "\u2205" })) };
+  assert.match(fails([ok, nul]), /^G9 210 Namenswechsel/m);
+  assert.match(fails([ok, { ...drift, deactivations: [{ securityId: "ref_D00", ticker: "WRONG" }] }]), /ungültiger Eintrag in deactivations/);
   assert.match(fails([ok, drift], { prevMasterSha256: SHA }), /G8 Sonderfreigabe nur zusammen/);
   // nicht freigebbare Arten und falsche Richtung
   for (const k of ["reactivations", "tickerChanges", "newIds", "lostIds"]) assert.match(fails([ok, { ...drift, [k]: [] }]), /G10 Sonderfreigabe: nicht freigebbare Art/);
@@ -323,15 +338,20 @@ test("SMW-13 · Drift-Nachweis: Klassen, Identitätsbefund ohne Freigabe, Doppel
   const { x, ok, dl } = driftCase();
   // D00: eigene Reihe läuft nach dem Anbieterende weiter (Tickerwiederverwendung) → Identitätsbefund
   for (const r of x.nextMaster.rows) if (/^D\d\d$/.test(r.ticker)) r.end_date = "2026-09-01";
-  const ends = { ref_D00: "2026-10-29", ref_D01: "2026-08-31" };
+  const ends = { ref_D00: "2026-10-29", ref_D01: "2026-08-31", ref_D02: "UNREADABLE" };
   x.prevNames.rows.push({ securityId: "ref_CUR", inProductUniverse: true, companyName: "Curated Name", nameSource: "VU_CURATED" }, { securityId: "ref_TII", inProductUniverse: true, companyName: "Sec Name", nameSource: "SEC_COMPANY_TICKERS" });
   x.nextNames.rows.push({ securityId: "ref_CUR", inProductUniverse: true, companyName: "Curated Name Inc.", nameSource: "SEC_COMPANY_TICKERS" }, { securityId: "ref_TII", inProductUniverse: true, companyName: "Tiingo Name", nameSource: "TIINGO_METADATA" });
   const mk = (includeDuplicates) => buildDriftEvidence({ prevMaster: x.prevMaster, nextMaster: x.nextMaster, prevNames: x.prevNames, nextNames: x.nextNames, v130: ok, seriesEnd: (id) => ends[id] ?? null, measuredOn: "2026-10-30", prevMasterSha256: SHA, nextMasterSha256: "d".repeat(64), includeDuplicates });
   const { evidence, approved } = mk(false);
-  assert.deepEqual(evidence.identityReview, ["ref_D00"]);
-  assert.equal(evidence.counts.deactivations.SERIES_CONTINUES_AFTER_PROVIDER_END, 1); assert.equal(evidence.counts.deactivations.SERIES_ENDS_WITH_PROVIDER, 1); assert.equal(evidence.counts.deactivations.NO_PRODUCT_SERIES, dl.length - 2);
-  assert.ok(!approved.deactivations.some((d) => d.securityId === "ref_D00")); assert.ok(!approved.eligibilityFlips.some((d) => d.securityId === "ref_D00"));
-  assert.equal(approved.deactivations.length, dl.length - 1);
+  assert.deepEqual(evidence.identityReview, ["ref_D00", "ref_D02"], "weiterlaufende und unlesbare Reihe");
+  assert.equal(evidence.counts.deactivations.SERIES_CONTINUES_AFTER_PROVIDER_END, 1); assert.equal(evidence.counts.deactivations.SERIES_UNREADABLE, 1); assert.equal(evidence.counts.deactivations.SERIES_ENDS_WITH_PROVIDER, 1); assert.equal(evidence.counts.deactivations.NO_PRODUCT_SERIES, dl.length - 3);
+  for (const id of ["ref_D00", "ref_D02"]) { assert.ok(!approved.deactivations.some((d) => d.securityId === id)); assert.ok(!approved.eligibilityFlips.some((d) => d.securityId === id)); }
+  assert.equal(approved.deactivations.length, dl.length - 2);
+  // Tickerwiederverwendung (neue Zeile unter derselben securityId) nur mit includeTickerReuse
+  const y = driftCase(); y.x.nextMaster.rows.push(row("C00", { canonical_id: "tiingo:NASDAQ:C00:2026-06-23", active_status: "INACTIVE", eligible_us_equity: false }));
+  const mkY = (includeTickerReuse) => buildDriftEvidence({ prevMaster: y.x.prevMaster, nextMaster: y.x.nextMaster, prevNames: y.x.prevNames, nextNames: y.x.nextNames, v130: y.ok, seriesEnd: () => null, measuredOn: "2026-10-30", prevMasterSha256: SHA, nextMasterSha256: "d".repeat(64), includeTickerReuse });
+  assert.deepEqual(mkY(false).evidence.tickerReuse, ["ref_C00"]);
+  assert.ok(!mkY(false).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00")); assert.ok(mkY(true).approved.canonicalIdChanges.some((c) => c.securityId === "ref_C00"));
   assert.ok(approved.eligibilityFlips.every((e) => e.from === true && e.to === false)); assert.ok(!approved.eligibilityFlips.some((e) => /^ref_P/.test(e.securityId)), "v130-Wechsel nicht doppelt");
   assert.deepEqual(approved.newDuplicateCanonicalIds, []); assert.deepEqual(mk(true).approved.newDuplicateCanonicalIds, ["tiingo:NYSE:AAA:2000-01-01"]);
   const cls = Object.fromEntries(evidence.lists.nameChanges.map((n) => [n.securityId, n.class]));
@@ -358,6 +378,10 @@ test("SMW-14 · Committete Nachholfreigabe: an den committeten Stamm gebunden, n
   const ev = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/drift-evidence.json"), "utf8"));
   const review = new Set(ev.identityReview);
   for (const k of ["deactivations", "eligibilityFlips", "canonicalIdChanges", "instrumentTypeChanges"]) assert.ok(d[k].every((x) => !review.has(x.securityId)), `${k} ohne Identitätsbefund`);
+  const reuse = new Set(ev.tickerReuse);
+  if (!ev.includeTickerReuse) for (const k of ["canonicalIdChanges", "instrumentTypeChanges", "eligibilityFlips"]) assert.ok(d[k].every((x) => !reuse.has(x.securityId)), `${k} ohne Tickerwiederverwendung`);
+  const src = new Map(ev.lists.nameChanges.map((n) => [n.securityId, n]));
+  assert.ok(d.nameChanges.every((n) => src.get(n.securityId)?.source === "SEC_COMPANY_TICKERS" && !review.has(n.securityId)), "Namen nur aus SEC, ohne Identitätsbefund (P5)");
   const v130 = new Set(v.eligibilityFlips.map((x) => x.securityId));
   assert.ok(d.eligibilityFlips.every((x) => !v130.has(x.securityId)), "keine Doppelung mit v130");
   const wf = code();

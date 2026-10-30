@@ -21,8 +21,9 @@ test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V13c ist bytegleich und vollst�
  // jede abgeschlossene Generation ist erfasst, seit der V13-Übergabe auch V10–V13c und ihre Berichte
  for(const d of ['v6','v7','v8','v9','v9-followups','v51','methodology-v1','v10','v11','v12','v13','v13b','v13c'])assert.ok(Object.keys(m.frozen.files).some(p=>p.startsWith('docs/quant-recovery/'+d+'/')),d);
  for(const f of ['BACKTEST_V10_FINAL.md','ALPHA_DISCOVERY_V11.md','DATA_QUALITY_V12_FINAL.md','DATA_QUALITY_V13_FINAL.md','HANDOVER_V13.md'])assert.ok(Object.hasOwn(m.frozen.files,'docs/quant-recovery/'+f),f);
- // jede committete Datei unter docs/quant-recovery/ ist eingefroren (keine offene Generation daneben)
- const all=[];const walk=d=>{for(const e of fs.readdirSync(join(root,d),{withFileTypes:true}))e.isDirectory()?walk(d+'/'+e.name):all.push(d+'/'+e.name);};walk('docs/quant-recovery');
+ // jede Datei in den eingefrorenen Generationen ist im Manifest; neue Generationen (neue Verzeichnisse, neue Berichte) bleiben möglich
+ const gens=[...new Set(Object.keys(m.frozen.files).filter(p=>/^docs\/quant-recovery\/[^/]+\//.test(p)).map(p=>p.split('/').slice(0,3).join('/')))];
+ const all=[];const walk=d=>{for(const e of fs.readdirSync(join(root,d),{withFileTypes:true}))e.isDirectory()?walk(d+'/'+e.name):all.push(d+'/'+e.name);};for(const g of gens)walk(g);
  assert.deepEqual(all.filter(p=>!Object.hasOwn(m.frozen.files,p)).sort(),[]);
 });
 

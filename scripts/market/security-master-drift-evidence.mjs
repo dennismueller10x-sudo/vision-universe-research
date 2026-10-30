@@ -9,7 +9,7 @@
  * draußen und zählt im Lauf weiter gegen die unveränderten Grenzen.
  *
  *   node scripts/market/security-master-drift-evidence.mjs --prev <dir> --next <dir> --prev-names <file>
- *        --next-names <file> --measured-on YYYY-MM-DD --out <dir> [--include-duplicates]
+ *        --next-names <file> --measured-on YYYY-MM-DD --out <dir> [--include-duplicates] [--include-ticker-reuse]
  *        [--v130 docs/data/security-master/v130-approved-changes.json] [--series-dir quant/data/market/discover-series]
  *
  * <prev> = committeter Stand (git show HEAD:…), <next> = Probelauf von build-us-security-master.mjs --require-provider
@@ -18,7 +18,7 @@
  *   drift-evidence.json           alle Wechsel mit Klasse, Begründung und erwartetem Gate-Ergebnis
  *   drift-lists.md                dieselben Listen zum Lesen
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
@@ -40,18 +40,17 @@ export function canonicalClass(from, to) {
   return ex && st ? "EXCHANGE_AND_START_DATE" : ex ? "EXCHANGE_LABEL" : st ? "START_DATE_REVISION" : "REORDERED";
 }
 
-/** Letzter Kurstag der öffentlichen Tagesreihe (Produktuniversum) oder null. */
+/** Letzter Kurstag der öffentlichen Tagesreihe (Produktuniversum): null = keine Reihe, "UNREADABLE" = Reihe ohne Ende. */
 function seriesEnd(seriesDir, id) {
   const p = join(seriesDir, `${id}.json`);
   if (!existsSync(p)) return null;
-  const s = readJson(p);
-  return typeof s.to === "string" ? s.to.slice(0, 10) : null;
+  try { const s = readJson(p); return typeof s.to === "string" && /^\d{4}-\d{2}-\d{2}/.test(s.to) ? s.to.slice(0, 10) : "UNREADABLE"; } catch { return "UNREADABLE"; }
 }
 
 /**
  * Rein: Probelauf gegen committeten Stand. reviewIds sind Titel mit Identitätsbefund; sie gehen in keine Freigabe.
  */
-export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextNames, v130, seriesEnd: endOf, measuredOn, prevMasterSha256, nextMasterSha256, includeDuplicates = false }) {
+export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextNames, v130, seriesEnd: endOf, measuredOn, prevMasterSha256, nextMasterSha256, includeDuplicates = false, includeTickerReuse = false }) {
   const cmp = compareMasters(prevMaster, nextMaster), B = baselineIndex(nextMaster);
   const v130Type = new Set(v130.instrumentTypeChanges.map((x) => `${x.securityId}|${x.from}|${x.to}`));
   const v130Elig = new Set(v130.eligibilityFlips.map((x) => `${x.securityId}|${x.from}|${x.to}`));
@@ -61,13 +60,16 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
   // Anbieterkorrektur alter Listings), ist das ein Identitätsbefund und keine Drift.
   const deactivations = cmp.deactivations.map((x) => {
     const rows = B.get(x.securityId), end = rows.map((r) => r.end_date).filter(Boolean).sort().at(-1) ?? null, s = endOf(x.securityId);
-    const cls = s === null ? "NO_PRODUCT_SERIES" : end !== null && s <= end ? "SERIES_ENDS_WITH_PROVIDER" : "SERIES_CONTINUES_AFTER_PROVIDER_END";
+    const cls = s === null ? "NO_PRODUCT_SERIES" : s === "UNREADABLE" ? "SERIES_UNREADABLE" : end !== null && s <= end ? "SERIES_ENDS_WITH_PROVIDER" : "SERIES_CONTINUES_AFTER_PROVIDER_END";
     return { securityId: x.securityId, ticker: x.ticker, providerEndDate: end, seriesEnd: s, class: cls };
   });
-  const reviewIds = new Set(deactivations.filter((d) => d.class === "SERIES_CONTINUES_AFTER_PROVIDER_END").map((d) => d.securityId));
+  const reviewIds = new Set(deactivations.filter((d) => d.class === "SERIES_CONTINUES_AFTER_PROVIDER_END" || d.class === "SERIES_UNREADABLE").map((d) => d.securityId));
 
   const canonicalIdChanges = cmp.canonicalIdChanges.map((x) => ({ ...x, class: canonicalClass(x.from, x.to) }));
   const instrumentTypeChanges = cmp.instrumentTypeChanges.filter((x) => !v130Type.has(key(x))).map((x) => ({ ...x, class: /ETF/.test(x.to) ? "ETF_LISTING_SAME_TICKER" : "OTHER" }));
+  // Tickerwiederverwendung: ein neues Listing unter derselben securityId (neue Zeile oder ETF). Für den Stamm vorsichtig
+  // (mehrdeutig → nicht geeignet), aber ein Identitätsthema: nur mit --include-ticker-reuse in der Freigabe.
+  const reuseIds = new Set([...canonicalIdChanges.filter((x) => x.class === "NEW_LISTING_SAME_TICKER").map((x) => x.securityId), ...instrumentTypeChanges.filter((x) => x.class === "ETF_LISTING_SAME_TICKER").map((x) => x.securityId)]);
   const eligibilityFlips = cmp.eligibilityFlips.filter((x) => !v130Elig.has(key(x))).map((x) => ({
     ...x,
     class: x.from === true && x.to === false
@@ -87,7 +89,7 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
 
   // Freigabe nur für die vorsichtige Richtung und ohne Identitätsbefund. Namen: Lücken aus SEC gefüllt oder SEC-Name
   // statt eines anderen (P5); ein Wechsel hin zu Tiingo-Metadaten oder weg von einem kuratierten Namen bleibt draußen.
-  const ok = (x) => !reviewIds.has(x.securityId);
+  const ok = (x) => !reviewIds.has(x.securityId) && (includeTickerReuse || !reuseIds.has(x.securityId));
   const approved = {
     schema: APPROVED_DRIFT_SCHEMA,
     purpose: `EINMALIGE_NACHHOLDRIFT seit ${String(prevMaster.generatedAt).slice(0, 10)} vor dem Wechsel 1.1.0 → 1.3.0 (gemessen ${measuredOn})`,
@@ -96,8 +98,8 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
     instrumentTypeChanges: instrumentTypeChanges.filter(ok).map(({ securityId, from, to }) => ({ securityId, from, to })),
     eligibilityFlips: eligibilityFlips.filter((x) => ok(x) && x.class !== "GAINED").map(({ securityId, from, to }) => ({ securityId, from, to })),
     canonicalIdChanges: canonicalIdChanges.filter(ok).map(({ securityId, from, to }) => ({ securityId, from, to })),
-    deactivations: deactivations.filter((d) => d.class !== "SERIES_CONTINUES_AFTER_PROVIDER_END").map(({ securityId }) => ({ securityId })),
-    nameChanges: nameChanges.filter((x) => x.class === "NAME_GAP_FILLED" || x.class === "SEC_NAME").map(({ securityId, from, to }) => ({ securityId, from, to })),
+    deactivations: deactivations.filter((d) => !reviewIds.has(d.securityId)).map(({ securityId }) => ({ securityId })),
+    nameChanges: nameChanges.filter((x) => !reviewIds.has(x.securityId) && x.source === "SEC_COMPANY_TICKERS" && (x.class === "NAME_GAP_FILLED" || x.class === "SEC_NAME")).map(({ securityId, from, to }) => ({ securityId, from, to })),
     newDuplicateCanonicalIds: includeDuplicates ? newDuplicateCanonicalIds.map((d) => d.canonicalId) : [],
   };
   const count = (xs) => xs.reduce((m, x) => ((m[x.class] = (m[x.class] || 0) + 1), m), {});
@@ -111,7 +113,7 @@ export function buildDriftEvidence({ prevMaster, nextMaster, prevNames, nextName
         instrumentTypeChangesBeyondV130: count(instrumentTypeChanges), nameChanges: count(nameChanges), newDuplicateCanonicalIds: newDuplicateCanonicalIds.length,
         reactivations: reactivations.length, tickerChanges: tickerChanges.length, lostIds: lostIds.length, newIds: newIds.length,
       },
-      identityReview: [...reviewIds].sort(),
+      identityReview: [...reviewIds].sort(), tickerReuse: [...reuseIds].sort(), includeTickerReuse, includeDuplicates,
       lists: { canonicalIdChanges, deactivations, eligibilityFlips, instrumentTypeChanges, nameChanges, newDuplicateCanonicalIds, reactivations, tickerChanges, lostIds, newIds },
     },
     approved,
@@ -127,6 +129,8 @@ export function driftListsMarkdown(ev, gate) {
     row("Freigaben", "Ergebnis", "Blockiert durch"), row("---", "---", "---"),
     ...gate.map((g) => row(g.label, g.pass ? "PASS" : "BLOCKED", g.failures.join("; ") || "–")), "",
     `Identitätsbefunde (in keiner Freigabe, zählen gegen die Grenzen): ${ev.identityReview.length ? ev.identityReview.join(", ") : "keine"}`, "",
+    `Tickerwiederverwendung (${ev.tickerReuse.length}; ${ev.includeTickerReuse ? "in dieser Freigabe" : "nicht in dieser Freigabe, nur mit --include-ticker-reuse"}): ${ev.tickerReuse.join(", ") || "keine"}`, "",
+    `Doppelungen: ${ev.includeDuplicates ? "in dieser Freigabe" : "nicht in dieser Freigabe, nur mit --include-duplicates"}`, "",
     "## Zählung je Klasse", "", "```json", JSON.stringify(ev.counts, null, 2), "```", "",
     `## Delistings (${L.deactivations.length})`, "", row("securityId", "Ticker", "Anbieter-Ende", "Ende eigene Reihe", "Klasse"), row("---", "---", "---", "---", "---"),
     ...L.deactivations.map((d) => row(d.securityId, d.ticker, d.providerEndDate, d.seriesEnd, d.class)), "",
@@ -151,14 +155,17 @@ function main() {
   if (need.length) { console.error(`[drift-evidence] fehlt: ${need.join(", ")}`); process.exit(2); }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(arg("--measured-on"))) { console.error("[drift-evidence] --measured-on JJJJ-MM-TT"); process.exit(2); }
   const out = arg("--out"), seriesDir = arg("--series-dir") || join(ROOT, "quant/data/market/discover-series");
+  // ohne Reihenverzeichnis wäre jedes Delisting „ohne Produktreihe“ und still freigegeben (fail closed)
+  if (!existsSync(join(seriesDir, "index.json"))) { console.error(`[drift-evidence] Reihenverzeichnis ohne index.json: ${seriesDir}`); process.exit(2); }
   const v130Path = arg("--v130") || join(ROOT, "docs/data/security-master/v130-approved-changes.json");
   const prevBytes = readFileSync(join(arg("--prev"), "us-security-master.json")), nextBytes = readFileSync(join(arg("--next"), "us-security-master.json"));
   const v130 = readJson(v130Path);
   const { evidence, approved } = buildDriftEvidence({
     prevMaster: JSON.parse(prevBytes), nextMaster: JSON.parse(nextBytes), prevNames: readJson(arg("--prev-names")), nextNames: readJson(arg("--next-names")),
     v130, seriesEnd: (id) => seriesEnd(seriesDir, id), measuredOn: arg("--measured-on"), prevMasterSha256: sha(prevBytes), nextMasterSha256: sha(nextBytes),
-    includeDuplicates: argv.includes("--include-duplicates"),
+    includeDuplicates: argv.includes("--include-duplicates"), includeTickerReuse: argv.includes("--include-ticker-reuse"),
   });
+  evidence.seriesDir = { files: readdirSync(seriesDir).filter((f) => /^ref_.*\.json$/.test(f)).length };
   // erwartetes Gate-Ergebnis mit genau den Eingaben des Probelaufs
   const inputs = {
     prevMaster: JSON.parse(prevBytes), nextMaster: JSON.parse(nextBytes), prevSummary: readJson(join(arg("--prev"), "summary.json")),
@@ -166,7 +173,11 @@ function main() {
     prevNames: readJson(arg("--prev-names")), nextNames: readJson(arg("--next-names")),
   };
   const run = (label, approvedChanges) => ({ label, ...evaluateRefresh(inputs, { today: arg("--measured-on"), allowVersionChange: true, approvedChanges, prevMasterSha256: sha(prevBytes) }) });
-  const gate = [run("nur v130", v130), run("v130 + Nachholdrift", [v130, approved])].map(({ label, pass, decision, failures }) => ({ label, pass, decision, failures }));
+  const all = buildDriftEvidence({
+    prevMaster: inputs.prevMaster, nextMaster: inputs.nextMaster, prevNames: inputs.prevNames, nextNames: inputs.nextNames, v130,
+    seriesEnd: (id) => seriesEnd(seriesDir, id), measuredOn: arg("--measured-on"), prevMasterSha256: sha(prevBytes), nextMasterSha256: sha(nextBytes), includeDuplicates: true, includeTickerReuse: true,
+  }).approved;
+  const gate = [run("nur v130", v130), run("v130 + Nachholdrift (diese Datei)", [v130, approved]), run("v130 + Nachholdrift mit Tickerwiederverwendung und Doppelungen", [v130, all])].map(({ label, pass, decision, failures }) => ({ label, pass, decision, failures }));
   evidence.expectedGate = gate;
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "drift-approved-changes.json"), JSON.stringify(approved, null, 1) + "\n");

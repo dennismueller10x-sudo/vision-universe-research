@@ -10,69 +10,8 @@
   "providerRows": null,
   "generator": "security-master-drift-evidence-1.0.0"
  },
- "instrumentTypeChanges": [
-  {
-   "securityId": "ref_AAAP",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_ABI",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_ANV",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_CAM",
-   "from": "EQUITY_COMMON",
-   "to": "ETF"
-  },
-  {
-   "securityId": "ref_DINE",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_LMNX",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_LQ",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_PCS",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_PTNT",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  },
-  {
-   "securityId": "ref_VOLT",
-   "from": "EQUITY_COMMON",
-   "to": "EQUITY_COMMON|ETF"
-  }
- ],
+ "instrumentTypeChanges": [],
  "eligibilityFlips": [
-  {
-   "securityId": "ref_AAAP",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_ABI",
-   "from": true,
-   "to": false
-  },
   {
    "securityId": "ref_AIHS",
    "from": true,
@@ -80,11 +19,6 @@
   },
   {
    "securityId": "ref_AMZE",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_ANV",
    "from": true,
    "to": false
   },
@@ -109,22 +43,12 @@
    "to": false
   },
   {
-   "securityId": "ref_BCAR",
-   "from": true,
-   "to": false
-  },
-  {
    "securityId": "ref_BNRG",
    "from": true,
    "to": false
   },
   {
    "securityId": "ref_BTOG",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_CAM",
    "from": true,
    "to": false
   },
@@ -140,11 +64,6 @@
   },
   {
    "securityId": "ref_CRNX",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_DINE",
    "from": true,
    "to": false
   },
@@ -259,16 +178,6 @@
    "to": false
   },
   {
-   "securityId": "ref_LMNX",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_LQ",
-   "from": true,
-   "to": false
-  },
-  {
    "securityId": "ref_MDV",
    "from": true,
    "to": false
@@ -305,16 +214,6 @@
   },
   {
    "securityId": "ref_ORIS",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_PCS",
-   "from": true,
-   "to": false
-  },
-  {
-   "securityId": "ref_PTNT",
    "from": true,
    "to": false
   },
@@ -394,11 +293,6 @@
    "to": false
   },
   {
-   "securityId": "ref_VOLT",
-   "from": true,
-   "to": false
-  },
-  {
    "securityId": "ref_VSEE",
    "from": true,
    "to": false
@@ -421,34 +315,9 @@
  ],
  "canonicalIdChanges": [
   {
-   "securityId": "ref_AAAP",
-   "from": "tiingo:NASDAQ:AAAP:2015-11-11",
-   "to": "tiingo:NASDAQ:AAAP:2015-11-11|tiingo:NASDAQ:AAAP:2026-06-23"
-  },
-  {
-   "securityId": "ref_ABI",
-   "from": "tiingo:NASDAQ:ABI:2009-05-11",
-   "to": "tiingo:NASDAQ:ABI:2009-05-11|tiingo:NASDAQ:ABI:2025-06-26"
-  },
-  {
    "securityId": "ref_ADIL",
    "from": "tiingo:NASDAQ:ADIL:2018-07-27",
    "to": "tiingo:NASDAQ:ADIL:2026-10-29"
-  },
-  {
-   "securityId": "ref_AEC",
-   "from": "tiingo:NASDAQ:AEC:1993-11-11",
-   "to": "tiingo:NASDAQ:AEC:1993-11-11|tiingo:NASDAQ:AEC:2025-09-18"
-  },
-  {
-   "securityId": "ref_ALPS",
-   "from": "tiingo:NASDAQ:ALPS:2022-09-28",
-   "to": "tiingo:EXPM:ALPS:2021-10-18|tiingo:NASDAQ:ALPS:2022-09-28|tiingo:NASDAQ:ALPS:2025-10-31"
-  },
-  {
-   "securityId": "ref_AMBR",
-   "from": "tiingo:NASDAQ:AMBR:2014-03-21",
-   "to": "tiingo:NASDAQ:AMBR:2014-03-21|tiingo:NASDAQ:AMBR:2025-03-13"
   },
   {
    "securityId": "ref_AMZE",
@@ -456,59 +325,14 @@
    "to": "tiingo:OTCMKTS:AMZE:2021-12-14"
   },
   {
-   "securityId": "ref_ANV",
-   "from": "tiingo:NASDAQ:ANV:2007-05-10",
-   "to": "tiingo:NASDAQ:ANV:2007-05-10|tiingo:NASDAQ:ANV:2026-02-03"
-  },
-  {
    "securityId": "ref_APAD",
    "from": "tiingo:NYSE:APAD:2025-08-27",
    "to": "tiingo:NASDAQ:APAD:2025-08-27"
   },
   {
-   "securityId": "ref_ARTC",
-   "from": "tiingo:NASDAQ:ARTC:1996-02-05",
-   "to": "tiingo:NASDAQ:ARTC:1996-02-05|tiingo:NASDAQ:ARTC:2026-02-27"
-  },
-  {
-   "securityId": "ref_ATCX",
-   "from": "tiingo:NASDAQ:ATCX:2019-01-23",
-   "to": "tiingo:NASDAQ:ATCX:2019-01-23|tiingo:NASDAQ:ATCX:2026-01-09"
-  },
-  {
    "securityId": "ref_AZTR",
    "from": "tiingo:AMEX:AZTR:2023-06-16",
    "to": "tiingo:NYSE MKT:AZTR:2023-06-16"
-  },
-  {
-   "securityId": "ref_BCAR",
-   "from": "tiingo:NASDAQ:BCAR:2012-03-07",
-   "to": "tiingo:NASDAQ:BCAR:2012-03-07|tiingo:NASDAQ:BCAR:2025-08-20"
-  },
-  {
-   "securityId": "ref_BLUW",
-   "from": "tiingo:NASDAQ:BLUW:2021-02-09",
-   "to": "tiingo:NASDAQ:BLUW:2021-02-09|tiingo:NASDAQ:BLUW:2025-07-31"
-  },
-  {
-   "securityId": "ref_BPAC",
-   "from": "tiingo:NASDAQ:BPAC:2022-01-25",
-   "to": "tiingo:NASDAQ:BPAC:2022-01-25|tiingo:NASDAQ:BPAC:2026-01-06"
-  },
-  {
-   "securityId": "ref_CAM",
-   "from": "tiingo:NYSE:CAM:1995-07-05",
-   "to": "tiingo:NYSE ARCA:CAM:2025-10-06"
-  },
-  {
-   "securityId": "ref_CCXI",
-   "from": "tiingo:NASDAQ:CCXI:2012-02-08",
-   "to": "tiingo:NASDAQ:CCXI:2012-02-08|tiingo:NASDAQ:CCXI:2026-02-09"
-  },
-  {
-   "securityId": "ref_CHOW",
-   "from": "tiingo:AMEX:CHOW:2025-09-16",
-   "to": "tiingo:NYSE MKT:CHOW:2025-09-16|tiingo:NYSE MKT:CHOW:2026-10-23"
   },
   {
    "securityId": "ref_CLRCU",
@@ -519,21 +343,6 @@
    "securityId": "ref_DBRG_P_H",
    "from": "tiingo:NYSE:DBRG-P-H:2017-01-11|tiingo:NYSE:DBRG-P-H:2021-06-22",
    "to": "tiingo:NYSE:DBRG-P-H:2021-06-22"
-  },
-  {
-   "securityId": "ref_DDC",
-   "from": "tiingo:AMEX:DDC:1992-06-22",
-   "to": "tiingo:AMEX:DDC:1992-06-22|tiingo:AMEX:DDC:2023-11-17"
-  },
-  {
-   "securityId": "ref_DINE",
-   "from": "tiingo:NASDAQ:DINE:2001-01-02",
-   "to": "tiingo:NASDAQ:DINE:2001-01-02|tiingo:NASDAQ:DINE:2026-05-05"
-  },
-  {
-   "securityId": "ref_EFTY",
-   "from": "tiingo:NASDAQ:EFTY:2025-08-08",
-   "to": "tiingo:NASDAQ:EFTY:2025-08-08|tiingo:NASDAQ:EFTY:2026-10-19"
   },
   {
    "securityId": "ref_ELE",
@@ -556,19 +365,9 @@
    "to": "tiingo:NASDAQ:FGNXP:2026-09-28"
   },
   {
-   "securityId": "ref_GIW",
-   "from": "tiingo:NASDAQ:GIW:2021-07-12",
-   "to": "tiingo:NASDAQ:GIW:2021-07-12|tiingo:NASDAQ:GIW:2025-10-27|tiingo:NYSE:GIW:2002-08-06"
-  },
-  {
    "securityId": "ref_ILLRW",
    "from": "tiingo:NASDAQ:ILLRW:2019-07-30",
    "to": "tiingo:OTCMKTS:ILLRW:2019-07-30"
-  },
-  {
-   "securityId": "ref_INCR",
-   "from": "tiingo:NASDAQ:INCR:2014-11-07|tiingo:NASDAQ:INCR:2019-01-28",
-   "to": "tiingo:NASDAQ:INCR:2014-11-07|tiingo:NASDAQ:INCR:2019-01-28|tiingo:NASDAQ:INCR:2021-09-01"
   },
   {
    "securityId": "ref_IVCB",
@@ -581,21 +380,6 @@
    "to": "tiingo:OTCMKTS:IVCBU:2021-12-15"
   },
   {
-   "securityId": "ref_JCSE",
-   "from": "tiingo:NASDAQ:JCSE:2022-04-22",
-   "to": "tiingo:NASDAQ:JCSE:2022-04-22|tiingo:NASDAQ:JCSE:2026-09-21"
-  },
-  {
-   "securityId": "ref_KG",
-   "from": "tiingo:NASDAQ:KG:2011-02-28",
-   "to": "tiingo:NASDAQ:KG:2011-02-28|tiingo:NASDAQ:KG:2025-05-28"
-  },
-  {
-   "securityId": "ref_LEGO",
-   "from": "tiingo:AMEX:LEGO:2021-03-04",
-   "to": "tiingo:AMEX:LEGO:2021-03-04|tiingo:AMEX:LEGO:2026-03-16"
-  },
-  {
    "securityId": "ref_LESL",
    "from": "tiingo:NASDAQ:LESL:2020-10-29",
    "to": "tiingo:NASDAQ:LESL:2026-10-05"
@@ -604,16 +388,6 @@
    "securityId": "ref_LILMW",
    "from": "tiingo:NASDAQ:LILMW:2021-09-15",
    "to": "tiingo:OTCMKTS:LILMW:2021-09-15"
-  },
-  {
-   "securityId": "ref_LMNX",
-   "from": "tiingo:NASDAQ:LMNX:2000-04-06",
-   "to": "tiingo:NASDAQ:LMNX:2000-04-06|tiingo:NASDAQ:LMNX:2025-10-16"
-  },
-  {
-   "securityId": "ref_LQ",
-   "from": "tiingo:NASDAQ:LQ:2014-04-09",
-   "to": "tiingo:NASDAQ:LQ:2014-04-09|tiingo:NASDAQ:LQ:2026-05-05"
   },
   {
    "securityId": "ref_LRHC",
@@ -631,16 +405,6 @@
    "to": "tiingo:NYSE MKT:MMA:2024-03-28"
   },
   {
-   "securityId": "ref_MRLN",
-   "from": "tiingo:NASDAQ:MRLN:2003-11-12",
-   "to": "tiingo:NASDAQ:MRLN:2003-11-12|tiingo:NASDAQ:MRLN:2026-03-16"
-  },
-  {
-   "securityId": "ref_MRT",
-   "from": "tiingo:AMEX:MRT:2016-09-29",
-   "to": "tiingo:AMEX:MRT:2016-09-29|tiingo:AMEX:MRT:2023-07-11"
-  },
-  {
    "securityId": "ref_MSSAU",
    "from": "tiingo:NASDAQ:MSSAU:2022-04-01",
    "to": "tiingo:OTCMKTS:MSSAU:2022-04-01"
@@ -649,11 +413,6 @@
    "securityId": "ref_MTNB",
    "from": "tiingo:AMEX:MTNB:2014-08-18",
    "to": "tiingo:NYSE MKT:MTNB:2014-08-18"
-  },
-  {
-   "securityId": "ref_NAVI",
-   "from": "tiingo:NASDAQ:NAVI:2014-04-17",
-   "to": "tiingo:NASDAQ:NAVI:2014-04-17|tiingo:NASDAQ:NAVI:2026-10-29"
   },
   {
    "securityId": "ref_NVNI",
@@ -686,24 +445,9 @@
    "to": "tiingo:OTCMKTS:ORIS:2024-10-17"
   },
   {
-   "securityId": "ref_PCS",
-   "from": "tiingo:BATS:PCS:2007-04-19",
-   "to": "tiingo:BATS:PCS:2007-04-19|tiingo:BATS:PCS:2025-08-01"
-  },
-  {
    "securityId": "ref_POAS",
    "from": "tiingo:AMEX:POAS:2025-11-13",
    "to": "tiingo:NYSE MKT:POAS:2025-11-13"
-  },
-  {
-   "securityId": "ref_PS",
-   "from": "tiingo:NYSE:PS:2018-05-17",
-   "to": "tiingo:NYSE:PS:2018-05-17|tiingo:NYSE:PS:2026-04-29"
-  },
-  {
-   "securityId": "ref_PTNT",
-   "from": "tiingo:BATS:PTNT:1999-07-23",
-   "to": "tiingo:BATS:PTNT:1999-07-23|tiingo:BATS:PTNT:2026-05-06"
   },
   {
    "securityId": "ref_QETA",
@@ -771,11 +515,6 @@
    "to": "tiingo:PINK:SPKLW:2026-10-07"
   },
   {
-   "securityId": "ref_SUNS",
-   "from": "tiingo:NASDAQ:SUNS:2011-02-25",
-   "to": "tiingo:NASDAQ:SUNS:2011-02-25|tiingo:NASDAQ:SUNS:2024-07-10"
-  },
-  {
    "securityId": "ref_SVMH",
    "from": "tiingo:NASDAQ:SVMH:2023-12-08",
    "to": "tiingo:OTCMKTS:SVMH:2023-12-08"
@@ -811,19 +550,9 @@
    "to": "tiingo:NASDAQ:TRUE:2014-05-16"
   },
   {
-   "securityId": "ref_VAL",
-   "from": "tiingo:NYSE:VAL:1992-03-17",
-   "to": "tiingo:NYSE:VAL:1992-03-17|tiingo:NYSE:VAL:2021-05-03"
-  },
-  {
    "securityId": "ref_VLNWF",
    "from": "tiingo:NYSE:VLNWF:2020-09-23",
    "to": "tiingo:OTCMKTS:VLNWF:2020-09-23"
-  },
-  {
-   "securityId": "ref_VOLT",
-   "from": "tiingo:NASDAQ:VOLT:1990-03-26",
-   "to": "tiingo:NASDAQ:VOLT:1990-03-26|tiingo:NASDAQ:VOLT:2024-12-04"
   },
   {
    "securityId": "ref_VSEE",
@@ -834,16 +563,6 @@
    "securityId": "ref_VTAK",
    "from": "tiingo:AMEX:VTAK:2018-09-27",
    "to": "tiingo:AMEX:VTAK:2026-10-05"
-  },
-  {
-   "securityId": "ref_XRPN",
-   "from": "tiingo:NASDAQ:XRPN:2025-06-24",
-   "to": "tiingo:NASDAQ:XRPN:2025-06-24|tiingo:NASDAQ:XRPN:2026-10-09"
-  },
-  {
-   "securityId": "ref_XRPNW",
-   "from": "tiingo:NASDAQ:XRPNW:2025-06-24",
-   "to": "tiingo:NASDAQ:XRPNW:2025-06-24|tiingo:NASDAQ:XRPNW:2026-10-12"
   }
  ],
  "deactivations": [
