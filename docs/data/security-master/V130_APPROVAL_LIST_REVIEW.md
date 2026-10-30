@@ -6,7 +6,7 @@ Stand 30.10.2026. Owner-Entscheidung vom selben Tag: eine quellengebundene, exak
 
 ## Ergebnis in einem Satz
 
-Von 1.144 gezählten Änderungen des Probelaufs sind 1.085 mit Beleg freigabefähig. 59 sind es nicht und zählen weiter gegen die unveränderten Grenzen. Mit dieser Liste bleibt **genau ein Gate-Befund**: G6, die doppelte canonical_id von ONEOK (`tiingo:NYSE:OKE:1985-07-01`). Sie ist ein Fehler in der Anbieterliste und wird bewusst **nicht** zur Freigabe vorgeschlagen (Abschnitt 4).
+Von 1.144 gezählten Änderungen des Probelaufs sind 1.085 mit Beleg freigabefähig. 59 sind es nicht und zählen weiter gegen die unveränderten Grenzen. Mit dieser Liste bleibt **genau ein Gate-Befund**: G6, die doppelte canonical_id von ONEOK (`tiingo:NYSE:OKE:1985-07-01`). Ursache ist laut SEC eine Holding-Reorganisation vom 10.09.2026 (Nachfolge-Emittent, neue CUSIP, Ticker und NYSE-Listing ohne Unterbrechung). Die Doppelung wird nach Owner-Entscheidung vom 30.10. **nicht** freigegeben, auch nicht als Ausnahme. Der Fall lässt sich ohne Änderung am Erzeuger nicht auflösen, und G6 blockiert den Lauf zwingend, weil das Gate nur prüft und der Workflow den Folgestand unverändert übernimmt (Abschnitt 4). Die Liste selbst bleibt unverändert.
 
 ## 1. Grundlage
 
@@ -42,7 +42,9 @@ Die Zählung ist die des Gates (`compareMasters`, `identityFindings`, `compareNa
 angewandt {instrumentTypeChanges 147, eligibilityFlips 203, deactivations 84, canonicalIdChanges 60, tickerChanges 0, newDuplicateCanonicalIds 0, nameChanges 591}, ungenutzt 0
 ```
 
-Zur Gegenprobe: Würde der Owner die OKE-Doppelung ausdrücklich übernehmen (`--accept-duplicate`, Abschnitt 4, Option b), wäre die Simulation `PASS · COMMIT`. Diese Variante ist **nicht** Teil der vorgeschlagenen Datei.
+Erneut ausgeführt am 30.10.2026 mit der unveränderten Datei (SHA-256 `98fa596d90a38f00e0cf55fde4393cd14dd6377e37301e4e6626f12ac8a61961`): dasselbe Ergebnis. **BLOCKED, nur G6.** Restzählungen gegen die unveränderten Grenzen: canonical_id-Wechsel 23/25, Typwechsel 1/25, aktiv → inaktiv 16/50, Eignungswechsel 17/50, Tickerwechsel 0/25, Namenswechsel 1/200, neue doppelte canonical_id 1/0. Ungenutzt: überall 0. Mit der Freigabe 1.0.0 allein bleibt der Lauf wie im CI an G6, G7 (83, 100, 82) und G9 (592) stehen.
+
+Zur Gegenprobe: Mit ausdrücklich übernommener OKE-Doppelung (`--accept-duplicate`) wäre die Simulation `PASS · COMMIT`. Diese Variante hat der Owner am 30.10. **abgelehnt**. Sie ist nicht Teil der Datei und wird nicht weiterverfolgt.
 
 ## 3. canonical_id-Wechsel (83): keine Identitätsänderung der securityId
 
@@ -68,9 +70,51 @@ Mit 23 verbleibenden Wechseln liegt G7 knapp unter der Grenze 25. Das ist der kl
 
 ## 4. Die doppelte canonical_id (G6): ONEOK
 
-Die Anbieterliste vom 29.10. enthält **zwei** Zeilen `OKE · NYSE · Beginn 1985-07-01`, Gattung Stock, USD. Sie unterscheiden sich nur im Enddatum: eine endet am 2026-09-14 (damit „INACTIVE“, 45 Tage alt), die andere am 2026-10-28 (aktiv). Im September-Stand gab es nur eine Zeile. Die SEC führt OKE unverändert an der NYSE (ONEOK). Es gibt keinen Beleg für ein zweites Wertpapier. Das ist also eine **Doppelzeile beim Anbieter**, kein neues Listing. Die canonical_id kann sie nicht unterscheiden, weil sie das Enddatum nicht enthält.
+### 4.1 Befund beim Anbieter
 
-Folge bei Übernahme: `ref_OKE` hätte zwei Zeilen (REVIEW, `BASELINE_MATCH_AMBIGUOUS`) und fiele aus der backtestfähigen Menge. Ein großer, liquider Titel wäre damit ohne fachlichen Grund weg. Deshalb **nicht freigabefähig**. Die Optionen stehen in Abschnitt 9.
+Die Anbieterliste vom 29.10. enthält **zwei** Zeilen `OKE · NYSE · Beginn 1985-07-01`, Gattung Stock, USD. Sie unterscheiden sich nur im Enddatum: Die eine endet am 2026-09-14 und ist damit „INACTIVE“ (45 Tage alt), die andere endet am 2026-10-28 und ist aktiv. Im committeten Stand (Anbieterliste vom 11.09.) gab es nur eine Zeile, `1985-07-01..2026-09-10`, ACTIVE, `EXCHANGE_MATCH`/`EXISTING`. Die canonical_id `tiingo:Börse:Ticker:Beginn` enthält das Enddatum nicht und kann die beiden Zeilen deshalb nicht unterscheiden. Welche Zeile zu welcher CUSIP gehört, steht nicht in der Liste, denn `supported_tickers` führt keine CUSIP.
+
+### 4.2 Befund bei der SEC (Quellen)
+
+Abgerufen am 30.10.2026 von `data.sec.gov` und `www.sec.gov/Archives`, mit dem User-Agent der SEC-Skripte im Repo (`VisionUniverseResearch info@visionuniverse.de`, wie `scripts/quant/sec/http_client.py`). Rohdaten sind nicht committet.
+
+| Frage | Befund | Quelle |
+|---|---|---|
+| Heutige Identität | ONEOK, Inc., Oklahoma, CIK **0001039684** (EDGAR-Name `ONEOK INC /NEW/`, vorher `WAI INC` bis Nov. 1997), Commission File 001-13643, IRS 73-1520922, SIC 4923. `company_tickers_exchange` (30.10.): `OKE`, `NYSE`. | `data.sec.gov/submissions/CIK0001039684.json`; Liste aus Abschnitt 1 |
+| Ereignis im September 2026 | **Holding-Reorganisation am 10.09.2026** nach OGCA § 1081.G: Legacy ONEOK wird mit der Falcon Merger Sub, L.L.C. verschmolzen (die überlebende Gesellschaft heißt jetzt ONEOK, L.L.C., CIK 0002154636). Die Falcon TopCo, Inc. wird in „ONEOK, Inc.“ umbenannt und ist **Nachfolge-Emittent nach Rule 12g-3(a)**. Jede Aktie wird 1:1 umgetauscht. Wörtlich: „continues to trade on the New York Stock Exchange … on an uninterrupted basis under the ticker symbol ‚OKE‘ with a new CUSIP number (30609A 109)“. Am selben Tag folgt die Apollo-Transaktion auf Ebene der ONEOK Holdings, L.L.C. | 8-K12B vom 10.09.2026, Acc. 0001193125-26-387972 (Items 1.01, 3.01, 3.03, 5.01, 5.03) |
+| Ende der Legacy-Aktie | Die NYSE stellt am 18.09.2026 Form 25 für die „Common Stock“ der Legacy-Gesellschaft (17 CFR 240.12d2-2(a)(3)). Am 28.09.2026 folgt Form 15 zur Common Stock der Legacy ONEOK. Die Anleihen laufen weiter unter ONEOK, L.L.C. | 25-NSE Acc. 0000876661-26-000770; 15-12G Acc. 0001193125-26-405508 |
+| Fortführung | Die Nachfolgerin meldet regulär weiter unter CIK 1039684: 8-K vom 27.10. (Item 2.02) und 10-Q vom 28.10.2026 (`oke-20260930.htm`). | Submissions CIK 1039684 |
+| Wiederverwendung vor 1997 | Die **frühere ONEOK Inc.** (Delaware, vormals Oklahoma Natural Gas, CIK **0000074154**, Filings 1994–2017, letzter 10-K 1997-11-28) wurde im November 1997 auf die WAI Inc. (CIK 1039684) verschmolzen. Das war die Transaktion mit Western Resources. Im 8-K vom 26.11.1997 heißt es: „It is expected that the symbol under which ONEOK Common Stock now trades will continue to be used for the shares of New ONEOK Common Stock“. Die alte Aktie wurde an der NYSE delistet. Der 10-K 1996 der alten Gesellschaft nennt die NYSE als Börse. | 8-K Acc. 0000950130-97-005339 (CIK 1039684), 8-A12B vom 21./28.11.1997; 10-K Acc. 0000950134-96-005494 (CIK 74154) |
+
+**Ergebnis:** Der Ticker OKE an der NYSE ging zweimal auf einen Nachfolge-Emittenten mit gleichem Geschäft über, 1997 (CIK 74154 → 1039684) und am 10.09.2026 (neue CUSIP 30609A 109, CIK bleibt 1039684). Beide Male ist es keine Wiederverwendung durch einen fremden Emittenten. Die durchgehende Tiingo-Zeile ab 1985-07-01 deckte schon die Zeit vor 1997 mit ab. Die Zeile, die am 2026-09-14 endet, passt zur Legacy-Aktie (wirksam 10.09., Form 25 am 18.09.). Die aktive Zeile passt zur Aktie der Nachfolgerin, der Anbieter hat aber den Beginn 1985-07-01 übernommen. Diese Zuordnung ist ein Schluss aus Datum und SEC-Text, denn die Anbieterliste selbst nennt keine CUSIP.
+
+### 4.3 Eigene Tagesreihe
+
+`quant/data/market/discover-series/ref_OKE.json` (Stand `main`, nur gelesen): 270 Tageswerte vom 2025-10-03 bis 2026-10-29, keine Lücke über 4 Kalendertage. Um den Stichtag herum: 09-09 95,82 · 09-10 95,72 · 09-11 96,62 · 09-14 96,97 · 09-15 94,72. Die größte Tagesbewegung im Jahr betrug 5,1 % (2026-02-24), nicht am Stichtag. Die Wochenreihe `discover-series-long/ref_OKE.json` (1990-01-05 bis 2026-10-23, 1.921 Wochen) hat nur eine Lücke (2001-09-10 → 09-21, NYSE-Schließung) und keinen Sprung um Nov. 1997 oder Sept. 2026. **`ref_OKE` läuft also durchgehend.** Das deckt sich mit „uninterrupted basis“ im 8-K12B.
+
+### 4.4 Dieselbe Klasse bei den 7 bekannten Doppelungen
+
+Die 7 Doppelungen, die schon im committeten Stand stehen und vom Gate nur ausgewiesen werden (BAM, CCSI, FUN, HUT, NYXH, TEL, UHAL-B), haben **dasselbe Muster**: eine inaktive Altzeile und eine aktive Zeile mit identischem Beginn. Alle 7 Bestandstitel sind schon heute `BASELINE_MATCH_AMBIGUOUS`/REVIEW. Bei zwei davon belegt die SEC ein Nachfolgeereignis zum Ende der Altzeile: TEL mit 8-K12B vom 30.09.2024 (Altzeile endet am 2024-09-27) und FUN mit 8-K12B vom 01.07.2024 (Altzeile endet am 2024-07-16). Die übrigen fünf sind hier nicht einzeln belegt. OKE wäre der achte Fall derselben Klasse.
+
+### 4.5 Ist der Fall eindeutig auflösbar? Nein, nicht im bestehenden Verfahren.
+
+* **Identität und Listing: ja, belegt.** Beide Zeilen beschreiben dasselbe NYSE-Listing unter OKE ohne Unterbrechung, mit 1:1-Umtausch und gleichem Geschäft. `ref_OKE` folgt nach ADR-001 dem laufenden Listing und bleibt richtig. Rechtlich sind es zwei Wertpapiere (alte und neue CUSIP). Das Modell unterscheidet sie aber nicht, und die eigene Reihe ist durchgehend.
+* **Regelkonformer Weg, genau eine Zeile zu verwenden: nein, es gibt keinen.** Der Erzeuger (`quant/engines/us-security-master.js`, Zuordnung „Ticker UND Handelsplatz“) hängt bei mehreren Zeilen an der Bestandsbörse bewusst **alle** an die securityId und wählt keine aus („Eine davon willkürlich zu wählen wäre eine Entscheidung, und die trifft dieser Lauf nicht“). Ein Zusammenführen, eine Zeilenauswahl oder eine Override-Liste gibt es nicht. Ein Builder-Schalter dafür fehlt ebenso.
+* **Zurückhalten im Gate (z. B. `heldBack`): nicht wirksam.** Das Gate ist rein lesend („Erzeugt nichts selbst“). Der Workflow-Schritt „Neuen Stand einsetzen“ kopiert `sm-next/us-security-master.json`, `summary.json`, `reconciliation.json` und `backfill-estimate.json` **unverändert** nach `quant/data`. Eine Liste, die `ref_OKE` aus der G6-Zählung nimmt, würde den Lauf auf PASS stellen, und committet würde trotzdem die Doppelung. Das wäre im Ergebnis die abgelehnte Ausnahme-Freigabe unter anderem Namen. Damit `ref_OKE` auf dem prev-Stand bleibt, müsste jemand den Folgestand schreiben: die OKE-Zeilen aus prev einsetzen und `summary`/`reconciliation` nachzählen. Das ist eine Änderung am Erzeuger oder eine Handänderung an einem generierten Artefakt. Beides ist nach CLAUDE.md nicht Teil von #1143.
+* **Folge:** G6 blockiert den Lauf zwingend. Eine Freigabe der übrigen 1.085 Änderungen ist mit #1143 allein **nicht** möglich, solange der Anbieter die Doppelzeile führt. In #1143 wird deshalb nichts am Gate oder Builder geändert. Die Freigabeliste bleibt byte-gleich.
+
+### 4.6 Weg zur Auflösung (eigener PR, nicht in #1143, nicht umgesetzt)
+
+**Empfehlung, Erzeuger-PR „identische canonical_id zusammenführen“** in `quant/engines/us-security-master.js` (Fachmodell, eigener PR mit Vorher/Nachher-Vergleich):
+
+1. Regel: Zeilen mit gleichem Ticker, gleicher Börse, gleichem Beginn, gleicher Gattung und Währung werden **vor** der Bestandszuordnung zu einer Zeile zusammengeführt. Es gewinnt das jüngste Enddatum, und daraus folgt der Aktivstatus. Die Zeile trägt `provider_rows_merged: n` und den Hinweis `PROVIDER_DUPLICATE_ROW_MERGED`. Es wird nichts erfunden, nur die schon vorhandene Information verdichtet.
+2. Vorher/Nachher-Vergleich gegen den Probelauf: Betroffen sind genau 8 securityIds (OKE und die 7 bekannten). Sie verlieren `BASELINE_MATCH_AMBIGUOUS`, die bekannten Doppelungen fallen von 7 auf 0. `masterHash` ändert sich, deshalb wird die Version erhöht.
+3. Gegenprobe als Näherung (kein Erzeugerlauf): Im Folgestand die inaktive OKE-Zeile entfernt und `ref_OKE` als `EXCHANGE_MATCH` geführt. Die Gate-Simulation mit der **unveränderten** Datei 1.1.0 ergibt `PASS · COMMIT`, ungenutzt 0, Restzählungen wie oben, G6 0. Die Freigabeliste müsste dafür nicht geändert werden, weil `ref_OKE` in keiner anderen Liste steht.
+4. Danach neuer Probelauf und neue Liste mit dem Builder, falls der Anbieter inzwischen weiter gedriftet ist.
+
+Alternative, ebenfalls im Erzeuger: eine belegte Liste `heldBack` (securityId, canonicalId, Beleg) als Eingabe von `build-us-security-master.mjs`, die für diese securityIds die Zeilen aus dem Ausgangsstand übernimmt und die Zählungen nachführt. Das Gate würde dann nur prüfen, dass die zurückgehaltenen Zeilen genau prev entsprechen, und sie ausweisen. Das ist weniger allgemein und veraltet mit jedem Lauf (Enddatum 2026-09-10 bleibt stehen). Deshalb ist es nur die zweite Wahl.
+
+Ohne Erzeugeränderung bleibt nur Abwarten (Option c in Abschnitt 9.2), bis Tiingo die Altzeile entfernt. Bei FUN und TEL steht sie seit 2024 noch in der Liste, das ist also wenig wahrscheinlich.
 
 ## 5. Deaktivierungen (100)
 
@@ -109,17 +153,18 @@ Die Produktnamen im Universum ändern sich nur bei den 18 Umfirmierungen. Die Na
 ## 9. Offene Owner-Entscheidungen
 
 1. **Freigabe der Liste** `v130-approved-changes-1.1.0.json`, ganz oder mit Streichungen. Gestrichene Einträge zählen dann gegen die Grenzen. Neu erzeugen statt von Hand ändern.
-2. **ONEOK (G6)**, eine der drei Optionen:
-   * a) *Empfehlung:* eigener PR im Erzeuger `quant/engines/us-security-master.js`: Zeilen mit identischer canonical_id zu einer zusammenführen (jüngstes Enddatum gewinnt), mit Vorher/Nachher-Vergleich nach der Regel „Fachmodelle nicht nebenbei ändern“. Danach neuer Probelauf und neue Liste.
-   * b) die Doppelung ausdrücklich übernehmen: Builder mit `--accept-duplicate tiingo:NYSE:OKE:1985-07-01 --accept-duplicate-ref "<Fundstelle der Owner-Freigabe>"`. Folge: ref_OKE ist bis zur Bereinigung beim Anbieter nicht backtestfähig. Simuliert: PASS.
-   * c) abwarten, bis Tiingo die Doppelzeile entfernt, und dann neuer Probelauf.
+2. **ONEOK (G6)**, Stand 30.10. (Abschnitt 4.5/4.6):
+   * a) *Empfehlung:* eigener PR im Erzeuger `quant/engines/us-security-master.js`: Zeilen mit identischer canonical_id zu einer zusammenführen (jüngstes Enddatum gewinnt), mit Vorher/Nachher-Vergleich nach der Regel „Fachmodelle nicht nebenbei ändern“. Betroffen sind 8 securityIds (OKE und die 7 bekannten Doppelungen). Danach neuer Probelauf. Die Liste 1.1.0 bleibt voraussichtlich unverändert (Näherung: PASS). **Zu entscheiden: Auftrag für diesen Erzeuger-PR.**
+   * b) ~~die Doppelung ausdrücklich übernehmen (`--accept-duplicate`)~~: vom Owner am 30.10. **abgelehnt**.
+   * c) abwarten, bis Tiingo die Doppelzeile entfernt, und dann neuer Probelauf. Wenig wahrscheinlich (FUN/TEL stehen seit 2024 doppelt).
+   * Ein Zurückhalten nur im Gate (`heldBack`) wirkt nicht, weil der Workflow den Folgestand unverändert committet. Es wurde daher nicht umgesetzt.
 3. Die 23 nicht freigabefähigen canonical_id-Wechsel bleiben unter der Grenze 25. Weitere Drift kann sie darüber heben. Dann gilt: neu erzeugen und neu prüfen, keine Grenze ändern.
 4. Workflow: Die Eingabe `approved_changes` zeigt in diesem PR in einem eigenen Commit auf die Datei 1.1.0. Sie enthält 1.0.0 vollständig.
 5. **Identitätsbefunde (13 + EDVA):** Diese Titel bleiben unter den Grenzen und würden bei Übernahme trotzdem inaktiv geführt. Exakt heißt nicht, dass sie blockieren, sondern dass sie gegen die Grenze zählen. Will der Owner sie vor der Übernahme klären (Zuordnung ticker → laufendes Listing im Erzeuger), ist das ein eigener Erzeuger-PR.
 
 ## 10. Owner-Schritte
 
-1. Diese Prüfung und die Datei lesen und den PR gesondert freigeben (Merge nach `main`). Vorher eine Entscheidung zu ONEOK (Abschnitt 9.2), sonst bleibt der Lauf an G6 stehen.
+1. Diese Prüfung und die Datei lesen und den PR gesondert freigeben (Merge nach `main`). Vorher muss ONEOK aufgelöst sein (Abschnitt 9.2 a oder c), sonst bleibt der Lauf an G6 stehen. Ein Merge von #1143 allein reicht nicht, um den Lauf zu übernehmen.
 2. `Security Master + Firmennamen` manuell starten: `commit=false`, `allow_version_change=true`, `approved_changes=true`. In der Zusammenfassung prüfen: `Gate: PASS · Entscheidung COMMIT`, „ungenutzt“ überall 0.
 3. Ist der Lauf BLOCKED oder sind Einträge ungenutzt (Anbieterbewegung seit dem 29.10.), das Artefakt des neuen Laufs herunterladen und die Liste neu erzeugen (Befehl unten). Danach als neuen PR prüfen und freigeben und mit Schritt 2 wiederholen. Die Datei passt nur zu dem Lauf, aus dem sie erzeugt wurde: Exakt heißt, dass jede Abweichung wieder zählt.
 4. Direkt danach, am selben Tag, mit denselben Eingaben und `commit=true` starten. Das Gate prüft erneut. Nur bei PASS · COMMIT werden die sechs Dateien committet. Ändert sich die Anbieterliste zwischen beiden Läufen, blockiert das Gate (fail closed, nichts wird übernommen). Dann zurück zu Schritt 3.
@@ -146,6 +191,23 @@ node scripts/market/security-master-refresh-gate.mjs --prev /tmp/sm-prev --next 
 ```
 
 Der Builder bricht ab, wenn der Gate-Bericht nicht zu prev/next passt. Er schreibt nur nach `--out`, `--classification-out` und `--markdown-out`.
+
+## 11. Überschneidung mit #1136 (Stand 30.10.2026)
+
+Owner-Entscheidung 30.10.: #1143 ist die bevorzugte Lösung. #1136 (Branch `claude/supertrader-9-data-certification-jnejw3-secmaster-drift`, Kopf `6dbe42c998`) wird nicht gleichzeitig integriert und hier nur gelesen. #1136 ist gestapelt: Commit `2342b12657` führt #1100 (Freeze) und #1101 (Nachweis 1.3.0) zusammen. Keiner der beiden steht in `main`, denn `v130-quant-freeze.json`, `backtest-generation-freeze.cjs` und `v130-count-reconciliation.json` fehlen dort.
+
+| Datei | #1143 | #1136 | Herkunft in #1136 | Konflikt | unabhängig von der Freigabe? |
+|---|---|---|---|---|---|
+| `scripts/market/security-master-refresh-gate.mjs` | Schema 1.1.0 = **eine** Datei, sieben exakte Listen inkl. `tickerChanges`, Beleg je Eintrag | Schema **gleichen Namens** 1.1.0 = Nachholdrift-Datei **neben** 1.0.0 (mehrere `--approved-changes`), sechs Arten, Eignung nur true → false | #1136 (`a425dc7f2a`, `16308c6bb6`) | **ja, inhaltlich**: gleicher Schema-Name, anderes Format. Wer später gemergt wird, muss umbenennen. | nein |
+| `.github/workflows/security-master-weekly.yml` | `approved_changes` zeigt auf die Datei 1.1.0 | zusätzliche Eingabe `approved_drift` (zweite Datei) und Alarm-Job `pipeline-alarm` (SMW-15) | #1136 (`a425dc7f2a`, `6dbe42c998`) | ja (Textkonflikt und Semantik der Eingaben) | der Alarm-Job allein: ja |
+| `docs/data/SECURITY_MASTER_WEEKLY.md` | – | erweitert | #1101 und #1136 | nein | teilweise (#1101-Teil) |
+| `quant/tests/security-master-weekly.test.mjs` | – (eigene Tests in `security-master-approval-v110.test.mjs`) | SMW-Tests für Drift, Sperrliste, Alarm | #1101 und #1136 | nein (andere Datei), aber die Tests prüfen das #1136-Format | nein |
+| `docs/data/security-master/drift-approved-changes.json`, `drift-evidence.json`, `drift-lists.md`, `scripts/market/security-master-drift-evidence.mjs` | entspricht `v130-approved-changes-1.1.0.json`, Builder und Prüfdokument | Nachholfreigabe; **übernimmt ONEOK** (`--include-duplicates`) und Ticker-Wiederverwendungen | #1136 | doppelte Lösung derselben Aufgabe; ONEOK im Widerspruch zur Owner-Entscheidung | nein |
+| `docs/data/security-master/identity-blocklist.json` | – | 71 gesperrte IDs (u. a. ONEOK) für die neue Backtest-Generation | #1136 (`8e5205a95b`, `1e8af2f320`) | nein | nein (setzt die Übernahme der Doppelung voraus) |
+| `docs/data/security-master/v130-quant-freeze.json`, `scripts/quant/backtest-generation-freeze.cjs`, `quant/tests/security-master-v130-freeze.test.mjs` | – | Freeze der Quant-Ergebnisse vor 1.3.0 | #1100 (`7af5c98bb9`, `321d2d959f`), danach in #1136 erweitert (V10–V13c, `--blocklist` als Pflicht `BLOCKLIST_REQUIRED`) | nein | **ja, im Stand von #1100**. Die Erweiterung `--blocklist` hängt an `identity-blocklist.json` (#1136) und müsste für eine unabhängige Übernahme optional bleiben. |
+| `docs/data/security-master/v130-count-reconciliation.json`, `scripts/market/security-master-v130-evidence.mjs` | – (Datei 1.0.0 aus `main` unverändert übernommen) | Zählabgleich 138/127/133, Erweiterung des Nachweisskripts | #1101 (`2525ba428c`) | nein | ja |
+
+**Schluss:** Hart überschneiden sich nur Gate und Workflow, dort aber unvereinbar (gleicher Schema-Name, anderes Format, andere ONEOK-Entscheidung). Unabhängig von #1143 übernehmbar wären die Freeze-Manifeste aus #1100 (ohne die Pflicht `--blocklist`), der Zählabgleich aus #1101 und der Alarm-Job SMW-15. Jeder Teil gehört in einen eigenen PR, die Freeze-Teile wegen der Quant-Pfade getrennt von den Market-Pfaden.
 
 ## Anhang: Listen (erzeugt vom Builder)
 
