@@ -10,29 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-10-30T19:36:43.262Z",
+  "updatedAt": "2026-10-30T20:01:13.958Z",
   "cycles": [
-    {
-      "cycle": 5,
-      "runId": "40933859633",
-      "triggerAt": "2026-10-29T19:56:30.404Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "15:56:30",
-      "fetchStartAt": "2026-10-29T19:56:30.405Z",
-      "fetchEndAt": "2026-10-29T20:10:33.907Z",
-      "session": "2026-10-29",
-      "written": 1373,
-      "requests": 1435,
-      "notPublishable": 49,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-10-29T20:10:33.869Z"
-    },
     {
       "cycle": 1,
       "runId": "41106753865",
@@ -157,6 +136,35 @@
       "written": 1327,
       "requests": 1440,
       "notPublishable": 48,
+      "addAt": "2026-10-30T19:36:43.262Z",
+      "commitAt": "2026-10-30T19:36:43.655Z",
+      "pushAt": "2026-10-30T19:47:11.069Z",
+      "sha": "3c983386f7",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-10-30T19:36:43.230Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "taktVerspaetet",
+          "auslieferungZuWeitHinterher"
+        ]
+      }
+    },
+    {
+      "cycle": 6,
+      "runId": "41106753865",
+      "triggerAt": "2026-10-30T19:47:11.437Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "15:47:11",
+      "fetchStartAt": "2026-10-30T19:47:11.438Z",
+      "fetchEndAt": "2026-10-30T20:01:13.956Z",
+      "session": "2026-10-30",
+      "written": 1371,
+      "requests": 1440,
+      "notPublishable": 45,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -164,7 +172,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-10-30T19:36:43.230Z"
+      "snapshotAt": "2026-10-30T20:01:13.927Z"
     }
   ]
 }
