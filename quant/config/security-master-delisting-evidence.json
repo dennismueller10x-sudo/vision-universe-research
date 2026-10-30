@@ -1,0 +1,2417 @@
+{
+  "schemaVersion": "security-master-delisting-evidence-1.0.0",
+  "generatedBy": "scripts/market/build-security-master-delisting-evidence.mjs (security-master-delisting-evidence-builder-1.0.0)",
+  "consumer": "scripts/market/build-us-security-master.mjs -> quant/engines/us-security-master.js#indexDelistingEvidence",
+  "effect": "Nur ACTIVE/UNKNOWN -> INACTIVE, nie umgekehrt; nur Zeilen desselben Tickers mit Anbieter-startDate <= effectiveDate; erst ab effectiveDate.",
+  "rule": {
+    "evidence": "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
+    "series": "Tagesreihe endet mit >= 5 gleichen Schluessen; Endlauf beginnt spaetestens 7 Tage nach dem Wirksamkeitstag des fruehesten Belegs.",
+    "excluded": "Faelle mit LIFECYCLE_SOURCE_CONFLICT; securityId nicht core/identity.js-konform."
+  },
+  "source": {
+    "file": "PR #1091 (0c67dfce33f6e4d8bd7f58c9b132b0e029c46111):docs/quant-recovery/v10/population/lifecycle-cases.json",
+    "sha256": "b42530d65fd8ab83f0cfbdfc47476304e9af9b54167fa916701bc2bad3d225ff",
+    "schemaVersion": "v10-population-lifecycle-cases-1.0.0",
+    "generatedAt": "2026-10-28T16:09:57Z",
+    "protocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+    "secTickersNowNote": "secTickersNow ist der SEC-Tickerstand zum Abrufzeitpunkt der Quelle."
+  },
+  "counts": {
+    "cases": 475,
+    "records": 133,
+    "rejectedByReason": {
+      "LIFECYCLE_SOURCE_CONFLICT": 2,
+      "NO_COMPLETED_DELISTING_EVIDENCE": 331,
+      "SERIES_MOVED_AFTER_EFFECTIVE_DATE": 9
+    }
+  },
+  "records": [
+    {
+      "ticker": "AACB",
+      "securityId": "ref_AACB",
+      "cik": "0002034334",
+      "issuer": "Artius II Acquisition Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000808",
+      "filingDate": "2026-08-19",
+      "effectiveDate": "2026-08-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/2034334/000135445726000808/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-08-19",
+      "frozenRun": 48,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "AACT",
+      "securityId": "ref_AACT",
+      "cik": "0001853138",
+      "issuer": "Kodiak AI, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-225299",
+      "filingDate": "2025-09-30",
+      "effectiveDate": "2025-09-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1853138/000119312525225299/",
+      "frozenSince": "2025-09-24",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25",
+          "accession": "0001193125-25-215636",
+          "filingDate": "2025-09-24"
+        }
+      ]
+    },
+    {
+      "ticker": "ACHL",
+      "securityId": "ref_ACHL",
+      "cik": "0001830749",
+      "issuer": "Achilles Therapeutics plc",
+      "form": "FORM_25",
+      "accession": "0001193125-25-051423",
+      "filingDate": "2025-03-11",
+      "effectiveDate": "2025-03-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1830749/000119312525051423/d936249d25.htm",
+      "frozenSince": "2025-03-20",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ACVA",
+      "securityId": "ref_ACVA",
+      "cik": "0001637873",
+      "issuer": "ACV Auctions Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-425225",
+      "filingDate": "2026-10-19",
+      "effectiveDate": "2026-10-19",
+      "url": "https://www.sec.gov/Archives/edgar/data/1637873/000119312526425225/",
+      "frozenSince": "2026-10-14",
+      "frozenRun": 9,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ADVM",
+      "securityId": "ref_ADVM",
+      "cik": "0001501756",
+      "issuer": "Adverum Biotechnologies, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-312722",
+      "filingDate": "2025-12-09",
+      "effectiveDate": "2025-12-09",
+      "url": "https://www.sec.gov/Archives/edgar/data/1501756/000119312525312722/",
+      "frozenSince": "2025-12-08",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001236",
+          "filingDate": "2025-12-09"
+        }
+      ]
+    },
+    {
+      "ticker": "AFAR",
+      "securityId": "ref_AFAR",
+      "cik": "0001901886",
+      "issuer": "Aura Fat Projects Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000167",
+      "filingDate": "2025-03-05",
+      "effectiveDate": "2025-03-15",
+      "url": "https://www.sec.gov/Archives/edgar/data/1901886/000135445725000167/xslF25X02/primary_doc.xml",
+      "frozenSince": "2024-10-25",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "AFBI",
+      "securityId": "ref_AFBI",
+      "cik": "0001823406",
+      "issuer": "Affinity Bancshares, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000771",
+      "filingDate": "2026-08-07",
+      "effectiveDate": "2026-08-17",
+      "url": "https://www.sec.gov/Archives/edgar/data/1823406/000135445726000771/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-07-30",
+      "frozenRun": 62,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "AITR",
+      "securityId": "ref_AITR",
+      "cik": "0001966734",
+      "issuer": "AI Transportation Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000655",
+      "filingDate": "2025-07-14",
+      "effectiveDate": "2025-07-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/1966734/000135445725000655/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-04-15",
+      "frozenRun": 187,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ALE",
+      "securityId": "ref_ALE",
+      "cik": "0000066756",
+      "issuer": "ALLETE INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001140361-25-045482",
+      "filingDate": "2025-12-15",
+      "effectiveDate": "2025-12-15",
+      "url": "https://www.sec.gov/Archives/edgar/data/66756/000114036125045482/ef20060780_8k.htm",
+      "frozenSince": "2025-12-12",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000967",
+          "filingDate": "2025-12-15"
+        }
+      ]
+    },
+    {
+      "ticker": "ALOT",
+      "securityId": "ref_ALOT",
+      "cik": "0000008146",
+      "issuer": "AstroNova, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-368764",
+      "filingDate": "2026-08-26",
+      "effectiveDate": "2026-08-26",
+      "url": "https://www.sec.gov/Archives/edgar/data/8146/000119312526368764/d618841d8k.htm",
+      "frozenSince": "2026-08-25",
+      "frozenRun": 44,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000831",
+          "filingDate": "2026-08-27"
+        }
+      ]
+    },
+    {
+      "ticker": "ANSC",
+      "securityId": "ref_ANSC",
+      "cik": "0001854149",
+      "issuer": "Agriculture & Natural Solutions Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000782",
+      "filingDate": "2026-08-12",
+      "effectiveDate": "2026-08-22",
+      "url": "https://www.sec.gov/Archives/edgar/data/1854149/000135445726000782/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-08-11",
+      "frozenRun": 54,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ANSS",
+      "securityId": "ref_ANSS",
+      "cik": "0001013462",
+      "issuer": "ANSYS INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001140361-25-026141",
+      "filingDate": "2025-07-17",
+      "effectiveDate": "2025-07-17",
+      "url": "https://www.sec.gov/Archives/edgar/data/1013462/000114036125026141/",
+      "frozenSince": "2025-07-16",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000689",
+          "filingDate": "2025-07-17"
+        }
+      ]
+    },
+    {
+      "ticker": "APAD",
+      "securityId": "ref_APAD",
+      "cik": "0001956439",
+      "issuer": "Enhanced Group Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001628280-26-032558",
+      "filingDate": "2026-05-08",
+      "effectiveDate": "2026-05-08",
+      "url": "https://www.sec.gov/Archives/edgar/data/1956439/000162828026032558/",
+      "frozenSince": "2026-05-07",
+      "frozenRun": 119,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25",
+          "accession": "0001628280-26-031825",
+          "filingDate": "2026-05-07"
+        }
+      ]
+    },
+    {
+      "ticker": "APLT",
+      "securityId": "ref_APLT",
+      "cik": "0001697532",
+      "issuer": "Applied Therapeutics, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-034559",
+      "filingDate": "2026-02-03",
+      "effectiveDate": "2026-02-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1697532/000119312526034559/d93556d8k.htm",
+      "frozenSince": "2026-02-02",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000130",
+          "filingDate": "2026-02-03"
+        }
+      ]
+    },
+    {
+      "ticker": "ARBKL",
+      "securityId": "ref_ARBKL",
+      "cik": "0001841675",
+      "issuer": "Argo Blockchain Plc",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-001258",
+      "filingDate": "2025-12-12",
+      "effectiveDate": "2025-12-22",
+      "url": "https://www.sec.gov/Archives/edgar/data/1841675/000135445725001258/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-12-12",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ATCOL",
+      "securityId": "ref_ATCOL",
+      "cik": "0001794846",
+      "issuer": "Atlas Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000614",
+      "filingDate": "2025-07-03",
+      "effectiveDate": "2025-07-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/1794846/000135445725000614/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-07-02",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000502",
+          "filingDate": "2025-07-10"
+        },
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000810",
+          "filingDate": "2025-10-30"
+        }
+      ]
+    },
+    {
+      "ticker": "ATMC",
+      "securityId": "ref_ATMC",
+      "cik": "0001889106",
+      "issuer": "ALPHATIME ACQUISITION CORP",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000044",
+      "filingDate": "2026-01-15",
+      "effectiveDate": "2026-01-25",
+      "url": "https://www.sec.gov/Archives/edgar/data/1889106/000135445726000044/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-12-08",
+      "frozenRun": 208,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "AVGR",
+      "securityId": "ref_AVGR",
+      "cik": "0001506928",
+      "issuer": "Avinger Inc",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000558",
+      "filingDate": "2025-06-23",
+      "effectiveDate": "2025-07-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1506928/000135445725000558/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-02-19",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "AVNS",
+      "securityId": "ref_AVNS",
+      "cik": "0001606498",
+      "issuer": "AVANOS MEDICAL, INC.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001606498-26-000115",
+      "filingDate": "2026-07-30",
+      "effectiveDate": "2026-07-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1606498/000160649826000115/avns-20260727.htm",
+      "frozenSince": "2026-07-24",
+      "frozenRun": 66,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-26-000646",
+          "filingDate": "2026-07-27"
+        }
+      ]
+    },
+    {
+      "ticker": "BBCQ",
+      "securityId": "ref_BBCQ",
+      "cik": "0002088295",
+      "issuer": "Bleichroeder Acquisition Corp. II",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001213900-26-094397",
+      "filingDate": "2026-08-27",
+      "effectiveDate": "2026-08-27",
+      "url": "https://www.sec.gov/Archives/edgar/data/2088295/000121390026094397/",
+      "frozenSince": "2026-08-27",
+      "frozenRun": 42,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000828",
+          "filingDate": "2026-08-27"
+        }
+      ]
+    },
+    {
+      "ticker": "BGFV",
+      "securityId": "ref_BGFV",
+      "cik": "0001156388",
+      "issuer": "BIG 5 SPORTING GOODS Corp",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-227537",
+      "filingDate": "2025-10-02",
+      "effectiveDate": "2025-10-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1156388/000119312525227537/d54346d8k.htm",
+      "frozenSince": "2025-09-30",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000978",
+          "filingDate": "2025-10-02"
+        }
+      ]
+    },
+    {
+      "ticker": "BHAT",
+      "securityId": "ref_BHAT",
+      "cik": "0001759136",
+      "issuer": "Blue Hat Interactive Entertainment Technology",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000685",
+      "filingDate": "2026-07-14",
+      "effectiveDate": "2026-07-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/1759136/000135445726000685/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-13",
+      "frozenRun": 156,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "BLFS",
+      "securityId": "ref_BLFS",
+      "cik": "0000834365",
+      "issuer": "BIOLIFE SOLUTIONS INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-415012",
+      "filingDate": "2026-10-06",
+      "effectiveDate": "2026-10-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/834365/000119312526415012/",
+      "frozenSince": "2026-10-05",
+      "frozenRun": 16,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000952",
+          "filingDate": "2026-10-06"
+        }
+      ]
+    },
+    {
+      "ticker": "BLFY",
+      "securityId": "ref_BLFY",
+      "cik": "0001846017",
+      "issuer": "Blue Foundry Bancorp",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-135897",
+      "filingDate": "2026-04-01",
+      "effectiveDate": "2026-04-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1846017/000119312526135897/d62529d8k.htm",
+      "frozenSince": "2026-03-31",
+      "frozenRun": 145,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000317",
+          "filingDate": "2026-04-01"
+        }
+      ]
+    },
+    {
+      "ticker": "BOWN",
+      "securityId": "ref_BOWN",
+      "cik": "0001973056",
+      "issuer": "Bowen Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000667",
+      "filingDate": "2026-07-13",
+      "effectiveDate": "2026-07-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/1973056/000135445726000667/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-09-26",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "BSII",
+      "securityId": "ref_BSII",
+      "cik": "0002025065",
+      "issuer": "Black Spade Acquisition II Co",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-056485",
+      "filingDate": "2025-06-05",
+      "effectiveDate": "2025-06-05",
+      "url": "https://www.sec.gov/Archives/edgar/data/2025065/000110465925056485/",
+      "frozenSince": "2025-06-04",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25",
+          "accession": "0001104659-25-058394",
+          "filingDate": "2025-06-11"
+        }
+      ]
+    },
+    {
+      "ticker": "BWNB",
+      "securityId": "ref_BWNB",
+      "cik": "0001630805",
+      "issuer": "Babcock & Wilcox Enterprises, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-26-000682",
+      "filingDate": "2026-08-13",
+      "effectiveDate": "2026-08-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/1630805/000087666126000682/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-08-12",
+      "frozenRun": 53,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CASI",
+      "securityId": "ref_CASI",
+      "cik": "0001962738",
+      "issuer": "CASI Pharmaceuticals, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000606",
+      "filingDate": "2026-06-23",
+      "effectiveDate": "2026-07-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1962738/000135445726000606/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-02-25",
+      "frozenRun": 167,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CCCX",
+      "securityId": "ref_CCCX",
+      "cik": "0002007825",
+      "issuer": "Infleqtion, Inc.",
+      "form": "FORM_25",
+      "accession": "0001193125-26-050159",
+      "filingDate": "2026-02-13",
+      "effectiveDate": "2026-02-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/2007825/000119312526050159/d186927d25.htm",
+      "frozenSince": "2026-02-13",
+      "frozenRun": 174,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CCIX",
+      "securityId": "ref_CCIX",
+      "cik": "0002006291",
+      "issuer": "Churchill Capital Corp IX/Cayman",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000732",
+      "filingDate": "2026-07-27",
+      "effectiveDate": "2026-08-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/2006291/000135445726000732/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-07-24",
+      "frozenRun": 66,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CFB",
+      "securityId": "ref_CFB",
+      "cik": "0001458412",
+      "issuer": "CROSSFIRST BANKSHARES, INC.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-019506",
+      "filingDate": "2025-03-03",
+      "effectiveDate": "2025-03-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1458412/000110465925019506/",
+      "frozenSince": "2025-02-28",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000155",
+          "filingDate": "2025-03-03"
+        }
+      ]
+    },
+    {
+      "ticker": "CFFS",
+      "securityId": "ref_CFFS",
+      "cik": "0001839519",
+      "issuer": "CF Acquisition Corp. VII",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000442",
+      "filingDate": "2025-05-22",
+      "effectiveDate": "2025-06-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1839519/000135445725000442/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-01-15",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CGBDL",
+      "securityId": "ref_CGBDL",
+      "cik": "0001544206",
+      "issuer": "Carlyle Secured Lending, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-001191",
+      "filingDate": "2025-11-28",
+      "effectiveDate": "2025-12-08",
+      "url": "https://www.sec.gov/Archives/edgar/data/1544206/000135445725001191/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-11-24",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CMRX",
+      "securityId": "ref_CMRX",
+      "cik": "0001117480",
+      "issuer": "CHIMERIX INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-087237",
+      "filingDate": "2025-04-21",
+      "effectiveDate": "2025-04-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1117480/000119312525087237/",
+      "frozenSince": "2025-04-17",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000340",
+          "filingDate": "2025-04-21"
+        }
+      ]
+    },
+    {
+      "ticker": "COLA",
+      "securityId": "ref_COLA",
+      "cik": "0002028201",
+      "issuer": "Columbus Acquisition Corp/Cayman Islands",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001213900-26-107578",
+      "filingDate": "2026-10-07",
+      "effectiveDate": "2026-10-07",
+      "url": "https://www.sec.gov/Archives/edgar/data/2028201/000121390026107578/ea0307944-8k_columbus.htm",
+      "frozenSince": "2026-10-01",
+      "frozenRun": 18,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000937",
+          "filingDate": "2026-10-01"
+        }
+      ]
+    },
+    {
+      "ticker": "CREV",
+      "securityId": "ref_CREV",
+      "cik": "0001960208",
+      "issuer": "Carbon Revolution Public Ltd Co",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000532",
+      "filingDate": "2026-06-04",
+      "effectiveDate": "2026-06-14",
+      "url": "https://www.sec.gov/Archives/edgar/data/1960208/000135445726000532/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-02-06",
+      "frozenRun": 176,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CSCI",
+      "securityId": "ref_CSCI",
+      "cik": "0001113423",
+      "issuer": "COSCIENS Biopharma Inc.",
+      "form": "FORM_25",
+      "accession": "0001493152-25-012330",
+      "filingDate": "2025-08-26",
+      "effectiveDate": "2025-09-05",
+      "url": "https://www.sec.gov/Archives/edgar/data/1113423/000149315225012330/form25.htm",
+      "frozenSince": "2025-09-03",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "CVAC",
+      "securityId": "ref_CVAC",
+      "cik": "0001809122",
+      "issuer": "CureVac N.V.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000010",
+      "filingDate": "2026-01-06",
+      "effectiveDate": "2026-01-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/1809122/000135445726000010/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-01-05",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "DYCQ",
+      "securityId": "ref_DYCQ",
+      "cik": "0001944212",
+      "issuer": "DT Cloud Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000043",
+      "filingDate": "2026-01-15",
+      "effectiveDate": "2026-01-25",
+      "url": "https://www.sec.gov/Archives/edgar/data/1944212/000135445726000043/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-11-19",
+      "frozenRun": 219,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "EBR-B",
+      "securityId": "ref_EBR_B",
+      "cik": "0001439124",
+      "issuer": "AXIA Energia S.A.",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-25-001021",
+      "filingDate": "2025-12-29",
+      "effectiveDate": "2026-01-08",
+      "url": "https://www.sec.gov/Archives/edgar/data/1439124/000087666125001021/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-11-07",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-26-000521",
+          "filingDate": "2026-06-10"
+        },
+        {
+          "form": "FORM_25",
+          "accession": "0001292814-26-003417",
+          "filingDate": "2026-06-11"
+        },
+        {
+          "form": "FORM_25",
+          "accession": "0001292814-26-003918",
+          "filingDate": "2026-07-27"
+        }
+      ]
+    },
+    {
+      "ticker": "EBTC",
+      "securityId": "ref_EBTC",
+      "cik": "0001018399",
+      "issuer": "ENTERPRISE BANCORP INC /MA/",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001018399-25-000082",
+      "filingDate": "2025-07-01",
+      "effectiveDate": "2025-07-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1018399/000101839925000082/ebtc-20250701.htm",
+      "frozenSince": "2025-06-30",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000601",
+          "filingDate": "2025-07-01"
+        }
+      ]
+    },
+    {
+      "ticker": "EMPG",
+      "securityId": "ref_EMPG",
+      "cik": "0002005569",
+      "issuer": "Empro Group Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000954",
+      "filingDate": "2026-10-06",
+      "effectiveDate": "2026-10-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/2005569/000135445726000954/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-10-08",
+      "frozenRun": 264,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ENFN",
+      "securityId": "ref_ENFN",
+      "cik": "0001868912",
+      "issuer": "Enfusion, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-036869",
+      "filingDate": "2025-04-21",
+      "effectiveDate": "2025-04-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1868912/000110465925036869/tm2512751d1_8k.htm",
+      "frozenSince": "2025-04-17",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000277",
+          "filingDate": "2025-04-21"
+        }
+      ]
+    },
+    {
+      "ticker": "EPWK",
+      "securityId": "ref_EPWK",
+      "cik": "0001900720",
+      "issuer": "EPWK Holdings Ltd.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000515",
+      "filingDate": "2026-06-02",
+      "effectiveDate": "2026-06-12",
+      "url": "https://www.sec.gov/Archives/edgar/data/1900720/000135445726000515/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-12-22",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ESHA",
+      "securityId": "ref_ESHA",
+      "cik": "0001918661",
+      "issuer": "ESH Acquisition Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000397",
+      "filingDate": "2026-04-30",
+      "effectiveDate": "2026-05-10",
+      "url": "https://www.sec.gov/Archives/edgar/data/1918661/000135445726000397/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-04-30",
+      "frozenRun": 124,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ETWO",
+      "securityId": "ref_ETWO",
+      "cik": "0001800347",
+      "issuer": "E2open Parent Holdings, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-172643",
+      "filingDate": "2025-08-04",
+      "effectiveDate": "2025-08-04",
+      "url": "https://www.sec.gov/Archives/edgar/data/1800347/000119312525172643/d936154d8k.htm",
+      "frozenSince": "2025-07-31",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000550",
+          "filingDate": "2025-08-04"
+        }
+      ]
+    },
+    {
+      "ticker": "EVGR",
+      "securityId": "ref_EVGR",
+      "cik": "0001900402",
+      "issuer": "Evergreen Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000551",
+      "filingDate": "2025-06-20",
+      "effectiveDate": "2025-06-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1900402/000135445725000551/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-02-12",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "FITBI",
+      "securityId": "ref_FITBI",
+      "cik": "0000035527",
+      "issuer": "FIFTH THIRD BANCORP",
+      "form": "FORM_25",
+      "accession": "0001193125-26-267509",
+      "filingDate": "2026-06-11",
+      "effectiveDate": "2026-06-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/35527/000119312526267509/d132955d25.htm",
+      "frozenSince": "2026-06-12",
+      "frozenRun": 94,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "FLIC",
+      "securityId": "ref_FLIC",
+      "cik": "0000740663",
+      "issuer": "FIRST OF LONG ISLAND CORP",
+      "form": "8-K_2.01+3.01",
+      "accession": "0000943374-25-000253",
+      "filingDate": "2025-06-02",
+      "effectiveDate": "2025-06-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/740663/000094337425000253/",
+      "frozenSince": "2025-05-30",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000480",
+          "filingDate": "2025-06-02"
+        }
+      ]
+    },
+    {
+      "ticker": "FNA",
+      "securityId": "ref_FNA",
+      "cik": "0001531978",
+      "issuer": "Paragon 28, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0000950157-25-000330",
+      "filingDate": "2025-04-21",
+      "effectiveDate": "2025-04-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1531978/000095015725000330/",
+      "frozenSince": "2025-04-16",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000276",
+          "filingDate": "2025-04-21"
+        }
+      ]
+    },
+    {
+      "ticker": "FOSLL",
+      "securityId": "ref_FOSLL",
+      "cik": "0000883569",
+      "issuer": "Fossil Group, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-001126",
+      "filingDate": "2025-11-13",
+      "effectiveDate": "2025-11-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/883569/000135445725001126/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-11-13",
+      "frozenRun": 185,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "FRGE",
+      "securityId": "ref_FRGE",
+      "cik": "0001827821",
+      "issuer": "Forge Global Holdings, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001827821-26-000010",
+      "filingDate": "2026-03-02",
+      "effectiveDate": "2026-03-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1827821/000182782126000010/",
+      "frozenSince": "2026-02-27",
+      "frozenRun": 164,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-26-000186",
+          "filingDate": "2026-03-02"
+        }
+      ]
+    },
+    {
+      "ticker": "FTRK",
+      "securityId": "ref_FTRK",
+      "cik": "0002027262",
+      "issuer": "Fast Track Group",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000974",
+      "filingDate": "2026-10-09",
+      "effectiveDate": "2026-10-19",
+      "url": "https://www.sec.gov/Archives/edgar/data/2027262/000135445726000974/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-08-17",
+      "frozenRun": 50,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "GAINL",
+      "securityId": "ref_GAINL",
+      "cik": "0001321741",
+      "issuer": "GLADSTONE INVESTMENT CORPORATION\\DE",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-001271",
+      "filingDate": "2025-12-15",
+      "effectiveDate": "2025-12-25",
+      "url": "https://www.sec.gov/Archives/edgar/data/1321741/000135445725001271/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-12-15",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000402",
+          "filingDate": "2026-05-04"
+        }
+      ]
+    },
+    {
+      "ticker": "GHLD",
+      "securityId": "ref_GHLD",
+      "cik": "0001821160",
+      "issuer": "Guild Holdings Co",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-116680",
+      "filingDate": "2025-11-28",
+      "effectiveDate": "2025-11-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1821160/000110465925116680/tm2532188d4_8k.htm",
+      "frozenSince": "2025-11-26",
+      "frozenRun": 186,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000916",
+          "filingDate": "2025-11-28"
+        }
+      ]
+    },
+    {
+      "ticker": "GIFI",
+      "securityId": "ref_GIFI",
+      "cik": "0001031623",
+      "issuer": "GULF ISLAND FABRICATION INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001140361-26-001488",
+      "filingDate": "2026-01-16",
+      "effectiveDate": "2026-01-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/1031623/000114036126001488/ef20063243_8k.htm",
+      "frozenSince": "2026-01-14",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000053",
+          "filingDate": "2026-01-16"
+        }
+      ]
+    },
+    {
+      "ticker": "GLADZ",
+      "securityId": "ref_GLADZ",
+      "cik": "0001143513",
+      "issuer": "GLADSTONE CAPITAL CORP",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-001020",
+      "filingDate": "2025-10-14",
+      "effectiveDate": "2025-10-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/1143513/000135445725001020/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-10-09",
+      "frozenRun": 182,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "GLDD",
+      "securityId": "ref_GLDD",
+      "cik": "0001372020",
+      "issuer": "Great Lakes Dredge & Dock CORP",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-136214",
+      "filingDate": "2026-04-01",
+      "effectiveDate": "2026-04-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1372020/000119312526136214/d145321d8k.htm",
+      "frozenSince": "2026-03-31",
+      "frozenRun": 145,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000316",
+          "filingDate": "2026-04-01"
+        }
+      ]
+    },
+    {
+      "ticker": "GORV",
+      "securityId": "ref_GORV",
+      "cik": "0001721741",
+      "issuer": "Lazydays Holdings, Inc.",
+      "form": "FORM_25",
+      "accession": "0001493152-25-024060",
+      "filingDate": "2025-11-18",
+      "effectiveDate": "2025-11-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1721741/000149315225024060/form25.htm",
+      "frozenSince": "2025-11-26",
+      "frozenRun": 107,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "HBI",
+      "securityId": "ref_HBI",
+      "cik": "0001359841",
+      "issuer": "Hanesbrands Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-303276",
+      "filingDate": "2025-12-01",
+      "effectiveDate": "2025-12-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1359841/000119312525303276/d848051d8k.htm",
+      "frozenSince": "2025-11-28",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000928",
+          "filingDate": "2025-12-01"
+        }
+      ]
+    },
+    {
+      "ticker": "HNNAZ",
+      "securityId": "ref_HNNAZ",
+      "cik": "0001145255",
+      "issuer": "HENNESSY ADVISORS INC",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000625",
+      "filingDate": "2026-06-29",
+      "effectiveDate": "2026-07-09",
+      "url": "https://www.sec.gov/Archives/edgar/data/1145255/000135445726000625/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-06-29",
+      "frozenRun": 84,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "HONE",
+      "securityId": "ref_HONE",
+      "cik": "0001769617",
+      "issuer": "HarborOne Bancorp, Inc.",
+      "form": "FORM_25",
+      "accession": "0001104659-25-103215",
+      "filingDate": "2025-10-28",
+      "effectiveDate": "2025-11-07",
+      "url": "https://www.sec.gov/Archives/edgar/data/1769617/000110465925103215/tm2529533d2_25.htm",
+      "frozenSince": "2025-10-31",
+      "frozenRun": 189,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "HSII",
+      "securityId": "ref_HSII",
+      "cik": "0001066605",
+      "issuer": "HEIDRICK & STRUGGLES INTERNATIONAL INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-313582",
+      "filingDate": "2025-12-10",
+      "effectiveDate": "2025-12-10",
+      "url": "https://www.sec.gov/Archives/edgar/data/1066605/000119312525313582/d832427d8k.htm",
+      "frozenSince": "2025-12-09",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001242",
+          "filingDate": "2025-12-10"
+        }
+      ]
+    },
+    {
+      "ticker": "HTBK",
+      "securityId": "ref_HTBK",
+      "cik": "0001053352",
+      "issuer": "HERITAGE COMMERCE CORP",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-167257",
+      "filingDate": "2026-04-21",
+      "effectiveDate": "2026-04-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1053352/000119312526167257/d143924d8k.htm",
+      "frozenSince": "2026-04-17",
+      "frozenRun": 133,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000355",
+          "filingDate": "2026-04-20"
+        }
+      ]
+    },
+    {
+      "ticker": "HYZN",
+      "securityId": "ref_HYZN",
+      "cik": "0001716583",
+      "issuer": "Hyzon Motors Inc.",
+      "form": "FORM_25",
+      "accession": "0001716583-25-000041",
+      "filingDate": "2025-03-03",
+      "effectiveDate": "2025-03-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/1716583/000171658325000041/hyzon-xdraftform25.htm",
+      "frozenSince": "2025-01-30",
+      "frozenRun": 232,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ICCH",
+      "securityId": "ref_ICCH",
+      "cik": "0001681903",
+      "issuer": "ICC Holdings, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001437749-25-008045",
+      "filingDate": "2025-03-17",
+      "effectiveDate": "2025-03-17",
+      "url": "https://www.sec.gov/Archives/edgar/data/1681903/000143774925008045/icch20250317_8k.htm",
+      "frozenSince": "2025-03-07",
+      "frozenRun": 183,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000200",
+          "filingDate": "2025-03-13"
+        }
+      ]
+    },
+    {
+      "ticker": "INFA",
+      "securityId": "ref_INFA",
+      "cik": "0001868778",
+      "issuer": "Informatica Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-113667",
+      "filingDate": "2025-11-18",
+      "effectiveDate": "2025-11-18",
+      "url": "https://www.sec.gov/Archives/edgar/data/1868778/000110465925113667/tm2531245d7_8k.htm",
+      "frozenSince": "2025-11-14",
+      "frozenRun": 107,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-25-000882",
+          "filingDate": "2025-11-18"
+        }
+      ]
+    },
+    {
+      "ticker": "IPEX",
+      "securityId": "ref_IPEX",
+      "cik": "0002028355",
+      "issuer": "Inflection Point Acquisition Corp. V",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001213900-26-103669",
+      "filingDate": "2026-09-28",
+      "effectiveDate": "2026-09-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/2028355/000121390026103669/",
+      "frozenSince": "2026-09-25",
+      "frozenRun": 20,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000916",
+          "filingDate": "2026-09-25"
+        }
+      ]
+    },
+    {
+      "ticker": "ISPO",
+      "securityId": "ref_ISPO",
+      "cik": "0001820566",
+      "issuer": "Inspirato Inc",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001820566-26-000018",
+      "filingDate": "2026-02-04",
+      "effectiveDate": "2026-02-04",
+      "url": "https://www.sec.gov/Archives/edgar/data/1820566/000182056626000018/",
+      "frozenSince": "2026-02-02",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000133",
+          "filingDate": "2026-02-03"
+        }
+      ]
+    },
+    {
+      "ticker": "JFB",
+      "securityId": "ref_JFB",
+      "cik": "0002024306",
+      "issuer": "JFB Construction Holdings",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000855",
+      "filingDate": "2026-09-03",
+      "effectiveDate": "2026-09-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/2024306/000135445726000855/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-09-03",
+      "frozenRun": 37,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "LPSN",
+      "securityId": "ref_LPSN",
+      "cik": "0001102993",
+      "issuer": "LIVEPERSON INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-383671",
+      "filingDate": "2026-09-04",
+      "effectiveDate": "2026-09-04",
+      "url": "https://www.sec.gov/Archives/edgar/data/1102993/000119312526383671/d112155d8k.htm",
+      "frozenSince": "2026-09-02",
+      "frozenRun": 38,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000857",
+          "filingDate": "2026-09-04"
+        }
+      ]
+    },
+    {
+      "ticker": "MAYA",
+      "securityId": "ref_MAYA",
+      "cik": "0002028355",
+      "issuer": "Inflection Point Acquisition Corp. V",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001213900-26-103669",
+      "filingDate": "2026-09-28",
+      "effectiveDate": "2026-09-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/2028355/000121390026103669/",
+      "frozenSince": "2026-05-28",
+      "frozenRun": 105,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000916",
+          "filingDate": "2026-09-25"
+        }
+      ]
+    },
+    {
+      "ticker": "MCAA",
+      "securityId": "ref_MCAA",
+      "cik": "0001856995",
+      "issuer": "Mountain & Co. I Acquisition Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000429",
+      "filingDate": "2025-05-19",
+      "effectiveDate": "2025-05-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/1856995/000135445725000429/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-01-10",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "MDV",
+      "securityId": "ref_MDV",
+      "cik": "0001645873",
+      "issuer": "MODIV INDUSTRIAL, INC.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-26-094865",
+      "filingDate": "2026-08-12",
+      "effectiveDate": "2026-08-12",
+      "url": "https://www.sec.gov/Archives/edgar/data/1645873/000110465926094865/tm2622928d1_8k.htm",
+      "frozenSince": "2026-08-11",
+      "frozenRun": 7,
+      "frozenThrough": "2026-08-19",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-26-000679",
+          "filingDate": "2026-08-12"
+        }
+      ]
+    },
+    {
+      "ticker": "METCL",
+      "securityId": "ref_METCL",
+      "cik": "0001687187",
+      "issuer": "Ramaco Resources, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000756",
+      "filingDate": "2025-08-01",
+      "effectiveDate": "2025-08-11",
+      "url": "https://www.sec.gov/Archives/edgar/data/1687187/000135445725000756/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-08-01",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "MGIC",
+      "securityId": "ref_MGIC",
+      "cik": "0000876779",
+      "issuer": "MAGIC SOFTWARE ENTERPRISES LTD",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000210",
+      "filingDate": "2026-02-24",
+      "effectiveDate": "2026-03-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/876779/000135445726000210/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-02-23",
+      "frozenRun": 171,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "MODV",
+      "securityId": "ref_MODV",
+      "cik": "0001220754",
+      "issuer": "ModivCare Inc",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000972",
+      "filingDate": "2025-10-01",
+      "effectiveDate": "2025-10-11",
+      "url": "https://www.sec.gov/Archives/edgar/data/1220754/000135445725000972/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-08-27",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "MOFG",
+      "securityId": "ref_MOFG",
+      "cik": "0001412665",
+      "issuer": "MidWestOne Financial Group, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001412665-26-000015",
+      "filingDate": "2026-02-20",
+      "effectiveDate": "2026-02-20",
+      "url": "https://www.sec.gov/Archives/edgar/data/1412665/000141266526000015/mofg-20260213.htm",
+      "frozenSince": "2026-02-13",
+      "frozenRun": 172,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000184",
+          "filingDate": "2026-02-13"
+        }
+      ]
+    },
+    {
+      "ticker": "MURA",
+      "securityId": "ref_MURA",
+      "cik": "0001971543",
+      "issuer": "Mural Oncology plc",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-308710",
+      "filingDate": "2025-12-05",
+      "effectiveDate": "2025-12-05",
+      "url": "https://www.sec.gov/Archives/edgar/data/1971543/000119312525308710/d64366d8k.htm",
+      "frozenSince": "2025-12-03",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001216",
+          "filingDate": "2025-12-05"
+        }
+      ]
+    },
+    {
+      "ticker": "MYNA",
+      "securityId": "ref_MYNA",
+      "cik": "0001850453",
+      "issuer": "Mynaric AG",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000561",
+      "filingDate": "2025-06-23",
+      "effectiveDate": "2025-07-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1850453/000135445725000561/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-02-14",
+      "frozenRun": 182,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "NKLA",
+      "securityId": "ref_NKLA",
+      "cik": "0001731289",
+      "issuer": "Nikola Corp",
+      "form": "FORM_25",
+      "accession": "0001731289-25-000026",
+      "filingDate": "2025-04-03",
+      "effectiveDate": "2025-04-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/1731289/000173128925000026/form25.htm",
+      "frozenSince": "2025-02-25",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "NPAB",
+      "securityId": "ref_NPAB",
+      "cik": "0001837929",
+      "issuer": "New Providence Acquisition Corp. II",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000226",
+      "filingDate": "2025-03-21",
+      "effectiveDate": "2025-03-31",
+      "url": "https://www.sec.gov/Archives/edgar/data/1837929/000135445725000226/xslF25X02/primary_doc.xml",
+      "frozenSince": "2024-11-08",
+      "frozenRun": 269,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "NURO",
+      "securityId": "ref_NURO",
+      "cik": "0001289850",
+      "issuer": "NeuroMetrix, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001641172-25-008179",
+      "filingDate": "2025-05-02",
+      "effectiveDate": "2025-05-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1289850/000164117225008179/form8-k.htm",
+      "frozenSince": "2025-05-01",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000373",
+          "filingDate": "2025-05-01"
+        }
+      ]
+    },
+    {
+      "ticker": "OAKU",
+      "securityId": "ref_OAKU",
+      "cik": "0001945422",
+      "issuer": "Oak Woods Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000468",
+      "filingDate": "2026-05-15",
+      "effectiveDate": "2026-05-25",
+      "url": "https://www.sec.gov/Archives/edgar/data/1945422/000135445726000468/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-23",
+      "frozenRun": 151,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ODP",
+      "securityId": "ref_ODP",
+      "cik": "0000800240",
+      "issuer": "ODP Corp",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-314368",
+      "filingDate": "2025-12-10",
+      "effectiveDate": "2025-12-10",
+      "url": "https://www.sec.gov/Archives/edgar/data/800240/000119312525314368/d76250d8k.htm",
+      "frozenSince": "2025-12-09",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001240",
+          "filingDate": "2025-12-10"
+        }
+      ]
+    },
+    {
+      "ticker": "OMGA",
+      "securityId": "ref_OMGA",
+      "cik": "0001850838",
+      "issuer": "Omega Therapeutics, Inc.",
+      "form": "FORM_25",
+      "accession": "0001193125-25-058964",
+      "filingDate": "2025-03-20",
+      "effectiveDate": "2025-03-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1850838/000119312525058964/d906084d25.htm",
+      "frozenSince": "2025-02-24",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ONCT",
+      "securityId": "ref_ONCT",
+      "cik": "0001260990",
+      "issuer": "Oncternal Therapeutics, Inc.",
+      "form": "FORM_25",
+      "accession": "0001193125-25-055153",
+      "filingDate": "2025-03-17",
+      "effectiveDate": "2025-03-27",
+      "url": "https://www.sec.gov/Archives/edgar/data/1260990/000119312525055153/d861284d25.htm",
+      "frozenSince": "2024-12-13",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ORGN",
+      "securityId": "ref_ORGN",
+      "cik": "0001802457",
+      "issuer": "Origin Materials, Inc.",
+      "form": "FORM_25",
+      "accession": "0001802457-26-000032",
+      "filingDate": "2026-06-22",
+      "effectiveDate": "2026-07-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1802457/000180245726000032/orgnform25.htm",
+      "frozenSince": "2026-07-01",
+      "frozenRun": 82,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000608",
+          "filingDate": "2026-06-23"
+        }
+      ]
+    },
+    {
+      "ticker": "OXSQZ",
+      "securityId": "ref_OXSQZ",
+      "cik": "0001259429",
+      "issuer": "Oxford Square Capital Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000926",
+      "filingDate": "2025-09-18",
+      "effectiveDate": "2025-09-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1259429/000135445725000926/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-09-16",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "PET",
+      "securityId": "ref_PET",
+      "cik": "0001842356",
+      "issuer": "Wag! Group Co.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000920",
+      "filingDate": "2025-09-18",
+      "effectiveDate": "2025-09-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1842356/000135445725000920/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-07-29",
+      "frozenRun": 106,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "PLYA",
+      "securityId": "ref_PLYA",
+      "cik": "0001692412",
+      "issuer": "Playa Hotels & Resorts N.V.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-060328",
+      "filingDate": "2025-06-17",
+      "effectiveDate": "2025-06-17",
+      "url": "https://www.sec.gov/Archives/edgar/data/1692412/000110465925060328/",
+      "frozenSince": "2025-06-13",
+      "frozenRun": 188,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25",
+          "accession": "0001104659-25-059872",
+          "filingDate": "2025-06-16"
+        }
+      ]
+    },
+    {
+      "ticker": "PRLH",
+      "securityId": "ref_PRLH",
+      "cik": "0001856161",
+      "issuer": "Pearl Holdings Acquisition Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000444",
+      "filingDate": "2025-05-22",
+      "effectiveDate": "2025-06-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1856161/000135445725000444/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-01-15",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "PTNM",
+      "securityId": "ref_PTNM",
+      "cik": "0002046573",
+      "issuer": "Pitanium Ltd",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000933",
+      "filingDate": "2026-10-01",
+      "effectiveDate": "2026-10-11",
+      "url": "https://www.sec.gov/Archives/edgar/data/2046573/000135445726000933/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-10-03",
+      "frozenRun": 267,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "PVBC",
+      "securityId": "ref_PVBC",
+      "cik": "0001778784",
+      "issuer": "Provident Bancorp, Inc. /MD/",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-112963",
+      "filingDate": "2025-11-17",
+      "effectiveDate": "2025-11-17",
+      "url": "https://www.sec.gov/Archives/edgar/data/1778784/000110465925112963/tm2531273d4_8k.htm",
+      "frozenSince": "2025-11-14",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "QRTEA",
+      "securityId": "ref_QRTEA",
+      "cik": "0001355096",
+      "issuer": "Old QVC Group, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000540",
+      "filingDate": "2026-06-08",
+      "effectiveDate": "2026-06-18",
+      "url": "https://www.sec.gov/Archives/edgar/data/1355096/000135445726000540/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-02-06",
+      "frozenRun": 177,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "QRTEB",
+      "securityId": "ref_QRTEB",
+      "cik": "0001355096",
+      "issuer": "Old QVC Group, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000540",
+      "filingDate": "2026-06-08",
+      "effectiveDate": "2026-06-18",
+      "url": "https://www.sec.gov/Archives/edgar/data/1355096/000135445726000540/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-02-06",
+      "frozenRun": 177,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "REE",
+      "securityId": "ref_REE",
+      "cik": "0001843588",
+      "issuer": "REE Automotive Ltd.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000675",
+      "filingDate": "2026-07-13",
+      "effectiveDate": "2026-07-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/1843588/000135445726000675/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-07-15",
+      "frozenRun": 73,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "REVG",
+      "securityId": "ref_REVG",
+      "cik": "0001687221",
+      "issuer": "REV Group, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-26-000076",
+      "filingDate": "2026-02-02",
+      "effectiveDate": "2026-02-12",
+      "url": "https://www.sec.gov/Archives/edgar/data/1687221/000087666126000076/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-01-30",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "RILYK",
+      "securityId": "ref_RILYK",
+      "cik": "0001464790",
+      "issuer": "BRC Group Holdings, Inc.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000307",
+      "filingDate": "2026-03-30",
+      "effectiveDate": "2026-04-09",
+      "url": "https://www.sec.gov/Archives/edgar/data/1464790/000135445726000307/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-27",
+      "frozenRun": 147,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000920",
+          "filingDate": "2026-09-28"
+        }
+      ]
+    },
+    {
+      "ticker": "RVNC",
+      "securityId": "ref_RVNC",
+      "cik": "0001479290",
+      "issuer": "Revance Therapeutics, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-021403",
+      "filingDate": "2025-02-06",
+      "effectiveDate": "2025-02-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/1479290/000119312525021403/",
+      "frozenSince": "2025-02-05",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000073",
+          "filingDate": "2025-02-06"
+        }
+      ]
+    },
+    {
+      "ticker": "RWAYZ",
+      "securityId": "ref_RWAYZ",
+      "cik": "0001653384",
+      "issuer": "Runway Growth Finance Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000229",
+      "filingDate": "2026-03-04",
+      "effectiveDate": "2026-03-14",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653384/000135445726000229/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-04",
+      "frozenRun": 162,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "RZB",
+      "securityId": "ref_RZB",
+      "cik": "0000898174",
+      "issuer": "REINSURANCE GROUP OF AMERICA INC",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-26-000529",
+      "filingDate": "2026-06-15",
+      "effectiveDate": "2026-06-25",
+      "url": "https://www.sec.gov/Archives/edgar/data/898174/000087666126000529/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-06-12",
+      "frozenRun": 93,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SASR",
+      "securityId": "ref_SASR",
+      "cik": "0000824410",
+      "issuer": "SANDY SPRING BANCORP INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-030581",
+      "filingDate": "2025-04-01",
+      "effectiveDate": "2025-04-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/824410/000110465925030581/tm2510685d3_8k.htm",
+      "frozenSince": "2025-03-31",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000262",
+          "filingDate": "2025-03-31"
+        }
+      ]
+    },
+    {
+      "ticker": "SAT",
+      "securityId": "ref_SAT",
+      "cik": "0001377936",
+      "issuer": "SARATOGA INVESTMENT CORP.",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-26-000772",
+      "filingDate": "2026-09-18",
+      "effectiveDate": "2026-09-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1377936/000087666126000772/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-09-14",
+      "frozenRun": 12,
+      "frozenThrough": "2026-09-29",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SBT",
+      "securityId": "ref_SBT",
+      "cik": "0001680379",
+      "issuer": "Sterling Bancorp, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-030586",
+      "filingDate": "2025-04-01",
+      "effectiveDate": "2025-04-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1680379/000110465925030586/tm2510964d1_8k.htm",
+      "frozenSince": "2025-03-31",
+      "frozenRun": 190,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25",
+          "accession": "0001104659-25-030477",
+          "filingDate": "2025-04-01"
+        }
+      ]
+    },
+    {
+      "ticker": "SCCC",
+      "securityId": "ref_SCCC",
+      "cik": "0001682220",
+      "issuer": "Sachem Capital Corp.",
+      "form": "FORM_25-NSE",
+      "accession": "0001143313-25-000071",
+      "filingDate": "2025-09-30",
+      "effectiveDate": "2025-10-10",
+      "url": "https://www.sec.gov/Archives/edgar/data/1682220/000114331325000071/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-09-29",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SDM",
+      "securityId": "ref_SDM",
+      "cik": "0002014955",
+      "issuer": "Smart Digital Group Ltd",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000676",
+      "filingDate": "2026-07-13",
+      "effectiveDate": "2026-07-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/2014955/000135445726000676/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-09-30",
+      "frozenRun": 270,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SELX",
+      "securityId": "ref_SELX",
+      "cik": "0001990950",
+      "issuer": "Semilux International Ltd.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000963",
+      "filingDate": "2026-10-08",
+      "effectiveDate": "2026-10-18",
+      "url": "https://www.sec.gov/Archives/edgar/data/1990950/000135445726000963/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-06-05",
+      "frozenRun": 99,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SHLT",
+      "securityId": "ref_SHLT",
+      "cik": "0001166834",
+      "issuer": "SHL TELEMEDICINE LTD",
+      "form": "FORM_25",
+      "accession": "0001178913-25-000961",
+      "filingDate": "2025-03-21",
+      "effectiveDate": "2025-03-31",
+      "url": "https://www.sec.gov/Archives/edgar/data/1166834/000117891325000961/zk2532880.htm",
+      "frozenSince": "2025-04-02",
+      "frozenRun": 188,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SLP",
+      "securityId": "ref_SLP",
+      "cik": "0001023459",
+      "issuer": "Simulations Plus, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001023459-26-000092",
+      "filingDate": "2026-10-06",
+      "effectiveDate": "2026-10-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/1023459/000102345926000092/",
+      "frozenSince": "2026-10-02",
+      "frozenRun": 17,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000953",
+          "filingDate": "2026-10-06"
+        }
+      ]
+    },
+    {
+      "ticker": "SLRN",
+      "securityId": "ref_SLRN",
+      "cik": "0001962918",
+      "issuer": "ACELYRIN, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-123707",
+      "filingDate": "2025-05-21",
+      "effectiveDate": "2025-05-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1962918/000119312525123707/d13977d8k.htm",
+      "frozenSince": "2025-05-20",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000436",
+          "filingDate": "2025-05-21"
+        }
+      ]
+    },
+    {
+      "ticker": "SNBR",
+      "securityId": "ref_SNBR",
+      "cik": "0000827187",
+      "issuer": "Sleep Number Corp",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000682",
+      "filingDate": "2026-07-14",
+      "effectiveDate": "2026-07-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/827187/000135445726000682/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-06-22",
+      "frozenRun": 89,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "SNCR",
+      "securityId": "ref_SNCR",
+      "cik": "0001131554",
+      "issuer": "SYNCHRONOSS TECHNOLOGIES INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001628280-26-008072",
+      "filingDate": "2026-02-13",
+      "effectiveDate": "2026-02-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/1131554/000162828026008072/",
+      "frozenSince": "2026-02-12",
+      "frozenRun": 173,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000179",
+          "filingDate": "2026-02-13"
+        }
+      ]
+    },
+    {
+      "ticker": "SNCRL",
+      "securityId": "ref_SNCRL",
+      "cik": "0001131554",
+      "issuer": "SYNCHRONOSS TECHNOLOGIES INC",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-25-000399",
+      "filingDate": "2025-05-09",
+      "effectiveDate": "2025-05-19",
+      "url": "https://www.sec.gov/Archives/edgar/data/1131554/000135445725000399/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-05-09",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "8-K_2.01+3.01",
+          "accession": "0001628280-26-008072",
+          "filingDate": "2026-02-13"
+        },
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000179",
+          "filingDate": "2026-02-13"
+        }
+      ]
+    },
+    {
+      "ticker": "STRM",
+      "securityId": "ref_STRM",
+      "cik": "0001008586",
+      "issuer": "STREAMLINE HEALTH SOLUTIONS INC.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001437749-25-026379",
+      "filingDate": "2025-08-13",
+      "effectiveDate": "2025-08-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/1008586/000143774925026379/strm20250812_8k.htm",
+      "frozenSince": "2025-08-11",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000807",
+          "filingDate": "2025-08-12"
+        }
+      ]
+    },
+    {
+      "ticker": "SVAC",
+      "securityId": "ref_SVAC",
+      "cik": "0002074850",
+      "issuer": "General Fusion Group Ltd.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000666",
+      "filingDate": "2026-07-10",
+      "effectiveDate": "2026-07-20",
+      "url": "https://www.sec.gov/Archives/edgar/data/2074850/000135445726000666/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-07-10",
+      "frozenRun": 76,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "TBHC",
+      "securityId": "ref_TBHC",
+      "cik": "0001056285",
+      "issuer": "BRAND HOUSE COLLECTIVE, INC.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001437749-26-011128",
+      "filingDate": "2026-04-02",
+      "effectiveDate": "2026-04-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1056285/000143774926011128/",
+      "frozenSince": "2026-04-01",
+      "frozenRun": 144,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000324",
+          "filingDate": "2026-04-02"
+        }
+      ]
+    },
+    {
+      "ticker": "TBMC",
+      "securityId": "ref_TBMC",
+      "cik": "0001934945",
+      "issuer": "Trailblazer Merger Corp I",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000305",
+      "filingDate": "2026-03-27",
+      "effectiveDate": "2026-04-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/1934945/000135445726000305/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-26",
+      "frozenRun": 148,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "TBNK",
+      "securityId": "ref_TBNK",
+      "cik": "0001447051",
+      "issuer": "Territorial Bancorp Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-071362",
+      "filingDate": "2025-04-02",
+      "effectiveDate": "2025-04-02",
+      "url": "https://www.sec.gov/Archives/edgar/data/1447051/000119312525071362/d932149d8k.htm",
+      "frozenSince": "2025-04-01",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-000273",
+          "filingDate": "2025-04-02"
+        }
+      ]
+    },
+    {
+      "ticker": "TBPH",
+      "securityId": "ref_TBPH",
+      "cik": "0001583107",
+      "issuer": "Theravance Biopharma, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-26-109979",
+      "filingDate": "2026-09-23",
+      "effectiveDate": "2026-09-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/1583107/000110465926109979/",
+      "frozenSince": "2026-09-22",
+      "frozenRun": 25,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000901",
+          "filingDate": "2026-09-23"
+        }
+      ]
+    },
+    {
+      "ticker": "TFFP",
+      "securityId": "ref_TFFP",
+      "cik": "0001733413",
+      "issuer": "TFF Pharmaceuticals, Inc.",
+      "form": "FORM_25",
+      "accession": "0001213900-25-021257",
+      "filingDate": "2025-03-06",
+      "effectiveDate": "2025-03-16",
+      "url": "https://www.sec.gov/Archives/edgar/data/1733413/000121390025021257/ea0233455-25_ttfpharma.htm",
+      "frozenSince": "2024-12-12",
+      "frozenRun": 258,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "THR",
+      "securityId": "ref_THR",
+      "cik": "0001489096",
+      "issuer": "Thermon Group Holdings, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-26-068666",
+      "filingDate": "2026-06-01",
+      "effectiveDate": "2026-06-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1489096/000110465926068666/",
+      "frozenSince": "2026-05-29",
+      "frozenRun": 103,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0000876661-26-000492",
+          "filingDate": "2026-06-01"
+        }
+      ]
+    },
+    {
+      "ticker": "TIRX",
+      "securityId": "ref_TIRX",
+      "cik": "0001782941",
+      "issuer": "TIAN RUIXIANG HOLDINGS LTD",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000623",
+      "filingDate": "2026-06-26",
+      "effectiveDate": "2026-07-06",
+      "url": "https://www.sec.gov/Archives/edgar/data/1782941/000135445726000623/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-04",
+      "frozenRun": 162,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "TRINL",
+      "securityId": "ref_TRINL",
+      "cik": "0001786108",
+      "issuer": "Trinity Capital Inc.",
+      "form": "FORM_25",
+      "accession": "0001213900-26-081363",
+      "filingDate": "2026-07-24",
+      "effectiveDate": "2026-08-03",
+      "url": "https://www.sec.gov/Archives/edgar/data/1786108/000121390026081363/ea0299064-01_25.htm",
+      "frozenSince": "2026-02-06",
+      "frozenRun": 177,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "TRML",
+      "securityId": "ref_TRML",
+      "cik": "0001827506",
+      "issuer": "Tourmaline Bio, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-102971",
+      "filingDate": "2025-10-28",
+      "effectiveDate": "2025-10-28",
+      "url": "https://www.sec.gov/Archives/edgar/data/1827506/000110465925102971/tm2529486d1_8k.htm",
+      "frozenSince": "2025-10-24",
+      "frozenRun": 180,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001066",
+          "filingDate": "2025-10-28"
+        }
+      ]
+    },
+    {
+      "ticker": "UBFO",
+      "securityId": "ref_UBFO",
+      "cik": "0001137547",
+      "issuer": "UNITED SECURITY BANCSHARES",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001628280-26-022619",
+      "filingDate": "2026-04-01",
+      "effectiveDate": "2026-04-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1137547/000162828026022619/ubfo-20260401.htm",
+      "frozenSince": "2026-03-31",
+      "frozenRun": 145,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000318",
+          "filingDate": "2026-04-01"
+        }
+      ]
+    },
+    {
+      "ticker": "VBTX",
+      "securityId": "ref_VBTX",
+      "cik": "0001501570",
+      "issuer": "Veritex Holdings, Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001104659-25-100622",
+      "filingDate": "2025-10-20",
+      "effectiveDate": "2025-10-20",
+      "url": "https://www.sec.gov/Archives/edgar/data/1501570/000110465925100622/tm2529027d1_8k.htm",
+      "frozenSince": "2025-10-17",
+      "frozenRun": 179,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001033",
+          "filingDate": "2025-10-20"
+        }
+      ]
+    },
+    {
+      "ticker": "VCIC",
+      "securityId": "ref_VCIC",
+      "cik": "0002025396",
+      "issuer": "Odysseus (Cayman) Ltd",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000314",
+      "filingDate": "2026-03-31",
+      "effectiveDate": "2026-04-10",
+      "url": "https://www.sec.gov/Archives/edgar/data/2025396/000135445726000314/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-03-31",
+      "frozenRun": 144,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "VSTA",
+      "securityId": "ref_VSTA",
+      "cik": "0001792829",
+      "issuer": "Vasta Platform Ltd",
+      "form": "FORM_25",
+      "accession": "0000950103-26-000644",
+      "filingDate": "2026-01-20",
+      "effectiveDate": "2026-01-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1792829/000095010326000644/dp240098_25.htm",
+      "frozenSince": "2026-01-28",
+      "frozenRun": 184,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "XTKG",
+      "securityId": "ref_XTKG",
+      "cik": "0001754323",
+      "issuer": "X3 Holdings Co., Ltd.",
+      "form": "FORM_25-NSE",
+      "accession": "0001354457-26-000683",
+      "filingDate": "2026-07-14",
+      "effectiveDate": "2026-07-24",
+      "url": "https://www.sec.gov/Archives/edgar/data/1754323/000135445726000683/xslF25X02/primary_doc.xml",
+      "frozenSince": "2026-04-01",
+      "frozenRun": 141,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    },
+    {
+      "ticker": "ZEUS",
+      "securityId": "ref_ZEUS",
+      "cik": "0000917470",
+      "issuer": "OLYMPIC STEEL INC",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-26-051373",
+      "filingDate": "2026-02-13",
+      "effectiveDate": "2026-02-13",
+      "url": "https://www.sec.gov/Archives/edgar/data/917470/000119312526051373/",
+      "frozenSince": "2026-02-12",
+      "frozenRun": 174,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-26-000183",
+          "filingDate": "2026-02-13"
+        }
+      ]
+    },
+    {
+      "ticker": "ZIMV",
+      "securityId": "ref_ZIMV",
+      "cik": "0001876588",
+      "issuer": "ZimVie Inc.",
+      "form": "8-K_2.01+3.01",
+      "accession": "0001193125-25-243136",
+      "filingDate": "2025-10-20",
+      "effectiveDate": "2025-10-20",
+      "url": "https://www.sec.gov/Archives/edgar/data/1876588/000119312525243136/",
+      "frozenSince": "2025-10-15",
+      "frozenRun": 181,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": [
+        {
+          "form": "FORM_25-NSE",
+          "accession": "0001354457-25-001034",
+          "filingDate": "2025-10-20"
+        }
+      ]
+    },
+    {
+      "ticker": "ZK",
+      "securityId": "ref_ZK",
+      "cik": "0001954042",
+      "issuer": "ZEEKR Intelligent Technology Holding Ltd",
+      "form": "FORM_25-NSE",
+      "accession": "0000876661-25-001004",
+      "filingDate": "2025-12-22",
+      "effectiveDate": "2026-01-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1954042/000087666125001004/xslF25X02/primary_doc.xml",
+      "frozenSince": "2025-12-19",
+      "frozenRun": 178,
+      "frozenThrough": "2026-10-26",
+      "corroboratingEvidence": []
+    }
+  ]
+}

@@ -169,7 +169,16 @@ if (masterRows) {
   }
 }
 
-const CLASSIFY_OPTS = { today: TODAY, listedRoots };
+/* Dasselbe SEC-Delisting-Register wie der Erzeuger des Stamms: wird eine
+   Stammzeile hier neu beurteilt (Versionswechsel, Namensschicht), leitet
+   der Klassierer active sonst aus dem fortgeschriebenen Anbieter-endDate
+   wieder ACTIVE ab (quant/engines/us-security-master.js, SEC-DELISTING-BELEG). */
+const { loadDelistingEvidence, DEFAULT_DELISTING_EVIDENCE_FILE } =
+  await import(join(root, "scripts", "market", "lib", "security-master-delisting-evidence.mjs"));
+let delistingEvidence;
+try { delistingEvidence = loadDelistingEvidence(arg("--delisting-evidence", DEFAULT_DELISTING_EVIDENCE_FILE)); }
+catch (err) { console.error("ABBRUCH: " + err.message); process.exit(2); }
+const CLASSIFY_OPTS = { today: TODAY, listedRoots, delistingEvidence: delistingEvidence.index };
 
 /* Die kanonische Namensschicht (build-company-names.mjs) als zweiter Beleg:
    der Stamm wurde ohne Firmennamen klassifiziert. Mit Namen greifen die
@@ -480,6 +489,9 @@ const eligibility = {
   scope: "US_LISTED_EQUITIES_PRODUCT_ELIGIBILITY",
   rootEvidence,
   securityMasterRejected: masterRejected, securityMasterRejudged: masterRejudge,
+  delistingEvidence: delistingEvidence.doc
+    ? { file: delistingEvidence.file, sha256: delistingEvidence.sha256, records: delistingEvidence.doc.records.length }
+    : { status: "DISABLED_BY_FLAG" },
   listedRootCount: Object.keys(listedRoots).length,
   nameLayer: Object.assign({}, nameLayerInfo, { reclassified: nameReclassified }),
   nonDestructive: {

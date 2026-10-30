@@ -305,7 +305,8 @@
    *
    * @param {object} row  ticker (Pflicht), exchange, assetType, name,
    *                      currency|priceCurrency, startDate, endDate.
-   * @param {object} [opts] {today, staleDays}
+   * @param {object} [opts] {today, staleDays, listedRoots, delistingEvidence
+   *                      (Index aus indexDelistingEvidence oder das Register selbst)}
    * @returns {object} Befund.
    */
   function classifySecurity(row, opts) {
@@ -332,6 +333,13 @@
       active = row.active;
       activeBasis = "callerSupplied:active=" + row.active;
     }
+    /* SEC-Delisting-Beleg (Register oben). Ebenfalls VOR der
+       Eignungspruefung, aus demselben Grund. */
+    var delistingIndex = opts.delistingEvidence && opts.delistingEvidence.schemaVersion
+      ? indexDelistingEvidence(opts.delistingEvidence) : opts.delistingEvidence || null;
+    var delisted = applyDelistingEvidence(row, active, activeBasis, delistingIndex, today);
+    active = delisted.active;
+    activeBasis = delisted.activeBasis;
 
     var ticker = upper(row.ticker);
     var exchange = upper(row.exchange);
@@ -559,6 +567,94 @@
 
   var RECONCILIATION_STATUS = ["EXISTING", "ADDED", "REVIEW", "EXCLUDED_CANDIDATE"];
 
+  /* ------------------------------------------- SEC-DELISTING-BELEG
+
+     Tiingo schreibt nach einem Delisting den letzten Schluss fort; sein
+     endDate bleibt dadurch aktuell, und die Ableitung "endDate juenger als
+     staleDays -> ACTIVE" haelt das beendete Listing am Leben (V10-Befund:
+     168 Bestandszeilen ACTIVE trotz SEC-Beleg, 163 davon mit letzter Kerze
+     am Vortag des Laufs - eine Pruefung "letzte Kerze zu alt" sieht sie
+     nicht).
+
+     Abhilfe: ein committetes, quellengebundenes Register
+     (quant/config/security-master-delisting-evidence.json, gebaut von
+     scripts/market/build-security-master-delisting-evidence.mjs). Ein
+     Eintrag verlangt BEIDES: einen abgeschlossenen Delisting-Beleg der SEC
+     (Form 25/25-NSE, wirksam 10 Tage nach Einreichung - 17 CFR
+     240.12d2-2(d)(1); oder 8-K mit Item 2.01 UND 3.01) und eine Kursreihe,
+     die spaetestens FROZEN_GRACE_DAYS nach dem Wirksamkeitstag einfriert
+     (>= FROZEN_MIN_RUN gleiche Tagesschluesse). Wiederholte Schluesse
+     allein sind nie ein Beleg, ein Beleg ohne eingefrorene Reihe auch
+     nicht.
+
+     Wirkung nur in eine Richtung: ein Eintrag macht eine Zeile INACTIVE,
+     nie ACTIVE. Er wirkt nur auf Zeilen desselben Tickers, deren
+     Anbieter-startDate am oder vor dem Wirksamkeitstag liegt (ein spaeter
+     wiederverwendetes Symbol bekommt eine neue Anbieterzeile und bleibt
+     unberuehrt), und erst ab dem Wirksamkeitstag. Ein unlesbares oder in
+     sich widerspruechliches Register bricht den Lauf ab. */
+  var DELISTING_EVIDENCE_SCHEMA = "security-master-delisting-evidence-1.0.0";
+  var DELISTING_FORMS = { "FORM_25": 10, "FORM_25-NSE": 10, "8-K_2.01+3.01": 0 };
+  var FROZEN_GRACE_DAYS = 7;
+  var FROZEN_MIN_RUN = 5;
+  var ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+  function isIsoDate(v) {
+    return typeof v === "string" && ISO_DATE.test(v) &&
+      !isNaN(Date.parse(v + "T00:00:00Z")) &&
+      new Date(Date.parse(v + "T00:00:00Z")).toISOString().slice(0, 10) === v;
+  }
+  function addDays(date, n) {
+    var d = new Date(Date.parse(date + "T00:00:00Z"));
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+
+  /** Register -> Index je Ticker. null/undefined -> null (kein Register).
+   *  Wirft bei jedem Formfehler (fail closed: lieber kein Lauf als ein
+   *  stiller Teilbeleg). */
+  function indexDelistingEvidence(doc) {
+    if (doc === null || doc === undefined) return null;
+    if (!doc || typeof doc !== "object" || doc.schemaVersion !== DELISTING_EVIDENCE_SCHEMA ||
+        !Array.isArray(doc.records)) {
+      throw new Error("DELISTING_EVIDENCE_INVALID: schemaVersion " + DELISTING_EVIDENCE_SCHEMA +
+                      " mit records[] erwartet");
+    }
+    var by = {};
+    doc.records.forEach(function (r, i) {
+      function bad(msg) { throw new Error("DELISTING_EVIDENCE_INVALID: records[" + i + "] " + msg); }
+      if (!r || typeof r !== "object") bad("kein Objekt");
+      if (typeof r.ticker !== "string" || !r.ticker || r.ticker !== upper(r.ticker)) bad("ticker");
+      if (by[r.ticker]) bad("Ticker " + r.ticker + " doppelt");
+      if (!Object.prototype.hasOwnProperty.call(DELISTING_FORMS, r.form)) bad("form " + r.form);
+      if (typeof r.accession !== "string" || !/^\d{10}-\d{2}-\d{6}$/.test(r.accession)) bad("accession");
+      if (!isIsoDate(r.filingDate) || !isIsoDate(r.effectiveDate) || !isIsoDate(r.frozenSince)) bad("Datum");
+      if (r.effectiveDate !== addDays(r.filingDate, DELISTING_FORMS[r.form])) {
+        bad("effectiveDate " + r.effectiveDate + " passt nicht zu " + r.form + " vom " + r.filingDate);
+      }
+      if (!(typeof r.frozenRun === "number" && r.frozenRun >= FROZEN_MIN_RUN)) bad("frozenRun < " + FROZEN_MIN_RUN);
+      if (r.frozenSince > addDays(r.effectiveDate, FROZEN_GRACE_DAYS)) {
+        bad("Reihe bewegt sich nach dem Wirksamkeitstag (frozenSince " + r.frozenSince + ")");
+      }
+      by[r.ticker] = Object.freeze({ ticker: r.ticker, form: r.form, accession: r.accession,
+        filingDate: r.filingDate, effectiveDate: r.effectiveDate, frozenSince: r.frozenSince });
+    });
+    return by;
+  }
+
+  /** Kippt eine abgeleitete Aktivitaet anhand des Registers - nur ACTIVE/
+   *  unbekannt -> INACTIVE. -> {active, activeBasis} */
+  function applyDelistingEvidence(row, active, activeBasis, index, today) {
+    if (!index || active === false) return { active: active, activeBasis: activeBasis };
+    var ev = index[upper(row.ticker)];
+    if (!ev || ev.effectiveDate > today) return { active: active, activeBasis: activeBasis };
+    var start = norm(row.startDate).slice(0, 10);
+    if (!isIsoDate(start) || start > ev.effectiveDate) return { active: active, activeBasis: activeBasis };
+    return { active: false,
+             activeBasis: "secDelisting:" + ev.form + ":" + ev.accession + ":effective=" + ev.effectiveDate +
+                          ":frozenSince=" + ev.frozenSince + " (vorher " + activeBasis + ")" };
+  }
+
   function canonicalId(entry) {
     return "tiingo:" + (entry.exchange || "NA") + ":" + (entry.ticker || "NA") +
            ":" + (entry.startDate || "NA");
@@ -577,7 +673,11 @@
    *   providerAvailable  false, wenn providerRows nicht erhoben werden
    *                 konnten. Trennt "der Anbieter fuehrt den Titel
    *                 nicht mehr" von "wir haben nicht nachgesehen".
-   * @returns {object} {rows, counts, duplicates, findings, invariants}
+   *   delistingEvidence  Optional: SEC-Delisting-Register
+   *                 (DELISTING_EVIDENCE_SCHEMA). Fehlt es, bleibt alles wie
+   *                 bisher; ist es fehlerhaft, wirft der Aufruf.
+   * @returns {object} {rows, counts, duplicates, findings, invariants,
+   *                    delistingEvidence}
    */
   function buildSecurityMaster(input) {
     input = input || {};
@@ -627,7 +727,9 @@
        weil der Anbieter ihn inzwischen delistet hat -, belegt sein
        Derivat genauso. */
     var listedRoots = input.listedRoots || collectListedRoots(providerRows, baseline);
-    var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots };
+    var delistingIndex = indexDelistingEvidence(input.delistingEvidence);
+    var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots,
+                         delistingEvidence: delistingIndex };
 
     providerRows.forEach(function (r) {
       var c = classifySecurity(r, classifyOpts);
@@ -762,11 +864,24 @@
     var findings = collectFindings(rows, duplicates, providerAvailable);
     var invariants = assertNonDestructive(rows, baselineByTicker);
 
+    var delistingApplied = rows.filter(function (r) {
+      return typeof r.listing_status === "string" && r.listing_status.indexOf("secDelisting:") === 0;
+    });
+    var delistingSummary = delistingIndex === null ? null : {
+      schemaVersion: DELISTING_EVIDENCE_SCHEMA,
+      records: Object.keys(delistingIndex).length,
+      appliedRows: delistingApplied.length,
+      appliedBaselineRows: delistingApplied.filter(function (r) { return r.baseline_member; }).length,
+      appliedTickers: delistingApplied.map(function (r) { return r.ticker; })
+        .filter(function (t, i, a) { return a.indexOf(t) === i; }).sort()
+    };
+
     return {
       version: VERSION,
       classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
       generatedFor: today,
       providerAvailable: providerAvailable,
+      delistingEvidence: delistingSummary,
       rows: rows,
       counts: counts,
       duplicates: duplicates,
@@ -1186,6 +1301,11 @@
     decideProductEligibility: decideProductEligibility,
     classifySecurity: classifySecurity,
     buildSecurityMaster: buildSecurityMaster,
+    DELISTING_EVIDENCE_SCHEMA: DELISTING_EVIDENCE_SCHEMA,
+    DELISTING_FORMS: DELISTING_FORMS,
+    FROZEN_GRACE_DAYS: FROZEN_GRACE_DAYS,
+    FROZEN_MIN_RUN: FROZEN_MIN_RUN,
+    indexDelistingEvidence: indexDelistingEvidence,
     /* Ausdruecklich exportiert, damit ein Test die Zusage selbst
        angreifen kann und nicht nur ihr Ergebnis: eine Wache, die nie
        ausgeloest hat, ist keine bewiesene Wache. */
