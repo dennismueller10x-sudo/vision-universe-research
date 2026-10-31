@@ -101,7 +101,7 @@ function sourceManifest(fr) {
   });
   return { schemaVersion: 'v10-studies-source-manifest-1.0.0', loaderOptions: fr.loaderOptions, columns: ['securityId', 'fileSha256', 'firstDate', 'lastDate', 'points', 'pointsHash', 'listingStart', 'mic', 'listingId', 'lifecycle'],
     qualified: rows, frame: fr.frame, excluded: fr.excluded, qualificationCounts: fr.reasons, calendarHash: V.hash(fr.calendar), calendarLength: fr.calendar.length,
-    files: Object.fromEntries(extra.map(f => [f, C.shaFile(path.join(ROOT, f))])) };
+    files: Object.fromEntries(extra.map(f => [f, f === extra[0] && fr.loader && fr.loader.masterHash ? fr.loader.masterHash : C.shaFile(path.join(ROOT, f))])) }; // master: the generation the loader read (security-master-generation.cjs)
 }
 
 // ---------- weekly panel ----------
