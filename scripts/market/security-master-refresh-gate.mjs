@@ -21,6 +21,11 @@
  *   G9  Firmennamen: Produktuniversum weicht ab, securityIds fehlen, Namensabdeckung fällt, zu viele Namenswechsel
  *   G10 Eingaben fehlen oder sind nicht lesbar
  *
+ * Sonderfreigabe (--approved-changes <datei>): Schema 1.0.0 nimmt genau belegte Typ- und Eignungswechsel aus G7;
+ * Schema 1.1.0 trägt zusätzlich exakte Listen für Deaktivierungen, canonical_id-, Ticker- und Namenswechsel sowie neue
+ * doppelte canonical_ids (G6, G7, G9). Beide gebunden an Quell-/Zielversion, SHA-256 des Ausgangsstamms und
+ * --allow-version-change; nicht gelistete Wechsel zählen gegen die unveränderten Grenzen.
+ *
  * Entscheidung bei bestandenem Gate (Idempotenz und Datenwachstum): COMMIT, wenn sich fachlich etwas geändert hat
  * oder der letzte Stand mindestens maxAgeDays alt ist; sonst SKIP_NO_MATERIAL_CHANGE (der Erzeuger schreibt je
  * Lauf alle Zeitstempel neu, ein Commit ohne fachliche Änderung brächte nur Datenwachstum und machte die
@@ -158,6 +163,61 @@ function applyApproval(cmp, approved, ctx, fail) {
   return { cmp: out, applied: used, unused: { instrumentTypeChanges: approved.instrumentTypeChanges.length - used.instrumentTypeChanges, eligibilityFlips: approved.eligibilityFlips.length - used.eligibilityFlips } };
 }
 
+/**
+ * Sonderfreigabe 1.1.0 (Owner-Entscheidung 30.10.2026): wie 1.0.0 gebunden an Quell-/Zielversion, SHA-256 des
+ * Ausgangsstamms und allowVersionChange, trägt aber zusätzlich EXAKTE Listen für Deaktivierungen, canonical_id-,
+ * Ticker- und Namenswechsel sowie neue doppelte canonical_ids. Jeder Eintrag: {securityId, from, to, evidence:{source, ref}}
+ * (doppelte canonical_id: zusätzlich canonicalId; securityId = beteiligte Bestands-securityIds, from/to = Zeilenzahl
+ * vorher/nachher). Ausgenommen wird nur, was nach (Schlüssel, from, to) genau getroffen wird; alles andere zählt gegen die
+ * unveränderten Grenzen. Erzeugt von scripts/market/build-security-master-approval-list.mjs.
+ */
+export const APPROVED_CHANGES_SCHEMA_V11 = "security-master-approved-changes-1.1.0";
+const V11_LISTS = {
+  instrumentTypeChanges: (x) => typeof x.from === "string" && typeof x.to === "string",
+  eligibilityFlips: (x) => typeof x.from === "boolean" && typeof x.to === "boolean",
+  deactivations: (x) => x.from === "ACTIVE" && x.to === "INACTIVE",
+  canonicalIdChanges: (x) => typeof x.from === "string" && typeof x.to === "string",
+  tickerChanges: (x) => typeof x.from === "string" && typeof x.to === "string",
+  newDuplicateCanonicalIds: (x) => typeof x.canonicalId === "string" && x.canonicalId !== "" && Number.isInteger(x.from) && Number.isInteger(x.to) && x.from >= 0 && x.to > 1,
+  nameChanges: (x) => (x.from === null || typeof x.from === "string") && (x.to === null || typeof x.to === "string"),
+};
+// Deaktivierungen tragen im Vergleich keine from/to-Felder (Richtung ist immer aktiv → inaktiv; Einträge sind darauf geprüft)
+const v11Key = (k, x) => (k === "newDuplicateCanonicalIds" ? `${x.canonicalId}|${x.securityId}|${x.from}|${x.to}` : k === "deactivations" ? `${x.securityId}|ACTIVE|INACTIVE` : `${x.securityId}|${x.from}|${x.to}`);
+const v11Id = (k, x) => (k === "newDuplicateCanonicalIds" ? x.canonicalId : x.securityId);
+/** Beschreibung einer neuen doppelten canonical_id in der Form der Freigabeeinträge (für den exakten Abgleich). */
+export function describeDuplicates(prevMaster, nextMaster, keys) {
+  return keys.map((k) => ({
+    canonicalId: k,
+    securityId: sortedSet(nextMaster.rows.filter((r) => r.canonical_id === k).map((r) => r.baseline_security_id)),
+    from: prevMaster.rows.filter((r) => r.canonical_id === k).length,
+    to: nextMaster.rows.filter((r) => r.canonical_id === k).length,
+  }));
+}
+function applyApprovalV11(lists, approved, ctx, fail) {
+  for (const k of Object.keys(V11_LISTS)) if (!Array.isArray(approved[k])) { fail.push(`G10 Sonderfreigabe 1.1.0: Liste ${k} fehlt`); return null; }
+  for (const [k, shape] of Object.entries(V11_LISTS)) {
+    const seen = new Set();
+    for (const x of approved[k]) {
+      const ev = x && x.evidence;
+      if (!x || typeof x.securityId !== "string" || !shape(x) || x.from === x.to || !ev || typeof ev.source !== "string" || !ev.source.trim() || typeof ev.ref !== "string" || !ev.ref.trim()) { fail.push(`G10 Sonderfreigabe: ungültiger Eintrag in ${k}`); return null; }
+      if (k !== "newDuplicateCanonicalIds" && x.securityId === "") { fail.push(`G10 Sonderfreigabe: ungültiger Eintrag in ${k}`); return null; }
+      if (seen.has(v11Id(k, x))) { fail.push(`G10 Sonderfreigabe: doppelte securityId ${v11Id(k, x)} in ${k}`); return null; }
+      seen.add(v11Id(k, x));
+    }
+  }
+  if (!ctx.allowVersionChange) fail.push("G8 Sonderfreigabe nur zusammen mit --allow-version-change");
+  if (approved.fromVersion !== ctx.prevVersion || approved.toVersion !== ctx.nextVersion) fail.push(`G8 Sonderfreigabe gilt für ${approved.fromVersion} → ${approved.toVersion}, nicht für ${ctx.prevVersion} → ${ctx.nextVersion}`);
+  if (!ctx.prevMasterSha256 || approved.prevMasterSha256 !== ctx.prevMasterSha256) fail.push("G8 Sonderfreigabe gehört zu einem anderen Ausgangsstamm (SHA-256)");
+  const out = {}, applied = {}, unused = {};
+  for (const k of Object.keys(V11_LISTS)) {
+    const allow = new Set(approved[k].map((x) => v11Key(k, x)));
+    let n = 0;
+    out[k] = (lists[k] || []).filter((x) => { const hit = allow.has(v11Key(k, x)); if (hit) n++; return !hit; });
+    applied[k] = n; unused[k] = approved[k].length - n;
+  }
+  return { lists: out, applied, unused };
+}
+
 export function evaluateRefresh(inputs, { today, allowVersionChange = false, thresholds = DEFAULT_THRESHOLDS, approvedChanges = null, prevMasterSha256 = null } = {}) {
   const t = { ...DEFAULT_THRESHOLDS, ...thresholds }, fail = [], { prevMaster, nextMaster, prevSummary, nextSummary, nextReconciliation } = inputs;
   if (!prevMaster || !nextMaster || !prevSummary || !nextSummary || !nextReconciliation) return { version: GATE_VERSION, pass: false, decision: "BLOCKED", failures: ["G10 Eingaben fehlen"], report: null };
@@ -177,22 +237,32 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
   if (idf.nonCanonicalIds.length) fail.push(`G5 ${idf.nonCanonicalIds.length} securityIds nicht nach core/identity.js (z. B. ${idf.nonCanonicalIds.slice(0, 5).join(", ")})`);
   // bekannte Doppelungen der Anbieterliste (heute 7, als REVIEW geführt) bleiben sichtbar; neue blockieren
   const knownDup = new Set(identityFindings(prevMaster).duplicateCanonicalIds), newDup = idf.duplicateCanonicalIds.filter((k) => !knownDup.has(k));
-  if (newDup.length) fail.push(`G6 ${newDup.length} neue doppelte canonical_id (z. B. ${newDup.slice(0, 5).join(", ")})`);
+  const ctx = { allowVersionChange, prevVersion: prevMaster.version, nextVersion: nextMaster.version, prevMasterSha256 };
+  // Firmennamen rein vorab vergleichen (die Sonderfreigabe 1.1.0 braucht die Namenswechsel); Prüfungen bleiben unten bei G9
+  const bothNames = !!(inputs.prevNames && inputs.nextNames), namesCmp = bothNames ? compareNames(inputs.prevNames, inputs.nextNames) : null;
+  // 1.1.0: exakte Listen auch für G6, G7 (alle Arten) und G9; 1.0.0 bleibt unten unverändert (nur Typ und Eignung)
+  const v11 = approvedChanges && approvedChanges.schema === APPROVED_CHANGES_SCHEMA_V11
+    ? applyApprovalV11({ ...cmp, newDuplicateCanonicalIds: describeDuplicates(prevMaster, nextMaster, newDup), nameChanges: namesCmp ? namesCmp.nameChanges : [] }, approvedChanges, ctx, fail)
+    : null;
+  const isV11 = !!(approvedChanges && approvedChanges.schema === APPROVED_CHANGES_SCHEMA_V11);
+  const countedDup = v11 ? v11.lists.newDuplicateCanonicalIds.map((d) => d.canonicalId) : newDup;
+  if (countedDup.length) fail.push(`G6 ${countedDup.length} neue doppelte canonical_id (z. B. ${countedDup.slice(0, 5).join(", ")})${v11 && v11.applied.newDuplicateCanonicalIds ? " (ohne die freigegebenen)" : ""}`);
   const lim = [["canonicalIdChanges", "maxCanonicalIdChanges", "canonical_id-Wechsel"], ["instrumentTypeChanges", "maxInstrumentTypeChanges", "Instrumenttyp-Wechsel"], ["deactivations", "maxDeactivations", "aktiv → inaktiv (Delistings)"], ["eligibilityFlips", "maxEligibilityFlips", "Eignungswechsel"], ["tickerChanges", "maxTickerChanges", "Tickerwechsel je securityId"]];
-  const approval = approvedChanges ? applyApproval(cmp, approvedChanges, { allowVersionChange, prevVersion: prevMaster.version, nextVersion: nextMaster.version, prevMasterSha256 }, fail) : null;
-  const counted = approval ? approval.cmp : cmp;
-  for (const [k, tk, label] of lim) if (counted[k].length > t[tk]) fail.push(`G7 ${counted[k].length} ${label} (Grenze ${t[tk]}${approval && (k === "instrumentTypeChanges" || k === "eligibilityFlips") ? ", ohne die freigegebenen" : ""})`);
+  const approval = approvedChanges && !isV11 ? applyApproval(cmp, approvedChanges, ctx, fail) : null;
+  const counted = v11 ? { ...cmp, ...v11.lists } : approval ? approval.cmp : cmp;
+  for (const [k, tk, label] of lim) if (counted[k].length > t[tk]) fail.push(`G7 ${counted[k].length} ${label} (Grenze ${t[tk]}${v11 || (approval && (k === "instrumentTypeChanges" || k === "eligibilityFlips")) ? ", ohne die freigegebenen" : ""})`);
   const versionChanged = prevMaster.version !== nextMaster.version;
   if (versionChanged && !allowVersionChange) fail.push(`G8 Klassifikator-Version ${prevMaster.version} → ${nextMaster.version}: nur mit --allow-version-change nach Vorher/Nachher-Prüfung`);
   let names = null;
   if (inputs.prevNames || inputs.nextNames) {
-    if (!inputs.prevNames || !inputs.nextNames) fail.push("G10 Firmennamen nur teilweise vorhanden");
+    if (!bothNames) fail.push("G10 Firmennamen nur teilweise vorhanden");
     else {
-      names = compareNames(inputs.prevNames, inputs.nextNames);
+      names = namesCmp;
       if (names.productUniverse.prev !== names.productUniverse.next) fail.push(`G9 Produktuniversum der Namensschicht ${names.productUniverse.prev} → ${names.productUniverse.next}`);
       if (names.lostIds.length) fail.push(`G9 ${names.lostIds.length} securityIds fehlen in den Firmennamen`);
       if (names.withName.next < names.withName.prev - t.maxNamesCoverageDrop) fail.push(`G9 Namensabdeckung ${names.withName.prev} → ${names.withName.next} (höchstens −${t.maxNamesCoverageDrop})`);
-      if (names.nameChanges.length > t.maxNameChanges) fail.push(`G9 ${names.nameChanges.length} Namenswechsel (Grenze ${t.maxNameChanges})`);
+      const nameCount = v11 ? v11.lists.nameChanges.length : names.nameChanges.length;
+      if (nameCount > t.maxNameChanges) fail.push(`G9 ${nameCount} Namenswechsel (Grenze ${t.maxNameChanges}${v11 ? ", ohne die freigegebenen" : ""})`);
     }
   }
   const material = cmp.canonicalIdChanges.length + cmp.instrumentTypeChanges.length + cmp.deactivations.length + cmp.reactivations.length + cmp.eligibilityFlips.length + cmp.tickerChanges.length + cmp.newIds.length + (versionChanged ? 1 : 0) + (names ? names.nameChanges.length + names.addedIds.length : 0);
@@ -206,7 +276,8 @@ export function evaluateRefresh(inputs, { today, allowVersionChange = false, thr
       prev: { version: prevMaster.version, generatedAt: prevMaster.generatedAt, rowsDelivered: prevMaster.rowsDelivered, providerRows: pr },
       next: { version: nextMaster.version, generatedAt: nextMaster.generatedAt, rowsDelivered: nextMaster.rowsDelivered, providerRows: nr, newProviderListings: h.NEW_ELIGIBLE_ADDITIONS ?? null, redistribution: nextMaster.redistribution ?? null },
       ageDays, materialChanges: material, versionChanged,
-      approval: approval && { fromVersion: approvedChanges.fromVersion, toVersion: approvedChanges.toVersion, prevMasterSha256: approvedChanges.prevMasterSha256, applied: approval.applied, unused: approval.unused },
+      approval: v11 ? { schema: APPROVED_CHANGES_SCHEMA_V11, fromVersion: approvedChanges.fromVersion, toVersion: approvedChanges.toVersion, prevMasterSha256: approvedChanges.prevMasterSha256, applied: v11.applied, unused: v11.unused, counted: Object.fromEntries(Object.entries(v11.lists).map(([k, v]) => [k, v.length])) }
+        : approval && { fromVersion: approvedChanges.fromVersion, toVersion: approvedChanges.toVersion, prevMasterSha256: approvedChanges.prevMasterSha256, applied: approval.applied, unused: approval.unused },
       counts: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, v.length])),
       samples: Object.fromEntries(Object.entries(cmp).map(([k, v]) => [k, s(v)])),
       identity: { nonCanonicalIds: s(idf.nonCanonicalIds), duplicateCanonicalIds: s(idf.duplicateCanonicalIds), newDuplicateCanonicalIds: s(newDup) },

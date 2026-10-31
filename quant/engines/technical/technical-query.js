@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.12.0";
+  var QUERY_VERSION = "technical-query-1.13.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -59,6 +59,8 @@
   var STRUCTURES_LEGACY = { NEUTRAL: "Neutral (bis 1.9.0, nie belegt)" };
 
   var ALL = ["1D", "1W", "1M"], D = ["1D"];
+  /* Tag und Woche: Formationen im Wochenchart seit 1.13.0 (screen-row 1.14.0, abgeschlossene Wochen aus den Tagesbars). */
+  var DW = ["1D", "1W"];
   /* group, id, label, kind (num|pct|bool|enum), tfs, hint; Labels mit Zeitrahmenvarianten als Objekt. */
   var FIELDS = [
     { id: "aboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 200", "1W": "Kurs über 40-Wochen-Linie", "1M": "Kurs über 10-Monats-Linie" } },
@@ -134,8 +136,8 @@
     { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bullisches Kerzenmuster am Stichtag", "1W": "Bullisches Kerzenmuster (Wochenkerze)", "1M": "Bullisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bärisches Kerzenmuster am Stichtag", "1W": "Bärisches Kerzenmuster (Wochenkerze)", "1M": "Bärisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
-    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
-    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation erkannt oder bestätigt", "1W": "Formation im Wochenchart erkannt oder bestätigt" }, values: FORMATION_TYPES },
+    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation bestätigt", "1W": "Formation im Wochenchart bestätigt" }, values: FORMATION_TYPES },
     /* AP8 L5 (seit 1.12.0): bestaetigte Formationen nach Ausbruchsrichtung, docs/technical/SCREENER_FIELDS_AP8_L5.md */
     { id: "formationConfirmedUp", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach oben", values: FORMATION_TYPES },
     { id: "formationConfirmedDown", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach unten", values: FORMATION_TYPES },

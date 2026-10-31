@@ -6,6 +6,7 @@
    Datenquellen (nur lesend):
      /technical/data/index-v1.json + meta.json         (Startseite, Chart Studio; Erzeuger build-screener.mjs)
      /technical/data/screener-v1.json                  (nur Screener, bei Bedarf)
+     /technical/data/spark-v1.json                     (Mini-Kursverlauf der Trefferkarten, nach dem ersten Bild)
      /quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz
                                                        (Tagesbars + Vollhistorien-Features)
      /quant/data/market/discover-series-long/<securityId>.json (Wochenschluesse)
@@ -34,6 +35,19 @@
   }
   function put(host, kids) { host.replaceChildren.apply(host, [].concat(kids || []).filter(Boolean)); }
   function isNum(v) { return typeof v === "number" && isFinite(v); }
+  /* Langtext der Kurssprung-Kennzeichnung unter der Pruefleiste (Chart Studio); null ohne Kennzeichnung. */
+  function jumpNote(row) {
+    var f = jumpFlag(row);
+    return f ? el("p", { class: "tc-note " + (row.suspectJumpStatus === "CONFIRMED" ? "is-bad" : "is-warn"), role: "note", text: f.title }) : null;
+  }
+  /* Kurssprung-Kennzeichnung der Zeile (price-jumps.js, screen-row 1.13.0): Verdacht oder bestaetigter Datenfehler. */
+  function jumpFlag(row) {
+    if (!row || !row.suspectJumpAt) return null;
+    var PJ = global.VUTechnical && global.VUTechnical.PriceJumps;
+    var j = { date: row.suspectJumpAt, factor: isNum(row.suspectJumpFactor) ? row.suspectJumpFactor : null, status: row.suspectJumpStatus || "SUSPECT", splitSignature: PJ && isNum(row.suspectJumpFactor) ? PJ.splitSignature(row.suspectJumpFactor) : true };
+    var d = PJ ? PJ.describe(j.factor === null ? Object.assign({}, j, { factor: "?" }) : j, M.dateDe) : { short: "Kurssprung prüfen (" + M.dateDe(j.date) + ")", long: "" };
+    return el("span", { class: "tc-flag" + (j.status === "CONFIRMED" ? " is-bad" : " is-warn"), title: d.long, text: d.short });
+  }
   var GLYPH = {
     trend: "M4 17l5-5 4 3 7-8M15 7h5v5", breakout: "M3 15h7l3-8 3 5h5M14 4h6v6", triangle: "M4 5l16 7-16 7z", flag: "M5 21V4M5 4h11l-3 4 3 4H5",
     bars: "M5 20V12M10 20V7M15 20v-5M20 20V4", pulse: "M3 12h4l3-7 4 14 3-7h4", range: "M4 7h16M4 17h16M7 7v10M17 7v10", contraction: "M3 6l5 5 4-3 4 2 5-1M3 18l5-4 4 2 4-1 5 1",
@@ -79,6 +93,23 @@
       return dataset;
     }, function (e) { screenerP = null; delete cache[M.SCREENER_PATH]; throw e; });
     return screenerP;
+  }
+  /* Mini-Kursverlauf der Trefferkarten aus spark-v1.json (eigene Datei seit Vertrag 1.2.0): erst nach dem ersten Bild
+     geladen; bis dahin bleibt der reservierte Platz leer. Ohne Datei bleibt die Karte ohne Linie (kein Fehler). */
+  var sparkP = null, sparkMap = null;
+  function loadSpark() {
+    if (!sparkP) sparkP = fetchJSON(M.SPARK_PATH).then(function (d) {
+      sparkMap = {};
+      (d && d.s || []).forEach(function (t, i) { sparkMap[t] = d.spark[i]; });
+      return sparkMap;
+    }, function () { sparkP = null; return null; });
+    return sparkP;
+  }
+  function sparkSpan(row) {
+    var span = el("span", { class: "tc-hit-spark" });
+    if (sparkMap) span.innerHTML = Chart.sparkline(sparkMap[row.s] || []);
+    else loadSpark().then(function (m) { if (m) span.innerHTML = Chart.sparkline(m[row.s] || []); });
+    return span;
   }
   /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
      Treffer ihn brauchen. Nicht bei "Datensparen" (Save-Data); die Startseite bleibt beim schlanken Index. */
@@ -127,7 +158,8 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js", "/core/listing-staleness.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js",
+    "/quant/engines/technical/timeframe.js", "/quant/engines/technical/multi-timeframe.js", "/core/listing-staleness.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -268,8 +300,23 @@
       if (r.recognized.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Erkannt" })].concat(r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok", text: t }); }))));
       if (r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Nicht erkannt" })].concat(r.unknown.map(function (t) { return el("span", { class: "tc-mini is-warn", text: t }); }))));
       r.errors.filter(function (e) { return e.code !== "EMPTY"; }).forEach(function (e) { kids.push(el("p", { class: "tc-note is-warn", text: ERROR_TEXT[e.code] ? ERROR_TEXT[e.code](e.text) : e.code + (e.text ? ": " + e.text : "") })); });
-      if (r.query.groups.length) kids.push(el("p", { class: "tc-note" }, ["Abfrage: ", el("code", { text: r.canonical || "–" })]));
+      if (r.query.groups.length) kids.push(queryEditor(r.canonical || ""));
       put(preview, kids);
+    }
+    /* Die uebersetzte Abfrage ist vor dem Ausfuehren bearbeitbar (kanonische Schreibweise, Rundreise parse(toText(q)) = q). */
+    function queryEditor(canonical) {
+      var edit = el("textarea", { class: "tc-input tc-input-code", rows: "2", spellcheck: "false", autocomplete: "off", "aria-label": "Übersetzte Abfrage bearbeiten" });
+      edit.value = canonical;
+      var state = el("p", { class: "tc-note", role: "status" });
+      function check() {
+        var r = QT.parse(edit.value), bad = r.errors.filter(function (e) { return e.code !== "EMPTY"; });
+        state.className = "tc-note" + (r.ok ? "" : " is-warn");
+        state.textContent = r.ok ? "Abfrage gültig." : (r.unknown.length ? "Nicht erkannt: " + r.unknown.join(", ") : bad.length ? (ERROR_TEXT[bad[0].code] ? ERROR_TEXT[bad[0].code](bad[0].text) : bad[0].code) : "Keine Bedingung.");
+        return r;
+      }
+      edit.addEventListener("input", check);
+      return el("div", { class: "tc-ts-edit" }, [el("label", { class: "tc-note", text: "Abfrage (vor dem Ausführen änderbar)" }), edit,
+        el("button", { class: "tc-btn tc-btn-ghost", type: "button", text: "Abfrage ausführen", onclick: function () { if (check().ok) location.hash = "#/screener?q=" + encodeURIComponent(edit.value.trim()); } }), state]);
     }
     var timer = null;
     input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { paint(input.value.trim() ? QT.parse(input.value) : null); }, 120); });
@@ -455,12 +502,12 @@
         if (row.frozenSince) flags.push(el("span", { class: "tc-flag", title: "Datenqualitätshinweis: seitdem unveränderter Schlusskurs. Kein bestätigtes Delisting, auch bei illiquiden Titeln möglich. Keine Kennzahlen", text: "Kurs unverändert seit " + M.dateDe(row.frozenSince) }));
         else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
             el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            sparkSpan(row),
             el("span", { class: "tc-hit-score" }, right),
             glyph("chevron", "tc-chev")
           ]),
@@ -651,12 +698,12 @@
         var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
         var flags = [];
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
         return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
             el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            sparkSpan(row),
             el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
             glyph("chevron", "tc-chev")
           ]),
@@ -712,6 +759,7 @@
             var val = f.kind || v === null || v === undefined || Array.isArray(v) || typeof v === "boolean" ? "" : " · " + valueText(f.field, v);
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
+          jumpNote(row),
           el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
       ]);
     }).catch(function () { put(box, [el("summary", {}, [el("b", { text: "Vorlage konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
@@ -734,7 +782,8 @@
   var LAYERS = M.CHART_LAYERS, PANE_LIST = M.CHART_PANES;
   var PANES = {};
   PANE_LIST.forEach(function (p) { PANES[p[0]] = 1; });
-  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["5J", 260], ["Max", 0]];
+  /* "1J·W": Wochenkerzen aus den Tagesbars (abgeschlossene Wochen, dieselben wie die Screener-Spalten formation…@1W). */
+  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["1J·W", 0], ["5J", 260], ["Max", 0]];
   var studio = { layers: { trend: true, muster: true, niveaus: true, sma: true, volumen: true }, range: "1J", full: false };
 
   function viewChartPicker(main) {
@@ -856,8 +905,15 @@
     put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
-    if (weekly) {
-      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen nur im Tageschart" }));
+    if (!X.focus && studio.range === "1J·W") {
+      var W = weeklyCandleConfig(X);
+      if (!W) put(host, stateBox("Keine Wochenkerzen", "Aus den Tagesbars entstehen weniger als zwei abgeschlossene Wochen."));
+      else {
+        put(legend, legendItems(W.cfg.legend).concat([el("span", { class: "tc-note", text: W.note })]));
+        chart = Chart.render(host, W.cfg);
+      }
+    } else if (weekly) {
+      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen im Tageschart und unter „1J·W“" }));
       loadWeekly(X.T).then(function (w) {
         var pts = (w.points || []).filter(function (p) { return isNum(p[1]); });
         var dates = pts.map(function (p) { return p[0]; }), close = pts.map(function (p) { return p[1]; });
@@ -895,6 +951,63 @@
   }
 
   function legendItems(items) { return items.map(function (it) { return el("span", { class: "tc-leg" }, [el("i", { style: "background:" + it[1] }), it[0]]); }); }
+
+  /**
+   * Wochenkerzen aus den geladenen Tagesbars: multi-timeframe.js#completedSeries (abgeschlossene Wochen, Regel
+   * STICHTAG_FREITAG), Formationen mit derselben Engine wie die Screener-Spalten formationActive@1W/formationConfirmed@1W
+   * (screen-row 1.14.0, ab 26 Wochen). Keine neue Kursreihe: nur eine andere Sicht auf die veroeffentlichten Tagesbars.
+   */
+  function weeklyCandleConfig(X) {
+    var VT = global.VUTechnical, S = X.S;
+    if (!VT.MultiTimeframe) return null;
+    var series = VT.CanonicalBars.fromRows(S.dates.map(function (d, i) { return { date: d, open: S.open[i], high: S.high[i], low: S.low[i], close: S.close[i], volume: S.volume[i] }; }),
+      { instrumentId: X.T, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
+    var wk = VT.MultiTimeframe.completedSeries(series, "1W");
+    if (!wk) return null;
+    var w = wk.series, WS = { dates: w.timestamps.map(function (t) { return String(t).slice(0, 10); }), open: w.open, high: w.high, low: w.low, close: w.close, volume: w.volume };
+    var frozen = X.st && X.st.frozenSince, enough = wk.bars >= 26;
+    var analysis = frozen || !enough ? { formations: [] } : VT.Formations.analyzeAt(VT.TIContext.prepare(w), w.length - 1);
+    var L = studio.layers, lines = [], zones = [], markers = [], overlays = [], legend = [["Kurs (Woche)", "var(--tc-price)"]];
+    if (L.sma) {
+      overlays.push({ id: "s10", label: "SMA 10 W", values: VT.Indicators.sma(w.close, 10), color: "var(--tc-c1)" });
+      overlays.push({ id: "s40", label: "SMA 40 W", values: VT.Indicators.sma(w.close, 40), color: "var(--tc-c2)" });
+      legend.push(["SMA 10 W", "var(--tc-c1)"], ["SMA 40 W", "var(--tc-c2)"]);
+    }
+    formationLayers(analysis, WS, L, null, WS.dates[0], lines, zones, markers);
+    var active = [];
+    (analysis.formations || []).forEach(function (f) { if (f.state !== "INVALIDATED" && active.indexOf(f.name) < 0) active.push(f.name); });
+    var note = wk.bars + " abgeschlossene Wochen bis " + M.dateDe(wk.asOf) + (wk.droppedOpenBar ? " (laufende Woche nicht enthalten)" : "") + " · " +
+      (frozen ? "Kurs unverändert: keine Formationen" : !enough ? "unter 26 Wochen: keine Wochenformationen" : active.length ? "Wochenformationen: " + active.join(", ") : "keine Wochenformation erkannt");
+    return { cfg: { title: X.T + " Wochenkerzen", mode: "candles", window: 0, data: WS, overlays: overlays, lines: lines, zones: zones, levels: [], markers: markers, volume: !!L.volumen, pane: null, legend: legend },
+      note: note, analysis: analysis, weeks: wk };
+  }
+
+  /** Linien, Zonen und Marken der Formationen (Tages- und Wochenchart dieselbe Darstellung). */
+  function formationLayers(analysis, S, L, focusF, firstDate, lines, zones, markers) {
+    var forms = focusF ? [focusF] : (analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
+    forms.forEach(function (f) {
+      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
+      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
+      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
+      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
+      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
+      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
+        var ci = S.dates.indexOf(f.confirmedAt);
+        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
+      }
+    });
+  }
 
   function studioConfig(X, win, focusF) {
     var S = X.S, L = studio.layers, overlays = [], lines = [], zones = [], levels = [], markers = [], legend = [["Kurs", "var(--tc-price)"]];
@@ -945,29 +1058,7 @@
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
       overlays.push({ id: "bbl", label: "Bollinger unten", values: X.ind.bb.lower, color: "var(--tc-c5)", dash: "2 3" }); legend.push(["Bollinger 20/2", "var(--tc-c5)"]);
     }
-    var forms = focusF ? [focusF] : (X.analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
-    forms.forEach(function (f) {
-      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
-      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
-      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
-      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
-      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
-      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
-        var ci = S.dates.indexOf(f.confirmedAt);
-        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
-      }
-      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
-        var ii = S.dates.indexOf(f.invalidatedAt);
-        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
-      }
-      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
-      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
-        var di = S.dates.indexOf(f.detectedAt);
-        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
-      }
-    });
+    formationLayers(X.analysis, S, L, focusF, firstDate, lines, zones, markers);
     if (L.niveaus) {
       (X.levels.resistances || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "negative", label: i ? null : "Widerstand" }); });
       (X.levels.supports || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "positive", label: i ? null : "Unterstützung" }); });
@@ -1066,9 +1157,8 @@
           : "nicht veröffentlicht: " + (p.barsAfterSeed !== null && p.barsAfterSeed < p.warmupBars ? "Historie zu kurz (frühestens ab " + p.minimumBars + " Tagesbars)" : "Fehlerschranke " + pct(p.errorBoundAtCutoff) + " über 0,1 % (Startfenster weit vom heutigen Kurs)") })];
       })(),
       (function () {
-        var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
-        if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
-        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet." })] : null;
+        var PJ = global.VUTechnical && global.VUTechnical.PriceJumps, at = PJ ? PJ.all(b).map(function (j) { return M.dateDe(j.date) + " (×" + String(j.factor).replace(".", ",") + ")"; }) : [];
+        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet. Ob ein Sprung als Datenfehler bestätigt ist, zeigt die Vorlagen-Prüfleiste." })] : null;
       })(),
       el("dt", { text: "Volumen" }), el("dd", { text: b.volume && b.volume.some(function (v) { return v > 0; }) ? "vorhanden" : "nicht vorhanden – Volumenindikatoren entfallen" }),
       el("dt", { text: "Formationen" }), el("dd", { text: "Nur bestätigte Swing-Punkte; Erkennung ohne Blick in die Zukunft (Engine " + global.VUTechnical.Formations.ENGINE_VERSION + ")" }),

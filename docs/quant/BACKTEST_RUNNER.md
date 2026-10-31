@@ -138,7 +138,7 @@ privaten Delisted-Fällen). Identität: `ref_<TICKER>` über `core/identity.js`,
 | strategy-2013-2014-bull | STRATEGY_BACKTEST | Bulle | A | 690 Trades | – | – | – | +30,9 % / 14,6 % / −6,1 % | SPY +42,4 % |
 | strategy-dividends-tr | STRATEGY_BACKTEST | Dividenden, Crash 2020 | A | 3 Trades | – | – | – | +174,4 % / 22,5 % / −19,7 % | ohne Dividenden +155,3 %, Beitrag +19,2 Pp, 60 Dividenden; Ereignisstudie 60/60 |
 | strategy-profile-prepared | STRATEGY_BACKTEST | Zustand B | B | – | – | – | – | – | fehlend: PIT-Faktor-Snapshots, beobachtete Provenienz |
-| factor-momentum-v10-panel | FACTOR_RANKING_BACKTEST | Rekonstruktion 2019–2020 | A (privat) | 65.200/65.200 (0) | 56,7 % | +2,9 % | +2,4 % | – | 3.088 Listings, 24 Rangtage; Ø Spearman +0,036, Ø Q5−Q1 −1,6 %; ohne Panel B |
+| factor-momentum-v10-panel | FACTOR_RANKING_BACKTEST | Rekonstruktion 2019–2020 | A (privat) | 65.176/65.176 (0) | 56,7 % | +2,9 % | +2,4 % | – | 3.087 Listings, 24 Rangtage; Ø Spearman +0,036, Ø Q5−Q1 −1,6 %; ohne Panel B |
 | delisted-xco-bankruptcy | SAME_STOCK_REPLAY | delistet (Insolvenz 2017-12) | A (privat) | 22/24 (2) | 31,8 % | −25,4 % | −25,1 % | – | 2 Ereignisse nach dem letzten Handel zensiert; Szenarien nur dokumentiert |
 | acquisition-agn | SIGNAL_BACKTEST | Übernahme (2020-05) | A (privat) | 28/30 (2) | 17,9 % | −14,7 % | −16,7 % | – | offene Ausgänge nach dem letzten Handel zensiert |
 

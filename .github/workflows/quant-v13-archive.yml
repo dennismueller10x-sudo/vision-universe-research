@@ -10,6 +10,10 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 #   [v13-archive:verify]  jedes Objekt aus R2 lesen und SHA-256 gegen das Manifest pruefen
 #   [v13-archive:keycheck] nur pruefen, ob Secret V13_ARCHIVE_PRIVATE_KEY vorhanden ist und zum Manifest passt
 #   [v13-archive:restore] unabhaengige Wiederherstellungsprobe auf dem Runner (R2 lesen, entschluesseln, alle Hashes)
+#   [v13-archive:demos]   die 16 Backtest-Demofaelle auf dem Runner neu bauen: nur v13-derived und v10-factor-panel
+#                         werden wiederhergestellt (alle Hashes geprueft), danach build-backtest-demos.cjs, Python-
+#                         Gegenrechnung und Vergleich mit docs/quant/backtest-demos. Artefakt: nur die abgeleiteten
+#                         Demoergebnisse (wie committet), Vergleich und Pruefbericht; keine Reihen, kein QA-Block.
 # Keine URL, kein Endpunkt und kein Secret erscheint im Log; Ausgaben nur Zaehlungen und Hashes.
 on:
   push:
@@ -24,7 +28,7 @@ jobs:
   archive:
     if: contains(github.event.head_commit.message, '[v13-archive:')
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,11 +42,11 @@ jobs:
           MSG: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore)\]' | head -1 | sed -E 's/\[v13-archive:([a-z]+)\]/\1/')
+          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos)\]' | head -1 | sed -E 's/\[v13-archive:([a-z]+)\]/\1/')
           test -n "$m"
           echo "mode=$m" >> "$GITHUB_OUTPUT"
       - name: R2 (nur Zaehlungen im Log)
-        if: steps.m.outputs.mode != 'keycheck' && steps.m.outputs.mode != 'restore'
+        if: steps.m.outputs.mode != 'keycheck' && steps.m.outputs.mode != 'restore' && steps.m.outputs.mode != 'demos'
         env:
           MODE: ${{ steps.m.outputs.mode }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -73,6 +77,44 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/quant/v13/archive/r2-restore.mjs --mode "$MODE" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+      - name: Private Teile fuer die Demofaelle wiederherstellen (privater Schluessel nur in diesem Schritt)
+        if: steps.m.outputs.mode == 'demos'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived,v10-factor-panel \
+            --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+      - name: Demofaelle neu bauen, gegenrechnen, vergleichen (Ausgabe nur Zaehlungen)
+        if: steps.m.outputs.mode == 'demos'
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/priv"; O="$RUNNER_TEMP/demo-out"; mkdir -p "$O"
+          first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["fields"] if "fields" in r else r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
+          hit=$(find "$P/v13-derived" -name "$first.json" -print -quit)
+          test -n "$hit"
+          DL=$(dirname "$hit")
+          PANEL=$(find "$P/v10-factor-panel" -name 'panel.jsonl.gz' -print -quit)
+          test -n "$PANEL"
+          echo "Reihen im Verzeichnis: $(find "$DL" -maxdepth 1 -name '*.json' | wc -l), Panel: $(stat -c %s "$PANEL") B"
+          node --max-old-space-size=12288 scripts/quant/research/build-backtest-demos.cjs --out "$O/demos" \
+            --cache "$RUNNER_TEMP/demo-cache" --private-delisted "$DL" --private-factor-panel "$PANEL" --qa-dir "$RUNNER_TEMP/demo-qa"
+          python3 -I scripts/quant/verify-backtest-runner.py --qa-dir "$RUNNER_TEMP/demo-qa" --private-delisted "$DL" --out "$O/verify-report.json"
+          node scripts/quant/research/compare-backtest-demos.cjs --a docs/quant/backtest-demos --b "$O/demos" \
+            --out "$O/comparison.json" --markdown-out "$O/comparison.md"
+          rm -rf "$P" "$RUNNER_TEMP/demo-qa" "$RUNNER_TEMP/demo-cache"
+      - uses: actions/upload-artifact@v4
+        if: steps.m.outputs.mode == 'demos'
+        with:
+          name: v13-archive-demos-${{ github.run_id }}
+          path: ${{ runner.temp }}/demo-out
+          retention-days: 7
+          if-no-files-found: error
       - name: URLs verschluesseln (AES-256 + RSA-OAEP), Klartext loeschen
         if: steps.m.outputs.mode == 'put' || steps.m.outputs.mode == 'get'
         run: |

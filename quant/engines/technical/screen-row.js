@@ -31,10 +31,14 @@
   var Fm = isNode ? require("./formations.js") : global.VUTechnical.Formations;
   var Ctx = isNode ? require("./ti/context.js") : global.VUTechnical.TIContext;
   var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
+  var PJ = isNode ? require("./price-jumps.js") : global.VUTechnical.PriceJumps;
+  var MTF = isNode ? require("./multi-timeframe.js") : global.VUTechnical.MultiTimeframe;
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.12.0";
+  var ROW_VERSION = "technical-screen-row-1.14.0";
+  /* Mindestzahl abgeschlossener Wochen fuer Wochenformationen: ein halbes Jahr (Pivots brauchen Vor- und Nachlauf). */
+  var WEEKLY_MIN_BARS = 26;
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -320,6 +324,24 @@
       });
     } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationConfirmedUp = null; row.formationConfirmedDown = null; row.formationError = String(e && e.message || e).slice(0, 80); }
 
+    /* ---- Formationen im Wochenchart (seit 1.14.0, docs/technical/WEEKLY_FORMATIONS.md) ----
+       Dieselbe Engine auf den ABGESCHLOSSENEN Wochenbars der Tagesbars (multi-timeframe.js#completedSeries, Regel
+       STICHTAG_FREITAG): echte Wochen-OHLC (Eroeffnung der ersten, Hoch/Tief der Woche, Schluss der letzten Sitzung,
+       Volumensumme). Chart Studio zeigt dieselben Wochen. Unter WEEKLY_MIN_BARS Wochen keine Aussage (null). */
+    row["formationActive@1W"] = null; row["formationConfirmed@1W"] = null; row.weeklyFormationBars = null;
+    try {
+      var wk = MTF.completedSeries(input.series, "1W");
+      row.weeklyFormationBars = wk ? wk.bars : 0;
+      if (wk && wk.bars >= WEEKLY_MIN_BARS) {
+        var wa = [], wc = [];
+        Fm.analyzeAt(Ctx.prepare(wk.series), wk.series.length - 1).formations.forEach(function (x) {
+          if (x.state !== "INVALIDATED" && wa.indexOf(x.type) < 0) wa.push(x.type);
+          if (x.state === "CONFIRMED" && wc.indexOf(x.type) < 0) wc.push(x.type);
+        });
+        row["formationActive@1W"] = wa; row["formationConfirmed@1W"] = wc;
+      }
+    } catch (e) { row["formationActive@1W"] = null; row["formationConfirmed@1W"] = null; }
+
     /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
     Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
     Object.assign(row, candleBlock(b));
@@ -349,10 +371,14 @@
     row.weeks = wc.length;
     row.fresh = input.universeAsOf ? row.asOf === input.universeAsOf : null;
     if (row.fresh === false) markStale(row);
-    /* Juengster Schlusssprung mit Datenverdacht (Split-Signatur oder Faktor ausserhalb 0,2..5) in den letzten 60 Bars:
-       nicht nachgezogene Splits oder Abspaltungen verfaelschen Indikatoren und Formationen; der Screener zeigt ihn an. */
-    row.suspectJumpAt = null;
-    for (var q = n - 1; q >= Math.max(1, n - 60); q--) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) { row.suspectJumpAt = b.timestamps[q]; break; }
+    /* Juengster auffaelliger Schlusssprung (price-jumps.js): Split-Signatur oder Faktor ausserhalb 0,2..5, ohne echte
+       Ereignistage mit Volumenbestaetigung. Seit 1.13.0 (Owner-Freigabe Option B, 30.10.2026) im Fenster der Vorlagen-
+       Kriterien (252 Bars statt 60), mit Faktor und Stufe: SUSPECT (Verdacht) oder CONFIRMED (Kapitalmassnahme in
+       quant/config/corporate-action-confirmations.json belegt, in den Kursdaten nicht bereinigt). */
+    var jump = PJ.latest(b, input.caConfirmations || null);
+    row.suspectJumpAt = jump ? jump.date : null;
+    row.suspectJumpFactor = jump ? jump.factor : null;
+    row.suspectJumpStatus = jump ? jump.status : null;
 
     /* ---- Vorschau: letzte 60 Schluesse auf 0..99 normiert ---- */
     var tail = b.close.slice(Math.max(0, n - 60)), lo = Math.min.apply(null, tail), hi = Math.max.apply(null, tail);

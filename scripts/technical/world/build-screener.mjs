@@ -10,6 +10,7 @@
      quant/data/product/universe-list-v1.json.gz            Namen
    Ausgabe:
      technical/data/screener-v1.json   eine Zeile je Titel, spaltenbasiert
+     technical/data/spark-v1.json      Mini-Kursverlauf je Titel (gleiche Reihenfolge wie screener.cols.s)
      technical/data/meta.json          Stand, Zaehler, Versionen, Gruende
 
    Kein Anbieterabruf, kein R2, keine Schluessel. Die Rechnung steckt in
@@ -24,6 +25,7 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadIndex as loadCaConfirmations } from "../../market/lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -36,6 +38,8 @@ const Contract = require(join(root, "quant/engines/technical/screener-contract.j
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
 const Model = require(join(root, "technical/engine/model.js"));
+/* Belegte, nicht bereinigte Kapitalmassnahmen der Marktdaten-Domaene (Kennzeichnung "bestaetigt", screen-row 1.13.0). */
+const caConfirmations = loadCaConfirmations(root);
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
@@ -43,6 +47,7 @@ function arg(name, fallback) {
 }
 
 export const SCHEMA_VERSION = "vu-technical-screener-1.0.0";
+export const SPARK_SCHEMA_VERSION = "vu-technical-spark-1.0.0";
 
 function readJSON(path) { return JSON.parse(readFileSync(path, "utf8")); }
 function readGz(path) { return JSON.parse(gunzipSync(readFileSync(path)).toString("utf8")); }
@@ -106,7 +111,7 @@ export function build(options = {}) {
           features: bundle && bundle.featuresAtCutoff || null,
           structure: bundle && bundle.structure && bundle.structure.state || null,
           weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, chartSeries: bundle && bundle.chartSeries || null,
-          benchmark, universeAsOf: options.universeAsOf || null
+          benchmark, universeAsOf: options.universeAsOf || null, caConfirmations: caConfirmations[securityId] || null
         });
         if (!bundle) row.noBundle = true;
         /* Eingefrorenes Kursende (core/listing-staleness.js, dieselbe Schwelle wie DQ-PX-6): erster Tag des
@@ -143,6 +148,10 @@ export function build(options = {}) {
   const versions = { row: Row.ROW_VERSION, query: Query.QUERY_VERSION, indicators: Indicators.INDICATORS_VERSION, formations: Formations.ENGINE_VERSION };
   const artifact = { schemaVersion: SCHEMA_VERSION, asOf, generatedFrom, versions, benchmark: benchmark ? { ticker: "SPY", asOf: benchmark.asOf } : null,
     count: rows.length, cols: toColumns(rows) };
+  /* Mini-Kursverlauf der Trefferkarten (21 % des Datensatzes, gzip) in eine eigene Datei: Die erste Vorlage braucht ihn
+     nicht zum Filtern; Chart Studio laedt ihn nach dem ersten Bild (Vertrag 1.2.0, B4 Completion 2.0). */
+  const spark = { schemaVersion: SPARK_SCHEMA_VERSION, asOf, count: rows.length, s: artifact.cols.s, spark: artifact.cols.spark };
+  delete artifact.cols.spark;
   const formationCounts = {};
   rows.forEach((r) => (r.formations || []).forEach(([type, state]) => { const k = type + ":" + state; formationCounts[k] = (formationCounts[k] || 0) + 1; }));
   const meta = {
@@ -150,7 +159,8 @@ export function build(options = {}) {
     counts: { rows: rows.length, fresh: rows.filter((r) => r.fresh).length, stale: rows.filter((r) => !r.fresh).length,
       withVolume: rows.filter((r) => r.hasVolume).length, withWeekly: rows.filter((r) => r.weeks >= 40).length,
       with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length,
-      suspectJump60: rows.filter((r) => r.suspectJumpAt).length,
+      suspectJump: rows.filter((r) => r.suspectJumpAt).length,
+      suspectJumpConfirmed: rows.filter((r) => r.suspectJumpStatus === "CONFIRMED").length,
       weeklyMonthlyFromDailyHistory: mtfFromHistory },
     skipped, formations: formationCounts,
     sources: {
@@ -160,9 +170,9 @@ export function build(options = {}) {
       names: "quant/data/product/universe-list-v1.json.gz"
     },
     producer: "scripts/technical/world/build-screener.mjs",
-    paths: { screener: "/technical/data/screener-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
+    paths: { screener: "/technical/data/screener-v1.json", spark: "/technical/data/spark-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
   };
-  return { artifact, meta };
+  return { artifact, meta, spark };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
@@ -170,10 +180,10 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const limit = Number(arg("--limit", "0")) || 0;
   const tickers = arg("--tickers", "") ? arg("--tickers").split(",") : null;
   const started = Date.now();
-  const { artifact, meta } = build({ limit, tickers });
+  const { artifact, meta, spark } = build({ limit, tickers });
   meta.runtimeSec = Math.round((Date.now() - started) / 1000);
   /* Datenvertrag (docs/technical/DATA_CONTRACT.md): bei einem Verstoss wird nichts geschrieben, der letzte gueltige Stand bleibt. */
-  const index = Model.homeIndex(artifact), verdict = Contract.check(artifact, meta, index);
+  const index = Model.homeIndex(artifact), verdict = Contract.check(artifact, meta, index, spark);
   if (!verdict.ok) {
     console.error("Datenvertrag verletzt (" + Contract.CONTRACT_VERSION + "): " + JSON.stringify(verdict.counts));
     verdict.errors.slice(0, 20).forEach((e) => console.error("  " + JSON.stringify(e)));
@@ -183,6 +193,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   writeFileSync(join(out, "screener-v1.json"), JSON.stringify(artifact));
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
   writeFileSync(join(out, "index-v1.json"), JSON.stringify(index));
+  writeFileSync(join(out, "spark-v1.json"), JSON.stringify(spark));
   console.log(`Technical-Screener: ${meta.counts.rows} Titel, Stand ${meta.asOf}, ${meta.runtimeSec}s -> ${out}`);
   /* Historische Evidenz der Formationen (beschreibend, kausal); bei --limit/--tickers uebersprungen, damit Teilaeufe schnell bleiben. */
   if (!limit && !tickers && process.argv.indexOf("--no-evidence") < 0) {

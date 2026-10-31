@@ -21,8 +21,10 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
 
-  var CONTRACT_VERSION = "technical-screener-contract-1.1.0";
-  var SCHEMAS = { screener: /^vu-technical-screener-1\./, meta: /^vu-technical-meta-1\./, index: /^vu-technical-index-1\./ };
+  var CONTRACT_VERSION = "technical-screener-contract-1.2.0";
+  var SCHEMAS = { screener: /^vu-technical-screener-1\./, meta: /^vu-technical-meta-1\./, index: /^vu-technical-index-1\./, spark: /^vu-technical-spark-1\./ };
+  /* Mini-Kursverlauf der Trefferkarten: seit Vertrag 1.2.0 eigene Datei spark-v1.json (nach dem ersten Bild geladen). */
+  var SPARK = { type: "spark", nullable: false, label: "letzte ≤ 60 Schlüsse, 0..99 normiert" };
   var DATE = /^\d{4}-\d{2}-\d{2}$/;
 
   /* Wertebereiche der Abfragefelder (alle Zeitrahmen). Ohne Eintrag: endliche Zahl. pct = Anteil (0,05 = 5 %). */
@@ -47,8 +49,10 @@
     asOf: { type: "date", nullable: false, label: "letzter Bar des Titels" },
     bars: { type: "int", nullable: false, range: [1, Infinity], label: "Tagesbars im Analysefenster" },
     weeks: { type: "int", nullable: false, range: [0, Infinity], label: "Wochenschlüsse (lange Reihe)" },
-    spark: { type: "spark", nullable: false, label: "letzte ≤ 60 Schlüsse, 0..99 normiert" },
-    suspectJumpAt: { type: "date", nullable: true, label: "jüngster Kurssprung mit Datenverdacht (60 Bars)" },
+    suspectJumpAt: { type: "date", nullable: true, label: "jüngster auffälliger Kurssprung (252 Bars, ab screen-row 1.13.0; davor 60)" },
+    suspectJumpFactor: { type: "num", nullable: true, optional: true, range: [0, Infinity], label: "Schlussfaktor des Kurssprungs (Schluss / Vortagesschluss)" },
+    suspectJumpStatus: { type: "enum", values: ["SUSPECT", "CONFIRMED"], nullable: true, optional: true, label: "Stufe: Verdacht oder bestätigter Datenfehler (belegte, nicht bereinigte Kapitalmaßnahme)" },
+    weeklyFormationBars: { type: "int", nullable: true, optional: true, range: [0, Infinity], label: "abgeschlossene Wochenbars aus den Tagesbars (Wochenformationen, ab screen-row 1.14.0; unter 26 keine Aussage)" },
     formations: { type: "formations", nullable: true, label: "aktive Formationen [Typ, Zustand, erkannt, Ausbruchstag, Richtung, Kennzeichen]" },
     distSma50: { type: "pct", nullable: true, range: [-1, Infinity], label: "Abstand zur SMA 50 (nur Anzeige)" },
     frozenSince: { type: "date", nullable: true, optional: true, label: "erster Tag des unveränderten Schlusskurses im Fenster der Tagesbars (Datenqualitätshinweis, ab screen-row 1.10.0)" }
@@ -122,7 +126,7 @@
    * @returns {{ ok, contract, checked, errors: [{code, column, ticker?, value?}], counts: Object<code, n> }}
    * errors ist je Code und Spalte auf 5 Beispiele begrenzt; counts zaehlt alle.
    */
-  function check(artifact, meta, index) {
+  function check(artifact, meta, index, spark) {
     var errors = [], counts = {}, seen = {};
     function bad(code, column, ticker, value) {
       counts[code] = (counts[code] || 0) + 1;
@@ -173,6 +177,16 @@
       if (index.asOf !== asOf) bad("INDEX_ASOF", "index.asOf", null, index.asOf);
       if (!Array.isArray(index.s) || index.count !== index.s.length) bad("INDEX_COUNT", "index.count");
       else index.s.forEach(function (t) { if (!tickers[t]) bad("INDEX_UNKNOWN_TICKER", "index.s", t); });
+    }
+    if (spark) {
+      if (!SCHEMAS.spark.test(spark.schemaVersion || "")) bad("SCHEMA", "spark.schemaVersion", null, spark.schemaVersion);
+      if (spark.asOf !== asOf) bad("SPARK_ASOF", "spark.asOf", null, spark.asOf);
+      if (!Array.isArray(spark.s) || !Array.isArray(spark.spark) || spark.s.length !== n || spark.spark.length !== n || spark.count !== n) bad("SPARK_COUNT", "spark.count");
+      else for (var j = 0; j < n; j++) {
+        if (spark.s[j] !== cols.s[j]) { bad("SPARK_ORDER", "spark.s", spark.s[j]); break; }
+        var se = valueError(SPARK, spark.spark[j]);
+        if (se) bad(se, "spark", spark.s[j], spark.spark[j]);
+      }
     }
     return result();
     function result() {

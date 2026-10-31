@@ -164,7 +164,7 @@ if (twArt && twArt.cols) {
   const analytic = TQ.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
   rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
   const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));
-  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"))));
+  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"), maybe("technical/data/spark-v1.json"))));
   /* DQ-TW-8: vollstaendige Treffer der Vorlagen, die distLow52w pruefen (technical/engine/templates.js, AP8) */
   const tplPath = join(REPO_ROOT, "technical", "engine", "templates.js"), fullHits = [];
   if (existsSync(tplPath)) {

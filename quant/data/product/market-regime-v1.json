@@ -14,58 +14,58 @@
    "id": "above200",
    "label": "Anteil über der 200-Tage-Linie",
    "why": "Die breiteste und langsamste der sechs. Sie sagt, wie viele Titel überhaupt in einem langfristig aufwärts gerichteten Kursbild stehen.",
-   "share": 0.38968380144850734,
-   "hits": 2206,
-   "observed": 5661,
+   "share": 0.3662842012356575,
+   "hits": 2075,
+   "observed": 5665,
    "coverage": 1
   },
   {
    "id": "above50",
    "label": "Anteil über der 50-Tage-Linie",
    "why": "Dieselbe Frage auf kürzerer Sicht. Weicht sie stark von above200 ab, ist die Lage im Umbruch - was hier beschrieben, aber nicht bewertet wird.",
-   "share": 0.37272566684331393,
-   "hits": 2110,
-   "observed": 5661,
+   "share": 0.3373345101500441,
+   "hits": 1911,
+   "observed": 5665,
    "coverage": 1
   },
   {
    "id": "trendBullish",
    "label": "Anteil mit aufwärts gerichtetem Trend",
    "why": "Die Trendklassifikation der bestehenden technischen Engine, nicht neu gerechnet.",
-   "share": 0.17046458222928812,
-   "hits": 965,
-   "observed": 5661,
+   "share": 0.16098852603706973,
+   "hits": 912,
+   "observed": 5665,
    "coverage": 1
   },
   {
    "id": "trendBearish",
    "label": "Anteil mit abwärts gerichtetem Trend",
    "why": "Die Gegenseite, immer mitveröffentlicht.",
-   "share": 0.504151210033563,
-   "hits": 2854,
-   "observed": 5661,
+   "share": 0.5170344218887908,
+   "hits": 2929,
+   "observed": 5665,
    "coverage": 1
   },
   {
    "id": "near52wHigh",
    "label": "Anteil höchstens 10 % unter dem 52-Wochen-Hoch",
    "why": "Misst, ob die Stärke von vielen Titeln getragen wird oder von wenigen.",
-   "share": 0.23971029853382794,
-   "hits": 1357,
-   "observed": 5661,
+   "share": 0.22612533097969992,
+   "hits": 1281,
+   "observed": 5665,
    "coverage": 1
   },
   {
    "id": "volatilityHigh",
    "label": "Anteil in hohem Volatilitätsregime",
    "why": "Steht neben den Trendmaßen, weil eine breite Aufwärtslage bei hoher Volatilität etwas anderes ist als bei ruhiger.",
-   "share": 0.22416534181240064,
-   "hits": 1269,
-   "observed": 5661,
+   "share": 0.2688437775816417,
+   "hits": 1523,
+   "observed": 5665,
    "coverage": 1
   }
  ],
- "universe": 5661,
+ "universe": 5665,
  "evaluatedRules": [
   {
    "ruleId": "regime.broad-weakness",
@@ -78,8 +78,8 @@
  },
  "notAForecast": "Dies ist eine Zustandsbeschreibung der Gegenwart. Es ist kein Timing-Signal, keine Empfehlung, keine Prognose und keine Aussage darüber, ob ein Einstieg jetzt günstig ist. Wer daraus eine Handlung ableitet, tut das ohne Grundlage in dieser Methodik.",
  "schemaVersion": "market-regime-1.0.0",
- "generatedAt": "2026-10-30T06:27:36.000Z",
- "asOf": "2026-10-29",
+ "generatedAt": "2026-10-31T03:44:39.000Z",
+ "asOf": "2026-10-30",
  "scope": {
   "universe": "Die Titel der veröffentlichten technischen Materialisierung. Das ist NICHT der Gesamtmarkt und kein Index: es ist das gemessene Produktuniversum, und die Zahlen beziehen sich ausschließlich darauf.",
   "source": "quant/data/product/technical-signals-v1",
@@ -130,13 +130,13 @@
     "requires": "Belegtes Verhalten an den Schwellen, ohne Flattern"
    }
   ],
-  "observations": 22,
+  "observations": 23,
   "minimumRequired": 12
  },
  "publishedObservation": {
-  "asOf": "2026-10-29",
+  "asOf": "2026-10-30",
   "rewritten": false,
   "written": true,
-  "measuredNowOver": 5661
+  "measuredNowOver": 5665
  }
 }

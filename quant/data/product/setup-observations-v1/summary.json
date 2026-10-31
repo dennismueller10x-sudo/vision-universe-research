@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-30T06:19:35.000Z",
- "asOf": "2026-10-29",
+ "generatedAt": "2026-10-31T03:39:30.000Z",
+ "asOf": "2026-10-30",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5661,
- "observed": 5661,
+ "universe": 5665,
+ "observed": 5665,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4420,
-  "WATCH": 656,
-  "SETUP_FORMING": 559,
-  "CONFIRMED": 26,
+  "NO_SETUP": 4495,
+  "WATCH": 638,
+  "SETUP_FORMING": 509,
+  "CONFIRMED": 23,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 559,
-  "setup.none.fallback": 4420,
+  "setup.forming.complete-setup-awaiting-trigger": 509,
+  "setup.none.fallback": 4495,
   "setup.watch.bullish-trend": 380,
-  "setup.watch.confirmed-structure-near-high": 276,
-  "setup.confirmed.structure-trend-volume": 26
+  "setup.watch.confirmed-structure-near-high": 258,
+  "setup.confirmed.structure-trend-volume": 23
  },
  "pathTier": {
   "states": [
@@ -382,14 +382,15 @@
    "2026-10-23",
    "2026-10-26",
    "2026-10-28",
-   "2026-10-29"
+   "2026-10-29",
+   "2026-10-30"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5661
+   "instruments": 5665
   }
  },
  "shards": [
@@ -1031,11 +1032,12 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 85,
-  "cutoff": "2026-10-29",
+  "count": 89,
+  "cutoff": "2026-10-30",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
+   "2026-10-29": 4,
    "2026-09-29": 5,
    "2026-09-15": 1,
    "2026-09-04": 1,
@@ -1081,6 +1083,10 @@
    {
     "ticker": "ACA",
     "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "ADIL",
+    "dataCutoff": "2026-10-29"
    },
    {
     "ticker": "AIXC",
@@ -1153,6 +1159,10 @@
    {
     "ticker": "DOMO",
     "dataCutoff": "2026-09-23"
+   },
+   {
+    "ticker": "EICA",
+    "dataCutoff": "2026-10-29"
    },
    {
     "ticker": "ELME",
@@ -1269,14 +1279,6 @@
    {
     "ticker": "NATH",
     "dataCutoff": "2026-10-26"
-   },
-   {
-    "ticker": "NCSM",
-    "dataCutoff": "2026-09-01"
-   },
-   {
-    "ticker": "NLY-P-I",
-    "dataCutoff": "2026-10-01"
    }
   ]
  }
