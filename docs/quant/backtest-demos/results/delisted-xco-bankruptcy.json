@@ -62,7 +62,7 @@
    "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
    "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
    "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
-   "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+   "quant/engines/research-weekly-loader.cjs": "83a4c2761a86ef33ebb94cfb743f77de3629dcb7e2b92e19e2a80a29c0c5f5f9",
    "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
    "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
@@ -72,20 +72,20 @@
    "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
-   "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+   "scripts/quant/v10/studies/common.cjs": "c260881d35dbce171b0182d6517cb8b99737b6f48d9a0054d0671d53ce72a989",
    "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
    "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
    "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
   },
   "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
-  "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
+  "benchmark": "b9c838026ed37204427f1a90b9c257628e25a48fef14f898f7735dad293e93b6",
   "population": {
    "profile": "V13_DELISTED_F1",
    "profileSpecHash": "c3b88381a1a1633b6480f7fe8d7b04878404efee70e88775e8638f91d271714b",
-   "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
-   "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+   "populationHash": "ee34e2dd9979937caa0673a33305fa2f1279b81b53783df3e74b6f3b1ec35571",
+   "calendarHash": "03207aa6b650388fafb21e0de0aba711339133e0d6ddfb77a50060c1377f7471",
    "calendarLength": 1922,
-   "sourceManifestHash": "c0356bdd7e18d862ce81541be4ef670d78a99cb3abb5d3f291964913db63de9d",
+   "sourceManifestHash": "482cee6fe5234f02178333e59fa64a52e7ee26a6d02663cbe388d9f1962a03eb",
    "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
    "registers": {
     "identityEvidence": {
@@ -109,7 +109,7 @@
     "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
     "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
    },
-   "pointsHashRoot": "73b7619a10f7c71cdbc11d1aa4d9b061954b4aced0453f0f6168f4788d9bdf1d"
+   "pointsHashRoot": "f756818c7723210bc60b18aaddd209bc2de4f99a87d7cf3120bc784f7e26a5f2"
   },
   "listings": {
    "dl_2ad5c4a973ce5a19": {
@@ -136,7 +136,7 @@
    }
   }
  },
- "inputHash": "efd2eb5bcb7008695c5351f48c77e3d68299f230adcccde94723193f98d6bea7",
+ "inputHash": "b7691d019ab6b6829051a0e1853ec58ef21d0858600dece8df3fc85d8999fa30",
  "kindPath": {
   "kind": "SAME_STOCK_REPLAY",
   "engine": "research-studies.runReplayValidation",
@@ -232,7 +232,7 @@
       "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
       "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
       "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
-      "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+      "quant/engines/research-weekly-loader.cjs": "83a4c2761a86ef33ebb94cfb743f77de3629dcb7e2b92e19e2a80a29c0c5f5f9",
       "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
       "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
@@ -242,20 +242,20 @@
       "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
-      "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+      "scripts/quant/v10/studies/common.cjs": "c260881d35dbce171b0182d6517cb8b99737b6f48d9a0054d0671d53ce72a989",
       "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
       "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
       "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
      },
      "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
-     "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
+     "benchmark": "b9c838026ed37204427f1a90b9c257628e25a48fef14f898f7735dad293e93b6",
      "population": {
       "profile": "V13_DELISTED_F1",
       "profileSpecHash": "c3b88381a1a1633b6480f7fe8d7b04878404efee70e88775e8638f91d271714b",
-      "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
-      "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+      "populationHash": "ee34e2dd9979937caa0673a33305fa2f1279b81b53783df3e74b6f3b1ec35571",
+      "calendarHash": "03207aa6b650388fafb21e0de0aba711339133e0d6ddfb77a50060c1377f7471",
       "calendarLength": 1922,
-      "sourceManifestHash": "c0356bdd7e18d862ce81541be4ef670d78a99cb3abb5d3f291964913db63de9d",
+      "sourceManifestHash": "482cee6fe5234f02178333e59fa64a52e7ee26a6d02663cbe388d9f1962a03eb",
       "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
       "registers": {
        "identityEvidence": {
@@ -279,7 +279,7 @@
        "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
        "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
       },
-      "pointsHashRoot": "73b7619a10f7c71cdbc11d1aa4d9b061954b4aced0453f0f6168f4788d9bdf1d"
+      "pointsHashRoot": "f756818c7723210bc60b18aaddd209bc2de4f99a87d7cf3120bc784f7e26a5f2"
      },
      "listings": {
       "dl_2ad5c4a973ce5a19": {
@@ -306,7 +306,7 @@
       }
      }
     },
-    "inputHash": "efd2eb5bcb7008695c5351f48c77e3d68299f230adcccde94723193f98d6bea7",
+    "inputHash": "b7691d019ab6b6829051a0e1853ec58ef21d0858600dece8df3fc85d8999fa30",
     "kindPath": {
      "kind": "SAME_STOCK_REPLAY",
      "engine": "research-studies.runReplayValidation",
@@ -345,7 +345,7 @@
      "specHash": "cbe6f1ae4409c56486259adadfa7a96876a47802f94c666d188e60f62869ab4b"
     }
    },
-   "specHash": "60091769a9c412f1c537acd40249d6886276f8066ebb8123cd2ceabe70a9605c"
+   "specHash": "d6e4db3c3c7a71b8b547219adde2f5727d068843da3e2af200b939ad8c4f38e0"
   },
   "events": {
    "form": "EVENTS",
@@ -437,11 +437,11 @@
    "totalReturnBasis": "PRICE_RETURN",
    "survivorship": {
     "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
-    "control": "population profile V13_DELISTED_F1 (0eeccd32fdc09510)"
+    "control": "population profile V13_DELISTED_F1 (ee34e2dd9979937c)"
    },
    "warnings": [
     "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
-    "TOTAL_RETURN_PARTIAL_390_OF_4715",
+    "TOTAL_RETURN_PARTIAL_390_OF_4717",
     "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
     "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
     "DATA_DRIFT_SINCE_REFERENCE_RUN",
@@ -473,7 +473,7 @@
      "engine": "research-studies.classifyRegimes+analyzeRegimes",
      "mode": "PIT_AVAILABLE",
      "definition": "SPY_WEEKLY_TREND_26_VOL_13",
-     "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+     "regimeResultHash": "1aff88df95a44845951e00dff09da40007e710171501d5abbe9e3e5ec5869ab0",
      "states": [
       {
        "state": "NEGATIVE_TREND/LOW_VOLATILITY",
@@ -501,7 +501,7 @@
       }
      ],
      "unmatched": 0,
-     "resultHash": "a5fda86ed1b5e59c278e4495c49202fbe03866fa1bf8993d23b28134031ad66c"
+     "resultHash": "e8fc0bd0ef04175ec680b2fba27d66365e29b0ad910f35be8e932b714c9b7fef"
     }
    },
    {
@@ -545,13 +545,13 @@
    "productionApproved": false,
    "evidenceKind": "OBSERVED"
   },
-  "envelopeHash": "8be8c6318811f27be25ef0d9655018702d4a21094e4dda9af0198a291a90ac4a"
+  "envelopeHash": "33062feef7998feb764bde95b11af0203e0d758a52208609bd9f4d36ac580a4a"
  },
- "envelopeHash": "8be8c6318811f27be25ef0d9655018702d4a21094e4dda9af0198a291a90ac4a",
+ "envelopeHash": "33062feef7998feb764bde95b11af0203e0d758a52208609bd9f4d36ac580a4a",
  "population": {
   "profile": "V13_DELISTED_F1",
-  "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
-  "frameSize": 4715,
+  "populationHash": "ee34e2dd9979937caa0673a33305fa2f1279b81b53783df3e74b6f3b1ec35571",
+  "frameSize": 4717,
   "calendar": {
    "first": "1990-01-05",
    "last": "2025-12-26",
@@ -580,7 +580,7 @@
   ],
   "excluded": [],
   "warnings": [
-   "TOTAL_RETURN_PARTIAL_390_OF_4715",
+   "TOTAL_RETURN_PARTIAL_390_OF_4717",
    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
    "DATA_DRIFT_SINCE_REFERENCE_RUN"
@@ -600,5 +600,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "f5c13cf6a9242d53127b12a284f480a23114bcb6e7dde39df9e44cea74a595f4"
+ "resultHash": "5005c60b7046d983f167b7ed8748910688800586e87b0c5918cc5a242efa0e99"
 }
