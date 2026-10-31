@@ -145,18 +145,21 @@ test('preflight lists exactly what a real run is missing and computes nothing', 
   assert.equal(none.ready, false);
   const codes = none.missing.map((m) => m.code);
   assert.deepEqual([...new Set(codes)].sort(), ['SNAPSHOT_STORE_SECRET_MISSING', 'V13_DAILY_DIR_MISSING', 'V13_SERIES_DIR_MISSING']);
-  // a complete synthetic input set (empty register => no QUALIFIED series needed) is ready
+  // a complete synthetic input set (placeholder files for every QUALIFIED chain of the public register) is ready
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-root-')), priv = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-priv-'));
-  for (const f of ['scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json', 'scripts/supertrader/validation/results-public-key.pem']) { fs.mkdirSync(path.dirname(path.join(root, f)), { recursive: true }); fs.copyFileSync(path.join(ROOT, f), path.join(root, f)); }
-  fs.mkdirSync(path.join(root, 'docs/quant-recovery/v13/delisted'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'docs/quant-recovery/v13/delisted/register-1.0.0.json'), JSON.stringify({ columns: ['chainId', 'status'], rows: [['x1', 'QUALIFIED']] }));
+  const REG = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+  const pinned = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, REG), 'utf8')).references.sha256);
+  for (const f of [REG, 'scripts/supertrader/validation/results-public-key.pem', ...pinned]) { fs.mkdirSync(path.dirname(path.join(root, f)), { recursive: true }); fs.copyFileSync(path.join(ROOT, f), path.join(root, f)); }
+  const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v13/delisted/register-1.0.0.json'), 'utf8')), ix = Object.fromEntries(reg.columns.map((c, i) => [c, i]));
+  const qualified = reg.rows.filter((r) => r[ix.status] === 'QUALIFIED').map((r) => r[ix.chainId]);
   fs.mkdirSync(path.join(priv, 'series')); fs.mkdirSync(path.join(priv, 'raw', '1'), { recursive: true });
+  for (const id of qualified.slice(1)) fs.writeFileSync(path.join(priv, 'series', id + '.json'), '{}'); // placeholders: presence only
   fs.writeFileSync(path.join(priv, 'raw', '1', 'series.jsonl.gz'), '');
   const env = { VU_HISTORY_S3_ENDPOINT: 'e', VU_HISTORY_S3_BUCKET: 'b', VU_HISTORY_S3_ACCESS_KEY_ID: 'k', VU_HISTORY_S3_SECRET_ACCESS_KEY: 's' };
   const args = ['--accounting', 'research-v1', '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--out', out, '--v13-series', path.join(priv, 'series'), '--v13-raw', path.join(priv, 'raw')];
   const part = preflight(args, { env, root });
-  assert.deepEqual(part.missing, [{ code: 'V13_SERIES_INCOMPLETE', detail: '1 of 1 QUALIFIED series absent' }]);
-  fs.writeFileSync(path.join(priv, 'series', 'x1.json'), '{}');
+  assert.deepEqual(part.missing, [{ code: 'V13_SERIES_INCOMPLETE', detail: `1 of ${qualified.length} QUALIFIED series absent` }]);
+  fs.writeFileSync(path.join(priv, 'series', qualified[0] + '.json'), '{}');
   assert.deepEqual(preflight(args, { env, root }), { ready: true, missing: [] });
   assert.ok(preflight([...args, '--quarantine', 'CA-Q-K5-DATES'], { env, root }).missing.some((m) => m.code === 'QUARANTINE_DATES_MISSING'));
   assert.ok(preflight([...args, '--identity-blocklist', path.join(priv, 'nope.json')], { env, root }).missing.some((m) => m.code === 'IDENTITY_BLOCKLIST_MISSING'));
