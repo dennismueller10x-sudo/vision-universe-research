@@ -14,7 +14,14 @@
  * Every code file the registration pins is re-hashed before the run (REGISTERED_REFERENCE_CHANGED stops it). After the
  * run each method and universe is audited independently (research/st9-hist-execution.mjs: exits, gap stops at the open,
  * delisting at the last traded close, books); a failed audit marks the public part EXECUTION_AUDIT_FAILED and exits 4.
- * --repeat-check runs the study a second time and requires the identical result hash (no seeds are used).
+ * --repeat-check calls S.runStudy a second time IN THE SAME PROCESS on the SAME in-memory datasets dsA / dsB and
+ * requires the identical result hash (no seeds are used). It checks the determinism of the method runs, quarantine and
+ * evaluation only; loading the snapshot, binding the V13 chains and building B are NOT repeated (receipt
+ * repeatCheckScope). A full second run is a second invocation with the same inputFingerprint.
+ *
+ * sec-pit r12 (_validation/sec-pit-r12.json.gz of the snapshot store) is part of universe A by the registration
+ * (attachSecPit, CIK dedupe): a missing or unreadable file stops the run (exit 3, SEC_PIT_MISSING / SEC_PIT_INVALID);
+ * its SHA-256 (of the stored bytes) enters the receipt and the inputFingerprint.
  *
  * --preflight checks every input without opening the snapshot and prints { ready, missing[] } (exit 0 ready, 3 not);
  * nothing is computed. The identity blocklist (#1159) is an optional input in FLAG mode only: the registered universes
@@ -43,6 +50,16 @@ export const REGISTRATION_FILE = 'scripts/supertrader/source-faithful/research/s
 export const REGISTRATION_SHA256 = '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // same input construction as run-sf6-integrity.mjs
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
+export const REPEAT_CHECK_SCOPE = 'SAME_PROCESS_SAME_DATASETS_RUNSTUDY_ONLY';
+
+/** sec-pit r12 bytes of the snapshot store -> { secPit, sha256 }; fail closed (never an empty substitute). */
+export function readSecPit(buf) {
+  if (!buf || !buf.length) throw new S.StudyError('SEC_PIT_MISSING');
+  let secPit;
+  try { secPit = JSON.parse(zlib.gunzipSync(buf).toString('utf8')); } catch { throw new S.StudyError('SEC_PIT_INVALID'); }
+  if (!secPit || typeof secPit !== 'object' || Array.isArray(secPit) || !Object.keys(secPit).length) throw new S.StudyError('SEC_PIT_INVALID');
+  return { secPit, sha256: sha(buf) };
+}
 
 export function studyCodeSha256() {
   const h = crypto.createHash('sha256');
@@ -109,7 +126,7 @@ async function main() {
   const t0 = Date.now(), log = (m) => console.log(`[st9-v13 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   log(`V13 chains bound (weekly + daily): ${v13.chains.length}`);
   const K = await import('../../snapshot/contract.mjs');
-  let pit, datasetSha256, secPit, verification;
+  let pit, datasetSha256, secPit, secPitSha256, verification;
   try {
     const { LIVE_IO, loadPitData } = await import('../../validation/analyze-methods.mjs');
     const { createSnapshotStore } = await import('../../snapshot/store.mjs');
@@ -121,12 +138,12 @@ async function main() {
     datasetSha256 = K.sha256(K.canonicalJson(v.dataset));
     verification = { datasetVerified: v.datasetVerified, bytesVerified: opened.verified.bytes };
     const buf = await (await opened.io.createDriver()).get(pit.mine.seriesPrefix + SEC_PIT_KEY);
-    secPit = buf ? JSON.parse(zlib.gunzipSync(buf).toString('utf8')) : {};
+    ({ secPit, sha256: secPitSha256 } = readSecPit(buf));
   } catch (e) {
-    die(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}` : `INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR ${e?.code ?? ''}`, 3);
+    die(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}` : e instanceof S.StudyError ? `INPUT_INTEGRITY_FAILURE: ${e.code}` : `INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR ${e?.code ?? ''}`, 3);
   }
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
-  // CIK of A listings from sec-pit r12 (when present) for the issuer-interval dedupe
+  // CIK of A listings from sec-pit r12 for the issuer-interval dedupe (listings without a CIK there are not CIK-deduped)
   const aCik = new Map(Object.entries(secPit).filter(([, f]) => f && f.cik).map(([k, f]) => [k, String(Number(f.cik))]));
   const chains = v13.chains.map((c) => ({ ...c, cik: String(Number(c.cik)) }));
   const { dsB, addedIds, census } = S.buildUniverseB(dsA, chains, { calendarDates: pit.spyRaw.map((b) => b.date), aCikByListing: aCik });
@@ -156,13 +173,13 @@ async function main() {
   const resultSha256 = X.resultSha256(result);
   if (argv.includes('--repeat-check')) {
     try { X.assertSameResult(result, S.runStudy({ dsA, dsB, addedIds, params, datesBySegment: dates?.map ?? null })); } catch (e) { die(`STUDY_REFUSED: ${e.code ?? e.message}`, 4); }
-    log('repeat check: identical result hash');
+    log(`repeat check (${REPEAT_CHECK_SCOPE}): identical result hash`);
   }
   const abDiff = Object.fromEntries(Object.entries(tradesOf).map(([k, t]) => [k, X.abDiff(t.A, t.B, { addedIds })]));
   const auditPass = Object.values(audits).every((m) => m.A.audit.pass && m.B.audit.pass);
-  const receipt = { schema: 'st9-v13-delisted-receipt-1.0.0', snapshotId, datasetSha256, ...verification, registrationSha256, studyCodeSha256: studyCodeSha256(), engineCodeSha256: engineCodeSha256(), quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, histUniverseVersion: H.ST9_HIST_UNIVERSE_VERSION, histExecutionVersion: X.ST9_HIST_EXECUTION_VERSION, registeredReferencesSha256: referencesSha256, resultSha256, repeatChecked: argv.includes('--repeat-check'), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, window: L.WINDOW_NAME };
+  const receipt = { schema: 'st9-v13-delisted-receipt-1.0.0', snapshotId, datasetSha256, ...verification, registrationSha256, studyCodeSha256: studyCodeSha256(), engineCodeSha256: engineCodeSha256(), quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, histUniverseVersion: H.ST9_HIST_UNIVERSE_VERSION, histExecutionVersion: X.ST9_HIST_EXECUTION_VERSION, registeredReferencesSha256: referencesSha256, resultSha256, repeatChecked: argv.includes('--repeat-check'), repeatCheckScope: argv.includes('--repeat-check') ? REPEAT_CHECK_SCOPE : null, secPitSha256, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, window: L.WINDOW_NAME };
   const histPublic = { A: H.publicUniverseDiagnostics(hist.A), B: H.publicUniverseDiagnostics(hist.B), identityBlocklistMode: blocklist ? 'FLAG' : 'NOT_SUPPLIED', addedTerminalCoverage: { addedLastTradeInWindow: census.addedLastTradeInWindow, addedTerminalBooked: census.addedTerminalBooked, terminalSegmentTooShort: census.terminalSegmentTooShort, terminalSegmentTooShortByClass: census.terminalSegmentTooShortByClass, windowEndSegmentTooShort: census.windowEndSegmentTooShort } };
-  receipt.inputFingerprint = X.inputFingerprint({ snapshotId, datasetSha256, registrationSha256, registeredReferencesSha256: referencesSha256, parametersSha256: params.sha256, v13RegisterSha256: v13.provenance.registerSha256, v13ChainsSha256: v13.provenance.chainsSha256, quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, studyCodeSha256: receipt.studyCodeSha256, engineCodeSha256: receipt.engineCodeSha256 }).sha256;
+  receipt.inputFingerprint = X.inputFingerprint({ snapshotId, datasetSha256, registrationSha256, registeredReferencesSha256: referencesSha256, parametersSha256: params.sha256, v13RegisterSha256: v13.provenance.registerSha256, v13ChainsSha256: v13.provenance.chainsSha256, secPitSha256, quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, studyCodeSha256: receipt.studyCodeSha256, engineCodeSha256: receipt.engineCodeSha256 }).sha256;
   const execPublic = { pass: auditPass, methods: Object.fromEntries(Object.entries(audits).map(([k, m]) => [k, { A: { audit: X.publicAudit(m.A.audit), coverage: m.A.coverage }, B: { audit: X.publicAudit(m.B.audit), coverage: m.B.coverage }, abDiff: abDiff[k] }])) };
   const pub = { ...S.publicPart(result, { census, provenance: v13.provenance, receipt }), historicalInfrastructure: { ...histPublic, execution: execPublic }, status: auditPass ? 'COMPLETE' : 'EXECUTION_AUDIT_FAILED' };
   const full = { receipt, public: pub, universeB: census, v13: v13.provenance, result, historicalInfrastructure: { ...histPublic, flagsA: Object.fromEntries(hist.A._flags), flagsB: Object.fromEntries(hist.B._flags), auditExamples: Object.fromEntries(Object.entries(audits).map(([k, m]) => [k, { A: m.A.audit._examples, B: m.B.audit._examples }])) } };

@@ -5,13 +5,17 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import * as X from '../source-faithful/research/st9-hist-execution.mjs';
 import * as H from '../source-faithful/research/st9-hist-universe.mjs';
 import * as S from '../source-faithful/research/st9-v13-delisted-study.mjs';
-import { REGISTRATION_FILE } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
+import { REGISTRATION_FILE, readSecPit, REPEAT_CHECK_SCOPE } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
 import { runResearchLifecycle } from '../source-faithful/research/lifecycle-engine.mjs';
 import { securityFromSegment } from '../source-faithful/runner/snapshot-input.mjs';
+import { buildSetupIndex, runMinerviniLifecycle, EQUITY_RESEARCH_PORTFOLIO_POLICY } from '../source-faithful/research/minervini-execution.mjs';
+import { REFERENCE_CONFIG as MINERVINI_REF } from '../source-faithful/research/minervini-lifecycle.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const WIN = Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2017-06-30' });
@@ -134,6 +138,75 @@ test('A/B diff and uncertainty per year and method: censored delisting, origin, 
   assert.equal(same.identical, true);
   const pub = JSON.stringify(X.publicAudit(t.B.a));
   assert.ok(!/e000000000000001|BASE|AAA/.test(pub), 'public audit carries no id');
+});
+
+/** Textbook VCP universe of the Minervini 4.0 tests (sf-sf7-minervini-exits): one stop exit, one breakeven raise. */
+function minerviniRun() {
+  const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
+  const bar = (k, o, h, l, c, v) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
+  const line = (knots) => { const out = []; for (let s = 1; s < knots.length; s++) { const [a, pa] = knots[s - 1], [b, pb] = knots[s]; for (let k = a; k < b; k++) out.push(pa + ((pb - pa) * (k - a)) / (b - a)); } out.push(knots.at(-1)[1]); return out; };
+  const VOLF = (k) => (k <= 260 ? 2e6 : k <= 284 ? 1.5e6 : k <= 300 ? 1e6 : k <= 330 ? 5e5 : 3e6);
+  const vcp = (id, tail) => {
+    let seed = 7 + id.length; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    const c = line([[0, 40], [260, 100], [272, 80], [284, 98], [292, 88.2], [300, 96], [305, 91.2], [320, 95], [330, 97], ...tail]);
+    return { id, bars: c.map((x, k) => { const z = x * (1 + (rnd() - 0.5) * 0.004); return bar(k, z, Math.max(x, z) * 1.004, Math.min(x, z) * 0.996, x, VOLF(k)); }) };
+  };
+  const secs = [vcp('V-STOP', [[340, 99], [350, 85], [400, 80]]), vcp('V-BE', [[340, 120], [352, 92], [400, 90]]), vcp('V-RUN', [[340, 120], [400, 130]])];
+  const d = { calendar: [...new Set(secs.flatMap((x) => x.bars.map((b) => b.date)))].sort(), securities: secs };
+  return { d, run: runMinerviniLifecycle(d, { strategy: 'SEPA', setupIndex: buildSetupIndex(d, 'SEPA'), config: MINERVINI_REF }) };
+}
+
+test('Minervini missed stop: the event stop path is checked on every held bar; a ledger without the stop exit is a violation', () => {
+  const { d, run } = minerviniRun();
+  const MC = { slippageBps: EQUITY_RESEARCH_PORTFOLIO_POLICY.slippageBps, commissionBps: EQUITY_RESEARCH_PORTFOLIO_POLICY.commissionBps };
+  const ok = X.checkMinerviniStops(d, run);
+  assert.equal(ok.violationCount, 0, JSON.stringify(ok.violations));
+  assert.ok(ok.checks.stopReachedBars >= 1 && ok.checks.heldBars > 0);
+  const audit = X.auditRun(d, { run, trades: run.trades }, { key: 'MINERVINI_SEPA', costs: MC });
+  assert.equal(audit.pass, true, JSON.stringify(audit.violations));
+  assert.equal(audit.missedStopCheck, 'MINERVINI_EVENT_PATH');
+  // counter-check 1: the stop exit removed from the ledger, the trade left open -> STOP_REACHED_NOT_EXECUTED
+  const st = run.trades.find((t) => t.id === 'V-STOP');
+  assert.equal(st.exitReason, 'STOP_INITIAL');
+  const missed = { ...run, ledger: run.ledger.filter((r) => !(r.side === 'SELL' && r.tradeId === st.tradeId)), trades: run.trades.map((t) => (t === st ? { ...t, status: 'OPEN_AT_DATA_END', exitDate: null, exitReason: null } : t)) };
+  const m = X.checkMinerviniStops(d, missed);
+  assert.deepEqual(m.violations, { STOP_REACHED_NOT_EXECUTED: 1 });
+  assert.deepEqual(m.examples[0], { code: 'STOP_REACHED_NOT_EXECUTED', id: 'V-STOP', date: st.exitDate });
+  assert.equal(X.auditRun(d, { run: missed, trades: missed.trades }, { key: 'MINERVINI_SEPA', costs: MC }).violations['STOPS:STOP_REACHED_NOT_EXECUTED'], 1);
+  // counter-check 2: the breakeven raise is effective from the NEXT session
+  const be = run.trades.find((t) => t.id === 'V-BE'), raise = be.events.find((e) => e.type === 'STOP_RAISED_BREAKEVEN');
+  assert.ok(raise && raise.stop > be.initialStop);
+  const x = d.securities.find((q) => q.id === 'V-BE'), k = x.bars.findIndex((b) => b.date === raise.date);
+  assert.ok(x.bars[k + 1].date < be.exitDate, 'a held bar follows the raise');
+  const dip = (j) => ({ ...d, securities: d.securities.map((q) => (q !== x ? q : { ...q, bars: q.bars.map((b, i) => (i === j ? { ...b, low: (raise.stop + be.initialStop) / 2 } : b)) })) });
+  assert.equal(X.checkMinerviniStops(dip(k), run).violationCount, 0, 'on the raise day the old stop still applies');
+  assert.deepEqual(X.checkMinerviniStops(dip(k + 1), run).violations, { STOP_REACHED_NOT_EXECUTED: 1 }, 'from the next session the raised stop applies');
+  // counter-check 3: finalStop must be the end of the event path
+  const wrong = { ...run, trades: run.trades.map((t) => (t === be ? { ...t, finalStop: be.initialStop } : t)) };
+  assert.deepEqual(X.checkMinerviniStops(d, wrong).violations, { STOP_LEVEL_NOT_EVENT_PATH: 1 });
+});
+
+test('Turtle: no missed-stop check (unit stop level needs the engine N); declared, not silent', () => {
+  const { A, params } = study();
+  const ref = { key: 'TURTLE_S1' };
+  const res = []; S.runStudy({ dsA: A, dsB: A, addedIds: new Set(), params, onRun: ({ key, frame, ds: d, r, opts }) => { if (key === ref.key && frame === 'A') res.push(X.auditRun(d, r, { key, costs: opts.costs, from: opts.from })); } });
+  assert.equal(res[0].missedStopCheck, 'NOT_CHECKED_LEVEL_UNKNOWN');
+  assert.equal(res[0].stopChecks, null);
+});
+
+test('sec-pit r12: fail closed when absent or unreadable; its SHA-256 enters the input fingerprint', () => {
+  const buf = zlib.gzipSync(JSON.stringify({ 'tiingo:NYSE:BASE:2010-01-04': { cik: '0000000777', eps: [], rev: [] } }));
+  const got = readSecPit(buf);
+  assert.equal(got.sha256, crypto.createHash('sha256').update(buf).digest('hex'), 'hash of the stored bytes');
+  assert.equal(got.secPit['tiingo:NYSE:BASE:2010-01-04'].cik, '0000000777');
+  // counter-checks: before, a missing file became {} silently (no CIK dedupe, no fundamentals) -> now refused
+  for (const b of [null, undefined, Buffer.alloc(0)]) assert.throws(() => readSecPit(b), (e) => e.code === 'SEC_PIT_MISSING');
+  assert.throws(() => readSecPit(Buffer.from('not gzip')), (e) => e.code === 'SEC_PIT_INVALID');
+  assert.throws(() => readSecPit(zlib.gzipSync('{}')), (e) => e.code === 'SEC_PIT_INVALID');
+  assert.throws(() => readSecPit(zlib.gzipSync('[1]')), (e) => e.code === 'SEC_PIT_INVALID');
+  const fp = (secPitSha256) => X.inputFingerprint({ snapshotId: 'sts1-x', datasetSha256: 'd', secPitSha256 }).sha256;
+  assert.notEqual(fp(got.sha256), fp(readSecPit(zlib.gzipSync(JSON.stringify({ a: { cik: '1' } }))).sha256), 'another sec-pit file, another fingerprint');
+  assert.equal(REPEAT_CHECK_SCOPE, 'SAME_PROCESS_SAME_DATASETS_RUNSTUDY_ONLY');
 });
 
 test('registered references are re-hashed (fail closed); one input fingerprint over every part', () => {

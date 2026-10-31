@@ -131,11 +131,20 @@ Prüft fertige Läufe unabhängig von den Engines. Keine Engine-Funktion wird au
 
 ### 6.1 Stop-Loss und Ausstiege (`classifyExits`)
 
-Jede SELL-Zeile wird gegen ihren Balken nachgerechnet:
+Jede SELL-Zeile wird gegen ihren Balken nachgerechnet.
+
+**Was unabhängig ist und was nicht:**
+- **Fill-Regel: unabhängig.** Ob ein Stop-Fill zwischen Tief und Eröffnung liegt und bei einem Gap zur Eröffnung gebucht ist, wird nur aus Ledger und Balken geprüft.
+- **Stop-Niveau: aus der Engine.** Das Niveau wird nicht aus der Quellregel neu abgeleitet. Es stammt aus den Trade-Daten der Engine: `finalStop`, bei Minervini zusätzlich der Stop-Pfad aus den Trade-Ereignissen (`ENTRY`-Stop, `STOP_RAISED_BREAKEVEN` ab der nächsten Sitzung) mit Abgleich gegen `finalStop` (`STOP_LEVEL_NOT_EVENT_PATH`).
+- **Verpasste Stops** (Balken mit Tief ≤ aktivem Stop ohne Stop-Verkauf, `STOP_REACHED_NOT_EXECUTED`):
+  - sf5-Lebenszyklen: `checkLifecycleRun` (wiederverwendet);
+  - Minervini C06/C07: `checkMinerviniStops` (neu). Jeder gehaltene Balken nach dem Einstiegstag bis zum Ausstieg wird gegen den Stop-Pfad und das Ledger geprüft. Ausnahme: Die Position wurde an dieser Eröffnung durch einen geplanten Ausstieg (`MA50_CLOSE_EXIT`, `FREEROLL_PARTIAL_HALF`) geschlossen. Der Einstiegstag selbst folgt der Gleichtagsregel der Engine und ist über `SAME_BAR_*` gekennzeichnet;
+  - **Turtle C01/C02: nicht geprüft.** Die Einheitsstopps (2N unter jedem Fill, je Zukauf angehoben) brauchen das N der Engine. Weder Ledger noch Trade-Zeilen enthalten es. Für Turtle wird deshalb nur „Fill zwischen Tief und Eröffnung“ geprüft, weder das Niveau noch ein verpasster Stop. Die Prüfung meldet das als `missedStopCheck: NOT_CHECKED_LEVEL_UNKNOWN`, nicht stillschweigend. Ein vollständiger Nachweis bräuchte eine Engine-Ausgabe der Stopps je Einheit, also eine Engine-Änderung mit neuer Registrierung.
+
 
 | Klasse | Bedingung | Regel |
 |---|---|---|
-| `GAP_THROUGH_STOP_AT_OPEN` | Eröffnung unter dem Stop (Stop-Niveau = `finalStop` des Engine-Trades) | Fill = Eröffnung |
+| `GAP_THROUGH_STOP_AT_OPEN` | Eröffnung unter dem Stop (Stop-Niveau = `finalStop` des Engine-Trades, nicht neu abgeleitet) | Fill = Eröffnung |
 | `INTRADAY_AT_STOP` | Eröffnung über dem Stop, Tief erreicht ihn | Fill = Stop |
 | `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Turtle-Einheitsstopps (kein einzelnes Niveau) | nur ≤ Eröffnung, ≥ Tief |
 | `SAME_BAR_CERTAIN` | Stop am Einstiegstag sicher (Fill zur Eröffnung, Schluss ≤ Stop) | – |
@@ -146,19 +155,23 @@ Jede SELL-Zeile wird gegen ihren Balken nachgerechnet:
 Als Verstöße zählen:
 - `STOP_FILL_ABOVE_OPEN`, `STOP_FILL_BELOW_LOW`, `STOP_NOT_REACHED`, `STOP_NOT_AT_LEVEL`;
 - **`STOP_GAP_NOT_FILLED_AT_OPEN`**: der Stop wurde zum Niveau gebucht, obwohl die Eröffnung darunter lag. Das ist die optimistische Annahme;
-- `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`.
+- `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`;
+- nur Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING` (Präfix `STOPS:` in `auditRun`).
 
 **Vorher/Nachher an der Fixture:** Eröffnung 15 bei Stop 18.
 - **Engine:** bucht 15 × (1 − Slippage), Klasse `GAP_THROUGH_STOP_AT_OPEN`, 0 Verstöße.
 - **Naive Tagesbalken-Buchung zum Stop:** 18 × (1 − Slippage) ergibt `STOP_FILL_ABOVE_OPEN` und `STOP_GAP_NOT_FILLED_AT_OPEN`.
 
-Das Ausführungsmodell der Engines war bereits richtig (`min(open, stop)`). Geändert wurde nichts. Neu ist, dass die Studie es für jede Methode und beide Universen nachweist, auch für Minervini und Turtle, die `checkLifecycleRun` nicht abdeckt.
+Das Ausführungsmodell der Engines war bereits richtig (`min(open, stop)`). Geändert wurde nichts. Neu ist, dass die Studie die Fill-Regel für jede Methode und beide Universen nachweist, auch für Minervini und Turtle, die `checkLifecycleRun` nicht abdeckt. Verpasste Stops weist sie für sf5 und Minervini nach, für Turtle nicht (siehe oben).
 
 ### 6.2 Prüfung je Lauf (`auditRun`)
 
 - `classifyExits`;
 - `sf7-execution-checks.mjs#checkLedgerAgainstBars` (Bücher, Fills im Balken, Bargeld), für alle Methoden;
-- `#checkLifecycleRun` für die sf5-Lebenszyklen.
+- `#checkLifecycleRun` für die sf5-Lebenszyklen;
+- `checkMinerviniStops` für C06/C07.
+
+Das Feld `missedStopCheck` je Audit nennt die Abdeckung: `SF5_CHECK_LIFECYCLE_RUN`, `MINERVINI_EVENT_PATH` oder `NOT_CHECKED_LEVEL_UNKNOWN` (Turtle).
 
 Beide sind wiederverwendet. Der Runner hängt die Prüfung über einen Beobachter (`runStudy({ onRun })`) an, ohne zweiten Lauf. Bei einem Verstoß gilt: öffentlicher Teil `status: EXECUTION_AUDIT_FAILED`, Beispiele nur versiegelt, Exit 4.
 
@@ -168,12 +181,15 @@ Beide sind wiederverwendet. Der Runner hängt die Prüfung über einen Beobachte
 - **`inputFingerprint`:** ein SHA-256 über
   - Snapshot-ID, Datensatz-Hash, Registrierung und Referenzen;
   - Parameter, V13-Register und Ketten;
+  - sec-pit r12 (SHA-256 der gespeicherten Bytes, `secPitSha256`, auch in der Quittung);
   - Quarantäneliste und Sperrliste;
   - Studien- und Engine-Code;
   - `seeds: NONE_USED`.
 
   Er steht in der Quittung.
-- **Determinismus:** `resultSha256` des Ergebnisses steht in der Quittung. `--repeat-check` rechnet die Studie ein zweites Mal und verlangt denselben Hash (`DETERMINISM_FAILED`). Der Studienpfad nutzt keine Zufallszahlen.
+- **sec-pit r12 fail closed:** Die Registrierung zählt sec-pit r12 zu Universum A (`attachSecPit`, CIK-Dublettenprüfung). Fehlt die Datei im Snapshot-Speicher oder ist sie nicht lesbar oder leer, bricht der Lauf mit Exit 3 ab (`SEC_PIT_MISSING`, `SEC_PIT_INVALID`, `runner#readSecPit`). Früher wurde daraus still `{}`: keine Fundamentaldaten, keine CIK-Dublettenprüfung. `--preflight` kann das nicht prüfen, weil er den Snapshot nicht öffnet.
+- **Determinismus:** `resultSha256` des Ergebnisses steht in der Quittung. Der Studienpfad nutzt keine Zufallszahlen.
+- **`--repeat-check`, genauer Umfang:** ruft `runStudy` im selben Prozess ein zweites Mal auf, mit denselben Datensätzen `dsA` und `dsB` im Speicher, und verlangt denselben Ergebnis-Hash (`DETERMINISM_FAILED`, Exit 4). Geprüft wird damit nur der Determinismus von Methodenläufen, Quarantäne und Auswertung. Nicht wiederholt werden das Laden des Snapshots, die Bindung der V13-Ketten und der Aufbau von B. Die Quittung nennt das als `repeatCheckScope: SAME_PROCESS_SAME_DATASETS_RUNSTUDY_ONLY`. Ein vollständiger Zweitlauf ist ein zweiter Aufruf; er muss denselben `inputFingerprint` und denselben `resultSha256` ergeben.
 - **Diff-Bericht `abDiff`** je Methode, aus `compareTradeSets` übernommen:
   - A-eigene Trades in B: unverändert, nur Stückzahl, geändert, entfallen, neu;
   - dazu die Trades in zugefügten Ketten.
@@ -193,10 +209,13 @@ Je Einstiegsjahr: Trades nach Herkunft, geschlossene Trades, Trades mit Kennzeic
 
 ### 6.5 Tests
 
-`node --test scripts/supertrader/tests/sf-st9-hist-execution.test.mjs`, 6 Tests:
+`node --test scripts/supertrader/tests/sf-st9-hist-execution.test.mjs`, 9 Tests:
 - Gap durch den Stop (vorher/nachher);
 - Berührung intraday und angenommene Intrabar-Reihenfolge;
 - Delisting-Abrechnung und Manipulationen (Preis, Fortschreiben, späte Zeile, später Einstieg);
 - Prüfung von Turtle S1 und KK Breakout in A und B ohne Ergebnisänderung, Wiederholungs-Hash;
 - A/B-Diff und Unsicherheit je Jahr;
-- Referenz-Hashes und Fingerabdruck.
+- Referenz-Hashes und Fingerabdruck;
+- Minervini verpasster Stop: echter Lauf ohne Verstoß; Gegenproben: Ledger ohne Stop-Ausstieg → `STOP_REACHED_NOT_EXECUTED`, angehobener Stop gilt erst ab der nächsten Sitzung, falscher `finalStop` → `STOP_LEVEL_NOT_EVENT_PATH`;
+- Turtle: verpasste Stops ausdrücklich als nicht geprüft gemeldet;
+- sec-pit r12: fehlend, kein gzip, leer oder kein Objekt → abgelehnt; ein anderer Inhalt ergibt einen anderen Fingerabdruck.

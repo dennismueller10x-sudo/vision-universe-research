@@ -11,8 +11,15 @@
  *     - delisting: TERMINAL_DELISTED only on the security's last bar = terminal date, at that close minus slippage
  *       (S0_LAST_PRICE); SECURITY_UNAVAILABLE is a data event (censored); no row after the last bar except the stale
  *       settlement of the accounting contract; no entry on or after the terminal date.
- *  2. auditRun: classifyExits + research/sf7-execution-checks.mjs#checkLedgerAgainstBars for every method and, for the
- *     sf5 lifecycles, #checkLifecycleRun (reused, not rebuilt).
+ *     Scope of the stop check: the FILL RULE is checked independently against the bar (open, low, level). The stop
+ *     LEVEL is not re-derived from the source rule: it comes from the engine's own trade data (finalStop; for
+ *     Minervini the stop path of the trade events, see 2.). Turtle unit stops (2N below each fill, raised per add) need
+ *     the engine's N, which neither the ledger nor the trade rows carry: for Turtle only "fill between low and open" is
+ *     checked, no level and no missed stop.
+ *  2. auditRun: classifyExits + research/sf7-execution-checks.mjs#checkLedgerAgainstBars for every method; missed
+ *     stops (STOP_REACHED_NOT_EXECUTED): for the sf5 lifecycles #checkLifecycleRun (reused, not rebuilt), for
+ *     Minervini checkMinerviniStops (stop path rebuilt from the trade events, every held bar against the ledger);
+ *     Turtle: not checked (see 1.).
  *  3. tradeCoverageByYear: trades per entry year and origin with uncertainty flags (censored exits, assumed intraday
  *     order, open at data end, identity flags, the method's data flag).
  *  4. abDiff: trade-level B vs A per method (compareTradeSets of sf7-execution-checks), split by origin.
@@ -105,6 +112,54 @@ export function classifyExits(ds, run, { slippageBps, trades = [] }) {
   return { version: ST9_HIST_EXECUTION_VERSION, classes, byReason, violations, violationCount: Object.values(violations).reduce((a, b) => a + b, 0), examples, perTrade };
 }
 
+/**
+ * Stop path of one Minervini trade from its events (minervini-execution.mjs): the ENTRY stop (= initialStop), then
+ * every STOP_RAISED_BREAKEVEN, effective from the NEXT session. Returns stopOn(date) or null without an entry stop.
+ */
+export function minerviniStopPath(trade) {
+  const ev = trade.events ?? [], entry = ev.find((e) => e.type === 'ENTRY');
+  const stop0 = fin(entry?.stop) ? entry.stop : trade.initialStop;
+  if (!fin(stop0)) return null;
+  const raises = ev.filter((e) => e.type === 'STOP_RAISED_BREAKEVEN' && fin(e.stop)).sort((a, b) => a.date.localeCompare(b.date));
+  return (d) => { let st = stop0; for (const r of raises) if (r.date < d) st = Math.max(st, r.stop); return st; };
+}
+const PATH_END = '9999-12-31';
+const OPEN_EXIT = /^(MA50_CLOSE_EXIT|FREEROLL_PARTIAL_HALF)$/; // scheduled at a close, sold at the next open before the stop check
+
+/**
+ * Missed stops of a Minervini run, independent of the engine's control flow: for every held bar of the run calendar
+ * (after the entry bar, up to the exit bar) whose low reaches the active stop on an executable open, the ledger must
+ * hold a STOP_ sale of that trade on that day; exception: the position was closed at that open by a scheduled exit.
+ * The entry bar is the engine's same-bar rule (STOP_SAME_BAR_* / SAME_BAR_STOP_IGNORED, flagged elsewhere).
+ * Also checked: finalStop equals the end of the event path (STOP_LEVEL_NOT_EVENT_PATH).
+ */
+export function checkMinerviniStops(ds, run) {
+  const idx = index(ds), cal = new Set((run.curve ?? []).map((c) => c.date)), calEnd = run.curve?.at(-1)?.date ?? null;
+  const stopSales = new Set(), violations = {}, examples = [], checks = { trades: 0, heldBars: 0, stopReachedBars: 0 };
+  const bad = (code, id, date) => { inc(violations, code); if (examples.length < 20) examples.push({ code, id, date }); };
+  for (const r of run.ledger) if (r.side === 'SELL' && isStop(r.reason)) stopSales.add(`${r.tradeId ?? r.id}|${r.date}`);
+  for (const t of engineTrades(run)) {
+    const x = idx.get(t.id), stopOn = minerviniStopPath(t);
+    if (!x || !stopOn) { bad('STOP_PATH_MISSING', t.id, t.entryDate); continue; }
+    checks.trades++;
+    const end = t.exitDate ?? calEnd, key = (d) => `${t.tradeId ?? t.id}|${d}`;
+    if (fin(t.finalStop) && !near(t.finalStop, stopOn(PATH_END))) bad('STOP_LEVEL_NOT_EVENT_PATH', t.id, end); // raises happen only while open
+    for (let k = (x.at.get(t.entryDate) ?? Infinity) + 1; k < x.s.bars.length; k++) {
+      const b = x.s.bars[k];
+      if (!end || b.date > end) break;
+      if (!cal.has(b.date)) continue;
+      checks.heldBars++;
+      if (b.date === t.exitDate && OPEN_EXIT.test(String(t.exitReason))) break; // closed at this open, before the stop
+      const st = stopOn(b.date);
+      if (!(b.synthetic !== true && fin(b.open) && b.open > 0 && fin(b.low) && b.low <= st)) continue;
+      checks.stopReachedBars++;
+      if (!stopSales.has(key(b.date))) bad('STOP_REACHED_NOT_EXECUTED', t.id, b.date);
+      break; // the first reached stop ends the position (a later bar can no longer be held)
+    }
+  }
+  return { version: ST9_HIST_EXECUTION_VERSION, checks, violations, violationCount: Object.values(violations).reduce((a, b) => a + b, 0), examples };
+}
+
 /** Engine trades with finalStop (lifecycle / Minervini); Turtle has positionTrades without a single stop. */
 const engineTrades = (run) => (Array.isArray(run.trades) ? run.trades : []);
 const dustOf = (run) => { const m = new Map(); for (const t of engineTrades(run)) for (const e of t.events ?? []) if (e.type === 'DUST_WRITE_OFF') (m.get(e.date) || m.set(e.date, []).get(e.date)).push(t.id); return m; };
@@ -120,10 +175,11 @@ export function auditRun(ds, r, { key, costs, from = null }) {
   const exits = classifyExits(ds, run, { slippageBps: costs.slippageBps, trades: engineTrades(run) });
   const books = checkLedgerAgainstBars(ds, run, { slippageBps: costs.slippageBps, commissionBps: costs.commissionBps, initialCapital: pol.initialCapital, maxOpenPositions: pol.maxOpenPositions ?? Infinity, from, dustWriteOffs: dustOf(run) });
   const lc = SF5_LIFECYCLES.find((l) => l.key === key);
+  const stops = key.startsWith('MINERVINI_') ? checkMinerviniStops(ds, run) : null;
   const lifecycle = lc ? checkLifecycleRun(ds, run, { config: lc.variants.find((v) => v.id === 'REF').config, adapter: lc.adapter, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, ...costs }, from }) : null;
-  const violations = { ...Object.fromEntries(Object.entries(exits.violations).map(([k, n]) => [`EXIT:${k}`, n])), ...Object.fromEntries(Object.entries(books.violations).map(([k, n]) => [`BOOKS:${k}`, n])), ...(lifecycle ? Object.fromEntries(Object.entries(lifecycle.violations).map(([k, n]) => [`LIFECYCLE:${k}`, n])) : {}) };
+  const violations = { ...Object.fromEntries(Object.entries(exits.violations).map(([k, n]) => [`EXIT:${k}`, n])), ...Object.fromEntries(Object.entries(books.violations).map(([k, n]) => [`BOOKS:${k}`, n])), ...(lifecycle ? Object.fromEntries(Object.entries(lifecycle.violations).map(([k, n]) => [`LIFECYCLE:${k}`, n])) : {}), ...(stops ? Object.fromEntries(Object.entries(stops.violations).map(([k, n]) => [`STOPS:${k}`, n])) : {}) };
   const violationCount = Object.values(violations).reduce((a, b) => a + b, 0);
-  return { version: ST9_HIST_EXECUTION_VERSION, key, pass: violationCount === 0, violationCount, violations, exitClasses: exits.classes, exitReasons: exits.byReason, booksChecks: books.checks, lifecycleChecks: lifecycle ? lifecycle.checks : null, lifecycleDiagnostics: lifecycle ? lifecycle.diagnostics : null, _examples: [...exits.examples, ...books.examples, ...(lifecycle?.examples ?? [])].slice(0, 20), _perTrade: exits.perTrade };
+  return { version: ST9_HIST_EXECUTION_VERSION, key, pass: violationCount === 0, violationCount, violations, exitClasses: exits.classes, exitReasons: exits.byReason, booksChecks: books.checks, lifecycleChecks: lifecycle ? lifecycle.checks : null, lifecycleDiagnostics: lifecycle ? lifecycle.diagnostics : null, missedStopCheck: lc ? 'SF5_CHECK_LIFECYCLE_RUN' : stops ? 'MINERVINI_EVENT_PATH' : 'NOT_CHECKED_LEVEL_UNKNOWN', stopChecks: stops ? stops.checks : null, _examples: [...exits.examples, ...books.examples, ...(lifecycle?.examples ?? []), ...(stops?.examples ?? [])].slice(0, 20), _perTrade: exits.perTrade };
 }
 
 /**
