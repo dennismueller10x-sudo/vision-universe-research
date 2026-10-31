@@ -223,6 +223,10 @@ backtest-spec-builder.cjs (Menü, Vorlagen, sichere Codes)             ┘      
 4. Paketintegrität (`bundleHash`, `productionApproved=false`, `NOT_CERTIFIED`, kein `CERTIFIED_STRATEGY` ohne
    Zertifizierungsartefakt, das die Art zertifiziert): sonst **503 `BACKTEST_BUNDLE_INVALID`**.
 
+Das Paket selbst liefert GitHub Pages nicht aus (`scripts/vu2/build-release.mjs#permitted` schließt `workers/*/data/`
+aus, Test); es erreicht Prüfer nur über diese Routen. Die Zahlen stammen aus `docs/quant/backtest-catalog/` und liegen
+damit wie bisher im (öffentlichen) Repository, nicht auf der Website.
+
 POST nur mit erlaubter Herkunft und Kopf `X-VU-Client: web` (CSRF, wie alle Konto-Routen). Antworten `Cache-Control:
 no-store, private`, `X-Robots-Tag: noindex`. Fehler tragen nur einen Zustand und gegebenenfalls einen sicheren Code
 (`SAFE_CODES` des Spec-Builders), nie Daten.
