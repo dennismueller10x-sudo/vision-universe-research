@@ -259,3 +259,13 @@ lässt der Isolations-Test in `quant/tests/backtest-preview.test.mjs` genau eine
 **Owner-Entscheidungen (nicht in diesem Schritt):** Rolle vergeben (an wen) und Schalter einschalten
 ([FREIGABEN.md](../accounts/FREIGABEN.md)). Die Seite unter `/konto/admin/backtests/` ist ein eigener Entwurfs-PR; sie
 ist nicht verlinkt und zeigt nur, was der Worker liefert.
+
+**Seite (Entwurf, nicht verlinkt): `/konto/admin/backtests/`.** Gleiche Shell wie die Tarifverwaltung (`konto.css`,
+`noindex`), Steuerung `views['backtest-review']` in `konto/konto.js`, Anzeige in `konto/admin/backtests/review.js`
+(nur `textContent`). Ohne Endpunkt oder ohne Sitzung keine Anfrage; ohne Schalter oder Rolle nur die Meldung des
+Servers. Auswahl: Art, Vorlage (historisches Beispiel), Zeitraum, Kosten, Benchmark, Zusatzmethoden, Signalregeln bzw.
+Faktor – oder direkt eine der vorgerechneten Auswahlen. Ergebnis: Rendite, Risiko und Drawdown, Kosten, Benchmark,
+Datenqualität und Abdeckung, historische Population; jede Zeile mit Bezeichnung, Nachweisart und Grundlage; Grenzen und
+Zertifizierungsstand (`NOT_CERTIFIED`, `productionApproved: false`) in jedem Zustand, auch bei „nicht vorgerechnet“.
+Keine Änderung an `quant/app/**`, `quant/index.html`, `assets/site-navigation.*` oder `ui-protection.json`.
+Tests: `node --test konto/tests/backtest-review.test.mjs`.

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Interne Backtest-Vorschau · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="backtest-review"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka" id="main">
+<p class="ka-eyebrow">Intern · nicht zertifiziert</p>
+<h1 class="ka-title">Interne Backtest-Vorschau</h1>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/einstellungen/">Einstellungen</a><a href="/konto/admin/backtests/">Backtest-Vorschau</a></nav>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
+<div id="br-wrap" hidden>
+<section class="ka-card" aria-labelledby="br-frame-title">
+<h2 id="br-frame-title">Einordnung</h2>
+<p class="ka-muted">Nur vorgerechnete Research-Ergebnisse aus dem Konto-Dienst. Diese Seite rechnet nichts und gibt keine Empfehlung.</p>
+<div id="br-frame"></div>
+</section>
+<form class="ka-card ka-form" id="br-form" novalidate>
+<h2>Auswahl</h2>
+<div class="ka-field"><label for="br-precomputed">Vorgerechnete Auswahl</label><select class="ka-select" id="br-precomputed" name="br-precomputed"></select></div>
+<div class="ka-grid ka-grid--2">
+<div class="ka-field"><label for="br-kind">Backtest-Art</label><select class="ka-select" id="br-kind" name="br-kind"></select></div>
+<div class="ka-field"><label for="br-template">Historisches Beispiel (Vorlage)</label><select class="ka-select" id="br-template" name="br-template"></select></div>
+<div class="ka-field"><label for="br-from">Zeitraum von (JJJJ-MM-TT, leer = wie Vorlage)</label><input class="ka-input" id="br-from" name="br-from" type="text" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="2022-01-01"></div>
+<div class="ka-field"><label for="br-to">Zeitraum bis (JJJJ-MM-TT, leer = wie Vorlage)</label><input class="ka-input" id="br-to" name="br-to" type="text" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="2022-06-30"></div>
+<div class="ka-field"><label for="br-cost">Kosten</label><select class="ka-select" id="br-cost" name="br-cost"></select></div>
+<div class="ka-field"><label for="br-benchmark">Benchmark</label><select class="ka-select" id="br-benchmark" name="br-benchmark"></select></div>
+<div class="ka-field"><label for="br-methods">Zusatzmethoden</label><select class="ka-select" id="br-methods" name="br-methods"><option value="">wie Vorlage</option><option value="NONE">keine</option></select></div>
+<div class="ka-field" id="br-factor-field" hidden><label for="br-factor">Faktor</label><select class="ka-select" id="br-factor" name="br-factor"></select></div>
+</div>
+<fieldset class="ka-field" id="br-rules-field" hidden><legend>Signalregeln (leer = wie Vorlage)</legend><div id="br-rules"></div></fieldset>
+<div class="ka-actions"><button class="ka-btn" type="submit">Nachschlagen</button></div>
+</form>
+<section class="ka-card" id="br-result" aria-live="polite" hidden></section>
+<section class="ka-card" aria-labelledby="br-kinds-title">
+<h2 id="br-kinds-title">Arten im Überblick</h2>
+<div class="ka-table-wrap"><table class="ka-table"><thead><tr><th scope="col">Art</th><th scope="col">Zustand</th><th scope="col">Zertifizierung</th><th scope="col" class="num">Vorschaufälle</th><th scope="col" class="num">Datenqualitätsgrenzen</th></tr></thead><tbody id="br-kinds"></tbody></table></div>
+</section>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/admin/backtests/review.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>
