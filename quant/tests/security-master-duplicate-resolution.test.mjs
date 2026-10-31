@@ -231,13 +231,14 @@ test("Lader: 'none' schaltet ab, Identitaet nur ueber core/identity.js, kein JSO
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("committetes Register ist gueltig und deckt nur belegte 12g-3(a)-Faelle mit 1:1 ab", () => {
+test("committetes Register ist gueltig: belegte 12g-3(a)-Doppelzeilen mit 1:1 und eine Fortfuehrung nach Umfirmierung (SAME_CIK)", () => {
   const loaded = loadDuplicateResolution(DEFAULT_DUPLICATE_RESOLUTION_FILE);
   assert.match(loaded.sha256, /^[0-9a-f]{64}$/);
   const ids = loaded.doc.records.map((r) => r.securityId).sort();
-  assert.deepEqual(ids, ["ref_OKE", "ref_TEL"]);
+  assert.deepEqual(ids, ["ref_EDVA", "ref_OKE", "ref_TEL"]);
   for (const r of loaded.doc.records) {
-    assert.equal(r.sec.rule, "12g-3(a)");
+    /* Fortfuehrung (keptCanonicalId) nur als SAME_CIK, siehe security-master-rename-continuation.test.mjs. */
+    assert.equal(r.sec.rule, r.keptCanonicalId ? "SAME_CIK" : "12g-3(a)");
     assert.equal(r.sec.exchangeRatio, "1:1");
     assert.equal(r.sec.predecessorCik, r.sec.successorCik);
     assert.ok(existsSync(join(root, r.series.file)), r.series.file);
