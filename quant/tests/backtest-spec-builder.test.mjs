@@ -45,5 +45,8 @@ test('fail closed mit sicheren Codes', () => {
   assert.equal(code(sel({ template: 'signal-2022-bear', factorId: 'value' })), 'FACTOR_ONLY_FOR_FACTOR_KIND');
   assert.equal(code(sel({ template: 'factor-momentum-v10-panel', factorId: 'alpha' })), 'FACTOR_NOT_ALLOWED');
   assert.equal(code(sel({ template: 'signal-2022-bear', methods: 'ALL' })), 'METHODS_OPTION_UNKNOWN');
+  assert.equal(code(sel({ template: 'strategy-2019-bull', costPreset: 'HIGH' })), 'SENSITIVITY_GRID_EXCLUDES_SELECTED_COSTS', 'Basis muss auf dem Sensitivitaetsraster liegen');
+  assert.equal(B.buildSpec(sel({ template: 'strategy-2019-bull', costPreset: 'HIGH', methods: 'NONE' }), T).ok, true);
+  assert.equal(B.buildSpec(sel({ template: 'strategy-2019-bull', costPreset: 'NONE' }), T).ok, true, 'feeBps 0 liegt auf dem Raster');
   for (const c of B.SAFE_CODES) assert.ok(/^[A-Z_]+$/.test(c));
 });

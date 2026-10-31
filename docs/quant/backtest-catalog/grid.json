@@ -15,7 +15,7 @@
     { "label": "Signal 2022 Baer, nur TREND_DOWN, 1. Halbjahr", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2022-bear", "window": { "from": "2022-01-01", "to": "2022-06-30" }, "ruleIds": ["TREND_DOWN"] } },
     { "label": "Signal 2022 Baer, nur TREND_DOWN, 2. Halbjahr", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2022-bear", "window": { "from": "2022-07-01", "to": "2022-12-31" }, "ruleIds": ["TREND_DOWN"] } },
     { "label": "Setup-Rekonstruktion 2016-2024", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "setup-reconstruction-2016-2024" } },
-    { "label": "Strategie 2019, hohe Kosten", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-2019-bull", "costPreset": "HIGH" } },
+    { "label": "Strategie 2019, hohe Kosten", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-2019-bull", "costPreset": "HIGH", "methods": "NONE" } },
     { "label": "Strategie 2013-2014", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-2013-2014-bull" } },
     { "label": "Strategie Dividenden (TR)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-dividends-tr" } },
     { "label": "Strategie Profil (Zustand B)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-profile-prepared" } },
