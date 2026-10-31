@@ -35,7 +35,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);fon
 /* hook overlay on line 0 */
 #hook{position:absolute;inset:0;z-index:12;display:none;text-align:center}
 #hook .who{position:absolute;top:250px;left:0;right:0;font-family:Archivo;font-size:64px;color:#fff;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill}
-#hook .num{position:absolute;top:320px;left:0;right:0;font-size:300px;color:var(--gold)}
+#hook .num{position:absolute;top:340px;left:0;right:0;font-size:255px;color:var(--gold)}
 #hook .day{position:absolute;top:660px;left:0;right:0;font-family:Archivo;font-size:76px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;opacity:0}
 #hook .stamp{left:540px;top:870px;font-size:150px;transform:translate(-50%,-50%) rotate(-8deg)}
 /* verdict stamp */
@@ -62,16 +62,19 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);fon
 </style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 <div id="world">
  <div class="scene" id="duo"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div id="cam"><div class="fig" id="bulle"></div><div class="fig" id="baer"></div></div>
-  <div id="hook"><div class="who">INTEL-AKTIE</div><div class="num big">−29 %</div><div class="day">AN EINEM TAG</div><div class="stamp" id="weg">CRASH!</div></div>
+  <div id="hook"><div class="who">US-STAAT VERLIERT</div><div class="num big">12 MRD $</div><div class="day">AN EINEM TAG</div><div class="stamp" id="weg">WEG!</div></div>
   <div id="cta"><div><span class="pill" style="background:var(--bull)">BULLE</span><span class="or">ODER</span><span class="pill" style="background:var(--bear)">BÄR?</span></div><div class="down">↓ AB IN DIE KOMMENTARE ↓</div></div></div>
-<div class="scene" id="d1"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">INTEL · FREITAG</div>
+<div class="scene" id="d1"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">WEM GEHÖRT INTEL?</div>
+  <div class="card" style="top:470px;height:330px"><div style="padding:30px;text-align:center"><div class="lab">DER US-STAAT BESITZT</div>
+   <div class="big" id="st" style="font-size:180px;color:#86c1f2">0 %</div></div></div>
+  <div class="tile" id="t1" style="top:870px;height:330px"><div class="lab">VON INTEL · SEIT AUGUST 2025</div><div class="big" style="font-size:120px;color:var(--gold)">433 MIO. AKTIEN</div></div></div>
+ <div class="scene" id="d2"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">INTEL · FREITAG</div>
   <div class="card" style="top:470px;height:330px"><div style="padding:30px;text-align:center"><div class="lab">AKTIE AM 30.10.</div>
    <div class="big" id="ic" style="font-size:180px;color:var(--red)">0 %</div></div></div>
-  <div class="tile" id="t1" style="top:870px;height:360px"><div class="lab">SCHLIMMSTER TAG SEIT</div><div class="big" style="font-size:190px;color:var(--gold)">1974</div></div></div>
- <div class="scene" id="d2"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">GOOGLE · DONNERSTAG</div>
-  <div class="card" style="top:470px;height:330px"><div style="padding:30px;text-align:center"><div class="lab">BÖRSENWERT IN EINER SITZUNG</div>
-   <div class="big" id="gv" style="font-size:170px;color:var(--red)">0 MRD $</div></div></div>
-  <div class="tile" id="t2" style="top:870px;height:360px"><div class="lab">GRÖSSTER TAGESVERLUST</div><div class="big" style="font-size:92px;color:var(--gold)">SEIT DEM BÖRSENGANG</div></div></div>
+  <div class="tile" id="t2" style="top:870px;height:330px"><div class="lab">SCHLIMMSTER TAG SEIT</div><div class="big" style="font-size:170px;color:var(--gold)">1974</div></div></div>
+ <div class="scene" id="d3"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">ABER JETZT KOMMT'S</div>
+  <div class="card" style="top:470px;height:700px"><svg id="pl" viewBox="0 0 960 700" width="944" height="684"></svg></div>
+  <div class="stamp" id="x3" style="left:780px;top:640px;font-size:150px;color:var(--bull);border-color:var(--bull);transform:translate(-50%,-50%) rotate(8deg)">×3</div></div>
 </div>
 <div id="badge"><i>ZOO</i>-TICKER · KW 44</div>
 <div id="verdict"><small>URTEIL</small><b></b></div>
@@ -93,9 +96,9 @@ const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f
 const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
 const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
 // ---------- scene colours: red for the hook, then one colour per line
-const PAL=['#e2453a','#f5a08f','#f2c230','#7fd0a8'];
+const PAL=['#e2453a','#86c1f2','#f5a08f','#7fd0a8','#f2c230'];
 // ---------- spoken numbers as digits
-const NUM=[['neunundzwanzig Prozent','29 %'],['neunzehnhundertvierundsiebzig','1974'],['vierhundertachtzig Milliarden Dollar','480 Mrd. $']];
+const NUM=[['Zwölf Milliarden Dollar','12 Mrd. $'],['zehn Prozent','10 %'],['neunundzwanzig Prozent','29 %'],['Neun Milliarden','9 Mrd.'],['achtundzwanzig','28 Mrd.']];
 const bare=x=>x.replace(/[.,!?:]+$/,'');
 for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
  const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:disp+tail,e:last.e});break}}
@@ -105,21 +108,27 @@ const wt=(line,re)=>{const w=W.find(w=>w.line===line&&re.test(w.w));return w?w.s
 // ---------- verdicts: the word after "Urteil:" shows the stamp
 const VERDICTS=[];W.forEach((w,i)=>{if(/^Urteil:?$/.test(w.w)&&W[i+1]){const v=bare(W[i+1].w);VERDICTS.push({t0:W[i+1].s-0.05,t1:S[w.line].e+0.45,txt:v.toUpperCase(),col:v==='Bulle'?'#1f9d55':'#8a5a2b',line:w.line})}});
 // ---------- icons triggered by words (max 3 per line, fixed slots, none on the hook and the comment call)
-const KEY={intel:'chart-runter',börsentag:'boerse',google:'chart-runter',börsenwert:'geldsack'};
+const KEY={'us-staat':'tresor',intel:'chart-runter',freitag:'kalender',plus:'chart-hoch',rein:'sparschwein',wert:'geldsack'};
 const SLOTS={duo:[[250,600],[830,560],[540,380]],d1:[[180,1420],[900,1420],[540,1500]],d2:[[180,1430],[900,1430],[540,1500]],d3:[[180,1450],[900,1450],[540,1510]],
  d4:[[180,1420],[900,1420],[540,1500]],d5:[[180,1440],[900,1440],[540,1500]],d6:[[180,1440],[900,1440],[540,1500]]};
-const POPS=[];{const per={};for(const w of W){if(w.line===0||w.line===3)continue;const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
+const POPS=[];{const per={};for(const w of W){if(w.line===0||w.line===4)continue;const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
  const seg=S[w.line];const sc=seg.scene==='dia'?'d'+seg.step:'duo';const el=document.createElement('div');el.className='ico';img(ICON+ic+'.png',el);
  const [x,y]=SLOTS[sc][n];el.style.left=x+'px';el.style.top=y+'px';document.getElementById(sc).appendChild(el);POPS.push({el,t0:w.s,t1:seg.e+0.05,rot:(n%2?8:-8)})}}
 // icons give way to the verdict stamp
 for(const p of POPS){const v=VERDICTS.find(v=>v.t0>p.t0&&v.t0<p.t1);if(v)p.t1=v.t0}
 // ---------- step start times (a step can span several lines)
 const ST={};for(const s of S)if(s.scene==='dia'&&ST[s.step]===undefined)ST[s.step]=s.s;
+// d3 bars: bought 433.3 mn shares at 20.47 $ (8.9 bn $), worth about 27.7 bn $ after the drop on 30.10.2026
+const pl=document.getElementById('pl');
+pl.innerHTML=`<rect x="140" y="600" width="260" height="0" id="pb1" fill="#888" stroke="#1d2433" stroke-width="7" rx="14"/><text x="270" y="660" font-family="Archivo" font-size="38" text-anchor="middle">EINGESETZT</text>
+<text id="pb1t" x="270" y="0" font-family="Bangers" font-size="76" text-anchor="middle" opacity="0">8,9 MRD $</text>
+<rect x="560" y="600" width="260" height="0" id="pb2" fill="#1f9d55" stroke="#1d2433" stroke-width="7" rx="14"/><text x="690" y="660" font-family="Archivo" font-size="38" text-anchor="middle">HEUTE WERT</text>
+<text id="pb2t" x="690" y="0" font-family="Bangers" font-size="76" text-anchor="middle" fill="#1f9d55" opacity="0">~28 MRD $</text>`;
 const cap=document.getElementById('cap'),world=document.getElementById('world'),cam=document.getElementById('cam'),flash=document.getElementById('flash'),end=document.getElementById('end');
 const hook=document.getElementById('hook'),cta=document.getElementById('cta'),verdict=document.getElementById('verdict');
 function fit(){let f=84;cap.style.fontSize=f+'px';while(cap.scrollWidth>1020&&f>48){f-=4;cap.style.fontSize=f+'px'}}
 const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
-const SCENES=['duo','d1','d2'];
+const SCENES=['duo','d1','d2','d3'];
 const pop=(el,t0,t,s0=0.6)=>{const q=(t-t0)/0.3;el.style.opacity=t>=t0?1:0;el.style.transform=`scale(${t>=t0?s0+(1-s0)*back(q):s0})`};
 const isShock=s=>s.face==='schock'||s.line===0;
 function render(t){
@@ -139,9 +148,9 @@ function render(t){
  hook.style.display=seg.line===0?'block':'none';
  if(seg.line===0){const n=hook.querySelector('.num');n.style.transform=`scale(${1+0.08*Math.sin(t*9)*Math.max(0,1-t)}) rotate(-3deg)`;
   const day=hook.querySelector('.day');const d0=wt(0,/^In$/);day.style.opacity=t>=d0?1:0;day.style.transform=`scale(${t>=d0?back((t-d0)/0.25):0.5})`;
-  const wg=document.getElementById('weg');const w0=wt(0,/^Tag/);wg.style.opacity=t>=w0?1:0;wg.style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${t>=w0?1+1.3*(1-back((t-w0)/0.25)):2})`}
- cta.style.display=seg.line===3?'block':'none';
- if(seg.line===3){const ps=cta.querySelectorAll('.pill');ps[0].style.transform=`rotate(-4deg) scale(${back(k/0.3)})`;ps[1].style.transform=`rotate(4deg) scale(${back((k-0.35)/0.3)})`;
+  const wg=document.getElementById('weg');const w0=wt(0,/^Weg/);wg.style.opacity=t>=w0?1:0;wg.style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${t>=w0?1+1.3*(1-back((t-w0)/0.25)):2})`}
+ cta.style.display=seg.line===4?'block':'none';
+ if(seg.line===4){const ps=cta.querySelectorAll('.pill');ps[0].style.transform=`rotate(-4deg) scale(${back(k/0.3)})`;ps[1].style.transform=`rotate(4deg) scale(${back((k-0.35)/0.3)})`;
   cta.querySelector('.down').style.transform=`translateY(${Math.sin(t*8)*10}px)`}
  // captions (the hook shows its own words)
  const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
@@ -166,8 +175,13 @@ function render(t){
    else if(blinkAt(who,t))f='blinzeln';
    show(who,f)}
  }
- if(id==='d1'){const q=easeOut((t-ST[1]-0.1)/0.8);document.getElementById('ic').textContent='−'+Math.round(29*q)+' %';pop(document.getElementById('t1'),ST[1]+0.9,t)}
- if(id==='d2'){const g=wt(2,/^480/);const q=easeOut((t-g)/0.9);document.getElementById('gv').textContent=(t<g?'0':'−'+Math.round(480*q))+' MRD $';pop(document.getElementById('t2'),wt(2,/^Börsenwert/),t)}
+ if(id==='d1'){const z=wt(1,/^10/);const q=easeOut((t-z)/0.7);document.getElementById('st').textContent=(t<z?'?':Math.round(10*q))+' %';pop(document.getElementById('t1'),ST[1]+1.9,t)}
+ if(id==='d2'){const q=easeOut((t-ST[2]-0.1)/0.8);document.getElementById('ic').textContent='−'+Math.round(29*q)+' %';pop(document.getElementById('t2'),ST[2]+1.4,t)}
+ if(id==='d3'){const H=480;const r=ST[3]+0.5,w=wt(3,/^heute/);const a=easeOut((t-r)/0.6),b=easeOut((t-w)/1.0);
+  const h1=H*8.9/27.7*a,h2=H*b;const b1=document.getElementById('pb1'),b2=document.getElementById('pb2');
+  b1.setAttribute('y',600-h1);b1.setAttribute('height',h1);b2.setAttribute('y',600-h2);b2.setAttribute('height',h2);
+  const t1=document.getElementById('pb1t'),t2=document.getElementById('pb2t');t1.setAttribute('y',600-h1-20);t1.setAttribute('opacity',clamp((a-0.7)*4));t2.setAttribute('y',600-h2-20);t2.setAttribute('opacity',clamp((b-0.7)*4));
+  const x=wt(3,/^28/)+0.5,st=document.getElementById('x3');st.style.opacity=t>=x?1:0;st.style.transform=`translate(-50%,-50%) rotate(8deg) scale(${t>=x?1+1.3*(1-back((t-x)/0.25)):2})`}
  end.style.opacity=0;
 }
 // sound events for audio.py mix (same moments as the visuals above)
@@ -176,7 +190,7 @@ window.EVENTS=[...POPS.map(p=>({t:p.t0,type:'pop'})),
  ...S.filter((s,i)=>i&&S[i-1].scene===s.scene).map(s=>({t:s.s,type:'punch'})),
  ...S.filter(isShock).map(s=>({t:s.s,type:'hit'})),
  ...VERDICTS.map(v=>({t:v.t0,type:'stamp'})),
- {t:wt(0,/^Tag/),type:'stamp'},{t:0,type:'hit'},{t:S[3].s,type:'pop'}].sort((a,b)=>a.t-b.t);
+ {t:wt(0,/^Weg/),type:'stamp'},{t:0,type:'hit'},{t:wt(3,/^heute/),type:'riser'},{t:wt(3,/^28/)+0.5,type:'stamp'},{t:S[4].s,type:'pop'}].sort((a,b)=>a.t-b.t);
 window.render=render;
 Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
 </script></body></html>

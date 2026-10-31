@@ -1,6 +1,6 @@
 """Voice and effects for the reel. Writes only into the working folder given as --out.
 
-  python3 -I audio.py voice --out WORK     # 4 HeyGen speech calls (about 0.05 USD), vo.wav + timing_vo.json with mouth envelope
+  python3 -I audio.py voice --out WORK     # 5 HeyGen speech calls (about 0.06 USD), vo.wav + timing_vo.json with mouth envelope
   python3 -I audio.py mix --out WORK       # effects from events.json, mix.wav at about -14 LUFS
 """
 import argparse
