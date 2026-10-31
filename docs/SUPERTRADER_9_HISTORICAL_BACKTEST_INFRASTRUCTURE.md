@@ -30,6 +30,7 @@ Es wurde **kein** Studienlauf ausgeführt und keine Zahl auf echten Daten berech
 - `membersAt(windows, d)`: Mitglieder an einem Tag sind genau die Listings, deren eigenes Intervall den Tag enthält. Es gibt keine heutige Tickerliste.
 - `pitUniverseByYear`: je Jahr Listings (A, B), Neuzugänge, Enden (wirtschaftlich / Datenlücke) und Anteil der Überlebenden. Damit ist Survivorship je Jahr sichtbar.
 - `assertPointInTime` (**fail closed**): nicht steigende Daten (`PIT_DATES_NOT_INCREASING`), Balken nach dem wirtschaftlichen Ende (`PIT_BAR_AFTER_TERMINAL`, also Fortschreiben), Balken nach dem Fensterende (`PIT_BAR_AFTER_WINDOW`).
+- `PIT_BAR_AFTER_TERMINAL` ist eine **Schutzprüfung, keine Gegenprobe**: `securityFromSegment` setzt das Enddatum auf den letzten Balken des Segments. Auf dem Produktionspfad kann die Prüfung deshalb nicht anschlagen. Sie greift erst, wenn ein späterer Umbau Balken hinter das Ende schreibt. Unabhängig belegt sie nichts; der Test zeigt nur, dass sie bei einem manipulierten Datensatz abbricht.
 - Nur gezählt, nie repariert: Balken außerhalb des Kalenders; Läufe von ≥ 5 unveränderten Balken ohne Umsatz (Signatur eines Fortschreibens, Grenze = `staleCarryMaxSessions`); letzter Balken ohne Umsatz.
 
 ### 2.2 Doppelte Listings und Identität
@@ -37,7 +38,7 @@ Es wurde **kein** Studienlauf ausgeführt und keine Zahl auf echten Daten berech
 - Gruppierung nur über `core/identity.js#securityIdForTicker` (ADR-001).
 - `DUPLICATE_LISTING_OVERLAP`: zwei Listings derselben securityId mit überlappendem Intervall.
 - `TICKER_REUSE_SEQUENTIAL`: dieselbe securityId nacheinander. Erlaubt, aber als mehrdeutige Identität gekennzeichnet (Owner-Entscheidung 30.10.2026).
-- **Gegenprobe zur Dublettenregel von B:** Eine zugefügte Kette mit Überlappung bricht den Lauf ab (`IDENTITY_DUPLICATE_IN_ADDED`). Die Prüfung nutzt engere Intervalle als `buildUniverseB` und kann deshalb nur einen Fehler dort finden.
+- **Schutzprüfung zur Dublettenregel von B (keine Gegenprobe):** Eine zugefügte Kette mit Überlappung bricht den Lauf ab (`IDENTITY_DUPLICATE_IN_ADDED`). Die Prüfung nutzt dieselbe Identität (`core/identity.js`) und engere Intervalle als `buildUniverseB` (Balkenintervalle ohne Toleranz statt Listing-Intervalle mit 10 Tagen). Sie kann deshalb nur anschlagen, wenn `buildUniverseB` selbst fehlerhaft ist. Eine fehlende Dublette, die beide Regeln gleich übersehen (etwa eine andere securityId für denselben Emittenten), findet sie nicht.
 - **Sperrliste aus #1159 als Eingang**, nicht nachgebaut:
   - `readIdentityBlocklist` verlangt einen festgeschriebenen SHA-256 sowie Schema und Erzeuger, die aus dem Builder importiert werden (`BLOCKLIST_SCHEMA`, `BLOCKLIST_GENERATOR`). Eine handgeschriebene Liste wird abgelehnt.
   - Die Nachrechnung gegen alten und neuen Stamm bleibt Aufgabe von `backtest-generation-freeze.cjs`; die Studie nimmt die Hashes beider Stämme in die Quittung auf.
@@ -57,6 +58,15 @@ Es wurde **kein** Studienlauf ausgeführt und keine Zahl auf echten Daten berech
 | `ACTIVE_AT_WINDOW_END` | Überlebender | – |
 
 Es wird nichts fortgeschrieben. Der letzte Balken ist der letzte Handelstag; dahinter gibt es keinen Balken, wie §2.1 erzwingt.
+
+**Zu kurzes letztes Segment einer zugefügten Kette (Abdeckungsdiagnose, Verhalten unverändert).** Die Registrierung verwirft Segmente unter 30 Balken (`MIN_SEGMENT_BARS`, wie `loadPitData`). Liegt vor dem letzten Handelstag eine Lücke > 30 Tage und danach ein Rest unter 30 Balken, fällt dieser Rest weg. Das letzte behaltene Stück endet dann als `DATA_GAP`, das Delisting wird also zensiert (`DATA_GAP_CENSORED`) und nicht als `LISTING_INACTIVE` abgerechnet. Die Kette zählt trotzdem in `addedLastTradeInWindow` und `addedByTerminalClass`. Weil die Registrierung eingefroren ist, bleibt das Verhalten. Sichtbar wird es über eigene Zähler im Zensus von B (`universeB`) und im öffentlichen Teil unter `historicalInfrastructure.addedTerminalCoverage`:
+
+| Zähler | Bedeutung |
+|---|---|
+| `terminalSegmentTooShort` | Ketten mit letztem Handelstag im Fenster, deren letztes Segment verworfen wurde |
+| `terminalSegmentTooShortByClass` | dieselben je V13-Klasse |
+| `windowEndSegmentTooShort` | Ketten über das Fensterende hinaus mit verworfenem letztem Segment (Ende `DATA_GAP` statt rechtszensiert offen) |
+| `addedTerminalBooked` | `addedLastTradeInWindow − terminalSegmentTooShort`: Delistings, die wirklich als `LISTING_INACTIVE` abgerechnet werden |
 
 ### 2.4 Abdeckung und Unsicherheit
 
@@ -111,4 +121,6 @@ Außerdem fehlt ein Workflow, der Snapshot und entschlüsseltes Archiv gleichzei
   - `FLAG` lässt den Datensatz unverändert, `EXCLUDE` entfernt die gesperrten IDs.
 - **Delisting-Ausgänge:** alle sechs Klassen, Zählung der zensierten Ausgänge.
 - **Abdeckung je Jahr und Methode:** Der öffentliche Teil enthält weder Ticker noch ID.
+
+`sf-st9-v13-delisted-study.test.mjs`, Test „coverage diagnostic“: Eine Kette mit verworfenem kurzem letztem Segment endet als `DATA_GAP`, zählt in `addedLastTradeInWindow` und in `terminalSegmentTooShort`; `addedTerminalBooked` entspricht der Zahl der `LISTING_INACTIVE`-Enden.
 - **Preflight:** listet genau die fehlenden Eingaben; ist ein vollständiger synthetischer Satz vorhanden, meldet er `ready`.

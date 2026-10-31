@@ -159,6 +159,31 @@ test('point in time: bars only inside the chain interval and the window; delisti
   assert.equal(r.census.addedWindowEnd, 1);
 });
 
+test('coverage diagnostic: a dropped short last segment is counted (terminalSegmentTooShort); behaviour unchanged', () => {
+  const v = load(archive([
+    // 2015-01 .. 2016-03, gap > 30 days, then 13 sessions before the last traded day 2016-06-17 (inside the window)
+    { id: 'g000000000000001', ticker: 'SHRT', cik: '801', cls: 'DISTRESS', rows: [...rows('2015-01-02', '2016-03-31', { seed: 41 }), ...rows('2016-06-01', '2016-06-17', { seed: 42 })] },
+    { id: 'g000000000000002', ticker: 'FULL', cik: '802', cls: 'MERGER', rows: rows('2015-01-02', '2016-06-30', { seed: 43 }) },
+    // listed beyond the window end, short last segment inside the window (2017-06-12 .. 2017-06-30)
+    { id: 'g000000000000003', ticker: 'OPEN', cik: '803', cls: 'UNKNOWN', rows: [...rows('2015-01-02', '2017-04-28', { seed: 44 }), ...rows('2017-06-12', '2017-12-29', { seed: 45 })] },
+  ]));
+  const r = S.buildUniverseB(dsA([]), v.chains, { window: WIN });
+  const shrt = r.dsB.securities.filter((s) => s.id.startsWith('v13dl:NASDAQ:g000000000000001'));
+  assert.equal(shrt.length, 1, 'the short last segment is dropped (registered rule, unchanged)');
+  assert.equal(shrt[0].bars.at(-1).date, '2016-03-31');
+  assert.equal(shrt[0].terminal.cause, 'DATA_GAP', 'the delisting is censored, not booked as LISTING_INACTIVE');
+  const open = r.dsB.securities.filter((s) => s.id.startsWith('v13dl:NASDAQ:g000000000000003'));
+  assert.equal(open.length, 1); assert.equal(open[0].terminal.cause, 'DATA_GAP');
+  assert.equal(r.census.added, 3);
+  assert.equal(r.census.addedLastTradeInWindow, 2, 'SHRT still counts as a delisting inside the window');
+  assert.deepEqual(r.census.addedByTerminalClass, { DISTRESS: 1, MERGER: 1, UNKNOWN: 1 });
+  assert.equal(r.census.terminalSegmentTooShort, 1);
+  assert.deepEqual(r.census.terminalSegmentTooShortByClass, { DISTRESS: 1 });
+  assert.equal(r.census.windowEndSegmentTooShort, 1);
+  assert.equal(r.census.addedTerminalBooked, 1, 'only FULL is settled as LISTING_INACTIVE');
+  assert.equal(r.dsB.securities.filter((s) => s.terminal?.cause === 'LISTING_INACTIVE').length, r.census.addedTerminalBooked);
+});
+
 /** A rising chain that is held by Turtle S1 when it delists. */
 function heldIntoDelisting(cls) {
   const v = load(archive([{ id: 'e000000000000001', ticker: 'RISE', cik: '601', cls, rows: rows('2015-01-02', '2016-09-30', { seed: 31, drift: 0.004, noise: 0.02, c0: 15 }) }]));

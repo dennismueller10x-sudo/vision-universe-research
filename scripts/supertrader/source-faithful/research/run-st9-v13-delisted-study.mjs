@@ -134,7 +134,7 @@ async function main() {
   log(`point in time: A ${JSON.stringify(hist.A.pointInTime)}; identity B ${JSON.stringify(hist.B.identity.duplicateListingOverlap)}`);
   const result = S.runStudy({ dsA, dsB, addedIds, params, datesBySegment: dates?.map ?? null, log });
   const receipt = { schema: 'st9-v13-delisted-receipt-1.0.0', snapshotId, datasetSha256, ...verification, registrationSha256, studyCodeSha256: studyCodeSha256(), engineCodeSha256: engineCodeSha256(), quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, histUniverseVersion: H.ST9_HIST_UNIVERSE_VERSION, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, window: L.WINDOW_NAME };
-  const histPublic = { A: H.publicUniverseDiagnostics(hist.A), B: H.publicUniverseDiagnostics(hist.B), identityBlocklistMode: blocklist ? 'FLAG' : 'NOT_SUPPLIED' };
+  const histPublic = { A: H.publicUniverseDiagnostics(hist.A), B: H.publicUniverseDiagnostics(hist.B), identityBlocklistMode: blocklist ? 'FLAG' : 'NOT_SUPPLIED', addedTerminalCoverage: { addedLastTradeInWindow: census.addedLastTradeInWindow, addedTerminalBooked: census.addedTerminalBooked, terminalSegmentTooShort: census.terminalSegmentTooShort, terminalSegmentTooShortByClass: census.terminalSegmentTooShortByClass, windowEndSegmentTooShort: census.windowEndSegmentTooShort } };
   const pub = { ...S.publicPart(result, { census, provenance: v13.provenance, receipt }), historicalInfrastructure: histPublic };
   const full = { receipt, public: pub, universeB: census, v13: v13.provenance, result, historicalInfrastructure: { ...histPublic, flagsA: Object.fromEntries(hist.A._flags), flagsB: Object.fromEntries(hist.B._flags) } };
   fs.mkdirSync(OUT, { recursive: true });

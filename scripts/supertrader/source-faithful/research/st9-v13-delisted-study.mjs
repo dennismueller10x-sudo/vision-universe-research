@@ -202,7 +202,7 @@ export function buildUniverseB(dsA, chains, { window = L.WINDOW, calendarDates =
   const cal = new Set(calendarDates ?? (dsA.benchmark || []).map((b) => b.date));
   if (!cal.size) fail('CALENDAR_REQUIRED');
   const A = aIndex(dsA, aCikByListing), ids = new Set(dsA.securities.map((s) => s.id));
-  const census = { schema: 'st9-universe-b-census-1.0.0', chainsIn: chains.length, added: 0, addedSecurities: 0, excluded: {}, barsOutsideInterval: 0, barsOffCalendar: 0, addedByTerminalClass: {}, addedLastTradeInWindow: 0, addedWindowEnd: 0 };
+  const census = { schema: 'st9-universe-b-census-1.0.0', chainsIn: chains.length, added: 0, addedSecurities: 0, excluded: {}, barsOutsideInterval: 0, barsOffCalendar: 0, addedByTerminalClass: {}, addedLastTradeInWindow: 0, addedWindowEnd: 0, terminalSegmentTooShort: 0, terminalSegmentTooShortByClass: {}, windowEndSegmentTooShort: 0 };
   const exclude = (k) => inc(census.excluded, k);
   // B's own identity intervals (earlier chain wins)
   const keptSid = new Map(), keptCik = new Map(), added = [];
@@ -241,8 +241,15 @@ export function buildUniverseB(dsA, chains, { window = L.WINDOW, calendarDates =
     (keptCik.get(c.cik) || keptCik.set(c.cik, []).get(c.cik)).push({ start: b0, end: b1 });
     added.push(...pieces); census.added++; census.addedSecurities += pieces.length; inc(census.addedByTerminalClass, c.terminalClass);
     if (b1 <= window.to) census.addedLastTradeInWindow++; else census.addedWindowEnd++;
+    // Diagnostic only (registered behaviour unchanged): the last segment is shorter than MIN_SEGMENT_BARS and was
+    // dropped, so the kept last piece ends as DATA_GAP. Its delisting is then censored, not booked as
+    // LISTING_INACTIVE, although the chain counts in addedLastTradeInWindow / addedByTerminalClass.
+    if (segs.at(-1).length < MIN_SEGMENT_BARS) {
+      if (b1 <= window.to) { census.terminalSegmentTooShort++; inc(census.terminalSegmentTooShortByClass, c.terminalClass); } else census.windowEndSegmentTooShort++;
+    }
   }
   census.excludedTotal = Object.values(census.excluded).reduce((a, b) => a + b, 0);
+  census.addedTerminalBooked = census.addedLastTradeInWindow - census.terminalSegmentTooShort; // delistings settled as LISTING_INACTIVE
   return { dsB: { ...dsA, securities: [...dsA.securities, ...added] }, addedIds: new Set(added.map((s) => baseId(s.id))), census };
 }
 

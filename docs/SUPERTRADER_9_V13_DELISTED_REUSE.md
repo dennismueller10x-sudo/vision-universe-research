@@ -205,7 +205,7 @@ Bei einer Abweichung (Hash, Bindung, Quarantäne) bricht der Runner mit `STUDY_I
 - **`st9-v13-delisted.public.json`** (zur Veröffentlichung geeignet, weil ohne Kennzahlen):
   - `receipt`: Snapshot-ID, Datensatz-Hash, Registrierungs-, Studien- und Engine-Code-Hash, Lauf, Commit;
   - `parametersSha256`;
-  - `universeB`: `chainsIn`, `added`, `addedSecurities`, `excluded{DUPLICATE_A_SECURITY_ID_INTERVAL, DUPLICATE_A_SERIES, DUPLICATE_A_CIK_INTERVAL, DUPLICATE_WITHIN_B, OUTSIDE_WINDOW, SHORT_IN_WINDOW}`, `barsOffCalendar`, `addedByTerminalClass`;
+  - `universeB`: `chainsIn`, `added`, `addedSecurities`, `excluded{DUPLICATE_A_SECURITY_ID_INTERVAL, DUPLICATE_A_SERIES, DUPLICATE_A_CIK_INTERVAL, DUPLICATE_WITHIN_B, OUTSIDE_WINDOW, SHORT_IN_WINDOW}`, `barsOffCalendar`, `addedByTerminalClass`, `addedLastTradeInWindow`, `addedWindowEnd`, `terminalSegmentTooShort`, `terminalSegmentTooShortByClass`, `windowEndSegmentTooShort`, `addedTerminalBooked` (Diagnose eines verworfenen kurzen letzten Segments, [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md) §2.3);
   - `v13`: Register-Hash, `requested`/`loaded`/`dailyBoundChains`, Ketten-Hash;
   - je Methode die Tradezahl A/B und die Abstimmung.
 - **`st9-v13-delisted.sealed.json`** (Eigentümerschlüssel) bzw. mit `--write-plain` **`.private.json`**. Je Methode `A` und `B` mit:
