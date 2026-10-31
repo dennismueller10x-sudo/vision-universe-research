@@ -15,6 +15,7 @@
  *        [--sec <company_tickers_exchange.json>] [--sec-as-of YYYY-MM-DD] [--delisting-register <json>]
  *        [--delisting-register-ref <text>] [--classification-out <json>] [--markdown-out <md>]
  *        [--accept-duplicate <canonical_id> --accept-duplicate-ref <Fundstelle der Owner-Entscheidung>]
+ *        [--canonical-evidence <json>]  Belegregister einzelner canonical_id-Wechsel (Börsenrückzug in den Freiverkehr)
  *        [--series-dir <dir>]   eigene Tagesreihen (Standard quant/data/market/discover-series, nur gelesen)
  *
  * --prev/--next: Verzeichnisse mit us-security-master.json (next zusätzlich reconciliation.json für die Lauf-ID).
@@ -132,8 +133,87 @@ export function classifyName(change, prevRow, nextRow, secBy) {
   return { class: viaSec ? "RENAMED_SAME_CIK_SEC" : "RENAMED_SAME_CIK_PROVIDER", approvable: true, reason: `Umfirmierung desselben Emittenten (CIK ${cikN || cikP}); Quelle ${nextRow.nameSource}`, sec: secRef };
 }
 
+/**
+ * Belegregister für einzelne canonical_id-Wechsel (quant/config/security-master-canonical-change-evidence.json).
+ * Es macht einen sonst nicht freigabefähigen Wechsel nur dann freigabefähig, wenn ALLES passt: gleiche securityId,
+ * Ticker, exakt dieselben canonical_ids vorher/nachher, dieselbe Builder-Klasse, Zielzeile im Freiverkehr, dieselbe
+ * Emittenten-CIK wie im committeten Namensstand (und in der SEC-Liste, falls sie den Ticker führt), Ereignis nicht in
+ * der Zukunft und die verlangten SEC-Meldungen mit Zitat. Sonst bleibt das Urteil des Builders unverändert, und der
+ * Eintrag erscheint als nicht angewandt. Ein formal fehlerhaftes Register bricht ab (fail closed).
+ * Zugelassen sind nur Börsenrückzüge in den Freiverkehr: kein Tickerwechsel, keine Zusammenführung von Listings.
+ */
+export const CANONICAL_EVIDENCE_SCHEMA = "security-master-canonical-change-evidence-1.0.0";
+const EVIDENCE_RULES = {
+  // gleiches Listing, nur Börse → Freiverkehr; SEC-Liste führt die Börse noch (Liste hinkt nach)
+  MOVED_TO_OTC: { cls: "MOVED_TO_OTC_SEC_EVIDENCE", needForms: [["8-K", "3.01"]], startMatchDays: null },
+  // Anbieter beginnt die Reihe im Freiverkehr neu; Form 25 der Börse und 8-K mit Wirksamkeit = neuer Beginn
+  PROVIDER_HISTORY_RESTARTED: { cls: "DELISTED_TO_OTC_SEC_EVIDENCE", needForms: [["8-K", "3.01"], ["25-NSE", null]], startMatchDays: 3 },
+};
+const EVIDENCE_KEYS = ["securityId", "ticker", "cik", "builderClass", "fromCanonicalId", "toCanonicalId", "event", "filings", "reviewedAt"];
+const isDay = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && new Date(`${v}T00:00:00Z`).toISOString().slice(0, 10) === v;
+
+/** Register → Map securityId → Eintrag. null → null. Wirft bei jedem Formfehler. */
+export function indexCanonicalEvidence(doc) {
+  if (doc === null || doc === undefined) return null;
+  const fail = (m) => { throw new Error(`CANONICAL_EVIDENCE_INVALID: ${m}`); };
+  if (!doc || doc.schemaVersion !== CANONICAL_EVIDENCE_SCHEMA) fail(`schemaVersion ${CANONICAL_EVIDENCE_SCHEMA} erwartet`);
+  if (!Array.isArray(doc.records)) fail("records[] fehlt");
+  const by = new Map();
+  doc.records.forEach((r, i) => {
+    const bad = (m) => fail(`records[${i}] ${m}`);
+    if (!r || typeof r !== "object" || Array.isArray(r)) bad("kein Objekt");
+    for (const k of Object.keys(r)) if (!EVIDENCE_KEYS.includes(k)) bad(`unbekanntes Feld ${k}`);
+    for (const k of EVIDENCE_KEYS) if (r[k] === undefined || r[k] === null) bad(`Pflichtfeld ${k} fehlt`);
+    if (!/^ref_[A-Z0-9_]+$/.test(r.securityId) || typeof r.ticker !== "string" || !r.ticker) bad("securityId/ticker");
+    if (!/^\d{10}$/.test(r.cik)) bad("cik");
+    if (!EVIDENCE_RULES[r.builderClass]) bad(`builderClass ${r.builderClass} nicht zugelassen`);
+    for (const k of ["fromCanonicalId", "toCanonicalId"]) if (typeof r[k] !== "string" || !/^tiingo:[^|]+:[^|]+:\d{4}-\d{2}-\d{2}$/.test(r[k])) bad(`${k} (genau eine canonical_id)`);
+    if (r.fromCanonicalId.split(":")[2] !== r.ticker || r.toCanonicalId.split(":")[2] !== r.ticker) bad("canonical_id passt nicht zum Ticker (Tickerwechsel sind ausgeschlossen)");
+    if (!r.event || typeof r.event.kind !== "string" || !isDay(r.event.effectiveDate)) bad("event");
+    if (!isDay(r.reviewedAt)) bad("reviewedAt");
+    if (!Array.isArray(r.filings) || !r.filings.length) bad("filings[] fehlt");
+    r.filings.forEach((f, j) => {
+      if (!f || typeof f.form !== "string" || !/^\d{10}-\d{2}-\d{6}$/.test(f.accession || "") || !isDay(f.filingDate) || !/^\d{10}$/.test(f.cik || "") || !/^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\//.test(f.url || "")) bad(`filings[${j}] braucht form, accession, filingDate, cik, url (sec.gov)`);
+      if (!Array.isArray(f.items)) bad(`filings[${j}].items[] fehlt`);
+      if (f.form === "8-K" && (typeof f.quote !== "string" || f.quote.length < 40)) bad(`filings[${j}] 8-K ohne Zitat`);
+    });
+    if (by.has(r.securityId)) bad(`securityId ${r.securityId} doppelt`);
+    by.set(r.securityId, r);
+  });
+  return by;
+}
+
+/** Wendet einen Registereintrag auf einen klassierten canonical_id-Wechsel an (rein). → {c, applied, reason} */
+export function applyCanonicalEvidence(c, rec, { P, N, today, secBy, prevCik }) {
+  const no = (reason) => ({ c, applied: false, reason });
+  const rule = EVIDENCE_RULES[rec.builderClass];
+  if (c.approvable) return no("ALREADY_APPROVABLE");
+  if (c.class !== rec.builderClass) return no(`CLASS_MISMATCH:${c.class}`);
+  if (c.from !== rec.fromCanonicalId || c.to !== rec.toCanonicalId) return no("CANONICAL_IDS_MISMATCH");
+  if (P[0].ticker !== rec.ticker || N.some((r) => r.ticker !== rec.ticker)) return no("TICKER_MISMATCH");
+  const from = P.find((r) => r.canonical_id === rec.fromCanonicalId), to = N.find((r) => r.canonical_id === rec.toCanonicalId);
+  if (!from || !to || N.length !== 1) return no("ROWS_NOT_FOUND");
+  if (EXCHANGE_FAMILY[String(to.exchange).toUpperCase()] !== "OTC") return no("TARGET_NOT_OTC");
+  if (from.instrument_type !== to.instrument_type) return no("INSTRUMENT_TYPE_CHANGED");
+  if (!prevCik || prevCik !== rec.cik) return no(`CIK_NOT_CONFIRMED_BY_COMMITTED_NAMES:${prevCik || "keine"}`);
+  const s = secBy.get(String(rec.ticker).toUpperCase());
+  if (s && s.cik !== rec.cik) return no(`SEC_LIST_OTHER_CIK:${s.cik}`);
+  if (rec.event.effectiveDate > today) return no("EVENT_IN_FUTURE");
+  if (rule.startMatchDays !== null && Math.abs(days(rec.event.effectiveDate, to.start_date)) > rule.startMatchDays) return no("START_DATE_NOT_AT_EVENT");
+  for (const [form, item] of rule.needForms) {
+    const f = rec.filings.find((x) => x.form === form && x.cik === rec.cik && x.filingDate <= today && (!item || x.items.includes(item)));
+    if (!f) return no(`FILING_MISSING:${form}${item ? " " + item : ""}`);
+  }
+  const k8 = rec.filings.find((x) => x.form === "8-K" && x.items.includes("3.01"));
+  const others = rec.filings.filter((x) => x !== k8).map((x) => `${x.form} ${x.accession} (${x.filingDate})`).join(", ");
+  const out = { ...c, class: rule.cls, approvable: true,
+    reason: `${c.reason.replace(/; SEC (widerspricht|bestätigt nicht) \(.*\)$/, "")}; SEC-Beleg derselben CIK ${rec.cik}: ${rec.event.kind} wirksam ${rec.event.effectiveDate}, 8-K ${k8.accession} (${k8.filingDate}, Item 3.01: „${k8.quote}“)${others ? `; weitere Meldungen: ${others}` : ""}${s ? `; die SEC-Tickerliste führt noch ${s.exchange} (Stand der Liste, vor dem Rückzug)` : ""}`,
+    secEvidence: { cik: rec.cik, event: rec.event, filings: rec.filings.map((x) => ({ form: x.form, accession: x.accession, filingDate: x.filingDate, url: x.url })) } };
+  return { c: out, applied: true, reason: null };
+}
+
 /** Kern (rein): Klassierung aller vom Gate gezählten Änderungen und Freigabeliste 1.1.0. */
-export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null }) {
+export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null }) {
   const today = String(next.today || next.generatedAt || "").slice(0, 10), secBy = indexSec(sec);
   const reg = new Map((register?.records || []).map((r) => [r.securityId, r]));
   const cmp = compareMasters(prev, next), a = baselineIndex(prev), b = baselineIndex(next);
@@ -144,8 +224,15 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
   const ev = (source, ref) => ({ source, ref });
   const evProvSec = (c) => ev(`${provSrc}; ${secSrc}`, `${c.provider} | SEC: ${c.sec.ref}`);
 
+  const evIdx = indexCanonicalEvidence(canonicalEvidence), evUsed = new Map();
+  const prevCikBy = new Map((prevNames?.rows || []).map((r) => [r.securityId, r.cik || null])), prevCikOf = (id) => prevCikBy.get(id) || null;
   const canonical = cmp.canonicalIdChanges.map((x) => {
-    const c = { ...x, ...classifyCanonical(a.get(x.securityId), b.get(x.securityId), { today, secBy }) }, r = reg.get(x.securityId);
+    let c = { ...x, ...classifyCanonical(a.get(x.securityId), b.get(x.securityId), { today, secBy }) };
+    const r = reg.get(x.securityId), e = evIdx && evIdx.get(x.securityId);
+    if (e) {
+      const res = applyCanonicalEvidence(c, e, { P: a.get(x.securityId), N: b.get(x.securityId), today, secBy, prevCik: prevCikOf(x.securityId) });
+      evUsed.set(x.securityId, res); c = res.c;
+    }
     if (!r) return c;
     c.form25 = { form: r.form, accession: r.accession, filingDate: r.filingDate, effectiveDate: r.effectiveDate, url: r.url };
     // SEC-Delisting-Beleg gegen eine weiterhin aktive Börsenzeile = Widerspruch (Freiverkehr ist damit vereinbar)
@@ -212,11 +299,11 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
     purpose: "AUFHOLLAUF 1.1.0 → 1.3.0: exakt abgegrenzte, quellengebundene Freigabeliste (Owner-Entscheidung 30.10.2026); Entwurf bis zur gesonderten Owner-Freigabe",
     generatedBy: `scripts/market/build-security-master-approval-list.mjs (${BUILDER_VERSION})`,
     fromVersion: prev.version, toVersion: next.version, prevMasterSha256: sha256(prevBytes),
-    sourceRun: { runId, nextGeneratedAt: next.generatedAt, today, secAsOf, secSha256, delistingRegister: registerRef },
+    sourceRun: { runId, nextGeneratedAt: next.generatedAt, today, secAsOf, secSha256, delistingRegister: registerRef, ...(evIdx ? { canonicalEvidence: { ref: canonicalEvidenceRef, records: evIdx.size, applied: [...evUsed].filter(([, v]) => v.applied).map(([k]) => k).sort(), notApplied: [...evIdx.keys()].filter((k) => !(evUsed.get(k) || {}).applied).sort().map((k) => ({ securityId: k, reason: evUsed.has(k) ? evUsed.get(k).reason : "NO_CANONICAL_CHANGE_IN_RUN" })) } } : {}) },
     instrumentTypeChanges: instrumentTypeChanges.filter((x) => x.approvable).map((x) => pickEntry(x, derivedEv(x))),
     eligibilityFlips: eligibilityFlips.filter((x) => x.approvable).map((x) => pickEntry(x, derivedEv(x))),
     deactivations: deactivations.filter((x) => x.approvable).map((x) => pickEntry(x, x.form25 ? ev(`${provSrc}; ${secSrc}; SEC ${x.form25.form} (${registerRef || "Delisting-Register"})`, `${x.provider} | SEC: ${x.sec.ref} | ${x.form25.form} ${x.form25.accession} eingereicht ${x.form25.filingDate}, wirksam ${x.form25.effectiveDate}: ${x.form25.url}`) : evProvSec(x))),
-    canonicalIdChanges: canonical.filter((x) => x.approvable).map((x) => pickEntry(x, x.form25 ? ev(`${provSrc}; ${secSrc}; SEC ${x.form25.form} (${registerRef || "Delisting-Register"})`, `${x.provider} | SEC: ${x.sec.ref} | ${x.form25.form} ${x.form25.accession} eingereicht ${x.form25.filingDate}, wirksam ${x.form25.effectiveDate}: ${x.form25.url}`) : evProvSec(x))),
+    canonicalIdChanges: canonical.filter((x) => x.approvable).map((x) => pickEntry(x, x.secEvidence ? ev(`${provSrc}; ${secSrc}; SEC-Belegregister ${canonicalEvidenceRef || "(ohne Fundstelle)"}`, `${x.reason} | ${x.provider} | ${x.secEvidence.filings.map((f) => `${f.form} ${f.accession}: ${f.url}`).join(" ; ")}`) : x.form25 ? ev(`${provSrc}; ${secSrc}; SEC ${x.form25.form} (${registerRef || "Delisting-Register"})`, `${x.provider} | SEC: ${x.sec.ref} | ${x.form25.form} ${x.form25.accession} eingereicht ${x.form25.filingDate}, wirksam ${x.form25.effectiveDate}: ${x.form25.url}`) : evProvSec(x))),
     tickerChanges: [],
     newDuplicateCanonicalIds: newDup.filter((x) => x.approvable).map((x) => ({ canonicalId: x.canonicalId, securityId: x.securityId, from: x.from, to: x.to, evidence: ev(`Owner-Entscheidung (--accept-duplicate); ${provSrc}`, `${x.ownerRef} | ${x.provider}`), class: x.class })),
     nameChanges: names.filter((x) => x.approvable).map((x) => pickEntry(x, ev(x.class === "RENAMED_SAME_CIK_PROVIDER" ? `quant/data/market/security-master/company-names.json (${run}), Quelle ${x.nameSource}; ${secSrc}` : `${secSrc}; company-names.json (${run})`, `${x.reason} | SEC: ${x.sec}`))),
@@ -268,6 +355,13 @@ function main() {
     sec: secBytes && JSON.parse(secBytes.toString("utf8")), secAsOf: arg("--sec-as-of"), secSha256: secBytes && sha256(secBytes),
     register: opt("--delisting-register"), registerRef: arg("--delisting-register-ref"), runId: rec?.run?.runId ?? null, gateReport: opt("--gate-report"),
     seriesEnd: (id) => { const p = join(arg("--series-dir") || join(ROOT, "quant/data/market/discover-series"), `${id}.json`); try { const s = existsSync(p) ? J(p) : null; return s && typeof s.to === "string" ? s.to.slice(0, 10) : null; } catch { return null; } },
+    ...(() => {
+      const f = arg("--canonical-evidence");
+      if (!f) return {};
+      if (!existsSync(f)) throw new Error(`Belegregister fehlt: ${f}`);
+      const bytes = readFileSync(f);
+      return { canonicalEvidence: JSON.parse(bytes.toString("utf8")), canonicalEvidenceRef: `${f.startsWith(ROOT + "/") ? f.slice(ROOT.length + 1) : f} sha256 ${sha256(bytes)}` };
+    })(),
     acceptDuplicates: arg("--accept-duplicate") ? [{ canonicalId: arg("--accept-duplicate"), ref: arg("--accept-duplicate-ref") || "Owner-Freigabe ohne Fundstelle" }] : [],
   });
   writeFileSync(arg("--out"), JSON.stringify(res.approval, null, 2) + "\n");

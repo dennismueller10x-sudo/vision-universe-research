@@ -91,3 +91,21 @@ Die freigegebenen Einträge der alten Liste sind alle wieder enthalten. Neu hinz
    - **Warten und neu erzeugen.** Die 5 doppelt aktiven Zeilen altern nach 30 Tagen aus. Eine Neuerzeugung am Lauftag kann dann ≤ 25 ergeben, neue Drift kann aber auch neue Fälle bringen.
    - **Einzelbelege ergänzen.** Für mindestens 3 der 16 Neustarts müsste ein SEC-Beleg (8-K oder Form 25) nachweisen, dass dasselbe Wertpapier weiterläuft oder das alte Listing endet. Das ginge über ein Belegregister im Builder nach dem Muster von #1163. Dafür braucht es einen eigenen PR mit Vorher/Nachher.
 5. Die Liste ist an die Anbieterdatei des Lauftags gebunden. Am Tag des produktiven Laufs wird sie mit demselben Builder erneut erzeugt und dem Owner vorgelegt.
+
+## Nachtrag: Belegregister (G7 = 24, PASS)
+
+Auftrag des Owners: Die 27 Fälle einzeln prüfen. Ergebnis in [V130_G7_CANONICAL_EVIDENCE.md](V130_G7_CANONICAL_EVIDENCE.md).
+
+Die Liste wurde aus demselben Probelauf (41086438209) mit `--canonical-evidence quant/config/security-master-canonical-change-evidence.json` neu erzeugt:
+
+| Kategorie | freigegeben | zählt (Grenze) |
+|---|---:|---:|
+| canonical_id | 63 von 87 | 24 (25) |
+| Instrumenttyp | 147 von 148 | 1 (25) |
+| Deaktivierungen | 87 von 104 | 17 (50) |
+| Eignungswechsel | 208 von 225 | 17 (50) |
+| Namen | 591 von 592 | 1 (200) |
+
+Gate-Probe mit unverändertem Gate und unveränderten Grenzen: **PASS · Entscheidung COMMIT**.
+
+Diese Datei ist ein Vorschlag. Nach dem Merge wird sie aus einem neuen Probelauf auf `main` erneut erzeugt und dem Owner vorgelegt.
