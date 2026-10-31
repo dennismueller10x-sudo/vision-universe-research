@@ -320,9 +320,9 @@ export function studyParameters({ methods = STUDY_METHODS, window = L.WINDOW, qu
 
 /**
  * Runs every method with identical parameters on A and on B. Returns per method A, B, the B - A delta (T0) and the
- * terminal-scenario band of B. Fails closed when the quarantined A part of B differs from quarantined A.
+ * terminal-scenario band of B. onRun({ key, frame, ds, r, opts }) observes each finished run (diagnostics only). Fails closed when the quarantined A part of B differs from quarantined A.
  */
-export function runStudy({ dsA, dsB, addedIds, params, datesBySegment = null, log = () => {} }) {
+export function runStudy({ dsA, dsB, addedIds, params, datesBySegment = null, log = () => {}, onRun = null }) {
   if (L.WINDOW_NAME !== 'DEV') fail('HOLDOUT_NOT_PERMITTED');
   const scenOf = new Map(), clsOf = new Map();
   for (const s of dsB.securities) if (s.v13) { scenOf.set(baseId(s.id), s.v13.scenarios); clsOf.set(baseId(s.id), s.v13.terminalClass); }
@@ -337,7 +337,9 @@ export function runStudy({ dsA, dsB, addedIds, params, datesBySegment = null, lo
     for (const [f, ds] of Object.entries(frames)) {
       const opts = { from: params.from, to: params.to, costs: params.costs };
       const prep = ref.prep(ds, opts) || {};
-      out[f] = evaluateRun(ref.run(ds, { ...opts, ...prep }), { addedIds, scenarioOf, initialCapital: params.initialCapital });
+      const r = ref.run(ds, { ...opts, ...prep });
+      out[f] = evaluateRun(r, { addedIds, scenarioOf, initialCapital: params.initialCapital });
+      if (onRun) onRun({ key, frame: f, ds, r, opts }); // read-only observer (st9-hist-execution audits); the result is unchanged
       out.parametersSha256[f] = sha({ params: params.sha256, opts });
       log(`${key} ${f}: ${out[f].trades} trades`);
     }
@@ -382,4 +384,4 @@ export function readQuarantineDates(file) {
   return { map: new Map(Object.entries(j).map(([k, v]) => [k, [...v].sort()])), sha256: sha(fs.readFileSync(file)) };
 }
 
-export const STUDY_FILES = Object.freeze(['st9-v13-delisted-study.mjs', 'run-st9-v13-delisted-study.mjs', 'st9-hist-universe.mjs']);
+export const STUDY_FILES = Object.freeze(['st9-v13-delisted-study.mjs', 'run-st9-v13-delisted-study.mjs', 'st9-hist-universe.mjs', 'st9-hist-execution.mjs']);

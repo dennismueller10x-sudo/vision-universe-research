@@ -9,6 +9,12 @@
  *     --accounting research-v1 --v13-series <v13-private>/series --v13-raw <v13-private>/raw --out <dir outside repo> \
  *     [--quarantine DQ-K5-BOOK | CA-Q-K5-DATES --quarantine-dates <sealed list.json>] [--methods KEY,KEY] [--write-plain]
  *     [--identity-blocklist <security-master-identity-blocklist.json> --identity-blocklist-sha256 <hex>] [--preflight]
+ *     [--repeat-check]
+ *
+ * Every code file the registration pins is re-hashed before the run (REGISTERED_REFERENCE_CHANGED stops it). After the
+ * run each method and universe is audited independently (research/st9-hist-execution.mjs: exits, gap stops at the open,
+ * delisting at the last traded close, books); a failed audit marks the public part EXECUTION_AUDIT_FAILED and exits 4.
+ * --repeat-check runs the study a second time and requires the identical result hash (no seeds are used).
  *
  * --preflight checks every input without opening the snapshot and prints { ready, missing[] } (exit 0 ready, 3 not);
  * nothing is computed. The identity blocklist (#1159) is an optional input in FLAG mode only: the registered universes
@@ -28,6 +34,7 @@ import { codeSha256 as engineCodeSha256 } from '../runner/run-research.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
 import * as H from './st9-hist-universe.mjs';
+import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -61,6 +68,7 @@ export function preflight(argv, { env = process.env, root = ROOT } = {}) {
   need(/^sts1-[0-9a-f]{32}$/.test(arg('--snapshot') || ''), 'SNAPSHOT_REQUIRED');
   try { S.assertOutsideRepo(arg('--out'), root); } catch (e) { missing.push({ code: e.code ?? 'OUT_INVALID' }); }
   try { verifyRegistration(root); } catch { missing.push({ code: 'REGISTRATION_HASH_MISMATCH' }); }
+  try { X.verifyRegisteredReferences(root, JSON.parse(fs.readFileSync(path.join(root, REGISTRATION_FILE), 'utf8'))); } catch (e) { missing.push({ code: e.code ?? 'REGISTERED_REFERENCE_CHANGED', detail: e.detail ?? null }); }
   for (const k of S3_ENV) need(!!env[k], 'SNAPSHOT_STORE_SECRET_MISSING', k);
   const series = arg('--v13-series'), raw = arg('--v13-raw');
   if (!series || !fs.existsSync(series)) missing.push({ code: 'V13_SERIES_DIR_MISSING', detail: 'archive 1.2.0 part v13-derived (restore-archive.sh)' });
@@ -87,16 +95,17 @@ async function main() {
   if (arg('--accounting') !== 'research-v1') die('RESEARCH_ACCOUNTING_REQUIRED');
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) die('SNAPSHOT_REQUIRED');
-  let OUT, params, registrationSha256, v13, dates = null, blocklist = null;
+  let OUT, params, registrationSha256, referencesSha256, v13, dates = null, blocklist = null;
   try {
     OUT = S.assertOutsideRepo(arg('--out'), ROOT);
     registrationSha256 = verifyRegistration();
+    referencesSha256 = X.verifyRegisteredReferences(ROOT, JSON.parse(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE), 'utf8'))).sha256;
     const quarantine = arg('--quarantine', 'DQ-K5-BOOK');
     params = S.studyParameters({ methods: arg('--methods', S.STUDY_METHODS.join(',')).split(','), quarantine });
     if (quarantine === 'CA-Q-K5-DATES') dates = S.readQuarantineDates(arg('--quarantine-dates'));
     if (arg('--identity-blocklist')) blocklist = H.readIdentityBlocklist(arg('--identity-blocklist'), { expectedSha256: arg('--identity-blocklist-sha256') });
     v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });
-  } catch (e) { die(e instanceof S.StudyError || e instanceof H.HistError ? `STUDY_INPUT_REFUSED: ${e.code}` : `STUDY_INPUT_REFUSED: UNEXPECTED ${e?.message ?? e}`, 3); }
+  } catch (e) { die(e instanceof S.StudyError || e instanceof H.HistError || e instanceof X.ExecError ? `STUDY_INPUT_REFUSED: ${e.code}` : `STUDY_INPUT_REFUSED: UNEXPECTED ${e?.message ?? e}`, 3); }
   const t0 = Date.now(), log = (m) => console.log(`[st9-v13 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   log(`V13 chains bound (weekly + daily): ${v13.chains.length}`);
   const K = await import('../../snapshot/contract.mjs');
@@ -132,16 +141,37 @@ async function main() {
     if (hist.B.identity.duplicateListingOverlap.byOrigin.B_ADDED) throw new H.HistError('IDENTITY_DUPLICATE_IN_ADDED', String(hist.B.identity.duplicateListingOverlap.byOrigin.B_ADDED));
   } catch (e) { die(e instanceof H.HistError ? `STUDY_INPUT_REFUSED: ${e.code}` : `STUDY_INPUT_REFUSED: UNEXPECTED ${e?.message ?? e}`, 3); }
   log(`point in time: A ${JSON.stringify(hist.A.pointInTime)}; identity B ${JSON.stringify(hist.B.identity.duplicateListingOverlap)}`);
-  const result = S.runStudy({ dsA, dsB, addedIds, params, datesBySegment: dates?.map ?? null, log });
-  const receipt = { schema: 'st9-v13-delisted-receipt-1.0.0', snapshotId, datasetSha256, ...verification, registrationSha256, studyCodeSha256: studyCodeSha256(), engineCodeSha256: engineCodeSha256(), quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, histUniverseVersion: H.ST9_HIST_UNIVERSE_VERSION, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, window: L.WINDOW_NAME };
+  // independent audit of every finished run (read-only observer); trades kept for the A/B diff
+  const audits = {}, tradesOf = {};
+  const outcomeOf = new Map(), flagsOf = { A: hist.A._flags, B: hist.B._flags };
+  for (const w of H.listingWindows(dsB, { addedIds })) outcomeOf.set(w.lid, H.outcomeOf(w));
+  const onRun = ({ key, frame, ds, r, opts }) => {
+    const a = X.auditRun(ds, r, { key, costs: opts.costs, from: opts.from });
+    const cov = X.tradeCoverageByYear(r.trades, { key, addedIds: frame === 'B' ? addedIds : new Set(), outcomeOfId: (id) => outcomeOf.get(id) ?? null, identityFlags: flagsOf[frame], perTrade: a._perTrade });
+    (audits[key] ||= {})[frame] = { audit: a, coverage: cov };
+    (tradesOf[key] ||= {})[frame] = r.trades;
+    log(`${key} ${frame}: audit ${a.pass ? 'pass' : `FAILED ${JSON.stringify(a.violations)}`}`);
+  };
+  const result = S.runStudy({ dsA, dsB, addedIds, params, datesBySegment: dates?.map ?? null, log, onRun });
+  const resultSha256 = X.resultSha256(result);
+  if (argv.includes('--repeat-check')) {
+    try { X.assertSameResult(result, S.runStudy({ dsA, dsB, addedIds, params, datesBySegment: dates?.map ?? null })); } catch (e) { die(`STUDY_REFUSED: ${e.code ?? e.message}`, 4); }
+    log('repeat check: identical result hash');
+  }
+  const abDiff = Object.fromEntries(Object.entries(tradesOf).map(([k, t]) => [k, X.abDiff(t.A, t.B, { addedIds })]));
+  const auditPass = Object.values(audits).every((m) => m.A.audit.pass && m.B.audit.pass);
+  const receipt = { schema: 'st9-v13-delisted-receipt-1.0.0', snapshotId, datasetSha256, ...verification, registrationSha256, studyCodeSha256: studyCodeSha256(), engineCodeSha256: engineCodeSha256(), quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, histUniverseVersion: H.ST9_HIST_UNIVERSE_VERSION, histExecutionVersion: X.ST9_HIST_EXECUTION_VERSION, registeredReferencesSha256: referencesSha256, resultSha256, repeatChecked: argv.includes('--repeat-check'), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, window: L.WINDOW_NAME };
   const histPublic = { A: H.publicUniverseDiagnostics(hist.A), B: H.publicUniverseDiagnostics(hist.B), identityBlocklistMode: blocklist ? 'FLAG' : 'NOT_SUPPLIED', addedTerminalCoverage: { addedLastTradeInWindow: census.addedLastTradeInWindow, addedTerminalBooked: census.addedTerminalBooked, terminalSegmentTooShort: census.terminalSegmentTooShort, terminalSegmentTooShortByClass: census.terminalSegmentTooShortByClass, windowEndSegmentTooShort: census.windowEndSegmentTooShort } };
-  const pub = { ...S.publicPart(result, { census, provenance: v13.provenance, receipt }), historicalInfrastructure: histPublic };
-  const full = { receipt, public: pub, universeB: census, v13: v13.provenance, result, historicalInfrastructure: { ...histPublic, flagsA: Object.fromEntries(hist.A._flags), flagsB: Object.fromEntries(hist.B._flags) } };
+  receipt.inputFingerprint = X.inputFingerprint({ snapshotId, datasetSha256, registrationSha256, registeredReferencesSha256: referencesSha256, parametersSha256: params.sha256, v13RegisterSha256: v13.provenance.registerSha256, v13ChainsSha256: v13.provenance.chainsSha256, quarantineDatesSha256: dates?.sha256 ?? null, identityBlocklistSha256: blocklist?.sha256 ?? null, studyCodeSha256: receipt.studyCodeSha256, engineCodeSha256: receipt.engineCodeSha256 }).sha256;
+  const execPublic = { pass: auditPass, methods: Object.fromEntries(Object.entries(audits).map(([k, m]) => [k, { A: { audit: X.publicAudit(m.A.audit), coverage: m.A.coverage }, B: { audit: X.publicAudit(m.B.audit), coverage: m.B.coverage }, abDiff: abDiff[k] }])) };
+  const pub = { ...S.publicPart(result, { census, provenance: v13.provenance, receipt }), historicalInfrastructure: { ...histPublic, execution: execPublic }, status: auditPass ? 'COMPLETE' : 'EXECUTION_AUDIT_FAILED' };
+  const full = { receipt, public: pub, universeB: census, v13: v13.provenance, result, historicalInfrastructure: { ...histPublic, flagsA: Object.fromEntries(hist.A._flags), flagsB: Object.fromEntries(hist.B._flags), auditExamples: Object.fromEntries(Object.entries(audits).map(([k, m]) => [k, { A: m.A.audit._examples, B: m.B.audit._examples }])) } };
   fs.mkdirSync(OUT, { recursive: true });
   const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   fs.writeFileSync(path.join(OUT, 'st9-v13-delisted.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify(full))));
   fs.writeFileSync(path.join(OUT, 'st9-v13-delisted.public.json'), JSON.stringify(pub, null, 1) + '\n');
   if (argv.includes('--write-plain')) fs.writeFileSync(path.join(OUT, 'st9-v13-delisted.private.json'), JSON.stringify(full, null, 1) + '\n');
+  if (!auditPass) { console.error('EXECUTION_AUDIT_FAILED (sealed examples in the private part)'); process.exit(4); }
   log('done');
 }
 

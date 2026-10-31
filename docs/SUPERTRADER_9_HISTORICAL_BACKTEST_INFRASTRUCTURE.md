@@ -124,3 +124,79 @@ Außerdem fehlt ein Workflow, der Snapshot und entschlüsseltes Archiv gleichzei
 
 `sf-st9-v13-delisted-study.test.mjs`, Test „coverage diagnostic“: Eine Kette mit verworfenem kurzem letztem Segment endet als `DATA_GAP`, zählt in `addedLastTradeInWindow` und in `terminalSegmentTooShort`; `addedTerminalBooked` entspricht der Zahl der `LISTING_INACTIVE`-Enden.
 - **Preflight:** listet genau die fehlenden Eingaben; ist ein vollständiger synthetischer Satz vorhanden, meldet er `ready`.
+
+## 6. Ausführungsseite: `research/st9-hist-execution.mjs` (Folge-PR)
+
+Prüft fertige Läufe unabhängig von den Engines. Keine Engine-Funktion wird aufgerufen, kein Fill und keine Buchung wird geändert. Das registrierte Ergebnis bleibt bytegleich; ein Test vergleicht den Ergebnis-Hash mit und ohne Prüfung.
+
+### 6.1 Stop-Loss und Ausstiege (`classifyExits`)
+
+Jede SELL-Zeile wird gegen ihren Balken nachgerechnet:
+
+| Klasse | Bedingung | Regel |
+|---|---|---|
+| `GAP_THROUGH_STOP_AT_OPEN` | Eröffnung unter dem Stop (Stop-Niveau = `finalStop` des Engine-Trades) | Fill = Eröffnung |
+| `INTRADAY_AT_STOP` | Eröffnung über dem Stop, Tief erreicht ihn | Fill = Stop |
+| `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Turtle-Einheitsstopps (kein einzelnes Niveau) | nur ≤ Eröffnung, ≥ Tief |
+| `SAME_BAR_CERTAIN` | Stop am Einstiegstag sicher (Fill zur Eröffnung, Schluss ≤ Stop) | – |
+| `INTRADAY_ORDER_ASSUMED` | Gleichtags-Stop nach Intrabar-Annahme ohne Minutendaten | Unsicherheitskennzeichen |
+| `TERMINAL_AT_LAST_TRADED_CLOSE` | Delisting | nur am letzten Balken = Ende, Preis = Schluss × (1 − Slippage) |
+| `DATA_EVENT_CENSORED` | `SECURITY_UNAVAILABLE` (Stale-Regel A4) | zensiert |
+
+Als Verstöße zählen:
+- `STOP_FILL_ABOVE_OPEN`, `STOP_FILL_BELOW_LOW`, `STOP_NOT_REACHED`, `STOP_NOT_AT_LEVEL`;
+- **`STOP_GAP_NOT_FILLED_AT_OPEN`**: der Stop wurde zum Niveau gebucht, obwohl die Eröffnung darunter lag. Das ist die optimistische Annahme;
+- `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`.
+
+**Vorher/Nachher an der Fixture:** Eröffnung 15 bei Stop 18.
+- **Engine:** bucht 15 × (1 − Slippage), Klasse `GAP_THROUGH_STOP_AT_OPEN`, 0 Verstöße.
+- **Naive Tagesbalken-Buchung zum Stop:** 18 × (1 − Slippage) ergibt `STOP_FILL_ABOVE_OPEN` und `STOP_GAP_NOT_FILLED_AT_OPEN`.
+
+Das Ausführungsmodell der Engines war bereits richtig (`min(open, stop)`). Geändert wurde nichts. Neu ist, dass die Studie es für jede Methode und beide Universen nachweist, auch für Minervini und Turtle, die `checkLifecycleRun` nicht abdeckt.
+
+### 6.2 Prüfung je Lauf (`auditRun`)
+
+- `classifyExits`;
+- `sf7-execution-checks.mjs#checkLedgerAgainstBars` (Bücher, Fills im Balken, Bargeld), für alle Methoden;
+- `#checkLifecycleRun` für die sf5-Lebenszyklen.
+
+Beide sind wiederverwendet. Der Runner hängt die Prüfung über einen Beobachter (`runStudy({ onRun })`) an, ohne zweiten Lauf. Bei einem Verstoß gilt: öffentlicher Teil `status: EXECUTION_AUDIT_FAILED`, Beispiele nur versiegelt, Exit 4.
+
+### 6.3 Reproduzierbare A/B-Vergleiche
+
+- **`verifyRegisteredReferences`:** Vor dem Lauf werden alle 24 in der Registrierung festgeschriebenen Dateien neu gehasht. Eine Änderung bricht den Lauf ab (`REGISTERED_REFERENCE_CHANGED`) und braucht eine neue Registrierung. Bisher prüfte der Runner nur den Hash der Registrierungsdatei selbst. `--preflight` meldet das ebenfalls.
+- **`inputFingerprint`:** ein SHA-256 über
+  - Snapshot-ID, Datensatz-Hash, Registrierung und Referenzen;
+  - Parameter, V13-Register und Ketten;
+  - Quarantäneliste und Sperrliste;
+  - Studien- und Engine-Code;
+  - `seeds: NONE_USED`.
+
+  Er steht in der Quittung.
+- **Determinismus:** `resultSha256` des Ergebnisses steht in der Quittung. `--repeat-check` rechnet die Studie ein zweites Mal und verlangt denselben Hash (`DETERMINISM_FAILED`). Der Studienpfad nutzt keine Zufallszahlen.
+- **Diff-Bericht `abDiff`** je Methode, aus `compareTradeSets` übernommen:
+  - A-eigene Trades in B: unverändert, nur Stückzahl, geändert, entfallen, neu;
+  - dazu die Trades in zugefügten Ketten.
+
+  So wird sichtbar, wie viel vom Unterschied B − A aus Kapital- und Platzkonkurrenz kommt und wie viel aus den neuen Ketten selbst.
+
+### 6.4 Unsicherheit je Jahr und Methode (`tradeCoverageByYear`)
+
+Je Einstiegsjahr: Trades nach Herkunft, geschlossene Trades, Trades mit Kennzeichen. Kennzeichen:
+- `OPEN_AT_DATA_END_RIGHT_CENSORED`, `INTRADAY_ORDER_ASSUMED`, `DATA_EVENT_CENSORED`;
+- `DELISTING_OUTCOME_UNKNOWN_CENSORED`, `DELISTING_MERGER_BAND` / `DELISTING_DISTRESS_BAND`;
+- Identitätskennzeichen aus §2.2;
+- das Datenkennzeichen der Methode (§2.4);
+- `ADDED_CHAIN_WITHOUT_FUNDAMENTALS` für C06/C07.
+
+`flaggedShare` ist der Anteil gekennzeichneter Trades. Öffentlich erscheinen nur Zählungen.
+
+### 6.5 Tests
+
+`node --test scripts/supertrader/tests/sf-st9-hist-execution.test.mjs`, 6 Tests:
+- Gap durch den Stop (vorher/nachher);
+- Berührung intraday und angenommene Intrabar-Reihenfolge;
+- Delisting-Abrechnung und Manipulationen (Preis, Fortschreiben, späte Zeile, später Einstieg);
+- Prüfung von Turtle S1 und KK Breakout in A und B ohne Ergebnisänderung, Wiederholungs-Hash;
+- A/B-Diff und Unsicherheit je Jahr;
+- Referenz-Hashes und Fingerabdruck.
