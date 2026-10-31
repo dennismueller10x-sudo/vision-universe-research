@@ -1,17 +1,17 @@
 {
  "schemaVersion": "backtest-demo-performance-1.0.0",
  "note": "Measured on one machine; cache states as listed (population cache warm unless MISS). Not part of any result hash.",
- "node": "v22.22.0",
+ "node": "v22.23.4",
  "cases": [
   {
    "id": "replay-nvda-winner-splits",
    "kind": "SAME_STOCK_REPLAY",
    "state": "RESEARCH_EXECUTED",
-   "populationCache": "HIT",
+   "populationCache": "MISS_WRITTEN",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 3141,
-   "rssMb": 216,
-   "rssDeltaMb": 161
+   "runtimeMs": 30743,
+   "rssMb": 710,
+   "rssDeltaMb": 657
   },
   {
    "id": "replay-intc-loser",
@@ -19,19 +19,19 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 1370,
-   "rssMb": 232,
-   "rssDeltaMb": 14
+   "runtimeMs": 602,
+   "rssMb": 723,
+   "rssDeltaMb": 13
   },
   {
    "id": "ledger-smci-winner-split",
    "kind": "SAME_STOCK_REPLAY",
    "state": "RESEARCH_EXECUTED",
-   "populationCache": "HIT",
+   "populationCache": "MISS_WRITTEN",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 1153,
-   "rssMb": 242,
-   "rssDeltaMb": 10
+   "runtimeMs": 29754,
+   "rssMb": 1300,
+   "rssDeltaMb": 577
   },
   {
    "id": "pattern-2015-sideways",
@@ -39,9 +39,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 5069,
-   "rssMb": 374,
-   "rssDeltaMb": 132
+   "runtimeMs": 3618,
+   "rssMb": 1279,
+   "rssDeltaMb": -21
   },
   {
    "id": "signal-2008-crash",
@@ -49,9 +49,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 8790,
-   "rssMb": 316,
-   "rssDeltaMb": -57
+   "runtimeMs": 7285,
+   "rssMb": 1281,
+   "rssDeltaMb": 1
   },
   {
    "id": "signal-2009-recovery",
@@ -59,9 +59,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 53490,
-   "rssMb": 670,
-   "rssDeltaMb": 354
+   "runtimeMs": 45206,
+   "rssMb": 1520,
+   "rssDeltaMb": 240
   },
   {
    "id": "signal-2020-covid",
@@ -69,9 +69,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 2944,
-   "rssMb": 406,
-   "rssDeltaMb": -264
+   "runtimeMs": 2131,
+   "rssMb": 1503,
+   "rssDeltaMb": -17
   },
   {
    "id": "signal-2022-bear",
@@ -79,9 +79,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 3176,
-   "rssMb": 422,
-   "rssDeltaMb": 16
+   "runtimeMs": 2464,
+   "rssMb": 1521,
+   "rssDeltaMb": 19
   },
   {
    "id": "setup-reconstruction-2016-2024",
@@ -89,9 +89,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 4522,
-   "rssMb": 477,
-   "rssDeltaMb": 54
+   "runtimeMs": 3207,
+   "rssMb": 1762,
+   "rssDeltaMb": 241
   },
   {
    "id": "strategy-2019-bull",
@@ -99,9 +99,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 1190,
-   "rssMb": 484,
-   "rssDeltaMb": 6
+   "runtimeMs": 712,
+   "rssMb": 1799,
+   "rssDeltaMb": 36
   },
   {
    "id": "strategy-2013-2014-bull",
@@ -109,9 +109,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 1267,
-   "rssMb": 495,
-   "rssDeltaMb": 11
+   "runtimeMs": 622,
+   "rssMb": 1837,
+   "rssDeltaMb": 39
   },
   {
    "id": "strategy-dividends-tr",
@@ -119,9 +119,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 822,
-   "rssMb": 516,
-   "rssDeltaMb": 20
+   "runtimeMs": 421,
+   "rssMb": 1879,
+   "rssDeltaMb": 41
   },
   {
    "id": "strategy-profile-prepared",
@@ -129,9 +129,9 @@
    "state": "PREPARED_DATA_LIMITED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 701,
-   "rssMb": 549,
-   "rssDeltaMb": 33
+   "runtimeMs": 280,
+   "rssMb": 1907,
+   "rssDeltaMb": 28
   },
   {
    "id": "factor-momentum-v10-panel",
@@ -139,19 +139,19 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 46059,
-   "rssMb": 1441,
-   "rssDeltaMb": 892
+   "runtimeMs": 20400,
+   "rssMb": 2066,
+   "rssDeltaMb": 160
   },
   {
    "id": "delisted-xco-bankruptcy",
    "kind": "SAME_STOCK_REPLAY",
    "state": "RESEARCH_EXECUTED",
-   "populationCache": "HIT",
+   "populationCache": "MISS_WRITTEN",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 2328,
-   "rssMb": 1557,
-   "rssDeltaMb": 97
+   "runtimeMs": 33983,
+   "rssMb": 2481,
+   "rssDeltaMb": 395
   },
   {
    "id": "acquisition-agn",
@@ -159,9 +159,9 @@
    "state": "RESEARCH_EXECUTED",
    "populationCache": "MEMORY",
    "resultCache": "MISS_WRITTEN",
-   "runtimeMs": 1223,
-   "rssMb": 1592,
-   "rssDeltaMb": 35
+   "runtimeMs": 655,
+   "rssMb": 2492,
+   "rssDeltaMb": 11
   }
  ]
 }

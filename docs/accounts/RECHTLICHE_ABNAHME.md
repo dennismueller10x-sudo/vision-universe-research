@@ -60,7 +60,7 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | A6 | Vertragsbestätigung § 312f BGB | umgesetzt (eigene E-Mail mit Volltexten) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A7 | Button-Lösung § 312j Abs. 3: letzte Schaltfläche bei Stripe heißt „Abonnieren“; ergänzender Text darüber („Mit „Abonnieren“ bestellst du Vision Universe Pro zahlungspflichtig für 1,00 € pro Monat inkl. USt. …“) | `custom_text.submit.message` | Rechtsberatung | **offen** |
 | A8 | Datenschutzhinweise: Rechtsgrundlagen, Speicherfristen, Anbieter (Supabase, Cloudflare, Stripe, PayPal, Klarna, Brevo, GitHub Pages), Drittlandübermittlung (DPF/SCC), AVV je Anbieter | Entwurf mit [[PRÜFEN]] „Fristen festlegen“, „Je Anbieter …“ | Owner + Rechtsberatung | **offen** |
-| A9 | Google Fonts auf `/analysten/` (Übermittlung an Google ohne Einwilligung) | nur benannt, nicht geändert (fremde Welt) | Owner | **offen** |
+| A9 | Google Fonts auf `/analysten/` (Übermittlung an Google ohne Einwilligung) | behoben 30.10.2026: Schriften lokal (`/assets/fonts`); die Website lädt keine Drittinhalte mehr | – | erledigt |
 | A10 | Brevo-Kontaktliste (A) ohne Einwilligung: Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO, nur Service-Kommunikation | Code trennt A und B; A ausgeschaltet | Rechtsberatung | **offen** |
 | A11 | Newsletter (B): Einwilligungstext, DOI, Nachweis, Abmeldung, Tracking aus | umgesetzt; Text wortgleich mit der Landingpage (`vu-newsletter-v1`) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt (`inclusive`); fester Satz 19 % DE vorbereitet (`tax_rate`), noch nicht angelegt; öffentlicher Checkout verlangt USt-Ausweis | Steuerberatung | **offen** |
@@ -77,8 +77,7 @@ freigegebene Texte zusätzlich auf Tester. Der Umschalt-PR ändert deshalb nur T
    `LEGAL_VERSION` ohne „entwurf“ (z. B. `vu-recht-2026-11-10-1`), `LEGAL_STATUS = 'freigegeben'`. Das Entwurfsbanner entfällt
    dann automatisch.
 2. **Fassung bestätigen**: `VU_LEGAL_APPROVED = "<LEGAL_VERSION>"` in `[env.production.vars]`.
-3. **Umsatzsteuer ausweisen**: `STRIPE_TAX_MODE = "txr_…"` (Lauf „Konten — Stripe Live einrichten“ mit `tax_rate = true`)
-   oder `"automatic"` ([STEUER.md](STEUER.md)).
+3. **Umsatzsteuer ausweisen**: `STRIPE_TAX_MODE = "automatic"` (Stripe Tax, [STEUER.md](STEUER.md)).
 4. **Checkout öffnen**: `VU_CHECKOUT_ACCESS = "public"`.
 
 Alle vier Punkte in einem PR, den der Owner ausdrücklich freigibt; danach „Konten — vu-account ausrollen (Produktion)“ mit

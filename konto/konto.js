@@ -635,6 +635,111 @@
     $('ka-cancel-print').addEventListener('click', function () { window.print(); });
   };
 
+  // ------------------------------------------------------------ Tarifverwaltung (nur Rolle pricing_admin)
+  // Der Server entscheidet ueber die Berechtigung (403 NOT_PRICING_ADMIN); die Seite zeigt nur an, was er liefert.
+  // Ablauf: Vorschau (nichts geaendert) -> Zusammenfassung -> Passwort + Bestaetigung -> Aenderung.
+  views['pricing-admin'] = function () {
+    if (!A.available()) return unavailable();
+    var current = null, pending = null;
+    var STATUS_TEXT = {applied: 'angewendet', failed: 'fehlgeschlagen', started: 'begonnen', stripe_created: 'unvollständig (wird bei Wiederholung abgeschlossen)'};
+    function label(p) { return p.plan_id.charAt(0).toUpperCase() + p.plan_id.slice(1) + ', ' + (p.interval === 'year' ? 'jährlich' : 'monatlich'); }
+    function cents(text) {
+      var t = String(text || '').trim().replace(/\s|€/g, '');
+      if (!/^\d{1,3}([.,]\d{1,2})?$/.test(t)) return null;
+      var parts = t.replace(',', '.').split('.');
+      return Number(parts[0]) * 100 + (parts[1] ? Number((parts[1] + '0').slice(0, 2)) : 0);
+    }
+    function row(cells) {
+      return el('tr', {}, cells.map(function (c) { return el('td', {className: c.num ? 'num' : null, text: c.text}); }));
+    }
+    function render(d) {
+      current = d;
+      var byId = {};
+      $('ka-loading').hidden = true;
+      $('ka-pricing-wrap').hidden = false;
+      $('pa-state').textContent = 'Modus: ' + (d.mode === 'live' ? 'Live' : 'Test') + ' · Checkout: ' + d.checkout +
+        ' · Umsatzsteuer: ' + (d.tax === 'automatic' ? 'Stripe Tax (' + (d.stripeTax === 'ok' ? 'aktiv' : 'NICHT aktiv') + ')' : 'ohne Ausweis') +
+        ' · Erlaubte Preise: ' + A.money(d.limits.min, 'EUR') + ' bis ' + A.money(d.limits.max, 'EUR');
+      var body = $('pa-prices'), sel = $('pa-price');
+      body.textContent = '';
+      sel.textContent = '';
+      d.prices.forEach(function (p) {
+        byId[p.id] = p;
+        var s = d.stripe[p.id];
+        var stripe = !p.active ? '–' : !s ? 'nicht geprüft' : s.error ? 'nicht lesbar'
+          : (s.matches ? 'stimmt überein' : 'ABWEICHUNG (' + A.money(s.amount, 'EUR') + ')') + (s.taxBehavior === 'inclusive' ? ', inkl. USt' : ', NICHT inkl. USt');
+        body.appendChild(row([{text: label(p)}, {text: A.money(p.unit_amount, p.currency), num: true},
+          {text: p.active ? 'aktiv (neue Abschlüsse)' : 'früher'}, {text: String(p.subscribers), num: true}, {text: stripe}]));
+        if (p.active && p.provider === 'stripe') sel.appendChild(el('option', {value: p.id, text: label(p) + ' – ' + A.money(p.unit_amount, p.currency)}));
+      });
+      var log = $('pa-log');
+      log.textContent = '';
+      if (!d.changes.length) log.appendChild(row([{text: 'Noch keine Änderung.'}, {text: ''}, {text: ''}, {text: ''}, {text: ''}]));
+      d.changes.forEach(function (c) {
+        var p = byId[c.plan_price_id];
+        log.appendChild(row([{text: new Date(c.created_at).toLocaleString('de-DE')}, {text: p ? label(p) : c.plan_price_id},
+          {text: A.money(c.old_amount, 'EUR'), num: true}, {text: A.money(c.new_amount, 'EUR'), num: true},
+          {text: (STATUS_TEXT[c.status] || c.status) + (c.error ? ' (' + c.error + ')' : '')}]));
+      });
+    }
+    function load() {
+      return A.get('/v1/admin/pricing').then(function (r) {
+        $('ka-loading').hidden = true;
+        if (r.ok) return render(r.data);
+        disableForms();
+        fail(r);
+      });
+    }
+    function reset() {
+      pending = null;
+      $('pa-apply-form').hidden = true;
+      $('pa-apply-form').reset();
+    }
+    requireSession().then(function (user) { if (user) load(); });
+
+    $('pa-preview-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type=submit]');
+      var amount = cents($('pa-amount').value);
+      if (amount === null || !current || amount < current.limits.min || amount > current.limits.max) return notice(A.message('AMOUNT_INVALID'), 'error');
+      reset();
+      busy(btn, true);
+      A.post('/v1/admin/pricing/preview', {price: $('pa-price').value, amount: amount}).then(function (r) {
+        busy(btn, false);
+        if (!r.ok) return fail(r);
+        pending = r.data;
+        var list = $('pa-summary');
+        list.textContent = '';
+        r.data.summary.forEach(function (line) { list.appendChild(el('li', {text: line})); });
+        $('pa-warnings').hidden = !r.data.warnings.length;
+        $('pa-warnings').textContent = r.data.warnings.join(' ');
+        $('pa-apply-form').hidden = false;
+        notice('Vorschau erstellt. Es wurde noch nichts geändert.', 'info');
+        $('pa-password').focus();
+      });
+    });
+    $('pa-cancel').addEventListener('click', function () { reset(); notice('Abgebrochen. Es wurde nichts geändert.', 'info'); });
+    $('pa-apply-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!pending) return;
+      if (!$('pa-confirm').checked) return notice('Bitte bestätige, dass du die Zusammenfassung geprüft hast.', 'error');
+      var btn = this.querySelector('button[type=submit]');
+      busy(btn, true);
+      // Wiederholen (z. B. nach Zeitueberschreitung) schickt dieselbe Vorgangs-ID: der Server fuehrt nichts doppelt aus.
+      A.post('/v1/admin/pricing/apply', {price: pending.price, amount: pending.amount, changeId: pending.changeId,
+        expectedProviderPriceId: pending.expectedProviderPriceId, password: $('pa-password').value, confirm: true}, {timeoutMs: 30000}).then(function (r) {
+        busy(btn, false);
+        $('pa-password').value = '';
+        if (!r.ok) return fail(r);
+        var c = r.data.change;
+        reset();
+        $('pa-amount').value = '';
+        notice('Preis geändert: ' + A.money(c.from, 'EUR') + ' → ' + A.money(c.to, 'EUR') + '. Neue Abschlüsse zahlen den neuen Preis (Preisseite spätestens nach 5 Minuten).', 'ok');
+        load();
+      });
+    });
+  };
+
   // Navigation innerhalb des Kontos: aktuelle Seite markieren.
   Array.prototype.forEach.call(document.querySelectorAll('.ka-nav a'), function (a) {
     if (a.getAttribute('href') === window.location.pathname) a.setAttribute('aria-current', 'page');

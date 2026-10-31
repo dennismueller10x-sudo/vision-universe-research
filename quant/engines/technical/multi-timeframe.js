@@ -50,6 +50,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var TF = isNode ? require("./timeframe.js") : global.VUTechnical.Timeframe;
+  var Canonical = isNode ? require("./canonical-bars.js") : global.VUTechnical.CanonicalBars;
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
   var Cdl = isNode ? require("./candlesticks.js") : global.VUTechnical.Candlesticks;
 
@@ -181,7 +182,22 @@
     return out;
   }
 
-  var api = { MTF_VERSION: MTF_VERSION, SPEC: SPEC, CANDLES: CANDLES, FIELDS_1_1: FIELDS_1_1, FIELDS_1_2: FIELDS_1_2, compute: compute, closedAt: closedAt, blockOf: blockOf, blockL7: blockL7, blockAP4: blockAP4 };
+  /**
+   * Abgeschlossene Bars eines Zeitrahmens als CanonicalBarSeries - dieselbe Aggregation und dieselbe Regel fuer den
+   * offenen Bar wie compute() (closedAt). Gemeinsame Quelle fuer Wochenformationen im Screener (screen-row.js) und die
+   * Wochenkerzen im Chart Studio, damit beide dieselben Wochen sehen.
+   * @returns {{series, bars, asOf, closedRule, droppedOpenBar}|null}
+   */
+  function completedSeries(series, tf) {
+    if (!series || series.timeframe !== "1D" || !series.length || !SPEC[tf]) return null;
+    var cutoff = series.timestamps[series.length - 1], agg = TF.aggregate(series, tf);
+    var drop = !closedAt(cutoff, tf) ? 1 : 0, n = agg.close.length - drop;
+    if (n < 2) return null;
+    return { series: drop ? Canonical.slice(agg, n - 1) : agg, bars: n, asOf: String(agg.timestamps[n - 1]).slice(0, 10),
+      closedRule: SPEC[tf].closedRule, droppedOpenBar: drop === 1 };
+  }
+
+  var api = { MTF_VERSION: MTF_VERSION, completedSeries: completedSeries, SPEC: SPEC, CANDLES: CANDLES, FIELDS_1_1: FIELDS_1_1, FIELDS_1_2: FIELDS_1_2, compute: compute, closedAt: closedAt, blockOf: blockOf, blockL7: blockL7, blockAP4: blockAP4 };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.MultiTimeframe = api; }
 })(typeof window !== "undefined" ? window : globalThis);

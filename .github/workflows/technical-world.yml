@@ -11,14 +11,17 @@ name: Technical - Screener-Datensatz
 on:
   workflow_run:
     workflows:
+      # Der Nachtlauf: Marktdaten-Refresh ruft die Materialisierung per workflow_call auf und ist erst fertig, wenn sie
+      # committet hat. Ein eigener Lauf der Materialisierung entsteht dabei nicht (Audit 26.10.2026), deshalb loest der
+      # Marktlauf selbst aus. Seit 30.10.2026 (docs/technical/TECHNICAL_SCHEDULE.md): Der Zeitplan unten startet bei
+      # GitHub 5-6 h spaet (27.-30.10.: 10:25-11:27 statt 05:10 UTC); der Marktlauf endet 04:00-06:50 UTC.
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
       - "Quant 2.0 Product Intelligence Materialization"
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types:
       - completed
-  # Der Marktlauf ruft die Materialisierung per workflow_call auf; dabei entsteht kein eigener Lauf, auf den
-  # workflow_run reagieren koennte (Audit 26.10.2026: alle 73 Ausloesungen uebersprungen, technical/data nie
-  # automatisch gebaut). Deshalb ein eigener Zeitplan nach dem Nachtlauf (Markt Mo-Fr 22:30 UTC, Materialisierung
-  # bis ca. 03:00 UTC). Unveraenderte Daten erzeugen keinen Commit; workflow_run bleibt als zusaetzlicher Ausloeser.
+  # Rueckfall, falls der Marktlauf scheitert oder kein workflow_run eintrifft. Unveraenderte Daten erzeugen keinen
+  # Commit; mehrere Ausloesungen an einem Tag sind deshalb harmlos.
   schedule:
     - cron: '10 5 * * 2-6'
   workflow_dispatch:
@@ -32,9 +35,12 @@ concurrency:
 
 jobs:
   build:
+    # workflow_run nur nach einem erfolgreichen Lauf auf main, der kein Push war (Push-Laeufe auf claude/** sind
+    # uebersprungen oder Probelaeufe und duerfen den Datensatz nicht ausloesen).
     if: >-
       github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event != 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "corporate-action-confirmations-1.0.0",
+  "version": 2,
+  "note": "Belegte Kapitalmassnahmen, die der Kursanbieter (Tiingo) NICHT fuehrt. Jeder Eintrag mit SEC-Originalbeleg (Accession, URL, sha256, woertliches Zitat) und dokumentierter Anbieterprobe. correction.status UNCORRECTED: nur Beleg (Kennzeichnung 'bestaetigt' in Technical, ab screen-row 1.13.0). correction.status PIPELINE: die Marktdaten-Domaene setzt beim Lesen der Rohbalken den splitFactor am Sprungtag (scripts/market/lib/corporate-action-confirmations.mjs#applyConfirmations; Technical-Materialisierung, Discover-Tagesreihe, Wochenreihe). Kurse und Volumen bleiben die des Anbieters; fuehrt der Anbieter den Split selbst oder springt die Reihe nicht mehr, greift der Eintrag nicht (PROVIDER_SPLIT_NEARBY, NO_RAW_JUMP).",
+  "entries": [
+    {
+      "id": "GIBO-2026-06-29-CONSOLIDATION-25",
+      "securityId": "ref_GIBO",
+      "ticker": "GIBO",
+      "cik": "0002034520",
+      "issuer": "GIBO Holdings Ltd",
+      "kind": "SHARE_CONSOLIDATION",
+      "ratioText": "25:1",
+      "splitFactor": 0.04,
+      "effectiveDate": "2026-06-29",
+      "effectiveBasis": "Wirksam zur Handelseroeffnung am Mo 2026-06-29 (6-K). Der Anbieterbalken vom 29.06. ist ein unveraenderter Altwert (O=H=L=C=1,25, Volumen 1.079); der erste Balken in konsolidierten Einheiten ist der 30.06. (Eroeffnung 24,74 = 19,8 x 1,25).",
+      "evidence": [
+        {
+          "accession": "0001493152-26-030060",
+          "form": "6-K",
+          "filed": "2026-06-25",
+          "url": "https://www.sec.gov/Archives/edgar/data/2034520/000149315226030060/form6-k.htm",
+          "sha256": "dab97c5356a813ae886c3f0689e27637c1c3d877e229376dc16630556a941bae",
+          "bytes": 32652,
+          "quote": "On May 25, 2026, the Board approved to effect a Share Consolidation at a ratio of twenty-five (25)-for one, such that (i) every twenty-five (25) issued and unissued Class A ordinary shares, par value US$0.0002 each, in authorized share capital of the Company be consolidated into one Class A ordinary share"
+        },
+        {
+          "accession": "0001493152-26-030060",
+          "form": "6-K",
+          "filed": "2026-06-25",
+          "url": "https://www.sec.gov/Archives/edgar/data/2034520/000149315226030060/form6-k.htm",
+          "sha256": "dab97c5356a813ae886c3f0689e27637c1c3d877e229376dc16630556a941bae",
+          "bytes": 32652,
+          "quote": "Beginning with the opening of trading on June 29, 2026, the Company’s Class A ordinary shares are expected to be traded on the Nasdaq Capital Market under the existing ticker symbol “GIBO” on a Share Consolidation-adjusted basis with a new CUSIP number G38617133."
+        }
+      ],
+      "providerCheck": {
+        "provider": "tiingo",
+        "checkedAt": "2026-10-30",
+        "window": "2026-06-15..2026-07-10",
+        "requests": 1,
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41117039581",
+        "result": "NO_SPLIT_FACTOR",
+        "detail": "splitFactor = 1 an allen 16 Balken; Rohschluss 26.06. 1,25 -> 29.06. 1,25 (Altwert) -> 30.06. 22,70."
+      },
+      "correction": {
+        "status": "PIPELINE",
+        "decidedAt": "2026-10-30",
+        "decision": "Owner-Freigabe Option A (30.10.2026): Korrektur ausschliesslich in der Marktdaten-Pipeline, keine manuelle Aenderung generierter Daten.",
+        "reason": "Der Anbieter fuehrt die Konsolidierung nicht (splitFactor = 1, Anbieterprobe). split-evidence-supplements.json bildet nur Vorwaerts-Splits mit Zahltag ab und verwirft diesen Fall zu Recht (Altwert am Wirksamkeitstag). Die Bereinigung setzt den Faktor 0,04 am ersten Balken in konsolidierten Einheiten (30.06.2026), dem Balken mit dem kleinsten Rest des Rohsprungs."
+      },
+      "verifiedAt": "2026-10-30"
+    }
+  ]
+}

@@ -6,6 +6,7 @@
    Datenquellen (nur lesend):
      /technical/data/index-v1.json + meta.json         (Startseite, Chart Studio; Erzeuger build-screener.mjs)
      /technical/data/screener-v1.json                  (nur Screener, bei Bedarf)
+     /technical/data/spark-v1.json                     (Mini-Kursverlauf der Trefferkarten, nach dem ersten Bild)
      /quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz
                                                        (Tagesbars + Vollhistorien-Features)
      /quant/data/market/discover-series-long/<securityId>.json (Wochenschluesse)
@@ -14,7 +15,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart;
+  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart, TPL = global.VUTechnical.Templates;
   var doc = global.document;
 
   /* -------------------------------------------------------------- DOM */
@@ -34,6 +35,19 @@
   }
   function put(host, kids) { host.replaceChildren.apply(host, [].concat(kids || []).filter(Boolean)); }
   function isNum(v) { return typeof v === "number" && isFinite(v); }
+  /* Langtext der Kurssprung-Kennzeichnung unter der Pruefleiste (Chart Studio); null ohne Kennzeichnung. */
+  function jumpNote(row) {
+    var f = jumpFlag(row);
+    return f ? el("p", { class: "tc-note " + (row.suspectJumpStatus === "CONFIRMED" ? "is-bad" : "is-warn"), role: "note", text: f.title }) : null;
+  }
+  /* Kurssprung-Kennzeichnung der Zeile (price-jumps.js, screen-row 1.13.0): Verdacht oder bestaetigter Datenfehler. */
+  function jumpFlag(row) {
+    if (!row || !row.suspectJumpAt) return null;
+    var PJ = global.VUTechnical && global.VUTechnical.PriceJumps;
+    var j = { date: row.suspectJumpAt, factor: isNum(row.suspectJumpFactor) ? row.suspectJumpFactor : null, status: row.suspectJumpStatus || "SUSPECT", splitSignature: PJ && isNum(row.suspectJumpFactor) ? PJ.splitSignature(row.suspectJumpFactor) : true };
+    var d = PJ ? PJ.describe(j.factor === null ? Object.assign({}, j, { factor: "?" }) : j, M.dateDe) : { short: "Kurssprung prüfen (" + M.dateDe(j.date) + ")", long: "" };
+    return el("span", { class: "tc-flag" + (j.status === "CONFIRMED" ? " is-bad" : " is-warn"), title: d.long, text: d.short });
+  }
   var GLYPH = {
     trend: "M4 17l5-5 4 3 7-8M15 7h5v5", breakout: "M3 15h7l3-8 3 5h5M14 4h6v6", triangle: "M4 5l16 7-16 7z", flag: "M5 21V4M5 4h11l-3 4 3 4H5",
     bars: "M5 20V12M10 20V7M15 20v-5M20 20V4", pulse: "M3 12h4l3-7 4 14 3-7h4", range: "M4 7h16M4 17h16M7 7v10M17 7v10", contraction: "M3 6l5 5 4-3 4 2 5-1M3 18l5-4 4 2 4-1 5 1",
@@ -70,12 +84,39 @@
     return cache[path];
   }
   var dataset = null;
+  /* Ein gemeinsames Versprechen: Vorladen und Ansicht bauen den Datensatz nur einmal. Nach einem Fehler neuer Versuch. */
+  var screenerP = null;
   function loadScreener() {
     if (dataset) return Promise.resolve(dataset);
-    return Promise.all([fetchJSON(M.SCREENER_PATH), fetchJSON(M.META_PATH).catch(function () { return null; })]).then(function (r) {
+    if (!screenerP) screenerP = Promise.all([fetchJSON(M.SCREENER_PATH), fetchJSON(M.META_PATH).catch(function () { return null; })]).then(function (r) {
       dataset = { ds: Q.createDataset(r[0]), artifact: r[0], meta: r[1] };
       return dataset;
-    });
+    }, function (e) { screenerP = null; delete cache[M.SCREENER_PATH]; throw e; });
+    return screenerP;
+  }
+  /* Mini-Kursverlauf der Trefferkarten aus spark-v1.json (eigene Datei seit Vertrag 1.2.0): erst nach dem ersten Bild
+     geladen; bis dahin bleibt der reservierte Platz leer. Ohne Datei bleibt die Karte ohne Linie (kein Fehler). */
+  var sparkP = null, sparkMap = null;
+  function loadSpark() {
+    if (!sparkP) sparkP = fetchJSON(M.SPARK_PATH).then(function (d) {
+      sparkMap = {};
+      (d && d.s || []).forEach(function (t, i) { sparkMap[t] = d.spark[i]; });
+      return sparkMap;
+    }, function () { sparkP = null; return null; });
+    return sparkP;
+  }
+  function sparkSpan(row) {
+    var span = el("span", { class: "tc-hit-spark" });
+    if (sparkMap) span.innerHTML = Chart.sparkline(sparkMap[row.s] || []);
+    else loadSpark().then(function (m) { if (m) span.innerHTML = Chart.sparkline(m[row.s] || []); });
+    return span;
+  }
+  /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
+     Treffer ihn brauchen. Nicht bei "Datensparen" (Save-Data); die Startseite bleibt beim schlanken Index. */
+  function prefetchScreener() {
+    if (dataset || (navigator.connection && navigator.connection.saveData)) return;
+    var go = function () { loadScreener().catch(function () {}); };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
   }
   /* Startseite und Chart Studio brauchen nur Kuerzel, Namen und Trefferzahlen: schlanker Index statt des vollen Datensatzes.
      Fehlt er (z. B. vor dem ersten Erzeugerlauf), wird er aus dem Datensatz nachgerechnet - dieselbe Funktion wie im Erzeuger. */
@@ -83,7 +124,7 @@
   function loadIndex() {
     if (indexP) return indexP;
     var meta = fetchJSON(M.META_PATH).catch(function () { return null; });
-    indexP = Promise.all([fetchJSON(M.INDEX_PATH).then(function (x) { if (!x || x.schemaVersion !== M.INDEX_SCHEMA) throw new Error("INDEX_SCHEMA"); return x; })
+    indexP = Promise.all([fetchJSON(M.INDEX_PATH).then(function (x) { if (!x || !/^vu-technical-index-1\./.test(x.schemaVersion || "")) throw new Error("INDEX_SCHEMA"); return x; })
       .catch(function () { return loadScreener().then(function (D) { return M.homeIndex(D.artifact); }); }), meta]).then(function (r) {
       var ix = r[0], pos = {};
       ix.s.forEach(function (t, i) { pos[t] = i; });
@@ -117,7 +158,8 @@
   var ENGINE_SCRIPTS = ["/quant/engines/hash.js", "/quant/engines/technical/feature-store.js", "/quant/engines/technical/pivot-engine.js",
     "/quant/engines/technical/elliott/patterns.js", "/quant/engines/technical/elliott/elliott-v2.js", "/quant/engines/technical/canonical-bars.js",
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
-    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js", "/core/listing-staleness.js"];
+    "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js",
+    "/quant/engines/technical/timeframe.js", "/quant/engines/technical/multi-timeframe.js", "/core/listing-staleness.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -181,6 +223,7 @@
       glyph("chevron", "tc-chev")
     ]);
   }
+  var MAIN_TABS = [["home", "#/", "Überblick"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
@@ -200,6 +243,15 @@
   /* ------------------------------------------------------------- Start */
   var PRESET_ICON = { breakout: "breakout", trend: "trend", triangles: "triangle", high52: "trophy", aboveSma200: "bars", high200w: "trophy", contraction: "contraction", bullflag: "flag" };
 
+  /* Startseite: neue Vorlagen (AP8); Fokus und Ranglisten bleiben, fuehren aber zur Vorlage mit Kriterien. */
+  var HOME_TEMPLATES = ["uptrendBasic", "triangleOpenUptrend", "triangleBreakoutUp"];
+  /** Zeile einer Vorlage mit Trefferzahl aus dem Index (ohne Vorlagen-Zaehlung: Zaehlung der Abfrage). */
+  function templateRow(id, ix) {
+    var t = TPL.get(id), tc = ix.templates && ix.templates[id];
+    var count = tc ? tc[0] : ix.presets && isNum(ix.presets[id]) ? ix.presets[id] : null;
+    var sub = t.summary + (tc && tc[1] ? " · " + tc[1].toLocaleString("de-DE") + " fast erfüllt" : "");
+    return rowCard(TPL.href(id), PRESET_ICON[id] || t.icon, t.title, sub, count, ix.count);
+  }
   function viewHome(main) {
     var hero = el("section", { class: "tc-hero vu-product-hero vu-hero-fidelity", "data-product": "technical", "aria-labelledby": "tc-hero-h" }, [
       el("div", { class: "vu-hero-scene", "aria-hidden": "true" }),
@@ -209,8 +261,8 @@
       el("p", { class: "vu-hero-description", text: "Automatische Chartanalyse, technische Indikatoren und Mustererkennung für US-Aktien – regelbasiert und nachvollziehbar." })
     ]);
     var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "tc-chips", role: "list" });
-    var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" });
-    put(main, [hero, searchSlot, chips, kpis, sectionHead("Setups im Fokus", "#/screener"), focus, sectionHead("Technische Ranglisten", "#/screener"), ranks, el("div", { class: "tc-foot-slot" })]);
+    var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" }), tpls = el("div", { class: "tc-list" });
+    put(main, [hero, searchSlot, chips, kpis, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
     hero.append(searchSlot, chips);
     loadIndex().then(function (X) {
       var ix = X.index;
@@ -224,7 +276,8 @@
         el("li", {}, [el("b", { class: "num", text: ix.focusUnion.toLocaleString("de-DE") }), el("span", { text: "Setups im Fokus" })]),
         el("li", {}, [el("b", { class: "num", text: asOf ? M.dateDe(asOf).slice(0, 6) : "–" }), el("span", { text: "Stand der Signale" })])
       ]);
-      function card(id) { var p = Q.PRESETS.filter(function (x) { return x.id === id; })[0]; return rowCard("#/screener?preset=" + id, PRESET_ICON[id], p.title, p.description, ix.presets[id] || 0, ix.count); }
+      function card(id) { return templateRow(id, ix); }
+      put(tpls, HOME_TEMPLATES.map(card));
       put(focus, M.FOCUS.map(card));
       put(ranks, M.RANKS.map(card));
       main.querySelector(".tc-foot-slot").replaceWith(disclaimer(X.meta));
@@ -247,8 +300,23 @@
       if (r.recognized.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Erkannt" })].concat(r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok", text: t }); }))));
       if (r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Nicht erkannt" })].concat(r.unknown.map(function (t) { return el("span", { class: "tc-mini is-warn", text: t }); }))));
       r.errors.filter(function (e) { return e.code !== "EMPTY"; }).forEach(function (e) { kids.push(el("p", { class: "tc-note is-warn", text: ERROR_TEXT[e.code] ? ERROR_TEXT[e.code](e.text) : e.code + (e.text ? ": " + e.text : "") })); });
-      if (r.query.groups.length) kids.push(el("p", { class: "tc-note" }, ["Abfrage: ", el("code", { text: r.canonical || "–" })]));
+      if (r.query.groups.length) kids.push(queryEditor(r.canonical || ""));
       put(preview, kids);
+    }
+    /* Die uebersetzte Abfrage ist vor dem Ausfuehren bearbeitbar (kanonische Schreibweise, Rundreise parse(toText(q)) = q). */
+    function queryEditor(canonical) {
+      var edit = el("textarea", { class: "tc-input tc-input-code", rows: "2", spellcheck: "false", autocomplete: "off", "aria-label": "Übersetzte Abfrage bearbeiten" });
+      edit.value = canonical;
+      var state = el("p", { class: "tc-note", role: "status" });
+      function check() {
+        var r = QT.parse(edit.value), bad = r.errors.filter(function (e) { return e.code !== "EMPTY"; });
+        state.className = "tc-note" + (r.ok ? "" : " is-warn");
+        state.textContent = r.ok ? "Abfrage gültig." : (r.unknown.length ? "Nicht erkannt: " + r.unknown.join(", ") : bad.length ? (ERROR_TEXT[bad[0].code] ? ERROR_TEXT[bad[0].code](bad[0].text) : bad[0].code) : "Keine Bedingung.");
+        return r;
+      }
+      edit.addEventListener("input", check);
+      return el("div", { class: "tc-ts-edit" }, [el("label", { class: "tc-note", text: "Abfrage (vor dem Ausführen änderbar)" }), edit,
+        el("button", { class: "tc-btn tc-btn-ghost", type: "button", text: "Abfrage ausführen", onclick: function () { if (check().ok) location.hash = "#/screener?q=" + encodeURIComponent(edit.value.trim()); } }), state]);
     }
     var timer = null;
     input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { paint(input.value.trim() ? QT.parse(input.value) : null); }, 120); });
@@ -343,13 +411,15 @@
     var st = M.stateFromParams(p);
     /* Suche in Worten: regelbasiert uebersetzt (query-text.js), gerechnet wird dieselbe validierte Abfrage. */
     var textQ = !preset && typeof p.q === "string" && p.q.trim() ? p.q.trim().slice(0, 300) : null;
+    /* Aus einer Vorlage uebernommen (AP8): Kriterien als Baukasten-Filter, damit sie sich anpassen lassen. */
+    var tplFrom = !preset && !textQ && p.vorlage && TPL.get(p.vorlage) ? TPL.toQuery(TPL.compose(p.vorlage, TPL.blocksFromParam(p.plus))) : null;
     var parsed = textQ && QT ? QT.parse(textQ) : null;
     var head = el("header", { class: "tc-head" }, [
       el("a", { class: "tc-back", href: "#/" }, [glyph("back"), "Technical"]),
       el("h1", { class: "tc-title", text: "Screener" }),
       el("p", { class: "tc-lead", text: "Setups, Indikatoren und Chartmuster regelbasiert filtern." })
     ]);
-    var tabBar = tabs([["home", "#/", "Überblick"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]], route.tab);
+    var tabBar = tabs(MAIN_TABS, route.tab);
     if (route.tab === "saved") return viewSaved(main, head, tabBar);
     var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
     put(main, [head, tabBar, body, results]);
@@ -366,12 +436,18 @@
 
     loadScreener().then(function (D) {
       var ds = D.ds, built = preset ? { query: Object.assign({ limit: 200 }, preset.query), dropped: [] }
-        : parsed ? { query: Object.assign({}, parsed.query, { limit: 200 }), dropped: [] } : M.queryFromState(st);
+        : parsed ? { query: Object.assign({}, parsed.query, { limit: 200 }), dropped: [] }
+        : tplFrom ? { query: Object.assign({}, tplFrom.query, { limit: 200 }), dropped: [] } : M.queryFromState(st);
       var res = Q.evaluate(ds, built.query);
       if (res.error) { put(body, stateBox("Ungültige Abfrage", res.errors.map(function (e) { return e.code; }).join(", "))); return; }
       var tf = built.query.timeframe;
-      var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed) : null];
-      if (parsed) {
+      var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : tplFrom ? M.builderFromQuery(tplFrom.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed || !!tplFrom) : null];
+      if (tplFrom) {
+        var tpl0 = TPL.get(p.vorlage);
+        controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Aus Vorlage „" + tpl0.title + "“" }), el("p", { text: Q.describe(built.query) }),
+          tplFrom.dropped.length ? el("p", { class: "tc-note is-warn", text: "Im Baukasten nicht wählbar und deshalb weggelassen: " + tplFrom.dropped.join(", ") + ". Die Trefferzahl kann deshalb von der Vorlage abweichen." }) : null,
+          el("a", { class: "tc-link", href: TPL.href(p.vorlage, TPL.blocksFromParam(p.plus)), text: "Zurück zur Vorlage" })]));
+      } else if (parsed) {
         controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Erkannt als" }), el("p", { text: Q.describe(built.query) || "Keine auswertbare Bedingung" }),
           el("a", { class: "tc-link", href: "#/screener", text: "Filter per Klick setzen" })]));
       } else if (preset) {
@@ -426,12 +502,12 @@
         if (row.frozenSince) flags.push(el("span", { class: "tc-flag", title: "Datenqualitätshinweis: seitdem unveränderter Schlusskurs. Kein bestätigtes Delisting, auch bei illiquiden Titeln möglich. Keine Kennzahlen", text: "Kurs unverändert seit " + M.dateDe(row.frozenSince) }));
         else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
             el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            el("span", { class: "tc-hit-spark", html: Chart.sparkline(row.spark || []) }),
+            sparkSpan(row),
             el("span", { class: "tc-hit-score" }, right),
             glyph("chevron", "tc-chev")
           ]),
@@ -453,7 +529,7 @@
         el("form", { class: "tc-save-form", onsubmit: function (ev) {
           ev.preventDefault();
           var name = saveName.value.trim() || (preset ? preset.title : Q.describe(query)).slice(0, 60);
-          var r = M.saveScreen(store(), name, preset ? "preset=" + preset.id : textQ ? "q=" + encodeURIComponent(textQ) : M.paramsFromState(st));
+          var r = M.saveScreen(store(), name, preset ? "preset=" + preset.id : textQ ? "q=" + encodeURIComponent(textQ) : tplFrom ? TPL.paramsOf(p.vorlage, TPL.blocksFromParam(p.plus)) : M.paramsFromState(st));
           saveMsg.textContent = r.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
         } }, [saveName, el("button", { class: "tc-btn", type: "submit", text: "Speichern" }), saveMsg])
       ]);
@@ -489,21 +565,26 @@
       } }),
       el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Importieren", onclick: function () { fileIn.click(); } }), fileIn]);
     var rows = list.map(function (sv) {
-      var q = queryOfParams(sv.params), desc = Q.describe(q) || "–", count = el("b", { class: "num", text: "…" });
+      var sp = M.parseRoute("#/screener?" + sv.params).params || {}, svT = sp.vorlage && TPL.get(sp.vorlage) ? TPL.compose(sp.vorlage, TPL.blocksFromParam(sp.plus)) : null;
+      var q = svT ? null : queryOfParams(sv.params), desc = svT ? "Vorlage: " + svT.title + (svT.blocks.length ? " + " + svT.blocks.map(function (b) { return TPL.block(b).title; }).join(", ") : "") : Q.describe(q) || "–", count = el("b", { class: "num", text: "…" });
+      var svHref = svT ? TPL.href(svT.id, svT.blocks) : "#/screener?" + sv.params;
       var nameIn = el("input", { class: "tc-input tc-input-s", value: sv.name, maxlength: "60", "aria-label": "Name ändern" });
       var edit = el("form", { class: "tc-brow", hidden: true, onsubmit: function (ev) { ev.preventDefault(); M.updateScreen(store(), sv.id, { name: nameIn.value }); render(); } },
         [nameIn, el("button", { class: "tc-btn", type: "submit", text: "Übernehmen" })]);
-      loadScreener().then(function (D) { var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); count.textContent = r.error ? "–" : r.count.toLocaleString("de-DE"); }).catch(function () { count.textContent = "–"; });
+      loadScreener().then(function (D) {
+        if (svT) { count.textContent = TPL.evaluate(D.ds, svT).full.length.toLocaleString("de-DE"); return; }
+        var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); count.textContent = r.error ? "–" : r.count.toLocaleString("de-DE");
+      }).catch(function () { count.textContent = "–"; });
       return el("div", { class: "tc-saved" }, [
         el("div", { class: "tc-row" }, [el("span", { class: "tc-row-icon" }, glyph("save")),
-          el("a", { class: "tc-row-text", href: "#/screener?" + sv.params }, [el("b", { text: sv.name }), el("span", { text: desc })]),
+          el("a", { class: "tc-row-text", href: svHref }, [el("b", { text: sv.name }), el("span", { text: desc })]),
           el("span", { class: "tc-hit-score" }, [el("span", { text: "Treffer heute" }), count])]),
         el("div", { class: "tc-brow tc-saved-actions" }, [
           el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) +
             (sv.migrated ? " · angepasst: „" + sv.migrated.from + "“ heißt jetzt „" + sv.migrated.to + "“ (gleiche Bedeutung)" : "") }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Umbenennen", onclick: function () { edit.hidden = !edit.hidden; if (!edit.hidden) nameIn.focus(); } }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Link kopieren", onclick: function () {
-            var url = location.origin + location.pathname + "#/screener?" + sv.params;
+            var url = location.origin + location.pathname + svHref;
             (global.navigator && navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { status.textContent = "Link kopiert."; }, function () { status.textContent = url; });
           } }),
           el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); render(); } })]),
@@ -513,12 +594,196 @@
     put(main, [head, tabBar, tools, status, body]);
   }
 
+  /* ------------------------------------------------- Strategie-Vorlagen */
+  /* AP8 S1 (docs/technical/STRATEGY_TEMPLATES_PLAN.md): Auswahl, Kriterien, Trendfilter, Treffer nach Erfuellung.
+     Gerechnet wird nur mit bestehenden Feldern (engine/templates.js); unbekannt zaehlt nie als erfuellt. */
+  var MARK = { PASS: ["✓", "erfüllt", "is-pass"], FAIL: ["✗", "nicht erfüllt", "is-fail"], UNKNOWN: ["?", "unbekannt", "is-unknown"] };
+  var SHOW = { voll: "full", fast: "near", offen: "incomplete" };
+  function templateHead(back, backText, eyebrow, title, lead) {
+    return el("header", { class: "tc-head" }, [
+      el("a", { class: "tc-back", href: back }, [glyph("back"), backText]),
+      eyebrow ? el("p", { class: "tc-eyebrow", text: eyebrow }) : null,
+      el("h1", { class: "tc-title", text: title }),
+      el("p", { class: "tc-lead", text: lead })
+    ]);
+  }
+  function viewTemplates(main, route) {
+    return route.id ? viewTemplate(main, route) : viewTemplateList(main);
+  }
+  function viewTemplateList(main) {
+    var head = templateHead("#/", "Technical", null, "Vorlagen", "Fertige Suchen mit erklärten Kriterien. Vorlage wählen, Treffer ansehen und im Chart prüfen.");
+    var body = el("div", { class: "tc-tpl-groups" });
+    put(main, [head, tabs(MAIN_TABS, "templates"), body]);
+    loadIndex().then(function (X) {
+      var ix = X.index;
+      put(body, TPL.GROUPS.map(function (g) {
+        return el("section", { class: "tc-tpl-group", "aria-label": g.title }, [sectionHead(g.title),
+          el("div", { class: "tc-list" }, TPL.list().filter(function (t) { return t.group === g.id; }).map(function (t) { return templateRow(t.id, ix); }))]);
+      }).concat([
+        el("p", { class: "tc-note", text: "In jeder Vorlage lassen sich Trendfilter (kurz-, mittel- und langfristig, Trendstärke) dazunehmen. Gezählt werden nur Aktien mit aktuellem Kurs." }),
+        disclaimer(X.meta)]));
+      prefetchScreener();
+    }).catch(function () {
+      put(body, stateBox("Vorlagen derzeit nicht verfügbar", "Der Index der Startseite konnte nicht geladen werden."));
+    });
+  }
+  /** Kriterienliste einer Vorlage, je Kriterium Zahl der erfuellten Titel. */
+  function criteriaCard(t, res) {
+    var items = t.criteria.map(function (x, k) {
+      var fz = res && res.funnel[k];
+      return el("li", { class: "tc-crit" }, [
+        el("b", { text: x.label }),
+        x.from ? el("span", { class: "tc-mini", text: "Trendfilter" }) : null,
+        el("span", { class: "tc-crit-why", text: x.why }),
+        fz ? el("span", { class: "tc-crit-n num", text: "erfüllt bei " + fz.pass.toLocaleString("de-DE") + (fz.unknown ? " · unbekannt bei " + fz.unknown.toLocaleString("de-DE") : "") }) : null
+      ]);
+    });
+    return el("details", { class: "tc-filter tc-tpl-crit" }, [
+      el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: t.criteria.length + (t.criteria.length === 1 ? " Kriterium" : " Kriterien") }), glyph("chevron", "tc-chev tc-rot")]),
+      el("div", { class: "tc-filter-body" }, [el("ol", { class: "tc-crit-list" }, items),
+        t.note ? el("p", { class: "tc-note", text: t.note }) : null,
+        el("p", { class: "tc-note", text: "Voraussetzung: aktueller Kurs am Stichtag. " + TPL.LIMITS })])
+    ]);
+  }
+  /** Haken je Kriterium (✓ erfuellt, ✗ nicht erfuellt, ? unbekannt) mit ausgeschriebenem Text fuer Screenreader. */
+  function ticks(t, states) {
+    return el("ul", { class: "tc-ticks", "aria-label": "Kriterien" }, states.map(function (s, k) {
+      var m = MARK[s];
+      return el("li", { class: m[2], title: t.criteria[k].label + ": " + m[1] }, [el("span", { "aria-hidden": "true", text: m[0] }), el("span", { class: "tc-sr", text: t.criteria[k].label + ": " + m[1] })]);
+    }));
+  }
+  function viewTemplate(main, route) {
+    var base = TPL.get(route.id);
+    if (!base) { put(main, [templateHead("#/vorlagen", "Vorlagen", null, "Vorlage nicht gefunden", "Diese Vorlage gibt es nicht (mehr)."), tabs(MAIN_TABS, "templates")]); return; }
+    var p = route.params || {}, blocks = TPL.blocksFromParam(p.plus), showKey = SHOW[p.zeige] ? p.zeige : "voll";
+    var t = TPL.compose(base.id, blocks), group = TPL.GROUPS.filter(function (g) { return g.id === t.group; })[0];
+    var head = templateHead("#/vorlagen", "Vorlagen", group ? group.title.toUpperCase() : null, t.title, t.summary);
+    var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
+    put(main, [head, tabs(MAIN_TABS, "templates"), body, results]);
+    /* Beim ersten Oeffnen laedt der Screener-Datensatz (gzip rund 1,5 MB, mobil mehrere Sekunden): sichtbarer Zustand statt leerer Seite. */
+    if (!dataset) { results.setAttribute("aria-busy", "true"); put(results, [el("p", { class: "tc-note", text: "Treffer werden berechnet. Beim ersten Öffnen lädt der Screener-Datensatz für alle Aktien." }), el("div", { class: "tc-skel", style: "height:220px" })]); }
+    loadScreener().then(function (D) {
+      results.removeAttribute("aria-busy");
+      var ds = D.ds, res = TPL.evaluate(ds, t), nearOk = t.criteria.length >= TPL.NEAR_MIN;
+      var blockPills = el("div", { class: "tc-pills" }, TPL.BLOCKS.map(function (B) {
+        var on = blocks.indexOf(B.id) >= 0;
+        return el("button", { type: "button", class: "tc-pill" + (on ? " is-on" : ""), "aria-pressed": String(on), text: B.title, onclick: function () {
+          var next = on ? blocks.filter(function (x) { return x !== B.id; }) : blocks.concat([B.id]);
+          location.hash = TPL.href(base.id, next, showKey);
+        } });
+      }));
+      var trend = el("details", { class: "tc-filter", open: blocks.length ? true : null }, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("trend")), el("b", { text: "Trendfilter dazunehmen" + (blocks.length ? " (" + blocks.length + ")" : "") }), glyph("chevron", "tc-chev tc-rot")]),
+        el("div", { class: "tc-filter-body" }, [blockPills, el("p", { class: "tc-note", text: "Jeder gewählte Trendfilter kommt als zusätzliches Kriterium hinzu (alle müssen erfüllt sein)." })])]);
+      var seg = [["voll", "Erfüllt", res.full.length]];
+      if (nearOk) seg.push(["fast", "Fast erfüllt", res.near.length]);
+      if (res.incomplete.length || showKey === "offen") seg.push(["offen", "Unvollständig", res.incomplete.length]);
+      if (!seg.some(function (x) { return x[0] === showKey; })) showKey = "voll";
+      var segBar = el("div", { class: "tc-seg tc-tpl-seg", role: "tablist", "aria-label": "Treffer nach Erfüllung" }, seg.map(function (x) {
+        return el("a", { role: "tab", class: "tc-seg-b" + (showKey === x[0] ? " is-on" : ""), "aria-selected": String(showKey === x[0]), href: TPL.href(base.id, blocks, x[0]) }, [x[1] + " ", el("b", { class: "num", text: x[2].toLocaleString("de-DE") })]);
+      }));
+      put(body, [criteriaCard(t, res), trend]);
+      renderTemplateHits(D, t, res, showKey, blocks, segBar);
+    }).catch(function (e) {
+      put(body, stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden (" + String(e && e.message || e) + ")."));
+    });
+
+    function renderTemplateHits(D, t, res, showKey, blocks, segBar) {
+      var ds = D.ds, entries = res[SHOW[showKey]], shown = 0, PAGE = 40, list = el("div", { class: "tc-hits" });
+      var tq = TPL.toQuery(t), wanted = M.wantedFormations(tq.query), chartQ = "v=" + encodeURIComponent(t.id) + (blocks.length ? "&plus=" + blocks.join(",") : "");
+      var more = el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Weitere anzeigen", onclick: function () { page(); } });
+      function hit(e) {
+        var row = ds.row(e.i), pass = e.states.filter(function (s) { return s === "PASS"; }).length;
+        var miss = e.states.map(function (s, k) { return s === "FAIL" ? t.criteria[k].label : null; }).filter(Boolean);
+        var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
+        var flags = [];
+        if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
+        if (row.suspectJumpAt) flags.push(jumpFlag(row));
+        return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
+          el("div", { class: "tc-hit-top" }, [
+            el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
+            el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
+            sparkSpan(row),
+            el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
+            glyph("chevron", "tc-chev")
+          ]),
+          ticks(t, e.states),
+          miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,
+          unk.length ? el("p", { class: "tc-hit-text" }, [el("b", { text: "Unbekannt (unvollständig): " }), unk.join(", ")]) : null,
+          wanted.length || flags.length ? el("p", { class: "tc-hit-text" }, [wanted.length ? M.hitSentence(row, wanted) : ""].concat(flags)) : null
+        ]);
+      }
+      function page() { entries.slice(shown, shown + PAGE).forEach(function (e) { list.append(hit(e)); }); shown = Math.min(entries.length, shown + PAGE); more.hidden = shown >= entries.length; count.textContent = "Gezeigt: " + shown.toLocaleString("de-DE") + " von " + entries.length.toLocaleString("de-DE") + "."; }
+      var count = el("p", { class: "tc-note" });
+      var EMPTY = { voll: ["Keine Aktie erfüllt alle Kriterien", "Mit weniger Trendfiltern oder unter „Fast erfüllt“ finden sich Aktien, denen genau ein Kriterium fehlt."],
+        fast: ["Keine Aktie mit genau einem fehlenden Kriterium", "Alle übrigen Aktien verfehlen mindestens zwei Kriterien oder haben unbekannte Werte."],
+        offen: ["Keine unvollständigen Treffer", "Für alle eingeordneten Aktien sind alle Kriterien bekannt."] }[showKey];
+      var EXPLAIN = { voll: "Alle Kriterien erfüllt.", fast: "Genau ein Kriterium nicht erfüllt, alle anderen erfüllt. Sortiert nach dem fehlenden Kriterium.",
+        offen: "Kein Kriterium verfehlt, aber mindestens eines unbekannt (z. B. zu kurze Kurshistorie). Unbekannt zählt nicht als erfüllt." }[showKey];
+      var saveName = el("input", { class: "tc-input tc-input-s", type: "text", maxlength: "60", placeholder: "Name der Suchstrategie", "aria-label": "Name der Suchstrategie" });
+      var saveMsg = el("span", { class: "tc-note", role: "status" });
+      var save = el("details", { class: "tc-save" }, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("save")), el("span", {}, [el("b", { text: "Vorlage speichern" }), el("span", { text: "Mit den gewählten Trendfiltern in diesem Browser sichern." })]), glyph("chevron", "tc-chev")]),
+        el("form", { class: "tc-save-form", onsubmit: function (ev) {
+          ev.preventDefault();
+          var r = M.saveScreen(store(), saveName.value.trim() || (t.title + (blocks.length ? " + " + blocks.map(function (b) { return TPL.block(b).title; }).join(", ") : "")).slice(0, 60), TPL.paramsOf(base.id, blocks));
+          saveMsg.textContent = r.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
+        } }, [saveName, el("button", { class: "tc-btn", type: "submit", text: "Speichern" }), saveMsg])
+      ]);
+      var adapt = el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/screener?" + TPL.paramsOf(base.id, blocks), text: "Im Screener anpassen" }),
+        tq.dropped.length ? " (dort nicht wählbar und deshalb weggelassen: " + tq.dropped.join(", ") + ")" : null]);
+      put(results, [el("div", { class: "tc-sec-head" }, [el("h2", { text: "Treffer" })]), segBar, el("p", { class: "tc-note", text: EXPLAIN }),
+        entries.length ? list : stateBox(EMPTY[0], EMPTY[1]), count, more,
+        res.excluded ? el("p", { class: "tc-note", text: res.excluded.toLocaleString("de-DE") + " Aktien ohne aktuellen Kurs (hinter dem Stichtag oder eingefroren) sind nicht eingeordnet." }) : null,
+        save, adapt, disclaimer(D.meta)]);
+      page();
+    }
+  }
+  /** Chart Studio mit ?v=<Vorlage>: Checkliste dieses Titels; laedt den Screener-Datensatz nur fuer diese Leiste. */
+  function templatePanel(T, params) {
+    var base = TPL.get(params.v); if (!base) return null;
+    var blocks = TPL.blocksFromParam(params.plus), t = TPL.compose(base.id, blocks);
+    /* Zugeklappt: die Zusammenfassung nennt das Ergebnis, der Chart bleibt auf dem iPhone sichtbar. */
+    var box = el("details", { class: "tc-filter tc-tpl-panel" }, [el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: "Vorlage „" + t.title + "“ wird geprüft …" }), glyph("chevron", "tc-chev tc-rot")])]);
+    loadScreener().then(function (D) {
+      var ck = TPL.checklist(D.ds, t, T);
+      if (!ck) { put(box, [el("summary", {}, [el("b", { text: "Vorlage „" + t.title + "“: für " + T + " kein Eintrag im Screener" })])]); return; }
+      var STATUS = { FULL: "alle Kriterien erfüllt", NEAR: "fast erfüllt – ein Kriterium fehlt", INCOMPLETE: "unvollständig – " + ck.unknown + " unbekannt", NONE: ck.pass + " von " + ck.states.length + " erfüllt", EXCLUDED: "nicht eingeordnet – kein aktueller Kurs" };
+      var row = D.ds.row(ck.i);
+      put(box, [
+        el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("span", {}, [el("b", { text: t.title }), el("span", { class: "tc-crit-why", text: STATUS[ck.status] })]), glyph("chevron", "tc-chev tc-rot")]),
+        el("div", { class: "tc-filter-body" }, [
+          el("ol", { class: "tc-crit-list" }, t.criteria.map(function (x, k) {
+            var m = MARK[ck.states[k]], f = x.filter, v = f.kind ? null : row[Q.columnKey(f.field, f.tf || "1D")];
+            /* Ja/Nein steht schon im Status ("erfüllt"/"nicht erfüllt"); gezeigt werden nur Zahlenwerte. */
+            var val = f.kind || v === null || v === undefined || Array.isArray(v) || typeof v === "boolean" ? "" : " · " + valueText(f.field, v);
+            return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
+          })),
+          jumpNote(row),
+          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
+      ]);
+    }).catch(function () { put(box, [el("summary", {}, [el("b", { text: "Vorlage konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
+    return box;
+  }
+  /** Schichten und Unterfenster, die die Kriterien einer Vorlage im Chart zeigen (model.js#FIELD_CHART). */
+  function templateLayers(params) {
+    var base = TPL.get(params.v); if (!base) return;
+    var t = TPL.compose(base.id, TPL.blocksFromParam(params.plus)), pane = null;
+    t.criteria.forEach(function (x) {
+      var fc = x.filter.field && M.FIELD_CHART[x.filter.field]; if (!fc) return;
+      if (fc[0] === "layer") studio.layers[fc[1]] = true;
+      if (fc[0] === "pane" && !pane) pane = fc[1];
+    });
+    if (pane) { Object.keys(PANES).forEach(function (k) { studio.layers[k] = false; }); studio.layers[pane] = true; }
+  }
+
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
   var LAYERS = M.CHART_LAYERS, PANE_LIST = M.CHART_PANES;
   var PANES = {};
   PANE_LIST.forEach(function (p) { PANES[p[0]] = 1; });
-  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["5J", 260], ["Max", 0]];
+  /* "1J·W": Wochenkerzen aus den Tagesbars (abgeschlossene Wochen, dieselben wie die Screener-Spalten formation…@1W). */
+  var RANGES = [["1M", 21], ["3M", 63], ["6M", 126], ["1J", 252], ["1J·W", 0], ["5J", 260], ["Max", 0]];
   var studio = { layers: { trend: true, muster: true, niveaus: true, sma: true, volumen: true }, range: "1J", full: false };
 
   function viewChartPicker(main) {
@@ -552,7 +817,9 @@
       if (SN && SCX) SN.mount(links, SCX.fromUs(T), "technical");
     } catch (e) { /* ungueltiges Kuerzel: kein Navigator */ }
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
-    put(main, [head, links, tabBar, body]);
+    var tplPanel = route.params && route.params.v ? templatePanel(T, route.params) : null;
+    if (tplPanel && route.tab !== "signals") templateLayers(route.params);
+    put(main, [head, links, tabBar, tplPanel, body]);
 
     Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence()]).then(function (r) {
       var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
@@ -566,7 +833,7 @@
       var analysis = VT.Formations.analyzeAt(prep, t), ctx = VT.TIContext.at(prep, t), levels = VT.TILevels.supportResistance(ctx);
       var fromIdx = Math.max(0, series.length - 252), hist = VT.Formations.history(prep, fromIdx, t);
       var S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume };
-      var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values,
+      var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values, sma150: VT.Indicators.compute(S, "sma", { period: 150 }).values,
         bb: VT.Indicators.compute(S, "bollinger").values, rsi: VT.Indicators.compute(S, "rsi").values, macd: VT.Indicators.compute(S, "macd").values, stoch: VT.Indicators.compute(S, "stochastic").values };
       /* Weitere Katalog-Indikatoren; ohne Volumen liefert compute() einen Fehler und die Schicht bleibt leer. */
       ["keltner", "donchian", "ichimoku", "supertrend", "psar", "vwma", "adx", "atr", "cci", "williamsR", "aroon", "mfi", "obv", "cmf",
@@ -638,8 +905,15 @@
     put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
-    if (weekly) {
-      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen nur im Tageschart" }));
+    if (!X.focus && studio.range === "1J·W") {
+      var W = weeklyCandleConfig(X);
+      if (!W) put(host, stateBox("Keine Wochenkerzen", "Aus den Tagesbars entstehen weniger als zwei abgeschlossene Wochen."));
+      else {
+        put(legend, legendItems(W.cfg.legend).concat([el("span", { class: "tc-note", text: W.note })]));
+        chart = Chart.render(host, W.cfg);
+      }
+    } else if (weekly) {
+      put(legend, el("span", { class: "tc-note", text: "Wochenschlüsse (Linie) · Formationen und Volumen im Tageschart und unter „1J·W“" }));
       loadWeekly(X.T).then(function (w) {
         var pts = (w.points || []).filter(function (p) { return isNum(p[1]); });
         var dates = pts.map(function (p) { return p[0]; }), close = pts.map(function (p) { return p[1]; });
@@ -678,11 +952,70 @@
 
   function legendItems(items) { return items.map(function (it) { return el("span", { class: "tc-leg" }, [el("i", { style: "background:" + it[1] }), it[0]]); }); }
 
+  /**
+   * Wochenkerzen aus den geladenen Tagesbars: multi-timeframe.js#completedSeries (abgeschlossene Wochen, Regel
+   * STICHTAG_FREITAG), Formationen mit derselben Engine wie die Screener-Spalten formationActive@1W/formationConfirmed@1W
+   * (screen-row 1.14.0, ab 26 Wochen). Keine neue Kursreihe: nur eine andere Sicht auf die veroeffentlichten Tagesbars.
+   */
+  function weeklyCandleConfig(X) {
+    var VT = global.VUTechnical, S = X.S;
+    if (!VT.MultiTimeframe) return null;
+    var series = VT.CanonicalBars.fromRows(S.dates.map(function (d, i) { return { date: d, open: S.open[i], high: S.high[i], low: S.low[i], close: S.close[i], volume: S.volume[i] }; }),
+      { instrumentId: X.T, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
+    var wk = VT.MultiTimeframe.completedSeries(series, "1W");
+    if (!wk) return null;
+    var w = wk.series, WS = { dates: w.timestamps.map(function (t) { return String(t).slice(0, 10); }), open: w.open, high: w.high, low: w.low, close: w.close, volume: w.volume };
+    var frozen = X.st && X.st.frozenSince, enough = wk.bars >= 26;
+    var analysis = frozen || !enough ? { formations: [] } : VT.Formations.analyzeAt(VT.TIContext.prepare(w), w.length - 1);
+    var L = studio.layers, lines = [], zones = [], markers = [], overlays = [], legend = [["Kurs (Woche)", "var(--tc-price)"]];
+    if (L.sma) {
+      overlays.push({ id: "s10", label: "SMA 10 W", values: VT.Indicators.sma(w.close, 10), color: "var(--tc-c1)" });
+      overlays.push({ id: "s40", label: "SMA 40 W", values: VT.Indicators.sma(w.close, 40), color: "var(--tc-c2)" });
+      legend.push(["SMA 10 W", "var(--tc-c1)"], ["SMA 40 W", "var(--tc-c2)"]);
+    }
+    formationLayers(analysis, WS, L, null, WS.dates[0], lines, zones, markers);
+    var active = [];
+    (analysis.formations || []).forEach(function (f) { if (f.state !== "INVALIDATED" && active.indexOf(f.name) < 0) active.push(f.name); });
+    var note = wk.bars + " abgeschlossene Wochen bis " + M.dateDe(wk.asOf) + (wk.droppedOpenBar ? " (laufende Woche nicht enthalten)" : "") + " · " +
+      (frozen ? "Kurs unverändert: keine Formationen" : !enough ? "unter 26 Wochen: keine Wochenformationen" : active.length ? "Wochenformationen: " + active.join(", ") : "keine Wochenformation erkannt");
+    return { cfg: { title: X.T + " Wochenkerzen", mode: "candles", window: 0, data: WS, overlays: overlays, lines: lines, zones: zones, levels: [], markers: markers, volume: !!L.volumen, pane: null, legend: legend },
+      note: note, analysis: analysis, weeks: wk };
+  }
+
+  /** Linien, Zonen und Marken der Formationen (Tages- und Wochenchart dieselbe Darstellung). */
+  function formationLayers(analysis, S, L, focusF, firstDate, lines, zones, markers) {
+    var forms = focusF ? [focusF] : (analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
+    forms.forEach(function (f) {
+      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
+      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
+      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
+      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
+      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
+      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
+        var ci = S.dates.indexOf(f.confirmedAt);
+        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
+      }
+    });
+  }
+
   function studioConfig(X, win, focusF) {
     var S = X.S, L = studio.layers, overlays = [], lines = [], zones = [], levels = [], markers = [], legend = [["Kurs", "var(--tc-price)"]];
     var from = Math.max(0, S.dates.length - win), firstDate = S.dates[from];
     if (L.sma) {
       if (X.cs.sma50) { overlays.push({ id: "sma50", label: "SMA 50", values: X.cs.sma50, color: "var(--tc-c1)" }); legend.push(["SMA 50", "var(--tc-c1)"]); }
+      /* SMA 150 (AP8 L1) aus den Tagesbars wie die Screener-Spalte aboveSma150 */
+      if (X.ind.sma150 && X.ind.sma150.some(isNum)) { overlays.push({ id: "sma150", label: "SMA 150", values: X.ind.sma150, color: "var(--tc-c4)", dash: "6 3" }); legend.push(["SMA 150", "var(--tc-c4)"]); }
       if (X.cs.sma200) { overlays.push({ id: "sma200", label: "SMA 200", values: X.cs.sma200, color: "var(--tc-c2)" }); legend.push(["SMA 200", "var(--tc-c2)"]); }
     }
     if (L.ema) {
@@ -725,29 +1058,7 @@
       overlays.push({ id: "bbu", label: "Bollinger oben", values: X.ind.bb.upper, color: "var(--tc-c5)", dash: "2 3" });
       overlays.push({ id: "bbl", label: "Bollinger unten", values: X.ind.bb.lower, color: "var(--tc-c5)", dash: "2 3" }); legend.push(["Bollinger 20/2", "var(--tc-c5)"]);
     }
-    var forms = focusF ? [focusF] : (X.analysis.formations || []).filter(function (f) { return f.state !== "INVALIDATED" || f.invalidatedAt >= firstDate; });
-    forms.forEach(function (f) {
-      var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
-      if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
-      var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
-      if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
-      if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
-      if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
-        var ci = S.dates.indexOf(f.confirmedAt);
-        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
-      }
-      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
-        var ii = S.dates.indexOf(f.invalidatedAt);
-        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
-      }
-      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
-      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
-        var di = S.dates.indexOf(f.detectedAt);
-        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
-      }
-    });
+    formationLayers(X.analysis, S, L, focusF, firstDate, lines, zones, markers);
     if (L.niveaus) {
       (X.levels.resistances || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "negative", label: i ? null : "Widerstand" }); });
       (X.levels.supports || []).slice(0, 2).forEach(function (z, i) { zones.push({ low: z.zoneLow, high: z.zoneHigh, tone: "positive", label: i ? null : "Unterstützung" }); });
@@ -846,9 +1157,8 @@
           : "nicht veröffentlicht: " + (p.barsAfterSeed !== null && p.barsAfterSeed < p.warmupBars ? "Historie zu kurz (frühestens ab " + p.minimumBars + " Tagesbars)" : "Fehlerschranke " + pct(p.errorBoundAtCutoff) + " über 0,1 % (Startfenster weit vom heutigen Kurs)") })];
       })(),
       (function () {
-        var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
-        if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
-        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet." })] : null;
+        var PJ = global.VUTechnical && global.VUTechnical.PriceJumps, at = PJ ? PJ.all(b).map(function (j) { return M.dateDe(j.date) + " (×" + String(j.factor).replace(".", ",") + ")"; }) : [];
+        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet. Ob ein Sprung als Datenfehler bestätigt ist, zeigt die Vorlagen-Prüfleiste." })] : null;
       })(),
       el("dt", { text: "Volumen" }), el("dd", { text: b.volume && b.volume.some(function (v) { return v > 0; }) ? "vorhanden" : "nicht vorhanden – Volumenindikatoren entfallen" }),
       el("dt", { text: "Formationen" }), el("dd", { text: "Nur bestätigte Swing-Punkte; Erkennung ohne Blick in die Zukunft (Engine " + global.VUTechnical.Formations.ENGINE_VERSION + ")" }),
@@ -862,7 +1172,7 @@
     var head = el("header", { class: "tc-head" }, [el("a", { class: "tc-back", href: "#/" }, [glyph("back"), "Technical"]), el("h1", { class: "tc-title", text: "Methodik" }),
       el("p", { class: "tc-lead", text: "Jeder Indikator und jede Formation mit Definition, Parametern und Regeln." })]);
     var slot = el("div", { class: "tc-method" }, [el("div", { class: "tc-skel", style: "height:200px" })]);
-    put(main, [head, tabs([["home", "#/", "Überblick"], ["build", "#/screener", "Screener"], ["method", "#/methodik", "Methodik"]], "method"), slot]);
+    put(main, [head, tabs(MAIN_TABS, "method"), slot]);
     loadEngines().then(function () {
       var VT = global.VUTechnical, fam = { TREND: "Trend", MOMENTUM: "Momentum", VOLATILITY: "Volatilität", VOLUME: "Volumen" };
       var ind = Object.keys(fam).map(function (k) {
@@ -951,6 +1261,7 @@
     else if (route.view === "screener") { doc.title = "Screener · Technical · Vision Universe®"; viewScreener(main, route); }
     else if (route.view === "chart") { doc.title = (route.ticker ? route.ticker + " · " : "") + "Chart Studio · Technical · Vision Universe®"; viewChart(main, route); }
     else if (route.view === "method") { doc.title = "Methodik · Technical · Vision Universe®"; viewMethod(main); }
+    else if (route.view === "templates") { var tt = route.id && TPL.get(route.id); doc.title = (tt ? tt.title + " · " : "") + "Vorlagen · Technical · Vision Universe®"; viewTemplates(main, route); }
     else put(main, stateBox("Seite nicht gefunden", "Diese Adresse kennt Technical nicht.", el("a", { class: "tc-link", href: "#/", text: "Zur Technical-Startseite" })));
     main.setAttribute("aria-busy", "false");
     var last = lastTicker();
@@ -958,7 +1269,7 @@
   }
   var lastView = null;
   function onHash() {
-    var r = M.parseRoute(location.hash), key = r.view + "|" + (r.ticker || "");
+    var r = M.parseRoute(location.hash), key = r.view + "|" + (r.ticker || "") + "|" + (r.id || "");
     render();
     if (key !== lastView) global.scrollTo(0, 0);
     lastView = key;

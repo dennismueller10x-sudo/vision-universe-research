@@ -55,7 +55,7 @@
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
    "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
-   "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+   "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
    "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
@@ -63,15 +63,15 @@
    "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
    "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
   },
-  "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
-  "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+  "certification": "ad081cf912f27d9c955241f9f7bfd2d230cafeac06f80f9e65b9d23f642c951c",
+  "benchmark": "23a10810b72c20adff5869a55473e50df1fddff6053c712caa24b5a92cd930b3",
   "population": {
    "profile": "V10_PRIMARY",
    "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-   "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+   "populationHash": "1373b9753e9029360e609a334399dce8a89dff1c0b1860ca54ece26415c9fbdf",
    "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
    "calendarLength": 1922,
-   "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+   "sourceManifestHash": "aa876be463b322664de0fce5d888e5ecaecc7e7e5a1d781339c968318ab2130a",
    "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
    "registers": {
     "identityEvidence": {
@@ -89,18 +89,18 @@
     "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
     "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
    },
-   "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+   "pointsHashRoot": "e508b75abe24328ac78a20193858b77657cae2588930e649cbd2a4fc2d7f295d"
   },
   "listings": {
-   "count": 3088,
-   "root": "e5db211a3b0d3b06d9a5e0882ec4db2257ec4e2788c48594fe6f6b1be136b7ee",
+   "count": 3087,
+   "root": "fdea627b094a75a089cfcd67db72fa8eb240f1ede20a8504a09442240fcfeaca",
    "rule": "sha256(canonical map securityId -> {listingId, sourceBytesHash|registerPointsSha256, first, last, bars})"
   },
   "private": {
    "factorPanel": "84bfe974a76335b6c064e0ba78a8e38b48f1e3fecc8fe445eebd19b5651b66a8"
   }
  },
- "inputHash": "653f51850fff67adb12d18cdfd014c5dcae1a7e14cebb2e29e0cb4e0bae8e947",
+ "inputHash": "fb28aeeff94d387fb64c30705af9f44d4de27e61bc8730e50c2395e1adb41e0d",
  "kindPath": {
   "kind": "FACTOR_RANKING_BACKTEST",
   "engine": "research-studies.runFactorStudy (private V10 PIT panel)",
@@ -115,13 +115,13 @@
    "listingId": null,
    "listingHash": null,
    "populationId": "runner:V10_PRIMARY:abd4933102c4d167",
-   "populationHash": "4cef9d8191f1c5ea7000f9eee1af15af98e19ca22317a21e179e1477d56dfaf9",
+   "populationHash": "616933f2114fa0e520fbebfe45960330d9ab92d2cda8c04bec03161d0185a4e3",
    "source": {
     "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
     "schemaVersion": "research-studies-1.1.0",
     "engineVersion": null,
     "artifact": null,
-    "resultHash": "347e46c40a2d34753bf33f5313044317ad8066b325ffb83bdfac6b9aadfc1ee1"
+    "resultHash": "b755a3e462b529e33cbf600f1a06281035e2cd42bb1f0ced861061b900fbf7cb"
    }
   },
   "period": {
@@ -189,7 +189,7 @@
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
       "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
-      "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+      "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
       "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
@@ -197,15 +197,15 @@
       "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
       "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
      },
-     "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
-     "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+     "certification": "ad081cf912f27d9c955241f9f7bfd2d230cafeac06f80f9e65b9d23f642c951c",
+     "benchmark": "23a10810b72c20adff5869a55473e50df1fddff6053c712caa24b5a92cd930b3",
      "population": {
       "profile": "V10_PRIMARY",
       "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-      "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+      "populationHash": "1373b9753e9029360e609a334399dce8a89dff1c0b1860ca54ece26415c9fbdf",
       "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
       "calendarLength": 1922,
-      "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+      "sourceManifestHash": "aa876be463b322664de0fce5d888e5ecaecc7e7e5a1d781339c968318ab2130a",
       "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
       "registers": {
        "identityEvidence": {
@@ -223,18 +223,18 @@
        "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
        "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
       },
-      "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+      "pointsHashRoot": "e508b75abe24328ac78a20193858b77657cae2588930e649cbd2a4fc2d7f295d"
      },
      "listings": {
-      "count": 3088,
-      "root": "e5db211a3b0d3b06d9a5e0882ec4db2257ec4e2788c48594fe6f6b1be136b7ee",
+      "count": 3087,
+      "root": "fdea627b094a75a089cfcd67db72fa8eb240f1ede20a8504a09442240fcfeaca",
       "rule": "sha256(canonical map securityId -> {listingId, sourceBytesHash|registerPointsSha256, first, last, bars})"
      },
      "private": {
       "factorPanel": "84bfe974a76335b6c064e0ba78a8e38b48f1e3fecc8fe445eebd19b5651b66a8"
      }
     },
-    "inputHash": "653f51850fff67adb12d18cdfd014c5dcae1a7e14cebb2e29e0cb4e0bae8e947",
+    "inputHash": "fb28aeeff94d387fb64c30705af9f44d4de27e61bc8730e50c2395e1adb41e0d",
     "kindPath": {
      "kind": "FACTOR_RANKING_BACKTEST",
      "engine": "research-studies.runFactorStudy (private V10 PIT panel)",
@@ -263,16 +263,16 @@
      "specHash": "e68dbfd2123e6152e03aaf99eb5f397fd2ecf4309862b995d5dadd01679d05b6"
     }
    },
-   "specHash": "30f5225f6c971cc4ccf00e59708c7e0d795264df3d9f011df8e102ab488057e7"
+   "specHash": "cc6cefcd344ac5c0fb0ec0e9b2fcc85174d54ba26256e15ef71db24b95a5874e"
   },
   "events": {
    "form": "EVENTS",
-   "occurrences": 65200,
-   "completed": 65200,
+   "occurrences": 65176,
+   "completed": 65176,
    "immature": 0,
    "censored": 0,
    "ineligible": 0,
-   "titles": 2851,
+   "titles": 2850,
    "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
    "exit": "FIXED_HORIZON"
   },
@@ -283,9 +283,9 @@
    "cagr": null,
    "annualReturns": null,
    "volatility": null,
-   "maxDrawdown": -0.14032786885245907,
-   "hitRate": 0.5672085889570552,
-   "trades": 65200,
+   "maxDrawdown": -0.14023599994942398,
+   "hitRate": 0.567233337424819,
+   "trades": 65176,
    "turnover": null,
    "costs": {
     "model": "PER_SIDE_NOTIONAL",
@@ -300,22 +300,22 @@
     "costsBps": 0
    },
    "excess": {
-    "meanExcess": 0.023870428968042874,
-    "n": 65200
+    "meanExcess": 0.023887341375749126,
+    "n": 65176
    },
    "perEvent": {
     "horizon": "REGISTERED_HORIZON",
     "label": null,
-    "n": 65200,
-    "median": 0.028990831096379455,
-    "mean": 0.0688314890351532,
+    "n": 65176,
+    "median": 0.0289970396614323,
+    "mean": 0.06884863119557937,
     "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS",
     "factor": {
      "factorId": "momentum",
      "rankDates": 24,
-     "meanSpearmanObservedOnly": 0.03557200919797745,
+     "meanSpearmanObservedOnly": 0.03567624774493461,
      "spearmanDates": 24,
-     "meanTopMinusBottomCompleteCohort": -0.015911760915145973,
+     "meanTopMinusBottomCompleteCohort": -0.015814010088537347,
      "topMinusBottomDates": 24,
      "buckets": 5
     }
@@ -324,8 +324,8 @@
   "uncertainty": {
    "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
    "interval": [
-    -0.0015102824922913621,
-    0.13917326056259777
+    -0.001487338555838949,
+    0.1391846009469977
    ],
    "level": 0.95,
    "p": null,
@@ -333,8 +333,8 @@
   },
   "dataQuality": {
    "coverage": {
-    "numerator": 65200,
-    "denominator": 65200,
+    "numerator": 65176,
+    "denominator": 65176,
     "share": 1,
     "contract": null
    },
@@ -345,18 +345,18 @@
    "corporateActions": {
     "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
     "listings": {
-     "count": 3088,
+     "count": 3087,
      "quality": {
-      "CLEAN": 2850,
+      "CLEAN": 2849,
       "RESOLVED": 238
      },
-     "withSplitsInWindow": 173
+     "withSplitsInWindow": 172
     }
    },
    "totalReturnBasis": "PRICE_RETURN",
    "survivorship": {
     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
-    "control": "population profile V10_PRIMARY (dce532a2533c2907)"
+    "control": "population profile V10_PRIMARY (1373b9753e902936)"
    },
    "warnings": [
     "ESTIMATED_NOT_CERTIFIED",
@@ -399,55 +399,55 @@
      "engine": "research-studies.classifyRegimes+analyzeRegimes",
      "mode": "PIT_AVAILABLE",
      "definition": "SPY_WEEKLY_TREND_26_VOL_13",
-     "regimeResultHash": "d272cdf3304233cfe4c61e74d7994bfb202797e2cc9ac57918e928d8adfbbf25",
+     "regimeResultHash": "6ad5a612887fdf5fff107d361d89be972aac0bf4920bd3825e20c8d63e5835c1",
      "states": [
       {
        "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
        "episodes": 24,
-       "n": 16193,
-       "mean": 0.12370871621208042,
+       "n": 16187,
+       "mean": 0.12372855936257555,
        "median": 0.0523102339356758,
        "interval95": [
-        -0.01605010290358748,
-        0.2634675353277483
+        -0.016020726823102446,
+        0.26347784554825354
        ]
       },
       {
        "state": "NEGATIVE_TREND/LOW_VOLATILITY",
        "episodes": 41,
-       "n": 5236,
-       "mean": -0.0004324812945721165,
-       "median": 0.00016668172410749804,
+       "n": 5234,
+       "mean": -0.0002938616898599392,
+       "median": 0.000344199370658993,
        "interval95": [
-        -0.007566162886416635,
-        0.006701200297272401
+        -0.00748134866905787,
+        0.0068936252893379915
        ]
       },
       {
        "state": "POSITIVE_TREND/HIGH_VOLATILITY",
        "episodes": 30,
-       "n": 11209,
-       "mean": 0.10733903232629374,
-       "median": 0.060907576665455654,
+       "n": 11205,
+       "mean": 0.10738594231582613,
+       "median": 0.06093145111342335,
        "interval95": [
-        0.03263369415167765,
-        0.18204437050090982
+        0.03267807877186514,
+        0.18209380585978713
        ]
       },
       {
        "state": "POSITIVE_TREND/LOW_VOLATILITY",
        "episodes": 45,
-       "n": 32562,
-       "mean": 0.03942322652732248,
-       "median": 0.011793102601843963,
+       "n": 32550,
+       "mean": 0.03940899492586537,
+       "median": 0.011786345200215376,
        "interval95": [
-        -0.08112627655941441,
-        0.1599727296140594
+        -0.0811284655521995,
+        0.15994645540393027
        ]
       }
      ],
      "unmatched": 0,
-     "resultHash": "fd494aa65a46210a64406a11e971e29119173895aa4d2eb4cb87255c87460f13"
+     "resultHash": "cd88b5daa163768454ee0b1d8955abc1f3a697e4e8416b5aeea70772e66047ba"
     }
    },
    {
@@ -489,36 +489,36 @@
    "certificationStatus": "COLLECTING_HISTORY",
    "certificationScope": "KIND",
    "certificationRuleId": null,
-   "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-29",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-30",
    "productionApproved": false,
    "evidenceKind": "TESTED"
   },
-  "envelopeHash": "85815035d41d03f013403e8a29e40f1441ebc16411535f23ceaa0f7f26c0971a"
+  "envelopeHash": "04d8f7abc2865c78abe3babbf7a5f5b539a4797532f5ba68d5cb0c9e62b21ec7"
  },
- "envelopeHash": "85815035d41d03f013403e8a29e40f1441ebc16411535f23ceaa0f7f26c0971a",
+ "envelopeHash": "04d8f7abc2865c78abe3babbf7a5f5b539a4797532f5ba68d5cb0c9e62b21ec7",
  "population": {
   "profile": "V10_PRIMARY",
-  "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
-  "frameSize": 4285,
+  "populationHash": "1373b9753e9029360e609a334399dce8a89dff1c0b1860ca54ece26415c9fbdf",
+  "frameSize": 4283,
   "calendar": {
    "first": "1990-01-05",
    "last": "2025-12-26",
    "length": 1878
   },
   "listings": {
-   "count": 3088,
-   "idsHash": "55c2ea76fb6eb5cc351d98b290c2d32574d6be38a49fdb042e00f543247e3ec5",
+   "count": 3087,
+   "idsHash": "cc97f3a068156d709989bad10991800f3f22592a44db5882cd054d4fb5fe3a58",
    "corporateActionQuality": {
-    "CLEAN": 2850,
+    "CLEAN": 2849,
     "RESOLVED": 238
    },
-   "withSplitsInWindow": 173,
+   "withSplitsInWindow": 172,
    "withLifecycle": 0
   },
   "excluded": {
-   "count": 1197,
+   "count": 1196,
    "byReason": {
-    "LISTING_STARTS_AFTER_WINDOW": 1197
+    "LISTING_STARTS_AFTER_WINDOW": 1196
    }
   },
   "warnings": [
@@ -530,9 +530,9 @@
   ]
  },
  "extras": {
-  "engineResultHash": "cfc58f81d57c8753daf1fa2a26c59d42ea679f97c81855f70d1bfd1406df5011",
-  "engineEvents": 65200,
-  "windowEvents": 65200
+  "engineResultHash": "7ed5abbb22f8e98b5d0398a3f7b0f042eb7ae9f9dc2e2329fffb74eedecc9ec5",
+  "engineEvents": 65176,
+  "windowEvents": 65176
  },
  "pit": {
   "asOf": "2025-12-31",
@@ -543,5 +543,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "58fdf16f7e8b87a1a9da92e247d9907e97c46af496e61cd81108788a9fa30192"
+ "resultHash": "a21589f1090e8b75410f42725ef43aa5c489d25c146d2c7bf83e6dd1ba90cbe9"
 }

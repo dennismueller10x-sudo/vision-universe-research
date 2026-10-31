@@ -166,15 +166,19 @@ test("Herausgeber-Komposition: Tagesbalken -> Wochenschluss -> Cent; vor dem Ex-
 test("Herausgeber-Quelltext: beide Reihen korrigieren die Spalte vor splitAdjustedCloses; Engines unberuehrt", () => {
   const lang = readFileSync(new URL("scripts/market/publish-long-series.mjs", ROOT), "utf8");
   assert.match(lang, /const belegt = applySupplements\(SC\.currentListingSegment\(reihe\.bars\)\.bars, s\.securityId\);/);
-  assert.match(lang, /const aktuell = belegt\.bars;/);
+  /* Danach die belegten Kapitalmassnahmen mit Status PIPELINE (corporate-action-confirmations.mjs), ebenfalls nur die Spalte. */
+  assert.match(lang, /const bestaetigt = applyConfirmations\(belegt\.bars, s\.securityId\);/);
+  assert.match(lang, /const aktuell = bestaetigt\.bars;/);
   assert.match(lang, /corporateActions: CorporateActions\.evidence\(closes, points, aktuell\)/);
   assert.match(lang, /doc\.corporateActions\.supplemented = supplemented/);
   const kurz = readFileSync(new URL("scripts/market/publish-discover-series.mjs", ROOT), "utf8");
   assert.match(kurz, /const belegt = applySupplements\(bars, security && security\.securityId\)\.bars;/);
-  assert.match(kurz, /splitAdjustedCloses\(belegt\)/);
+  assert.match(kurz, /const bestaetigt = applyConfirmations\(belegt, security && security\.securityId\)\.bars;/);
+  assert.match(kurz, /splitAdjustedCloses\(bestaetigt\)/);
   /* Keine eigene Kumulation in der Ergaenzung (ADR-002): sie setzt nur die Spalte. */
   const lib = readFileSync(new URL("scripts/market/lib/split-evidence-supplements.mjs", ROOT), "utf8");
   assert.doesNotMatch(lib, /\*=/);
+  assert.doesNotMatch(readFileSync(new URL("scripts/market/lib/corporate-action-confirmations.mjs", ROOT), "utf8"), /\*=/);
   for (const engine of ["quant/engines/return-series.js", "quant/engines/corporate-action-evidence.js"]) {
     assert.doesNotMatch(readFileSync(new URL(engine, ROOT), "utf8"), /split-evidence-supplements|supplement/i, engine);
   }

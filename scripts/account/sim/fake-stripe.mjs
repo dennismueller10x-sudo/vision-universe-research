@@ -37,6 +37,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
   const customers = new Map(), sessions = new Map(), subscriptions = new Map(), invoices = new Map();
   const idempotency = new Map();
   const priceOverrides = new Map(); // Simulation: Preis im Stripe-Dashboard geaendert
+  let taxSettings = {status: 'active'}; // Simulation: Stripe Tax im Dashboard
   const events = [];
   const t = () => Math.floor(now() / 1000);
 
@@ -61,10 +62,14 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
     return inv;
   }
 
+  const createdPrices = new Map(); // Simulation: in der Tarifverwaltung angelegte Preise
   function priceObject(id) {
+    if (createdPrices.has(id)) return createdPrices.get(id);
     const p = SIM_PRICES[id];
     if (!p) return null;
-    return {id, object: 'price', unit_amount: p.amount, currency: 'eur', recurring: {interval: p.interval}, livemode: false};
+    return {id, object: 'price', product: `prod_sim_${String(id).replace(/^price_test_/, '').split('_')[0]}`, unit_amount: p.amount,
+      currency: 'eur', recurring: {interval: p.interval, interval_count: 1}, tax_behavior: 'inclusive', lookup_key: `vu_${id.replace(/^price_test_/, '')}`,
+      active: true, livemode: false};
   }
 
   function newSubscription(session, {paid}) {
@@ -156,10 +161,21 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
         return done(sub);
       }
     }
+    if (p === '/v1/prices' && req.method === 'POST') {
+      if (!params.product || !params.unit_amount || params.tax_behavior !== 'inclusive') return reply(400, {error: {message: 'invalid price'}});
+      const price = {id: rid('price_sim'), object: 'price', product: params.product, unit_amount: Number(params.unit_amount),
+        currency: params.currency, recurring: {interval: params.recurring?.interval, interval_count: Number(params.recurring?.interval_count || 1)},
+        tax_behavior: params.tax_behavior, lookup_key: params.lookup_key || null, active: true, livemode: false, metadata: params.metadata || {}};
+      if (params.lookup_key) for (const other of createdPrices.values()) if (other.lookup_key === params.lookup_key) other.lookup_key = null;
+      createdPrices.set(price.id, price);
+      sim.pricesCreated = (sim.pricesCreated || 0) + 1;
+      return done(price);
+    }
     if ((m = p.match(/^\/v1\/prices\/(price_\w+)$/)) && req.method === 'GET') {
       const price = priceOverrides.get(m[1]) || priceObject(m[1]);
       return price ? reply(200, {...price, active: price.active ?? true}) : notFound('price');
     }
+    if (p === '/v1/tax/settings' && req.method === 'GET') return reply(200, {object: 'tax.settings', livemode: false, ...taxSettings});
     if ((m = p.match(/^\/v1\/invoices\/(in_\w+)$/)) && req.method === 'GET') {
       return invoices.has(m[1]) ? reply(200, invoices.get(m[1])) : notFound('invoice');
     }
@@ -271,6 +287,7 @@ export function createFakeStripe({secretKey = 'sk_test_local_simulation', webhoo
     },
     pendingEvents: () => events.filter(e => !e.delivered),
     overridePrice(id, patch) { priceOverrides.set(id, {...priceObject(id), ...patch}); },
+    setTaxSettings(patch) { taxSettings = {...taxSettings, ...patch}; },
     // Stellt alle offenen Ereignisse signiert zu. post(rawBody, signatureHeader) -> Response
     async deliver(post, {only} = {}) {
       const results = [];

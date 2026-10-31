@@ -953,6 +953,125 @@ test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfass
   assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
 });
 
+test('Umsatzsteuer: Stripe Tax automatisch, Bruttopreis bleibt, kein zweiter Steuermechanismus; ohne aktives Stripe Tax kein Checkout', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const b = await signedIn(env, 'tina.steuer@example.test');
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const health = async () => (await env.app.handle(new Request(env.api + '/v1/health'))).json();
+  assert.deepEqual([(await health()).tax, (await health()).stripeTax], ['automatic', 'ok']);
+  const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(ok.status, 200);
+  const session = env.stripe.sim.sessions.get(ok.data.url.split('/').pop());
+  assert.deepEqual(session.automatic_tax, {enabled: 'true'}, 'Stripe Tax berechnet');
+  assert.equal(session.subscription_data.default_tax_rates, undefined, 'kein fester Steuersatz daneben');
+  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Bruttopreis unveraendert');
+
+  // Stripe Tax im Dashboard pausiert: kein Checkout, nichts berechnet.
+  env.stripe.sim.setTaxSettings({status: 'pending'});
+  resetTaxCache();
+  const before = env.stripe.sim.sessions.size;
+  const refused = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([refused.status, refused.data.state], [503, 'TAX_CONFIG_INVALID']);
+  assert.equal(env.stripe.sim.sessions.size, before, 'keine neue Checkout-Sitzung');
+  resetTaxCache();
+  assert.equal((await health()).stripeTax, 'STRIPE_TAX_PENDING');
+});
+
+test('Umsatzsteuer: ein Preis ohne "inclusive" wird mit Stripe Tax nicht verkauft (kein Aufschlag)', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const b = await signedIn(env, 'tom.exklusiv@example.test');
+  const [row] = await env.pg.json(`select json_agg(provider_price_id) from public.plan_prices where id = 'pro_month'`);
+  env.stripe.sim.overridePrice(row, {tax_behavior: 'exclusive'});
+  const r = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([r.status, r.data.state], [503, 'TAX_CONFIG_INVALID']);
+});
+
+test('Tarifverwaltung: nur pricing_admin, Vorschau ohne Aenderung, Bestaetigung mit Passwort, neuer Preis nur fuer neue Abos', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const kunde = await signedIn(env, 'kai.bestand@example.test');
+  const admin = await signedIn(env, 'petra.preise@example.test');
+  const grant = email => env.pg.json(`with x as (insert into public.user_roles (user_id, role)
+    select id, 'pricing_admin' from auth.users where email = '${email}' returning 1) select to_json(count(*)) from x`);
+
+  // Bestandsabo auf dem alten Preis (19,90 EUR).
+  const co = await kunde.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  env.stripe.sim.completeCheckout(co.data.url.split('/').pop());
+  await env.deliverWebhooks();
+
+  await t.test('ohne Rolle: kein Zugriff, auch nicht per Selbstvergabe; ohne Anmeldung 401', async () => {
+    assert.equal((await env.browser().get('/v1/admin/pricing')).status, 401);
+    assert.deepEqual([(await admin.get('/v1/admin/pricing')).status, (await admin.get('/v1/admin/pricing')).data.state], [403, 'NOT_PRICING_ADMIN']);
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 2490})).status, 403);
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {price: 'pro_month', amount: 2490, confirm: true})).status, 403);
+    assert.equal(await grant('petra.preise@example.test'), 1);
+  });
+
+  let preview;
+  await t.test('Uebersicht und Vorschau aendern nichts', async () => {
+    const o = await admin.get('/v1/admin/pricing');
+    assert.equal(o.status, 200);
+    const pro = o.data.prices.find(p => p.id === 'pro_month');
+    assert.deepEqual([pro.unit_amount, pro.active, pro.subscribers], [1990, true, 1]);
+    assert.deepEqual([o.data.stripe.pro_month.taxBehavior, o.data.stripe.pro_month.matches, o.data.tax, o.data.stripeTax], ['inclusive', true, 'automatic', 'ok']);
+    assert.equal(JSON.stringify(o.data).includes('sk_'), false, 'kein Stripe-Schluessel in der Antwort');
+    preview = (await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 2490})).data;
+    assert.match(preview.changeId, /^pc_[a-f0-9]{32}$/);
+    assert.ok(preview.summary.some(l => /24,90\s€ pro Monat inkl\. Umsatzsteuer \(bisher 19,90\s€\)/.test(l)));
+    assert.ok(preview.summary.some(l => /Bestehende Abos \(1\) behalten ihren bisherigen Preis/.test(l)));
+    assert.equal(env.stripe.sim.pricesCreated || 0, 0, 'Vorschau legt nichts an');
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 20})).data.state, 'AMOUNT_INVALID');
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 1990})).data.state, 'PRICE_UNCHANGED');
+  });
+
+  const body = () => ({price: 'pro_month', amount: 2490, changeId: preview.changeId, expectedProviderPriceId: preview.expectedProviderPriceId,
+    password: PASSWORD, confirm: true});
+  await t.test('ohne Bestaetigung oder mit falschem Passwort: nichts geaendert', async () => {
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {...body(), confirm: false})).data.state, 'CONFIRMATION_REQUIRED');
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {...body(), password: 'falsch-falsch-1A'})).data.state, 'CURRENT_PASSWORD_INVALID');
+    assert.equal(env.stripe.sim.pricesCreated || 0, 0);
+  });
+
+  await t.test('Ausfuehren: neuer Stripe-Preis brutto/inklusive, aktiv fuer neue Abschluesse; doppelt = einmal', async () => {
+    const r = await admin.post('/v1/admin/pricing/apply', body());
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual([r.data.change.from, r.data.change.to, r.data.change.status], [1990, 2490, 'applied']);
+    const again = await admin.post('/v1/admin/pricing/apply', body());
+    assert.equal(again.data.change.price, r.data.change.price, 'zweiter Klick: derselbe Vorgang');
+    assert.equal(env.stripe.sim.pricesCreated, 1, 'genau ein neuer Stripe-Preis');
+    const plans = await env.browser().get('/v1/plans');
+    const month = plans.data.plans.find(p => p.id === 'pro').prices.filter(p => p.interval === 'month');
+    assert.deepEqual(month.map(p => p.unitAmount), [2490], 'Preisseite/Registrierung: nur der neue Preis');
+    // Neuer Abschluss nutzt den neuen Preis, mit Stripe Tax und unveraendertem Endpreis-Hinweis.
+    const neu = await signedIn(env, 'nina.neu@example.test');
+    const c = await neu.post('/v1/billing/checkout', {price: month[0].key, confirm: true});
+    assert.equal(c.status, 200, JSON.stringify(c.data));
+    const session = env.stripe.sim.sessions.get(c.data.url.split('/').pop());
+    assert.match(session.custom_text.submit.message, /24,90\s€ pro Monat inkl\. USt/);
+    assert.deepEqual(session.automatic_tax, {enabled: 'true'});
+    // Bestandsabo unveraendert, weiterhin Pro.
+    const bestand = await env.pg.json(`select to_json(price_id) from public.subscriptions s join auth.users u on u.id = s.user_id where u.email = 'kai.bestand@example.test'`);
+    assert.equal(bestand, 'pro_month');
+    assert.equal((await kunde.get('/v1/me/billing')).data.entitlements.plan_id, 'pro');
+    // Audit-Log
+    const audit = await env.pg.json(`select to_json(x) from (select status, old_amount, new_amount, admin_user_id is not null as wer from billing.price_changes) x`);
+    assert.deepEqual(audit, {status: 'applied', old_amount: 1990, new_amount: 2490, wer: true});
+  });
+
+  await t.test('veraltete Vorschau (Preis inzwischen geaendert) wird abgelehnt', async () => {
+    const stale = await admin.post('/v1/admin/pricing/apply', {...body(), changeId: 'pc_' + 'f'.repeat(32), amount: 2990});
+    assert.deepEqual([stale.status, stale.data.state], [409, 'PRICE_NOT_ACTIVE'], 'alter Preisschluessel nicht mehr aktiv');
+    assert.equal(env.stripe.sim.pricesCreated, 1, 'kein weiterer Stripe-Preis');
+  });
+});
+
 test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {
   const lists = {VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'};
   const env = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', ...lists}});

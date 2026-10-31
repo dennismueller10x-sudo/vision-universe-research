@@ -155,7 +155,26 @@ Alle Felder bekommen:
 
 Reihenfolge: S1 und S2 sind unabhängig und können parallel als PRs vorliegen. S3 braucht beide, S4 kommt zuletzt. Keines der Pakete berührt die Produktionsprüfung am 30.10. oder den Nachtlauf.
 
-## 7. Entscheidungen für den Owner
+## 7. Owner-Entscheidungen (30.10.2026)
+
+1. **S1-Umfang:** V1a, V2 (drei Ausprägungen), V3 (kombinierbare Trendfilter) und die acht bestehenden Vorlagen; keine weiteren. „Bestätigter Dreiecksausbruch“ erst, wenn die Richtung korrekt gefiltert oder eindeutig dargestellt ist. Umsetzung: Die Vorlage „Dreieck mit Ausbruch nach oben“ filtert die Richtung aus der Spalte `formations` (nur Formationen, die `formationConfirmed` meldet; Test: jedes bestätigte Dreieck hat eine Richtung, „nach oben“ nur bei bestätigtem Dreieck). Mit L5 wird das Kriterium ein Abfragefeld.
+2. **V1-Name:** „Etablierter Aufwärtstrend“, ohne Namensnennung im Produkt und ohne Andeutung einer offiziellen Verbindung oder Zertifizierung (Sprachtest: kein „Minervini“, kein „IBD“).
+3. **RS-Rang (L4):** Perzentilrang von `rs6m` über aktuelle, gültig auswertbare Aktien; Universum, Richtung, fehlende Werte und Rangdefinition werden im Fachmodell-PR exakt dokumentiert; keine Bezeichnung als IBD-RS.
+4. **Fast erfüllt:** ja, genau ein tatsächlich nicht erfülltes Kriterium. Unbekannt (`null`) zählt weder als erfüllt noch als nicht erfüllt; Titel mit unbekannten Kriterien heißen ausdrücklich „unvollständig“. Umsetzung: „Fast erfüllt“ nur bei Vorlagen mit mindestens 3 Kriterien, sonst wäre fast jeder Titel „fast erfüllt“.
+
+Auftrag: S1–S3 als zusammenhängendes Paket; S2 als getrennte Fachmodell-PRs zur Freigabe; S4 (historische Tests) braucht eine eigene Freigabe.
+
+## 8. Umsetzungsstand
+
+| Paket | Stand |
+|---|---|
+| S1 | umgesetzt (PR „Technical AP8 S1“): `technical/engine/templates.js`, Ansichten `#/vorlagen` und `#/vorlagen/<id>`, Kriterien-Checklisten (✓ / ✗ / ?), Trendfilter, Treffer nach „Erfüllt / Fast erfüllt / Unvollständig“, Speichern, „Im Screener anpassen“, Prüfleiste im Chart Studio (`?v=<Vorlage>`), Zählung im Index (`templates`, Schema 1.1.0) |
+| S2 | L1–L5 vom Owner am 30.10. freigegeben und gemergt (#1144, #1145, #1147, #1149, #1150), je mit Neubau durch den Erzeuger; die bisherigen 150 Spalten blieben byte-gleich |
+| S3 | gemergt (#1151): „Etablierter Aufwärtstrend“ mit 8 Kriterien; Stand 29.10.: 685 erfüllt, 440 fast erfüllt, 1 unvollständig; Nachrechnung 1.126/1.126 ohne Abweichung (STRATEGY_TEMPLATE_S3.md) |
+| Datenqualität | DQ-TW-8 (#1155): kein vollständiger Vorlagen-Treffer auf einem Lunten-Tief (Owner-Auflage zu L3) |
+| S4 | historische Prüfung, eigene Freigabe nötig |
+
+## (Archiv) Fragen an den Owner vom 29.10.
 
 1. **Auswahl für S1:** V1a, V2 (drei Ausprägungen), V3 als Bausteine und die 8 bestehenden Vorlagen. Kommen weitere hinzu, oder fallen welche weg?
 2. **Name von V1:** neutral („Etablierter Aufwärtstrend“), mit Quellenangabe auf der Methodik-Seite, oder mit Namensnennung (Rechtsprüfung)?

@@ -1257,10 +1257,10 @@
       "cik": "0002044241",
       "name": "TryHard Holdings Ltd",
       "sic": "7990",
-      "rawFacts": 0,
-      "mappedFacts": 0,
-      "unmappedFacts": 0,
-      "calendarYears": 0,
+      "rawFacts": 4,
+      "mappedFacts": 4,
+      "unmappedFacts": 2,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -1374,29 +1374,34 @@
         "resolvedValues": 0
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 0,
-        "by_severity": {},
-        "by_code": {}
+        "rules_version": "1.1.0",
+        "total": 2,
+        "by_severity": {
+          "INFO": 2
+        },
+        "by_code": {
+          "UNKNOWN_CONCEPT": 2
+        }
       },
       "latestFiling": {
-        "accession": "0001493152-25-020356",
-        "filing_date": "2025-10-31",
+        "accession": "0001493152-26-049291",
+        "filing_date": "2026-10-29",
         "form": "20-F",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-10-29T20:50:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "8e1e43ef8c2bbb61faeeb01c6fae62896d4a1e0e2071a80f5808c5d2f4cd8e59",
+      "sourceDigest": "0f321a98c3e638d2e04eab2d170a3c97f536aa957f44a64dc6a74fcb9b1ba956",
       "issuerId": "iss_cik_0002044241"
     }
   ]

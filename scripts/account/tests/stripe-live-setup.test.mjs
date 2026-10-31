@@ -186,16 +186,14 @@ test('Zahlungsmethoden: Probelauf schaltet nichts ein', async () => {
   assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'off');
 });
 
-test('Steuersatz nur auf Wunsch: 19 % DE inklusive, idempotent, sonst kein Aufruf', async () => {
-  const f = fakeStripe();
-  const base = {key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: f.fetchImpl, log: () => {}};
-  const plain = await setupStripeLive(base);
-  assert.equal(plain.taxRateId, null);
-  assert.ok(!f.state.calls.some(c => c.includes('/v1/tax_rates')), 'ohne --tax-rate kein Steuer-Aufruf');
-  const first = await setupStripeLive({...base, taxRate: true});
-  assert.match(first.taxRateId, /^txr_/);
-  assert.deepEqual([f.state.taxRates[0].percentage, f.state.taxRates[0].inclusive, f.state.taxRates[0].country], [19, true, 'DE']);
-  const again = await setupStripeLive({...base, taxRate: true});
-  assert.equal(again.taxRateId, first.taxRateId);
-  assert.equal(f.state.taxRates.length, 1);
+test('Preis aus der Tarifverwaltung: kein neuer Preis, keine Preiszeile', async () => {
+  const s = fakeStripe();
+  s.state.products.set('vu_pro', {id: 'vu_pro', name: 'Vision Universe Pro', description: LIVE_CATALOG[0].description, active: true, livemode: true});
+  s.state.prices.push({id: 'price_verwaltet', product: 'vu_pro', unit_amount: 490, currency: 'eur', tax_behavior: 'inclusive',
+    recurring: {interval: 'month', interval_count: 1}, lookup_key: 'vu_pro_month', active: true, livemode: true,
+    metadata: {vu_change_id: 'pc_' + 'a'.repeat(32)}});
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(s.state.prices.length, 1, 'nichts angelegt');
+  assert.equal(s.state.prices[0].unit_amount, 490);
+  assert.deepEqual(r.prices, [], 'keine Preiszeile');
 });

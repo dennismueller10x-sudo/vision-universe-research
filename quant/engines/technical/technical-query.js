@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.11.0";
+  var QUERY_VERSION = "technical-query-1.13.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -59,11 +59,21 @@
   var STRUCTURES_LEGACY = { NEUTRAL: "Neutral (bis 1.9.0, nie belegt)" };
 
   var ALL = ["1D", "1W", "1M"], D = ["1D"];
+  /* Tag und Woche: Formationen im Wochenchart seit 1.13.0 (screen-row 1.14.0, abgeschlossene Wochen aus den Tagesbars). */
+  var DW = ["1D", "1W"];
   /* group, id, label, kind (num|pct|bool|enum), tfs, hint; Labels mit Zeitrahmenvarianten als Objekt. */
   var FIELDS = [
     { id: "aboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 200", "1W": "Kurs über 40-Wochen-Linie", "1M": "Kurs über 10-Monats-Linie" } },
     { id: "aboveSma50", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 50", "1W": "Kurs über 10-Wochen-Linie", "1M": "Kurs über 5-Monats-Linie" } },
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
+    /* AP8 L1 (seit 1.12.0): SMA 150 (Tagesbars), docs/technical/SCREENER_FIELDS_AP8_L1.md */
+    { id: "aboveSma150", group: "Trend", kind: "bool", tfs: D, label: "Kurs über SMA 150" },
+    { id: "sma150AboveSma200", group: "Trend", kind: "bool", tfs: D, label: "SMA 150 über SMA 200" },
+    { id: "sma50AboveSma150", group: "Trend", kind: "bool", tfs: D, label: "SMA 50 über SMA 150" },
+    { id: "distSma150", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur SMA 150" },
+    /* AP8 L2 (seit 1.12.0): Richtung der SMA 200 ueber 21 Handelstage, docs/technical/SCREENER_FIELDS_AP8_L2.md */
+    { id: "sma200Rising", group: "Trend", kind: "bool", tfs: D, label: "SMA 200 steigt (gegenüber vor einem Monat)" },
+    { id: "sma200Slope21", group: "Trend", kind: "pct", tfs: D, label: "Veränderung der SMA 200 über einen Monat" },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
@@ -78,6 +88,8 @@
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
     { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
+    /* AP8 L3 (seit 1.12.0): Abstand zum 52-Wochen-Tief, nur Tag, docs/technical/SCREENER_FIELDS_AP8_L3.md */
+    { id: "distLow52w", group: "Hochs", kind: "pct", tfs: D, label: "Abstand über dem 52-Wochen-Tief (Tagestief)" },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
@@ -105,6 +117,8 @@
     { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
+    /* AP8 L4 (seit 1.12.0): Perzentilrang von rs6m, docs/technical/SCREENER_FIELDS_AP8_L4.md */
+    { id: "rsRank", group: "Relative Stärke", kind: "num", tfs: D, label: "RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
     { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
     { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
@@ -122,8 +136,11 @@
     { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bullisches Kerzenmuster am Stichtag", "1W": "Bullisches Kerzenmuster (Wochenkerze)", "1M": "Bullisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bärisches Kerzenmuster am Stichtag", "1W": "Bärisches Kerzenmuster (Wochenkerze)", "1M": "Bärisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
-    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
-    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation erkannt oder bestätigt", "1W": "Formation im Wochenchart erkannt oder bestätigt" }, values: FORMATION_TYPES },
+    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation bestätigt", "1W": "Formation im Wochenchart bestätigt" }, values: FORMATION_TYPES },
+    /* AP8 L5 (seit 1.12.0): bestaetigte Formationen nach Ausbruchsrichtung, docs/technical/SCREENER_FIELDS_AP8_L5.md */
+    { id: "formationConfirmedUp", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach oben", values: FORMATION_TYPES },
+    { id: "formationConfirmedDown", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach unten", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
     /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
        mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
@@ -234,7 +251,7 @@
     };
   }
 
-  /** Praedikat: true | false | null (null = kein Wert). */
+  /** Praedikat: true | false | null (null = kein Wert). Exportiert als predicate (Vorlagen-Checklisten, technical/engine/templates.js). */
   function compile(ds, filter, tf) {
     var f = field(filter.field), c = ds.column(columnKey(filter.field, filter.tf || tf));
     if (!f || !c) return function () { return null; };
@@ -405,7 +422,7 @@
     QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, STRUCTURES_LEGACY: STRUCTURES_LEGACY, PRESETS: PRESETS,
     MAX_GROUPS: MAX_GROUPS, MAX_FILTERS: MAX_FILTERS,
     field: field, labelOf: labelOf, columnKey: columnKey, opsFor: opsFor,
-    validate: validate, createDataset: createDataset, evaluate: evaluate, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
+    validate: validate, createDataset: createDataset, evaluate: evaluate, predicate: compile, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
   };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Query = api; }
