@@ -57,3 +57,14 @@ Die 16 Demofälle sind davon in ihren Kennzahlen nicht betroffen. Nur der Code-H
 | D7 | Faktor: privates Panel einschließlich delisteter Listings (Verknüpfung über CIK, `pit_docs.py`/`panel.cjs`) | Faktor-Ranking ohne Überlebendenfilter | größter Aufwand |
 
 **Gate-Wirkung:** Das Zertifizierungsgate `survivorship` liest heute nicht die Runner-Ergebnisse, sondern `signal-backtest-v1.json` und `survivorship-control-v1.json`. Ein Lauf mit delisteten Titeln ändert dort also nichts. Sollen solche Läufe in die Zertifizierung einfließen, ist das eine normative Entscheidung des Owners.
+
+## 6. Demo-Neubau zu diesem PR
+
+Run **41179269415** (`[v13-archive:demos]`, Branch dieses PR): 16 Fälle, Python-Gegenrechnung mit 276.828 Prüfungen und 0 Abweichungen.
+
+Gegenüber den Demos auf `main` (#1178) hat sich **keine Kennzahl, kein Ereignis und kein Zustand** verändert. Geändert haben sich nur Hashes:
+- der Code-Hash von `backtest-runner.cjs`;
+- das Zertifizierungsdatum;
+- die fortgeschriebene SPY-Reihe, sichtbar im Hash des Marktregime-Ergebnisses.
+
+Hinweis zur Reihenfolge: Die interne Vorschau (#1201) liest die Demos. Wird dieser PR zuerst gemergt, muss ihr Lesemodell danach neu erzeugt werden (`build-backtest-preview.cjs --out`).
