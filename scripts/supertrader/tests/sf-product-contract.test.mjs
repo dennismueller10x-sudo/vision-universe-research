@@ -332,6 +332,9 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   const autoBlock = code.slice(auto, code.indexOf('\n  alarm:'));
   assert.match(autoBlock, /if \[ "\$GITHUB_REF" != "refs\/heads\/main" \]; then echo "::error::automatischer Commit nur auf main"; exit 1; fi/);
   assert.match(autoBlock, /SF8-Contract: /, 'Nachweis als Trailer');
+  // SF8-Code-Commit nennt den ausgecheckten Stand (Code und Eingaben), nicht GITHUB_SHA des Ausloesers
+  assert.match(code, /code_commit="\$\(git rev-parse HEAD\)"\n[\s\S]*?--code-commit "\$code_commit"/, 'SF8-Code-Commit = ausgecheckter HEAD');
+  assert.doesNotMatch(code, /--code-commit "\$GITHUB_SHA"/, 'GITHUB_SHA kann aelter sein als der Checkout');
   // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
   assert.match(code, /sf8\.length !== 8\)[^\n]*process\.exit\(1\)/, 'fehlende Regeln sind rot');
   assert.match(code, /x\.status !== "PASS" \|\| x\.checked === 0/, 'jede Regel muss geprüft und bestanden sein');

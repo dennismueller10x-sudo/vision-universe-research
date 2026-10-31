@@ -61,7 +61,7 @@ SF8-Fingerprint: <sha256 der öffentlichen Dateien>
 SF8-Inputs-SHA256: <summary.inputs.inputsSha256, derselbe Wert wie in summary.json>
 SF8-Source-Files-SHA256: <sha256 der Liste summary.inputs.sourceFiles>
 SF8-Previous-AsOf: <ersetzter Stand>
-SF8-Code-Commit: <main-SHA des Laufs>
+SF8-Code-Commit: <ausgecheckter main-SHA (git rev-parse HEAD), aus dem Code und Eingaben stammen>
 SF8-Run: <Lauf-ID>
 ```
 
