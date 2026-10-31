@@ -28,7 +28,13 @@
      completedCount Zahl abgeschlossener Ergebnisse, falls rows === null.
      minPerSegment  Mindestgroesse je Segment (Vertrag: 30).
      segmentation   null (heute) oder { id, method, cutDate?, embargoDays,
-                    criterion: { metric, rule } }.
+                    criterion: { metric, rule }, countBy? }.
+                    countBy (optional, Vorarbeit A5, keine Norm): 'ROWS'
+                    (Standard, wie bisher) oder 'EVENT_DAY' - die Mindest-
+                    groesse zaehlt dann verschiedene Ereignistage statt Zeilen
+                    (konservative Clusterung querschnittlich korrelierter
+                    Ereignisse). Die Kennzahl bleibt der Median ueber alle
+                    Zeilen. Wirksam nur ueber eine freigegebene Segmentierung.
 
    Ausgabe { schemaVersion, status: PASS|FAIL, reasonCode, minPerSegment,
              completed, segmentation, purged, segments: { train, test } | null }
@@ -38,6 +44,7 @@ const DAY = 86400000;
 const METHODS = ['CHRONOLOGICAL_MEDIAN_EVENT_DATE', 'FIXED_CALENDAR_CUT'];
 const METRICS = ['MEDIAN_EXCESS', 'MEDIAN_NET'];
 const RULES = ['POSITIVE_IN_BOTH', 'SIGN_REPLICATES'];
+const COUNT_BY = ['ROWS', 'EVENT_DAY'];
 const REASONS = ['OOS_NOT_MEASURABLE_YET', 'OOS_SEGMENT_DEFINITION_MISSING', 'OOS_SEGMENT_DEFINITION_INVALID', 'OOS_ROWS_NOT_EXPORTED',
   'OOS_SEGMENT_TOO_SMALL', 'OOS_DIRECTION_NOT_REPLICATED', 'OOS_MIN_PER_SEGMENT_INVALID'];
 
@@ -69,6 +76,7 @@ function validSegmentation(s) {
   if (s.method !== 'FIXED_CALENDAR_CUT' && s.cutDate !== undefined && s.cutDate !== null) return false;
   if (!Number.isSafeInteger(s.embargoDays) || s.embargoDays < 0 || s.embargoDays > 3660) return false;
   if (!s.criterion || !METRICS.includes(s.criterion.metric) || !RULES.includes(s.criterion.rule)) return false;
+  if (s.countBy !== undefined && !COUNT_BY.includes(s.countBy)) return false;
   return true;
 }
 
@@ -80,9 +88,13 @@ function cutDateOf(s, rows) {
   return rows[(rows.length - 1) >> 1].date;
 }
 
-function summary(list, metric) {
-  const vals = list.map((r) => (metric === 'MEDIAN_EXCESS' ? r.excess : r.net)).filter((x) => x !== null);
-  return { n: vals.length, nAll: list.length, from: list.length ? list[0].date : null, to: list.length ? list[list.length - 1].date : null, metric: median(vals) };
+function summary(list, metric, countBy) {
+  const valid = list.filter((r) => (metric === 'MEDIAN_EXCESS' ? r.excess : r.net) !== null);
+  const vals = valid.map((r) => (metric === 'MEDIAN_EXCESS' ? r.excess : r.net));
+  const out = { n: vals.length, nAll: list.length, from: list.length ? list[0].date : null, to: list.length ? list[list.length - 1].date : null, metric: median(vals) };
+  /* Nur mit ausdruecklichem countBy: n zaehlt Ereignistage, die Zeilenzahl steht daneben. */
+  if (countBy === 'EVENT_DAY') { out.nRows = out.n; out.n = new Set(valid.map((r) => r.date)).size; out.countBy = countBy; }
+  return out;
 }
 
 function result(status, reasonCode, extra) {
@@ -111,7 +123,7 @@ function evaluateSetupOos(input) {
   const before = rows.filter((r) => r.date < cut);
   /* Purge/Embargo: Trainingsereignisse, deren Fenster in den Test reicht, fallen weg. */
   const train = before.filter((r) => ms(r.date) + s.embargoDays * DAY < cutMs);
-  const segments = { cutDate: cut, train: summary(train, metric), test: summary(test, metric) };
+  const segments = { cutDate: cut, train: summary(train, metric, s.countBy), test: summary(test, metric, s.countBy) };
   Object.assign(base, { purged: before.length - train.length, segments });
   if (segments.train.n < min || segments.test.n < min) return result('FAIL', 'OOS_SEGMENT_TOO_SMALL', base);
   const a = sign(segments.train.metric), b = sign(segments.test.metric);
@@ -142,4 +154,4 @@ const VALUE_TEXT = {
 };
 function gateValue(r) { return r.status === 'PASS' ? 'im Testzeitraum bestätigt (' + r.segmentation + ')' : VALUE_TEXT[r.reasonCode]; }
 
-module.exports = { VERSION, METHODS, METRICS, RULES, REASONS, evaluateSetupOos, segmentationFromMethodology, gateValue };
+module.exports = { VERSION, METHODS, METRICS, RULES, COUNT_BY, REASONS, evaluateSetupOos, segmentationFromMethodology, gateValue };
