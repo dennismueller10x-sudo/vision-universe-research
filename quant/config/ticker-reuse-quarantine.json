@@ -1,0 +1,551 @@
+{
+  "schemaVersion": "ticker-reuse-quarantine-1.0.0",
+  "consumer": "scripts/market/universe-source.mjs#resolveProductUniverse (einzige Quelle des Produktuniversums)",
+  "doc": "docs/data/security-master/TICKER_REUSE_QUARANTINE.md",
+  "effect": "WITHHELD: die securityId wird aus dem ausgelieferten Produktuniversum genommen (gezaehlt, mit Grund), bis Stamm, Name, Kursreihe und Identitaet wieder zu einem Wertpapier gehoeren. eligibility.json und alle generierten Daten bleiben unberuehrt; Discover, Screener und Faktoren folgen beim naechsten regulaeren Neubau.",
+  "rule": "Nur mit Beleg: Anbieterliste fuehrt die alte Aktienzeile beendet UND eine neue Zeile eines anderen Wertpapiertyps unter demselben Ticker; die eigene Tagesreihe beginnt nach dem Ende der alten Zeile; der Stamm fuehrt unter der securityId nur die Zeile der alten Aktie (gleicher Beginn). Nie allein ueber den Ticker.",
+  "sources": [
+    {
+      "id": "tiingo-supported-tickers",
+      "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+      "fetchedAt": "2026-10-31",
+      "sha256": "fc51593e897968c51929088f07ea6eaff046561c2d2833bee733e8563b215ad4",
+      "rows": 109176
+    },
+    {
+      "id": "sec-company-tickers-exchange",
+      "url": "https://www.sec.gov/files/company_tickers_exchange.json",
+      "fetchedAt": "2026-10-31",
+      "sha256": "76b92fbacfc1a5a8715a32bb5f923df4c79a8062b615735542081ddff6977b46"
+    },
+    {
+      "id": "identity-blocklist-probe",
+      "file": "docs/data/security-master/identity-blocklist-probe-20261030.json",
+      "finding": "SERIES_CONTINUES_AFTER_PROVIDER_END"
+    },
+    {
+      "id": "us-security-master-1.1.0",
+      "file": "quant/data/market/security-master/us-security-master.json",
+      "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332"
+    }
+  ],
+  "records": [
+    {
+      "securityId": "ref_ACTS",
+      "ticker": "ACTS",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Actions Semiconductor Company. Ltd. ADR",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2005-11-30",
+          "endDate": "2016-12-20"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:ACTS:2005-11-30 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-03-19",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_ACTS.json",
+        "from": "2026-03-19",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "SEPARATE_CLASS",
+        "instrumentType": "ADR",
+        "pageName": "Actions Semiconductor Company. Ltd. ADR"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_BREW",
+      "ticker": "BREW",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Corgi Coffee & Energy Drinks ETF",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "1995-08-18",
+          "endDate": "2020-09-30"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NASDAQ:BREW:1995-08-18 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-06",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_BREW.json",
+        "from": "2026-05-06",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Corgi Coffee & Energy Drinks ETF"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_ENTL",
+      "ticker": "ENTL",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Entellus Medical Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2015-01-29",
+          "endDate": "2018-02-28"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NASDAQ:ENTL:2015-01-29 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-06-23",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_ENTL.json",
+        "from": "2026-06-23",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Entellus Medical"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_FTPA",
+      "ticker": "FTPA",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "FTAC Parnassus Acquisition Corp - Class A",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2021-05-07",
+          "endDate": "2023-03-15"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:FTPA:2021-05-07 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-11-10",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_FTPA.json",
+        "from": "2025-11-10",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "SEPARATE_CLASS",
+        "instrumentType": "SPAC",
+        "pageName": "FTAC Parnassus Acquisition Class A"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_GNMX",
+      "ticker": "GNMX",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Medgenics Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2011-04-08",
+          "endDate": "2020-02-03"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NASDAQ:GNMX:2011-04-08 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-06",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_GNMX.json",
+        "from": "2026-05-06",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Medgenics"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_INVN",
+      "ticker": "INVN",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "ALGER RUSSELL INNOVATION ETF",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2011-11-16",
+          "endDate": "2017-07-17"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:INVN:2011-11-16 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-01-07",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_INVN.json",
+        "from": "2025-10-06",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Alger Russell Innovation ETF"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_NMBL",
+      "ticker": "NMBL",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Nimble Storage Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2013-12-13",
+          "endDate": "2017-08-17"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:NMBL:2013-12-13 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-10-31",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_NMBL.json",
+        "from": "2025-10-31",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Nimble Storage"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_NYNY",
+      "ticker": "NYNY",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Corgi NYC Based ETF",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "1993-11-05",
+          "endDate": "2019-11-22"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NASDAQ:NYNY:1993-11-05 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-06",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_NYNY.json",
+        "from": "2026-05-06",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Corgi NYC Based ETF"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_PCLN",
+      "ticker": "PCLN",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Priceline.com Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "1999-03-31",
+          "endDate": "2018-02-26"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:PCLN:1999-03-31 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-10-16",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_PCLN.json",
+        "from": "2025-10-16",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Priceline.com"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_TRIL",
+      "ticker": "TRIL",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Trillium Therapeutics Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2005-03-23",
+          "endDate": "2021-11-18"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NASDAQ:TRIL:2005-03-23 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-09-30",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_TRIL.json",
+        "from": "2025-09-30",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Trillium Therapeutics"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_USX",
+      "ticker": "USX",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "U.S. Xpress Enterprises Inc - Class A",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2018-06-14",
+          "endDate": "2023-06-30"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:USX:2018-06-14 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-06-03",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_USX.json",
+        "from": "2026-06-03",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "U.S. Xpress Enterprises Class A"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_WR",
+      "ticker": "WR",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Corgi U.S. War Machine ETF",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "1987-08-25",
+          "endDate": "2018-06-05"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:WR:1987-08-25 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-06",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_WR.json",
+        "from": "2026-05-06",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "ELIGIBLE",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Corgi U.S. War Machine ETF"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_WX",
+      "ticker": "WX",
+      "action": "WITHHELD",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "WuXi PharmaTech Cayman Inc. ADR",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NYSE",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2007-08-15",
+          "endDate": "2015-12-10"
+        },
+        "masterStatus": "us-security-master-1.1.0: tiingo:NYSE:WX:2007-08-15 ACTIVE bis 2026-09-10 (Zeile der alten Aktie; die neue ETF-Zeile fehlt im Stamm)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "BATS",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-06-03",
+          "endDate": "2026-10-30"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_WX.json",
+        "from": "2026-06-03",
+        "to": "2026-10-30"
+      },
+      "productBefore": {
+        "eligibility": "SEPARATE_CLASS",
+        "instrumentType": "ADR",
+        "pageName": "WuXi PharmaTech Cayman Inc. ADR"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    }
+  ],
+  "notWithheld": [
+    {
+      "securityId": "ref_EDVA",
+      "ticker": "EDVA",
+      "finding": "RENAMED_SAME_ISSUER",
+      "evidence": "SEC CIK 0001553788: Splash Beverage Group, Inc. bis 2026-08-21, seither Endovia Health Sciences, Inc. (submissions formerNames); company_tickers_exchange: EDVA -> CIK 1553788 Endovia Health Sciences, NYSE. Anbieter: NYSE MKT 2019-02-05..2026-08-21 und AMEX 2026-08-21..2026-10-30 (Neubeginn am Umfirmierungstag).",
+      "reason": "Dieselbe Emittentin, kein fremdes Wertpapier: nicht zurueckgehalten. Offen: Name (Splash -> Endovia) und Verknuepfung der neuen Anbieterzeile im Stamm (eigener Erzeuger-PR)."
+    }
+  ],
+  "decidedAt": "2026-10-31"
+}
