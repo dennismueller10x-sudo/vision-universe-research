@@ -128,3 +128,41 @@ Lokal auf `main` (5e9d2b9) zusammen mit diesem PR. Es wurde nichts committet und
 
 - `node --test scripts/supertrader/tests/sf-sf9-publication.test.mjs`: 7/7, jede Vertragsregel mit Gegenprobe.
 - `SF8-DAILY-WORKFLOW` (ersetzt `SF8-DAILY-DISABLED`): genau ein Zeitplan; kein `push`, `pull_request` oder `workflow_run`; beide Variablen; automatisch nur auf `main`; Reihenfolge DQ → Fingerabdruck → zweiter Lauf → Vertrag → Commit; Eingaben nur über `env:`; keine Secrets; Alarm; Anstoß nur aus `supertrader-signals.yml`. Gegenproben lokal: Ein zusätzliches `workflow_run`, ein zweiter Zeitplan, ein Job ohne `SF8_AUTO_PUBLISH`, ein fehlender `main`-Schutz, Commit bei `!= BLOCKED` und ein Vertrag mit nur einem Fingerabdruck machen den Test jeweils rot.
+
+## E2E-Prüfung
+
+`scripts/supertrader/tests/sf-sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
+
+Bewusste Abweichungen vom echten Lauf:
+- Teiluniversum von 60 Titeln (`--tickers`) statt 5.103 Titeln, sonst dieselben Argumente.
+- Lauftag ist der Tag nach dem Marktstand, und DQ läuft mit `--now` dieses Tages. Damit hängt das Ergebnis nicht vom Zeitpunkt des Tests ab.
+- Der veröffentlichte Stand ist eine Kopie des eigenen Ergebnisses, eine Sitzung früher datiert. Die Registry ist synthetisch.
+- `supertrader/data/sf-candidates` wird nur gelesen. Ein Byte-Vergleich vorher und nachher ist Teil des Tests.
+
+| Fall | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Läufe A und B: gleicher Fingerabdruck → `PUBLISH`, genau ein Commit, nur `supertrader/data/sf-candidates/` ohne `records/`, Trailer `SF8-*`. Gegenprobe mit einem Byte Unterschied in B | PUBLISH; Gegenprobe BLOCKED (C1), Exit 5 |
+| 2 | `versions.candidateContractSha256`, `detectors` bzw. `pipeline` geändert oder Engine-Version geändert | BLOCKED (C4), kein Commit |
+| 3 | veröffentlichter Stand eine Sitzung später / gleich / früher / fehlt | BLOCKED (C5) / `SKIP_SAME_SESSION` (grün, kein Commit) / PUBLISH / BLOCKED |
+| 4 | Lauftag drei Sitzungen nach dem Marktstand; Pflichtquelle fehlt (Fixture); Pipeline ohne Preisreferenz | Exit 3, kein Ergebnisverzeichnis, Kette endet bei der Bereitstellung; `MISSING`; Ausnahme |
+| 5 | DQ-SF8-8 FAIL, DQ-SF8-4 `checked=0`, DQ-SF8-6 fehlt | DQ-Schritt rot; derselbe Bericht im Vertrag BLOCKED (C2) |
+| 6 | Ergebnis ohne `summary.json`, `index.json` oder `strategy/`; öffentlicher Teil ohne `index.json`; Vertrag ohne neuen Stand; Wiederaufnahme C in ein Verzeichnis mit Resten eines Abbruchs | rot und kein Commit in jedem Fall; C hat **denselben** Fingerabdruck wie A und B, Reste entfernt |
+| 7 | genau zwei Schritte committen, keiner mit `always()`; Entscheidungstabelle der echten `if:`; manueller Commit ohne `expected_sha256` | Commit nur bei PUBLISH; bei BLOCKED/SKIP unverändert (Bytes); manuell Exit 1 |
+| 8 | Registry mit `activation` `ACTIVATING` oder `PREPARED_DISABLED`, ohne Eintrag, mit anderem Artefakt | BLOCKED (C7), HEAD unverändert |
+| 9 | Security Master synthetisch 60 / 61 Tage alt / ohne Datum (Fixture). Der echte Stamm wird nur gelesen | CURRENT / STALE (`master`) / STALE |
+
+Gegenproben (lokal, danach zurückgesetzt): Commit-Bedingung `!= 'BLOCKED'`, DQ-Urteil ohne `checked === 0` und C1 ohne Vergleich der Fingerabdrücke machen die Fälle 1, 3, 5 und 7 rot.
+
+**Messwerte (31.10.2026, main d961971, 4 Kerne):**
+
+| | Wert |
+|---|---|
+| Test | 11/11 grün, 35 s (davon vier Erzeugungen parallel 24 s; jede liest alle 650 Shards, ~19 s) |
+| Teilstand | Stand 30.10., Lauftag 31.10., Eingangsprüfung CURRENT, 60 Titel, 102 Kandidaten (59 / 41 / 2), 450 kB, Fingerabdruck A = B = C `6ce0831d…` |
+| DQ-SF8 Teilstand | alle PASS: 1: 0/1, 2: 0/102, 3: 0/353, 4: 0/200, 5: 0/353, 6: 0/55, 7: 0/57, 8: 0/102 |
+| Vollbau (lokal, nicht im Test) | zwei Läufe mit `--require-current 2026-10-31 --previous supertrader/data/sf-candidates`: 42 s bzw. 47 s, 5.103 Titel, 3.368 Kandidaten (2.103 / 1.188 / 77), 12,5 MB, keine Datei über 2 MB, Fingerabdrücke **gleich** `92cea434…` |
+| DQ-SF8 Vollbau | alle PASS: 2: 0/3.368, 3: 0/10.169, 4: 0/6.582, 6: 0/510, 7: 0/512, 8: 0/3.368 |
+| Vertrag Vollbau gegen den veröffentlichten Stand (29.10.), Registry ohne `activation` | **PUBLISH**, ohne Verstoß |
+| Security Master | `generatedAt` 11.09.2026: Die Eingangsprüfung ist bis zum Lauftag 10.11.2026 CURRENT, danach STALE (Exit 3), solange der Stamm nicht neu erzeugt ist (siehe Inbetriebnahme, Schritt 3) |
+
+Sind die Repodaten am abgeleiteten Lauftag nicht CURRENT, etwa weil der Security Master veraltet ist, erzeugt der Test ohne `--require-current` und meldet das als Diagnose. Fall 4 und Fall 9 prüfen den Abbruch trotzdem. Der Test läuft im Workflow-Schritt „Produkt- und Vertragstests“ mit (`sf-*.test.mjs`).
