@@ -32,19 +32,29 @@ Die SEC-Tickerliste (`company_tickers_exchange.json`, 31.10.) führt keinen der 
 - Es ist dieselbe Emittentin, also keine falsche Firmenzuordnung. Der Titel wird **nicht** zurückgehalten.
 - Offen sind der Name (Splash → Endovia) und die Verknüpfung der neuen Anbieterzeile im Stamm. Dafür ist ein eigener Erzeuger-PR nötig. Bis dahin zeigt die Seite den alten Namen derselben Firma.
 
-## 2. Korrektur in diesem PR
+## 2. Korrektur in diesem PR (Quant/Market) und im Folge-PR (Discover)
 
-- **Register** `quant/config/ticker-reuse-quarantine.json` (Schema `ticker-reuse-quarantine-1.0.0`) mit 13 Einträgen, Aktion `WITHHELD`. Jeder Eintrag belegt:
+- **Register** `quant/config/ticker-reuse-quarantine.json` (Schema `ticker-reuse-quarantine-1.0.0`) mit 13 Einträgen, Aktion `IDENTITY_QUARANTINED`. Jeder Eintrag belegt:
   - die alte Anbieterzeile und ihren Wertpapiertyp;
   - die neue Anbieterzeile;
   - die eigene Reihe;
-  - den Stammstatus;
+  - die Stammzeile;
   - den bisherigen Produktstand.
-- **Einziger Konsument** ist `scripts/market/universe-source.mjs#resolveProductUniverse`, die einzige Quelle des Produktuniversums. Zurückgehaltene securityIds fehlen in `securities` und stehen gezählt und mit Grund in `identityQuarantine.withheld`.
-  - `counts.productUniverse` bleibt quellentreu (6.686).
-  - `counts.identityWithheld` = 13; ausgeliefert werden 6.673.
-- **Fail closed:** Ein Eintrag wirkt nur, wenn die securityId `core/identity.js` folgt, sich der Wertpapiertyp unterscheidet, die neue Zeile nach dem Ende der alten beginnt und die eigene Reihe nach dem Ende der alten Zeile anfängt. Formfehler brechen die Auflösung ab.
-- **Unberührt:** `eligibility.json` und alle generierten Daten. Die Discover-Seiten, der Screener, die Faktoren und die Indexmitgliedschaft der 13 Titel entfallen beim nächsten regulären Neubau (Marktdaten-Refresh), weil diese Erzeuger `resolveProductUniverse` lesen.
+- **`scripts/market/universe-source.mjs#resolveProductUniverse`** ist die einzige Quelle des Produktuniversums. Sie markiert die 13 Titel mit `identityStatus: IDENTITY_QUARANTINED` und `identityReason`; Anzahl in `counts.identityQuarantined`, Liste in `identityQuarantine.flagged`.
+  - Die Mitgliedschaft bleibt bestehen, deshalb bleiben Kursreihen, Datenhygiene (DH1) und Pipeline unverändert.
+  - **Warum nicht einfach herausnehmen:** Die Hygieneprüfung verlangt dann sofort, dass Kursreihen und abgeleitete Artefakte verschwinden. Neu bauen kann das nur die Pipeline mit Anbieterzugang. `main` und der Nachtlauf wären bis dahin rot.
+- **Fail closed:** Ein Eintrag wirkt nur, wenn
+  - die securityId `core/identity.js` folgt,
+  - sich der Wertpapiertyp unterscheidet,
+  - die neue Anbieterzeile nach dem Ende der alten beginnt
+  - und die eigene Reihe nach dem Ende der alten Zeile anfängt.
+
+  Formfehler brechen die Auflösung ab.
+- **Anzeige (Folge-PR, Discover-Gate):**
+  - Discover liest `identityStatus`. Markierte Titel kommen nicht in Rankings, Sammlungen, Feeds oder Empfehlungen.
+  - Die Seite zeigt deutlich „Identität in Prüfung: unter diesem Ticker handelt heute ein anderes Wertpapier“ statt einer stillen Zuordnung zum alten Unternehmen.
+  - Screener und Supertrader lesen die Discover-Ausgabe und folgen damit.
+- **Unberührt:** `eligibility.json` und alle generierten Daten. Die Wirkung tritt beim nächsten regulären Discover-Neubau ein.
 
 ## 3. Wann ein Eintrag entfällt
 

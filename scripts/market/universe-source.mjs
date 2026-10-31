@@ -40,10 +40,11 @@ export const ELIGIBILITY_CLASSES = ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW", "EXC
 export const PRODUCT_CLASSES = ["ELIGIBLE", "SEPARATE_CLASS", "REVIEW"];
 
 /* Belegte Ticker-Wiederverwendungen (quant/config/ticker-reuse-quarantine.json): eine securityId, deren Ticker heute
-   ein anderes Wertpapier traegt als Stamm und Name (z. B. ETF unter dem Ticker einer erloschenen Aktie), wird bis zur
-   Korrektur aus dem ausgelieferten Universum genommen - gezaehlt und mit Grund, nie still. Die Quelle (eligibility.json)
-   bleibt unberuehrt; productUniverse zaehlt weiter wie die Quelle, identityWithheld daneben. Fehlt die Datei, gibt es
-   nichts zurueckzuhalten; ist sie fehlerhaft, bricht die Aufloesung ab (fail closed). */
+   ein anderes Wertpapier traegt als Stamm und Name (z. B. ETF unter dem Ticker einer erloschenen Aktie), traegt bis zur
+   Korrektur identityStatus = "IDENTITY_QUARANTINED" mit Grund. Die Mitgliedschaft bleibt (Kursreihen, Datenhygiene und
+   Pipeline unveraendert); jeder Anzeige-Konsument muss die Markierung lesen und den Titel nicht als das alte
+   Unternehmen zeigen (Discover: eigener PR). Gezaehlt in counts.identityQuarantined, aufgelistet in
+   identityQuarantine.flagged. Fehlt die Datei, gibt es nichts zu markieren; ist sie fehlerhaft, bricht die Aufloesung ab. */
 export const TICKER_REUSE_QUARANTINE_FILE = "quant/config/ticker-reuse-quarantine.json";
 export const TICKER_REUSE_QUARANTINE_SCHEMA = "ticker-reuse-quarantine-1.0.0";
 export function loadTickerReuseQuarantine(root, file = TICKER_REUSE_QUARANTINE_FILE) {
@@ -58,7 +59,7 @@ export function loadTickerReuseQuarantine(root, file = TICKER_REUSE_QUARANTINE_F
   const by = new Map();
   for (const r of doc.records) {
     if (!r || typeof r.ticker !== "string" || r.securityId !== Identity.securityIdForTicker(r.ticker)) fail("securityId folgt nicht core/identity.js: " + (r && r.securityId));
-    if (r.action !== "WITHHELD") fail(r.securityId + ": action " + r.action + " (nur WITHHELD)");
+    if (r.action !== "IDENTITY_QUARANTINED") fail(r.securityId + ": action " + r.action + " (nur IDENTITY_QUARANTINED)");
     const old = r.historicIdentity && r.historicIdentity.providerRow, now = r.currentInstrument && r.currentInstrument.providerRow, own = r.ownSeries;
     if (!old || !now || !old.endDate || !now.startDate || !(now.startDate > old.endDate)) fail(r.securityId + ": Beleg (alte Zeile beendet, neue Zeile spaeter) fehlt");
     if (old.assetType === now.assetType) fail(r.securityId + ": gleicher Wertpapiertyp ist keine belegte Wiederverwendung");
@@ -115,7 +116,7 @@ function fromSecurityMaster(root, file) {
                    ELIGIBLE: 0, SEPARATE_CLASS: 0, REVIEW: 0, EXCLUDED: 0 };
   const securities = [];
   const quarantaene = loadTickerReuseQuarantine(root);
-  const zurueckgehalten = [];
+  const markiert = [];
   for (const e of entscheidungen) {
     const klasse = e.product_eligibility;
     if (!ELIGIBILITY_CLASSES.includes(klasse)) {
@@ -125,13 +126,15 @@ function fromSecurityMaster(root, file) {
     if (klasse === "EXCLUDED") continue;
     counts.productUniverse++;
     const sid = e.securityId || Identity.securityIdForTicker(e.ticker);
-    if (quarantaene && quarantaene.records.has(sid)) { zurueckgehalten.push({ ...quarantaene.records.get(sid), eligibility: klasse }); continue; }
+    const q = quarantaene && quarantaene.records.get(sid);
+    if (q) markiert.push({ ...q, eligibility: klasse });
     securities.push({
       securityId: e.securityId || Identity.securityIdForTicker(e.ticker), ticker: String(e.ticker).toUpperCase(),
       providerSymbol: e.providerSymbol || String(e.ticker).toUpperCase(),
       exchange: e.exchange || null, mic: e.mic || null, eligibility: klasse,
       instrumentType: e.instrument_type || null, activeStatus: e.active_status || null,
-      consumer: isConsumerInstrument(e.instrument_type)
+      consumer: isConsumerInstrument(e.instrument_type),
+      ...(q ? { identityStatus: "IDENTITY_QUARANTINED", identityReason: q.reason } : {})
     });
   }
   /* Gegenprobe gegen die Zaehlung der Quelle - eine Projektion, die von
@@ -142,7 +145,7 @@ function fromSecurityMaster(root, file) {
       throw new Error(SECURITY_MASTER_FILE + ": " + k + " " + counts[k] + " statt " + erwartet[k] + " (Quelle).");
     }
   }
-  counts.identityWithheld = zurueckgehalten.length;
+  counts.identityQuarantined = markiert.length;
   securities.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
   const kuratiert = overlayCuratedSectors(root, securities);
   const namen = overlayCompanyNames(root, securities);
@@ -152,7 +155,7 @@ function fromSecurityMaster(root, file) {
     sha256: createHash("sha256").update(roh).digest("hex"),
     curatedSectors: kuratiert,
     companyNames: namen,
-    identityQuarantine: quarantaene ? { file: quarantaene.file, sha256: quarantaene.sha256, withheld: zurueckgehalten.sort((a, b) => (a.ticker < b.ticker ? -1 : 1)) } : null,
+    identityQuarantine: quarantaene ? { file: quarantaene.file, sha256: quarantaene.sha256, flagged: markiert.sort((a, b) => (a.ticker < b.ticker ? -1 : 1)) } : null,
     handover: Object.assign({}, HANDOVER, { status: "INTEGRATED" })
   };
 }

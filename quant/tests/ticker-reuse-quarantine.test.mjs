@@ -10,7 +10,7 @@ import { resolveProductUniverse, loadTickerReuseQuarantine, TICKER_REUSE_QUARANT
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const J = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
-const rec = (t, o = {}) => ({ securityId: "ref_" + t, ticker: t, action: "WITHHELD", finding: "TICKER_REUSED_BY_ETF",
+const rec = (t, o = {}) => ({ securityId: "ref_" + t, ticker: t, action: "IDENTITY_QUARANTINED", finding: "TICKER_REUSED_BY_ETF",
   historicIdentity: { providerRow: { assetType: "Stock", endDate: "2018-02-26" } }, currentInstrument: { providerRow: { assetType: "ETF", startDate: "2025-10-16" } },
   ownSeries: { from: "2025-10-16" }, ...o });
 function fixture(records, fn) {
@@ -25,19 +25,22 @@ function fixture(records, fn) {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 
-test("zurueckgehalten mit Grund und Zaehlung; productUniverse bleibt quellentreu", () => {
+test("markiert mit Grund und Zaehlung; Mitgliedschaft und Zaehlung bleiben quellentreu", () => {
   fixture([rec("PCLN")], (dir) => {
     const r = resolveProductUniverse(dir);
-    assert.deepEqual(r.securities.map((s) => s.ticker), ["AAA", "CCC"]);
-    assert.equal(r.counts.productUniverse, 3); assert.equal(r.counts.identityWithheld, 1);
-    assert.deepEqual(r.identityQuarantine.withheld.map((x) => [x.securityId, x.reason, x.eligibility]), [["ref_PCLN", "IDENTITY_TICKER_REUSED_BY_ETF", "ELIGIBLE"]]);
+    assert.deepEqual(r.securities.map((s) => s.ticker), ["AAA", "CCC", "PCLN"]);
+    assert.equal(r.counts.productUniverse, 3); assert.equal(r.counts.identityQuarantined, 1);
+    const p = r.securities.find((s) => s.ticker === "PCLN");
+    assert.deepEqual([p.identityStatus, p.identityReason], ["IDENTITY_QUARANTINED", "IDENTITY_TICKER_REUSED_BY_ETF"]);
+    assert.equal(r.securities.find((s) => s.ticker === "AAA").identityStatus, undefined);
+    assert.deepEqual(r.identityQuarantine.flagged.map((x) => [x.securityId, x.eligibility]), [["ref_PCLN", "ELIGIBLE"]]);
   });
-  fixture(null, (dir) => { const r = resolveProductUniverse(dir); assert.equal(r.securities.length, 3); assert.equal(r.identityQuarantine, null); assert.equal(r.counts.identityWithheld, 0); });
+  fixture(null, (dir) => { const r = resolveProductUniverse(dir); assert.equal(r.securities.length, 3); assert.equal(r.identityQuarantine, null); assert.equal(r.counts.identityQuarantined, 0); });
 });
 
 for (const [what, r, re] of [
   ["securityId nicht nach core/identity.js", rec("PCLN", { securityId: "ref_PCLN_2" }), /core\/identity\.js/],
-  ["andere Aktion", rec("PCLN", { action: "HIDE" }), /nur WITHHELD/],
+  ["andere Aktion", rec("PCLN", { action: "HIDE" }), /nur IDENTITY_QUARANTINED/],
   ["neue Zeile nicht spaeter", rec("PCLN", { currentInstrument: { providerRow: { assetType: "ETF", startDate: "2017-01-01" } } }), /Beleg/],
   ["gleicher Wertpapiertyp", rec("PCLN", { currentInstrument: { providerRow: { assetType: "Stock", startDate: "2025-10-16" } } }), /gleicher Wertpapiertyp/],
   ["eigene Reihe vor dem Ende", rec("PCLN", { ownSeries: { from: "2010-01-01" } }), /eigene Reihe/],
@@ -62,6 +65,7 @@ test("committetes Register: jeder Eintrag durch Stamm (alte Zeile), Kursreihe un
   assert.deepEqual(doc.notWithheld.map((x) => x.securityId), ["ref_EDVA"]);
   assert.ok(!q.records.has("ref_EDVA"));
   const u = resolveProductUniverse(root);
-  assert.equal(u.counts.identityWithheld, 13);
-  assert.ok(!u.securities.some((s) => q.records.has(s.securityId)), "kein zurueckgehaltener Titel im ausgelieferten Universum");
+  assert.equal(u.counts.identityQuarantined, 13);
+  const flagged = u.securities.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
+  assert.deepEqual(flagged, [...q.records.keys()].sort(), "genau die belegten Titel sind markiert");
 });

@@ -2,7 +2,7 @@
   "schemaVersion": "ticker-reuse-quarantine-1.0.0",
   "consumer": "scripts/market/universe-source.mjs#resolveProductUniverse (einzige Quelle des Produktuniversums)",
   "doc": "docs/data/security-master/TICKER_REUSE_QUARANTINE.md",
-  "effect": "WITHHELD: die securityId wird aus dem ausgelieferten Produktuniversum genommen (gezaehlt, mit Grund), bis Stamm, Name, Kursreihe und Identitaet wieder zu einem Wertpapier gehoeren. eligibility.json und alle generierten Daten bleiben unberuehrt; Discover, Screener und Faktoren folgen beim naechsten regulaeren Neubau.",
+  "effect": "IDENTITY_QUARANTINED: die securityId bleibt im Produktuniversum (Kursreihen, Datenhygiene, Pipeline unveraendert), traegt aber identityStatus IDENTITY_QUARANTINED mit Grund. Anzeige-Konsumenten (Discover, Screener) duerfen den Titel nicht als das alte Unternehmen zeigen und nehmen ihn aus Rankings, Sammlungen und Empfehlungen (eigener Discover-PR). eligibility.json und generierte Daten bleiben unberuehrt.",
   "rule": "Nur mit Beleg: Anbieterliste fuehrt die alte Aktienzeile beendet UND eine neue Zeile eines anderen Wertpapiertyps unter demselben Ticker; die eigene Tagesreihe beginnt nach dem Ende der alten Zeile; der Stamm fuehrt unter der securityId nur die Zeile der alten Aktie (gleicher Beginn). Nie allein ueber den Ticker.",
   "sources": [
     {
@@ -33,7 +33,7 @@
     {
       "securityId": "ref_ACTS",
       "ticker": "ACTS",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Actions Semiconductor Company. Ltd. ADR",
@@ -72,7 +72,7 @@
     {
       "securityId": "ref_BREW",
       "ticker": "BREW",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Corgi Coffee & Energy Drinks ETF",
@@ -111,7 +111,7 @@
     {
       "securityId": "ref_ENTL",
       "ticker": "ENTL",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Entellus Medical Inc",
@@ -150,7 +150,7 @@
     {
       "securityId": "ref_FTPA",
       "ticker": "FTPA",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "FTAC Parnassus Acquisition Corp - Class A",
@@ -189,7 +189,7 @@
     {
       "securityId": "ref_GNMX",
       "ticker": "GNMX",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Medgenics Inc",
@@ -228,7 +228,7 @@
     {
       "securityId": "ref_INVN",
       "ticker": "INVN",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "ALGER RUSSELL INNOVATION ETF",
@@ -267,7 +267,7 @@
     {
       "securityId": "ref_NMBL",
       "ticker": "NMBL",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Nimble Storage Inc",
@@ -306,7 +306,7 @@
     {
       "securityId": "ref_NYNY",
       "ticker": "NYNY",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Corgi NYC Based ETF",
@@ -345,7 +345,7 @@
     {
       "securityId": "ref_PCLN",
       "ticker": "PCLN",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Priceline.com Inc",
@@ -384,7 +384,7 @@
     {
       "securityId": "ref_TRIL",
       "ticker": "TRIL",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Trillium Therapeutics Inc",
@@ -423,7 +423,7 @@
     {
       "securityId": "ref_USX",
       "ticker": "USX",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "U.S. Xpress Enterprises Inc - Class A",
@@ -462,7 +462,7 @@
     {
       "securityId": "ref_WR",
       "ticker": "WR",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "Corgi U.S. War Machine ETF",
@@ -501,7 +501,7 @@
     {
       "securityId": "ref_WX",
       "ticker": "WX",
-      "action": "WITHHELD",
+      "action": "IDENTITY_QUARANTINED",
       "finding": "TICKER_REUSED_BY_ETF",
       "historicIdentity": {
         "name": "WuXi PharmaTech Cayman Inc. ADR",
