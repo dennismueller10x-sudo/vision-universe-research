@@ -39,6 +39,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadTickerReuseQuarantine } from "../market/universe-source.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -179,6 +180,11 @@ const notDefined = (reason) => ({ state: "NOT_DEFINED", reason });
 
 /* ---------------------------------------------------------------- Ereignisse */
 const events = [];
+/* WIEDERVERWENDETE KUERZEL (quant/config/ticker-reuse-quarantine.json, #1206): heute handelt ein ETF unter dem
+   Kuerzel der alten Gesellschaft. Ein Vergleich zweier Staende vermischt beide Wertpapiere; solche Titel
+   erzeugen kein Ereignis und keine Historie. Die Zahl steht im Bericht. */
+const REUSE = new Set([...((loadTickerReuseQuarantine(ROOT) || { records: new Map() }).records.values())].map((r) => r.ticker));
+let reuseSkipped = 0;
 /* METHODIKWECHSEL IST KEIN MARKTEREIGNIS (quant-radar.js compareSnapshots):
    Ereignisse aus dem Vergleich zweier Staende werden erst gesammelt und nur
    bei gleicher Methodik zu Ereignissen; sonst ein internes METHOD_REBASE. */
@@ -192,6 +198,7 @@ function methodGate(source, prev, cur, collect) {
     r.transitions.forEach(push); }
 }
 function push(e) {
+  if (REUSE.has(e.ticker)) { reuseSkipped++; return; }
   if (stage) { stage.push(e); return; }
   const t = Radar.TYPE[e.eventType];
   const be = backtestEvidenceFor(e.eventType);
@@ -468,7 +475,7 @@ const historyCutoff = new Date(Date.parse(latest.date) - 90 * 86400000).toISOStr
 const quarantined = EventQuarantine.index(JSON.parse(readFileSync(P("quant/config/radar-event-quarantine.json"), "utf8")));
 for (const f of readdirSync(EVENT_HISTORY).filter((x) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(x) && x.slice(0, 10) >= historyCutoff).sort()) {
   for (const [t, type, dir, at] of gz(join(EVENT_HISTORY, f)).rows) {
-    if (EventQuarantine.isQuarantined(quarantined, t, type, at)) continue;
+    if (EventQuarantine.isQuarantined(quarantined, t, type, at) || REUSE.has(t)) continue;
     const list = (eventHistory[t] = eventHistory[t] || []);
     if (!list.some((x) => x[0] === type && x[2] === at)) list.push([type, dir, at]);
   }
@@ -590,6 +597,7 @@ const radar = {
     WATCHLIST_TRACKABLE_TITLES: Object.keys(lifecycle).length,
     ALERT_READY_EVENTS: events.length - violations.length, ALERT_CONTRACT_VIOLATIONS: violations.length,
     METHOD_REBASES: methodRebases.length,
+    RADAR_EVENTS_SUPPRESSED_TICKER_REUSE: reuseSkipped,
     TRANSITIONS_SUPPRESSED_BY_METHOD_CHANGE: methodRebases.reduce((n, r) => n + r.suppressedTransitions, 0),
     RADAR_EVENTS_WITH_BACKTEST: events.filter((e) => e.backtestEvidence.state === "AVAILABLE").length,
     EVENT_TYPES_WITH_BACKTEST: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state === "AVAILABLE").map((t) => t.id),
