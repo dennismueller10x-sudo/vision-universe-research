@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--ink:#1d2433;--cream:#fbf7ef;--bull:#1f9d55;--bear:#8a5a2b;--red:#e2453a;--gold:#f2c230}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream);font-family:Nunito,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:540px 960px}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.bg{position:absolute;inset:-200px;background:var(--c)}
+.dots{position:absolute;inset:-200px;background-image:radial-gradient(rgba(0,0,0,.10) 22%,transparent 24%);background-size:34px 34px}
+.rays{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;
+ background:repeating-conic-gradient(rgba(255,255,255,.22) 0 9deg,transparent 9deg 18deg)}
+/* duo */
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.fig{position:absolute;bottom:-60px;height:1220px}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-40px;width:600px}#baer{right:-50px;width:660px}
+/* icons */
+.ico{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;opacity:0;z-index:8;filter:drop-shadow(0 12px 0 rgba(0,0,0,.22))}
+.ico img{width:100%;height:100%;object-fit:contain}
+/* news scenes */
+.card{position:absolute;left:60px;right:60px;background:#fff;border:8px solid var(--ink);border-radius:36px;box-shadow:0 16px 0 var(--ink)}
+.h1{position:absolute;top:230px;left:0;right:0;text-align:center;font-family:Bangers;font-size:112px;letter-spacing:3px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;text-shadow:8px 10px 0 var(--ink);transform:rotate(-2deg)}
+.lab{font-family:Archivo;font-size:44px}
+.sub{font-family:Archivo;font-size:34px;opacity:.7}
+.big{font-family:Bangers;letter-spacing:2px;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill;text-shadow:7px 9px 0 var(--ink);white-space:nowrap}
+.tile{position:absolute;left:60px;right:60px;height:330px;background:#fff;border:8px solid var(--ink);border-radius:36px;box-shadow:0 16px 0 var(--ink);text-align:center;padding-top:26px;opacity:0}
+.stamp{position:absolute;font-family:Bangers;letter-spacing:3px;color:var(--red);border:14px solid var(--red);border-radius:26px;padding:0 34px;background:rgba(255,255,255,.94);white-space:nowrap;opacity:0;z-index:9}
+/* series badge */
+#badge{position:absolute;left:40px;top:96px;z-index:30;font-family:Bangers;font-size:58px;letter-spacing:2px;color:#fff;background:var(--red);border:7px solid var(--ink);border-radius:20px;padding:2px 22px;box-shadow:0 8px 0 var(--ink);transform:rotate(-3deg)}
+#badge i{font-style:normal;color:var(--gold)}
+/* hook overlay on line 0 */
+#hook{position:absolute;inset:0;z-index:12;display:none;text-align:center}
+#hook .who{position:absolute;top:250px;left:0;right:0;font-family:Archivo;font-size:64px;color:#fff;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill}
+#hook .num{position:absolute;top:320px;left:0;right:0;font-size:300px;color:var(--gold)}
+#hook .day{position:absolute;top:660px;left:0;right:0;font-family:Archivo;font-size:76px;color:#fff;-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;opacity:0}
+#hook .stamp{left:540px;top:870px;font-size:150px;transform:translate(-50%,-50%) rotate(-8deg)}
+/* verdict stamp */
+#verdict{position:absolute;left:540px;z-index:35;text-align:center;opacity:0;font-family:Bangers;letter-spacing:4px;border:16px solid var(--v);color:var(--v);background:rgba(255,255,255,.96);border-radius:30px;padding:6px 48px 0;white-space:nowrap}
+#verdict small{display:block;font-size:56px;line-height:1;color:var(--ink);letter-spacing:3px;margin:4px 0 22px}
+#verdict b{font-weight:400;font-size:190px;line-height:1}
+/* comment call */
+#cta{position:absolute;left:0;right:0;top:470px;z-index:12;display:none;text-align:center}
+#cta .pill{display:inline-block;font-family:Bangers;font-size:120px;letter-spacing:3px;color:#fff;border:10px solid var(--ink);border-radius:30px;padding:0 36px;box-shadow:0 12px 0 var(--ink);margin:0 10px}
+#cta .or{font-family:Bangers;font-size:90px;color:#fff;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill;vertical-align:middle}
+#cta .down{font-family:Archivo;font-size:58px;margin-top:34px;color:#fff;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill}
+/* captions */
+#cap{position:absolute;left:30px;right:30px;text-align:center;font-family:Archivo;font-size:84px;line-height:1.08;z-index:20;text-transform:uppercase;
+ -webkit-text-stroke:18px var(--ink);paint-order:stroke fill;color:#fff}
+#cap .w{display:inline-block;margin:0 10px}
+#cap .w.on{color:var(--hl)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none}
+#end{position:absolute;inset:0;background:var(--cream);opacity:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
+#end .logo{width:420px;height:420px;border-radius:50%;box-shadow:0 12px 0 rgba(0,0,0,.12)}
+#end .nm{font-family:Archivo;font-size:132px;line-height:.95}#end .nm i{font-style:normal;color:var(--bull)}#end .nm u{text-decoration:none;color:var(--bear)}
+#end .h{font-family:Archivo;font-size:44px;opacity:.8}
+#end .btn{font-family:Archivo;font-size:56px;background:var(--ink);color:#fff;padding:18px 60px;border-radius:24px}
+#end .fine{font-size:34px;font-weight:800;opacity:.7}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="world">
+ <div class="scene" id="duo"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div id="cam"><div class="fig" id="bulle"></div><div class="fig" id="baer"></div></div>
+  <div id="hook"><div class="who">INTEL-AKTIE</div><div class="num big">−29 %</div><div class="day">AN EINEM TAG</div><div class="stamp" id="weg">CRASH!</div></div>
+  <div id="cta"><div><span class="pill" style="background:var(--bull)">BULLE</span><span class="or">ODER</span><span class="pill" style="background:var(--bear)">BÄR?</span></div><div class="down">↓ AB IN DIE KOMMENTARE ↓</div></div></div>
+<div class="scene" id="d1"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">INTEL · FREITAG</div>
+  <div class="card" style="top:470px;height:330px"><div style="padding:30px;text-align:center"><div class="lab">AKTIE AM 30.10.</div>
+   <div class="big" id="ic" style="font-size:180px;color:var(--red)">0 %</div></div></div>
+  <div class="tile" id="t1" style="top:870px;height:360px"><div class="lab">SCHLIMMSTER TAG SEIT</div><div class="big" style="font-size:190px;color:var(--gold)">1974</div></div></div>
+ <div class="scene" id="d2"><div class="bg"></div><div class="rays"></div><div class="dots"></div><div class="h1">GOOGLE · DONNERSTAG</div>
+  <div class="card" style="top:470px;height:330px"><div style="padding:30px;text-align:center"><div class="lab">BÖRSENWERT IN EINER SITZUNG</div>
+   <div class="big" id="gv" style="font-size:170px;color:var(--red)">0 MRD $</div></div></div>
+  <div class="tile" id="t2" style="top:870px;height:360px"><div class="lab">GRÖSSTER TAGESVERLUST</div><div class="big" style="font-size:92px;color:var(--gold)">SEIT DEM BÖRSENGANG</div></div></div>
+</div>
+<div id="badge"><i>ZOO</i>-TICKER · KW 44</div>
+<div id="verdict"><small>URTEIL</small><b></b></div>
+<div id="cap"></div><div id="flash"></div>
+<div id="end"><img class="logo" src="../../profil/icon-a-gold.png"><div class="nm"><i>AKTIEN</i><u>ZOO</u></div><div class="h">@aktienzoo</div><div class="btn">FOLGEN</div><div class="fine">Keine Anlageberatung</div></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp;
+const FIG={bulle:'../../figuren/entwurf-1/outfits/outfit-sakko/',baer:'../../figuren/entwurf-1/outfits/outfit-hemd/'};
+const ICON='../../icons/';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3),easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const OPEN={bulle:0.62,baer:0.5},HALF={bulle:0.16,baer:0.16};
+const loads=[];const img=(src,parent,cls)=>{const im=new Image();im.src=src;if(cls)im.className=cls;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
+// ---------- figures
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
+const show=(who,f)=>{for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
+const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
+// ---------- scene colours: red for the hook, then one colour per line
+const PAL=['#e2453a','#f5a08f','#f2c230','#7fd0a8'];
+// ---------- spoken numbers as digits
+const NUM=[['neunundzwanzig Prozent','29 %'],['neunzehnhundertvierundsiebzig','1974'],['vierhundertachtzig Milliarden Dollar','480 Mrd. $']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
+ const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:disp+tail,e:last.e});break}}
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)&&!/Mrd\.$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+// first word in a line that matches, for reveals in sync with the voice
+const wt=(line,re)=>{const w=W.find(w=>w.line===line&&re.test(w.w));return w?w.s:S[line].s};
+// ---------- verdicts: the word after "Urteil:" shows the stamp
+const VERDICTS=[];W.forEach((w,i)=>{if(/^Urteil:?$/.test(w.w)&&W[i+1]){const v=bare(W[i+1].w);VERDICTS.push({t0:W[i+1].s-0.05,t1:S[w.line].e+0.45,txt:v.toUpperCase(),col:v==='Bulle'?'#1f9d55':'#8a5a2b',line:w.line})}});
+// ---------- icons triggered by words (max 3 per line, fixed slots, none on the hook and the comment call)
+const KEY={intel:'chart-runter',börsentag:'boerse',google:'chart-runter',börsenwert:'geldsack'};
+const SLOTS={duo:[[250,600],[830,560],[540,380]],d1:[[180,1420],[900,1420],[540,1500]],d2:[[180,1430],[900,1430],[540,1500]],d3:[[180,1450],[900,1450],[540,1510]],
+ d4:[[180,1420],[900,1420],[540,1500]],d5:[[180,1440],[900,1440],[540,1500]],d6:[[180,1440],[900,1440],[540,1500]]};
+const POPS=[];{const per={};for(const w of W){if(w.line===0||w.line===3)continue;const k=bare(w.w).toLowerCase();const ic=KEY[k];if(!ic)continue;const n=per[w.line]||0;if(n>=3)continue;per[w.line]=n+1;
+ const seg=S[w.line];const sc=seg.scene==='dia'?'d'+seg.step:'duo';const el=document.createElement('div');el.className='ico';img(ICON+ic+'.png',el);
+ const [x,y]=SLOTS[sc][n];el.style.left=x+'px';el.style.top=y+'px';document.getElementById(sc).appendChild(el);POPS.push({el,t0:w.s,t1:seg.e+0.05,rot:(n%2?8:-8)})}}
+// icons give way to the verdict stamp
+for(const p of POPS){const v=VERDICTS.find(v=>v.t0>p.t0&&v.t0<p.t1);if(v)p.t1=v.t0}
+// ---------- step start times (a step can span several lines)
+const ST={};for(const s of S)if(s.scene==='dia'&&ST[s.step]===undefined)ST[s.step]=s.s;
+const cap=document.getElementById('cap'),world=document.getElementById('world'),cam=document.getElementById('cam'),flash=document.getElementById('flash'),end=document.getElementById('end');
+const hook=document.getElementById('hook'),cta=document.getElementById('cta'),verdict=document.getElementById('verdict');
+function fit(){let f=84;cap.style.fontSize=f+'px';while(cap.scrollWidth>1020&&f>48){f-=4;cap.style.fontSize=f+'px'}}
+const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
+const SCENES=['duo','d1','d2'];
+const pop=(el,t0,t,s0=0.6)=>{const q=(t-t0)/0.3;el.style.opacity=t>=t0?1:0;el.style.transform=`scale(${t>=t0?s0+(1-s0)*back(q):s0})`};
+const isShock=s=>s.face==='schock'||s.line===0;
+function render(t){
+ const seg=segAt(t);const id=seg.scene==='dia'?'d'+seg.step:'duo';
+ for(const s of SCENES)document.getElementById(s).style.display=s===id?'block':'none';
+ document.getElementById(id).style.setProperty('--c',PAL[seg.line%PAL.length]);
+ for(const r of document.querySelectorAll('.rays'))r.style.transform=`rotate(${t*6}deg)`;
+ // cuts: punch-in at every line start, whip slide when the scene type changes, flash + shake on shock
+ const k=t-seg.s;const prev=S[seg.line-1];const whip=prev&&prev.scene!==seg.scene;
+ let tx=0,sc=1+0.10*(1-easeOut(k/0.22)),rot=0;
+ if(whip&&k<0.22){tx=(1-easeOut(k/0.22))*(seg.line%2?-1:1)*700;world.style.filter=`blur(${(1-k/0.22)*14}px)`}else world.style.filter='none';
+ const shock=isShock(seg)&&seg.line>0;
+ if(isShock(seg)&&k<0.5){tx+=Math.sin(k*90)*18*(1-k/0.5);rot=Math.sin(k*70)*1.4*(1-k/0.5)}
+ flash.style.opacity=shock?clamp(1-k/0.18)*0.9:0;
+ world.style.transform=`translateX(${tx}px) scale(${sc}) rotate(${rot}deg)`;
+ // hook: the number is on screen from the first frame
+ hook.style.display=seg.line===0?'block':'none';
+ if(seg.line===0){const n=hook.querySelector('.num');n.style.transform=`scale(${1+0.08*Math.sin(t*9)*Math.max(0,1-t)}) rotate(-3deg)`;
+  const day=hook.querySelector('.day');const d0=wt(0,/^In$/);day.style.opacity=t>=d0?1:0;day.style.transform=`scale(${t>=d0?back((t-d0)/0.25):0.5})`;
+  const wg=document.getElementById('weg');const w0=wt(0,/^Tag/);wg.style.opacity=t>=w0?1:0;wg.style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${t>=w0?1+1.3*(1-back((t-w0)/0.25)):2})`}
+ cta.style.display=seg.line===3?'block':'none';
+ if(seg.line===3){const ps=cta.querySelectorAll('.pill');ps[0].style.transform=`rotate(-4deg) scale(${back(k/0.3)})`;ps[1].style.transform=`rotate(4deg) scale(${back((k-0.35)/0.3)})`;
+  cta.querySelector('.down').style.transform=`translateY(${Math.sin(t*8)*10}px)`}
+ // captions (the hook shows its own words)
+ const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
+ if(g&&t<END&&g[0].line!==0){cap.style.setProperty('--hl',g[0].who==='bulle'?'#7dffb0':'#ffd36b');
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[,:]$/,'').replace(/([^d])\.$/,'$1')}</span>`).join('');
+  cap.style.transform=`scale(${0.88+0.12*back((t-g[0].s)/0.18)}) rotate(${gi%2?1.5:-1.5}deg)`}else cap.innerHTML='';
+ cap.style.top=id==='duo'?'260px':'1640px';fit();
+ // verdict stamp
+ const v=VERDICTS.find(v=>t>=v.t0&&t<v.t1);
+ if(v){verdict.style.opacity=1;verdict.style.setProperty('--v',v.col);verdict.querySelector('b').textContent=v.txt;verdict.style.top=(id==='duo'?560:1080)+'px';
+  verdict.style.transform=`translate(-50%,-50%) rotate(-7deg) scale(${1+1.2*(1-back((t-v.t0)/0.25))})`}else verdict.style.opacity=0;
+ // icons
+ for(const p of POPS){const on=t>=p.t0&&t<p.t1;const q=(t-p.t0)/0.3;p.el.style.opacity=on?1:0;
+  p.el.style.transform=`scale(${on?back(q):0}) rotate(${p.rot+Math.sin(t*3+p.rot)*3}deg) translateY(${Math.sin(t*2.4+p.rot)*8}px)`}
+ if(id==='duo'){
+  const close=seg.line===0||((seg.e-seg.s)>2.4&&seg.line%2===0);const z=close?1.45:1;const fx=seg.who==='bulle'?300:770;
+  cam.style.transform=close?`translate(${540-fx*z}px,${760-900*z+(seg.line===0?420:180)}px) scale(${z})`:'none';
+  for(const who of ['bulle','baer']){let f='basis';const speaking=seg.who===who&&t<=seg.e;
+   if(speaking){const a=amp(t);const face=seg.face;
+    if(seg.line===0&&who==='bulle'&&k>=0.6)f=a>0.35?'mund-offen':'schock';else if(face&&k<0.6)f=face;else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>OPEN[who]?'mund-offen':a>HALF[who]?'mund-halb':'basis')}
+   else if(!speaking&&seg.face==='schock'&&who==='baer')f='ueber-brille';
+   else if(blinkAt(who,t))f='blinzeln';
+   show(who,f)}
+ }
+ if(id==='d1'){const q=easeOut((t-ST[1]-0.1)/0.8);document.getElementById('ic').textContent='−'+Math.round(29*q)+' %';pop(document.getElementById('t1'),ST[1]+0.9,t)}
+ if(id==='d2'){const g=wt(2,/^480/);const q=easeOut((t-g)/0.9);document.getElementById('gv').textContent=(t<g?'0':'−'+Math.round(480*q))+' MRD $';pop(document.getElementById('t2'),wt(2,/^Börsenwert/),t)}
+ end.style.opacity=0;
+}
+// sound events for audio.py mix (same moments as the visuals above)
+window.EVENTS=[...POPS.map(p=>({t:p.t0,type:'pop'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene!==s.scene).map(s=>({t:s.s-0.05,type:'whoosh'})),
+ ...S.filter((s,i)=>i&&S[i-1].scene===s.scene).map(s=>({t:s.s,type:'punch'})),
+ ...S.filter(isShock).map(s=>({t:s.s,type:'hit'})),
+ ...VERDICTS.map(v=>({t:v.t0,type:'stamp'})),
+ {t:wt(0,/^Tag/),type:'stamp'},{t:0,type:'hit'},{t:S[3].s,type:'pop'}].sort((a,b)=>a.t-b.t);
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
+</script></body></html>
