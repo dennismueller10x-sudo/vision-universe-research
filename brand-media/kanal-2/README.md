@@ -71,3 +71,15 @@ Daraus folgt ab Reel 6:
 4. **Ein Reel pro Tag** um 16:00 Uhr, nicht mehrere in wenigen Stunden. Die Caption beginnt mit dem Aufhänger, die Quellen folgen darunter.
 5. Tagesfakten nur mit Stand und Uhrzeit. Bewegliche Kurse als „zeitweise“ oder als Untergrenze formulieren („über 300 Mrd. $“), damit die Aussage bis zum Abend stimmt.
 6. Ein geplanter Auftrag baut die Folge täglich ab 13:23 Uhr (Berlin) und schickt Video, Cover und Captions zur Freigabe. Veröffentlicht wird nur vom Owner.
+
+## Kurzformat ab 31.10.2026 (Owner-Entscheidung)
+
+Die Reels werden nur an 100–200 Personen ausgespielt, weil Zuschauer in den ersten Sekunden abspringen. Ab jetzt gilt:
+
+1. **10–22 Sekunden**, ein Thema, 3–5 Sätze. Keine Begrüßung, kein „Das ist der Zoo-Ticker“, keine Endkarte; das Video endet auf der Frage und läuft direkt in die Schleife.
+2. **Einstieg in Sekunde 0:** die härteste Zahl riesig im Bild (mindestens 300 px), roter Hintergrund, Bulle schockiert und sprechend, Wackler und Schlag-Sound bei 0 s. Der erste Satz hat höchstens sechs Wörter und nennt Zahl oder Verlust („Minus neunundzwanzig Prozent. An einem Tag!“).
+3. **Alle 2–3 Sekunden ein neues Bild:** pro Satz eine Szene, eine Zahl, die hochzählt.
+4. **Eine Wendung ist Pflicht (Owner-Feedback 31.10.):** Eine reine Nachricht („Intel −29 %“) ist nichtssagend. Jedes Reel braucht nach dem Schock ein „Aber jetzt kommt's“ mit einer überraschenden Erkenntnis, die man weitererzählen will (z. B. „Der Staat verliert 12 Mrd. $ und liegt trotzdem mit dem Dreifachen im Plus“). Formel: Schock-Zahl → Wer/Was → Kontext → Wendung mit Zahl → Frage.
+5. **Schluss mit Polarisierung:** eine Frage, auf die man antworten will („Staat als Börsenzocker: genial oder gefährlich?“).
+6. Caption: erste Zeile wiederholt Einstieg und Wendung, darunter Quellen kurz. Muster: `reels/2026-10-31-kurz-intel-staat/`.
+7. Der tägliche Auftrag baut ab jetzt dieses Format.
