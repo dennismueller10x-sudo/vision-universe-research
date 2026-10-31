@@ -12,7 +12,7 @@ Ersetzt 2.1.0 (gleicher Tag). Eine neue Sitzung braucht keinen Chatverlauf. Abge
 | #1207 | Discover schließt markierte Titel aus | `0085fc7a31` | wie oben; einziger neuer Fehler: Erzeugerbesitz 485, nach Erzeuger-Neubau grün (49/49) |
 | #1208 | Backtest-Katalog, 21 Einträge (20 A, 1 B) | `ea95de8f07` | siehe 4 |
 
-Danach ist der reguläre Marktdaten-Lauf **41213952384** gelaufen (manuell gestartet, inkrementell). Er committete `64c7bb42ce`. Ergebnis auf `main`:
+Danach ist der reguläre Marktdaten-Lauf **41213952384** gelaufen (manuell gestartet, inkrementell). Die Jobs refresh, materialize und freshness-contract waren erfolgreich. Der Lauf committete `64c7bb42ce`. Ergebnis auf `main`:
 - keine Seite, kein Indexeintrag, kein Treffer in US- oder GLOBAL-Suche für die 13;
 - EDVA und alle übrigen behalten ihre Seite.
 
@@ -27,7 +27,8 @@ Frühere Merges des Tages: Version 2.1.0, Abschnitt 1 (unter anderem #1163, #116
 | #1214 | Quant: Verzeichnis, Faktor-Evidenz, Radar ohne alte Identität der 13 | Draft, mit Vorher/Nachher (Rangwirkung ≤ 0,97 Punkte) |
 | #1213 | Technical: Weltscreener und Technical Intelligence ohne die 13 | Draft |
 | #1212 | Watchlist-Zusammenfassung: die 13 ohne Namen, Kurs und Abschnitte | Draft |
-| P4 | interne Backtest-Vorschau: Backend (Rolle `backtest_reviewer`, Worker, Bundle) und getrennter Seiten-Entwurf | in Arbeit, siehe 5 |
+| #1215 | P4 Backend: Rolle `backtest_reviewer` (Migration, keine Vergabe), Worker-Routen mit Schalter `VU_BACKTEST_REVIEW_ENABLED=false`, hashgebundenes Bundle, Release schließt `workers/*/data/` aus | Draft |
+| #1216 | P4 Seite `/konto/admin/backtests/` (noindex, nicht verlinkt), Basis #1215 | Draft |
 | #1203 | diese Übergabe | Draft |
 | #1119 | 132 SEC-belegte Statuskorrekturen | zurückgestellt bis zur regulären Umstellung auf 1.3.0 |
 
@@ -89,7 +90,15 @@ Frühere Merges des Tages: Version 2.1.0, Abschnitt 1 (unter anderem #1163, #116
   - Worker-Routen `/v1/admin/backtests*` mit Aktivierungsschalter, standardmäßig aus;
   - hashgebundenes Bundle (Menü, Vorschau, Katalog);
   - Seite `/konto/admin/backtests/` als getrennter Draft (noindex, nicht verlinkt, keine gesperrten Quant-UI-Dateien).
-- Nicht vorgerechnete Auswahlen heißen „nicht vorgerechnet“.
+- Nicht vorgerechnete Auswahlen heißen „nicht vorgerechnet“ (`NOT_PRECOMPUTED`); gerechnet wird nie.
+- Schutzreihenfolge, durch Tests belegt:
+  1. Schalter aus: 404.
+  2. Ohne Sitzung: 401.
+  3. Ohne Rolle: 403 (`pricing_admin` reicht nicht).
+  4. Manipuliertes Bundle oder `CERTIFIED_STRATEGY` ohne Artefakt: 503.
+- Dazu CSRF-Prüfung und `no-store`.
+- Offen: der Fall in `browser-qa.mjs` (braucht PostgreSQL und Playwright) und die SQL-Tests (`account-ci`).
+- Nach einem Stammwechsel müssen Katalog und Bundle neu gebaut werden; bis dahin bricht der Export ab.
 
 ## 6. Setup-OOS (P5)
 
@@ -117,7 +126,7 @@ Frühere Merges des Tages: Version 2.1.0, Abschnitt 1 (unter anderem #1163, #116
 1. #1210 (P2-Architektur) mergen. Danach entscheiden, ob ein neuer 1.3.0-Lauf vorbereitet wird.
 2. #1209 EDVA mergen. Der Wochenlauf übernimmt Name und Stamm.
 3. #1214 (Quant, Rangwirkung), #1213 (Technical), #1212 (Watchlist) mergen. Die Watchlist blendet auch die richtigen ETF-Namen von BREW, INVN, NYNY und WR aus, das Quant-Verzeichnis behält sie. Gewünschte Linie festlegen.
-4. P4: Rolle vergeben, Aktivierung, Backend-PR, Seiten-Draft.
+4. P4: #1215 und #1216 mergen; wer die Rolle `backtest_reviewer` bekommt (SQL in `FREIGABEN.md`); Schalter einschalten (eigener PR); ob die Seite je verlinkt wird.
 5. Setup-OOS A1–A6, spätestens vor etwa 2027-03-26.
 6. #1119 erst nach regulärer Umstellung auf 1.3.0.
 
