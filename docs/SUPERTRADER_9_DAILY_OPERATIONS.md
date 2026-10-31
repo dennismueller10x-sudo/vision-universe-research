@@ -131,7 +131,7 @@ Lokal auf `main` (5e9d2b9) zusammen mit diesem PR. Es wurde nichts committet und
 
 ## E2E-Prüfung
 
-`scripts/supertrader/tests/sf-sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
+`scripts/supertrader/tests/sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
 
 Bewusste Abweichungen vom echten Lauf:
 - Teiluniversum von 60 Titeln (`--tickers`) statt 5.103 Titeln, sonst dieselben Argumente.
@@ -166,3 +166,5 @@ Gegenproben (lokal, danach zurückgesetzt): Commit-Bedingung `!= 'BLOCKED'`, DQ-
 | Security Master | `generatedAt` 11.09.2026: Die Eingangsprüfung ist bis zum Lauftag 10.11.2026 CURRENT, danach STALE (Exit 3), solange der Stamm nicht neu erzeugt ist (siehe Inbetriebnahme, Schritt 3) |
 
 Sind die Repodaten am abgeleiteten Lauftag nicht CURRENT, etwa weil der Security Master veraltet ist, erzeugt der Test ohne `--require-current` und meldet das als Diagnose. Fall 4 und Fall 9 prüfen den Abbruch trotzdem. Der Test läuft im Workflow-Schritt „Produkt- und Vertragstests“ mit (`sf-*.test.mjs`).
+
+Der Dateiname beginnt bewusst nicht mit `sf-`. Der Schritt „Produkt- und Vertragstests“ des Tageslaufs (`node --test "scripts/supertrader/tests/sf-*.test.mjs"`) führt den Test deshalb nicht aus: Er würde den Produktionslauf um vier zusätzliche Erzeugungen verlängern, und ein Testfehler dürfte dort nicht die Veröffentlichung blockieren. Er läuft in den Supertrader Quality Gates (`supertrader-ci.yml`, `*.test.mjs`) und in der Signalkette.
