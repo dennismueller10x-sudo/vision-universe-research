@@ -14,11 +14,17 @@
      Supertrader  supertrader/data/signals-core.json + registry-core.json Zustaende je Strategie + Freigabestufe der Strategie
    Zugeordnet wird ein Kurs/Score nur dem Listing, dessen kanonische securityId (ref_<TICKER>, core/identity.js) die Quelle
    traegt, das aktiv ist und dessen Waehrung passt. Sonst bleibt der Abschnitt leer und traegt den Grund.
-   Fehlt eine Quelle, fehlt der Abschnitt (state SOURCE_MISSING) - nie ein Ersatzwert. */
+   Fehlt eine Quelle, fehlt der Abschnitt (state SOURCE_MISSING) - nie ein Ersatzwert.
+   Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json, gelesen ueber
+   scripts/market/universe-source.mjs#loadTickerReuseQuarantine): unter dem Ticker handelt heute ein anderes Wertpapier
+   (z. B. ein ETF) als das Unternehmen, auf das Name, Stamm und securityId zeigen. Solche Zeilen behalten Kennung, Kuerzel,
+   Boerse und Status, tragen aber keinen Namen der alten Identitaet und keine Kurs-, Quant-, Technik- oder
+   Supertrader-Werte; jeder Abschnitt nennt den Grund IDENTITY_QUARANTINED (why), gezaehlt in withheld. */
 import {readFileSync,existsSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
+import {loadTickerReuseQuarantine} from '../market/universe-source.mjs';
 
 const require=createRequire(import.meta.url);
 const Identity=require('../../core/identity.js');
@@ -45,28 +51,34 @@ export function buildSummary(root,{now=new Date()}={}){
  const manifest=readJson(root,'quant/data/universe/master-manifest.json');
  if(!manifest||!manifest.shards||!Array.isArray(manifest.shards.index))throw Error('COMPANY_MASTER_MISSING');
  const rows=[],bySymbol=new Map();
+ const quarantine=loadTickerReuseQuarantine(root);
+ const quarantined=quarantine?quarantine.records:new Map();
+ const withheld={};
  for(const {shard} of manifest.shards.index){
   const part=readJson(root,'quant/data/universe/instruments/'+shard+'.json');if(!part)throw Error('COMPANY_MASTER_SHARD_MISSING:'+shard);
   for(const m of part.instruments||[]){
    if(!Identity.isInstrumentId(m.instrumentId)||!Identity.normalizeTicker(m.symbol))continue;
-   const r={i:m.instrumentId,s:m.symbol,n:m.companyName||null,x:m.exchange||null,cu:m.currency||null,act:m.active?1:0,
-    del:m.delistedAt||null,el:m.productEligibility||null,sid:Identity.securityIdForTicker(m.symbol),legacy:m.masterMemberId||null};
+   const sid=Identity.securityIdForTicker(m.symbol),iq=quarantined.has(sid);
+   const r={i:m.instrumentId,s:m.symbol,n:iq?null:m.companyName||null,x:m.exchange||null,cu:m.currency||null,act:m.active?1:0,
+    del:m.delistedAt||null,el:m.productEligibility||null,sid,legacy:m.masterMemberId||null};
+   if(iq){r.iq=true;r.why={identity:'IDENTITY_QUARANTINED'};withheld['identity:IDENTITY_QUARANTINED']=(withheld['identity:IDENTITY_QUARANTINED']||0)+1;}
    rows.push(r);
    if(!bySymbol.has(r.s))bySymbol.set(r.s,[]);bySymbol.get(r.s).push(r);
   }
  }
  sources.master={...domainRule(registry,'companyMaster'),asOf:manifest.asOf||null,generatedAt:manifest.generatedAt||null};
+ if(quarantine)sources.master.identityQuarantine={artifact:'/'+quarantine.file,sha256:quarantine.sha256,securities:quarantined.size,reason:'IDENTITY_QUARANTINED'};
  /* Genau ein Listing traegt die Daten eines Tickers: aktiv, und seine kanonische securityId ist die der Quelle. */
  const listingFor=(ticker,sid,currency)=>{
   const cands=(bySymbol.get(ticker)||[]).filter(r=>r.sid===sid);
   const active=cands.filter(r=>r.act===1);
   if(!cands.length)return {reason:'NOT_IN_COMPANY_MASTER'};
+  if(cands.some(r=>r.iq))return {reason:'IDENTITY_QUARANTINED',rows:cands};
   if(active.length>1)return {reason:'LISTING_AMBIGUOUS',rows:active};
   if(!active.length)return {reason:'LISTING_INACTIVE',rows:cands};
   if(currency&&active[0].cu&&currency!==active[0].cu)return {reason:'CURRENCY_MISMATCH',rows:active};
   return {row:active[0]};
  };
- const withheld={};
  const note=(rowsOf,section,reason)=>{for(const r of rowsOf||[]){(r.why=r.why||{})[section]=reason;}withheld[section+':'+reason]=(withheld[section+':'+reason]||0)+1;};
 
  // ---- Kurs
@@ -187,7 +199,7 @@ export function buildSummary(root,{now=new Date()}={}){
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;
- if(slices){cols.stp=rows.map(r=>slices.has(r.s)&&r.act===1?1:0);delete sources.supertrader.slices;}
+ if(slices){cols.stp=rows.map(r=>slices.has(r.s)&&r.act===1&&!r.iq?1:0);delete sources.supertrader.slices;}
  const doc={schemaVersion:SCHEMA,generatedAt:now.toISOString(),count:rows.length,calendar:{exchange:'XNYS',after:oldest,sessions},
   sources,skipped,withheld,fields:Object.keys(cols),cols};
  const report={rows:rows.length,priced:rows.filter(r=>r.c).length,quant:rows.filter(r=>r.q).length,technical:rows.filter(r=>r.td).length,
