@@ -253,3 +253,51 @@ Damit keine Daten verloren gehen, braucht es nur noch den Owner:
 - **`SF8_AUTO_PUBLISH` bleibt ungesetzt** (Owner-Vorgabe). Setzen erst, wenn diese Bedingungen belegt sind:
   - **Security Master gültig:** Lauf `commit=true` mit PASS, danach `system-health` „Security Master“ und „US-Wertpapierstamm“ nicht STALE/DEGRADED (S6).
   - **V1:** S1 5/5, S2, S4 und S5 mit echten Läufen, S7 (`data-quality` ohne ERROR, DQ-PX-2 ≤ 93).
+
+## 14. 31.10.2026, ~15:00 UTC: autonomer Parallellauf (V1, Betrieb, E2E, Historie, Zertifizierung)
+
+### 14.1 V1-Stabilität (nur echte Läufe)
+
+| # | Stand | Beleg |
+|---|---|---|
+| S1 | **3 von 5** | 40803128385 (29.10.), 40989532165 (30.10.), 41156681821 (31.10.; alle 7 Jobs grün, Prune vorgesehen übersprungen, Materialize-Commit). Nächste: Läufe vom 03.11. und 04.11. |
+| S2 | erfüllt bisher (3/3 ohne Eingriff) | letzter Heil-Dispatch der Materialisierung 40459929703 am 27.10., davor |
+| S3 | erfüllt | unverändert |
+| S4 | **erfüllt (31.10.)** | Reparatur 41044254369 (30.10.) und 41192838845 (31.10., 7/7 geschrieben), Samstags-Volllauf 41207577526 (6.686 angefordert, 6.102 geschrieben, 0 fehlgeschlagen; Commit 40d042a). SPY auf der letzten Sitzung 30.10.; Listing-Kontinuität und SIC-Taxonomie im Nachtlauf 41156681821 grün. DQ-PX-4 danach 0/6.204 |
+| S5 | 1 von 2 | Lauf Mo 02.11., 07:30 UTC steht aus; Auswertung 14:00 UTC vorgemerkt |
+| S6 | nicht erfüllt | Security Master vom 11.09.; Quant-Sitzung (#1143, #1163) |
+| S7 | nicht erfüllt | `data-quality` auf `main` 40d042a: ERROR DQ-TW-3 (6, Technical-Datensatz: IVF, MASK, NXXT, WFF, WHLR – Splits; gehört der Technical-Welt) und **DQ-SF8-8 3.839/3.840 (strukturell, siehe 14.2)**; DQ-PX-2 104 > 93 (überwiegend delistete Titel, die der alte Stamm noch führt; DQ-ID-4 112) |
+
+### 14.2 Zirkelabhängigkeit SF8_AUTO_PUBLISH ↔ S7 (Owner-Entscheidung)
+
+Ohne Tageslauf veraltet der Kandidatenstand mit jedem Nachtlauf. DQ-SF8-8 verlangt den zeitgleichen veröffentlichten Schluss (`core/data-quality.js:901-902`) und ist dann für fast alle Kandidaten rot, während DQ-SF8-1 (Frische, maxLag 2) PASS bleibt. Folgen auf `main`: `data-quality` ist jede Nacht ERROR, der Core-Test „DQ-SF8 · Repository-Stand“ ist rot (299/300 in jedem PR-Lauf). S7 („ohne ERROR“) ist damit **ohne täglichen SF8-Lauf nicht erfüllbar**, die Owner-Bedingung „SF8_AUTO_PUBLISH erst nach V1“ also zirkulär. Eine Lockerung von DQ-SF8-8 schlage ich nicht vor. Optionen:
+1. `SF8_AUTO_PUBLISH=true` nach gültigem Security Master und S1–S5, S7 ohne den Anteil DQ-SF8-8 bewerten (der Vertrag prüft DQ-SF8-1..8 vor jedem Commit ohnehin streng);
+2. bis dahin täglich manuell (`mode=manual`, `commit=true`, `expected_sha256`), was der Owner nicht möchte;
+3. Rot bis zur Aktivierung hinnehmen; dann ist S7 frühestens am Tag nach der Aktivierung erfüllbar.
+
+### 14.3 Produktionsprobleme (Betriebsaudit, je Befund ein PR)
+
+| Befund | Beleg | PR (Draft) |
+|---|---|---|
+| Kandidaten-Commit löst kein Pages-Deployment aus (Auslieferung nach den Signalen startet vor dem SF8-Commit; 204a517 ging erst mit fremdem Push raus) | `pages-release.yml` workflow_run-Liste | **#1199** (`pages-release.yml` + `quant/tests`, außerhalb Gate A) |
+| Trailer `SF8-Code-Commit` = `GITHUB_SHA` statt ausgechecktem HEAD (bei verspätetem Lauf falscher Nachprüf-Commit) | `supertrader-sf8-candidates.yml:194` | **#1191** |
+| Doku widerspricht dem Stand nach #1137/#1146 | `SUPERTRADER_9_DAILY_OPERATIONS.md:3,84`, `SUPERTRADER_8_DAILY_RUN.md:1` | **#1200** |
+| Rückfall-Zeitplan `43 11 * * 2-6` hat am 30.10. keinen Lauf erzeugt (ein Datenpunkt) | Laufliste | beobachten |
+| Alarmlücke: Fehler vor dem Schritt `mode` → kein Alarm; kein SF8-eigener Frische-Wächter | `:269`, `supertrader-signals.yml:96` | offen (Wächter wäre neue Pipeline/Core) |
+| `supertrader-signals.yml` ohne ADR-005 (Gruppe ohne `ref_name`, `ref: main`, kein push-with-retry) – vorbestehend | `:44-45`, `:55` | offen, eigener PR mit `supertrader-chain.mjs` |
+
+Geprüft ohne Befund: Anstoß per `workflow_dispatch` mit GITHUB_TOKEN (Lauf 41166562555), Alarm-Job, Börsenkalender in Health/Eingangsprüfung, Schutz des alten Stands, Concurrency/push-with-retry im SF8-Workflow, idempotente Wiederholung.
+
+Nebenbefund auf `main` (nicht Supertrader): Quant-Suite 3 rot (`technical-ap8-l1..l3`, dieselben Splits wie DQ-TW-3). `secrets.test.mjs` war nur lokal rot (Agenten-Worktrees im Repo-Verzeichnis), auf `main` grün.
+
+### 14.4 E2E (#1198, gestapelt auf #1191)
+
+`scripts/supertrader/tests/sf-sf9-e2e.test.mjs` spielt den Tagesweg mit den wörtlichen Workflow-Schritten nach (Wegwerf-Repository): C1 zwei Berechnungen = gleicher Fingerabdruck, C4 Fachmodelle, C5 Frische (älter/gleich/neuer/fehlend), fehlende Eingänge (Exit 3), DQ FAIL/checked=0/fehlend → BLOCKED, Abbruch und Wiederaufnahme, Schutz vor Überschreiben (Commit nur bei PUBLISH, Bytes unverändert), C7 Registry, Security Master nur synthetisch (60 Tage CURRENT, 61 STALE). 11/11. Kein Fehler im Tagesweg gefunden. Läuft nur mit `SF9_E2E=1` in den Quality Gates, damit er keinen Produktionslauf verlängert oder blockiert. Vollbau lokal: 42 s/47 s, 3.368 Kandidaten, Fingerabdrücke gleich, DQ-SF8 PASS, Vertrag gegen 29.10.: PUBLISH ohne Verstoß. Eingangsprüfung des Stamms: CURRENT bis Lauftag 10.11., danach Exit 3.
+
+### 14.5 Historische Backtest-Infrastruktur (#1189 → #1190)
+
+#1189 übernimmt #1142 (Studie A gegen A + V13-Delisting-Ketten, Registrierung eingefroren) und ergänzt Point-in-Time-Universum (`membersAt`, `assertPointInTime` fail closed), Dublettenerkennung je securityId über `core/identity.js`, Sperrliste aus #1159 nur als gepinnter Eingang, Delisting-Ausgänge mit Zensierung, Abdeckung je Jahr samt `terminalSegmentTooShort`. #1190: `classifyExits` (Gap durch Stop → Eröffnung), unabhängige Prüfung verpasster Stops für Minervini (`STOP_REACHED_NOT_EXECUTED`), für Turtle ausdrücklich `NOT_CHECKED_LEVEL_UNKNOWN`; A/B-Diff, Neu-Hash der 24 registrierten Dateien, Eingabe-Fingerabdruck inkl. sec-pit (fehlend → Exit 3), `--preflight`, `--repeat-check` (Umfang benannt). Kein Lauf auf echten Daten. Für einen echten Lauf fehlen: Snapshot-Secrets `VU_HISTORY_S3_*`, das entschlüsselte V13-Archiv (Teile `v13-derived`, `v13-raw`) und ein Workflow, der beides zugleich sieht (eigener Gate-A-PR, Owner-Auslösung); optional die Sperrliste aus Stamm 1.3.0.
+
+### 14.6 Zertifizierungsvorbereitung C02, C01, C08, C12, C03 (#1196, erst nach #1148)
+
+Je Methode Blocker mit Klasse (a lösbar / b Security Master / c V13 / d Owner-Quelle). Abgebaut (a): Regeltreue-Tests an den Grenzen (Turtle 20/55/10, 2N-Stop mit N der Vorsitzung, Gap durch den Stop; KK 30 % Vorbewegung, 10-Sitzungen-Niveau, ADR; BGU 0,75 × ATR40, Stop am Gap-Tagestief; Darvas 3 Tage, Stop nie in der neuen Box, Ausbruch und Boxbruch auf demselben Balken), gepinnter Prüfplan ohne Renditeziele, Prüfer gegen Code und #709-Wortlaut. Abnahme Regeltreue auf PR-Head: C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16; Nachweis auf dem Referenz-Commit offen. Kein Implementierungsfehler; vier Auslegungsbefunde dokumentiert (F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING). Offen bleiben CC-1/CC-3/CC-4/CC-5/CC-8 (d), Survivorship (c), PIT-Stammdaten (b).
