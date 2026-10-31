@@ -10,6 +10,9 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),root=resolve(import.meta.dirname,'../..');
 const F=require('../../scripts/quant/backtest-generation-freeze.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
 const MANIFEST='docs/data/security-master/v130-quant-freeze.json',MASTER='quant/data/market/security-master/us-security-master.json';
+// Ausgangsstand "vor dem Wechsel" ist die eingefrorene, hashgebundene Generation 1.1.0 (quant/config/security-master-generations.json),
+// nicht der laufende Produktstamm: so gelten die Prüfungen vor und nach einer Umstellung gleich (Owner P2, 31.10.2026).
+const PINNED=JSON.parse(fs.readFileSync(join(root,'quant/config/security-master-generations.json'),'utf8')).generations['us-security-master-1.1.0'];
 const sha=b=>createHash('sha256').update(b).digest('hex');
 
 test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V13c ist bytegleich und vollständig (neue Dateien erlaubt)',()=>{
@@ -37,6 +40,7 @@ test('SMF-1 · eingefrorene Quant-Evidenz V5.1–V13c ist bytegleich und vollst�
 test('SMF-2 · Ausgangsstamm des Freeze = Ausgangsstamm der Sonderfreigabe; masterHash-Vertrag unverändert, kein Inhalts-Fingerabdruck',()=>{
  const m=JSON.parse(fs.readFileSync(join(root,MANIFEST),'utf8')),ap=JSON.parse(fs.readFileSync(join(root,'docs/data/security-master/v130-approved-changes.json'),'utf8'));
  assert.equal(m.preSwitchMaster.sha256,ap.prevMasterSha256);assert.equal(m.preSwitchMaster.version,'us-security-master-1.1.0');
+ assert.equal(PINNED.sha256,m.preSwitchMaster.sha256,'eingefrorene Generation = Ausgangsstamm des Freeze');assert.equal(sha(fs.readFileSync(join(root,PINNED.file))),PINNED.sha256);
  const src=fs.readFileSync(join(root,'scripts/quant/backtest-generation-freeze.cjs'),'utf8');
  assert.equal(/require\([^)]*security-master-content-hash/.test(src),false);assert.equal(/contentHash\(/.test(src),false);
  const A=require('../engines/weekly-real-adapter.cjs');assert.equal(A.createLoader(root).masterHash,sha(fs.readFileSync(join(root,MASTER))));
@@ -50,6 +54,7 @@ const LOST='ref_ACGLO',ids=['ref_NVDA','ref_MSFT','ref_XOM',LOST];
 const copy=p=>{const to=join(fixture,p);fs.mkdirSync(dirname(to),{recursive:true});fs.cpSync(join(root,p),to,{recursive:true});};
 for(const p of ['quant/engines','quant/api','quant/methodology','quant/data/universe/instruments',MASTER,'quant/data/market/multi-asset/series/SPY.json','quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json','scripts/quant/materialize-real-backtest-read.cjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/contracts/weekly-execution-model-v2.json','quant/config/development-preview.json','quant/config/feature-gates.json'])copy(p);
 for(const id of ids)copy('quant/data/market/discover-series-long/'+id+'.json');
+fs.copyFileSync(join(root,PINNED.file),join(fixture,MASTER));assert.equal(sha(fs.readFileSync(join(fixture,MASTER))),PINNED.sha256);
 test.after(()=>fs.rmSync(folder,{recursive:true,force:true}));
 let manifest,old;
 
@@ -140,7 +145,7 @@ test('SMF-6 · Identitätssperre: gesperrte IDs fehlen in der neuen Generation, 
 test('SMF-7 · Sperrliste nur, wenn sie sich aus den tatsächlichen Stämmen nachrechnen lässt (keine handgeschriebene Liste)',async()=>{
  const B=await import('../../scripts/market/build-security-master-identity-blocklist.mjs');
  const prevFile=join(folder,'prev-master.json'),nextFile=join(fixture,MASTER),out=join(folder,'repro.json');
- fs.copyFileSync(join(root,MASTER),prevFile);
+ fs.copyFileSync(join(root,PINNED.file),prevFile);
  const pb=fs.readFileSync(prevFile),nb=fs.readFileSync(nextFile);
  const exp=B.buildBlocklist({prevMaster:JSON.parse(pb),nextMaster:JSON.parse(nb),seriesEnd:B.seriesEndReader(join(root,'quant/data/market/discover-series')),prevMasterSha256:sha(pb),nextMasterSha256:sha(nb)});
  assert.equal(exp.generator,F.BLOCKLIST_GENERATOR);assert.ok(exp.entries.some(e=>e.securityId===LOST),'Typwechsel ACGLO gesperrt');

@@ -6,14 +6,16 @@
 //   node scripts/quant/research/check-backtest-demo-freshness.cjs [--results <dir>] [--out <file>] [--strict]
 // CODE      a recorded code file has different bytes now -> the demo does not document the code on this checkout.
 // INPUTS    certification artefact or security master changed since the build (expected drift, information only).
+//           A result bound to a frozen Security-Master generation (quant/config/security-master-generations.json) is reported
+//           with that generation and does not count as masterChanged: it documents its generation, not the product master.
 // --strict  exit 1 on any CODE finding (default: report only, exit 0).
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const R = require('./backtest-runner.cjs');
+const G = require('../../../quant/engines/security-master-generation.cjs');
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 const DEFAULT_RESULTS = path.join(ROOT, 'docs/quant/backtest-demos/results');
-const MASTER = 'quant/data/market/security-master/us-security-master.json';
 const SCHEMA = 'backtest-demo-freshness-1.0.0';
 
 const shaBytes = b => crypto.createHash('sha256').update(b).digest('hex');
@@ -25,7 +27,7 @@ function demoFreshness({ root = ROOT, resultsDir = DEFAULT_RESULTS } = {}) {
   const shaCache = new Map(), current = f => (shaCache.has(f) ? shaCache.get(f) : (shaCache.set(f, fileSha(root, f)), shaCache.get(f)));
   let certSha = null;
   try { certSha = R.hash(JSON.parse(fs.readFileSync(path.join(root, R.CERTIFICATION_PATH), 'utf8'))); } catch { certSha = null; }
-  const masterSha = current(MASTER);
+  const masterSha = current(G.LIVE_FILE);
   const code = {}, cases = [];
   for (const f of files) {
     const id = f.replace(/\.json$/, '');
@@ -35,9 +37,11 @@ function demoFreshness({ root = ROOT, resultsDir = DEFAULT_RESULTS } = {}) {
     const stale = Object.keys(h.code).sort().filter(p => current(p) !== h.code[p]);
     for (const p of stale) (code[p] = code[p] || { recorded: new Set(), current: current(p), cases: [] }).cases.push(id), code[p].recorded.add(h.code[p]);
     const recMaster = h.population && h.population.masterHash != null ? h.population.masterHash : null;
+    const masterGeneration = recMaster !== null ? (G.generationOfHash(recMaster, root) || (recMaster === masterSha ? G.LIVE : null)) : null;
     cases.push({ id, kind: doc.kind || null, codeStale: stale,
       certificationChanged: certSha !== null && h.certification !== certSha,
-      masterChanged: recMaster !== null && masterSha !== null && recMaster !== masterSha });
+      masterGeneration,
+      masterChanged: recMaster !== null && masterSha !== null && recMaster !== masterSha && masterGeneration === null });
   }
   const codeFindings = Object.keys(code).sort().map(p => ({ file: p, current: code[p].current, recorded: [...code[p].recorded].sort(), cases: code[p].cases }));
   return {

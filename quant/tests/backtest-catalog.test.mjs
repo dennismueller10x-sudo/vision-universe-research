@@ -70,3 +70,18 @@ test('committeter Katalog: vollstaendig, integer, an Raster und Spec-Builder geb
   const hit = C.lookup(dir, C.readGrid().selections[5].selection);
   assert.equal(hit.state, 'PRECOMPUTED');
 });
+
+// Generationen (Owner P3/P2, 31.10.2026): ein Katalog wird nie ueberschrieben, und ein Katalog mischt nie Security-Master-Generationen.
+test('Generationen: vorhandener Katalog wird nicht ueberschrieben; gemischte Stammgenerationen brechen ab; committeter Katalog = Generation 1.1.0', () => {
+  const out = tmp(), g = grid(2);
+  C.buildCatalog({ grid: g, out, deps: { runBacktest: fakeRun } });
+  const before = fs.readFileSync(path.join(out, 'catalog.json'), 'utf8');
+  assert.throws(() => C.buildCatalog({ grid: g, out, deps: { runBacktest: fakeRun } }), /CATALOG_GENERATION_EXISTS_NO_OVERWRITE/);
+  assert.equal(fs.readFileSync(path.join(out, 'catalog.json'), 'utf8'), before);
+  let n = 0; const mixed = (spec) => ({ ...fakeRun(spec), inputHashes: { population: { masterHash: (n++ ? 'b' : 'a').repeat(64) } } });
+  assert.throws(() => C.buildCatalog({ grid: g, out: tmp(), deps: { runBacktest: mixed } }), /CATALOG_MIXED_MASTER_GENERATIONS/);
+  const G = require('../engines/security-master-generation.cjs'), dir = path.join(ROOT, 'docs/quant/backtest-catalog');
+  const hashes = new Set(fs.readdirSync(path.join(dir, 'results')).map((f) => JSON.parse(fs.readFileSync(path.join(dir, 'results', f), 'utf8')).inputHashes.population.masterHash).filter(Boolean));
+  assert.deepEqual([...hashes].map((h) => G.generationOfHash(h)), ['us-security-master-1.1.0']);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'catalog.json'), 'utf8')).catalogHash, '7ea6383e7260a5fb40b95e07066b625c73d0beca74e332c3c79c1733d7cb6e44', 'Katalog-Generation 1 unveraendert');
+});

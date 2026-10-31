@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "security-master-generations-1.0.0",
+  "description": "Hash-gebundene Security-Master-Generationen fuer Research. Abgeschlossene Studien (V7-V13c), ihre Reproduktionen, die Backtest-Demos und der Katalog lesen eine eingefrorene Generation, nie den laufend aktualisierten Produktstamm. Ein Eintrag wird nie geaendert oder entfernt; eine neue Generation bekommt einen neuen Eintrag. Siehe docs/data/security-master/SECURITY_MASTER_GENERATIONS.md.",
+  "live": {
+    "id": "LIVE",
+    "file": "quant/data/market/security-master/us-security-master.json",
+    "rule": "Produktstamm, folgt dem woechentlichen Erzeuger (security-master-weekly.yml). Kein fester Hash."
+  },
+  "researchEvidenceDefault": "us-security-master-1.1.0",
+  "generations": {
+    "us-security-master-1.1.0": {
+      "file": "quant/frozen/security-master/us-security-master-1.1.0.json",
+      "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "bytes": 9702293,
+      "gitBlob": "ee1fe3ad0c79c990db67d8d328d2e2737ea4a264",
+      "version": "us-security-master-1.1.0",
+      "generatedAt": "2026-09-11T14:43:20.305Z",
+      "rows": 8021,
+      "frozenAt": "2026-10-31",
+      "producer": "scripts/quant/pin-security-master-generation.cjs (Kopie des committeten Stamms, Hash geprueft)",
+      "evidence": [
+        "docs/data/security-master/v130-quant-freeze.json#preSwitchMaster.sha256",
+        "docs/data/security-master/v130-approved-changes.json#prevMasterSha256"
+      ],
+      "boundStudies": "V7-V13c (docs/quant-recovery/**, masterHash/masterSha256 26c82617...), Backtest-Demos und Katalog bis zur naechsten Generation"
+    }
+  }
+}
