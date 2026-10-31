@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-31T02:55:53.356Z",
+  "generatedAt": "2026-10-31T16:27:07.907Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6686
   },
   "sources": {
-    "ingestStatus": "2026-10-31T02:51:27.006Z",
-    "factors": "2026-10-31T02:53:54.663Z",
+    "ingestStatus": "2026-10-31T16:23:23.159Z",
+    "factors": "2026-10-31T16:24:49.964Z",
     "intradaySession": "2026-10-30",
-    "discover": "2026-10-31T02:55:48.445Z"
+    "discover": "2026-10-31T16:27:02.864Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,30 +23,29 @@
     "marketDataFetched": 6686,
     "historicalAvailable": 5767,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 1395,
-    "liveCapable": 1322,
+    "intradayAvailable": 5104,
+    "liveCapable": 1390,
     "factorEligible": 6568,
     "fundamentals": 5216,
     "fundamentals10y": 2251,
     "fundamentals5y": 3478,
     "fundamentalsTtm": 5202,
-    "discoverEligible": 5916,
-    "stockPages": 6116,
+    "discoverEligible": 5903,
+    "stockPages": 6103,
     "namesMissing": 20,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 5246,
+    "NOT_IN_LIVE_SCOPE": 3714,
+    "NO_IEX_BARS": 1581,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
     "INSUFFICIENT_HISTORY": 911,
-    "NO_STOCK_PAGE": 570,
+    "NO_STOCK_PAGE": 583,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 462,
     "NOT_TRADING:STALE_SERIES": 190,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
+    "NO_DISCOVER_CARD": 114,
     "NO_FACTOR_ROW:FAIL": 113,
-    "NO_DISCOVER_CARD": 101,
-    "NOT_IN_LIVE_SCOPE": 73,
-    "NO_IEX_BARS": 45,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 10,
@@ -55,7 +54,8 @@
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
-    "QUALITY_REJECTED:too_few_bars": 2
+    "QUALITY_REJECTED:too_few_bars": 2,
+    "NO_INTRADAY_SNAPSHOT": 1
   },
   "spotCheck": [
     {
@@ -265,7 +265,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
+        "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -277,7 +277,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NO_INTRADAY_SNAPSHOT"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {

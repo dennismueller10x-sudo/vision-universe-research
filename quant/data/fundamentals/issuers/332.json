@@ -166,9 +166,9 @@
       "cik": "0000810332",
       "name": "REPUBLIC AIRWAYS HOLDINGS INC.",
       "sic": "4512",
-      "rawFacts": 11219,
-      "mappedFacts": 3482,
-      "unmappedFacts": 7734,
+      "rawFacts": 11438,
+      "mappedFacts": 3586,
+      "unmappedFacts": 7920,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -178,28 +178,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 12,
-      "quarterlyPeriods": 41,
+      "quarterlyPeriods": 42,
       "firstPeriodEnd": "2015-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25
         },
         "eps_diluted": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25
         },
         "free_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25,
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.25
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2015-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.25
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2017-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.25
@@ -277,47 +277,48 @@
         }
       },
       "quality": {
-        "HIGH": 347,
-        "MEDIUM": 47
+        "HIGH": 352,
+        "MEDIUM": 49
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 394,
-        "resolvedValues": 394
+        "datableValues": 401,
+        "resolvedValues": 401
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8305,
+        "rules_version": "1.1.0",
+        "total": 8498,
         "by_severity": {
-          "INFO": 7734,
+          "INFO": 7920,
           "ERROR": 1,
-          "WARNING": 570
+          "WARNING": 577
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 409,
+          "CONCEPT_DISAGREEMENT": 404,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 161,
-          "UNKNOWN_CONCEPT": 7734
+          "RESTATEMENT_CONFLICT": 173,
+          "UNKNOWN_CONCEPT": 7920
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-051405",
-        "filing_date": "2026-07-31",
+        "accession": "0001628280-26-068594",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 112
+        "periodic_filings": 113,
+        "acceptance_datetime": "2026-10-30T20:26:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ad79fbb9756f857bbc542b0ebda985efec71a47dc224a8af99768ff020e72a34",
+      "sourceDigest": "b00203d0eafabc5e71c2cbda66fb0096d869a1556aaa9aceadb2f39e467ab0fb",
       "issuerId": "iss_cik_0000810332"
     },
     {

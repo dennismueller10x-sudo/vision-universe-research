@@ -1,15 +1,15 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 140
+    "SEC_RECOVERABLE": 139
   },
-  "accountedFor": 140,
+  "accountedFor": 139,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
       "count": 4,
-      "percent": 2.8571,
+      "percent": 2.8777,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -37,7 +37,7 @@
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
       "count": 49,
-      "percent": 35.0,
+      "percent": 35.2518,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -65,7 +65,7 @@
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.7143,
+      "percent": 0.7194,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -78,7 +78,7 @@
     {
       "cause": "IFRS_REMAINING",
       "count": 1,
-      "percent": 0.7143,
+      "percent": 0.7194,
       "consequence": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -91,7 +91,7 @@
     {
       "cause": "NO_XBRL_FACTS",
       "count": 39,
-      "percent": 27.8571,
+      "percent": 28.0576,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -119,7 +119,7 @@
     {
       "cause": "NO_XBRL_FINANCIALS",
       "count": 3,
-      "percent": 2.1429,
+      "percent": 2.1583,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -141,8 +141,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 43,
-      "percent": 30.7143,
+      "count": 42,
+      "percent": 30.2158,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -169,7 +169,7 @@
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 43,
+    "RESOLVES_WITH_TIME": 42,
     "NOT_APPLICABLE": 53,
     "EXTERNAL_PROVIDER_CANDIDATE": 42,
     "INDUSTRY_LAYER": 1,
@@ -307,7 +307,6 @@
       "0002025416",
       "0002027329",
       "0002039972",
-      "0002041208",
       "0002052053",
       "0002054507",
       "0002070534",
@@ -346,5 +345,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-30T13:12:54+00:00"
+  "generatedAtUtc": "2026-10-31T12:35:02+00:00"
 }

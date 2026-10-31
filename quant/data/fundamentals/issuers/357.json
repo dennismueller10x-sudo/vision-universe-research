@@ -264,9 +264,9 @@
       "name": "EXELON CORP",
       "sic": "4931",
       "rawFacts": 34632,
-      "mappedFacts": 6987,
+      "mappedFacts": 6994,
       "unmappedFacts": 27869,
-      "calendarYears": 19,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -274,11 +274,11 @@
         "EXC"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 73,
-      "firstPeriodEnd": "2008-06-30",
+      "annualPeriods": 19,
+      "quarterlyPeriods": 74,
+      "firstPeriodEnd": "2007-12-31",
       "lastPeriodEnd": "2026-03-31",
-      "historyYears": 17.0,
+      "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
@@ -343,11 +343,11 @@
           "historyYears": 17.0
         },
         "stockholders_equity": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
+          "annualPeriods": 19,
+          "quarterlyPeriods": 69,
+          "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
+          "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
@@ -374,47 +374,47 @@
         }
       },
       "quality": {
-        "HIGH": 721,
+        "HIGH": 723,
         "MEDIUM": 60
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 781,
-        "resolvedValues": 781
+        "datableValues": 783,
+        "resolvedValues": 783
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 28789,
+        "rules_version": "1.1.0",
+        "total": 28744,
         "by_severity": {
           "INFO": 27869,
           "ERROR": 4,
-          "WARNING": 916
+          "WARNING": 871
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 741,
-          "EXTREME_VALUE": 8,
+          "CONCEPT_DISAGREEMENT": 723,
+          "EXTREME_VALUE": 2,
           "FISCAL_PERIOD_CONFLICT": 35,
           "FUTURE_DATA_LEAK": 4,
-          "NEGATIVE_WHERE_IMPOSSIBLE": 6,
-          "RESTATEMENT_CONFLICT": 126,
+          "RESTATEMENT_CONFLICT": 111,
           "UNKNOWN_CONCEPT": 27869
         }
       },
       "latestFiling": {
-        "accession": "0001109357-26-000080",
-        "filing_date": "2026-07-30",
+        "accession": "0001109357-26-000095",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 115
+        "periodic_filings": 116,
+        "acceptance_datetime": "2026-10-30T16:44:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "326b74564849880c4dca0f0445a4389ca7597b17e7dbfd83702e3698cb22d350",
