@@ -72,3 +72,10 @@ test('committete Demos: Bericht entsteht fuer alle 16 Faelle, Befunde nennen nur
     assert.notEqual(f.current, f.recorded[0]);
   }
 });
+
+test('quant-ci prueft die Demos strikt und nur als Hash-Abgleich (keine Behauptung privater Validierung)', () => {
+  const wf = fs.readFileSync(path.join(ROOT, '.github/workflows/quant-ci.yml'), 'utf8');
+  assert.match(wf, /check-backtest-demo-freshness\.cjs --strict/);
+  assert.match(wf, /keine private Validierung/);
+  assert.doesNotMatch(wf.split('check-backtest-demo-freshness')[0].split('\n').slice(-12).join('\n'), /secrets\./, 'kein Secret in diesem Schritt');
+});
