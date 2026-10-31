@@ -56,3 +56,17 @@ test('verweigert: Ziel in generierten Daten, abweichender specHash des Runners, 
   const g = grid(1); g.selections = [g.selections[0], g.selections[0]];
   assert.throws(() => C.plan(g), /GRID_DUPLICATE_SPEC/);
 });
+
+test('committeter Katalog: vollstaendig, integer, an Raster und Spec-Builder gebunden, nichts zertifiziert', () => {
+  const dir = path.join(ROOT, 'docs/quant/backtest-catalog');
+  assert.deepEqual(C.catalogViolations(dir), []);
+  const idx = JSON.parse(fs.readFileSync(path.join(dir, 'catalog.json'), 'utf8'));
+  assert.equal(idx.complete, true); assert.equal(idx.productionApproved, false);
+  assert.equal(idx.gridHash, C.sha(C.readGrid()), 'Raster seit dem Bau geaendert: Katalog neu rechnen ([v13-archive:catalog])');
+  assert.deepEqual(idx.entries.map((e) => e.specHash).sort(), C.plan(C.readGrid()).map((p) => p.specHash).sort(), 'Spec-Builder liefert andere Specs: Katalog neu rechnen');
+  assert.ok(idx.entries.every((e) => e.certificationStatus !== 'CERTIFIED' && e.productionApproved === false));
+  const v = JSON.parse(fs.readFileSync(path.join(dir, 'verify-report.json'), 'utf8'));
+  assert.equal(v.results, idx.entries.length); assert.equal(v.failures, 0);
+  const hit = C.lookup(dir, C.readGrid().selections[5].selection);
+  assert.equal(hit.state, 'PRECOMPUTED');
+});
