@@ -24,6 +24,7 @@ const EARLIEST = '1990-01-01';
 // Codes a caller may show; anything else from the runner is reported as SPEC_REJECTED (no detail, no stack).
 const SAFE_CODES = ['SELECTION_SCHEMA_UNKNOWN', 'SELECTION_UNKNOWN_KEY', 'UNKNOWN_TEMPLATE', 'WINDOW_INVALID', 'COST_PRESET_UNKNOWN', 'BENCHMARK_UNKNOWN',
   'RULE_NOT_ALLOWED', 'RULES_ONLY_FOR_SIGNAL', 'FACTOR_NOT_ALLOWED', 'FACTOR_ONLY_FOR_FACTOR_KIND', 'METHODS_OPTION_UNKNOWN',
+  'SENSITIVITY_GRID_EXCLUDES_SELECTED_COSTS',
   'SPEC_INVALID', 'SPEC_UNKNOWN_KEY', 'SPEC_SCHEMA_UNKNOWN', 'UNKNOWN_KIND', 'UNKNOWN_METHOD', 'METHOD_NOT_APPLICABLE_TO_KIND', 'SPEC_REJECTED'];
 
 const sha = x => crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -97,6 +98,9 @@ function buildSpec(selection, templates = loadTemplates()) {
     if (sel.methods === 'NONE') delete spec.methods;
     else if (sel.methods !== 'TEMPLATE') return rejected('METHODS_OPTION_UNKNOWN');
   }
+  // A recorded sensitivity grid must contain the selected baseline (research-validation: BASELINE_NOT_ON_GRID).
+  const grid = spec.methods && spec.methods.PARAMETER_SENSITIVITY && spec.methods.PARAMETER_SENSITIVITY.dimensions;
+  if (grid) for (const k of ['feeBps', 'slippageBps']) if (Array.isArray(grid[k]) && !grid[k].includes(spec.costs[k])) return rejected('SENSITIVITY_GRID_EXCLUDES_SELECTED_COSTS');
   const changed = { ...sel }; delete changed.schemaVersion;
   spec.id = 'sel-' + sha(changed).slice(0, 16);
   spec.description = 'Auswahl aus Vorlage ' + tpl.id + ' (' + spec.kind + ', ' + spec.window.from + '..' + spec.window.to + ')';
