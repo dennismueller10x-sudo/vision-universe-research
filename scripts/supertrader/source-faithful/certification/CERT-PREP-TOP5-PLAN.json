@@ -1,0 +1,452 @@
+{
+  "schema": "vu-supertrader-cert-prep-plan-1",
+  "id": "SF9-CERT-PREP-TOP5",
+  "version": "1.0.0",
+  "fixedOn": "2026-10-31",
+  "status": "PREREGISTERED_NOT_ACTIVE",
+  "purpose": "Methodische Zertifizierungsvorbereitung der fünf am besten validierbaren Methoden. Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
+  "basis": {
+    "matrix": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (PR #1148, Stand 30.10.2026)",
+    "criteria": "sf6-readiness-criteria-1.2.0 (scripts/supertrader/source-faithful/completion/sf6-readiness-criteria.mjs)",
+    "paperProtocol": "SF6-PAPER-2027 1.1.0 (scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs)",
+    "validationProtocol": "SF6-VALIDATION-PROTOCOL 1.1.0 (scripts/supertrader/source-faithful/research/run-sf6-validation.mjs)",
+    "sourceExtract": "scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json"
+  },
+  "classes": {
+    "a": "lösbar ohne Security-Master-Wechsel und ohne private Daten (Code-, Test- und Dokumentationsarbeit in der Supertrader-Welt)",
+    "b": "braucht den neuen Security Master (#1143 / #1163, andere Sitzung)",
+    "c": "braucht private V13- oder Delisting-Daten",
+    "d": "braucht eine Owner- oder Quellenentscheidung (auch Lizenzdaten, Aktivierung, Zeitablauf)"
+  },
+  "guards": {
+    "validatedTradeSignal": "LOCKED_FOR_ALL_13",
+    "ruleChanges": "NONE",
+    "parameterChanges": "NONE",
+    "workflowsTriggered": "NONE",
+    "generatedDataChanged": "NONE",
+    "acceptanceMetricKinds": ["INTEGRITY", "COUNT", "SOURCE", "DATA_COVERAGE", "DISTRIBUTION_REPORT_ONLY", "DECISION_RECORD"],
+    "forbiddenMetricKinds": ["PERFORMANCE"],
+    "noTuning": "kein Parameter, kein Universum, keine Kosten- oder Ausführungsannahme wird nach einem Ergebnis gewählt"
+  },
+  "sharedExecution": {
+    "costs": {
+      "reference": { "slippageBps": 10, "commissionBps": 1 },
+      "levels": [
+        { "id": "COST-0", "slippageBps": 0, "commissionBps": 0 },
+        { "id": "REF", "slippageBps": 10, "commissionBps": 1 },
+        { "id": "COST-20", "slippageBps": 20, "commissionBps": 2 },
+        { "id": "COST-50", "slippageBps": 50, "commissionBps": 5 }
+      ],
+      "origin": "Plattformkonvention research-v1, keine Quellenregel; Stufen vorregistriert in SF6-VALIDATION-PROTOCOL 1.1.0"
+    },
+    "portfolio": { "id": "VU-SF5-EQUITY-RESEARCH-PORTFOLIO", "maxPositionWeight": 0.25, "maxOpenPositions": 20, "cashOnly": true },
+    "bars": "Tagesbalken, split-adjustiert (ADR-002); ein Balken ohne Eröffnung oder synthetisch wird nie gefüllt (isExecutableBar)",
+    "intrabarReference": "PESSIMISTIC: auf dem Einstiegsbalken kommt das Tief nach dem Fill; die optimistische Gegenlesart läuft als Szenario",
+    "tests": [
+      "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY",
+      "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-BUY-STOP-FILL",
+      "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-ENGINE-FILL",
+      "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-INVARIANTS-ALL-VARIANTS"
+    ]
+  },
+  "crossCuttingBlockers": [
+    { "id": "X-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "83 referenzexponierte DQ-K5-Sitzungen ungeklärt; EDGAR 1.4.0–1.4.3 bestätigt keine, Tiingo-Splits HTTP 403; CC5-e mit k-Schwellen konstruktionsbedingt unerfüllbar; CC5-f nicht gerechnet", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.4, Querschnittsblocker 1", "closes": "lizenzierte, faktortragende CA-Quelle mit Abnahme (E7-1), Daten-PR, Snapshot-Generation 3 (E7-4 B), Neuläufe gegen dieselben Referenz-Hashes" },
+    { "id": "X-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "kein unberührtes historisches Fenster; SF6-PAPER-2027 vorbereitet, nicht aktiv; Aufbewahrungsentscheidung offen; auswertbar frühestens Ende 2027", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.6, Querschnittsblocker 2", "closes": "Owner-Aktivierung in eigenem PR vor dem 01.01.2027, 250 Sitzungen, alle vier Integritätsprüfungen bestanden" },
+    { "id": "X-SURV", "criterion": "DATA", "class": "c", "secondary": ["d"], "text": "Snapshot-Delistings nur aus der Tiingo-Liste, vor 2009 kaum vorhanden, keine Delisting-Renditen; V13-Reihen nur privat im Quant-Bereich, Einbindung nicht belegt", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5, Querschnittsblocker 3", "closes": "neue Snapshot-Generation mit V13-Reihen (Quant- und Supertrader-PR getrennt)" },
+    { "id": "X-PIT-MASTER", "criterion": "DATA", "class": "b", "secondary": [], "text": "Produktlauf: --as-of schneidet nur Tagesbalken; Listing-Beginn, Status, SIC und Kontinuität bleiben auf heutigem Stand; Security Master ohne Erzeuger", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md Querschnittsblocker 4", "closes": "neuer Security Master (#1143 / #1163)" },
+    { "id": "X-LEDGER", "criterion": "CC-1", "class": "a", "secondary": [], "text": "scripts/supertrader/source-ledger.json führt Morales/Kacher, Raschke, B07 und W-MIN18 nicht; Herkunft nur über PSR #709 und die Registry belegt", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.8, Querschnittsblocker 6", "closes": "Ledger-Einträge für W-MOKA12 / W-MOKAV24 / W-MOKASTOP / W-MOKAPP aus dem #709-Extrakt in einem eigenen PR (berührt den Legacy-Build scripts/supertrader/build.mjs, deshalb nicht hier)", "status": "OPEN_SEPARATE_PR" }
+  ],
+  "methods": [
+    {
+      "candidateId": "C02",
+      "strategyId": "SF_TURTLE_S2",
+      "priority": 1,
+      "contract": { "module": "contracts/turtle.mjs", "export": "TURTLE_S2", "sourceContractVersion": "1.2.0" },
+      "engine": { "module": "methods/turtle.mjs", "versionExport": "TURTLE_VERSION", "version": "sf-turtle-1.3.0" },
+      "sources": ["W-TUR"],
+      "ccMet": ["CC-1", "CC-2", "CC-3", "CC-6", "CC-7"],
+      "ccOpen": ["CC-4", "CC-5", "CC-8"],
+      "rules": [
+        { "id": "TUR-SF-ENTRY", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-S2-NOSKIP", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-EXIT", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-N", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-STOP", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-STOPADD", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-ADD", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-UNIT", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-LIMIT-CORR", "status": "DATA_BLOCKED" },
+        { "id": "TUR-SF-SHORT", "status": "DATA_BLOCKED" }
+      ],
+      "params": [
+        { "psr709": "TUR-S2ENT", "token": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.entry" }, "value": 55, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2EX", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.exit" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2NOSKIP", "token": "ohne Vortrade-Skipfilter", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.filter" }, "value": false, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-N", "token": "/20", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "nPeriod" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-STOP", "token": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-ADD", "token": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-STOPADD", "token": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT4", "token": "4 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsPerMarket" }, "value": 4, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT12", "token": "12 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLong" }, "value": 12, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT6", "token": "6 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsClosely" }, "value": 6, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT10", "token": "10 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLoosely" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-UNIT", "token": "0,01", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "unitRiskFraction" }, "value": 0.01, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-DRAWDOWN", "token": "10%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalLossStep" }, "value": 0.1, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-DRAWDOWN", "token": "20%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalCut" }, "value": 0.2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2ENT", "token": "1 Tick", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rawTick" }, "value": 0.01, "kind": "CONVENTION", "note": "ein Tick = 0,01 Rohpreis, in die split-adjustierte Basis umgerechnet (Ableitung, kein Quellenwert)" },
+        { "psr709": "TUR-RANK", "token": "stärkste", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rankLookbackSessions" }, "value": 63, "kind": "CONVENTION", "note": "3 Monate = 63 Sitzungen (TUR-RANKVAR OPTIONAL, Ableitung)" }
+      ],
+      "blockers": [
+        { "id": "C02-CC4", "criterion": "CC-4", "class": "d", "secondary": [], "text": "TUR-SF-LIMIT-CORR DATA_BLOCKED: keine Owner-freigegebene PIT-Korrelationsgruppenquelle; SIC-Proxys schließen CC-4 nach E4 nicht", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C02 Blocker / Querschnittsblocker 5", "closes": "Owner-Entscheidung E7-5 (A mit E4-Revision oder B GICS-Historie), danach Neulauf mit aktiviertem Limit und Vorher/Nachher", "status": "OPEN" },
+        { "id": "C02-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "DQ-K5 14 exponiert / 14 ungeklärt, DQ-K3 38 / 38 ungeklärt; 11 von 559 Trades direkt exponiert (1,97 %)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C02 Corporate Actions", "closes": "X-CC5", "status": "OPEN" },
+        { "id": "C02-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "SF6-PAPER-2027 nicht aktiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C02 OOS", "closes": "X-CC8", "status": "OPEN" },
+        { "id": "C02-SAMPLE", "criterion": "CC-8", "class": "d", "secondary": ["a"], "text": "etwa 52 Trades pro Jahr; 250 Paper-Sitzungen ergeben eine kleine Stichprobe", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C02 statistische Grenze", "closes": "Owner-Entscheidung vor dem 01.01.2027, ob SF6-PAPER-2027 eine Mindestzahl oder ein längeres Fenster bekommt (sonst Änderung nach Fensterbeginn verboten); hier nur als Zählung vorregistriert (PS-C02-SAMPLE-COUNT)", "status": "PREPARED_COUNT_ONLY" },
+        { "id": "C02-SURV", "criterion": "DATA", "class": "c", "secondary": [], "text": "Holdout nach oben verzerrt, Delistings vor 2009 fehlen", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Survivorship (gilt für C02)", "closes": "X-SURV", "status": "OPEN" },
+        { "id": "C02-PRODUCT-PLAN", "criterion": "PRODUCT", "class": "a", "secondary": [], "text": "Produkt ohne modellierten Ablauf: TURTLE_ENTRY_IS_INTRADAY_ON_ASOF_NOT_MODELLED_FOR_NEXT_SESSION; der ruhende Buy-Stop der nächsten Sitzung ist aus den Balken bis zum Stichtag bekannt", "evidence": "scripts/supertrader/source-faithful/product/detectors.mjs (detectTurtle, planBlockers)", "closes": "eigener Produkt-PR (ändert Produktausgabe und damit supertrader/data), nicht in dieser Vorbereitung", "status": "OPEN_SEPARATE_PR" },
+        { "id": "C02-RULE-CONFORMANCE", "criterion": "CC-7", "class": "a", "secondary": [], "text": "Regeltreue an den Grenzen nicht vollständig mit Tests belegt (Fensterlänge 55/20, Ein-Tick-Grenze, N der Vorsitzung im Stop, Gap durch den Stop, kein Filter/Failsafe in S2)", "evidence": "Abgleich Golden Cases sf-turtle*.test.mjs mit TUR-S2ENT / TUR-S2EX / TUR-STOP", "closes": "CP-TUR-*-Tests in sf-cert-prep-top5.test.mjs", "status": "DONE" }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-WINDOW-55",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-TRIGGER-ONE-TICK",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-NO-SKIP-NO-FAILSAFE",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-EXIT-WINDOW-20",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-STOP-2N-PRIOR-CLOSE-N",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-COSTS-REFERENCE",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: SF-TUR-TEMPORAL",
+        "scripts/supertrader/tests/sf-turtle-n-wilder.test.mjs: GC-TUR-N-WILDER",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-TURTLE-LEDGER",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-TURTLE-PIT-CORRUPTION"
+      ],
+      "dataRequirements": [
+        { "id": "D-TUR-OHLC", "data": "Tages-OHLC split-adjustiert, mindestens 76 Balken (55 + 20 + 1)", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-TUR-RAW", "data": "Rohschluss (Tick-Umrechnung, Universumsuntergrenze)", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-TUR-DIV", "data": "Dividenden (Buchhaltung research-v1)", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-TUR-TERMINAL", "data": "Listing-Enden und Delisting-Klasse", "need": "REQUIRED", "availability": "SNAPSHOT_PARTIAL", "class": "c", "blocker": "C02-SURV" },
+        { "id": "D-TUR-CA", "data": "faktortragende Kapitalmaßnahmen für die exponierten Sitzungen", "need": "REQUIRED", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C02-CC5" },
+        { "id": "D-TUR-GROUPS", "data": "PIT-Korrelationsgruppen (eng / lose)", "need": "REQUIRED", "availability": "MISSING_OWNER_DECISION", "class": "d", "blocker": "C02-CC4" },
+        { "id": "D-TUR-BORROW", "data": "Borrow / Locate (nur Originalsystem Short)", "need": "OUT_OF_SCOPE_EQUITY_LONG", "availability": "MISSING", "class": null }
+      ],
+      "executionAssumptions": [
+        { "id": "EX-TUR-ENTRY", "text": "ruhender Buy-Stop aus den Kanälen der Vorsitzungen; Fill max(Eröffnung, Trigger) auf demselben Balken", "basis": "TUR-INTRADAY, TUR-GAP (Quelle)", "tests": ["scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL", "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-TRIGGER-ONE-TICK"] },
+        { "id": "EX-TUR-STOP-GAP", "text": "Unit-Stop und Kanalausstieg füllen min(Eröffnung, Niveau)", "basis": "Ableitung auf Tagesbalken (SF-R1-06)", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-STOP-2N-PRIOR-CLOSE-N"] },
+        { "id": "EX-TUR-INTRABAR", "text": "Einstiegsbalken pessimistisch (Referenz), OPTIMISTIC_CERTAIN_RULE als Szenario", "basis": "MA-TUR-INTRABAR-ORDER", "tests": ["scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-ENTRY-BAR-ORDER-READINGS"] },
+        { "id": "EX-TUR-COSTS", "text": "10 bps je Seite plus 1 bp; Stufen 0/10/20/50", "basis": "Plattformkonvention", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-COSTS-REFERENCE"] }
+      ],
+      "studies": [
+        { "id": "PS-C02-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?", "procedure": "node --test über die Dateien aus conformanceTests; Ergebnis per cert-prep-check.mjs --run-tests protokolliert", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C02-CC4-GROUPS", "class": "d", "question": "Wirkt das Korrelationslimit mit einer freigegebenen Gruppenquelle wie vorgeschrieben?", "procedure": "nach Owner-Freigabe: Neulauf BASE_S0 mit groupsOf; Referenz ohne Gruppen bleibt hashgleich", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "correlationLimits = ENFORCED_WITH_CALLER_GROUPS (nicht PARTIAL)" }, { "metricKind": "COUNT", "criterion": "rejectCorrelationLimit6 / -10 und geänderte Trades vorher/nachher berichtet" }, { "metricKind": "INTEGRITY", "criterion": "Referenzlauf ohne Gruppen ledger-hash-identisch" }], "status": "BLOCKED_OWNER" },
+        { "id": "PS-C02-CC5", "class": "d", "question": "Sind alle exponierten K5/K3-Sitzungen der Referenz belegt?", "procedure": "Klassifikation je Sitzung mit der freigegebenen CA-Quelle, Neulauf, Holdout-Zensus (CC5-f)", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "0 ungeklärte K5-Sitzungen (14 heute)" }, { "metricKind": "DATA_COVERAGE", "criterion": "alle 38 K3-Sitzungen klassifiziert" }, { "metricKind": "COUNT", "criterion": "Trades vorher/nachher je Sitzung berichtet" }], "status": "BLOCKED_OWNER" },
+        { "id": "PS-C02-SAMPLE-COUNT", "class": "a", "question": "Wie viele abgeschlossene Positionen liefert das Paper-Fenster?", "procedure": "Zählung der positionTrades im Paper-Log; keine Kennzahl wird geöffnet", "acceptance": [{ "metricKind": "COUNT", "criterion": "Anzahl berichtet; keine Mindestzahl als Kriterium (würde SF6-PAPER-2027 ändern; Entscheidung d)" }], "status": "PREPARED" },
+        { "id": "PS-C02-CC8", "class": "d", "question": "Ist CC-8 nach SF6-PAPER-2027 belegt?", "procedure": "SF6-PAPER-2027 1.1.0 unverändert", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "FORWARD_LOG_EQUALS_BATCH_REPLAY, NO_MISSING_SESSIONS, RESEARCH_V1_RECONCILED, V4D1_FORWARD_CENSUS bestanden, >= 250 Sitzungen" }, { "metricKind": "INTEGRITY", "criterion": "Turtle-Code-Fingerabdruck 89fbcf86… unverändert über das Fenster" }], "status": "BLOCKED_OWNER" }
+      ],
+      "findings": []
+    },
+    {
+      "candidateId": "C01",
+      "strategyId": "SF_TURTLE_S1",
+      "priority": 2,
+      "contract": { "module": "contracts/turtle.mjs", "export": "TURTLE_S1", "sourceContractVersion": "1.2.0" },
+      "engine": { "module": "methods/turtle.mjs", "versionExport": "TURTLE_VERSION", "version": "sf-turtle-1.3.0" },
+      "sources": ["W-TUR"],
+      "ccMet": ["CC-2", "CC-3", "CC-6", "CC-7"],
+      "ccOpen": ["CC-1", "CC-4", "CC-5", "CC-8"],
+      "rules": [
+        { "id": "TUR-SF-ENTRY", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-S1-FILTER", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-S1-OPEN-BREAKOUT", "status": "SOURCE_AMBIGUOUS" },
+        { "id": "TUR-SF-FAILSAFE", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-FAILSAFE-EXIT", "status": "SOURCE_AMBIGUOUS" },
+        { "id": "TUR-SF-EXIT", "status": "SOURCE_DERIVED" },
+        { "id": "TUR-SF-STOP", "status": "SOURCE_EXACT" },
+        { "id": "TUR-SF-LIMIT-CORR", "status": "DATA_BLOCKED" }
+      ],
+      "params": [
+        { "psr709": "TUR-S1ENT", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.entry" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1EX", "token": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.exit" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-FAILSAFE", "token": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.failsafe" }, "value": 55, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1LOSER", "token": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1LOSER", "token": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterExit" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1SKIP", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterBreakout" }, "value": 20, "kind": "SOURCE_NUMBER" }
+      ],
+      "blockers": [
+        { "id": "C01-CC1", "criterion": "CC-1", "class": "d", "secondary": ["a"], "text": "zwei SOURCE_AMBIGUOUS-Regeln: TUR-SF-S1-OPEN-BREAKOUT (Referenz SKIP) und TUR-SF-FAILSAFE-EXIT (Referenz 10D); beide Lesarten laufen als Szenarien", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Regeln / Blocker", "closes": "Owner-Entscheidung mit W-TUR-Stelle (oder Nachweis 'nicht essenziell'), getroffen vor dem Öffnen versiegelter Kennzahlen; Entscheidungsverfahren hier vorregistriert (PS-C01-READINGS)", "status": "PREPARED_DECISION_PROCEDURE" },
+        { "id": "C01-CC4", "criterion": "CC-4", "class": "d", "secondary": [], "text": "wie C02-CC4", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Blocker", "closes": "wie C02-CC4", "status": "OPEN" },
+        { "id": "C01-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "DQ-K5 16 / 16 ungeklärt, DQ-K3 41 exponiert (1 echt, 40 ungeklärt); Trade-Stabilität unter Quarantäne 16 %", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Corporate Actions", "closes": "X-CC5", "status": "OPEN" },
+        { "id": "C01-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "SF6-PAPER-2027 nicht aktiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 OOS", "closes": "X-CC8", "status": "OPEN" },
+        { "id": "C01-SURV", "criterion": "DATA", "class": "c", "secondary": [], "text": "wie C02-SURV", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Survivorship", "closes": "X-SURV", "status": "OPEN" },
+        { "id": "C01-PRODUCT-PLAN", "criterion": "PRODUCT", "class": "a", "secondary": [], "text": "wie C02-PRODUCT-PLAN; bei S1 hängt der Plan zusätzlich am Filterzustand zum Stichtag", "evidence": "scripts/supertrader/source-faithful/product/detectors.mjs (detectTurtle)", "closes": "eigener Produkt-PR", "status": "OPEN_SEPARATE_PR" },
+        { "id": "C01-RULE-CONFORMANCE", "criterion": "CC-7", "class": "a", "secondary": [], "text": "Fenstergrenzen 20/10/55 nicht an der Grenze getestet", "evidence": "Abgleich Golden Cases mit TUR-S1ENT / TUR-S1EX / TUR-FAILSAFE", "closes": "CP-TUR-S1-WINDOWS", "status": "DONE" }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S1-WINDOWS",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-STOP-2N-PRIOR-CLOSE-N",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS",
+        "scripts/supertrader/tests/sf-turtle.test.mjs: SF-TUR-WARMUP-CAUSAL",
+        "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FAILSAFE-EXIT-READINGS",
+        "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-OPEN-BREAKOUT-READINGS",
+        "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FILTER-ENTRY-BAR"
+      ],
+      "dataRequirements": [
+        { "id": "D-TUR-OHLC", "data": "wie C02; der S1-Filter wärmt auf der Historie vor dem Fenster", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-TUR-CA", "data": "wie C02 (16 K5 / 40 K3 ungeklärt)", "need": "REQUIRED", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C01-CC5" },
+        { "id": "D-TUR-GROUPS", "data": "wie C02", "need": "REQUIRED", "availability": "MISSING_OWNER_DECISION", "class": "d", "blocker": "C01-CC4" }
+      ],
+      "executionAssumptions": [
+        { "id": "EX-TUR-ENTRY", "text": "wie C02", "basis": "TUR-INTRADAY, TUR-GAP", "tests": ["scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"] },
+        { "id": "EX-TUR-FILTER-BAR", "text": "eine Auflösung des hypothetischen Ausbruchs auf dem Signalbalken zählt nur bei Eröffnung (Reihenfolge unbekannt, gezählt)", "basis": "SF-R3-04", "tests": ["scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FILTER-ENTRY-BAR"] }
+      ],
+      "studies": [
+        { "id": "PS-C01-CONFORMANCE", "class": "a", "question": "wie PS-C02-CONFORMANCE", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C01-READINGS", "class": "d", "question": "Welche Lesart von TUR-SF-S1-OPEN-BREAKOUT und TUR-SF-FAILSAFE-EXIT ist die Referenz?", "procedure": "Owner entscheidet mit Zitat aus W-TUR (gedruckt S. 19) oder stellt 'nicht essenziell' fest; die Entscheidung wird datiert, bevor eine versiegelte Kennzahl geöffnet wird; beide Szenarien bleiben gerechnet", "acceptance": [{ "metricKind": "DECISION_RECORD", "criterion": "Entscheidung mit Quellenstelle, Datum vor jedem Öffnen der Kennzahlen" }, { "metricKind": "COUNT", "criterion": "Trades je Lesart (SKIP/TAKE, 10D/20D) berichtet" }], "status": "BLOCKED_OWNER" },
+        { "id": "PS-C01-STABILITY", "class": "a", "question": "Wie stabil sind die Trades unter Quarantäne und Weglassen eines Titels?", "procedure": "bestehende SF7-VAL-STABILITY-Zählung; Auswertung nur als Verteilung (E6)", "acceptance": [{ "metricKind": "DISTRIBUTION_REPORT_ONLY", "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle" }], "status": "READY" }
+      ],
+      "findings": []
+    },
+    {
+      "candidateId": "C08",
+      "strategyId": "SF_KK_BREAKOUT",
+      "priority": 3,
+      "contract": { "module": "contracts/kullamagi.mjs", "export": "KK_BREAKOUT", "sourceContractVersion": "1.2.1" },
+      "engine": { "module": "research/kk-breakout-lifecycle.mjs", "versionExport": "KK_LIFECYCLE_VERSION", "version": "sf5-kk-breakout-lifecycle-1.1.0" },
+      "sources": ["W-KK3", "W-KKFAQ"],
+      "ccMet": ["CC-1", "CC-2", "CC-4", "CC-6", "CC-7"],
+      "ccOpen": ["CC-3", "CC-5", "CC-8"],
+      "rules": [
+        { "id": "KK-SF-ADR", "status": "SOURCE_EXACT" },
+        { "id": "KK-SF-CAP", "status": "SOURCE_EXACT" },
+        { "id": "KK-SF-STOPMARKET", "status": "SOURCE_EXACT" },
+        { "id": "KK-SF-BO-STOP", "status": "SOURCE_EXACT" },
+        { "id": "KK-SF-BO-MOMENTUM", "status": "SOURCE_DERIVED" },
+        { "id": "KK-SF-BO-SETUP", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "KK-SF-BO-ENTRY", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "KK-SF-BO-PARTIAL", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "KK-SF-BO-TRAIL", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "KK-SF-SIZE", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "KK-SF-BO-ORH", "status": "DATA_BLOCKED" }
+      ],
+      "params": [
+        { "psr709": "KK-031", "token": "ADR20", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "adrSessions" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "KK-001", "token": "30%", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "overnightCap" }, "value": 0.3, "kind": "SOURCE_NUMBER" },
+        { "psr709": "KK-006", "token": "30–100%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMove" }, "value": 0.3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Druckgrenze einer PREFERENCE als Grenze eines deklarierten Proxys (MA-KK-SETUP-PROXY), kein Kullamägi-Gate" },
+        { "psr709": "KK-006", "token": "1–3Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMoveSessions" }, "value": 63, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "3 Monate = 63 Sitzungen" },
+        { "psr709": "KK-008", "token": "2Wochen–2Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.window" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Grenze 2 Wochen = 10 Sitzungen; CONSOLIDATION_20 vorregistriert" },
+        { "psr709": "KK-013", "token": "3–5Tagen", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.partialAfter" }, "value": 3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" },
+        { "psr709": "KK-014", "token": "10DMA", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.trailMa" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "gedruckte Anfängerregel" },
+        { "psr709": "KK-025", "token": "0,3–0,5%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_REFERENCE_CONFIG", "path": "sizing.riskFraction" }, "value": 0.005, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" }
+      ],
+      "blockers": [
+        { "id": "C08-CC3", "criterion": "CC-3", "class": "d", "secondary": ["a"], "text": "7 essenzielle manuelle Entscheidungen (Setup-Qualität, Ausbruchsniveau, Größe …); das Setup ist eine Modellkonvention (MA-KK-SETUP-PROXY)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 Blocker", "closes": "Quellenbelege für eine mechanische Setup-Definition oder Owner-Entscheidung, die das Kriterium nicht aufweicht; hier nur die Proxy-Grenzen mit Tests festgeschrieben", "status": "OPEN_PROXY_PINNED" },
+        { "id": "C08-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "DQ-K5 27 / 27 ungeklärt, DQ-K3 95 exponiert (1 echt, 94 ungeklärt); Stabilität unter Quarantäne 31 %", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 Corporate Actions", "closes": "X-CC5", "status": "OPEN" },
+        { "id": "C08-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "SF6-PAPER-2027 nicht aktiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 OOS", "closes": "X-CC8", "status": "OPEN" },
+        { "id": "C08-XS-SURV", "criterion": "DATA", "class": "c", "secondary": [], "text": "Querschnittsmomentum (1/3/6 Monate) hängt an der Vollständigkeit des Universums und ist survivorship-sensitiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 Daten", "closes": "X-SURV; vorab Zählung der Querschnittsgröße je Datum mit und ohne inaktive Listings (PS-C08-XS-COVERAGE)", "status": "OPEN" },
+        { "id": "C08-MOMENTUM-SPLIT", "criterion": "CC-3", "class": "d", "secondary": [], "text": "Forschungsreferenz nutzt das Momentum nicht zur Auswahl (KK-005 PREFERENCE), das Produkt wendet die Modell-Interpretation P98 (O-6) als getrennte Stufe an; Referenz und Produkt messen damit nicht dieselbe Auswahl", "evidence": "research/kk-breakout-lifecycle.mjs (Kopfkommentar), product/detectors.mjs KK_MOMENTUM_INTERPRETATION", "closes": "Owner-Entscheidung, welche Auswahl die Zertifizierungsreferenz ist; keine Änderung hier", "status": "OPEN_DOCUMENTED" },
+        { "id": "C08-COSTS", "criterion": "CC-7", "class": "a", "secondary": [], "text": "deutlich kostensensitiv (9.114 → 5.064 Trades bei COST-50)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 Ausführung", "closes": "alle vier Kostenstufen sind vorregistriert und gemessen; Abnahme berichtet sie vollständig (PS-C08-COSTS)", "status": "PREPARED_REPORT_ONLY" },
+        { "id": "C08-RULE-CONFORMANCE", "criterion": "CC-7", "class": "a", "secondary": [], "text": "Proxy-Grenzen (30 %, 10-Sitzungen-Niveau, strikte Überschreitung, MA-Steigung) und ADR-Gleichheit nicht an der Grenze getestet", "evidence": "Abgleich sf-kullamagi / sf-sf5-kk-moka-lifecycle mit KK-006..009, KK-012", "closes": "CP-KK-*-Tests", "status": "DONE" },
+        { "id": "C08-ORH", "criterion": "DATA", "class": "d", "secondary": [], "text": "ORH-Einstieg (KK-010, Hauptweg des Autors) DATA_BLOCKED; nicht essenziell für die Tagesvariante KK-011", "evidence": "contracts/kullamagi.mjs KK-SF-BO-ORH", "closes": "lizenzierte konsolidierte Minuten (Lizenzentscheidung)", "status": "OPEN_NON_ESSENTIAL" }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-SETUP-PRIOR-MOVE-BOUND",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-SETUP-LEVEL",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-SETUP-MA-RISING",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-STOP-ADR-BOUNDARY",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-NEXT-OPEN-PLANNED-LOSS",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-STOP-MARKET-AND-CAP",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-KK-NEXT-OPEN",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-KK-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-KK-SETUP-PIT",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-KK-BREAKOUT"
+      ],
+      "dataRequirements": [
+        { "id": "D-KK-OHLC", "data": "Tages-OHLC split-adjustiert, mindestens 127 Balken (6-Monats-Momentum + Puffer)", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-KK-XS", "data": "Querschnitt des Universums je Datum für 1/3/6-Monats-Perzentile (inkl. inaktiver Listings)", "need": "REQUIRED_PRODUCT_EVIDENCE_RESEARCH", "availability": "SNAPSHOT_PARTIAL", "class": "c", "blocker": "C08-XS-SURV" },
+        { "id": "D-KK-CA", "data": "faktortragende Kapitalmaßnahmen (27 K5 / 94 K3)", "need": "REQUIRED", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C08-CC5" },
+        { "id": "D-KK-MINUTES", "data": "konsolidierte Minuten für ORH (KK-010)", "need": "OPTIONAL_NON_ESSENTIAL", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C08-ORH" }
+      ],
+      "executionAssumptions": [
+        { "id": "EX-KK-NEXT-OPEN", "text": "Kauf zur nächsten Eröffnung nach dem Ausbruchsschluss; Stop = Ausbruchstag-Tief; nicht ausgeführt bei 1 - Stop/Eröffnung > ADR20 oder Eröffnung <= Stop", "basis": "MA-KK-ENTRY-TIMING (Owner 23.10.2026), abgeleitete Lesart von KK-012", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-NEXT-OPEN-PLANNED-LOSS", "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-KK-NEXT-OPEN"] },
+        { "id": "EX-KK-STOP-MARKET", "text": "Stop-Market: Gap durch den Stop füllt zur Eröffnung", "basis": "KK-027 (Quelle)", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-STOP-MARKET-AND-CAP"] },
+        { "id": "EX-KK-PARTIAL", "text": "1/3 zur Eröffnung nach dem 3. Schluss über dem Einstieg, Rest Break-even, Trail MA10 zur nächsten Eröffnung", "basis": "MA-KK-EXIT-POLICY", "tests": ["scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-KK-LIFECYCLE"] },
+        { "id": "EX-KK-SIZE", "text": "0,5 % Risiko zum Stop, gedeckelt durch 25 % Plattform (strenger als 30 % Quelle)", "basis": "MA-KK-RISK-FRACTION, KK-001", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-STOP-MARKET-AND-CAP"] }
+      ],
+      "studies": [
+        { "id": "PS-C08-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C08-COSTS", "class": "a", "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?", "procedure": "bestehende SF6-Läufe COST-0/REF/COST-20/COST-50 (versiegelt)", "acceptance": [{ "metricKind": "COUNT", "criterion": "Trades je Kostenstufe berichtet; keine Kostenstufe wird nachträglich gewählt" }], "status": "READY" },
+        { "id": "PS-C08-XS-COVERAGE", "class": "a", "question": "Wie groß ist der Momentum-Querschnitt je Datum, mit und ohne inaktive Listings?", "procedure": "Zählung auf dem DEV-Snapshot über momentumRanks (keine Kennzahl, nur Anzahl Titel je Datum); Lauf braucht den Snapshot-Workflow und wird nicht in dieser Vorbereitung ausgelöst", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "Verteilung der Querschnittsgröße je Datum und Anteil inaktiver Listings berichtet" }], "status": "PLANNED_NEEDS_SNAPSHOT_RUN" },
+        { "id": "PS-C08-SETUP-PROXY", "class": "d", "question": "Ist der Setup-Proxy für CC-3 tragfähig?", "procedure": "Owner-Entscheidung auf Grundlage der festgeschriebenen Proxy-Grenzen und der vorregistrierten Varianten CONSOLIDATION_20 / NO_MA_CONDITION", "acceptance": [{ "metricKind": "DECISION_RECORD", "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen" }, { "metricKind": "COUNT", "criterion": "Trades je Proxy-Variante berichtet" }], "status": "BLOCKED_OWNER" }
+      ],
+      "findings": ["F-KK-ADR-DENOMINATOR"]
+    },
+    {
+      "candidateId": "C12",
+      "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+      "priority": 4,
+      "contract": { "module": "contracts/morales-kacher.mjs", "export": "BUYABLE_GAP_UP", "sourceContractVersion": "1.3.0" },
+      "engine": { "module": "methods/morales-kacher.mjs", "versionExport": "MOKA_VERSION", "version": "sf-morales-kacher-1.1.0" },
+      "sources": ["W-MOKA12", "W-MOKAV24", "W-MOKASTOP"],
+      "ccMet": ["CC-2", "CC-4", "CC-6", "CC-7"],
+      "ccOpen": ["CC-1", "CC-3", "CC-5", "CC-8"],
+      "rules": [
+        { "id": "MOKA-SF-BGU-GAP", "status": "SOURCE_EXACT" },
+        { "id": "MOKA-SF-BGU-GAP-MEASURE", "status": "SOURCE_DERIVED" },
+        { "id": "MOKA-SF-BGU-VOLUME", "status": "SOURCE_EXACT" },
+        { "id": "MOKA-SF-BGU-VOLWINDOW", "status": "SOURCE_AMBIGUOUS" },
+        { "id": "MOKA-SF-EXIT-VIOLATION", "status": "SOURCE_AMBIGUOUS" },
+        { "id": "MOKA-SF-BGU-MEGA", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "MOKA-SF-BGU-SELLGUIDE", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "MOKA-SF-BGU-CONTEXT", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "MOKA-SF-BGU-SIZE", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "MOKA-SF-EXIT-MA", "status": "MANUAL_REVIEW_REQUIRED" }
+      ],
+      "params": [
+        { "psr709": "MOKA12-004", "token": "0.75×ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "gapAtr" }, "value": 0.75, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA12-004", "token": "ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "atrSessions" }, "value": 40, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA24-VOL", "token": "150%", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeRatio" }, "value": 1.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA12-008", "token": "7Wochen", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "respectWeeks" }, "value": 7, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA24-VOL", "token": "Durchschnitts", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeWindow" }, "value": 50, "kind": "OWNER_CONVENTION", "note": "Fenster nicht in der Quelle (MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS); Owner-Entscheidung D-BGU-VOLWINDOW 2026-10-23" }
+      ],
+      "blockers": [
+        { "id": "C12-CC1-VOLWINDOW", "criterion": "CC-1", "class": "d", "secondary": [], "text": "MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS; Referenz 50 Sitzungen als Owner-Konvention", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Blocker", "closes": "Quellenstelle zum Mittelungsfenster (Autoren-Primärquelle)", "status": "OPEN" },
+        { "id": "C12-CC1-VIOLATION", "criterion": "CC-1", "class": "d", "secondary": [], "text": "MOKA-SF-EXIT-VIOLATION SOURCE_AMBIGUOUS (MOKA-C2: nächster Tag laut 2012-Folie, spätere Tage laut FAQ); Referenz LATER_DAYS", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Blocker", "closes": "Quellenstelle oder Owner-Entscheidung 'nicht essenziell', beide Lesarten bleiben gerechnet", "status": "OPEN" },
+        { "id": "C12-CC3", "criterion": "CC-3", "class": "d", "secondary": [], "text": "8 essenzielle manuelle Entscheidungen (Führung/Thema, Megacap-Ausnahme, Sell-Guide, Größe, Ausstieg)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Blocker", "closes": "Quellenbelege oder Owner-Neudefinition (wäre keine Quellentreue)", "status": "OPEN" },
+        { "id": "C12-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "DQ-K5 14 / 14 ungeklärt, DQ-K3 69 exponiert (1 echt, 68 ungeklärt); Gap-Ereignisse liegen methodisch nahe an nicht deklarierten Splits", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Corporate Actions", "closes": "X-CC5; vorab Zählung der BGU-Signale auf DQ-markierten Sitzungen (PS-C12-CA-PROXIMITY)", "status": "OPEN" },
+        { "id": "C12-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "SF6-PAPER-2027 nicht aktiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 OOS", "closes": "X-CC8", "status": "OPEN" },
+        { "id": "C12-MEGACAP", "criterion": "DATA", "class": "b", "secondary": ["d"], "text": "PIT-Marktkapitalisierung für die Megacap-Ausnahme fehlt im Snapshot; die Ausnahme bleibt manuell", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Daten", "closes": "PIT-Aktienzahl/Marktkapitalisierung aus dem neuen Security Master oder einer lizenzierten Quelle", "status": "OPEN" },
+        { "id": "C12-LEDGER", "criterion": "CC-1", "class": "a", "secondary": [], "text": "kein Eintrag in source-ledger.json", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Quellen", "closes": "X-LEDGER", "status": "OPEN_SEPARATE_PR" },
+        { "id": "C12-RULE-CONFORMANCE", "criterion": "CC-7", "class": "a", "secondary": [], "text": "Gap-Gleichheit an 0,75 ATR40, Gap-Messgröße ohne volle Lücke, einfache ATR, Volumenfenster ohne Gap-Tag nicht an der Grenze getestet", "evidence": "Abgleich sf-morales-kacher mit MOKA12-004 / MOKA24-VOL", "closes": "CP-BGU-*-Tests", "status": "DONE" }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-GAP-EXACT",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-GAP-MEASURE",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-ATR-SIMPLE-MEAN",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-VOLUME-WINDOW-50",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-STOP-AT-GAP-DAY-LOW",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION",
+        "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-BGU-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-NO-SIGNAL-CLOSE-FILL",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-BGU"
+      ],
+      "dataRequirements": [
+        { "id": "D-BGU-OHLCV", "data": "Tages-OHLCV split-adjustiert, mindestens 52 Balken (50-Sitzungen-Volumen + Vortag + Gap-Tag); ATR40 braucht 41", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-BGU-CA", "data": "faktortragende Kapitalmaßnahmen (14 K5 / 68 K3); bei Gaps zwingend, da ein nicht deklarierter Split als Gap erscheint", "need": "REQUIRED", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C12-CC5" },
+        { "id": "D-BGU-MCAP", "data": "PIT-Marktkapitalisierung (Megacap-Ausnahme)", "need": "REQUIRED_FOR_MANUAL_RULE", "availability": "MISSING", "class": "b", "blocker": "C12-MEGACAP" },
+        { "id": "D-BGU-INTRADAY-VOL", "data": "hochgerechnetes Intraday-Volumen (Autoren kaufen intraday)", "need": "OPTIONAL_NOT_MODELLED", "availability": "MISSING_LICENSE", "class": "d" }
+      ],
+      "executionAssumptions": [
+        { "id": "EX-BGU-NEXT-OPEN", "text": "Kauf zur nächsten Eröffnung nach dem Signal-Schluss (Tagesvolumen erst nach dem Schluss bekannt)", "basis": "MA-MOKA-ENTRY-TIMING", "tests": ["scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-NO-SIGNAL-CLOSE-FILL"] },
+        { "id": "EX-BGU-STOP", "text": "Stop-Market am Gap-Tagestief, ganze Position; Gap durch den Stop füllt zur Eröffnung", "basis": "MA-MOKA-BGU-STOP (innerhalb 'mindestens die Hälfte', MOKASTOP-006)", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-BGU-STOP-AT-GAP-DAY-LOW", "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-BGU"] },
+        { "id": "EX-BGU-VIOLATION", "text": "MA-Verletzung: strikt unter dem Tief des Verletzungstages, Lesart LATER_DAYS (Referenz), NEXT_DAY vorregistriert", "basis": "MA-MOKA-VIOLATION-READING", "tests": ["scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"] }
+      ],
+      "studies": [
+        { "id": "PS-C12-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C12-CA-PROXIMITY", "class": "a", "question": "Wie viele BGU-Signale der Referenz fallen auf eine DQ-K5- oder DQ-K3-markierte Sitzung (Gap-Tag oder Vortag)?", "procedure": "Zählung mit dem bestehenden SF6-Detektor auf dem DEV-Snapshot; Lauf braucht den Snapshot-Workflow und wird nicht in dieser Vorbereitung ausgelöst", "acceptance": [{ "metricKind": "COUNT", "criterion": "Anzahl und Anteil markierter Signale berichtet; keine Signale werden entfernt" }], "status": "PLANNED_NEEDS_SNAPSHOT_RUN" },
+        { "id": "PS-C12-READINGS", "class": "d", "question": "Welches Volumenfenster und welche Verletzungslesart sind die Referenz?", "procedure": "Quellensuche in den bereits zitierten Autorenquellen; sonst Owner-Entscheidung datiert vor jedem Öffnen der Kennzahlen; eine neue Fenstervariante bräuchte eine Registry-Änderung (sf5VariantRegistrySha256 ist in SF6-PAPER-2027 gepinnt) und ist hier nicht angelegt", "acceptance": [{ "metricKind": "SOURCE", "criterion": "Quellenstelle zitiert oder Entscheidung dokumentiert" }, { "metricKind": "COUNT", "criterion": "Trades je Verletzungslesart (LATER_DAYS / NEXT_DAY) berichtet" }], "status": "BLOCKED_OWNER" }
+      ],
+      "findings": []
+    },
+    {
+      "candidateId": "C03",
+      "strategyId": "SF_DARVAS_BOX",
+      "priority": 5,
+      "contract": { "module": "contracts/darvas.mjs", "export": "DARVAS", "sourceContractVersion": "1.3.1" },
+      "engine": { "module": "methods/darvas.mjs", "versionExport": "DARVAS_VERSION", "version": "sf-darvas-1.1.0" },
+      "sources": ["B06"],
+      "ccMet": ["CC-2", "CC-4", "CC-6", "CC-7"],
+      "ccOpen": ["CC-1", "CC-3", "CC-5", "CC-8"],
+      "rules": [
+        { "id": "DAR-SF-TOP", "status": "SOURCE_EXACT" },
+        { "id": "DAR-SF-BOTTOM", "status": "SOURCE_DERIVED" },
+        { "id": "DAR-SF-BOTTOM-START", "status": "SOURCE_AMBIGUOUS" },
+        { "id": "DAR-SF-NO-WAIT", "status": "SOURCE_EXACT" },
+        { "id": "DAR-SF-ENTRY", "status": "SOURCE_DERIVED" },
+        { "id": "DAR-SF-PROTECT", "status": "SOURCE_EXACT" },
+        { "id": "DAR-SF-STOP-INIT", "status": "SOURCE_DERIVED" },
+        { "id": "DAR-SF-STOP-RAISE", "status": "SOURCE_DERIVED" },
+        { "id": "DAR-SF-ATH", "status": "SOURCE_DERIVED" },
+        { "id": "DAR-SF-SELECTION", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "DAR-SF-VOLUME", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "DAR-SF-MARKET", "status": "MANUAL_REVIEW_REQUIRED" },
+        { "id": "DAR-SF-SIZING", "status": "MANUAL_REVIEW_REQUIRED" }
+      ],
+      "params": [
+        { "psr709": "DAR-Q1", "token": "drei", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "confirmDays" }, "value": 3, "kind": "SOURCE_NUMBER" },
+        { "psr709": "DAR-Q4", "token": "Bruchteil", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "rawFraction" }, "value": 0.01, "kind": "CONVENTION", "note": "'a fraction' ist nicht beziffert; ein Roh-Cent ist VU-Konvention (MA-DAR-FRACTION)" }
+      ],
+      "blockers": [
+        { "id": "C03-CC1", "criterion": "CC-1", "class": "d", "secondary": [], "text": "DAR-SF-BOTTOM-START SOURCE_AMBIGUOUS (Referenz AFTER_TOP_DAY; der Wortlaut von DAR-Q2 neigt zu AFTER_TOP_CONFIRMED); Ledger SRC-ND-BOOK DISPUTED", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Quellen / Blocker", "closes": "Owner-Entscheidung mit B06-Stelle (gedruckt S. 184)", "status": "OPEN" },
+        { "id": "C03-CC3", "criterion": "CC-3", "class": "d", "secondary": [], "text": "8 essenzielle manuelle Entscheidungen; die Quelle verlangt Ermessen ausdrücklich (Auswahl, Volumen, Markt, Größe); strukturell kaum erreichbar", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Blocker", "closes": "keine mechanische Lösung ohne Abkehr von der Quelle; Messklasse bleibt MECHANICAL_COMPONENT_STUDY", "status": "OPEN_STRUCTURAL" },
+        { "id": "C03-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "DQ-K5 15 / 15 ungeklärt, DQ-K3 30 / 30 ungeklärt (0,10 % der Trades exponiert, 92 % stabil)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Corporate Actions", "closes": "X-CC5", "status": "OPEN" },
+        { "id": "C03-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "SF6-PAPER-2027 nicht aktiv", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 OOS", "closes": "X-CC8", "status": "OPEN" },
+        { "id": "C03-ATH", "criterion": "DATA", "class": "b", "secondary": ["d"], "text": "Allzeithoch nur in der verfügbaren Historie prüfbar (Snapshot ab 2015, ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED); im Produkt strukturell gesperrt (O-7)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Daten", "closes": "Listing-Beginn je Titel (Security Master) und Tageshochs vor 2015 (LISTING_TO_DATE_HISTORY)", "status": "OPEN" },
+        { "id": "C03-COSTS", "criterion": "CC-7", "class": "a", "secondary": [], "text": "stark kostensensitiv (19.556 → 7.343 Trades bei COST-50)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Ausführung", "closes": "Abnahme berichtet alle vier Kostenstufen (PS-C03-COSTS)", "status": "PREPARED_REPORT_ONLY" },
+        { "id": "C03-ENTRY-BAR", "criterion": "CC-7", "class": "a", "secondary": [], "text": "SF7-D1: 8.596 von 17.002 Stops am Einstiegstag sind sicher, nur als Variante umgesetzt; Referenz pessimistisch", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Ausführung", "closes": "Referenz bleibt pessimistisch; Spannweite Referenz / Variante wird berichtet (PS-C03-ENTRY-BAR)", "status": "PREPARED_REPORT_ONLY" },
+        { "id": "C03-RULE-CONFORMANCE", "criterion": "CC-7", "class": "a", "secondary": [], "text": "Stop-Lage relativ zur neuen Box (DAR-Q7), Drei-Tage-Zählung an der Grenze und Gleichzeitigkeit von Ausbruch und Boxbruch nicht ausdrücklich getestet", "evidence": "Abgleich sf-darvas*.test.mjs mit DAR-Q1, DAR-Q5..Q7", "closes": "CP-DAR-*-Tests", "status": "DONE" }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-STOP-NEVER-INSIDE-NEW-BOX",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-THREE-DAYS-CONSECUTIVE",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-TOUCH-RESET",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER",
+        "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
+        "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-STOP",
+        "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-GAP-EXIT",
+        "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-DAR-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-DAR-PIT-PREFIX",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-DARVAS"
+      ],
+      "dataRequirements": [
+        { "id": "D-DAR-OHLC", "data": "Tages-OHLC split-adjustiert (DAR-Q15)", "need": "REQUIRED", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-DAR-ATH", "data": "Tageshochs ab Listing-Beginn (Allzeithoch, DAR-Q9) und Listing-Beginn je Titel", "need": "REQUIRED", "availability": "MISSING", "class": "b", "blocker": "C03-ATH" },
+        { "id": "D-DAR-REVIEW", "data": "2-3-Jahres-Hoch/Tief, 26 Wochenspannen mit Volumen (DAR-Q12, nur Prüfdaten)", "need": "EVIDENCE_ONLY", "availability": "SNAPSHOT", "class": null },
+        { "id": "D-DAR-CA", "data": "faktortragende Kapitalmaßnahmen (15 K5 / 30 K3)", "need": "REQUIRED", "availability": "MISSING_LICENSE", "class": "d", "blocker": "C03-CC5" }
+      ],
+      "executionAssumptions": [
+        { "id": "EX-DAR-BUY-STOP", "text": "eine am Schluss vollständige Box schärft den Buy-Stop für die nächste Sitzung; Fill max(Eröffnung, Deckel + Bruchteil)", "basis": "DAR-Q3, DAR-Q4, MA-DAR-ORDER-VALIDITY", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-BUY-STOP-FILL", "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-DAR-LIFECYCLE"] },
+        { "id": "EX-DAR-STOP", "text": "Stop mit dem Kauf einen Bruchteil unter dem durchbrochenen Deckel; Anhebung ab der nächsten Sitzung; Gap füllt zur Eröffnung", "basis": "DAR-B6, DAR-Q5..Q8", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-STOP-NEVER-INSIDE-NEW-BOX", "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-GAP-EXIT"] },
+        { "id": "EX-DAR-INTRABAR", "text": "Einstiegsbalken mit Tief am Stop: pessimistischer Ausstieg (Referenz), optimistische Variante vorregistriert", "basis": "MA-DAR-INTRABAR-ORDER", "tests": ["scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-DAR-ENTRY-BAR-STOP", "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL"] }
+      ],
+      "studies": [
+        { "id": "PS-C03-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C03-COSTS", "class": "a", "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?", "procedure": "bestehende SF6-Läufe (versiegelt)", "acceptance": [{ "metricKind": "COUNT", "criterion": "Trades je Kostenstufe berichtet" }], "status": "READY" },
+        { "id": "PS-C03-ENTRY-BAR", "class": "a", "question": "Wie groß ist die Spannweite zwischen pessimistischer Referenz und sicherer Einstiegsbalken-Lesart (SF7-D1)?", "procedure": "bestehende SF7-Varianten, nur Zählungen", "acceptance": [{ "metricKind": "COUNT", "criterion": "Stops am Einstiegstag je Lesart berichtet (8.596 sicher von 17.002)" }], "status": "READY" },
+        { "id": "PS-C03-ATH-COVERAGE", "class": "b", "question": "Wie viele Ausbrüche tragen ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED?", "procedure": "Zählung nach Einbindung des Listing-Beginns aus dem neuen Security Master", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "Anteil verifizierter Allzeithochs berichtet" }], "status": "BLOCKED_SECURITY_MASTER" },
+        { "id": "PS-C03-BOTTOM-START", "class": "d", "question": "Welche Lesart des Bodensuch-Beginns ist die Referenz?", "procedure": "Owner-Entscheidung mit B06-Stelle, datiert vor jedem Öffnen der Kennzahlen; beide Lesarten bleiben gerechnet", "acceptance": [{ "metricKind": "DECISION_RECORD", "criterion": "Entscheidung mit Quellenstelle" }, { "metricKind": "COUNT", "criterion": "Trades je Lesart berichtet" }], "status": "BLOCKED_OWNER" }
+      ],
+      "findings": ["F-DAR-SAME-BAR-ORDER", "F-DAR-Q7-READING"]
+    }
+  ],
+  "findings": [
+    { "id": "F-TUR-ADD-UNIT-N", "methods": ["C01", "C02"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "Ein Add wird mit N der Vorsitzung des Add-Balkens dimensioniert (buyUnit nSize = N[i-1]); Abstand und Stops nutzen N des Einstiegs. TUR-SF-ADD nennt nur Abstand und Stops; TUR-SF-UNIT nennt N der Vorsitzung. Kein Widerspruch zu W-TUR (Units aus dem jeweils gültigen N), aber die Ableitung steht nicht ausdrücklich im Vertrag.", "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle (addUnits -> buyUnit)", "proposal": "Ableitungstext von TUR-SF-ADD in einem eigenen Supertrader-PR ergänzen (Vertragstext, kein Codepfad; ändert den Vertrags-Fingerabdruck, daher nicht hier)" },
+    { "id": "F-KK-ADR-DENOMINATOR", "methods": ["C08"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "ADR20 misst (Hoch/Tief - 1) relativ zum Tief (KK-031, Quelle), der Stopabstand wird relativ zum Einstieg gemessen ((Einstieg - Tagestief)/Einstieg). KK-012 nennt keinen Nenner. Abweichung je Trade gering, aber an der Grenze entscheidend.", "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopCheck", "proposal": "als Ableitung im Vertrag benennen; keine Änderung ohne Owner-Entscheidung" },
+    { "id": "F-DAR-SAME-BAR-ORDER", "methods": ["C03"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "Erreicht ein Balken in der Box-Phase den Trigger und unterschreitet den Boden, gewinnt im Zustandsautomaten der Ausbruch; die Position wird am Einstiegsbalken pessimistisch ausgestoppt. Die Reihenfolge ist auf Tagesbalken nicht entscheidbar und nicht ausdrücklich im Vertrag genannt.", "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine (case BOX)", "proposal": "in MA-DAR-INTRABAR-ORDER ausdrücklich nennen; Test CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL hält das Verhalten fest" },
+    { "id": "F-DAR-Q7-READING", "methods": ["C03"], "kind": "SOURCE_READING", "modelChange": false, "text": "DAR-SF-STOP-INIT 'never inside the box' (DAR-Q7) wird als 'nicht in der neuen Box' gelesen: der Initialstop liegt einen Bruchteil unter dem alten Deckel und damit in der Spanne der alten Box. Das folgt DAR-Q5; die Lesart von Q7 ist nicht ausdrücklich dokumentiert.", "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition", "proposal": "als Lesart im Vertrag dokumentieren (eigener PR); für CC-1 dem Owner vorlegen" }
+  ]
+}
