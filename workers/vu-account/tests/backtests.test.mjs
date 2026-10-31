@@ -260,3 +260,10 @@ test('Paket: reproduzierbar aus den committeten Artefakten, hashgebunden, ohne R
   assert.ok(Buffer.byteLength(text) < 400_000, 'Paket bleibt klein (Worker-Bundle)');
   for (const bad of ['quant/data/x.json', 'discover/data/x.json']) assert.throws(() => Export.parse(['--out', path.join(ROOT, bad)]), /OUT_INSIDE_GENERATED_DATA/);
 });
+
+test('Paket wird nicht von GitHub Pages ausgeliefert, nur vom Worker (geschuetzt)', async () => {
+  const {permitted} = await import('../../../scripts/vu2/build-release.mjs');
+  assert.equal(permitted('workers/vu-account/data/backtest-review-bundle.json'), false);
+  assert.equal(permitted('docs/quant/backtest-catalog/catalog.json'), false);
+  assert.equal(permitted('konto/konto.js'), true, 'Kontoseiten bleiben ausgeliefert');
+});
