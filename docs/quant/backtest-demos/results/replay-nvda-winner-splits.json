@@ -85,7 +85,7 @@
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
    "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -134,7 +134,7 @@
   },
   "private": {}
  },
- "inputHash": "c7c03ec6c17d89b185839e2d52238ecabd6a050e062d96181f4928092f0abf02",
+ "inputHash": "2dc7765dea1742520790de9ce866d1f25768fe4af1daf2e58fd6611b9fe788b8",
  "kindPath": {
   "kind": "SAME_STOCK_REPLAY",
   "engine": "research-studies.runReplayValidation",
@@ -253,7 +253,7 @@
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
       "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -302,7 +302,7 @@
      },
      "private": {}
     },
-    "inputHash": "c7c03ec6c17d89b185839e2d52238ecabd6a050e062d96181f4928092f0abf02",
+    "inputHash": "2dc7765dea1742520790de9ce866d1f25768fe4af1daf2e58fd6611b9fe788b8",
     "kindPath": {
      "kind": "SAME_STOCK_REPLAY",
      "engine": "research-studies.runReplayValidation",
@@ -341,7 +341,7 @@
      "specHash": "fa43586e33eb09df1a84cd8657654ab6e9208c920f1e008aed5ac1c65fb9e33a"
     }
    },
-   "specHash": "aee8c71c12c42a94428235af996d60404d6e9a01f3774a4915121e7d5bfcc9e4"
+   "specHash": "8eec97e5626f76d95ab97dd2f3f7320d6952d9186f359680b82a455c9eac85d5"
   },
   "events": {
    "form": "EVENTS",
@@ -666,8 +666,8 @@
       "maxEstimate": 0.7176501863970329
      },
      "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
-     "registrationHash": "cb0650c47cec2470b86ff1996cbc23443e923e8641069bd83b074f22038d3757",
-     "resultHash": "fad8fcd9f4cdc888d28b89d1c25fef07528e104c8be4bff727d9db82a4401110",
+     "registrationHash": "d5d4a4de99b93ba02a89f03cce605a766d4f5570d4f39cd8703aad02e184f5ab",
+     "resultHash": "2125bd872fe915761bff8765731c38d52aa8b2282fcb488115988e3439c60a34",
      "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
     }
    },
@@ -707,9 +707,9 @@
    "productionApproved": false,
    "evidenceKind": "OBSERVED"
   },
-  "envelopeHash": "b19a0191517edbba0b4aa4cc0b525d76bc13a199688ef7082239a62011832214"
+  "envelopeHash": "3784c9e170ac50529f8bb42c5d79a8257dd485f5ad02d9f8c45c3799758c38ca"
  },
- "envelopeHash": "b19a0191517edbba0b4aa4cc0b525d76bc13a199688ef7082239a62011832214",
+ "envelopeHash": "3784c9e170ac50529f8bb42c5d79a8257dd485f5ad02d9f8c45c3799758c38ca",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
@@ -763,5 +763,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "c4a22a060d6fac0a25c137a6591061aeca651780890120ee2f6ed7d140931400"
+ "resultHash": "3019066fb2ce95459b58a9b0362b1b1e4537086fd7a99d7e597739fe278be7e8"
 }

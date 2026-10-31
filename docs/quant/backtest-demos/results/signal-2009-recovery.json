@@ -95,7 +95,7 @@
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
    "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -376,7 +376,7 @@
   },
   "private": {}
  },
- "inputHash": "c0f4a05df67a2e8690c3d48657835df2e091a9cd3a451a8c9f80a679b5a761dd",
+ "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
  "kindPath": {
   "kind": "SIGNAL_BACKTEST",
   "engine": "research-studies.runSignalStudy",
@@ -505,7 +505,7 @@
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
       "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -786,7 +786,7 @@
      },
      "private": {}
     },
-    "inputHash": "c0f4a05df67a2e8690c3d48657835df2e091a9cd3a451a8c9f80a679b5a761dd",
+    "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
     "kindPath": {
      "kind": "SIGNAL_BACKTEST",
      "engine": "research-studies.runSignalStudy",
@@ -821,7 +821,7 @@
      "specHash": "55d31de894b6782a7174a0fa3b4a021d0593fdc4c4e6d984e0ae621f5baa4f72"
     }
    },
-   "specHash": "8a887cee3b2daf1990b2637c16d4c2aff756d077daf3521c1af88670c67c87a2"
+   "specHash": "28fd967048c55fc5b85d5fe0db053daa95f57c30aee9c0e7e102dfa6c1284a6e"
   },
   "events": {
    "form": "EVENTS",
@@ -1242,8 +1242,8 @@
       "maxEstimate": 0.15521107405905007
      },
      "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
-     "registrationHash": "4a9c6df5fd51c0d282a9e9ee5d397f2e82212b95c4ff91cfbd5fc70a8ee2ea25",
-     "resultHash": "9bbaa9716c55fa590a69cf175cfb4e9b8eb35b48be43cda0e75a0c89a07df61b",
+     "registrationHash": "c9b4d0dfed56ef2bedc1ecaff4cbfd20c2932b810d1f5893c07b37771633436c",
+     "resultHash": "fa4baceb7978cc9a4e5f32e323eb54b295b9cdc031e96695fe79cfd14fa6ad8c",
      "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
     }
    },
@@ -1282,9 +1282,9 @@
    "productionApproved": false,
    "evidenceKind": "TESTED"
   },
-  "envelopeHash": "b9e03fc2f558c899ceb62dd99a5578c05b844e465b0026188825f6083ac73bd9"
+  "envelopeHash": "df7e0a45f0b102b3bae4258ce8998e1de7ecc21398f9439d04a88ec1502d3970"
  },
- "envelopeHash": "b9e03fc2f558c899ceb62dd99a5578c05b844e465b0026188825f6083ac73bd9",
+ "envelopeHash": "df7e0a45f0b102b3bae4258ce8998e1de7ecc21398f9439d04a88ec1502d3970",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
@@ -1619,5 +1619,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "3c59172c3c52a4f6a8164f0f4c5f20355510585fca0256a4c9ab5cabdb74a5ff"
+ "resultHash": "0d13aa80c9ffd26c5af63e1bb2b36bc977426a3fc18f35572a7709c41f87dd5d"
 }
