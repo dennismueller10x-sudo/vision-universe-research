@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "backtest-catalog-grid-1.0.0",
+  "purpose": "Vorab festgelegtes Raster von Auswahlen fuer den vorgerechneten Backtest-Katalog der internen Vorschau. Jede Auswahl laeuft ueber scripts/quant/research/backtest-spec-builder.cjs (registrierte Vorlagen, validateSpec) und den bestehenden Research-Runner. Keine neue Engine, keine Produktzertifizierung.",
+  "budgets": { "maxRuntimeMsPerRun": 180000, "maxRssMbPerRun": 4096, "maxTotalRuntimeMs": 1800000, "maxEntries": 40 },
+  "selections": [
+    { "label": "Replay NVDA (Vorlage)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "replay-nvda-winner-splits", "methods": "NONE" } },
+    { "label": "Replay INTC, hohe Kosten", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "replay-intc-loser", "costPreset": "HIGH" } },
+    { "label": "Ledger SMCI (Vorlage)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "ledger-smci-winner-split" } },
+    { "label": "Pattern 2015 seitwaerts", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "pattern-2015-sideways" } },
+    { "label": "Pattern 2015 ohne Benchmark", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "pattern-2015-sideways", "benchmark": "NONE", "methods": "NONE" } },
+    { "label": "Signal 2008 Crash", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2008-crash" } },
+    { "label": "Signal 2008 Crash, hohe Kosten", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2008-crash", "costPreset": "HIGH" } },
+    { "label": "Signal 2009 Erholung ohne Zusatzmethoden", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2009-recovery", "methods": "NONE" } },
+    { "label": "Signal 2020 Covid", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2020-covid" } },
+    { "label": "Signal 2022 Baer, nur TREND_DOWN, 1. Halbjahr", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2022-bear", "window": { "from": "2022-01-01", "to": "2022-06-30" }, "ruleIds": ["TREND_DOWN"] } },
+    { "label": "Signal 2022 Baer, nur TREND_DOWN, 2. Halbjahr", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "signal-2022-bear", "window": { "from": "2022-07-01", "to": "2022-12-31" }, "ruleIds": ["TREND_DOWN"] } },
+    { "label": "Setup-Rekonstruktion 2016-2024", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "setup-reconstruction-2016-2024" } },
+    { "label": "Strategie 2019, hohe Kosten", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-2019-bull", "costPreset": "HIGH" } },
+    { "label": "Strategie 2013-2014", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-2013-2014-bull" } },
+    { "label": "Strategie Dividenden (TR)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-dividends-tr" } },
+    { "label": "Strategie Profil (Zustand B)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "strategy-profile-prepared" } },
+    { "label": "Faktor Momentum (privates Panel)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "factor-momentum-v10-panel" } },
+    { "label": "Faktor Value (privates Panel)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "factor-momentum-v10-panel", "factorId": "value", "methods": "NONE" } },
+    { "label": "Faktor Quality (privates Panel)", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "factor-momentum-v10-panel", "factorId": "quality", "methods": "NONE" } },
+    { "label": "Delistet: XCO Insolvenz", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "delisted-xco-bankruptcy" } },
+    { "label": "Delistet: AGN Uebernahme", "selection": { "schemaVersion": "backtest-spec-selection-1.0.0", "template": "acquisition-agn" } }
+  ]
+}

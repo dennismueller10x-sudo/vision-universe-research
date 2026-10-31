@@ -14,6 +14,9 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 #                         werden wiederhergestellt (alle Hashes geprueft), danach build-backtest-demos.cjs, Python-
 #                         Gegenrechnung und Vergleich mit docs/quant/backtest-demos. Artefakt: nur die abgeleiteten
 #                         Demoergebnisse (wie committet), Vergleich und Pruefbericht; keine Reihen, kein QA-Block.
+#   [v13-archive:catalog] vorgerechneter Backtest-Katalog: gleiche Wiederherstellung, dann build-backtest-catalog.cjs
+#                         ueber docs/quant/backtest-catalog/grid.json (Budgets im Raster), Python-Gegenrechnung und
+#                         Integritaetspruefung; Artefakt: nur abgeleitete Ergebnisse je specHash und der hashgebundene Index.
 # Keine URL, kein Endpunkt und kein Secret erscheint im Log; Ausgaben nur Zaehlungen und Hashes.
 on:
   push:
@@ -28,7 +31,7 @@ jobs:
   archive:
     if: contains(github.event.head_commit.message, '[v13-archive:')
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,11 +45,11 @@ jobs:
           MSG: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos)\]' | head -1 | sed -E 's/\[v13-archive:([a-z]+)\]/\1/')
+          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos|catalog)\]' | head -1 | sed -E 's/\[v13-archive:([a-z]+)\]/\1/')
           test -n "$m"
           echo "mode=$m" >> "$GITHUB_OUTPUT"
       - name: R2 (nur Zaehlungen im Log)
-        if: steps.m.outputs.mode != 'keycheck' && steps.m.outputs.mode != 'restore' && steps.m.outputs.mode != 'demos'
+        if: steps.m.outputs.mode != 'keycheck' && steps.m.outputs.mode != 'restore' && steps.m.outputs.mode != 'demos' && steps.m.outputs.mode != 'catalog'
         env:
           MODE: ${{ steps.m.outputs.mode }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -77,8 +80,8 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/quant/v13/archive/r2-restore.mjs --mode "$MODE" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
-      - name: Private Teile fuer die Demofaelle wiederherstellen (privater Schluessel nur in diesem Schritt)
-        if: steps.m.outputs.mode == 'demos'
+      - name: Private Teile fuer Demofaelle bzw. Katalog wiederherstellen (privater Schluessel nur in diesem Schritt)
+        if: steps.m.outputs.mode == 'demos' || steps.m.outputs.mode == 'catalog'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -108,6 +111,26 @@ jobs:
           node scripts/quant/research/compare-backtest-demos.cjs --a docs/quant/backtest-demos --b "$O/demos" \
             --out "$O/comparison.json" --markdown-out "$O/comparison.md"
           rm -rf "$P" "$RUNNER_TEMP/demo-qa" "$RUNNER_TEMP/demo-cache"
+      - name: Backtest-Katalog rechnen, gegenrechnen, Integritaet pruefen (Ausgabe nur Zaehlungen)
+        if: steps.m.outputs.mode == 'catalog'
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/priv"; O="$RUNNER_TEMP/catalog-out"; mkdir -p "$O"
+          first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
+          hit=$(find "$P/v13-derived" -name "$first.json" -print -quit); test -n "$hit"; DL=$(dirname "$hit")
+          PANEL=$(find "$P/v10-factor-panel" -name 'panel.jsonl.gz' -print -quit); test -n "$PANEL"
+          node --max-old-space-size=12288 scripts/quant/research/build-backtest-catalog.cjs --out "$O/catalog" \
+            --cache "$RUNNER_TEMP/catalog-cache" --private-delisted "$DL" --private-factor-panel "$PANEL" --qa-dir "$RUNNER_TEMP/catalog-qa"
+          python3 -I scripts/quant/verify-backtest-runner.py --qa-dir "$RUNNER_TEMP/catalog-qa" --private-delisted "$DL" --out "$O/verify-report.json"
+          node -e 'const C=require("./scripts/quant/research/build-backtest-catalog.cjs");const v=C.catalogViolations(process.argv[1]);console.log(JSON.stringify({violations:v.length}));if(v.length)process.exit(1)' "$O/catalog"
+          rm -rf "$P" "$RUNNER_TEMP/catalog-qa" "$RUNNER_TEMP/catalog-cache"
+      - uses: actions/upload-artifact@v4
+        if: steps.m.outputs.mode == 'catalog'
+        with:
+          name: v13-archive-catalog-${{ github.run_id }}
+          path: ${{ runner.temp }}/catalog-out
+          retention-days: 7
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: steps.m.outputs.mode == 'demos'
         with:
