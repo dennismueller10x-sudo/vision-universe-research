@@ -469,7 +469,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   };
 
   const stocks = [];
-  const consumerPolicy = { allowed: 0, excludedByType: {} };
+  const consumerPolicy = { allowed: 0, excludedByType: {}, excludedByIdentity: {} };
   for (const sec of factors.securities) {
     /* Nur Titel des Produktuniversums: was der Company Master ausschliesst
        (Warrants, Units, Rights, Testwerte), bekommt keine Karte - auch wenn
@@ -482,6 +482,15 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     if (ref.consumer === false) {
       const typ = ref.instrumentType || "UNKNOWN";
       consumerPolicy.excludedByType[typ] = (consumerPolicy.excludedByType[typ] || 0) + 1;
+      continue;
+    }
+    /* Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json ueber universe-source.mjs):
+       unter dem Ticker handelt heute ein anderes Wertpapier (z. B. ein ETF) als das Unternehmen, dessen Name
+       und Stamm hier stehen. Keine Karte, keine Seite, kein Ranking, bis die Identitaet korrigiert ist -
+       gezaehlt nach Grund, nie still und nie als das alte Unternehmen. */
+    if (ref.identityStatus === "IDENTITY_QUARANTINED") {
+      const grund = ref.identityReason || "IDENTITY_QUARANTINED";
+      consumerPolicy.excludedByIdentity[grund] = (consumerPolicy.excludedByIdentity[grund] || 0) + 1;
       continue;
     }
     consumerPolicy.allowed++;
@@ -610,7 +619,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
     fundamentalsCoverage,
-    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs" }),
+    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs; identityStatus IDENTITY_QUARANTINED (quant/config/ticker-reuse-quarantine.json) ausgeschlossen" }),
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
     provider: factors.provider,
