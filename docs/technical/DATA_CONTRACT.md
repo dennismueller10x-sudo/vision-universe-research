@@ -63,6 +63,22 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
   - Der Vertrag lässt diese Werte deshalb nach oben offen. Begrenzt sind nur mathematisch begrenzte Größen: RSI, Stochastik, MFI, ADX, Choppiness, Connors RSI (0…100), Williams %R (−100…0), Aroon-Oszillator (−100…100), CMF (−1…1), Elder Impulse (−1, 0, 1), Abstand zum Hoch (−1…0) und Kursänderungen (≥ −1).
 - **Chart ↔ Screener:** RSI 14 und ADX im Chart (aus 270 Bars) stimmen mit dem Screener (aus der Vollhistorie) bis auf Rundung überein: Median 0,003, 95. Perzentil 0,005 über 5.657 Titel. Alle Ausreißer sind eingefrorene Reihen (SCREENER_FRESHNESS.md, #1077).
 
+## Ticker-Wiederverwendung (`IDENTITY_QUARANTINED`, 31.10.2026)
+
+**Befund:** Unter 13 Tickern (ACTS BREW ENTL FTPA GNMX INVN NMBL NYNY PCLN TRIL USX WR WX) handelt heute ein ETF. Name, Stamm und securityId beschreiben noch das alte Unternehmen. Belegt im Register `quant/config/ticker-reuse-quarantine.json` (#1206, Discover: #1207). Technical zeigte INVN und USX („U.S. Xpress Enterprises Class A“) im Screener und in der Chart-Suche.
+
+**Regel:**
+- `build-screener.mjs` lässt markierte securityIds aus. Gezählt werden sie in `meta.skipped.IDENTITY_QUARANTINED`, die Quelle steht in `meta.sources.identityQuarantine`. DQ-TW-4 bleibt erfüllt, weil der Grund gezählt ist.
+- `build-technical-intelligence.mjs` analysiert markierte Titel nicht (Tages- und Wochenreihen). Gezählt in `meta.counts.identityQuarantined`.
+- Das Register wird nur über `scripts/market/universe-source.mjs#loadTickerReuseQuarantine` gelesen (`scripts/technical/lib/identity-quarantine.mjs`), die securityId kommt aus `core/identity.js`. Fehlt die Datei, wird nichts ausgelassen. Ist sie fehlerhaft, bricht der Bau ab.
+- Formations- und Signal-Evidenz sowie die Materialisierung `technical-signals-v1` bleiben unverändert. Sie zeigen keine Identität und gehören nicht zu diesem Schritt.
+
+**Vorher/Nachher** (Stand `main` 31.10.2026, Bau in ein Temp-Verzeichnis):
+- Screener: 5.665 → 5.663 Zeilen. Es entfallen genau INVN und USX. Alle anderen Spalten und alle Mini-Kursverläufe sind gleich. Einzige Ausnahme ist der RS-Rang (Querschnitt): 393 Titel ändern sich, höchstens um 0,1 Punkte.
+- Meta und Index ändern nur die abgeleiteten Zähler (`rows`, `fresh`, `withVolume`, `withWeekly`, `suspectJump`, Formationen, Vorlagen und Presets um je höchstens 2).
+- Technical Intelligence (`--only` mit den 13 Titeln und 7 Kontrolltiteln): Alle Dateien sind gleich bis auf `meta.counts` (`skipped` 6 → 0, `identityQuarantined` 6). Die 6 Titel mit Wochenreihe waren schon vorher wegen zu kurzer Historie (< 160 Wochen) ausgelassen. Die Regel verhindert, dass sie mit wachsender Reihe unter falschem Namen erscheinen.
+- Die committeten Daten (`technical/data`, `quant/data/technical-intelligence`) ändern sich erst mit dem regulären Lauf nach dem Merge.
+
 ## Spalten
 
 <!-- contract:columns:start -->

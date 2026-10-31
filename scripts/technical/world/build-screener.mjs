@@ -8,6 +8,8 @@
      quant/data/market/discover-series-long/ref_*.json      Wochenschluesse (MAX)
      quant/data/market/discover-series/ref_SPY.json         Vergleichsreihe
      quant/data/product/universe-list-v1.json.gz            Namen
+     quant/config/ticker-reuse-quarantine.json              belegte Ticker-Wiederverwendungen (ausgelassen,
+                                                            gezaehlt in meta.skipped.IDENTITY_QUARANTINED)
    Ausgabe:
      technical/data/screener-v1.json   eine Zeile je Titel, spaltenbasiert
      technical/data/spark-v1.json      Mini-Kursverlauf je Titel (gleiche Reihenfolge wie screener.cols.s)
@@ -26,6 +28,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { loadIndex as loadCaConfirmations } from "../../market/lib/corporate-action-confirmations.mjs";
+import { loadIdentityQuarantine, QUARANTINE_REASON } from "../lib/identity-quarantine.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -86,6 +89,9 @@ export function build(options = {}) {
 
   const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f))  /* "C-", "F-", "T-": Vorzugsaktien (product-materialization.shardKey) */.sort();
   const only = options.tickers ? new Set(options.tickers) : null;
+  /* Ticker-Wiederverwendung (IDENTITY_QUARANTINED): Name und Stamm beschreiben das alte Unternehmen, der Kurs einen ETF.
+     Kein Screener-Eintrag unter falscher Identitaet; der Grund wird gezaehlt (DQ-TW-4). */
+  const quarantine = loadIdentityQuarantine(base);
   const rows = [], skipped = {};
   let generatedFrom = null;
   for (const file of shards) {
@@ -95,6 +101,7 @@ export function build(options = {}) {
       if (only && !only.has(ticker)) continue;
       if (options.limit && rows.length >= options.limit) break;
       const inst = shard.instruments[ticker];
+      if (quarantine.has(Identity.securityIdForTicker(ticker))) { skipped[QUARANTINE_REASON] = (skipped[QUARANTINE_REASON] || 0) + 1; continue; }
       const reason = !inst || inst.isMock || inst.dataMode !== "real" ? "NOT_REAL_DATA"
         : !inst.bars || !Array.isArray(inst.bars.close) || inst.bars.close.length < 60 ? "INSUFFICIENT_BARS"
         : inst.priceSeriesType !== "SPLIT_ADJUSTED" ? "NOT_SPLIT_ADJUSTED" : null;
@@ -167,7 +174,8 @@ export function build(options = {}) {
       daily: "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
       weekly: "quant/data/product/technical-signals-v1 bundle.multiTimeframe (Wochen/Monat aus der vollen Tageshistorie, OHLCV); Ersatz: quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
       benchmark: "quant/data/market/discover-series/ref_SPY.json",
-      names: "quant/data/product/universe-list-v1.json.gz"
+      names: "quant/data/product/universe-list-v1.json.gz",
+      identityQuarantine: quarantine.file
     },
     producer: "scripts/technical/world/build-screener.mjs",
     paths: { screener: "/technical/data/screener-v1.json", spark: "/technical/data/spark-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
