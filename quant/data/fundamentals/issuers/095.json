@@ -6,9 +6,9 @@
       "cik": "0000882095",
       "name": "GILEAD SCIENCES, INC.",
       "sic": "2836",
-      "rawFacts": 30859,
-      "mappedFacts": 8404,
-      "unmappedFacts": 22440,
+      "rawFacts": 31233,
+      "mappedFacts": 8526,
+      "unmappedFacts": 22835,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 20,
-      "quarterlyPeriods": 75,
+      "quarterlyPeriods": 76,
       "firstPeriodEnd": "2006-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 19.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 19,
-          "quarterlyPeriods": 72,
-          "firstAvailablePeriod": "2007-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 18.0
-        },
-        "eps_diluted": {
           "annualPeriods": 19,
           "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
+        "eps_diluted": {
+          "annualPeriods": 19,
+          "quarterlyPeriods": 74,
+          "firstAvailablePeriod": "2007-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 18.0
+        },
         "free_cash_flow": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0,
@@ -52,56 +52,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "net_income": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "operating_cash_flow": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "revenue": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "short_term_debt": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "stockholders_equity": {
           "annualPeriods": 20,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 19.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0,
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 700,
-        "MEDIUM": 116
+        "HIGH": 708,
+        "MEDIUM": 117
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 816,
-        "resolvedValues": 816
+        "datableValues": 825,
+        "resolvedValues": 825
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 23283,
+        "rules_version": "1.1.0",
+        "total": 23684,
         "by_severity": {
-          "INFO": 22440,
-          "WARNING": 843
+          "INFO": 22835,
+          "WARNING": 849
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 779,
+          "CONCEPT_DISAGREEMENT": 785,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 22440
+          "UNKNOWN_CONCEPT": 22835
         }
       },
       "latestFiling": {
-        "accession": "0000882095-26-000031",
-        "filing_date": "2026-08-06",
+        "accession": "0000882095-26-000039",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 123
+        "periodic_filings": 124,
+        "acceptance_datetime": "2026-10-30T00:09:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4f5b3f0b98b5b88b8a1477ad21aa78d69c6d28de7c0d6473ae2c959f4f4dc50a",
+      "sourceDigest": "3c10561c7b3c50542397df8a8d00eea44bf8bd4e732d013236765dd002330db3",
       "issuerId": "iss_cik_0000882095"
     },
     {

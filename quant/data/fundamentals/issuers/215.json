@@ -994,9 +994,9 @@
       "cik": "0001302215",
       "name": "HOULIHAN LOKEY, INC.",
       "sic": "6282",
-      "rawFacts": 14597,
-      "mappedFacts": 3581,
-      "unmappedFacts": 10791,
+      "rawFacts": 14898,
+      "mappedFacts": 3665,
+      "unmappedFacts": 11001,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -1006,28 +1006,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 51,
+      "quarterlyPeriods": 52,
       "firstPeriodEnd": "2013-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
         },
         "free_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0,
@@ -1047,21 +1047,21 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.0
@@ -1075,14 +1075,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
@@ -1105,44 +1105,46 @@
         }
       },
       "quality": {
-        "HIGH": 449
+        "HIGH": 455,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 449,
-        "resolvedValues": 449
+        "datableValues": 456,
+        "resolvedValues": 456
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10993,
+        "rules_version": "1.1.0",
+        "total": 11210,
         "by_severity": {
-          "INFO": 10791,
-          "WARNING": 202
+          "INFO": 11001,
+          "WARNING": 209
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 159,
+          "CONCEPT_DISAGREEMENT": 166,
           "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 10791
+          "UNKNOWN_CONCEPT": 11001
         }
       },
       "latestFiling": {
-        "accession": "0001302215-26-000067",
-        "filing_date": "2026-07-31",
+        "accession": "0001302215-26-000074",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 47
+        "periodic_filings": 48,
+        "acceptance_datetime": "2026-10-30T20:41:09.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3f50b7691f941853d62b6498401ca8af76e78de459aed19153bbcee37d62deee",
+      "sourceDigest": "9119b57f35f8293733e61ac0c97de9719216e568be835d027cea64c1813b28ff",
       "issuerId": "iss_cik_0001302215"
     },
     {

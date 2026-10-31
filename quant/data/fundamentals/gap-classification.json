@@ -13,8 +13,8 @@
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 739,
-      "percent": 11.0529,
+      "count": 740,
+      "percent": 11.0679,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -203,8 +203,8 @@
     },
     {
       "cause": "FOREIGN_ISSUER",
-      "count": 28,
-      "percent": 0.4188,
+      "count": 27,
+      "percent": 0.4038,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -260,13 +260,13 @@
   },
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
-    "SEC_RECOVERABLE": 140,
+    "SEC_RECOVERABLE": 139,
     "EXTERNAL_PROVIDER_CANDIDATE": 55,
-    "RESOLVES_WITH_TIME": 739,
+    "RESOLVES_WITH_TIME": 740,
     "BY_DESIGN": 450,
     "REQUIRES_REVIEW": 343
   },
-  "regroupedByFineClassification": 138,
+  "regroupedByFineClassification": 137,
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -314,7 +314,7 @@
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 355
+            "count": 356
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -326,7 +326,7 @@
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 28
+            "count": 27
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -339,12 +339,12 @@
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 483,
-        "PERCENT": 7.2241,
+        "COUNT": 484,
+        "PERCENT": 7.239,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 420
+            "count": 421
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -361,8 +361,8 @@
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
-        "COUNT": 142,
-        "PERCENT": 2.1238,
+        "COUNT": 141,
+        "PERCENT": 2.1089,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -370,7 +370,7 @@
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 28
+            "count": 27
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -412,5 +412,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-10-30T13:12:54+00:00"
+  "generatedAtUtc": "2026-10-31T12:35:02+00:00"
 }
