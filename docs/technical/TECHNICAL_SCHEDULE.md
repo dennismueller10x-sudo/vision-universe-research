@@ -51,3 +51,15 @@ Stand 30.10.2026. Betrifft `.github/workflows/technical-world.yml`. Der Erzeuger
 - Der erste Nachtlauf nach dem Merge muss einen technical-world-Lauf mit Ereignis `workflow_run` vom Marktdaten-Refresh zeigen.
 - Dieser Lauf muss vor dem Zeitplan-Lauf committen.
 - Bis dahin gilt die Lösung als ungeprüft.
+
+### Ergebnis der ersten Nacht (30./31.10.2026), Prüfung 31.10. 06:30–07:00 UTC
+
+| Schritt | Ergebnis |
+|---|---|
+| Marktdaten-Refresh (Zeitplan, Lauf 41156681821) | gestartet 01:43, **success** um 03:59 UTC; Marktdaten-Commit `1d4ff5e` (03:14), Materialisierung `d2a7fc4` (03:55, Bündel Stand 30.10.) |
+| technical-world per `workflow_run` | **kein Lauf angelegt.** Der letzte `workflow_run`-Lauf von technical-world stammt von 22:41 UTC des Vortags; nach 03:59 erscheint keiner. Ursache unbekannt: Der Auslöser-Name stimmt mit `name:` des Marktlaufs überein, und der Marktlauf war ein Zeitplan-Lauf auf `main`. Der Nachweis „workflow_run vor Zeitplan“ ist damit **nicht erbracht**. |
+| Zeitplan-Rückfall (05:10 UTC) | startet bei GitHub erfahrungsgemäß 5–6 h spät; stand bei der Prüfung noch aus |
+| Erzeuger auf dem neuen Stand | hätte **nicht geschrieben**: Vertragsverstoß `choppiness14` BMBL 131,4 (Grenze 0..100 falsch, Wert nach Standardformel echt). Behoben mit #1188 (Vertrag 1.2.1); Daten dort mit dem Erzeuger auf Stand 30.10. gebaut, DQ-TW-1..8 PASS |
+| Anbieterabrufe | keine: technical-world und Erzeuger lesen nur committete Artefakte |
+
+**Folge:** Die Aktualität hängt bis zur Klärung am Zeitplan-Rückfall. Er ist täglich, aber 5–6 h verspätet; Technical ist damit am Vormittag statt am frühen Morgen aktuell. Der Fehler in einem Erzeugerlauf bleibt nicht still: Der Lauf scheitert sichtbar, die alten Daten bleiben, DQ-TW-1 meldet den Rückstand.

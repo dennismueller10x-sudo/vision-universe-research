@@ -29,7 +29,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
-| A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ✔ | 30.10.2026, ohne Handstart: Zeitplan-Lauf 41047225923 (Start 11:19 UTC) committet `b65def8`; schon um 11:08 UTC hatte der `workflow_run` nach „Lange Kursreihen“ `21ffbff` committet. Auch am 29.10. hat der Zeitplan-Lauf selbst committet (`26a0360`, 11:31 UTC). Einschränkung: Der Zeitplan (05:10 UTC) startet bei GitHub 5–6 h spät. Vorschlag gegen die Verspätung in TECHNICAL_READINESS_REPORT.md §4. | P0 |
+| A1 Nächtliche Kette (market-data-refresh → Materialisierung → technical-world) läuft ohne Handeingriff und committet nach `main` | ✔ | 30.10.2026, ohne Handstart: Zeitplan-Lauf 41047225923 (Start 11:19 UTC) committet `b65def8`; schon um 11:08 UTC hatte der `workflow_run` nach „Lange Kursreihen“ `21ffbff` committet. Auch am 29.10. hat der Zeitplan-Lauf selbst committet (`26a0360`, 11:31 UTC). Einschränkung: Der Zeitplan (05:10 UTC) startet bei GitHub 5–6 h spät. Vorschlag gegen die Verspätung in TECHNICAL_READINESS_REPORT.md §4. **31.10.:** Der neue Auslöser `workflow_run` (#1168) hat nach dem erfolgreichen Marktlauf keinen technical-world-Lauf angelegt. Ursache offen; Aktualität über den Zeitplan-Rückfall (TECHNICAL_SCHEDULE.md, Ergebnis der ersten Nacht). | P0 |
 | A2 Stichtag der Produktwelt ≤ 1 Sitzung hinter der letzten abgeschlossenen Sitzung | ✔ | 29.10.: Stichtag 28.10. = letzte abgeschlossene Sitzung; `system-health`: Technical (Produktwelt) OK. DQ-TW-1 PASS. | – |
 | A3 Titel mit veraltetem oder eingefrorenem Kurs liefern keine Signale „von heute“ | ✔ | AP1 (#1077, `technical-screen-row-1.10.0`, SCREENER_FRESHNESS.md). Titel hinter dem Stichtag (77) haben keine Ereignis- und Stichtagsfelder. Eingefrorene Reihen (233, `frozenSince`, Datenqualitätshinweis, kein bestätigtes Delisting) haben keine Analysefelder. Neubau auf `main` (`a433f3e`): DQ-TW-6 PASS 0/310, 5.347 aktuelle Titel ohne Abweichung. Chart Studio wendet dieselbe Regel an (#1088). | – |
 | A4 Ursache der beendeten Reihen bei aktivem Stamm | ⏸ | `diagnose.mjs AVB`: `MASTER_ACTIVE_SERIES_ENDED` (Reihe bis 17.08., Stamm ACTIVE). Zuständig ist die Marktdaten-Domäne (Erzeuger `market-data-refresh.yml`), nicht Technical. **Owner-Entscheidung 29.10.: keine zusätzlichen Anbieterabrufe.** Die Schutzmaßnahmen bleiben unverändert: Kennzeichnung veralteter und eingefrorener Titel (A3, AP1), Ereignisse veralteter Titel `null`, DQ-TW-6. Damit ist das Risiko „falsches Signal“ abgedeckt; offen bleibt nur die Ursache in der Marktdaten-Domäne. | P0 (Owner, zurückgestellt) |
@@ -81,7 +81,7 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | F3 `/screener/` nutzt dieselben Spalten (eine Quelle) | ✔ | #936, 16 Spalten | – |
 | F4 Ereignisfelder beziehen sich auf den Stichtag des Universums | ✔ | siehe A3. Für Titel hinter dem Stichtag gelten Ereignisfilter als „unbekannt“ (`null`) und sind kein Treffer. | – |
 | F6 Jeder Spaltenwert ist im Abfragekatalog wählbar | ✔ (nach Merge AP2) | **Befund 28.10.:** Marktstruktur MIXED (629 Titel) und UNDETERMINED (61) waren nicht wählbar, „Neutral“ fand nie einen Titel. Behoben in `technical-query-1.10.0`; der Vertrag prüft das künftig für jede Enum-Spalte. | P0 |
-| F5 Suche in Worten (KI) | ◐ | Completion 2.0 (#1182): `query-ai.js` übersetzt nur und ist standardmäßig aus; ausgeführt wird ausschließlich mit `technical-query.js`. Geprüft wird auf INVALID, ASSUMED_THRESHOLD, UNMAPPED und DIFFERS_FROM_RULES; bei Fehlern greift ein sicherer Rückfall auf die Regeln. Kostengrenzen sind eingebaut. Getestet mit Mock-Antworten (Gold-Set 88/88, 0 stille Fehlgriffe). Die übersetzte Abfrage ist vor dem Ausführen bearbeitbar. Freischaltung erst nach Owner-Entscheidung zu Anbieter, Kosten, Budget und Datenschutz (AI_SEARCH_EVAL.md). | P2 (Freischaltung beim Owner) |
+| F5 Suche in Worten (KI) | ✔ übergeben | Completion 2.0 (#1182): `query-ai.js` übersetzt nur und ist standardmäßig aus; ausgeführt wird ausschließlich mit `technical-query.js`. Geprüft wird auf INVALID, ASSUMED_THRESHOLD, UNMAPPED und DIFFERS_FROM_RULES; bei Fehlern greift ein sicherer Rückfall auf die Regeln. Kostengrenzen sind eingebaut. Getestet mit Mock-Antworten (Gold-Set 88/88, 0 stille Fehlgriffe). Die übersetzte Abfrage ist vor dem Ausführen bearbeitbar. **Owner-Entscheidung 31.10.: keine eigene KI-Suche in Technical; die Anbindung erfolgt über AI Atlas** (AI_ATLAS_HANDOFF.md). | – |
 
 ### G. Chart Studio und visuelle Darstellung
 
@@ -125,12 +125,13 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
-| K1 Auffällige Kurssprünge generisch gekennzeichnet; Verdacht und bestätigter Fehler getrennt; in Screener, Vorlagen und Chart Studio | ✔ | #1180 (screen-row 1.13.0, `price-jumps.js`): 181 Kennzeichnungen, 1 bestätigt (GIBO). Keine tickerbezogene Regel. | P0 |
-| K2 Bestätigter Datenfehler (GIBO 25:1) ausschließlich in der Marktdaten-Pipeline bereinigt, mit Schutz gegen Doppelbereinigung | ◐ | #1177 (Beleg) und #1181 (Bereinigung, Status PIPELINE). Wirksam ab dem nächsten regulären Lauf; der Nachweis ist für den 31.10. geplant (CORPORATE_ACTION_GIBO_2026.md). | P0 |
-| K3 Mobile Performance weiter verbessert ohne Architekturumbau | ◐ | #1184 gemergt: `spark` als eigene Datei, Screener-Datensatz −21,5 %, erste Vorlage mobil 4,78 → 3,00 s (lokal gemessen). Live-Messung nach Deploy offen. | P1 |
-| K4 Historische Tests der Vorlagen (S4) mit bestehender Backtest-Maschine, ehrlich eingestuft | ◐ | `scripts/technical/s4/template-study.mjs` über `runEventStudy`, `holm`, `buildWalkForward`, `classifyRegimes`. Status RESEARCH_LIMITED, nicht zertifiziert (S4_TEMPLATE_STUDY.md): ab 2016 kein Überschuss ggü. SPY, Walk-Forward ≈ 0. Formations-Vorlagen sind mangels Tages-OHLC-Historie nicht testbar. | P1 |
+| K1 Auffällige Kurssprünge generisch gekennzeichnet; Verdacht und bestätigter Fehler getrennt; in Screener, Vorlagen und Chart Studio | ✔ | #1180 (screen-row 1.13.0, `price-jumps.js`): 181 Kennzeichnungen. Nach der GIBO-Bereinigung ist 0 bestätigt. GRAL und AGIO bleiben Verdacht; der Volumentest bei GRAL spricht gegen einen Split (TECHNICAL_FINAL_HANDOVER.md §4). Keine tickerbezogene Regel. | P0 |
+| K2 Bestätigter Datenfehler (GIBO 25:1) ausschließlich in der Marktdaten-Pipeline bereinigt, mit Schutz gegen Doppelbereinigung | ✔ | #1177, #1181. Nachgewiesen im Nachtlauf 31.10.: Materialisierung `d2a7fc4` und Discover-Tagesreihe bereinigt (größter Tagesfaktor 1,38), Screener rs6m 1,58, kein Volltreffer mehr (CORPORATE_ACTION_GIBO_2026.md §7). Die Wochenreihe folgt mit dem nächsten Wochenlauf. | P0 |
+| K3 Mobile Performance weiter verbessert ohne Architekturumbau | ✔ | #1184: `spark` als eigene Datei, Screener-Datensatz −21,5 %, erste Vorlage mobil 4,78 → 3,00 s (lokal gemessen). Live-QA nach dem Deploy grün (Lauf 41175504014, 31.10. 06:10 UTC). | P1 |
+| K4 Historische Tests der Vorlagen (S4) mit bestehender Backtest-Maschine, ehrlich eingestuft | ✔ (Forschung) | `scripts/technical/s4/template-study.mjs` über `runEventStudy`, `holm`, `buildWalkForward`, `classifyRegimes`. Status RESEARCH_LIMITED, nicht zertifiziert (S4_TEMPLATE_STUDY.md, #1185): ab 2016 kein Überschuss ggü. SPY, Walk-Forward ≈ 0, kein nachgewiesener Handelsvorteil. Formations-Vorlagen sind mangels Tages-OHLC-Historie nicht testbar. | P1 |
 | K5 Wochenkerzen und -formationen | ◐ | siehe D5, E4 | P2 |
-| K6 KI-Suche vorbereitet, standardmäßig aus | ✔ (vorbereitet) | siehe F5 | P2 |
+| K6 KI-Suche vorbereitet, standardmäßig aus | ✔ (an AI Atlas übergeben) | Owner-Entscheidung 31.10.: AI Atlas ist der zentrale KI-Assistent; Technical bekommt keine eigene KI-Suche. Übergabe: AI_ATLAS_HANDOFF.md | – |
+| K7 Erzeuger schreibt auch bei echten Extremwerten | ✔ | Befund 31.10.: Vertragsgrenze `choppiness14` [0,100] ließ den Erzeuger nach dem Nachtlauf scheitern (BMBL 131,4, Wert echt). #1188: Vertrag 1.2.1, Grenze nach oben offen, Indikator unverändert, Daten auf Stand 30.10. | P0 |
 
 ## 2. Arbeitspakete (Reihenfolge = Priorität)
 
@@ -169,6 +170,8 @@ Wer die Arbeit fortsetzt, beginnt hier:
 1. Offene PRs und ihre CI prüfen (TECHNICAL_WORLD_PROGRESS.md §10, letzte Einträge).
 2. Nächstes offenes Arbeitspaket in §2 nehmen. Den Status in §1 erst mit Nachweis auf ✔ setzen.
 3. Jede abgeschlossene Prüfung mit Datum, Commit und Ergebnis im Verlauf von TECHNICAL_WORLD_PROGRESS.md festhalten.
+
+**Abschluss 31.10.2026 – Technical-Entwicklungsphase beendet.** Endbericht: [TECHNICAL_FINAL_HANDOVER.md](TECHNICAL_FINAL_HANDOVER.md); KI-Übergabe: [AI_ATLAS_HANDOFF.md](AI_ATLAS_HANDOFF.md). Weitere Arbeit nur in eigenen Projekten (AI Atlas, Frontend-Neugestaltung) oder nach neuer Owner-Freigabe.
 
 **Stand 30.10.2026, 23 Uhr UTC (Completion 2.0):** Plan, Stand und Übergabe stehen in [TECHNICAL_COMPLETION_2_0.md](TECHNICAL_COMPLETION_2_0.md).
 - Gemergt: #1177, #1180, #1181, #1182, #1183, #1184.
