@@ -160,3 +160,32 @@ in `product-services.js`, `quant/index.html` und `page-backtest.js`.
   bestehenden Gates und eine Owner-Freigabe.
 - **Private Fälle.** Die Fälle mit privatem Panel bzw. privaten Delisted-Reihen (Faktor, XCO, AGN) sind nur mit diesen
   Eingaben nachrechenbar.
+
+## 8. Version 2 (31.10.2026): aktuelle Demos, Nachweisart, Spec-Builder
+
+- **Lesemodell neu erzeugt:** Grundlage sind die auf `main` neu gebauten 16 Demos (#1178). Neuer `previewHash` `b4eb93f0…`. Der Reproduzierbarkeitstest besteht.
+- **Nachweisart je Fall** (`display.evidence`, nur in der Ansicht, das Lesemodell bleibt unverändert):
+
+  | Klasse | Anzeige | Abgeleitet aus | Fälle |
+  |---|---|---|---|
+  | `HISTORICAL_STUDY` | Historische Studie (beobachtete Daten) | Standard | Replay, Pattern, Signal |
+  | `HISTORICAL_SIMULATION` | Historische Simulation | `evidenceKind` SIMULATED_LEDGER oder `HISTORICAL_PRICE_SIMULATION` | Ledger, Strategy |
+  | `RECONSTRUCTION` | Rekonstruierte Forschungsdaten | Limitation mit `RECONSTRUCT…` | Setup, Faktor |
+  | `NOT_COMPUTED` | Nicht gerechnet (Eingaben fehlen) | Zustand B | Strategy-Profil |
+  | `CERTIFIED_STRATEGY` | Zertifiziert | **nur** Zustand C (PRODUCT_CERTIFIED) | heute keiner |
+
+  `alphaClaim` ist immer `false`.
+- **Spec-Builder** (`scripts/quant/research/backtest-spec-builder.cjs`): erzeugt aus einer Auswahl eine Runner-Spec, die `validateSpec` prüft.
+  - Ausgangspunkt sind die 16 registrierten Vorlagen.
+  - Änderbar sind nur: Zeitraum (innerhalb des Datenstands der Vorlage), Kosten (`NONE`, `STANDARD` 5+5, `HIGH` 20+20 Bp je Seite), Benchmark (SPY oder keine), Signalregeln (Teilmenge der 5 Regeln), Faktor (7 Signale), Methoden (wie Vorlage oder keine).
+  - Eine Produktzertifizierung kann nie angefordert werden.
+  - Fehler kommen nur als sichere Codes zurück (`SAFE_CODES`).
+  - Ausführung offline: `run-backtest.cjs --spec <spec> --out <datei>`. Beispiel: Vorlage signal-2022-bear, 2022-01..06, HIGH, TREND_DOWN ergibt Zustand A in rund 40 s.
+- **Ausführungsmodell:** Der Runner braucht Node, rund 700 MB bis 2,3 GB und die privaten Archive, er läuft also nicht auf GitHub Pages. Geplant ist deshalb ein vorgerechneter Katalog:
+  1. ein freigegebenes Raster von Auswahlen über den Spec-Builder;
+  2. Rechnung in CI wie beim Demo-Neubau (`[v13-archive:demos]`), mit `verify-backtest-runner.py`;
+  3. `build-backtest-preview.cjs --extra-result` erzeugt ein hashgebundenes Lesemodell;
+  4. die Ansicht schlägt nach `specHash` nach. Was nicht vorgerechnet ist, wird als „nicht vorgerechnet“ angezeigt.
+
+  Das Raster samt Laufzeitbudget ist der nächste Schritt (eigener PR).
+- **Unverändert:** standardmäßig aus, nicht in `product-services.js` verdrahtet, keine Frontend-Änderung, `productionApproved=false`. Eine Anzeige im Produkt braucht eine eigene Owner-Freigabe.

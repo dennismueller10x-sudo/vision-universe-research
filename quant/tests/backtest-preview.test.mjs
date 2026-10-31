@@ -184,3 +184,22 @@ test('isolation: the preview service is reached only by its two offline tools; n
   assert.equal(fs.existsSync(path.join(ROOT, 'quant/config/backtest-preview.json')), false);
   assert.ok(fs.existsSync(COMMITTED));
 });
+
+test('Nachweisart je Fall: Simulation, Rekonstruktion und Zertifizierung getrennt, nie Zertifiziert ohne Zustand C', () => {
+  const P = require('../api/backtest-preview-service.cjs');
+  const doc = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant/backtest-preview/backtest-preview.json'), 'utf8'));
+  const cert = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/product/backtest-certification-v1.json'), 'utf8'));
+  const v = P.getBacktestPreview(doc, { backtestPreview: { enabled: true, audience: 'INTERNAL_REVIEW' }, internalPreview: true, certification: cert });
+  assert.equal(v.state, 'AVAILABLE');
+  const by = Object.fromEntries(v.kinds.flatMap(k => k.cases).map(c => [c.id, c.display.evidence.class]));
+  assert.equal(by['setup-reconstruction-2016-2024'], 'RECONSTRUCTION');
+  assert.equal(by['factor-momentum-v10-panel'], 'RECONSTRUCTION');
+  assert.equal(by['ledger-smci-winner-split'], 'HISTORICAL_SIMULATION');
+  assert.equal(by['strategy-2019-bull'], 'HISTORICAL_SIMULATION');
+  assert.equal(by['strategy-profile-prepared'], 'NOT_COMPUTED');
+  assert.equal(by['signal-2008-crash'], 'HISTORICAL_STUDY');
+  assert.ok(!Object.values(by).includes('CERTIFIED_STRATEGY'));
+  for (const c of v.kinds.flatMap(k => k.cases)) assert.equal(c.display.evidence.alphaClaim, false);
+  assert.equal(P.evidenceClassOf({ state: 'RESEARCH_EXECUTED', evidenceKind: 'TESTED', limitations: ['CERTIFIED'] }).class, 'HISTORICAL_STUDY', 'Text in Limitations macht nichts zertifiziert');
+  assert.equal(P.evidenceClassOf({ state: 'PRODUCT_CERTIFIED', limitations: [] }).certified, true);
+});

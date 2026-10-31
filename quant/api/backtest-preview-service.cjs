@@ -196,6 +196,26 @@ function disabled() { return { state: 'DISABLED', reason: 'BACKTEST_PREVIEW_DISA
 function unavailable(reason, extra) { return Object.assign({ state: 'UNAVAILABLE', reason, schemaVersion: VIEW_VERSION, label: 'RESEARCH', certification: 'NOT_CERTIFIED', productionApproved: false, publiclyActivated: false }, extra || {}); }
 
 /* options: { backtestPreview: {enabled, audience}, internalPreview: boolean, certification: doc, kind?: string } */
+/* Nachweisart je Fall (nur Ansicht, nicht im Lesemodell): trennt historische Simulation, rekonstruierte
+   Forschungsdaten und zertifizierte Strategien. Abgeleitet aus Zustand, evidenceKind und den Limitations des
+   Ergebnisvertrags v2; CERTIFIED_STRATEGY nur im Zustand C (PRODUCT_CERTIFIED, heute nie). */
+const EVIDENCE_CLASS_LABEL = {
+  CERTIFIED_STRATEGY: 'Zertifiziert',
+  NOT_COMPUTED: 'Nicht gerechnet (Eingaben fehlen)',
+  RECONSTRUCTION: 'Rekonstruierte Forschungsdaten',
+  HISTORICAL_SIMULATION: 'Historische Simulation',
+  HISTORICAL_STUDY: 'Historische Studie (beobachtete Daten)'
+};
+function evidenceClassOf(c) {
+  const lim = Array.isArray(c.limitations) ? c.limitations : [];
+  const cls = c.state === 'PRODUCT_CERTIFIED' ? 'CERTIFIED_STRATEGY'
+    : c.state === 'PREPARED_DATA_LIMITED' ? 'NOT_COMPUTED'
+    : lim.some(l => /RECONSTRUCT/.test(l)) ? 'RECONSTRUCTION'
+    : c.evidenceKind === 'SIMULATED_LEDGER' || lim.includes('HISTORICAL_PRICE_SIMULATION') ? 'HISTORICAL_SIMULATION'
+    : 'HISTORICAL_STUDY';
+  return { class: cls, label: EVIDENCE_CLASS_LABEL[cls], certified: cls === 'CERTIFIED_STRATEGY', alphaClaim: false };
+}
+
 function getBacktestPreview(doc, options) {
   options = options || {};
   const cfg = options.backtestPreview || DEFAULT_CONFIG;
@@ -213,7 +233,7 @@ function getBacktestPreview(doc, options) {
     cases: k.cases.map(c => {
       const o = clone(c);
       if (!numbers) for (const f of NUMBER_FIELDS) o[f] = null;
-      o.display = { productAllowed: false, numbersShown: numbers, trust: 'NOT_PRODUCT_TRUST', label: 'RESEARCH' };
+      o.display = { productAllowed: false, numbersShown: numbers, trust: 'NOT_PRODUCT_TRUST', label: 'RESEARCH', evidence: evidenceClassOf(c) };
       return o;
     })
   }));
@@ -227,4 +247,4 @@ function getBacktestPreview(doc, options) {
   };
 }
 
-module.exports = { VERSION, VIEW_VERSION, AUDIENCE, DEFAULT_CONFIG, KINDS, STATE_CODE, NUMBER_FIELDS, CLAIM, canonical, sha, certificationSummary, buildPreview, previewViolations, getBacktestPreview };
+module.exports = { EVIDENCE_CLASS_LABEL, evidenceClassOf, VERSION, VIEW_VERSION, AUDIENCE, DEFAULT_CONFIG, KINDS, STATE_CODE, NUMBER_FIELDS, CLAIM, canonical, sha, certificationSummary, buildPreview, previewViolations, getBacktestPreview };
