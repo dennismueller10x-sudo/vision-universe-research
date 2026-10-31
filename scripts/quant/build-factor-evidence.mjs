@@ -327,7 +327,12 @@ function main() {
    * Emittenten dessen Stammaktie den Boersenwert nehmen (PRHI neben dem
    * Senior Note PRHIZ). Gezaehlt wird deshalb nur, wer im kanonischen
    * Produktuniversum steht; die Zahl der verworfenen Zeilen steht im Bericht. */
-  const imProdukt = new Set(resolveProductUniverse(ROOT).securities.map((s) => s.securityId));
+  /* Wiederverwendete Kuerzel (quant/config/ticker-reuse-quarantine.json, #1206) stehen weiter im Universum,
+   * tragen aber eine ungesicherte Identitaet (heute ein ETF unter dem Kuerzel der alten Gesellschaft). Sie
+   * bekommen keine Faktorzeile und zaehlen in keinem Rang mit; die Zahl steht im Bericht. */
+  const universum = resolveProductUniverse(ROOT).securities;
+  const identityQuarantined = universum.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
+  const imProdukt = new Set(universum.filter((s) => s.identityStatus !== "IDENTITY_QUARANTINED").map((s) => s.securityId));
   const vorFilter = priceFactors.securities.length;
   priceFactors.securities = priceFactors.securities.filter((s) => imProdukt.has(s.securityId));
   const outsideProductUniverse = vorFilter - priceFactors.securities.length;
@@ -1158,6 +1163,7 @@ function main() {
       priceFactorSecurities: priceFactors.securities.length,
       priceFactorRowsOutsideProductUniverse: outsideProductUniverse,
       notAnEquityListing: uebersprungen.length,
+      identityQuarantined: identityQuarantined.length,
       published: written,
       withFundamentals: records.filter((record) => record.fundamentals).length,
       withMarketCap: records.filter((record) => finite(record.fundamentals?.marketCap)).length,
