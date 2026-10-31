@@ -1,53 +1,43 @@
-# Tiingo-Nutzungsrechte für historische delistete Kursdaten (Prüfung 30.10.2026)
+# Tiingo-Nutzungsrechte: historische und delistete Kurse, Charts, Kennzahlen, Backtests (Stand 31.10.2026)
 
-Auftrag des Owners vom 30.10.: anhand des bestehenden Vertrags und der dokumentierten Lizenzbedingungen klären, ob und in welcher Form historische delistete Kursdaten von Tiingo für serverseitige Backtests und daraus abgeleitete Kennzahlen genutzt werden dürfen. Getrennt werden interne Berechnung, Anzeige von Ergebnissen und Weitergabe von Rohkursen.
+Version 2.0, ersetzt den Stand vom 30.10.2026. **Korrektur:** Die Annahme, Vision Universe habe nur eine interne Nutzungslizenz („Internal Use Only“), ist überholt. Der Owner hat am 31.10.2026 erklärt, dass eine kostenpflichtige kommerzielle Tiingo-Lizenz erworben wurde, die nach seinem Vertragsverständnis auch die Veröffentlichung der lizenzierten Daten umfasst.
 
-**Dies ist keine Rechtsberatung und keine Rechtsprüfung.** Es ist eine Bestandsaufnahme der vorhandenen Belege.
+Dieses Dokument ist eine Bestandsaufnahme der Belege, keine Rechtsprüfung.
 
-## 1. Vorhandene Belege
+## 1. Belege
 
 | Beleg | Inhalt | Stufe |
 |---|---|---|
-| **Vertragstext** | **liegt im Repository nicht vor.** Auch die Tiingo-AGB sind von hier nicht abrufbar: `app.tiingo.com/terms` und `/legal/terms-of-service` liefern ohne Anmeldung HTTP 403 | fehlt |
-| Owner-Erklärung vom 13.09.2026 (`quant/config/provider-profiles.json#providers.tiingo.licensing`, `quant/config/development-preview.json#grants`) | „Die erforderliche Tiingo-Freigabe für die öffentliche Anzeige der Market-Data liegt vor. Wir verwenden das entsprechend freigegebene große Paket.“ Der Geltungsbereich laut `grants.basis`: **„Tageskurse, abgeleitete Werte und Kursverläufe des Produktuniversums auf research.visionuniverse.de“** | `OWNER_DECLARED`, ausdrücklich nicht `DOCUMENTATION_VERIFIED`; `aiUsage` und `modelTraining` stehen auf `UNKNOWN` |
-| Öffentliche Preisseite (`tiingo.com/about/pricing`, abgerufen am 30.10.) | Pläne mit „Internal Use Only“. Interne Nutzung heißt dort: „you may only use the data for your own personal use and you may not display or share the data with another person“. Für Weiterverbreitung („redistribution use“) gibt es eigene Preise über die Produktseiten und den Vertrieb | öffentlich dokumentiert |
-| V13-Abruf der delisteten Reihen (`docs/quant-recovery/HANDOVER_V13.md`) | 8.620 Anfragen im Pauschaltarif; Reihen nur verschlüsselt im privaten R2-Archiv; im Repository nur Register mit Hashes | Betriebsbeleg |
-| Frühere Lizenzregel des Projekts (`TIINGO_COMMERCIAL_PHASE1_ABSCHLUSSBERICHT.md`, §34) | „Interne Nutzung ist nicht öffentliche Weitergabe.“ Kursniveaus wurden als `WITHHELD_REDISTRIBUTION` aus Artefakten entfernt; die Tickerliste bleibt `LEGAL_REVIEW_REQUIRED` | Projektregel |
+| **Owner-Erklärung vom 31.10.2026** (`quant/config/provider-profiles.json#providers.tiingo.licensing.declaration`) | Kommerzielle Tiingo-Lizenz einschließlich Veröffentlichung der lizenzierten Daten. Erklärter Umfang (`scopeDeclared`): serverseitige Berechnung, öffentliche Anzeige historischer Kurse und Charts, Veröffentlichung abgeleiteter Kennzahlen und Backtest-Ergebnisse, historische Kurse delisteter Aktien aus den vorhandenen Archiven | `OWNER_DECLARED` |
+| Owner-Erklärung vom 13.09.2026 (`previousDeclarations`, `development-preview.json#grants`) | Freigabe der öffentlichen Anzeige der Market-Data des Produktuniversums („großes Paket“) | `OWNER_DECLARED`, bleibt gültig |
+| Vertragstext / Bestellbestätigung | **nicht im Repository.** Die Tiingo-AGB sind ohne Anmeldung nicht abrufbar (`app.tiingo.com/terms`: HTTP 403) | fehlt |
+| Öffentliche Preisseite (`tiingo.com/about/pricing`, 30.10.) | „Internal Use Only“ gilt für die Basispläne; für Weiterverbreitung gibt es eigene Preise über Produktseiten und Vertrieb | betrifft die Basispläne, nicht die erklärte kommerzielle Lizenz |
 
-## 2. Bewertung nach Nutzungsart
+## 2. Nutzungsumfang je Nutzungsform
 
-Delistete Titel gehören **nicht** zum Produktuniversum. Die Owner-Erklärung deckt sie deshalb nach ihrem Wortlaut nicht ab.
+| Nutzungsform | Stand | Folge für das Produkt |
+|---|---|---|
+| Serverseitige Berechnung (Runner, Backtests, Studien) | **gedeckt** (Erklärung vom 31.10.) | keine Blockade |
+| Öffentliche Anzeige historischer Kurse und Charts (Produktuniversum) | **gedeckt** (13.09. und 31.10.) | wie bisher aktiv (Discover, Aktienseiten) |
+| Veröffentlichung abgeleiteter Kennzahlen und Backtest-Ergebnisse (aggregiert, Rendite, Risiko, Trefferquote) | **gedeckt** (31.10.) | kein Lizenzhindernis mehr für eine spätere Produktanzeige. Diese braucht weiterhin die fachliche Zertifizierung (`productionApproved`) und eine eigene Owner-Freigabe |
+| Historische Kurse **delisteter** Aktien (V13-Archive, bereits beschafft) | **gedeckt** laut Erklärung (lizenzierte Daten, erneuter Download nicht nötig) | dürfen in Berechnungen und abgeleitete Ergebnisse einfließen. Anzeige von Kursverläufen delisteter Titel: kein Lizenzhindernis, aber noch keine Produktfläche (eigene Freigabe) |
+| **Weitergabe herunterladbarer Rohdatensätze** (Massendownload von Kursreihen, CSV/JSON-Export ganzer Historien) | **nicht belegt.** Die Erklärung nennt die Veröffentlichung der Daten, ein ausdrückliches Recht zur Weitergabe ganzer Rohdatensätze zum Herunterladen fehlt | nicht anbieten, bis der Vertrag es ausdrücklich deckt. Es besteht kein Anlass für eine neue Lizenz, solange keine Downloadfunktion geplant ist |
+| KI-Nutzung, Modelltraining | unverändert `UNKNOWN` | nicht Gegenstand der aktuellen Arbeit |
 
-| Nutzung | Produktuniversum (laufende Titel) | Historische delistete Reihen (V13) | Folge |
-|---|---|---|---|
-| **Interne serverseitige Berechnung** (Runner auf GitHub Actions, private Ablage, Ergebnisse nur für den Owner) | gedeckt (Owner-Erklärung) | **wahrscheinlich zulässig.** Selbst der kleinste kommerzielle Plan erlaubt interne Nutzung. Ungeklärt sind die Speicherdauer nach Vertragsende und die verschlüsselte Ablage bei Dritten (Cloudflare R2) | so weiterführen wie bisher: verschlüsselt, nur auf dem Runner, nichts im Repository |
-| **Anzeige von Ergebnissen und abgeleiteten Kennzahlen** (Trefferquote, Medianrendite, Ereignisanzahl; aggregiert, keine Kurse) | gedeckt für „abgeleitete Werte des Produktuniversums“ | **nicht belegt.** Interne Nutzung schließt das Zeigen an andere aus („may not display or share the data“); ob aggregierte Statistiken als „data“ gelten, regelt nur der Vertrag | **keine öffentlichen Produktartefakte** aus delisteten Reihen bis zur Klärung (`productionApproved=false` bleibt) |
-| **Weitergabe historischer Rohkurse** (Reihen, Schlusskurse, Kursniveaus) | gedeckt laut Erklärung („Tageskurse … Kursverläufe“); wird auf der Seite genutzt | **nicht zulässig ohne ausdrückliche Weiterverbreitungsrechte** | Delistete Reihen bleiben ausschließlich verschlüsselt im privaten Archiv |
+## 3. Was sich gegenüber dem 30.10. ändert
 
-## 3. Was heute schon öffentlich ist (zur Kenntnis)
+- Die Bewertung „öffentliche Anzeige abgeleiteter Ergebnisse aus delisteten Reihen: nicht belegt“ ist überholt. Diese Nutzung ist jetzt durch die Owner-Erklärung gedeckt.
+- Die aggregierten Delisted-Statistiken in den Research-Dokumenten V13/V13c und in den Demofällen AGN und XCO sind damit keine Lizenzfrage mehr.
+- Delistete Rohreihen bleiben trotzdem verschlüsselt im privaten R2-Archiv. Der Grund ist Integrität und Umfang: 1,5 GB und hashgebundene Register. Ein Lizenzgrund besteht dafür nicht mehr. Ins Repository kommen sie nicht, weil Repository-Hygiene und Größe dagegensprechen.
+- Kein erneuter Massendownload, kein neuer Anbieter: Die vorhandenen Archive (R2, Manifest 1.2.0) werden weiterverwendet.
 
-- Die Research-Dokumente V13 und V13c (`docs/quant-recovery/v13*/`) und die Demofälle `acquisition-agn` und `delisted-xco-bankruptcy` (`docs/quant/backtest-demos/results/`) enthalten **aggregierte Statistiken** aus delisteten Reihen, keine Kurse. Sie sind kein Produktartefakt, liegen aber in einem öffentlichen Repository.
-  - Der Neubau in #1178 ändert an diesen beiden Fällen keine Kennzahl.
-  - Der Faktorfall beruht auf SEC-Fakten und Kursen des Produktuniversums, nicht auf delisteten Reihen.
-- Laut HANDOVER_V13, Abschnitt 8, sind alte PR-Commits mit Anbieterzeilen weiter per SHA abrufbar. Eine Bereinigungsanfrage an GitHub liegt beim Owner.
+## 4. Einziger offener Punkt (ohne Anlass für eine neue Lizenz)
 
-## 4. Was der Owner klären muss (keine neuen Verträge, keine neuen Anbieter)
+Die Weitergabe herunterladbarer Rohdatensätze ist nicht belegt. Wird eine Downloadfunktion geplant, prüft der Owner den vorhandenen Vertrag auf genau diesen Punkt. Bis dahin ist nichts zu tun.
 
-1. **Den vorhandenen Vertrag bzw. die Plan-Bedingungen** des „großen Pakets“ einsehen, als PDF oder Screenshot der Kontoseite, und nachsehen:
-   - (a) Plan-Name und Lizenzart: interne Nutzung oder Weiterverbreitung/Anzeige;
-   - (b) Regelung für **abgeleitete Daten** (derived data);
-   - (c) Gilt die Anzeigefreigabe auch für **historische Daten nicht mehr gehandelter Titel**?
-   - (d) Speicherung nach Vertragsende.
-2. Bis dahin gilt:
-   - interne Berechnung ja;
-   - öffentliche Anzeige von Ergebnissen aus delisteten Reihen nein;
-   - Rohkurse delisteter Titel nie.
-3. Lässt der Plan nur interne Nutzung zu: über eine Entfernung der aggregierten Delisted-Statistiken aus dem öffentlichen Repository entscheiden. Ein Wechsel auf ein privates Repository ist ebenfalls eine Owner-Entscheidung.
+Zur Nachvollziehbarkeit, optional: eine Kopie der Lizenzbestätigung (Plan-Name, Datum, Umfang) in den privaten Unterlagen des Owners ablegen. Ins öffentliche Repository gehört sie nicht. Die Stufe `OWNER_DECLARED` bleibt bestehen, bis ein Beleg vorliegt.
 
-## 5. Technische Absicherung (bereits vorhanden)
+## 5. Technische Folgen
 
-- `productionApproved=false` für alle Backtest-Arten.
-- Der Research-Adapter liefert standardmäßig `DISABLED`, `display.allowed=false`.
-- Delistete Reihen werden nur über den hashgebundenen Loader und nur mit `privateDirs` gelesen.
-- Der Workflow `[v13-archive:demos]` lädt nur abgeleitete Ergebnisse hoch und löscht die privaten Daten.
-- `display-policy.js` prüft öffentliche Anzeige je Anbieter und Datenklasse. Eine Datenklasse für delistete Historie gibt es dort nicht, also wird sie nicht angezeigt.
+- `display-policy.js` und `development-preview.json` gelten unverändert. Eine eigene Datenklasse für delistete Historie entsteht erst mit einer Produktfläche, die sie anzeigt (eigene Freigabe).
+- Für Backtests gibt es keine Lizenzblockade mehr. Ob Ergebnisse angezeigt werden, regeln weiter die fachlichen Gates: `productionApproved=false`, Zertifizierungsartefakt, Research-Adapter standardmäßig `DISABLED`.
