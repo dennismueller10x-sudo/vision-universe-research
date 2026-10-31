@@ -157,6 +157,12 @@ TR-Fenster des Registers decken 2016–2020 nur für MSFT, WMT, IBM ab (JPM bis 
 Ergebnis B, und ihre Echtdatentests werden übersprungen (als übersprungen gemeldet, nicht als bestanden). Committet sind nur
 abgeleitete Statistiken (keine Kurse).
 
+**Aktualität (CI).** `quant-ci` führt `scripts/quant/research/check-backtest-demo-freshness.cjs --strict` aus. Der Schritt vergleicht die Code-Hashes, die jedes Demoergebnis aufgezeichnet hat, mit dem Checkout und wird rot, sobald Runner- oder Engine-Code sich ändert, ohne dass die Demos neu gebaut wurden.
+- Das ist nur ein Hash-Abgleich. Der Schritt liest keine privaten Daten und bestätigt keine private Nachrechnung.
+- Neubau: leerer Commit mit `[v13-archive:demos]` auf dem `claude/**`-Branch. Der Lauf stellt `v13-derived` und `v10-factor-panel` über das Secret wieder her, baut alle 16 Fälle, rechnet sie mit Python gegen und vergleicht sie mit `compare-backtest-demos.cjs`. Das Artefakt enthält nur abgeleitete Ergebnisse, die danach committet werden.
+- Fehlen die privaten Eingaben, enden die drei privaten Fälle in Zustand B. Der Vergleich zeigt das als `STATE_CHANGED`, nicht als bestanden.
+- Drift bei Zertifizierung und Stamm meldet der Wächter nur zur Information.
+
 ## 6. QA (Agent F)
 
 - **Python-Gegenrechnung** (`scripts/quant/verify-backtest-runner.py`, stdlib, `python3 -I`, eigener Code): Envelope-Zählungen
