@@ -163,7 +163,7 @@ in `product-services.js`, `quant/index.html` und `page-backtest.js`.
 
 ## 8. Version 2 (31.10.2026): aktuelle Demos, Nachweisart, Spec-Builder
 
-- **Lesemodell neu erzeugt:** Grundlage sind die auf `main` neu gebauten 16 Demos (#1178). Neuer `previewHash` `b4eb93f0…`. Der Reproduzierbarkeitstest besteht.
+- **Lesemodell neu erzeugt:** Grundlage sind die auf `main` neu gebauten 16 Demos (#1178). Neu erzeugt auf `main` @ `bceb376` (Demos aus #1205), `previewHash` `8bbee23f…`; Python-Prüfung `verify-backtest-preview.py`: 16 Fälle, 0 Befunde. Der Reproduzierbarkeitstest besteht.
 - **Nachweisart je Fall** (`display.evidence`, nur in der Ansicht, das Lesemodell bleibt unverändert):
 
   | Klasse | Anzeige | Abgeleitet aus | Fälle |
