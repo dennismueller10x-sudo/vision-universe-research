@@ -103,8 +103,12 @@ const S = {
 // ---------------------------------------------------------------------------------------------------------------
 // Hilfen: bash-Schritt ausführen, GITHUB_OUTPUT lesen, Verzeichnis-Abdruck
 // ---------------------------------------------------------------------------------------------------------------
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'sf9-e2e-'));
-process.on('exit', () => fs.rmSync(TMP, { recursive: true, force: true }));
+/* Nur mit SF9_E2E=1 (eigener Schritt in supertrader-ci.yml). Die Produktionslaeufe (Signalkette: tests/*.test.mjs,
+   SF8-Tageslauf: sf-*.test.mjs) ueberspringen den Test sofort: er darf keine Veroeffentlichung verlaengern oder blockieren. */
+const E2E = process.env.SF9_E2E === '1';
+const SKIP = E2E ? false : 'nur mit SF9_E2E=1 (Supertrader Quality Gates)';
+const TMP = E2E ? fs.mkdtempSync(path.join(os.tmpdir(), 'sf9-e2e-')) : null;
+if (TMP) process.on('exit', () => fs.rmSync(TMP, { recursive: true, force: true }));
 let seq = 0;
 const isolatedGit = { GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1', GIT_TERMINAL_PROMPT: '0' };
 
@@ -166,7 +170,7 @@ function sampleMarketAsOf() {
 const W = {}; // gemeinsamer Zustand der Fälle (Ergebnisse der Erzeugungen)
 const before = { published: dirDigest(PUBLISHED) };
 
-test('SF9-E2E-0 · Erzeugung wie im Workflow: drei Läufe parallel (A, B, Wiederaufnahme C) und ein veralteter Lauf', async (t) => {
+test('SF9-E2E-0 · Erzeugung wie im Workflow: drei Läufe parallel (A, B, Wiederaufnahme C) und ein veralteter Lauf', { skip: SKIP }, async (t) => {
   // build-Aufruf des Workflows unverändert (dieselben Argumente in beiden Läufen)
   for (const s of [S.build, S.rebuild]) assert.match(s.run, /build-candidates\.mjs \\\n\s+--out "\$OUT2?" --stats "[^"]+" --require-current "\$heute" "\$\{prev\[@\]\}"/, s.name);
   // Lauftag = Tag nach dem Marktstand der Repodaten (häufigster letzter Balken, wie eod-adapter#marketAsOf; hier aus
@@ -254,7 +258,11 @@ function workspace(tag, { prevFrom, prevMutate = null, registry = SF8_ENTRY, git
     g('remote', 'add', 'origin', remote); g('push', '-q', 'origin', 'HEAD:main');
     return { ws, prev, remote, g, head: g('rev-parse', 'HEAD') };
   }
-  return { ws, prev };
+  // Der Vertragsschritt nennt den ausgecheckten Stand (git rev-parse HEAD, #1191): auch ohne Remote ein Git-Arbeitsbaum
+  const r0 = (...a) => spawnSync('git', a, { cwd: ws, encoding: 'utf8', env: { ...process.env, ...isolatedGit } });
+  assert.equal(r0('init', '-q', '-b', 'main').status, 0); assert.equal(r0('add', '-A').status, 0);
+  assert.equal(r0('-c', 'user.name=e2e', '-c', 'user.email=e2e@example.invalid', 'commit', '-q', '-m', 'Ausgangsstand').status, 0);
+  return { ws, prev, head: r0('rev-parse', 'HEAD').stdout.trim() };
 }
 function contractStep(ws, { pub, report, fp, fp2 }) {
   const record = path.join(TMP, `record-${++seq}.json`);
@@ -299,7 +307,7 @@ function chain({ out, out2, tag, prevFrom, prevMutate, registry, mutateNext = nu
 // abgeleitete Vorsitzung: derselbe Stand, eine Sitzung früher veröffentlicht
 const earlier = (s) => { s.nextSession = s.asOf; s.asOf = prevSession(s.asOf); };
 
-test('SF9-E2E-1 · C1: zwei Berechnungen = gleicher Fingerabdruck → PUBLISH und genau ein Commit; Gegenprobe abweichend → BLOCKED', () => {
+test('SF9-E2E-1 · C1: zwei Berechnungen = gleicher Fingerabdruck → PUBLISH und genau ein Commit; Gegenprobe abweichend → BLOCKED', { skip: SKIP }, () => {
   const r = chain({ out: W.out.A, out2: W.out.B, tag: 'pub', prevFrom: W.out.A + '-prevsrc', prevMutate: earlier });
   W.e2e = r;
   assert.match(r.fp, /^[0-9a-f]{64}$/); assert.equal(r.fp, r.fp2, 'C1 im Lauf');
@@ -312,7 +320,8 @@ test('SF9-E2E-1 · C1: zwei Berechnungen = gleicher Fingerabdruck → PUBLISH un
   assert.ok(files.length > 0 && files.every((f) => f.startsWith('supertrader/data/sf-candidates/') && !f.includes('/records/')), files.join(','));
   assert.equal(dirDigest(r.ws.prev), dirDigest(r.pub), 'committet ist genau das geprüfte Verzeichnis');
   const msg = g('log', '-1', '--format=%B');
-  for (const k of ['SF8-Contract: sf8-auto-publication-1.0.0', `SF8-Fingerprint: ${r.fp}`, `SF8-Inputs-SHA256: ${W.stats && readJson(path.join(r.pub, 'summary.json')).inputs.inputsSha256}`, 'SF8-Code-Commit: e2e0000']) assert.ok(msg.includes(k), `${k} in ${msg}`);
+  for (const k of ['SF8-Contract: sf8-auto-publication-1.0.0', `SF8-Fingerprint: ${r.fp}`, `SF8-Inputs-SHA256: ${W.stats && readJson(path.join(r.pub, 'summary.json')).inputs.inputsSha256}`, `SF8-Code-Commit: ${r.ws.head}`]) assert.ok(msg.includes(k), `${k} in ${msg}`);
+  assert.ok(!msg.includes('e2e0000'), 'SF8-Code-Commit nennt den ausgecheckten Stand, nicht GITHUB_SHA (#1191)');
   // Gegenprobe: ein Byte im zweiten Lauf anders → anderer Fingerabdruck → BLOCKED (C1), kein Commit
   const bad = chain({ out: W.out.A, out2: W.out.B, tag: 'c1bad', prevFrom: W.out.A + '-prevsrc', prevMutate: earlier,
     mutateNext: (pub) => { if (pub.endsWith('-2')) fs.appendFileSync(path.join(pub, 'strategy/C01.json'), ' '); } });
@@ -320,7 +329,7 @@ test('SF9-E2E-1 · C1: zwei Berechnungen = gleicher Fingerabdruck → PUBLISH un
   assert.match(bad.contract.log, /C1 nicht reproduzierbar/); assert.equal(bad.commitRan, false); assert.equal(bad.prevAfter, bad.prevBefore);
 });
 
-test('SF9-E2E-2 · C4: geänderte Fachmodell-Versionen bzw. candidateContractSha256 → BLOCKED, kein Commit', () => {
+test('SF9-E2E-2 · C4: geänderte Fachmodell-Versionen bzw. candidateContractSha256 → BLOCKED, kein Commit', { skip: SKIP }, () => {
   for (const [k, v] of [['candidateContractSha256', '0'.repeat(64)], ['detectors', 'sf8-detectors-9.9.9'], ['pipeline', 'sf8-candidate-pipeline-2.0.0']]) {
     const r = chain({ out: W.out.A, out2: W.out.B, tag: `c4-${k}`, prevFrom: W.out.A + '-prevsrc', prevMutate: (s) => { earlier(s); s.versions[k] = v; } });
     assert.equal(r.fp, r.fp2); assert.equal(r.decision, 'BLOCKED', k);
@@ -330,7 +339,7 @@ test('SF9-E2E-2 · C4: geänderte Fachmodell-Versionen bzw. candidateContractSha
   assert.equal(e.decision, 'BLOCKED'); assert.match(e.contract.log, /C4 Engine-Versionen/); assert.equal(e.commitRan, false);
 });
 
-test('SF9-E2E-3 · C5 Datenfrische: älterer Stand → BLOCKED, gleiche Sitzung → SKIP_SAME_SESSION, neuere → PUBLISH', () => {
+test('SF9-E2E-3 · C5 Datenfrische: älterer Stand → BLOCKED, gleiche Sitzung → SKIP_SAME_SESSION, neuere → PUBLISH', { skip: SKIP }, () => {
   const older = chain({ out: W.out.A, out2: W.out.B, tag: 'c5-older', prevFrom: W.out.A + '-prevsrc', prevMutate: (s) => { s.asOf = calendar.nextSession(s.asOf); s.nextSession = calendar.nextSession(s.asOf); } });
   assert.equal(older.decision, 'BLOCKED'); assert.match(older.contract.log, /C5 neuer Stand \S+ älter als der veröffentlichte/); assert.equal(older.commitRan, false);
   assert.equal(older.prevAfter, older.prevBefore);
@@ -343,7 +352,7 @@ test('SF9-E2E-3 · C5 Datenfrische: älterer Stand → BLOCKED, gleiche Sitzung 
   assert.equal(none.decision, 'BLOCKED'); assert.match(none.contract.log, /C5 kein veröffentlichter Stand/); assert.equal(none.commitRan, false);
 });
 
-test('SF9-E2E-4 · fehlende bzw. veraltete Eingänge: build-candidates --require-current bricht mit Exit 3 ab, kein Ergebnis', () => {
+test('SF9-E2E-4 · fehlende bzw. veraltete Eingänge: build-candidates --require-current bricht mit Exit 3 ab, kein Ergebnis', { skip: SKIP }, () => {
   assert.equal(W.D.status, 3, W.D.log);
   assert.match(W.D.log, /Eingangsprüfung STALE/);
   assert.equal(fs.existsSync(W.out.D), false, 'kein Ergebnisverzeichnis'); assert.equal(fs.existsSync(path.join(TMP, 'stats-D.json')), false);
@@ -359,7 +368,7 @@ test('SF9-E2E-4 · fehlende bzw. veraltete Eingänge: build-candidates --require
   assert.throws(() => runPipeline({ securities: [], asOf: W.asOf, calendar, continuity: { bySecurityId: new Map() } }), /SF8_PRICE_REFERENCE_SOURCE_REQUIRED/);
 });
 
-test('SF9-E2E-5 · nicht bestandene DQ: FAIL, checked=0 oder fehlende Regel → roter DQ-Schritt; im Vertrag BLOCKED (C2)', () => {
+test('SF9-E2E-5 · nicht bestandene DQ: FAIL, checked=0 oder fehlende Regel → roter DQ-Schritt; im Vertrag BLOCKED (C2)', { skip: SKIP }, () => {
   const cases = {
     fail: (rep) => { const x = rep.rules.find((y) => y.id === 'DQ-SF8-8'); x.status = 'FAIL'; x.failed = 1; x.samples = ['XYZ']; },
     checked0: (rep) => { const x = rep.rules.find((y) => y.id === 'DQ-SF8-4'); x.checked = 0; },
@@ -382,7 +391,7 @@ test('SF9-E2E-5 · nicht bestandene DQ: FAIL, checked=0 oder fehlende Regel → 
   W.dq = sf8.map((x) => `${x.id} ${x.failed}/${x.checked}`).join(', ');
 });
 
-test('SF9-E2E-6 · Abbruch mitten im Lauf: unvollständiges Ergebnis → kein Commit; Wiederaufnahme liefert denselben Fingerabdruck', () => {
+test('SF9-E2E-6 · Abbruch mitten im Lauf: unvollständiges Ergebnis → kein Commit; Wiederaufnahme liefert denselben Fingerabdruck', { skip: SKIP }, () => {
   for (const missing of ['summary.json', 'index.json', 'strategy']) {
     const cut = path.join(TMP, `cut-${missing}`);
     copyDir(W.out.A, cut); fs.rmSync(path.join(cut, missing), { recursive: true, force: true });
@@ -405,7 +414,7 @@ test('SF9-E2E-6 · Abbruch mitten im Lauf: unvollständiges Ergebnis → kein Co
   assert.equal(fs.existsSync(path.join(W.out.C, 'ticker/ZZ.json')), false, 'fremde Reste in ticker/ entfernt');
 });
 
-test('SF9-E2E-7 · Schutz vor Überschreiben: Commit-Schritte nur bei PUBLISH (if-Bedingungen), veröffentlichte Bytes bei BLOCKED/SKIP unverändert', () => {
+test('SF9-E2E-7 · Schutz vor Überschreiben: Commit-Schritte nur bei PUBLISH (if-Bedingungen), veröffentlichte Bytes bei BLOCKED/SKIP unverändert', { skip: SKIP }, () => {
   // statisch: genau zwei Schritte committen; keiner läuft nach einem roten Schritt (kein always()/failure())
   const committing = STEPS.filter((s) => s.run && /git commit|push-with-retry\.sh/.test(s.run));
   assert.deepEqual(committing.map((s) => s.name), [S.manualCommit.name, S.autoCommit.name]);
@@ -429,7 +438,7 @@ test('SF9-E2E-7 · Schutz vor Überschreiben: Commit-Schritte nur bei PUBLISH (i
   assert.equal(dirDigest(PUBLISHED), before.published, 'supertrader/data/sf-candidates unverändert');
 });
 
-test('SF9-E2E-8 · C7: Registry mit activation (oder ohne Eintrag) → BLOCKED, kein Commit', () => {
+test('SF9-E2E-8 · C7: Registry mit activation (oder ohne Eintrag) → BLOCKED, kein Commit', { skip: SKIP }, () => {
   for (const [k, reg] of [['activating', { ...SF8_ENTRY, activation: { state: 'ACTIVATING' } }], ['prepared', { ...SF8_ENTRY, activation: { state: 'PREPARED_DISABLED' } }], ['fehlt', null], ['anderes-artefakt', { ...SF8_ENTRY, artifact: '/supertrader/data/x.json' }]]) {
     const r = chain({ out: W.out.A, out2: W.out.B, tag: `c7-${k}`, prevFrom: W.out.A + '-prevsrc', prevMutate: earlier, registry: reg });
     assert.equal(r.decision, 'BLOCKED', k); assert.match(r.contract.log, /C7 Registry-Eintrag nicht freigegeben/); assert.equal(r.commitRan, false);
@@ -437,7 +446,7 @@ test('SF9-E2E-8 · C7: Registry mit activation (oder ohne Eintrag) → BLOCKED, 
   }
 });
 
-test('SF9-E2E-9 · Security Master: nur das bestehende Verhalten (STALE → Abbruch) mit synthetischem Alter', (t) => {
+test('SF9-E2E-9 · Security Master: nur das bestehende Verhalten (STALE → Abbruch) mit synthetischem Alter', { skip: SKIP }, (t) => {
   const max = AUX_MAX_AGE_DAYS.master;
   assert.equal(max, 60);
   const fixture = (masterAt) => {
@@ -465,7 +474,7 @@ test('SF9-E2E-9 · Security Master: nur das bestehende Verhalten (STALE → Abbr
   W.master = { real, until };
 });
 
-test('SF9-E2E-10 · Messwerte', (t) => {
+test('SF9-E2E-10 · Messwerte', { skip: SKIP }, (t) => {
   const s = readJson(path.join(W.e2e.pub, 'summary.json'));
   const bytes = fs.readdirSync(W.e2e.pub, { recursive: true }).map((f) => path.join(W.e2e.pub, f)).filter((p) => fs.statSync(p).isFile()).reduce((a, p) => a + fs.statSync(p).size, 0);
   t.diagnostic(`Stand ${s.asOf} (Lauftag ${W.today}, Gate ${W.gate.status}${W.req ? '' : ', ohne --require-current'}), ${TICKERS.length} Titel, ${s.counts.candidates} Kandidaten ${JSON.stringify(s.counts.byStage)}`);

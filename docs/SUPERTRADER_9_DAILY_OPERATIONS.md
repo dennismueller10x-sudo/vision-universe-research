@@ -131,7 +131,7 @@ Lokal auf `main` (5e9d2b9) zusammen mit diesem PR. Es wurde nichts committet und
 
 ## E2E-Prüfung
 
-`scripts/supertrader/tests/sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
+`scripts/supertrader/tests/sf-sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
 
 Bewusste Abweichungen vom echten Lauf:
 - Teiluniversum von 60 Titeln (`--tickers`) statt 5.103 Titeln, sonst dieselben Argumente.
@@ -165,6 +165,6 @@ Gegenproben (lokal, danach zurückgesetzt): Commit-Bedingung `!= 'BLOCKED'`, DQ-
 | Vertrag Vollbau gegen den veröffentlichten Stand (29.10.), Registry ohne `activation` | **PUBLISH**, ohne Verstoß |
 | Security Master | `generatedAt` 11.09.2026: Die Eingangsprüfung ist bis zum Lauftag 10.11.2026 CURRENT, danach STALE (Exit 3), solange der Stamm nicht neu erzeugt ist (siehe Inbetriebnahme, Schritt 3) |
 
-Sind die Repodaten am abgeleiteten Lauftag nicht CURRENT, etwa weil der Security Master veraltet ist, erzeugt der Test ohne `--require-current` und meldet das als Diagnose. Fall 4 und Fall 9 prüfen den Abbruch trotzdem. Der Test läuft im Workflow-Schritt „Produkt- und Vertragstests“ mit (`sf-*.test.mjs`).
+Sind die Repodaten am abgeleiteten Lauftag nicht CURRENT, etwa weil der Security Master veraltet ist, erzeugt der Test ohne `--require-current` und meldet das als Diagnose. Fall 4 und Fall 9 prüfen den Abbruch trotzdem.
 
-Der Dateiname beginnt bewusst nicht mit `sf-`. Der Schritt „Produkt- und Vertragstests“ des Tageslaufs (`node --test "scripts/supertrader/tests/sf-*.test.mjs"`) führt den Test deshalb nicht aus: Er würde den Produktionslauf um vier zusätzliche Erzeugungen verlängern, und ein Testfehler dürfte dort nicht die Veröffentlichung blockieren. Er läuft in den Supertrader Quality Gates (`supertrader-ci.yml`, `*.test.mjs`) und in der Signalkette.
+Der Test läuft nur mit `SF9_E2E=1`. Das setzt allein der eigene Schritt „E2E SF8-Tagesweg“ in den Supertrader Quality Gates (`supertrader-ci.yml`). In den Produktionsläufen, der Signalkette (`scripts/supertrader/tests/*.test.mjs` vor dem Commit) und dem SF8-Tageslauf (`sf-*.test.mjs`), überspringt er sich sofort. So verlängert er keinen Produktionslauf, und ein Testfehler blockiert keine Veröffentlichung. Der Name `sf-…` bleibt, weil SF2-LEGACY-ISOLATION Importe der Produktmodule nur aus `tests/sf-*.test.mjs` zulässt. Den Code-Commit prüft der Test gegen den ausgecheckten Stand des Arbeitsbaums (#1191, `git rev-parse HEAD`), nicht gegen `GITHUB_SHA`.

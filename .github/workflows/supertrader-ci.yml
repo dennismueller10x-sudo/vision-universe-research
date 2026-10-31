@@ -32,6 +32,12 @@ jobs:
         run: node scripts/supertrader/guard-protected-paths.mjs --base="origin/${{ github.base_ref }}"
       - name: Gate B/D/E — Engine, Registry, Source Ledger, Artefakte
         run: node --test "scripts/supertrader/tests/*.test.mjs"
+      # Nur hier mit SF9_E2E=1: In den Produktionslaeufen (Signalkette, SF8-Tageslauf) ueberspringt sich der Test,
+      # damit er keine Veroeffentlichung verlaengert oder blockiert.
+      - name: E2E SF8-Tagesweg (nur Pruefung, keine Veroeffentlichung)
+        env:
+          SF9_E2E: '1'
+        run: node --test scripts/supertrader/tests/sf-sf9-e2e.test.mjs
       - name: Build auf den aktuellen kanonischen Artefakten (frisches Protokoll, temporaer)
         run: node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-build"
       - name: Build wie im Produktivlauf (inkrementell auf einer Kopie, Runner-Standard-Heap)
