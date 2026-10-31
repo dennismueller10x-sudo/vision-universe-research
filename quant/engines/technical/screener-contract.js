@@ -21,7 +21,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
 
-  var CONTRACT_VERSION = "technical-screener-contract-1.2.0";
+  var CONTRACT_VERSION = "technical-screener-contract-1.2.1";
   var SCHEMAS = { screener: /^vu-technical-screener-1\./, meta: /^vu-technical-meta-1\./, index: /^vu-technical-index-1\./, spark: /^vu-technical-spark-1\./ };
   /* Mini-Kursverlauf der Trefferkarten: seit Vertrag 1.2.0 eigene Datei spark-v1.json (nach dem ersten Bild geladen). */
   var SPARK = { type: "spark", nullable: false, label: "letzte ≤ 60 Schlüsse, 0..99 normiert" };
@@ -29,7 +29,12 @@
 
   /* Wertebereiche der Abfragefelder (alle Zeitrahmen). Ohne Eintrag: endliche Zahl. pct = Anteil (0,05 = 5 %). */
   var RANGES = {
-    rsi14: [0, 100], rsRank: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], choppiness14: [0, 100], connorsRsi: [0, 100],
+    rsi14: [0, 100], rsRank: [0, 100], stochK: [0, 100], mfi14: [0, 100], adx: [0, 100], connorsRsi: [0, 100],
+    /* Choppiness ist nach oben offen: Liegt der Vortagesschluss eines Fensterbars ausserhalb der Fensterspanne (Kurssprung,
+       danach enge Spanne), uebersteigt die Summe der True Ranges die Spanne um mehr als den Faktor n, und der Index liegt
+       ueber 100 (Standardformel, keine Begrenzung). Befund 31.10.2026: BMBL 3,80 -> 5,98 am 13.10., danach Spanne 0,08
+       -> 131,4; der Erzeuger hatte deshalb das Schreiben verweigert. */
+    choppiness14: [0, Infinity],
     williamsR: [-100, 0], aroonOsc: [-100, 100], cmf20: [-1, 1], elderImpulse: [-1, 1],
     /* ATR % und relatives Volumen sind nach oben offen: Reverse-Split-Ketten (WHLR: Wochenschluss 402.408 -> 0,357 in
        70 Wochen, split-bereinigt) und Volumen-Median 0 ergeben echte, extreme Werte. */
