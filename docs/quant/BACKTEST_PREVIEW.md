@@ -189,3 +189,69 @@ in `product-services.js`, `quant/index.html` und `page-backtest.js`.
 
   Das Raster samt Laufzeitbudget ist der nächste Schritt (eigener PR).
 - **Unverändert:** standardmäßig aus, nicht in `product-services.js` verdrahtet, keine Frontend-Änderung, `productionApproved=false`. Eine Anzeige im Produkt braucht eine eigene Owner-Freigabe.
+
+## 9. Geschützter Zugang über den Konto-Worker (31.10.2026, Owner-Freigabe P4: nur intern)
+
+Ziel: Die Vorschau ist für berechtigte Prüfer im Browser nutzbar, aber **nur** nachweisbar geschützt und **nur** nach
+ausdrücklichem Einschalten. `docs/` wird von GitHub Pages nicht ausgeliefert, das Repository ist aber öffentlich. Ein
+nachweisbarer Schutz besteht deshalb nur über den Konto-Worker und die Supabase-Rollen (Muster der Tarifverwaltung,
+[TARIFVERWALTUNG.md](../accounts/TARIFVERWALTUNG.md)). Keine neue Architektur, keine neue Engine, keine Rechnung im
+Browser oder im Worker.
+
+```
+docs/quant/backtest-catalog (21 vorgerechnete Auswahlen, catalogHash) ┐
+Lesemodell backtest-preview.json (previewHash, nur Übersicht)         ├─ export-backtest-review-bundle.cjs
+backtest-spec-builder.cjs (Menü, Vorlagen, sichere Codes)             ┘        │
+                                   workers/vu-account/data/backtest-review-bundle.json (bundleHash)
+                                                                               │
+                         vu-account: /v1/admin/backtests*  (Schalter + Sitzung + Rolle backtest_reviewer)
+```
+
+| Baustein | Inhalt |
+|---|---|
+| `scripts/quant/research/export-backtest-review-bundle.cjs` | baut das Paket (`backtest-review-bundle-1.0.0`): Menü, Vorlagen, Übersicht je Art, Katalogindex und abgeleitete Anzeigefelder je Eintrag (Kennzahlen, Risiko, Kosten, Benchmark, Drawdown, Datenqualität und Abdeckung, historische Population, Methoden mit Zustand, Grenzen, PIT). Keine Rohreihen, keine QA-Blöcke, keine Code-Hashes. Prüft Katalogintegrität (`catalogViolations`), `previewHash`, `gridHash`, Security-Master-Generation (`us-security-master-1.1.0`); `--check` vergleicht mit dem committeten Paket |
+| `workers/vu-account/src/backtests.mjs` | `GET /v1/admin/backtests` (Menü + Übersicht, ohne Zahlen), `GET/POST /v1/admin/backtests/lookup` (Auswahl → vorgerechneter Eintrag oder `NOT_PRECOMPUTED`) |
+| `supabase/migrations/20261031000100_backtest_reviewer.sql` | nur der Rollenwert `backtest_reviewer`, **keine Vergabe** |
+
+**Schutz, in dieser Reihenfolge bei jeder Anfrage:**
+
+1. Schalter `VU_BACKTEST_REVIEW_ENABLED` (wrangler.toml, Entwicklung und Produktion `"false"`): sonst **404
+   `PREVIEW_NOT_ACTIVATED`**, ohne Daten und ohne Rollenabfrage.
+2. Sitzung (HttpOnly-Cookie oder Bearer-JWT, geprüft gegen JWKS): sonst **401**.
+3. Rolle `backtest_reviewer` aus `user_roles` mit dem JWT des Kontos (RLS; Konten können Rollen nur lesen): sonst **403
+   `NOT_BACKTEST_REVIEWER`**. `pricing_admin` und `billing_tester` berechtigen nicht.
+4. Paketintegrität (`bundleHash`, `productionApproved=false`, `NOT_CERTIFIED`, kein `CERTIFIED_STRATEGY` ohne
+   Zertifizierungsartefakt, das die Art zertifiziert): sonst **503 `BACKTEST_BUNDLE_INVALID`**.
+
+POST nur mit erlaubter Herkunft und Kopf `X-VU-Client: web` (CSRF, wie alle Konto-Routen). Antworten `Cache-Control:
+no-store, private`, `X-Robots-Tag: noindex`. Fehler tragen nur einen Zustand und gegebenenfalls einen sicheren Code
+(`SAFE_CODES` des Spec-Builders), nie Daten.
+
+**Nachschlagen.** Der Worker übersetzt eine Auswahl nach denselben Regeln wie `backtest-spec-builder.cjs#buildSpec` in
+eine Spec und schlägt deren `specHash` im Paket nach. Die Gleichheit von `specHash`, Fehlercodes und Ergebnis mit
+`buildSpec` und `build-backtest-catalog.cjs#lookup` sichert ein Test über alle Raster-Auswahlen und über 200 Varianten.
+Was nicht vorgerechnet ist, heißt `NOT_PRECOMPUTED` („nicht vorgerechnet“). Es wird nie gerechnet.
+
+**Nachweisart** je Eintrag (`evidence`): dieselbe Regel wie `display.evidence` der Vorschau (Test gegen die Ansicht).
+Alle Einträge: `productionApproved=false`, `alphaClaim=false`; heute zertifiziert das Artefakt keine Art.
+
+**Neu erzeugen** (nach Neubau von Katalog oder Lesemodell, sonst schlägt der Reproduzierbarkeitstest fehl):
+
+```bash
+node scripts/quant/research/export-backtest-review-bundle.cjs --out workers/vu-account/data/backtest-review-bundle.json
+node scripts/quant/research/export-backtest-review-bundle.cjs --check
+```
+
+Nach einem Wechsel des Security Masters ist der Katalog veraltet: Katalog neu rechnen, dann das Paket neu exportieren
+(eine unbekannte Master-Generation bricht den Export ab).
+
+**Isolation.** Der Export liest das Lesemodell als JSON und prüft dessen Hash; den Vorschau-Dienst lädt er nicht. Dafür
+lässt der Isolations-Test in `quant/tests/backtest-preview.test.mjs` genau einen zusätzlichen Leser des Pfads
+`backtest-preview/backtest-preview.json` zu (den Export). Alle übrigen Isolationsregeln bleiben unverändert.
+
+**Tests:** `node --test workers/vu-account/tests/backtests.test.mjs quant/tests/backtest-review-bundle.test.mjs`, SQL:
+`supabase/tests/12_backtest_reviewer.sql` (braucht `PG_TEST_URL`).
+
+**Owner-Entscheidungen (nicht in diesem Schritt):** Rolle vergeben (an wen) und Schalter einschalten
+([FREIGABEN.md](../accounts/FREIGABEN.md)). Die Seite unter `/konto/admin/backtests/` ist ein eigener Entwurfs-PR; sie
+ist nicht verlinkt und zeigt nur, was der Worker liefert.

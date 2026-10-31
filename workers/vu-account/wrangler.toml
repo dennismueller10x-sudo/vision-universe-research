@@ -86,6 +86,9 @@ VU_BREVO_LIST_USERS = ""
 VU_BREVO_LIST_FREE = ""
 VU_BREVO_LIST_PRO = ""
 VU_BREVO_LIST_NEWSLETTER = ""
+# Interne Backtest-Vorschau (/v1/admin/backtests*, Rolle backtest_reviewer): AUS. Nur per eigenem PR mit
+# Owner-Freigabe auf "true" (docs/accounts/FREIGABEN.md, docs/quant/BACKTEST_PREVIEW.md Abschnitt 9).
+VU_BACKTEST_REVIEW_ENABLED = "false"
 
 # =============================================================================
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
@@ -160,3 +163,5 @@ VU_BREVO_LIST_USERS = "11"
 VU_BREVO_LIST_FREE = "12"
 VU_BREVO_LIST_PRO = "13"
 VU_BREVO_LIST_NEWSLETTER = "4"
+# Interne Backtest-Vorschau: AUS (siehe [vars]). Einschalten nur per eigenem PR mit Owner-Freigabe.
+VU_BACKTEST_REVIEW_ENABLED = "false"
