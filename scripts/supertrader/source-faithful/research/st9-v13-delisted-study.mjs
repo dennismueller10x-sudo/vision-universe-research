@@ -375,4 +375,4 @@ export function readQuarantineDates(file) {
   return { map: new Map(Object.entries(j).map(([k, v]) => [k, [...v].sort()])), sha256: sha(fs.readFileSync(file)) };
 }
 
-export const STUDY_FILES = Object.freeze(['st9-v13-delisted-study.mjs', 'run-st9-v13-delisted-study.mjs']);
+export const STUDY_FILES = Object.freeze(['st9-v13-delisted-study.mjs', 'run-st9-v13-delisted-study.mjs', 'st9-hist-universe.mjs']);

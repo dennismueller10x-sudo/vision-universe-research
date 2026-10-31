@@ -22,7 +22,7 @@ Es gab keinen Anbieterabruf und keinen Netzabruf außer Git und GitHub.
 | `scripts/quant/v13/delisted/qualify.py` | Qualifikation | SHA-256 `6addb5ff…` = `codeSha256` im Register |
 | `coverage-1.0.0.json`, `v13/studies/*`, `v13b/*`, `v13c/*` | Abdeckung und Studienergebnisse S1–S3 (F0/F1/F1c/F1w/F1d) | – |
 | `docs/quant-recovery/v13b/hist/register-1.1.0.json` | 1.688 QUALIFIED (+13) | nicht Teil dieser Studie; dafür wäre eine neue Registrierung nötig |
-| `docs/quant-recovery/v13/archive/manifest-1.1.0.json` und `archive-pub.pem` | Manifest des verschlüsselten Archivs (7 Teile, 11.615 Dateien, 1,38 GB) | – |
+| `docs/quant-recovery/v13/archive/manifest-1.2.0.json` und `archive-pub.pem` | Manifest des verschlüsselten Archivs, gültige Version 1.2.0 (8 Teile, 11.616 Dateien, 1,50 GB; 1.0.0 und 1.1.0 wurden nie hochgeladen) | – |
 
 **Öffentlich fehlen Ticker, exakte Intervalle und Kurse.** Nachtrag 1.0.1 C5 schwärzt sie bewusst. Ticker, Börse, Ketten-Start, letzter Handelstag und Kurse stehen nur in den privaten Dateien.
 
@@ -42,7 +42,7 @@ F1 und F1w sind Regeln für **Wochen**-Frames der Quant-Studien. Für Supertrade
 | Ort | Inhalt | Hier zugänglich? |
 |---|---|---|
 | Actions-Artefakte der Läufe 40872752947, 40877544263, 40887984799 (`v13-delisted-*`) | Tagesreihen aller 4.278 Ticker (Spalten `date, open, high, low, close, volume, adjClose, divCash, splitFactor`), RSA-OAEP und AES-256 | Die Artefakte existieren laut GitHub-API **bis 05.11.2026** (Aufbewahrung 7 Tage). Zum Entschlüsseln braucht es den privaten Transportschlüssel des Abrufs. Er liegt nicht im Repository und nicht im Archiv. **Nein.** |
-| Archiv 1.1.0, Teil `v13-raw` (Tagesdaten) und `v13-derived` (Wochenreihen, Register 1.0.0) | Wird mit dem privaten Archivschlüssel entschlüsselt | Das Archiv liegt nur im temporären Scratchpad der Bausitzung. Der R2-Upload ist nicht erfolgt, weil `*.r2.cloudflarestorage.com` dort nicht erreichbar war. Das Secret `V13_ARCHIVE_PRIVATE_KEY` ist noch nicht abgelegt (Owner-Schritt). **Nein.** |
+| Archiv 1.2.0, Teil `v13-raw` (Tagesdaten) und `v13-derived` (Wochenreihen, Register 1.0.0) | Wird mit dem privaten Archivschlüssel entschlüsselt | Laut Owner verschlüsselt in R2 (Präfix `research-snapshots/quant-v13/archive-1.2.0/`; die README nennt mit Stand 29.10. den Upload noch als offen). Entschlüsseln braucht den privaten Archivschlüssel (Secret `V13_ARCHIVE_PRIVATE_KEY`), der in dieser Umgebung nicht vorliegt. **Nein.** |
 | Supertrader-Snapshot `sts1-134d4d62…` (Universum A) | Privater R2-Eimer, Zugriff nur über die Actions-Secrets `VU_HISTORY_S3_*` | **Nein.** |
 
 In dieser Umgebung gibt es weder V13-Dateien noch Archiv-Chiffrate noch Schlüssel. Die Umgebungsvariablen enthalten keinen V13- oder Archivschlüssel. Vorhandene allgemeine Cloud-Zugangsdaten wurden nicht benutzt. Das Archiv hat keinen Lesepfad, der ohne den privaten Schlüssel auskommt. Deshalb gab es auch keinen Listing-Versuch.
@@ -181,20 +181,22 @@ In dieser Umgebung gibt es weder V13-Dateien noch Archiv-Chiffrate noch Schlüss
 ## 6. Ausführung beim Owner oder Operator
 
 **Voraussetzungen (Owner):**
-- **O1:** Freigabe, die V13-Delisting-Reihen für Supertrader-Research zu nutzen, und Entscheidung zur Veröffentlichung der Kennzahlen.
-- **O2:** Archiv 1.1.0 nach R2 hochladen, bevor die Bausitzung verfällt. Dafür in den Netzwerkeinstellungen `*.r2.cloudflarestorage.com` freigeben, dann `[v13-archive:put]` → `transfer.sh put` → `[v13-archive:verify]`. Den privaten Archivschlüssel als Secret `V13_ARCHIVE_PRIVATE_KEY` und offline ablegen.
+- **O1:** ~~Freigabe, die V13-Delisting-Reihen für Supertrader-Research zu nutzen~~ – erteilt (Ergebnisse intern). Offen bleibt die Entscheidung zur Veröffentlichung der Kennzahlen.
+- **O2:** Archiv 1.2.0 liegt laut Owner in R2. Vor dem Lauf `[v13-archive:verify]` (Objekte gegen `manifest-1.2.0.json`) und der private Archivschlüssel als Secret `V13_ARCHIVE_PRIVATE_KEY`.
 - **O3:** Ist das Archiv verloren, sind die Actions-Artefakte die letzte Kopie der Tagesdaten. Sie verfallen am **05.11.2026** und sind nur mit dem Transportschlüssel der Bausitzung lesbar. Danach ist ein Neuabruf nötig (8.620 Anfragen, Pauschaltarif, braucht eine Owner-Freigabe). Die Register-Hashes machen ihn prüfbar.
 - **O4:** Eine Umgebung, die den Snapshot (R2-Secrets `VU_HISTORY_S3_*`) und das entschlüsselte Archiv gleichzeitig sieht. Dafür gibt es noch keinen Workflow; ein solcher wäre ein eigener Gate-A-PR mit `contents: read`.
 
 **Befehl** (`<priv>` = Ziel der Wiederherstellung. `restore-archive.sh` legt den Teil `v13-derived` unter `<priv>/v13-derived/series` ab und `v13-raw` unter `<priv>/v13-raw/raw/<run>/series.jsonl.gz`. `<out>` liegt außerhalb des Repositorys):
 
 ```bash
-scripts/quant/v13/archive/restore-archive.sh docs/quant-recovery/v13/archive/manifest-1.1.0.json <archiv> archive-priv.pem <priv> v13-raw v13-derived
+scripts/quant/v13/archive/restore-archive.sh docs/quant-recovery/v13/archive/manifest-1.2.0.json <archiv> archive-priv.pem <priv> v13-raw v13-derived
 node --max-old-space-size=8192 scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs \
   --snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d --accounting research-v1 \
   --v13-series <priv>/v13-derived/series --v13-raw <priv>/v13-raw/raw --out <out> \
   [--quarantine CA-Q-K5-DATES --quarantine-dates <versiegelte CA-Q-K5-Liste>.json] [--write-plain]
 ```
+
+Vorher `--preflight` mit denselben Argumenten: listet jede fehlende Eingabe (Exit 3), rechnet nichts. Die historische Infrastruktur (Punkt-in-Zeit, Identität, Delisting, Abdeckung) steht in [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md).
 
 Bei einer Abweichung (Hash, Bindung, Quarantäne) bricht der Runner mit `STUDY_INPUT_REFUSED: <CODE>` bzw. `INPUT_INTEGRITY_FAILURE` ab. Ein Teilergebnis gibt es nicht.
 
