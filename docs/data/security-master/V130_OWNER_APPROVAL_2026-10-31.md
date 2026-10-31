@@ -48,6 +48,9 @@ Der Schritt „Artefakt-Tests“ prüft `discover/tests/names.test.mjs` (NM3) ge
 - Die neuen Namen prüfen weiter `company-name-coverage` und das Gate G9.
 - Gegen die Seiten werden sie beim nächsten Discover-Neubau im Marktdaten-Refresh geprüft.
 - SMW-2 bleibt unverändert, Discover wird nicht gebaut.
+- **Damit nichts verdeckt wird**, listet `scripts/market/report-name-display-drift.mjs` jede Seite, die vom neuen Namensstand abweicht: alter und neuer Name, Quelle, CIK-Wechsel. Die Liste steht im Log und als `sm-next/name-display-drift.json` im Artefakt.
+- Für Lauf 41177449137 meldet der Bericht 6.103 geprüfte Seiten und 16 Seiten mit altem Namen. Fünfzehn sind Umfirmierungen desselben Emittenten, alle in der freigegebenen Liste. Einer ist XRPN: Armada Acquisition Corp II → Evernorth Holdings, CIK 0002044009 → 0002092592. Das ist der eine nicht freigegebene Namenswechsel, der gegen G9 zählt (1/200).
+- Keiner der 14 Ticker-Wiederverwendungsfälle (Abschnitt 4) bekommt einen neuen Namen.
 - Lokal auf dem simulierten Folgestand: NM3 besteht (3/3), SMW mit Freigabe- und Belegtests 39/39.
 
 ## 4. Bedingung „17 nicht einzeln belegte Deaktivierungen ohne unbeabsichtigte Folgen für aktive Produktlistings“: geprüft

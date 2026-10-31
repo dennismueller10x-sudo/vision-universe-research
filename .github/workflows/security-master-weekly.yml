@@ -120,6 +120,9 @@ jobs:
           node --test discover/tests/names.test.mjs
           cp "$RUNNER_TEMP/names-next.json" "$N/company-names.json"
           cmp -s "$RUNNER_TEMP/names-next.json" "$N/company-names.json"
+          # Nichts verdecken: jede Seite, die vom NEUEN Namensstand abweicht, steht in Log und Artefakt
+          # (alter/neuer Name, Quelle, CIK-Wechsel); Freigabe der Aenderungen selbst: Gate G9.
+          node scripts/market/report-name-display-drift.mjs --next "$N/company-names.json" --prev "$RUNNER_TEMP/sm-prev/company-names.json" --out "$RUNNER_TEMP/sm-next/name-display-drift.json"
           node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Ergebnis als CI-Artefakt (Pruefung vor jeder Uebernahme)
