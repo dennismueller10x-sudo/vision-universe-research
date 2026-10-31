@@ -1,9 +1,9 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-31T03:53:51.150Z",
+ "generatedAt": "2026-10-31T17:26:20.692Z",
  "asOf": "2026-10-30",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 1460,
+  "RADAR_EVENTS_TOTAL": 2413,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 5,
    "SETUP_NEW": 68,
@@ -11,7 +11,7 @@
    "NEW_52W_HIGH": 217,
    "MOMENTUM_IMPROVED": 66,
    "TREND_UP": 41,
-   "PATTERN_MATCH_NEW": 0,
+   "PATTERN_MATCH_NEW": 953,
    "FACTOR_CHANGED": 445,
    "RISK_RISING": 21,
    "SETUP_WEAKENED": 131,
@@ -28,31 +28,31 @@
   "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5665,
-   "covered": 5301,
-   "available": 4448,
+   "covered": 5304,
+   "available": 4481,
    "sufficient": {
-    "m1": 2147,
-    "m3": 2074,
-    "m6": 2011,
-    "m12": 1913
+    "m1": 2152,
+    "m3": 2082,
+    "m6": 2023,
+    "m12": 1922
    },
    "broad": {
-    "m6": 738
+    "m6": 782
    },
    "reasons": {
-    "NOT_COVERED": 364,
-    "NO_PRICE_CONDITION_TODAY": 762,
-    "NO_COMPARABLE_CASE": 91
+    "NOT_COVERED": 361,
+    "NO_PRICE_CONDITION_TODAY": 755,
+    "NO_COMPARABLE_CASE": 68
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5576,
-  "ALERT_READY_EVENTS": 1460
+  "ALERT_READY_EVENTS": 2413
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1126 Karten aus 1460 Ereignissen"
+   "measured": "1793 Karten aus 2413 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2011 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2023 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -220,11 +220,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 21,
+    "episodes": 71,
     "horizon": "m6",
-    "evidence": "THIN",
-    "positiveShare": 0.65,
-    "medianReturn": 0.16357571279771888
+    "evidence": "BROAD",
+    "positiveShare": 0.8115942028985508,
+    "medianReturn": 0.19010819165378678
    },
    "factors": 6
   },
@@ -310,11 +310,7 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 35,
-    "horizon": "m6",
-    "evidence": "BROAD",
-    "positiveShare": 0.7428571428571429,
-    "medianReturn": 0.08979437841916638
+    "reason": "NO_PRICE_CONDITION_TODAY"
    },
    "factors": 4
   },
@@ -402,18 +398,20 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 12,
-    "horizon": "m6",
-    "evidence": "THIN",
-    "positiveShare": 0.8181818181818182,
-    "medianReturn": 0.2950068712780578
+    "episodes": 9,
+    "horizon": null,
+    "evidence": "WITHHELD",
+    "positiveShare": null,
+    "medianReturn": null
    },
    "factors": 4
   },
   {
    "ticker": "DXPE",
    "kind": "Small Cap",
-   "radarEvents": [],
+   "radarEvents": [
+    "PATTERN_MATCH_NEW"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-20",
@@ -447,11 +445,11 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 33,
+    "episodes": 37,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.59375,
-    "medianReturn": 0.025020644586807195
+    "positiveShare": 0.5,
+    "medianReturn": -0.00009647807575274836
    },
    "factors": 6
   },

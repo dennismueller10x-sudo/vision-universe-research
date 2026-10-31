@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-31T03:53:50.424Z",
+ "generatedAt": "2026-10-31T17:26:19.756Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -36,21 +36,21 @@
    },
    "coverage": {
     "universe": 5665,
-    "covered": 5301,
-    "available": 4448,
+    "covered": 5304,
+    "available": 4481,
     "sufficient": {
-     "m1": 2147,
-     "m3": 2074,
-     "m6": 2011,
-     "m12": 1913
+     "m1": 2152,
+     "m3": 2082,
+     "m6": 2023,
+     "m12": 1922
     },
     "broad": {
-     "m6": 738
+     "m6": 782
     },
     "reasons": {
-     "NOT_COVERED": 364,
-     "NO_PRICE_CONDITION_TODAY": 762,
-     "NO_COMPARABLE_CASE": 91
+     "NOT_COVERED": 361,
+     "NO_PRICE_CONDITION_TODAY": 755,
+     "NO_COMPARABLE_CASE": 68
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 950462,
+    "sample": 950510,
     "period": [
      "1992-01-31",
-     "2026-10-29"
+     "2026-10-30"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -109,7 +109,7 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "6 Stichtage",
+     "measured": "7 Stichtage",
      "state": "FAIL"
     },
     {
@@ -263,7 +263,7 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89110,
+     "n": 89111,
      "titles": 5076,
      "displayAllowed": true,
      "failed": [
@@ -338,21 +338,21 @@
   },
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5665,
-   "covered": 5301,
-   "available": 4448,
+   "covered": 5304,
+   "available": 4481,
    "sufficient": {
-    "m1": 2147,
-    "m3": 2074,
-    "m6": 2011,
-    "m12": 1913
+    "m1": 2152,
+    "m3": 2082,
+    "m6": 2023,
+    "m12": 1922
    },
    "broad": {
-    "m6": 738
+    "m6": 782
    },
    "reasons": {
-    "NOT_COVERED": 364,
-    "NO_PRICE_CONDITION_TODAY": 762,
-    "NO_COMPARABLE_CASE": 91
+    "NOT_COVERED": 361,
+    "NO_PRICE_CONDITION_TODAY": 755,
+    "NO_COMPARABLE_CASE": 68
    }
   }
  }
