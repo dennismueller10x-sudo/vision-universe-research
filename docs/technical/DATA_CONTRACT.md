@@ -66,7 +66,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.2.0, 164 Spalten.
+technical-screener-contract-1.2.1, 164 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -106,7 +106,7 @@ technical-screener-contract-1.2.0, 164 Spalten.
 | `candleWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `cci20` | num | ja | endlich | CCI 20 |
 | `chg1d` | pct | ja | −1 … ∞ | Tagesänderung |
-| `choppiness14` | num | ja | 0 … 100 | Choppiness Index 14 (unter 38,2 Trend, über 61,8 seitwärts) |
+| `choppiness14` | num | ja | 0 … ∞ | Choppiness Index 14 (unter 38,2 Trend, über 61,8 seitwärts) |
 | `close` | num | ja | 0 … ∞ | Schlusskurs (USD) |
 | `cmf20` | num | ja | −1 … 1 | Chaikin Money Flow 20 (−1 bis 1) |
 | `connorsRsi` | num | ja | 0 … 100 | Connors RSI (3/2/100) |
