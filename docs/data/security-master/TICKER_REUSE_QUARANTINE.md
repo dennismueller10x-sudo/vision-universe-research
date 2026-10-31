@@ -31,6 +31,7 @@ Die SEC-Tickerliste (`company_tickers_exchange.json`, 31.10.) führt keinen der 
 - Der Anbieter beginnt am Umfirmierungstag eine neue Zeile (NYSE MKT → AMEX, dieselbe Börsenfamilie).
 - Es ist dieselbe Emittentin, also keine falsche Firmenzuordnung. Der Titel wird **nicht** zurückgehalten.
 - Offen sind der Name (Splash → Endovia) und die Verknüpfung der neuen Anbieterzeile im Stamm. Dafür ist ein eigener Erzeuger-PR nötig. Bis dahin zeigt die Seite den alten Namen derselben Firma.
+- Nachtrag 31.10.: Der Erzeuger-PR trägt EDVA als Fortführung nach Umfirmierung in das Register belegter Doppelzeilen ein (`quant/config/security-master-duplicate-resolution.json`, Feld `keptCanonicalId`), siehe [SECURITY_MASTER_DUPLICATE_RESOLUTION.md](../SECURITY_MASTER_DUPLICATE_RESOLUTION.md) Abschnitt 9. Ergänzend aus EDGAR: Die Aktie handelte vor dem 24.08.2026 unter dem Symbol SBEV (8-K 0001731122-26-001120). SBEV steht in keinem committeten Stand; `ref_EDVA` folgt dem heutigen Ticker.
 
 ## 2. Korrektur in diesem PR (Quant/Market) und im Folge-PR (Discover)
 
