@@ -189,9 +189,13 @@ jobs:
           # Dauerbetrieb nur ohne activation (V6 e, eigener Core-PR); ACTIVATING gilt nur fuer den manuellen Weg
           registry=false
           if node -e 'const d=(require("./core/registry/domains.json").domains||[]).find((x)=>x.id==="supertrader-sf8-candidates"); process.exit(d && d.artifact==="/supertrader/data/sf-candidates/summary.json" && !d.activation ? 0 : 1)'; then registry=true; fi
+          # SF8-Code-Commit = der ausgecheckte Stand, aus dem Code UND Eingaben stammen. checkout mit ref: github.ref holt
+          # die Spitze des Branches beim Jobstart; GITHUB_SHA ist der Stand beim Ausloesen und kann aelter sein
+          # (wartender Lauf in der Concurrency-Gruppe, verspaeteter Zeitplan) - dann waere die Nachpruefung falsch.
+          code_commit="$(git rev-parse HEAD)"
           node scripts/supertrader/source-faithful/product/publication-contract.mjs --next "$PUB" --prev supertrader/data/sf-candidates \
             --fingerprint "$FP" --rebuild-fingerprint "$FP2" --dq "$REPORT" --registry-ok "$registry" \
-            --code-commit "$GITHUB_SHA" --run "$GITHUB_RUN_ID" --out "$RECORD"
+            --code-commit "$code_commit" --run "$GITHUB_RUN_ID" --out "$RECORD"
           node -e 'const r=require(process.env.RECORD);console.log("### Veroeffentlichungsvertrag "+r.contract+": "+r.decision+"\n\nStand "+r.asOf+" (veroeffentlicht "+r.previousAsOf+"), Eingaben `"+r.inputsSha256+"`"+(r.failures.length?"\n\n- "+r.failures.join("\n- "):""))' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Vollstaendiges Ergebnis als CI-Artefakt (inklusive Vertragsdatensaetze)
