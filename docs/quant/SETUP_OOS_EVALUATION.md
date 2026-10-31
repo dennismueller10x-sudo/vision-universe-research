@@ -111,3 +111,33 @@ Die Umsetzung einer Freigabe ist ein eigener PR mit Vorher/Nachher: Feld `oosSeg
 ## 7. Nebenbefund: Paritätstext
 
 `build-backtest-certification.mjs` gab die Replay-Parität als `checked/checked` aus und zeigte damit auch bei Abweichungen immer volle Übereinstimmung. Korrigiert auf `(checked − mismatches)/checked`. Heute gilt `mismatches = 0`, der Text bleibt `3327/3327` und das Artefakt unverändert. Bei einer künftigen Abweichung zeigt der nächste Erzeugerlauf die echte Zahl (Anzeige in `quant/app/page-backtest.js`: „Nachgeprüft: X/Y …“). `scripts/quant/measure-backtest-signal-intelligence.mjs` hat dasselbe Muster (Messbericht, kein Produktartefakt) und ist hier nicht geändert.
+
+## 8. Konsistenzprüfung und technische Vorarbeit (31.10.2026)
+
+Arbeitsgrundlage des Owners vom 31.10. (keine Norm): Schnitt 2027-05-31, Embargo 183 Tage, SETUP_NEW und SETUP_CONFIRMED getrennt, Clusterung nach Ereignistagen, MEDIAN_EXCESS mit SIGN_REPLICATES. Ausführliche Vorlage: `docs/quant/SETUP_OOS_DECISION_A1_A6.md`.
+
+**Konsistenz mit dem Vertrag**
+
+| Punkt | Vertrag bzw. archivierter Vorschlag | Arbeitsgrundlage | Ergebnis |
+|---|---|---|---|
+| Mindestgröße je Segment | `oosMinPerSegment` 30, Zählbasis nicht festgelegt | 30 effektive Ereignistage | konsistent. Die Zählbasis wird Teil der freigegebenen Segmentierung (`countBy`), die Schwelle bleibt |
+| Holdout | „not viewed during rule selection“ | fester Kalenderschnitt, vorab freigegeben | konsistent, wenn die Freigabe vor dem ersten M6-Ergebnis (etwa 2027-03-26) erfolgt |
+| Embargo | mindestens längster Horizont | 183 Kalendertage (M6) | konsistent |
+| Kriterium | `OOS_DIRECTIONAL_REPLICATION`, kein wirtschaftlicher Vorteil | SIGN_REPLICATES auf MEDIAN_EXCESS | konsistent |
+| Ereignisarten | nicht festgelegt | getrennt | braucht eine Anpassung des Zertifizierungs-Builders: je Art auswerten, Gate besteht nur bei allen freigegebenen Arten. Das ist eine normative Entscheidung, deshalb nicht umgesetzt |
+| andere Gates | `completedOutcomesM6` 100, `historyDates` 120, `historySpanDays` 180, `titles` 20, `independentWeeks` 20, Owner-Freigabe | unverändert | keine Wirkung |
+
+**Umgesetzt, ohne normative Wirkung**
+- **A5:** Die Segmentierung kennt das optionale Feld `countBy` (`ROWS` als Standard wie bisher, oder `EVENT_DAY`). Bei `EVENT_DAY` zählt `n` verschiedene Ereignistage, `nRows` steht daneben; die Kennzahl bleibt der Median über alle Zeilen. Die Python-Gegenrechnung (`verify-setup-oos.py`) rechnet beides mit.
+- **A6:** `build-setup-outcomes.mjs --oos-rows-out <datei>` schreibt die abgeschlossenen Ereigniszeilen `{date, net, b}` je Ereignisart, Variante und Horizont (Schema `setup-oos-rows-1.0.0`). Ziele unter `quant/data` werden verweigert. Neu ist außerdem `--out` für Tests.
+- **Vorher/Nachher:** `setup-outcomes-v1.json` und `backtest-certification-v1.json` sind mit altem und neuem Code identisch (ohne `generatedAt`). Die Segmentierung in der Methodik fehlt weiter, das Gate meldet unverändert `OOS_NOT_MEASURABLE_YET`.
+
+**Zur Fachentscheidung (kompakt):** Nach der Freigabe wird in `quant/methodology/backtest-certification-v1.json` (Versionssprung) eingetragen:
+
+```json
+"oosSegmentation": { "id": "setup-oos-2027-05-31", "method": "FIXED_CALENDAR_CUT", "cutDate": "2027-05-31", "embargoDays": 183,
+  "countBy": "EVENT_DAY", "criterion": { "metric": "MEDIAN_EXCESS", "rule": "SIGN_REPLICATES" },
+  "approval": { "approvedBy": "<Owner>", "approvedAt": "<Datum>" } }
+```
+
+Dazu kommen die Auswertung je Ereignisart im Zertifizierungs-Builder und der Zeilenexport im Materialisierungslauf, jeweils als eigener PR mit Vorher/Nachher.

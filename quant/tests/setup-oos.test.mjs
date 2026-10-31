@@ -170,3 +170,24 @@ test("Sabotage: die Python-Gegenrechnung erkennt ein verfaelschtes Ergebnis", ()
   assert.equal(reference(input, { ...r, segments: { ...r.segments, test: { ...r.segments.test, n: r.segments.test.n + 1 } } }).ok, false);
   assert.equal(reference(input, { ...r, segments: { ...r.segments, train: { ...r.segments.train, metric: r.segments.train.metric + 1e-6 } } }).ok, false);
 });
+
+/* Vorarbeit A5 (keine Norm): countBy EVENT_DAY zaehlt Ereignistage statt Zeilen. */
+test("countBy EVENT_DAY: viele Zeilen an wenigen Tagen reichen nicht, Standard bleibt Zeilenzaehlung", () => {
+  /* 480 Zeilen an 16 Wochentagen (30 je Tag): roh gross genug, effektiv nicht. */
+  const t0 = Date.parse("2025-01-02T00:00:00Z");
+  const many = Array.from({ length: 480 }, (_, i) => ({ date: new Date(t0 + Math.floor(i / 30) * 7 * 86400000).toISOString().slice(0, 10), net: 0.04, b: { median: 0.01, positiveShare: 0.5, n: 100 } }));
+  const raw = run({ rows: many, minPerSegment: MIN, segmentation: seg() });
+  assert.equal(raw.status, "PASS", "Zeilenzaehlung wie bisher");
+  assert.equal(raw.segments.train.countBy, undefined, "ohne countBy unveraenderte Ausgabe");
+  const eff = run({ rows: many, minPerSegment: MIN, segmentation: seg({ countBy: "EVENT_DAY" }) });
+  assert.deepEqual([eff.status, eff.reasonCode], ["FAIL", "OOS_SEGMENT_TOO_SMALL"]);
+  assert.equal(eff.segments.train.countBy, "EVENT_DAY");
+  assert.ok(eff.segments.train.n < MIN && eff.segments.train.nRows >= MIN && eff.segments.train.nRows === eff.segments.train.nAll, JSON.stringify(eff.segments.train));
+  assert.equal(eff.segments.train.metric, raw.segments.train.metric, "Kennzahl unveraendert");
+  /* Genug verschiedene Tage: PASS auch effektiv. */
+  const spread = rows(140, { stepDays: 1, netFn: () => 0.04, baseFn: () => 0.01 }).map((r, i) => ({ ...r, date: new Date(t0 + i * 86400000).toISOString().slice(0, 10) }));
+  assert.equal(run({ rows: spread, minPerSegment: MIN, segmentation: seg({ countBy: "EVENT_DAY" }) }).status, "PASS");
+  /* Unbekannte Zaehlweise ist ungueltig. */
+  assert.equal(run({ rows: spread, minPerSegment: MIN, segmentation: seg({ countBy: "CLUSTER" }) }).reasonCode, "OOS_SEGMENT_DEFINITION_INVALID");
+  assert.deepEqual(O.COUNT_BY, ["ROWS", "EVENT_DAY"]);
+});

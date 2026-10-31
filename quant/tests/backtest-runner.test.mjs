@@ -245,3 +245,17 @@ test('independent Python re-computation (python3 -I) of synthetic runner results
     assert.equal(rep.cases.prepared['stateB.noNumbers'].passed, 1);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('state B: incomplete private delisted directory -> PREPARED_DATA_LIMITED with the count, never a hard error or a smaller population', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dl-incomplete-'));
+  const incomplete = () => { throw Error('PRIVATE_DATA_INCOMPLETE:12 of 1675 register rows without a private file'); };
+  const r = R.runBacktest({ ...replaySpec(), population: { profile: 'V13_DELISTED_F1', securityIds: ['dl_2ad5c4a973ce5a19'], privateInputs: ['delistedSeries'] } },
+    { privateDirs: { delistedSeries: dir }, deps: deps({ population: incomplete }) });
+  valid(r); assert.equal(r.state, 'PREPARED_DATA_LIMITED');
+  assert.ok(r.envelope.limitations.some(x => x.startsWith('MISSING_INPUT:PRIVATE_DATA_INCOMPLETE:delistedSeries 12 of 1675')), JSON.stringify(r.envelope.limitations));
+  assert.equal(r.envelope.metrics.basis, 'NONE');
+  /* Andere Fehler bleiben harte Fehler. */
+  const broken = () => { throw Error('DELISTED_POINTS_HASH_MISMATCH:x'); };
+  assert.throws(() => R.runBacktest({ ...replaySpec(), population: { profile: 'V13_DELISTED_F1', securityIds: ['dl_2ad5c4a973ce5a19'], privateInputs: ['delistedSeries'] } },
+    { privateDirs: { delistedSeries: dir }, deps: deps({ population: broken }) }), /DELISTED_POINTS_HASH_MISMATCH/);
+});

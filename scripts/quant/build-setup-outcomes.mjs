@@ -19,12 +19,18 @@
    oeffentliche Jahresreihe (nur Kurs) - die Renditebasis steht im Artefakt.
 
    Schreibt quant/data/product/setup-outcomes-v1.json (nur abgeleitete
-   Zustaende und Aggregate, keine Kursreihe).
+   Zustaende und Aggregate, keine Kursreihe); --out <datei> schreibt
+   stattdessen dorthin (Tests, Vorher/Nachher).
+
+   --oos-rows-out <datei> (Vorarbeit Setup-OOS A6, keine Norm): zusaetzlich
+   die abgeschlossenen Ereigniszeilen {date, net, b} je Ereignisart, Variante
+   und Horizont als getrennte Datei (Schema setup-oos-rows-1.0.0), nicht unter
+   quant/data. Das Produktartefakt bleibt davon unberuehrt.
    ========================================================================= */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { dailyOf } from "./lib/daily-prices.mjs";
@@ -36,6 +42,7 @@ const CONTRACT = JSON.parse(readFileSync(join(ROOT, "quant/methodology/setup-bac
 const HIST = join(ROOT, "quant/data/product/setup-observation-history/setup-mapping-1.0.0");
 const OUT = join(ROOT, "quant/data/product/setup-outcomes-v1.json");
 export const OUTCOMES_SCHEMA = "setup-outcomes-1.0.0";
+export const OOS_ROWS_SCHEMA = "setup-oos-rows-1.0.0";
 
 const UP = { NO_SETUP: 0, WATCH: 1, SETUP_FORMING: 2, CONFIRMED: 3 };
 export function transitionType(a, b) {
@@ -70,6 +77,10 @@ export function contractExit({ dates, close }, e, levelsBefore, weakenedOn, maxH
 function main() {
   const argv = process.argv.slice(2);
   const wi = argv.indexOf("--work-dir"), workDir = wi >= 0 ? argv[wi + 1] : null;
+  const opt = (k) => { const i = argv.indexOf(k); if (i < 0) return null; if (!argv[i + 1] || argv[i + 1].startsWith("--")) throw Error("ARGUMENT_MISSING " + k); return argv[i + 1]; };
+  const outFile = opt("--out") || OUT, rowsOut = opt("--oos-rows-out");
+  if (rowsOut && (resolve(rowsOut) + sep).startsWith(join(ROOT, "quant", "data") + sep)) throw Error("OOS_ROWS_OUT_INSIDE_QUANT_DATA");
+  const oosRows = {};
   const files = readdirSync(HIST).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).sort();
   const snaps = files.map((f) => {
     const s = JSON.parse(gunzipSync(readFileSync(join(HIST, f))).toString("utf8"));
@@ -140,7 +151,7 @@ function main() {
     const evs = events.filter((e) => e.type === type);
     const byVariant = {};
     for (const variant of CONTRACT.entry.variants.map((v) => v.id)) {
-      const hz = {};
+      const hz = {}, rowsBy = {};
       for (const h of H) {
         const rets = [], ex = [], dd = [], status = { COMPLETED: 0, PENDING: 0, INCOMPLETE: 0, NO_PRICES: 0 }, rows = [];
         for (const ev of evs) {
@@ -163,6 +174,7 @@ function main() {
           if (b) ex.push(net - b.median);
           rows.push({ date: ev.date, net, b });
         }
+        rowsBy[h.id] = rows.map((r) => ({ date: r.date, net: r.net, b: r.b ? { median: r.b.median } : null })).sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : x.net - y.net));
         const sum = rets.length ? SB.summarize(rets) : null;
         const matchedBase = rows.filter((r) => r.b);
         hz[h.id] = { tradingDays: h.tradingDays, status, summary: sum,
@@ -170,6 +182,7 @@ function main() {
           medianExcess: ex.length ? SB.round(SB.median(ex)) : null, typicalDrawdown: dd.length ? SB.round(SB.median(dd)) : null };
       }
       byVariant[variant] = hz;
+      if (rowsOut && type !== "SETUP_WEAKENED") for (const h of H) ((oosRows[type] = oosRows[type] || {})[variant] = oosRows[type][variant] || {})[h.id] = rowsBy[h.id];
     }
     /* Vertragsausstieg (nur Einstiegsereignisse, Standardvariante). */
     let trades = null;
@@ -218,7 +231,12 @@ function main() {
     events: events.map((e) => [e.ticker, e.type, e.date]),
     study
   };
-  writeFileSync(OUT, JSON.stringify(out) + "\n");
+  writeFileSync(outFile, JSON.stringify(out) + "\n");
+  if (rowsOut) {
+    writeFileSync(rowsOut, JSON.stringify({ schemaVersion: OOS_ROWS_SCHEMA, outcomesSchema: OUTCOMES_SCHEMA, asOf: out.asOf, returnType,
+      note: "Abgeschlossene Ereigniszeilen fuer den Setup-OOS-Auswerter (quant/engines/setup-oos.cjs, Feld rows). Kein Produktartefakt, keine Kursreihe; b = Marktbasis desselben Einstiegstags.",
+      rows: oosRows }) + "\n");
+  }
   console.log("dates", dates.length, "span", out.history.spanDays, "events", events.length, "returnType", returnType, "priced", withPrices.length);
   for (const [k, v] of Object.entries(study)) console.log(k, "events", v.events, "m1", JSON.stringify(v.variants.NEXT_CLOSE.m1.status), "m6", JSON.stringify(v.variants.NEXT_CLOSE.m6.status), "trades", v.contractTrades ? v.contractTrades.completed : "-");
 }
