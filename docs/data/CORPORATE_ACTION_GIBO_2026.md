@@ -117,3 +117,15 @@ Die Trefferliste hätte 684 statt 685 Titel; Platz 1 wäre MRNA.
   - `quant/tests/corporate-action-confirmations.test.mjs` 5/5 (Bereinigung und Schutzregeln);
 - **Nach dem nächsten Lauf erwartet:** DQ-PX-3 meldet GIBO nicht mehr, da die Discover-Reihe bereinigt ist;
   - `quant/tests/split-evidence-supplements.test.mjs` 9/9, unverändert.
+
+## 7. Nachweis im regulären Lauf (31.10.2026)
+
+| Artefakt | Ergebnis |
+|---|---|
+| Materialisierung `d2a7fc4` (Nachtlauf 30./31.10., Bündel `technical-signals-v1/GI`) | Schluss 26.06. = 31,25, 29.06. = 31,25, 30.06. = 22,70; größter Tagesfaktor der Reihe **1,377** (vorher 18,16). `splitEvents` 2 in der Herkunft. |
+| Discover-Tagesreihe `ref_GIBO` (Marktdaten-Refresh `1d4ff5e`) | bereinigt: 31,25 → 31,25 → 22,70 |
+| DQ-PX-3 | meldet den Sprung vom 30.06. nicht mehr |
+| Technical-Screener (Erzeuger auf Stand 30.10., #1188) | rs6m **1,58**, RS-Rang **99,4**, keine Kurssprung-Kennzeichnung, `suspectJumpConfirmed` = 0; „Etablierter Aufwärtstrend“ nur noch **fast**, kein Volltreffer (619 Volltreffer) |
+| Wochenreihe `discover-series-long/ref_GIBO` | **noch nicht** neu gebaut (wöchentlicher Lauf, letzter 24.10.); bis dahin meldet DQ-PX-4 die Abweichung Tag/Woche um Faktor 25. Der nächste reguläre Lauf schreibt `corporateActions.confirmed`. |
+
+Vorhersage aus §4 bestätigt: Der etablierte Aufwärtstrend fällt wie vorhergesagt weg. Der RS-Rang liegt mit 99,4 statt 98,6 etwas höher, weil der Stichtag einen Tag später ist und sich der Querschnitt verschoben hat.

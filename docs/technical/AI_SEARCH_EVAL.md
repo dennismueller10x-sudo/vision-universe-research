@@ -78,3 +78,7 @@ Freigeschaltet wird erst, wenn alle Punkte entschieden sind:
 4. **Qualität:** Gold-Set mit dem echten Modell, mindestens so gut wie der Parser, 0 stille Fehlgriffe (Regel oben).
 
 Bis dahin lädt die Seite `query-ai.js` nicht (kein zusätzlicher Request). Die Oberfläche nutzt den regelbasierten Weg, der zugleich der Rückfall der Modellstufe ist.
+
+## Owner-Entscheidung 31.10.2026: Anbindung über AI Atlas
+
+AI Atlas ist der zentrale KI-Assistent für Vision Universe. Technical bekommt **keine eigene** kostenpflichtige KI-Suche und keine eigene Modellanbindung. Die Module dieses Dokuments (`query-ai.js`, Schema, Prüfung, Rückfall, Gold-Set) bleiben bestehen und werden von AI Atlas genutzt. Die Freischaltungspunkte oben gelten dann für das Atlas-Projekt. Übergabe: [AI_ATLAS_HANDOFF.md](AI_ATLAS_HANDOFF.md).
