@@ -63,7 +63,7 @@
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
    "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -130,7 +130,7 @@
    "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
   }
  },
- "inputHash": "a35bd861bfaa69ab286f304490b23a06dad606b4ad891b3d9372d16624a7281f",
+ "inputHash": "4d9fc70a5ff10809ca90edf921d17ad1eb09b9f12c06b2a44e8dc165fdca5bab",
  "kindPath": {
   "kind": "STRATEGY_BACKTEST",
   "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -227,7 +227,7 @@
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
       "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -294,7 +294,7 @@
       "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
      }
     },
-    "inputHash": "db59eb304acad06282f8f90f180fdb6d702a977373e1d862486a6969e8a13cdc",
+    "inputHash": "f7a04b1964dd556bad992c24105c653d1b5c9116b117dc00a50cd12ab2398e3e",
     "kindPath": {
      "kind": "STRATEGY_BACKTEST",
      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -315,7 +315,7 @@
      "specHash": "12f9f4fc4c561cae7b3242fa767752aed529937425dab14c58c507d0e3bcb2bb"
     }
    },
-   "specHash": "a25d320b202fb6a7864eca3644c9a4eb9446980efc9b6da9396a84b5a610baaa"
+   "specHash": "4ce01969fed9bfdc2f08023baeac16c58b2c5c2c872b7a4ba5af99151dd7eca1"
   },
   "events": {
    "form": "TRADES",
@@ -1351,9 +1351,9 @@
    "productionApproved": false,
    "evidenceKind": "SIMULATED_LEDGER"
   },
-  "envelopeHash": "106324d6feecdc6e4a57b613578aad9faf6116387f5c94a00cbd4cdcd4e06ee7"
+  "envelopeHash": "01b5f4cafaf94872ad9a2a324c97f9281ba71e17e1d38d2361fd3e8d634ccdb7"
  },
- "envelopeHash": "106324d6feecdc6e4a57b613578aad9faf6116387f5c94a00cbd4cdcd4e06ee7",
+ "envelopeHash": "01b5f4cafaf94872ad9a2a324c97f9281ba71e17e1d38d2361fd3e8d634ccdb7",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
@@ -1604,5 +1604,5 @@
   "inputsAfterAsOf": 0
  },
  "qa": null,
- "resultHash": "f1090baaa64eec1efbd2401e1e8115b03229218a43aeeff2d28c2358ff6f925e"
+ "resultHash": "a4ae342d7ad2578d2b5e95c5b4f05143fa5594d711377870339ee16580663ec8"
 }

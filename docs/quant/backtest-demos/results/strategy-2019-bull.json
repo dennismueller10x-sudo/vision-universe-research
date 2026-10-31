@@ -88,7 +88,7 @@
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
    "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -209,7 +209,7 @@
   },
   "private": {}
  },
- "inputHash": "99b9e8281b1f5c156109b73595f52409be928a54680747139dd0eb6f9f1b69e9",
+ "inputHash": "ef0fa0fc9ab627068e436896cdddc8ee1d06189d14c4c1f7503b122cc7040145",
  "kindPath": {
   "kind": "STRATEGY_BACKTEST",
   "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,4)",
@@ -331,7 +331,7 @@
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
       "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
@@ -452,7 +452,7 @@
      },
      "private": {}
     },
-    "inputHash": "99b9e8281b1f5c156109b73595f52409be928a54680747139dd0eb6f9f1b69e9",
+    "inputHash": "ef0fa0fc9ab627068e436896cdddc8ee1d06189d14c4c1f7503b122cc7040145",
     "kindPath": {
      "kind": "STRATEGY_BACKTEST",
      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,4)",
@@ -473,7 +473,7 @@
      "specHash": "8bd07c6959ee14bb547280f49a5ed27a469a2864dec3af618d215d2473e51971"
     }
    },
-   "specHash": "59e98d2f024c860561d1c3d207164dcea7ef6a022558f1e3d5329b725a006566"
+   "specHash": "2feff2806698ea413cef673c6c24ba0dd44ae11b6db1eb4b47c6658360662701"
   },
   "events": {
    "form": "TRADES",
@@ -1010,8 +1010,8 @@
       "maxEstimate": 0.00003224402431536607
      },
      "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
-     "registrationHash": "1cc25ee8eeedfda9d0551cb2ed84bc8c194d49f4e4fb7e0af6c365f55956f442",
-     "resultHash": "2f493ed87fa2dbeced7f3f671b762906135cf077309f81f381e9c8126acfcd35",
+     "registrationHash": "1a55f80d5adc12459f4b8a7cd852645e451ab29b41ec6152fd0e2e64d797c855",
+     "resultHash": "e90bbceb790d48d29115df010b22ead4ccc589942154266a30d2b9c08b51dfda",
      "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
     }
    },
@@ -1061,9 +1061,9 @@
    "productionApproved": false,
    "evidenceKind": "SIMULATED_LEDGER"
   },
-  "envelopeHash": "06dc1338568377b2ccc1b3096115e333c3b381de74851c575efb258ea31e0050"
+  "envelopeHash": "e8c8d8cb009ca46c6dce64130e6a37c380ad6bc7637734004360981c0b1900d8"
  },
- "envelopeHash": "06dc1338568377b2ccc1b3096115e333c3b381de74851c575efb258ea31e0050",
+ "envelopeHash": "e8c8d8cb009ca46c6dce64130e6a37c380ad6bc7637734004360981c0b1900d8",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
@@ -1310,5 +1310,5 @@
   "inputsAfterAsOf": 0
  },
  "qa": null,
- "resultHash": "f8f64016f463a2a70bcb1629c0c4ba6d8983a74dd7bcae7d5b441687fa25dd40"
+ "resultHash": "14b072bfa6e75891a031451c5e04884d88bbe6b70b02160fc47c9cd19b3c11d7"
 }
