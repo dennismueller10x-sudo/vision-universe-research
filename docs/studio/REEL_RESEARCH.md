@@ -156,3 +156,5 @@ Befunde:
 5. Kommentar-Aufrufe („Kommentiere AKTIE", „Boden oder Falle") bringen Kommentare (bis 8), aber ohne Haltequote keine Reichweite.
 
 Nächster Test (Hypothesen, nicht bewiesen): 20 bis 30 s, erstes Bild ohne Logo- und Kickerzeile, Bewegung und eine Zahl ab Bild 1, offene Schleife wie beim Fed-Reel, Serie mit Teil 1/2, Teilen-Anlass („Schick das jemandem, der …"). Messung nach 48 h: Haltequote über 30 % ist das Ziel.
+
+Nachtrag 31.10.2026: KI-Jobs-Reel nach 17 h bei 141 Reichweite, Ø 5,3 s (8 %). Lehre: Eine Frage im Hook („Bist du bald arbeitslos?") lässt sich innerlich mit „Nein" beantworten; die ersten 10 Sekunden lösten das Versprechen „dein Job" nicht ein (Microsoft-Mitarbeiter, dann Investitionen), und die Testgruppe (Börse) passt nicht zum Job-Thema. Hook und erste 10 s müssen dasselbe Versprechen halten; Behauptung mit Lücke schlägt Frage.
