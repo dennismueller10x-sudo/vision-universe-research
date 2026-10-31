@@ -1,12 +1,21 @@
 {
   "schema": "vu-supertrader-cert-prep-plan-1",
   "id": "SF9-CERT-PREP-TOP5",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "fixedOn": "2026-10-31",
   "status": "PREREGISTERED_NOT_ACTIVE",
   "purpose": "Methodische Zertifizierungsvorbereitung der fünf am besten validierbaren Methoden. Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
+  "revision": "1.1.0 (31.10.2026, vor jedem Ergebnis einer Studie): Abhängigkeit von PR #1148 ausdrücklich, Soll-Mengen für Regeln und Parameter (rulesOutOfScope, paramsOutOfScope), C01 um CP-TUR-S2-TRIGGER-ONE-TICK ergänzt, Befund F-KK-ADR-DENOMINATOR präzisiert, Status der CONFORMANCE-Studien auf PR-Head-Nachweis begrenzt, Prüfername korrigiert. Keine Regel, kein Parameter und kein Abnahmekriterium einer Studie geändert.",
+  "dependsOn": {
+    "pr": 1148,
+    "branch": "claude/supertrader-9-data-certification-jnejw3",
+    "commit": "afa923a6ce61262cfabd0177ba72f9f4a1ce2da4",
+    "file": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md",
+    "sha256": "89a6026937f1f903dab18487dcfc34603b387a12132efe81de8abf3c2398cfde",
+    "mergeOrder": "erst nach #1148 mergen: alle Fundstellen 'Matrix …' verweisen auf diese Datei, die heute nur auf dem Branch von #1148 liegt; die Matrix wird hier nicht kopiert"
+  },
   "basis": {
-    "matrix": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (PR #1148, Stand 30.10.2026)",
+    "matrix": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (PR #1148, Stand 30.10.2026; noch nicht auf main, siehe dependsOn)",
     "criteria": "sf6-readiness-criteria-1.2.0 (scripts/supertrader/source-faithful/completion/sf6-readiness-criteria.mjs)",
     "paperProtocol": "SF6-PAPER-2027 1.1.0 (scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs)",
     "validationProtocol": "SF6-VALIDATION-PROTOCOL 1.1.0 (scripts/supertrader/source-faithful/research/run-sf6-validation.mjs)",
@@ -17,6 +26,16 @@
     "b": "braucht den neuen Security Master (#1143 / #1163, andere Sitzung)",
     "c": "braucht private V13- oder Delisting-Daten",
     "d": "braucht eine Owner- oder Quellenentscheidung (auch Lizenzdaten, Aktivierung, Zeitablauf)"
+  },
+  "outOfScopeReasons": {
+    "COVERED_IN": "Vertragsregel der gemeinsamen Engine, im Plan bei der genannten Methode geführt (COVERED_IN:<Kandidat>)",
+    "MANUAL_REVIEW_LAYER": "Vertragsstatus MANUAL_REVIEW_REQUIRED: keine mechanische Grenze, die ein Regeltreue-Test festschreiben kann",
+    "DATA_BLOCKED": "Vertragsstatus DATA_BLOCKED",
+    "CONTRACT_GOLDEN_CASES": "nicht Gegenstand dieser Grenzfall-Vorbereitung; die Regeltreue belegen die im Vertrag genannten Golden Cases (unverändert)",
+    "OTHER_METHOD": "Parameter einer anderen Methode derselben Engine (OTHER_METHOD:<Kandidat>)",
+    "STRUCTURAL_FLAG": "Strukturschalter ohne Quellenzahl; der genannte Test hält den Wert fest",
+    "NOT_IN_RESEARCH_REFERENCE": "von der Forschungsreferenz nicht genutzt; der genannte Blocker führt die offene Frage",
+    "UNIT_CONVERSION": "Umrechnungskonstante, keine Quellenregel"
   },
   "guards": {
     "validatedTradeSignal": "LOCKED_FOR_ALL_13",
@@ -49,6 +68,17 @@
       "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-INVARIANTS-ALL-VARIANTS"
     ]
   },
+  "paramsOutOfScope": [
+    { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.filter", "reason": "STRUCTURAL_FLAG", "test": "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S1-WINDOWS" },
+    { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.failsafe", "reason": "STRUCTURAL_FLAG", "test": "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-NO-SKIP-NO-FAILSAFE" },
+    { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "epMaxAdr", "reason": "OTHER_METHOD:C09" },
+    { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "epGapReference", "reason": "OTHER_METHOD:C09" },
+    { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "momentumSessions.m1", "reason": "NOT_IN_RESEARCH_REFERENCE", "blocker": "C08-MOMENTUM-SPLIT" },
+    { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "momentumSessions.m3", "reason": "NOT_IN_RESEARCH_REFERENCE", "blocker": "C08-MOMENTUM-SPLIT" },
+    { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "momentumSessions.m6", "reason": "NOT_IN_RESEARCH_REFERENCE", "blocker": "C08-MOMENTUM-SPLIT" },
+    { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "ppWindow", "reason": "OTHER_METHOD:C11" },
+    { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "sessionsPerWeek", "reason": "UNIT_CONVERSION" }
+  ],
   "crossCuttingBlockers": [
     { "id": "X-CC5", "criterion": "CC-5", "class": "d", "secondary": [], "text": "83 referenzexponierte DQ-K5-Sitzungen ungeklärt; EDGAR 1.4.0–1.4.3 bestätigt keine, Tiingo-Splits HTTP 403; CC5-e mit k-Schwellen konstruktionsbedingt unerfüllbar; CC5-f nicht gerechnet", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.4, Querschnittsblocker 1", "closes": "lizenzierte, faktortragende CA-Quelle mit Abnahme (E7-1), Daten-PR, Snapshot-Generation 3 (E7-4 B), Neuläufe gegen dieselben Referenz-Hashes" },
     { "id": "X-CC8", "criterion": "CC-8", "class": "d", "secondary": [], "text": "kein unberührtes historisches Fenster; SF6-PAPER-2027 vorbereitet, nicht aktiv; Aufbewahrungsentscheidung offen; auswertbar frühestens Ende 2027", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.6, Querschnittsblocker 2", "closes": "Owner-Aktivierung in eigenem PR vor dem 01.01.2027, 250 Sitzungen, alle vier Integritätsprüfungen bestanden" },
@@ -77,6 +107,19 @@
         { "id": "TUR-SF-UNIT", "status": "SOURCE_DERIVED" },
         { "id": "TUR-SF-LIMIT-CORR", "status": "DATA_BLOCKED" },
         { "id": "TUR-SF-SHORT", "status": "DATA_BLOCKED" }
+      ],
+      "rulesOutOfScope": [
+        { "id": "TUR-SF-TR", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-N-DAILY", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-NOTIONAL", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-LIMIT4", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-LIMIT12", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-ADDFAST", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-STOPGAP", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-RANK", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-CONSISTENT", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-MARKETS", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-CASH", "reason": "CONTRACT_GOLDEN_CASES" }
       ],
       "params": [
         { "psr709": "TUR-S2ENT", "token": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.entry" }, "value": 55, "kind": "SOURCE_NUMBER" },
@@ -140,7 +183,7 @@
         { "id": "EX-TUR-COSTS", "text": "10 bps je Seite plus 1 bp; Stufen 0/10/20/50", "basis": "Plattformkonvention", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-COSTS-REFERENCE"] }
       ],
       "studies": [
-        { "id": "PS-C02-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?", "procedure": "node --test über die Dateien aus conformanceTests; Ergebnis per cert-prep-check.mjs --run-tests protokolliert", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C02-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?", "procedure": "node --test über die Dateien aus conformanceTests; Ergebnis per scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --run-tests protokolliert (NOT_MET macht das Protokoll ungültig, Exit 1)", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY", "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN" },
         { "id": "PS-C02-CC4-GROUPS", "class": "d", "question": "Wirkt das Korrelationslimit mit einer freigegebenen Gruppenquelle wie vorgeschrieben?", "procedure": "nach Owner-Freigabe: Neulauf BASE_S0 mit groupsOf; Referenz ohne Gruppen bleibt hashgleich", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "correlationLimits = ENFORCED_WITH_CALLER_GROUPS (nicht PARTIAL)" }, { "metricKind": "COUNT", "criterion": "rejectCorrelationLimit6 / -10 und geänderte Trades vorher/nachher berichtet" }, { "metricKind": "INTEGRITY", "criterion": "Referenzlauf ohne Gruppen ledger-hash-identisch" }], "status": "BLOCKED_OWNER" },
         { "id": "PS-C02-CC5", "class": "d", "question": "Sind alle exponierten K5/K3-Sitzungen der Referenz belegt?", "procedure": "Klassifikation je Sitzung mit der freigegebenen CA-Quelle, Neulauf, Holdout-Zensus (CC5-f)", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "0 ungeklärte K5-Sitzungen (14 heute)" }, { "metricKind": "DATA_COVERAGE", "criterion": "alle 38 K3-Sitzungen klassifiziert" }, { "metricKind": "COUNT", "criterion": "Trades vorher/nachher je Sitzung berichtet" }], "status": "BLOCKED_OWNER" },
         { "id": "PS-C02-SAMPLE-COUNT", "class": "a", "question": "Wie viele abgeschlossene Positionen liefert das Paper-Fenster?", "procedure": "Zählung der positionTrades im Paper-Log; keine Kennzahl wird geöffnet", "acceptance": [{ "metricKind": "COUNT", "criterion": "Anzahl berichtet; keine Mindestzahl als Kriterium (würde SF6-PAPER-2027 ändern; Entscheidung d)" }], "status": "PREPARED" },
@@ -167,6 +210,24 @@
         { "id": "TUR-SF-STOP", "status": "SOURCE_EXACT" },
         { "id": "TUR-SF-LIMIT-CORR", "status": "DATA_BLOCKED" }
       ],
+      "rulesOutOfScope": [
+        { "id": "TUR-SF-TR", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-N", "reason": "COVERED_IN:C02" },
+        { "id": "TUR-SF-N-DAILY", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-UNIT", "reason": "COVERED_IN:C02" },
+        { "id": "TUR-SF-NOTIONAL", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-LIMIT4", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-LIMIT12", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-SHORT", "reason": "COVERED_IN:C02" },
+        { "id": "TUR-SF-ADD", "reason": "COVERED_IN:C02" },
+        { "id": "TUR-SF-ADDFAST", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-STOPADD", "reason": "COVERED_IN:C02" },
+        { "id": "TUR-SF-STOPGAP", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-RANK", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-CONSISTENT", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-MARKETS", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "TUR-SF-CASH", "reason": "CONTRACT_GOLDEN_CASES" }
+      ],
       "params": [
         { "psr709": "TUR-S1ENT", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.entry" }, "value": 20, "kind": "SOURCE_NUMBER" },
         { "psr709": "TUR-S1EX", "token": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.exit" }, "value": 10, "kind": "SOURCE_NUMBER" },
@@ -186,6 +247,7 @@
       ],
       "conformanceTests": [
         "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S1-WINDOWS",
+        "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-S2-TRIGGER-ONE-TICK",
         "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-TUR-STOP-2N-PRIOR-CLOSE-N",
         "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
         "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1",
@@ -209,7 +271,7 @@
         { "id": "EX-TUR-FILTER-BAR", "text": "eine Auflösung des hypothetischen Ausbruchs auf dem Signalbalken zählt nur bei Eröffnung (Reihenfolge unbekannt, gezählt)", "basis": "SF-R3-04", "tests": ["scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FILTER-ENTRY-BAR"] }
       ],
       "studies": [
-        { "id": "PS-C01-CONFORMANCE", "class": "a", "question": "wie PS-C02-CONFORMANCE", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C01-CONFORMANCE", "class": "a", "question": "wie PS-C02-CONFORMANCE", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY", "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN" },
         { "id": "PS-C01-READINGS", "class": "d", "question": "Welche Lesart von TUR-SF-S1-OPEN-BREAKOUT und TUR-SF-FAILSAFE-EXIT ist die Referenz?", "procedure": "Owner entscheidet mit Zitat aus W-TUR (gedruckt S. 19) oder stellt 'nicht essenziell' fest; die Entscheidung wird datiert, bevor eine versiegelte Kennzahl geöffnet wird; beide Szenarien bleiben gerechnet", "acceptance": [{ "metricKind": "DECISION_RECORD", "criterion": "Entscheidung mit Quellenstelle, Datum vor jedem Öffnen der Kennzahlen" }, { "metricKind": "COUNT", "criterion": "Trades je Lesart (SKIP/TAKE, 10D/20D) berichtet" }], "status": "BLOCKED_OWNER" },
         { "id": "PS-C01-STABILITY", "class": "a", "question": "Wie stabil sind die Trades unter Quarantäne und Weglassen eines Titels?", "procedure": "bestehende SF7-VAL-STABILITY-Zählung; Auswertung nur als Verteilung (E6)", "acceptance": [{ "metricKind": "DISTRIBUTION_REPORT_ONLY", "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle" }], "status": "READY" }
       ],
@@ -236,6 +298,9 @@
         { "id": "KK-SF-BO-TRAIL", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "KK-SF-SIZE", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "KK-SF-BO-ORH", "status": "DATA_BLOCKED" }
+      ],
+      "rulesOutOfScope": [
+        { "id": "KK-SF-PRIORITY", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
         { "psr709": "KK-031", "token": "ADR20", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "adrSessions" }, "value": 20, "kind": "SOURCE_NUMBER" },
@@ -287,7 +352,7 @@
         { "id": "EX-KK-SIZE", "text": "0,5 % Risiko zum Stop, gedeckelt durch 25 % Plattform (strenger als 30 % Quelle)", "basis": "MA-KK-RISK-FRACTION, KK-001", "tests": ["scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-KK-STOP-MARKET-AND-CAP"] }
       ],
       "studies": [
-        { "id": "PS-C08-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C08-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY", "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN" },
         { "id": "PS-C08-COSTS", "class": "a", "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?", "procedure": "bestehende SF6-Läufe COST-0/REF/COST-20/COST-50 (versiegelt)", "acceptance": [{ "metricKind": "COUNT", "criterion": "Trades je Kostenstufe berichtet; keine Kostenstufe wird nachträglich gewählt" }], "status": "READY" },
         { "id": "PS-C08-XS-COVERAGE", "class": "a", "question": "Wie groß ist der Momentum-Querschnitt je Datum, mit und ohne inaktive Listings?", "procedure": "Zählung auf dem DEV-Snapshot über momentumRanks (keine Kennzahl, nur Anzahl Titel je Datum); Lauf braucht den Snapshot-Workflow und wird nicht in dieser Vorbereitung ausgelöst", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "Verteilung der Querschnittsgröße je Datum und Anteil inaktiver Listings berichtet" }], "status": "PLANNED_NEEDS_SNAPSHOT_RUN" },
         { "id": "PS-C08-SETUP-PROXY", "class": "d", "question": "Ist der Setup-Proxy für CC-3 tragfähig?", "procedure": "Owner-Entscheidung auf Grundlage der festgeschriebenen Proxy-Grenzen und der vorregistrierten Varianten CONSOLIDATION_20 / NO_MA_CONDITION", "acceptance": [{ "metricKind": "DECISION_RECORD", "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen" }, { "metricKind": "COUNT", "criterion": "Trades je Proxy-Variante berichtet" }], "status": "BLOCKED_OWNER" }
@@ -314,6 +379,10 @@
         { "id": "MOKA-SF-BGU-CONTEXT", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "MOKA-SF-BGU-SIZE", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "MOKA-SF-EXIT-MA", "status": "MANUAL_REVIEW_REQUIRED" }
+      ],
+      "rulesOutOfScope": [
+        { "id": "MOKA-SF-EXIT-GUIDE-EVIDENCE", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "MOKA-SF-EXIT-CONTEXT", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
         { "psr709": "MOKA12-004", "token": "0.75×ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "gapAtr" }, "value": 0.75, "kind": "SOURCE_NUMBER" },
@@ -360,7 +429,7 @@
         { "id": "EX-BGU-VIOLATION", "text": "MA-Verletzung: strikt unter dem Tief des Verletzungstages, Lesart LATER_DAYS (Referenz), NEXT_DAY vorregistriert", "basis": "MA-MOKA-VIOLATION-READING", "tests": ["scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"] }
       ],
       "studies": [
-        { "id": "PS-C12-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C12-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY", "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN" },
         { "id": "PS-C12-CA-PROXIMITY", "class": "a", "question": "Wie viele BGU-Signale der Referenz fallen auf eine DQ-K5- oder DQ-K3-markierte Sitzung (Gap-Tag oder Vortag)?", "procedure": "Zählung mit dem bestehenden SF6-Detektor auf dem DEV-Snapshot; Lauf braucht den Snapshot-Workflow und wird nicht in dieser Vorbereitung ausgelöst", "acceptance": [{ "metricKind": "COUNT", "criterion": "Anzahl und Anteil markierter Signale berichtet; keine Signale werden entfernt" }], "status": "PLANNED_NEEDS_SNAPSHOT_RUN" },
         { "id": "PS-C12-READINGS", "class": "d", "question": "Welches Volumenfenster und welche Verletzungslesart sind die Referenz?", "procedure": "Quellensuche in den bereits zitierten Autorenquellen; sonst Owner-Entscheidung datiert vor jedem Öffnen der Kennzahlen; eine neue Fenstervariante bräuchte eine Registry-Änderung (sf5VariantRegistrySha256 ist in SF6-PAPER-2027 gepinnt) und ist hier nicht angelegt", "acceptance": [{ "metricKind": "SOURCE", "criterion": "Quellenstelle zitiert oder Entscheidung dokumentiert" }, { "metricKind": "COUNT", "criterion": "Trades je Verletzungslesart (LATER_DAYS / NEXT_DAY) berichtet" }], "status": "BLOCKED_OWNER" }
       ],
@@ -389,6 +458,15 @@
         { "id": "DAR-SF-VOLUME", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "DAR-SF-MARKET", "status": "MANUAL_REVIEW_REQUIRED" },
         { "id": "DAR-SF-SIZING", "status": "MANUAL_REVIEW_REQUIRED" }
+      ],
+      "rulesOutOfScope": [
+        { "id": "DAR-SF-TOP-EXCEEDED", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "DAR-SF-BOX-FAIL", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "DAR-SF-SPLITS", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "DAR-SF-RESEARCH-POPULATION", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "DAR-SF-REVIEW-DATA", "reason": "CONTRACT_GOLDEN_CASES" },
+        { "id": "DAR-SF-PYRAMID", "reason": "MANUAL_REVIEW_LAYER" },
+        { "id": "DAR-SF-REENTRY", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
         { "psr709": "DAR-Q1", "token": "drei", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "confirmDays" }, "value": 3, "kind": "SOURCE_NUMBER" },
@@ -434,7 +512,7 @@
         { "id": "EX-DAR-INTRABAR", "text": "Einstiegsbalken mit Tief am Stop: pessimistischer Ausstieg (Referenz), optimistische Variante vorregistriert", "basis": "MA-DAR-INTRABAR-ORDER", "tests": ["scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs: GC-SF5-DAR-ENTRY-BAR-STOP", "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL"] }
       ],
       "studies": [
-        { "id": "PS-C03-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY" },
+        { "id": "PS-C03-CONFORMANCE", "class": "a", "question": "Bestehen alle Regeltreue-Tests auf dem Referenz-Commit?", "procedure": "wie PS-C02-CONFORMANCE", "acceptance": [{ "metricKind": "INTEGRITY", "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen" }], "status": "READY", "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN" },
         { "id": "PS-C03-COSTS", "class": "a", "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?", "procedure": "bestehende SF6-Läufe (versiegelt)", "acceptance": [{ "metricKind": "COUNT", "criterion": "Trades je Kostenstufe berichtet" }], "status": "READY" },
         { "id": "PS-C03-ENTRY-BAR", "class": "a", "question": "Wie groß ist die Spannweite zwischen pessimistischer Referenz und sicherer Einstiegsbalken-Lesart (SF7-D1)?", "procedure": "bestehende SF7-Varianten, nur Zählungen", "acceptance": [{ "metricKind": "COUNT", "criterion": "Stops am Einstiegstag je Lesart berichtet (8.596 sicher von 17.002)" }], "status": "READY" },
         { "id": "PS-C03-ATH-COVERAGE", "class": "b", "question": "Wie viele Ausbrüche tragen ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED?", "procedure": "Zählung nach Einbindung des Listing-Beginns aus dem neuen Security Master", "acceptance": [{ "metricKind": "DATA_COVERAGE", "criterion": "Anteil verifizierter Allzeithochs berichtet" }], "status": "BLOCKED_SECURITY_MASTER" },
@@ -445,7 +523,7 @@
   ],
   "findings": [
     { "id": "F-TUR-ADD-UNIT-N", "methods": ["C01", "C02"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "Ein Add wird mit N der Vorsitzung des Add-Balkens dimensioniert (buyUnit nSize = N[i-1]); Abstand und Stops nutzen N des Einstiegs. TUR-SF-ADD nennt nur Abstand und Stops; TUR-SF-UNIT nennt N der Vorsitzung. Kein Widerspruch zu W-TUR (Units aus dem jeweils gültigen N), aber die Ableitung steht nicht ausdrücklich im Vertrag.", "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle (addUnits -> buyUnit)", "proposal": "Ableitungstext von TUR-SF-ADD in einem eigenen Supertrader-PR ergänzen (Vertragstext, kein Codepfad; ändert den Vertrags-Fingerabdruck, daher nicht hier)" },
-    { "id": "F-KK-ADR-DENOMINATOR", "methods": ["C08"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "ADR20 misst (Hoch/Tief - 1) relativ zum Tief (KK-031, Quelle), der Stopabstand wird relativ zum Einstieg gemessen ((Einstieg - Tagestief)/Einstieg). KK-012 nennt keinen Nenner. Abweichung je Trade gering, aber an der Grenze entscheidend.", "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopCheck", "proposal": "als Ableitung im Vertrag benennen; keine Änderung ohne Owner-Entscheidung" },
+    { "id": "F-KK-ADR-DENOMINATOR", "methods": ["C08"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "Die Formel steht im Vertrag: KK_BREAKOUT.stops nennt 'reject if (entry - LoD) / entry > ADR20 %' (contracts/kullamagi.mjs), und stopCheck rechnet genau so. Die Lücke liegt in der Regel KK-SF-BO-STOP: sie ist SOURCE_EXACT und hat keinen derivation-Text, obwohl KK-012 nur 'Abstand <= ADR (oder ATR)' sagt. Der Nenner (Einstieg) und der Vergleich mit ADR20, das relativ zum Tief misst (Hoch/Tief - 1, KK-031), sind Ableitung, nicht Wortlaut. Abweichung je Trade gering, an der Grenze entscheidend.", "code": "scripts/supertrader/source-faithful/contracts/kullamagi.mjs (KK_BREAKOUT, Regel KK-SF-BO-STOP und Feld stops); scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopCheck", "proposal": "derivation-Text an KK-SF-BO-STOP ergänzen und die Statusfrage SOURCE_EXACT oder SOURCE_DERIVED dem Owner vorlegen; eigener Supertrader-PR (ändert den Vertragsfingerabdruck), keine Änderung ohne Owner-Entscheidung" },
     { "id": "F-DAR-SAME-BAR-ORDER", "methods": ["C03"], "kind": "DOCUMENTATION_GAP", "modelChange": false, "text": "Erreicht ein Balken in der Box-Phase den Trigger und unterschreitet den Boden, gewinnt im Zustandsautomaten der Ausbruch; die Position wird am Einstiegsbalken pessimistisch ausgestoppt. Die Reihenfolge ist auf Tagesbalken nicht entscheidbar und nicht ausdrücklich im Vertrag genannt.", "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine (case BOX)", "proposal": "in MA-DAR-INTRABAR-ORDER ausdrücklich nennen; Test CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL hält das Verhalten fest" },
     { "id": "F-DAR-Q7-READING", "methods": ["C03"], "kind": "SOURCE_READING", "modelChange": false, "text": "DAR-SF-STOP-INIT 'never inside the box' (DAR-Q7) wird als 'nicht in der neuen Box' gelesen: der Initialstop liegt einen Bruchteil unter dem alten Deckel und damit in der Spanne der alten Box. Das folgt DAR-Q5; die Lesart von Q7 ist nicht ausdrücklich dokumentiert.", "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition", "proposal": "als Lesart im Vertrag dokumentieren (eigener PR); für CC-1 dem Owner vorlegen" }
   ]

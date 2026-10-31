@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { loadPlan, validatePlan, planSha256, certPrepReport, PLAN_FILE } from '../source-faithful/certification/cert-prep-top5.mjs';
+import { loadPlan, validatePlan, planSha256, planContentSha256, certPrepReport, isPerformanceTarget, outTarget, PLAN_FILE, PINNED_PLAN_CONTENT_SHA256 } from '../source-faithful/certification/cert-prep-top5.mjs';
 import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../source-faithful/completion/sf6-paper-protocol-2027.mjs';
 import { turtleN, entryTrigger, runTurtle, PARAMS } from '../source-faithful/methods/turtle.mjs';
 import { darvasEvents, darvasPosition, DARVAS_PARAMS } from '../source-faithful/methods/darvas.mjs';
@@ -132,10 +132,25 @@ function kkSetupBars({ base = 130, top = 131, breakClose = 132, spike = null } =
 
 test('CP-KK-SETUP-PRIOR-MOVE-BOUND: die Vorbewegung von genau 30 % genügt dem Modell-Proxy, knapp darunter nicht (MA-KK-SETUP-PROXY, untere Druckgrenze von KK-006)', () => {
   const P = KK_SETUP_PROXIES.NO_MA_CONDITION; // isoliert die Vorbewegung
+  // Die Engine rechnet priorMove = Schluss[Konsolidierungsbeginn] / Tief - 1 und verlangt priorMove >= proxy.priorMove.
+  // Gleichheit mit der Modellgrenze 0,30 ist in double unerreichbar: für Schluss/Tief in [1, 2) ist Schluss/Tief - 1
+  // ein Vielfaches von 2^-52, 0,30 (= 0,29999999999999998890) nicht. Der kleinste erreichbare Wert darüber ist
+  // 1,3 - 1 = 0,30000000000000004 (130 / 100), der größte darunter 0,2999999999999998 (nächstkleinerer double von 130).
   const ok = kkBreakoutSetupAt(kkSetupBars({ base: 130 }), 80, P);
   assert.ok(ok, 'Schluss 130 / Tief 100 = +30 %');
-  assert.ok(ok.priorMove >= 0.30 && near(ok.priorMove, 0.30, 1e-12));
+  assert.equal(ok.priorMove, 130 / 100 - 1);
+  assert.equal(kkBreakoutSetupAt(kkSetupBars({ base: 129.99999999999997 }), 80, P), null, 'nächstkleinerer double: 0,2999999999999998');
   assert.equal(kkBreakoutSetupAt(kkSetupBars({ base: 129.99 }), 80, P), null);
+  // Vergleichsoperator an exakter Gleichheit: eine Grenze, die bitgenau der berechneten Größe entspricht, wird
+  // angenommen (>=); eine strikte Lesart (>) lehnt sie ab. Zwei Fälle: die berechnete Größe von 130 / 100 und die
+  // binär exakte Grenze 0,25 (125 / 100 - 1 === 0,25). Die Modellgrenze selbst bleibt 0,30 (unverändert).
+  for (const [base, bound, below] of [[130, 130 / 100 - 1, 129.99999999999997], [125, 0.25, 124.99999999999999]]) {
+    const proxy = { ...P, priorMove: bound };
+    const hit = kkBreakoutSetupAt(kkSetupBars({ base }), 80, proxy);
+    assert.ok(hit, `Gleichheit priorMove === ${bound} muss genügen`);
+    assert.equal(hit.priorMove, bound, 'berechnete Größe gleich der Grenze');
+    assert.equal(kkBreakoutSetupAt(kkSetupBars({ base: below }), 80, proxy), null, `knapp unter ${bound}`);
+  }
   assert.equal(KK_SETUP_PROXIES.CONSOLIDATION_10.priorMove, 0.30);
   assert.equal(KK_SETUP_PROXIES.CONSOLIDATION_10.priorMoveSessions, 63);
 });
@@ -294,7 +309,10 @@ test('CP-EXEC-BUY-STOP-FILL: Buy-Stop füllt nach Gap zur Eröffnung, sonst am N
 // ---------------------------------------------------------------- Prüfplan (vorregistriert) und Prüfprotokoll
 // Vorregistrierung: eine Änderung am Plan (Blocker, Klassen, Abnahmekriterien) ändert diesen Wert und braucht einen
 // eigenen, begründeten Commit; Abnahmekriterien werden nie nach einem Ergebnis angepasst.
-const PINNED_PLAN_SHA256 = '31ed0d488729290cdffb8f018e3f6ec00b94712091a352b67d12f869118b0c02';
+// 1.1.0 (Review #1196): neuer Pin nach der begründeten Planrevision (siehe plan.revision); der Prüfer pinnt zusätzlich
+// den Planinhalt (PINNED_PLAN_CONTENT_SHA256, Test CP-PLAN-PIN-IN-CHECKER).
+const PINNED_PLAN_SHA256 = 'a22412be02c02f840bcd609ed48b5ac6a87dd4e7cef2736c80dcf1169a6dcce7';
+const CHECKER = path.join(path.dirname(PLAN_FILE), 'cert-prep-top5.mjs');
 
 test('CP-PLAN-VALID: der Prüfplan stimmt mit Verträgen, Parametern, #709-Wortlaut und Testnamen überein', async () => {
   const { issues, checks } = await validatePlan();
@@ -321,8 +339,17 @@ test('CP-PLAN-NO-PERFORMANCE-TARGET: kein Abnahmekriterium ist eine Rendite- ode
   assert.ok(plan.findings.every((f) => f.modelChange === false), 'Befunde ohne Fachmodelländerung');
 });
 
+const planHas = async (fn, prefix) => {
+  const p = loadPlan(); fn(p);
+  const { issues } = await validatePlan(p);
+  assert.ok(issues.some((x) => x.startsWith(prefix)), `${prefix}: ${issues.join(' | ')}`);
+  return issues;
+};
+const method = (p, id) => p.methods.find((m) => m.candidateId === id);
+const dropTest = (list, id) => { const i = list.findIndex((x) => x.endsWith(`: ${id}`)); assert.ok(i >= 0, id); list.splice(i, 1); };
+
 test('CP-PLAN-DETECTS: die Plan-Prüfung findet geänderte Parameter, falsche Tokens, fehlende Tests, Statuswechsel und Renditeziele', async () => {
-  const has = async (fn, prefix) => { const p = loadPlan(); fn(p); const { issues } = await validatePlan(p); assert.ok(issues.some((x) => x.startsWith(prefix)), `${prefix}: ${issues.join(' | ')}`); };
+  const has = planHas;
   await has((p) => { p.methods[0].params[0].value = 60; }, 'PARAM_VALUE');
   await has((p) => { p.methods[0].params[0].token = '60-Tage'; }, 'PARAM_TOKEN');
   await has((p) => { p.methods[0].conformanceTests.push('scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-DOES-NOT-EXIST'); }, 'TEST_MISSING');
@@ -333,6 +360,79 @@ test('CP-PLAN-DETECTS: die Plan-Prüfung findet geänderte Parameter, falsche To
   await has((p) => { p.guards.validatedTradeSignal = 'ACTIVE'; }, 'GUARD_VALIDATED_TRADE_SIGNAL');
 });
 
+test('CP-PLAN-PERFORMANCE-WORDING: Rendite-, Risiko- und Trefferkennzahlen mit Vergleich und Zahl werden erkannt, Zählungen nicht', async () => {
+  const targets = ['Sharpe-Ratio ≥ 1,0', 'Rendite von mindestens 10 % p.a.', 'CAGR größer 8 %', 'Max-Drawdown unter 20 %', 'Alpha > 0', 'Sortino mindestens 1,5',
+    'Gewinn über 5 % je Trade', 'Return above 12%', 'Trefferquote >= 40 %', 'Profit Factor höchstens 2', 'Calmar = 1', 'Erwartungswert größer 0,2 R', '8 % p.a.', 'Win-Rate besser als 50 %'];
+  for (const t of targets) {
+    assert.ok(isPerformanceTarget(t), t);
+    await planHas((p) => { p.methods[2].studies[0].acceptance.push({ metricKind: 'COUNT', criterion: t }); }, 'STUDY_PERFORMANCE_TARGET');
+  }
+  for (const t of ['Trades vorher/nachher je Sitzung berichtet', 'Anzahl berichtet; keine Mindestzahl als Kriterium (würde SF6-PAPER-2027 ändern; Entscheidung d)', '0 ungeklärte K5-Sitzungen (14 heute)', 'alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen', 'Rendite nur als Verteilung berichtet, keine Schwelle'])
+    assert.equal(isPerformanceTarget(t), false, t);
+  for (const s of loadPlan().methods.flatMap((m) => m.studies)) for (const a of s.acceptance) assert.equal(isPerformanceTarget(a.criterion), false, `${s.id}: ${a.criterion}`);
+});
+
+test('CP-PLAN-PIN-IN-CHECKER: der Prüfer selbst verlangt den gepinnten Planinhalt; jede Änderung macht den Plan ungültig', async () => {
+  assert.equal(planContentSha256(loadPlan()), PINNED_PLAN_CONTENT_SHA256);
+  await planHas((p) => { p.methods[1].blockers[0].text += ' '; }, 'PLAN_NOT_PINNED');
+  await planHas((p) => { p.methods[0].studies[0].acceptance[0].criterion = 'mindestens 90 % der Tests PASS'; }, 'PLAN_NOT_PINNED');
+});
+
+test('CP-PLAN-STRUCTURE: gelöschte Regeln und Parameter, Klassenwechsel ohne Begründung, Proxy als Quellenzahl und gekürzte Regeltreue-Tests werden erkannt', async () => {
+  // Regel-Soll aus dem Vertrag
+  await planHas((p) => { method(p, 'C02').rules = method(p, 'C02').rules.filter((r) => r.id !== 'TUR-SF-STOP'); }, 'RULE_NOT_COVERED:C02:TUR-SF-STOP');
+  await planHas((p) => { method(p, 'C08').rulesOutOfScope = []; }, 'RULE_NOT_COVERED:C08:KK-SF-PRIORITY');
+  await planHas((p) => { method(p, 'C02').rulesOutOfScope.find((r) => r.id === 'TUR-SF-TR').reason = 'MANUAL_REVIEW_LAYER'; }, 'RULE_OOS_STATUS:C02:TUR-SF-TR');
+  await planHas((p) => { method(p, 'C01').rulesOutOfScope.find((r) => r.id === 'TUR-SF-N').reason = 'COVERED_IN:C08'; }, 'RULE_OOS_NOT_COVERED_THERE:C01:TUR-SF-N');
+  // Parameter-Soll aus dem Code (alle Blätter von PARAMS / KK_PARAMS / MOKA_PARAMS / DARVAS_PARAMS)
+  await planHas((p) => { method(p, 'C02').params = method(p, 'C02').params.filter((x) => x.code.path !== 'S2.entry'); }, 'PARAM_NOT_COVERED:methods/turtle.mjs#PARAMS.S2.entry');
+  await planHas((p) => { method(p, 'C03').params = method(p, 'C03').params.filter((x) => x.code.path !== 'confirmDays'); }, 'PARAM_NOT_COVERED:methods/darvas.mjs#DARVAS_PARAMS.confirmDays');
+  await planHas((p) => { p.paramsOutOfScope.pop(); }, 'PARAM_NOT_COVERED:methods/morales-kacher.mjs#MOKA_PARAMS.sessionsPerWeek');
+  // Klasse d -> a ohne Begründung
+  const dToA = await planHas((p) => { method(p, 'C02').blockers.find((b) => b.id === 'C02-CC4').class = 'a'; }, 'BLOCKER_CLASS_A_STATUS:C02-CC4');
+  assert.ok(dToA.includes('BLOCKER_CLASS_OWNER:C02-CC4') && dToA.some((x) => x.startsWith('DATA_CLASS:D-TUR-GROUPS')), dToA.join(' | '));
+  await planHas((p) => { method(p, 'C08').blockers.find((b) => b.id === 'C08-CC5').class = 'a'; }, 'BLOCKER_CLASS_INHERIT:C08-CC5:X-CC5');
+  await planHas((p) => { method(p, 'C03').blockers.find((b) => b.id === 'C03-CC8').class = 'b'; }, 'BLOCKER_CLASS_CRITERION:C03-CC8:CC-8');
+  // Modellgrenze als Quellenzahl
+  await planHas((p) => { method(p, 'C08').params.find((x) => x.code.path === 'CONSOLIDATION_10.priorMove').kind = 'SOURCE_NUMBER'; }, 'PARAM_KIND_MODEL_AS_SOURCE:C08:KK_SETUP_PROXIES.CONSOLIDATION_10.priorMove');
+  // gekürzte conformanceTests (Mindestumfang aus der Testdatei)
+  await planHas((p) => dropTest(method(p, 'C08').conformanceTests, 'CP-KK-SETUP-LEVEL'), 'CONFORMANCE_FAMILY:KK:CP-KK-SETUP-LEVEL');
+  await planHas((p) => dropTest(method(p, 'C01').conformanceTests, 'CP-TUR-STOP-2N-PRIOR-CLOSE-N'), 'CONFORMANCE_MINIMUM:C01:CP-TUR-STOP-2N-PRIOR-CLOSE-N');
+  await planHas((p) => dropTest(method(p, 'C02').conformanceTests, 'CP-TUR-COSTS-REFERENCE'), 'CONFORMANCE_FAMILY:TUR:CP-TUR-COSTS-REFERENCE');
+  await planHas((p) => dropTest(p.sharedExecution.tests, 'CP-EXEC-BUY-STOP-FILL'), 'CONFORMANCE_SHARED:CP-EXEC-BUY-STOP-FILL');
+  // Abhängigkeit von PR #1148
+  await planHas((p) => { delete p.dependsOn; }, 'DEPENDENCY_UNDECLARED');
+  await planHas((p) => { p.dependsOn.file = 'docs/SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md'; }, 'DEPENDENCY_SHA256');
+});
+
+test('CP-PLAN-NOT-MET-INVALID: --run-tests mit NOT_MET macht das Protokoll ungültig (valid: false, Exit 1)', async () => {
+  const plan = loadPlan(), met = Object.fromEntries(plan.methods.map((m) => [m.candidateId, { pass: m.conformanceTests.length, other: [], acceptance: 'MET' }]));
+  const good = await certPrepReport({ runTests: true, runner: () => met });
+  assert.equal(good.valid, true, good.issues.join(' | '));
+  const bad = await certPrepReport({ runTests: true, runner: () => ({ ...met, C02: { pass: 16, other: [{ ref: 'x', result: 'FAIL' }], acceptance: 'NOT_MET' } }) });
+  assert.equal(bad.valid, false);
+  assert.deepEqual(bad.issues, ['CONFORMANCE_NOT_MET:C02']);
+});
+
+// Läuft nicht innerhalb von --run-tests (runPlanTests setzt CERT_PREP_NESTED), sonst riefe der Prüfer sich selbst auf.
+test('CP-PLAN-NOT-MET-EXIT: der Prüfer endet mit --run-tests und einem roten Regeltreue-Test mit Exit 1', { skip: process.env.CERT_PREP_NESTED === '1' }, () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cert-prep-notmet-'));
+  try {
+    const failing = path.join(tmp, 'fail.test.mjs');
+    fs.writeFileSync(failing, "import test from 'node:test';\ntest('CP-FAIL-X: rot', () => { throw new Error('rot'); });\n");
+    const plan = loadPlan(); plan.methods[0].conformanceTests.push(`${failing}: CP-FAIL-X`);
+    const planFile = path.join(tmp, 'plan.json'); fs.writeFileSync(planFile, JSON.stringify(plan, null, 2));
+    const r = spawnSync(process.execPath, [CHECKER, '--plan', planFile, '--run-tests', '--out', path.join(tmp, 'check.json')], { encoding: 'utf8' });
+    assert.equal(r.status, 1, r.stderr);
+    const report = JSON.parse(fs.readFileSync(path.join(tmp, 'check.json'), 'utf8'));
+    assert.equal(report.valid, false);
+    assert.equal(report.conformance.C02.acceptance, 'NOT_MET');
+    assert.deepEqual(report.conformance.C02.other, [{ ref: `${failing}: CP-FAIL-X`, result: 'FAIL' }]);
+    assert.ok(report.issues.includes('CONFORMANCE_NOT_MET:C02'), report.issues.join(' | '));
+    assert.equal(report.conformance.C08.acceptance, 'MET');
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
+
 test('CP-PLAN-REPORT: das Prüfprotokoll ist deterministisch, ohne Zeitstempel und schreibt nur mit --out (nie in ein Artefakt)', async () => {
   const a = await certPrepReport(), b = await certPrepReport();
   assert.deepEqual(a, b);
@@ -341,13 +441,25 @@ test('CP-PLAN-REPORT: das Prüfprotokoll ist deterministisch, ohne Zeitstempel u
   const byId = Object.fromEntries(a.methods.map((m) => [m.candidateId, m]));
   assert.deepEqual(byId.C02.ccOpen, ['CC-4', 'CC-5', 'CC-8']);
   assert.ok(byId.C02.blockersByClass.d.includes('C02-CC4') && byId.C02.blockersByClass.a.includes('C02-RULE-CONFORMANCE'));
+  assert.equal(a.dependency.pr, 1148); assert.equal(a.dependency.state, fs.existsSync(path.resolve(path.dirname(PLAN_FILE), '../../../../', a.dependency.file)) ? 'PRESENT_MATCHING_PR_1148' : 'PENDING_PR_1148');
+  assert.equal(a.referenceCode.C02.state, 'HEAD_EQUALS_PINNED_REFERENCE_FINGERPRINT');
+  assert.equal(a.referenceCode.C08.state, 'REFERENCE_FINGERPRINT_NOT_PINNED_REFERENCE_COMMIT_OPEN');
+  assert.ok(a.methods.flatMap((m) => m.studies).filter((s) => s.id.endsWith('-CONFORMANCE')).every((s) => s.evidenceState === 'PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN'));
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cert-prep-'));
   try {
     const before = fs.readFileSync(PLAN_FILE, 'utf8');
-    const r = spawnSync(process.execPath, [path.join(path.dirname(PLAN_FILE), 'cert-prep-top5.mjs'), '--out', tmp], { encoding: 'utf8' });
+    // --out <dir>
+    const r = spawnSync(process.execPath, [CHECKER, '--out', tmp], { encoding: 'utf8' });
     assert.equal(r.status, 0, r.stderr);
     assert.deepEqual(fs.readdirSync(tmp), ['CERT-PREP-TOP5-CHECK.json']);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(tmp, 'CERT-PREP-TOP5-CHECK.json'), 'utf8')), JSON.parse(JSON.stringify(a)));
+    // --out <datei.json>
+    const file = path.join(tmp, 'sub', 'protokoll.json');
+    assert.equal(outTarget(file), file); assert.equal(outTarget(tmp), path.join(tmp, 'CERT-PREP-TOP5-CHECK.json'));
+    const r2 = spawnSync(process.execPath, [CHECKER, '--out', file], { encoding: 'utf8' });
+    assert.equal(r2.status, 0, r2.stderr);
+    assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), JSON.parse(JSON.stringify(a)));
+    assert.equal(spawnSync(process.execPath, [CHECKER, '--out'], { encoding: 'utf8' }).status, 1, '--out ohne Wert');
     assert.equal(fs.readFileSync(PLAN_FILE, 'utf8'), before);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });

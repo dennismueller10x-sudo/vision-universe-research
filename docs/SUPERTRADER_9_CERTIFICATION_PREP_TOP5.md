@@ -1,6 +1,8 @@
 # Supertrader 9 – Zertifizierungsvorbereitung der fünf zuerst prüfbaren Methoden
 
-Stand: 31.10.2026. Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
+Stand: 31.10.2026 (Plan 1.1.0). Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
+
+> **Abhängigkeit: erst nach #1148 mergen.** Die Matrix liegt heute nur auf dem Branch `claude/supertrader-9-data-certification-jnejw3` (Draft-PR #1148), nicht auf `main`. Alle Fundstellen „Matrix …“ in diesem Bericht und im Plan verweisen auf sie. Der Plan führt die Abhängigkeit in `dependsOn`: PR 1148, Commit `afa923a6…`, sha256 der Matrix `89a60269…` (`git show origin/claude/supertrader-9-data-certification-jnejw3:docs/SUPERTRADER_9_CERTIFICATION_READINESS.md | sha256sum`). Der Prüfer meldet `PENDING_PR_1148`, solange die Datei fehlt. Liegt sie vor und weicht ihr sha256 ab, ist der Plan ungültig. Die Matrix wird hier bewusst nicht kopiert.
 
 **Was diese Arbeit ist**
 - Methodische Vorbereitung: Blocker auflisten, nach Lösungsweg klassifizieren, abbauen, was ohne Security-Master-Wechsel und ohne private Daten geht, und die übrigen Prüfungen mit Abnahmekriterien vorregistrieren.
@@ -18,21 +20,26 @@ Stand: 31.10.2026. Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERT
 | Datei | Inhalt |
 |---|---|
 | `scripts/supertrader/source-faithful/certification/CERT-PREP-TOP5-PLAN.json` | maschinenlesbarer, vorregistrierter Prüfplan: Blocker mit Klasse und Fundstelle, Parameter-Quellenabgleich, Datenanforderungen, Ausführungsannahmen, Studien mit Abnahmekriterien, Befunde |
-| `scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs` | Plan-Prüfung und reproduzierbares Prüfprotokoll (`--out <dir>`, optional `--run-tests`) |
-| `scripts/supertrader/tests/sf-cert-prep-top5.test.mjs` | 23 Regeltreue-Tests mit synthetischen Balken (`CP-*`) und 5 Plan-Tests (`CP-PLAN-*`) |
+| `scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs` | Plan-Prüfung und reproduzierbares Prüfprotokoll (`--out <dir>` oder `--out <datei.json>`, optional `--run-tests`, `--plan <datei>`) |
+| `scripts/supertrader/tests/sf-cert-prep-top5.test.mjs` | 23 Regeltreue-Tests mit synthetischen Balken (`CP-*`) und 10 Plan-Tests (`CP-PLAN-*`) |
 
 **Prüfprotokoll erzeugen**
 
 ```bash
-node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --out /tmp/cert-prep             # Plan gegen Code und Quellen
+node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --out /tmp/cert-prep             # Verzeichnis: /tmp/cert-prep/CERT-PREP-TOP5-CHECK.json
+node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --out /tmp/cert-prep/check.json  # Datei (Endung .json)
 node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --run-tests --out /tmp/cert-prep # zusätzlich die gelisteten Tests (TAP)
 ```
 
+- Exit 0 nur bei `valid: true`. Mit `--run-tests` macht eine Methode mit `NOT_MET` das Protokoll ungültig (`CONFORMANCE_NOT_MET:<Kandidat>`, Exit 1).
+
 - Das Protokoll hat keinen Zeitstempel und ist deterministisch.
 - Ohne `--out` geht es nur auf stdout und wird nie in ein committetes Artefakt geschrieben.
-- Lokaler Lauf am 31.10.2026: Plan gültig, 0 Abweichungen.
-- Geprüft wurden 52 Vertragsregeln mit Status, 37 Parameter gegen Code und #709-Wortlaut, 82 #709-Belege (alle `original_wording_checked`) und 80 Testverweise.
-- Mit `--run-tests`: C02 17/17, C01 13/13, C08 15/15, C12 14/14, C03 16/16 PASS. Damit ist die Abnahme `PS-*-CONFORMANCE` erfüllt.
+- Lokaler Lauf am 31.10.2026 auf dem PR-Head: Plan gültig, 0 Abweichungen, Abhängigkeit `PENDING_PR_1148`.
+- Geprüft wurden 52 Vertragsregeln mit Status und 37 begründet ausgeschlossene Vertragsregeln, 37 Parameter gegen Code und #709-Wortlaut und 9 begründet ausgeschlossene Parameter, 82 #709-Belege (alle `original_wording_checked`) und 80 Testverweise.
+- Mit `--run-tests`: C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16 PASS.
+- **Stand von `PS-*-CONFORMANCE`: auf dem PR-Head erfüllt; der Nachweis auf dem Referenz-Commit ist offen** (`evidenceState: PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN`). Die Abnahme verlangt PASS auf dem Commit, der die Referenz rechnet; gelaufen ist nur der PR-Head.
+- Code-Fingerabdruck im Protokoll (`referenceCode`): C02/C01 `codeSha256` = `89fbcf86…`, gleich dem in SF6-PAPER-2027 gepinnten Turtle-Wert. C08/C12/C03 `sf5ResearchCodeSha256` = `0726cac0…`; dafür ist im Code kein Referenzwert gepinnt.
 
 ---
 
@@ -47,8 +54,16 @@ node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --run-
 
 **Regeln für die Abnahmekriterien**
 - Jedes Kriterium trägt einen `metricKind` aus INTEGRITY, COUNT, SOURCE, DATA_COVERAGE, DISTRIBUTION_REPORT_ONLY oder DECISION_RECORD.
-- PERFORMANCE ist verboten. Die Plan-Prüfung weist zusätzlich jede Formulierung wie „Sharpe ≥ …“ oder „Rendite > …“ zurück (Test `CP-PLAN-DETECTS`).
-- Der Plan ist über seinen sha256 gepinnt (`CP-PLAN-PREREGISTERED`). Eine Änderung braucht einen eigenen, begründeten Commit.
+- PERFORMANCE ist verboten.
+- Die Plan-Prüfung weist zusätzlich jedes Kriterium zurück, das eine Rendite-, Risiko- oder Trefferkennzahl (Rendite, Return, Gewinn, Profit, Sharpe, Sortino, Calmar, CAGR, Alpha, Drawdown, Trefferquote, Win-Rate, Erwartungswert, Performance) im selben Satzteil mit Vergleich und Zahl nennt, sowie jede Zahl mit „p.a.“. Beispiele: „Sharpe-Ratio ≥ 1,0“, „Rendite von mindestens 10 % p.a.“, „CAGR größer 8 %“, „Max-Drawdown unter 20 %“ (Test `CP-PLAN-PERFORMANCE-WORDING`).
+- Eine Wortliste ersetzt keine Durchsicht: Ein umschriebenes Renditeziel ohne Kennzahlwort fängt sie nicht. Dafür sorgt der Pin.
+- Die Plan-Prüfung erkennt außerdem strukturelle Eingriffe (Test `CP-PLAN-STRUCTURE`):
+  - Regeln: Jede Vertragsregel steht im Plan oder in `rulesOutOfScope` mit einem geprüften Grund (`COVERED_IN:<Kandidat>`, `MANUAL_REVIEW_LAYER`, `DATA_BLOCKED`, `CONTRACT_GOLDEN_CASES`). Der Grund wird gegen den Vertrag geprüft.
+  - Parameter: Jedes Blatt von `PARAMS`, `KK_PARAMS`, `MOKA_PARAMS` und `DARVAS_PARAMS` steht im Plan oder in `paramsOutOfScope` mit Grund.
+  - Parameterart: Ein Wert aus `research/` ist nie `SOURCE_NUMBER`.
+  - Blockerklassen: Ein Verweis auf einen Querschnittsblocker erbt dessen Klasse. CC-5/CC-8 sind Klasse d. Klasse a nur mit Status `DONE`, `PREPARED_*` oder `OPEN_SEPARATE_PR`. Owner- oder Lizenzbezug verlangt d, auch als Nebenklasse. Die Klasse einer Datenanforderung ist gleich der ihres Blockers. Eine bewusste Abweichung braucht `classReason`.
+  - Regeltreue-Tests: Jeder `CP-*`-Test der Testdatei ist seiner Familie zugeordnet (TUR: C02/C01, KK: C08, BGU: C12, DAR: C03, EXEC: gemeinsam). Ein `CP-*`-Test, dessen Belegstellen eine Regel, einen #709-Beleg oder einen Parameter der Methode nennen, gehört in ihre `conformanceTests`.
+- Der Plan ist doppelt gepinnt: der Datei-sha256 im Test (`CP-PLAN-PREREGISTERED`) und der Inhalts-sha256 im Prüfer selbst (`PINNED_PLAN_CONTENT_SHA256`, Issue `PLAN_NOT_PINNED`, Test `CP-PLAN-PIN-IN-CHECKER`). Eine Änderung braucht einen eigenen, begründeten Commit. Die Revision 1.1.0 ist in `revision` beschrieben; sie ändert kein Abnahmekriterium.
 - Ein Kriterium wird nie nach einem Ergebnis angepasst.
 - Entscheidungen der Klasse d werden datiert, **bevor** eine versiegelte Kennzahl geöffnet wird.
 
@@ -101,7 +116,7 @@ CC erfüllt: 2, 3, 6, 7. Offen: 1, 4, 5, 8.
 | C01-CC8 | Matrix C01 | d | offen | offen |
 | C01-SURV | Matrix C01 | c | offen | offen |
 | C01-PRODUCT-PLAN | `product/detectors.mjs` | a | offen | OPEN_SEPARATE_PR |
-| C01-RULE-CONFORMANCE 20/10/55 an der Grenze | Abgleich TUR-S1ENT / -S1EX / -FAILSAFE | a | offen | **DONE**: CP-TUR-S1-WINDOWS; dazu zählt CP-TUR-STOP-2N-PRIOR-CLOSE-N |
+| C01-RULE-CONFORMANCE 20/10/55 an der Grenze | Abgleich TUR-S1ENT / -S1EX / -FAILSAFE | a | offen | **DONE**: CP-TUR-S1-WINDOWS; dazu zählen CP-TUR-STOP-2N-PRIOR-CLOSE-N und CP-TUR-S2-TRIGGER-ONE-TICK (gemeinsamer Ein-Tick-Trigger, TUR-INTRADAY) |
 
 **Abgleich:** 6 S1-Zahlen geprüft (20, 10, 55, 2 N, 10-Tage-Filterausstieg, 20-Tage-Filterausbruch). Keine Abweichung.
 
@@ -186,7 +201,7 @@ Festgehalten sind vier Dokumentationsbefunde (`findings` im Plan, alle `modelCha
 | ID | Methode | Art | Befund | Vorschlag |
 |---|---|---|---|---|
 | F-TUR-ADD-UNIT-N | C01, C02 | Dokulücke | Ein Add wird mit N der Vorsitzung des Add-Balkens dimensioniert; Abstand und Stops nutzen das Einstiegs-N. `TUR-SF-ADD` nennt nur Abstand und Stops. Das widerspricht W-TUR nicht. | Ableitungstext im Vertrag ergänzen. Das ändert den Vertragsfingerabdruck, daher eigener PR |
-| F-KK-ADR-DENOMINATOR | C08 | Dokulücke | ADR20 misst relativ zum Tief (KK-031), der Stopabstand relativ zum Einstieg. KK-012 nennt keinen Nenner. | als Ableitung benennen, keine Änderung ohne Owner |
+| F-KK-ADR-DENOMINATOR | C08 | Dokulücke | Die Formel steht im Vertrag: `stops` in `contracts/kullamagi.mjs` nennt „reject if (entry − LoD) / entry > ADR20 %“, und `stopCheck` rechnet so. Die Lücke ist die Regel `KK-SF-BO-STOP`: Sie ist SOURCE_EXACT und hat keinen Ableitungstext. KK-012 sagt nur „Abstand ≤ ADR“. Der Nenner (Einstieg) und der Vergleich mit ADR20 (relativ zum Tief gemessen, KK-031) sind Ableitung. | Ableitungstext an `KK-SF-BO-STOP` ergänzen und die Statusfrage (SOURCE_EXACT oder SOURCE_DERIVED) dem Owner vorlegen; eigener PR, weil er den Vertragsfingerabdruck ändert |
 | F-DAR-SAME-BAR-ORDER | C03 | Dokulücke | Ein Balken über dem Trigger und unter dem Boden gilt als Ausbruch und wird am Einstiegsbalken pessimistisch ausgestoppt. Test `CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL` hält das fest. | in MA-DAR-INTRABAR-ORDER nennen |
 | F-DAR-Q7-READING | C03 | Lesart | „Stop nie in der Box“ (DAR-Q7) wird als „nicht in der neuen Box“ gelesen; der Initialstop liegt in der Spanne der alten Box (folgt DAR-Q5). | als Lesart dokumentieren, für CC-1 dem Owner vorlegen |
 
@@ -221,7 +236,7 @@ Maschinenlesbar steht das im Plan, Feld `dataRequirements`. Kurzfassung:
 
 | Studie | Methode | Klasse | Stand | Abnahme (metricKind) |
 |---|---|---|---|---|
-| PS-C02/C01/C08/C12/C03-CONFORMANCE | alle | a | READY, lokal erfüllt | alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen (INTEGRITY) |
+| PS-C02/C01/C08/C12/C03-CONFORMANCE | alle | a | READY; auf dem PR-Head erfüllt, Nachweis auf dem Referenz-Commit offen | alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen (INTEGRITY) |
 | PS-C02-CC4-GROUPS | C02 (C01 analog) | d | BLOCKED_OWNER | `ENFORCED_WITH_CALLER_GROUPS`, Referenz ohne Gruppen hashgleich (INTEGRITY); Ablehnungen vorher/nachher (COUNT) |
 | PS-C02-CC5 | C02 (alle analog über X-CC5) | d | BLOCKED_OWNER | 0 ungeklärte K5, alle K3 klassifiziert (DATA_COVERAGE) |
 | PS-C02-SAMPLE-COUNT | C02 | a | PREPARED | Anzahl Positionen im Paper-Fenster (COUNT), keine Mindestzahl ohne Owner |
@@ -253,7 +268,7 @@ Die beiden Studien `PLANNED_NEEDS_SNAPSHOT_RUN` brauchen den eingefrorenen DEV-S
 ## 8. Tests
 
 ```bash
-node --test scripts/supertrader/tests/sf-cert-prep-top5.test.mjs   # 28 Tests (23 CP-Regeltreue, 5 CP-PLAN)
+node --test scripts/supertrader/tests/sf-cert-prep-top5.test.mjs   # 33 Tests (23 CP-Regeltreue, 10 CP-PLAN)
 node --test "scripts/supertrader/tests/*.test.mjs"
 node --test "core/tests/*.test.mjs"
 node scripts/supertrader/guard-protected-paths.mjs
