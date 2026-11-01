@@ -777,7 +777,8 @@ jobs:
   #
   # Gleiches Muster wie `supertrader`: erst wenn refresh, materialize und
   # freshness-contract gruen sind, ein workflow_dispatch auf main (eigener
-  # Lauf, eigene Concurrency-Gruppe technical-world-main, eigene Engine- und
+  # Lauf in der Gruppe technical-world-main mit Zeitplan-Rueckfall und
+  # workflow_run, dort nur fuer main gefiltert; eigene Engine- und
   # Vertragstests vor dem Commit, Erzeuger unveraendert). Kein Anbieterabruf,
   # kein PAT. Ein Technical-Fehler kann den Nachtlauf nicht rot machen; der
   # Lauf selbst meldet sich ueber seinen eigenen Pipeline-Alarm. Scheitert

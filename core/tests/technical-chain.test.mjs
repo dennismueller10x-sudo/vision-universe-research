@@ -33,6 +33,8 @@ test("TC2 · technical-world.yml: Dispatch erlaubt, Zeitplan-Rueckfall, Tests vo
   const wf = lies(".github/workflows/technical-world.yml");
   assert.match(wf, /\n  workflow_dispatch:/);
   assert.match(wf, /cron: '10 5 \* \* 2-6'/);
+  /* workflow_run nur von main: sonst verdraengt ein uebersprungener Zweig-Lauf den wartenden Nachtlauf in der Gruppe */
+  assert.match(wf, /types:\s*\n\s+- completed\s*\n(\s*#.*\n)*\s+branches:\s*\n\s+- main/);
   assert.match(wf, /group: technical-world-\$\{\{ github\.ref_name \}\}\s*\n\s+cancel-in-progress: false/);
   /* workflow_dispatch passiert die Job-Bedingung (nur workflow_run wird gefiltert) */
   assert.match(wf, /if: >-\s*\n\s+github\.event_name != 'workflow_run' \|\|/);

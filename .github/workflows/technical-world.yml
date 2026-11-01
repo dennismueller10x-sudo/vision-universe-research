@@ -21,6 +21,11 @@ on:
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types:
       - completed
+    # Nur Laeufe auf main: workflow_run-Laeufe tragen immer ref main und teilen sich die Gruppe technical-world-main.
+    # Ohne Filter verdraengte ein uebersprungener Lauf eines claude/**-Zweigs einen wartenden Nachtlauf (cancelled,
+    # ohne Alarm).
+    branches:
+      - main
   # Rueckfall, falls der Marktlauf scheitert oder der Anstoss ausbleibt. Startet bei GitHub 5-6 h spaet
   # (docs/technical/TECHNICAL_SCHEDULE.md). Unveraenderte Daten erzeugen keinen Commit.
   schedule:
