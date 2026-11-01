@@ -301,3 +301,21 @@ Nebenbefund auf `main` (nicht Supertrader): Quant-Suite 3 rot (`technical-ap8-l1
 ### 14.6 Zertifizierungsvorbereitung C02, C01, C08, C12, C03 (#1196, erst nach #1148)
 
 Je Methode Blocker mit Klasse (a lösbar / b Security Master / c V13 / d Owner-Quelle). Abgebaut (a): Regeltreue-Tests an den Grenzen (Turtle 20/55/10, 2N-Stop mit N der Vorsitzung, Gap durch den Stop; KK 30 % Vorbewegung, 10-Sitzungen-Niveau, ADR; BGU 0,75 × ATR40, Stop am Gap-Tagestief; Darvas 3 Tage, Stop nie in der neuen Box, Ausbruch und Boxbruch auf demselben Balken), gepinnter Prüfplan ohne Renditeziele, Prüfer gegen Code und #709-Wortlaut. Abnahme Regeltreue auf PR-Head: C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16; Nachweis auf dem Referenz-Commit offen. Kein Implementierungsfehler; vier Auslegungsbefunde dokumentiert (F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING). Offen bleiben CC-1/CC-3/CC-4/CC-5/CC-8 (d), Survivorship (c), PIT-Stammdaten (b).
+
+## 15. Owner-Entscheidung 01.11.2026: Aktivierungsweg (a) für SF8_AUTO_PUBLISH
+
+Kriterien S1–S7 und ihre Definitionen bleiben **unverändert**. Keine DQ-Regel wird gelockert. Der Vertrag verlangt vor jedem Commit weiter DQ-SF8-1..8 vollständig (je PASS mit `checked > 0`), C1–C7 unverändert; bei fehlerhaftem oder veraltetem Stand gibt es keine Veröffentlichung.
+
+Zwei getrennte Nachweise:
+
+**Nachweis 1 – Aktivierung (vor dem Setzen der Variable).** Alle Punkte mit echter Lauf-ID bzw. Commit:
+1. S1: 5 aufeinanderfolgende geplante Nachtläufe grün (Stand 31.10.: 3/5; frühestens 04.11.).
+2. S2: in diesen Läufen kein Heil-Dispatch.
+3. S3: erfüllt.
+4. S4: erfüllt am 31.10. (41192838845, 41207577526).
+5. S5: zwei aufeinanderfolgende geplante Montagsläufe SEC-Consumer grün (Lauf 02.11. ausstehend).
+6. S6: Security-Master-Gate erfüllt – Lauf `commit=true` mit PASS (Quant-Sitzung, #1143/#1163), danach `system-health` „Security Master“ und „US-Wertpapierstamm“ weder STALE noch DEGRADED.
+7. Technische Voraussetzungen: #1137 und #1146 gemergt (93884b3, f2c2ce8); Registry ohne `activation`; `SF8_CANDIDATES_ENABLED=true` bestätigt; Eingangsprüfung am Lauftag CURRENT.
+Erst dann `SF8_AUTO_PUBLISH=true`. Danach brauchen normale tägliche Veröffentlichungen keine Einzelzustimmung.
+
+**Nachweis 2 – S7 (nach dem ersten automatischen Lauf, getrennt dokumentiert).** S7 wird mit dem ersten erfolgreichen automatischen Kandidatenlauf und der darauf folgenden echten Datenqualität auf `main` geprüft: `system-health` OK für die SF8-Eingaben, `data-quality` ohne ERROR, DQ-PX-2/PX-3 auf dem Niveau vom 27.10. oder darunter. Bis dahin bleibt S7 „nicht erfüllt“; es wird kein grüner Stabilitätsnachweis vorweggenommen. Ein ERROR einer anderen Welt (z. B. DQ-TW-3, Technical) bleibt ein ERROR und verhindert S7, bis er behoben ist.
