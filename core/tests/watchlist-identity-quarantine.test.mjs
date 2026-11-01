@@ -122,3 +122,34 @@ test("Quarantaene im echten Bestand: keine markierte Kennung traegt Name, Kurs, 
   const nvda = doc.cols.s.indexOf("NVDA");
   assert.ok(doc.cols.n[nvda] && doc.cols.c[nvda] > 0 && doc.cols.q[nvda], "nicht markierte Titel behalten ihre Abschnitte");
 });
+
+test("Quarantaene in der Ansicht: deutscher Text, Warnzustand der Identitaet, keine Produktwelt-Verweise", t => {
+  const { doc } = buildSummary(fixtureRoot(t), { now: AFTER_RUN });
+  const ix = W.index(doc);
+  const v = W.view(ix, { instrumentId: "vu_bbbbbb000001", ticker: "OLDC" }, AFTER_RUN);
+  assert.equal(v.identity.state, "WARN", "Warnung statt AVAILABLE");
+  assert.equal(v.identity.listing, "ACTIVE", "Listing-Status bleibt");
+  assert.equal(v.identity.reason, "IDENTITY_QUARANTINED");
+  assert.equal(v.identity.reasonText, "Unter diesem Kürzel handelt heute ein anderes Wertpapier; die frühere Zuordnung ist gesperrt, bis die Identität geklärt ist.");
+  assert.equal(W.REASON.IDENTITY_QUARANTINED, v.identity.reasonText, "kein roher Grundcode in der Oberflaeche");
+  for (const s of ["price", "quant", "high52", "volume", "trend", "supertrader"]) {
+    assert.equal(v[s].reason, "IDENTITY_QUARANTINED", s);
+    assert.equal(v[s].reasonText, W.REASON.IDENTITY_QUARANTINED, s);
+  }
+  assert.deepEqual(v.links, [], "weder Quant noch Fundamental, Discover oder Technical");
+  assert.equal(v.relevance, 0);
+  assert.equal(W.aggregate([v]).delisted, 0, "nicht als delistet gezaehlt");
+  const a = W.view(ix, { instrumentId: "vu_aaaaaa000001", ticker: "ACME" }, AFTER_RUN);
+  assert.equal(a.identity.state, "AVAILABLE");
+  assert.ok(a.links.some(l => l.product === "quant") && a.links.some(l => l.product === "discover"), "nicht markierte Titel behalten ihre Verweise");
+});
+
+test("Quarantaene im echten Bestand: PCLN ohne Verweise und mit Warnung", () => {
+  const doc = buildSummary(ROOT, { now: AFTER_RUN }).doc;
+  const k = doc.cols.s.indexOf("PCLN");
+  assert.ok(k >= 0);
+  const v = W.view(W.index(doc), { instrumentId: doc.cols.i[k], ticker: "PCLN" }, AFTER_RUN);
+  assert.equal(v.identity.state, "WARN");
+  assert.equal(v.name, null);
+  assert.deepEqual(v.links, []);
+});

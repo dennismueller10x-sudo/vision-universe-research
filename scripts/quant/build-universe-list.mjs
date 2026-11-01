@@ -109,18 +109,21 @@ async function namenAusCompanyMaster() {
      nach Symbolpraefix. Hier werden sie einmal gelesen und zu einer Tabelle
      verdichtet; die Oberflaeche liest danach keinen Shard mehr. */
   const dir = join(ROOT, "quant/data/universe/search/sym");
-  if (!existsSync(dir)) return { namen: new Map(), typen: new Map(), shards: 0 };
-  const namen = new Map(), typen = new Map();
+  if (!existsSync(dir)) return { namen: new Map(), historisch: new Map(), typen: new Map(), shards: 0 };
+  const namen = new Map(), historisch = new Map(), typen = new Map();
   const dateien = (await readdir(dir)).filter((n) => n.endsWith(".json"));
   for (const datei of dateien) {
     const shard = await json(join(dir, datei));
     for (const eintrag of shard.entries || []) {
       if (!eintrag || !eintrag.s) continue;
       if (eintrag.n && eintrag.n !== eintrag.s) namen.set(eintrag.s, eintrag.n);
+      /* Seit der Suchindex wiederverwendete Kuerzel ohne Namen fuehrt (build-universe-indexes.mjs),
+         steht der alte Name nur noch als andere Quelle `ia` - er bleibt genau das, nie `n`. */
+      if (eintrag.ic === "TICKER_REUSE" && eintrag.ia && eintrag.ia !== eintrag.s) historisch.set(eintrag.s, eintrag.ia);
       if (eintrag.t) typen.set(eintrag.s, eintrag.t);
     }
   }
-  return { namen, typen, shards: dateien.length };
+  return { namen, historisch, typen, shards: dateien.length };
 }
 
 /* WELCHE TITEL BELEGT KEINE AKTIE SIND.
@@ -148,7 +151,7 @@ async function main() {
   const capability = await json(join(ROOT, "quant/data/universe/market-capability.json"));
   const members = capability.members || [];
   if (!members.length) throw new Error("EMPTY_CAPABILITY");
-  const { namen, typen, shards } = await namenAusCompanyMaster();
+  const { namen, historisch, typen, shards } = await namenAusCompanyMaster();
   const keineAktie = await belegtKeineAktie();
   let mitKeineAktie = 0;
 
@@ -255,7 +258,8 @@ async function main() {
       ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
       ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {}),
       ...(keineAktie.has(member.s) || wiederverwendet ? { ne: 1 } : {}),
-      ...(wiederverwendet ? { ic: "TICKER_REUSE", ...(namen.get(member.s) ? { ia: namen.get(member.s) } : {}) }
+      ...(wiederverwendet ? { ic: "TICKER_REUSE", ...((namen.get(member.s) || historisch.get(member.s))
+        ? { ia: namen.get(member.s) || historisch.get(member.s) } : {}) }
         : konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
         ...(andererName(name, konflikt.get(member.s)) ? { ia: andererName(name, konflikt.get(member.s)) } : {}) } : {})
     });

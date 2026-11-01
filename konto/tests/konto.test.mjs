@@ -106,7 +106,7 @@ test('Formatierung deutsch', () => {
 
 test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, keine Inline-Handler', () => {
   const list = pages();
-  assert.equal(list.length, 11);
+  assert.equal(list.length, 12);
   for (const p of list) {
     const html = readFileSync(p, 'utf8');
     const name = p.slice(ROOT.length) || '/';
@@ -147,6 +147,11 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
   assert.match(js, /W\.PATHS\.names/, 'Namensverzeichnis nur bei Bedarf');
   assert.ok(!/compositeScore|quantScore|universeRank/.test(js), 'kein Gesamtscore oder Rang im Browser');
   assert.match(html, /Gesamtscore ist nicht freigegeben/);
+  // Gesperrte Identitaet (IDENTITY_QUARANTINED, Zustand WARN): Warnchip mit dem Text der Ansicht, Verweise nur aus view.links.
+  assert.match(js, /var inactive = v\.identity\.state !== 'AVAILABLE';/);
+  assert.match(js, /if \(inactive\) chips\.appendChild\(chip\(v\.identity\.reasonText \|\| 'Nicht verfügbar', 'warn', 'alert'\)\);/);
+  assert.match(js, /if \(v\.links\.length\) \{/);
+  assert.ok(!/StockContext/.test(js), 'kein eigener Produktverweis neben view.links');
   // Owner-Auftrag 29.10.2026: Die Watchlist ist Teil von "Mein Dashboard"; die Kontonavigation fuehrt dorthin,
   // die Detailseite /konto/watchlist/ bleibt unter ihrer Adresse erreichbar und fuehrt zurueck.
   for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
