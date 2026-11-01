@@ -57,8 +57,9 @@ test('real weekly append invalidates the reader, rejects old selections and expo
  fs.writeFileSync(source,full);const pending=await reader.getRealBacktest('NVDA');assert.equal(pending.delivery.state,'STALE_INPUT_SNAPSHOT');assert.ok(pending.delivery.changedDependencies.includes('PRICE_SERIES'));assert.equal(pending.asOf,doc.asOf);
  const updated=build();assert.ok(updated.calculatedListings<=1);assert.equal(updated.calculatedListings+updated.calculationCacheHits+updated.reused,8);
  const stale=await reader.getRealBacktest('NVDA',{section:'equity',expectedGeneration:old.generation,expectedListingId:old.identity.listingId});assert.equal(stale.state,'UNAVAILABLE');assert.equal(stale.reason,'GENERATION_CHANGED');assert.equal(stale.result,undefined);
- const fresh=await reader.getRealBacktest('NVDA');assert.equal(fresh.asOf,JSON.parse(full).asOf);assert.equal(fresh.delivery.state,'CURRENT_INPUT_SNAPSHOT');assert.notEqual(fresh.generation,old.generation);assert.equal(fresh.result.metrics.completedTrades,21);assert.equal(fresh.result.to,JSON.parse(full).to);
- const expected=require('../../scripts/quant/run-real-weekly-backtest.cjs').run(require('../engines/weekly-real-adapter.cjs').load(root,'ref_NVDA'));assert.ok(Math.abs(fresh.result.endCapital-expected.equity.at(-1).value)<1e-6);
+ const fresh=await reader.getRealBacktest('NVDA');assert.equal(fresh.asOf,JSON.parse(full).asOf);assert.equal(fresh.delivery.state,'CURRENT_INPUT_SNAPSHOT');assert.notEqual(fresh.generation,old.generation);assert.equal(fresh.result.to,JSON.parse(full).to);
+ // Erwartete Trade-Zahl aus dem unabhängigen Lauf auf derselben Reihe statt eines Live-Pins (jeder Nightly-Anhang kann einen Trade abschließen).
+ const expected=require('../../scripts/quant/run-real-weekly-backtest.cjs').run(require('../engines/weekly-real-adapter.cjs').load(root,'ref_NVDA'));assert.equal(fresh.result.metrics.completedTrades,expected.trades.length);assert.ok(expected.trades.length>=21);assert.ok(Math.abs(fresh.result.endCapital-expected.equity.at(-1).value)<1e-6);
 });
 
 test('automated refresh preserves its established listing scope and rejects accidental scope shrink',()=>{

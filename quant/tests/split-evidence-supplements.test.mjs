@@ -184,17 +184,41 @@ test("Herausgeber-Quelltext: beide Reihen korrigieren die Spalte vor splitAdjust
   }
 });
 
-test("committete PZZA-Wochenreihe: korrigierte Kopie besteht den Wochen-Adapter, die heutige nicht", () => {
+/* Seit dem Lauf der langen Reihen (40d042ad38, 30.10.) veroeffentlicht der Herausgeber die PZZA-Reihe MIT der Ergaenzung.
+   Der Vorher-Stand wird deshalb nicht mehr aus der Live-Datei gelesen, sondern als feste Eingabe gepinnt: der zuletzt
+   ohne Ergaenzung veroeffentlichte Wochenschluss vor dem Ex-Tag (89,95) und der Tagesbeleg der Anbieter-Spalte
+   (Ein-Tages-Verhaeltnis am Ex-Tag), beide aus der Reihe vor 40d042ad38. */
+const PZZA_BEFORE = { week: "2013-12-27", close: 89.95, move: { week: "2014-01-03", maxDailyRatio: 0.511395, maxDailyDate: "2013-12-30", splitInWeek: false } };
+/* Die Reihe ohne Ergaenzung, aus der committeten zurueckgerechnet: Spalte vor dem Ex-Tag * ratio, Split und Herkunft entfernt,
+   der Sprung in der Ex-Woche mit dem gepinnten Tagesbeleg des Anbieters. */
+function withoutSupplement(doc, entry) {
+  const points = doc.points.map(([d, p]) => [d, d < entry.exDate ? PublishedClose.roundClose(p * entry.ratio) : p]);
+  const k = points.findIndex((p) => p[0] === PZZA_BEFORE.move.week);
+  const { supplemented, ...ca } = doc.corporateActions;
+  return { ...doc, points, corporateActions: { ...ca, splits: ca.splits.filter((x) => x[0] !== entry.exDate), moves: [{ week: PZZA_BEFORE.move.week, weeklyRatio: +(points[k][1] / points[k - 1][1]).toFixed(6), maxDailyRatio: PZZA_BEFORE.move.maxDailyRatio, maxDailyDate: PZZA_BEFORE.move.maxDailyDate, splitInWeek: false }] } };
+}
+
+test("committete PZZA-Wochenreihe: traegt die Ergaenzung und besteht den Wochen-Adapter, ohne Ergaenzung nicht", () => {
   const text = readFileSync(new URL("quant/data/market/discover-series-long/" + ID + ".json", ROOT), "utf8");
   const doc = JSON.parse(text);
   const loader = Adapter.createLoader(new URL(".", ROOT).pathname);
-  assert.throws(() => loader(ID, text), /CORPORATE_ACTION_UNRESOLVED.*SINGLE_DAY_SPLIT_SIZED_JUMP/);
-  const { doc: neu, unresolvedMoves } = correctedDoc(doc, PZZA);
+  /* heute: der Herausgeber hat die belegte Ergaenzung angewandt */
+  assert.equal(loader(ID, text).corporateActionQuality.status, "CLEAN");
+  assert.deepEqual(doc.corporateActions.splits.filter((x) => x[0] === PZZA.exDate), [[PZZA.exDate, 2]]);
+  assert.deepEqual(doc.corporateActions.supplemented.map((x) => [x.date, x.factor, x.id, x.accession, x.source]), [[PZZA.exDate, 2, PZZA.id, PZZA.evidence[0].accession, "SEC_FILING_SUPPLEMENT"]]);
+  assert.ok(!doc.corporateActions.moves.some((m) => m.week === PZZA_BEFORE.move.week));
+  const i = doc.points.findIndex((p) => p[0] === "2014-01-03");
+  assert.equal(doc.points[i - 1][0], PZZA_BEFORE.week);
+  const band = dividePublished(PZZA_BEFORE.close, PZZA.ratio);
+  assert.ok(doc.points[i - 1][1] >= band.lo && doc.points[i - 1][1] <= band.hi, "Wochenschluss vor dem Ex-Tag = 89,95 / 2 im Rundungsband");
+  /* vorher: ohne Ergaenzung scheitert dieselbe Reihe am ungeklaerten Ein-Tages-Sprung */
+  const vorher = withoutSupplement(doc, PZZA);
+  assert.throws(() => loader(ID, JSON.stringify(vorher)), /CORPORATE_ACTION_UNRESOLVED.*SINGLE_DAY_SPLIT_SIZED_JUMP/);
+  /* und die Ergaenzung (correctedDoc) fuehrt sie wieder in die committete Reihe ueber */
+  const { doc: neu, unresolvedMoves } = correctedDoc(vorher, PZZA);
   assert.deepEqual(unresolvedMoves, []);
   assert.equal(loader(ID, JSON.stringify(neu)).corporateActionQuality.status, "CLEAN");
   assert.equal(neu.corporateActions.supplemented[0].source, "SEC_FILING_SUPPLEMENT");
-  const i = doc.points.findIndex((p) => p[0] === "2014-01-03");
-  assert.equal(doc.points[i - 1][1], 89.95);
   assert.deepEqual(neu.points.slice(i), doc.points.slice(i), "ab der Ex-Woche unveraendert");
-  doc.points.slice(0, i).forEach(([d, v], k) => assert.ok(Math.abs(neu.points[k][1] - v / 2) <= 0.0050001, d));
+  doc.points.slice(0, i).forEach(([d, v], k) => assert.ok(Math.abs(neu.points[k][1] - v) <= 0.0050001, d));
 });

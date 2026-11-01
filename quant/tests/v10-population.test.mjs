@@ -21,6 +21,16 @@ const FIVE=['ref_BGC','ref_COHR','ref_DCOM','ref_SGI','ref_TRAK'];
 const BASE_REGISTRY_SHA256='b471d52e7a903eb53048a4842db933ccc19f3f8802e705aabd963ad01bfd08b9';
 const V10=Identity.v10.records,LC=Lifecycle.records;
 const FRAME={identityEvidence:true,identityEvidenceProtocolV10:true,corporateActionEvidence:true,listingLifecycleEvidence:true};
+// Registrierter Kalender des V10-Rahmens: Die Wochenreihen wachsen jede Woche; die eingefrorene Evidenz (population-frame dataAsOf.weekly,
+// lifecycle-cases weeklyTail.to) beschreibt den Stand bis zu diesem Schnitt. Tests gegen diese Evidenz lesen die Reihe deshalb bis zum
+// registrierten Schnitt (asOf = Schnitt) statt den jeweils letzten Nightly-Stand.
+const FRAME_CUT=EV('population-frame-1.0.0.json').dataAsOf.weekly;
+const atCut=(id,cut=FRAME_CUT)=>{
+ const d=JSON.parse(seriesBytes(id)),points=d.points.filter(p=>p[0]<=cut);assert.ok(points.length>0,id);
+ const ca=d.corporateActions&&{...d.corporateActions};
+ if(ca?.splits)ca.splits=ca.splits.filter(a=>a[0]<=cut);if(ca?.moves)ca.moves=ca.moves.filter(m=>m.week<=cut);
+ return JSON.stringify({...d,asOf:cut,to:points.at(-1)[0],points,...(ca?{corporateActions:ca}:{})});
+};
 const frozenRun=pts=>{let n=1;for(let i=pts.length-2;i>=0&&pts[i][1]===pts.at(-1)[1];i--)n++;return n;};
 
 test('reference cases: the five V9 dossier records are byte-identical and keep their 1.0.0 semantics',()=>{
@@ -141,7 +151,8 @@ test('listingLifecycleEvidence: cut at the sourced last trading day, frozen with
  // real frozen ids without a record
  const lcIds=new Set(LC.map(r=>r.securityId));
  const cases=EV('lifecycle-cases.json').cases.filter(c=>c.weeklyFrozen&&!lcIds.has(c.securityId)&&c.defaultReason==='QUALIFIED').slice(0,5);
- for(const c of cases){const o=outcome(()=>L(c.securityId));if(!o.ok)continue;const r=L(c.securityId);
+ // Eingabe auf den registrierten Kalender gepinnt: ein später angehängter Wochenschluss kann den eingefrorenen Schwanz beenden (z. B. ALF).
+ for(const c of cases){assert.ok(c.weeklyTail.to<=FRAME_CUT,c.securityId);const bytes=atCut(c.securityId);const o=outcome(()=>L(c.securityId,bytes));if(!o.ok)continue;const r=L(c.securityId,bytes);
   assert.equal(r.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED',c.securityId);assert.ok(R.frozenTailRun(r.points)<R.FROZEN_TAIL_MIN_RUN||r.points.length<2,c.securityId);}
  // records: cut + listingLifecycle contract
  let ok=0;
@@ -172,6 +183,7 @@ test('population frame: ids, hash and counts reproduce under the frame loader op
  assert.equal(sha(JSON.stringify(ids)),f.idsSha256);assert.equal(f.counts.qualified,ids.length);
  assert.equal(f.counts.candidates,f.counts.qualified+Object.values(f.counts.excludedByReason).reduce((a,b)=>a+b,0));
  const L=R.createResearchLoader(root,FRAME);
- for(const x of f.listings.filter((_,i)=>i%97===0)){const r=L(x.securityId);assert.equal(r.points[0][0],x.from);assert.equal(r.points.at(-1)[0],x.to);}
+ assert.match(f.dataAsOf.weekly,/^\d{4}-\d{2}-\d{2}$/);
+ for(const x of f.listings.filter((_,i)=>i%97===0)){const r=L(x.securityId,atCut(x.securityId,f.dataAsOf.weekly));assert.equal(r.points[0][0],x.from);assert.equal(r.points.at(-1)[0],x.to);}
  for(const [y,p] of Object.entries(f.perIsoYear))assert.equal(p.qualified,p.laterDelisted+p.survivors,y);
 });
