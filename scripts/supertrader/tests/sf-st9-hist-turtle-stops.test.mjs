@@ -80,7 +80,63 @@ test('real runTurtle run with adds and unit stops: no violation; every stop sale
   // before: classifyExits read STOP_2N_SAME_BAR as a held-bar stop and flagged its fill (100.01 > open 100) as
   // STOP_FILL_ABOVE_OPEN; now it is the declared intrabar convention, its level checked by checkTurtleStops
   assert.equal(audit.exitClasses.INTRADAY_ORDER_ASSUMED, 4);
-  assert.equal(audit.exitClasses.GAP_AT_OPEN_LEVEL_UNKNOWN, 1, 'A unit 1 at the gap open 99');
+  // held-bar unit stops: own classes (their level is checked by checkTurtleStops), not *_LEVEL_UNKNOWN
+  assert.equal(audit.exitClasses.TURTLE_UNIT_STOP_GAP_AT_OPEN, 1, 'A unit 1 at the gap open 99');
+  assert.equal(audit.exitClasses.TURTLE_UNIT_STOP_INTRADAY, 3, 'A units 2-4 at 101');
+  assert.equal(audit.exitClasses.GAP_AT_OPEN_LEVEL_UNKNOWN, undefined);
+  assert.equal(audit.exitClasses.INTRADAY_LEVEL_UNKNOWN, undefined);
+  assert.ok(X.EXIT_CLASSES.includes('TURTLE_UNIT_STOP_GAP_AT_OPEN') && X.EXIT_CLASSES.includes('TURTLE_UNIT_STOP_INTRADAY') && X.EXIT_CLASSES.includes('GAP_AT_OPEN_LEVEL_UNKNOWN'));
+  // a stop without finalStop of another kind keeps the *_LEVEL_UNKNOWN class (no consumer of it changes)
+  const other = { ...run, ledger: run.ledger.map((r) => (r === a[3] ? { ...r, reason: 'STOP_OTHER' } : r)) };
+  assert.equal(X.classifyExits(d, other, { slippageBps: SLIP_BPS }).classes.GAP_AT_OPEN_LEVEL_UNKNOWN, 1);
+});
+
+/**
+ * R: four units (stops 100.01), 16 volatile held bars (lows 101.5, highs 145), then the bar open 101 / high 155 / low
+ * 90: the old units are stopped at 100.01 (STOP_2N_UNIT), the engine re-enters on the same bar (new position, unit 1
+ * again, counts.reentrySameBarAsExit) and the new unit 1 leaves at the 20-day channel 94.99 (EXIT_20D_SAME_BAR), below
+ * the OLD stop. With highs 140 the re-entry pyramids to two units and both leave by STOP_2N_SAME_BAR.
+ */
+function reentry(H) {
+  const vol = Array.from({ length: 16 }, (_, k) => (k % 2 ? [H - 5, H, 101.5, 103] : [103, H, 101.5, H - 5]));
+  const R = bars([...flat(60), [100, 108, 104, 107], [111, 116, 110.5, 115], [117, 122, 116.5, 121], ...vol, [101, 155, 90, 100], ...flat(5)]);
+  const d = dataOf([{ id: 'R', bars: R }]);
+  return { d, run: runTurtle(d, { system: 'S2', from: d.calendar[0], slippageBps: SLIP_BPS, commissionBps: 1 }) };
+}
+
+test('re-entry on the bar of the exit: the sale of the new unit 1 is a new generation, no false missed stop', () => {
+  const { d, run } = reentry(145);
+  assert.equal(run.counts.reentrySameBarAsExit, 1);
+  const s = sells(run, 'R'), exitDay = s[0].date;
+  assert.deepEqual(s.map((r) => [r.unit, r.reason]), [[2, 'STOP_2N_UNIT'], [3, 'STOP_2N_UNIT'], [4, 'STOP_2N_UNIT'], [1, 'STOP_2N_UNIT'], [1, 'EXIT_20D_SAME_BAR']]);
+  assert.ok(s.every((r) => r.date === exitDay));
+  assert.ok(close(s[4].price, 94.99 * (1 - SLIP), 1e-6), 'new unit 1 at the channel 94.99, below the old stop 100.01');
+  const c = check(d, run);
+  assert.deepEqual(c.violations, {}, 'before: { STOP_REACHED_NOT_EXECUTED: 1 } (the new unit 1 overwrote the sale of the old one)');
+  assert.equal(c.checks.positions, 2);
+  assert.equal(c.checks.stopReachedUnitBars, 4);
+  assert.equal(X.auditRun(d, { run }, { key: 'TURTLE_S2', costs: COSTS, from: d.calendar[0] }).pass, true);
+  // the same with a pyramided re-entry whose units leave by same-bar stops
+  const p = reentry(140);
+  assert.equal(p.run.counts.reentrySameBarAsExit, 1);
+  assert.deepEqual(sells(p.run, 'R').slice(4).map((r) => [r.unit, r.reason]), [[2, 'STOP_2N_SAME_BAR'], [1, 'STOP_2N_SAME_BAR']]);
+  assert.deepEqual(check(p.d, p.run).violations, {});
+});
+
+test('counter-check: a really missed stop of an old unit is found on a re-entry bar, also behind a new stop sale', () => {
+  const drop = ({ d, run }, unit) => {
+    const old = sells(run, 'R').find((r) => r.unit === unit && r.reason === 'STOP_2N_UNIT');
+    return { c: check(d, { ...run, ledger: run.ledger.filter((r) => r !== old) }), date: old.date };
+  };
+  for (const H of [145, 140]) for (const unit of [1, 2]) {
+    const { c, date } = drop(reentry(H), unit);
+    assert.equal(c.violations.STOP_REACHED_NOT_EXECUTED, 1, `H ${H} unit ${unit}: ${JSON.stringify(c.violations)}`);
+    assert.ok(c.examples.some((e) => e.code === 'STOP_REACHED_NOT_EXECUTED' && e.id === 'R' && e.date === date));
+  }
+  // H 140, old unit 1 kept open: the new unit 1 is sold by STOP_2N_SAME_BAR on that bar; before, that sale stood in for
+  // the old unit (missed stop hidden); now the missed stop is reported and the BUY of an open unit number is flagged
+  const { c } = drop(reentry(140), 1);
+  assert.equal(c.violations.TURTLE_UNIT_REOPENED, 1);
 });
 
 test('counter-check: a removed stop sale is a missed stop (once per unit); a low at the stop is a boundary', () => {

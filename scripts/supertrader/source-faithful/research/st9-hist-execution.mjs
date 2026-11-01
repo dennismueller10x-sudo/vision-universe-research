@@ -14,8 +14,8 @@
  *     Scope of the stop check: the FILL RULE is checked independently against the bar (open, low, level). The stop
  *     LEVEL is not re-derived from the source rule: it comes from the engine's own trade data (finalStop; for
  *     Minervini the stop path of the trade events, see 2.). Turtle unit stops (2N below each fill, raised per add) are
- *     not in the ledger; classifyExits checks only "fill between low and open" for them, checkTurtleStops (2.) rebuilds
- *     the levels.
+ *     not in the ledger; classifyExits checks only "fill between low and open" for them (classes TURTLE_UNIT_STOP_*),
+ *     checkTurtleStops (2.) rebuilds the levels from the ledger fills (entry / add triggers and buy prices unchecked).
  *  2. auditRun: classifyExits + research/sf7-execution-checks.mjs#checkLedgerAgainstBars for every method; missed
  *     stops (STOP_REACHED_NOT_EXECUTED): for the sf5 lifecycles #checkLifecycleRun (reused, not rebuilt), for
  *     Minervini checkMinerviniStops (stop path rebuilt from the trade events, every held bar against the ledger),
@@ -54,7 +54,11 @@ const fail = (code, detail) => { throw new ExecError(code, detail); };
 const SAME_BAR_ASSUMED = /^(STOP_SAME_BAR_ASSUMED|STOP_2N_SAME_BAR$)/;
 const SAME_BAR_CERTAIN = /^(STOP_SAME_BAR_CERTAIN|STOP_2N_SAME_BAR_CERTAIN$)/;
 const isStop = (r) => /^STOP_/.test(String(r ?? ''));
-export const EXIT_CLASSES = Object.freeze(['GAP_THROUGH_STOP_AT_OPEN', 'INTRADAY_AT_STOP', 'GAP_AT_OPEN_LEVEL_UNKNOWN', 'INTRADAY_LEVEL_UNKNOWN', 'SAME_BAR_CERTAIN', 'INTRADAY_ORDER_ASSUMED', 'TERMINAL_AT_LAST_TRADED_CLOSE', 'DATA_EVENT_CENSORED', 'OTHER_RULE_EXIT']);
+// Turtle held-bar unit stops (STOP_2N_UNIT) have no finalStop here, but their level IS checked, by checkTurtleStops (own
+// N, units from the ledger): own classes, so that *_LEVEL_UNKNOWN keeps meaning "level not checked by any part of the
+// audit" (a stop of another method without finalStop)
+const TURTLE_UNIT_STOP = /^STOP_2N_UNIT$/;
+export const EXIT_CLASSES = Object.freeze(['GAP_THROUGH_STOP_AT_OPEN', 'INTRADAY_AT_STOP', 'TURTLE_UNIT_STOP_GAP_AT_OPEN', 'TURTLE_UNIT_STOP_INTRADAY', 'GAP_AT_OPEN_LEVEL_UNKNOWN', 'INTRADAY_LEVEL_UNKNOWN', 'SAME_BAR_CERTAIN', 'INTRADAY_ORDER_ASSUMED', 'TERMINAL_AT_LAST_TRADED_CLOSE', 'DATA_EVENT_CENSORED', 'OTHER_RULE_EXIT']);
 
 function index(ds) {
   const m = new Map();
@@ -64,7 +68,8 @@ function index(ds) {
 
 /**
  * Classifies every SELL row of a run. trades: the engine's own trades (finalStop, exitDate, id) where available
- * (lifecycle engine, Minervini); Turtle unit stops have no single level and are checked against open and low only.
+ * (lifecycle engine, Minervini); Turtle unit stops have no single level here and are checked against open and low only
+ * (classes TURTLE_UNIT_STOP_*, their level is checked by checkTurtleStops).
  */
 export function classifyExits(ds, run, { slippageBps, trades = [] }) {
   const slip = slippageBps / 1e4, idx = index(ds), byExit = new Map();
@@ -100,7 +105,8 @@ export function classifyExits(ds, run, { slippageBps, trades = [] }) {
           if (!(b.low <= level + EPS * level)) bad('STOP_NOT_REACHED', r);
           if (b.open < level) { cls = 'GAP_THROUGH_STOP_AT_OPEN'; if (!near(px, b.open)) bad(near(px, level) ? 'STOP_GAP_NOT_FILLED_AT_OPEN' : 'STOP_GAP_FILL_NOT_OPEN', r); }
           else { cls = 'INTRADAY_AT_STOP'; if (!near(px, level)) bad('STOP_NOT_AT_LEVEL', r); }
-        } else cls = near(px, b.open) ? 'GAP_AT_OPEN_LEVEL_UNKNOWN' : 'INTRADAY_LEVEL_UNKNOWN';
+        } else if (TURTLE_UNIT_STOP.test(r.reason)) cls = near(px, b.open) ? 'TURTLE_UNIT_STOP_GAP_AT_OPEN' : 'TURTLE_UNIT_STOP_INTRADAY'; // level: checkTurtleStops
+        else cls = near(px, b.open) ? 'GAP_AT_OPEN_LEVEL_UNKNOWN' : 'INTRADAY_LEVEL_UNKNOWN';
       } else {
         cls = 'OTHER_RULE_EXIT';
         if (/_GAP_OPEN$/.test(r.reason) && !near(px, b.open)) bad('GAP_EXIT_NOT_AT_OPEN', r);
@@ -202,9 +208,14 @@ const SAME_BAR_STOP = /^STOP_2N_SAME_BAR/;
  *    (MA-TUR-HELD-BAR-ORDER), so this holds on add days too; units bought ON the bar are the intrabar convention
  *    (MA-TUR-INTRABAR-ORDER): level check only, counted as conventionBars. A low within 1e-9 of a stop is a boundary
  *    (counted, not judged). A missed stop is reported once per unit (the first reached bar ends the unit);
+ *  - position generations: a sale is matched to the unit object it closed, not to the unit number; a re-entry on the
+ *    bar of the exit (new position, units numbered from 1 again) is a new generation, so its sales neither excuse nor
+ *    hide a missed stop of the old units;
  *  - TURTLE_N_UNAVAILABLE (no N before the first fill: the position's stops are not judged), TURTLE_UNIT_UNKNOWN (a SELL
- *    of a unit that is not open), TURTLE_UNIT_FIELD_MISSING (BUY / SELL without `unit`), TURTLE_UNIT_WITHOUT_BAR (BUY or
+ *    of a unit that is not open), TURTLE_UNIT_REOPENED (a BUY of a unit number that is still open), TURTLE_UNIT_FIELD_MISSING (BUY / SELL without `unit`), TURTLE_UNIT_WITHOUT_BAR (BUY or
  *    STOP_ / EXIT_ sale on a date without a bar of the security).
+ * Limit: the entries and adds themselves are NOT checked independently: neither the add trigger (last fill + 1/2 N) nor
+ * the buy prices; the stops are derived FROM the ledger fills, so a wrong fill moves the expected stop with it.
  */
 export function checkTurtleStops(ds, run, { slippageBps }) {
   const R = TURTLE_STOP_RULE, slip = slippageBps / 1e4, idx = index(ds);
@@ -221,6 +232,9 @@ export function checkTurtleStops(ds, run, { slippageBps }) {
     for (const d of dates) {
       const i = x?.at.get(d), b = i !== undefined ? x.s.bars[i] : null, today = byDate.get(d) ?? [];
       const held = pos && pos.entryN !== null ? [...pos.units.entries()].filter(([, u]) => u.day < d && !u.missed).map(([n, u]) => ({ n, u, stop: u.stop })) : [];
+      // sales of this bar keyed by the unit OBJECT (= position generation + unit number): the engine numbers a new
+      // position from 1 again and may re-enter on the bar of the exit (counts.reentrySameBarAsExit), so a sale of the new
+      // unit 1 must not stand in for (or overwrite) the sale of the old unit 1
       const sold = new Map();
       if (today.some((r) => r.side === 'BUY')) checks.conventionBars++;
       for (const r of today) {
@@ -232,6 +246,7 @@ export function checkTurtleStops(ds, run, { slippageBps }) {
             pos = { entryN: fin(n0) && n0 > 0 ? n0 : null, units: new Map() }; checks.positions++;
             if (pos.entryN === null) { bad('TURTLE_N_UNAVAILABLE', id, d); checks.positionsNotJudged++; }
           }
+          if (pos.units.has(r.unit)) bad('TURTLE_UNIT_REOPENED', id, d); // BUY of a unit number that is still open
           const fill = r.price / (1 + slip);
           if (pos.entryN !== null) for (const u of pos.units.values()) u.stop += R.addStepN * pos.entryN;
           pos.units.set(r.unit, { stop: pos.entryN !== null ? fill - R.stopN * pos.entryN : null, day: d }); checks.units++;
@@ -246,7 +261,7 @@ export function checkTurtleStops(ds, run, { slippageBps }) {
           const want = SAME_BAR_STOP.test(reason) ? u.stop : Math.min(b.open, u.stop);
           if (!near(px, want) || b.low > u.stop + EPS * Math.max(1, Math.abs(u.stop))) bad('STOP_LEVEL_MISMATCH', id, d);
         }
-        sold.set(r.unit, { reason, px });
+        sold.set(u, { reason, px });
         pos.units.delete(r.unit);
         if (!pos.units.size) pos = null;
       }
@@ -258,7 +273,7 @@ export function checkTurtleStops(ds, run, { slippageBps }) {
         if (near(b.low, u.stop)) { checks.boundaryUnitBars++; continue; }
         if (!(b.low < u.stop)) continue;
         checks.stopReachedUnitBars++;
-        const s = sold.get(u.n);
+        const s = sold.get(u.u);
         if (s && isStop(s.reason)) continue;
         if (s && /^EXIT_/.test(s.reason) && s.px >= Math.min(b.open, u.stop) - EPS * Math.max(1, Math.abs(u.stop))) { checks.exitSupersededStops++; continue; }
         bad('STOP_REACHED_NOT_EXECUTED', id, d);

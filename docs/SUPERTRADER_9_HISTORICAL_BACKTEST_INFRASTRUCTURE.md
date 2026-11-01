@@ -147,14 +147,17 @@ Jede SELL-Zeile wird gegen ihren Balken nachgerechnet.
     - **Verpasste Stops:** Auf jedem gehaltenen Balken des Laufkalenders (ab der ersten Ledger-Zeile des Wertpapiers bis zum Ende der Kurve) mit ausführbarer Eröffnung muss jede seit einem früheren Tag offene Einheit, deren Stop das Tief erreicht, an diesem Tag verkauft sein: durch einen STOP_*-Verkauf oder durch den Kanalausstieg `EXIT_xD` zu einem Roh-Preis ≥ min(Eröffnung, Stop). Ein Stop unter dem Kanal wird durch den Kanalausstieg abgelöst (`exitSupersededStops`). Sonst `STOP_REACHED_NOT_EXECUTED`, je Einheit einmal. Gehaltene Stopps gelten vor Zukäufen (MA-TUR-HELD-BAR-ORDER), deshalb auch an Zukauftagen. Einheiten, die am Balken selbst gekauft wurden, folgen der Intrabar-Konvention (MA-TUR-INTRABAR-ORDER): nur Niveauprüfung, gezählt als `conventionBars`. Ein Tief innerhalb 1e-9 um den Stop ist Grenzfall (`boundaryUnitBars`), nicht bewertet.
     - **Fail closed:** `TURTLE_N_UNAVAILABLE` (kein N vor dem ersten Fill; die Stopps dieser Position werden nicht bewertet und gezählt), `TURTLE_UNIT_UNKNOWN` (Verkauf einer nicht offenen Einheit), `TURTLE_UNIT_FIELD_MISSING` (BUY/SELL ohne `unit`), `TURTLE_UNIT_WITHOUT_BAR` (BUY oder STOP_/EXIT_-Verkauf ohne Balken).
     - `missedStopCheck: TURTLE_INDEPENDENT_N_UNIT_STOPS`. Bis 1.0.0 stand hier `NOT_CHECKED_LEVEL_UNKNOWN`.
+    - **Positionsgenerationen:** Ein Verkauf wird der Einheit zugeordnet, die er schließt (Positionsgeneration + Einheitennummer), nicht nur der Nummer. Die Engine nummeriert eine neue Position wieder ab 1 und erlaubt den Wiedereinstieg am Ausstiegstag (`counts.reentrySameBarAsExit`). Der Verkauf der neuen Einheit 1 entschuldigt deshalb keinen verpassten Stop der alten Einheit 1 und überschreibt ihren Verkauf nicht. `TURTLE_UNIT_REOPENED`: BUY einer Einheitennummer, die noch offen ist.
     - **Grenze:** Geprüft wird die Quellregel gegen das Ledger, nicht der Code der Engine. Einstiegs- und Zukauftage bleiben Konvention: ob das Tief vor oder nach dem Fill kam, zeigen Tagesbalken nicht.
+    - **Grenze:** Einstiege und Zukäufe selbst werden nicht unabhängig geprüft, weder der Zukauf-Trigger (letzter Fill + ½N) noch die Kaufpreise. Die Stopps werden aus den Fills des Ledgers abgeleitet; ein falscher Fill verschiebt den erwarteten Stop mit.
 
 
 | Klasse | Bedingung | Regel |
 |---|---|---|
 | `GAP_THROUGH_STOP_AT_OPEN` | Eröffnung unter dem Stop (Stop-Niveau = `finalStop` des Engine-Trades, nicht neu abgeleitet) | Fill = Eröffnung |
 | `INTRADAY_AT_STOP` | Eröffnung über dem Stop, Tief erreicht ihn | Fill = Stop |
-| `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Turtle-Einheitsstopps auf gehaltenem Balken (kein `finalStop`; Niveau prüft `checkTurtleStops`) | nur ≤ Eröffnung, ≥ Tief |
+| `TURTLE_UNIT_STOP_GAP_AT_OPEN` / `TURTLE_UNIT_STOP_INTRADAY` | Turtle-Einheitsstopps `STOP_2N_UNIT` auf gehaltenem Balken (kein `finalStop`; Niveau prüft `checkTurtleStops`) | hier ≤ Eröffnung, ≥ Tief; Niveau in `checkTurtleStops` |
+| `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Stop ohne `finalStop` und ohne eigene Niveauprüfung (bis 1.0.0 auch die Turtle-Einheitsstopps) | nur ≤ Eröffnung, ≥ Tief |
 | `SAME_BAR_CERTAIN` | Stop am Einstiegstag sicher (Fill zur Eröffnung, Schluss ≤ Stop) | – |
 | `INTRADAY_ORDER_ASSUMED` | Gleichtags-Stop nach Intrabar-Annahme ohne Minutendaten (auch Turtle `STOP_2N_SAME_BAR`) | Unsicherheitskennzeichen |
 | `TERMINAL_AT_LAST_TRADED_CLOSE` | Delisting | nur am letzten Balken = Ende, Preis = Schluss × (1 − Slippage) |
@@ -164,7 +167,7 @@ Als Verstöße zählen:
 - `STOP_FILL_ABOVE_OPEN`, `STOP_FILL_BELOW_LOW`, `STOP_NOT_REACHED`, `STOP_NOT_AT_LEVEL`;
 - **`STOP_GAP_NOT_FILLED_AT_OPEN`**: der Stop wurde zum Niveau gebucht, obwohl die Eröffnung darunter lag. Das ist die optimistische Annahme;
 - `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`;
-- Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING`; Turtle: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_MISMATCH`, `TURTLE_*` (Präfix `STOPS:` in `auditRun`).
+- Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING`; Turtle: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_MISMATCH`, `TURTLE_*` (auch `TURTLE_UNIT_REOPENED`) (Präfix `STOPS:` in `auditRun`).
 
 **Korrektur in 1.1.0 (`classifyExits`):** Turtle-Gleichtags-Stopps `STOP_2N_SAME_BAR` wurden bis 1.0.0 wie Stopps auf gehaltenem Balken gelesen. Ihr Fill zum angehobenen Stop kann über der Eröffnung liegen (Einstieg intraday über der Eröffnung, Tief danach), das ergab ein falsches `STOP_FILL_ABOVE_OPEN`. Jetzt gilt `STOP_2N_SAME_BAR` als `INTRADAY_ORDER_ASSUMED` und `STOP_2N_SAME_BAR_CERTAIN` als `SAME_BAR_CERTAIN`. Das Niveau prüft `checkTurtleStops`. Kein Fill und keine Buchung ändert sich.
 
@@ -231,9 +234,10 @@ Je Einstiegsjahr: Trades nach Herkunft, geschlossene Trades, Trades mit Kennzeic
 - Turtle: `missedStopCheck: TURTLE_INDEPENDENT_N_UNIT_STOPS`, Studienlauf B ohne Verstoß;
 - sec-pit r12: fehlend, kein gzip, leer oder kein Objekt → abgelehnt; ein anderer Inhalt ergibt einen anderen Fingerabdruck.
 
-`node --test scripts/supertrader/tests/sf-st9-hist-turtle-stops.test.mjs`, 6 Tests:
+`node --test scripts/supertrader/tests/sf-st9-hist-turtle-stops.test.mjs`, 8 Tests:
 - Regelkonstanten 20/2/½ gleich `PARAMS`;
 - eigenes Wilder-N gegen GC-TUR-N und `turtleN` (zwei Zufallsreihen, Balken ohne H);
 - echter `runTurtle`-Lauf (S2) mit vier Einheiten, drei Intraday-Einheitsstopps, einem Gap-Stop zur Eröffnung, einem durch den Kanal abgelösten Stop und vier Gleichtags-Stopps: 0 Verstöße, `auditRun` besteht;
 - Gegenproben: Stop-SELL entfernt → `STOP_REACHED_NOT_EXECUTED` (einmal je Einheit); Tief genau am Stop → Grenzfall; Stop-Preis verschoben, Gap-Stop zum Niveau statt zur Eröffnung, Tief erreicht den Stop nicht, Gleichtags-Stop nicht am Stop → `STOP_LEVEL_MISMATCH`; Kanalausstieg unter min(Eröffnung, Stop) → `STOP_REACHED_NOT_EXECUTED`;
+- Wiedereinstieg am Ausstiegstag (echter `runTurtle`-Lauf, `reentrySameBarAsExit` = 1): alte Einheiten `STOP_2N_UNIT`, neue Einheit 1 `EXIT_20D_SAME_BAR` unter dem alten Stop → 0 Verstöße (vorher Fehlalarm `STOP_REACHED_NOT_EXECUTED`); Gegenproben: alter Stop-Verkauf der Einheit 1 bzw. 2 entfernt → genau ein `STOP_REACHED_NOT_EXECUTED`, auch wenn die neue Einheit 1 per Stop verkauft wird (vorher verdeckt);
 - Ledger-Form: fehlendes `unit`, unbekannte Einheit, Zeile ohne Balken, kein N vor dem ersten Fill.
