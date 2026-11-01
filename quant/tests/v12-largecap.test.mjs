@@ -7,6 +7,8 @@ import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+// Mutationstests am Stamm des tmp-Root: ausdrücklich der Produktstamm (LIVE); ohne Angabe lesen Evidenz-Optionen die eingefrorene Generation 1.1.0.
+const LIVE={masterGeneration:'LIVE'};
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const R = require('../engines/research-weekly-loader.cjs');
@@ -100,7 +102,7 @@ test('fail closed: history guard, changed master rows, corrupted record', () => 
   mkdirSync(join(tmp, 'quant/data/market/security-master'), { recursive: true });
   writeFileSync(join(tmp, 'quant/data/market/security-master/us-security-master.json'), JSON.stringify(master));
   symlinkSync(join(root, 'quant/data/market/discover-series-long'), join(tmp, 'quant/data/market/discover-series-long'));
-  assert.throws(() => R.createResearchLoader(tmp, V12)(r.securityId), /^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
+  assert.throws(() => R.createResearchLoader(tmp, V12, LIVE)(r.securityId), /^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
 });
 
 test('evidence files: every v12 record is backed by a qualified case; counts consistent', () => {
