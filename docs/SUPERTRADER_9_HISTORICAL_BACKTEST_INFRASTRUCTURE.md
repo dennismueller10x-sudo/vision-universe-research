@@ -98,7 +98,20 @@ Es wird nichts fortgeschrieben. Der letzte Balken ist der letzte Handelstag; dah
 | optional `QUARANTINE_DATES_MISSING` | versiegelte CA-Q-K5-Sitzungsliste (nur Modus `CA-Q-K5-DATES`) | Owner-Schlüssel |
 | optional | Identitätssperrliste aus dem committeten Stamm 1.3.0 mit SHA-256 | erst nach dem Stammwechsel (#1143/#1163) |
 
-Außerdem fehlt ein Workflow, der Snapshot und entschlüsseltes Archiv gleichzeitig sieht (O4 in der Studie). Er wäre ein eigener Gate-A-PR mit `contents: read`, ausgelöst nur durch den Owner.
+Den Workflow, der Snapshot und entschlüsseltes Archiv gleichzeitig sieht (O4 in der Studie), liefert `.github/workflows/supertrader-st9-v13-study.yml` (§3.1). Ausgelöst wird er nur durch den Owner.
+
+### 3.1 Workflow `supertrader-st9-v13-study.yml`
+
+- **Auslöser:** nur `workflow_dispatch`, Eingaben `snapshot_id` (Standard `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`), `methods` (leer = alle registrierten) und `repeat_check` (Standard an). Die Eingaben gelangen nur über `env:` in die Shell und werden per Regex geprüft. `permissions: contents: read`, kein Commit, kein Push.
+- **Ein Job, fail closed:**
+  1. Ob die Secrets vorhanden sind, wird nur als ja/nein geprüft (`VU_HISTORY_S3_ENDPOINT`, `_BUCKET`, `_ACCESS_KEY_ID`, `_SECRET_ACCESS_KEY`, `V13_ARCHIVE_PRIVATE_KEY`). Fehlt eines, endet der Lauf mit Exit 3.
+  2. `scripts/supertrader/snapshot/fetch-v13-archive-parts.mjs` lädt die Chiffretexte der Teile `v13-raw` und `v13-derived` aus `research-snapshots/quant-v13/archive-1.2.0/`. Jeder Teil wird gegen `manifest-1.2.0.json` geprüft (Bytes, SHA-256); fehlt einer oder weicht er ab, bricht der Lauf ab. Die S3-Secrets stehen nur in diesem Schritt und im Studienschritt.
+  3. Entschlüsseln mit dem unveränderten `scripts/quant/v13/archive/restore-archive.sh` (Chiffre-, Klartext- und Datei-Hashes). Der private Schlüssel steht nur in diesem Schritt. Er wird vorher gegen den Fingerabdruck im Manifest geprüft und danach geschreddert.
+  4. Runner: erst `--preflight`, dann der Lauf, ohne `--write-plain`, mit `--out` unter `$RUNNER_TEMP`. Stdout und Stderr gehen in `run.log` im Ausgabeordner, nicht ins Actions-Log.
+  5. Danach wird der **ganze Ausgabeordner** verschlüsselt: `sealed.json`, `public.json`, `preflight.json` und `run.log` als tar, AES-256-CBC mit zufälligem Datenschlüssel, der Datenschlüssel mit RSA-OAEP-SHA256 an `docs/quant-recovery/v13/archive/archive-pub.pem` gebunden. Ausgabeordner, Datenschlüssel und entschlüsseltes V13-Archiv werden gelöscht. Erst wenn eine Prüfung „nur `st9-output.tar.enc` und `k.bin.enc` vorhanden“ besteht, wird das Artefakt hochgeladen (7 Tage).
+- **Summary** (`scripts/supertrader/snapshot/st9-study-summary.mjs`, Feldliste fest, Formate geprüft): `status`, Exit-Code des Runners, `auditPass`, Anzahl der Audit-Verstöße, `resultSha256`, `inputFingerprint`, `datasetSha256`, `registrationSha256` aus der Quittung, dazu der SHA-256 des Chiffretexts. Keine Methode, keine Trade-Zahl, keine Kennzahl.
+- **Test:** `scripts/supertrader/tests/sf-st9-v13-study-workflow.test.mjs`. Statische Regeln mit je einer Gegenprobe, der Verschlüsselungsschritt lokal auf einem Dummy-Ordner, die Hilfsskripte.
+- **Auslesen:** Artefakt herunterladen. `k.bin.enc` mit dem privaten Archivschlüssel entpacken (`openssl pkeyutl -decrypt -inkey archive-priv.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in k.bin.enc -out k.bin`), dann `openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -pass file:k.bin -in st9-output.tar.enc -out st9-output.tar`. Die darin liegende `st9-v13-delisted.sealed.json` öffnet zusätzlich nur der Owner-Schlüssel zu `validation/results-public-key.pem`.
 
 ## 4. Abhängigkeit vom Security Master 1.1.0 → 1.3.0
 
