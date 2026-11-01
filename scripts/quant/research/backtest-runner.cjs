@@ -192,7 +192,11 @@ function resolvePopulation(spec, ctx, E) {
     else privateDirs.delistedSeries = ctx.privateDirs.delistedSeries;
   }
   if (missing.length) return { missing, profile: pop.profile, profileSpecHash: profileInfo.specHash };
-  const frame = populationFrame(pop.profile, privateDirs, ctx, E);
+  let frame;
+  // Incomplete private delisted directory (register rows without a file): state B with the count, never a hard error
+  // and never a silently smaller population.
+  try { frame = populationFrame(pop.profile, privateDirs, ctx, E); }
+  catch (e) { if (/^PRIVATE_DATA_INCOMPLETE/.test(String(e.message))) return { missing: [String(e.message).replace(/^PRIVATE_DATA_INCOMPLETE:?\s*/, 'PRIVATE_DATA_INCOMPLETE:delistedSeries ')], profile: pop.profile, profileSpecHash: profileInfo.specHash }; throw e; }
   const s = frame.summary, asOf = spec.asOf;
   const calendar = s.calendar.filter(d => d <= asOf);
   // Requested identities: tickers via core/identity.js (ADR-001), or explicit security ids.
@@ -363,8 +367,10 @@ function runFactor(spec, pop, ctx, E) {
   // possible exit (+2 sessions), like scripts/quant/v10/factor/study.cjs (exits beyond stay IMMATURE/CENSORED as in the engine).
   const k = pop.calendar.indexOf(snaps.at(-1).date), to = pop.calendar[Math.min(pop.calendar.length - 1, (k < 0 ? pop.calendar.length - 1 : k) + posInt(eng.horizonBars, 'engine.horizonBars') + 2)];
   const listings = pop.listings.filter(l => used.has(l.securityId)).map(l => engineListing(l, { listingIdIsSecurityId: true, from: snaps[0].date, to }));
+  // The V10 panel holds ref_ listings only: delisted members of the population are reported, not dropped silently.
+  const excluded = pop.listings.filter(l => l.securityId.startsWith('dl_') && !used.has(l.securityId)).map(l => ({ securityId: l.securityId, reason: 'NOT_IN_PRIVATE_FACTOR_PANEL_REF_ONLY' }));
   const r = E.S.runFactorStudy(studyBase(spec, pop, ctx, { listings, horizonBars: posInt(eng.horizonBars, 'engine.horizonBars'), buckets: posInt(eng.buckets || 5, 'engine.buckets', 2), factorId: eng.factorId, factorSnapshots }));
-  return { raw: r, path: 'research-studies.runFactorStudy (private V10 PIT panel)', panelSha256: shaFile(file), panelRankDates: snaps.length };
+  return { raw: r, path: 'research-studies.runFactorStudy (private V10 PIT panel)', panelSha256: shaFile(file), panelRankDates: snaps.length, ...(excluded.length ? { excluded } : {}) };
 }
 
 // Portfolio inputs from the population (existing runPortfolio contract; schedule via buildSchedule).
@@ -633,7 +639,9 @@ function runBacktest(spec, options = {}) {
   const commonDq = { warnings: popWarnings, corporateActions: { contract: 'LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)', listings: caListings.length > LIST_LIMIT ? { count: caListings.length, quality: countBy(caListings, l => l.quality), withSplitsInWindow: caListings.filter(l => l.splitsInWindow.length).length } : caListings },
     survivorship: { state: pop.listings.some(l => l.securityId.startsWith('dl_')) ? 'INCLUDES_PRIVATE_DELISTED_SERIES' : 'CONDITIONAL_CURRENT_SURVIVOR_COHORT', control: 'population profile ' + pop.profile + ' (' + pop.summary.populationHash.slice(0, 16) + ')' } };
   const terminals = pop.listings.filter(l => l.doc.listingLifecycle && l.doc.listingLifecycle.terminal).map(l => ({ securityId: l.securityId, lifecycle: { lastTradeDate: l.doc.listingLifecycle.lastTradeDate || null, terminalKind: l.doc.listingLifecycle.terminal.kind, terminalScenarios: l.doc.listingLifecycle.terminal.scenarios || null } }));
-  if (terminals.length) commonDq.terminal = { state: 'SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE', listings: terminals.map(l => ({ securityId: l.securityId, lastTradeDate: l.lifecycle.lastTradeDate, terminalKind: l.lifecycle.terminalKind, terminalScenarios: l.lifecycle.terminalScenarios })) };
+  // Delisted series whose end is not sourced (register PRICE_ONLY_CENSORED_END) are labelled as such; both censor events after the last trade.
+  const unsourcedEnd = pop.listings.filter(l => l.doc.listingLifecycle && l.doc.listingLifecycle.status === 'DELISTED_CENSORED_END').length;
+  if (terminals.length) commonDq.terminal = { state: unsourcedEnd ? 'TERMINAL_END_PARTLY_UNSOURCED_EVENTS_AFTER_LAST_OBSERVATION_CENSORED' : 'SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE', ...(unsourcedEnd ? { unsourcedEndListings: unsourcedEnd } : {}), listings: terminals.map(l => ({ securityId: l.securityId, lastTradeDate: l.lifecycle.lastTradeDate, terminalKind: l.lifecycle.terminalKind, terminalScenarios: l.lifecycle.terminalScenarios })) };
   const populationId = 'runner:' + pop.profile + ':' + sHash.slice(0, 16);
   const populationHash = sha({ populationHash: pop.summary.populationHash, listings: pop.listings.map(l => l.securityId), window: spec.window, asOf: spec.asOf });
   const common = { spec, specHash: sHash, inputHashes, inputHash: ctx.inputHash, kindPath, populationId, populationHash, dataQuality: commonDq, grain: 'WEEKLY' };

@@ -163,7 +163,7 @@ const VISUAL = [
   ['Quant', '/quant/#/', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips'],
   ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
   ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
-  ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste'],
+  ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-evo', 'Evidenz-Ueberblick der drei Stufen'],
   ['Quant', '/quant/#/aktie/NVDA', '.qx-change-tally', 'Bilanz der Veraenderungen'],
   ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
@@ -195,7 +195,27 @@ if (only.has('visual')) await guard('visual', async () => {
   for (const [route, items] of byRoute) {
     const { page, errors } = await open(ctx, route);
     await scrollThrough(page);
-    for (const [world, , sel, label] of items) {
+    for (const [world, , baseSel, baseLabel, variant] of items) {
+      let sel = baseSel, label = baseLabel;
+      if (variant === 'setupDirection') {
+        /* Die Setup-Karte hat zwei Formen: Aufwaertsszenario mit Regelcheckliste, Abwaertsszenario (bzw. ohne Richtung)
+           mit "Ungueltig ueber" und Zielzonen abwaerts, ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
+           renderSetupCard). Welche gilt, entscheidet das veroeffentlichte Basisszenario - hier unabhaengig von der
+           Karte ueber die Produkt-API gelesen. Ohne Szenario bleibt die strenge Erwartung (Checkliste). */
+        const dir = await page.evaluate(async () => {
+          const g = globalThis, ticker = location.hash.split('/')[2];
+          const api = g.VUProductServices.create({ loadJSON: g.QuantShell.loadJSON, displayPolicy: g.VUDisplayPolicy, queryEngine: g.VUQuery });
+          const ws = await api.getTechnicalWorkspace(ticker).catch(() => null);
+          if (!ws || ws.state !== 'AVAILABLE' || !(ws.scenarios || []).length) return null;
+          const ts = ws.tradeSetup || null;
+          const sc = ws.scenarios.find((x) => ts && x.id === ts.scenarioId) || ws.scenarios.find((x) => x.kind === 'PRIMARY') || null;
+          return sc && sc.direction ? sc.direction : null;
+        });
+        if (dir && dir !== 'BULLISH') {
+          if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+        }
+      }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);
       state === 'visible' ? pass('visual ' + world, label + ' (' + sel + ')') : fail('visual ' + world, label + ' ' + state + ' (' + sel + ' auf ' + route + ')');
     }
