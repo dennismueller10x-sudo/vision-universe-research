@@ -373,3 +373,43 @@ Die Wochenreihen dieser Titel wurden am 31.10. repariert (DQ-PX-4 jetzt 0). Der 
 Kein Aktivierungsnachweis. Das war ein einzelner manueller Lauf, `SF8_AUTO_PUBLISH` bleibt ungesetzt, S7 ist nicht vorweggenommen.
 
 **Verbleibender CI-Blocker für alle Merges:** Die Quant-Regression (auch in den Supertrader Quality Gates) ist nur noch an L1–L3 rot (Technical, Abschnitt 16). #1219 ist darauf CI-rot (3.829 Tests, 3 Fehler, nur L1–L3).
+
+## 18. 01.11.2026, ~21:00 UTC: Integration der freigegebenen PRs, neuer gemeinsamer Blocker NL5
+
+**L1–L3 sind behoben.** Technical hat den Datenvertrag 1.3.0 eingeführt und den Screener neu gebaut (#1188, b5fa577). Damit war `technical-world.yml` nicht mehr der Grund für den Abbruch am 01.11. (Lauf 41317289055: `technical-screener-contract-1.2.0 RANGE choppiness14 BMBL=131,4`). Mit #1232 stößt der Marktlauf technical-world per Dispatch an. Abschnitt 16 ist damit erledigt.
+
+**Gemergt (jeweils nach grünen Pflichtchecks, Head-SHA gesperrt):**
+
+| PR | Merge-Commit | Inhalt |
+|---|---|---|
+| #1219 | f0fd146 | Quant-Wochenreihen-Tests vom wachsenden Datenstand entkoppelt (7 veraltete Tests) |
+| #1199 | 1dfffb0 | Pages liefert auch nach dem SF8-Tageslauf aus |
+| #1217 | 6d065c3 | Doku Rückfall-Zeitplan 30./31.10. |
+
+Auf `main` f0fd146 laufen alle Tests grün: Quant 3.857, Core 308, Supertrader 949, Technical 61, kein Fehler. Der Pages-Job `package` von #1219 war im ersten Versuch rot (Smoke-Test `requestfailed … golden-preview/daily/ref_AAPL.chart.json`). Im zweiten Versuch war er grün; der Fehler war also flüchtig.
+
+**Neuer gemeinsamer Blocker, nicht aus Supertrader.**
+- Mit 3caa8ca (#1232, Technical) hat der Alarm-Job in `market-data-refresh.yml` die Abhängigkeit `technical` bekommen. Der Discover-Test NL5 (`discover/tests/im-blick-nachtlauf.test.mjs:331`) prüft die Alarm-Liste aber exakt (`["supertrader", "supertrader-prune"]`).
+- Seitdem sind `main` und der Job `gates` der Supertrader Quality Gates auf jedem PR rot. Der Job führt die Discover-Tests aus, Ergebnis 1 Fehler bei 588 Tests.
+- Der Fix liegt schon vor: #1239 (Draft, Sitzung `oue3bi`, nur diese eine Testzeile). Er gehört nicht zur Supertrader-Freigabe. Eine konkurrierende Implementierung gibt es nicht.
+
+**Wartet auf #1239, alles schon auf `main` f0fd146 gebracht:**
+- #1200, #1191, #1218, #1220, #1189, #1196.
+- Lokal Supertrader 949–982 Tests grün, Core ohne Fehler, Gate A OK.
+- In der CI ist jeweils nur `gates` an NL5 rot.
+- Für #1218 und #1220 hat GitHub auf dem neuen Head keine Läufe angelegt. Ein erneuter Merge von `main` nach #1239 holt das regulär nach, ohne leeren Commit.
+
+**Danach:**
+1. #1198 (gestapelt auf #1191).
+2. #1190 (gestapelt auf #1189).
+3. Basis jeweils nach dem Merge auf `main` umstellen.
+
+Weiter Draft, nicht freigegeben: #1233, #1234, #1235.
+
+**#1235 (Zertifizierungsvorbereitung der übrigen acht Methoden):**
+- Die drei MINOR-Befunde des unabhängigen Reviews sind eingearbeitet (Head d798215, Prüferversion `sf9-cert-prep-check-1.2.1`):
+  - `PARAM_KIND_MODEL_AS_SOURCE` erfasst auch `SOURCE_NUMBER_TRANSLATION_ONLY`.
+  - CP-HG-TOUCH-ORDER-STOP, CP-PP-UP-DAY-STRICT und CP-EP-EXIT-MA20 haben jetzt Fixtures, die die jeweilige Mutation erkennen.
+- 41 von 41 Gegenproben werden rot (vorher 38).
+- Der ALL13-Plan-Pin wurde bewusst neu gesetzt; neu sind nur die drei Gegenproben.
+- Die Engines sind byte-gleich, TOP5-Plan und -Pin unverändert.
