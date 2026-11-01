@@ -248,3 +248,20 @@ test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne v
   const ci = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-ci.yml'), 'utf8');
   assert.match(ci, /cp -r supertrader "\$RUNNER_TEMP\/supertrader-inkrementell"\n\s+node scripts\/supertrader\/build\.mjs --out="\$RUNNER_TEMP\/supertrader-inkrementell"/, 'Speicher-Fruehwarnung in der CI');
 });
+
+/* Betriebsaudit 01.11.2026 (ADR-005): Der Commit-Schritt rebased und pusht auf den Zweig des Laufs
+   (scripts/ci/commit-and-push.sh: origin/$GITHUB_REF_NAME). Ausgecheckt werden muss deshalb genau dieser Zweig,
+   an der Spitze - nie fest `main` und nie github.sha. */
+test('Workflow ADR-005: Checkout an der Spitze des eigenen Zweigs, Push nur auf diesen Zweig und nur supertrader/', () => {
+  const wf = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-signals.yml'), 'utf8');
+  const code = wf.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+  const signals = code.slice(code.indexOf('\n  signals:\n'), code.indexOf('\n  sf8:\n'));
+  const refs = [...signals.matchAll(/\n\s+ref: ([^\n]+)/g)].map((m) => m[1].trim());
+  assert.deepEqual(refs, ['${{ github.ref }}'], 'genau ein Checkout, an der Spitze des eigenen Zweigs');
+  assert.doesNotMatch(signals, /github\.sha/);
+  assert.match(signals, /\n\s+bash scripts\/ci\/commit-and-push\.sh "\$nachricht" supertrader\/(\n|$)/, 'nur eigene Pfade');
+  const cp = readFileSync(join(ROOT, 'scripts', 'ci', 'commit-and-push.sh'), 'utf8');
+  assert.match(cp, /git pull --rebase --autostash origin "\$\{GITHUB_REF_NAME\}"/, 'rebased auf den Zweig des Laufs');
+  assert.match(cp, /git push origin "HEAD:\$\{GITHUB_REF_NAME\}"/, 'pusht auf den Zweig des Laufs');
+  assert.doesNotMatch(cp.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n'), /\|\| true/, 'kein still verschluckter Pull oder Push');
+});

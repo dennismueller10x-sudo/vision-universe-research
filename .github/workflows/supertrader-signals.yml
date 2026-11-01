@@ -41,6 +41,9 @@ on:
         default: build
 permissions:
   contents: write
+# Concurrency: Gruppe noch ohne Zweig (ADR-005 (5) offen). Alle Laeufe bisher auf main (22 von 22 Anstoessen); die
+# Umstellung braucht zugleich core/tests/supertrader-chain.test.mjs (SC5) und die Laufliste in
+# scripts/ci/supertrader-chain.mjs (wartende Laeufe nur von main zaehlen) - eigener Core-PR, nicht in Gate A.
 concurrency:
   group: supertrader-signals
   cancel-in-progress: false
@@ -51,9 +54,12 @@ jobs:
     env:
       MODE: ${{ inputs.mode || 'build' }}
     steps:
+      # ADR-005 (1): Spitze des eigenen Zweigs. Der Commit-Schritt rebased auf origin/$GITHUB_REF_NAME und pusht
+      # dorthin; ein fest verdrahtetes `ref: main` haette bei einem Lauf auf einem anderen Zweig main-Code getestet
+      # und den main-Stand auf diesen Zweig geschoben. Auf main ist es dasselbe wie vorher.
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
