@@ -32,7 +32,7 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
 
 const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
-const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || inputs.mode == 'auto')";
+const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))";
 
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
@@ -354,17 +354,18 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
 // Eingabe in der Bedingung bliebe genau dieser rote Lauf ohne Alarm. Bewertet wird der echte Ausdruck der Datei.
 test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt mode, ein manueller nie', () => {
   const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
-  if (!fs.existsSync(p)) return;
+  assert.ok(fs.existsSync(p), 'Tageslauf-Workflow vorhanden');
   const y = fs.readFileSync(p, 'utf8');
   const m = y.match(/\n  alarm:\n    needs: candidates\n    if: ([^\n]+)\n/);
   assert.ok(m, 'Alarm-Job mit Bedingung');
   const ausdruck = m[1];
-  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|inputs\.mode|'[a-z_]*'|==|!=|&&|\|\||[()\s]/g;
+  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|github\.ref|inputs\.mode|'[a-z_/]*'|==|!=|&&|\|\||[()\s]/g;
   assert.equal(ausdruck.replace(bekannt, ''), '', 'nur bekannte Bausteine: ' + ausdruck);
   const js = ausdruck.replace(/always\(\)/g, 'true').replace(/needs\.candidates\.result/g, 'c.result').replace(/needs\.candidates\.outputs\.auto/g, 'c.auto')
-    .replace(/github\.event_name/g, 'c.event').replace(/inputs\.mode/g, 'c.mode').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
+    .replace(/github\.event_name/g, 'c.event').replace(/github\.ref/g, 'c.ref').replace(/inputs\.mode/g, 'c.mode').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
   const alarm = new Function('c', 'return (' + js + ');');
-  for (const [event, mode, result, auto, erwartet, fall] of [
+  const MAIN = 'refs/heads/main', ZWEIG = 'refs/heads/claude/probe';
+  for (const [event, mode, result, auto, erwartet, fall, ref = MAIN] of [
     ['workflow_dispatch', 'auto', 'failure', '', true, 'Anstoß mode=auto scheitert vor dem Schritt mode'],
     ['workflow_dispatch', 'auto', 'cancelled', '', true, 'Anstoß mode=auto abgebrochen vor dem Schritt mode'],
     ['workflow_dispatch', 'auto', 'failure', 'true', true, 'Anstoß mode=auto scheitert nach dem Schritt mode'],
@@ -376,9 +377,12 @@ test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt m
     ['workflow_dispatch', 'manual', 'success', 'false', false, 'manueller Lauf grün'],
     ['workflow_dispatch', 'auto', 'skipped', '', false, 'Job übersprungen (Schalter aus)'],
     ['schedule', '', 'skipped', '', false, 'Zeitplan ohne SF8_AUTO_PUBLISH'],
-  ]) assert.equal(alarm({ event, mode, result, auto }), erwartet, fall);
+    ['workflow_dispatch', 'auto', 'failure', '', false, 'Probelauf mode=auto auf einem anderen Zweig (scheitert in mode)', ZWEIG],
+    ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf auf einem anderen Zweig', ZWEIG],
+  ]) assert.equal(alarm({ event, mode, result, auto, ref }), erwartet, fall);
   // Eingaben bleiben außerhalb des Shell-Texts: der Alarm-Schritt reicht nur das Jobergebnis über env weiter
   const job = y.slice(y.indexOf('\n  alarm:'));
-  for (const block of job.split(/\n\s+run: /).slice(1)) assert.doesNotMatch(block.split('\n')[0], /\$\{\{/, 'kein Ausdruck im Shell-Text');
+  const ausdruecke = job.split('\n').filter((l) => /\$\{\{/.test(l));
+  assert.deepEqual(ausdruecke.filter((l) => !/^\s+[A-Z_]+: \$\{\{ (github\.token|needs\.candidates\.result) \}\}$/.test(l) && !/^\s+ref: \$\{\{ github\.ref \}\}$/.test(l)), [], 'Ausdrücke im Alarm-Job nur in env: und ref:, nie im Shell-Text');
   assert.match(job, /RESULT_CANDIDATES: \$\{\{ needs\.candidates\.result \}\}/);
 });
