@@ -1,4 +1,4 @@
-# Technical – Datenvertrag v1 (`technical-screener-contract-1.1.0`)
+# Technical – Datenvertrag v1 (`technical-screener-contract-1.3.0`)
 
 Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ und Tests. Gehört zu [TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md), AP2 (Kriterien B3, I4).
 
@@ -60,7 +60,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 - **Extreme, aber korrekte Werte:**
   - `atrPct@1M` reicht bis 982.924.676 % (WHLR). Grund ist eine Reverse-Split-Kette: Der Wochenschluss fiel split-bereinigt in 70 Wochen von 402.408 auf 0,357. Eine ATR über 14 Monate im Verhältnis zum heutigen Kurs ist dann legitim riesig.
   - `relVol` ist bei einem Volumen-Median nahe 0 ebenfalls offen.
-  - Der Vertrag lässt diese Werte deshalb nach oben offen. Begrenzt sind nur mathematisch begrenzte Größen: RSI, Stochastik, MFI, ADX, Choppiness, Connors RSI (0…100), Williams %R (−100…0), Aroon-Oszillator (−100…100), CMF (−1…1), Elder Impulse (−1, 0, 1), Abstand zum Hoch (−1…0) und Kursänderungen (≥ −1).
+  - Der Vertrag lässt diese Werte deshalb nach oben offen. Begrenzt sind nur mathematisch begrenzte Größen: RSI, Stochastik, MFI, ADX, Connors RSI (0…100), Choppiness (≥ 0, seit Vertrag 1.3.0 nach oben offen, siehe unten), Williams %R (−100…0), Aroon-Oszillator (−100…100), CMF (−1…1), Elder Impulse (−1, 0, 1), Abstand zum Hoch (−1…0) und Kursänderungen (≥ −1).
 - **Chart ↔ Screener:** RSI 14 und ADX im Chart (aus 270 Bars) stimmen mit dem Screener (aus der Vollhistorie) bis auf Rundung überein: Median 0,003, 95. Perzentil 0,005 über 5.657 Titel. Alle Ausreißer sind eingefrorene Reihen (SCREENER_FRESHNESS.md, #1077).
 
 ## Ticker-Wiederverwendung (`IDENTITY_QUARANTINED`, 31.10.2026)
@@ -79,10 +79,31 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 - Technical Intelligence (`--only` mit den 13 Titeln und 7 Kontrolltiteln): Alle Dateien sind gleich bis auf `meta.counts` (`skipped` 6 → 0, `identityQuarantined` 6). Die 6 Titel mit Wochenreihe waren schon vorher wegen zu kurzer Historie (< 160 Wochen) ausgelassen. Die Regel verhindert, dass sie mit wachsender Reihe unter falschem Namen erscheinen.
 - Die committeten Daten (`technical/data`, `quant/data/technical-intelligence`) ändern sich erst mit dem regulären Lauf nach dem Merge.
 
+## Choppiness über 100 (Vertrag 1.3.0, 01.11.2026)
+
+**Anlass:** Am 30.10.2026 meldete der Vertrag `choppiness14` = 131,4 für BMBL als Verstoß. Der reguläre Lauf von `build-screener.mjs` schrieb deshalb nichts (Exit 2), `technical/data` blieb auf dem Stand 29.10.2026.
+
+**Befund: kein Datenfehler.**
+- Die Tagesbars von BMBL (`technical-signals-v1`, gleich mit `discover-series`) zeigen Schlüsse 2,54 (09.10.), 3,80 (12.10., Bericht über Übernahmegespräche) und 5,95 (13.10., Eröffnung 5,98). Am 13.10.2026 wurde die Übernahme durch Ithaca Holdings zu 6,05 USD je Aktie in bar vereinbart.
+- Seitdem liegt der Kurs zwischen 5,92 und 6,00. Die Faktoren 1,50 und 1,57 haben keine Split-Signatur, `suspectJumpAt` ist leer.
+- Am 30.10. beginnt das 14-Tage-Fenster am 13.10. Die True Range dieses Tages enthält die Lücke vom Vorschluss 3,80: Σ TR ≈ 2,6 bei einer Spanne HH − LL = 0,08. Das ergibt 100 · log10(32,6) / log10(14) = 131,4.
+
+**Mathematik:**
+- Unten begrenzt: Jedes TR-Intervall enthält den Vorschluss, der im Intervall des Vortags liegt. Die Intervalle hängen also zusammen und überdecken [LL, HH]. Damit gilt Σ TR ≥ HH − LL und CHOP ≥ 0.
+- Oben nicht begrenzt: Innerhalb des Fensters ist TR ≤ HH − LL. Nur der erste Bar nutzt einen Vorschluss von außerhalb. Mit dessen Abstand g zu [LL, HH] gilt CHOP ≤ 100 · log10(n + g / (HH − LL)) / log10(n). Über 100 liegt der Wert nur bei einer Lücke am Fensteranfang (g > 0) und Σ TR > n · (HH − LL).
+- Die Standarddefinition (Dreiss, TradingView) ist ebenso unbegrenzt. Die Formel in `indicators.js` bleibt unverändert, es wird nichts gekappt.
+
+**Änderung:** `choppiness14` hat den Bereich 0 … ∞ (vorher 0 … 100). Test: `technical/tests/technical-choppiness-range.test.mjs` (BMBL-Bars, Handrechnung, Schranken an 200 Zufallsreihen mit Lücken).
+
+**Vorher/Nachher** (Bau in ein Temp-Verzeichnis, Stand 30.10.2026, 5.663 Titel):
+- Vorher: Vertrag verletzt (1 × RANGE, BMBL), nichts geschrieben.
+- Nachher: Vertrag erfüllt. Genau 1 Zeile über 100 (BMBL 131,4). Verteilung: p10 34,3 · Median 49,5 · p90 63,2 · p99 71,9; 235 `null` (ruhende Titel). Stand 29.10.: p10 34,4 · Median 48,9 · p90 63,0 · p99 72,5 · Maximum 84,8.
+- Über alle 1.417.466 berechenbaren Bars der Materialisierung liegen 66 Werte (0,005 %) bei 61 Titeln über 100, das Maximum ist 257,3 (GLU-P-B, 09.04.2026). Der alte Bereich hätte den Lauf also wiederholt gestoppt.
+
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.2.1, 164 Spalten.
+technical-screener-contract-1.3.0, 164 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
