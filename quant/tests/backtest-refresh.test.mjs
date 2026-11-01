@@ -54,11 +54,13 @@ test('real weekly append invalidates the reader, rejects old selections and expo
  const Reader=require('../../server/quant-backtest-reader.cjs'),full=fs.readFileSync(join(root,'quant/data/market/discover-series-long/ref_NVDA.json')),doc=JSON.parse(full);doc.points.pop();doc.to=doc.asOf=doc.points.at(-1)[0];doc.corporateActions.splits=doc.corporateActions.splits.filter(x=>x[0]<=doc.asOf);doc.corporateActions.moves=doc.corporateActions.moves.filter(x=>x.week<=doc.asOf);fs.writeFileSync(source,JSON.stringify(doc));build();
  const reader=Reader.create({directory:output,root:fixture,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:['NVDA']});
  const old=await reader.getRealBacktest('NVDA');assert.equal(old.asOf,doc.asOf);
+
  fs.writeFileSync(source,full);const pending=await reader.getRealBacktest('NVDA');assert.equal(pending.delivery.state,'STALE_INPUT_SNAPSHOT');assert.ok(pending.delivery.changedDependencies.includes('PRICE_SERIES'));assert.equal(pending.asOf,doc.asOf);
  const updated=build();assert.ok(updated.calculatedListings<=1);assert.equal(updated.calculatedListings+updated.calculationCacheHits+updated.reused,8);
  const stale=await reader.getRealBacktest('NVDA',{section:'equity',expectedGeneration:old.generation,expectedListingId:old.identity.listingId});assert.equal(stale.state,'UNAVAILABLE');assert.equal(stale.reason,'GENERATION_CHANGED');assert.equal(stale.result,undefined);
- const fresh=await reader.getRealBacktest('NVDA');assert.equal(fresh.asOf,JSON.parse(full).asOf);assert.equal(fresh.delivery.state,'CURRENT_INPUT_SNAPSHOT');assert.notEqual(fresh.generation,old.generation);assert.equal(fresh.result.metrics.completedTrades,21);assert.equal(fresh.result.to,JSON.parse(full).to);
- const expected=require('../../scripts/quant/run-real-weekly-backtest.cjs').run(require('../engines/weekly-real-adapter.cjs').load(root,'ref_NVDA'));assert.ok(Math.abs(fresh.result.endCapital-expected.equity.at(-1).value)<1e-6);
+ const fresh=await reader.getRealBacktest('NVDA');assert.equal(fresh.asOf,JSON.parse(full).asOf);assert.equal(fresh.delivery.state,'CURRENT_INPUT_SNAPSHOT');assert.notEqual(fresh.generation,old.generation);assert.equal(fresh.result.to,JSON.parse(full).to);
+ // completed trades follow an independent run on the full committed series (it grows weekly; a pinned count goes stale)
+ const expected=require('../../scripts/quant/run-real-weekly-backtest.cjs').run(require('../engines/weekly-real-adapter.cjs').load(root,'ref_NVDA'));assert.equal(fresh.result.metrics.completedTrades,expected.trades.filter(t=>t.completed).length);assert.ok(fresh.result.metrics.completedTrades>=old.result.metrics.completedTrades);assert.ok(Math.abs(fresh.result.endCapital-expected.equity.at(-1).value)<1e-6);
 });
 
 test('automated refresh preserves its established listing scope and rejects accidental scope shrink',()=>{
@@ -68,6 +70,15 @@ test('automated refresh preserves its established listing scope and rejects acci
 test('corporate-action corruption invalidates exactly its listing and cannot deliver old financial results',()=>{
  const before=ptr(),full=fs.readFileSync(source),doc=JSON.parse(full);assert.ok(doc.corporateActions.splits.length);doc.corporateActions.splits[0][1]=-1;fs.writeFileSync(source,JSON.stringify(doc));
  try{const invalid=build();assert.equal(invalid.calculatedListings,1);assert.equal(invalid.calculationCacheHits,7);assert.notEqual(ptr(),before);const row=JSON.parse(fs.readFileSync(join(output,invalid.generation,'listings/ref_NVDA/summary.json')));assert.equal(row.state,'BLOCKED');assert.ok(row.quality.exclusionReasons.includes('CORPORATE_ACTION'));assert.deepEqual(row.periods,{});}finally{fs.writeFileSync(source,full);build();}
+});
+
+test('an open position reaches the API as uncompleted (series fixed at As-of 2026-10-16, independent of later weeks)',async()=>{
+ const full=fs.readFileSync(source),doc=JSON.parse(full),asOf='2026-10-16';doc.points=doc.points.filter(p=>p[0]<=asOf);doc.to=doc.asOf=doc.points.at(-1)[0];doc.corporateActions.splits=doc.corporateActions.splits.filter(x=>x[0]<=asOf);doc.corporateActions.moves=doc.corporateActions.moves.filter(x=>x.week<=asOf);fs.writeFileSync(source,JSON.stringify(doc));
+ try{build();const reader=require('../../server/quant-backtest-reader.cjs').create({directory:output,root:fixture,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:['NVDA']});
+  const summary=await reader.getRealBacktest('NVDA');assert.equal(summary.asOf,asOf);const trades=await reader.getRealBacktest('NVDA',{section:'trades',expectedGeneration:summary.generation,expectedListingId:summary.identity.listingId});
+  const expected=require('../../scripts/quant/run-real-weekly-backtest.cjs').run(require('../engines/weekly-real-adapter.cjs').load(root,'ref_NVDA'),{asOf});
+  assert.ok(expected.openPosition);assert.deepEqual(trades.result.openPosition,expected.openPosition);assert.equal(trades.result.openPosition.completed,false);assert.equal(summary.result.metrics.completedTrades,21);
+ }finally{fs.writeFileSync(source,full);build();}
 });
 
 test('snapshot, release, cache key and reader retain the actual calculation runtime',async()=>{
