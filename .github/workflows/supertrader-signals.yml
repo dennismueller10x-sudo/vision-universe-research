@@ -41,9 +41,10 @@ on:
         default: build
 permissions:
   contents: write
-# Concurrency: Gruppe noch ohne Zweig (ADR-005 (5) offen). Alle Laeufe bisher auf main (22 von 22 Anstoessen); die
-# Umstellung braucht zugleich core/tests/supertrader-chain.test.mjs (SC5) und die Laufliste in
-# scripts/ci/supertrader-chain.mjs (wartende Laeufe nur von main zaehlen) - eigener Core-PR, nicht in Gate A.
+# Concurrency: Gruppe noch ohne Zweig (ADR-005 (5) offen). Bis zur Umstellung keine Laeufe auf anderen Zweigen im
+# Fenster der Nachtkette: ein wartender Zweig-Lauf kann einen wartenden main-Lauf verdraengen. Die Umstellung braucht
+# zugleich core/tests/supertrader-chain.test.mjs (SC5) und die Laufliste in scripts/ci/supertrader-chain.mjs (wartende
+# Laeufe nur von main zaehlen) - eigener Core-PR, nicht in Gate A.
 concurrency:
   group: supertrader-signals
   cancel-in-progress: false
