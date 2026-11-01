@@ -28,7 +28,16 @@ Browser ──CDN──▶ /core/data/watchlist-summary-v1/meta.json + rows/<sha
 
 Zeilenschlüssel ist die `instrumentId` aus dem Company Master (ADR-001). Ein Wert wird nur dem Listing zugeordnet, dessen kanonische
 `securityId` (`core/identity.js`) die Quelle trägt, das **aktiv** ist und dessen **Währung** passt. Sonst bleibt der Abschnitt leer und
-trägt den Grund (`LISTING_INACTIVE`, `LISTING_AMBIGUOUS`, `CURRENCY_MISMATCH`, `NOT_COVERED`, `SOURCE_MISSING`).
+trägt den Grund (`LISTING_INACTIVE`, `LISTING_AMBIGUOUS`, `CURRENCY_MISMATCH`, `NOT_COVERED`, `SOURCE_MISSING`, `IDENTITY_QUARANTINED`).
+
+**Ticker-Wiederverwendung (`IDENTITY_QUARANTINED`):** Für die Kennungen in `quant/config/ticker-reuse-quarantine.json` (gelesen
+über `scripts/market/universe-source.mjs#loadTickerReuseQuarantine`, wie in Discover) handelt unter dem Ticker heute ein anderes
+Wertpapier (z. B. ein ETF), als Name, Stamm und `securityId` meinen. Die Zeile bleibt mit `instrumentId`, Kürzel, Börse und
+Listing-Status erhalten, damit gespeicherte Einträge erklärbar bleiben. Sie trägt aber keinen Namen der alten Identität (auch nicht
+in `names.json`) und keinen Kurs, keine Faktoren, keine Technik und keine Supertrader-Zustände. `why` nennt für die Identität und
+jeden betroffenen Abschnitt `IDENTITY_QUARANTINED`; `withheld` zählt die Fälle, `sources.master.identityQuarantine` nennt Datei
+und Hash. Stand 31.10.2026: 13 Kennungen (ACTS BREW ENTL FTPA GNMX INVN NMBL NYNY PCLN TRIL USX WR WX). Fehlt die Datei, wird
+nichts markiert; ist sie fehlerhaft, bricht der Bau ab.
 
 | Abschnitt | Quelle | Regel in der Watchlist | Frist (domains.json) |
 |---|---|---|---|
@@ -55,6 +64,7 @@ Ein späterer Datenlauf kann nichts von selbst freischalten. Jede Freigabe bleib
 | Modus nicht LIVE (z. B. MODEL) | nicht freigegeben | dto. |
 | Unbekannte Strategie im Signal | wird nicht gezeigt | dto. |
 | Veralteter Stand | „veraltet“, zählt nicht, kein Ereignis | `Veraltete Daten …` |
+| Kennung in der Ticker-Quarantäne | kein alter Name, kein Kurs, keine Faktoren, Technik, Supertrader; Grund `IDENTITY_QUARANTINED`; zählt nicht | `core/tests/watchlist-identity-quarantine.test.mjs` |
 
 Die Freigabe selbst geschieht wie bisher in der Supertrader-Welt (Evidenz in `registry-core.json`, eigener PR mit Gate A). Die Watchlist
 übernimmt sie nur.
@@ -289,6 +299,7 @@ oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der O
 | `supabase/tests/08_watchlist_personal.sql` | RLS zwischen zwei Nutzern, Idempotenz, Kennungsformat, Alerts, Tarifgrenze, anonym, Löschung, Fan-out-Index |
 | `workers/vu-account/tests/flows.test.mjs` | API Ende-zu-Ende mit zwei isolierten Konten, CSRF/Herkunft, Grenze 409, Export, Löschung; Pro mit 200 Titeln (Übernahme, Antwortzeit) |
 | `core/tests/watchlist-view.test.mjs` | echte Artefakte: kein Gesamtscore, Supertrader nur Forschung ohne Freigabe; veraltete Stände; zwei Listings (BGC); Delisting; Währungskonflikt; fehlende Quellen; Ereignisse; Teilauslieferung = Gesamtansicht |
+| `core/tests/watchlist-identity-quarantine.test.mjs` | Ticker-Quarantäne: markierte Kennung ohne alten Namen und ohne Abschnitte, Grund je Abschnitt; nicht markierte unverändert; fehlende Datei markiert nichts, fehlerhafte bricht ab; echter Bestand |
 | `core/tests/watchlist-button.test.mjs` | Lesezeichen: ohne Freigabe nichts laden; nur eindeutig aktives Listing; keine HTML-Strings; gesperrte Dateien unberührt. Kopplung: ohne Konten/Anmeldung rein lokal; angemeldet lokal ODER Konto, Klick schreibt beide, nichts wird von selbst übernommen; Tarifgrenze lässt lokal wie geklickt |
 | `konto/tests/konto.test.mjs` | Seitenstruktur, kein `innerHTML`, kein Gesamtscore im Browser, Unternavigation |
 | `scripts/account/watchlist-qa.mjs` | Browser (Chromium und WebKit/iPhone, hell/dunkel): Übernahme, Suche, Kennzahlen, Details, Notiz, Alerts, Filter/Sortierung/Gruppen, Entfernen, Lesezeichen angemeldet/abgemeldet/ohne Freigabe |

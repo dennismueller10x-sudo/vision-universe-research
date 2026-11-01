@@ -1,7 +1,7 @@
 {
   "schemaVersion": "rejection-ledger-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: Rejection-Checkpoint klassifizieren statt loeschen",
-  "checkedAt": "2026-10-31T01:44:45.892Z",
+  "checkedAt": "2026-10-31T15:16:45.464Z",
   "applied": true,
   "staleAfterDays": 7,
   "checkpointsFound": 1,
@@ -9,28 +9,59 @@
     {
       "file": ".market-cache/tiingo/checkpoints/incremental.json",
       "runId": "incremental",
-      "total": 4,
+      "total": 5,
       "byClass": {
         "PERMANENT_REJECT": 0,
-        "TEMPORARY_REJECT": 4,
+        "TEMPORARY_REJECT": 5,
         "STALE_REJECT": 0
       },
       "byCode": {
         "too_few_bars": 2,
-        "adjustment_status_contradicted": 2
+        "adjustment_status_contradicted": 3
       },
-      "retryDue": 4,
-      "keptBlocked": 0,
-      "oldest": "2026-10-30T02:14:58.407Z",
-      "newest": "2026-10-30T03:08:57.916Z",
-      "keptExamples": [],
-      "removed": 4
+      "retryDue": 2,
+      "keptBlocked": 3,
+      "oldest": "2026-10-31T01:53:51.633Z",
+      "newest": "2026-10-31T02:47:51.321Z",
+      "keptExamples": [
+        {
+          "securityId": "ref_PS",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-31T02:32:50.536Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_SCAG",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-31T02:36:59.467Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_VTAK",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-31T02:47:51.321Z",
+          "confirmations": 1
+        }
+      ],
+      "removed": 2
     }
   ],
   "totals": {
-    "before": 4,
-    "retryDue": 4,
-    "keptBlocked": 0,
-    "removed": 4
+    "before": 5,
+    "retryDue": 2,
+    "keptBlocked": 3,
+    "removed": 2
   }
 }

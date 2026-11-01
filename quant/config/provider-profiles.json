@@ -855,7 +855,7 @@
       },
       "licensing": {
         "status": "OWNER_DECLARED_LICENSED",
-        "checkedAt": "2026-09-13",
+        "checkedAt": "2026-10-31",
         "findings": {
           "developmentUse": "OWNER_DECLARED",
           "commercialUse": "OWNER_DECLARED",
@@ -869,18 +869,37 @@
           "aiUsage": "UNKNOWN",
           "modelTraining": "UNKNOWN"
         },
-        "note": "Seit 2026-09-13 gilt die Erklaerung des Eigentuemers als Grundlage fuer die oeffentliche Anzeige (Tageskurse, abgeleitete Werte, Intraday, Realtime) des Produktuniversums; sie steht mit Datum in quant/config/development-preview.json (grants) und wird von display-policy.js je Datenklasse geprueft. Der Vertragstext liegt dem Repository nicht vor, eine eigene Rechtspruefung wurde nicht vorgenommen - OWNER_DECLARED ist deshalb eine eigene Stufe, nicht DOCUMENTATION_VERIFIED. Weiterhin offen und unveraendert: aiUsage und modelTraining (UNKNOWN). Die Kursart der IEX-Intradaydaten bleibt vom Anbieter unbenannt (priceType UNSPECIFIED).",
+        "note": "Seit 2026-09-13 gilt die Erklaerung des Eigentuemers als Grundlage fuer die oeffentliche Anzeige (Tageskurse, abgeleitete Werte, Intraday, Realtime) des Produktuniversums; sie steht mit Datum in quant/config/development-preview.json (grants) und wird von display-policy.js je Datenklasse geprueft. Der Vertragstext liegt dem Repository nicht vor, eine eigene Rechtspruefung wurde nicht vorgenommen - OWNER_DECLARED ist deshalb eine eigene Stufe, nicht DOCUMENTATION_VERIFIED. Weiterhin offen und unveraendert: aiUsage und modelTraining (UNKNOWN). Die Kursart der IEX-Intradaydaten bleibt vom Anbieter unbenannt (priceType UNSPECIFIED). Erklaerung vom 2026-10-31: kommerzielle Lizenz mit Veroeffentlichungsrechten (siehe declaration.scopeDeclared); Vertragstext weiterhin nicht im Repository, Pruefung docs/data/TIINGO_LICENSE_REVIEW.md.",
         "previousStatus": {
           "status": "LEGAL_REVIEW_REQUIRED",
           "until": "2026-09-13"
         },
         "declaration": {
           "by": "Repository owner",
-          "date": "2026-09-13",
-          "text": "Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor. Wir verwenden das entsprechend freigegebene grosse Paket.",
+          "date": "2026-10-31",
+          "text": "Vision Universe besitzt eine kostenpflichtige kommerzielle Tiingo-Lizenz, die nach dem Vertragsverstaendnis des Eigentuemers auch die Veroeffentlichung der lizenzierten Daten umfasst. Die fruehere Annahme einer reinen internen Nutzungslizenz ist ueberholt.",
+          "scopeDeclared": [
+            "serverseitige Berechnung",
+            "oeffentliche Anzeige historischer Kurse und Charts",
+            "Veroeffentlichung abgeleiteter Kennzahlen und Backtest-Ergebnisse",
+            "historische Kurse delisteter Aktien (bereits beschaffte Archive)"
+          ],
+          "notEvidenced": [
+            "Weitergabe herunterladbarer Rohdatensaetze (Massendownload) - in der Erklaerung nicht ausdruecklich genannt",
+            "aiUsage und modelTraining (unveraendert UNKNOWN)"
+          ],
           "evidenceLevel": "OWNER_DECLARED",
           "contractInRepository": false
-        }
+        },
+        "previousDeclarations": [
+          {
+            "by": "Repository owner",
+            "date": "2026-09-13",
+            "text": "Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor. Wir verwenden das entsprechend freigegebene grosse Paket.",
+            "evidenceLevel": "OWNER_DECLARED",
+            "contractInRepository": false
+          }
+        ]
       },
       "cost": {
         "checkedAt": "2026-09-07",

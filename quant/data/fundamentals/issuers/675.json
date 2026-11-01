@@ -368,9 +368,9 @@
       "name": "CubeSmart",
       "sic": "6798",
       "rawFacts": 18261,
-      "mappedFacts": 5267,
-      "unmappedFacts": 12983,
-      "calendarYears": 18,
+      "mappedFacts": 5260,
+      "unmappedFacts": 13103,
+      "calendarYears": 17,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
@@ -389,21 +389,21 @@
         },
         "real_estate_accumulated_depreciation": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "real_estate_gross": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "real_estate_net": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -491,14 +491,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -521,44 +521,46 @@
         }
       },
       "quality": {
-        "HIGH": 387,
+        "HIGH": 389,
         "MEDIUM": 55
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 442,
-        "resolvedValues": 442
+        "datableValues": 444,
+        "resolvedValues": 444
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13516,
+        "rules_version": "1.1.0",
+        "total": 13625,
         "by_severity": {
-          "INFO": 12983,
-          "WARNING": 533
+          "INFO": 13103,
+          "WARNING": 522
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 456,
+          "CONCEPT_DISAGREEMENT": 450,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 68,
+          "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 12983
+          "UNKNOWN_CONCEPT": 13103,
+          "UNPLACEABLE_PERIOD": 3
         }
       },
       "latestFiling": {
-        "accession": "0001298675-26-000038",
-        "filing_date": "2026-07-31",
+        "accession": "0001298675-26-000050",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 88
+        "periodic_filings": 89,
+        "acceptance_datetime": "2026-10-30T20:34:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "5a32e9470b112afc5cea14becc841b6a09fa8e5b0df87ba8f76c3893b4ee6e8b",

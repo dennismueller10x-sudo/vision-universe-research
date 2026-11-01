@@ -56,6 +56,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PublishedClose = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
 const Naming = createRequire(import.meta.url)(join(ROOT, "quant/engines/company-naming-contract.js"));
 const Classification = createRequire(import.meta.url)(join(ROOT, "quant/engines/instrument-classification.js"));
+import { loadTickerReuseQuarantine } from "../market/universe-source.mjs";
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
   const i = argv.indexOf("--" + name);
@@ -211,11 +212,25 @@ async function main() {
     }
   }
 
+  /* WIEDERVERWENDETE KUERZEL (quant/config/ticker-reuse-quarantine.json, #1206).
+   *
+   * Unter 13 Kuerzeln handelt heute ein ETF, Stamm und Name beschreiben noch die
+   * alte Gesellschaft (PCLN "Priceline.com", Kurs 28,98). Der Eintrag behauptet
+   * deshalb keine Gesellschaft: kein Name `n`, Identitaetskonflikt `ic`
+   * TICKER_REUSE mit dem historischen Namen als anderer Quelle `ia`, und `ne`,
+   * (nur wo das Verzeichnis noch die alte Gesellschaft fuehrt; ein ETF-Eintrag stimmt schon)
+   * damit keine Faktoren oder Geschaeftszahlen der alten Gesellschaft erscheinen.
+   * Dieselben Felder wie bisher - die Oberflaeche zeigt sie schon. */
+  const reuse = loadTickerReuseQuarantine(ROOT);
+  let mitWiederverwendung = 0;
   const entries = [];
   const staende = {};
   let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0, mitBewertungsgrund = 0, mitKonflikt = 0;
   for (const member of members) {
-    const name = namen.get(member.s) || null;
+    /* Fuehrt das Firmenverzeichnis schon das heutige Wertpapier (Typ ETF, z. B. WR "Corgi U.S. War Machine ETF"),
+       stimmt der Name; zurueckgehalten wird nur der Name der alten Gesellschaft. */
+    const wiederverwendet = reuse && reuse.records.has(member.m) && typen.get(member.s) !== "ETF" ? reuse.records.get(member.m) : null;
+    const name = wiederverwendet ? null : namen.get(member.s) || null;
     let preis = null;
     const pfad = join(ROOT, "quant/data/market/discover-series", member.m + ".json");
     if (!existsSync(pfad)) ohneReihe += 1;
@@ -239,10 +254,12 @@ async function main() {
       ...(bars !== null ? { b: bars } : {}),
       ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
       ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {}),
-      ...(keineAktie.has(member.s) ? { ne: 1 } : {}),
-      ...(konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
+      ...(keineAktie.has(member.s) || wiederverwendet ? { ne: 1 } : {}),
+      ...(wiederverwendet ? { ic: "TICKER_REUSE", ...(namen.get(member.s) ? { ia: namen.get(member.s) } : {}) }
+        : konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
         ...(andererName(name, konflikt.get(member.s)) ? { ia: andererName(name, konflikt.get(member.s)) } : {}) } : {})
     });
+    if (wiederverwendet) mitWiederverwendung += 1;
     if (konflikt.has(member.s)) mitKonflikt += 1;
     if (keineAktie.has(member.s)) mitKeineAktie += 1;
     if (bewertungGrund.has(member.s)) mitBewertungsgrund += 1;
@@ -258,6 +275,7 @@ async function main() {
       factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)",
       valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)",
       identityConflict: "quant/data/product/naming-contract-v1.json (company-naming-1.0.0)",
+      tickerReuse: "quant/config/ticker-reuse-quarantine.json (ticker-reuse-quarantine-1.0.0)",
       provenNonEquity: "quant/data/universe/instruments (belegte Gattung nach instrument-classification provenNonEquity)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
@@ -267,6 +285,7 @@ async function main() {
       withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
       withValuationReason: mitBewertungsgrund,
       withIdentityConflict: mitKonflikt,
+      tickerReuseQuarantined: mitWiederverwendung,
       provenNonEquity: mitKeineAktie,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))

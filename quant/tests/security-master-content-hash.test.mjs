@@ -14,11 +14,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const C = require("../engines/security-master-content-hash.js");
 const A = require("../engines/weekly-real-adapter.cjs");
 const MASTER = "quant/data/market/security-master/us-security-master.json";
-const bytes = readFileSync(join(ROOT, MASTER), "utf8"), master = () => JSON.parse(bytes);
+// Golden Case und Mutationen auf der eingefrorenen Generation 1.1.0 (hashgebunden), unabhängig vom laufenden Produktstamm.
+const G = require("../engines/security-master-generation.cjs");
+const bytes = G.resolve(ROOT, "us-security-master-1.1.0").text, master = () => JSON.parse(bytes);
+const liveBytes = readFileSync(join(ROOT, MASTER), "utf8");
 const BYTES_1_1_0 = "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332";
 
 test("MCH-1 · Golden Case: committeter Stamm 1.1.0 (11.09.2026) hat den festgeschriebenen Inhalts-Fingerabdruck", (t) => {
-  if (A.hash(bytes) !== BYTES_1_1_0) return t.skip("Stamm seit dem Entwurf geändert: Golden Case gilt für 26c82617…");
+  assert.equal(A.hash(bytes), BYTES_1_1_0, "eingefrorene Generation 1.1.0 ist bytegleich");
   assert.equal(C.contentHash(master()), "cf5fbebf0a0e88fbec53dc76637eda4ff8f83dd4f64393e3e3274fcffc29fb20");
   assert.equal(C.ALGORITHM, "us-security-master-backtest-content-1");
   assert.deepEqual([...C.FIELDS], ["baseline_security_id", "canonical_id", "ticker", "provider", "currency", "start_date", "active_status", "eligible_us_equity", "instrument_type", "source_provenance"]);
@@ -55,8 +58,10 @@ test("MCH-4 · fail closed: fehlende Felder, falsche Typen, kein Stamm", () => {
 });
 
 test("MCH-5 · bestehender Vertrag unverändert: masterHash = SHA-256 der ganzen Datei (Adapter, Loader)", () => {
-  assert.equal(A.createLoader(ROOT).masterHash, crypto.createHash("sha256").update(bytes).digest("hex"));
-  assert.equal(A.createLoader(ROOT).masterHash, A.hash(bytes));
+  assert.equal(A.createLoader(ROOT).masterHash, crypto.createHash("sha256").update(liveBytes).digest("hex"));
+  assert.equal(A.createLoader(ROOT).masterHash, A.hash(liveBytes));
+  // eine eingefrorene Generation trägt denselben Vertrag: masterHash = SHA-256 der gelesenen Datei
+  assert.equal(require("../engines/research-weekly-loader.cjs").createResearchLoader(ROOT, undefined, { masterGeneration: "us-security-master-1.1.0" }).masterHash, BYTES_1_1_0);
   // der Entwurf ist nirgends verdrahtet: kein Verbraucher lädt das Modul
   const users = ["quant/engines/weekly-real-adapter.cjs", "server/quant-backtest-freshness.cjs", "server/quant-backtest-reader.cjs", "scripts/quant/materialize-real-backtest-read.cjs"]
     .filter((p) => readFileSync(join(ROOT, p), "utf8").includes("security-master-content-hash"));

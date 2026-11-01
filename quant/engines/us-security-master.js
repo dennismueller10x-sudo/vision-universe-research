@@ -594,7 +594,24 @@
      listing_status). Passt etwas nicht, bleibt alles wie ohne Register
      und der Lauf meldet den Eintrag als nicht angewandt. Zeilen ohne
      Eintrag beruehrt das Register nie. Ein unlesbares oder in sich
-     widerspruechliches Register bricht den Lauf ab (fail closed). */
+     widerspruechliches Register bricht den Lauf ab (fail closed).
+
+     Fortfuehrung nach Umfirmierung (optionales Feld keptCanonicalId):
+     Tiingo beendet bei einer Umfirmierung desselben Emittenten
+     gelegentlich die bisherige Zeile und beginnt am Umstellungstag eine
+     neue mit anderer Boersenbezeichnung derselben Boerse (EDVA 2026:
+     tiingo:NYSE MKT:EDVA:2019-02-05 bis 2026-08-21 und
+     tiingo:AMEX:EDVA:2026-08-21 bis heute; NYSE MKT und AMEX sind beide
+     die NYSE American). Die Zuordnung ueber Ticker UND Handelsplatz
+     haengt die securityId dann an die beendete Zeile, die laufende wird
+     ALTERNATE_LISTING. Ein Eintrag mit keptCanonicalId verlangt
+     zusaetzlich: Regel SAME_CIK, derselbe Ticker in beiden canonical_ids,
+     dieselbe Boerse (nur die Bezeichnung darf wechseln, VENUE_ALIASES),
+     Beginn der Folgezeile hoechstens 7 Tage vom Wirksamkeitstag. Wirkung
+     nur, wenn genau diese zwei Anbieterzeilen den Ticker tragen: die
+     beendete Zeile entfaellt (dropped_row), die Folgezeile wird normal
+     zugeordnet. Tickerwechsel, Boersenwechsel und Zusammenschluesse sind
+     damit weiter ausgeschlossen. */
   var DUPLICATE_RESOLUTION_SCHEMA = "security-master-duplicate-resolution-1.0.0";
   var DUPLICATE_RESOLUTION_LIMITS = {
     /* Enddatum der Altzeile hoechstens so weit vom Wirksamkeitstag. */
@@ -611,6 +628,21 @@
   var DUPLICATE_RESOLUTION_RULES = ["12g-3(a)", "SAME_CIK"];
   var DUPLICATE_RESOLUTION_KEYS = ["securityId", "ticker", "exchange", "startDate", "canonicalId",
     "assetType", "instrumentType", "currency", "droppedEndDate", "event", "sec", "series", "reviewedAt"];
+  /* Optional: nur fuer die Fortfuehrung nach Umfirmierung (siehe oben). */
+  var DUPLICATE_RESOLUTION_OPTIONAL_KEYS = ["keptCanonicalId"];
+  /* Bezeichnungen DERSELBEN Boerse beim Anbieter. Keine Boersenfamilie:
+     NYSE und NYSE American sind verschiedene Boersen. */
+  var VENUE_ALIASES = { "NYSE MKT": "NYSE AMERICAN", "AMEX": "NYSE AMERICAN", "NYSE AMERICAN": "NYSE AMERICAN" };
+  function sameVenue(a, b) {
+    var x = upper(a), y = upper(b);
+    return (VENUE_ALIASES[x] || x) === (VENUE_ALIASES[y] || y);
+  }
+  /* "tiingo:<Boerse>:<Ticker>:<Beginn>" -> Teile; die Boerse darf ein
+     Leerzeichen tragen ("NYSE MKT"), aber keinen Doppelpunkt. */
+  function parseCanonicalId(id) {
+    var m = /^tiingo:([^:]+):([^:]+):(\d{4}-\d{2}-\d{2})$/.exec(typeof id === "string" ? id : "");
+    return m ? { exchange: m[1], ticker: m[2], startDate: m[3] } : null;
+  }
   var CIK_RE = /^\d{10}$/;
   var ACCESSION_RE = /^\d{10}-\d{2}-\d{6}$/;
 
@@ -642,7 +674,8 @@
       function bad(msg) { fail("records[" + i + "] " + msg); }
       if (!r || typeof r !== "object" || Array.isArray(r)) bad("kein Objekt");
       Object.keys(r).forEach(function (k) {
-        if (DUPLICATE_RESOLUTION_KEYS.indexOf(k) < 0) bad("unbekanntes Feld " + k);
+        if (DUPLICATE_RESOLUTION_KEYS.indexOf(k) < 0 &&
+            DUPLICATE_RESOLUTION_OPTIONAL_KEYS.indexOf(k) < 0) bad("unbekanntes Feld " + k);
       });
       DUPLICATE_RESOLUTION_KEYS.forEach(function (k) {
         if (r[k] === undefined || r[k] === null) bad("Pflichtfeld " + k + " fehlt");
@@ -666,6 +699,19 @@
         bad("droppedEndDate " + r.droppedEndDate + " liegt mehr als " +
             DUPLICATE_RESOLUTION_LIMITS.maxEndDateDistanceDays + " Tage vom Ereignis " + ev.effectiveDate);
       }
+      var keptParts = null;
+      if (r.keptCanonicalId !== undefined) {
+        keptParts = parseCanonicalId(r.keptCanonicalId);
+        if (!keptParts || !isIsoDay(keptParts.startDate)) bad("keptCanonicalId " + r.keptCanonicalId);
+        if (r.keptCanonicalId === r.canonicalId) bad("keptCanonicalId gleich canonicalId");
+        if (keptParts.ticker !== r.ticker) bad("keptCanonicalId mit anderem Ticker (Tickerwechsel sind ausgeschlossen)");
+        if (!sameVenue(keptParts.exchange, r.exchange)) bad("keptCanonicalId an anderer Boerse (Boersenwechsel sind ausgeschlossen)");
+        if (!(keptParts.startDate > r.startDate)) bad("Folgezeile beginnt nicht nach der Altzeile");
+        if (Math.abs(dayDistance(ev.effectiveDate, keptParts.startDate)) > DUPLICATE_RESOLUTION_LIMITS.maxEndDateDistanceDays) {
+          bad("Folgezeile beginnt " + keptParts.startDate + ", mehr als " +
+              DUPLICATE_RESOLUTION_LIMITS.maxEndDateDistanceDays + " Tage vom Ereignis " + ev.effectiveDate);
+        }
+      }
 
       var sec = r.sec;
       if (!sec || typeof sec !== "object") bad("sec");
@@ -673,6 +719,7 @@
       if (DUPLICATE_RESOLUTION_RULES.indexOf(sec.rule) < 0) bad("sec.rule " + sec.rule);
       if (sec.exchangeRatio !== "1:1") bad("sec.exchangeRatio " + sec.exchangeRatio + " (nur 1:1)");
       if (sec.rule === "SAME_CIK" && sec.predecessorCik !== sec.successorCik) bad("SAME_CIK mit verschiedenen CIK");
+      if (keptParts && sec.rule !== "SAME_CIK") bad("keptCanonicalId nur mit sec.rule SAME_CIK (Umfirmierung derselben Emittentin)");
       if (!Array.isArray(sec.filings) || !sec.filings.length) bad("sec.filings[] fehlt");
       var successorFiling = null;
       sec.filings.forEach(function (f, j) {
@@ -710,10 +757,14 @@
         bad("series: Sprung " + s.maxAbsMove + " (Split-Groesse)");
       }
 
+      if (keptParts && seenCanonical[r.keptCanonicalId]) bad("keptCanonicalId " + r.keptCanonicalId + " doppelt");
       seenCanonical[r.canonicalId] = true;
+      if (keptParts) seenCanonical[r.keptCanonicalId] = true;
       by[r.securityId] = Object.freeze({
         securityId: r.securityId, ticker: r.ticker, exchange: r.exchange, startDate: r.startDate,
-        canonicalId: r.canonicalId, assetType: r.assetType, instrumentType: r.instrumentType,
+        canonicalId: r.canonicalId, keptCanonicalId: keptParts ? r.keptCanonicalId : null,
+        cik: sec.successorCik,
+        assetType: r.assetType, instrumentType: r.instrumentType,
         currency: r.currency, droppedEndDate: r.droppedEndDate, effectiveDate: ev.effectiveDate,
         eventKind: ev.kind, rule: sec.rule,
         accession: (successorFiling || sec.filings[0]).accession,
@@ -735,15 +786,28 @@
       var base = baselineByTicker[e.ticker];
       if (!base || base.length !== 1 || base[0].securityId !== id) return skip("BASELINE_SECURITY_ID_MISMATCH");
       var group = providerByTicker[e.ticker] || [];
-      var same = group.filter(function (c) { return canonicalId(c) === e.canonicalId; });
-      if (same.length !== 2) return skip("PROVIDER_ROWS_WITH_CANONICAL_ID:" + same.length);
+      var same;
+      if (e.keptCanonicalId) {
+        /* Fortfuehrung: genau die Altzeile und genau die Folgezeile, sonst nichts unter dem Ticker. */
+        var oldRows = group.filter(function (c) { return canonicalId(c) === e.canonicalId; });
+        var newRows = group.filter(function (c) { return canonicalId(c) === e.keptCanonicalId; });
+        if (oldRows.length !== 1) return skip("PROVIDER_ROWS_WITH_CANONICAL_ID:" + oldRows.length);
+        if (newRows.length !== 1) return skip("PROVIDER_ROWS_WITH_KEPT_CANONICAL_ID:" + newRows.length);
+        if (group.length !== 2) return skip("PROVIDER_ROWS_FOR_TICKER:" + group.length);
+        same = [oldRows[0], newRows[0]];
+      } else {
+        same = group.filter(function (c) { return canonicalId(c) === e.canonicalId; });
+        if (same.length !== 2) return skip("PROVIDER_ROWS_WITH_CANONICAL_ID:" + same.length);
+      }
       for (var k = 0; k < same.length; k++) {
         var c = same[k];
         if (c.assetType !== e.assetType) return skip("ASSET_TYPE_MISMATCH");
         if (c.instrumentType !== e.instrumentType) return skip("INSTRUMENT_TYPE_MISMATCH");
         if (c.currency !== e.currency) return skip("CURRENCY_MISMATCH");
       }
-      var dropped = same.filter(function (c) { return c.endDate === e.droppedEndDate; });
+      var dropped = e.keptCanonicalId
+        ? (same[0].endDate === e.droppedEndDate ? [same[0]] : [])
+        : same.filter(function (c) { return c.endDate === e.droppedEndDate; });
       if (dropped.length !== 1) return skip("DROPPED_END_DATE_NOT_FOUND");
       var kept = same[0] === dropped[0] ? same[1] : same[0];
       if (!isIsoDay(kept.endDate) || !(kept.endDate > e.droppedEndDate)) return skip("KEPT_ROW_NOT_LATEST");
@@ -760,10 +824,20 @@
         event: e.eventKind, effectiveDate: e.effectiveDate,
         dropped_row: droppedInfo
       };
-      kept.activeBasis = kept.activeBasis + " (Doppelzeile " + droppedInfo.start_date + ".." +
-        droppedInfo.end_date + " belegt aufgeloest: " + e.form + " " + e.accession + ")";
-      applied.push({ securityId: id, canonicalId: e.canonicalId, keptEndDate: kept.endDate,
-                     droppedEndDate: droppedInfo.end_date, accession: e.accession });
+      if (e.keptCanonicalId) {
+        /* Nur bei Fortfuehrung: Zeilen der Altfaelle bleiben Feld fuer Feld gleich. */
+        kept.duplicateResolution.continuation = "SAME_ISSUER_RENAMED";
+        kept.duplicateResolution.cik = e.cik;
+        kept.activeBasis = kept.activeBasis + " (Folgezeile derselben Emittentin CIK " + e.cik + "; Altzeile " +
+          droppedInfo.canonical_id + " bis " + droppedInfo.end_date + " belegt abgeloest: " + e.form + " " + e.accession + ")";
+      } else {
+        kept.activeBasis = kept.activeBasis + " (Doppelzeile " + droppedInfo.start_date + ".." +
+          droppedInfo.end_date + " belegt aufgeloest: " + e.form + " " + e.accession + ")";
+      }
+      var appliedEntry = { securityId: id, canonicalId: e.canonicalId, keptEndDate: kept.endDate,
+                           droppedEndDate: droppedInfo.end_date, accession: e.accession };
+      if (e.keptCanonicalId) appliedEntry.keptCanonicalId = e.keptCanonicalId;
+      applied.push(appliedEntry);
     });
     return { applied: applied, notApplied: notApplied };
   }
@@ -1418,6 +1492,8 @@
     DUPLICATE_RESOLUTION_LIMITS: DUPLICATE_RESOLUTION_LIMITS,
     indexDuplicateResolution: indexDuplicateResolution,
     canonicalId: canonicalId,
+    parseCanonicalId: parseCanonicalId,
+    sameVenue: sameVenue,
     /* Ausdruecklich exportiert, damit ein Test die Zusage selbst
        angreifen kann und nicht nur ihr Ergebnis: eine Wache, die nie
        ausgeloest hat, ist keine bewiesene Wache. */

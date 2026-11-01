@@ -896,15 +896,15 @@
       "cik": "0001253986",
       "name": "ARBOR REALTY TRUST INC",
       "sic": "6798",
-      "rawFacts": 22928,
-      "mappedFacts": 5841,
-      "unmappedFacts": 16988,
+      "rawFacts": 23389,
+      "mappedFacts": 5930,
+      "unmappedFacts": 17475,
       "calendarYears": 19,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -932,14 +932,14 @@
         },
         "real_estate_net": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "secured_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -954,9 +954,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
@@ -968,7 +968,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -988,21 +988,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -1023,14 +1023,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -1054,47 +1054,49 @@
       },
       "quality": {
         "MEDIUM": 102,
-        "HIGH": 341
+        "HIGH": 347
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 443,
-        "resolvedValues": 443
+        "datableValues": 449,
+        "resolvedValues": 449
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 17832,
+        "rules_version": "1.1.0",
+        "total": 18282,
         "by_severity": {
-          "INFO": 16988,
+          "INFO": 17475,
           "ERROR": 1,
-          "WARNING": 843
+          "WARNING": 806
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 782,
+          "CONCEPT_DISAGREEMENT": 744,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 53,
-          "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 16988
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 54,
+          "UNEXPECTED_DURATION": 7,
+          "UNKNOWN_CONCEPT": 17475
         }
       },
       "latestFiling": {
-        "accession": "0001253986-26-000048",
-        "filing_date": "2026-07-31",
+        "accession": "0001253986-26-000063",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 91
+        "periodic_filings": 92,
+        "acceptance_datetime": "2026-10-30T13:01:11.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b4e2bd582e7d32702876be48ace0ae4781ed10594c4f82a9d1ebd65fc8554cea",
+      "sourceDigest": "28ad3d8222da0f2af339131e7ec72bc503d985fd1d4487dd3e7514300dc95953",
       "issuerId": "iss_cik_0001253986"
     },
     {
