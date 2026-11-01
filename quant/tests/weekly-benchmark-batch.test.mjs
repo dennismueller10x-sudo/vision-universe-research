@@ -9,14 +9,17 @@ const require=createRequire(import.meta.url),A=require('../engines/weekly-real-a
 const root=resolve(import.meta.dirname,'../..'),data=A.load(root,'ref_NVDA'),benchmark=B.load(root);
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
 test('legacy NVDA reference is preserved, per-side costs charge purchases and open entry',()=>{
- const legacy=run(data,{costModel:'LEGACY_EXIT_NOTIONAL',benchmark,asOf:'2026-10-16'}),r=run(data,{benchmark});
- near(legacy.equity.at(-1).value,4933558.796274043);assert.equal(legacy.trades.length,21);
- for(const t of [...r.trades,r.openPosition].filter(Boolean)){
+ // Pinned values are anchored to a fixed As-of: the committed series grows every week, and on 2026-10-30 the position
+ // opened 2026-05-01 closed at entry + 26 weeks (22 trades, no open position). The open-entry check therefore runs at
+ // the same As-of as the legacy reference; the cost invariants also run on the full current series.
+ const legacy=run(data,{costModel:'LEGACY_EXIT_NOTIONAL',benchmark,asOf:'2026-10-16'}),r=run(data,{benchmark,asOf:'2026-10-16'}),current=run(data,{benchmark});
+ near(legacy.equity.at(-1).value,4933558.796274043);assert.equal(legacy.trades.length,21);assert.equal(r.trades.length,21);assert.ok(r.openPosition,'open position at the anchored As-of');
+ for(const t of [...r.trades,r.openPosition,...current.trades,current.openPosition].filter(Boolean)){
   near(t.entryCapital,t.entryGross+t.entryFees+t.entrySlippage);near(t.units*t.entryPrice,t.entryGross);
   near(t.entryFees,t.entryGross*.001);near(t.entrySlippage,t.entryGross*.0005);
   if(t.completed){near(t.exitFees,t.grossExitValue*.001);near(t.exitSlippage,t.grossExitValue*.0005);near(t.netExitValue,t.grossExitValue-t.exitFees-t.exitSlippage);}
  }
- near(r.metrics.fees,r.trades.reduce((s,t)=>s+t.fees,0)+(r.openPosition?.entryFees||0));
+ for(const x of [r,current])near(x.metrics.fees,x.trades.reduce((s,t)=>s+t.fees,0)+(x.openPosition?.entryFees||0));
  assert.ok(r.openPosition.entryFees>0);
 });
 test('real SPY aligns every exact equity date, independent Python verifies both cost models',()=>{
@@ -28,7 +31,10 @@ test('real SPY aligns every exact equity date, independent Python verifies both 
 });
 test('missing SPY dates or currency mismatch remain separate from executable strategy',()=>{
  const sparse={...benchmark,byDate:new Map(benchmark.byDate)};sparse.byDate.delete('2000-01-28');
- const r=run(data,{benchmark:sparse});assert.equal(r.marketBenchmark.state,'BENCHMARK_UNAVAILABLE');assert.equal(r.trades.length,21);
+ // the strategy ledger with a sparse benchmark is the ledger with the full one (not a pinned count of a growing series)
+ const r=run(data,{benchmark:sparse}),full=run(data,{benchmark});assert.equal(r.marketBenchmark.state,'BENCHMARK_UNAVAILABLE');assert.equal(full.marketBenchmark.state,'AVAILABLE');
+ assert.deepEqual(r.trades,full.trades);assert.deepEqual(r.openPosition,full.openPosition);assert.deepEqual(r.equity,full.equity);
+ assert.equal(run(data,{benchmark:sparse,asOf:'2026-10-16'}).trades.length,21);
  assert.equal(B.compare(benchmark,r.equity,r.metrics,'EUR').reason,'CURRENCY_MISMATCH');
  const poison={...benchmark,byDate:new Map(benchmark.byDate)};poison.byDate.set('2099-01-01',1e12);near(run(data,{benchmark:poison,asOf:'2026-10-16'}).marketBenchmark.cagr,run(data,{benchmark,asOf:'2026-10-16'}).marketBenchmark.cagr);
 });
