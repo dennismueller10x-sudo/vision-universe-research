@@ -30,7 +30,7 @@ Neu vorbereitet sind die übrigen acht Methoden, in der Reihenfolge der Matrix: 
 
 | Datei | Inhalt |
 |---|---|
-| `scripts/supertrader/source-faithful/certification/CERT-PREP-ALL13-PLAN.json` | Erweiterungsplan: 8 Methoden, 4 neue Querschnittsblocker, 4 Befunde, 38 Gegenproben. Er verweist mit `extends` auf den TOP5-Plan und dessen Inhalts-sha256 |
+| `scripts/supertrader/source-faithful/certification/CERT-PREP-ALL13-PLAN.json` | Erweiterungsplan: 8 Methoden, 4 neue Querschnittsblocker, 4 Befunde, 41 Gegenproben. Er verweist mit `extends` auf den TOP5-Plan und dessen Inhalts-sha256 |
 | `scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs` | Prüfer: Pins, Zusammenführung, Plan-Prüfung über alle 13, statische Prüfung der Gegenproben; optional `--run-tests` und `--mutation-probes` |
 | `scripts/supertrader/tests/sf-cert-prep-all13.test.mjs` | 26 Regeltreue-Tests (`CP-WEIN-*`, `CP-MIN-*`, `CP-EP-*`, `CP-PS-*`, `CP-PP-*`, `CP-HG-*`) und 5 Plan-Tests (`CP-PLAN-ALL13-*`) |
 | `scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs` | Erweitert, für TOP5 aber unverändert im Verhalten (Details unten) |
@@ -80,7 +80,7 @@ node scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --mut
   - 206 Testverweise;
   - 121 Blocker, 55 Studien.
 - `--run-tests`: alle 13 `MET` (C02 17, C01 14, C08 15, C12 14, C03 16, C07 21, C06 20, C13 13, C11 18, C05 21, C04 23, C09 19, C10 12).
-- `--mutation-probes`: 38 von 38 ROT, alle Dateien danach byte-gleich (git: keine Änderung).
+- `--mutation-probes`: 41 von 41 ROT, alle Dateien danach byte-gleich (git: keine Änderung).
 - Wie bei TOP5 gilt für `PS-*-CONFORMANCE` `evidenceState: PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN`. Der Nachweis auf dem Commit, der die Referenz rechnet, steht aus.
 
 ## Klassen
@@ -281,7 +281,7 @@ CC erfüllt: 1. Offen: 2–8.
 
 Ein Implementierungsfehler gegenüber den zitierten Quellen wurde **nicht** gefunden:
 - Alle 26 neuen Grenzfalltests liefen gegen den unveränderten Code grün.
-- Alle 38 Gegenproben machten ihren Test rot.
+- Alle 41 Gegenproben machten ihren Test rot.
 
 Es gibt deshalb keinen Draft-PR für eine Fachmodelländerung. Festgehalten sind vier Befunde (`findings`, alle `modelChange: false`):
 

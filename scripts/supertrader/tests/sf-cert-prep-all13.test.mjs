@@ -275,10 +275,12 @@ test('CP-EP-ORH-FILL-AND-LOD: Buy-Stop ein Roh-Cent über dem 1-Minuten-ORH; Fil
 });
 
 test('CP-EP-EXIT-MA20: Referenz verlässt die Position zur nächsten Eröffnung nach dem ersten Schluss unter der MA20; Schluss gleich MA20 nicht (KK-017, MA-EP-EXIT)', () => {
-  const bars = Array.from({ length: 25 }, (_, k) => flat(k, 20)), ctx = { bars };
+  // steigende Schlüsse 10, 11, …, 33 und Handelstag 24: MA20 und MA10 fallen auseinander (Schluss 24 = MA20 < MA10 28,5)
+  const bars = Array.from({ length: 25 }, (_, k) => flat(k, 10 + k)), ctx = { bars };
   const run = (c) => { bars[24] = { ...bars[24], close: c }; const log = []; KK_EP_ADAPTER.onClose({}, ctx, 24, apiLog(log), EP_REFERENCE_CONFIG); return log; };
-  assert.deepEqual(run(20), [], 'Schluss gleich MA20');
-  assert.deepEqual(run(19.99), [['EXIT', 1, 'EP_CLOSE_BELOW_MA20']]);
+  assert.deepEqual(run(24), [], 'Schluss gleich MA20 (456 + 24) / 20 = 24, unter der MA10');
+  assert.deepEqual(run(23.99), [['EXIT', 1, 'EP_CLOSE_BELOW_MA20']]);
+  assert.deepEqual(run(30), [], 'über MA20 und MA10');
   assert.equal(EP_REFERENCE_CONFIG.exitMa, 20);
 });
 
@@ -321,11 +323,11 @@ test('CP-PS-COSTS-NO-BORROW: Short-Rendite mit 10 bps je Seite und 1 bp, ohne Le
 
 // ---------------------------------------------------------------- Pocket Pivot (C11)
 /** 60 Sitzungen bei 101, Vortag 52 (Abwärtstag mit Volumen 1e6), Signaltag mit Schluss c und Volumen 2e6. */
-function ppSignalBars(c = 100, { flatDayVolume = null } = {}) {
+function ppSignalBars(c = 100, { flatDayVolume = null, signalVolume = 2e6 } = {}) {
   const b = Array.from({ length: 60 }, (_, k) => bar(k, 101, 101.5, 100.5, 101));
   if (flatDayVolume !== null) b[55] = { ...b[55], volume: flatDayVolume }; // Schluss gleich dem Vortag: kein Abwärtstag
   b.push(bar(60, 101, 101.5, 51.5, 52));
-  b.push(bar(61, 52, c + 0.5, 51.8, c, 2e6));
+  b.push(bar(61, 52, c + 0.5, 51.8, c, signalVolume));
   return b;
 }
 
@@ -334,6 +336,10 @@ test('CP-PP-UP-DAY-STRICT: Signal- und Abwärtstage sind strikt (Schluss gleich 
   const flatDay = pocketPivotAt(ppSignalBars(100, { flatDayVolume: 9e6 }), 61);
   assert.equal(flatDay.status, 'VOLUME_SIGNATURE'); assert.equal(flatDay.maxDownVolume, 1e6); assert.equal(flatDay.downDays, 1);
   assert.equal(pocketPivotAt(ppSignalBars(52), 61).status, 'NOT_UP_DAY');
+  // Volumen strikt über dem höchsten Abwärtsvolumen: Gleichheit wird abgelehnt
+  const eqVol = pocketPivotAt(ppSignalBars(100, { signalVolume: 1e6 }), 61);
+  assert.equal(eqVol.status, 'VOLUME_NOT_ABOVE_DOWN_VOLUME'); assert.equal(eqVol.volume, eqVol.maxDownVolume);
+  assert.equal(pocketPivotAt(ppSignalBars(100, { signalVolume: 1e6 + 1 }), 61).status, 'VOLUME_SIGNATURE');
   assert.equal(MOKA_PARAMS.ppWindow, 10);
 });
 
@@ -397,6 +403,12 @@ test('CP-HG-TOUCH-ORDER-STOP: ein Tief genau an der EMA20 ist eine Berührung; B
   assert.equal(el.order.type, 'BUY_STOP'); assert.ok(near(el.order.level, b[i].high + 0.01)); assert.equal(el.order.stop, set.swingLow);
   const hiK = b.findIndex((x) => x.date === set.impulseHighDate);
   assert.equal(set.swingLow, Math.min(...b.slice(hiK, i + 1).map((x) => x.low)));
+  // das Tief des Impulshoch-Balkens selbst ist das tiefste: es gehört zum Stop (ab dem Impulshoch einschließlich)
+  const own = b.map((x, k) => (k === hiK ? { ...x, low: Math.min(...b.slice(hiK + 1, i + 1).map((y) => y.low)) - 0.2 } : x));
+  const so = holyGrailSetupSeries(own, HG_REFERENCE_CONFIG).get(i);
+  assert.ok(so && so.impulseHighDate === b[hiK].date, 'gleiches Setup und Impulshoch');
+  assert.equal(so.swingLow, own[hiK].low);
+  assert.ok(so.swingLow < Math.min(...own.slice(hiK + 1, i + 1).map((x) => x.low)));
 });
 
 test('CP-HG-EXIT-NEW-HIGH-STRICT: Ausstieg zur nächsten Eröffnung nach dem ersten Schluss strikt über dem Impulshoch; Schluss gleich dem Impulshoch nicht (RAS04-003, MA-RAS-EXIT)', () => {
@@ -408,7 +420,7 @@ test('CP-HG-EXIT-NEW-HIGH-STRICT: Ausstieg zur nächsten Eröffnung nach dem ers
 
 // ---------------------------------------------------------------- Prüfplan ALL13 (vorregistriert) und Prüfprotokoll
 // Vorregistrierung: eine Änderung am ALL13-Plan ändert diesen Wert und braucht einen eigenen, begründeten Commit.
-const PINNED_ALL13_SHA256 = 'a64d6f8e15202342a544a2aebbe8d5c07a665de4841c577a402add7b5a28dc3a';
+const PINNED_ALL13_SHA256 = '69a2447dfcfb12dd7310cbcb255cba9987d535d8bfc5704c5bc7a23ef05f2626';
 const CHECKER = path.join(path.dirname(ALL13_PLAN_FILE), 'cert-prep-all13.mjs');
 const fileSha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 
@@ -451,6 +463,8 @@ test('CP-PLAN-ALL13-DETECTS: Pin, geänderte TOP5-Basis, Parameter, Statuswechse
   await all13Has((e) => { e.methods = e.methods.filter((m) => m.candidateId !== 'C10'); }, 'ALL13_COVERAGE');
   await all13Has((e) => { m13(e, 'C06').psr709WordingUnchecked = []; }, 'PSR709_WORDING_UNCHECKED:MIN-TT-01');
   await all13Has((e) => { m13(e, 'C06').params.find((p) => p.code.path === 'aboveLow').kind = 'SOURCE_NUMBER'; }, 'PARAM_SOURCE_WORDING_UNCHECKED:C06:MIN-TT-06');
+  // Review: ein Forschungsproxy ist auch als nur übersetzte Quellenzahl unzulässig
+  await all13Has((e) => { m13(e, 'C07').params.find((p) => p.code.module === 'research/minervini-lifecycle.mjs' && p.code.path === 'riskFraction').kind = 'SOURCE_NUMBER_TRANSLATION_ONLY'; }, 'PARAM_KIND_MODEL_AS_SOURCE:C07:REFERENCE_CONFIG.riskFraction');
   await all13Has((e) => { e.paramsOutOfScopeSuperseded = []; }, 'PARAM_OOS_METHOD_IN_PLAN');
   await all13Has((e) => { m13(e, 'C11').conformanceTests = m13(e, 'C11').conformanceTests.filter((t) => !t.endsWith('CP-PP-SELL-GUIDE-35')); }, 'CONFORMANCE_MINIMUM:C11:CP-PP-SELL-GUIDE-35');
   await all13Has((e) => { m13(e, 'C05').rulesOutOfScope.find((r) => r.id === 'WEIN-SF-STAGE').reason = 'COVERED_IN:C08'; }, 'RULE_OOS_NOT_COVERED_THERE:C05:WEIN-SF-STAGE');

@@ -3671,6 +3671,14 @@
       "why": "ein Schluss gleich MA20 löste den Ausstieg aus"
     },
     {
+      "id": "MP-EP-EXIT-MA-PARAM",
+      "test": "CP-EP-EXIT-MA20",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "m = smaAt(ctx.bars, i, cfg.exitMa)",
+      "replace": "m = smaAt(ctx.bars, i, 10)",
+      "why": "der Ausstieg nutzte die MA10 statt der konfigurierten MA20"
+    },
+    {
       "id": "MP-PS-ACCEL",
       "test": "CP-PS-STREAK-ACCEL",
       "file": "research/kk-ps-study.mjs",
@@ -3727,6 +3735,14 @@
       "why": "ein gleich schließender Tag wäre ein Aufwärtstag"
     },
     {
+      "id": "MP-PP-VOLUME-STRICT",
+      "test": "CP-PP-UP-DAY-STRICT",
+      "file": "methods/morales-kacher.mjs",
+      "find": "status: b.volume > maxDown ?",
+      "replace": "status: b.volume >= maxDown ?",
+      "why": "ein Signalvolumen gleich dem höchsten Abwärtsvolumen wäre eine Volumensignatur"
+    },
+    {
       "id": "MP-PP-MA50",
       "test": "CP-PP-CONTEXT-MA50-STRICT",
       "file": "research/moka-lifecycle.mjs",
@@ -3781,6 +3797,14 @@
       "find": "const level = fin(ref) ? ref + rawTickAdjusted(bars[i]) : null;",
       "replace": "const level = fin(ref) ? ref : null;",
       "why": "der Buy-Stop läge am Hoch statt einen Roh-Cent darüber"
+    },
+    {
+      "id": "MP-HG-SWING-LOW",
+      "test": "CP-HG-TOUCH-ORDER-STOP",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "let lo = Infinity; for (let k = hiK; k <= i; k++)",
+      "replace": "let lo = Infinity; for (let k = hiK + 1; k <= i; k++)",
+      "why": "das Tief des Impulshoch-Balkens selbst gehörte nicht zum Stop"
     },
     {
       "id": "MP-HG-EXIT",

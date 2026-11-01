@@ -38,7 +38,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SF_DIR = path.resolve(HERE, '..');
 export const ROOT = path.resolve(SF_DIR, '..', '..', '..');
 export const PLAN_FILE = path.join(HERE, 'CERT-PREP-TOP5-PLAN.json');
-export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.0'; // 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
+export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.1'; // 1.2.1: Forschungsproxy auch nicht als SOURCE_NUMBER_TRANSLATION_ONLY; 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
 export const BLOCKER_CLASSES = Object.freeze(['a', 'b', 'c', 'd']);
 /** Pin des Planinhalts (sha256 über JSON.stringify des geladenen Plans). Neu setzen nur in einem begründeten Commit. */
 export const PINNED_PLAN_CONTENT_SHA256 = '7f6f864b4a8e198db8316f9b8f135fa18ab240e3605dd5d93b3a9bd22fb48ad9';
@@ -218,8 +218,8 @@ export async function validatePlan(plan = loadPlan(), { pinnedContentSha256 = PI
       if (p.kind === 'SOURCE_NUMBER' && e.original_wording_checked !== true) issues.push(`PARAM_SOURCE_WORDING_UNCHECKED:${m.candidateId}:${p.psr709}`);
       if (p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY' && (e.original_wording_checked !== false || !wordingBlockerOk(m))) issues.push(`PARAM_TRANSLATION_KIND:${m.candidateId}:${p.psr709}`);
       if (p.kind !== 'SOURCE_NUMBER' && !p.note && p.kind !== 'MODEL_BOUND_FROM_SOURCE_RANGE') issues.push(`PARAM_NOTE:${p.psr709}`);
-      // Forschungsproxys (research/*) sind nie eine Quellenzahl; eine Quellenzahl liegt im Methodenmodul
-      if (p.code.module.startsWith('research/') && p.kind === 'SOURCE_NUMBER') issues.push(`PARAM_KIND_MODEL_AS_SOURCE:${m.candidateId}:${p.code.export}.${p.code.path}`);
+      // Forschungsproxys (research/*) sind nie eine Quellenzahl (auch nicht nur übersetzt); eine Quellenzahl liegt im Methodenmodul
+      if (p.code.module.startsWith('research/') && (p.kind === 'SOURCE_NUMBER' || p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY')) issues.push(`PARAM_KIND_MODEL_AS_SOURCE:${m.candidateId}:${p.code.export}.${p.code.path}`);
       if (p.kind === 'MODEL_BOUND_FROM_SOURCE_RANGE' && !p.code.module.startsWith('research/')) issues.push(`PARAM_KIND_MODEL_OUTSIDE_RESEARCH:${m.candidateId}:${p.code.export}.${p.code.path}`);
       if (p.code.module.startsWith('methods/')) paramSeen.add(`${p.code.module}#${p.code.export}#${p.code.path}`);
     }

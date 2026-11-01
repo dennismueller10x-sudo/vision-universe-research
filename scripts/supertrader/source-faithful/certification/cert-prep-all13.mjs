@@ -31,7 +31,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ALL13_PLAN_FILE = path.join(HERE, 'CERT-PREP-ALL13-PLAN.json');
 export const CERT_PREP_ALL13_CHECK_VERSION = 'sf9-cert-prep-all13-check-1.0.0';
 /** Pin des ALL13-Planinhalts (sha256 über JSON.stringify des geladenen ALL13-Plans). Neu setzen nur in einem begründeten Commit. */
-export const PINNED_ALL13_CONTENT_SHA256 = '106b7155675d272179b8b6db019e601a45ba0ddbe49d7e8b11121aee1fcae802';
+export const PINNED_ALL13_CONTENT_SHA256 = 'c8e90a2b63f98e48d1ddb428591cf695bc77c92060bb18199b509a6e4f5ca560';
 export const ALL13_TEST_FILE = 'scripts/supertrader/tests/sf-cert-prep-all13.test.mjs';
 /** Familienpräfix der CP-Tests der ALL13-Testdatei -> Methoden. */
 export const ALL13_CP_FAMILIES = Object.freeze({ WEIN: ['C04', 'C05'], MIN: ['C06', 'C07'], EP: ['C09'], PS: ['C10'], PP: ['C11'], HG: ['C13'] });
