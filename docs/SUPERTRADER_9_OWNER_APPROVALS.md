@@ -353,3 +353,23 @@ DQ-TW-3 „Technical-Schluss = Discover-Tagesreihe“ ist ERROR mit 6 von 5.659 
 Die Wochenreihen dieser Titel wurden am 31.10. repariert (DQ-PX-4 jetzt 0). Der Technical-Datensatz zeigt sie weiter auf der alten Basis, weil er nicht neu gebaut wurde. Mit einem Neubau nach Ursache 1 sollten DQ-TW-3 und L1–L3 zusammen grün werden. Das ist zu prüfen, nicht vorweggenommen.
 
 **Wirkung auf Supertrader.** Die Supertrader Quality Gates führen `quant/tests/*.test.mjs` aus (Schritt „Quant-2.0-Regression“). Solange L1–L3 rot sind, ist dieser Pflichtcheck auf jedem Supertrader-PR rot. Für S7 bleibt DQ-TW-3 ein ERROR.
+
+## 17. 01.11.2026: einmaliger manueller Kandidaten-Refresh (Owner-Variante B)
+
+- Lauf A 41310414650 (`mode=manual`, ohne Commit):
+  - Eingangsprüfung CURRENT, Stand 30.10.
+  - 3.368 Kandidaten (2.103 / 1.188 / 77), 5.102 Titel.
+  - Öffentlicher Teil 12,5 MB.
+  - **DQ-SF8-1..8 PASS**, DQ-SF8-8 0/3.368.
+  - Fingerabdruck `bf75eb0903982b0819eaf9b7e61bbfa22b7d05735677371b26a6b9d69a175f80`.
+- Lauf B 41310744985 (`commit=true`, gleicher Fingerabdruck auf demselben `main` 7e8ff10) → Commit **b7c4e9e** „Research-Kandidaten (Stand 2026-10-30, nicht freigeschaltet)“, ohne `records/`, 0 VALIDATED_TRADE_SIGNAL.
+- Danach auf `main`:
+  - Core 304/304 (der strukturelle DQ-SF8-Test ist grün).
+  - `data-quality` DQ-SF8-1..8 PASS.
+  - Health „Supertrader Research-Kandidaten OK“.
+- Kein Gate wurde umgangen. Der Security Master (11.09.) liegt in der Eingangsprüfung noch unter 60 Tagen.
+- Pages: Der Lauf 41310956208 für b7c4e9e wurde von 41311228637 (main 1bf468c, enthält b7c4e9e) abgelöst; die maßgebliche Auslieferung ist also nicht veraltet.
+
+Kein Aktivierungsnachweis. Das war ein einzelner manueller Lauf, `SF8_AUTO_PUBLISH` bleibt ungesetzt, S7 ist nicht vorweggenommen.
+
+**Verbleibender CI-Blocker für alle Merges:** Die Quant-Regression (auch in den Supertrader Quality Gates) ist nur noch an L1–L3 rot (Technical, Abschnitt 16). #1219 ist darauf CI-rot (3.829 Tests, 3 Fehler, nur L1–L3).
