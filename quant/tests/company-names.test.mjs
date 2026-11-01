@@ -127,6 +127,35 @@ test("CN4 · SEC-Zuordnung nur ueber Schluessel: Ticker + Boersenfamilie, nie be
   assert.equal(CN.exchangeFamily("Cboe BZX"), "BATS"); assert.equal(CN.exchangeFamily("Wurst"), null);
 });
 
+test("CN4b · NYSE American unter dem SEC-Etikett NYSE: nur eindeutig, ohne Wiederverwendung, mit uebereinstimmendem Namen", () => {
+  const map = CN.parseSecTickerMap({ fields: ["cik", "name", "ticker", "exchange"], data: [
+    [21, "ACME UNITED CORP", "ACU", "NYSE"],
+    [22, "Neue Firma Inc", "ALT", "NYSE"],
+    [23, "Arca Fonds", "ARC", "NYSE Arca"],
+    [24, "Zwei Eins", "TWO", "NYSE"], [25, "Zwei Zwei", "TWO", "Nasdaq"],
+    [26, "Nasdaq Corp", "NAS", "Nasdaq"]
+  ] });
+  const ok = { ticker: "ACU", uniqueInMaster: true, quarantined: false, names: ["Acme United Corp"] };
+  /* Ohne Belege bleibt es beim Widerspruch (bisheriges Verhalten, auch fuer EDVA ohne Register). */
+  assert.equal(CN.secCandidate(map, "ACU", "AMEX").reason, "SEC_EXCHANGE_MISMATCH");
+  const c = CN.secCandidate(map, "ACU", "AMEX", null, ok).candidate;
+  assert.equal(c.identity, "TICKER+NYSE_AMERICAN_AS_NYSE"); assert.equal(c.cik, "0000000021");
+  assert.equal(CN.secCandidate(map, "ACU", "NYSE MKT", null, ok).candidate.identity, "TICKER+NYSE_AMERICAN_AS_NYSE");
+  assert.equal(CN.secCandidate(map, "ACU", "AMEX", null, { ...ok, uniqueInMaster: false }).reason, "SEC_NYSE_LABEL_TICKER_NOT_UNIQUE");
+  assert.equal(CN.secCandidate(map, "ACU", "AMEX", null, { ...ok, quarantined: true }).reason, "SEC_NYSE_LABEL_TICKER_REUSE");
+  assert.equal(CN.secCandidate(map, "ACU", "AMEX", null, { ...ok, names: [] }).reason, "SEC_NYSE_LABEL_UNCONFIRMED", "kein unabhaengiger Name: nichts erfinden");
+  assert.equal(CN.secCandidate(map, "ACU", "AMEX", null, { ...ok, names: ["Acme United Corp", "Ganz Anders Ltd"] }).reason, "SEC_NYSE_LABEL_NAME_CONFLICT");
+  /* Wiederverwendung/Umfirmierung: Anbieter nennt die alte Firma -> kein SEC-Name. */
+  assert.equal(CN.secCandidate(map, "ALT", "AMEX", null, { ticker: "ALT", uniqueInMaster: true, quarantined: false, names: ["Alte Gesellschaft Corp"] }).reason,
+    "SEC_NYSE_LABEL_NAME_CONFLICT");
+  /* Nur das Etikett "NYSE": NYSE Arca, Nasdaq und mehrere SEC-Eintraege bleiben Widerspruch. */
+  for (const t of ["ARC", "TWO", "NAS"]) {
+    assert.equal(CN.secCandidate(map, t, "AMEX", null, { ticker: t, uniqueInMaster: true, quarantined: false, names: [map.get(t)[0].name] }).candidate, null, t);
+  }
+  /* Andere Boersen des Stamms werden nicht beruehrt. */
+  assert.equal(CN.secCandidate(map, "NAS", "NYSE", null, { ticker: "NAS", uniqueInMaster: true, quarantined: false, names: ["Nasdaq Corp"] }).reason, "SEC_EXCHANGE_MISMATCH");
+});
+
 test("CN5 · Anbieter-Stammdaten: nur bei gleichem Symbol; kein Name -> kein Name; alles mit Herkunft", async () => {
   const dir = mkdtempSync(join(tmpdir(), "vu-cn-"));
   try {

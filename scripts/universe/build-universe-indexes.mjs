@@ -32,11 +32,13 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadTickerReuseQuarantine } from "../market/universe-source.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const Master = require(join(root, "quant", "engines", "company-master.js"));
+const Identity = require(join(root, "core", "identity.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -464,17 +466,40 @@ function main() {
   const nameShards = new Map();
   let entries = 0, nameEntries = 0;
 
+  /* WIEDERVERWENDETE KUERZEL (quant/config/ticker-reuse-quarantine.json, #1206).
+     Unter 13 Kuerzeln handelt heute ein ETF; der Stamm fuehrt noch die alte
+     Gesellschaft (PCLN "Priceline.com"). Die Suche zeigt den Titel deshalb
+     nicht unter dem alten Namen: kein Name `n`, kein Eintrag in den
+     Namensscherben, Identitaetskonflikt `ic` TICKER_REUSE mit dem alten Namen
+     als anderer Quelle `ia` - dieselben Felder wie im Quant-Verzeichnis
+     (build-universe-list.mjs). Ueber das Kuerzel bleibt der Titel auffindbar,
+     damit ein gespeicherter Eintrag erklaerbar bleibt. Fuehrt der Stamm schon
+     das heutige Wertpapier (Typ ETF, z. B. WR "Corgi U.S. War Machine ETF"),
+     stimmt der Name und bleibt. Zuordnung nur ueber core/identity.js, nie
+     ueber einen Namen. Fehlt das Register, wird nichts markiert; ist es
+     fehlerhaft, bricht der Bau ab (Lader in universe-source.mjs). */
+  const reuse = loadTickerReuseQuarantine(root);
+  const reuseWithheld = [];
+
   for (const inst of instruments) {
     const caps = capsByInstrument.get(inst.instrumentId);
     const flags = Master.CAPABILITIES.filter((c) => caps.levels[c] === "DELIVERED");
     const entry = Master.searchEntry(inst, { capabilities: flags });
+    const wiederverwendet = !!(reuse && reuse.records.has(Identity.securityIdForTicker(inst.symbol)) &&
+                               inst.securityType !== "ETF");
+    if (wiederverwendet) {
+      entry.n = null;
+      entry.ic = "TICKER_REUSE";
+      if (inst.companyName) entry.ia = inst.companyName;
+      reuseWithheld.push(inst.symbol);
+    }
     entries++;
 
     const sk = Master.shardKey(inst.symbol);
     (symShards.get(sk) || symShards.set(sk, []).get(sk)).push(entry);
 
     const seen = new Set();
-    for (const token of nameTokens(inst.companyName)) {
+    for (const token of wiederverwendet ? [] : nameTokens(inst.companyName)) {
       const nk = Master.shardKey(token);
       if (seen.has(nk)) continue;
       seen.add(nk);
@@ -511,8 +536,11 @@ function main() {
     minQueryLengthForMasterLookup: CONFIG.search.minQueryLengthForMasterLookup,
     totals: { instruments: instruments.length, symbolShards: symIndex.length,
               nameShards: nameIndex.length, nameIndexEntries: nameEntries,
-              withSearchableName: instruments.filter((i) => i.companyName).length,
-              withoutSearchableName: instruments.filter((i) => !i.companyName).length },
+              withSearchableName: instruments.filter((i) => i.companyName && !reuseWithheld.includes(i.symbol)).length,
+              withoutSearchableName: instruments.filter((i) => !i.companyName || reuseWithheld.includes(i.symbol)).length,
+              tickerReuseNameWithheld: reuseWithheld.length },
+    ...(reuse ? { tickerReuse: { artifact: reuse.file, sha256: reuse.sha256, securities: reuse.records.size,
+                                 nameWithheld: reuseWithheld.sort(), conflict: "TICKER_REUSE" } } : {}),
     note: "Die Suche laedt hoechstens zwei Scherben je Anfrage: eine nach Kuerzelanfang, " +
           "eine nach Namensanfang. Titel ohne Firmennamen sind ueber ihr Kuerzel auffindbar " +
           "und ueber ihren Namen nicht - die Zahl dazu steht oben und nicht im Kleingedruckten.",
@@ -691,6 +719,8 @@ function main() {
 
   console.log(`\n  Suchindex: ${symIndex.length} Kuerzel-Scherben, ${nameIndex.length} Namens-Scherben, ` +
               `${(bytes / 1024).toFixed(0)} KB  (${searchMs} ms)`);
+  if (reuse) console.log(`  Wiederverwendete Kuerzel: ${reuseWithheld.length} ohne Namen der alten Gesellschaft ` +
+                         `(${reuse.records.size} im Register)`);
   console.log(`  Faehigkeiten: ${capMs} ms`);
   console.log(`  Kursverlauf: ${totals.TOTAL_WITH_PROVIDER_PRICE_HISTORY} beim Anbieter belegt, ` +
               `${totals.TOTAL_WITH_DELIVERED_PRICE_HISTORY} ausgeliefert`);

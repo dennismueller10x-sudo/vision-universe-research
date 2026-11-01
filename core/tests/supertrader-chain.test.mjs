@@ -227,7 +227,7 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* der Alarm sieht nur den ANSTOSS */
   assert.match(wf, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result == 'failure' && 'failure'/);
-  assert.match(wf, /needs: \[refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune\]/);
+  assert.match(wf, /\n  alarm:\n    needs: \[refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune(, [a-z-]+)*\]/);
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
   assert.match(st, /cron: '17 6 \* \* 2-6'/);

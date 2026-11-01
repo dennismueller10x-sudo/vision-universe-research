@@ -86,8 +86,8 @@ test('opt-in resolves exactly the registry events, keeps validate() output other
    assert.equal(r.sourceBytesHash,A.hash(seriesBytes(id)));assert.deepEqual(r.points,JSON.parse(seriesBytes(id)).points);
    assert.equal(r.listingId,recs[0].canonicalId);
   }
-  // ids outside the registry: identical to the loader without the CA option
-  const without=R.createResearchLoader(root,{identityEvidence:!!opts.identityEvidence});
+  // ids outside the registry: identical to the loader without the CA option on the same Security-Master generation
+  const without=R.createResearchLoader(root,{identityEvidence:!!opts.identityEvidence},{masterGeneration:L.masterGeneration});
   for(const id of ['ref_NVDA','ref_MSFT','ref_COHR','ref_ACET','ref_ABT','ref_ACI'])assert.deepEqual(outcome(()=>L(id)),outcome(()=>without(id)),id);
  }
 });

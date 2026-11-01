@@ -189,6 +189,8 @@ Die Sonderfreigabe deckt beide über die 138 Paare ab.
 
 ### P2 – Sicherung und Neuaufbau der Quant-Artefakte (Plan, nichts ausgeführt)
 
+> **Stand 31.10.2026:** Die eingefrorene Grundlage für abgeschlossene Studien ist umgesetzt: Security-Master-Generation `us-security-master-1.1.0` (hashgebunden, `quant/config/security-master-generations.json`). Ergebnis der Migrationsprüfung am echten Folgestand 1.3.0 und Ablauf: [security-master/SECURITY_MASTER_GENERATIONS.md](security-master/SECURITY_MASTER_GENERATIONS.md).
+
 Reihenfolge, jeder Schritt erst nach Freigabe des vorigen:
 
 Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/security-master-v130-freeze.test.mjs` (eigener Quant-PR #1100). Es ruft keinen Anbieter ab, schreibt nie nach `quant/data`, `discover/data`, `supertrader/data` oder `social/data` und hängt keinen Leser um.
