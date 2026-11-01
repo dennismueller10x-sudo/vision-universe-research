@@ -260,5 +260,14 @@ lässt der Isolations-Test in `quant/tests/backtest-preview.test.mjs` genau eine
 ([FREIGABEN.md](../accounts/FREIGABEN.md)). Die Seite unter `/konto/admin/backtests/` ist ein eigener Entwurfs-PR; sie
 ist nicht verlinkt und zeigt nur, was der Worker liefert.
 
+**Seite (Entwurf, nicht verlinkt): `/konto/admin/backtests/`.** Gleiche Shell wie die Tarifverwaltung (`konto.css`,
+`noindex`), Steuerung `views['backtest-review']` in `konto/konto.js`, Anzeige in `konto/admin/backtests/review.js`
+(nur `textContent`). Ohne Endpunkt oder ohne Sitzung keine Anfrage; ohne Schalter oder Rolle nur die Meldung des
+Servers. Auswahl: Art, Vorlage (historisches Beispiel), Zeitraum, Kosten, Benchmark, Zusatzmethoden, Signalregeln bzw.
+Faktor – oder direkt eine der vorgerechneten Auswahlen. Ergebnis: Rendite, Risiko und Drawdown, Kosten, Benchmark,
+Datenqualität und Abdeckung, historische Population; jede Zeile mit Bezeichnung, Nachweisart und Grundlage; Grenzen und
+Zertifizierungsstand (`NOT_CERTIFIED`, `productionApproved: false`) in jedem Zustand, auch bei „nicht vorgerechnet“.
+Keine Änderung an `quant/app/**`, `quant/index.html`, `assets/site-navigation.*` oder `ui-protection.json`.
+Tests: `node --test konto/tests/backtest-review.test.mjs`.
 
 **Reihenfolge bei Neubauten:** Wer die Demos oder das Vorschau-Lesemodell neu baut (`build-backtest-preview.cjs --out`), exportiert danach das Review-Bundle neu (`export-backtest-review-bundle.cjs --out workers/vu-account/data/backtest-review-bundle.json`), im selben PR. `backtest-review-bundle.test.mjs` und `backtests.test.mjs` schlagen sonst fehl (`BUNDLE_OUT_OF_DATE`). So geschehen nach #1210/#1215 am 01.11.2026.

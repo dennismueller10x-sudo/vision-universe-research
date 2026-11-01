@@ -106,7 +106,7 @@ test('Formatierung deutsch', () => {
 
 test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, keine Inline-Handler', () => {
   const list = pages();
-  assert.equal(list.length, 11);
+  assert.equal(list.length, 12);
   for (const p of list) {
     const html = readFileSync(p, 'utf8');
     const name = p.slice(ROOT.length) || '/';
