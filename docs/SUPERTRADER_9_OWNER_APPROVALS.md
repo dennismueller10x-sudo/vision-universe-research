@@ -319,3 +319,37 @@ Zwei getrennte Nachweise:
 Erst dann `SF8_AUTO_PUBLISH=true`. Danach brauchen normale tägliche Veröffentlichungen keine Einzelzustimmung.
 
 **Nachweis 2 – S7 (nach dem ersten automatischen Lauf, getrennt dokumentiert).** S7 wird mit dem ersten erfolgreichen automatischen Kandidatenlauf und der darauf folgenden echten Datenqualität auf `main` geprüft: `system-health` OK für die SF8-Eingaben, `data-quality` ohne ERROR, DQ-PX-2/PX-3 auf dem Niveau vom 27.10. oder darunter. Bis dahin bleibt S7 „nicht erfüllt“; es wird kein grüner Stabilitätsnachweis vorweggenommen. Ein ERROR einer anderen Welt (z. B. DQ-TW-3, Technical) bleibt ein ERROR und verhindert S7, bis er behoben ist.
+
+## 16. Übergabe an die Technical-Sitzung (01.11.2026): drei rote Quant-Tests L1–L3
+
+Zuständig ist die Technical-Welt; in der Supertrader-Sitzung wird daran nichts implementiert.
+
+**Rote Tests auf `main`** (`node --test quant/tests/technical-ap8-l1.test.mjs …-l2… …-l3…`):
+- L1 „Datensatz – Spalte = SMA 150 der veröffentlichten Bars“
+- L2 „Datensatz – Spalte = Rechnung auf den veröffentlichten Bars“
+- L3 „Datensatz – Spalte = Schluss / tiefstes Tagestief (252) − 1“
+
+Fehlerbild jeweils `geprueft: 10`, verlangt sind mehr als 200 (`technical-ap8-l1.test.mjs:74`).
+
+**Ursache 1 (Hauptursache): Der Screener-Datensatz wurde nicht neu gebaut.**
+- Die Tests vergleichen nur Titel, deren Datensatz-Zeile auf demselben Stichtag beruht wie die Materialisierung (`c.asOf[i] === letzter Bar-Zeitstempel`, ca. Z. 67).
+- `technical/data/screener-v1.json` stammt aus der Materialisierung vom 30.10. 06:03 UTC. Die Materialisierung vom 31.10. 03:30 UTC liegt vor.
+- DQ-TW-1 meldet: „Erzeuger technical-world.yml nicht gelaufen“.
+- Alle Läufe von `technical-world.yml` seit dem 30.10. endeten mit `skipped` (event `workflow_run`), darunter 41224838494 vom 31.10. 17:30 nach dem Materialize-Commit 485f5e3, bis 41307003337 vom 01.11.
+- Zu prüfen ist die `if:`-Bedingung bzw. der `workflow_run`-Filter von `technical-world.yml`: Welcher Auslöser soll nach der Nachtkette bauen, und warum greift er nicht?
+
+**Ursache 2 (dieselbe Spur): nicht nachgezogene Splits.**
+DQ-TW-3 „Technical-Schluss = Discover-Tagesreihe“ ist ERROR mit 6 von 5.659 Titeln, Stichtag 29.10.:
+
+| Titel | Technical | Tagesreihe | Faktor |
+|---|---|---|---|
+| IVF | 0,5361 | 2,14 | ~4 |
+| MASK | 0,68 | 2,72 | ~4 |
+| NXXT | 0,3142 | 3,14 | ~10 |
+| WFF | 0,06 | 1,5 | ~25 |
+| WHLR | 0,2359 | 1,42 | ~6 |
+| ZONE | 0,095 | 5,7 | ~60 |
+
+Die Wochenreihen dieser Titel wurden am 31.10. repariert (DQ-PX-4 jetzt 0). Der Technical-Datensatz zeigt sie weiter auf der alten Basis, weil er nicht neu gebaut wurde. Mit einem Neubau nach Ursache 1 sollten DQ-TW-3 und L1–L3 zusammen grün werden. Das ist zu prüfen, nicht vorweggenommen.
+
+**Wirkung auf Supertrader.** Die Supertrader Quality Gates führen `quant/tests/*.test.mjs` aus (Schritt „Quant-2.0-Regression“). Solange L1–L3 rot sind, ist dieser Pflichtcheck auf jedem Supertrader-PR rot. Für S7 bleibt DQ-TW-3 ein ERROR.
