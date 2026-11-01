@@ -2,40 +2,40 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1885296,
-      "ISSUERS_WITH_VALUES": 5343
+      "RESOLVED_VALUES": 1886680,
+      "ISSUERS_WITH_VALUES": 5344
     },
     "byState": {
-      "VALID": 1715411,
-      "WARNING": 169885
+      "VALID": 1716800,
+      "WARNING": 169880
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49896471
+      "RAW_XBRL_FACTS_WITH_FINDING": 49939886
     },
     "byState": {
-      "AMBIGUOUS": 1307772,
-      "RESTATED": 308981,
-      "NON_COMPARABLE": 70679,
-      "MISSING": 48190041,
-      "WARNING": 18998
+      "AMBIGUOUS": 1301950,
+      "RESTATED": 307405,
+      "NON_COMPARABLE": 70688,
+      "MISSING": 48241098,
+      "WARNING": 18745
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48190041,
-      "CONCEPT_DISAGREEMENT": 1298996,
-      "RESTATEMENT_CONFLICT": 308981,
-      "UNEXPECTED_DURATION": 54549,
-      "PERIOD_MISMATCH": 14869,
-      "FISCAL_PERIOD_CONFLICT": 14035,
+      "UNKNOWN_CONCEPT": 48241098,
+      "CONCEPT_DISAGREEMENT": 1291928,
+      "RESTATEMENT_CONFLICT": 307405,
+      "UNEXPECTED_DURATION": 54550,
+      "PERIOD_MISMATCH": 14877,
+      "FISCAL_PERIOD_CONFLICT": 13717,
       "FUTURE_DATA_LEAK": 7493,
-      "NEGATIVE_WHERE_IMPOSSIBLE": 2587,
-      "EXTREME_VALUE": 2242,
-      "UNPLACEABLE_PERIOD": 1283,
+      "NEGATIVE_WHERE_IMPOSSIBLE": 2581,
+      "UNPLACEABLE_PERIOD": 2529,
+      "EXTREME_VALUE": 2233,
       "UNIT_MISMATCH": 1261,
-      "FUTURE_PERIOD_END": 128,
-      "IMPLAUSIBLE_FILING_FY": 6
+      "FUTURE_PERIOD_END": 207,
+      "IMPLAUSIBLE_FILING_FY": 7
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
   },
@@ -45,8 +45,8 @@
     },
     "byState": {
       "AVAILABLE": 4959,
-      "PARTIAL": 483,
-      "MISSING": 89,
+      "PARTIAL": 484,
+      "MISSING": 88,
       "NOT_APPLICABLE": 53,
       "REQUIRES_REVIEW": 0,
       "UNAVAILABLE": 1102
@@ -56,54 +56,54 @@
   "metricsByMissingRate": [
     {
       "metric": "total_debt",
-      "MISSING_COUNT": 2492,
-      "MISSING_RATE": 46.6405
+      "MISSING_COUNT": 2493,
+      "MISSING_RATE": 46.6504
     },
     {
       "metric": "revenue",
-      "MISSING_COUNT": 931,
-      "MISSING_RATE": 17.4247
+      "MISSING_COUNT": 932,
+      "MISSING_RATE": 17.4401
     },
     {
       "metric": "free_cash_flow",
-      "MISSING_COUNT": 818,
-      "MISSING_RATE": 15.3098
+      "MISSING_COUNT": 819,
+      "MISSING_RATE": 15.3256
     },
     {
       "metric": "capital_expenditures",
-      "MISSING_COUNT": 808,
-      "MISSING_RATE": 15.1226
+      "MISSING_COUNT": 809,
+      "MISSING_RATE": 15.1385
     },
     {
       "metric": "eps_diluted",
       "MISSING_COUNT": 572,
-      "MISSING_RATE": 10.7056
+      "MISSING_RATE": 10.7036
     },
     {
       "metric": "operating_cash_flow",
       "MISSING_COUNT": 298,
-      "MISSING_RATE": 5.5774
+      "MISSING_RATE": 5.5763
     },
     {
       "metric": "net_income",
       "MISSING_COUNT": 280,
-      "MISSING_RATE": 5.2405
+      "MISSING_RATE": 5.2395
     },
     {
       "metric": "stockholders_equity",
       "MISSING_COUNT": 78,
-      "MISSING_RATE": 1.4599
+      "MISSING_RATE": 1.4596
     },
     {
       "metric": "total_assets",
       "MISSING_COUNT": 41,
-      "MISSING_RATE": 0.7674
+      "MISSING_RATE": 0.7672
     }
   ],
   "highestMissingRate": {
     "metric": "total_debt",
-    "MISSING_COUNT": 2492,
-    "MISSING_RATE": 46.6405
+    "MISSING_COUNT": 2493,
+    "MISSING_RATE": 46.6504
   },
   "versions": {
     "normalization_schema": "1.0.0",
@@ -116,5 +116,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-30T13:12:54+00:00"
+  "generatedAtUtc": "2026-10-31T12:35:02+00:00"
 }
