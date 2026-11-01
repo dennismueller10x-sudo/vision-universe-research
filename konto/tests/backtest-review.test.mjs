@@ -7,6 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
+import { permitted } from '../../scripts/vu2/build-release.mjs';
 
 const require = createRequire(import.meta.url);
 const KONTO = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -183,7 +184,11 @@ test('Seite: noindex, gemeinsame Shell, nicht verlinkt von oeffentlichen Seiten 
     refs = execFileSync('git', ['grep', '--untracked', '-l', '-F', '/konto/admin/backtests', '--', '.', ':!docs', ':!konto/admin/backtests', ':!konto/tests'],
       {cwd: ROOT, encoding: 'utf8'}).trim().split('\n').filter(Boolean);
   } catch (e) { if (e.status !== 1) throw e; }
-  assert.deepEqual(refs, [], 'kein Link ausser auf der Seite selbst');
+  // Massgeblich ist, was Pages ausliefert (scripts/vu2/build-release.mjs#permitted): Werkzeuge unter scripts/
+  // (z. B. die Browser-QA, die die Seite gezielt aufruft) werden nie veroeffentlicht.
+  const published = refs.filter((f) => permitted(f));
+  assert.deepEqual(published, [], 'kein Link ausser auf der Seite selbst');
+  assert.deepEqual(refs.filter((f) => !permitted(f)).filter((f) => !f.startsWith('scripts/')), [], 'unveroeffentlichte Fundstellen nur unter scripts/');
   for (const f of ['assets/site-navigation.js', 'konto/admin/tarife/index.html', 'konto/index.html', 'index.html'])
     assert.equal(readFileSync(join(ROOT, f), 'utf8').includes('admin/backtests'), false, f);
 });
