@@ -118,7 +118,7 @@ jobs:
           if [ "$REPEAT_CHECK" = "true" ]; then args+=(--repeat-check); fi
           R=scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs
           set +e
-          node "$R" "${args[@]}" --preflight > "$OUT/preflight.json" 2>&1
+          node "$R" "${args[@]}" --preflight > "$OUT/preflight.json" 2> "$OUT/preflight.log"
           pf=$?
           set -e
           node -e 'try { const p = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")); console.log("preflight ready=" + p.ready + " missing=" + p.missing.map((m) => m.code).join(",")); } catch { console.log("preflight unreadable"); }' "$OUT/preflight.json"
@@ -147,7 +147,9 @@ jobs:
           if [ -d "$W/out" ] && [ -n "$(ls -A "$W/out")" ]; then
             mkdir -p "$W/upload"
             tar --sort=name --owner=0 --group=0 --numeric-owner -cf "$W/st9-output.tar" -C "$W/out" .
-            openssl rand -out "$W/k.bin" 32
+            # passphrase = 64 hex characters on one line: -pass file: reads only up to the first newline, a binary key
+            # (rand -out) could be cut at a 0x0a byte (empty or short passphrase)
+            openssl rand -hex 32 > "$W/k.bin"
             openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:"$W/k.bin" -in "$W/st9-output.tar" -out "$W/upload/st9-output.tar.enc"
             openssl pkeyutl -encrypt -pubin -inkey "$GITHUB_WORKSPACE/docs/quant-recovery/v13/archive/archive-pub.pem" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$W/k.bin" -out "$W/upload/k.bin.enc"
             shred -u "$W/k.bin" "$W/st9-output.tar"

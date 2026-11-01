@@ -14,6 +14,13 @@ import { summarize, markdown } from '../snapshot/st9-study-summary.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const WF = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-st9-v13-study.yml'), 'utf8');
+const ALLOWED_SCRIPTS = Object.freeze([
+  'scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs',
+  'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json', // header comment only
+  'scripts/supertrader/snapshot/fetch-v13-archive-parts.mjs',
+  'scripts/supertrader/snapshot/st9-study-summary.mjs',
+  'scripts/quant/v13/archive/restore-archive.sh',
+]);
 const S3 = ['VU_HISTORY_S3_ENDPOINT', 'VU_HISTORY_S3_BUCKET', 'VU_HISTORY_S3_REGION', 'VU_HISTORY_S3_ACCESS_KEY_ID', 'VU_HISTORY_S3_SECRET_ACCESS_KEY'];
 
 /** Steps of the single job: { head, name, id, if, env: {k: v}, run, with, text }. */
@@ -82,6 +89,17 @@ function lint(text) {
   }
   if (iRun >= 0 && !/--out "\$OUT"/.test(st[iRun].run)) v.add('RUNNER_OUT_NOT_TEMP');
   if (iRun >= 0 && !/> "\$OUT\/run\.log" 2>&1/.test(st[iRun].run)) v.add('RUNNER_LOG_NOT_SEALED');
+  // preflight: stdout is the JSON, stderr goes to its own file in the output folder (not mixed into the JSON)
+  if (iRun >= 0 && (!/--preflight > "\$OUT\/preflight\.json" 2> "\$OUT\/preflight\.log"/.test(st[iRun].run) || /preflight\.json"? 2>&1/.test(st[iRun].run))) v.add('PREFLIGHT_STDERR_IN_JSON');
+  // data key: 64 hex characters on one line (-pass file: stops at the first newline; binary rand -out may be cut short)
+  if (iEnc >= 0 && (!/openssl rand -hex 32 > "\$W\/k\.bin"/.test(st[iEnc].run) || /openssl rand (?!-hex 32 >)/.test(st[iEnc].run))) v.add('DATA_KEY_NOT_HEX_LINE');
+  // modules: only the study runner (and its frozen registration), the two snapshot helpers and the unchanged V13
+  // restore script; no completion/ or research-signal module (the SF2-LEGACY-ISOLATION exception in
+  // sf-completion.test.mjs is granted by file name, so its scope is pinned here); inline node -e only with fs
+  const refs = [...text.matchAll(/scripts\/[A-Za-z0-9_./-]+/g)].map((m) => m[0]);
+  if (refs.some((r) => !ALLOWED_SCRIPTS.includes(r))) v.add('MODULE_NOT_ALLOWED');
+  if (/completion\/|research-signal|source-faithful\/(?!research\/(run-st9-v13-delisted-study\.mjs|st9-v13-delisted-registration-1\.0\.0\.json))/.test(text)) v.add('MODULE_NOT_ALLOWED');
+  if ([...text.matchAll(/require\(\s*["']([^"']+)["']\s*\)/g)].some((m) => m[1] !== 'fs') || /\bimport\s*\(/.test(text)) v.add('MODULE_NOT_ALLOWED');
   if (!/HAS_V13_ARCHIVE_PRIVATE_KEY/.test(text) || !/exit 3/.test(st.find((s) => /SECRET_MISSING/.test(s.run))?.run ?? '')) v.add('SECRETS_NOT_FAIL_CLOSED');
   const summary = st.filter((s) => /GITHUB_STEP_SUMMARY/.test(s.run));
   if (summary.some((s) => !/summary\.md/.test(s.run))) v.add('SUMMARY_NOT_WHITELISTED');
@@ -116,6 +134,13 @@ test('counter-checks: each rule turns red on its mutation', () => {
     ['UPLOAD_NOT_GATED_BY_PLAINTEXT_CHECK', (t) => t.replace("if: always() && steps.noplain.outcome == 'success'", "if: always() && steps.enc.outputs.encrypted == 'true'")],
     ['RUNNER_LOG_NOT_SEALED', (t) => t.replace('> "$OUT/run.log" 2>&1', '')],
     ['SECRETS_NOT_FAIL_CLOSED', (t) => t.replace('[ "$missing" = 0 ] || exit 3', '[ "$missing" = 0 ] || true')],
+    ['PREFLIGHT_STDERR_IN_JSON', (t) => t.replace('--preflight > "$OUT/preflight.json" 2> "$OUT/preflight.log"', '--preflight > "$OUT/preflight.json" 2>&1')],
+    ['DATA_KEY_NOT_HEX_LINE', (t) => t.replace('openssl rand -hex 32 > "$W/k.bin"', 'openssl rand -out "$W/k.bin" 32')],
+    ['DATA_KEY_NOT_HEX_LINE', (t) => t.replace('openssl rand -hex 32 > "$W/k.bin"', 'openssl rand -hex 32 > "$W/k.bin"\n            openssl rand -out "$W/k.bin" 32')],
+    ['MODULE_NOT_ALLOWED', (t) => t.replace('R=scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs', 'R=scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs\n          node scripts/supertrader/source-faithful/completion/build-completion.mjs')],
+    ['MODULE_NOT_ALLOWED', (t) => t.replace('R=scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs', 'R=scripts/supertrader/source-faithful/research/research-signal.mjs')],
+    ['MODULE_NOT_ALLOWED', (t) => t.replace('node scripts/supertrader/snapshot/st9-study-summary.mjs', 'node scripts/supertrader/snapshot/other-helper.mjs')],
+    ['MODULE_NOT_ALLOWED', (t) => t.replace('require("fs").readFileSync(process.argv[1], "utf8")).archivePublicKeySha256Der', 'require("fs").readFileSync(process.argv[1], "utf8")).archivePublicKeySha256Der + require("../source-faithful/completion/status.mjs")')],
     ['SUMMARY_NOT_WHITELISTED', (t) => t.replace('if [ -f "$RUNNER_TEMP/st9/summary.md" ]; then cat "$RUNNER_TEMP/st9/summary.md" >> "$GITHUB_STEP_SUMMARY"; fi', 'cat "$RUNNER_TEMP/st9/out/st9-v13-delisted.public.json" >> "$GITHUB_STEP_SUMMARY"')],
   ];
   for (const [code, f] of cases) {
@@ -150,6 +175,63 @@ test('encryption step, run locally on a dummy output folder: only ciphertext rem
   // counter-check: a plaintext file left next to the ciphertext stops the upload
   fs.writeFileSync(path.join(W, 'upload', 'st9-v13-delisted.public.json'), '{}');
   assert.throws(() => execFileSync('bash', ['-c', chk.run], { env, stdio: 'pipe' }), /UNEXPECTED_UPLOAD_CONTENT|Command failed/);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+/** Runs the encryption step on a dummy folder with a throwaway RSA key at the archive-pub.pem path; returns paths. */
+function encryptLocally(runText) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-rt-')), W = path.join(tmp, 'st9'), ws = path.join(tmp, 'ws');
+  const keyDir = path.join(ws, 'docs/quant-recovery/v13/archive'), priv = path.join(tmp, 'archive-priv.pem');
+  fs.mkdirSync(keyDir, { recursive: true }); fs.mkdirSync(path.join(W, 'out'), { recursive: true });
+  execFileSync('openssl', ['genpkey', '-algorithm', 'RSA', '-pkeyopt', 'rsa_keygen_bits:2048', '-out', priv], { stdio: 'pipe' });
+  execFileSync('openssl', ['pkey', '-in', priv, '-pubout', '-out', path.join(keyDir, 'archive-pub.pem')], { stdio: 'pipe' });
+  const files = { 'st9-v13-delisted.sealed.json': '{"sealed":true}\n', 'preflight.json': '{"ready":true,"missing":[]}\n', 'preflight.log': 'warn\n', 'run.log': 'log\n' };
+  for (const [f, c] of Object.entries(files)) fs.writeFileSync(path.join(W, 'out', f), c);
+  fs.writeFileSync(path.join(W, 'summary.md'), '');
+  execFileSync('bash', ['-c', runText], { env: { ...process.env, RUNNER_TEMP: tmp, GITHUB_WORKSPACE: ws, GITHUB_OUTPUT: path.join(tmp, 'gh-out') }, stdio: 'pipe' });
+  return { tmp, W, priv, files };
+}
+const HEX_LINE = /^[0-9a-f]{64}\n?$/;
+/** The two decryption commands exactly as documented in §3.1 of the infrastructure doc. */
+function documentedDecrypt() {
+  const doc = fs.readFileSync(path.join(ROOT, 'docs/SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md'), 'utf8');
+  const cmds = [...doc.matchAll(/`(openssl (?:pkeyutl -decrypt|enc -d)[^`]*)`/g)].map((m) => m[1]);
+  assert.equal(cmds.length, 2, 'the doc names exactly the two decryption commands');
+  return cmds;
+}
+
+test('data key: 64 hex characters on one line; local round trip with the documented decryption commands', () => {
+  const enc = steps(WF).find((s) => s.id === 'enc');
+  const { tmp, W, priv, files } = encryptLocally(enc.run);
+  const dec = path.join(tmp, 'dec');
+  fs.mkdirSync(dec);
+  fs.copyFileSync(priv, path.join(dec, 'archive-priv.pem'));
+  for (const f of ['k.bin.enc', 'st9-output.tar.enc']) fs.copyFileSync(path.join(W, 'upload', f), path.join(dec, f));
+  for (const c of documentedDecrypt()) execFileSync('bash', ['-c', c], { cwd: dec, stdio: 'pipe' });
+  assert.match(fs.readFileSync(path.join(dec, 'k.bin'), 'utf8'), HEX_LINE, 'the unwrapped data key is 64 hex characters (+ newline)');
+  fs.mkdirSync(path.join(dec, 'x'));
+  execFileSync('tar', ['-xf', path.join(dec, 'st9-output.tar'), '-C', path.join(dec, 'x')], { stdio: 'pipe' });
+  for (const [f, c] of Object.entries(files)) assert.equal(fs.readFileSync(path.join(dec, 'x', f), 'utf8'), c, f);
+  // the passphrase is the whole hex line: a passphrase of only its first 63 characters does not decrypt
+  const k = fs.readFileSync(path.join(dec, 'k.bin'), 'utf8').trim();
+  assert.throws(() => execFileSync('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '100000', '-pass', `pass:${k.slice(0, 63)}`, '-in', path.join(dec, 'st9-output.tar.enc'), '-out', path.join(dec, 'y.tar')], { stdio: 'pipe' }));
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('counter-check: a binary key (rand -out) is red, and -pass file: really stops at the first newline', () => {
+  const enc = steps(WF).find((s) => s.id === 'enc');
+  const bin = enc.run.replace('openssl rand -hex 32 > "$W/k.bin"', 'openssl rand -out "$W/k.bin" 32');
+  assert.notEqual(bin, enc.run);
+  assert.ok(lint(WF.replace(enc.run.split('\n').find((l) => l.includes('rand -hex')).trim(), 'openssl rand -out "$W/k.bin" 32')).includes('DATA_KEY_NOT_HEX_LINE'));
+  const { tmp, W, priv } = encryptLocally(bin);
+  const key = execFileSync('openssl', ['pkeyutl', '-decrypt', '-inkey', priv, '-pkeyopt', 'rsa_padding_mode:oaep', '-pkeyopt', 'rsa_oaep_md:sha256', '-in', path.join(W, 'upload', 'k.bin.enc')], { stdio: ['ignore', 'pipe', 'pipe'] });
+  assert.equal(key.length, 32);
+  assert.doesNotMatch(key.toString('latin1'), HEX_LINE, 'binary data key fails the hex-line check');
+  // why it matters: a key file "ab\n<30 random bytes>" encrypts with the passphrase "ab" only
+  const kf = path.join(tmp, 'kb.bin'), pt = path.join(tmp, 'p.txt'), ct = path.join(tmp, 'p.enc');
+  fs.writeFileSync(kf, Buffer.concat([Buffer.from('ab\n'), crypto.randomBytes(29)])); fs.writeFileSync(pt, 'secret');
+  execFileSync('openssl', ['enc', '-aes-256-cbc', '-pbkdf2', '-iter', '1000', '-salt', '-pass', `file:${kf}`, '-in', pt, '-out', ct], { stdio: 'pipe' });
+  assert.equal(execFileSync('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '1000', '-pass', 'pass:ab', '-in', ct], { stdio: ['ignore', 'pipe', 'pipe'] }).toString(), 'secret');
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 
