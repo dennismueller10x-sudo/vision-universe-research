@@ -11,16 +11,21 @@ Ziel ist die interne praktische Abnahme durch genau ein ausdrücklich berechtigt
 
 | Nr. | Voraussetzung | Prüfung |
 |---|---|---|
-| V1 | Backend #1215 auf `main`, Worker ausgerollt | Lauf „Konten — Produktion automatisch“ grün; `GET https://konto.visionuniverse.de/v1/admin/backtests` → 404 `PREVIEW_NOT_ACTIVATED` (geprüft am 01.11.) |
-| V2 | Bundle aktuell (#1223) | `node scripts/quant/research/export-backtest-review-bundle.cjs --check` → `ok` |
-| V3 | Seite #1216 auf `main` und über Pages ausgeliefert | `https://research.visionuniverse.de/konto/admin/backtests/` → 200, `noindex`, von keiner öffentlichen Seite verlinkt (Test in `konto/tests/backtest-review.test.mjs`) |
-| V4 | Paket nicht öffentlich | `https://research.visionuniverse.de/workers/vu-account/data/backtest-review-bundle.json` → 404 (Release schließt `workers/*/data/` aus, #1215) |
-| V5 | Rolle nur für das Testkonto | siehe 2; keine pauschale Vergabe |
+| V1 | Backend #1215 auf `main`, Worker ausgerollt | **erfüllt** (01.11.): Konten-Automatik grün. Live: `GET https://konto.visionuniverse.de/v1/admin/backtests` → 404 `PREVIEW_NOT_ACTIVATED`, auch mit gefälschtem Token; POST mit fremder Herkunft → 403; PUT/DELETE → 405; alle `no-store` |
+| V2 | Bundle aktuell (#1223) | **erfüllt**: `export-backtest-review-bundle.cjs --check` → `ok`, `bundleHash` `aefb5942…` |
+| V3 | Seite #1216 auf `main` und ausgeliefert | **erfüllt**: `https://research.visionuniverse.de/konto/admin/backtests/` → 200, `noindex,nofollow`; Startseite, `/quant/` und `/konto/` enthalten keinen Link |
+| V4 | Paket nicht öffentlich | **erfüllt** (live): `…/workers/vu-account/data/backtest-review-bundle.json` → 404, während `…/workers/vu-account/src/backtests.mjs` aus demselben Release 200 liefert |
+| V5 | Rolle nur für das Testkonto | offen: der Owner nennt das Konto (Abschnitt 2) |
+| V6 | Abnahmeprotokoll | **erfüllt**: `node scripts/account/backtest-review-acceptance.mjs` → 61 Prüfungen, 0 Fehler (Abschnitt 7) |
 
 ## 2. Rolle für genau ein Testkonto
 
-- **Was der Owner nennt:** die E-Mail-Adresse des berechtigten Testkontos. Das Konto muss bestätigt sein.
-- **Wer vergibt:** der Owner, über den Datenbankzugang des Betriebs. Es gibt dafür keinen Workflow und keine Selbstvergabe, weil `user_roles` für Konten nur lesbar ist (SQL-Test `12_backtest_reviewer.sql`).
+**Benötigt wird ein einziges Konto in der Produktion (`konto.visionuniverse.de`):**
+- registriert über `https://research.visionuniverse.de/konto/registrieren/`, E-Mail bestätigt (Free genügt, kein Abo);
+- mit einer E-Mail-Adresse, die ausschließlich der Owner nutzt;
+- empfohlen ist ein **eigenes Prüfkonto, nicht das Konto mit `pricing_admin`**: So sind die Rechte getrennt, und ein Entzug trifft nur die Vorschau.
+
+**Vergabe:** durch den Owner über den Datenbankzugang des Betriebs. Es gibt keinen Workflow und keine Selbstvergabe, weil `user_roles` für Konten nur lesbar ist (SQL-Test `12_backtest_reviewer.sql`).
 
 ```sql
 insert into public.user_roles (user_id, role)
@@ -65,3 +70,36 @@ Mit diesem PR gilt in `workers/vu-account/wrangler.toml`, Abschnitt `[env.produc
 - Die Seite zeigt ausschließlich vorgerechnete, hashgebundene Katalogeinträge (Katalog-Generation 1, Security-Master-Generation 1.1.0).
 - Alle Ergebnisse sind `NOT_CERTIFIED` und `productionApproved=false`.
 - Nach einer Umstellung des Security Masters werden Katalog und Bundle als neue Generation neu gebaut. Bis dahin bricht der Export ab.
+
+## 7. Praxistest: was die Vorschau heute kann und was geprüft ist
+
+Das Abnahmeprotokoll `scripts/account/backtest-review-acceptance.mjs` spielt die echte Worker-Logik durch: ohne Netz, Supabase simuliert, Test `scripts/account/tests/backtest-review-acceptance.test.mjs`. Es läuft grün auf `main` und auf dem simulierten Folgestand 1.3.0.
+
+| Bereich | Geprüft |
+|---|---|
+| Schalter aus | 404 `PREVIEW_NOT_ACTIVATED`, keine Daten, keine Rollenabfrage |
+| Sitzung und Rolle | ohne Sitzung 401; ohne Rolle 403; `pricing_admin` und `billing_tester` 403; mit `backtest_reviewer` 200, `no-store` |
+| sechs Arten | Replay, Pattern, Signal, Setup, Strategie, Faktor: alle im Menü und alle mit mindestens einer vorgerechneten Auswahl |
+| 21 vorgerechnete Auswahlen | jede per GET und POST identisch; Zustand **20 A + 1 B** (Strategie-Profil, Eingaben fehlen); Nachweisart je Eintrag; nie zertifiziert |
+| gültig, aber nicht vorgerechnet | je Art mindestens eine Variante (z. B. Kosten „ohne“) → `NOT_PRECOMPUTED`, „nicht vorgerechnet“, keine Rechnung |
+| ungültige Kombinationen | 9 Fälle mit ihrem sicheren Code: `UNKNOWN_TEMPLATE`, `SELECTION_SCHEMA_UNKNOWN`, `COST_PRESET_UNKNOWN`, `RULES_ONLY_FOR_SIGNAL`, `FACTOR_ONLY_FOR_FACTOR_KIND`, `WINDOW_INVALID` (2×), `SELECTION_UNKNOWN_KEY`, `METHODS_OPTION_UNKNOWN` |
+| Generation und Hash | Paket `NOT_CERTIFIED`, `productionApproved=false`, `publiclyActivated=false`; Security-Master-Generation `us-security-master-1.1.0` = Register (`26c82617…`); Katalog-Generation 1 `7ea6383e…` |
+| Browser | Account-Browser-QA (Chromium und WebKit/iPhone, mobil hell/dunkel): ohne Rolle gesperrt, mit Rolle Übersicht, Grenzen, „nicht zertifiziert“, vorgerechnete Auswahl |
+
+**Was der Owner im Praxistest selbst sieht** (nach den Schritten in 8):
+- Übersicht der sechs Arten mit Zustand und Zertifizierungsstand;
+- je vorgerechneter Auswahl Rendite, Risiko, Drawdown, Kosten, Benchmark, Datenqualität, Abdeckung, historische Population, Nachweisart und Grenzen;
+- bei jeder anderen Kombination „nicht vorgerechnet“.
+
+## 8. Einmalige Schritte zur internen Freischaltung
+
+1. **Owner:** Testkonto nennen (bestätigte E-Mail, siehe 2).
+2. **Owner, SQL:** Rolle `backtest_reviewer` für genau dieses Konto vergeben. Die Kontrolle muss genau eine Zeile zeigen.
+3. **Owner:** diesen PR (#1227) freigeben. Merge, danach rollt „Konten — Produktion automatisch“ den Worker aus. Es gibt keinen weiteren Freigabejob, weil der Schalter nicht zahlungsrelevant ist.
+4. **Prüfen** (Abschnitt 4):
+   - ohne Sitzung 401;
+   - Konto ohne Rolle 403;
+   - Testkonto: `https://research.visionuniverse.de/konto/admin/backtests/`.
+5. **Praxistest** wie in 7.
+6. **Zurücknehmen nach Bedarf:** die Rolle sofort per SQL entziehen, oder den Schalter per PR auf `"false"` setzen.
+
