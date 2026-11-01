@@ -276,11 +276,13 @@ test('the field list matches what page-backtest.js reads today (read-only)', () 
 test('nothing outside tests and docs imports the research adapter; product services import none of the new modules', () => {
   const grep = needle => { try { return execFileSync('git', ['grep', '--untracked', '-l', '-F', needle, '--', '.', ':!quant/data', ':!discover/data', ':!supertrader/data', ':!social/data'], { cwd: root, encoding: 'utf8' }).trim().split('\n').filter(Boolean); } catch (e) { if (e.status === 1) return []; throw e; } };
   const outside = files => files.filter(f => !f.startsWith('quant/tests/') && !f.startsWith('docs/'));
-  assert.deepEqual(outside(grep('backtest-research-adapter')), []);
+  // The only caller is the internal, disabled backtest preview service (Node-only, not wired; docs/quant/BACKTEST_PREVIEW.md,
+  // its own isolation test in quant/tests/backtest-preview.test.mjs).
+  assert.deepEqual(outside(grep('backtest-research-adapter')), ['quant/api/backtest-preview-service.cjs']);
   assert.deepEqual(outside(grep('VUBacktestResearchAdapter')), ['quant/api/backtest-research-adapter.js']);
   // The only additional caller is the research backtest runner (scripts/quant/research, offline, not wired; docs/quant/BACKTEST_RUNNER.md).
   assert.deepEqual(outside(grep('backtest-result-adapters')).sort(), ['quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs', 'scripts/quant/verify-backtest-result-v2.py'].sort());
   assert.deepEqual(outside(grep('backtest-result-contract.cjs')).sort(), ['quant/api/backtest-research-adapter.js', 'quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs'].sort());
   for (const f of ['quant/api/product-services.js', 'quant/index.html', 'quant/app/page-backtest.js'])
-    for (const needle of ['backtest-kinds', 'backtest-result-', 'backtest-research-adapter']) assert.equal(readFileSync(join(root, f), 'utf8').includes(needle), false, f + ' mentions ' + needle);
+    for (const needle of ['backtest-kinds', 'backtest-result-', 'backtest-research-adapter', 'backtest-preview']) assert.equal(readFileSync(join(root, f), 'utf8').includes(needle), false, f + ' mentions ' + needle);
 });

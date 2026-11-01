@@ -59,6 +59,8 @@ def valid_seg(s):
     if not is_int(e) or e < 0 or e > 3660:
         return False
     c = s.get("criterion")
+    if "countBy" in s and s["countBy"] not in ("ROWS", "EVENT_DAY"):
+        return False
     return isinstance(c, dict) and c.get("metric") in METRICS and c.get("rule") in RULES
 
 
@@ -105,7 +107,10 @@ def evaluate(inp):
     idx = 2 if s["criterion"]["metric"] == "MEDIAN_EXCESS" else 1
 
     def summ(lst):
-        vals = [r[idx] for r in lst if r[idx] is not None]
+        valid = [r for r in lst if r[idx] is not None]
+        vals = [r[idx] for r in valid]
+        if s.get("countBy") == "EVENT_DAY":
+            return {"n": len(set(r[0] for r in valid)), "nAll": len(lst), "metric": med(vals)}
         return {"n": len(vals), "nAll": len(lst), "metric": med(vals)}
 
     seg = {"cutDate": cut, "train": summ(train), "test": summ(test)}
