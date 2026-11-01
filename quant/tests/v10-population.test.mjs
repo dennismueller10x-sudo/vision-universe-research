@@ -21,11 +21,10 @@ const V10=Identity.v10.records,LC=Lifecycle.records;
 const FRAME={identityEvidence:true,identityEvidenceProtocolV10:true,corporateActionEvidence:true,listingLifecycleEvidence:true};
 const frozenRun=pts=>{let n=1;for(let i=pts.length-2;i>=0&&pts[i][1]===pts.at(-1)[1];i--)n++;return n;};
 // Evidence files (lifecycle cases, population frame) were derived from the long weekly series as of a fixed date. The
-// committed series keep growing (weekly long-series run), so they are replayed as of that date: points, boundaries and
-// corporate-action evidence after it are dropped - the same cut the backtest-refresh test applies to NVDA.
+// committed series keep growing (weekly long-series run), so they are replayed as of that date: points and corporate-action
+// evidence after it are dropped and to/asOf set to the last kept week (barCount/sourceLast are not read by any loader) - the same cut the backtest-refresh test applies to NVDA.
 const seriesAsOf=(id,asOf)=>{const d=JSON.parse(seriesBytes(id));d.points=d.points.filter(p=>p[0]<=asOf);d.to=d.asOf=d.points.at(-1)[0];const ca=d.corporateActions;
  if(ca){ca.splits=ca.splits.filter(s=>s[0]<=d.asOf);ca.moves=ca.moves.filter(m=>m.week<=d.asOf);if(ca.supplemented)ca.supplemented=ca.supplemented.filter(s=>s.date<=d.asOf);}return JSON.stringify(d);};
-const isoMonday=d=>{const t=new Date(d+'T00:00:00Z');t.setUTCDate(t.getUTCDate()-(t.getUTCDay()+6)%7);return t.toISOString().slice(0,10);};
 
 test('reference cases: the five V9 dossier records are byte-identical and keep their 1.0.0 semantics',()=>{
  const {v10,...base}=Identity;
@@ -147,10 +146,10 @@ test('listingLifecycleEvidence: cut at the sourced last trading day, frozen with
  const lcIds=new Set(LC.map(r=>r.securityId));
  const cases=EV('lifecycle-cases.json').cases.filter(c=>c.weeklyFrozen&&!lcIds.has(c.securityId)&&c.defaultReason==='QUALIFIED').slice(0,5);
  let frozenSeen=0;
- for(const c of cases){const text=seriesAsOf(c.securityId,c.weeklyTail.to),o=outcome(()=>L(c.securityId,text));if(!o.ok)continue;const r=L(c.securityId,text);frozenSeen++;
+ for(const c of cases){const text=seriesAsOf(c.securityId,c.weeklyTail.to),o=outcome(()=>L(c.securityId,text));if(!o.ok){assert.match(o.value,/^INSUFFICIENT_HISTORY$/,c.securityId);continue;}const r=L(c.securityId,text);frozenSeen++;
   assert.ok(frozenRun(JSON.parse(text).points)>=R.FROZEN_TAIL_MIN_RUN,c.securityId+': replay must show the recorded frozen tail');
   assert.equal(r.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED',c.securityId);assert.ok(R.frozenTailRun(r.points)<R.FROZEN_TAIL_MIN_RUN||r.points.length<2,c.securityId);}
- assert.ok(frozenSeen>0,'at least one recorded frozen case must replay');
+ assert.equal(frozenSeen,4,'recorded frozen cases that replay (frozen evidence: AACB, AFBI, ALF, ANSC; ADEX too short)');
  // records: cut + listingLifecycle contract
  let ok=0;
  for(const rec of LC){
@@ -180,22 +179,9 @@ test('population frame: ids, hash and counts reproduce under the frame loader op
  assert.equal(sha(JSON.stringify(ids)),f.idsSha256);assert.equal(f.counts.qualified,ids.length);
  assert.equal(f.counts.candidates,f.counts.qualified+Object.values(f.counts.excludedByReason).reduce((a,b)=>a+b,0));
  const L=R.createResearchLoader(root,FRAME);
- // Replayed as of the frame's data date: later weeks are new data, not a different frame. The series name each week by
- // its last trading day, so a week the provider later completes or fills may carry another day of the SAME ISO week;
- // the comparison is by ISO week and bar count. A bar of the frame week itself (partial when the frame was drawn) has
- // since been completed by the provider: it must still exist in the committed series, the replay holds the weeks before.
- const asOf=f.dataAsOf.weekly,frameWeek=isoMonday(asOf),prevWeek=isoMonday(new Date(Date.parse(frameWeek)-864e5).toISOString().slice(0,10));
- for(const x of f.listings.filter((_,i)=>i%97===0)){
-  const r=L(x.securityId,seriesAsOf(x.securityId,asOf)),p=r.points,week=isoMonday(x.to);assert.equal(p[0][0],x.from,x.securityId);
-  if(week<frameWeek){
-   const upTo=p.filter(q=>isoMonday(q[0])<=week);assert.equal(upTo.length,x.bars,x.securityId);assert.equal(isoMonday(upTo.at(-1)[0]),week,x.securityId);
-   // only a listing that traded into the week before the frame week may have a frame-week bar the snapshot did not hold yet
-   const later=p.slice(upTo.length);assert.ok(later.length===0||(week===prevWeek&&later.length===1&&isoMonday(later[0][0])===frameWeek),x.securityId+': bars after the frame end '+JSON.stringify(later.slice(0,3)));
-  }else{
-   assert.equal(week,frameWeek,x.securityId);
-   const kept=isoMonday(p.at(-1)[0])===frameWeek;assert.equal(p.length,kept?x.bars:x.bars-1,x.securityId);
-   assert.ok(JSON.parse(seriesBytes(x.securityId)).points.some(q=>isoMonday(q[0])===frameWeek),x.securityId+': frame-week bar missing from the committed series');
-  }
- }
+ // Replayed as of the frame's data date: weeks after it are new data, not a different frame. The sample is fixed (the
+ // frame is frozen evidence), so boundaries and bar count must reproduce exactly; only a provider revision of weeks up
+ // to the frame date may break this, and then it should.
+ for(const x of f.listings.filter((_,i)=>i%97===0)){const r=L(x.securityId,seriesAsOf(x.securityId,f.dataAsOf.weekly));assert.equal(r.points[0][0],x.from,x.securityId);assert.equal(r.points.at(-1)[0],x.to,x.securityId);assert.equal(r.points.length,x.bars,x.securityId);}
  for(const [y,p] of Object.entries(f.perIsoYear))assert.equal(p.qualified,p.laterDelisted+p.survivors,y);
 });

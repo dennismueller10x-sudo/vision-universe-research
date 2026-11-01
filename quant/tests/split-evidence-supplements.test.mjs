@@ -214,7 +214,9 @@ test("committete PZZA-Wochenreihe: fuehrt die Ergaenzung, besteht den Wochen-Ada
   assert.equal(loader(ID, text).corporateActionQuality.status, "CLEAN");
   const { doc: erwartet, ambiguous } = correctedDoc(JSON.parse(readFileSync(new URL(VORHER, ROOT), "utf8")), PZZA);
   /* Kapitalmassnahmen-Beleg genau wie vorhergesagt: Split 2013-12-30 2:1 in splits, Herkunft SEC, kein ungeklaerter Sprung. */
-  assert.deepEqual(doc.corporateActions, erwartet.corporateActions);
+  const bis = (ca) => ({ ...ca, splits: ca.splits.filter((x) => x[0] <= erwartet.to), moves: ca.moves.filter((m) => m.week <= erwartet.to), supplemented: (ca.supplemented || []).filter((x) => x.date <= erwartet.to) });
+  assert.deepEqual(bis(doc.corporateActions), erwartet.corporateActions);
+  /* Spaetere Kapitalmassnahmen sind neue Daten; einen ungeklaerten Sprung faengt der Adapter oben (CLEAN). */
   /* Jede Woche des eingefrorenen Stands: exakt der vorhergesagte Wert, bei Rundungskante im Band [unten, oben].
      Spaetere Wochen sind neue Daten. */
   const band = new Map(ambiguous.map((a) => [a.date, a])), heute = new Map(doc.points);

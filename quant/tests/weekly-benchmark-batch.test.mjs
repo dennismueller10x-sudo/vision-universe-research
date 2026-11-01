@@ -32,7 +32,7 @@ test('real SPY aligns every exact equity date, independent Python verifies both 
 test('missing SPY dates or currency mismatch remain separate from executable strategy',()=>{
  const sparse={...benchmark,byDate:new Map(benchmark.byDate)};sparse.byDate.delete('2000-01-28');
  // the strategy ledger with a sparse benchmark is the ledger with the full one (not a pinned count of a growing series)
- const r=run(data,{benchmark:sparse}),full=run(data,{benchmark});assert.equal(r.marketBenchmark.state,'BENCHMARK_UNAVAILABLE');assert.equal(full.marketBenchmark.state,'AVAILABLE');
+ const r=run(data,{benchmark:sparse}),full=run(data,{benchmark});assert.equal(r.marketBenchmark.state,'BENCHMARK_UNAVAILABLE');assert.equal(run(data,{benchmark,asOf:'2026-10-16'}).marketBenchmark.state,'AVAILABLE'); // SPY and NVDA come from separate runs: availability only at a fixed As-of
  assert.deepEqual(r.trades,full.trades);assert.deepEqual(r.openPosition,full.openPosition);assert.deepEqual(r.equity,full.equity);
  assert.equal(run(data,{benchmark:sparse,asOf:'2026-10-16'}).trades.length,21);
  assert.equal(B.compare(benchmark,r.equity,r.metrics,'EUR').reason,'CURRENCY_MISMATCH');
