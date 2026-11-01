@@ -125,3 +125,40 @@ node scripts/market/build-us-security-master.mjs --require-provider --from-zip /
 node scripts/market/build-us-security-master.mjs --require-provider --from-zip /tmp/supported_tickers.zip \
   --today 2026-10-30 --stamp 2026-10-30T00:00:00Z --duplicate-resolution none --out /tmp/sm-none --work-dir /tmp/sm-none-work
 ```
+
+## 9. Nachtrag 31.10.2026: Fortführung nach Umfirmierung (EDVA)
+
+**Anlass.** Im Folgestand 1.3.0 vom 31.10. (Lauf mit der Anbieterliste vom 31.10., SHA-256 `fc51593e…`, zurückgenommen als `46d8e936b3`) wurde `ref_EDVA` inaktiv und nicht mehr geeignet. Der Grund war keine Börsenstreichung. Der Anbieter führt die Aktie seit der Umfirmierung in zwei Zeilen: `tiingo:NYSE MKT:EDVA:2019-02-05` bis 2026-08-21 und `tiingo:AMEX:EDVA:2026-08-21` bis heute. Der Erzeuger ordnet über Ticker und Handelsplatz zu. Damit hing `ref_EDVA` an der beendeten Zeile (Bestand `NYSE MKT`), und die laufende Zeile blieb `ALTERNATE_LISTING` außerhalb des öffentlichen Stamms.
+
+**Belege (EDGAR, abgerufen 31.10.2026, User-Agent `VisionUniverseResearch info@visionuniverse.de`).** CIK 0001553788, heute Endovia Health Sciences, Inc., Ticker EDVA, Börse NYSE American (SEC-Liste: „NYSE“). Frühere Namen: SPLASH BEVERAGE GROUP, INC. (2020-08-13 bis 2026-08-21) und Canfield Medical Supply, Inc. (bis 2020-08-05).
+
+* 8-K `0001731122-26-001040` (11.08.2026, Item 5.03): Satzungsänderung in Nevada am 05./06.08. auf den Namen „Endovia Health Sciences, Inc.“. Sie wird an der NYSE American 10 Tage nach der Pressemitteilung wirksam.
+* 8-K `0001731122-26-001120` (21.08.2026, Item 7.01): Handel unter neuem Namen und dem Symbol „EDVA“ ab Börsenbeginn 24.08.2026. Vorher hieß das Symbol SBEV, das in keinem committeten Stand steht.
+* Kontext: 8-K `0001731122-26-000950` (16.07.2026, Item 5.03). Reverse Split 1:4 am 24.07.2026, neue CUSIP 84862C401. Er liegt innerhalb der Altzeile und betrifft dieselbe Gattung.
+
+**Regel (Erweiterung, nur mit Eintrag).** Das optionale Feld `keptCanonicalId` beschreibt eine Fortführung derselben Aktie. Der Eintrag wird nur angenommen, wenn alle folgenden Bedingungen gelten, sonst bricht der Lauf ab (`DUPLICATE_RESOLUTION_INVALID`):
+
+* `sec.rule` ist `SAME_CIK`, mit zitierter Meldung derselben CIK.
+* Beide canonical_ids tragen denselben Ticker. Ein Tickerwechsel ist damit ausgeschlossen.
+* Beide Zeilen liegen an derselben Börse. Erlaubt sind nur Bezeichnungen derselben Börse beim Anbieter (`NYSE MKT` = `AMEX` = `NYSE AMERICAN`). NYSE gegenüber NYSE American ist ein Börsenwechsel und bleibt ausgeschlossen.
+* Die Folgezeile beginnt nach der Altzeile und höchstens 7 Tage vom Wirksamkeitstag entfernt. Für das Enddatum der Altzeile gilt dieselbe Grenze wie bisher.
+
+Wirkung im Lauf: Nur wenn unter dem Ticker **genau** diese zwei Zeilen stehen und Gattung, Währung und Enddatum passen, entfällt die Altzeile. Sie steht dann als `dropped_row` an der Folgezeile, und die Folgezeile wird normal zugeordnet. Nur bei dieser Fortführung kommen `duplicate_resolution.continuation = "SAME_ISSUER_RENAMED"` und `duplicate_resolution.cik` hinzu. Die Zeilen von OKE und TEL bleiben Feld für Feld gleich. Das Schema bleibt `security-master-duplicate-resolution-1.0.0`, weil das Feld optional ist. Eine Erhöhung würde die Zeilen von OKE und TEL im Artefakt ändern.
+
+**Eigene Reihe.** `discover-series/ref_EDVA.json` enthält die letzten 50 Handelstage und beginnt am 2026-08-21, dem Beginn der Folgezeile. Vor dem Ereignis gibt es keine eigenen Punkte, eine Wochenreihe fehlt. Im Fenster 25.07. bis 23.09. liegen 23 Punkte, die größte Lücke beträgt 4 Tage, die größte Bewegung 12,7 %. Damit belegt die Reihe den lückenlosen Handel der Folgezeile ohne Sprung in Split-Größe. Dass über das Ereignis hinweg dieselbe Aktie gehandelt wird, belegen die SEC-Meldungen (dieselbe CIK, Umfirmierung ohne Umtausch), nicht die Reihe.
+
+**Firmennamen.** `scripts/market/build-company-names.mjs` übernimmt die belegte CIK aus diesem Register, und zwar nur als Rückfall, wenn der Schlüssel aus Ticker und Börsenfamilie nicht greift. Dann muss unter dem Ticker genau ein SEC-Eintrag mit genau dieser CIK stehen (Identität `TICKER+CIK_REGISTER`). Hintergrund: Die SEC-Liste führt NYSE-American-Titel als „NYSE“, die Namensschicht als „AMEX“. Ohne Registerbeleg bleibt das `SEC_EXCHANGE_MISMATCH`.
+
+**Freigabeliste.** `scripts/market/build-security-master-approval-list.mjs` erkennt die Marke (`applyRenameContinuation`) und stuft den canonical_id-Wechsel als `RENAMED_SAME_ISSUER_REGISTER` freigabefähig ein. Voraussetzung: je genau eine Zeile vorher und nachher, gleicher Ticker und gleiche Gattung, dieselbe Börsenfamilie außerhalb des Freiverkehrs, die Zielzeile ist aktiv, und die SEC-Liste bestätigt Ticker und Börse unter der Register-CIK. Ohne die Marke wäre derselbe Wechsel `UNCLEAR_REPLACEMENT` und nicht freigabefähig.
+
+**Vorher/Nachher** (Anbieterliste vom 31.10., `--today 2026-10-31 --stamp 2026-10-31T00:00:00Z`, Ausgabe in `/tmp`):
+
+| | vorher (Register aus `main`) | nachher |
+|---|---|---|
+| Öffentlicher Stamm | 8.055 Zeilen, Zeile für Zeile gleich dem zurückgenommenen Folgestand `46d8e936b3` | 8.055 Zeilen; nur die EDVA-Zeile ist ersetzt, alle anderen sind byte-gleich |
+| `ref_EDVA` | `tiingo:NYSE MKT:EDVA:2019-02-05`, INACTIVE, nicht geeignet, REVIEW | `tiingo:AMEX:EDVA:2026-08-21`, ACTIVE, geeignet, EXISTING, `duplicate_resolution` mit `dropped_row` |
+| Arbeitsablage | 109.196 Zeilen | 109.195 Zeilen (Altzeile entfällt) |
+| Firmenname `ref_EDVA` (SEC-Liste vom 30.10.) | Splash Beverage Group Inc NV, `cik` null | Endovia Health Sciences, Inc., CIK 0001553788, `nameConflict` vermerkt; alle anderen 7.802 Zeilen gleich |
+| Freigabeliste gegen 1.1.0 | EDVA: Deaktivierung und Eignungswechsel nicht freigabefähig | EDVA: canonical_id-Wechsel freigabefähig (`RENAMED_SAME_ISSUER_REGISTER`), Name freigabefähig (`RENAMED_SAME_CIK_SEC`); nicht freigabefähige Deaktivierungen 17 → 16, Eignungswechsel 154 → 153, canonical_id 24 → 24 |
+
+Prüfen: `node --test quant/tests/security-master-rename-continuation.test.mjs`.
