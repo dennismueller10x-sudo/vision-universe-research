@@ -1,0 +1,5170 @@
+{
+ "schemaVersion": "backtest-preview-1.0.0",
+ "audience": "INTERNAL_REVIEW",
+ "label": "RESEARCH",
+ "trust": "NOT_PRODUCT_TRUST",
+ "claim": "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+ "productionApproved": false,
+ "publiclyActivated": false,
+ "notes": [
+  "Interne Vorschau aus committeten Research-Runner-Ergebnissen; keine Produktanzeige, keine Freigabe.",
+  "Zahlen sind unverändert aus den Ergebnisumschlägen (backtest-result-2.0.0) übernommen.",
+  "Zustand A wird nie automatisch zu C; C nur, wenn das Zertifizierungsartefakt die Art CERTIFIED meldet (heute keine Art)."
+ ],
+ "sources": {
+  "demos": "docs/quant/backtest-demos",
+  "runner": "backtest-runner-1.0.0",
+  "certification": "quant/data/product/backtest-certification-v1.json",
+  "extraResults": []
+ },
+ "certification": {
+  "source": "quant/data/product/backtest-certification-v1.json",
+  "schemaVersion": "backtest-certification-1.0.0",
+  "statusSha256": "f184311492e8d139aecf7bea2cd811d8bc5ace517e2a27cc067a8ca88659e297",
+  "violations": [],
+  "kinds": {
+   "SAME_STOCK_REPLAY": {
+    "label": "Rückblick derselben Aktie",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "SURVIVOR_BY_CONSTRUCTION",
+    "blockers": [
+     "survivorship:SURVIVOR_BY_CONSTRUCTION",
+     "ruleTest:DESCRIPTIVE_NOT_A_TEST"
+    ]
+   },
+   "PATTERN_EVIDENCE": {
+    "label": "Marktweite Muster",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+    "blockers": [
+     "survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART",
+     "returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+     "certifiedAsBacktest:STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+    ]
+   },
+   "SIGNAL_BACKTEST": {
+    "label": "Signal-Backtest",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "PARTIAL_SENSITIVITY_ONLY",
+    "blockers": [
+     "survivorship:PARTIAL_SENSITIVITY_ONLY",
+     "ruleCertified:NO_RULE_CERTIFIED"
+    ]
+   },
+   "SETUP_BACKTEST": {
+    "label": "Setup-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "SETUP_HISTORY_TOO_SHORT",
+    "blockers": [
+     "historyDates:SETUP_HISTORY_TOO_SHORT",
+     "historySpan:SETUP_HISTORY_SPAN_TOO_SHORT",
+     "completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW",
+     "titles:TOO_FEW_TITLES",
+     "independence:EVENTS_CLUSTERED_IN_TIME",
+     "returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN",
+     "entryVariant:VARIANTS_NOT_MEASURABLE_YET",
+     "oos:OOS_NOT_MEASURABLE_YET"
+    ]
+   },
+   "STRATEGY_BACKTEST": {
+    "label": "Strategie-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "blockers": [
+     "membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "factorHistory:FACTOR_HISTORY_TOO_SHORT"
+    ]
+   },
+   "FACTOR_RANKING_BACKTEST": {
+    "label": "Faktor-/Ranking-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "FACTOR_HISTORY_TOO_SHORT",
+    "blockers": [
+     "factorHistory:FACTOR_HISTORY_TOO_SHORT",
+     "completedForward:FORWARD_OUTCOMES_TOO_FEW",
+     "membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    ]
+   }
+  },
+  "certifiedKinds": []
+ },
+ "kinds": [
+  {
+   "kind": "SAME_STOCK_REPLAY",
+   "label": "Rückblick derselben Aktie",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 4,
+    "B": 0,
+    "C": 0
+   },
+   "certification": {
+    "label": "Rückblick derselben Aktie",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "SURVIVOR_BY_CONSTRUCTION",
+    "blockers": [
+     "survivorship:SURVIVOR_BY_CONSTRUCTION",
+     "ruleTest:DESCRIPTIVE_NOT_A_TEST"
+    ]
+   },
+   "dataQualityLimits": [
+    "DATA_DRIFT_SINCE_REFERENCE_RUN",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "PRICE_RETURN_WITHOUT_DIVIDENDS",
+    "PRIVATE_PROVIDER_DATA_HASH_BOUND",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "TERMINAL_CONSIDERATION_NOT_VERIFIED_SCENARIOS_ONLY",
+    "TOTAL_RETURN_PARTIAL_390_OF_4715",
+    "V13_DELISTED_RESEARCH_SERIES",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+    "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+    "EX_POST_PRICE_REVISIONS",
+    "HISTORICAL_PRICE_SIMULATION",
+    "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+    "LEDGER_NOT_CERTIFIED",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_INDEPENDENT_CONFIRMATION",
+    "ONE_FUNDED_POSITION_AT_A_TIME_OVERLAPS_EXCLUDED",
+    "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SINGLE_LISTING_NOT_AGGREGATE_SIGNAL_EVIDENCE",
+    "SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE",
+    "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+    "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+    "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+    "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+   ],
+   "cases": [
+    {
+     "id": "replay-nvda-winner-splits",
+     "kind": "SAME_STOCK_REPLAY",
+     "scenarios": [
+      "STRONG_WINNER",
+      "CORPORATE_ACTION_SPLIT"
+     ],
+     "privateData": null,
+     "purpose": "Gleiche-Aktie-Wiederholung einer festen Regel (Wochenschluss höchstens 5 % unter dem 52-Wochen-Hoch) auf NVDA 2010–2024; Fenster enthält die Splits 2021-07-20 (4:1) und 2024-06-10 (10:1).",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "OBSERVED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2011-01-07",
+      "to": "2025-05-30",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SAME_STOCK_REPLAY",
+      "engine": "research-studies.runReplayValidation",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 1,
+     "excluded": 0,
+     "events": {
+      "occurrences": 37,
+      "completed": 37,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 1,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.16433566433566427,
+      "hitRate": 0.8648648648648649,
+      "trades": 37,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.23297626649307698,
+       "n": 37
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 37,
+       "median": 0.18897768897768907,
+       "mean": 0.2892278844355524,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": null,
+      "level": null,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.23297626649307698,
+       "n": 37
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-monte-carlo-1.0.0",
+        "model": "TRADE_IID",
+        "simulations": 2000,
+        "horizon": 10,
+        "seed": 20261029,
+        "blockLength": null,
+        "sourceObservations": 20,
+        "totalReturn": {
+         "p5": 0.39619295578015196,
+         "p50": 7.890615888814502,
+         "p95": 44.27926605379634
+        },
+        "maxDrawdown": {
+         "p5": -0.6441075223565831,
+         "p50": -0.3912480481395437,
+         "p95": 0
+        },
+        "inputHash": "5ed3bedee86091a307cafe007d75d1fee905ce3e0e318d58d04ca5d806d6a5f2",
+        "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+       }
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation-1.0.0",
+        "mode": "ROLLING",
+        "sizes": {
+         "train": 156,
+         "validation": 52,
+         "test": 104,
+         "step": 104
+        },
+        "embargoDays": 0,
+        "folds": 5,
+        "excludedByReason": {
+         "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
+         "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
+        },
+        "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+        "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+       }
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "EXECUTED",
+       "result": {
+        "endpoint": "netReturn",
+        "n": 29,
+        "mean": 0.3265475035407173,
+        "perFold": [
+         {
+          "fold": 0,
+          "test": [
+           "2014-01-03",
+           "2015-12-24"
+          ],
+          "train": 1,
+          "validation": 0,
+          "n": 7,
+          "mean": 0.1306421293660916
+         },
+         {
+          "fold": 1,
+          "test": [
+           "2015-12-31",
+           "2017-12-22"
+          ],
+          "train": 0,
+          "validation": 0,
+          "n": 7,
+          "mean": 0.6189034809400012
+         },
+         {
+          "fold": 2,
+          "test": [
+           "2017-12-29",
+           "2019-12-20"
+          ],
+          "train": 5,
+          "validation": 0,
+          "n": 4,
+          "mean": -0.025763187319357783
+         },
+         {
+          "fold": 3,
+          "test": [
+           "2019-12-27",
+           "2021-12-17"
+          ],
+          "train": 8,
+          "validation": 0,
+          "n": 8,
+          "mean": 0.3403630413449361
+         },
+         {
+          "fold": 4,
+          "test": [
+           "2021-12-23",
+           "2023-12-15"
+          ],
+          "train": 3,
+          "validation": 2,
+          "n": 3,
+          "mean": 0.5344022496853648
+         }
+        ],
+        "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+        "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922",
+        "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT"
+       }
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 2,
+          "mean": 0.4953033547391571,
+          "median": 0.4953033547391571,
+          "interval95": null
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 1,
+          "mean": 0.3663919972644807,
+          "median": 0.3663919972644807,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 2,
+          "mean": 0.32632411859248606,
+          "median": 0.326324118592486,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 32,
+          "mean": 0.2716182743808648,
+          "median": 0.17301532584022872,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "fd4465c87fb3725cff1eeda19dc7329a46d62a145bf041089611a3c004ee68c6"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation.runSensitivity (recorded grid, run-research evaluator)",
+        "grid": [
+         {
+          "parameters": {
+           "holdingPeriods": 13
+          },
+          "n": 37,
+          "estimate": 0.14483716674112956,
+          "ci": [
+           0.0715026531827212,
+           0.21376603155656146
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.003
+         },
+         {
+          "parameters": {
+           "holdingPeriods": 26
+          },
+          "n": 37,
+          "estimate": 0.2892278844355524,
+          "ci": [
+           0.14158642209036776,
+           0.43092978495716555
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.003
+         },
+         {
+          "parameters": {
+           "holdingPeriods": 52
+          },
+          "n": 37,
+          "estimate": 0.7176501863970329,
+          "ci": [
+           0.3654241050711744,
+           1.0284338530651915
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.003
+         }
+        ],
+        "baseline": {
+         "holdingPeriods": 26
+        },
+        "neighborhood": {
+         "count": 2,
+         "sameDirection": true,
+         "minEstimate": 0.14483716674112956,
+         "maxEstimate": 0.7176501863970329
+        },
+        "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
+        "registrationHash": "d5d4a4de99b93ba02a89f03cce605a766d4f5570d4f39cd8703aad02e184f5ab",
+        "resultHash": "2125bd872fe915761bff8765731c38d52aa8b2282fcb488115988e3439c60a34",
+        "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
+       }
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 37,
+       "denominator": 37,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 1,
+       "byQuality": {
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 1
+      },
+      "warnings": [
+       "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+      "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+      "SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "47c1d6611a041b90ea5a5ea54f24de859d18b9626dc32b4d07e2ee572a0e2f79",
+      "inputHash": "2dc7765dea1742520790de9ce866d1f25768fe4af1daf2e58fd6611b9fe788b8",
+      "envelopeHash": "3784c9e170ac50529f8bb42c5d79a8257dd485f5ad02d9f8c45c3799758c38ca",
+      "resultHash": "3019066fb2ce95459b58a9b0362b1b1e4537086fd7a99d7e597739fe278be7e8"
+     }
+    },
+    {
+     "id": "replay-intc-loser",
+     "kind": "SAME_STOCK_REPLAY",
+     "scenarios": [
+      "STRONG_LOSER"
+     ],
+     "privateData": null,
+     "purpose": "Dieselbe Regel auf einem starken Verlierer: INTC 2019–2025 (Kurs etwa halbiert).",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "OBSERVED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2019-03-15",
+      "to": "2024-05-10",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SAME_STOCK_REPLAY",
+      "engine": "research-studies.runReplayValidation",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 1,
+     "excluded": 0,
+     "events": {
+      "occurrences": 6,
+      "completed": 6,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 1,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.2828832007585582,
+      "hitRate": 0.3333333333333333,
+      "trades": 6,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.1535433038752578,
+       "n": 6
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 6,
+       "median": -0.11290897737925576,
+       "mean": -0.08154613362583096,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": null,
+      "level": null,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.1535433038752578,
+       "n": 6
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-monte-carlo-1.0.0",
+        "model": "TRADE_IID",
+        "simulations": 2000,
+        "horizon": 10,
+        "seed": 20261029,
+        "blockLength": null,
+        "sourceObservations": 4,
+        "totalReturn": {
+         "p5": -0.5585888197195292,
+         "p50": -0.0787919996626637,
+         "p95": 0.8627376185481636
+        },
+        "maxDrawdown": {
+         "p5": -0.5929869419545452,
+         "p50": -0.3279031172902114,
+         "p95": -0.17622466408373383
+        },
+        "inputHash": "92ec37f18a572d34a7ad8cdbac76331c615a33e659a4e2ec4056b3e64c8cf09b",
+        "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+       }
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 1,
+          "mean": -0.04959329067477758,
+          "median": -0.04959329067477758,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 5,
+          "mean": -0.08793670221604163,
+          "median": -0.17622466408373394,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "65ab36743aa8a961a246be59dd091b01e55dfd71db412c2b60c45212541056e6"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 6,
+       "denominator": 6,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 1,
+       "byQuality": {
+        "CLEAN": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+      "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+      "SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "4e21a61db9bd36a86c6cade29a9a4f3cb41df8f7c2c0254322cdbddd29d1bedc",
+      "inputHash": "bd96e562fda90c5394925892fbf771c8a345b8ae3cf0f9c6c143a9a6754971a4",
+      "envelopeHash": "1a9eee3e496c3f64140dc847120a99ccb1d13467375f94b5717c9d66efa05877",
+      "resultHash": "3679831b4b746af51c257a6bfb97c789148200e9a6c217993c4acd4ad7b4fe3e"
+     }
+    },
+    {
+     "id": "ledger-smci-winner-split",
+     "kind": "SAME_STOCK_REPLAY",
+     "scenarios": [
+      "STRONG_WINNER",
+      "CORPORATE_ACTION_SPLIT"
+     ],
+     "privateData": null,
+     "purpose": "Realer Wochen-Ledger (eine finanzierte Position, NEW_52W_HIGH, 26 Wochen) auf SMCI, 10 Jahre bis 2025-12-31; enthält den 10:1-Split 2024-10-01.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "SIMULATED_LEDGER",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2015-12-31",
+      "to": "2025-12-26",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SAME_STOCK_REPLAY",
+      "engine": "run-real-weekly-backtest.run (NEW_52W_HIGH, one funded position at a time)",
+      "adapter": "fromRealWeeklyLedger",
+      "population": "PRODUCT_DEFAULT"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 1,
+     "excluded": 0,
+     "events": {
+      "occurrences": 8,
+      "completed": 6,
+      "immature": 0,
+      "censored": null,
+      "ineligible": 2,
+      "titles": 1,
+      "entry": "NEXT_WEEK_CLOSE",
+      "exit": "ENTRY_PLUS_26_WEEK_CLOSE"
+     },
+     "metrics": {
+      "basis": "PORTFOLIO",
+      "totalReturn": 5.807572892993535,
+      "cagr": 0.21171440663298036,
+      "annualReturns": [
+       {
+        "year": "2015",
+        "value": 0,
+        "partial": true
+       },
+       {
+        "year": "2016",
+        "value": 0,
+        "partial": false
+       },
+       {
+        "year": "2017",
+        "value": 0,
+        "partial": false
+       },
+       {
+        "year": "2018",
+        "value": 0,
+        "partial": false
+       },
+       {
+        "year": "2019",
+        "value": -0.0014977533699449541,
+        "partial": false
+       },
+       {
+        "year": "2020",
+        "value": 0.16422614107883793,
+        "partial": false
+       },
+       {
+        "year": "2021",
+        "value": 0.028722910115345668,
+        "partial": false
+       },
+       {
+        "year": "2022",
+        "value": 0.8547471473088106,
+        "partial": false
+       },
+       {
+        "year": "2023",
+        "value": 0.6357886723507913,
+        "partial": false
+       },
+       {
+        "year": "2024",
+        "value": 0.8762710917091538,
+        "partial": false
+       },
+       {
+        "year": "2025",
+        "value": 0,
+        "partial": false
+       }
+      ],
+      "volatility": 0.3472718584235815,
+      "maxDrawdown": -0.4152249134948097,
+      "hitRate": 1,
+      "trades": 6,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "paid": 4070.9062453461393,
+       "fees": 2713.937496897426,
+       "slippage": 1356.968748448713,
+       "roundTripBps": 20,
+       "slippageBps": 10
+      },
+      "cashShare": 0.7011494252873564,
+      "benchmark": {
+       "id": "SAME_LISTING_BUY_AND_HOLD",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 11.50612244897959,
+       "cagr": 0.28779088824183763,
+       "market": {
+        "id": "SPY_BUY_AND_HOLD",
+        "returnBasis": "PRICE_RETURN",
+        "state": "AVAILABLE"
+       }
+      },
+      "excess": {
+       "totalReturn": -5.698549555986056,
+       "cagr": -0.07607648160885727,
+       "sharpeRiskFreeZero": 0.7197133231408671,
+       "metricsEngine": "backtest-metrics-1.0.0"
+      },
+      "perEvent": null
+     },
+     "uncertainty": null,
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SAME_LISTING_BUY_AND_HOLD",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 11.50612244897959,
+       "cagr": 0.28779088824183763,
+       "market": {
+        "id": "SPY_BUY_AND_HOLD",
+        "returnBasis": "PRICE_RETURN",
+        "state": "AVAILABLE"
+       }
+      },
+      "excess": {
+       "totalReturn": -5.698549555986056,
+       "cagr": -0.07607648160885727,
+       "sharpeRiskFreeZero": 0.7197133231408671,
+       "metricsEngine": "backtest-metrics-1.0.0"
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-monte-carlo-1.0.0",
+        "model": "TRADE_IID",
+        "simulations": 2000,
+        "horizon": 6,
+        "seed": 20261029,
+        "blockLength": null,
+        "sourceObservations": 6,
+        "totalReturn": {
+         "p5": 1.7936339539627784,
+         "p50": 5.807476073401013,
+         "p95": 15.768558119486105
+        },
+        "maxDrawdown": {
+         "p5": 0,
+         "p50": 0,
+         "p95": 0
+        },
+        "inputHash": "0e58cc00ee284873bf007ff79bb9ba98e1c2371864406734d3c48a453f90afc3",
+        "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+       }
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": null,
+      "censored": null,
+      "terminal": {
+       "state": "NO_OPEN_POSITION"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile PRODUCT_DEFAULT (09488879b7e340da)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 1,
+       "byQuality": {
+        "CLEAN": 1
+       },
+       "listingsWithSplitsInWindow": 1
+      },
+      "warnings": [
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF",
+       "PRICE_RETURN_WITHOUT_DIVIDENDS",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS"
+      ]
+     },
+     "limitations": [
+      "SINGLE_LISTING_NOT_AGGREGATE_SIGNAL_EVIDENCE",
+      "ONE_FUNDED_POSITION_AT_A_TIME_OVERLAPS_EXCLUDED",
+      "LEDGER_NOT_CERTIFIED",
+      "HISTORICAL_PRICE_SIMULATION",
+      "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+      "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+      "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0
+     },
+     "hashes": {
+      "specHash": "1067e89171e12353a20097fbeced453c503749bf16034353ec85c0e6648c92dc",
+      "inputHash": "1c46a02d76afa43a2c3b4de899d66c966df31bbf7f35a6a678f3ff71f221b666",
+      "envelopeHash": "619d2f59fee03aa7db2b7a34384a1ee3034e09025b6f41861bbec955f41a4bd7",
+      "resultHash": "b35ac5949190a6591a68d66c4647ff1016b8f4047d62fe6f1ca4e31e22d8a31b"
+     }
+    },
+    {
+     "id": "delisted-xco-bankruptcy",
+     "kind": "SAME_STOCK_REPLAY",
+     "scenarios": [
+      "DELISTED"
+     ],
+     "privateData": "delistedSeries",
+     "purpose": "Delisteter Titel (EXCO Resources, Insolvenz, letzter Handel 2017-12-22) aus der privaten, hash-gebundenen V13-Reihe: Regel-Wiederholung, Ereignisse nach dem letzten Handelstag werden zensiert.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "OBSERVED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2012-01-27",
+      "to": "2017-10-27",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SAME_STOCK_REPLAY",
+      "engine": "research-studies.runReplayValidation",
+      "adapter": "fromResearchStudy",
+      "population": "V13_DELISTED_F1"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 1,
+     "excluded": 0,
+     "events": {
+      "occurrences": 24,
+      "completed": 22,
+      "immature": 0,
+      "censored": 2,
+      "ineligible": 0,
+      "titles": 1,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.46533799880881477,
+      "hitRate": 0.3181818181818182,
+      "trades": 22,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.2510480968219078,
+       "n": 22
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 22,
+       "median": -0.25432519581379454,
+       "mean": -0.19191164426691154,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": null,
+      "level": null,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.2510480968219078,
+       "n": 22
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 2,
+          "mean": 0.2558890689142791,
+          "median": 0.2558890689142791,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 1,
+          "mean": 0.012300020896009567,
+          "median": 0.012300020896009567,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 19,
+          "mean": -0.2497965438208748,
+          "median": -0.3717495619134963,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "a5fda86ed1b5e59c278e4495c49202fbe03866fa1bf8993d23b28134031ad66c"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 22,
+       "denominator": 24,
+       "share": 0.9166666666666666,
+       "contract": null
+      },
+      "censored": 2,
+      "terminal": {
+       "state": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE",
+       "listings": [
+        {
+         "securityId": "dl_2ad5c4a973ce5a19",
+         "lastTradeDate": "2017-12-22",
+         "terminalKind": "DISTRESS",
+         "terminalScenarios": [
+          0,
+          -0.3,
+          -1
+         ]
+        }
+       ]
+      },
+      "survivorship": {
+       "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
+       "control": "population profile V13_DELISTED_F1 (0eeccd32fdc09510)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 1,
+       "byQuality": {
+        "NOT_REPORTED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+       "TOTAL_RETURN_PARTIAL_390_OF_4715",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "DATA_DRIFT_SINCE_REFERENCE_RUN",
+       "V13_DELISTED_RESEARCH_SERIES",
+       "PRIVATE_PROVIDER_DATA_HASH_BOUND",
+       "TERMINAL_CONSIDERATION_NOT_VERIFIED_SCENARIOS_ONLY"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:SURVIVOR_BY_CONSTRUCTION",
+      "CERTIFICATION_BLOCKER:ruleTest:DESCRIPTIVE_NOT_A_TEST",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+      "SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2017-12-22",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "604ae68e67df1b3e32e9c78b581c7cfa7d81237f66d946aaf2c0ee418f21e81a",
+      "inputHash": "efd2eb5bcb7008695c5351f48c77e3d68299f230adcccde94723193f98d6bea7",
+      "envelopeHash": "8be8c6318811f27be25ef0d9655018702d4a21094e4dda9af0198a291a90ac4a",
+      "resultHash": "f5c13cf6a9242d53127b12a284f480a23114bcb6e7dde39df9e44cea74a595f4"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "PATTERN_EVIDENCE",
+   "label": "Marktweite Muster",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 1,
+    "B": 0,
+    "C": 0
+   },
+   "certification": {
+    "label": "Marktweite Muster",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+    "blockers": [
+     "survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART",
+     "returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+     "certifiedAsBacktest:STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+    ]
+   },
+   "dataQualityLimits": [
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "ESTIMATED_NOT_CERTIFIED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "CERTIFICATION_BLOCKER:certifiedAsBacktest:STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+    "CERTIFICATION_BLOCKER:returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+    "CERTIFICATION_BLOCKER:survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+    "EX_POST_PRICE_REVISIONS",
+    "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_INDEPENDENT_CONFIRMATION",
+    "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+    "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+    "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+   ],
+   "cases": [
+    {
+     "id": "pattern-2015-sideways",
+     "kind": "PATTERN_EVIDENCE",
+     "scenarios": [
+      "SIDEWAYS"
+     ],
+     "privateData": null,
+     "purpose": "Musterstudie (Wochenschluss ≥ 20 % unter dem bisherigen Hoch) über 30 Large Caps im Seitwärtsjahr 2015 (SPY etwa ±0 %), 13 Wochen Horizont, gleichzeitige Kontrollen.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "OBSERVED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#PATTERN_EVIDENCE@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2015-01-02",
+      "to": "2016-03-24",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "PATTERN_EVIDENCE",
+      "engine": "research-studies.runPatternStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 62,
+      "completed": 62,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 18,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.0849599380758847,
+      "hitRate": 0.5,
+      "trades": 62,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.013683262128160812,
+       "n": 62
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 62,
+       "median": -0.0008593781459031447,
+       "mean": 0.0027393662239088516,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       -0.027079072706201107,
+       0.032557805154018814
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.013683262128160812,
+       "n": 62
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation-1.0.0",
+        "mode": "ROLLING",
+        "sizes": {
+         "train": 13,
+         "validation": 4,
+         "test": 13,
+         "step": 13
+        },
+        "embargoDays": 0,
+        "folds": 2,
+        "excludedByReason": {
+         "OUTCOME_NOT_MATURE_AT_CUTOFF": 37
+        },
+        "partitionHash": "405bb435ca4893e257e76c6ac334410380f7c86d9cd621c61da75f59f970f59e",
+        "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+       }
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "EXECUTED",
+       "result": {
+        "endpoint": "netReturn",
+        "n": 33,
+        "mean": -0.01832344242719679,
+        "perFold": [
+         {
+          "fold": 0,
+          "test": [
+           "2015-05-01",
+           "2015-07-24"
+          ],
+          "train": 0,
+          "validation": 0,
+          "n": 15,
+          "mean": -0.06130325564475803
+         },
+         {
+          "fold": 1,
+          "test": [
+           "2015-07-31",
+           "2015-10-23"
+          ],
+          "train": 0,
+          "validation": 0,
+          "n": 18,
+          "mean": 0.017493068587437585
+         }
+        ],
+        "partitionHash": "405bb435ca4893e257e76c6ac334410380f7c86d9cd621c61da75f59f970f59e",
+        "resultHash": "03f86f6636331d00203dab1f7c343604a81256ed1fd70f954c8abfeb9021facb",
+        "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT"
+       }
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 28,
+          "mean": 0.028269136619967713,
+          "median": 0.029145834621172928,
+          "interval95": [
+           -0.021230890925368385,
+           0.07776916416530381
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 34,
+          "mean": -0.018285150572845504,
+          "median": -0.03019679189106761,
+          "interval95": [
+           -0.06011010389891144,
+           0.02353980275322044
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "92d5aaa550ccff077dc9db1795827e35a68ed3fdd7296cb5c6c3cc59d63bedd7"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 62,
+       "denominator": 62,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART",
+      "CERTIFICATION_BLOCKER:returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+      "CERTIFICATION_BLOCKER:certifiedAsBacktest:STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "2393987659c32d63126a59e4f9f810b40dc3b0e3d6d8c5d260ed99b4c933dfe5",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "ba70d5bb5608baa81fef114e53b28cb3d1152ebf58ffef84f29380137dc12d35",
+      "resultHash": "eac6b0f591376e5699fb168054f4d9c7579c453df85c99e3140d53fdacf5934b"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "SIGNAL_BACKTEST",
+   "label": "Signal-Backtest",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 5,
+    "B": 0,
+    "C": 0
+   },
+   "certification": {
+    "label": "Signal-Backtest",
+    "status": "LIMITED",
+    "readiness": "NOT_READY",
+    "trust": "LIMITED",
+    "reason": "PARTIAL_SENSITIVITY_ONLY",
+    "blockers": [
+     "survivorship:PARTIAL_SENSITIVITY_ONLY",
+     "ruleCertified:NO_RULE_CERTIFIED"
+    ]
+   },
+   "dataQualityLimits": [
+    "DATA_DRIFT_SINCE_REFERENCE_RUN",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "ESTIMATED_NOT_CERTIFIED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "PRIVATE_PROVIDER_DATA_HASH_BOUND",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "TERMINAL_CONSIDERATION_NOT_VERIFIED_SCENARIOS_ONLY",
+    "TOTAL_RETURN_PARTIAL_390_OF_4715",
+    "V13_DELISTED_RESEARCH_SERIES",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+    "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+    "EX_POST_PRICE_REVISIONS",
+    "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_INDEPENDENT_CONFIRMATION",
+    "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+    "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+    "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+   ],
+   "cases": [
+    {
+     "id": "signal-2008-crash",
+     "kind": "SIGNAL_BACKTEST",
+     "scenarios": [
+      "BEAR_CRASH"
+     ],
+     "privateData": null,
+     "purpose": "Alle fünf Signalregeln auf 30 Large Caps, Signale 2007-10 bis 2009-03 (Finanzkrise), 26 Wochen; finanzierte Variante TREND_UP (max. 5 Positionen) über research-portfolio.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2007-10-05",
+      "to": "2009-10-02",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SIGNAL_BACKTEST",
+      "engine": "research-studies.runSignalStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 201,
+      "completed": 201,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 29,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.21942697414395518,
+      "hitRate": 0.26865671641791045,
+      "trades": 201,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.020298078319831426,
+       "n": 201
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 201,
+       "median": -0.11236306226854409,
+       "mean": -0.12224442665459033,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       -0.1776647617915196,
+       -0.06682409151766106
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.020298078319831426,
+       "n": 201
+      }
+     },
+     "funded": {
+      "rule": "TREND_UP",
+      "totalReturn": -0.33827965669059035,
+      "cagr": -0.18711457755508598,
+      "maxDrawdown": -0.4036233473762205,
+      "spyTotalReturn": -0.34238049406480586,
+      "episodes": 15
+     },
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-monte-carlo-1.0.0",
+        "model": "CIRCULAR_BLOCK",
+        "simulations": 2000,
+        "horizon": 26,
+        "seed": 20261029,
+        "blockLength": 8,
+        "sourceObservations": 104,
+        "totalReturn": {
+         "p5": -0.34949511411773587,
+         "p50": -0.07615529977155266,
+         "p95": 0.14672355347036686
+        },
+        "maxDrawdown": {
+         "p5": -0.38915715812925117,
+         "p50": -0.17446433328365257,
+         "p95": -0.061743077040011765
+        },
+        "inputHash": "deab41f0f55091515134811349e7b5c45d1794f47df4bc1e4170d4c43446a5a1",
+        "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+       }
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation-1.0.0",
+        "mode": "ROLLING",
+        "sizes": {
+         "train": 26,
+         "validation": 8,
+         "test": 26,
+         "step": 26
+        },
+        "embargoDays": 0,
+        "folds": 1,
+        "excludedByReason": {
+         "OUTCOME_NOT_MATURE_AT_CUTOFF": 118
+        },
+        "partitionHash": "b5f32145256b77bcf60d65cc637495e0952406a46cc8e52cccdc5dfe8078590f",
+        "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+       }
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "EXECUTED",
+       "result": {
+        "endpoint": "netReturn",
+        "n": 62,
+        "mean": -0.2375545312103218,
+        "perFold": [
+         {
+          "fold": 0,
+          "test": [
+           "2008-05-30",
+           "2008-11-21"
+          ],
+          "train": 0,
+          "validation": 0,
+          "n": 62,
+          "mean": -0.2375545312103218
+         }
+        ],
+        "partitionHash": "b5f32145256b77bcf60d65cc637495e0952406a46cc8e52cccdc5dfe8078590f",
+        "resultHash": "dd987f7c94aa7ed6ccd32a22c2134acaedb947af781493774249c6ac36b353be",
+        "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT"
+       }
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 78,
+          "mean": -0.05347303558887285,
+          "median": -0.06321309395463293,
+          "interval95": [
+           -0.1113179552996808,
+           0.0043718841219351
+          ]
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 113,
+          "mean": -0.17056625747494675,
+          "median": -0.17178257427220067,
+          "interval95": [
+           -0.24948309227467366,
+           -0.09164942267521983
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 10,
+          "mean": -0.11262458869715908,
+          "median": -0.12170819512604164,
+          "interval95": [
+           -0.19933544984409177,
+           -0.02591372755022639
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "52fd0f77fa6fdb849bb1982d4838fe121b262166db03936205ad3c64be526ae6"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-portfolio-1.2.0 via signal-study.fundedSchedule/fundedInput",
+        "rule": "TREND_UP",
+        "maxPositions": 5,
+        "holdingWeeks": 26,
+        "episodes": 15,
+        "skippedNoFreeSlot": 22,
+        "from": "2007-10-05",
+        "to": "2009-10-02",
+        "totalReturn": -0.33827965669059035,
+        "cagr": -0.18711457755508598,
+        "maxDrawdown": -0.4036233473762205,
+        "volatility": 0.2781238360756752,
+        "sharpeRiskFreeZero": -0.6021007654747883,
+        "benchmark": {
+         "id": "SPY_PRICE_RETURN",
+         "totalReturn": -0.34238049406480586,
+         "beta": 0.7290326733821327,
+         "trackingError": 0.18297871524077294
+        },
+        "averageCashShare": 0.25716880645516227,
+        "resultHash": "bdee1d4de5bcfc0be531dce75013d67908ba6bb351951ada31d777f3a29c607f"
+       }
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 201,
+       "denominator": 201,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+      "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "f0437a8048e6cb0cd28a3c0ce04e3fc4faa10b0e7e1b5bbcccfd32f641035fc6",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "bb38e0b8e0b7fabcf9c099910e2445c8d0557670339e3705a856796169114dd5",
+      "resultHash": "0533fccab530db4be19a1cb19cf37b01249c4508812c9a111ad0a223c87de86e"
+     }
+    },
+    {
+     "id": "signal-2009-recovery",
+     "kind": "SIGNAL_BACKTEST",
+     "scenarios": [
+      "RECOVERY"
+     ],
+     "privateData": null,
+     "purpose": "Signalregeln in der Erholung 2009-03 bis 2010-12 (30 Large Caps), mit Parameter-Sensitivität (Horizont 13/26/52, Kosten 5/25 Bp).",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2009-03-27",
+      "to": "2011-07-01",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SIGNAL_BACKTEST",
+      "engine": "research-studies.runSignalStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 315,
+      "completed": 315,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 30,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.0990322580645161,
+      "hitRate": 0.8031746031746032,
+      "trades": 315,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.006408924550443954,
+       "n": 315
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 315,
+       "median": 0.09375453443894521,
+       "mean": 0.11272693732507551,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       0.07593528660847176,
+       0.14951858804167925
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.006408924550443954,
+       "n": 315
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 72,
+          "mean": 0.18797423128309199,
+          "median": 0.18380680703775154,
+          "interval95": [
+           0.13711223753042184,
+           0.23883622503576213
+          ]
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 36,
+          "mean": 0.1146100547591017,
+          "median": 0.06647554846525705,
+          "interval95": [
+           0.021548065823925572,
+           0.20767204369427783
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 80,
+          "mean": 0.1524785323026362,
+          "median": 0.13974990526714692,
+          "interval95": [
+           0.09838985205077819,
+           0.2065672125544942
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 127,
+          "mean": 0.04449288227935123,
+          "median": 0.04931436488040286,
+          "interval95": [
+           0.007905439539440638,
+           0.08108032501926182
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "6d27fa6fc569371c10bd8f706ca52cce764b26e8478d30b1d65595008a126563"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation.runSensitivity (recorded grid, run-research evaluator)",
+        "grid": [
+         {
+          "parameters": {
+           "feeBps": 5,
+           "holdingPeriods": 13
+          },
+          "n": 315,
+          "estimate": 0.05452798237072442,
+          "ci": [
+           0.01807984037797694,
+           0.09861781032748713
+          ],
+          "pValue": 0.007,
+          "adjustedPValue": 0.014
+         },
+         {
+          "parameters": {
+           "feeBps": 5,
+           "holdingPeriods": 26
+          },
+          "n": 315,
+          "estimate": 0.11272693732507552,
+          "ci": [
+           0.06778285538301193,
+           0.16475860584389557
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.006
+         },
+         {
+          "parameters": {
+           "feeBps": 5,
+           "holdingPeriods": 52
+          },
+          "n": 315,
+          "estimate": 0.15521107405905007,
+          "ci": [
+           0.09677072775036966,
+           0.22324472339043933
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.006
+         },
+         {
+          "parameters": {
+           "feeBps": 25,
+           "holdingPeriods": 13
+          },
+          "n": 315,
+          "estimate": 0.05031827722242269,
+          "ci": [
+           0.014015637230151229,
+           0.09423209735498327
+          ],
+          "pValue": 0.012,
+          "adjustedPValue": 0.014
+         },
+         {
+          "parameters": {
+           "feeBps": 25,
+           "holdingPeriods": 26
+          },
+          "n": 315,
+          "estimate": 0.10828490032366701,
+          "ci": [
+           0.06352023641156587,
+           0.16010885696902308
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.006
+         },
+         {
+          "parameters": {
+           "feeBps": 25,
+           "holdingPeriods": 52
+          },
+          "n": 315,
+          "estimate": 0.15059943919763205,
+          "ci": [
+           0.0923923883830847,
+           0.21836149630137436
+          ],
+          "pValue": 0.001,
+          "adjustedPValue": 0.006
+         }
+        ],
+        "baseline": {
+         "feeBps": 5,
+         "holdingPeriods": 26
+        },
+        "neighborhood": {
+         "count": 3,
+         "sameDirection": true,
+         "minEstimate": 0.05452798237072442,
+         "maxEstimate": 0.15521107405905007
+        },
+        "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
+        "registrationHash": "c9b4d0dfed56ef2bedc1ecaff4cbfd20c2932b810d1f5893c07b37771633436c",
+        "resultHash": "fa4baceb7978cc9a4e5f32e323eb54b295b9cdc031e96695fe79cfd14fa6ad8c",
+        "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
+       }
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 315,
+       "denominator": 315,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+      "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "eff769d59966a0734fac841ef9b7b8baba8a0abd371bd743df6e7f1903d3de80",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "df7e0a45f0b102b3bae4258ce8998e1de7ecc21398f9439d04a88ec1502d3970",
+      "resultHash": "0d13aa80c9ffd26c5af63e1bb2b36bc977426a3fc18f35572a7709c41f87dd5d"
+     }
+    },
+    {
+     "id": "signal-2020-covid",
+     "kind": "SIGNAL_BACKTEST",
+     "scenarios": [
+      "BEAR_CRASH",
+      "RECOVERY"
+     ],
+     "privateData": null,
+     "purpose": "Corona-Crash und Erholung: Signale 2020-01 bis 2020-12, 30 Large Caps, 13 Wochen; finanzierte Variante NEW_52W_HIGH.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2020-01-10",
+      "to": "2021-04-09",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SIGNAL_BACKTEST",
+      "engine": "research-studies.runSignalStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 196,
+      "completed": 196,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 30,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.10075808557834737,
+      "hitRate": 0.6428571428571429,
+      "trades": 196,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.004910408986897223,
+       "n": 196
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 196,
+       "median": 0.034904284215972026,
+       "mean": 0.06646489807892754,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       0.011399618196259141,
+       0.12153017796159593
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.004910408986897223,
+       "n": 196
+      }
+     },
+     "funded": {
+      "rule": "NEW_52W_HIGH",
+      "totalReturn": 0.136446919868765,
+      "cagr": 0.10641052118385641,
+      "maxDrawdown": -0.2350019731426617,
+      "spyTotalReturn": 0.2762941596104338,
+      "episodes": 18
+     },
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 58,
+          "mean": 0.09238443771227405,
+          "median": 0.049184311940272174,
+          "interval95": [
+           -0.0062670967158332674,
+           0.19103597214038137
+          ]
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 7,
+          "mean": 0.05131709539961945,
+          "median": 0.01576606136701053,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 59,
+          "mean": 0.06194620857333299,
+          "median": 0.03503269946979026,
+          "interval95": [
+           -0.011447225996007095,
+           0.13533964314267308
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 72,
+          "mean": 0.05076078697963779,
+          "median": 0.02718189310905106,
+          "interval95": [
+           -0.07126018853517854,
+           0.17278176249445412
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "d792bec13991d1ed031808d349b07a4e9ac5108db433606bc724e304b4618376"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-portfolio-1.2.0 via signal-study.fundedSchedule/fundedInput",
+        "rule": "NEW_52W_HIGH",
+        "maxPositions": 5,
+        "holdingWeeks": 13,
+        "episodes": 18,
+        "skippedNoFreeSlot": 2,
+        "from": "2020-01-03",
+        "to": "2021-04-09",
+        "totalReturn": 0.136446919868765,
+        "cagr": 0.10641052118385641,
+        "maxDrawdown": -0.2350019731426617,
+        "volatility": 0.2195128079278119,
+        "sharpeRiskFreeZero": 0.5687106227913604,
+        "benchmark": {
+         "id": "SPY_PRICE_RETURN",
+         "totalReturn": 0.2762941596104338,
+         "beta": 0.6788882144700383,
+         "trackingError": 0.13280304880427965
+        },
+        "averageCashShare": 0.3040671683906482,
+        "resultHash": "9c74b80caa185befc60d92307ba83a83279651016b2fe2252d9008e3714dd380"
+       }
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 196,
+       "denominator": 196,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 1
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+      "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "a22e706aba587b49815fa5e8c3d347c28e84729f2e87eaa43ae758ffa38a89db",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "e11f39f0a418565ec52764595c8c6f4ea4b868fd1d7c8673d52286ead175863a",
+      "resultHash": "6a7e116de0e64a2eaeb0d4b75486f5a8d181065eb015bbdddaca16417f460386"
+     }
+    },
+    {
+     "id": "signal-2022-bear",
+     "kind": "SIGNAL_BACKTEST",
+     "scenarios": [
+      "BEAR_CRASH"
+     ],
+     "privateData": null,
+     "purpose": "Bärenmarkt 2022: Signale 2022-01 bis 2022-12, 30 Large Caps, 26 Wochen.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2022-01-07",
+      "to": "2023-07-07",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SIGNAL_BACKTEST",
+      "engine": "research-studies.runSignalStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 156,
+      "completed": 156,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 27,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.17650429799426937,
+      "hitRate": 0.2948717948717949,
+      "trades": 156,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.010670264771520796,
+       "n": 156
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 156,
+       "median": -0.06250783500996698,
+       "mean": -0.03752996459171879,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       -0.08583360654040886,
+       0.010773677356971281
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.010670264771520796,
+       "n": 156
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 70,
+          "mean": 0.03257498696984601,
+          "median": -0.019484662664266794,
+          "interval95": [
+           -0.042051830911517846,
+           0.10720180485120986
+          ]
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 40,
+          "mean": -0.0795691560769181,
+          "median": -0.07377261839517135,
+          "interval95": [
+           -0.13193840311511498,
+           -0.027199909038721222
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 23,
+          "mean": -0.06737299793786337,
+          "median": -0.09528677094549098,
+          "interval95": [
+           -0.18325132298324195,
+           0.048505327107515206
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 23,
+          "mean": -0.1479381899369465,
+          "median": -0.18118723381881285,
+          "interval95": [
+           -0.17380513385182783,
+           -0.12207124602206515
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "44038d2ca465ebbb12d10c9d5a63cbaf8ceb3551b571e28bb459176862af33cf"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 156,
+       "denominator": 156,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 2
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+      "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "88af4b37cda64b84862b9522d1b44938135f2534afc7b68889d2acb9d532749f",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "3ad2d6eaf0c3ae9ef74e1fdb795d4d92d5cb7cdd0f363cd940295a15ef2ceae7",
+      "resultHash": "a2f9578a22ab5afd2ec0aca4fd01d7ac1839bc06acefbe7f84de7ea71687fe54"
+     }
+    },
+    {
+     "id": "acquisition-agn",
+     "kind": "SIGNAL_BACKTEST",
+     "scenarios": [
+      "ACQUISITION"
+     ],
+     "privateData": "delistedSeries",
+     "purpose": "Übernommener Titel (Allergan, Übernahme abgeschlossen, letzter Handel 2020-05-08) aus der privaten V13-Reihe: Signalregeln 2015–2020, offene Ergebnisse nach dem letzten Handel zensiert, Abfindungsszenarien nur dokumentiert.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "LIMITED",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2015-07-31",
+      "to": "2020-05-08",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SIGNAL_BACKTEST",
+      "engine": "research-studies.runSignalStudy",
+      "adapter": "fromResearchStudy",
+      "population": "V13_DELISTED_F1"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 1,
+     "excluded": 0,
+     "events": {
+      "occurrences": 30,
+      "completed": 28,
+      "immature": 0,
+      "censored": 2,
+      "ineligible": 0,
+      "titles": 1,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.23399673889673311,
+      "hitRate": 0.17857142857142858,
+      "trades": 28,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.16703586046581023,
+       "n": 28
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 28,
+       "median": -0.14732859560841094,
+       "mean": -0.1235737754685126,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": null,
+      "level": null,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.16703586046581023,
+       "n": 28
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 7,
+          "mean": -0.18407944990722536,
+          "median": -0.18024161856298415,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 21,
+          "mean": -0.103405217322275,
+          "median": -0.14577990435479748,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "25c2fcd6d00d454c52aa739726b8af3848122a5140f88c48d861e38263bf7583"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 28,
+       "denominator": 30,
+       "share": 0.9333333333333333,
+       "contract": null
+      },
+      "censored": 2,
+      "terminal": {
+       "state": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE",
+       "listings": [
+        {
+         "securityId": "dl_392eb87953a4f307",
+         "lastTradeDate": "2020-05-08",
+         "terminalKind": "MERGER",
+         "terminalScenarios": [
+          0,
+          -0.1,
+          0.1
+         ]
+        }
+       ]
+      },
+      "survivorship": {
+       "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
+       "control": "population profile V13_DELISTED_F1 (0eeccd32fdc09510)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 1,
+       "byQuality": {
+        "NOT_REPORTED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+       "TOTAL_RETURN_PARTIAL_390_OF_4715",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "DATA_DRIFT_SINCE_REFERENCE_RUN",
+       "V13_DELISTED_RESEARCH_SERIES",
+       "PRIVATE_PROVIDER_DATA_HASH_BOUND",
+       "TERMINAL_CONSIDERATION_NOT_VERIFIED_SCENARIOS_ONLY"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+      "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2020-05-08",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "2e4449a6a0eb3b28280de7e9e95318da85d175f60fdd65a804a368889d26f52e",
+      "inputHash": "2231e2772a6acfbed68cb28a3e3333d33461bb9d22f09ef399895e6e3fbb0737",
+      "envelopeHash": "0aa4ad11e40a8cba8170bb9aa663a6653035434a8a4dac22cbabc389a09c51f4",
+      "resultHash": "7011fe45cc7d7c697eb9dde94e33865514746e8a2bd79894723138ad99fa6d54"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "SETUP_BACKTEST",
+   "label": "Setup-Backtest",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 1,
+    "B": 0,
+    "C": 0
+   },
+   "certification": {
+    "label": "Setup-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "SETUP_HISTORY_TOO_SHORT",
+    "blockers": [
+     "historyDates:SETUP_HISTORY_TOO_SHORT",
+     "historySpan:SETUP_HISTORY_SPAN_TOO_SHORT",
+     "completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW",
+     "titles:TOO_FEW_TITLES",
+     "independence:EVENTS_CLUSTERED_IN_TIME",
+     "returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN",
+     "entryVariant:VARIANTS_NOT_MEASURABLE_YET",
+     "oos:OOS_NOT_MEASURABLE_YET"
+    ]
+   },
+   "dataQualityLimits": [
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "ESTIMATED_NOT_CERTIFIED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "CERTIFICATION_BLOCKER:completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW",
+    "CERTIFICATION_BLOCKER:entryVariant:VARIANTS_NOT_MEASURABLE_YET",
+    "CERTIFICATION_BLOCKER:historyDates:SETUP_HISTORY_TOO_SHORT",
+    "CERTIFICATION_BLOCKER:historySpan:SETUP_HISTORY_SPAN_TOO_SHORT",
+    "CERTIFICATION_BLOCKER:independence:EVENTS_CLUSTERED_IN_TIME",
+    "CERTIFICATION_BLOCKER:oos:OOS_NOT_MEASURABLE_YET",
+    "CERTIFICATION_BLOCKER:returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN",
+    "CERTIFICATION_BLOCKER:titles:TOO_FEW_TITLES",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+    "EVIDENCE_KIND_RECONSTRUCTION_NOT_PUBLISHED_STATE_EVIDENCE",
+    "EX_POST_PRICE_REVISIONS",
+    "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_INDEPENDENT_CONFIRMATION",
+    "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+    "RECONSTRUCTED_SETUP_STATES_CANNOT_SATISFY_PUBLISHED_ONLY_GATE",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+    "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+    "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+   ],
+   "cases": [
+    {
+     "id": "setup-reconstruction-2016-2024",
+     "kind": "SETUP_BACKTEST",
+     "scenarios": [
+      "RECONSTRUCTION"
+     ],
+     "privateData": null,
+     "purpose": "Setup-Backtest auf rekonstruierten Zuständen (setup-replay-v1, alle Replay-Titel im V10-Frame), SETUP_NEW/SETUP_CONFIRMED, Einstieg nächster Wochenschluss, 26 Wochen; Setup-OOS-Status aus dem Zertifizierungspfad.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#SETUP_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2016-01-08",
+      "to": "2025-07-03",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "SETUP_BACKTEST",
+      "engine": "research-studies.runSetupStudy (reconstructed states: setup-replay-v1 + run-setup-reconstruction.eventStream)",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 111,
+     "excluded": 49,
+     "events": {
+      "occurrences": 2750,
+      "completed": 2750,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 103,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.1795696047702775,
+      "hitRate": 0.536,
+      "trades": 2750,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.009735665121259543,
+       "n": 2750
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 2750,
+       "median": 0.015429713286445379,
+       "mean": 0.048714623801155175,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       0.021596370376233485,
+       0.07583287722607687
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": -0.009735665121259543,
+       "n": 2750
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation-1.0.0",
+        "mode": "ROLLING",
+        "sizes": {
+         "train": 104,
+         "validation": 52,
+         "test": 104,
+         "step": 104
+        },
+        "embargoDays": 0,
+        "folds": 3,
+        "excludedByReason": {
+         "PURGED_INFORMATION_OUTCOME_OVERLAP": 1528,
+         "OUTCOME_NOT_MATURE_AT_CUTOFF": 895
+        },
+        "partitionHash": "f1a7d214aa9cffb9274384725b69eda38371d2239cc1438662f9af7ef72208d0",
+        "use": "FIXED_RULE_NO_FITTING_PARTITION_MECHANICS"
+       }
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": {
+        "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE",
+        "certificationPathSetupOos": {
+         "evaluator": "setup-oos-1.0.0",
+         "status": "FAIL",
+         "reasonCode": "OOS_NOT_MEASURABLE_YET",
+         "completed": 0,
+         "minPerSegment": 30,
+         "source": "quant/data/product/setup-outcomes-v1.json (published states)"
+        }
+       }
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 2750,
+       "denominator": 2750,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 111,
+       "byQuality": {
+        "CLEAN": 98,
+        "RESOLVED": 13
+       },
+       "listingsWithSplitsInWindow": 22
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:historyDates:SETUP_HISTORY_TOO_SHORT",
+      "CERTIFICATION_BLOCKER:historySpan:SETUP_HISTORY_SPAN_TOO_SHORT",
+      "CERTIFICATION_BLOCKER:completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW",
+      "CERTIFICATION_BLOCKER:titles:TOO_FEW_TITLES",
+      "CERTIFICATION_BLOCKER:independence:EVENTS_CLUSTERED_IN_TIME",
+      "CERTIFICATION_BLOCKER:returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN",
+      "CERTIFICATION_BLOCKER:entryVariant:VARIANTS_NOT_MEASURABLE_YET",
+      "CERTIFICATION_BLOCKER:oos:OOS_NOT_MEASURABLE_YET",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+      "EVIDENCE_KIND_RECONSTRUCTION_NOT_PUBLISHED_STATE_EVIDENCE",
+      "RECONSTRUCTED_SETUP_STATES_CANNOT_SATISFY_PUBLISHED_ONLY_GATE"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "56186f5660e80893a990807baf35ef54cc099e8d9d91e9295792a513eb4532e7",
+      "inputHash": "45b380d3786206922d49000f3d433ef82cc221ba949a11dd2b5969963ecf51a8",
+      "envelopeHash": "1c6ea1f57c23825814561f76abd4814b9a91aac602316bd58d0fe2ed7ff197de",
+      "resultHash": "703904b3a813d6c799036d029062cf4ed10e09878c8a22056aa61e2de5277d31"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "STRATEGY_BACKTEST",
+   "label": "Strategie-Backtest",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 3,
+    "B": 1,
+    "C": 0
+   },
+   "certification": {
+    "label": "Strategie-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "blockers": [
+     "membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "factorHistory:FACTOR_HISTORY_TOO_SHORT"
+    ]
+   },
+   "dataQualityLimits": [
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "BENCHMARK_ZERO_RATE_CASH_TOTAL_RETURN_BASIS",
+    "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+    "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+    "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+    "DIVIDENDS_FROM_TR_REGISTER_CASH_CREDITED_AT_PAY_DATE_NOT_REINVESTED",
+    "EVENTS_APPLIED_AT_ENTITLEMENT_DECISIONS_BEFORE_INFORMATION_TIME_REJECTED",
+    "FRACTIONAL_LONG_ONLY",
+    "MISSING_INPUT:HISTORICAL_OBSERVED_PROVENANCE_EVIDENCE_HASHES (identity, population, corporate actions, lifecycle, license)",
+    "MISSING_INPUT:PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY (research-portfolio.buildProfileTargets)",
+    "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_CASH_INTEREST_OR_TAX",
+    "NO_RESULT_ARTIFACT_STATUS_ONLY",
+    "NO_VOLUME_CAPACITY_MODEL",
+    "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT",
+    "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+    "STATE_B_PREPARED_DATA_LIMITED_ENGINE_READY",
+    "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY"
+   ],
+   "cases": [
+    {
+     "id": "strategy-2019-bull",
+     "kind": "STRATEGY_BACKTEST",
+     "scenarios": [
+      "BULL"
+     ],
+     "privateData": null,
+     "purpose": "Gleichgewichtete Strategie aus 10 Large Caps, Rebalancing alle 4 Wochen, 2019 (SPY +29 %); Monte Carlo (Blockbootstrap), Regime, Kostensensitivität.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "SIMULATED_LEDGER",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2019-01-04",
+      "to": "2019-12-27",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "STRATEGY_BACKTEST",
+      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,4)",
+      "adapter": "fromPortfolio",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 10,
+     "excluded": 0,
+     "events": {
+      "occurrences": 130,
+      "completed": 130,
+      "immature": null,
+      "censored": null,
+      "ineligible": null,
+      "titles": 10,
+      "entry": "NEXT_SESSION_CLOSE_AFTER_DECISION",
+      "exit": "REBALANCE_OR_EVENT"
+     },
+     "metrics": {
+      "basis": "PORTFOLIO",
+      "totalReturn": 0.2777096914656281,
+      "cagr": 0.28496635469065645,
+      "annualReturns": [
+       {
+        "year": "2019",
+        "value": 0.2777096914656281,
+        "partial": false
+       }
+      ],
+      "volatility": 0.12687020280248812,
+      "maxDrawdown": -0.08863713315752031,
+      "hitRate": null,
+      "trades": 130,
+      "turnover": 0.7153239035034699,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "paid": 148.9620299617555,
+       "fees": 74.48101498087775,
+       "slippage": 74.48101498087775
+      },
+      "cashShare": 0.019230769230769232,
+      "benchmark": {
+       "id": "SPY_PRICE_RETURN",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0.27921074527516954,
+       "cagr": 0.28651083981551695,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0.27921074527516954,
+        "cagr": 0.28651083981551695,
+        "annualizedVolatility": 0.10778263881184161,
+        "sharpe": 2.3876833736721794,
+        "maxDrawdown": -0.06380301329796279,
+        "excessTotalReturn": -0.0015010538095414638,
+        "excessCagr": -0.0015444851248604952,
+        "meanPeriodExcess": 0.000018244211034196157,
+        "trackingError": 0.06417614731136967,
+        "informationRatio": 0.0147827349182447,
+        "beta": 1.0131395785370627,
+        "correlation": 0.8621897986027048,
+        "periods": 51
+       }
+      },
+      "excess": {
+       "totalReturn": -0.0015010538095414638,
+       "cagr": -0.0015444851248604952,
+       "sharpeRiskFreeZero": 2.039427986973398,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0"
+      },
+      "perEvent": null
+     },
+     "uncertainty": null,
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SPY_PRICE_RETURN",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0.27921074527516954,
+       "cagr": 0.28651083981551695,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0.27921074527516954,
+        "cagr": 0.28651083981551695,
+        "annualizedVolatility": 0.10778263881184161,
+        "sharpe": 2.3876833736721794,
+        "maxDrawdown": -0.06380301329796279,
+        "excessTotalReturn": -0.0015010538095414638,
+        "excessCagr": -0.0015444851248604952,
+        "meanPeriodExcess": 0.000018244211034196157,
+        "trackingError": 0.06417614731136967,
+        "informationRatio": 0.0147827349182447,
+        "beta": 1.0131395785370627,
+        "correlation": 0.8621897986027048,
+        "periods": 51
+       }
+      },
+      "excess": {
+       "totalReturn": -0.0015010538095414638,
+       "cagr": -0.0015444851248604952,
+       "sharpeRiskFreeZero": 2.039427986973398,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0"
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-monte-carlo-1.0.0",
+        "model": "CIRCULAR_BLOCK",
+        "simulations": 2000,
+        "horizon": 52,
+        "seed": 20261029,
+        "blockLength": 8,
+        "sourceObservations": 51,
+        "totalReturn": {
+         "p5": 0.07019011257256345,
+         "p50": 0.29020052320163203,
+         "p95": 0.5160238215175815
+        },
+        "maxDrawdown": {
+         "p5": -0.1380026570806674,
+         "p50": -0.08042370707369623,
+         "p95": -0.03750638977623477
+        },
+        "inputHash": "21d5326e37be2f7a30183a464d6e85402ddc121299f32c995cdc5370b4490168",
+        "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST"
+       }
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 11,
+          "mean": 0.008420704071363123,
+          "median": 0.003693850952419364,
+          "interval95": null
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 3,
+          "mean": 0.029150034897163907,
+          "median": 0.020755670364006384,
+          "interval95": null
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 37,
+          "mean": 0.001979847724856736,
+          "median": 0.0034846094641114433,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "50f7a96042217d77e1d25fac38383c597aa3f5d10148ed7eb4af5918a486e9ad"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-validation.runSensitivity (recorded grid, run-research evaluator)",
+        "grid": [
+         {
+          "parameters": {
+           "everySessions": 1,
+           "feeBps": 0
+          },
+          "n": 51,
+          "estimate": -0.000007962880215162987,
+          "ci": [
+           -0.0022561648352365684,
+           0.002170131732457526
+          ],
+          "pValue": 0.998,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 1,
+           "feeBps": 5
+          },
+          "n": 51,
+          "estimate": -0.000025851759888884323,
+          "ci": [
+           -0.0022839385057848473,
+           0.0021718798844302363
+          ],
+          "pValue": 0.988,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 1,
+           "feeBps": 25
+          },
+          "n": 51,
+          "estimate": -0.00009731365768099438,
+          "ci": [
+           -0.0023931418710256666,
+           0.002145704756805406
+          ],
+          "pValue": 0.94,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 4,
+           "feeBps": 0
+          },
+          "n": 51,
+          "estimate": 0.00003224402431536607,
+          "ci": [
+           -0.002190879844999092,
+           0.0022055277377780493
+          ],
+          "pValue": 0.982,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 4,
+           "feeBps": 5
+          },
+          "n": 51,
+          "estimate": 0.000018244211034196157,
+          "ci": [
+           -0.002206014929757329,
+           0.0022108699703165856
+          ],
+          "pValue": 0.99,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 4,
+           "feeBps": 25
+          },
+          "n": 51,
+          "estimate": -0.000037655992872529565,
+          "ci": [
+           -0.0022978416676842856,
+           0.0022303169846544435
+          ],
+          "pValue": 0.979,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 13,
+           "feeBps": 0
+          },
+          "n": 51,
+          "estimate": 0.000027629210721289694,
+          "ci": [
+           -0.0021098119141754494,
+           0.0021447839929787747
+          ],
+          "pValue": 0.988,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 13,
+           "feeBps": 5
+          },
+          "n": 51,
+          "estimate": 0.000015869693832105658,
+          "ci": [
+           -0.002130055512056481,
+           0.0021418984825666947
+          ],
+          "pValue": 0.993,
+          "adjustedPValue": 1
+         },
+         {
+          "parameters": {
+           "everySessions": 13,
+           "feeBps": 25
+          },
+          "n": 51,
+          "estimate": -0.00003107237796618141,
+          "ci": [
+           -0.002209199338968706,
+           0.002146638764794186
+          ],
+          "pValue": 0.982,
+          "adjustedPValue": 1
+         }
+        ],
+        "baseline": {
+         "everySessions": 4,
+         "feeBps": 5
+        },
+        "neighborhood": {
+         "count": 4,
+         "sameDirection": false,
+         "minEstimate": -0.000037655992872529565,
+         "maxEstimate": 0.00003224402431536607
+        },
+        "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
+        "registrationHash": "1a55f80d5adc12459f4b8a7cd852645e451ab29b41ec6152fd0e2e64d797c855",
+        "resultHash": "e90bbceb790d48d29115df010b22ead4ccc589942154266a30d2b9c08b51dfda",
+        "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
+       }
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-portfolio-1.2.0",
+        "rebalances": 13,
+        "skipped": 0,
+        "oneWayTurnoverSum": 0.7153239035034699,
+        "schedule": {
+         "frequency": "sessions",
+         "everySessions": 4
+        }
+       }
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": null,
+      "censored": null,
+      "terminal": {
+       "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 10,
+       "byQuality": {
+        "CLEAN": 9,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+      "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+      "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+      "FRACTIONAL_LONG_ONLY",
+      "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+      "NO_CASH_INTEREST_OR_TAX",
+      "NO_VOLUME_CAPACITY_MODEL",
+      "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+      "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT",
+      "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+      "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0
+     },
+     "hashes": {
+      "specHash": "e3a75290382a0298eb76afef75d606d57bf0edaa4a126bb791ad2824253f9bd9",
+      "inputHash": "ef0fa0fc9ab627068e436896cdddc8ee1d06189d14c4c1f7503b122cc7040145",
+      "envelopeHash": "e8c8d8cb009ca46c6dce64130e6a37c380ad6bc7637734004360981c0b1900d8",
+      "resultHash": "14b072bfa6e75891a031451c5e04884d88bbe6b70b02160fc47c9cd19b3c11d7"
+     }
+    },
+    {
+     "id": "strategy-2013-2014-bull",
+     "kind": "STRATEGY_BACKTEST",
+     "scenarios": [
+      "BULL"
+     ],
+     "privateData": null,
+     "purpose": "Gleichgewichtete Strategie aus 30 Large Caps, monatliches Rebalancing, 2013–2014.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "SIMULATED_LEDGER",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2013-01-04",
+      "to": "2014-12-26",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "STRATEGY_BACKTEST",
+      "engine": "research-portfolio.runPortfolio + buildSchedule(monthly)",
+      "adapter": "fromPortfolio",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 30,
+     "excluded": 0,
+     "events": {
+      "occurrences": 690,
+      "completed": 690,
+      "immature": null,
+      "censored": null,
+      "ineligible": null,
+      "titles": 30,
+      "entry": "NEXT_SESSION_CLOSE_AFTER_DECISION",
+      "exit": "REBALANCE_OR_EVENT"
+     },
+     "metrics": {
+      "basis": "PORTFOLIO",
+      "totalReturn": 0.30930971658981377,
+      "cagr": 0.14628412837062466,
+      "annualReturns": [
+       {
+        "year": "2013",
+        "value": 0.19114746789815418,
+        "partial": false
+       },
+       {
+        "year": "2014",
+        "value": 0.09920035249721293,
+        "partial": false
+       }
+      ],
+      "volatility": 0.10213810111794969,
+      "maxDrawdown": -0.06092001927846258,
+      "hitRate": null,
+      "trades": 690,
+      "turnover": 0.8163442758928923,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "paid": 173.81792646363633,
+       "fees": 86.90896323181816,
+       "slippage": 86.90896323181816
+      },
+      "cashShare": 0.038461538461538464,
+      "benchmark": {
+       "id": "SPY_PRICE_RETURN",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0.424062307849969,
+       "cagr": 0.19612331530027172,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0.424062307849969,
+        "cagr": 0.19612331530027172,
+        "annualizedVolatility": 0.10049179491927723,
+        "sharpe": 1.8288103678837786,
+        "maxDrawdown": -0.062851175973348,
+        "excessTotalReturn": -0.11475259126015525,
+        "excessCagr": -0.04983918692964706,
+        "meanPeriodExcess": -0.0008151861568523371,
+        "trackingError": 0.033958751789991956,
+        "informationRatio": -1.2482696778276243,
+        "beta": 0.9576521434697581,
+        "correlation": 0.9438327208955994,
+        "periods": 103
+       }
+      },
+      "excess": {
+       "totalReturn": -0.11475259126015525,
+       "cagr": -0.04983918692964706,
+       "sharpeRiskFreeZero": 1.3866844914058511,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0"
+      },
+      "perEvent": null
+     },
+     "uncertainty": null,
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SPY_PRICE_RETURN",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0.424062307849969,
+       "cagr": 0.19612331530027172,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0.424062307849969,
+        "cagr": 0.19612331530027172,
+        "annualizedVolatility": 0.10049179491927723,
+        "sharpe": 1.8288103678837786,
+        "maxDrawdown": -0.062851175973348,
+        "excessTotalReturn": -0.11475259126015525,
+        "excessCagr": -0.04983918692964706,
+        "meanPeriodExcess": -0.0008151861568523371,
+        "trackingError": 0.033958751789991956,
+        "informationRatio": -1.2482696778276243,
+        "beta": 0.9576521434697581,
+        "correlation": 0.9438327208955994,
+        "periods": 103
+       }
+      },
+      "excess": {
+       "totalReturn": -0.11475259126015525,
+       "cagr": -0.04983918692964706,
+       "sharpeRiskFreeZero": 1.3866844914058511,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0"
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 103,
+          "mean": 0.0027190530053712142,
+          "median": 0.003913707643419029,
+          "interval95": null
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "c1c10bd7bb566f7dd1785eb179bd4f01e3acf28f35dd025adabb9e97194e6924"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-portfolio-1.2.0",
+        "rebalances": 23,
+        "skipped": 0,
+        "oneWayTurnoverSum": 0.8163442758928923,
+        "schedule": {
+         "frequency": "monthly"
+        }
+       }
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": null,
+      "censored": null,
+      "terminal": {
+       "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 30,
+       "byQuality": {
+        "CLEAN": 29,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+      "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+      "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+      "FRACTIONAL_LONG_ONLY",
+      "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+      "NO_CASH_INTEREST_OR_TAX",
+      "NO_VOLUME_CAPACITY_MODEL",
+      "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+      "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT",
+      "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+      "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0
+     },
+     "hashes": {
+      "specHash": "abc02bac8ce60bb03d32cad78b135146f598bbdeb711ad58cd1b45eab0abe2ec",
+      "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
+      "envelopeHash": "946b1c8f5d4fb4ea6ee87b51b3c9fb595122d3c8b478adde0e1b68276c692ca1",
+      "resultHash": "96a3a58b1244c5099eb37e2a3392b29e59c1cdc7e0393590d80f8ea40d1e3a15"
+     }
+    },
+    {
+     "id": "strategy-dividends-tr",
+     "kind": "STRATEGY_BACKTEST",
+     "scenarios": [
+      "DIVIDENDS",
+      "BEAR_CRASH",
+      "RECOVERY"
+     ],
+     "privateData": null,
+     "purpose": "Gesamtrendite mit Dividenden aus dem TR-Register (MSFT, WMT, IBM gleichgewichtet, Kauf und Halten 2016–2020, enthält den Corona-Crash), Vergleich mit derselben Strategie ohne Dividenden; Ereignisstudie Dividendenmeldung. Kein periodisches Rebalancing: der Ledger verweigert Entscheidungen vor später veröffentlichten Dividendeninformationen (DECISION_BEFORE_EVENT_INFORMATION, z. B. WMT 2017-03-10), also korrektes PIT-Verhalten.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "SIMULATED_LEDGER",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2016-01-08",
+      "to": "2020-12-31",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "STRATEGY_BACKTEST",
+      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
+      "adapter": "fromPortfolio",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 0,
+      "slippageBps": 0
+     },
+     "listings": 3,
+     "excluded": 0,
+     "events": {
+      "occurrences": 3,
+      "completed": 3,
+      "immature": null,
+      "censored": null,
+      "ineligible": null,
+      "titles": 3,
+      "entry": "NEXT_SESSION_CLOSE_AFTER_DECISION",
+      "exit": "REBALANCE_OR_EVENT"
+     },
+     "metrics": {
+      "basis": "PORTFOLIO",
+      "totalReturn": 1.7442684441611416,
+      "cagr": 0.22471434938735446,
+      "annualReturns": [
+       {
+        "year": "2016",
+        "value": 0.2383144887462718,
+        "partial": true
+       },
+       {
+        "year": "2017",
+        "value": 0.2558329662355314,
+        "partial": false
+       },
+       {
+        "year": "2018",
+        "value": -0.0024332299021554427,
+        "partial": false
+       },
+       {
+        "year": "2019",
+        "value": 0.4047594724907104,
+        "partial": false
+       },
+       {
+        "year": "2020",
+        "value": 0.2592727769691765,
+        "partial": false
+       }
+      ],
+      "volatility": 0.15896671339851987,
+      "maxDrawdown": -0.19714479540341157,
+      "hitRate": null,
+      "trades": 3,
+      "turnover": 0.49999999999999994,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "paid": 0,
+       "fees": 0,
+       "slippage": 0
+      },
+      "cashShare": 0.05146961510610255,
+      "benchmark": {
+       "id": "ZERO_RATE_CASH",
+       "returnBasis": "TOTAL_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0,
+       "cagr": 0,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0,
+        "cagr": 0,
+        "annualizedVolatility": 0,
+        "sharpe": null,
+        "maxDrawdown": 0,
+        "excessTotalReturn": 1.7442684441611416,
+        "excessCagr": 0.22471434938735446,
+        "meanPeriodExcess": 0.004132122280375961,
+        "trackingError": 0.15865085993389072,
+        "informationRatio": 1.354359873429528,
+        "beta": null,
+        "correlation": null,
+        "periods": 260
+       }
+      },
+      "excess": {
+       "totalReturn": 1.7442684441611416,
+       "cagr": 0.22471434938735446,
+       "sharpeRiskFreeZero": 1.354359873429528,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0",
+       "versusPriceOnly": {
+        "totalReturnWithDividends": 1.7442684441611416,
+        "priceOnlyTotalReturn": 1.552699786197663,
+        "dividendContribution": 0.19156865796347855,
+        "cagrWithDividends": 0.22471434938735446,
+        "priceOnlyCagr": 0.20704756618204123,
+        "priceOnlyResultHash": "a64b552aa5c9c3c3f9dc1ed558138b6c9d33269d2fd5fe9bad083c082f7aa846",
+        "dividendEventsApplied": 60,
+        "openReceivables": 1
+       }
+      },
+      "perEvent": null
+     },
+     "uncertainty": null,
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "ZERO_RATE_CASH",
+       "returnBasis": "TOTAL_RETURN",
+       "costsBps": 0,
+       "totalReturn": 0,
+       "cagr": 0,
+       "pathStatistics": {
+        "state": "SAME_DATES",
+        "label": null,
+        "totalReturn": 0,
+        "cagr": 0,
+        "annualizedVolatility": 0,
+        "sharpe": null,
+        "maxDrawdown": 0,
+        "excessTotalReturn": 1.7442684441611416,
+        "excessCagr": 0.22471434938735446,
+        "meanPeriodExcess": 0.004132122280375961,
+        "trackingError": 0.15865085993389072,
+        "informationRatio": 1.354359873429528,
+        "beta": null,
+        "correlation": null,
+        "periods": 260
+       }
+      },
+      "excess": {
+       "totalReturn": 1.7442684441611416,
+       "cagr": 0.22471434938735446,
+       "sharpeRiskFreeZero": 1.354359873429528,
+       "riskFreeAssumption": {
+        "annualRate": 0,
+        "label": "ASSUMPTION_ZERO_DEFAULT"
+       },
+       "metricsEngine": "backtest-metrics-1.0.0",
+       "versusPriceOnly": {
+        "totalReturnWithDividends": 1.7442684441611416,
+        "priceOnlyTotalReturn": 1.552699786197663,
+        "dividendContribution": 0.19156865796347855,
+        "cagrWithDividends": 0.22471434938735446,
+        "priceOnlyCagr": 0.20704756618204123,
+        "priceOnlyResultHash": "a64b552aa5c9c3c3f9dc1ed558138b6c9d33269d2fd5fe9bad083c082f7aa846",
+        "dividendEventsApplied": 60,
+        "openReceivables": 1
+       }
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.runEventStudy",
+        "source": "docs/quant-recovery/v10/corporate-actions/tr-register-1.0.0.json",
+        "registerSha256": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8",
+        "entryModel": "FIRST_OBSERVED_WEEK_CLOSE_ON_LATER_DATE",
+        "coverage": {
+         "expected": 60,
+         "observed": 60,
+         "immature": 0,
+         "censored": 0,
+         "ineligible": 0,
+         "maturedDenominator": 60,
+         "observedShareMatured": 1
+        },
+        "meanNet": 0.019305673580136604,
+        "medianNet": 0.010627059681911577,
+        "interval95": [
+         -0.01105154798005624,
+         0.04966289514032945
+        ],
+        "meanBenchmarkExcess": -0.0013826372596904613,
+        "resultHash": "c4fd31a43166657f01276b872d4b3a619493cd7292d51753fff27623acf69f6e",
+        "scope": "EVENT_STUDY_DESCRIPTIVE_NOT_A_TRADING_RULE"
+       }
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-portfolio-1.2.0",
+        "rebalances": 1,
+        "skipped": 0,
+        "oneWayTurnoverSum": 0.49999999999999994,
+        "schedule": {
+         "frequency": "sessions",
+         "everySessions": 10000
+        }
+       }
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "TOTAL_RETURN",
+      "coverage": null,
+      "censored": null,
+      "terminal": {
+       "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 3,
+       "byQuality": {
+        "CLEAN": 3
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "FRACTIONAL_LONG_ONLY",
+      "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+      "NO_CASH_INTEREST_OR_TAX",
+      "NO_VOLUME_CAPACITY_MODEL",
+      "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+      "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT",
+      "EVENTS_APPLIED_AT_ENTITLEMENT_DECISIONS_BEFORE_INFORMATION_TIME_REJECTED",
+      "VOLATILITY_ANNUALIZED_BY_OBSERVED_ROW_FREQUENCY",
+      "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "DIVIDENDS_FROM_TR_REGISTER_CASH_CREDITED_AT_PAY_DATE_NOT_REINVESTED",
+      "BENCHMARK_ZERO_RATE_CASH_TOTAL_RETURN_BASIS"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0
+     },
+     "hashes": {
+      "specHash": "2beba93e3127b4265d58dd34a10bd6de97f77437183896245799b4aa8fe60159",
+      "inputHash": "4d9fc70a5ff10809ca90edf921d17ad1eb09b9f12c06b2a44e8dc165fdca5bab",
+      "envelopeHash": "01b5f4cafaf94872ad9a2a324c97f9281ba71e17e1d38d2361fd3e8d634ccdb7",
+      "resultHash": "a4ae342d7ad2578d2b5e95c5b4f05143fa5594d711377870339ee16580663ec8"
+     }
+    },
+    {
+     "id": "strategy-profile-prepared",
+     "kind": "STRATEGY_BACKTEST",
+     "scenarios": [
+      "STATE_B"
+     ],
+     "privateData": null,
+     "purpose": "Profil-Strategie (buildProfileTargets): Engine bereit, PIT-Faktor-Snapshots und beobachtete Provenienz fehlen → Zustand B mit genauen fehlenden Eingaben.",
+     "state": "PREPARED_DATA_LIMITED",
+     "stateCode": "B",
+     "stateLabel": "B · Engine bereit, Nachweise fehlen",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": null,
+      "to": null,
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "STRATEGY_BACKTEST",
+      "engine": null,
+      "adapter": null,
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 10,
+     "excluded": 0,
+     "events": {
+      "occurrences": null,
+      "completed": null,
+      "immature": null,
+      "censored": null,
+      "ineligible": null,
+      "titles": null,
+      "entry": null,
+      "exit": null
+     },
+     "metrics": {
+      "basis": "NONE",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": null,
+      "hitRate": null,
+      "trades": null,
+      "turnover": null,
+      "costs": null,
+      "cashShare": null,
+      "benchmark": null,
+      "excess": null,
+      "perEvent": null
+     },
+     "uncertainty": null,
+     "benchmark": {
+      "requested": "SPY",
+      "definition": null,
+      "excess": null
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_RUN",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "NOT_APPLICABLE_NO_RESULT",
+      "coverage": null,
+      "censored": null,
+      "terminal": null,
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 10,
+       "byQuality": {
+        "CLEAN": 9,
+        "RESOLVED": 1
+       },
+       "listingsWithSplitsInWindow": 0
+      },
+      "warnings": [
+       "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+      ]
+     },
+     "limitations": [
+      "NO_RESULT_ARTIFACT_STATUS_ONLY",
+      "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "STATE_B_PREPARED_DATA_LIMITED_ENGINE_READY",
+      "MISSING_INPUT:PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY (research-portfolio.buildProfileTargets)",
+      "MISSING_INPUT:HISTORICAL_OBSERVED_PROVENANCE_EVIDENCE_HASHES (identity, population, corporate actions, lifecycle, license)"
+     ],
+     "missingInputs": [
+      "MISSING_INPUT:PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY (research-portfolio.buildProfileTargets)",
+      "MISSING_INPUT:HISTORICAL_OBSERVED_PROVENANCE_EVIDENCE_HASHES (identity, population, corporate actions, lifecycle, license)"
+     ],
+     "pit": null,
+     "hashes": {
+      "specHash": "12f801bf7f7495997997ece4eaec04514e186498583e9c4bf1e1d5d935c8f6a3",
+      "inputHash": "ef0fa0fc9ab627068e436896cdddc8ee1d06189d14c4c1f7503b122cc7040145",
+      "envelopeHash": "8c1b992ee65660e296277b9b1064d6fe916d60db70b80fedbcfdcba2d7b8fb15",
+      "resultHash": "9881aff7133d1e078a8ab3fc90408f362299247cef97839a38a0e8426bee9b0e"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "label": "Faktor-/Ranking-Backtest",
+   "state": "RESEARCH_EXECUTED",
+   "stateCode": "A",
+   "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+   "states": {
+    "A": 1,
+    "B": 0,
+    "C": 0
+   },
+   "certification": {
+    "label": "Faktor-/Ranking-Backtest",
+    "status": "COLLECTING_HISTORY",
+    "readiness": "NOT_READY",
+    "trust": "NOT_READY",
+    "reason": "FACTOR_HISTORY_TOO_SHORT",
+    "blockers": [
+     "factorHistory:FACTOR_HISTORY_TOO_SHORT",
+     "completedForward:FORWARD_OUTCOMES_TOO_FEW",
+     "membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    ]
+   },
+   "dataQualityLimits": [
+    "CORPORATE_ACTION_RESOLVED_BY_RESEARCH_REGISTRY",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "DIVIDENDS_EXCLUDED",
+    "ESTIMATED_NOT_CERTIFIED",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "SERIES_RESTRICTED_TO_SOURCED_INTERVAL",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "SOURCE_RESOLVED_IDENTITY_BINDING",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ],
+   "limitations": [
+    "CERTIFICATION_BLOCKER:completedForward:FORWARD_OUTCOMES_TOO_FEW",
+    "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+    "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "CERTIFICATION_READINESS:NOT_READY",
+    "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+    "EVIDENCE_KIND_RECONSTRUCTION_PRIVATE_V10_PIT_PANEL",
+    "EX_POST_PRICE_REVISIONS",
+    "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+    "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+    "NO_INDEPENDENT_CONFIRMATION",
+    "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+    "PRIVATE_DATA_REQUIRED",
+    "RUNNER_COMPOSED_EXISTING_ENGINES",
+    "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+    "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+    "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+   ],
+   "cases": [
+    {
+     "id": "factor-momentum-v10-panel",
+     "kind": "FACTOR_RANKING_BACKTEST",
+     "scenarios": [
+      "RECONSTRUCTION",
+      "BEAR_CRASH",
+      "RECOVERY"
+     ],
+     "privateData": "factorPanel",
+     "purpose": "Faktor-Ranking (Momentum, 5 Buckets, 13 Wochen) auf dem privaten V10-PIT-Panel, Rangtage 2019–2020, gesamter V10-Primary-Frame. Ohne Panel: Zustand B mit fehlender Eingabe.",
+     "state": "RESEARCH_EXECUTED",
+     "stateCode": "A",
+     "stateLabel": "A · Research-Studie ausgeführt (historisch, dokumentierter Scope)",
+     "evidenceKind": "TESTED",
+     "certificationStatus": "COLLECTING_HISTORY",
+     "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-31",
+     "runnerCertificationSha256": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "productionApproved": false,
+     "period": {
+      "from": "2019-01-25",
+      "to": "2021-04-09",
+      "asOf": "2025-12-31",
+      "grain": "WEEKLY"
+     },
+     "engine": {
+      "kind": "FACTOR_RANKING_BACKTEST",
+      "engine": "research-studies.runFactorStudy (private V10 PIT panel)",
+      "adapter": "fromResearchStudy",
+      "population": "V10_PRIMARY"
+     },
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "listings": 3087,
+     "excluded": 1196,
+     "events": {
+      "occurrences": 65176,
+      "completed": 65176,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "titles": 2850,
+      "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+      "exit": "FIXED_HORIZON"
+     },
+     "metrics": {
+      "basis": "PER_EVENT",
+      "totalReturn": null,
+      "cagr": null,
+      "annualReturns": null,
+      "volatility": null,
+      "maxDrawdown": -0.14023599994942398,
+      "hitRate": 0.567233337424819,
+      "trades": 65176,
+      "turnover": null,
+      "costs": {
+       "model": "PER_SIDE_NOTIONAL",
+       "feeBpsPerSide": 5,
+       "slippageBpsPerSide": 5,
+       "paid": null
+      },
+      "cashShare": null,
+      "benchmark": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.023887341375749126,
+       "n": 65176
+      },
+      "perEvent": {
+       "horizon": "REGISTERED_HORIZON",
+       "label": null,
+       "n": 65176,
+       "median": 0.0289970396614323,
+       "mean": 0.06884863119557937,
+       "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS",
+       "factor": {
+        "factorId": "momentum",
+        "rankDates": 24,
+        "meanSpearmanObservedOnly": 0.03567624774493461,
+        "spearmanDates": 24,
+        "meanTopMinusBottomCompleteCohort": -0.015814010088537347,
+        "topMinusBottomDates": 24,
+        "buckets": 5
+       }
+      }
+     },
+     "uncertainty": {
+      "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+      "interval": [
+       -0.001487338555838949,
+       0.1391846009469977
+      ],
+      "level": 0.95,
+      "p": null,
+      "family": null
+     },
+     "benchmark": {
+      "requested": "SPY",
+      "definition": {
+       "id": "SUPPLIED_RESEARCH_BENCHMARK",
+       "returnBasis": "PRICE_RETURN",
+       "costsBps": 0
+      },
+      "excess": {
+       "meanExcess": 0.023887341375749126,
+       "n": 65176
+      }
+     },
+     "funded": null,
+     "methods": [
+      {
+       "method": "MONTE_CARLO",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "WALK_FORWARD",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "OUT_OF_SAMPLE",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "MARKET_REGIME",
+       "state": "EXECUTED",
+       "result": {
+        "engine": "research-studies.classifyRegimes+analyzeRegimes",
+        "mode": "PIT_AVAILABLE",
+        "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+        "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+        "states": [
+         {
+          "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 24,
+          "n": 16187,
+          "mean": 0.12372855936257555,
+          "median": 0.0523102339356758,
+          "interval95": [
+           -0.016020726823102446,
+           0.26347784554825354
+          ]
+         },
+         {
+          "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+          "episodes": 41,
+          "n": 5234,
+          "mean": -0.0002938616898599392,
+          "median": 0.000344199370658993,
+          "interval95": [
+           -0.00748134866905787,
+           0.0068936252893379915
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+          "episodes": 30,
+          "n": 11205,
+          "mean": 0.10738594231582613,
+          "median": 0.06093145111342335,
+          "interval95": [
+           0.03267807877186514,
+           0.18209380585978713
+          ]
+         },
+         {
+          "state": "POSITIVE_TREND/LOW_VOLATILITY",
+          "episodes": 45,
+          "n": 32550,
+          "mean": 0.03940899492586537,
+          "median": 0.011786345200215376,
+          "interval95": [
+           -0.0811284655521995,
+           0.15994645540393027
+          ]
+         }
+        ],
+        "unmatched": 0,
+        "resultHash": "581132fd31bb259d873a389d1e811e7715444daffa82b49617ee927c1d862f10"
+       }
+      },
+      {
+       "method": "PARAMETER_SENSITIVITY",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "EVENT_DRIVEN",
+       "state": "NOT_RUN",
+       "result": null
+      },
+      {
+       "method": "PORTFOLIO_REBALANCING",
+       "state": "NOT_APPLICABLE",
+       "result": null
+      }
+     ],
+     "dataQuality": {
+      "totalReturnBasis": "PRICE_RETURN",
+      "coverage": {
+       "numerator": 65176,
+       "denominator": 65176,
+       "share": 1,
+       "contract": null
+      },
+      "censored": 0,
+      "terminal": {
+       "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+      },
+      "survivorship": {
+       "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+       "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
+      },
+      "corporateActions": {
+       "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+       "listings": 3087,
+       "byQuality": {
+        "CLEAN": 2849,
+        "RESOLVED": 238
+       },
+       "listingsWithSplitsInWindow": 172
+      },
+      "warnings": [
+       "ESTIMATED_NOT_CERTIFIED",
+       "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+       "DELISTED_SERIES_NOT_INCLUDED",
+       "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+       "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+       "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+       "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+       "DIVIDENDS_EXCLUDED",
+       "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+       "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+       "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+       "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF",
+       "CORPORATE_ACTION_RESOLVED_BY_RESEARCH_REGISTRY",
+       "SOURCE_RESOLVED_IDENTITY_BINDING",
+       "SERIES_RESTRICTED_TO_SOURCED_INTERVAL"
+      ]
+     },
+     "limitations": [
+      "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+      "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+      "EX_POST_PRICE_REVISIONS",
+      "NO_INDEPENDENT_CONFIRMATION",
+      "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+      "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+      "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+      "CERTIFICATION_BLOCKER:factorHistory:FACTOR_HISTORY_TOO_SHORT",
+      "CERTIFICATION_BLOCKER:completedForward:FORWARD_OUTCOMES_TOO_FEW",
+      "CERTIFICATION_BLOCKER:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "CERTIFICATION_READINESS:NOT_READY",
+      "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+      "RUNNER_COMPOSED_EXISTING_ENGINES",
+      "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW",
+      "EVIDENCE_KIND_RECONSTRUCTION_PRIVATE_V10_PIT_PANEL",
+      "PRIVATE_DATA_REQUIRED"
+     ],
+     "missingInputs": [],
+     "pit": {
+      "asOf": "2025-12-31",
+      "latestInputBar": "2025-12-26",
+      "inputsAfterAsOf": 0,
+      "entryNotAfterSignal": 0,
+      "exitAfterAsOf": 0,
+      "signalsAfterWindow": 0
+     },
+     "hashes": {
+      "specHash": "abd4933102c4d167059424b1fc45343483b29283748c3d69231d4972d10b920f",
+      "inputHash": "6307b819a4a77853f9fdcc5e72054699654b5a34ae37345f2950fff0042b4f69",
+      "envelopeHash": "5e3cf516f47fe8f40932c22159420d0f0079de50fdde3cc63448c549cd440514",
+      "resultHash": "b01fdf40ec8eb3205b1fb654f0e9cfdbf4b5262c118ed4bfe14cdda0bf269dba"
+     }
+    }
+   ]
+  }
+ ],
+ "previewHash": "8bbee23fa3e6e42868aa88fb35fa2912efccee00f60afee37abe408e13898ffa"
+}

@@ -334,9 +334,9 @@
       "cik": "0001144980",
       "name": "ASBURY AUTOMOTIVE GROUP INC",
       "sic": "5500",
-      "rawFacts": 21209,
-      "mappedFacts": 6537,
-      "unmappedFacts": 14630,
+      "rawFacts": 21585,
+      "mappedFacts": 6528,
+      "unmappedFacts": 15022,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -346,9 +346,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -360,7 +360,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -387,21 +387,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -415,14 +415,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -446,44 +446,45 @@
       },
       "quality": {
         "MEDIUM": 82,
-        "HIGH": 526
+        "HIGH": 532
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 608,
-        "resolvedValues": 608
+        "datableValues": 614,
+        "resolvedValues": 614
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 15248,
+        "rules_version": "1.1.0",
+        "total": 15536,
         "by_severity": {
-          "INFO": 14630,
-          "WARNING": 618
+          "INFO": 15022,
+          "WARNING": 514
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 559,
-          "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 14630
+          "CONCEPT_DISAGREEMENT": 486,
+          "RESTATEMENT_CONFLICT": 28,
+          "UNKNOWN_CONCEPT": 15022
         }
       },
       "latestFiling": {
-        "accession": "0001144980-26-000094",
-        "filing_date": "2026-07-31",
+        "accession": "0001144980-26-000112",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 103
+        "periodic_filings": 104,
+        "acceptance_datetime": "2026-10-30T20:28:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "aaaf43bfb86e49d0479b97cf9fd15c4af83c72e8bc224e4c759f652618006e1a",
+      "sourceDigest": "cba1d7ebeaa63f60865a2a6a9b4f90d70664751b0420cfc196c83ef64955faed",
       "issuerId": "iss_cik_0001144980"
     },
     {

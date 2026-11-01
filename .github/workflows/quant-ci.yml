@@ -53,6 +53,14 @@ jobs:
       - name: Engine- und Acceptance-Tests
         run: node --test "quant/tests/*.test.mjs"
 
+      - name: Backtest-Demos passen zum Code (nur Hash-Abgleich, keine private Validierung)
+        # Vergleicht die in docs/quant/backtest-demos/results aufgezeichneten Code-Hashes mit dem Checkout
+        # (scripts/quant/research/check-backtest-demo-freshness.cjs). Rot heisst: Runner- oder Engine-Code hat sich
+        # geaendert, die Demos dokumentieren ihn nicht mehr. Abhilfe: leerer Commit mit [v13-archive:demos] auf dem
+        # claude/**-Branch (Neubau mit den privaten Archivdaten ueber das Secret, Python-Gegenrechnung), Ergebnis
+        # committen. Dieser Schritt liest keine privaten Daten und bestaetigt keine private Nachrechnung.
+        run: node scripts/quant/research/check-backtest-demo-freshness.cjs --strict
+
       - name: Existing SEC exporter and internal PIT projection guards
         run: python3 -m unittest discover -s scripts/vu2 -p 'test*.py'
 
