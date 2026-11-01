@@ -27,11 +27,10 @@ const DEFAULTS = {
   bundle: 'workers/vu-account/data/backtest-review-bundle.json'
 };
 const GENERATED = ['quant/data', 'discover/data', 'supertrader/data', 'social/data'];
-// Security-Master-Generation, gegen die der Katalog gerechnet wurde (inputHashes.population.masterHash =
-// sha256 der Datei quant/data/market/security-master/us-security-master.json). Unbekannter Hash -> Abbruch.
-const MASTER_GENERATIONS = Object.freeze({
-  '26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332': 'us-security-master-1.1.0'
-});
+// Security-Master-Generation, gegen die der Katalog gerechnet wurde (inputHashes.population.masterHash): nur ueber das
+// hashgebundene Register quant/config/security-master-generations.json (#1210). Unbekannter Hash -> Abbruch.
+const Generations = require('../../../quant/engines/security-master-generation.cjs');
+const MASTER_GENERATIONS = Object.freeze(Object.fromEntries(Object.entries(Generations.registry().generations).map(([id, g]) => [g.sha256, id])));
 const STATE_CODE = Object.freeze({ RESEARCH_EXECUTED: 'A', PREPARED_DATA_LIMITED: 'B', PRODUCT_CERTIFIED: 'C' });
 const EVIDENCE_CLASS_LABEL = Object.freeze({
   CERTIFIED_STRATEGY: 'Zertifiziert',

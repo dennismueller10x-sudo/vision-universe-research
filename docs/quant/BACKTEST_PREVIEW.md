@@ -259,3 +259,6 @@ lässt der Isolations-Test in `quant/tests/backtest-preview.test.mjs` genau eine
 **Owner-Entscheidungen (nicht in diesem Schritt):** Rolle vergeben (an wen) und Schalter einschalten
 ([FREIGABEN.md](../accounts/FREIGABEN.md)). Die Seite unter `/konto/admin/backtests/` ist ein eigener Entwurfs-PR; sie
 ist nicht verlinkt und zeigt nur, was der Worker liefert.
+
+
+**Reihenfolge bei Neubauten:** Wer die Demos oder das Vorschau-Lesemodell neu baut (`build-backtest-preview.cjs --out`), exportiert danach das Review-Bundle neu (`export-backtest-review-bundle.cjs --out workers/vu-account/data/backtest-review-bundle.json`), im selben PR. `backtest-review-bundle.test.mjs` und `backtests.test.mjs` schlagen sonst fehl (`BUNDLE_OUT_OF_DATE`). So geschehen nach #1210/#1215 am 01.11.2026.
