@@ -86,8 +86,12 @@ test('standardmaessig aus: ohne Schalter 404 PREVIEW_NOT_ACTIVATED, ohne Daten u
     assert.equal(a.calls.includes('/rest/v1/user_roles'), false, 'keine Rollenabfrage, solange aus');
   }
   const toml = fs.readFileSync(path.join(ROOT, 'workers/vu-account/wrangler.toml'), 'utf8');
-  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "false"$/gm) || []).length, 2, 'Entwicklung und Produktion: aus');
-  assert.equal(/^VU_BACKTEST_REVIEW_ENABLED = "true"/m.test(toml), false);
+  // Aktivierung (Owner-Freigabe, docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md): nur Produktion ein, Entwicklung aus.
+  const prod = toml.slice(toml.indexOf('[env.production.vars]'));
+  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "false"$/gm) || []).length, 1, 'Entwicklung: aus');
+  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "true"$/gm) || []).length, 1, 'genau ein Schalter ein');
+  assert.match(prod.slice(0, prod.indexOf('\n[', 1) > 0 ? prod.indexOf('\n[', 1) : prod.length), /^VU_BACKTEST_REVIEW_ENABLED = "true"$/m, 'ein nur in [env.production.vars]');
+  assert.ok(fs.existsSync(path.join(ROOT, 'docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md')), 'Aktivierung dokumentiert');
 });
 
 test('eingeschaltet: 401 ohne Sitzung, 403 ohne Rolle (auch pricing_admin/billing_tester), Fehler ohne Daten', async () => {
