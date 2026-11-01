@@ -31,6 +31,7 @@ Die SEC-Tickerliste (`company_tickers_exchange.json`, 31.10.) führt keinen der 
 - Der Anbieter beginnt am Umfirmierungstag eine neue Zeile (NYSE MKT → AMEX, dieselbe Börsenfamilie).
 - Es ist dieselbe Emittentin, also keine falsche Firmenzuordnung. Der Titel wird **nicht** zurückgehalten.
 - Offen sind der Name (Splash → Endovia) und die Verknüpfung der neuen Anbieterzeile im Stamm. Dafür ist ein eigener Erzeuger-PR nötig. Bis dahin zeigt die Seite den alten Namen derselben Firma.
+- Nachtrag 31.10.: Der Erzeuger-PR trägt EDVA als Fortführung nach Umfirmierung in das Register belegter Doppelzeilen ein (`quant/config/security-master-duplicate-resolution.json`, Feld `keptCanonicalId`), siehe [SECURITY_MASTER_DUPLICATE_RESOLUTION.md](../SECURITY_MASTER_DUPLICATE_RESOLUTION.md) Abschnitt 9. Ergänzend aus EDGAR: Die Aktie handelte vor dem 24.08.2026 unter dem Symbol SBEV (8-K 0001731122-26-001120). SBEV steht in keinem committeten Stand; `ref_EDVA` folgt dem heutigen Ticker.
 
 ## 2. Korrektur in diesem PR (Quant/Market) und im Folge-PR (Discover)
 
@@ -65,3 +66,19 @@ Ein Eintrag wird entfernt, sobald eine der beiden Bedingungen erfüllt ist:
 ## 4. Bekannte Grenze
 
 `scripts/technical/build-technical-intelligence.mjs` liest die langen Wochenreihen direkt und nicht über `resolveProductUniverse`. Ob Technical die 13 Titel ebenfalls ausschließt, gehört in die Technical-Welt (eigener PR) und wird hier nur festgehalten.
+
+## 5. Konsumenten (Prüfung vom 31.10.2026 nach #1206/#1207)
+
+| Konsument | liest | Stand |
+|---|---|---|
+| Discover (Karten, Seiten, Rankings, Im Blick, Suche US/GLOBAL) | `resolveProductUniverse` | ausgeschlossen seit #1207; wirksam mit dem nächsten Discover-Neubau (Marktdaten-Lauf) |
+| Screener | Discover-Seiten | erbt den Ausschluss: keine Seite, keine Zeile |
+| Supertrader | `discover/data/stock-index/US_REAL.json` | erbt den Ausschluss (Gate A unberührt); die 13 hatten nie eine Zeile |
+| Firmenlogos | Discover-Suche | erbt den Ausschluss mit dem nächsten Logo-Lauf |
+| **Quant-Verzeichnis** (`build-universe-list.mjs`) | Firmenverzeichnis | **Quant-PR:** Name der alten Gesellschaft zurückgehalten (9 Titel), `ic` `TICKER_REUSE` mit altem Namen als andere Quelle, `ne` (keine Faktoren, keine Geschäftszahlen). Die vier Titel, die das Verzeichnis schon als ETF führt (BREW, INVN, NYNY, WR), behalten ihren richtigen Namen |
+| **Faktor-Evidenz** (`build-factor-evidence.mjs`) | `resolveProductUniverse` (nur Mitgliedschaft) | **Quant-PR:** keine Faktorzeile, kein Rang. Vorher/Nachher: 6.426 → 6.417 Zeilen (ACTS, ENTL, FTPA, GNMX, NMBL, PCLN, TRIL, USX, WX). Verschiebungen in den Rängen der übrigen: Scores im Median 0,01, höchstens 0,97 Punkte (0–100) |
+| **Radar** (`build-quant-radar.mjs`) | Technical-, Setup- und Faktorstände | **Quant-PR:** kein Ereignis, keine Historie. Vorher/Nachher: 1.460 → 1.455 Ereignisse; entfallen sind nur PCLN und NMBL (Trend, Momentum, Faktor) |
+| Technical (Weltscreener, Technical Intelligence) | Signal-Shards, lange Reihen | eigener Technical-PR |
+| Watchlist-Zusammenfassung | Firmenverzeichnis, Faktoren, Technical, Supertrader | eigener Watchlist-PR |
+| Firmenverzeichnis-Suche (`quant/data/universe/search`) | Erzeuger `build-sec-universe.mjs` | offen: führt PCLN als „Priceline.com“. Erzeuger-PR des Company Masters |
+| Indexmitgliedschaft, Fähigkeitsmatrix | `resolveProductUniverse` | keiner der 13 in einem Index; Fähigkeitsmatrix nur Datenebene, keine Anzeige |
