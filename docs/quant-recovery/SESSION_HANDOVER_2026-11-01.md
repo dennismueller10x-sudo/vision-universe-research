@@ -41,7 +41,8 @@ Nach dem Merge von #1215 lief „Konten — Produktion automatisch“ grün: Mig
 | #1225 | Firmenverzeichnis-Suche: PCLN u. a. ohne alten Namen | Wirkung erst mit dem nächsten Erzeugerlauf |
 | #1226 | SEC-Namen für NYSE American: +214 CIKs, 0 Namen geändert | dto. |
 | #1229 | Watchlist-Anzeige: deutscher Text statt `IDENTITY_QUARANTINED`, Warnchip, keine Produktlinks | |
-| DQ-SF8 und Browser-QA | in Arbeit | siehe 7 |
+| #1228 | DQ-SF8: Test erwartet jetzt genau die Ansichten, deren Discover-Reihe weiter ist als der SF8-Stand (Regel und Daten korrekt) | Core 304/0 |
+| #1230 | Browser-/Shell-QA: NVDA-Setup-Prüfung richtungsabhängig (NVDA ist BEARISH); Menüprüfung wartet auf eingefahrenes Menü und nennt jedes zu kleine Ziel | `scripts/vu2/browser-qa.mjs` ist bytegesperrt, deshalb bleibt die Quant Browser QA rot |
 | #1203 | Übergabe 3.0.0 | |
 | #1119 | 132 Statuskorrekturen | zurückgestellt bis zur Umstellung auf 1.3.0 |
 
@@ -114,7 +115,9 @@ Voraussetzungen und Prüfungen stehen in `docs/accounts/BACKTEST_VORSCHAU_AKTIVI
 | SEC-Namen NYSE American | SEC führt sie als „NYSE“ | #1226 |
 | Rohcode `IDENTITY_QUARANTINED` | fehlender Anzeigetext | #1229 |
 | Bundle veraltet und MG-5 seit #1215 | Merge-Reihenfolge | #1223 |
-| DQ-SF8, Browser-QA, Shell-QA (wechselnde Menüziel-Befunde < 44 px; NVDA-Checkliste nur einmal in CI) | in Arbeit | folgt |
+| DQ-SF8 | veraltete Annahme im Test: SF8-Stand 29.10., weil der Tageslauf nicht freigeschaltet ist; Discover 30.10. | #1228 |
+| Browser-QA (4 Befunde) und Shell-QA NVDA | Datenstand: Das Basisszenario von NVDA ist BEARISH, die Karte zeigt dann absichtlich keine Checkliste | #1230 (Shell/vu3); die gesperrte `scripts/vu2/browser-qa.mjs` braucht eine Owner-Freigabe |
+| Shell-QA Menüziele < 44 px | lokal nicht nachstellbar, Messung direkt nach dem Klick | #1230 (Warten, genaue Befundangabe; 44 px unverändert) |
 | Social CI | rot auch auf `main` seit 30.10. | nicht bearbeitet |
 
 ## 8. Owner-Entscheidungen
@@ -122,8 +125,10 @@ Voraussetzungen und Prüfungen stehen in `docs/accounts/BACKTEST_VORSCHAU_AKTIVI
 1. #1223 mergen, danach #1216.
 2. Aktivierung: Testkonto nennen, Rolle vergeben, #1227 mergen.
 3. #1222 (Freigabeliste) und danach, ob und wann der produktive 1.3.0-Lauf vorbereitet wird.
-4. #1221, #1224, #1225, #1226, #1229 und die folgenden PRs zu DQ-SF8 und Browser-QA.
-5. Setup-OOS A1–A6, spätestens vor etwa 2027-03-26.
+4. #1221, #1224, #1225, #1226, #1228, #1229, #1230.
+5. Sperre `docs/quant-recovery/v51/ui-protection.json` für `scripts/vu2/browser-qa.mjs`: Freigabe für die richtungsabhängige NVDA-Prüfung (eigener Draft-PR), sonst bleibt die Quant Browser QA rot, solange NVDA abwärts steht.
+6. SF8-Tageslauf (`SF8_CANDIDATES_ENABLED`, `SF8_AUTO_PUBLISH`) einschalten oder nicht.
+7. Setup-OOS A1–A6, spätestens vor etwa 2027-03-26.
 
 ## 9. Einstieg
 
