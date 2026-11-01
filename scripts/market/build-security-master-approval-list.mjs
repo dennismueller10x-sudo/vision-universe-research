@@ -212,6 +212,26 @@ export function applyCanonicalEvidence(c, rec, { P, N, today, secBy, prevCik }) 
   return { c: out, applied: true, reason: null };
 }
 
+/**
+ * Fortführung nach Umfirmierung, belegt im Register belegter Doppelzeilen des Erzeugers
+ * (quant/config/security-master-duplicate-resolution.json, keptCanonicalId): Die Zielzeile trägt
+ * duplicate_resolution.continuation = SAME_ISSUER_RENAMED, ihre dropped_row ist genau die bisherige Zeile.
+ * Freigabefähig nur bei vollständigem Treffer: je genau eine Zeile vorher/nachher, gleicher Ticker und Gattung,
+ * dieselbe Börsenfamilie außerhalb des Freiverkehrs, Zielzeile aktiv, SEC-Liste bestätigt Ticker und Börse unter
+ * derselben CIK wie im Register. Sonst bleibt das Urteil des Builders (rein). → c
+ */
+export function applyRenameContinuation(c, P, N, secBy) {
+  if (c.approvable || !P || !N || P.length !== 1 || N.length !== 1) return c;
+  const p = P[0], n = N[0], dr = n.duplicate_resolution;
+  if (!dr || dr.continuation !== "SAME_ISSUER_RENAMED" || !dr.dropped_row || dr.dropped_row.canonical_id !== c.from || p.canonical_id !== c.from || n.canonical_id !== c.to) return c;
+  const fam = EXCHANGE_FAMILY[String(n.exchange).toUpperCase()];
+  if (p.ticker !== n.ticker || p.instrument_type !== n.instrument_type || n.active_status !== "ACTIVE" || !fam || fam === "OTC" || EXCHANGE_FAMILY[String(p.exchange).toUpperCase()] !== fam) return c;
+  const chk = secCheck(n, n.ticker, secBy);
+  if (chk.status !== "CONFIRMS" || !chk.sec || chk.sec.cik !== dr.cik) return c;
+  return { ...c, class: "RENAMED_SAME_ISSUER_REGISTER", approvable: true, sec: chk,
+    reason: `Umfirmierung derselben Emittentin (CIK ${dr.cik}): Anbieter beendet die Zeile ${c.from} und führt die Aktie als ${c.to} fort (dieselbe Börsenfamilie ${fam}); Register belegter Doppelzeilen ${dr.rule} ${dr.form} ${dr.accession}, wirksam ${dr.effectiveDate}; SEC-Liste bestätigt ${chk.ref}` };
+}
+
 /** Kern (rein): Klassierung aller vom Gate gezählten Änderungen und Freigabeliste 1.1.0. */
 export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null }) {
   const today = String(next.today || next.generatedAt || "").slice(0, 10), secBy = indexSec(sec);
@@ -233,6 +253,7 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
       const res = applyCanonicalEvidence(c, e, { P: a.get(x.securityId), N: b.get(x.securityId), today, secBy, prevCik: prevCikOf(x.securityId) });
       evUsed.set(x.securityId, res); c = res.c;
     }
+    c = applyRenameContinuation(c, a.get(x.securityId), b.get(x.securityId), secBy);
     if (!r) return c;
     c.form25 = { form: r.form, accession: r.accession, filingDate: r.filingDate, effectiveDate: r.effectiveDate, url: r.url };
     // SEC-Delisting-Beleg gegen eine weiterhin aktive Börsenzeile = Widerspruch (Freiverkehr ist damit vereinbar)

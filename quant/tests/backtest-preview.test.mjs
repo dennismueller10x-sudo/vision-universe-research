@@ -174,7 +174,8 @@ test('isolation: the preview service is reached only by its two offline tools; n
   assert.deepEqual(outside(grep('backtest-preview-service')).sort(), ['scripts/quant/research/build-backtest-preview.cjs', 'scripts/quant/research/render-backtest-preview.cjs']);
   assert.deepEqual(outside(grep('build-backtest-preview')).sort(), ['scripts/quant/research/build-backtest-preview.cjs']);
   assert.deepEqual(outside(grep('render-backtest-preview')).sort(), ['scripts/quant/research/render-backtest-preview.cjs']);
-  assert.deepEqual(outside(grep('backtest-preview/backtest-preview.json')).sort(), ['scripts/quant/research/render-backtest-preview.cjs']);
+  /* Zusaetzlich liest nur der Export fuer den Konto-Worker das Lesemodell (als JSON, per Hash geprueft, ohne den Dienst; BACKTEST_PREVIEW.md Abschnitt 9). */
+  assert.deepEqual(outside(grep('backtest-preview/backtest-preview.json')).sort(), ['scripts/quant/research/export-backtest-review-bundle.cjs', 'scripts/quant/research/render-backtest-preview.cjs']);
   for (const f of ['quant/api/product-services.js', 'quant/index.html', 'quant/app/page-backtest.js', 'quant/api/real-backtest-service.cjs'])
     for (const needle of ['backtest-preview', 'backtestPreview', 'getBacktestPreview']) assert.equal(fs.readFileSync(path.join(ROOT, f), 'utf8').includes(needle), false, f + ' mentions ' + needle);
   for (const dir of ['quant/app', 'api', '.github/workflows', 'server'])
