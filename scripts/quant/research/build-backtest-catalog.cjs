@@ -51,12 +51,14 @@ function insideGenerated(dir) { const p = path.resolve(dir); return GENERATED.so
 function buildCatalog({ grid, out, qaDir = null, runOptions = {}, deps = {} }) {
   if (!out) fail('OUT_REQUIRED');
   if (insideGenerated(out) || (qaDir && insideGenerated(qaDir))) fail('OUT_INSIDE_GENERATED_DATA');
+  // A catalog generation is never overwritten: a new generation (e.g. after a Security-Master migration) gets a new directory.
+  if (fs.existsSync(path.join(out, 'catalog.json'))) fail('CATALOG_GENERATION_EXISTS_NO_OVERWRITE');
   const run = deps.runBacktest || R.runBacktest, now = deps.now || (() => Date.now());
   const items = plan(grid, deps.templates);
   const budgets = grid.budgets;
   fs.mkdirSync(path.join(out, 'results'), { recursive: true });
   if (qaDir) fs.mkdirSync(qaDir, { recursive: true });
-  const entries = []; let total = 0, stopped = null;
+  const entries = []; let total = 0, stopped = null, masterHash = null;
   for (const it of items) {
     const t0 = now();
     const r = run(it.spec, runOptions);
@@ -64,6 +66,9 @@ function buildCatalog({ grid, out, qaDir = null, runOptions = {}, deps = {} }) {
     total += ms;
     if (r.specHash !== it.specHash) fail('RUNNER_SPEC_HASH_MISMATCH', it.label);
     const env = r.envelope;
+    // one catalog = one Security-Master generation: results bound to different masters are never mixed
+    const mh = r.inputHashes && r.inputHashes.population && r.inputHashes.population.masterHash;
+    if (mh) { if (masterHash && mh !== masterHash) fail('CATALOG_MIXED_MASTER_GENERATIONS', it.label); masterHash = mh; }
     const entry = { label: it.label, selectionHash: it.selectionHash, template: it.template, kind: r.kind, specHash: r.specHash, state: r.state,
       certificationStatus: env.status.certificationStatus, evidenceKind: env.status.evidenceKind, productionApproved: env.status.productionApproved,
       envelopeHash: r.envelopeHash, resultHash: r.resultHash, inputHash: r.inputHash,

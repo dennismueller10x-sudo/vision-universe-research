@@ -15,6 +15,12 @@ test('V8 exact original-source classification conflicts block two real common-st
  for(const id of ['ref_FRMEP','ref_MBINM'])assert.throws(()=>A.load(root,id),/^Error: ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT$/);
  assert.equal(A.load(root,'ref_NVDA').securityId,'ref_NVDA');
 });
+test('V8 classification evidence reproduces on its frozen Security-Master generation 1.1.0 (independent of the product master)',()=>{
+ const L=require('../engines/research-weekly-loader.cjs').createResearchLoader(root,undefined,{masterGeneration:'us-security-master-1.1.0'});
+ assert.equal(L.masterHash,'26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332');assert.equal(L.masterGeneration,'us-security-master-1.1.0');
+ for(const id of ['ref_FRMEP','ref_MBINM'])assert.throws(()=>L(id),/^Error: ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT$/);
+ assert.equal(L('ref_NVDA').securityId,'ref_NVDA');
+});
 test('V8 classification holds require exact listing ID and original source evidence, without ticker suffix rules',()=>{
  for(const e of evidence.records){
   const audit=originalAudit.results.find(x=>'ref_'+x.ticker===e.securityId);assert.ok(audit);
@@ -43,6 +49,8 @@ function fixture(id){
  for(const p of ['quant/engines','quant/api','quant/methodology','quant/data/universe/instruments','quant/data/market/security-master/us-security-master.json','quant/data/market/multi-asset/series/SPY.json','quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json','quant/data/market/discover-series-long/'+id+'.json','scripts/quant/materialize-real-backtest-read.cjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/contracts/weekly-execution-model-v2.json','quant/config/development-preview.json','quant/config/feature-gates.json']){
   mkdirSync(dirname(join(source,p)),{recursive:true});cpSync(join(root,p),join(source,p),{recursive:true});
  }
+ // the V8 premise (1.1.0 admits FRMEP as common stock) is a fact of the frozen generation 1.1.0, not of the product master
+ cpSync(join(root,'quant/frozen/security-master/us-security-master-1.1.0.json'),join(source,'quant/data/market/security-master/us-security-master.json'));
  return {folder,source,output,registry:join(source,'quant/engines/research-classification-evidence.cjs')};
 }
 function buildFixture(f,id){

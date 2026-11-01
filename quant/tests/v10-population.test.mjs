@@ -6,6 +6,8 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+// Mutationstests am Stamm des tmp-Root: ausdrücklich der Produktstamm (LIVE); ohne Angabe lesen Evidenz-Optionen die eingefrorene Generation 1.1.0.
+const LIVE={masterGeneration:'LIVE'};
 const require=createRequire(import.meta.url);
 const A=require('../engines/weekly-real-adapter.cjs'),R=require('../engines/research-weekly-loader.cjs');
 const Identity=require('../engines/research-identity-evidence.cjs'),Lifecycle=require('../engines/research-listing-lifecycle.cjs');
@@ -101,9 +103,9 @@ test('V10 identity bindings select the recorded master row on the sourced interv
   mkdirSync(join(tmp,'quant/data/market/security-master'),{recursive:true});
   const extra={...master.rows.find(r=>r.canonical_id===rec.selectedCanonicalId),canonical_id:'tiingo:TEST:'+rec.ticker+':2001-01-01'};
   writeFileSync(join(tmp,mp),JSON.stringify({...master,rows:master.rows.concat([extra])}));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true})(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true},LIVE)(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
   writeFileSync(join(tmp,mp),JSON.stringify({...master,rows:master.rows.filter(r=>r.canonical_id!==rec.selectedCanonicalId)}));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true})(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true},LIVE)(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
  }finally{rmSync(tmp,{recursive:true,force:true});}
 });
 
