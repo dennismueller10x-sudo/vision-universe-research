@@ -32,17 +32,17 @@ Neu vorbereitet sind die übrigen acht Methoden, in der Reihenfolge der Matrix: 
 |---|---|
 | `scripts/supertrader/source-faithful/certification/CERT-PREP-ALL13-PLAN.json` | Erweiterungsplan: 8 Methoden, 4 neue Querschnittsblocker, 4 Befunde, 38 Gegenproben. Er verweist mit `extends` auf den TOP5-Plan und dessen Inhalts-sha256 |
 | `scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs` | Prüfer: Pins, Zusammenführung, Plan-Prüfung über alle 13, statische Prüfung der Gegenproben; optional `--run-tests` und `--mutation-probes` |
-| `scripts/supertrader/tests/sf-cert-prep-all13.test.mjs` | 26 Regeltreue-Tests (`CP-WEIN-*`, `CP-MIN-*`, `CP-EP-*`, `CP-PS-*`, `CP-PP-*`, `CP-HG-*`) und 4 Plan-Tests (`CP-PLAN-ALL13-*`) |
+| `scripts/supertrader/tests/sf-cert-prep-all13.test.mjs` | 26 Regeltreue-Tests (`CP-WEIN-*`, `CP-MIN-*`, `CP-EP-*`, `CP-PS-*`, `CP-PP-*`, `CP-HG-*`) und 5 Plan-Tests (`CP-PLAN-ALL13-*`) |
 | `scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs` | Erweitert, für TOP5 aber unverändert im Verhalten (Details unten) |
 
-Änderungen an `cert-prep-top5.mjs`; ohne Optionen gilt alles wie bisher, alle 33 TOP5-Tests sind grün:
+Änderungen an `cert-prep-top5.mjs` (Prüferversion 1.2.0). Für den TOP5-Plan ist das Ergebnis gleich: 0 Abweichungen, alle 33 TOP5-Tests grün. Neu sind zusätzliche Prüfregeln, ein Zähler `checks.psr709WordingUnchecked` und die Version im Protokoll:
 - `validatePlan(plan, { pinnedContentSha256, cpTestFiles })`:
   - Nur der ALL13-Prüfer übergibt `pinnedContentSha256: null`, weil er die Pins selbst prüft.
   - `cpTestFiles` erlaubt eine zweite Regeltreue-Testdatei mit eigenen Familien.
 - Neue Parameterart `SOURCE_NUMBER_TRANSLATION_ONLY`. Dazu zwei Prüfungen:
   - Eine `SOURCE_NUMBER` mit ungeprüftem #709-Wortlaut ist ein Fehler (`PARAM_SOURCE_WORDING_UNCHECKED`).
-  - Eine nur übersetzte Zahl braucht einen CC-1-Blocker.
-- Ungeprüfter #709-Wortlaut ist nur mit einer exakten Liste je Methode zulässig (`psr709WordingUnchecked`, `PSR709_UNCHECKED_LIST_STALE`) und braucht einen CC-1-Blocker der Klasse d (`wordingUncheckedBlocker`).
+  - Eine nur übersetzte Zahl braucht einen CC-1-Blocker der Klasse d, und CC-1 muss offen sein.
+- Ungeprüfter #709-Wortlaut ist nur mit einer exakten Liste je Methode zulässig (`psr709WordingUnchecked`, `PSR709_UNCHECKED_LIST_STALE`). Er braucht einen CC-1-Blocker der Klasse d (`wordingUncheckedBlocker`), und CC-1 muss in `ccOpen` stehen.
 - Parameterwerte werden strukturell verglichen; Felder wie `[3, 4]` oder `[50, 150, 200]` sind damit prüfbar.
 
 ## Prüfprotokoll
@@ -56,7 +56,7 @@ node scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --mut
 **Verhalten des Prüfers**
 - Exit 0 nur bei `valid: true`.
 - Das Protokoll ist deterministisch, hat keinen Zeitstempel und geht ohne `--out` nur auf stdout.
-- `--mutation-probes` verändert für jeden Lauf genau eine Engine-Datei und setzt sie danach zurück, geprüft per sha256. Es verweigert den Lauf, wenn eine Zieldatei schon vom Git-Stand abweicht. Kein Test und kein Workflow ruft es auf.
+- `--mutation-probes` verändert für jeden Lauf genau eine Engine-Datei (wörtliche Ersetzung) und setzt sie danach zurück, geprüft per sha256. Es verweigert den Lauf, wenn eine Probe statisch fehlerhaft ist oder eine Zieldatei (Arbeitsstand oder Index) vom HEAD abweicht. Kein Test und kein Workflow ruft es auf. Der Lauf ist synchron; nach einem harten Abbruch (SIGKILL) verweigert der nächste Lauf, bis die Datei aus dem HEAD wiederhergestellt ist.
 
 **Pins und Prüfungen**
 - ALL13-Planinhalt: `PINNED_ALL13_CONTENT_SHA256` im Prüfer. Die Plandatei ist zusätzlich im Test gepinnt (`CP-PLAN-ALL13-PREREGISTERED`).
@@ -64,7 +64,7 @@ node scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --mut
 - Zusammenführung (`mergePlans`):
   - Die Basis bleibt unverändert, Methoden, Querschnittsblocker, Befunde und Gründe werden angehängt.
   - `guards` und `dependsOn` müssen gleich sein.
-  - Ein Ausschlussgrund darf nicht umdefiniert werden.
+  - Ein Ausschlussgrund darf nicht umdefiniert werden; Befund-IDs, Parameter-Ausschlüsse und gemeinsame Tests dürfen nicht doppelt vorkommen.
   - Ein TOP5-Eintrag `OTHER_METHOD:<Kandidat>` fällt nur weg, wenn er in `paramsOutOfScopeSuperseded` steht und der Kandidat zur Erweiterung gehört. Betroffen sind `KK_PARAMS.epMaxAdr`, `KK_PARAMS.epGapReference` und `MOKA_PARAMS.ppWindow`.
 - Die 13 Methoden C01..C13 kommen genau einmal vor, mit den Prioritäten 1..13 (`ALL13_COVERAGE`, `ALL13_PRIORITY_ORDER`).
 - Gegenproben, statisch geprüft:
@@ -346,7 +346,7 @@ Gemeinsam wie bei TOP5: 10 bps je Seite und 1 bp Kommission, Stufen 0/10/20/50, 
 ## Tests
 
 ```bash
-node --test scripts/supertrader/tests/sf-cert-prep-all13.test.mjs   # 30 Tests (26 CP-Regeltreue, 4 CP-PLAN-ALL13)
+node --test scripts/supertrader/tests/sf-cert-prep-all13.test.mjs   # 31 Tests (26 CP-Regeltreue, 5 CP-PLAN-ALL13)
 node --test scripts/supertrader/tests/sf-cert-prep-top5.test.mjs    # 33 Tests, unverändert grün
 node --test "scripts/supertrader/tests/*.test.mjs"
 node scripts/supertrader/guard-protected-paths.mjs --base=origin/main

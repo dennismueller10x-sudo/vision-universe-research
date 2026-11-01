@@ -27,7 +27,7 @@ import { adx, HG_PARAMS } from '../source-faithful/methods/holy-grail.mjs';
 import { holyGrailSetupSeries, HOLY_GRAIL_RESEARCH_ADAPTER, HG_REFERENCE_CONFIG } from '../source-faithful/research/holy-grail-lifecycle.mjs';
 import { emaSeries } from '../source-faithful/common/series.mjs';
 import { loadPlan, validatePlan, PINNED_PLAN_CONTENT_SHA256, planContentSha256 } from '../source-faithful/certification/cert-prep-top5.mjs';
-import { loadAll13, validateAll13, mergePlans, all13Report, all13OutTarget, ALL13_PLAN_FILE, PINNED_ALL13_CONTENT_SHA256, ALL13_CANDIDATES, all13ContentSha256 } from '../source-faithful/certification/cert-prep-all13.mjs';
+import { loadAll13, validateAll13, mergePlans, all13Report, all13OutTarget, ALL13_PLAN_FILE, PINNED_ALL13_CONTENT_SHA256, ALL13_CANDIDATES, all13ContentSha256, runMutationProbes } from '../source-faithful/certification/cert-prep-all13.mjs';
 
 const near = (a, b, eps = 1e-9) => Math.abs(a - b) <= eps;
 const day = (k) => new Date(Date.UTC(2021, 0, 4) + k * 864e5).toISOString().slice(0, 10);
@@ -454,6 +454,20 @@ test('CP-PLAN-ALL13-DETECTS: Pin, geänderte TOP5-Basis, Parameter, Statuswechse
   await all13Has((e) => { e.paramsOutOfScopeSuperseded = []; }, 'PARAM_OOS_METHOD_IN_PLAN');
   await all13Has((e) => { m13(e, 'C11').conformanceTests = m13(e, 'C11').conformanceTests.filter((t) => !t.endsWith('CP-PP-SELL-GUIDE-35')); }, 'CONFORMANCE_MINIMUM:C11:CP-PP-SELL-GUIDE-35');
   await all13Has((e) => { m13(e, 'C05').rulesOutOfScope.find((r) => r.id === 'WEIN-SF-STAGE').reason = 'COVERED_IN:C08'; }, 'RULE_OOS_NOT_COVERED_THERE:C05:WEIN-SF-STAGE');
+  // Review: übersetzter Wortlaut nur mit offenem CC-1 und einem echten CC-1-Blocker der Klasse d
+  await all13Has((e) => { const m = m13(e, 'C06'); m.ccOpen = m.ccOpen.filter((x) => x !== 'CC-1'); m.ccMet.push('CC-1'); }, 'PSR709_WORDING_UNCHECKED:MIN-TT-01');
+  await all13Has((e) => { m13(e, 'C07').wordingUncheckedBlocker = 'C07-TYPO'; }, 'PARAM_TRANSLATION_KIND:C07:MIN-PP-02');
+  await all13Has((e) => { e.findings.push({ ...e.findings[0], id: 'F-TUR-ADD-UNIT-N' }); }, 'MERGE_DUPLICATE_FINDING:F-TUR-ADD-UNIT-N');
+  await all13Has((e) => { e.mutationProbes[0].file = '../certification/cert-prep-top5.mjs'; }, 'MUTATION_PROBE_SCOPE');
+});
+
+test('CP-PLAN-ALL13-PROBE-REFUSAL: Gegenproben schreiben nie, wenn eine Probe statisch fehlerhaft ist (Bereich, Fundstelle)', () => {
+  for (const change of [(e) => { e.mutationProbes[0].file = '../certification/cert-prep-top5.mjs'; }, (e) => { e.mutationProbes[0].find = 'return'; }]) {
+    const ext = loadAll13(); change(ext);
+    const before = fs.readFileSync(path.join(path.dirname(ALL13_PLAN_FILE), 'cert-prep-top5.mjs'), 'utf8');
+    assert.throws(() => runMutationProbes(ext), /MUTATION_PROBES_REFUSED_STATIC/);
+    assert.equal(fs.readFileSync(path.join(path.dirname(ALL13_PLAN_FILE), 'cert-prep-top5.mjs'), 'utf8'), before);
+  }
 });
 
 test('CP-PLAN-ALL13-REPORT: das Prüfprotokoll ist deterministisch, ohne Zeitstempel und schreibt nur mit --out', async () => {

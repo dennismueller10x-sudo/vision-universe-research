@@ -38,7 +38,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SF_DIR = path.resolve(HERE, '..');
 export const ROOT = path.resolve(SF_DIR, '..', '..', '..');
 export const PLAN_FILE = path.join(HERE, 'CERT-PREP-TOP5-PLAN.json');
-export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.1.0';
+export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.0'; // 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
 export const BLOCKER_CLASSES = Object.freeze(['a', 'b', 'c', 'd']);
 /** Pin des Planinhalts (sha256 über JSON.stringify des geladenen Plans). Neu setzen nur in einem begründeten Commit. */
 export const PINNED_PLAN_CONTENT_SHA256 = '7f6f864b4a8e198db8316f9b8f135fa18ab240e3605dd5d93b3a9bd22fb48ad9';
@@ -49,6 +49,8 @@ export const CP_FAMILIES = Object.freeze({ TUR: ['C02', 'C01'], KK: ['C08'], BGU
 const PARAM_KINDS = Object.freeze(['SOURCE_NUMBER', 'CONVENTION', 'MODEL_BOUND_FROM_SOURCE_RANGE', 'OWNER_CONVENTION', 'SOURCE_NUMBER_TRANSLATION_ONLY']);
 /** Regeltreue-Testdateien mit ihren Familien (TOP5); der ALL13-Prüfer übergibt zusätzlich seine eigene Datei. */
 export const DEFAULT_CP_TEST_FILES = Object.freeze([Object.freeze({ file: CERT_PREP_TEST_FILE, families: CP_FAMILIES })]);
+/** Ausnahme für ungeprüften #709-Wortlaut: benannter Blocker der Methode mit CC-1 und Klasse d, und CC-1 ist offen. */
+const wordingBlockerOk = (m) => m.ccOpen.includes('CC-1') && m.blockers.some((b) => b.id === m.wordingUncheckedBlocker && b.criterion === 'CC-1' && b.class === 'd');
 const sameValue = (a, b) => (a !== null && typeof a === 'object' ? JSON.stringify(a) === JSON.stringify(b) : a === b);
 const A_STATUS = /^(DONE|PREPARED_[A-Z_]+|OPEN_SEPARATE_PR)$/;
 
@@ -69,11 +71,11 @@ const allTestRefs = (plan) => [...new Set([
 ])].sort();
 
 /** test('…')-Titel einer Datei; ein Titel trägt seine IDs vor dem ersten ':' (getrennt durch ' / '). */
-function testTitlesOf(file) {
+export function testTitlesOf(file) {
   const src = fs.readFileSync(path.resolve(ROOT, file), 'utf8');
   return [...src.matchAll(/^\s*test\((['`])(.*?)\1/gm)].map((m) => m[2]);
 }
-const idsOfTitle = (t) => t.split(':')[0].split(' / ').map((s) => s.trim());
+export const idsOfTitle = (t) => t.split(':')[0].split(' / ').map((s) => s.trim());
 function testIdsOf(file) { return new Set(testTitlesOf(file).flatMap(idsOfTitle)); }
 
 /**
@@ -180,7 +182,7 @@ export async function validatePlan(plan = loadPlan(), { pinnedContentSha256 = PI
         if (!e) issues.push(`PSR709_MISSING:${p}`);
         else if (e.original_wording_checked !== true) {
           // nur mit ausdrücklicher Liste und einem CC-1-Blocker der Klasse d zulässig (Übersetzungsbelege, C06/C07)
-          if ((m.psr709WordingUnchecked ?? []).includes(p) && m.blockers.some((b) => b.id === m.wordingUncheckedBlocker && b.criterion === 'CC-1' && b.class === 'd')) checks.psr709WordingUnchecked++;
+          if ((m.psr709WordingUnchecked ?? []).includes(p) && wordingBlockerOk(m)) checks.psr709WordingUnchecked++;
           else issues.push(`PSR709_WORDING_UNCHECKED:${p}`);
         }
       }
@@ -214,7 +216,7 @@ export async function validatePlan(plan = loadPlan(), { pinnedContentSha256 = PI
       if (!PARAM_KINDS.includes(p.kind)) issues.push(`PARAM_KIND:${p.psr709}`);
       // Quellenzahl nur mit geprüftem Wortlaut; eine nur übersetzte Zahl trägt SOURCE_NUMBER_TRANSLATION_ONLY
       if (p.kind === 'SOURCE_NUMBER' && e.original_wording_checked !== true) issues.push(`PARAM_SOURCE_WORDING_UNCHECKED:${m.candidateId}:${p.psr709}`);
-      if (p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY' && (e.original_wording_checked !== false || !m.wordingUncheckedBlocker)) issues.push(`PARAM_TRANSLATION_KIND:${m.candidateId}:${p.psr709}`);
+      if (p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY' && (e.original_wording_checked !== false || !wordingBlockerOk(m))) issues.push(`PARAM_TRANSLATION_KIND:${m.candidateId}:${p.psr709}`);
       if (p.kind !== 'SOURCE_NUMBER' && !p.note && p.kind !== 'MODEL_BOUND_FROM_SOURCE_RANGE') issues.push(`PARAM_NOTE:${p.psr709}`);
       // Forschungsproxys (research/*) sind nie eine Quellenzahl; eine Quellenzahl liegt im Methodenmodul
       if (p.code.module.startsWith('research/') && p.kind === 'SOURCE_NUMBER') issues.push(`PARAM_KIND_MODEL_AS_SOURCE:${m.candidateId}:${p.code.export}.${p.code.path}`);

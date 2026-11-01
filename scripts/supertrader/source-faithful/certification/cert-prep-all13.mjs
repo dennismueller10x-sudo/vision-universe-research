@@ -13,7 +13,9 @@
  *    jede nennt eine Codestelle in methods/ oder research/, die genau einmal vorkommt;
  *  - mit --mutation-probes: wendet jede Gegenprobe einzeln auf den Engine-Code an, lässt den genannten Test laufen,
  *    verlangt ROT und stellt die Datei sofort byte-gleich wieder her (Prüfung per sha256). Nur lokal, nie in CI oder
- *    in einem Test; bricht ab, wenn eine Zieldatei vor dem Lauf schon vom Git-Stand abweicht.
+ *    in einem Test; bricht ab, wenn eine Probe statisch fehlerhaft ist oder eine Zieldatei (Arbeitsstand oder Index)
+ *    schon vom HEAD abweicht. Der Lauf ist synchron: ein Abbruch mit SIGKILL kann eine Datei mutiert zurücklassen;
+ *    der nächste Lauf verweigert dann (Datei weicht vom HEAD ab), wiederherstellen mit dem Checkout der Datei.
  * Liest sonst nur; ändert keine Regel, keinen Parameter, keine Daten.
  *
  *   node scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs [--out <dir | datei.json>] [--run-tests] [--mutation-probes] [--plan <datei>]
@@ -21,10 +23,9 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { loadPlan, validatePlan, runPlanTests, planContentSha256, planSha256, referenceCodeFingerprints, SF_DIR, ROOT, PLAN_FILE, PINNED_PLAN_CONTENT_SHA256, DEFAULT_CP_TEST_FILES, BLOCKER_CLASSES } from './cert-prep-top5.mjs';
+import { loadPlan, validatePlan, runPlanTests, planContentSha256, planSha256, referenceCodeFingerprints, testTitlesOf, idsOfTitle, SF_DIR, ROOT, PLAN_FILE, PINNED_PLAN_CONTENT_SHA256, DEFAULT_CP_TEST_FILES, BLOCKER_CLASSES } from './cert-prep-top5.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ALL13_PLAN_FILE = path.join(HERE, 'CERT-PREP-ALL13-PLAN.json');
@@ -38,8 +39,9 @@ export const ALL13_CANDIDATES = Object.freeze(Array.from({ length: 13 }, (_, k) 
 const CP_TEST_FILES = Object.freeze([...DEFAULT_CP_TEST_FILES, Object.freeze({ file: ALL13_TEST_FILE, families: ALL13_CP_FAMILIES })]);
 
 export const loadAll13 = (file = ALL13_PLAN_FILE) => JSON.parse(fs.readFileSync(file, 'utf8'));
-export const all13ContentSha256 = (ext) => crypto.createHash('sha256').update(JSON.stringify(ext)).digest('hex');
-const fileSha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+/** Gleiche Bildung wie planContentSha256 (sha256 über JSON.stringify des geladenen Plans). */
+export const all13ContentSha256 = (ext) => planContentSha256(ext);
+const fileSha = (f) => planSha256(f);
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
@@ -61,6 +63,10 @@ export function mergePlans(base, ext) {
     else superseded.add(key(s));
   }
   for (const m of ext.methods) if (base.methods.some((x) => x.candidateId === m.candidateId)) issues.push(`MERGE_METHOD_IN_BASE:${m.candidateId}`);
+  // keine Kollision von IDs oder Schlüsseln zwischen Basis und Erweiterung
+  for (const f of ext.findings ?? []) if (base.findings.some((x) => x.id === f.id)) issues.push(`MERGE_DUPLICATE_FINDING:${f.id}`);
+  for (const p of ext.paramsOutOfScope ?? []) if ((base.paramsOutOfScope ?? []).some((x) => key(x) === key(p))) issues.push(`MERGE_DUPLICATE_PARAM_OOS:${key(p)}`);
+  for (const t of ext.sharedExecutionTests ?? []) if (base.sharedExecution.tests.includes(t)) issues.push(`MERGE_DUPLICATE_SHARED_TEST:${t}`);
   const plan = {
     ...base,
     id: ext.id, version: ext.version, fixedOn: ext.fixedOn, status: ext.status,
@@ -74,7 +80,7 @@ export function mergePlans(base, ext) {
   return { plan, issues };
 }
 
-const titlesOf = (file) => [...fs.readFileSync(path.resolve(ROOT, file), 'utf8').matchAll(/^\s*test\((['`])(.*?)\1/gm)].map((m) => m[2].split(':')[0].split(' / ')[0].trim());
+const titlesOf = (file) => testTitlesOf(file).map((t) => idsOfTitle(t)[0]);
 
 /** Statische Prüfung der Gegenproben. */
 function probeIssues(ext) {
@@ -103,7 +109,7 @@ export async function validateAll13({ ext = loadAll13(), base = loadPlan() } = {
   if (baseSha !== PINNED_PLAN_CONTENT_SHA256 || ext.extends?.contentSha256 !== PINNED_PLAN_CONTENT_SHA256) issues.push(`BASE_NOT_PINNED:${baseSha}`);
   if (ext.extends?.id !== base.id || ext.extends?.version !== base.version) issues.push('EXTENDS_IDENTITY');
   // die TOP5-Basis bleibt für sich gültig (mit ihrem eigenen Pin)
-  for (const x of (await validatePlan(base)).issues) issues.push(`BASE:${x}`);
+  for (const x of (await validatePlan(base)).issues) if (!x.startsWith('PLAN_NOT_PINNED:')) issues.push(`BASE:${x}`); // der Pin steht schon als BASE_NOT_PINNED
   const { plan, issues: mergeIssues } = mergePlans(base, ext);
   issues.push(...mergeIssues);
   const v = await validatePlan(plan, { pinnedContentSha256: null, cpTestFiles: CP_TEST_FILES });
@@ -120,9 +126,12 @@ export async function validateAll13({ ext = loadAll13(), base = loadPlan() } = {
  * verlangen, Datei byte-gleich zurücksetzen. Weicht eine Zieldatei schon vor dem Lauf vom Git-Stand ab, läuft nichts.
  */
 export function runMutationProbes(ext = loadAll13()) {
+  // nie mit einer statisch fehlerhaften Probe schreiben (Bereich methods/ und research/, Fundstelle genau einmal)
+  const bad = probeIssues(ext);
+  if (bad.length) throw new Error(`MUTATION_PROBES_REFUSED_STATIC:${bad.join(',')}`);
   const files = [...new Set(ext.mutationProbes.map((p) => p.file))];
   for (const f of files) {
-    const r = spawnSync('git', ['diff', '--quiet', '--', path.join(SF_DIR, f)], { cwd: ROOT });
+    const r = spawnSync('git', ['diff', '--quiet', 'HEAD', '--', path.join(SF_DIR, f)], { cwd: ROOT });
     if (r.status !== 0) throw new Error(`MUTATION_PROBES_REFUSED_DIRTY:${f}`);
   }
   const env = { ...process.env, CERT_PREP_NESTED: '1' }; delete env.NODE_TEST_CONTEXT;
@@ -130,15 +139,13 @@ export function runMutationProbes(ext = loadAll13()) {
   for (const p of ext.mutationProbes) {
     const f = path.join(SF_DIR, p.file), original = fs.readFileSync(f), sha = fileSha(f);
     const restore = () => { fs.writeFileSync(f, original); if (fileSha(f) !== sha) throw new Error(`MUTATION_RESTORE_FAILED:${p.file}`); };
-    const onSignal = () => { restore(); process.exit(130); };
-    process.once('SIGINT', onSignal); process.once('SIGTERM', onSignal);
     let state;
     try {
-      fs.writeFileSync(f, original.toString('utf8').replace(p.find, p.replace));
+      fs.writeFileSync(f, original.toString('utf8').replace(p.find, () => p.replace));
       const r = spawnSync(process.execPath, ['--test', '--test-reporter=tap', `--test-name-pattern=^${p.test}:`, ALL13_TEST_FILE], { cwd: ROOT, encoding: 'utf8', env });
       const line = r.stdout.split('\n').find((l) => new RegExp(`^(not ok|ok) \\d+ - ${p.test}:`).test(l));
       state = !line ? 'NOT_FOUND' : line.startsWith('not ok') ? 'RED' : 'STAYED_GREEN';
-    } finally { restore(); process.removeListener('SIGINT', onSignal); process.removeListener('SIGTERM', onSignal); }
+    } finally { restore(); }
     results.push({ id: p.id, test: p.test, file: p.file, result: state });
   }
   return results;
@@ -147,12 +154,11 @@ export function runMutationProbes(ext = loadAll13()) {
 /** Code-Fingerabdrücke der rechnenden Engines (TOP5 unverändert, dazu die acht übrigen Methoden). */
 export async function all13ReferenceCode() {
   const top5 = await referenceCodeFingerprints();
-  const { sf5ResearchCodeSha256 } = await import('../research/run-sf5-lifecycle.mjs');
   const { researchCodeSha256 } = await import('../research/run-sf4-lifecycle.mjs');
   const { kkResearchCodeSha256 } = await import('../research/run-kk-intraday.mjs');
   const { SF6_PAPER_PROTOCOL } = await import('../completion/sf6-paper-protocol-2027.mjs');
   const pin = SF6_PAPER_PROTOCOL.references.pinned.minerviniResearchCodeSha256, min = researchCodeSha256();
-  const sf5 = { fingerprint: 'research/run-sf5-lifecycle.mjs#sf5ResearchCodeSha256', head: sf5ResearchCodeSha256(), pinnedReference: null, pinnedIn: null, state: 'REFERENCE_FINGERPRINT_NOT_PINNED_REFERENCE_COMMIT_OPEN' };
+  const sf5 = { fingerprint: 'research/run-sf5-lifecycle.mjs#sf5ResearchCodeSha256', head: top5.C08.head, pinnedReference: null, pinnedIn: null, state: 'REFERENCE_FINGERPRINT_NOT_PINNED_REFERENCE_COMMIT_OPEN' };
   const minRow = { fingerprint: 'research/run-sf4-lifecycle.mjs#researchCodeSha256', head: min, pinnedReference: pin, pinnedIn: 'SF6-PAPER-2027 references.pinned.minerviniResearchCodeSha256', state: min === pin ? 'HEAD_EQUALS_PINNED_REFERENCE_FINGERPRINT' : 'HEAD_DIFFERS_FROM_PINNED_REFERENCE_FINGERPRINT' };
   const kk = { fingerprint: 'research/run-kk-intraday.mjs#kkResearchCodeSha256', head: kkResearchCodeSha256(), pinnedReference: null, pinnedIn: null, state: 'NOT_IN_SF6_PAPER_2027_NO_PINNED_REFERENCE' };
   return { ...top5, C07: minRow, C06: minRow, C13: sf5, C11: sf5, C05: sf5, C04: sf5, C09: kk, C10: kk };
