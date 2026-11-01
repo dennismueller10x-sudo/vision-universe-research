@@ -14,7 +14,7 @@ Nur Tageszeitrahmen. Jedes Feld ist der Wert des Indikatorkatalogs am Stichtag. 
 | Feld | Art | Definition (Katalog) | fehlt (`null`), wenn |
 |---|---|---|---|
 | `vortexBull` | ja/nein | Vortex VI+ > VI− (14) | keine Kursbewegung im Fenster |
-| `choppiness14` | Zahl 0–100 | Choppiness Index 14: unter 38,2 Trend, über 61,8 seitwärts | keine Kursbewegung im Fenster |
+| `choppiness14` | Zahl ≥ 0 (über 100 nach einer Kurslücke am Fensteranfang, DATA_CONTRACT.md) | Choppiness Index 14: unter 38,2 Trend, über 61,8 seitwärts | keine Kursbewegung im Fenster |
 | `newHigh20d`, `newLow20d` | ja/nein | Schluss über dem höchsten Hoch bzw. unter dem tiefsten Tief der 20 Vortage (Donchian-Ausbruch) | weniger als 21 Bars |
 | `elderImpulse` | +1/0/−1 | +1, wenn EMA 13 und MACD-Histogramm (12/26/9) steigen; −1, wenn beide fallen; sonst 0 | Aufwärmphase |
 | `zScore20` | Zahl | (Schluss − SMA 20) / Standardabweichung 20 | Streuung 0 |

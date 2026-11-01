@@ -39,6 +39,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const Adapter = require('./weekly-real-adapter.cjs');
+const Generations = require('./security-master-generation.cjs');
 const CorporateActions = require('./corporate-action-evidence.js');
 const { validate, hash } = Adapter;
 
@@ -489,16 +490,50 @@ function lifecycleIndex() {
 }
 
 const isoWeekOf = d => { const t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - (t.getUTCDay() + 6) % 7); return t.toISOString().slice(0, 10); };
-function createResearchLoader(root, options) {
+// Security-Master-Generation (Owner P2, 31.10.2026): the evidence registries (identity, CA, lifecycle) were built and
+// registered against us-security-master-1.1.0 (26c82617...). With any evidence option the loader therefore reads that frozen,
+// hash-bound generation unless `generation.masterGeneration` names another one explicitly (new research generations).
+// Without evidence options the default stays the adapter's own loader on the product master (LIVE), byte-identical.
+// The generation is a separate argument, not a loader option: loader options are part of registered specs and hashes.
+function masterGenerationOf(root, opts, generation) {
+  if (generation !== undefined && (!generation || typeof generation !== 'object' || Array.isArray(generation) || Object.keys(generation).some(k => k !== 'masterGeneration') || typeof generation.masterGeneration !== 'string')) throw Error('INVALID_MASTER_GENERATION_OPTIONS');
+  if (generation) return generation.masterGeneration;
+  return (opts.identityEvidence || opts.corporateActionEvidence || opts.listingLifecycleEvidence) ? Generations.researchEvidenceDefault(root) : Generations.LIVE;
+}
+// The adapter's own single-row loader (weekly-real-adapter.cjs#createLoader, which stays byte-identical to main and always
+// reads the product master) re-stated for a frozen generation: same row rule, same validate(), same output fields and order.
+function generationBase(root, masterGeneration) {
+  const g = Generations.resolve(root, masterGeneration);
+  const master = JSON.parse(g.text), byId = new Map(), canonical = new Map();
+  for (const row of master.rows) {
+    const key = row.baseline_security_id;
+    if (key) { if (!byId.has(key)) byId.set(key, []); byId.get(key).push(row); }
+    if (row.canonical_id && key) { if (!canonical.has(row.canonical_id)) canonical.set(row.canonical_id, new Set()); canonical.get(row.canonical_id).add(key); }
+  }
+  const loader = (securityId, suppliedBytes) => {
+    if (!/^ref_[A-Za-z0-9_.-]+$/.test(securityId)) throw Error('INVALID_SECURITY_ID');
+    const rel = 'quant/data/market/discover-series-long/' + securityId + '.json';
+    const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel), 'utf8') : suppliedBytes;
+    const rows = byId.get(securityId) || [];
+    if (rows.length !== 1 || canonical.get(rows[0].canonical_id)?.size !== 1) throw Error('AMBIGUOUS_LISTING_IDENTITY');
+    return { ...validate(JSON.parse(bytes), rows[0]), sourcePath: rel, sourceBytesHash: hash(bytes), masterVersion: master.version, masterGeneratedAt: master.generatedAt };
+  };
+  loader.masterHash = hash(g.text);
+  loader.masterGeneration = g.id;
+  return loader;
+}
+function createResearchLoader(root, options, generation) {
   const opts = loaderOptions(options);
-  const base = Adapter.createLoader(root);
+  const masterGeneration = masterGenerationOf(root, opts, generation);
+  const base = masterGeneration === Generations.LIVE ? Adapter.createLoader(root) : generationBase(root, masterGeneration);
+  if (masterGeneration === Generations.LIVE) base.masterGeneration = Generations.LIVE;
   if (!opts.identityEvidence && !opts.corporateActionEvidence && !opts.listingLifecycleEvidence) return base; // default: the adapter's own loader, byte-identical
   const evidence = opts.identityEvidence ? identityEvidenceBindings(opts) : { registryHash: null, bindings: new Map() };
   const ca = opts.corporateActionEvidence ? caEvidenceIndex() : null;
   const lc = opts.listingLifecycleEvidence ? lifecycleIndex() : null;
   const check = ca ? caValidator(ca) : validate;
   // The research branches read the same master file as the adapter (same path, same grouping rules).
-  const masterBytes = fs.readFileSync(path.join(root, 'quant/data/market/security-master/us-security-master.json'), 'utf8');
+  const masterBytes = Generations.resolve(root, masterGeneration).text;
   if (hash(masterBytes) !== base.masterHash) throw Error('IDENTITY_EVIDENCE_MASTER_CHANGED_DURING_LOAD');
   const master = JSON.parse(masterBytes), byId = new Map(), canonical = new Map();
   for (const row of master.rows) {
@@ -564,6 +599,7 @@ function createResearchLoader(root, options) {
           paymentDate: rec.terminal.paymentDate, evidence: rec.sources.map(s => ({ role: s.role, accession: s.accession, url: s.url, sha256: s.sha256, quote: s.quote })) } } };
   };
   loader.masterHash = base.masterHash;
+  loader.masterGeneration = masterGeneration;
   if (opts.identityEvidence) loader.identityEvidence = Object.freeze({ schemaVersion: IDENTITY_EVIDENCE_SCHEMA, registryHash: evidence.registryHash,
     boundSecurityIds: Object.freeze([...evidence.bindings.keys()].sort()), allowCoverPageOnly: !!opts.identityEvidenceAllowCoverPageOnly, protocolV10: !!opts.identityEvidenceProtocolV10,
     ...(opts.identityEvidenceProtocolV12 ? { protocolV12: true, v12SchemaVersion: IDENTITY_EVIDENCE_V12_SCHEMA, v12RegistryHash: evidence.v12RegistryHash } : {}),

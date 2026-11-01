@@ -87,6 +87,9 @@ export function loadConfig(env = {}) {
       // Empfaenger von Betriebsalarmen (Kuendigung ueberfaellig, Bestaetigung nicht zustellbar).
       opsAlertEmail: String(env.VU_OPS_ALERT_EMAIL || ''),
     },
+    // Interne Backtest-Vorschau (/v1/admin/backtests*): standardmaessig AUS. Einschalten nur per eigenem PR mit
+    // Owner-Freigabe (docs/accounts/FREIGABEN.md); zusaetzlich braucht jedes Konto die Rolle backtest_reviewer.
+    backtestReview: {enabled: flag(env.VU_BACKTEST_REVIEW_ENABLED)},
     cookies: {
       secure: cookieSecure,
       prefix: cookieSecure ? '__Host-' : '',

@@ -765,6 +765,58 @@ jobs:
           node scripts/ci/supertrader-chain.mjs dispatch
 
   # ===================================================================
+  # TECHNICAL-SCREENER NACH DEM NACHTLAUF
+  #
+  # technical-world.yml baut technical/data aus der Materialisierung dieses
+  # Laufs. Sein `workflow_run` auf diesen Marktlauf hat auf main nie
+  # gefeuert (wie bei der Materialisierung, siehe oben); geblieben ist nur
+  # sein Zeitplan, der 5-6 h spaet startet und Sonntag/Montag nicht laeuft.
+  # 30.10.-01.11.2026: ein einziger Zeitplanlauf (31.10., am Datenvertrag
+  # gescheitert), sonst nur uebersprungene workflow_run-Laeufe -> Screener
+  # zwei Sitzungen alt, Quant-Tests L1-L3 und DQ-TW-3 rot.
+  #
+  # Gleiches Muster wie `supertrader`: erst wenn refresh, materialize und
+  # freshness-contract gruen sind, ein workflow_dispatch auf main (eigener
+  # Lauf in der Gruppe technical-world-main mit Zeitplan-Rueckfall und
+  # workflow_run, dort nur fuer main gefiltert; eigene Engine- und
+  # Vertragstests vor dem Commit, Erzeuger unveraendert). Kein Anbieterabruf,
+  # kein PAT. Ein Technical-Fehler kann den Nachtlauf nicht rot machen; der
+  # Lauf selbst meldet sich ueber seinen eigenen Pipeline-Alarm. Scheitert
+  # der Anstoss, meldet es der Alarm dieses Laufs. Der Zeitplan in
+  # technical-world.yml bleibt Rueckfall; ein zweiter Lauf auf demselben
+  # Stand committet nichts.
+  # ===================================================================
+  technical:
+    needs: [refresh, materialize, freshness-contract]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && github.event_name != 'push' &&
+      needs.refresh.result == 'success' && needs.materialize.result == 'success' &&
+      needs.freshness-contract.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    outputs:
+      ergebnis: ${{ steps.anstossen.outcome == 'failure' && 'failure' || 'success' }}
+      detail: ${{ steps.anstossen.outputs.detail }}
+    steps:
+      - name: Technical-Screener anstossen (eigener Lauf auf main)
+        id: anstossen
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh workflow run technical-world.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+            echo "detail=technical-world.yml auf main angestossen" >> "$GITHUB_OUTPUT"
+          else
+            echo "detail=Anstoss von technical-world.yml abgewiesen" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+  # ===================================================================
   # SUPERTRADER-BEREINIGUNG, WENN DIE MATERIALISIERUNG SCHEITERT
   #
   # 27.10.2026 (BZH): refresh committete das neue Universum, materialize
@@ -831,7 +883,7 @@ jobs:
   # selben Issue, ohne es zu oeffnen.
   # ===================================================================
   alarm:
-    needs: [refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune]
+    needs: [refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune, technical]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -874,6 +926,9 @@ jobs:
           # Bereinigung nach gescheiterter Materialisierung: ebenfalls nur der Anstoss.
           RESULT_SUPERTRADER_PRUNE: ${{ needs.supertrader-prune.result == 'failure' && 'failure' || needs.supertrader-prune.outputs.ergebnis == 'failure' && 'failure' || needs.supertrader-prune.result == 'success' && 'success' || 'skipped' }}
           SUPERTRADER_PRUNE_DETAIL: ${{ needs.supertrader-prune.outputs.detail }}
+          # Technical-Anstoss: wie Supertrader nur der ANSTOSS (der Lauf meldet sich selbst).
+          RESULT_TECHNICAL: ${{ needs.technical.result == 'failure' && 'failure' || needs.technical.outputs.ergebnis == 'failure' && 'failure' || needs.technical.result == 'success' && 'success' || 'skipped' }}
+          TECHNICAL_DETAIL: ${{ needs.technical.outputs.detail }}
           GATE_DIR: ${{ runner.temp }}/gates
         run: |
           : > "$RUNNER_TEMP/stufen-detail.txt"
@@ -885,6 +940,9 @@ jobs:
           fi
           if [ -n "${SUPERTRADER_PRUNE_DETAIL:-}" ]; then
             printf 'Supertrader-Bereinigung (entfallene Titel): %s\n' "$SUPERTRADER_PRUNE_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
+          fi
+          if [ "${RESULT_TECHNICAL:-}" = "failure" ] && [ -n "${TECHNICAL_DETAIL:-}" ]; then
+            printf 'Technical (Anstoss nach dem Nachtlauf): %s\n' "$TECHNICAL_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
           fi
           if [ -s "$RUNNER_TEMP/stufen-detail.txt" ]; then
             export ALARM_DETAIL_FILE="$RUNNER_TEMP/stufen-detail.txt"
