@@ -79,7 +79,7 @@
  },
  "inputHashes": {
   "code": {
-   "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+   "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
    "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
    "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -95,8 +95,8 @@
    "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
    "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
    "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-   "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
-   "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+   "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
    "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
    "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
    "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
@@ -104,15 +104,15 @@
    "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
    "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
   },
-  "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
-  "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+  "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+  "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
   "population": {
    "profile": "V10_PRIMARY",
    "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-   "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+   "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
    "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
    "calendarLength": 1922,
-   "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+   "sourceManifestHash": "20b15322c5afef42efc68471e68cd975420b4cadab065fb0887984f8dfc78e0f",
    "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
    "registers": {
     "identityEvidence": {
@@ -130,7 +130,7 @@
     "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
     "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
    },
-   "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+   "pointsHashRoot": "e508b75abe24328ac78a20193858b77657cae2588930e649cbd2a4fc2d7f295d"
   },
   "listings": {
    "ref_MSFT": {
@@ -376,7 +376,7 @@
   },
   "private": {}
  },
- "inputHash": "0588dbcc5764e695f4452290af1b8cabdfad6432b1f8224c94810d39735b019d",
+ "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
  "kindPath": {
   "kind": "SIGNAL_BACKTEST",
   "engine": "research-studies.runSignalStudy",
@@ -391,13 +391,13 @@
    "listingId": null,
    "listingHash": null,
    "populationId": "runner:V10_PRIMARY:eff769d59966a073",
-   "populationHash": "7ad5cf733cd7809ce843f2e27fe4842ef564a01fbefc3b419c7c718c9467a47a",
+   "populationHash": "14fe71f5de51cd09dbae16cf820e63aafc547d84f31f52108d510b7650aafaf6",
    "source": {
     "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
     "schemaVersion": "research-studies-1.1.0",
     "engineVersion": null,
     "artifact": null,
-    "resultHash": "b16fcc6ac512adae28ec47dc4d97f6ead241ec946e720a688d92793a2707b734"
+    "resultHash": "883ba30e2aa1fce014754e3d3d618e582b4e50d4b9fb6d006b0f41497fcb821b"
    }
   },
   "period": {
@@ -489,7 +489,7 @@
     "runnerSpecHash": "eff769d59966a0734fac841ef9b7b8baba8a0abd371bd743df6e7f1903d3de80",
     "inputHashes": {
      "code": {
-      "scripts/quant/research/backtest-runner.cjs": "547a213cd06a707e05afe20e3b4a11c047f21b448a7c9b4fbcb2bc74ef2cba29",
+      "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
       "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
       "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
       "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -505,8 +505,8 @@
       "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
       "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
       "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
-      "quant/engines/setup-oos.cjs": "2d8e57d2b7b9431bf7056d74a7b8d98cf42da2f740bf0b67c7e537c520041f0e",
-      "quant/engines/research-delisted-series.cjs": "24571cb402136989fbcd43f0e2af614443ba8c7644cf98dc348db6674c580231",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+      "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
       "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
       "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
       "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
@@ -514,15 +514,15 @@
       "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
       "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
      },
-     "certification": "81e4a1096844aeca045ca3c72e619a2a2e81c329664403c3aaede7dedc667f10",
-     "benchmark": "562dcbd055ddf5bd0015b32c8d38457fef6a51c270954e3168f8c026c2de4d3e",
+     "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
      "population": {
       "profile": "V10_PRIMARY",
       "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-      "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
+      "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
       "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
       "calendarLength": 1922,
-      "sourceManifestHash": "6393e093e045772c0db455cbe4deed94b9749e89c09d04ee93c94ece63a3c948",
+      "sourceManifestHash": "20b15322c5afef42efc68471e68cd975420b4cadab065fb0887984f8dfc78e0f",
       "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
       "registers": {
        "identityEvidence": {
@@ -540,7 +540,7 @@
        "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
        "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
       },
-      "pointsHashRoot": "3db1f52af66386eb89afc5eb8f7d72eba6e3dfcb92f28adc988cdc2798f2de49"
+      "pointsHashRoot": "e508b75abe24328ac78a20193858b77657cae2588930e649cbd2a4fc2d7f295d"
      },
      "listings": {
       "ref_MSFT": {
@@ -786,7 +786,7 @@
      },
      "private": {}
     },
-    "inputHash": "0588dbcc5764e695f4452290af1b8cabdfad6432b1f8224c94810d39735b019d",
+    "inputHash": "42e9ccf44d21e4fd90f036a6882c3b3c2168c738bfe5bdde7b1cb78e11151746",
     "kindPath": {
      "kind": "SIGNAL_BACKTEST",
      "engine": "research-studies.runSignalStudy",
@@ -821,7 +821,7 @@
      "specHash": "55d31de894b6782a7174a0fa3b4a021d0593fdc4c4e6d984e0ae621f5baa4f72"
     }
    },
-   "specHash": "ce6edc5af4b2984e3328bde3d83fb76f268c4f547b298fa76e05e7aaf8a3db31"
+   "specHash": "28fd967048c55fc5b85d5fe0db053daa95f57c30aee9c0e7e102dfa6c1284a6e"
   },
   "events": {
    "form": "EVENTS",
@@ -1049,7 +1049,7 @@
    "totalReturnBasis": "PRICE_RETURN",
    "survivorship": {
     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
-    "control": "population profile V10_PRIMARY (dce532a2533c2907)"
+    "control": "population profile V10_PRIMARY (4b74f7564af9c70d)"
    },
    "warnings": [
     "ESTIMATED_NOT_CERTIFIED",
@@ -1089,7 +1089,7 @@
      "engine": "research-studies.classifyRegimes+analyzeRegimes",
      "mode": "PIT_AVAILABLE",
      "definition": "SPY_WEEKLY_TREND_26_VOL_13",
-     "regimeResultHash": "d272cdf3304233cfe4c61e74d7994bfb202797e2cc9ac57918e928d8adfbbf25",
+     "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
      "states": [
       {
        "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
@@ -1137,7 +1137,7 @@
       }
      ],
      "unmatched": 0,
-     "resultHash": "8ea06e0fe454be9362455b4b4da93cbdee4db68d087fe77adfe05ed983868eb4"
+     "resultHash": "6d27fa6fc569371c10bd8f706ca52cce764b26e8478d30b1d65595008a126563"
     }
    },
    {
@@ -1242,8 +1242,8 @@
       "maxEstimate": 0.15521107405905007
      },
      "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
-     "registrationHash": "eba4b687e5f493ce1e04b4116a6c4ecafa190adbe0ce5ea594cf64da57b3cad8",
-     "resultHash": "4d8d413da427dace308089279b8a7d1b4a28d2ec7bc09d9477a242b555cef7ca",
+     "registrationHash": "c9b4d0dfed56ef2bedc1ecaff4cbfd20c2932b810d1f5893c07b37771633436c",
+     "resultHash": "fa4baceb7978cc9a4e5f32e323eb54b295b9cdc031e96695fe79cfd14fa6ad8c",
      "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
     }
    },
@@ -1278,17 +1278,17 @@
    "certificationStatus": "LIMITED",
    "certificationScope": "KIND",
    "certificationRuleId": null,
-   "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-29",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
    "productionApproved": false,
    "evidenceKind": "TESTED"
   },
-  "envelopeHash": "92d980d66ee8a453ba855c54cd1106d47b623b195e1c1530062343c7003959d5"
+  "envelopeHash": "df7e0a45f0b102b3bae4258ce8998e1de7ecc21398f9439d04a88ec1502d3970"
  },
- "envelopeHash": "92d980d66ee8a453ba855c54cd1106d47b623b195e1c1530062343c7003959d5",
+ "envelopeHash": "df7e0a45f0b102b3bae4258ce8998e1de7ecc21398f9439d04a88ec1502d3970",
  "population": {
   "profile": "V10_PRIMARY",
-  "populationHash": "dce532a2533c29070e1108e534aa84b9b2eb77b529a6f082ea2ebce776b41a03",
-  "frameSize": 4285,
+  "populationHash": "4b74f7564af9c70dacbd4e68e79973b58606fd5b308ce19721b7af60bb8cc9ba",
+  "frameSize": 4283,
   "calendar": {
    "first": "1990-01-05",
    "last": "2025-12-26",
@@ -1606,7 +1606,7 @@
   ]
  },
  "extras": {
-  "engineResultHash": "9e9f6ed79318b998dc953cd0527ed16b70edd9a5eaf98b990b3dab7f94aeeeda",
+  "engineResultHash": "5f77345586b376adb112c9663c958dc5875339be4682f2ca5cd2e043e40662cb",
   "engineEvents": 2981,
   "windowEvents": 315
  },
@@ -1619,5 +1619,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "9e26d1d3279bfd01bebee09a3a3baa4899ff0e9e059e89991491abb776244f24"
+ "resultHash": "0d13aa80c9ffd26c5af63e1bb2b36bc977426a3fc18f35572a7709c41f87dd5d"
 }
