@@ -87,7 +87,8 @@ test('default loader and every existing option set are byte-identical to the loa
   const sets = [undefined, { identityEvidence: true }, { corporateActionEvidence: true }, { identityEvidence: true, identityEvidenceProtocolV10: true, corporateActionEvidence: true }, V12, V13];
   const ids = [...IDS, 'ref_MSFT', 'ref_JNJ', 'ref_NVDA'];
   for (const opts of sets) {
-    const now = R.createResearchLoader(root, opts && { ...opts }), before = B.createResearchLoader(root, opts && { ...opts });
+    // code identity on the same master: the base-commit loader reads the product master, so the current loader is compared on LIVE
+    const now = R.createResearchLoader(root, opts && { ...opts }, { masterGeneration: 'LIVE' }), before = B.createResearchLoader(root, opts && { ...opts });
     assert.deepEqual(JSON.stringify(now.identityEvidence ?? null), JSON.stringify(before.identityEvidence ?? null));
     for (const id of ids) assert.deepEqual(outcome(() => now(id)), outcome(() => before(id)), JSON.stringify(opts) + ' ' + id);
   }
