@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-technical-meta-1.0.0",
  "asOf": "2026-10-30",
- "generatedFrom": "2026-10-31T03:30:09.931Z",
+ "generatedFrom": "2026-10-31T16:53:31.476Z",
  "versions": {
   "row": "technical-screen-row-1.14.0",
   "query": "technical-query-1.13.0",
@@ -9,39 +9,41 @@
   "formations": "technical-formations-1.4.0"
  },
  "counts": {
-  "rows": 5665,
-  "fresh": 5346,
+  "rows": 5663,
+  "fresh": 5344,
   "stale": 319,
-  "withVolume": 5618,
-  "withWeekly": 5658,
-  "with200Weeks": 4739,
+  "withVolume": 5616,
+  "withWeekly": 5657,
+  "with200Weeks": 4742,
   "noBundle": 0,
-  "suspectJump": 181,
+  "suspectJump": 180,
   "suspectJumpConfirmed": 0,
-  "weeklyMonthlyFromDailyHistory": 5665
+  "weeklyMonthlyFromDailyHistory": 5663
  },
- "skipped": {},
+ "skipped": {
+  "IDENTITY_QUARANTINED": 2
+ },
  "formations": {
   "ASCENDING_CHANNEL:DETECTED": 130,
-  "SUPPORT_TRENDLINE:DETECTED": 734,
+  "SUPPORT_TRENDLINE:DETECTED": 733,
   "FALLING_WEDGE:CONFIRMED": 123,
   "GAP_UP:CONFIRMED": 169,
   "ASCENDING_CHANNEL:CONFIRMED": 53,
-  "DOUBLE_TOP:DETECTED": 152,
-  "RESISTANCE_TRENDLINE:DETECTED": 1196,
+  "DOUBLE_TOP:DETECTED": 151,
+  "RESISTANCE_TRENDLINE:DETECTED": 1195,
   "SYMMETRICAL_TRIANGLE:CONFIRMED": 293,
   "RESISTANCE_TRENDLINE:CONFIRMED": 398,
   "GAP_DOWN:CONFIRMED": 203,
   "DESCENDING_CHANNEL:CONFIRMED": 154,
-  "RANGE_BREAKOUT:CONFIRMED": 387,
+  "RANGE_BREAKOUT:CONFIRMED": 386,
   "RANGE_BREAKOUT:DETECTED": 210,
   "DESCENDING_CHANNEL:DETECTED": 251,
   "ASCENDING_TRIANGLE:CONFIRMED": 62,
   "DOUBLE_BOTTOM:CONFIRMED": 117,
   "VOLATILITY_CONTRACTION:DETECTED": 46,
-  "DOUBLE_TOP:CONFIRMED": 194,
+  "DOUBLE_TOP:CONFIRMED": 193,
   "BEAR_FLAG:CONFIRMED": 36,
-  "GAP_DOWN:DETECTED": 180,
+  "GAP_DOWN:DETECTED": 179,
   "BEAR_FLAG:DETECTED": 174,
   "SUPPORT_TRENDLINE:CONFIRMED": 260,
   "ASCENDING_TRIANGLE:DETECTED": 159,
@@ -54,7 +56,7 @@
   "DESCENDING_TRIANGLE:DETECTED": 187,
   "DESCENDING_TRIANGLE:CONFIRMED": 164,
   "HEAD_AND_SHOULDERS:DETECTED": 114,
-  "BULL_FLAG:DETECTED": 48,
+  "BULL_FLAG:DETECTED": 47,
   "INVERSE_HEAD_AND_SHOULDERS:CONFIRMED": 39,
   "RECTANGLE:CONFIRMED": 91,
   "RESISTANCE_BREAKOUT:DETECTED": 124,
@@ -75,7 +77,8 @@
   "daily": "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
   "weekly": "quant/data/product/technical-signals-v1 bundle.multiTimeframe (Wochen/Monat aus der vollen Tageshistorie, OHLCV); Ersatz: quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
   "benchmark": "quant/data/market/discover-series/ref_SPY.json",
-  "names": "quant/data/product/universe-list-v1.json.gz"
+  "names": "quant/data/product/universe-list-v1.json.gz",
+  "identityQuarantine": "quant/config/ticker-reuse-quarantine.json"
  },
  "producer": "scripts/technical/world/build-screener.mjs",
  "paths": {
@@ -84,5 +87,5 @@
   "index": "/technical/data/index-v1.json",
   "chart": "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz"
  },
- "runtimeSec": 46
+ "runtimeSec": 47
 }
