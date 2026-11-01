@@ -264,9 +264,12 @@ jobs:
 
   # Ein roter automatischer Lauf bleibt nicht unbemerkt (wie market-data-refresh.yml): Issue mit Label pipeline-alarm,
   # ein gruener automatischer Lauf schliesst es. Der Bote veraendert den Befund nicht.
+  # Automatisch gemeint ist ein Lauf schon vor dem Schritt `mode`: Zeitplan oder Eingabe mode=auto (der Anstoss aus
+  # supertrader-signals.yml). Scheitert der Job vorher (Checkout, Node, Wegbestimmung, Abbruch), ist outputs.auto leer;
+  # ohne die Eingabe bliebe ein roter Anstoss stumm. Ein manueller Lauf (mode=manual) alarmiert nie.
   alarm:
     needs: candidates
-    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule')
+    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || inputs.mode == 'auto')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
