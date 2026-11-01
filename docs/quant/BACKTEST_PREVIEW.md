@@ -269,3 +269,5 @@ Datenqualität und Abdeckung, historische Population; jede Zeile mit Bezeichnung
 Zertifizierungsstand (`NOT_CERTIFIED`, `productionApproved: false`) in jedem Zustand, auch bei „nicht vorgerechnet“.
 Keine Änderung an `quant/app/**`, `quant/index.html`, `assets/site-navigation.*` oder `ui-protection.json`.
 Tests: `node --test konto/tests/backtest-review.test.mjs`.
+
+**Reihenfolge bei Neubauten:** Wer die Demos oder das Vorschau-Lesemodell neu baut (`build-backtest-preview.cjs --out`), exportiert danach das Review-Bundle neu (`export-backtest-review-bundle.cjs --out workers/vu-account/data/backtest-review-bundle.json`), im selben PR. `backtest-review-bundle.test.mjs` und `backtests.test.mjs` schlagen sonst fehl (`BUNDLE_OUT_OF_DATE`). So geschehen nach #1210/#1215 am 01.11.2026.
