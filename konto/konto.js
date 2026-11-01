@@ -740,6 +740,15 @@
     });
   };
 
+  // ------------------------------------------------------------ Interne Backtest-Vorschau (nur Rolle backtest_reviewer)
+  // Entwurf, nicht verlinkt. Der Server entscheidet ueber Aktivierung (404 PREVIEW_NOT_ACTIVATED) und Rolle
+  // (403 NOT_BACKTEST_REVIEWER); Anzeige und Auswahl in konto/admin/backtests/review.js. Ohne Sitzung keine Anfrage.
+  views['backtest-review'] = function () {
+    if (!A.available()) return unavailable();
+    if (!window.VUBacktestReview) return;
+    window.VUBacktestReview.start({api: A, doc: document, requireSession: requireSession, notice: notice, disableForms: disableForms});
+  };
+
   // Navigation innerhalb des Kontos: aktuelle Seite markieren.
   Array.prototype.forEach.call(document.querySelectorAll('.ka-nav a'), function (a) {
     if (a.getAttribute('href') === window.location.pathname) a.setAttribute('aria-current', 'page');

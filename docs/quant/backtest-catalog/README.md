@@ -40,4 +40,7 @@ Der Test `backtest-catalog.test.mjs` schlägt fehl, sobald Raster, Spec-Builder 
 
 - Alle Ergebnisse tragen `NO_ALPHA_OR_CERTIFICATION_CLAIM`. Die Nachweisart je Fall (Studie, Simulation, Rekonstruktion) liefert die Vorschau (`display.evidence`).
 - Fälle mit privaten Eingaben (Faktorpanel, delistete Reihen) lassen sich nur über den Archivweg neu rechnen.
-- Nach einer Umstellung des Security Masters ändern sich `masterHash` und gegebenenfalls Populationen. Dann den Katalog neu rechnen.
+- **Generationen:** Dieser Katalog ist Generation 1. Alle Ergebnisse sind an die eingefrorene Security-Master-Generation `us-security-master-1.1.0` gebunden ([SECURITY_MASTER_GENERATIONS.md](../../data/security-master/SECURITY_MASTER_GENERATIONS.md)).
+  - Nach einer Umstellung des Stamms wird eine neue Generation ausdrücklich in einem **neuen Verzeichnis** gerechnet. Dieser Katalog wird nicht überschrieben: Der Builder verweigert ein Ziel mit vorhandenem `catalog.json` (`CATALOG_GENERATION_EXISTS_NO_OVERWRITE`) und bricht bei gemischten Stammgenerationen ab (`CATALOG_MIXED_MASTER_GENERATIONS`).
+  - Der Test `backtest-catalog.test.mjs` hält `catalogHash` `7ea6383e…` fest.
+- **Datenstand:** Die Ergebnisse binden die Kursreihen zum Bauzeitpunkt (`inputHashes.listings`, `populationHash`). Prüfung vom 31.10. auf `main` nach den neuen Wochenreihen: Alle 16 öffentlich rechenbaren Fälle ergeben **dieselben Kennzahlen und Methodenergebnisse**. Abweichend sind nur die Datenstand-Hashes (Reihenbytes, SPY, Kalender bis zur letzten Woche), und genau das soll die Bindung sichtbar machen.
