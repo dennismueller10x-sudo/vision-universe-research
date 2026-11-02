@@ -190,6 +190,8 @@ Für Live-Abrufe (Tiingo, SEC) braucht es Schlüssel. Sie laufen ausschließlich
 
 ## 9. Weiterführend
 
+- **Produktwelt-Übergaben für die zentrale Entwicklung:** Quant (Backtests, Security-Master-Generationen, interne Vorschau, offene Entscheidungen): [docs/quant/QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md), maschinenlesbar [docs/quant/quant-handover.json](quant/quant-handover.json).
+
 - Ist-Analyse, Befunde, Zielbild: [docs/architecture/README.md](architecture/README.md)
 - Datenflüsse: [docs/data/DATA_FLOWS.md](data/DATA_FLOWS.md) · Datenqualität: [docs/data/DATA_QUALITY.md](data/DATA_QUALITY.md)
 - Pipelines: [docs/pipelines/PIPELINES.md](pipelines/PIPELINES.md)
