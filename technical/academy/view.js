@@ -44,7 +44,7 @@
     var completed = M.read(store(), content), lesson = content.lessons.find(function (l) { return l.id === id; });
     var wrap = node('div', null, { class: 'ta' }); host.replaceChildren(wrap);
     if (!id) {
-      wrap.append(header('Strategie-Akademie'),node('p','Technische Werkzeuge verstehen, Befunde prüfen und im vorhandenen Technical anwenden. 8 Lernpfade · 32 Lektionen.'),
+      wrap.append(link('← Vision Universe Academy','/academy/'),header('Strategie-Akademie'),node('p','Technische Werkzeuge verstehen, Befunde prüfen und im vorhandenen Technical anwenden. 8 Lernpfade · 32 Lektionen.'),
         node('p','Beschreibende Chartanalyse ist kein nachgewiesener Handelsvorteil. Alle Beispiele sind konstruiert; keine Anlageempfehlung.'),
         node('p', completed.length + ' von 32 Lektionen abgeschlossen · nur in diesem Browser gespeichert.', { role:'status' }));
       if(M.outdated(store(),content))wrap.append(node('p','Lerninhalte wurden überarbeitet. Abschlüsse geänderter Lektionen müssen erneut markiert werden.',{role:'status'}));

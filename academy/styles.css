@@ -76,3 +76,7 @@
 @media(max-width:640px){
   .vu-a-pilot{padding:26px 22px;}
 }
+
+/* Available worlds open their single registered experience without nesting controls. */
+a.vu-a-world-card{color:inherit;text-decoration:none;display:block}
+a.vu-a-world-card:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
