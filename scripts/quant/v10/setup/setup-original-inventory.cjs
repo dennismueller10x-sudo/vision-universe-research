@@ -60,6 +60,8 @@ function main() {
   const argv = process.argv.slice(2), out = argv[argv.indexOf('--out') + 1];
   if (!argv.includes('--out') || !out) throw Error('--out REQUIRED');
   const cert = read(CERT), bt = read(BT), req = cert.kinds.SETUP_BACKTEST.requirements;
+  // Entscheidung FV-1: Schwelle heisst eventCalendarMonths; aeltere Vertraege mit independentWeeks als Alias. Der Gate-Name unten bleibt fuer die eingefrorenen Staende gleich.
+  const monthsRequired = req.eventCalendarMonths ?? req.independentWeeks;
   const H6 = bt.horizons.find(h => h.id === 'm6').tradingDays, H3 = bt.horizons.find(h => h.id === 'm3').tradingDays;
   const snaps = loadSnapshots(), dates = snaps.map(s => s.date), events = eventsOf(snaps), outcomes = read(OUTCOMES);
   const published = outcomes.events.map(e => e.join('|')).sort(), mine = events.map(e => e.join('|')).sort();
@@ -104,18 +106,18 @@ function main() {
   const cum = { SETUP_NEW: 0, SETUP_CONFIRMED: 0 }; let m6Date = null, m6Kind = null;
   for (const m of maturity) { cum.SETUP_NEW += m.SETUP_NEW; cum.SETUP_CONFIRMED += m.SETUP_CONFIRMED; if (!m6Date && Math.max(cum.SETUP_NEW, cum.SETUP_CONFIRMED) >= req.completedOutcomesM6) { m6Date = m.m6; m6Kind = cum.SETUP_NEW >= req.completedOutcomesM6 ? 'SETUP_NEW' : 'SETUP_CONFIRMED'; } }
   const eventMonths = [...new Set(events.map(e => e[2].slice(0, 7)))].sort();
-  const monthsMissing = req.independentWeeks - eventMonths.length;
+  const monthsMissing = monthsRequired - eventMonths.length;
   const monthTarget = (() => { const [y, m] = eventMonths.at(-1).split('-').map(Number); const t = new Date(Date.UTC(y, m - 1 + monthsMissing, 1)); const first = t.toISOString().slice(0, 10); return L.isSession(first) ? first : L.nextSession(first); })();
   const firstM6 = maturity[0].m6;
   const evaluatorText = fs.readFileSync(path.join(ROOT, EVALUATOR), 'utf8').split('\n');
   const setupStart = evaluatorText.findIndex(l => /const setupGates/.test(l));
-  const oosLine = setupStart + evaluatorText.slice(setupStart).findIndex(l => /G\("oos"/.test(l)) + 1, titlesLine = evaluatorText.findIndex(l => /const completedTitles/.test(l)) + 1, monthsLine = evaluatorText.findIndex(l => /const eventWeeks/.test(l)) + 1;
+  const oosLine = setupStart + evaluatorText.slice(setupStart).findIndex(l => /G\("oos"/.test(l)) + 1, titlesLine = evaluatorText.findIndex(l => /const completedTitles/.test(l)) + 1, monthsLine = evaluatorText.findIndex(l => /const event(Weeks|CalendarMonths) =/.test(l)) + 1;
   const gates = [
     { gate: 'historyDates', required: req.historyDates, observed: dates.length, earliest: future[needDates - 1], basis: `${needDates} weitere Veroeffentlichungen an aufeinanderfolgenden NYSE-Sitzungen ab ${future[0]}` },
     { gate: 'historySpanDays', required: req.historySpanDays, observed: Math.round((L.utc(last) - L.utc(dates[0])) / 86400000), earliest: spanDate, basis: `erster Stand ${dates[0]} + ${req.historySpanDays} Kalendertage, naechste Sitzung` },
     { gate: 'completedOutcomesM6', required: req.completedOutcomesM6, observed: 0, earliest: m6Date, basis: `Reife M6 (${H6} Sitzungen nach NEXT_CLOSE-Einstieg) der Ereignisse vom ${maturity[0].eventDate}; ${m6Kind} hat dort ${maturity[0][m6Kind]} Ereignisse (>= ${req.completedOutcomesM6}), Annahme: alle bepreist, keines INCOMPLETE` },
     { gate: 'titles', required: req.titles, observed: 0, earliest: firstM6, basis: `Auswerter Z. ${titlesLine} zaehlt ALLE Titel einer Ereignisart, sobald mindestens ein M6-Ergebnis abgeschlossen ist (heute ${outcomes.study.SETUP_NEW.titles} Titel SETUP_NEW); damit faellt das Gate mit der ersten M6-Reife` },
-    { gate: 'independentWeeks', required: req.independentWeeks, observed: eventMonths.length, earliest: monthTarget, basis: `Auswerter Z. ${monthsLine} zaehlt verschiedene Kalendermonate (date.slice(0,7)) aller Ereignisse inkl. SETUP_WEAKENED; ${monthsMissing} weitere Monate, je mindestens ein Ereignis; frueheste Sitzung des ${req.independentWeeks}. Monats` },
+    { gate: 'independentWeeks', required: monthsRequired, observed: eventMonths.length, earliest: monthTarget, basis: `Auswerter Z. ${monthsLine} zaehlt verschiedene Kalendermonate (date.slice(0,7)) aller Ereignisse inkl. SETUP_WEAKENED; ${monthsMissing} weitere Monate, je mindestens ein Ereignis; frueheste Sitzung des ${monthsRequired}. Monats` },
     { gate: 'entryVariant', required: 'Delta Median M6 <= 1 Pp (SETUP_CONFIRMED)', observed: 'NOT_MEASURABLE_YET', earliest: maturity.find(m => m.SETUP_CONFIRMED > 0).m6, basis: 'erst messbar, sobald M6-Ergebnisse von SETUP_CONFIRMED vorliegen; Ergebnis offen (kann PASS oder OWNER_GATE_ENTRY_VARIANT sein)' },
     { gate: 'oos', required: `oosMinPerSegment ${req.oosMinPerSegment}`, observed: 'konstant false', earliest: null, basis: `Auswerter Z. ${oosLine} setzt das Gate unbedingt auf false (keine Segmentdefinition implementiert); ohne Codeaenderung zu keinem Datum erfuellbar` },
     { gate: 'returnBasis', required: 'TOTAL_RETURN', observed: outcomes.returnType, earliest: null, basis: 'strukturell: haengt an der Preisquelle des Pipeline-Laufs, nicht an der Zeit' },

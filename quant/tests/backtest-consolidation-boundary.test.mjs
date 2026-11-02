@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
-const root=path.resolve(import.meta.dirname,'../..'),require=createRequire(import.meta.url),lock=JSON.parse(fs.readFileSync(path.join(root,'docs/quant-recovery/v51/ui-protection.json')));
+const root=path.resolve(import.meta.dirname,'../..'),require=createRequire(import.meta.url),lock=await import('../../scripts/quality/ui-protection.mjs').then(m=>m.effectiveLock(root)); // eingefrorene Basis + einzeln freigegebene Revisionen
 test('merged Quant UI refresh, navigation, charts, styles and its QA retain exact Main bytes',()=>{
  for(const [file,expected] of Object.entries(lock.files))assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex'),expected,file);
 });
