@@ -22,7 +22,7 @@ Auto-Reload ist aus. Fehler `402 insufficient_credit` heißt: Guthaben leer, der
 
 Antwort `data`: `audio_url` (WAV), `duration`, `word_timestamps` (Liste `{word,start,end}` mit Platzhaltern `<start>`, `<end>`, `<break …>`). Die Wortzeiten steuern die Szenen. Preis: etwa 0,002 USD je Sekunde Rohaudio (50 s etwa 0,10 USD, 56 s etwa 0,12 USD).
 
-Textregeln: Zahlen ausschreiben („dreihundertsiebzig"), „Vision Universe" als `Wischn Juniwörs`, kein `<break>` am Anfang, keine Sonderzeichen. Danach immer per Whisper gegenprüfen.
+Textregeln: Zahlen ausschreiben („dreihundertsiebzig"), „Vision Universe" in normaler Schreibweise (seit 02.11.2026; `Wischn Juniwörs` kippte zu „Juniverse"), kein `<break>` am Anfang, keine Sonderzeichen. Danach immer per Whisper gegenprüfen.
 
 ## Stimmen
 

@@ -35,7 +35,7 @@ Arbeitsordner anlegen, `assets/` mit `assets/fonts/inter-latin.woff2` (als `inte
 curl -X POST https://api.heygen.com/v3/voices/speech -H "Content-Type: application/json" \
      -H "Idempotency-Key: <neu je Aufruf>" -d @tts_request.json -o tts_response.json
 # Stimme Helmut: voice_id e8b866d761284bd6b188848f3c9f5d4e, engine elevenlabs, model eleven_v3
-# Aussprache: "Vision Universe" als "Wischn Juniwörs" schreiben, kein <break> am Textanfang
+# Aussprache: "Vision Universe" normal schreiben (nicht "Wischn Juniwörs"), Hörprobe an den Owner, kein <break> am Textanfang
 
 # 2. Audio laden, Pausen kürzen, Tempo 1,14
 python3 -I tools/tighten.py tts_response.json vo_raw.wav vo.wav words.json 1.14

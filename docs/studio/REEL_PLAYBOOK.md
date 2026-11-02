@@ -78,7 +78,7 @@ Katalogwert: Zeitkritische Reels (Tesla-Zahlen) halten 3 bis 5 Tage. Evergreen-R
 1. Hook-Score ab 7.
 2. Jede Zahl gegen Primärquelle geprüft (Gesetz, Studie, Unternehmensmitteilung). Rechenwege in der Caption.
 3. Kurs oder Stand direkt vor dem Posten prüfen, Abweichung über 5 % korrigiert.
-4. Aussprache per Transkript geprüft („Vision Universe": im Text `Wischn Juniwörs`, „Riester" ohne Pause am Anfang, Zahlen ausgeschrieben).
+4. Aussprache per Transkript geprüft („Vision Universe": im Text normal geschrieben, Hörprobe der Namensstelle an den Owner, „Riester" ohne Pause am Anfang, Zahlen ausgeschrieben).
 5. Bild- und Tonrechte geklärt (Musik aus eigenem Dropbox-Track, fremde Bilder nur mit geklärter Herkunft).
 6. KI-Kennzeichnung in der Caption („Teile der Bilder sind KI-generiert"), TikTok: Schalter „KI-generierter Inhalt".
 7. Keine Anlageberatung, kein Kursversprechen. „Modell, keine Prognose" wenn Zielkurse vorkommen.
@@ -138,7 +138,7 @@ Ausgangswerte (vor Neustart, offizielle Insights): Median Reichweite 12, Ø Wied
 
 - Der Hook entscheidet, nicht der Aufwand. Unsere ersten animierten Erklär-Reels lagen bei 21 bis 91 erreichten Konten. Sie waren 25 bis 32 s lang und begannen ohne Betrag.
 - `<break>` am Textanfang führt zu falscher Aussprache („Riester" wurde „Leaster"). Stattdessen kein Break und notfalls ein Wort aus einer früheren Aufnahme einsetzen.
-- „Vision Universe" spricht Helmut richtig als `Wischn Juniwörs`. Nach jeder Aufnahme per Whisper prüfen und im Zweifel das Wortpaar aus der geprüften Aufnahme einsetzen.
+- „Vision Universe" im Text normal schreiben (Owner-Hörtest 02.11.2026: klarer als `Wischn Juniwörs`). Whisper erkennt den Unterschied nicht; vor dem Rendern eine Hörprobe der Namensstelle an den Owner. Keine Schnipsel aus anderen Reels einsetzen (Laute des Vorworts wandern mit).
 - Zahlen in der Stimme ausschreiben („dreihundertsiebzig"). Das Tempo steigt mit `atempo 1.14`. Pausen über 0,26 s kürzen.
 - Das HeyGen-Guthaben war leer, als der neue Text gebraucht wurde. Vor einer Produktion Guthaben prüfen (`GET /v3/users/me`).
 - Bei Kursen immer „aktuell rund X" und im Zweifel den Bereich prüfen, über den die Aussage robust bleibt (Tesla: zwischen 355 und 374 $ blieb die Rendite über 1.200 %).
