@@ -196,3 +196,21 @@ Lesart:
 **Engpasstage (`counts.intradayAllocationByMinute`):** Der KK-Runner veröffentlicht für EP nur ausgewählte Zähler (`notExecuted`, `technicalOrdersArmed`, `notTriggered`, Reason Codes) und nicht das ganze `counts`-Objekt. Die Zahl der Engpasstage steht deshalb weder im öffentlichen Block noch in der verschlüsselten Datei, dort stehen nur Kennzahlen und Trades. Abschnitt 3 Punkt 2 hatte das anders erwartet. Sicher ist nur die Untergrenze: Jede der 47 EP-Ausgaben hat sich geändert, also gab es in jeder Variante mindestens einen Engpasstag. Wer die genaue Zahl will, braucht einen Runner, der den Zähler veröffentlicht. Das ändert `researchCodeSha256` erneut und braucht einen eigenen PR und einen neuen Lauf.
 
 Nicht geprüft wurden die Kennzahlen je Variante, weil sie verschlüsselt sind. Der Owner kann sie in den beiden Ablagedateien mit den Vorgängern vergleichen: `20261025T203358Z-kk-intraday-cache.sealed.json` (40228395395) und `20261025T213058Z-sf5-lifecycle.sealed.json` (40228392651).
+
+### 6.3 Neue Pins (zweiter Commit, ergänzt nach Abschnitt 4)
+
+Alles ist ergänzt, nichts entfernt. Alte Lauf-IDs, ihre Hashes und Zählungen bleiben vollständig stehen. Ausdrücklich geändert wurden an alten Einträgen nur diese Felder:
+
+| Pin | neu | alter Eintrag: was sich ändert |
+|---|---|---|
+| `KK_SNAPSHOT_RUNS` (`completion/build-kk-ep-ps.mjs`) | 41504851988 `AUTHORITATIVE`, `researchCodeSha256` `c5ee7f45…`, EP-Zählungen und Hashes aus L1, PS-Blöcke unverändert übernommen, `metrics` → Ablage `20261102T192348Z` | 40228395395: `role` `AUTHORITATIVE` → `SUPERSEDED_BY_41504851988_C09_ALLOCATION_BY_MINUTE`; an `validity` angehängt „superseded by 41504851988 (C09 allocation by fill minute, PR #1262: every EP block changed, inputs and PS identical)“ |
+| `SF5_SNAPSHOT_RUNS` (`completion/build-sf5-lifecycle.mjs`) | 41504856962 `AUTHORITATIVE`, `researchCodeSha256` `a8d757fb…`, `sameReferencesAs` 40228392651 (47/47 identisch), sonst Felder von 40228392651 | 40228392651: `role` `AUTHORITATIVE` → `SUPERSEDED_BY_41504856962_SAME_REFERENCES` |
+| `PINNED_SF6_ENGINE_FILES` (`tests/sf-sf7-execution-validation.test.mjs`) | `b05ea605…` | alter Wert `7edb24de…` bleibt als `PINNED_SF6_ENGINE_FILES_7_0_IDENTITY_RUNS` |
+| ST9-V13 | `research/st9-v13-delisted-registration-1.1.0.json` (SHA-256 `e2f9aa7d…`), nur Referenz `lifecycle-engine.mjs` `3e2cbdc8…` → `1dcf2655…`, `baseCommit` `d789e6dc`, Block `amends`; `run-st9-v13-delisted-study.mjs` liest 1.1.0 | `…-1.0.0.json` bytegleich (`548b8079…`), als `REGISTRATION_FILE_1_0_0` / `REGISTRATION_SHA256_1_0_0` gepinnt; neuer Test prüft Bytegleichheit und dass sich nur diese eine Referenz ändert |
+| Artefakte | `STRATEGY-KK-EP-PS-CHART.json`, `STRATEGY-SF5-LIFECYCLE.json`, `docs/SUPERTRADER_5_LIFECYCLE_MATRIX.md` mit ihren Erzeugern neu gebaut (`rebuild-all.mjs` konvergiert, 120/120 Golden Cases) | – |
+
+Neu gegenüber Abschnitt 4: Die Ergebnisse von C09 haben sich geändert. Deshalb heißt die Rolle `…_C09_ALLOCATION_BY_MINUTE` und nicht `…_SAME_PUBLIC_RESULTS`. Der Test SF-KK-READINESS kennt diese eine Ersetzung jetzt ausdrücklich. Er prüft, dass Eingaben, Stichprobe und PS gleich sind, dass sich jeder EP-Hash geändert hat und dass es genau eine solche Ersetzung gibt (40228395395). Die bisherige Regel für `SAME_PUBLIC_RESULTS` bleibt unverändert.
+
+Unverändert: `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (bytegleich), `SF6-PAPER-2027` (`e623b336…`), `engineCodeSha256` `89fbcf86…`, `integrityCodeSha256`, EP/PS/Stichproben-Register, `ENGINE_VERSION` und `supertrader/data`.
+
+Offen bleibt die fachliche Freigabe C09 (Merge #1262). Der PR wird nicht gemergt.

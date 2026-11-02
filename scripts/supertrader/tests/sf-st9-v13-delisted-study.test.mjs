@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as S from '../source-faithful/research/st9-v13-delisted-study.mjs';
-import { verifyRegistration, REGISTRATION_SHA256, REGISTRATION_FILE } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
+import { verifyRegistration, REGISTRATION_SHA256, REGISTRATION_FILE, REGISTRATION_FILE_1_0_0, REGISTRATION_SHA256_1_0_0 } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
 import { securityFromSegment } from '../source-faithful/runner/snapshot-input.mjs';
 import { REFERENCE_COSTS, SF6_REFERENCE_KEYS } from '../source-faithful/research/sf6-references.mjs';
 
@@ -84,6 +84,20 @@ test('registration is pinned, frozen parameters reference the unchanged REF conf
   assert.deepEqual(S.STUDY_METHODS.slice(0, 3), ['MINERVINI_SEPA', 'MINERVINI_POWER_PLAY', 'KK_BREAKOUT']);
   assert.deepEqual([...S.STUDY_METHODS].sort(), [...SF6_REFERENCE_KEYS].sort());
   assert.throws(() => S.studyParameters({ methods: ['NEW_METHOD'] }), /UNKNOWN_METHOD/);
+});
+
+test('registration 1.1.0 amends 1.0.0 only in the lifecycle-engine reference; 1.0.0 stays byte-identical', () => {
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE_1_0_0))).digest('hex'), REGISTRATION_SHA256_1_0_0);
+  assert.equal(REGISTRATION_SHA256_1_0_0, '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc');
+  const old = JSON.parse(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE_1_0_0), 'utf8'));
+  const neu = JSON.parse(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE), 'utf8'));
+  assert.equal(neu.registrationVersion, '1.1.0');
+  assert.deepEqual({ file: neu.amends.file, sha256: neu.amends.sha256 }, { file: REGISTRATION_FILE_1_0_0, sha256: REGISTRATION_SHA256_1_0_0 });
+  const LE = 'scripts/supertrader/source-faithful/research/lifecycle-engine.mjs';
+  const changed = Object.keys(neu.references.sha256).filter((f) => neu.references.sha256[f] !== old.references.sha256[f]);
+  assert.deepEqual(changed, [LE]);
+  assert.deepEqual(Object.keys(neu.references.sha256), Object.keys(old.references.sha256));
+  for (const k of ['methods', 'frozenParameters', 'terminalScenarios', 'metrics', 'hypotheses', 'universes', 'pointInTime', 'quarantine', 'outputs', 'principle']) assert.deepEqual(neu[k], old[k], k);
 });
 
 test('the real register hash matches the pinned value (public file, no private data)', () => {

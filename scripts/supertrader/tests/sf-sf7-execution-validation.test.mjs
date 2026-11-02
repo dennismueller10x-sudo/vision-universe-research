@@ -362,8 +362,12 @@ import { integrityCodeSha256 } from '../source-faithful/research/run-sf6-integri
 import { SF6_RUN_FACTS } from '../source-faithful/completion/sf6-run-facts.mjs';
 import { sf6PaperProtocolSha256 } from '../source-faithful/completion/sf6-paper-protocol-2027.mjs';
 // lifecycle-engine.mjs (last change d1ea0179, the commit of sf5 run 40099831813) and minervini-execution.mjs (7bd28f69,
-// before Minervini run 40170832007): the code every 7.0 identity run executed
-const PINNED_SF6_ENGINE_FILES = '7edb24de208af62d12f68f19c1a25b5d1cfe25493266a060c75328fcec762def';
+// before Minervini run 40170832007): the code every 7.0 identity run executed (kept as the value of those runs)
+const PINNED_SF6_ENGINE_FILES_7_0_IDENTITY_RUNS = '7edb24de208af62d12f68f19c1a25b5d1cfe25493266a060c75328fcec762def';
+// C09 F-MC3M-01/02 (PR #1262, lifecycle-engine.mjs at d789e6dc): the code of the C09/C10 rerun 41504851988 and the
+// SF5 rerun 41504856962 (2026-11-02); minervini-execution.mjs unchanged
+const PINNED_SF6_ENGINE_FILES = 'b05ea605f55d39bd066201bd402a0f5d8ef750e1bbcdc454326514c4eb98d419';
+assert.notEqual(PINNED_SF6_ENGINE_FILES, PINNED_SF6_ENGINE_FILES_7_0_IDENTITY_RUNS);
 
 test('SF7-VAL-CODE-COVERAGE: jede ausgefuehrte Abhaengigkeit der Runner liegt in einem eingetragenen Fingerabdruck; Zusatz-Fingerabdruck der Engine gepinnt; 6.0-Fingerabdruecke unveraendert', () => {
   const runners = [...COV.SF6_RUNNERS, { runner: 'run-sf5-lifecycle.mjs', own: ['AG3_ENGINE', 'SF5_RESEARCH'] }, { runner: 'run-sf4-lifecycle.mjs', own: ['AG3_ENGINE', 'SF4_RESEARCH'] }, { runner: 'run-kk-intraday.mjs', own: ['AG3_ENGINE', 'KK_RESEARCH'] }];

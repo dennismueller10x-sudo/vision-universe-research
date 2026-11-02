@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import * as H from '../source-faithful/research/st9-hist-universe.mjs';
-import { preflight } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
+import { preflight, REGISTRATION_FILE } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
 import { securityFromSegment } from '../source-faithful/runner/snapshot-input.mjs';
 import { BLOCKLIST_SCHEMA, BLOCKLIST_GENERATOR } from '../../market/build-security-master-identity-blocklist.mjs';
 
@@ -147,7 +147,7 @@ test('preflight lists exactly what a real run is missing and computes nothing', 
   assert.deepEqual([...new Set(codes)].sort(), ['SNAPSHOT_STORE_SECRET_MISSING', 'V13_DAILY_DIR_MISSING', 'V13_SERIES_DIR_MISSING']);
   // a complete synthetic input set (placeholder files for every QUALIFIED chain of the public register) is ready
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-root-')), priv = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-priv-'));
-  const REG = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+  const REG = REGISTRATION_FILE; // 1.1.0 (C09, PR #1262); 1.0.0 is pinned in sf-st9-v13-delisted-study.test.mjs
   const pinned = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, REG), 'utf8')).references.sha256);
   for (const f of [REG, 'scripts/supertrader/validation/results-public-key.pem', ...pinned]) { fs.mkdirSync(path.dirname(path.join(root, f)), { recursive: true }); fs.copyFileSync(path.join(ROOT, f), path.join(root, f)); }
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v13/delisted/register-1.0.0.json'), 'utf8')), ix = Object.fromEntries(reg.columns.map((c, i) => [c, i]));

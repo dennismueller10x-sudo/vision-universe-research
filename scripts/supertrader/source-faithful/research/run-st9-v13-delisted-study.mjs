@@ -45,9 +45,16 @@ import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const REGISTRATION_FILE = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+/**
+ * Registration 1.1.0 (2026-11-02, before any V13 run): only the pinned hash of lifecycle-engine.mjs moves (C09 F-MC3M-01/02,
+ * PR #1262). 1.0.0 stays byte-identical and pinned below; the study reads 1.1.0.
+ */
+export const REGISTRATION_FILE = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.1.0.json';
 /** Pinned before any V13 chain entered a Supertrader run (tests hold it). */
-export const REGISTRATION_SHA256 = '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc';
+export const REGISTRATION_SHA256 = 'e2f9aa7d9522531afd1375da53dae73149e8124c4583e9278c13a99f5b9c1ae6';
+/** Registration 1.0.0 (2026-10-30), superseded by 1.1.0 and never run; kept byte-identical. */
+export const REGISTRATION_FILE_1_0_0 = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+export const REGISTRATION_SHA256_1_0_0 = '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // same input construction as run-sf6-integrity.mjs
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 export const REPEAT_CHECK_SCOPE = 'SAME_PROCESS_SAME_DATASETS_RUNSTUDY_ONLY';
