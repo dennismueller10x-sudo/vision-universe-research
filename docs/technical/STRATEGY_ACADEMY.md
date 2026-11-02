@@ -1,6 +1,6 @@
 # Strategie-Akademie T-ACADEMY-1.0
 
-Stand: 02.11.2026. Umsetzung auf dem unveränderten Assistenten-Stand `46fca1f420087067cdfd25e0e62189a61cccc41d` aus PR #1245. Dieser war bei Arbeitsbeginn **offen, Draft, nicht gemergt**. Eigener Branch `feat/technical-academy-t-academy-1`, gestapelter PR gegen `claude/technical-assistant-t1-t3`. Kein Commit auf dessen Branch, kein Merge, keine Aktivierung außerhalb des normalen Technical-Frontends. Nach dessen Merge den Akademie-PR auf main umstellen und erneut prüfen.
+Stand: 02.11.2026. Umsetzung auf dem unveränderten Assistenten-Stand `46fca1f420087067cdfd25e0e62189a61cccc41d` aus PR #1245. Dieser war bei Arbeitsbeginn **offen, Draft, nicht gemergt**. Eigener Branch `feat/technical-academy-t-academy-1`, gestapelter PR gegen `claude/technical-assistant-t1-t3`. Kein Commit auf dessen Branch, kein Merge, keine Aktivierung außerhalb des normalen Technical-Frontends. Während der Umsetzung wurde #1245 auf `97b15816089c91e28c577c5c24c5f3a2e4c6f66b` weitergeführt. Dieser Stand wurde unverändert in den eigenen Akademie-Branch integriert; keine Änderung zurück auf den Assistenten-Branch. Nach dessen Merge den Akademie-PR auf main umstellen und erneut prüfen.
 
 ## Architektur und Nutzerweg
 
@@ -72,5 +72,21 @@ NODE_PATH=/tmp/tc-qa/node_modules node scripts/technical/world/browser-qa.mjs --
 Playwright 1.58.2, Chromium 145, Node 24.19.0 lokal (CI verwendet weiterhin Node 22). Die bestehende Technical-CI führt das neue Inhaltsgate über die Tests und die zusätzliche Browserprüfung aus. Screenshots und Berichte werden als CI-Artefakt gespeichert.
 
 Akademie-Browser: **25/25 Prüfgruppen**, darunter **192 vollständige Lektionsaufrufe** (32 × 360/390/1280 × hell/dunkel), Katalog, Glossar, unbekannte ID, richtige/falsche Quizantwort, Tastaturabschluss, Reload-Persistenz, Praxisübergänge, Ladefehler/Wiederholen, gesperrter Speicher, HTML als harmloser Text, kein horizontaler Überlauf, keine Konsolen- oder Seitenfehler im regulären Nutzerweg. Bestehender Technical-Browser: **66/66**. Mobile Ansicht bei 390 px in hell und dunkel zusätzlich per Screenshot gesichtet. Dies ist mobile Browseremulation, kein Test auf physischem iPhone/Safari.
+
+### Ergebnisse der Bestandstests
+
+| Prüfung | Ergebnis |
+|---|---|
+| Akademie-Inhalte, Verträge, Sicherheit, Umfang, Speicher | 6/6 |
+| vollständige Technical-Produktsuite (inkl. Akademie) | 73/73 |
+| vollständige Core-Suite | 308/308 |
+| Technical-/TI-Engines | 574/574 |
+| Technical-Testisolation | keine Produktionsdatei verändert |
+| Geschützte Pfade gegen aktuellen #1245-Stand | unverändert: `quant/engines`, `supertrader`, `technical/data`, `templates.js`, `assistant.js` |
+| `git diff --check` | ohne Befund |
+
+Anfängliche Fehler durch fehlende Dateien im Sparse-Checkout wurden durch Nachladen der Originaldateien behoben; keine Testschwelle oder Produktionsdatei geändert. Die Core-Suite ist nach vollständigem Bereitstellen ihrer Eingaben 308/308 grün. Nach Übernahme der neuen redaktionellen Assistentenänderungen sind auch die wiederholten Technical- (73/73) und Browserprüfungen (25/25 sowie 66/66) grün. Die 574 Engine-Tests und die Core-Prüfung betreffen unveränderte Dateien.
+
+Maschinenlesbarer Prüfbeleg je Lektion und Quelltext-Hash: [content-review.json](academy-qa/content-review.json).
 
 Details und Screenshots: [academy-qa/report.json](academy-qa/report.json), [bestehende Browserprüfung](academy-qa/existing-browser-report.json). Owner-Abnahme: [STRATEGY_ACADEMY_ABNAHME.md](STRATEGY_ACADEMY_ABNAHME.md).
