@@ -1,6 +1,6 @@
 # Umsatzsteuer im Pro-Abo (Stripe Tax)
 
-Stand 30.10.2026. **Keine Steuerberatung.** Die steuerrechtliche Bewertung, Registrierungs- und Erklärungspflichten
+Stand 02.11.2026. **Keine Steuerberatung.** Die steuerliche Prüfung ist **nicht** erfolgt (Prüfliste unten). Die steuerrechtliche Bewertung, Registrierungs- und Erklärungspflichten
 liegen beim Steuerberater. Dieses Dokument hält fest, was technisch eingestellt ist.
 
 ## Ausgangslage
@@ -26,8 +26,8 @@ liegen beim Steuerberater. Dieses Dokument hält fest, was technisch eingestellt
   (kein Reverse Charge). Änderung nur nach steuerlicher Entscheidung.
 - **Kein fester Steuersatz (`txr_…`) mehr** – der frühere Code dafür ist entfernt, damit nie zwei Steuerberechnungen
   auf derselben Buchung liegen.
-- **Preiserhöhung später:** neuer Preis mit `tax_behavior: inclusive` über `LIVE_CATALOG` (eigener PR, Freigabe);
-  Stripe Tax muss dafür nicht neu eingerichtet werden.
+- **Preisänderung später:** über die Tarifverwaltung (`/konto/admin/tarife/`, [TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)):
+  neuer Stripe-Preis mit `tax_behavior: inclusive` für neue Abschlüsse; Stripe Tax muss nicht neu eingerichtet werden.
 
 ## Schutz (fail closed)
 
@@ -49,6 +49,29 @@ Stripe Tax `active`, Registrierung `DE:standard`, Steuerkategorie Standard `txcd
 Supplied Services), Produkt ohne eigene Kategorie, Preis `inclusive`. EU-Ausland wird mit deutscher USt berechnet (nur
 deutsche Registrierung, Lieferschwelle) – Bestätigung und Überwachung der 10.000-€-Schwelle durch den Steuerberater.
 Seit diesem Befund `STRIPE_TAX_MODE = "automatic"`.
+
+## Prüfliste für den Steuerberater
+
+Bitte je Punkt bestätigen oder korrigieren. Bis dahin gilt die steuerliche Einordnung als **ungeprüft**.
+
+1. **Leistung:** Vision Universe Pro ist ein Online-Abo für eine Research-Web-App (automatisiert bereitgestellt, kein
+   individueller Service). Einordnung als elektronisch erbrachte Dienstleistung (§ 3a Abs. 5 UStG) richtig?
+2. **Sitz und Regelbesteuerung:** RAM Consulting UG (haftungsbeschränkt), Weinsberg, regelbesteuert. Inländische
+   Verbraucher: 19 % aus dem Bruttopreis (1,00 € = 0,84 € netto + 0,16 € USt) – richtig?
+3. **EU-Verbraucher und 10.000-€-Schwelle (§ 3a Abs. 5 Satz 3 UStG):** Unterhalb der Schwelle wird mit deutscher USt
+   abgerechnet (so rechnet Stripe Tax heute, nur DE-Registrierung). Wer überwacht die Schwelle (Vorjahr und laufendes Jahr,
+   EU-weit für alle elektronischen Leistungen)? Soll auf die Schwelle verzichtet werden?
+4. **OSS:** Ab Überschreiten der Schwelle: Anmeldung zum One-Stop-Shop beim BZSt; dann in Stripe Tax die OSS-Registrierung
+   hinterlegen, damit der Satz des Kundenlands gilt. Gewünschter Ablauf und Zeitpunkt?
+5. **Drittländer (z. B. Schweiz, USA, UK):** Stripe berechnet dort keine Steuer (keine Registrierung). Ist das bei
+   Kleinstbeträgen zulässig, oder sollen Verkaufsländer beschränkt werden (z. B. nur EU)?
+6. **Unternehmerkunden:** Heute werden alle Kunden als Verbraucher behandelt (keine USt-IdNr.-Abfrage, kein Reverse
+   Charge). Beibehalten oder USt-IdNr.-Abfrage einschalten?
+7. **Steuerkategorie in Stripe:** `txcd_10000000` (General – Electronically Supplied Services) passend?
+8. **Rechnungen:** Stripe-Rechnung mit Firma, Anschrift, Steuernummer, Rechnungsnummer, Leistungszeitraum, Netto,
+   Steuersatz und Steuerbetrag – genügt sie § 14 UStG (Kleinbetragsrechnung § 33 UStDV)? Fehlt die USt-IdNr.?
+9. **Buchhaltung:** Wie gelangen Stripe-Auszahlungen, Gebühren und Rechnungen in die Buchhaltung (Export, DATEV)?
+10. **Erstattungen und Widerruf:** Korrektur der Umsatzsteuer bei Erstattungen über Stripe ausreichend?
 
 ## Prüfung
 
