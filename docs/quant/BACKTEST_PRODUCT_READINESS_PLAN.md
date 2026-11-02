@@ -52,9 +52,9 @@ Eine Art erreicht C nur über das Zertifizierungsartefakt (`scripts/quant/build-
 | P0.2 | Test: JSON-Schema `docs/quant/backtest-result-v2.schema.json` stimmt mit `validate()` überein (Enums, Pflichtfelder) | verhindert eine stille Abweichung im Vertrag | **besteht bereits** (`backtest-result-contract.test.mjs`, Test „schema document and contract engine agree“) |
 | P0.3 | Test: Runner-Pfad gegen das **committete** Zertifizierungsartefakt (`certificationViolations` = 0, keine Art C) | Runner und Artefakt können nicht auseinanderlaufen | **besteht bereits** (`backtest-certification.test.mjs` prüft das committete Artefakt; der Runner bricht bei Verstößen mit `CERTIFICATION_ARTIFACT_VIOLATES_ITS_CONTRACT` ab) |
 | P0.4 | Veraltungswächter für die 16 Demofälle: Ergebnis-Hashes gegen `CODE_FILES` des Runners | Demos veralten nicht unbemerkt | **#1171**: Wächter `check-backtest-demo-freshness.cjs`. Befund: Alle 16 Demos zeichnen `research-delisted-series.cjs` im Stand `45d7a67c9e` auf, `main` hat `8315b0c82b`. **erledigt in #1178** (Neubau auf dem Runner aus dem R2-Archiv, Python 276.828 Prüfungen/0 Abweichungen, 15/16 Fälle ohne Kennzahländerung); mit #1171+#1178 meldet der Wächter `Code CURRENT`, danach `--strict` in CI möglich |
-| P0.5 | `run-backtest.cjs`: `--help` und Prüfung der eigenen Ausgabe gegen den Vertrag | Bedienbarkeit, fail closed | Ausgabe nur nach `--out` |
+| P0.5 | `run-backtest.cjs`: `--help` und Prüfung der eigenen Ausgabe gegen den Vertrag | Bedienbarkeit, fail closed | Ausgabe nur nach `--out`; **erledigt (Master Completion 3.0)**: `checkResult` gegen `validate()` und die eigenen Hashes, Verstoß schreibt nichts (Exit 1), Schreiben atomar; Test `backtest-run-cli-metrics-hash.test.mjs` |
 | P0.6 | Opt-in-CI-Job (workflow_dispatch, `permissions: contents: read`) für `BACKTEST_RUNNER_FULL=1` | Echtdaten-Tests laufen regelmäßig, nicht nur lokal | kein Commit, nur Bericht |
-| P0.7 | Reproduzierbarkeit über Laufzeiten: Kennzahlen-Hash ohne Node-Binär-Hash zusätzlich ausweisen | Determinismus in CI prüfbar | zwei Node-Versionen liefern denselben Kennzahlen-Hash |
+| P0.7 | Reproduzierbarkeit über Laufzeiten: Kennzahlen-Hash ohne Node-Binär-Hash zusätzlich ausweisen | Determinismus in CI prüfbar | zwei Node-Versionen liefern denselben Kennzahlen-Hash; **erledigt als Hilfsfunktion** `backtest-metrics-hash.cjs` (Zusammenfassungszeile von `run-backtest.cjs`, Spalte in der Coverage-Matrix); Test mit zwei Node-Binären; Runner-Feld und CI-Job: Freigabevorlagen FV-2/FV-3 in [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md) |
 
 ### Phase P1 – Konsolidierung (je eigener PR mit Vorher/Nachher, da Zahlen sich bewegen können)
 
@@ -69,8 +69,8 @@ Eine Art erreicht C nur über das Zertifizierungsartefakt (`scripts/quant/build-
 
 | Nr. | Paket | Warum |
 |---|---|---|
-| P2.1 | Monatlicher Integritätsbericht der PIT-Snapshots (Faktor, Mitgliedschaft, Setup-Stichtage): Lücke, Hash-Kette, Zählerstand gegen das Gate (z. B. 2/24) | Strategy und Factor brauchen 24 lückenlose Monate; eine unbemerkte Lücke verschiebt C um Monate |
-| P2.2 | Prognose je Art: frühestes Datum, an dem jedes HISTORY-Gate erfüllt sein kann, aus dem heutigen Takt | ehrliche Planung statt Schätzung |
+| P2.1 | Monatlicher Integritätsbericht der PIT-Snapshots (Faktor, Mitgliedschaft, Setup-Stichtage): Lücke, Hash-Kette, Zählerstand gegen das Gate (z. B. 2/24) | Strategy und Factor brauchen 24 lückenlose Monate; eine unbemerkte Lücke verschiebt C um Monate. **Erledigt als Skript** `scripts/quant/research/pit-snapshot-integrity.cjs --out` (Matrix Abschnitt F); der monatliche Lauf hängt an P2.3 |
+| P2.2 | Prognose je Art: frühestes Datum, an dem jedes HISTORY-Gate erfüllt sein kann, aus dem heutigen Takt | ehrliche Planung statt Schätzung. **Erledigt** im selben Skript: Strategy und Factor frühestens 2028-08, Setup frühestens 2028-04 (Gate `independence` zählt Monate, FV-1) |
 | P2.3 | Alarm (bestehender `pipeline-alarm`), wenn ein Snapshot-Monat fehlt | fail closed im Betrieb |
 
 ### Phase P3 – Survivorship (strukturelle Blockade von Replay, Pattern, Signal)
@@ -119,6 +119,9 @@ Keine Art wird vor dem Erfüllen ihrer bestehenden Gates zertifiziert. Ein negat
 
 ## 5. Wiederaufnahmepunkt
 
-- Einstieg: dieses Dokument, dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
-- Nächste autonome Pakete: P0.5 (`run-backtest.cjs --help` und Ausgabeprüfung), P0.6 (Opt-in-CI-Job), P0.7 (Kennzahlen-Hash).
+- Einstieg: dieses Dokument, dann [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md) (erzeugt, Stand der Abdeckung und Freigabevorlagen FV-1 bis FV-8), dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
+- **Stand 02.11.2026 (Master Completion 3.0):** P0.5 erledigt, P0.7 als Hilfsfunktion erledigt, P2.1/P2.2 als Skript erledigt, Coverage-Matrix als Erzeuger (`scripts/quant/research/backtest-coverage-matrix.cjs`, Test erzwingt `--check`). Gegenrechnung lokal: 16 öffentliche Katalogfälle neu gerechnet, Python 16.451 Prüfungen/0 Abweichungen, Kennzahlen-Hash 16/16 gleich zum CI-Bau vom 31.10.
+- Nächste autonome Pakete: P0.6 (Opt-in-CI-Job, braucht FV-3), P1.3 (FACTOR_RANKING in die Evidenz-Taxonomie), P1.4 (V10_LIFECYCLE-Listingdrift erklären).
+- Wartet auf den Owner: FV-1 (Lesart `independence`), FV-2 (Runner-Feld Kennzahlen-Hash mit Demo-Neubau), FV-5 (Gates aus Sensitivitäten), FV-6 (A1–A6), FV-8 (Alarm P2.3), dazu H1 (Security Master 1.3.0).
+- Nach jedem Gate-Wechsel im Zertifizierungsartefakt: `node scripts/quant/research/backtest-coverage-matrix.cjs --out docs/quant/BACKTEST_COVERAGE_MATRIX.md` im selben PR.
 - P0.4 abgeschlossen mit #1171 und #1178. Owner-Vorlagen: Setup-OOS A1–A6 und Tiingo-Lizenz in #1179; Security Master in #1167/#1175.
