@@ -307,7 +307,21 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#veraenderung .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor({state:'attached'});
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
-   for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   /* Richtung des veroeffentlichten Basisszenarios (Owner-Freigabe 01.11.2026, nur diese Pruefung): unabhaengig von der
+      Karte ueber die Produkt-API gelesen, dieselbe Regel wie scripts/quality/vu3-regression-qa.mjs (setupDirection).
+      Aufwaerts: Einstieg und Abbruch nach unten ("Interessant ab", "Ungültig unter"). Abwaerts: Abbruch nach oben
+      ("Ungültig über"), kein Einstieg, keine Regelcheckliste. Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
+   const setupDir=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
+    const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
+    const ws=await api.getTechnicalWorkspace(ticker).catch(()=>null);
+    if(!ws||ws.state!=='AVAILABLE'||!(ws.scenarios||[]).length)return null;
+    const ts=ws.tradeSetup||null,sc=ws.scenarios.find(x=>ts&&x.id===ts.scenarioId)||ws.scenarios.find(x=>x.kind==='PRIMARY')||null;
+    return sc&&sc.direction?sc.direction:null;});
+   if(setupDir&&setupDir!=='BULLISH'){
+    if(!setupText.includes('Ungültig über'))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "Ungültig über"');
+    for(const w of ['Interessant ab','Ungültig unter'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
+    if(await page.locator('#setup .q-check-count').count())befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit Regelcheckliste');
+   } else for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
    /* VU3-Finalisierung: Stufe C steht in "Einzelheiten und Methodik" - zuerst aufklappen, dann lesen (wie die Faktoren). */
    {await page.locator('#historie details').evaluateAll(ds=>ds.forEach(d=>{d.open=true;}));

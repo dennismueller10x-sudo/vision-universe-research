@@ -41,6 +41,10 @@ Neue Infrastruktur: keine. Neu sind eine Migration (Tabelle, Funktionen, Rollenw
 
 ## Rolle vergeben (einmalig, Owner-Zustimmung)
 
+**Stand 02.11.2026: Die Rolle ist niemandem zugewiesen** (Owner-Entscheidung). Das vorhandene Konto ist ein privates
+Testkonto und bekommt keine Administratorrechte. Wird die Tarifverwaltung gebraucht, legt der Owner ein eigenes
+geschäftliches Konto an; erst diesem wird die Rolle nach ausdrücklicher Zustimmung zugewiesen.
+
 Die Rolle ist eine Änderung an Produktionsdaten und wird **nur mit ausdrücklicher Zustimmung des Owners** vergeben, nie
 von der Oberfläche aus. Über den bestehenden Datenbankzugang (Supabase SQL-Editor):
 
