@@ -43,8 +43,9 @@ export const LINKS = Object.freeze({
   newsletter: '/rechtliches/newsletter', kuendigen: '/kuendigen', widerrufen: '/widerrufen',
 });
 
-// Pro: Preis und Laufzeit (muessen zu plan_prices/Stripe passen; der Checkout gleicht sie vor jeder Sitzung ab).
-export const PRO_TERMS = Object.freeze({amount: 100, currency: 'EUR', interval: 'month', label: '1,00 € pro Monat inkl. gesetzlicher Umsatzsteuer'});
+// Pro: Der Preis steht bewusst nicht in den Bedingungen. Er kommt zur Laufzeit aus plan_prices (Preisseite, Bestelluebersicht,
+// Stripe-Bestelltext billing.mjs#checkoutSubmitText, Vertragsbestaetigung mail.mjs#contractConfirmation) und kann in der
+// Tarifverwaltung geaendert werden (docs/accounts/TARIFVERWALTUNG.md); ein fester Betrag hier wuerde dann widersprechen.
 
 export const DOCS = {
   impressum: {
@@ -85,7 +86,7 @@ export const DOCS = {
       {p: `Mit dem Klick auf die zahlungspflichtige Bestellschaltfläche auf der Stripe-Zahlungsseite gibst du ein verbindliches Angebot ab. Der Vertrag kommt zustande, wenn die Zahlungsseite den Abschluss bestätigt. Wir senden dir danach eine Vertragsbestätigung mit diesen Bedingungen und der Widerrufsbelehrung per E-Mail. ${CHECK('Beschriftung der letzten Schaltfläche bei Stripe („Abonnieren“) und ergänzender Hinweistext nach § 312j Abs. 3 BGB')}`},
       {p: 'Vertragssprache ist Deutsch. Den Vertragstext speichern wir nicht gesondert für dich abrufbar; du erhältst ihn mit der Vertragsbestätigung per E-Mail. Die jeweils aktuelle Fassung findest du unter [konto.visionuniverse.de/rechtliches/agb](/rechtliches/agb).'},
       {h: '5. Preis, Zahlung, Rechnung'},
-      {p: `Pro kostet ${PRO_TERMS.label} (Bruttopreis; der Betrag enthält die Umsatzsteuer und wird nicht zusätzlich erhöht). Weitere Kosten fallen nicht an.`},
+      {p: `Der Preis für Pro ist der Preis, der dir vor der Bestellung auf der Preisseite, in der Bestellübersicht und auf der Zahlungsseite angezeigt wird. Er wird in der Vertragsbestätigung genannt und gilt für die gesamte Laufzeit deines Abonnements. Es ist ein Bruttopreis: Er enthält die gesetzliche Umsatzsteuer und wird nicht zusätzlich erhöht. Weitere Kosten fallen nicht an. ${CHECK('Preisangabe über Bestellübersicht und Vertragsbestätigung statt eines festen Betrags in den Bedingungen')}`},
       {p: 'Der Betrag ist jeweils zu Beginn eines Abrechnungsmonats im Voraus fällig. Die Zahlung wickelt die Stripe Payments Europe, Ltd. (Irland) ab. Welche Zahlungsarten angeboten werden (z. B. Karte, Apple Pay, Google Pay, PayPal, SEPA-Lastschrift, Klarna, Link), richtet sich nach deinem Gerät, deinem Land und der Eignung der Zahlungsart für wiederkehrende Zahlungen; angezeigt werden nur die jeweils zugelassenen.'},
       {p: 'Bei SEPA-Lastschrift wird die erste Zahlung erst nach einigen Bankarbeitstagen bestätigt; bis dahin gilt Free. Schlägt eine Zahlung fehl, versucht Stripe den Einzug erneut; du erhältst einen Hinweis und kannst die Zahlungsart im Kundenportal ändern. Bleibt die Zahlung aus, endet der Pro-Zugang; dein Konto gilt dann als Free.'},
       {p: `Rechnungen stellt die ${C.name} elektronisch aus; sie stehen im Konto unter „Abonnement“ und im Kundenportal bereit.`},
