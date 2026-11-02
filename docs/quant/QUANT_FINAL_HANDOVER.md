@@ -237,6 +237,13 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 | #1236 merge, #1242 merge | Freigabe nötig | geprüft |
 | SF8-Tageslauf einschalten | Supertrader-Welt | – |
 
+**Produktfremde Fehler (nicht Quant, für die zentrale Koordination):**
+- **Discover Frontend Quality Gates**, rot seit 30.10.:
+  - `browser-qa-direct`: Die Europa-Route Rheinmetall (`/discover/#/s/EUROPE/ref_RHM_DE_XETR`) zeigt „Europa noch nicht verfügbar“. Zu klären ist, ob Europa bewusst gesperrt ist (dann ist die QA-Erwartung veraltet) oder ob ein Datenfehler vorliegt.
+  - WebKit 390 dark: „Range context missing“.
+- **Supertrader Production Smoke:** Research-Kandidaten ohne veröffentlichten Stand.
+- **Social CI:** rot seit 30.10.
+
 ---
 
 ## F. Privates V13-Archiv: Generation und Wiederherstellung
