@@ -1,6 +1,6 @@
 # Supertrader 9 – Zertifizierungsvorbereitung der fünf zuerst prüfbaren Methoden
 
-Stand: 31.10.2026 (Plan 1.1.0). Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
+Stand: 31.10.2026 (Plan 1.1.1: Feld `token` in `sourcePhrase` umbenannt, Werte unverändert). Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
 
 > **Abhängigkeit: erst nach #1148 mergen.** Die Matrix liegt heute nur auf dem Branch `claude/supertrader-9-data-certification-jnejw3` (Draft-PR #1148), nicht auf `main`. Alle Fundstellen „Matrix …“ in diesem Bericht und im Plan verweisen auf sie. Der Plan führt die Abhängigkeit in `dependsOn`: PR 1148, Commit `afa923a6…`, sha256 der Matrix `89a60269…` (`git show origin/claude/supertrader-9-data-certification-jnejw3:docs/SUPERTRADER_9_CERTIFICATION_READINESS.md | sha256sum`). Der Prüfer meldet `PENDING_PR_1148`, solange die Datei fehlt. Liegt sie vor und weicht ihr sha256 ab, ist der Plan ungültig. Die Matrix wird hier bewusst nicht kopiert.
 

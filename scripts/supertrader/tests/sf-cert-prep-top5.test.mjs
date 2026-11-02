@@ -311,7 +311,8 @@ test('CP-EXEC-BUY-STOP-FILL: Buy-Stop füllt nach Gap zur Eröffnung, sonst am N
 // eigenen, begründeten Commit; Abnahmekriterien werden nie nach einem Ergebnis angepasst.
 // 1.1.0 (Review #1196): neuer Pin nach der begründeten Planrevision (siehe plan.revision); der Prüfer pinnt zusätzlich
 // den Planinhalt (PINNED_PLAN_CONTENT_SHA256, Test CP-PLAN-PIN-IN-CHECKER).
-const PINNED_PLAN_SHA256 = 'a22412be02c02f840bcd609ed48b5ac6a87dd4e7cef2736c80dcf1169a6dcce7';
+// 1.1.1 (02.11.2026): Feld token → sourcePhrase (Schlüsselsuche der Quality Gates), Werte unverändert; neuer Pin.
+const PINNED_PLAN_SHA256 = '4e01310d6bbeb4a3ffa46a4e93e467c61a07d6067bbedbb8a70c88330aad3e9a';
 const CHECKER = path.join(path.dirname(PLAN_FILE), 'cert-prep-top5.mjs');
 
 test('CP-PLAN-VALID: der Prüfplan stimmt mit Verträgen, Parametern, #709-Wortlaut und Testnamen überein', async () => {
@@ -351,7 +352,7 @@ const dropTest = (list, id) => { const i = list.findIndex((x) => x.endsWith(`: $
 test('CP-PLAN-DETECTS: die Plan-Prüfung findet geänderte Parameter, falsche Tokens, fehlende Tests, Statuswechsel und Renditeziele', async () => {
   const has = planHas;
   await has((p) => { p.methods[0].params[0].value = 60; }, 'PARAM_VALUE');
-  await has((p) => { p.methods[0].params[0].token = '60-Tage'; }, 'PARAM_TOKEN');
+  await has((p) => { p.methods[0].params[0].sourcePhrase = '60-Tage'; }, 'PARAM_TOKEN');
   await has((p) => { p.methods[0].conformanceTests.push('scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-DOES-NOT-EXIST'); }, 'TEST_MISSING');
   await has((p) => { p.methods[0].rules[0].status = 'SOURCE_EXACT'; }, 'RULE_STATUS');
   await has((p) => { p.methods[0].studies[0].acceptance.push({ metricKind: 'PERFORMANCE', criterion: 'x' }); }, 'STUDY_METRIC_KIND');

@@ -1,11 +1,11 @@
 {
   "schema": "vu-supertrader-cert-prep-plan-1",
   "id": "SF9-CERT-PREP-TOP5",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "fixedOn": "2026-10-31",
   "status": "PREREGISTERED_NOT_ACTIVE",
   "purpose": "Methodische Zertifizierungsvorbereitung der fünf am besten validierbaren Methoden. Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
-  "revision": "1.1.0 (31.10.2026, vor jedem Ergebnis einer Studie): Abhängigkeit von PR #1148 ausdrücklich, Soll-Mengen für Regeln und Parameter (rulesOutOfScope, paramsOutOfScope), C01 um CP-TUR-S2-TRIGGER-ONE-TICK ergänzt, Befund F-KK-ADR-DENOMINATOR präzisiert, Status der CONFORMANCE-Studien auf PR-Head-Nachweis begrenzt, Prüfername korrigiert. Keine Regel, kein Parameter und kein Abnahmekriterium einer Studie geändert.",
+  "revision": "1.1.0 (31.10.2026, vor jedem Ergebnis einer Studie): Abhängigkeit von PR #1148 ausdrücklich, Soll-Mengen für Regeln und Parameter (rulesOutOfScope, paramsOutOfScope), C01 um CP-TUR-S2-TRIGGER-ONE-TICK ergänzt, Befund F-KK-ADR-DENOMINATOR präzisiert, Status der CONFORMANCE-Studien auf PR-Head-Nachweis begrenzt, Prüfername korrigiert. Keine Regel, kein Parameter und kein Abnahmekriterium einer Studie geändert. | 1.1.1 (02.11.2026, vor jedem Ergebnis einer Studie): Feld token in sourcePhrase umbenannt, weil die Schlüsselsuche der Supertrader Quality Gates den Feldnamen als möglichen Schlüssel meldet; Werte, Regeln, Parameter und Abnahmekriterien unverändert.",
   "dependsOn": {
     "pr": 1148,
     "branch": "claude/supertrader-9-data-certification-jnejw3",
@@ -122,22 +122,22 @@
         { "id": "TUR-SF-CASH", "reason": "CONTRACT_GOLDEN_CASES" }
       ],
       "params": [
-        { "psr709": "TUR-S2ENT", "token": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.entry" }, "value": 55, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S2EX", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.exit" }, "value": 20, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S2NOSKIP", "token": "ohne Vortrade-Skipfilter", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.filter" }, "value": false, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-N", "token": "/20", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "nPeriod" }, "value": 20, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-STOP", "token": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-ADD", "token": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-STOPADD", "token": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-LIMIT4", "token": "4 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsPerMarket" }, "value": 4, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-LIMIT12", "token": "12 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLong" }, "value": 12, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-LIMIT6", "token": "6 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsClosely" }, "value": 6, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-LIMIT10", "token": "10 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLoosely" }, "value": 10, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-UNIT", "token": "0,01", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "unitRiskFraction" }, "value": 0.01, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-DRAWDOWN", "token": "10%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalLossStep" }, "value": 0.1, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-DRAWDOWN", "token": "20%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalCut" }, "value": 0.2, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S2ENT", "token": "1 Tick", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rawTick" }, "value": 0.01, "kind": "CONVENTION", "note": "ein Tick = 0,01 Rohpreis, in die split-adjustierte Basis umgerechnet (Ableitung, kein Quellenwert)" },
-        { "psr709": "TUR-RANK", "token": "stärkste", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rankLookbackSessions" }, "value": 63, "kind": "CONVENTION", "note": "3 Monate = 63 Sitzungen (TUR-RANKVAR OPTIONAL, Ableitung)" }
+        { "psr709": "TUR-S2ENT", "sourcePhrase": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.entry" }, "value": 55, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2EX", "sourcePhrase": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.exit" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2NOSKIP", "sourcePhrase": "ohne Vortrade-Skipfilter", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S2.filter" }, "value": false, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-N", "sourcePhrase": "/20", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "nPeriod" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-STOP", "sourcePhrase": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-ADD", "sourcePhrase": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-STOPADD", "sourcePhrase": "0,5 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "addStepN" }, "value": 0.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT4", "sourcePhrase": "4 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsPerMarket" }, "value": 4, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT12", "sourcePhrase": "12 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLong" }, "value": 12, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT6", "sourcePhrase": "6 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsClosely" }, "value": 6, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-LIMIT10", "sourcePhrase": "10 Units", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "maxUnitsLoosely" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-UNIT", "sourcePhrase": "0,01", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "unitRiskFraction" }, "value": 0.01, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-DRAWDOWN", "sourcePhrase": "10%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalLossStep" }, "value": 0.1, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-DRAWDOWN", "sourcePhrase": "20%", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "notionalCut" }, "value": 0.2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S2ENT", "sourcePhrase": "1 Tick", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rawTick" }, "value": 0.01, "kind": "CONVENTION", "note": "ein Tick = 0,01 Rohpreis, in die split-adjustierte Basis umgerechnet (Ableitung, kein Quellenwert)" },
+        { "psr709": "TUR-RANK", "sourcePhrase": "stärkste", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "rankLookbackSessions" }, "value": 63, "kind": "CONVENTION", "note": "3 Monate = 63 Sitzungen (TUR-RANKVAR OPTIONAL, Ableitung)" }
       ],
       "blockers": [
         { "id": "C02-CC4", "criterion": "CC-4", "class": "d", "secondary": [], "text": "TUR-SF-LIMIT-CORR DATA_BLOCKED: keine Owner-freigegebene PIT-Korrelationsgruppenquelle; SIC-Proxys schließen CC-4 nach E4 nicht", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C02 Blocker / Querschnittsblocker 5", "closes": "Owner-Entscheidung E7-5 (A mit E4-Revision oder B GICS-Historie), danach Neulauf mit aktiviertem Limit und Vorher/Nachher", "status": "OPEN" },
@@ -229,12 +229,12 @@
         { "id": "TUR-SF-CASH", "reason": "CONTRACT_GOLDEN_CASES" }
       ],
       "params": [
-        { "psr709": "TUR-S1ENT", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.entry" }, "value": 20, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S1EX", "token": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.exit" }, "value": 10, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-FAILSAFE", "token": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.failsafe" }, "value": 55, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S1LOSER", "token": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S1LOSER", "token": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterExit" }, "value": 10, "kind": "SOURCE_NUMBER" },
-        { "psr709": "TUR-S1SKIP", "token": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterBreakout" }, "value": 20, "kind": "SOURCE_NUMBER" }
+        { "psr709": "TUR-S1ENT", "sourcePhrase": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.entry" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1EX", "sourcePhrase": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.exit" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-FAILSAFE", "sourcePhrase": "55-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "S1.failsafe" }, "value": 55, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1LOSER", "sourcePhrase": "2 N", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "stopN" }, "value": 2, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1LOSER", "sourcePhrase": "10-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterExit" }, "value": 10, "kind": "SOURCE_NUMBER" },
+        { "psr709": "TUR-S1SKIP", "sourcePhrase": "20-Tage", "code": { "module": "methods/turtle.mjs", "export": "PARAMS", "path": "filterBreakout" }, "value": 20, "kind": "SOURCE_NUMBER" }
       ],
       "blockers": [
         { "id": "C01-CC1", "criterion": "CC-1", "class": "d", "secondary": ["a"], "text": "zwei SOURCE_AMBIGUOUS-Regeln: TUR-SF-S1-OPEN-BREAKOUT (Referenz SKIP) und TUR-SF-FAILSAFE-EXIT (Referenz 10D); beide Lesarten laufen als Szenarien", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C01 Regeln / Blocker", "closes": "Owner-Entscheidung mit W-TUR-Stelle (oder Nachweis 'nicht essenziell'), getroffen vor dem Öffnen versiegelter Kennzahlen; Entscheidungsverfahren hier vorregistriert (PS-C01-READINGS)", "status": "PREPARED_DECISION_PROCEDURE" },
@@ -303,14 +303,14 @@
         { "id": "KK-SF-PRIORITY", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
-        { "psr709": "KK-031", "token": "ADR20", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "adrSessions" }, "value": 20, "kind": "SOURCE_NUMBER" },
-        { "psr709": "KK-001", "token": "30%", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "overnightCap" }, "value": 0.3, "kind": "SOURCE_NUMBER" },
-        { "psr709": "KK-006", "token": "30–100%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMove" }, "value": 0.3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Druckgrenze einer PREFERENCE als Grenze eines deklarierten Proxys (MA-KK-SETUP-PROXY), kein Kullamägi-Gate" },
-        { "psr709": "KK-006", "token": "1–3Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMoveSessions" }, "value": 63, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "3 Monate = 63 Sitzungen" },
-        { "psr709": "KK-008", "token": "2Wochen–2Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.window" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Grenze 2 Wochen = 10 Sitzungen; CONSOLIDATION_20 vorregistriert" },
-        { "psr709": "KK-013", "token": "3–5Tagen", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.partialAfter" }, "value": 3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" },
-        { "psr709": "KK-014", "token": "10DMA", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.trailMa" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "gedruckte Anfängerregel" },
-        { "psr709": "KK-025", "token": "0,3–0,5%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_REFERENCE_CONFIG", "path": "sizing.riskFraction" }, "value": 0.005, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" }
+        { "psr709": "KK-031", "sourcePhrase": "ADR20", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "adrSessions" }, "value": 20, "kind": "SOURCE_NUMBER" },
+        { "psr709": "KK-001", "sourcePhrase": "30%", "code": { "module": "methods/kullamagi.mjs", "export": "KK_PARAMS", "path": "overnightCap" }, "value": 0.3, "kind": "SOURCE_NUMBER" },
+        { "psr709": "KK-006", "sourcePhrase": "30–100%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMove" }, "value": 0.3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Druckgrenze einer PREFERENCE als Grenze eines deklarierten Proxys (MA-KK-SETUP-PROXY), kein Kullamägi-Gate" },
+        { "psr709": "KK-006", "sourcePhrase": "1–3Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.priorMoveSessions" }, "value": 63, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "3 Monate = 63 Sitzungen" },
+        { "psr709": "KK-008", "sourcePhrase": "2Wochen–2Monate", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_SETUP_PROXIES", "path": "CONSOLIDATION_10.window" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "untere Grenze 2 Wochen = 10 Sitzungen; CONSOLIDATION_20 vorregistriert" },
+        { "psr709": "KK-013", "sourcePhrase": "3–5Tagen", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.partialAfter" }, "value": 3, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" },
+        { "psr709": "KK-014", "sourcePhrase": "10DMA", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_EXIT_POLICIES", "path": "PARTIAL3_THIRD_BE_MA10.trailMa" }, "value": 10, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE", "note": "gedruckte Anfängerregel" },
+        { "psr709": "KK-025", "sourcePhrase": "0,3–0,5%", "code": { "module": "research/kk-breakout-lifecycle.mjs", "export": "KK_REFERENCE_CONFIG", "path": "sizing.riskFraction" }, "value": 0.005, "kind": "MODEL_BOUND_FROM_SOURCE_RANGE" }
       ],
       "blockers": [
         { "id": "C08-CC3", "criterion": "CC-3", "class": "d", "secondary": ["a"], "text": "7 essenzielle manuelle Entscheidungen (Setup-Qualität, Ausbruchsniveau, Größe …); das Setup ist eine Modellkonvention (MA-KK-SETUP-PROXY)", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C08 Blocker", "closes": "Quellenbelege für eine mechanische Setup-Definition oder Owner-Entscheidung, die das Kriterium nicht aufweicht; hier nur die Proxy-Grenzen mit Tests festgeschrieben", "status": "OPEN_PROXY_PINNED" },
@@ -385,11 +385,11 @@
         { "id": "MOKA-SF-EXIT-CONTEXT", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
-        { "psr709": "MOKA12-004", "token": "0.75×ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "gapAtr" }, "value": 0.75, "kind": "SOURCE_NUMBER" },
-        { "psr709": "MOKA12-004", "token": "ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "atrSessions" }, "value": 40, "kind": "SOURCE_NUMBER" },
-        { "psr709": "MOKA24-VOL", "token": "150%", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeRatio" }, "value": 1.5, "kind": "SOURCE_NUMBER" },
-        { "psr709": "MOKA12-008", "token": "7Wochen", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "respectWeeks" }, "value": 7, "kind": "SOURCE_NUMBER" },
-        { "psr709": "MOKA24-VOL", "token": "Durchschnitts", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeWindow" }, "value": 50, "kind": "OWNER_CONVENTION", "note": "Fenster nicht in der Quelle (MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS); Owner-Entscheidung D-BGU-VOLWINDOW 2026-10-23" }
+        { "psr709": "MOKA12-004", "sourcePhrase": "0.75×ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "gapAtr" }, "value": 0.75, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA12-004", "sourcePhrase": "ATR40", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "atrSessions" }, "value": 40, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA24-VOL", "sourcePhrase": "150%", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeRatio" }, "value": 1.5, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA12-008", "sourcePhrase": "7Wochen", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "respectWeeks" }, "value": 7, "kind": "SOURCE_NUMBER" },
+        { "psr709": "MOKA24-VOL", "sourcePhrase": "Durchschnitts", "code": { "module": "methods/morales-kacher.mjs", "export": "MOKA_PARAMS", "path": "volumeWindow" }, "value": 50, "kind": "OWNER_CONVENTION", "note": "Fenster nicht in der Quelle (MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS); Owner-Entscheidung D-BGU-VOLWINDOW 2026-10-23" }
       ],
       "blockers": [
         { "id": "C12-CC1-VOLWINDOW", "criterion": "CC-1", "class": "d", "secondary": [], "text": "MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS; Referenz 50 Sitzungen als Owner-Konvention", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C12 Blocker", "closes": "Quellenstelle zum Mittelungsfenster (Autoren-Primärquelle)", "status": "OPEN" },
@@ -469,8 +469,8 @@
         { "id": "DAR-SF-REENTRY", "reason": "MANUAL_REVIEW_LAYER" }
       ],
       "params": [
-        { "psr709": "DAR-Q1", "token": "drei", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "confirmDays" }, "value": 3, "kind": "SOURCE_NUMBER" },
-        { "psr709": "DAR-Q4", "token": "Bruchteil", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "rawFraction" }, "value": 0.01, "kind": "CONVENTION", "note": "'a fraction' ist nicht beziffert; ein Roh-Cent ist VU-Konvention (MA-DAR-FRACTION)" }
+        { "psr709": "DAR-Q1", "sourcePhrase": "drei", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "confirmDays" }, "value": 3, "kind": "SOURCE_NUMBER" },
+        { "psr709": "DAR-Q4", "sourcePhrase": "Bruchteil", "code": { "module": "methods/darvas.mjs", "export": "DARVAS_PARAMS", "path": "rawFraction" }, "value": 0.01, "kind": "CONVENTION", "note": "'a fraction' ist nicht beziffert; ein Roh-Cent ist VU-Konvention (MA-DAR-FRACTION)" }
       ],
       "blockers": [
         { "id": "C03-CC1", "criterion": "CC-1", "class": "d", "secondary": [], "text": "DAR-SF-BOTTOM-START SOURCE_AMBIGUOUS (Referenz AFTER_TOP_DAY; der Wortlaut von DAR-Q2 neigt zu AFTER_TOP_CONFIRMED); Ledger SRC-ND-BOOK DISPUTED", "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C03 Quellen / Blocker", "closes": "Owner-Entscheidung mit B06-Stelle (gedruckt S. 184)", "status": "OPEN" },
