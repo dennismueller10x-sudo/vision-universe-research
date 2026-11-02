@@ -84,6 +84,9 @@ body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
 
 /* Rechnungen */
 .ka-table-wrap{overflow-x:auto;margin-top:12px}
+/* Interne Backtest-Vorschau: lange Codes (z. B. CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE) duerfen die Seite
+   auf dem iPhone nicht verbreitern; sie brechen innerhalb des Ergebnisses um. Tabellen scrollen weiter in ihrem Rahmen. */
+#br-result li,#br-result p,#br-frame li,#br-frame p{overflow-wrap:anywhere}
 .ka-table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
 .ka-table th,.ka-table td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--vu-line)}
 .ka-table th{color:var(--vu-muted);font-weight:600}
