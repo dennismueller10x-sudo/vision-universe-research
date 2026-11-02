@@ -323,9 +323,9 @@
       "cik": "0001487918",
       "name": "OFS Capital Corp",
       "sic": null,
-      "rawFacts": 4938,
-      "mappedFacts": 1005,
-      "unmappedFacts": 3947,
+      "rawFacts": 5270,
+      "mappedFacts": 1066,
+      "unmappedFacts": 4251,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -337,9 +337,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 24,
+      "quarterlyPeriods": 25,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -351,7 +351,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -378,14 +378,14 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -406,14 +406,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -436,45 +436,46 @@
         }
       },
       "quality": {
-        "HIGH": 138
+        "HIGH": 143
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 138,
-        "resolvedValues": 138
+        "datableValues": 143,
+        "resolvedValues": 143
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4015,
+        "rules_version": "1.1.0",
+        "total": 4326,
         "by_severity": {
-          "INFO": 3947,
-          "WARNING": 68
+          "INFO": 4251,
+          "WARNING": 75
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 10,
+          "CONCEPT_DISAGREEMENT": 13,
           "PERIOD_MISMATCH": 48,
-          "RESTATEMENT_CONFLICT": 10,
-          "UNKNOWN_CONCEPT": 3947
+          "RESTATEMENT_CONFLICT": 14,
+          "UNKNOWN_CONCEPT": 4251
         }
       },
       "latestFiling": {
-        "accession": "0001487918-26-000078",
-        "filing_date": "2026-07-31",
+        "accession": "0001487918-26-000091",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 56
+        "periodic_filings": 57,
+        "acceptance_datetime": "2026-10-29T21:36:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b65399d2b88878ea5fd53cec0a0d43bd42eee4a7ebfbbff76b3e06141e3c8c9b",
+      "sourceDigest": "ad4dbb4885fe1ddf9a02208e57db158111aa85da27b1fd9093bf36bfa1fd2ac4",
       "issuerId": "iss_cik_0001487918"
     },
     {

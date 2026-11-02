@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-31T03:53:32.641Z",
+ "generatedAt": "2026-10-31T17:25:54.618Z",
  "signalStudy": {
   "asOf": "2026-10-30",
-  "generatedAt": "2026-10-31T03:51:36.000Z",
+  "generatedAt": "2026-10-31T17:23:18.479Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,8 +17,8 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6190,
-    "withTotalReturn": 6052,
+    "titles": 6206,
+    "withTotalReturn": 6068,
     "share": 0.978,
     "minimumShare": 0.95
    }
@@ -54,8 +54,8 @@
    "to": "2026-10-30",
    "spanDays": 50,
    "replay": {
-    "titles": 158,
-    "observations": 125771,
+    "titles": 159,
+    "observations": 126850,
     "from": "1991-03-08"
    }
   },
@@ -78,11 +78,11 @@
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 6,
+   "count": 7,
    "byIndex": {
-    "SP500": 6,
-    "NDX": 6,
-    "DJIA": 6
+    "SP500": 7,
+    "NDX": 7,
+    "DJIA": 7
    },
    "from": "2026-09-15"
   },
@@ -90,7 +90,7 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6190,
+    "titles": 6206,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6052,
-    "eligibleTitles": 6190,
+    "titles": 6068,
+    "eligibleTitles": 6206,
     "share": 0.978,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-10-30",
-    "generatedAt": "2026-10-31T03:51:36.000Z"
+    "generatedAt": "2026-10-31T17:23:18.479Z"
    },
    "daily": {
     "titles": 5,
@@ -140,7 +140,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 163,
    "robust": 96,
-   "matchSnapshots": 12
+   "matchSnapshots": 13
   },
   {
    "id": "technicalStates",
@@ -193,7 +193,7 @@
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 6,
+   "membershipSnapshots": 7,
    "state": "NOT_CONTROLLED",
    "sensitivityDelisted": 3058,
    "sensitivityFrom": "2016-01-08"
@@ -210,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6190 Titel seit 1990-01-05",
+     "value": "6206 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "3628 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "3629 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -272,7 +272,7 @@
      "id": "SETUP_CONFIRMED",
      "trust": "LIMITED",
      "n": 823,
-     "titles": 115,
+     "titles": 116,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
@@ -280,7 +280,7 @@
      "id": "SETUP_NEW",
      "trust": "LIMITED",
      "n": 7485,
-     "titles": 146,
+     "titles": 147,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
@@ -288,7 +288,7 @@
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
      "n": 8256,
-     "titles": 147,
+     "titles": 148,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     }
@@ -317,14 +317,14 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6190 Titel seit 1990-01-05",
+     "value": "6206 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "6052 von 6190 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
+     "value": "6068 von 6206 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -346,7 +346,7 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89110,
+     "n": 89111,
      "titles": 5076,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
@@ -400,7 +400,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "6 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "7 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {
