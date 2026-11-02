@@ -12,7 +12,7 @@ const content=JSON.parse(await readFile(root+'technical/academy/content.json','u
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.svg':'image/svg+xml','.gz':'application/gzip','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://x').pathname);if(p.endsWith('/'))p+='index.html';const f=resolve(root,'.'+p);if(!f.startsWith(root))throw Error('path');res.setHeader('content-type',types[extname(f)]||'application/octet-stream');res.end(await readFile(f));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});
-const base='http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[];
+const base='http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[];
 const assert=(x,msg)=>{if(!x)throw Error(msg);};
 async function check(name,fn){try{await fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}
 try{
@@ -23,6 +23,18 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  const prefix=width+'-'+theme;
  async function overflow(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');}
+ await check(prefix+' central Academy single strategy entry',async()=>{
+  await page.goto(base.replace('/technical/','/academy/'));await page.locator('.vu-a-world-card').first().waitFor();
+  assert(await page.locator('.vu-a-world-card').count()===11,'11 existing worlds');
+  assert(await page.evaluate(()=>document.documentElement.dataset.theme)===theme,'entry theme follows preference');
+  const entry=page.locator('a.vu-a-world-card[href="/technical/#/akademie"]');assert(await entry.count()===1,'single strategy world link');
+  await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
+  const ax=await page.evaluate(()=>axe.run(document.querySelector('a.vu-a-world-card[href="/technical/#/akademie"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));assert(!ax.violations.length,ax.violations.map(x=>x.id).join(','));
+  await entry.focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();
+  await page.getByRole('link',{name:'← Vision Universe Academy',exact:true}).click();await entry.waitFor();
+  await page.screenshot({path:out+'/'+prefix+'-central-academy.png',fullPage:true});
+  await page.locator('#questions-mount a',{hasText:'Wie lese ich einen Chart'}).click();await page.locator('.ta-paths section').first().waitFor();
+ });
  await check(prefix+' catalog/navigation',async()=>{await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();assert(await page.locator('.ta-paths section').count()===8,'8 paths');assert(await page.locator('.ta-paths li').count()===32,'32 lessons');await overflow();await page.screenshot({path:out+'/'+prefix+'-katalog.png',fullPage:true});});
  await check(prefix+' all 32 lessons',async()=>{
   for(const l of content.lessons){await page.goto(base+'#/akademie/'+l.id);await page.getByRole('heading',{name:l.title,exact:true}).waitFor();assert(await page.locator('.ta h2').count()===8,'complete sections '+l.id);assert(await page.locator('figure').count()===1,'visual');assert(await page.locator('input[type=radio]').count()===2,'answers');await overflow();}
@@ -78,8 +90,34 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.getByRole('link',{name:'Nächste Lektion →',exact:true}).click();await page.getByRole('heading',{name:'Bollinger-Bänder',exact:true}).waitFor();await page.getByRole('link',{name:'← Vorherige Lektion',exact:true}).click();await page.getByRole('heading',{name:'ATR',exact:true}).waitFor();
   await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();assert(await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).evaluate(n=>n===document.activeElement),'reset retains focus');
  });
+ for(const id of ['trend-1','momentum-1','zeitrahmen-1'])await check(prefix+' complete user journey '+id,async()=>{
+  const l=content.lessons.find(x=>x.id===id),path=content.paths.find(p=>p.id===l.pathId);
+  await page.goto(base.replace('/technical/','/academy/'));await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').click();
+  await page.locator('.ta-paths section').filter({has:page.getByRole('heading',{name:path.title,exact:true})}).getByRole('link',{name:l.title,exact:true}).click();
+  await page.locator('fieldset').waitFor();const expected=Object.entries(auditContract.answers).find(([key])=>key===id)[1];await page.getByLabel(expected,{exact:true}).check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
+  await page.locator('a[data-practice]').click();await page.locator('.tc-hit .tc-ticks').first().waitFor();
+  const goal=await page.locator('#tc-main h1').innerText();
+  await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-cta').waitFor();const matches=await page.locator('.tc-cta').innerText();await page.locator('.tc-cta').click();
+  await page.locator('.tc-hits .tc-hit').first().click();await page.locator('.tc-chart svg').first().waitFor();const chart=await page.evaluate(()=>location.hash);
+  if(width===390)await page.screenshot({path:out+'/'+prefix+'-'+id+'-practice.png',fullPage:true});
+  await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.getByLabel(expected,{exact:true}).isChecked(),'quiz restored after analysis');await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
+  await page.getByRole('button',{name:'Lektion als abgeschlossen markieren',exact:true}).click();await page.reload();await page.getByRole('button',{name:'Abschluss aufheben',exact:true}).waitFor();
+  if(width===390)await page.screenshot({path:out+'/'+prefix+'-'+id+'-completed.png',fullPage:true});
+  await page.getByRole('link',{name:'← Alle Lernpfade',exact:true}).click();await page.getByRole('status').filter({hasText:'von 32 Lektionen abgeschlossen'}).waitFor();const progress=await page.getByRole('status').filter({hasText:'von 32 Lektionen abgeschlossen'}).innerText();
+  assert(await page.getByRole('link',{name:l.title+' · abgeschlossen',exact:true}).count()===1,'catalog shows completed lesson');
+  journeys.push({width,theme,lesson:id,path:path.title,goal,matches,chart,progress,pass:true});
+ });
  await context.close();
 }
+await check('cold Academy loading with mobile network and CPU profile',async()=>{
+ for(const route of ['/academy/','/technical/#/akademie','/technical/#/akademie/trend-1']){
+  const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
+  await cdp.send('Network.enable');await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:150,downloadThroughput:200000,uploadThroughput:90000});await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+  let contentRequests=0;page.on('request',r=>{if(r.url().endsWith('/technical/academy/content.json'))contentRequests++;});const start=Date.now();await page.goto(base.replace('/technical/','')+route,{waitUntil:'domcontentloaded'});
+  if(route==='/academy/')await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();else if(route.endsWith('trend-1'))await page.locator('fieldset').waitFor();else await page.locator('.ta-paths section').first().waitFor();
+  const ms=Date.now()-start;assert(ms<15000,'cold load exceeds 15s failure ceiling');assert(contentRequests<2,'duplicate lesson payload');performanceChecks.push({route,ms,contentRequests,profile:'390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache',ceilingMs:15000});await context.close();
+ }
+});
 await check('real chart analysis and screener handoff retain academy return',async()=>{
  const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();
  await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
@@ -95,4 +133,4 @@ await check('blocked storage / safe text / load retry',async()=>{
  await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>r.fulfill({json:{paths:[],lessons:[],glossary:[]}}));await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content);c.lessons[0].foundations[0]='<img src=x onerror="window.academyInjection=true">';return r.fulfill({json:c});});await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Lektion als abgeschlossen markieren'}).click();await page.getByRole('status').filter({hasText:'Speichern ist gesperrt'}).waitFor();assert(await page.locator('.ta img').count()===0,'injected image');assert(await page.evaluate(()=>!window.academyInjection),'injected execution');await context.close();
 });
 }finally{await browser.close();server.close();}
-await writeFile(out+'/report.json',JSON.stringify({results},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
+await writeFile(out+'/report.json',JSON.stringify({results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;

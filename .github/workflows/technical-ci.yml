@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - 'technical/**'
+      - 'academy/**'
       - 'quant/engines/technical/**'
       - 'quant/tests/technical-*'
       - 'quant/tests/fixtures/technical-reference-*'
@@ -20,6 +21,7 @@ on:
     branches: [main]
     paths:
       - 'technical/**'
+      - 'academy/**'
       - 'quant/engines/technical/**'
       - 'scripts/technical/world/**'
       - '.github/workflows/technical-*.yml'
@@ -47,6 +49,8 @@ jobs:
         run: node --test quant/tests/technical-*.test.mjs quant/tests/ti-*.test.mjs
       - name: Produktwelt und Datensatzvertrag
         run: node --test technical/tests/*.test.mjs
+      - name: Bestehende Academy-Engine
+        run: node --test academy/engines/*.test.mjs
       - name: Hero-Block synchron
         run: node scripts/design/sync-product-hero.mjs --check
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
