@@ -17,9 +17,19 @@
 
 **Die 7 verbleibenden Quant-Fehler** sind veraltete Test-Fixtures, auf `main` genauso. #1219 (Supertrader-Chat) bzw. #1224 behebt sie. Sie hängen nicht am Stamm.
 
+## 1a. Probelauf vom 02.11.2026: Der Folgestand ändert sich täglich
+
+Lauf **41400342624** (`commit=false`, gleiche Eingaben):
+- **Folgestand** sha256 `f10b1c25f2c1ac9d…`, nicht `4d9a0e03…` vom Vortag. Die Ursachen:
+  - Der Stamm trägt das Laufdatum (`generatedAt`).
+  - Neue Alterungen nach der 30-Tage-Schwelle: Deaktivierungen nicht freigabefähig 16 → **20**, Eignungswechsel 16 → **17**, Namen gezählt 1 → **5**, davon 3 Listeneinträge ungenutzt.
+- **Gate:** weiter PASS bei unveränderten Grenzen (canonical_id 24/25).
+
+**Folge:** Eine im Voraus fixierte Hash-Bedingung lässt sich nicht über Tage halten. Freigabeliste, Probelauf, Regression und `commit=true` gehören auf **denselben Tag** (Arbeitspaket H1 in `docs/quant/QUANT_FINAL_HANDOVER.md`). Die Freigabe des Owners nennt deshalb den Lauftag. Die Bedingung lautet: Der Folgestand des produktiven Laufs ist bytegleich mit dem Folgestand des Probelaufs desselben Tages, und die neu erzeugte Liste lässt im Gate keinen Eintrag ungenutzt.
+
 ## 2. Freigabe (vom Owner zu erteilen)
 
-> „Ich gebe den produktiven Lauf `security-master-weekly.yml` mit `commit=true`, `allow_version_change=true` und `approved_changes=true` am <Datum> frei. Bedingung: Der Probelauf am selben Tag ergibt denselben Folgestand sha256 `4d9a0e039c4e9431…` ohne neuen Listeneintrag.“
+> „Ich gebe den produktiven Lauf `security-master-weekly.yml` mit `commit=true`, `allow_version_change=true` und `approved_changes=true` am <Datum> frei. Bedingungen: Am selben Tag werden Probelauf, Neuerzeugung der Freigabeliste, Gate PASS bei unveränderten Grenzen ohne ungenutzten Eintrag und volle Suiten auf dem Folgestand ausgeführt; der produktive Folgestand ist bytegleich mit dem des Probelaufs.“
 
 ## 3. Ablauf am Lauftag
 
