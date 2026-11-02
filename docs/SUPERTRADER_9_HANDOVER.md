@@ -331,3 +331,43 @@ Dazu Python-Quant OK und Testisolation sauber. In der CI waren Quant CI, Core, T
 | Erste Veröffentlichung, Rückweg | [SUPERTRADER_8_FIRST_RELEASE.md](SUPERTRADER_8_FIRST_RELEASE.md) |
 | Paper-Protokoll 2027 | [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md) |
 | Quant: Security Master, V13-Archiv | [quant/QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md) |
+
+---
+
+## 12. Master Completion 3.0 (Stand 02.11.2026, `main` @ `122f5d9`)
+
+Ergänzung, nichts oben ist umgeschrieben. Keine Handelsregel, kein Parameter, keine Engine, keine Registrierung, kein gepinnter Plan, kein CC-Kriterium und kein Veröffentlichungsgate ist geändert. Keine Secrets, kein R2, kein kostenpflichtiger Lauf, keine Variable, kein Merge.
+
+**Evidenznachweis der 13 Methoden:** [SUPERTRADER_13_METHODS_EVIDENCE.md](SUPERTRADER_13_METHODS_EVIDENCE.md). Erzeugt von `scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs` aus den committeten Quellen (Readiness-Artefakt und -Matrix, TOP5-Plan, Golden Cases, Paper-Protokoll, historische Infrastruktur, Kandidatenstand, §4 und §8.1 dieses Dokuments). Je Methode zehn Prüfdimensionen mit Status, Nachweis, Blocker und Zuständigkeit sowie die getrennten Statusdimensionen IMPLEMENTIERT … ZURÜCKGESTELLT. Test `sf-mc3-evidence-matrix.test.mjs`: Dokument = Erzeuger, 13 Methoden, ZERTIFIZIERT nur mit Beleg der Readiness, jeder Nachweispfad existiert. Ergebnis heute: keine Methode zertifiziert, fachlich validiert oder produktreif.
+
+**Geschlossene Prüfdefizite (nur Tests):**
+- `sf-mc3-causality.test.mjs`: Kausalität (`prepare`/`signalAt`/`eligibility` am Balken i nur aus 0..i) und Determinismus je Methode für C03–C08 und C11–C13 auf den eingefrorenen echten Reihen der SF8-Fixture, mit Gegenprobe. C01/C02 deckt `SF-TUR-TEMPORAL`. C09/C10 bleiben offen: Ihre Entscheidung fällt an der Eröffnung der Folgesitzung auf IEX-Minuten.
+- `sf-mc3-product-wording.test.mjs`: keine Erfolgs-, Gewinn- oder Sicherheitsversprechen und keine Kaufaufforderung in allen Seiten, Skripten, Kandidatendateien und der Registry unter `supertrader/**`, mit Gegenproben. Ausgenommen sind das Literaturverzeichnis `sources.json`, ein zitierter Buchtitel und Wertpapiernamen Dritter.
+- Lokal `cert-prep-top5.mjs --run-tests` auf `122f5d9`: Plan gültig, 0 Abweichungen, `PRESENT_MATCHING_PR_1148`, C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16. Der Turtle-Code-Fingerabdruck auf `main` ist gleich dem in SF6-PAPER-2027 gepinnten Referenzwert (`89fbcf86…`). Für sf5 gibt es keinen Pin. Der formale Nachweis auf dem Referenz-Commit (`evidenceState` im gepinnten Plan) bleibt offen.
+
+**S1 PR-Konsolidierung** (GitHub, 02.11.2026 ~10:25 UTC; nur gelesen, nichts geändert oder kommentiert; Mergebarkeit per `git merge-tree` gegen `main` `122f5d9`):
+
+| PR | Zustand | Head | Stand des Zweigs | gegen `main` | CI auf dem Head | Abhängigkeit, nächster Schritt |
+|---|---|---|---|---|---|---|
+| #1148 | **gemergt** 02.11. 09:56 UTC | `50b415b` | – | – | – | Matrix byte-gleich auf `main` (`89a60269…cfde`), TOP5-Prüfer meldet `PRESENT_MATCHING_PR_1148` |
+| #1233 | Draft | `08492df` | gestapelt auf hist-exec `53e13fb`, enthält weder `659df6c` noch #1219 | konfliktfrei | Core 41343673038 rot (Schritt Core-Tests), Quality Gates 41343673046 rot (Schritt Quant-2.0-Regression; Head liegt vor #1219, Ursache nicht weiter geprüft) | vor #1234; main einmergen, CI neu, Gate A, Owner-Freigabe |
+| #1234 | Draft | `39ecbc8` | wie #1233 auf hist-exec | konfliktfrei; auch mit #1233 zusammen konfliktfrei (beide ändern `SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md`) | Core 41343953479 rot, Quality Gates 41343953541 rot | nach #1233; liest Archiv 1.2.0 (nach #1241 auf 2.0.0 umstellen); Owner bestätigt Secrets und löst aus |
+| #1235 | Draft | `d798215` | gestapelt auf cert-prep, enthält `2d30160` (#1196) nicht | **Konflikt** in `cert-prep-top5.mjs` | Quality Gates 41344891387 rot | Konflikt lösen; Feld `token` kommt im ALL13-Plan 36-mal vor → `sourcePhrase`, neuer Pin mit Begründung; Review, Owner-Freigabe |
+| #1142 | Draft, überholt | `39f24c5` | Basis `adbc2f0` | **Konflikt** (add/add in 4 Dateien der V13-Studie) | – | übernommen in #1189; Schließen nur durch Owner |
+| #1141 | Draft, überholt | `78b33ed` | Basis `adbc2f0` | **Konflikt** in `quant/tests/security-master-content-hash.test.mjs` | – | Quant-Bereich, außerhalb Gate A |
+| #1156 | Draft, überholt | `32c4c85` | Basis `99af26c` | konfliktfrei | – | Workflow `sec-consumer-fundamentals.yml`, außerhalb Gate A |
+| #1099 | Draft, überholt | `fdb2567` | Basis `a2bfa48` | konfliktfrei | – | abgelöst durch §4 |
+
+**S4 Produktreife (lesend):**
+- Kandidatenstand `asOf` 30.10.2026: am 02.11. aktuell (letzte abgeschlossene Sitzung vor dem Laufdatum ist der 30.10.). Ab Laufdatum 03.11. liegt er eine Sitzung zurück, ab 05.11. ist DQ-SF8-1 rot (`maxLag` 2), solange `SF8_AUTO_PUBLISH` nicht gesetzt ist.
+- Vertrag C1–C7: Code und Tests SF9-PUB-1…7 auf `main`; C7 erfüllt (Registry-Eintrag ohne `activation`). C1–C6 prüft jeder Lauf selbst.
+- V1: unverändert wie §4. Seit 41156681821 gab es keinen weiteren geplanten Nachtlauf von `market-data-refresh.yml` auf `main` (geprüft 02.11. ~10:25 UTC). Damit bleibt S1 bei 3/5; die nächsten Messpunkte sind 02.11. und 03.11. 22:30 UTC. S5 wartet auf den Montagslauf vom 02.11. Nichts ist vorweggenommen.
+- **Risiko Security Master:** Stamm `us-security-master-1.1.0` vom 11.09.2026 14:43 UTC. Letztes zulässiges Laufdatum ist der **10.11.2026**, ab dem 11.11. meldet die Eingangsprüfung STALE und jeder Kandidatenlauf endet mit Exit 3. Firmennamen: STALE ab 26.11.2026. Zuständig ist Quant (H1, #1240) mit Owner-Datum.
+
+**Owner-Freigaben, die dieser Stand braucht** (Einzelheiten im Evidenzdokument, Abschnitt 5):
+1. Security Master 1.3.0 produktiv vor dem Laufdatum 10.11.2026 (Quant H1, #1240).
+2. `SF8_AUTO_PUBLISH` erst nach Nachweis 1 (§3.3).
+3. #1233, #1234 und #1235 nach Nachzug und Review; der Lauf der V13-Studie mit Secrets und Archivgeneration.
+4. Lesarten und Proxys vor dem Öffnen der Kennzahlen: PS-C01-READINGS, PS-C03-BOTTOM-START, PS-C08-SETUP-PROXY, PS-C12-READINGS. Dazu die Gruppenquelle PS-C02-CC4-GROUPS (E7-5).
+5. Eine lizenzierte CA-Quelle (CC-5, E1) und die Aktivierung von SF6-PAPER-2027 vor dem 01.01.2027 (CC-8, mit Aufbewahrung).
+6. Vertrags- bzw. Produkt-PRs: F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING, C01/C02-PRODUCT-PLAN, X-LEDGER.
